@@ -25,7 +25,7 @@ newGame
 
 Filter
 --------------------------------------------------------
-This event does not support filters.
+This event may be filtered by `fileName`.
 
 
 .. _`Event Guide`: ../guide/events.html
