@@ -20,7 +20,7 @@ timestamp
 
 menumode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`Bool`_. Read-only. If the game is paused- in inventory, menu, etc.
+`Boolean`_. Read-only. If the game is paused- in inventory, menu, etc.
 
 
 Filter
@@ -30,4 +30,4 @@ This event does not support filters.
 
 .. _`Event Guide`: ../guide/events.html
 .. _`Number`: ../type/lua/number.html
-.. _`Bool`: ../type/lua/bool.html
+.. _`Boolean`: ../type/lua/boolean.html
