@@ -58,4 +58,4 @@ Show a message when Ctrl-Z is pressed.
 .. _`Event Guide`: ../guide/events.html
 .. _`Number`: ../type/lua/number.html
 .. _`Boolean`: ../type/lua/boolean.html
-.. _`scan code`: ../type/scancodes.html
+.. _`scan code`: ../guide/scancodes.html
