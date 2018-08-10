@@ -549,5 +549,40 @@ namespace mwse {
 
 			return sol::make_object(state, object);
 		}
+
+		sol::object makeLuaObject(NI::Pointer<NI::Object> object) {
+			if (object == nullptr) {
+				return sol::nil;
+			}
+
+			LuaManager& luaManager = LuaManager::getInstance();
+
+			sol::state& state = luaManager.getState();
+
+			switch ((uintptr_t)object->getRunTimeTypeInformation()) {
+			case NI::RTTIStaticPtr::AVObject:
+				return sol::make_object(state, NI::Pointer<NI::AVObject>(reinterpret_cast<NI::AVObject*>(object.get())));
+			case NI::RTTIStaticPtr::Camera:
+				return sol::make_object(state, NI::Pointer<NI::Camera>(reinterpret_cast<NI::Camera*>(object.get())));
+			case NI::RTTIStaticPtr::Node:
+				return sol::make_object(state, NI::Pointer<NI::Node>(reinterpret_cast<NI::Node*>(object.get())));
+			case NI::RTTIStaticPtr::ObjectNET:
+				return sol::make_object(state, NI::Pointer<NI::ObjectNET>(reinterpret_cast<NI::ObjectNET*>(object.get())));
+			case NI::RTTIStaticPtr::SwitchNode:
+				return sol::make_object(state, NI::Pointer<NI::SwitchNode>(reinterpret_cast<NI::SwitchNode*>(object.get())));
+			}
+
+			if (object->isInstanceOfType(NI::RTTIStaticPtr::Node)) {
+				return sol::make_object(state, NI::Pointer<NI::Node>(reinterpret_cast<NI::Node*>(object.get())));
+			}
+			else if (object->isInstanceOfType(NI::RTTIStaticPtr::AVObject)) {
+				return sol::make_object(state, NI::Pointer<NI::AVObject>(reinterpret_cast<NI::AVObject*>(object.get())));
+			}
+			else if (object->isInstanceOfType(NI::RTTIStaticPtr::ObjectNET)) {
+				return sol::make_object(state, NI::Pointer<NI::ObjectNET>(reinterpret_cast<NI::ObjectNET*>(object.get())));
+			}
+
+			return sol::make_object(state, object);
+		}
 	}
 }

@@ -23,6 +23,8 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
+		void release();
+
 		// Slow, but name-based lookup of nodes.
 		bool isOfType(const RTTI*);
 		bool isOfType(uintptr_t rtti) { return isOfType(reinterpret_cast<RTTI*>(rtti)); }
@@ -33,7 +35,7 @@ namespace NI {
 	static_assert(sizeof(Object) == 0x8, "NI::Object failed size validation");
 
 	struct Object_vTable {
-		void * destructor; // 0x0
+		void (__thiscall * destructor)(Object*, int); // 0x0
 		RTTI * (__thiscall * getRTTI)(Object*); // 0x4
 		Object * (__thiscall * createClone)(Object*); // 0x8
 		void * loadBinary; // 0xC

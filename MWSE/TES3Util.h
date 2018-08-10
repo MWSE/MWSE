@@ -157,6 +157,12 @@ namespace mwse {
 			return __new(sizeof(T));
 		}
 
+		template <typename T>
+		void _delete(T * address) {
+			const auto __delete = reinterpret_cast<void (__cdecl*)(T *)>(0x727530);
+			__delete(address);
+		}
+
 		typedef void* (__cdecl *ExternalRealloc)(void*, size_t);
 		extern ExternalRealloc _realloc;
 		void* realloc(void* address, size_t size);

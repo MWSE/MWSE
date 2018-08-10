@@ -15,6 +15,10 @@ namespace NI {
 		return reinterpret_cast<Object * (__thiscall *)(Object *)>(0x6E9910)(this);
 	}
 
+	void Object::release() {
+		reinterpret_cast<void(__thiscall *)(Object *)>(0x404630)(this);
+	}
+
 	bool Object::isOfType(const RTTI* type) {
 		return (vTable.asObject->getRTTI(this) == type);
 	}

@@ -3,6 +3,7 @@
 #include "sol.hpp"
 
 #include "NIDefines.h"
+#include "NIPointer.h"
 
 #include "TES3Defines.h"
 
@@ -63,5 +64,6 @@ namespace mwse {
 		sol::object makeLuaObject(TES3::MobileObject* object);
 		sol::object makeLuaObject(TES3::Weather* weather);
 		sol::object makeLuaObject(NI::Object* object);
+		sol::object makeLuaObject(NI::Pointer<NI::Object> object);
 	}
 }

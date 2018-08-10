@@ -15,7 +15,10 @@
 #include "CodePatchUtil.h"
 
 #include "NICamera.h"
+#include "NINode.h"
 #include "NIPick.h"
+#include "NIRTTI.h"
+#include "NIStream.h"
 
 #include "TES3Actor.h"
 #include "TES3AudioController.h"
@@ -945,6 +948,23 @@ namespace mwse {
 				return true;
 			};
 
+			state["tes3"]["loadMesh"] = [](const char* path) -> sol::object {
+				NI::Stream stream;
+
+				if (!stream.load(path)) {
+					return sol::nil;
+				}
+
+				NI::Pointer<NI::Object> x = stream.unknown_0x64->get()->createClone();
+
+				mwse::log::getLog() << "Reference count: " << x->references << std::endl;
+
+				sol::object result = makeLuaObject(x);
+
+				mwse::log::getLog() << "Reference count: " << x->references << std::endl;
+
+				return result;
+			};
 		}
 	}
 }

@@ -158,7 +158,7 @@ namespace TES3 {
 		int mouseSensitivity; // 0xE8
 		int horzSensitivity; // 0xEC
 		int shaderWaterReflectUpdate; // 0xF0
-		NI::Object * nodeCursor; // 0xF4
+		NI::Node * nodeCursor; // 0xF4
 		WorldControllerRenderCamera splashscreenCamera; // 0xF8
 		WorldControllerRenderCamera worldCamera; // 0x124
 		WorldControllerRenderCamera unknown_0x150;

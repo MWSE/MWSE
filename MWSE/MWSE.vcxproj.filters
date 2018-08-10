@@ -855,6 +855,12 @@
     <ClInclude Include="TES3CrimeTree.h">
       <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
     </ClInclude>
+    <ClInclude Include="NIPointer.h">
+      <Filter>Header Files\DataAdapters\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="NIStream.h">
+      <Filter>Header Files\DataAdapters\NI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -1927,6 +1933,9 @@
     </ClCompile>
     <ClCompile Include="TES3WeatherController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="NIStream.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3AudioController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>

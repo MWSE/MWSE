@@ -13,6 +13,8 @@
   <ItemGroup>
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="CodePatchUtil.h" />
+    <ClInclude Include="NIPointer.h" />
+    <ClInclude Include="NIStream.h" />
     <ClInclude Include="TES3CrimeEvent.h" />
     <ClInclude Include="TES3CrimeTree.h" />
     <ClInclude Include="D3DColorValue.h" />
@@ -256,6 +258,7 @@
     <ClCompile Include="NIObjectLua.cpp" />
     <ClCompile Include="NIPick.cpp" />
     <ClCompile Include="NIPickLua.cpp" />
+    <ClCompile Include="NIStream.cpp" />
     <ClCompile Include="NISwitchNodeLua.cpp" />
     <ClCompile Include="NIUtil.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
