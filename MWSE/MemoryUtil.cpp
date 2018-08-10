@@ -205,6 +205,7 @@ namespace mwse {
 		VirtualProtect((DWORD*)address, 0x5, oldProtect, &oldProtect);
 	}
 
+	// WARNING: If passing a function address, always use a non-static function or it will crash.
 	void writePatchCodeUnprotected(DWORD address, const BYTE* patch, DWORD size) {
 #ifdef _DEBUG
 		// Read incremental linker trampoline to find real patch

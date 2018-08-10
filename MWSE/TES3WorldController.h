@@ -161,11 +161,11 @@ namespace TES3 {
 		NI::Node * nodeCursor; // 0xF4
 		WorldControllerRenderCamera splashscreenCamera; // 0xF8
 		WorldControllerRenderCamera worldCamera; // 0x124
-		WorldControllerRenderCamera unknown_0x150;
-		WorldControllerRenderCamera unknown_0x17C;
+		WorldControllerRenderCamera armCamera; // 0x150
+		WorldControllerRenderCamera menuCamera; // 0x17C
 		WorldControllerRenderTarget characterRenderTarget; // 0x1A8
-		WorldControllerRenderTarget unknown_0x22C;
-		WorldControllerRenderCamera unknown_0x2B0;
+		WorldControllerRenderTarget unknown_0x22C; // 0x22C
+		WorldControllerRenderCamera shadowCamera; // 0x2B0
 		int unknown_0x2DC;
 		void * fogOfWarController; // 0x2E0
 		void * uiInventoryData; // 0x2E8

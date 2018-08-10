@@ -21,7 +21,7 @@ namespace mwse {
 
 			// Functions exposed as read-only properties.
 			usertypeDefinition.set("id", sol::readonly_property(&TES3::BaseObject::getObjectID));
-			usertypeDefinition.set("sourceMod", sol::readonly_property([](TES3::BaseObject& self) { return self.sourceMod->fileName; }));
+			usertypeDefinition.set("sourceMod", sol::readonly_property([](TES3::BaseObject& self) { return self.sourceMod->filename; }));
 		}
 
 		template <typename T>

@@ -213,6 +213,8 @@ namespace TES3 {
 		float calculateSwimRunSpeed();
 		float calculateFlySpeed();
 
+		void updateDerivedStatistics(Statistic * baseStatistic);
+
 		//
 		// Custom functions.
 		//

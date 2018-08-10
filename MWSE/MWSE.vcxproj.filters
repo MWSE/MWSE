@@ -858,6 +858,9 @@
     <ClInclude Include="NIPointer.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
+    <ClInclude Include="TES3GameFileLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClInclude>
     <ClInclude Include="NIStream.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
@@ -1942,6 +1945,9 @@
     </ClCompile>
     <ClCompile Include="TES3Game.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3GameFileLua.cpp">
+      <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

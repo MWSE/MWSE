@@ -23,6 +23,7 @@
     <ClInclude Include="D3DVector.h" />
     <ClInclude Include="D3DViewport.h" />
     <ClInclude Include="DynamicLuaObject.h" />
+    <ClInclude Include="TES3GameFileLua.h" />
     <ClInclude Include="TES3MobController.h" />
     <ClInclude Include="TES3AttachmentLua.h" />
     <ClInclude Include="TES3StdString.h" />
@@ -267,6 +268,7 @@
     <ClCompile Include="ScriptUtilLua.cpp" />
     <ClCompile Include="TES3AudioController.cpp" />
     <ClCompile Include="TES3Game.cpp" />
+    <ClCompile Include="TES3GameFileLua.cpp" />
     <ClCompile Include="TES3StdString.cpp" />
     <ClCompile Include="TES3AttachmentLua.cpp" />
     <ClCompile Include="TES3CrimeEvent.cpp" />

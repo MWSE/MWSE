@@ -19,6 +19,8 @@
 #define TES3_ui_inventory_equipInventoryTileToPlayer 0x5CE130
 #define TES3_ui_data_inventory_updatePaperDoll 0x7B6D04
 
+#define TES3_ui_updateStatsPane 0x6266D0
+
 #define TES3_ui_showRestWaitMenu 0x610170
 
 namespace mwse {
@@ -70,6 +72,10 @@ namespace mwse {
 
 			void flagPaperDollUpdate() {
 				*reinterpret_cast<signed char*>(TES3_ui_data_inventory_updatePaperDoll) = 1;
+			}
+
+			void updateStatsPane() {
+				reinterpret_cast<void(__cdecl *)()>(TES3_ui_updateStatsPane)();
 			}
 
 			void showRestWaitMenu(bool allowRest, bool scripted) {

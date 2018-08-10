@@ -62,6 +62,7 @@
 #include "TES3EnchantmentLua.h"
 #include "TES3FactionLua.h"
 #include "TES3GameLua.h"
+#include "TES3GameFileLua.h"
 #include "TES3GameSettingLua.h"
 #include "TES3GlobalVariableLua.h"
 #include "TES3IngredientLua.h"
@@ -274,6 +275,7 @@ namespace mwse {
 			bindTES3Enchantment();
 			bindTES3Faction();
 			bindTES3Game();
+			bindTES3GameFile();
 			bindTES3GameSetting();
 			bindTES3GlobalVariable();
 			bindTES3Ingredient();
@@ -1316,7 +1318,7 @@ namespace mwse {
 		//
 
 		// Fix missing coverage of updates to lastActiveRegion
-		static __declspec(naked) void patchWeatherRegionCheck() {
+		__declspec(naked) void patchWeatherRegionCheck() {
 			__asm {
 				mov ecx, [esi + 0x58]	// ecx = WorldController->weatherController
 				mov [ecx + 0x1D0], eax  // weatherController->lastActiveRegion = eax

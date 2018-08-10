@@ -99,6 +99,9 @@ namespace mwse {
 				usertypeDefinition.set("werewolfFOV", &TES3::WorldController::werewolfFOV);
 				usertypeDefinition.set("windowHandle", &TES3::WorldController::Win32_hWnd);
 				usertypeDefinition.set("worldCamera", &TES3::WorldController::worldCamera);
+				usertypeDefinition.set("armCamera", &TES3::WorldController::armCamera);
+				usertypeDefinition.set("menuCamera", &TES3::WorldController::menuCamera);
+				usertypeDefinition.set("shadowCamera", &TES3::WorldController::shadowCamera);
 				usertypeDefinition.set("year", &TES3::WorldController::gvarYear);
 
 				// Access to other objects that need to be packaged.
