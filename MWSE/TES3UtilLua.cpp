@@ -948,22 +948,16 @@ namespace mwse {
 				return true;
 			};
 
-			state["tes3"]["loadMesh"] = [](const char* path) -> sol::object {
-				NI::Stream stream;
+			state["tes3"]["loadMesh"] = [](const char* relativePath) -> sol::object {
+				std::string path = "Data Files\\Meshes\\";
+				path += relativePath;
 
-				if (!stream.load(path)) {
+				NI::Stream stream;
+				if (!stream.load(path.c_str())) {
 					return sol::nil;
 				}
 
-				NI::Pointer<NI::Object> x = stream.unknown_0x64->get()->createClone();
-
-				mwse::log::getLog() << "Reference count: " << x->references << std::endl;
-
-				sol::object result = makeLuaObject(x);
-
-				mwse::log::getLog() << "Reference count: " << x->references << std::endl;
-
-				return result;
+				return makeLuaObject(*stream.loadedObject);
 			};
 		}
 	}

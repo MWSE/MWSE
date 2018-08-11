@@ -10,28 +10,54 @@ namespace NI {
 	template <class T>
 	class Pointer {
 	public:
-		Pointer(T * pointer) {
-			reinterpret_cast<void(__thiscall*)(Pointer<T>*, T*)>(0x40A840)(this, pointer);
+		Pointer(T * pointer = nullptr) {
+			claim(pointer);
+		}
+
+		Pointer(const Pointer<T>& pointer) {
+			claim(pointer);
 		}
 
 		~Pointer() {
-			reinterpret_cast<void(__thiscall*)(Pointer<T>*)>(0x40A880)(this);
+			release();
+		}
+
+		bool operator==(T* pointer) const {
+			return (pointer == m_Pointer);
+		}
+
+		bool operator!=(T* pointer) const {
+			return (pointer != m_Pointer);
+		}
+
+		bool operator==(const Pointer<T>& pointer) const {
+			return (pointer == m_Pointer);
+		}
+
+		bool operator!=(const Pointer<T>& pointer) const {
+			return (pointer != m_Pointer);
 		}
 
 		operator T*() const {
 			return m_Pointer;
 		}
 
-		T * operator->() const {
+		T* operator->() const {
 			return m_Pointer;
 		}
 
-		bool operator==(T * pointer) const {
-			return (m_Pointer == pointer);
+		Pointer<T>& operator=(const Pointer<T>& pointer) {
+			if (m_Pointer != pointer) {
+				claim(pointer);
+			}
+			return *this;
 		}
 
-		bool operator!=(T * pointer) const {
-			return (m_Pointer != pointer);
+		Pointer<T>& operator=(T* pointer) {
+			if (m_Pointer != pointer) {
+				claim(pointer);
+			}
+			return *this;
 		}
 
 		T * get() {
@@ -39,7 +65,25 @@ namespace NI {
 		}
 
 	private:
-		T * m_Pointer;
+		T * m_Pointer = nullptr;
+
+		void release() {
+			if (m_Pointer) {
+				if (--m_Pointer->references == 0) {
+					m_Pointer->vTable.asObject->destructor(m_Pointer, 1);
+					m_Pointer = nullptr;
+				}
+			}
+		}
+
+		void claim(T * pointer) {
+			release();
+
+			m_Pointer = pointer;
+			if (m_Pointer) {
+				m_Pointer->references++;
+			}
+		}
 	};
 	static_assert(sizeof(Pointer<int>) == 0x4, "NI::Pointer failed size validation");
 }

@@ -31,7 +31,7 @@ namespace NI {
 		int unknown_0x58;
 		int unknown_0x5C;
 		int unknown_0x60;
-		Pointer<Object> * unknown_0x64;
+		Pointer<Object> * loadedObject; // 0x64
 		int unknown_0x68;
 		int unknown_0x6C;
 		int unknown_0x70;
