@@ -95,6 +95,15 @@ local function copyDefinition(destination, package, parent)
 		end
 		destination.fields = tempFields
 	end
+
+	local tempIndex = {}
+	if (parent.metatable and parent.metatable.fields and parent.metatable.fields.__index) then
+		copyTable(parent.metatable.fields.__index, tempIndex)
+		if (package.metatable and package.metatable.fields and package.metatable.fields.__index) then
+			copyTable(package.metatable.fields.__index, tempIndex)
+		end
+		destination.metatable.fields.__index = tempIndex
+	end
 end
 
 local function insertField(parent, key, package)
@@ -108,7 +117,7 @@ local function insertMethod(parent, key, package)
 	if (parent.metatable == nil) then
 		parent.metatable = { type = "table", fields = { __index = { type = "table", fields = {} } } }
 	end
-	parent.metatable.fields.__index[key] = package
+	parent.metatable.fields.__index.fields[key] = package
 end
 
 local function setupFunction(package, raw)
