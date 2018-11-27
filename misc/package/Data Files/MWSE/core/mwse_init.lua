@@ -264,8 +264,13 @@ _G.json = require("dkjson")
 -------------------------------------------------
 
 function json.loadfile(fileName)
+	-- Allow optional suffix, for 'lfs.dir()' compatiblity.
+	if not fileName:lower():find("%.json$") then
+		fileName = fileName .. ".json"
+	end
+
 	-- Load the contents of the file.
-	local f = io.open("Data Files/MWSE/" .. fileName .. ".json", "r")
+	local f = io.open("Data Files/MWSE/" .. fileName, "r")
 	if (f == nil) then
 		return nil
 	end
@@ -309,6 +314,16 @@ function mwse.saveConfig(fileName, object, config)
 		json.savefile(string.format("config/%s", fileName), object, config or { indent = true })
 	end
 end
+
+
+-------------------------------------------------
+-- Extend our base API: mwse
+-------------------------------------------------
+
+function tes3ui.log(str, ...)
+	tes3ui.logToConsole(str:format(...), false)
+end
+
 
 -------------------------------------------------
 -- Usertype Extensions: tes3uiElement
