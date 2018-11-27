@@ -122,7 +122,7 @@ namespace mwse {
 				usertypeDefinition.set("copy", [](TES3::BoundingBox& self) { return TES3::BoundingBox(self); });
 
 				// Finish up our usertype.
-				state.set_usertype("tes3vector4", usertypeDefinition);
+				state.set_usertype("tes3boundingBox", usertypeDefinition);
 			}
 
 			// Binding for TES3::Matrix33.
