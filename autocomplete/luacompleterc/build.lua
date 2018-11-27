@@ -236,6 +236,13 @@ local function buildAPI(folder, key, parentPackage, parentRawPackage)
 	elseif (rawType == "method") then
 		assert(parentRawPackage.type == "class")
 		setupFunction(package, rawPackage)
+
+		if (package.args) then
+			table.insert(package.args, 1, { name = "self" })
+		else
+			package.args = { { name = "self" } }
+		end
+
 		insertMethod(parentPackage, key, package)
 	elseif (rawType == "value") then
 		if (standardTypes[rawType]) then
