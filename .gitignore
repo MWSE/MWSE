@@ -39,3 +39,5 @@ build/dist/
 /deps/LuaJIT/src/jit/vmdef.lua
 /deps/LuaJIT/src/lua51.dll
 /MWSE/BuildDate.h
+/misc/package/Data Files/MWSE/.luacheckrc
+/misc/package/Data Files/MWSE/.luacompleterc
