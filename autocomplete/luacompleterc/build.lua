@@ -245,7 +245,7 @@ local function buildAPI(folder, key, parentPackage, parentRawPackage)
 			package.args = { { name = "self" } }
 		end
 	elseif (rawType == "value") then
-		if (standardTypes[rawType]) then
+		if (standardTypes[rawPackage.valuetype]) then
 			package.type = typeRemaps[rawPackage.valuetype] or rawPackage.valuetype
 			insertField(parentPackage, key, package)
 		else
