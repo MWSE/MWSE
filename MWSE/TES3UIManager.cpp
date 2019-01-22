@@ -307,6 +307,36 @@ namespace TES3 {
 			pushNewUIID(0x5F0EE5, "HelpMenu_mapNoteLabel");
 			pushNewUIID(0x5915E6, "HelpMenu_locked");
 			pushNewUIID(0x591614, "HelpMenu_trapped");
+			pushNewUIID(0x5C1A89, "MenuEnchantment_topRow");
+			pushNewUIID(0x5C1AC5, "MenuEnchantment_selectablesContainer");
+			//pushNewUIID(0x5C1B33, "name and item label container");
+			pushNewUIID(0x5C1B99, "MenuEnchantment_nameLabel");
+			//pushNewUIID(0x5C1C0F, "item label container");
+			pushNewUIID(0x5C1C5C, "MenuEnchantment_itemLabel");
+			//pushNewUIID(0x5C1CCE, "name field soul bullshit container");
+			pushNewUIID(0x5C1D18, "MenuEnchantment_nameFieldBorder");
+			//pushNewUIID(0x5C1E32, "item and soul container kind of");
+			//pushNewUIID(0x5C1F4E, "MenuEnchantment_soulContainer");
+			pushNewUIID(0x5C1FBA, "MenuEnchantment_soulLabel");
+			pushNewUIID(0x5C20A0, "MenuEnchantment_infoContainer");
+			pushNewUIID(0x5C211E, "MenuEnchantment_enchantmentContainer");
+			pushNewUIID(0x5C2188, "MenuEnchantment_enchantmentLabel");
+			//pushNewUIID(0x5C21E3, "MenuEnchantment_enchantmentContainer");
+			pushNewUIID(0x5C2226, "MenuEnchantment_enchantmentBackslash");
+			pushNewUIID(0x5C224D, "MenuEnchantment_castCostContainer");
+			pushNewUIID(0x5C22B5, "MenuEnchantment_castCostLabel");
+			pushNewUIID(0x5C232F, "MenuEnchantment_chargeContainer");
+			pushNewUIID(0x5C2394, "MenuEnchantment_chargeLabel");
+			pushNewUIID(0x5C23F9, "MenuEnchantment_scrollPanelsContainer");
+			pushNewUIID(0x5C240D, "MenuEnchantment_magicEffectsContainer");
+			pushNewUIID(0x5C2478, "MenuEnchantment_magicEffectsLabel");
+			pushNewUIID(0x5C24F7, "MenuEnchantment_effectsContainer");
+			pushNewUIID(0x5C2549, "MenuEnchantment_effectsLabel");
+			pushNewUIID(0x5C25EB, "MenuEnchantment_bottomButtonRow");
+			pushNewUIID(0x5C26F5, "MenuEnchantment_priceContainer");
+			pushNewUIID(0x5C2752, "MenuEnchantment_priceLabel");
+			//pushNewUIID(0x5C27E3, "MenuEnchantment_priceContainer");
+			pushNewUIID(0x5C2852, "MenuEnchantment_buttonContainer");
 		}
 	}
 }
