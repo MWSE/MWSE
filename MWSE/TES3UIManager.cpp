@@ -269,7 +269,7 @@ namespace TES3 {
 			mwse::genCallEnforced(0x585E1E, 0x584850, *reinterpret_cast<DWORD*>(&patch));
 			mwse::genCallEnforced(0x5863AE, 0x584850, *reinterpret_cast<DWORD*>(&patch));
 
-			// Provide some UI IDs for elements that don't have them.
+			// Provide some UI IDs for elements that don't have them, like tooltips:
 			pushNewUIID(0x590F59, "HelpMenu_titleBlock");
 			pushNewUIID(0x590FBD, "HelpMenu_icon");
 			pushNewUIID(0x5911DC, "HelpMenu_name");
@@ -307,21 +307,17 @@ namespace TES3 {
 			pushNewUIID(0x5F0EE5, "HelpMenu_mapNoteLabel");
 			pushNewUIID(0x5915E6, "HelpMenu_locked");
 			pushNewUIID(0x591614, "HelpMenu_trapped");
+
+			// Enchantment Menu
 			pushNewUIID(0x5C1A89, "MenuEnchantment_topRow");
 			pushNewUIID(0x5C1AC5, "MenuEnchantment_selectablesContainer");
-			//pushNewUIID(0x5C1B33, "name and item label container");
 			pushNewUIID(0x5C1B99, "MenuEnchantment_nameLabel");
-			//pushNewUIID(0x5C1C0F, "item label container");
 			pushNewUIID(0x5C1C5C, "MenuEnchantment_itemLabel");
-			//pushNewUIID(0x5C1CCE, "name field soul bullshit container");
 			pushNewUIID(0x5C1D18, "MenuEnchantment_nameFieldBorder");
-			//pushNewUIID(0x5C1E32, "item and soul container kind of");
-			//pushNewUIID(0x5C1F4E, "MenuEnchantment_soulContainer");
 			pushNewUIID(0x5C1FBA, "MenuEnchantment_soulLabel");
 			pushNewUIID(0x5C20A0, "MenuEnchantment_infoContainer");
 			pushNewUIID(0x5C211E, "MenuEnchantment_enchantmentContainer");
 			pushNewUIID(0x5C2188, "MenuEnchantment_enchantmentLabel");
-			//pushNewUIID(0x5C21E3, "MenuEnchantment_enchantmentContainer");
 			pushNewUIID(0x5C2226, "MenuEnchantment_enchantmentBackslash");
 			pushNewUIID(0x5C224D, "MenuEnchantment_castCostContainer");
 			pushNewUIID(0x5C22B5, "MenuEnchantment_castCostLabel");
@@ -335,7 +331,6 @@ namespace TES3 {
 			pushNewUIID(0x5C25EB, "MenuEnchantment_bottomButtonRow");
 			pushNewUIID(0x5C26F5, "MenuEnchantment_priceContainer");
 			pushNewUIID(0x5C2752, "MenuEnchantment_priceLabel");
-			//pushNewUIID(0x5C27E3, "MenuEnchantment_priceContainer");
 			pushNewUIID(0x5C2852, "MenuEnchantment_buttonContainer");
 		}
 	}
