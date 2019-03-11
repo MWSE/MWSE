@@ -18,7 +18,7 @@ namespace mwse {
 
 			sol::table ActivationTargetChangedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["previous"] = makeLuaObject(m_PreviousReference);
 				eventData["current"] = makeLuaObject(m_CurrentReference);

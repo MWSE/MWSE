@@ -14,7 +14,7 @@ namespace mwse {
 
 			sol::table ButtonPressedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["button"] = m_ButtonId;
 

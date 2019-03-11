@@ -19,7 +19,7 @@ namespace mwse {
 
 			sol::table MouseAxisEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["deltaX"] = m_DeltaX;
 				eventData["deltaY"] = m_DeltaY;

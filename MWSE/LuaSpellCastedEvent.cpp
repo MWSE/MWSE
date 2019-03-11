@@ -25,7 +25,7 @@ namespace mwse {
 
 			sol::table SpellCastedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["caster"] = makeLuaObject(m_MagicSourceInstance->caster);
 				eventData["target"] = makeLuaObject(m_MagicSourceInstance->target);
@@ -38,7 +38,7 @@ namespace mwse {
 
 			sol::object SpellCastedEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = makeLuaObject(m_MagicSourceInstance->sourceCombo.source.asGeneric);
 				return options;

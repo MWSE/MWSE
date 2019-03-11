@@ -31,9 +31,9 @@ namespace mwse {
 			};
 
 			// Returns a reference to the sol2 lua state.
-			sol::state& __fastcall getState() {
-				return luaState;
-			}
+			sol::state& getState();
+
+			sol::table createTable();
 
 			// Uses the MemoryUtil library to create the necessary injections into Morrowind.
 			void hook();

@@ -6,9 +6,15 @@
 #include "TES3Cell.h"
 #include "TES3Region.h"
 
+#include <Windows.h>
+
 namespace mwse {
 	namespace lua {
 		auto iterateReferencesFiltered(TES3::Cell* cell, unsigned int desiredType) {
+			if (TES3::DataHandler::get()->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+
 			unsigned int currentList = 0;
 
 			// Prepare the lists we care about.

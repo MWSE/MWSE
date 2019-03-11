@@ -135,7 +135,7 @@ namespace mwse {
 		BYTE instruction = *reinterpret_cast<BYTE*>(address);
 		if (instruction != 0x6A) {
 #if _DEBUG
-			log::getLog() << "[MemoryUtil] Skipping call generation at 0x" << std::hex << address << ". Expected 0x6A, found instruction: 0x" << (int)instruction << "." << std::endl;
+			log::getLog() << "[MemoryUtil] Skipping push (BYTE) generation at 0x" << std::hex << address << ". Expected 0x6A, found instruction: 0x" << (int)instruction << "." << std::endl;
 #endif
 			return false;
 		}
@@ -159,7 +159,7 @@ namespace mwse {
 		BYTE instruction = *reinterpret_cast<BYTE*>(address);
 		if (instruction != 0x68) {
 #if _DEBUG
-			log::getLog() << "[MemoryUtil] Skipping call generation at 0x" << std::hex << address << ". Expected 0x68, found instruction: 0x" << (int)instruction << "." << std::endl;
+			log::getLog() << "[MemoryUtil] Skipping push (DWORD) generation at 0x" << std::hex << address << ". Expected 0x68, found instruction: 0x" << (int)instruction << "." << std::endl;
 #endif
 			return false;
 		}

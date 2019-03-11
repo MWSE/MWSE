@@ -19,7 +19,7 @@ namespace mwse {
 
 			sol::table DeterminedActionEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["session"] = m_Session;
 

@@ -23,7 +23,7 @@ namespace mwse {
 
 			sol::table EquippedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["actor"] = makeLuaObject(m_Actor);
 				eventData["mobile"] = makeLuaObject(m_MobileActor);

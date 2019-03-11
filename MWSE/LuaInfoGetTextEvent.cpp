@@ -17,7 +17,7 @@ namespace mwse {
 
 			sol::table InfoGetTextEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["info"] = makeLuaObject(m_DialogueInfo);
 

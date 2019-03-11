@@ -17,9 +17,10 @@
 
 namespace TES3 {
 	sol::object Reference::getAttachments() {
-		sol::state& state = mwse::lua::LuaManager::getInstance().getState();
+		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
+		sol::state& state = luaManager.getState();
 
-		sol::table result = state.create_table();
+		sol::table result = luaManager.createTable();
 
 		Attachment* attachment = this->attachments;
 		while (attachment) {
@@ -44,17 +45,13 @@ namespace TES3 {
 		return result;
 	}
 
-	sol::table& Reference::getLuaTable() {
+	sol::table Reference::getLuaTable() {
 		auto attachment = getOrCreateAttachedItemData();
 		if (attachment == nullptr) {
 			throw std::exception("Could not create ItemData attachment.");
 		}
 
-		if (attachment->luaData == nullptr) {
-			attachment->luaData = new ItemData::LuaData();
-		}
-
-		return attachment->luaData->data;
+		return attachment->getOrCreateLuaDataTable();
 	}
 }
 

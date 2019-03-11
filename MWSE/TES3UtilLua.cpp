@@ -478,7 +478,7 @@ namespace mwse {
 					return sol::nil;
 				}
 
-				sol::table mods = state.create_table();
+				sol::table mods = LuaManager::getInstance().createTable();
 				for (int i = 0; i < 256; i++) {
 					TES3::GameFile* gameFile = dataHandler->nonDynamicData->activeMods[i];
 					if (gameFile == nullptr) {
@@ -664,7 +664,7 @@ namespace mwse {
 
 				// We're now in multi-result mode. We'll store these in a table.
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table results = state.create_table();
+				sol::table results = LuaManager::getInstance().createTable();
 				
 				// Go through and clone the results in a way that will play nice.
 				for (int i = 0; i < rayTestCache->results.filledCount; i++) {
@@ -884,7 +884,7 @@ namespace mwse {
 			state["tes3"]["getCursorPosition"] = []() -> sol::object {
 				TES3::WorldController * worldController = TES3::WorldController::get();
 				if (worldController) {
-					sol::table results = LuaManager::getInstance().getState().create_table();
+					sol::table results = LuaManager::getInstance().createTable();
 					results["x"] = worldController->mouseController->position.x;
 					results["y"] = worldController->mouseController->position.z;
 					return results;
@@ -1722,7 +1722,7 @@ namespace mwse {
 				}
 
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table result = state.create_table();
+				sol::table result = LuaManager::getInstance().createTable();
 
 				if (dataHandler->currentInteriorCell) {
 					result[1] = makeLuaObject(dataHandler->currentInteriorCell);

@@ -15,7 +15,7 @@ namespace mwse {
 
 			sol::table SaveGameEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["name"] = m_SaveName;
 				eventData["filename"] = m_FileName;
@@ -25,7 +25,7 @@ namespace mwse {
 
 			sol::object SaveGameEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_FileName;
 

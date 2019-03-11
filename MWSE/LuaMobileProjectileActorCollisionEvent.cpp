@@ -21,7 +21,7 @@ namespace mwse {
 
 			sol::table MobileProjectileActorCollisionEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["mobile"] = makeLuaObject(m_Projectile);
 				eventData["target"] = makeLuaObject(m_TargetReference);

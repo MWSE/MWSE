@@ -169,7 +169,7 @@ namespace mwse {
 			std::shared_ptr<Timer> timer = nullptr;
 			while (!m_ActiveTimers.empty() && (timer = m_ActiveTimers.front()) && timer->timing <= m_Clock) {
 				// Build data to send to the callback.
-				sol::table data = LuaManager::getInstance().getState().create_table();
+				sol::table data = LuaManager::getInstance().createTable();
 				data["timer"] = timer;
 
 				// Invoke the callback.
@@ -390,7 +390,7 @@ namespace mwse {
 			}
 
 			// Create our timer library.
-			state["timer"] = state.create_table();
+			state["timer"] = LuaManager::getInstance().createTable();
 
 			// Expose timer types.
 			state["timer"]["real"] = TimerType::RealTime;
@@ -406,7 +406,7 @@ namespace mwse {
 			state["timer"]["start"] = sol::overload(&startTimerAmbiguous, &startTimerLegacySimulation, &startTimerLegacySimulationWithIterations);
 
 			// Legacy support for frame timers.
-			state["timer"]["frame"] = state.create_table();
+			state["timer"]["frame"] = LuaManager::getInstance().createTable();
 			state["timer"]["frame"]["start"] = sol::overload(&startTimerLegacyReal, &startTimerLegacyRealWithIterations);
 
 			// Legacy support for functions.

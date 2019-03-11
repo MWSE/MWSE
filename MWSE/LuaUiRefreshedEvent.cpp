@@ -16,7 +16,7 @@ namespace mwse {
 
 			sol::table UiRefreshedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["element"] = m_Element;
 
@@ -25,7 +25,7 @@ namespace mwse {
 
 			sol::object UiRefreshedEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_Element->name.cString;
 

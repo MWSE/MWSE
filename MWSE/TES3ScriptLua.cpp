@@ -103,7 +103,7 @@ namespace mwse {
 			}
 
 			sol::state& state = LuaManager::getInstance().getState();
-			sol::table results = state.create_table();
+			sol::table results = LuaManager::getInstance().createTable();
 
 			// Append any short variables.
 			for (int i = 0; i < script->shortCount; i++) {

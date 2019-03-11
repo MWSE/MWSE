@@ -19,7 +19,7 @@ namespace mwse {
 
 			sol::table LoadGameEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				if (m_NewGame) {
 					eventData["newGame"] = true;
@@ -37,7 +37,7 @@ namespace mwse {
 
 			sol::object LoadGameEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_FileName;
 

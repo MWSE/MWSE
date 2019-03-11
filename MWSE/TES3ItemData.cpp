@@ -2,6 +2,7 @@
 
 #include "TES3Util.h"
 
+#include "TES3DataHandler.h"
 #include "TES3Enchantment.h"
 #include "TES3Light.h"
 #include "TES3Misc.h"
@@ -10,6 +11,7 @@
 #include "LuaManager.h"
 
 #include <unordered_set>
+#include <Windows.h>
 
 namespace TES3 {
 	//
@@ -34,8 +36,10 @@ namespace TES3 {
 	// MWSE-Extended ItemData
 	//
 
+	std::unordered_set<ItemData*> validItemDataCache;
+
 	ItemData::LuaData::LuaData() {
-		data = mwse::lua::LuaManager::getInstance().getState().create_table();
+		data = mwse::lua::LuaManager::getInstance().createTable();
 	}
 
 	ItemData::ItemData() {
@@ -49,11 +53,23 @@ namespace TES3 {
 	ItemData * ItemData::ctor(ItemData * self) {
 		ItemDataVanilla::ctor(self);
 		self->luaData = nullptr;
+		if (ItemData::test_itemDataIsManaged(self)) {
+			throw std::exception("Attempting to construct unhandled ItemData.");
+		}
+		validItemDataCache.insert(self);
 		return self;
 	}
 
 	void ItemData::dtor(ItemData * self) {
 		ItemDataVanilla::dtor(self);
+
+		if (!ItemData::test_itemDataIsManaged(self)) {
+			throw std::exception("Attempting to destruct invalid ItemData.");
+		}
+		else {
+			validItemDataCache.erase(self);
+		}
+
 		if (self->luaData) {
 			delete self->luaData;
 		}
@@ -99,11 +115,39 @@ namespace TES3 {
 			return false;
 		}
 
+		if (!ItemData::test_itemDataIsManaged(itemData)) {
+			throw std::exception("Attempting to check repair for invalid ItemData.");
+		}
+
 		if (itemData->luaData) {
 			return itemData->luaData->data.empty();
 		}
 
 		return true;
+	}
+
+	sol::table ItemData::getOrCreateLuaDataTable() {
+		if (!ItemData::test_itemDataIsManaged(this)) {
+			throw std::exception("Attempting to create lua table for invalid ItemData.");
+		}
+
+		if (luaData == nullptr) {
+			luaData = new ItemData::LuaData();
+		}
+
+		return luaData->data;
+	}
+
+	bool ItemData::test_itemDataIsManaged(ItemData * itemData) {
+		if (itemData == nullptr) {
+			return true;
+		}
+
+		auto count = validItemDataCache.count(itemData);
+		if (count > 1) {
+			throw std::exception("Managed ItemData is mishandled.");
+		}
+		return count != 0;
 	}
 
 }

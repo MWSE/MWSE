@@ -7,9 +7,7 @@
 
 namespace TES3 {
 	sol::table Class::getMajorSkills() {
-		sol::state& state = mwse::lua::LuaManager::getInstance().getState();
-
-		sol::table result = state.create_table();
+		sol::table result = mwse::lua::LuaManager::getInstance().createTable();
 		for (int i = 0; i < 5; i++) {
 			result[i + 1] = &skills[i * 2];
 		}
@@ -17,9 +15,7 @@ namespace TES3 {
 	}
 
 	sol::table Class::getMinorSkills() {
-		sol::state& state = mwse::lua::LuaManager::getInstance().getState();
-
-		sol::table result = state.create_table();
+		sol::table result = mwse::lua::LuaManager::getInstance().createTable();
 		for (int i = 0; i < 5; i++) {
 			result[i + 1] = &skills[i * 2 + 1];
 		}

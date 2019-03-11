@@ -20,7 +20,7 @@ namespace mwse {
 
 			sol::table GenericUiPreEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["parent"] = m_Parent;
 				eventData["source"] = m_Source;

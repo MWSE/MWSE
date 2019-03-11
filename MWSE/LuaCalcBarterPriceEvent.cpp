@@ -23,7 +23,7 @@ namespace mwse {
 			}
 
 			sol::table CalculateBarterPriceEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["mobile"] = makeLuaObject(m_MobileActor);
 				if (m_MobileActor) {

@@ -21,7 +21,7 @@ namespace mwse {
 			}
 
 			sol::table UiObjectTooltipEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				// If the object is a reference, expose its base object and the reference.
 				if (m_Object->objectType == TES3::ObjectType::Reference) {

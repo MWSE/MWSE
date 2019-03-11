@@ -32,7 +32,7 @@ namespace mwse {
 			}
 
 			sol::table CalculateArmorRatingEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["armor"] = makeLuaObject(m_Armor);
 

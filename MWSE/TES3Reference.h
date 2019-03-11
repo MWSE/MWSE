@@ -80,7 +80,7 @@ namespace TES3 {
 		// Return a table (or nil) of attachments for this object.
 		sol::object getAttachments();
 
-		sol::table& getLuaTable();
+		sol::table getLuaTable();
 
 	};
 	static_assert(sizeof(Reference) == 0x50, "TES3::Reference failed size validation");

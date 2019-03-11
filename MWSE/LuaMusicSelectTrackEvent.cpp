@@ -13,7 +13,7 @@ namespace mwse {
 			}
 
 			sol::table MusicSelectTrackEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 				eventData["situation"] = m_Situation;
 				return eventData;
 			}

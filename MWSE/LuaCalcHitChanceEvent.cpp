@@ -18,7 +18,7 @@ namespace mwse {
 			}
 
 			sol::table CalcHitChanceEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["attackerMobile"] = makeLuaObject(m_Attacker);
 				eventData["attacker"] = makeLuaObject(m_Attacker->reference);

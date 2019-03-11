@@ -79,6 +79,8 @@
 #include "TES3WeatherSnow.h"
 #include "TES3WeatherThunder.h"
 
+#include <Windows.h>
+
 #define TES3_vTable_MobileCreature 0x74AFA4
 #define TES3_vTable_MobileNPC 0x74AE6C
 #define TES3_vTable_MobilePlayer 0x74B174
@@ -327,6 +329,13 @@ namespace mwse {
 				return sol::nil;
 			}
 
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
+
 			LuaManager& luaManager = LuaManager::getInstance();
 
 			// Search in cache first.
@@ -492,6 +501,13 @@ namespace mwse {
 				return sol::nil;
 			}
 
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
+
 			LuaManager& luaManager = LuaManager::getInstance();
 
 			// Search in cache first.
@@ -531,6 +547,13 @@ namespace mwse {
 				return sol::nil;
 			}
 
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
+
 			sol::state& state = LuaManager::getInstance().getState();
 
 			switch (weather->index) {
@@ -554,6 +577,13 @@ namespace mwse {
 				return sol::nil;
 			}
 
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
+
 			sol::state& state = LuaManager::getInstance().getState();
 			return sol::make_object(state, gameFile);
 		}
@@ -564,6 +594,13 @@ namespace mwse {
 			}
 
 			LuaManager& luaManager = LuaManager::getInstance();
+
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
 
 			sol::state& state = luaManager.getState();
 
@@ -612,6 +649,13 @@ namespace mwse {
 			if (object == nullptr) {
 				return sol::nil;
 			}
+
+#if _DEBUG
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				throw std::exception("Cannot be called from outside the main thread.");
+			}
+#endif
 
 			LuaManager& luaManager = LuaManager::getInstance();
 

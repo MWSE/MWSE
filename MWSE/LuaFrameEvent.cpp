@@ -15,7 +15,7 @@ namespace mwse {
 
 			sol::table FrameEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["menuMode"] = m_MenuMode;
 				eventData["delta"] = m_Delta;

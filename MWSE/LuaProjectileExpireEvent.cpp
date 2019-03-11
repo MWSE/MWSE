@@ -23,7 +23,7 @@ namespace mwse {
 
 			sol::table ProjectileExpireEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["mobile"] = makeLuaObject(m_Projectile);
 

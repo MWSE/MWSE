@@ -18,7 +18,7 @@ namespace mwse {
 
 			sol::table ActivateEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["activator"] = makeLuaObject(m_Activator);
 				eventData["target"] = makeLuaObject(m_Target);

@@ -35,7 +35,7 @@ namespace mwse {
 
 			// Access to other objects that need to be packaged.
 			usertypeDefinition.set("masters", sol::readonly_property([](TES3::GameFile& self) {
-				sol::table t = LuaManager::getInstance().getState().create_table();
+				sol::table t = LuaManager::getInstance().createTable();
 				TES3::GameFile* master = self.arrayMasters;
 				for (int i = 1, count = self.masterNames->size; i <= count; ++i, ++master) {
 					t[i] = master;

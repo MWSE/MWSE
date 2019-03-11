@@ -35,7 +35,8 @@ namespace mwse {
 		static std::unordered_map<Element*, void(__cdecl*)(Element*)> destroyMap;
 
 		TES3::UI::Boolean __cdecl eventDispatcher(Element* owningWidget, Property eventID, int data0, int data1, Element* source) {
-			sol::state& state = LuaManager::getInstance().getState();
+			LuaManager& luaManager = LuaManager::getInstance();
+			sol::state& state = luaManager.getState();
 
 			// Handle inheritance
 			Element* target = source;
@@ -47,7 +48,7 @@ namespace mwse {
 			if (iterElements != eventMap.end()) {
 				for (const auto& eventLua : iterElements->second) {
 					if (eventLua.id == eventID) {
-						sol::table eventData = state.create_table();
+						sol::table eventData = luaManager.createTable();
 						eventData["source"] = source;
 						eventData["widget"] = owningWidget;
 						eventData["id"] = eventID;
@@ -82,7 +83,7 @@ namespace mwse {
 			if (iterElements != eventMap.end()) {
 				for (const auto& eventLua : iterElements->second) {
 					if (eventLua.id == Property::event_destroy) {
-						sol::table eventData = state.create_table();
+						sol::table eventData = LuaManager::getInstance().createTable();
 						eventData["source"] = source;
 						eventData["id"] = Property::event_destroy;
 

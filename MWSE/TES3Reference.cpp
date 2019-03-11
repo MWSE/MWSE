@@ -327,6 +327,9 @@ namespace TES3 {
 	ItemData* Reference::getAttachedItemData() {
 		auto attachment = static_cast<TES3::ItemDataAttachment*>(getAttachment(TES3::AttachmentType::Variables));
 		if (attachment) {
+			if (!ItemData::test_itemDataIsManaged(attachment->data)) {
+				throw std::exception("Reference's attached ItemData didn't come from MWSE's control!");
+			}
 			return attachment->data;
 		}
 		return nullptr;
@@ -334,7 +337,11 @@ namespace TES3 {
 
 	const auto TES3_Reference_getOrCreateAttachedItemData = reinterpret_cast<ItemData* (__thiscall*)(Reference*)>(0x4E7640);
 	ItemData* Reference::getOrCreateAttachedItemData() {
-		return TES3_Reference_getOrCreateAttachedItemData(this);
+		auto result = TES3_Reference_getOrCreateAttachedItemData(this);
+		if (!ItemData::test_itemDataIsManaged(result)) {
+			throw std::exception("Reference's created ItemData was not created by MWSE.");
+		}
+		return result;
 	}
 
 	LockAttachmentNode* Reference::getAttachedLockNode() {

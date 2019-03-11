@@ -19,7 +19,7 @@ namespace mwse {
 
 			sol::table KeyEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["keyCode"] = m_KeyCode;
 				eventData["pressed"] = m_Pressed;
@@ -33,7 +33,7 @@ namespace mwse {
 
 			sol::object KeyEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_KeyCode;
 

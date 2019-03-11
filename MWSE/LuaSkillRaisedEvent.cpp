@@ -15,7 +15,7 @@ namespace mwse {
 
 			sol::table SkillRaisedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["skill"] = m_Skill;
 				eventData["level"] = m_NewLevel;
@@ -25,7 +25,7 @@ namespace mwse {
 
 			sol::object SkillRaisedEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_Skill;
 

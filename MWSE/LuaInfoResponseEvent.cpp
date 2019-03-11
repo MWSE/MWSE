@@ -24,7 +24,7 @@ namespace mwse {
 
 			sol::table InfoResponseEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["command"] = m_Command;
 				eventData["reference"] = makeLuaObject(m_Reference);

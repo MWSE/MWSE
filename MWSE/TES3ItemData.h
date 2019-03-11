@@ -57,5 +57,14 @@ namespace TES3 {
 		static ItemData * __cdecl createForObject(Object * object);
 
 		static bool __cdecl isFullyRepaired(ItemData * itemData, Item * item, bool fromBarterMenu = false);
+
+		//
+		// Custom functions.
+		//
+
+		sol::table getOrCreateLuaDataTable();
+
+		static bool test_itemDataIsManaged(ItemData * itemData);
+
 	};
 }

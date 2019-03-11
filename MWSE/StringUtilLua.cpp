@@ -30,7 +30,7 @@ namespace mwse {
 			// Also provide a way to interact with the string storage.
 			//
 
-			state["mwse"]["string"] = state.create_table();
+			state["mwse"]["string"] = LuaManager::getInstance().createTable();
 
 			state["mwse"]["string"]["create"] = [](std::string value) -> int {
 				return mwse::string::store::getOrCreate(value.c_str());

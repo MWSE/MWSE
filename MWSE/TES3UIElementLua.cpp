@@ -18,6 +18,8 @@
 #include "LuaManager.h"
 #include "Log.h"
 
+#include <Windows.h>
+
 namespace mwse {
 	namespace lua {
 		using TES3::UI::Element;
@@ -91,7 +93,10 @@ namespace mwse {
 			usertypeDefinition.set("parent", sol::readonly_property(&Element::parent));
 			usertypeDefinition.set("children", sol::readonly_property(
 				[](const Element& self) {
-					sol::table children = LuaManager::getInstance().getState().create_table();
+					if (TES3::DataHandler::get()->mainThreadID != GetCurrentThreadId()) {
+						throw std::exception("Cannot be called from outside the main thread.");
+					}
+					sol::table children = LuaManager::getInstance().createTable();
 					auto it = self.vectorChildren.begin;
 					auto end = self.vectorChildren.end;
 					for (int i = 1; it != end; ++it, ++i) {
@@ -101,7 +106,7 @@ namespace mwse {
 				}
 			));
 			usertypeDefinition.set("properties", sol::readonly_property([](const Element& self) {
-				sol::table result = LuaManager::getInstance().getState().create_table();
+				sol::table result = LuaManager::getInstance().createTable();
 
 				addPropertyToTable(result, self.properties.root->nextLeafOrRoot);
 

@@ -22,7 +22,7 @@ namespace mwse {
 			}
 
 			sol::table CalculateTrainingPriceEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["mobile"] = makeLuaObject(m_MobileActor);
 				if (m_MobileActor) {

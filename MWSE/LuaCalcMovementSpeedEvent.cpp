@@ -39,7 +39,7 @@ namespace mwse {
 
 			sol::table CalculateMovementSpeed::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["type"] = m_Type;
 				eventData["speed"] = m_Speed;

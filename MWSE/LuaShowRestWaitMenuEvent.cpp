@@ -15,7 +15,7 @@ namespace mwse {
 
 			sol::table ShowRestWaitMenuEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["allowRest"] = m_AllowRest;
 				eventData["scripted"] = m_Scripted;

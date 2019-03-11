@@ -18,7 +18,7 @@ namespace mwse {
 
 			sol::table MouseWheelEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["delta"] = m_Delta;
 				eventData["isControlDown"] = m_ControlDown;

@@ -24,7 +24,7 @@ namespace mwse {
 
 			sol::table InfoFilterEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["info"] = makeLuaObject(m_DialogueInfo);
 				eventData["actor"] = makeLuaObject(m_Actor);

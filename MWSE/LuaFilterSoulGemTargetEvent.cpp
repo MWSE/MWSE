@@ -20,7 +20,7 @@ namespace mwse {
 
 			sol::table FilterSoulGemTargetEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["soulGem"] = makeLuaObject(m_SoulGem);
 

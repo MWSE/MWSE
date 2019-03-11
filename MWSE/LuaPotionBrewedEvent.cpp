@@ -17,7 +17,7 @@ namespace mwse {
 
 			sol::table PotionBrewedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["object"] = makeLuaObject(m_Object);
 

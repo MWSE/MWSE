@@ -17,7 +17,7 @@ namespace mwse {
 
 			sol::table ItemDroppedEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["reference"] = makeLuaObject(m_Reference);
 

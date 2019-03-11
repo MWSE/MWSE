@@ -17,7 +17,7 @@ namespace mwse {
 			}
 
 			sol::table LeveledCreaturePickedEvent::createEventTable() {
-				sol::table eventData = LuaManager::getInstance().getState().create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["list"] = lua::makeLuaObject(m_List);
 				eventData["pick"] = lua::makeLuaObject(m_Result);

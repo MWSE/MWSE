@@ -19,7 +19,7 @@ namespace mwse {
 
 			sol::table MobileObjectWaterImpactEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["mobile"] = makeLuaObject(m_MobileObject);
 				eventData["inWater"] = m_InWater;

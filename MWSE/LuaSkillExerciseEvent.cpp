@@ -15,7 +15,7 @@ namespace mwse {
 
 			sol::table SkillExerciseEvent::createEventTable() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table eventData = state.create_table();
+				sol::table eventData = LuaManager::getInstance().createTable();
 
 				eventData["skill"] = m_Skill;
 				eventData["progress"] = m_Progress;
@@ -25,7 +25,7 @@ namespace mwse {
 
 			sol::object SkillExerciseEvent::getEventOptions() {
 				sol::state& state = LuaManager::getInstance().getState();
-				sol::table options = state.create_table();
+				sol::table options = LuaManager::getInstance().createTable();
 
 				options["filter"] = m_Skill;
 
