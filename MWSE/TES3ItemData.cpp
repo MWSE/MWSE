@@ -76,6 +76,8 @@ namespace TES3 {
 		return self;
 	}
 
+	std::queue<TES3::ItemData::LuaData*> threadedDeletionQueue;
+
 	void ItemData::dtor(ItemData * self) {
 		ItemDataVanilla::dtor(self);
 
@@ -88,10 +90,25 @@ namespace TES3 {
 			validItemDataCache.erase(self);
 			validItemDataCacheMutex.unlock();
 		}
+
 #endif
 
 		if (self->luaData) {
-			delete self->luaData;
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+				threadedDeletionQueue.push(self->luaData);
+				self->luaData = nullptr;
+			}
+			else {
+				while (!threadedDeletionQueue.empty()) {
+					auto itemData = threadedDeletionQueue.front();
+					threadedDeletionQueue.pop();
+					delete itemData;
+				}
+
+				delete self->luaData;
+				self->luaData = nullptr;
+			}
 		}
 	}
 
@@ -167,9 +184,10 @@ namespace TES3 {
 #endif
 
 		if (data == sol::nil) {
-			if (luaData) {
+			if (luaData != nullptr) {
 				luaData->data = sol::nil;
 				delete luaData;
+				luaData = nullptr;
 			}
 		}
 		else if (data.is<sol::table>()) {
@@ -190,7 +208,7 @@ namespace TES3 {
 		}
 
 		auto dataHandler = TES3::DataHandler::get();
-		if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+		if (dataHandler->mainThreadID != GetCurrentThreadId()) {
 			throw std::exception("Cannot be called from outside the main thread.");
 		}
 #endif

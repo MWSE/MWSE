@@ -86,11 +86,11 @@ namespace TES3 {
 		// Add on the magnitude. Fortify magicka has its own logic because it has an x suffix.
 		if (effectID == EffectID::FortifyMagickaMultiplier) {
 			float min = magnitudeMin * 0.1f;
-			float max = magnitudeMax = 0.1f;
 			if (magnitudeMin == magnitudeMax) {
 				ss << " " << min << ndd->GMSTs[GMST::sXTimesINT]->value.asString;
 			}
 			else {
+				float max = magnitudeMax * 0.1f;
 				ss << " " << min << ndd->GMSTs[GMST::sXTimes]->value.asString << " " << ndd->GMSTs[GMST::sTo]->value.asString << " " << max << ndd->GMSTs[GMST::sXTimesINT]->value.asString;
 			}
 		}
