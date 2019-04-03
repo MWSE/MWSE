@@ -189,6 +189,7 @@
 #include "psapi.h"
 
 #include <filesystem>
+#include <unordered_map>
 
 #define TES3_HOOK_RUNSCRIPT_LUACHECK 0x5029A4
 #define TES3_HOOK_RUNSCRIPT_LUACHECK_SIZE 0x6
@@ -2174,6 +2175,12 @@ namespace mwse {
 			genCallUnprotected(address + 0x4, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
 		}
 
+		TES3::ItemData * __cdecl TestCreateNewItemData(size_t size) {
+			auto itemData = tes3::_new<TES3::ItemData>();
+			TES3::ItemData::ctor(itemData);
+			return itemData;
+		}
+
 		//
 		// Handle saving of our extra ItemData information.
 		//
@@ -2225,9 +2232,9 @@ namespace mwse {
 		}
 
 		// Get a handle on the last created ItemData when loading.
-		TES3::ItemData * saveLoadItemData = nullptr;
+		std::unordered_map<DWORD, TES3::ItemData*> saveLoadItemDataMap;
 		TES3::ItemData * __fastcall CreateItemDataFromLoading(TES3::ItemData * itemData) {
-			saveLoadItemData = itemData;
+			saveLoadItemDataMap[GetCurrentThreadId()] = itemData;
 			return TES3::ItemData::ctor(itemData);
 		}
 
@@ -2244,13 +2251,14 @@ namespace mwse {
 				if (success) {
 					// Get our lua table, and replace it with our new table.
 					sol::state& state = LuaManager::getInstance().getState();
-					if (saveLoadItemData->luaData == nullptr) {
-						saveLoadItemData->luaData = new TES3::ItemData::LuaData();
-						saveLoadItemData->luaData->data = state["json"]["decode"](buffer);
+					auto threadID = GetCurrentThreadId();
+					auto saveLoadItemData = saveLoadItemDataMap[threadID];
+					if (saveLoadItemData && saveLoadItemData->luaData == nullptr) {
+						saveLoadItemData->setLuaDataTable(state["json"]["decode"](buffer));
 #if _DEBUG
 						mwse::log::getLog() << "Loaded Lua table for reference: " << buffer << std::endl;
 #endif
-						saveLoadItemData = nullptr;
+						saveLoadItemDataMap.erase(threadID);
 					}
 				}
 
@@ -2265,7 +2273,7 @@ namespace mwse {
 		// Get ItemData for reference being saved.
 		TES3::ItemData * __fastcall GetItemDataForReferenceSaving(TES3::Reference * reference) {
 			auto itemData = reference->getAttachedItemData();
-			saveLoadItemData = itemData;
+			saveLoadItemDataMap[GetCurrentThreadId()] = itemData;
 			return itemData;
 		}
 
@@ -2274,6 +2282,7 @@ namespace mwse {
 			// Overwritten code.
 			int result = gameFile->writeChunkData(tag, data, size);
 
+			auto saveLoadItemData = saveLoadItemDataMap[GetCurrentThreadId()];
 			if (!TES3::ItemData::test_itemDataIsManaged(saveLoadItemData)) {
 				throw std::exception("Writing ItemData that didn't come from MWSE.");
 			}
@@ -2297,9 +2306,9 @@ namespace mwse {
 		}
 
 		// Get reference that is being loaded.
-		TES3::Reference * loadSaveReference = nullptr;
+		std::unordered_map<DWORD, TES3::Reference*> saveLoadReferenceMap;
 		TES3::MobileActor * __fastcall LoadReferenceGetMACT(TES3::Reference * reference) {
-			loadSaveReference = reference;
+			saveLoadReferenceMap[GetCurrentThreadId()] = reference;
 			return reference->getAttachedMobileActor();
 		}
 
@@ -2316,14 +2325,13 @@ namespace mwse {
 				if (success) {
 					// Get our lua table, and replace it with our new table.
 					sol::state& state = LuaManager::getInstance().getState();
-					auto itemData = loadSaveReference->getAttachedItemData();
+					auto itemData = saveLoadReferenceMap[GetCurrentThreadId()]->getAttachedItemData();
 					if (!TES3::ItemData::test_itemDataIsManaged(itemData)) {
 						throw std::exception("Some shit I'm too lazy to write a description for.");
 					}
 					if (itemData) {
 						if (itemData->luaData == nullptr) {
-							itemData->luaData = new TES3::ItemData::LuaData();
-							itemData->luaData->data = state["json"]["decode"](buffer);
+							itemData->setLuaDataTable(state["json"]["decode"](buffer));
 						}
 					}
 #if _DEBUG
@@ -3149,6 +3157,7 @@ namespace mwse {
 			genCallEnforced(0x5C47A3, 0x4E44E0, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
 			genCallEnforced(0x5C4C36, 0x4E44E0, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
 			genCallEnforced(0x4E48A7, 0x4E5410, reinterpret_cast<DWORD>(OnDeletingItemData));
+			genPushEnforced(0x4E7761, (BYTE)sizeof(TES3::ItemData));
 			genCallEnforced(0x46589C, 0x4E7750, reinterpret_cast<DWORD>(&TES3::ItemData::createForObject));
 			genCallEnforced(0x465CFC, 0x4E7750, reinterpret_cast<DWORD>(&TES3::ItemData::createForObject));
 			genCallEnforced(0x465D92, 0x4E7750, reinterpret_cast<DWORD>(&TES3::ItemData::createForObject));
@@ -3208,6 +3217,7 @@ namespace mwse {
 			genCallEnforced(0x4DE426, 0x4B67C0, reinterpret_cast<DWORD>(LoadNextRecordForReference));
 			
 			// TESTING SHIT
+			genCallEnforced(0x4E7763, 0x727692, reinterpret_cast<DWORD>(TestCreateNewItemData));
 			auto referenceGetOrCreateAttachedItemData = &TES3::Reference::getOrCreateAttachedItemData;
 			genCallEnforced(0x4DE667, 0x4E7640, *reinterpret_cast<DWORD*>(&referenceGetOrCreateAttachedItemData));
 			genCallEnforced(0x4DF248, 0x4E7640, *reinterpret_cast<DWORD*>(&referenceGetOrCreateAttachedItemData));

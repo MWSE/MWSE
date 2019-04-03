@@ -37,10 +37,11 @@ namespace TES3 {
 
 
 	struct ItemData : ItemDataVanilla {
-		struct LuaData {
-			sol::table data;
-
+		class LuaData {
+		public:
 			LuaData();
+
+			sol::table data;
 		};
 		LuaData * luaData;
 
@@ -62,6 +63,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		void setLuaDataTable(sol::object data);
 		sol::table getOrCreateLuaDataTable();
 
 		static bool test_itemDataIsManaged(ItemData * itemData);

@@ -46,6 +46,11 @@ namespace TES3 {
 	}
 
 	sol::table Reference::getLuaTable() {
+		auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
+			throw std::exception("Cannot be called from outside the main thread.");
+		}
+
 		auto attachment = getOrCreateAttachedItemData();
 		if (attachment == nullptr) {
 			throw std::exception("Could not create ItemData attachment.");

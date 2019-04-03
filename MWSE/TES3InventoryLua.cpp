@@ -105,30 +105,6 @@ namespace mwse {
 			}
 		}
 
-		sol::object getItemDataLuaData(TES3::ItemData& itemData) {
-			if (itemData.luaData == nullptr) {
-				itemData.luaData = new TES3::ItemData::LuaData();
-			}
-			return itemData.luaData->data;
-		}
-
-		void setItemDataLuaData(TES3::ItemData& itemData, sol::object data) {
-			if (data == sol::nil) {
-				if (itemData.luaData) {
-					delete itemData.luaData;
-				}
-			}
-			else if (data.is<sol::table>()) {
-				if (itemData.luaData == nullptr) {
-					itemData.luaData = new TES3::ItemData::LuaData();
-				}
-				itemData.luaData->data = data;
-			}
-			else {
-				throw std::exception("Invalid data type assignment. Must be a table or nil.");
-			}
-		}
-
 		void bindTES3Inventory() {
 			// Get our lua state.
 			sol::state& state = LuaManager::getInstance().getState();
@@ -155,7 +131,7 @@ namespace mwse {
 				usertypeDefinition.set("soul", sol::property(&getItemDataSoul, &setItemDataSoul));
 
 				// 
-				usertypeDefinition.set("data", sol::property(&getItemDataLuaData, &setItemDataLuaData));
+				usertypeDefinition.set("data", sol::property(&TES3::ItemData::getOrCreateLuaDataTable, &TES3::ItemData::setLuaDataTable));
 
 				// Add the ability to get the unique script context from this itemdata for ease of mwscript interaction.
 				usertypeDefinition.set("context", sol::readonly_property([](TES3::ItemData& self) { return std::shared_ptr<ScriptContext>(new ScriptContext(self.script, self.scriptData)); }));
