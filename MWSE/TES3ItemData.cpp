@@ -42,11 +42,6 @@ namespace TES3 {
 	// MWSE-Extended ItemData
 	//
 
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-	std::unordered_set<ItemData*> validItemDataCache;
-	std::mutex validItemDataCacheMutex;
-#endif
-
 	ItemData::LuaData::LuaData() {
 		data = mwse::lua::LuaManager::getInstance().createTable();
 	}
@@ -62,17 +57,6 @@ namespace TES3 {
 	ItemData * ItemData::ctor(ItemData * self) {
 		ItemDataVanilla::ctor(self);
 		self->luaData = nullptr;
-
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (ItemData::test_itemDataIsManaged(self)) {
-			throw std::exception("Attempting to construct already handled ItemData.");
-		}
-
-		validItemDataCacheMutex.lock();
-		validItemDataCache.insert(self);
-		validItemDataCacheMutex.unlock();
-#endif
-
 		return self;
 	}
 
@@ -81,25 +65,15 @@ namespace TES3 {
 	void ItemData::dtor(ItemData * self) {
 		ItemDataVanilla::dtor(self);
 
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (!ItemData::test_itemDataIsManaged(self)) {
-			throw std::exception("Attempting to destruct invalid ItemData.");
-		}
-		else {
-			validItemDataCacheMutex.lock();
-			validItemDataCache.erase(self);
-			validItemDataCacheMutex.unlock();
-		}
-
-#endif
-
 		if (self->luaData) {
+			// If we're destructing from a background thread, we need to queue the deletion.
 			auto dataHandler = TES3::DataHandler::get();
 			if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
 				threadedDeletionQueue.push(self->luaData);
 				self->luaData = nullptr;
 			}
 			else {
+				// Clean up any background thread deletions that are pending first.
 				while (!threadedDeletionQueue.empty()) {
 					auto itemData = threadedDeletionQueue.front();
 					threadedDeletionQueue.pop();
@@ -152,12 +126,6 @@ namespace TES3 {
 			return false;
 		}
 
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (!ItemData::test_itemDataIsManaged(itemData)) {
-			throw std::exception("Attempting to check repair for invalid ItemData.");
-		}
-#endif
-
 		if (itemData->luaData) {
 			// We can only check the table state from the main thread. If we aren't on the main thread, assume that the table isn't empty.
 			if (TES3::DataHandler::get()->mainThreadID == GetCurrentThreadId()) {
@@ -172,17 +140,6 @@ namespace TES3 {
 	}
 
 	void ItemData::setLuaDataTable(sol::object data) {
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (!ItemData::test_itemDataIsManaged(this)) {
-			throw std::exception("Attempting to set lua table for invalid ItemData.");
-		}
-
-		auto dataHandler = TES3::DataHandler::get();
-		if (dataHandler != nullptr && dataHandler->mainThreadID != GetCurrentThreadId()) {
-			throw std::exception("Cannot be called from outside the main thread.");
-		}
-#endif
-
 		if (data == sol::nil) {
 			if (luaData != nullptr) {
 				luaData->data = sol::nil;
@@ -202,39 +159,10 @@ namespace TES3 {
 	}
 
 	sol::table ItemData::getOrCreateLuaDataTable() {
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (!ItemData::test_itemDataIsManaged(this)) {
-			throw std::exception("Attempting to create lua table for invalid ItemData.");
-		}
-
-		auto dataHandler = TES3::DataHandler::get();
-		if (dataHandler->mainThreadID != GetCurrentThreadId()) {
-			throw std::exception("Cannot be called from outside the main thread.");
-		}
-#endif
-
 		if (luaData == nullptr) {
 			luaData = new ItemData::LuaData();
 		}
 
 		return luaData->data;
-	}
-
-	bool ItemData::test_itemDataIsManaged(ItemData * itemData) {
-#if DEBUG_CUSTOM_ITEMDATA_EXTENSIONS
-		if (itemData == nullptr) {
-			return true;
-		}
-
-		validItemDataCacheMutex.lock();
-		auto count = validItemDataCache.count(itemData);
-		validItemDataCacheMutex.unlock();
-		if (count > 1) {
-			throw std::exception("Managed ItemData is mishandled.");
-		}
-		return count != 0;
-#else
-		return true;
-#endif
 	}
 }

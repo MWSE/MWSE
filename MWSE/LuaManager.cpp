@@ -2175,12 +2175,6 @@ namespace mwse {
 			genCallUnprotected(address + 0x4, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
 		}
 
-		TES3::ItemData * __cdecl TestCreateNewItemData(size_t size) {
-			auto itemData = tes3::_new<TES3::ItemData>();
-			TES3::ItemData::ctor(itemData);
-			return itemData;
-		}
-
 		//
 		// Handle saving of our extra ItemData information.
 		//
@@ -2207,10 +2201,6 @@ namespace mwse {
 			int result = gameFile->writeChunkData(tag, data, size);
 
 			TES3::ItemData * itemData = currentlySavingInventoryIterator->current->data->variables->storage[currentlySavingInventoyItemDataIndex];
-			if (!TES3::ItemData::test_itemDataIsManaged(itemData)) {
-				throw std::exception("Writing ItemData that didn't come from MWSE.");
-			}
-
 			if (itemData->luaData) {
 				sol::table table = itemData->luaData->data;
 
@@ -2222,9 +2212,6 @@ namespace mwse {
 
 					// Call original writechunk function.
 					gameFile->writeChunkData('TAUL', json.c_str(), json.length() + 1);
-#if _DEBUG
-					mwse::log::getLog() << "Saved Lua table for reference: " << json << std::endl;
-#endif
 				}
 			}
 
@@ -2255,9 +2242,6 @@ namespace mwse {
 					auto saveLoadItemData = saveLoadItemDataMap[threadID];
 					if (saveLoadItemData && saveLoadItemData->luaData == nullptr) {
 						saveLoadItemData->setLuaDataTable(state["json"]["decode"](buffer));
-#if _DEBUG
-						mwse::log::getLog() << "Loaded Lua table for reference: " << buffer << std::endl;
-#endif
 						saveLoadItemDataMap.erase(threadID);
 					}
 				}
@@ -2283,10 +2267,6 @@ namespace mwse {
 			int result = gameFile->writeChunkData(tag, data, size);
 
 			auto saveLoadItemData = saveLoadItemDataMap[GetCurrentThreadId()];
-			if (!TES3::ItemData::test_itemDataIsManaged(saveLoadItemData)) {
-				throw std::exception("Writing ItemData that didn't come from MWSE.");
-			}
-
 			if (saveLoadItemData->luaData) {
 				sol::table table = saveLoadItemData->luaData->data;
 
@@ -2326,9 +2306,6 @@ namespace mwse {
 					// Get our lua table, and replace it with our new table.
 					sol::state& state = LuaManager::getInstance().getState();
 					auto itemData = saveLoadReferenceMap[GetCurrentThreadId()]->getAttachedItemData();
-					if (!TES3::ItemData::test_itemDataIsManaged(itemData)) {
-						throw std::exception("Some shit I'm too lazy to write a description for.");
-					}
 					if (itemData) {
 						if (itemData->luaData == nullptr) {
 							itemData->setLuaDataTable(state["json"]["decode"](buffer));

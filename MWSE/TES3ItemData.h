@@ -66,7 +66,5 @@ namespace TES3 {
 		void setLuaDataTable(sol::object data);
 		sol::table getOrCreateLuaDataTable();
 
-		static bool test_itemDataIsManaged(ItemData * itemData);
-
 	};
 }
