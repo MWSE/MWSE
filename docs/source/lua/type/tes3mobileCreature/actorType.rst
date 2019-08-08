@@ -1,7 +1,7 @@
 actorType
 ====================================================================================================
 
-`number`_. The type of the mobile actor, showing if it belongs to a creature, NPC, or the player.
+`number`_. The type of the mobile actor. 0 is tes3.actorType.creature. 1 is tes3.actorType.npc. 2 is tes3.actorType.player.
 
 .. _`tes3creature`: ../../../lua/type/tes3creature.html
 .. _`niObject`: ../../../lua/type/niObject.html
