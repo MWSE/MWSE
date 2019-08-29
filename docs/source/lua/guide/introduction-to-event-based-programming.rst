@@ -49,8 +49,7 @@ The order in which functions registered for the same event are executed can be c
 
     event.register("activate", OnActivateObject, { priority = -111 });
     
-Functions registered with higher priority will run first. 
-Priority defaults to 0 if the argument is not provided.
+Functions registered with higher priority will run first. Priority defaults to 0 if the argument is not provided.
 
 Conclusion
 --------------------------------------------------------
