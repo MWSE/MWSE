@@ -68,6 +68,8 @@ local function onClickCloseButton(e)
 		-- Destroy the mod config menu.
 		local modConfigMenu = tes3ui.findMenu(UIID_mwse_modConfigMenu)
 		if (modConfigMenu) then
+			mwse.saveConfig('MCMconfig', {width = modConfigMenu.width, height = modConfigMenu.height, 
+					positionX = modConfigMenu.positionX, positionY = modConfigMenu.positionY})
 			currentModConfig = nil
 			modConfigContainer = nil
 			modConfigMenu:destroy()
@@ -97,10 +99,11 @@ local function onClickModConfigButton()
 		menu.text = "Mod Configuration"
 		menu.minWidth = 600
 		menu.minHeight = 500
-		menu.width = 1200
-		menu.height = 800
-		menu.positionX = menu.width / -2
-		menu.positionY = menu.height / 2
+		local MCMconfig = mwse.loadConfig('MCMconfig') or {width = 1200, height = 800, positionX = -600, positionY = 400}
+		menu.width = MCMconfig.width
+		menu.height = MCMconfig.height
+		menu.positionX = MCMconfig.positionX
+		menu.positionY = MCMconfig.positionY
 
 		-- Register and block unfocus event, to prevent players
 		-- messing up state by opening their inventory.
