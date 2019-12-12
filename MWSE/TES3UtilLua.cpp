@@ -71,57 +71,41 @@
 
 #include "BitUtil.h"
 
-#include <unordered_set>
-
 namespace mwse {
 	namespace lua {
-		auto iterateObjects(const std::unordered_set<unsigned int> desiredTypes) {
+		auto iterateObjectsFiltered(unsigned int desiredType) {
 			auto ndd = TES3::DataHandler::get()->nonDynamicData;
 
-			// Prepare the lists we care about.
-			std::queue<TES3::Object*> objectListQueue;
-			bool searchingSpells = desiredTypes.count(TES3::ObjectType::Spell);
-			if (searchingSpells) {
-				objectListQueue.push(ndd->spellsList->head);
+			TES3::Object * object = nullptr;
+			if (desiredType == TES3::ObjectType::Spell) {
+				object = ndd->spellsList->head;
 			}
-			if (desiredTypes.size() != 1 || !searchingSpells) {
-				objectListQueue.push(ndd->list->head);
+			else {
+				object = ndd->list->head;
 			}
 
-			// Get the first reference we care about.
-			TES3::Object* object = nullptr;
-			if (!objectListQueue.empty()) {
-				object = objectListQueue.front();
-				objectListQueue.pop();
-			}
-
-			return [object, objectListQueue, desiredTypes]() mutable -> sol::object {
-				while (object && !desiredTypes.empty() && !desiredTypes.count(object->objectType)) {
-					object = reinterpret_cast<TES3::Reference*>(object->nextInCollection);
-
-					// If we hit the end of the list, check for the next list.
-					if (object == nullptr && !objectListQueue.empty()) {
-						object = objectListQueue.front();
-						objectListQueue.pop();
-					}
+			return [object, desiredType]() mutable -> sol::object {
+				while (object && desiredType != 0 && object->objectType != desiredType) {
+					object = object->nextInCollection;
 				}
 
-				if (object == nullptr) {
+				auto ndd = TES3::DataHandler::get()->nonDynamicData;
+				if (desiredType == 0 && object == ndd->list->tail) {
+					object = ndd->spellsList->head;
+				}
+
+				if (object == NULL) {
 					return sol::nil;
 				}
 
-				// Get the object we want to return.
-				sol::object ret = lua::makeLuaObject(object);
-
-				// Get the next reference. If we're at the end of the list, go to the next one
-				object = reinterpret_cast<TES3::Reference*>(object->nextInCollection);
-				if (object == nullptr && !objectListQueue.empty()) {
-					object = objectListQueue.front();
-					objectListQueue.pop();
-				}
-
+				sol::object ret = makeLuaObject(object);
+				object = object->nextInCollection;
 				return ret;
 			};
+		}
+
+		auto iterateObjects() {
+			return iterateObjectsFiltered(0);
 		}
 
 		void bindTES3Util() {
@@ -566,28 +550,7 @@ namespace mwse {
 			};
 
 			// Bind function: tes3.iterateList
-			state["tes3"]["iterateObjects"] = [](sol::optional<sol::object> filter) {
-				std::unordered_set<unsigned int> filters;
-
-				if (filter) {
-					if (filter.value().is<unsigned int>()) {
-						filters.insert(filter.value().as<unsigned int>());
-					}
-					else if (filter.value().is<sol::table>()) {
-						sol::table filterTable = filter.value().as<sol::table>();
-						for (const auto& kv : filterTable) {
-							if (kv.second.is<unsigned int>()) {
-								filters.insert(kv.second.as<unsigned int>());
-							}
-						}
-					}
-					else {
-						throw std::invalid_argument("Iteration can only be filtered by object type, a table of object types, or must not have any filter.");
-					}
-				}
-
-				return iterateObjects(std::move(filters));
-			};
+			state["tes3"]["iterateObjects"] = sol::overload(&iterateObjects, &iterateObjectsFiltered);
 
 			// Bind function: tes3.getSound
 			state["tes3"]["getSound"] = [](const char* id) -> sol::object {
@@ -728,7 +691,10 @@ namespace mwse {
 				}
 
 				// TODO: Allow specifying the root?
-				rayTestCache->root = TES3::Game::get()->worldRoot;
+				// Added ablity to use any node
+				// In Lua Script use "root = tes3.mobilePlayer.firstPersonReference.sceneNode"
+				// to have rayTest scan 1st person scene node
+				rayTestCache->root = getOptionalParam<NI::Node*>(params, "root", TES3::Game::get()->worldRoot);
 
 				// Are we finding all or the first?
 				if (getOptionalParam<bool>(params, "findAll", false)) {
@@ -859,21 +825,59 @@ namespace mwse {
 						}
 					}
 				}
-
-				// Are we looking for a single result?
-				if (rayTestCache->pickType == NI::PickType::FIND_FIRST) {
-					return sol::make_object(state, rayTestCache->results.storage[0]);
-				}
-
-				// We're now in multi-result mode. We'll store these in a table.
-				sol::table results = state.create_table();
 				
-				// Go through and clone the results in a way that will play nice.
-				for (int i = 0; i < rayTestCache->results.filledCount; i++) {
-					results[i + 1] = rayTestCache->results.storage[i];
-				}
+				// New Parameter: Ignore Skinned results.
+				// Removes results of skinned objects
+				if (getOptionalParam<bool>(params, "ignoreSkinned", false)) {
+					int i2 = 0;
 
-				return results;
+					// We're now in multi-result mode. We'll store these in a table.
+					sol::table results = state.create_table();
+
+					// Go through and clone the results in a way that will play nice.
+					// Skip any results that have a skinInstance
+					for (int i = 0; i < rayTestCache->results.filledCount; i++) {
+						auto r = rayTestCache->results.storage[i];
+						if ((uintptr_t)r->object->getRunTimeTypeInformation() == NI::RTTIStaticPtr::NiTriShape) {
+							auto node = static_cast<const NI::TriShape*>(r->object);
+							if (!node->skinInstance) {
+								i2++;
+								results[i2] = rayTestCache->results.storage[i];
+							}
+						}
+						else
+						{
+							i2++;
+							results[i2] = rayTestCache->results.storage[i];
+						}
+					}
+					//Return nothing if all results were skinned
+					if (i2 == 0){
+						return sol::nil;
+					}
+					// Are we looking for a single result?
+					if (rayTestCache->pickType == NI::PickType::FIND_FIRST) {
+						return results[1];
+					}
+					return results;
+				}
+				else {
+					// Treat results as normal
+					// Are we looking for a single result?
+					if (rayTestCache->pickType == NI::PickType::FIND_FIRST) {
+						return sol::make_object(state, rayTestCache->results.storage[0]);
+					}
+
+					// We're now in multi-result mode. We'll store these in a table.
+					sol::table results = state.create_table();
+				
+					// Go through and clone the results in a way that will play nice.
+					for (int i = 0; i < rayTestCache->results.filledCount; i++) {
+						results[i + 1] = rayTestCache->results.storage[i];
+					}
+	
+					return results;
+				}
 			};
 
 			// Bind function: tes3.is3rdPerson
@@ -3207,7 +3211,7 @@ namespace mwse {
 					auto itt = firstEffect->next;
 					while (itt != firstEffect) {
 						if (itt->magicEffectID == effectId) {
-							magnitude += itt->magnitudeMin;
+							magnitude += itt->getMagnitude();
 						}
 						itt = itt->next;
 					}
@@ -3420,62 +3424,6 @@ namespace mwse {
 				}
 
 				return hoursPassed;
-			};
-
-			state["tes3"]["beginTransform"] = [](sol::table params) {
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				if (reference == nullptr) {
-					throw std::invalid_argument("Invalid 'reference' parameter provided.");
-				}
-
-				auto mact = reference->getAttachedMobileActor();
-				if (mact == nullptr) {
-					throw std::invalid_argument("Invalid 'reference' parameter provided. No mobile actor found.");
-				}
-
-				if (mact->getIsWerewolf()) {
-					return false;
-				}
-
-				if (mact->isDead()) {
-					return false;
-				}
-
-				mact->changeWerewolfState(true);
-				mact->setMobileActorFlag(TES3::MobileActorFlag::BodypartsChanged, false);
-
-				auto macp = TES3::WorldController::get()->getMobilePlayer();
-				if (mact == macp) {
-					// TODO
-				}
-			};
-
-			state["tes3"]["undoTransform"] = [](sol::table params) {
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				if (reference == nullptr) {
-					throw std::invalid_argument("Invalid 'reference' parameter provided.");
-				}
-
-				auto mact = reference->getAttachedMobileActor();
-				if (mact == nullptr) {
-					throw std::invalid_argument("Invalid 'reference' parameter provided. No mobile actor found.");
-				}
-
-				if (!mact->getIsWerewolf()) {
-					return false;
-				}
-
-				if (mact->isDead()) {
-					return false;
-				}
-
-				mact->changeWerewolfState(false);
-				mact->setMobileActorFlag(TES3::MobileActorFlag::BodypartsChanged, true);
-
-				auto macp = TES3::WorldController::get()->getMobilePlayer();
-				if (mact == macp) {
-					// TODO
-				}
 			};
 		}
 	}
