@@ -39,6 +39,12 @@ useBackTriangles (`boolean`_)
 
 observeAppCullFlag (`boolean`_)
     Default: ``true``. Ignore intersections with culled (hidden) models.
+	
+root (`node *`_)
+	Default: ``tes3.game.worldSceneGraphRoot`` Node pointer to node scene.
+	
+ignoreSkinned (`boolean`_)
+	Default: ``false``. Ignore results from skinned objects.
 
 returnColor (`boolean`_)
     Default: ``false``. Calculate and return the vertex color at intersections.
