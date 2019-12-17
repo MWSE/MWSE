@@ -262,6 +262,7 @@ namespace TES3 {
 		//
 
 		int getNameGMST();
+		void setDescription( const char *value );
 
 	};
 	static_assert(sizeof(MagicEffect) == 0x0110, "TES3::EffectID:: failed size validation");

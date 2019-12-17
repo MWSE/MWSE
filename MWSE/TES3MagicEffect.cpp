@@ -6,6 +6,8 @@
 #include "TES3GameSetting.h"
 #include "TES3MagicEffectController.h"
 
+#include <cstring>
+
 namespace TES3 {
 	const auto TES3_MagicEffect_ctor = reinterpret_cast<void(__thiscall*)(MagicEffect*)>(0x4A8C90);
 	MagicEffect::MagicEffect() {
@@ -37,6 +39,32 @@ namespace TES3 {
 			return -1;
 		}
 		return reinterpret_cast<int*>(0x79454C)[id];
+	}
+
+	void MagicEffect::setDescription( const char *value )
+	{
+		if( value == nullptr )
+		{
+			if( description != nullptr )
+			{
+				delete[] description;
+				description = nullptr;
+			}
+
+			return;
+		}
+
+		auto size = std::strlen( value ) + 1;
+
+		char *newDescription = new char[ size ];
+
+		if( newDescription == nullptr )
+			return;
+
+		std::strncpy( newDescription, value, size );
+
+		delete[] description;
+		description = newDescription;
 	}
 
 	MagicEffect * Effect::getEffectData() {

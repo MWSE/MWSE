@@ -117,6 +117,9 @@ namespace mwse {
 
 				// Functions exposed as properties.
 				usertypeDefinition.set("name", sol::readonly_property([](TES3::MagicEffect& self) { return TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectName(self.id); }));
+				usertypeDefinition.set( "description", sol::property(
+					[]( TES3::MagicEffect &self ) { return self.description; },
+					[]( TES3::MagicEffect &self, const char *value ) { self.setDescription( value ); } ) );
 				usertypeDefinition.set("areaSoundEffect", sol::readonly_property([](TES3::MagicEffect& self) { return self.areaSoundEffect; }));
 				usertypeDefinition.set("boltSoundEffect", sol::readonly_property([](TES3::MagicEffect& self) { return self.boltSoundEffect; }));
 				usertypeDefinition.set("castSoundEffect", sol::readonly_property([](TES3::MagicEffect& self) { return self.castSoundEffect; }));
@@ -126,6 +129,10 @@ namespace mwse {
 					[](TES3::MagicEffect& self, const char* value) { if (strlen(value) < 32) strcpy(self.icon, value); }
 				));
 				usertypeDefinition.set("particleTexture", sol::readonly_property([](TES3::MagicEffect& self) { return self.particleTexture; }));
+
+				// custom functions
+				// that one looks needed (though maybe crap) as setting description to nil using lua is not handled in the property...don't know why, NullCascade, any idea?
+				usertypeDefinition.set( "resetDescription", []( TES3::MagicEffect &self ) { self.setDescription( nullptr ); } );
 
 				// Finish up our usertype.
 				state.set_usertype("tes3magicEffect", usertypeDefinition);
