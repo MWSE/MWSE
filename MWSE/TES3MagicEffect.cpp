@@ -47,7 +47,7 @@ namespace TES3 {
 		{
 			if( description != nullptr )
 			{
-				delete[] description;
+				mwse::tes3::free( description );
 				description = nullptr;
 			}
 
@@ -56,14 +56,16 @@ namespace TES3 {
 
 		auto size = std::strlen( value ) + 1;
 
-		char *newDescription = new char[ size ];
+		char *newDescription = reinterpret_cast< char * >( mwse::tes3::_new( size ) );
 
 		if( newDescription == nullptr )
 			return;
 
 		std::strncpy( newDescription, value, size );
 
-		delete[] description;
+		if( description != nullptr  )
+			mwse::tes3::free( description );
+
 		description = newDescription;
 	}
 

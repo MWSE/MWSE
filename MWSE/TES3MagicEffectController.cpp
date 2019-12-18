@@ -572,6 +572,10 @@ namespace TES3 {
 		// Clear some more initialization of magic effect IDs.
 		mwse::genNOPUnprotected(0x4B831D, 0x22);
 
+		// Prevent free of spell effect description when help menu display it both for populating enchanting menu and spell making menu
+		mwse::genNOPUnprotected( 0x6231E1, 0x5 );
+		mwse::genNOPUnprotected( 0x5C69C1, 0x5 );
+
 		// When destructing the effect list, 
 		mwse::genCallUnprotected(0x4B821B, (DWORD)DestroyController, 0x20);
 
