@@ -3291,11 +3291,10 @@ namespace mwse {
 				// Description.
 				sol::optional<std::string> description = params["description"];
 				if (description) {
-					effect->description = new char[description.value().length() + 1];
-					strcpy_s(effect->description, description.value().length() + 1, description.value().c_str());
+					effect->setDescription( description.value().c_str() );
 				}
 				else {
-					effect->description = "No description available.";
+					effect->setDescription( "No description available." );
 				}
 
 				// Set color.
