@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BitUtil.h" />
+    <ClInclude Include="BookTextStore.h" />
     <ClInclude Include="LuaCalcHitArmorPieceEvent.h" />
     <ClInclude Include="LuaBookGetTextEvent.h" />
     <ClInclude Include="LuaCalcArmorRatingEvent.h" />
@@ -403,6 +404,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArrayUtil.cpp" />
+    <ClCompile Include="BookTextStore.cpp" />
     <ClCompile Include="CodePatchUtil.cpp" />
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="LuaActivateEvent.cpp" />

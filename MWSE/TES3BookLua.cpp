@@ -6,9 +6,15 @@
 #include "TES3Book.h"
 #include "TES3Enchantment.h"
 #include "TES3Script.h"
+#include "LuaObject.h"
 
 namespace mwse {
 	namespace lua {
+		auto createBook( sol::table params )
+		{
+			return makeObjectCreator( TES3::ObjectType::Book )->create( params, false );
+		}
+
 		void bindTES3Book() {
 			// Get our lua state.
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
@@ -39,6 +45,11 @@ namespace mwse {
 			usertypeDefinition.set("name", sol::property(&TES3::Book::getName, &TES3::Book::setName));
 			usertypeDefinition.set("script", sol::property(&TES3::Book::getScript));
 			usertypeDefinition.set("text", sol::property(&TES3::Book::getBookText));
+
+			// utility function bindings
+			usertypeDefinition.set( "create", &createBook );
+			usertypeDefinition.set( "setDynamicText", &TES3::Book::setDynamicText );
+			usertypeDefinition.set( "clearDynamicText", &TES3::Book::clearDynamicText );
 
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition.set("model", sol::property(&TES3::Book::getModelPath, &TES3::Book::setModelPath));

@@ -1353,6 +1353,9 @@
     <ClInclude Include="LuaCalcSunDamageScalarEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="BookTextStore.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -2920,6 +2923,9 @@
     </ClCompile>
     <ClCompile Include="LuaCalcSunDamageScalarEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="BookTextStore.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

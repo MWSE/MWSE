@@ -9,6 +9,8 @@ std::unique_ptr< ObjectCreatorBase > makeObjectCreator( TES3::ObjectType::Object
 	{
 	case TES3::ObjectType::Activator:
 		return std::make_unique< ObjectCreator< TES3::Activator > >();
+	case TES3::ObjectType::Book:
+		return std::make_unique< ObjectCreator< TES3::Book > >();
 	case TES3::ObjectType::Misc:
 		return std::make_unique< ObjectCreator< TES3::Misc > >();
 	case TES3::ObjectType::Static:
