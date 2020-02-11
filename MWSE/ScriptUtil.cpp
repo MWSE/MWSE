@@ -522,6 +522,42 @@ namespace mwse
 			setScriptSecondObject(cachedSecondObject);
 		}
 
+		void RemoveFromLevCreature(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* leveledList, TES3::Actor* actor, unsigned short level) {
+			// Cache destination values.
+			TES3::BaseObject* cachedSecondObject = getScriptSecondObject();
+			TES3::BaseObject* cachedDataBufferObject = getDataBufferObject();
+			float cachedDestinationX = getScriptDestinationX();
+
+			// Call original opcode.
+			setScriptSecondObject(leveledList);
+			setDataBufferObject(actor);
+			setScriptDestinationX(level);
+			RunOriginalOpCode(script, reference, OpCode::RemoveFromLevCreature);
+
+			// Restore destination values.
+			setScriptSecondObject(cachedSecondObject);
+			setDataBufferObject(cachedDataBufferObject);
+			setScriptDestinationX(cachedDestinationX);
+		}
+
+		void RemoveFromLevItem(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* leveledList, TES3::PhysicalObject* item, unsigned short level) {
+			// Cache destination values.
+			TES3::BaseObject* cachedSecondObject = getScriptSecondObject();
+			TES3::BaseObject* cachedDataBufferObject = getDataBufferObject();
+			float cachedDestinationX = getScriptDestinationX();
+
+			// Call original opcode.
+			setScriptSecondObject(leveledList);
+			setDataBufferObject(item);
+			setScriptDestinationX(level);
+			RunOriginalOpCode(script, reference, OpCode::RemoveFromLevItem);
+
+			// Restore destination values.
+			setScriptSecondObject(cachedSecondObject);
+			setDataBufferObject(cachedDataBufferObject);
+			setScriptDestinationX(cachedDestinationX);
+		}
+
 		void RemoveItem(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* itemTemplate, long count) {
 			// Cache previous script variables.
 			long cachedVarIndex = getScriptVariableIndex();

@@ -371,6 +371,32 @@ namespace mwse {
 				mwscript::PositionCell(script, reference, x, y, z, rotation, cell.c_str());
 				return true;
 			};
+			state["mwscript"]["removeFromLevCreature"] = [](sol::optional<sol::table> params) {
+				TES3::Script* script = getOptionalParamExecutionScript(params);
+				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				TES3::LeveledCreature* list = getOptionalParamObject<TES3::LeveledCreature>(params, "list");
+				TES3::Actor* actor = getOptionalParamObject<TES3::Actor>(params, "creature");
+				short level = getOptionalParam<double>(params, "level", 0.0);
+				if (list == NULL || actor == NULL || level <= 0) {
+					return false;
+				}
+
+				mwscript::RemoveFromLevCreature(script, reference, list, actor, level);
+				return true;
+			};
+			state["mwscript"]["removeFromLevItem"] = [](sol::optional<sol::table> params) {
+				TES3::Script* script = getOptionalParamExecutionScript(params);
+				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				TES3::BaseObject* list = getOptionalParamObject<TES3::BaseObject>(params, "list");
+				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
+				short level = getOptionalParam<double>(params, "level", 0.0);
+				if (list == NULL || item == NULL || level <= 0) {
+					return false;
+				}
+
+				mwscript::RemoveFromLevItem(script, reference, list, item, level);
+				return true;
+			};
 			state["mwscript"]["removeItem"] = [](sol::optional<sol::table> params) {
 				TES3::Script* script = getOptionalParamExecutionScript(params);
 				TES3::Reference* reference = getOptionalParamExecutionReference(params);
