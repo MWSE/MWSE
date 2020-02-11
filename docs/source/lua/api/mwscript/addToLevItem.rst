@@ -14,7 +14,7 @@ Parameters
 Accepts parameters through a table with the given keys:
 
 list (`tes3leveledItem`_, `string`_)
-    Leveled item list to add a creature to.
+    Leveled item list to add an item to.
 
 item (`tes3item`_, `string`_)
     Item to add to the list.
