@@ -3657,6 +3657,11 @@ namespace mwse {
 			// Allow overriding of sun damage calculation.
 			auto weatherControllerCalcSunDamageScalar = &TES3::WeatherController::calcSunDamageScalar;
 			genCallEnforced(0x0464C1C, 0x440630, *reinterpret_cast<DWORD*>(&weatherControllerCalcSunDamageScalar));
+			
+			// Allow overriding of player underwater calculation.
+			auto mobilePlayerIsUnderwater = &TES3::MobilePlayer::isUnderwater;
+			genCallEnforced(0x568114, 0x5299F0, *reinterpret_cast<DWORD*>(&mobilePlayerIsUnderwater));
+
 
 			// Allow defining certain objects as sourceless.
 			auto isSourcelessObject = &TES3::BaseObject::isSourcelessObject;

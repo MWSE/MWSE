@@ -68,6 +68,7 @@
     <ClInclude Include="LuaInfoGetTextEvent.h" />
     <ClInclude Include="LuaInfoResponseEvent.h" />
     <ClInclude Include="LuaIsGuardEvent.h" />
+    <ClInclude Include="LuaIsMobilePlayerUnderwaterEvent.h" />
     <ClInclude Include="LuaItemDroppedEvent.h" />
     <ClInclude Include="LuaItemTileUpdatedEvent.h" />
     <ClInclude Include="LuaJournalEvent.h" />
@@ -468,6 +469,7 @@
     <ClCompile Include="LuaInfoGetTextEvent.cpp" />
     <ClCompile Include="LuaInfoResponseEvent.cpp" />
     <ClCompile Include="LuaIsGuardEvent.cpp" />
+    <ClCompile Include="LuaIsMobilePlayerUnderwaterEvent.cpp" />
     <ClCompile Include="LuaItemDroppedEvent.cpp" />
     <ClCompile Include="LuaItemTileUpdatedEvent.cpp" />
     <ClCompile Include="LuaJournalEvent.cpp" />

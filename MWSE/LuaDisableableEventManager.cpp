@@ -52,6 +52,7 @@
 #include "LuaInfoGetTextEvent.h"
 #include "LuaInfoResponseEvent.h"
 #include "LuaIsGuardEvent.h"
+#include "LuaIsMobilePlayerUnderwaterEvent.h"
 #include "LuaItemDroppedEvent.h"
 #include "LuaItemTileUpdatedEvent.h"
 #include "LuaJournalEvent.h"
@@ -171,6 +172,7 @@ namespace mwse {
 				usertypeDefinition.set("infoGetText", sol::property(&InfoGetTextEvent::getEventEnabled, &InfoGetTextEvent::setEventEnabled));
 				usertypeDefinition.set("infoResponse", sol::property(&InfoResponseEvent::getEventEnabled, &InfoResponseEvent::setEventEnabled));
 				usertypeDefinition.set("isGuard", sol::property(&IsGuardEvent::getEventEnabled, &IsGuardEvent::setEventEnabled));
+				usertypeDefinition.set("isMobilePlayerUnderwater", sol::property(&IsMobilePlayerUnderwaterEvent::getEventEnabled, &IsMobilePlayerUnderwaterEvent::setEventEnabled));
 				usertypeDefinition.set("itemDropped", sol::property(&ItemDroppedEvent::getEventEnabled, &ItemDroppedEvent::setEventEnabled));
 				usertypeDefinition.set("itemTileUpdated", sol::property(&ItemTileUpdatedEvent::getEventEnabled, &ItemTileUpdatedEvent::setEventEnabled));
 				usertypeDefinition.set("journal", sol::property(&JournalEvent::getEventEnabled, &JournalEvent::setEventEnabled));

@@ -91,6 +91,7 @@ namespace TES3 {
 		void onDeath();
 		bool is3rdPerson();
 		int getGold();
+		bool isUnderwater();
 
 		int getBounty();
 		void setBounty(int value);

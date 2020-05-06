@@ -7,6 +7,7 @@
 
 #include "LuaDeathEvent.h"
 #include "LuaSkillExerciseEvent.h"
+#include "LuaIsMobilePlayerUnderwaterEvent.h"
 
 #include "Log.h"
 
@@ -60,6 +61,21 @@ namespace TES3 {
 
 	bool MobilePlayer::is3rdPerson() {
 		return vTable.mobileActor->is3rdPerson(this);
+	}
+
+	const auto TES3_MobilePlayer_isUnderwater = reinterpret_cast<bool(__thiscall*)(MobilePlayer*)>(0x5299F0);
+	bool MobilePlayer::isUnderwater() {
+		bool isUnderwater = TES3_MobilePlayer_isUnderwater(this);
+
+		// Trigger isMobilePlayerUnderwater event.
+		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
+		auto stateHandle = luaManager.getThreadSafeStateHandle();
+		sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::IsMobilePlayerUnderwaterEvent(this, isUnderwater));
+		if (eventData.valid()) {
+			isUnderwater = eventData.get<bool>("isUnderwater");
+		}
+
+		return isUnderwater;
 	}
 
 	int MobilePlayer::getGold() {
