@@ -1,7 +1,7 @@
 timer.simulate
 ====================================================================================================
 
-Constant to represent timers that run when the game isn't paused.
+Constant to represent timers that run when the game isn't paused. Duration is measured in seconds.
 
 .. _`tes3creature`: ../../lua/type/tes3creature.html
 .. _`niObject`: ../../lua/type/niObject.html
