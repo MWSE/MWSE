@@ -17,7 +17,7 @@ sound (`tes3sound`_, `string`_)
     The sound object, or id of the sound to look for.
     
 soundPath (`string`_)
-    The path to a custom soundfile (useful for playing sounds that are not registered in the Construction Set). Starts in Data Files\Sound.
+    The path to a custom soundfile (useful for playing sounds that are not registered in the Construction Set). Starts in Data Files\\Sound.
 
 reference (`tes3reference`_, `tes3mobileActor`_, `string`_)
     Optional. The reference to attach the sound to.
