@@ -49,7 +49,7 @@ return {
         	checkForKnockdown = {   --Not sure what this one does
             		type ="bool",
             		readonly = true,
-            	description = ""
+            		description = ""
         	},
 	},
 }
