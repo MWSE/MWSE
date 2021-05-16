@@ -26,10 +26,10 @@ return {
 			description = "attacker mobile's associated reference. Can be nil.",
 		},
 		projectile = {
-	        type = "tes3mobileProjectile",
+			type = "tes3mobileProjectile",
 			readonly = true,
 			description = "Projectile that dealt the damage. Can be nil.",
-	    },
+		},
 		activeMagicEffect = {
 			type = "tes3magicEffect",
 			readonly = true,
