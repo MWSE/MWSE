@@ -30,7 +30,7 @@ return {
 			type = "tes3mobileProjectile",
 			readonly = true,
 			description = "Projectile that dealt the damage. Can be nil.",
-	    },
+		},
 		activeMagicEffect = {
 			type = "tes3magicEffect",
 			readonly = true,
