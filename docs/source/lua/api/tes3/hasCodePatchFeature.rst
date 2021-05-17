@@ -12,7 +12,7 @@ Parameters
 ----------------------------------------------------------------------------------------------------
 
 id (`number`_)
-    No description available.
+    Can be found in '\Morrowind\mcpatch\describe.json'.
 
 .. _`tes3creature`: ../../../lua/type/tes3creature.html
 .. _`niObject`: ../../../lua/type/niObject.html
