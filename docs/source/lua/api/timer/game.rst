@@ -1,7 +1,7 @@
 timer.game
 ====================================================================================================
 
-Constant to represent timers that run based on in-world time.
+Constant to represent timers that run based on in-world time. Duration measured in game-scale hours.
 
 .. _`tes3creature`: ../../lua/type/tes3creature.html
 .. _`niObject`: ../../lua/type/niObject.html
