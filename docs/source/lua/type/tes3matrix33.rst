@@ -94,3 +94,6 @@ Methods
 .. _`toZero`: tes3matrix33/toZero.html
 .. _`transpose`: tes3matrix33/transpose.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

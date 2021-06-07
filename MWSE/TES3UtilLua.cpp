@@ -2450,23 +2450,26 @@ namespace mwse {
 				throw std::invalid_argument("Invalid reference parameter provided.");
 			}
 
-			TES3::Reference* target = getOptionalParamReference(params, "target");
-			if (target == nullptr) {
-				throw std::invalid_argument("Invalid target parameter provided.");
-			}
-
 			TES3::Spell* spell = getOptionalParamSpell(params, "spell");
 			if (spell == nullptr) {
 				throw std::invalid_argument("Invalid spell parameter provided.");
 			}
 
-			bool instant = getOptionalParam<bool>(params, "instant", false);
 			TES3::MobileActor* casterMobile = reference->getAttachedMobileActor();
+			TES3::Reference* target = getOptionalParamReference(params, "target");
+			if (target == nullptr) {
+				// Only allow player to cast without a target.
+				if (!(casterMobile && casterMobile->actorType == TES3::MobileActorType::Player)) {
+					throw std::invalid_argument("Invalid target parameter provided.");
+				}
+			}
+
+			bool instant = getOptionalParam<bool>(params, "instant", false);
 			if (casterMobile && !instant) {
 				// Request AI to cast chosen spell.
-				if (casterMobile->isActive()) {
+				if (casterMobile->isActive() && target != nullptr) {
 					casterMobile->setCurrentMagicSourceFiltered(spell);
-					casterMobile->setActionTarget(target->getAttachedMobileActor());
+					casterMobile->forceSpellCast(target->getAttachedMobileActor());
 					return true;
 				}
 			}
@@ -2485,7 +2488,7 @@ namespace mwse {
 
 				// Trigger spells to progress from pre-cast to targetting state. This state is automatically reset by active AI.
 				if (casterMobile) {
-					casterMobile->actionData.animStateAttack = TES3::AttackAnimationState::Casting2;
+					casterMobile->actionData.animStateAttack = TES3::AttackAnimationState::CastingFollow;
 				}
 
 				return true;

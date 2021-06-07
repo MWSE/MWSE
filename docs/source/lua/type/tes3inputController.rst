@@ -84,3 +84,7 @@ Methods
 .. _`isMouseButtonReleasedThisFrame`: tes3inputController/isMouseButtonReleasedThisFrame.html
 .. _`keybindTest`: tes3inputController/keybindTest.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3directInputMouseState`: ../../lua/type/tes3directInputMouseState.html

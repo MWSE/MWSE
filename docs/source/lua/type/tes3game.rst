@@ -86,3 +86,8 @@ Properties
 .. _`wireframeProperty`: tes3game/wireframeProperty.html
 .. _`worldSceneGraphRoot`: tes3game/worldSceneGraphRoot.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`niProperty`: ../../lua/type/niProperty.html

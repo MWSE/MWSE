@@ -15,7 +15,9 @@ Functions
     table/copy
     table/copymissing
     table/deepcopy
+    table/empty
     table/find
     table/removevalue
     table/size
+    table/traverse
 

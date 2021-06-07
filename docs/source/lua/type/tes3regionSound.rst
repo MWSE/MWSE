@@ -21,3 +21,5 @@ Properties
 .. _`chance`: tes3regionSound/chance.html
 .. _`sound`: tes3regionSound/sound.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3regionSound`: ../../lua/type/tes3regionSound.html

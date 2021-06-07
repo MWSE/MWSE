@@ -154,3 +154,15 @@ Methods
 .. _`updateEffects`: niTriShape/updateEffects.html
 .. _`updateProperties`: niTriShape/updateProperties.html
 
+.. _`niObject`: ../../lua/type/niObject.html
+.. _`niTriShapeData`: ../../lua/type/niTriShapeData.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
+.. _`niAVObject`: ../../lua/type/niAVObject.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`niPropertyLinkedList`: ../../lua/type/niPropertyLinkedList.html
+.. _`niProperty`: ../../lua/type/niProperty.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

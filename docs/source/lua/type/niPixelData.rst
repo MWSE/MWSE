@@ -92,3 +92,9 @@ Functions
 
 .. _`new`: niPixelData/new.html
 
+.. _`niObject`: ../../lua/type/niObject.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`niSourceTexture`: ../../lua/type/niSourceTexture.html

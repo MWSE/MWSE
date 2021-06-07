@@ -261,7 +261,7 @@ namespace TES3 {
 
 		bool isActive();
 		void setCurrentMagicSourceFiltered(Object * magic);
-		void setActionTarget(MobileActor * target);
+		void forceSpellCast(MobileActor * target);
 
 		void dropItem(Object * item, ItemData * itemData = nullptr, int count = 1, bool exact = true);
 

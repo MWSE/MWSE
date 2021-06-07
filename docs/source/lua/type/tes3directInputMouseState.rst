@@ -31,3 +31,5 @@ Properties
 .. _`y`: tes3directInputMouseState/y.html
 .. _`z`: tes3directInputMouseState/z.html
 
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html

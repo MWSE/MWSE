@@ -116,3 +116,10 @@ Properties
 .. _`text`: tes3dialogueInfo/text.html
 .. _`type`: tes3dialogueInfo/type.html
 
+.. _`tes3class`: ../../lua/type/tes3class.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3actor`: ../../lua/type/tes3actor.html
+.. _`tes3faction`: ../../lua/type/tes3faction.html
+.. _`tes3cell`: ../../lua/type/tes3cell.html

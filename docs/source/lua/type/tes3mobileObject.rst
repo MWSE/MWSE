@@ -76,3 +76,7 @@ Properties
 .. _`reference`: tes3mobileObject/reference.html
 .. _`velocity`: tes3mobileObject/velocity.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

@@ -69,3 +69,8 @@ Methods
 
 .. _`selectAlchemyWithEffect`: tes3combatSession/selectAlchemyWithEffect.html
 
+.. _`tes3spell`: ../../lua/type/tes3spell.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
+.. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
+.. _`tes3equipmentStack`: ../../lua/type/tes3equipmentStack.html

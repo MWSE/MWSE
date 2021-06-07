@@ -61,3 +61,8 @@ Properties
 .. _`triangleIndex`: niPickRecord/triangleIndex.html
 .. _`vertexIndex`: niPickRecord/vertexIndex.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`niAVObject`: ../../lua/type/niAVObject.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3vector2`: ../../lua/type/tes3vector2.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

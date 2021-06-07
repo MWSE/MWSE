@@ -61,7 +61,7 @@ function dofile(path)
 
 	-- Check all package paths.
 	for ppath in package.path:gmatch("[^;]+") do
-		r = loadfile(ppath:gsub("?", standardizedPath))
+		r = loadfile(tes3.installDirectory .. ppath:gsub("?", standardizedPath))
 		if (r) then
 			return r()
 		end
@@ -134,16 +134,16 @@ function table.choice(t)
 	return t[key], key
 end
 
-function table.find(t, n)
+function table.find(t, value)
 	for i, v in pairs(t) do
-		if (v == n) then
+		if (v == value) then
 			return i
 		end
 	end
 end
 
-function table.removevalue(t, v)
-	local i = table.find(t, v)
+function table.removevalue(t, value)
+	local i = table.find(t, value)
 	if (i ~= nil) then
 		table.remove(t, i)
 		return true
@@ -151,18 +151,18 @@ function table.removevalue(t, v)
 	return false
 end
 
-function table.copy(t, d)
-	if (d == nil) then
-		d = {}
-	elseif (type(t) ~= "table" or type(d) ~= "table") then
+function table.copy(from, to)
+	if (to == nil) then
+		to = {}
+	elseif (type(from) ~= "table" or type(to) ~= "table") then
 		error("Arguments for table.copy must be tables.")
 	end
 
-	for k, v in pairs(t) do
-		d[k] = v
+	for k, v in pairs(from) do
+		to[k] = v
 	end
 
-	return d
+	return to
 end
 
 function table.deepcopy(t)
@@ -235,9 +235,9 @@ end
 local function default_fcompval( value ) return value end
 local function fcompf( a,b ) return a < b end
 local function fcompr( a,b ) return a > b end
-function table.binsearch( t,value,fcompval,reversed )
+function table.binsearch( t,value,compval,reversed )
 	-- Initialise functions
-	local fcompval = fcompval or default_fcompval
+	local compval = compval or default_fcompval
 	local fcomp = reversed and fcompr or fcompf
 	--  Initialise numbers
 	local iStart,iEnd,iMid = 1,#t,0
@@ -246,15 +246,15 @@ function table.binsearch( t,value,fcompval,reversed )
 		-- calculate middle
 		iMid = math.floor( (iStart+iEnd)/2 )
 		-- get compare value
-		local value2 = fcompval( t[iMid] )
+		local value2 = compval( t[iMid] )
 		-- get all values that match
 		if value == value2 then
 			local tfound,num = { iMid,iMid },iMid - 1
-			while value == fcompval( t[num] ) do
+			while value == compval( t[num] ) do
 				tfound[1],num = num,num - 1
 			end
 			num = iMid + 1
-			while value == fcompval( t[num] ) do
+			while value == compval( t[num] ) do
 				tfound[2],num = num,num + 1
 			end
 			return tfound
@@ -280,9 +280,9 @@ end
 	returns the index where 'value' was inserted
 ]]--
 local fcomp_default = function( a,b ) return a < b end
-function table.bininsert(t, value, fcomp)
+function table.bininsert(t, value, comp)
 	-- Initialise compare function
-	local fcomp = fcomp or fcomp_default
+	local comp = comp or fcomp_default
 	--  Initialise numbers
 	local iStart,iEnd,iMid,iState = 1,#t,1,0
 	-- Get insert position
@@ -290,7 +290,7 @@ function table.bininsert(t, value, fcomp)
 		-- calculate middle
 		iMid = math.floor( (iStart+iEnd)/2 )
 		-- compare
-		if fcomp( value,t[iMid] ) then
+		if comp( value,t[iMid] ) then
 			iEnd,iState = iMid - 1,0
 		else
 			iStart,iState = iMid + 1,1

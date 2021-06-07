@@ -26,3 +26,5 @@ Properties
 .. _`reputation`: tes3factionRank/reputation.html
 .. _`skills`: tes3factionRank/skills.html
 
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html

@@ -104,3 +104,7 @@ Methods
 .. _`normalized`: tes3vector3/normalized.html
 .. _`outerProduct`: tes3vector3/outerProduct.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`bool`: ../../lua/type/boolean.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

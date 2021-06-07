@@ -21,3 +21,5 @@ Properties
 .. _`faction`: tes3factionReaction/faction.html
 .. _`reputation`: tes3factionReaction/reputation.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3faction`: ../../lua/type/tes3faction.html

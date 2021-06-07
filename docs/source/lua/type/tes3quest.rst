@@ -56,3 +56,7 @@ Properties
 .. _`objectType`: tes3quest/objectType.html
 .. _`sourceMod`: tes3quest/sourceMod.html
 
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html

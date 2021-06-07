@@ -27,6 +27,7 @@ return {
 			description = "The item data of item.",
 		},
 	},
+    	filter = "item",
 	links = {
         ["equip"] = "lua/event/equip",
     },

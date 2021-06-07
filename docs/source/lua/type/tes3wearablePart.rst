@@ -26,3 +26,5 @@ Properties
 .. _`male`: tes3wearablePart/male.html
 .. _`type`: tes3wearablePart/type.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html

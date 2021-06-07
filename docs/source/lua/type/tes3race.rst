@@ -96,3 +96,10 @@ Properties
 .. _`sourceMod`: tes3race/sourceMod.html
 .. _`weight`: tes3race/weight.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3raceHeightWeight`: ../../lua/type/tes3raceHeightWeight.html
+.. _`tes3raceBodyParts`: ../../lua/type/tes3raceBodyParts.html
+.. _`tes3spellList`: ../../lua/type/tes3spellList.html

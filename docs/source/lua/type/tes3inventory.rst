@@ -59,3 +59,6 @@ Methods
 .. _`removeItem`: tes3inventory/removeItem.html
 .. _`resolveLeveledItems`: tes3inventory/resolveLeveledItems.html
 
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html

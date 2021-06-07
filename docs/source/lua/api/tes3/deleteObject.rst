@@ -1,12 +1,12 @@
 tes3.deleteObject
 ====================================================================================================
 
-Deletes a game object from the system. This can be dangerous, use caution.
+Deletes a game object from the system. This can be dangerous, use with caution.
 
 Parameters
 ----------------------------------------------------------------------------------------------------
 
 object (`tes3object`_)
-    No description available.
+    The object to delete.
 
 .. _`tes3object`: ../../../lua/type/tes3object.html

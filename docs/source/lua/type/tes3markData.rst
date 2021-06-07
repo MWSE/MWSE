@@ -26,3 +26,6 @@ Properties
 .. _`position`: tes3markData/position.html
 .. _`rotation`: tes3markData/rotation.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3cell`: ../../lua/type/tes3cell.html

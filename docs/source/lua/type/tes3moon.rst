@@ -86,3 +86,7 @@ Properties
 .. _`texture`: tes3moon/texture.html
 .. _`weatherController`: tes3moon/weatherController.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3weatherController`: ../../lua/type/tes3weatherController.html

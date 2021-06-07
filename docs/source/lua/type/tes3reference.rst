@@ -245,3 +245,17 @@ Methods
 .. _`updateLighting`: tes3reference/updateLighting.html
 .. _`updateSceneGraph`: tes3reference/updateSceneGraph.html
 
+.. _`niPointLight`: ../../lua/type/niPointLight.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3object`: ../../lua/type/tes3object.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3mobileObject`: ../../lua/type/tes3mobileObject.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3lockNode`: ../../lua/type/tes3lockNode.html
+.. _`tes3cell`: ../../lua/type/tes3cell.html
+.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html

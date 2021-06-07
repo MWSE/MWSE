@@ -31,3 +31,5 @@ Properties
 .. _`size`: tes3referenceList/size.html
 .. _`tail`: tes3referenceList/tail.html
 
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3cell`: ../../lua/type/tes3cell.html

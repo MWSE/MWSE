@@ -519,14 +519,14 @@ namespace TES3 {
 		return TES3_MobileActor_isActive(this);
 	}
 
-	const auto TES3_MobileActor_setCurrentMagicSourceFiltered = reinterpret_cast<bool(__thiscall*)(const MobileActor*, Object*, int)>(0x52B220);
+	const auto TES3_MobileActor_setCurrentMagicSourceFiltered = reinterpret_cast<bool(__thiscall*)(MobileActor*, Object*, int)>(0x52B220);
 	void MobileActor::setCurrentMagicSourceFiltered(Object * magic) {
 		TES3_MobileActor_setCurrentMagicSourceFiltered(this, magic, 0);
 	}
 
-	const auto TES3_MobileActor_setActionTarget = reinterpret_cast<bool(__thiscall*)(const MobileActor*, MobileActor*)>(0x52F790);
-	void MobileActor::setActionTarget(MobileActor * target) {
-		TES3_MobileActor_setActionTarget(this, target);
+	const auto TES3_MobileActor_forceSpellCast = reinterpret_cast<bool(__thiscall*)(MobileActor*, MobileActor*)>(0x52F790);
+	void MobileActor::forceSpellCast(MobileActor * target) {
+		TES3_MobileActor_forceSpellCast(this, target);
 	}
 
 	const auto TES3_MobileActor_dropItem = reinterpret_cast<void (__thiscall*)(MobileActor*, Object*, ItemData*, int, bool)>(0x52C460);

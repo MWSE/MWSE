@@ -1185,7 +1185,7 @@ namespace TES3 {
 		}
 
 		Element* Element::createImage_lua(sol::optional<sol::table> params) {
-			std::string path = mwse::lua::getOptionalParam<const char*>(params, "path", nullptr);
+			std::string path = mwse::lua::getOptionalParam<const char*>(params, "path", "");
 			if (path.empty()) {
 				throw std::invalid_argument("createImage: path argument is required.");
 			}
@@ -1209,7 +1209,7 @@ namespace TES3 {
 		}
 
 		Element* Element::createNif_lua(sol::optional<sol::table> params) {
-			std::string path = mwse::lua::getOptionalParam<const char*>(params, "path", nullptr);
+			std::string path = mwse::lua::getOptionalParam<const char*>(params, "path", "");
 			if (path.empty()) {
 				throw std::invalid_argument("createNif: path argument is required.");
 			}

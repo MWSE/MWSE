@@ -51,3 +51,6 @@ Properties
 .. _`sourceMod`: tes3globalVariable/sourceMod.html
 .. _`value`: tes3globalVariable/value.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html

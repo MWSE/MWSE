@@ -139,3 +139,12 @@ Functions
 
 .. _`create`: tes3alchemy/create.html
 
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3object`: ../../lua/type/tes3object.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

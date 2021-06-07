@@ -119,3 +119,13 @@ Methods
 
 .. _`getMagnitudeForIndex`: tes3magicSourceInstance/getMagnitudeForIndex.html
 
+.. _`tes3spell`: ../../lua/type/tes3spell.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
+.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
+.. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3item`: ../../lua/type/tes3item.html
+.. _`tes3itemData`: ../../lua/type/tes3itemData.html

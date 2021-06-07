@@ -64,3 +64,6 @@ Methods
 .. _`copy`: niColor/copy.html
 .. _`toVector3`: niColor/toVector3.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`niColor`: ../../lua/type/niColor.html

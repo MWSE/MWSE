@@ -104,3 +104,6 @@ Methods
 
 .. _`deleteFile`: tes3gameFile/deleteFile.html
 
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html

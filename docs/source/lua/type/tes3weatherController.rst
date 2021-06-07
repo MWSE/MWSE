@@ -224,3 +224,12 @@ Methods
 .. _`switchTransition`: tes3weatherController/switchTransition.html
 .. _`updateVisuals`: tes3weatherController/updateVisuals.html
 
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3weather`: ../../lua/type/tes3weather.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3moon`: ../../lua/type/tes3moon.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3region`: ../../lua/type/tes3region.html
+.. _`niDirectionalLight`: ../../lua/type/niDirectionalLight.html

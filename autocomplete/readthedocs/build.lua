@@ -144,15 +144,32 @@ end
 -- Handle link caching to optimize RTD build times.
 -- 
 
-local cachingLinks = false
+local cachingLinks = -1
 local writtenLinks = {}
 local originalFileWrite = nil
 
 local originalIOOpen = io.open
 local fileMetatable = nil
 
+-- Handle nested caching begin/stop
+local function beginCachingLinks()
+	cachingLinks = cachingLinks + 1
+end
+
+local function isCachingLinks()
+    return cachingLinks > -1
+end
+
+local function stopCachingLinks()
+	cachingLinks = cachingLinks - 1
+end
+
+local function isLinkCached(file, link)
+	return writtenLinks[file] and writtenLinks[file][link] == true
+end
+
 local function cachedWrite(self, str)
-	if (cachingLinks) then
+	if (isCachingLinks()) then
 		writtenLinks[self] = writtenLinks[self] or {}
 		for capture in string.gmatch(str, "`.-`_") do
 			writtenLinks[self][string.sub(capture, 2, -3)] = true
@@ -173,18 +190,6 @@ function io.open(...)
 		writtenLinks[file] = writtenLinks[file] or {}
 	end
 	return file
-end
-
-local function beginCachingLinks()
-	cachingLinks = true
-end
-
-local function stopCachingLinks()
-	cachingLinks = false
-end
-
-local function isLinkCached(file, link)
-	return writtenLinks[file] and writtenLinks[file][link] == true
 end
 
 -- 

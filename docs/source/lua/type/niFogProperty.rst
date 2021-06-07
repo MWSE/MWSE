@@ -79,3 +79,9 @@ Methods
 .. _`removeAllControllers`: niFogProperty/removeAllControllers.html
 .. _`removeController`: niFogProperty/removeController.html
 
+.. _`niObject`: ../../lua/type/niObject.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`niColor`: ../../lua/type/niColor.html

@@ -12,10 +12,10 @@ Parameters
 ----------------------------------------------------------------------------------------------------
 
 callback (`function`_)
-    No description available.
+    The callback function that will execute when the timer expires.
 
 type (`number`_)
-    Default: ``timer.simulate``. No description available.
+    Default: ``timer.simulate``. Type of the timer. This value can be timer.simulate, timer.game and timer.real.
 
 .. _`number`: ../../../lua/type/number.html
 .. _`function`: ../../../lua/type/function.html

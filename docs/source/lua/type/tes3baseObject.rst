@@ -46,3 +46,6 @@ Properties
 .. _`objectType`: tes3baseObject/objectType.html
 .. _`sourceMod`: tes3baseObject/sourceMod.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html

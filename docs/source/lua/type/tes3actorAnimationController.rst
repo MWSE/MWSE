@@ -23,3 +23,5 @@ Use by getting the animation controller from the mobile. e.g. mobile.animationCo
 .. _`mobile`: tes3actorAnimationController/mobile.html
 .. _`weaponSpeed`: tes3actorAnimationController/weaponSpeed.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html

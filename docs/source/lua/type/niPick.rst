@@ -96,3 +96,5 @@ Methods
 .. _`clearResults`: niPick/clearResults.html
 .. _`pickObjects`: niPick/pickObjects.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`niPickRecord`: ../../lua/type/niPickRecord.html

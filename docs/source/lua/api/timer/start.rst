@@ -14,7 +14,7 @@ Parameters
 Accepts parameters through a table with the given keys:
 
 type (`number`_)
-    Optional. Defaults to timer.simulate.
+    Default: ``timer.simulate``. Type of the timer. This value can be timer.simulate, timer.game and timer.real.
 
 duration (`number`_)
     Duration of the timer. The method of time passing depends on the timer type.

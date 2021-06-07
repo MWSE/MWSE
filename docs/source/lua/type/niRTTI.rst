@@ -21,3 +21,5 @@ Properties
 .. _`name`: niRTTI/name.html
 .. _`parent`: niRTTI/parent.html
 
+.. _`string`: ../../lua/type/string.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html

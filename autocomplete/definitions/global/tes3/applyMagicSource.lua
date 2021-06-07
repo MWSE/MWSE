@@ -17,7 +17,7 @@ return {
 					{ name = "id", type = "boolean", optional = true, default = -1, description = "ID of the effect." },
 					{ name = "skill", type = "tes3.skill.* constants", optional = true, default = -1, description = "If effect parameter specified is: Absorb, Damage, Drain, Fortify or Restore Skill, a skill should be provided. This also applies to any custom spell effect which operates on a certain skill." },
 					{ name = "attribute", type = "tes3.attribute.* constants", optional = true, default = -1, description = "If effect parameter specified is: Absorb, Damage, Drain, Fortify or Restore Attribute, an attribute should be provided. This also applies to any custom spell effect which operates on a certain attribute." },
-					{ name = "range", type = "tes3.effectRange.* constants", optional = true, default = tes3.effectRange.self, description = "The range of the effect. This maps to tes3.effectRange.* constants." },
+					{ name = "range", type = "tes3.effectRange.* constants", optional = true, default = "tes3.effectRange.self", description = "The range of the effect. This maps to tes3.effectRange.* constants." },
 					{ name = "radius", type = "number", optional = true, default = 0, description = "The radius of the effect." },
 					{ name = "duration", type = "number", optional = true, default = 0, description = "Number of seconds the effect is going to be active." },
 					{ name = "min", type = "number", optional = true, default = 0, description = "The minimal magintude of the effect per tick." },

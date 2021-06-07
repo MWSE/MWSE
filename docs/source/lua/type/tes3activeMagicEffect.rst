@@ -71,3 +71,7 @@ Properties
 .. _`serial`: tes3activeMagicEffect/serial.html
 .. _`skillId`: tes3activeMagicEffect/skillId.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3activeMagicEffect`: ../../lua/type/tes3activeMagicEffect.html
+.. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html

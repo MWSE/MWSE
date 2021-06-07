@@ -17,7 +17,7 @@ namespace TES3 {
 		ReadyingWeap = 0x8,
 		UnreadyWeap = 0x9,
 		Casting = 0xA,
-		Casting2 = 0xB,
+		CastingFollow = 0xB,
 		ReadyingMagic = 0xC,
 		UnreadyMagic = 0xD,
 		Knockdown = 0xE,

@@ -48,3 +48,5 @@ In this example, a list is iterated using the pairs iterator function. The node 
     end
 
 
+.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html
+.. _`number`: ../../lua/type/number.html

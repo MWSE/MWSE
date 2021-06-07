@@ -26,3 +26,4 @@ Properties
 .. _`head`: tes3iteratorNode/head.html
 .. _`tail`: tes3iteratorNode/tail.html
 
+.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html

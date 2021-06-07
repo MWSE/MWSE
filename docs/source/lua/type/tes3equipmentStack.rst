@@ -21,3 +21,5 @@ Properties
 .. _`object`: tes3equipmentStack/object.html
 .. _`variables`: tes3equipmentStack/variables.html
 
+.. _`tes3item`: ../../lua/type/tes3item.html
+.. _`tes3itemData`: ../../lua/type/tes3itemData.html

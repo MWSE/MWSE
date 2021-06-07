@@ -39,3 +39,7 @@ Methods
 
 .. _`copy`: tes3transform/copy.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3transform`: ../../lua/type/tes3transform.html

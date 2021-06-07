@@ -181,3 +181,6 @@ Properties
 .. _`unreflectable`: tes3magicEffect/unreflectable.html
 .. _`usesNegativeLighting`: tes3magicEffect/usesNegativeLighting.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html

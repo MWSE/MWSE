@@ -224,3 +224,17 @@ Methods
 
 .. _`onInventoryClose`: tes3npcInstance/onInventoryClose.html
 
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3class`: ../../lua/type/tes3class.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`tes3race`: ../../lua/type/tes3race.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3object`: ../../lua/type/tes3object.html
+.. _`number`: ../../lua/type/number.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`tes3npc`: ../../lua/type/tes3npc.html
+.. _`tes3faction`: ../../lua/type/tes3faction.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3spellList`: ../../lua/type/tes3spellList.html

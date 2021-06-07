@@ -113,3 +113,10 @@ If you already know the effective radius of the vertex data, you could more effi
 .. _`markAsChanged`: niTriShapeData/markAsChanged.html
 .. _`updateModelBound`: niTriShapeData/updateModelBound.html
 
+.. _`niObject`: ../../lua/type/niObject.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`tes3vector2`: ../../lua/type/tes3vector2.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

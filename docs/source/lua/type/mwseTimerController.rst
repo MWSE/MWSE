@@ -42,3 +42,6 @@ Functions
 
 .. _`new`: mwseTimerController/new.html
 
+.. _`number`: ../../lua/type/number.html
+.. _`mwseTimerController`: ../../lua/type/mwseTimerController.html
+.. _`mwseTimer`: ../../lua/type/mwseTimer.html

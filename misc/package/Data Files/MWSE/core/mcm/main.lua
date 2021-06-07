@@ -265,9 +265,10 @@ function mwse.registerModConfig(name, package)
 end
 
 -- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.
+-- Set this up to run before most other initialized callbacks.
 local function onInitialized()
 	UIID_mwse_modConfigMenu = tes3ui.registerID("MWSE:ModConfigMenu")
 
 	event.trigger("modConfigReady")
 end
-event.register("initialized", onInitialized)
+event.register("initialized", onInitialized, { priority = 100 })

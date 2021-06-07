@@ -181,3 +181,7 @@ Properties
 .. _`sourceMod`: tes3class/sourceMod.html
 .. _`specialization`: tes3class/specialization.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`number`: ../../lua/type/number.html

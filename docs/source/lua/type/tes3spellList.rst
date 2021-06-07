@@ -49,3 +49,6 @@ Methods
 .. _`getCheapest`: tes3spellList/getCheapest.html
 .. _`remove`: tes3spellList/remove.html
 
+.. _`tes3spell`: ../../lua/type/tes3spell.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`boolean`: ../../lua/type/boolean.html

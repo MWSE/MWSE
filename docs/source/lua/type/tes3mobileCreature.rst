@@ -678,3 +678,17 @@ Damages the actor.
 .. _`startDialogue`: tes3mobileCreature/startDialogue.html
 .. _`stopCombat`: tes3mobileCreature/stopCombat.html
 
+.. _`tes3spell`: ../../lua/type/tes3spell.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3creatureInstance`: ../../lua/type/tes3creatureInstance.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3activeMagicEffect`: ../../lua/type/tes3activeMagicEffect.html
+.. _`tes3actionData`: ../../lua/type/tes3actionData.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3statistic`: ../../lua/type/tes3statistic.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3cell`: ../../lua/type/tes3cell.html
+.. _`tes3actorAnimationController`: ../../lua/type/tes3actorAnimationController.html
+.. _`tes3equipmentStack`: ../../lua/type/tes3equipmentStack.html

@@ -144,3 +144,9 @@ Methods
 
 .. _`iterateReferences`: tes3cell/iterateReferences.html
 
+.. _`boolean`: ../../lua/type/boolean.html
+.. _`string`: ../../lua/type/string.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3region`: ../../lua/type/tes3region.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3packedColor`: ../../lua/type/tes3packedColor.html

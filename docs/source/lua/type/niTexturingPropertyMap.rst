@@ -31,3 +31,4 @@ Properties
 .. _`texCoordSet`: niTexturingPropertyMap/texCoordSet.html
 .. _`texture`: niTexturingPropertyMap/texture.html
 
+.. _`number`: ../../lua/type/number.html
