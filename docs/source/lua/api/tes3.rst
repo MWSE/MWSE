@@ -11,14 +11,22 @@ Values
 
     tes3/animationState
     tes3/dataHandler
-    tes3/effect
     tes3/game
     tes3/installDirectory
     tes3/magicSchoolSkill
     tes3/mobilePlayer
     tes3/player
     tes3/worldController
+    
+Enumeration Tables
+----------------------------------------------------------------------------------------------------
 
+.. toctree::
+    :maxdepth: 1
+    
+    tes3/effect
+    tes3/spellState
+    
 Functions
 ----------------------------------------------------------------------------------------------------
 
