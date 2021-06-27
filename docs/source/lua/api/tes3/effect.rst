@@ -1,7 +1,7 @@
 tes3.effect
 ====================================================================================================
 
-A table of `tes3magicEffect`_ IDs. Additional fields may be present after invocations of `tes3.addMagicEffect`_.
+A table of `tes3magicEffect`_ IDs. Additional fields may be present after invocations of `tes3.claimSpellEffectId`_.
 
 ======================== =====
 key                      value
@@ -152,4 +152,4 @@ sEffectSummonCreature05  142
 ======================== =====
 
 .. _`tes3magicEffect`: ../../../lua/type/tes3magicEffect.html
-.. _`tes3.addMagicEffect`: addMagicEffect.html
+.. _`tes3.addMagicEffect`: claimSpellEffectId.html
