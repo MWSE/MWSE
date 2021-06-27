@@ -11,6 +11,7 @@ Values
 
     tes3/animationState
     tes3/dataHandler
+    tes3/effect
     tes3/game
     tes3/installDirectory
     tes3/magicSchoolSkill
