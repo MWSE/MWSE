@@ -1,0 +1,45 @@
+tes3.keybind
+====================================================================================================
+
+============== =====
+key            value
+============== =====
+forward        0 
+back           1 
+left           2 
+right          3 
+use            4 
+activate       5 
+readyWeapon    6 
+readyMagic     7 
+sneak          8 
+run            9 
+alwaysRun      10
+autoRun        11
+jump           12
+nextWeapon     13
+previousWeapon 14
+nextSpell      15
+previousSpell  16
+togglePOV      17
+menuMode       18
+journal        19
+rest           20
+quickMenu      21
+quick1         22
+quick2         23
+quick3         24
+quick4         25
+quick5         26
+quick6         27
+quick7         28
+quick8         29
+quick9         30
+quick10        31
+quickSave      32
+quickLoad      33
+escape         34
+console        35
+screenshot     36
+readyMagicMCP  37
+============== =====

@@ -1,6 +1,10 @@
-tes3.game
+tes3.armorWeightClass
 ====================================================================================================
 
-`tes3game`_. One of the core game objects.
-
-.. _`tes3game`: ../../type/tes3game.html
+====== =====
+key    value
+====== =====
+light  0
+medium 1
+heavy  2
+====== =====

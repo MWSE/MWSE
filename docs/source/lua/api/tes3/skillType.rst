@@ -1,6 +1,10 @@
-tes3.game
+tes3.skillType
 ====================================================================================================
 
-`tes3game`_. One of the core game objects.
-
-.. _`tes3game`: ../../type/tes3game.html
+===== =====
+key   value
+===== =====
+major 0
+minor 1
+misc  2
+===== =====

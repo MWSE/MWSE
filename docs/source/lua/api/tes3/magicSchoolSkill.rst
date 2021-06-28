@@ -1,7 +1,18 @@
 tes3.magicSchoolSkill
 ====================================================================================================
 
-`tes3.skill.* constants`_. These constants are used to convert magic schools to their respective skill. These constants map to their respective tes3.skill constants.
+`tes3.skill.* constants`_. These constants are used to convert magic schools to their respective skill. These constants map to their respective `tes3.skill`_ constants.
+
+=== =====
+key value
+=== =====
+2   10
+0   11
+3   12
+1   13
+4   14
+5   15
+=== =====
 
 Examples
 ----------------------------------------------------------------------------------------------------
@@ -23,3 +34,6 @@ The example below gives the player 100 experience for failing to cast a spell. H
     event.register("spellCastedFailure", OnSpellFailed)
 
 
+
+.. _`tes3.magicSchool`: magicSchool.html
+.. _`tes3.skill.* constants`: skill.html

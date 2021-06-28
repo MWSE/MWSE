@@ -1,6 +1,9 @@
-tes3.game
+tes3.bookType
 ====================================================================================================
 
-`tes3game`_. One of the core game objects.
-
-.. _`tes3game`: ../../type/tes3game.html
+====== =====
+key    value
+====== =====
+book   0
+scroll 1
+====== =====

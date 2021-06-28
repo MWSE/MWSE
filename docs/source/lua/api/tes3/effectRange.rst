@@ -1,6 +1,10 @@
-tes3.game
+tes3.effectRange
 ====================================================================================================
 
-`tes3game`_. One of the core game objects.
-
-.. _`tes3game`: ../../type/tes3game.html
+====== =====
+key    value
+====== =====
+self   0
+touch  1
+target 2
+====== =====

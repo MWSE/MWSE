@@ -1,0 +1,40 @@
+tes3.objectType
+====================================================================================================
+
+===================== ==========
+key                   value
+===================== ==========
+mobileProjectile      1246908493
+mobileNPC             1212367181
+soundGenerator        1195658835
+lockpick              1262702412
+apparatus             1095782465
+enchantment           1212370501
+probe                 1112494672
+ingredient            1380404809
+mobileActor           1413693773
+repairItem            1095779666
+door                  1380929348
+leveledItem           1230390604
+miscItem              1129531725
+light                 1212631372
+reference             1380336978
+activator             1230259009
+book                  1263488834
+static                1413567571
+alchemy               1212369985
+creature              1095062083
+mobileSpellProjectile 1347637325
+weapon                1346454871
+ammunition            1330466113
+faction               1413693766
+spell                 1279610963
+mobileCreature        1380139341
+container             1414418243
+script                1414546259
+armor                 1330467393
+leveledCreature       1129727308
+clothing              1414483011
+npc                   1598246990
+mobilePlayer          1346584909
+===================== ==========

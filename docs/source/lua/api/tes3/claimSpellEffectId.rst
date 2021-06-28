@@ -6,8 +6,6 @@ This function is used to claim a unique spell effect name and id. This is needed
 Parameters
 ----------------------------------------------------------------------------------------------------
 
-Accepts parameters through a table with the given keys:
-
 name (`string`_)
     The name of the new spell effect. Must be unique. An error will be thrown if it's non-unique.
 
