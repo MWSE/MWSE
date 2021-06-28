@@ -18,14 +18,62 @@ Values
     tes3/player
     tes3/worldController
     
-Enumeration Tables
+Enumerations
 ----------------------------------------------------------------------------------------------------
 
 .. toctree::
     :maxdepth: 1
     
+    tes3/attribute
+    tes3/physicalAttackType
+    tes3/actionFlag
+    tes3/gmst
+    tes3/effectEventType
+    tes3/skillType
+    tes3/musicSituation
+    tes3/soundGenType
+    tes3/texturingPropertyMap
+    tes3/animationGroup
+    tes3/dynamicEffectType
+    tes3/effectAttribute
+    tes3/uiProperty
+    tes3/weather
+    tes3/magicSourceType
+    tes3/voiceover
+    tes3/weaponType
+    tes3/spellOrigin
+    tes3/activeBodyPart
+    tes3/actorType
+    tes3/objectType
+    tes3/specialization
+    tes3/soundMix
+    tes3/armorSlot
+    tes3/crimeType
+    tes3/bookType
+    tes3/magicSchool
+    tes3/animationStartFlag
+    tes3/apparatusType
+    tes3/attachmentType
+    tes3/keyTransition
     tes3/effect
+    tes3/clothingSlot
+    tes3/codePatchFeature
+    tes3/armorWeightClass
+    tes3/enchantmentType
+    tes3/magicSchoolSkill
+    tes3/activeBodyPartLayer
+    tes3/aiPackage
+    tes3/scanCode
+    tes3/niType
+    tes3/effectRange
+    tes3/skill
+    tes3/bodyPartAttachment
+    tes3/keybind
+    tes3/creatureType
+    tes3/scanCodeToNumber
     tes3/spellState
+    tes3/animationState
+    tes3/spellType
     
 Functions
 ----------------------------------------------------------------------------------------------------
