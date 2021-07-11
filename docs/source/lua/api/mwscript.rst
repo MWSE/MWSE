@@ -38,6 +38,8 @@ Functions
     mwscript/playSound
     mwscript/position
     mwscript/positionCell
+    mwscript/removeFromLevCreature
+    mwscript/removeFromLevItem
     mwscript/removeItem
     mwscript/removeSpell
     mwscript/scriptRunning

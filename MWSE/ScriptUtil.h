@@ -154,6 +154,10 @@ namespace mwse
 
 		void PositionCell(TES3::Script* script, TES3::Reference* reference, float x, float y, float z, float rotation, const char* cell);
 
+		void RemoveFromLevCreature(TES3::Script*, TES3::Reference*, TES3::BaseObject*, TES3::Actor*, unsigned short);
+
+		void RemoveFromLevItem(TES3::Script*, TES3::Reference*, TES3::BaseObject*, TES3::PhysicalObject*, unsigned short);
+
 		void RemoveItem(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* itemTemplate, long count);
 
 		void RemoveSpell(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* spellTemplate);
