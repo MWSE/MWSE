@@ -1,5 +1,7 @@
 return {
 	type = "value",
-	description = [[The maximum condition/health of the object.]],
+	description = [[Depracted. Use tes3probe.maxCondition.
+
+The maximum condition/health of the object.]],
 	valuetype = "number",
 }
