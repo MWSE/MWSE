@@ -22,7 +22,7 @@ index (`number`_)
 showMessage (`boolean`_)
     Default: ``false``. If set, a message may be shown to the player.
 
-.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
+.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html

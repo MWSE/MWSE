@@ -13,6 +13,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 insertBefore (`tes3uiElement`_, `number`_)
     The insertion point (or its 0-based child index).
 
@@ -22,6 +24,6 @@ moveFrom (`tes3uiElement`_, `number`_)
 count (`number`_)
     The property name.
 
-.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html
 .. _`boolean`: ../../../lua/type/boolean.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

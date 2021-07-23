@@ -52,6 +52,8 @@
 #include "TES3LeveledList.h"
 #include "TES3Light.h"
 #include "TES3MagicEffectController.h"
+#include "TES3MagicEffectInstance.h"
+#include "TES3MagicInstanceController.h"
 #include "TES3Misc.h"
 #include "TES3MobController.h"
 #include "TES3MobileCreature.h"
@@ -66,7 +68,6 @@
 #include "TES3Sound.h"
 #include "TES3SoundGenerator.h"
 #include "TES3Spell.h"
-#include "TES3SpellInstanceController.h"
 #include "TES3UIElement.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
@@ -75,6 +76,7 @@
 #include "TES3WorldController.h"
 
 #include "BitUtil.h"
+#include <sstream>
 
 namespace mwse {
 	namespace lua {
@@ -723,6 +725,25 @@ namespace mwse {
 			macp->animationController.asPlayer->cameraOffset = offset.value();
 		}
 
+		const auto TES3_rand = reinterpret_cast<int (__cdecl*)(unsigned int)>(0x47B3B0);
+		int random(sol::optional<sol::object> maybe_object) {
+			if (maybe_object) {
+				sol::object object = maybe_object.value();
+				if (object.is<void*>()) {
+					return TES3_rand(unsigned int(object.as<void*>()));
+				}
+				else if (object.is<double>()) {
+					return TES3_rand(unsigned int(object.as<double>()));
+				}
+				else {
+					throw std::exception("Object must be reasonably convertable to a number.");
+				}
+			}
+			else {
+				return TES3_rand(0);
+			}
+		}
+
 		static NI::Pick* rayTestCache = nullptr;
 		static std::vector<NI::AVObject*> rayTestIgnoreRoots;
 		sol::object rayTest(sol::table params) {
@@ -1206,11 +1227,11 @@ namespace mwse {
 			}
 
 			if (effect != -1) {
-				TES3::WorldController::get()->spellInstanceController->removeSpellsByEffect(reference, effect, chance);
+				TES3::WorldController::get()->magicInstanceController->removeSpellsByEffect(reference, effect, chance);
 			}
 			else if (castType != -1) {
 				bool removeSpell = getOptionalParam<bool>(params, "removeSpell", castType != int(TES3::SpellCastType::Spell));
-				TES3::WorldController::get()->spellInstanceController->clearSpellEffect(reference, castType, chance, removeSpell);
+				TES3::WorldController::get()->magicInstanceController->clearSpellEffect(reference, castType, chance, removeSpell);
 			}
 			else {
 				throw std::exception("tes3.removeEffects: Must pass either 'effect' or 'castType' parameter!");
@@ -1569,6 +1590,31 @@ namespace mwse {
 			return actor->tradesItemType(item->objectType);
 		}
 
+		std::pair<bool, TES3::DialogueInfo*> checkMerchantOffersService(sol::table params) {
+			auto reference = getOptionalParamExecutionReference(params);
+			if (reference == nullptr) {
+				throw std::invalid_argument("Invalid reference parameter provided: Can't be nil.");
+			}
+
+			auto actor = reinterpret_cast<TES3::Actor*>(reference->baseObject);
+			if (!actor->isActor()) {
+				throw std::invalid_argument("Invalid reference parameter provided: Base object must be an actor.");
+			}
+
+			// Check if the actor is offering the specific service.
+			sol::optional<int> service = params["service"];
+			if (service && !actor->offersService(service.value())) {
+				return { false, nullptr };
+			}
+
+			// Check for service refusal response.
+			const int serviceRefusalPage = 7;
+			auto dialogue = TES3::Dialogue::getDialogue((int)TES3::DialogueType::Persuasion, serviceRefusalPage);
+			auto serviceRefusal = dialogue->getFilteredInfo(actor, reference, true);
+
+			return { serviceRefusal == nullptr, serviceRefusal };
+		}
+
 		sol::optional<int> getJournalIndex(sol::table params) {
 			TES3::Dialogue* journal = getOptionalParamDialogue(params, "id");
 			if (journal == nullptr || journal->type != TES3::DialogueType::Journal) {
@@ -1751,8 +1797,7 @@ namespace mwse {
 
 			// Make sure our object is of the right type.
 			if (!maybeMobile.is<TES3::MobileActor>()) {
-				logStackTrace("tes3.setStatistic: Could not resolve parameter 'reference'.");
-				return;
+				throw std::invalid_argument("tes3.setStatistic: Could not resolve parameter 'reference'.");
 			}
 
 			// Try to get our statistic.
@@ -1767,9 +1812,9 @@ namespace mwse {
 						statistic = &static_cast<TES3::MobileCreature*>(mobile)->skills[statisticSkill.value()];
 					}
 					else {
-						mwse::log::getLog() << "tes3.setStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for creature." << std::endl;
-						logStackTrace();
-						return;
+						std::stringstream ss;
+						ss << "tes3.setStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for creature.";
+						throw std::invalid_argument(ss.str());
 					}
 				}
 				else {
@@ -1777,9 +1822,9 @@ namespace mwse {
 						statistic = &static_cast<TES3::MobileNPC*>(mobile)->skills[statisticSkill.value()];
 					}
 					else {
-						mwse::log::getLog() << "tes3.setStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for NPC." << std::endl;
-						logStackTrace();
-						return;
+						std::stringstream ss;
+						ss << "tes3.setStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for NPC.";
+						throw std::invalid_argument(ss.str());
 					}
 				}
 			}
@@ -1788,26 +1833,27 @@ namespace mwse {
 					statistic = &mobile->attributes[statisticAttribute.value()];
 				}
 				else {
-					mwse::log::getLog() << "tes3.setStatistic: Invalid attribute index " << std::dec << statisticSkill.value() << "." << std::endl;
-					logStackTrace();
-					return;
+					std::stringstream ss;
+					ss << "tes3.setStatistic: Invalid attribute index " << std::dec << statisticSkill.value() << ".";
+					throw std::invalid_argument(ss.str());
 				}
 			}
 			else if (statisticName) {
 				sol::optional<TES3::Statistic*> maybeStatistic = maybeMobile[statisticName.value()];
 				if (maybeStatistic) {
+					// Further check is required as sol may convert nil to nullptr.
 					statistic = maybeStatistic.value();
 				}
-				else {
-					logStackTrace("tes3.setStatistic: No statistic with the given criteria could be found.");
-					return;
+				if (statistic == nullptr) {
+					std::stringstream ss;
+					ss << "tes3.setStatistic: No statistic named \"" << statisticName.value() << "\" could be found.";
+					throw std::invalid_argument(ss.str());
 				}
 			}
 
 			// This case shouldn't be hit.
 			if (statistic == nullptr) {
-				logStackTrace("tes3.setStatistic: No statistic resolved.");
-				return;
+				throw std::invalid_argument("tes3.setStatistic: No statistic resolved.");
 			}
 
 			// Retype our variables to something more friendly, and get additional params.
@@ -1830,8 +1876,7 @@ namespace mwse {
 				statistic->setBase(base.value());
 			}
 			else {
-				logStackTrace("tes3.setStatistic: No edit mode provided, missing parameter 'current' or 'base' or 'value'.");
-				return;
+				throw std::invalid_argument("tes3.setStatistic: No edit mode provided, missing parameter 'current' or 'base' or 'value'.");
 			}
 
 			// Update any derived statistics.
@@ -1882,8 +1927,7 @@ namespace mwse {
 
 			// Make sure our object is of the right type.
 			if (!maybeMobile.is<TES3::MobileActor>()) {
-				logStackTrace("tes3.modStatistic: Could not resolve parameter 'reference'.");
-				return;
+				throw std::invalid_argument("tes3.modStatistic: Could not resolve parameter 'reference'.");
 			}
 
 			// Try to get our statistic.
@@ -1898,9 +1942,9 @@ namespace mwse {
 						statistic = &static_cast<TES3::MobileCreature*>(mobile)->skills[statisticSkill.value()];
 					}
 					else {
-						mwse::log::getLog() << "tes3.modStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for creature." << std::endl;
-						logStackTrace();
-						return;
+						std::stringstream ss;
+						ss << "tes3.modStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for creature.";
+						throw std::invalid_argument(ss.str());
 					}
 				}
 				else {
@@ -1908,9 +1952,9 @@ namespace mwse {
 						statistic = &static_cast<TES3::MobileNPC*>(mobile)->skills[statisticSkill.value()];
 					}
 					else {
-						mwse::log::getLog() << "tes3.modStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for NPC." << std::endl;
-						logStackTrace();
-						return;
+						std::stringstream ss;
+						ss << "tes3.modStatistic: Invalid skill index " << std::dec << statisticSkill.value() << " for NPC.";
+						throw std::invalid_argument(ss.str());
 					}
 				}
 			}
@@ -1919,26 +1963,27 @@ namespace mwse {
 					statistic = &mobile->attributes[statisticAttribute.value()];
 				}
 				else {
-					mwse::log::getLog() << "tes3.modStatistic: Invalid attribute index " << std::dec << statisticSkill.value() << "." << std::endl;
-					logStackTrace();
-					return;
+					std::stringstream ss;
+					ss << "tes3.modStatistic: Invalid attribute index " << std::dec << statisticSkill.value() << ".";
+					throw std::invalid_argument(ss.str());
 				}
 			}
 			else if (statisticName) {
 				sol::optional<TES3::Statistic*> maybeStatistic = maybeMobile[statisticName.value()];
 				if (maybeStatistic) {
+					// Further check is required as sol may convert nil to nullptr.
 					statistic = maybeStatistic.value();
 				}
-				else {
-					logStackTrace("tes3.modStatistic: No statistic with the given criteria could be found.");
-					return;
+				if (statistic == nullptr) {
+					std::stringstream ss;
+					ss << "tes3.modStatistic: No statistic named \"" << statisticName.value() << "\" could be found.";
+					throw std::invalid_argument(ss.str());
 				}
 			}
 
 			// This case shouldn't be hit.
 			if (statistic == nullptr) {
-				logStackTrace("tes3.modStatistic: No statistic resolved.");
-				return;
+				throw std::invalid_argument("tes3.modStatistic: No statistic resolved.");
 			}
 
 			// Retype our variables to something more friendly, and get additional params.
@@ -1962,7 +2007,7 @@ namespace mwse {
 				statistic->modBaseCapped(base.value(), limit.value_or(false), limit.value_or(false));
 			}
 			else {
-				logStackTrace("tes3.modStatistic: No edit mode provided, missing parameter 'current' or 'base' or 'value'.");
+				throw std::invalid_argument("tes3.modStatistic: No edit mode provided, missing parameter 'current' or 'base' or 'value'.");
 				return;
 			}
 
@@ -2004,7 +2049,7 @@ namespace mwse {
 		bool runLegacyScript(sol::table params) {
 			TES3::Script* script = getOptionalParamScript(params, "script");
 			if (script == nullptr) {
-				script = TES3::WorldController::get()->scriptGlobals;
+				script = TES3::WorldController::get()->scriptCompileAndRun;
 			}
 
 			TES3::ScriptCompiler* compiler = TES3::WorldController::get()->menuController->scriptCompiler;
@@ -2476,9 +2521,9 @@ namespace mwse {
 			else {
 				// Instant cast from both actors and non-actors.
 				TES3::MagicSourceCombo sourceCombo(spell);
-				auto spellInstanceController = TES3::WorldController::get()->spellInstanceController;
-				auto serial = spellInstanceController->activateSpell(reference, nullptr, &sourceCombo);
-				auto spellInstance = spellInstanceController->getInstanceFromSerial(serial);
+				auto magicInstanceController = TES3::WorldController::get()->magicInstanceController;
+				auto serial = magicInstanceController->activateSpell(reference, nullptr, &sourceCombo);
+				auto spellInstance = magicInstanceController->getInstanceFromSerial(serial);
 
 				if (getOptionalParam<bool>(params, "alwaysSucceeds", true)) {
 					spellInstance->overrideCastChance = 100.0f;
@@ -2586,9 +2631,9 @@ namespace mwse {
 			}
 
 			// Activate the source on our target.
-			auto spellInstanceController = TES3::WorldController::get()->spellInstanceController;
-			auto serial = spellInstanceController->activateSpell(reference, from.value_or(nullptr), &sourceCombo);
-			auto instance = spellInstanceController->getInstanceFromSerial(serial);
+			auto magicInstanceController = TES3::WorldController::get()->magicInstanceController;
+			auto serial = magicInstanceController->activateSpell(reference, from.value_or(nullptr), &sourceCombo);
+			auto instance = magicInstanceController->getInstanceFromSerial(serial);
 
 			// Check if magic activation succeeded before setting more data.
 			if (instance) {
@@ -2627,7 +2672,7 @@ namespace mwse {
 				throw std::invalid_argument("Invalid 'serialNumber' parameter provided.");
 			}
 
-			return TES3::WorldController::get()->spellInstanceController->getInstanceFromSerial(serialNumber);
+			return TES3::WorldController::get()->magicInstanceController->getInstanceFromSerial(serialNumber);
 		}
 
 		const auto TES3_UI_showAlchemyMenu = reinterpret_cast<void(__cdecl*)()>(0x599A30);
@@ -2638,6 +2683,46 @@ namespace mwse {
 		const auto TES3_UI_showRepairServiceMenu = reinterpret_cast<void(__cdecl*)(TES3::MobileActor*)>(0x615160);
 		void showRepairServiceMenu() {
 			TES3_UI_showRepairServiceMenu(TES3::WorldController::get()->getMobilePlayer());
+		}
+
+		void updateInventoryGUI_internal(TES3::Reference* reference, std::optional<float> containerWeight = {}) {
+			auto worldController = TES3::WorldController::get();
+			auto macp = worldController->getMobilePlayer();
+
+			// Update inventory menu if necessary.
+			if (macp && reference == macp->reference) {
+				worldController->inventoryData->clearIcons(2);
+				worldController->inventoryData->addInventoryItems(&macp->npcInstance->inventory, 2);
+				mwse::tes3::ui::inventoryUpdateIcons();
+			}
+
+			// Update contents menu if necessary.
+			auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
+			if (contentsMenu) {
+				TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
+				if (reference == contentsReference) {
+					float isCompanion = *reinterpret_cast<float*>(0x7D3184);
+					if (isCompanion != 0.0f) {
+						TES3::UI::updateContentsCompanionElements();
+					}
+
+					TES3::UI::updateContentsMenuTiles();
+
+					// Update container weight variable.
+					auto MenuContents_totalweight = *reinterpret_cast<TES3::UI::Property*>(0x7D30B8);
+					if (!containerWeight.has_value()) {
+						containerWeight = static_cast<TES3::Actor*>(contentsReference->baseObject)->inventory.calculateContainedWeight();
+					}
+					contentsMenu->setProperty(MenuContents_totalweight, containerWeight.value());
+				}
+			}
+		}
+
+		void updateInventoryGUI(sol::table params) {
+			TES3::Reference* reference = getOptionalParamReference(params, "reference");
+			if (reference) {
+				updateInventoryGUI_internal(reference);
+			}
 		}
 
 		int addItem(sol::table params) {
@@ -2759,26 +2844,21 @@ namespace mwse {
 
 			// If either of them are the player, we need to update the GUI.
 			if (playerMobile && getOptionalParam<bool>(params, "updateGUI", true)) {
-				// Update inventory menu if necessary.
-				if (mobile == playerMobile) {
-					worldController->inventoryData->clearIcons(2);
-					worldController->inventoryData->addInventoryItems(&playerMobile->npcInstance->inventory, 2);
-					mwse::tes3::ui::inventoryUpdateIcons();
-				}
-
 				// Update contents menu if necessary.
+				std::optional<float> newContainerWeight;
 				auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
 				if (contentsMenu) {
 					TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
 					if (reference == contentsReference) {
 						TES3::UI::updateContentsMenuTiles();
-					}
 
-					// Update container weight variable.
-					auto MenuContents_totalweight = *reinterpret_cast<TES3::UI::Property*>(0x7D30B8);
-					auto currentWeight = contentsMenu->getProperty(TES3::UI::PropertyType::Float, MenuContents_totalweight).floatValue;
-					contentsMenu->setProperty(MenuContents_totalweight, currentWeight + item->getWeight() * fulfilledCount);
+						// Update container weight variable.
+						auto MenuContents_totalweight = *reinterpret_cast<TES3::UI::Property*>(0x7D30B8);
+						auto currentWeight = contentsMenu->getProperty(TES3::UI::PropertyType::Float, MenuContents_totalweight).floatValue;
+						newContainerWeight = currentWeight + item->getWeight() * fulfilledCount;
+					}
 				}
+				updateInventoryGUI_internal(reference, newContainerWeight);
 			}
 
 			reference->setObjectModified(true);
@@ -2868,14 +2948,8 @@ namespace mwse {
 
 			// If either of them are the player, we need to update the GUI.
 			if (playerMobile && getOptionalParam<bool>(params, "updateGUI", true)) {
-				// Update inventory menu if necessary.
-				if (mobile == playerMobile) {
-					worldController->inventoryData->clearIcons(2);
-					worldController->inventoryData->addInventoryItems(&playerMobile->npcInstance->inventory, 2);
-					mwse::tes3::ui::inventoryUpdateIcons();
-				}
-
 				// Update contents menu if necessary.
+				std::optional<float> newContainerWeight;
 				auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
 				if (contentsMenu) {
 					TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
@@ -2886,8 +2960,9 @@ namespace mwse {
 					// Update container weight variable.
 					auto MenuContents_totalweight = *reinterpret_cast<TES3::UI::Property*>(0x7D30B8);
 					auto currentWeight = contentsMenu->getProperty(TES3::UI::PropertyType::Float, MenuContents_totalweight).floatValue;
-					contentsMenu->setProperty(MenuContents_totalweight, currentWeight - item->getWeight() * fulfilledCount);
+					newContainerWeight = currentWeight - item->getWeight() * fulfilledCount;
 				}
+				updateInventoryGUI_internal(reference, newContainerWeight);
 			}
 
 			reference->setObjectModified(true);
@@ -3006,7 +3081,7 @@ namespace mwse {
 					int itemsLeftToTransfer = std::min(desiredCount, stackCount);
 
 					// If we're limited by capacity, find out how many items we really want to transfer.
-					if (maxCapacity != -1.0f) {
+					if (maxCapacity != -1.0f && itemWeight != 0.0f) {
 						itemsLeftToTransfer = std::min(itemsLeftToTransfer, (int)std::floorf((maxCapacity - currentWeight) / itemWeight));
 					}
 
@@ -3092,6 +3167,22 @@ namespace mwse {
 				fromMobile->updateOpacity();
 			}
 
+			// If we're looking at a companion, we need to update the profit value and trigger the GUI updates.
+			float isCompanion = *reinterpret_cast<float*>(0x7D3184);
+			if (isCompanion != 0.0f) {
+				auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
+				if (contentsMenu) {
+					TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
+					float& companionProfit = *reinterpret_cast<float*>(0x7D3188);
+					if (toReference == contentsReference) {
+						companionProfit += fulfilledCount * item->getValue();
+					}
+					else {
+						companionProfit -= fulfilledCount * item->getValue();
+					}
+				}
+			}
+
 			// If either of them are the player, we need to update the GUI.
 			if (playerMobile && getOptionalParam<bool>(params, "updateGUI", true)) {
 				// Update inventory menu if necessary.
@@ -3102,38 +3193,25 @@ namespace mwse {
 				}
 
 				// Update contents menu if necessary.
+				std::optional<float> newContainerWeight;
 				auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
 				if (contentsMenu) {
 					// Make sure that the contents reference is one of the ones we care about.
 					TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
-					if (fromReference == contentsReference || toReference == contentsReference) {
-						// If we're looking at a companion, we need to update the profit value and trigger the GUI updates.
-						float isCompanion = *reinterpret_cast<float*>(0x7D3184);
-						if (isCompanion != 0.0f) {
-							float& companionProfit = *reinterpret_cast<float*>(0x7D3188);
-							if (toReference == contentsReference) {
-								companionProfit += fulfilledCount * item->getValue();
-							}
-							else {
-								companionProfit -= fulfilledCount * item->getValue();
-							}
-							TES3::UI::updateContentsCompanionElements();
-						}
-
-						// We also need to update the menu tiles.
-						TES3::UI::updateContentsMenuTiles();
-					}
 
 					// Update container weight variable.
 					auto MenuContents_totalweight = *reinterpret_cast<TES3::UI::Property*>(0x7D30B8);
 					auto currentWeight = contentsMenu->getProperty(TES3::UI::PropertyType::Float, MenuContents_totalweight).floatValue;
 					if (toReference == contentsReference) {
-						contentsMenu->setProperty(MenuContents_totalweight, currentWeight + item->getWeight() * fulfilledCount);
+						newContainerWeight = currentWeight + item->getWeight() * fulfilledCount;
 					}
 					else {
-						contentsMenu->setProperty(MenuContents_totalweight, currentWeight - item->getWeight() * fulfilledCount);
+						newContainerWeight = currentWeight - item->getWeight() * fulfilledCount;
 					}
 				}
+
+				updateInventoryGUI_internal(fromReference, newContainerWeight);
+				updateInventoryGUI_internal(toReference, newContainerWeight);
 			}
 
 			fromReference->setObjectModified(true);
@@ -3180,7 +3258,7 @@ namespace mwse {
 				// Create array required to hold ItemData.
 				stack->variables = new NI::TArray<TES3::ItemData*>();
 			}
-			else if (stack->count <= stack->variables->getFilledCount()) {
+			else if (stack->count <= int(stack->variables->getFilledCount())) {
 				// All items already have ItemData.
 				return nullptr;
 			}
@@ -3195,22 +3273,7 @@ namespace mwse {
 			auto playerMobile = worldController->getMobilePlayer();
 
 			if (getOptionalParam<bool>(params, "updateGUI", true)) {
-				// Update inventory menu if necessary.
-				if (toMobile == playerMobile) {
-					worldController->inventoryData->clearIcons(2);
-					worldController->inventoryData->addInventoryItems(&playerMobile->npcInstance->inventory, 2);
-					mwse::tes3::ui::inventoryUpdateIcons();
-				}
-
-				// Update contents menu if necessary.
-				auto contentsMenu = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D3098));
-				if (contentsMenu) {
-					// Make sure that the contents reference is one of the ones we care about.
-					TES3::Reference* contentsReference = static_cast<TES3::Reference*>(contentsMenu->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3048)).ptrValue);
-					if (toReference == contentsReference) {
-						TES3::UI::updateContentsMenuTiles();
-					}
-				}
+				updateInventoryGUI_internal(toReference);
 			}
 
 			toReference->setObjectModified(true);
@@ -3388,7 +3451,7 @@ namespace mwse {
 			float pitch = getOptionalParam(params, "pitch", 1.0f);
 
 			// Apply volume, using mix channel and rescale to 0-250.
-			double volume = std::min(std::max(0.0, getOptionalParam(params, "volume", 1.0)), 1.0);
+			double volume = std::clamp(getOptionalParam(params, "volume", 1.0), 0.0, 1.0);
 			volume *= 250.0 * worldController->audioController->getMixVolume(TES3::AudioMixType::Voice);
 
 			// Show a messagebox.
@@ -3410,11 +3473,23 @@ namespace mwse {
 			if (reference == nullptr) {
 				reference = playerReference;
 			}
+			auto referenceBaseObject = reference->getBaseObject();
 
 			// What are we checking ownership of?
 			TES3::Reference* target = getOptionalParamReference(params, "target");
 			if (target == nullptr) {
 				throw std::invalid_argument("Invalid target parameter provided.");
+			}
+
+			// You always have access to yourself.
+			if (reference == target) {
+				return true;
+			}
+
+			// The player never has access to living actors.
+			auto targetBaseObject = target->getBaseObject();
+			if (target->isActor() && !target->isDead().value_or(true)) {
+				return false;
 			}
 
 			// Do we have an owner?
@@ -3426,7 +3501,12 @@ namespace mwse {
 			// Are we looking at an NPC owner?
 			if (targetData->owner->objectType == TES3::ObjectType::NPC) {
 				// We own our own things.
-				if (target->getBaseObject() == targetData->owner) {
+				if (referenceBaseObject == targetData->owner) {
+					return true;
+				}
+
+				// Is the target dead? We have to check the kill counter here.
+				else if (reference == playerReference && TES3::WorldController::get()->playerKills->getKillCount(static_cast<TES3::NPC*>(targetData->owner)) > 0) {
 					return true;
 				}
 
@@ -3440,7 +3520,7 @@ namespace mwse {
 					return targetData->requiredVariable->value > 0.0f;
 				}
 			}
-
+			// How about a faction?
 			else if (targetData->owner->objectType == TES3::ObjectType::Faction) {
 				auto ownerAsFaction = reinterpret_cast<TES3::Faction*>(targetData->owner);
 
@@ -3473,23 +3553,37 @@ namespace mwse {
 			}
 
 			// Get data about what is being dropped.
-			TES3::ItemData* itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
+			auto itemData = getOptionalParam<TES3::ItemData*>(params, "itemData");
 			int count = getOptionalParam<int>(params, "count", 1);
-			bool matchExact = getOptionalParam<bool>(params, "matchExact", true);
+			bool matchNoItemData = getOptionalParam<bool>(params, "matchNoItemData", false);
+
+			// Check if the item to drop exists, as the game functions don't handle it.
+			auto actor = static_cast<TES3::Actor*>(mobile->reference->baseObject);
+			auto stack = actor->inventory.findItemStack(item);
+			if (!stack) {
+				return nullptr;
+			}
+			if (matchNoItemData) {
+				if (stack->variables && stack->count == stack->variables->filledCount) {
+					// Match failed: All items have itemData.
+					return nullptr;
+				}
+			}
+			else if (itemData.has_value()) {
+				if (stack->variables == nullptr || !stack->variables->contains(itemData.value())) {
+					// Match failed: itemData is not found.
+					return nullptr;
+				}
+			}
 
 			// Drop the item.
-			mobile->dropItem(item, itemData, count, matchExact);
+			bool matchExact = itemData.has_value() || matchNoItemData;
+			mobile->dropItem(item, itemData.value_or(nullptr), count, !matchExact);
 			auto droppedReference = mobile->getCell()->temporaryRefs.tail;
 
 			// Update inventory tiles if needed.
 			if (getOptionalParam<bool>(params, "updateGUI", true)) {
-				auto worldController = TES3::WorldController::get();
-				auto macp = worldController->getMobilePlayer();
-				if (mobile == macp) {
-					worldController->inventoryData->clearIcons(2);
-					worldController->inventoryData->addInventoryItems(&macp->npcInstance->inventory, 2);
-					mwse::tes3::ui::inventoryUpdateIcons();
-				}
+				updateInventoryGUI_internal(mobile->reference);
 			}
 
 			return droppedReference;
@@ -3827,8 +3921,23 @@ namespace mwse {
 
 			// Check based on effect ID.
 			if (effectId > -1) {
+				auto effectController = TES3::DataHandler::get()->nonDynamicData->magicEffects;
+				sol::optional<int> skillOrAttributeID;
+				if (effectController->getEffectFlag(effectId, TES3::EffectFlag::TargetAttributeBit)) {
+					skillOrAttributeID = getOptionalParam<int>(params, "attribute");
+					if (!skillOrAttributeID) {
+						throw std::invalid_argument("Invalid 'attribute' parameter provided. The given effect requires an associated attribute.");
+					}
+				}
+				else if (effectController->getEffectFlag(effectId, TES3::EffectFlag::TargetSkillBit)) {
+					skillOrAttributeID = getOptionalParam<int>(params, "skill");
+					if (!skillOrAttributeID) {
+						throw std::invalid_argument("Invalid 'skill' parameter provided. The given effect requires an associated skill.");
+					}
+				}
+
 				for (auto& activeEffect : mact->activeMagicEffects) {
-					if (activeEffect.magicEffectID == effectId) {
+					if (activeEffect.magicEffectID == effectId && (!skillOrAttributeID || activeEffect.skillOrAttributeID == skillOrAttributeID)) {
 						return true;
 					}
 				}
@@ -3840,7 +3949,7 @@ namespace mwse {
 			return false;
 		}
 
-		int getEffectMagnitude(sol::table params) {
+		std::pair<float, unsigned int> getEffectMagnitude(sol::table params) {
 			TES3::Reference* reference = getOptionalParamExecutionReference(params);
 			if (reference == nullptr) {
 				throw std::invalid_argument("Invalid 'reference' parameter provided.");
@@ -3852,18 +3961,48 @@ namespace mwse {
 			}
 
 			int effectId = getOptionalParam<int>(params, "effect", -1);
-			int skillOrAttributeID = getOptionalParam<int>(params, "skill", getOptionalParam<int>(params, "attribute", -1));
-			if (!TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(effectId, TES3::EffectFlag::NoMagnitudeBit)) {
-				int magnitude = 0;
-				for (auto& activeEffect : mact->activeMagicEffects) {
-					if (activeEffect.magicEffectID == effectId && activeEffect.skillOrAttributeID == skillOrAttributeID) {
-						magnitude += activeEffect.magnitudeMin;
-					}
-				}
-				return magnitude;
+			auto effectController = TES3::DataHandler::get()->nonDynamicData->magicEffects;
+			if (!effectController->getEffectExists(effectId)) {
+				throw std::invalid_argument("Invalid 'effect' parameter provided. No effect exists with the given id.");
 			}
 
-			return 0;
+			if (effectController->getEffectFlag(effectId, TES3::EffectFlag::NoMagnitudeBit)) {
+				return std::make_pair(0.0f, 0);
+			}
+
+			// Get our attribute or skill, if appropriate.
+			sol::optional<int> skillOrAttributeID;
+			if (effectController->getEffectFlag(effectId, TES3::EffectFlag::TargetAttributeBit)) {
+				skillOrAttributeID = getOptionalParam<int>(params, "attribute");
+				if (!skillOrAttributeID) {
+					return std::make_pair(0.0f, 0);
+				}
+			}
+			else if (effectController->getEffectFlag(effectId, TES3::EffectFlag::TargetSkillBit)) {
+				skillOrAttributeID = getOptionalParam<int>(params, "skill");
+				if (!skillOrAttributeID) {
+					return std::make_pair(0.0f, 0);
+				}
+			}
+
+			auto magicInstanceController = TES3::WorldController::get()->magicInstanceController;
+			auto referenceID = reference->getObjectID();
+			unsigned int unresistedMagnitude = 0;
+			float magnitude = 0;
+
+			for (auto& activeEffect : mact->activeMagicEffects) {
+				if (activeEffect.magicEffectID == effectId && (!skillOrAttributeID || activeEffect.skillOrAttributeID == skillOrAttributeID)) {
+					auto instance = magicInstanceController->getInstanceFromSerial(activeEffect.magicInstanceSerial);
+					if (instance) {
+						auto effectInstance = instance->effects[activeEffect.magicInstanceEffectIndex].getNode(referenceID);
+						if (effectInstance) {
+							unresistedMagnitude += effectInstance->value.magnitude;
+							magnitude += effectInstance->value.magnitude * (1.0f - effectInstance->value.resistedPercent / 100.0f);
+						}
+					}
+				}
+			}
+			return std::make_pair(magnitude, unresistedMagnitude);
 		}
 
 		TES3::MagicEffect* addMagicEffect(sol::table params) {
@@ -3898,9 +4037,9 @@ namespace mwse {
 			// Set color.
 			auto lighting = getOptionalParamVector3(params, "lighting");
 			if (lighting) {
-				effect->lightingRed = std::min(std::max(lighting.value().x, 0.0f), 1.0f) * 255;
-				effect->lightingGreen = std::min(std::max(lighting.value().y, 0.0f), 1.0f) * 255;
-				effect->lightingBlue = std::min(std::max(lighting.value().z, 0.0f), 1.0f) * 255;
+				effect->lightingRed = int(std::clamp(lighting.value().x, 0.0f, 1.0f) * 255);
+				effect->lightingGreen = int(std::clamp(lighting.value().y, 0.0f, 1.0f) * 255);
+				effect->lightingBlue = int(std::clamp(lighting.value().z, 0.0f, 1.0f) * 255);
 			}
 			else {
 				effect->lightingRed = 255;
@@ -4033,12 +4172,12 @@ namespace mwse {
 		}
 
 		double advanceTime(sol::table params) {
-			double rawHours = getOptionalParam<double>(params, "hours", 0.0);
-			double hoursPassed = 0.0;
+			float rawHours = getOptionalParam(params, "hours", 0.0f);
+			float hoursPassed = 0.0f;
 
 			// Leverage the resting/waiting system if we're advancing by an hour or more.
 			if (rawHours >= 1.0) {
-				int hoursToAdvance = std::floor(rawHours);
+				int hoursToAdvance = int(std::floor(rawHours));
 
 				auto worldController = TES3::WorldController::get();
 				worldController->gvarGameHour->value += rawHours - hoursToAdvance;
@@ -4098,8 +4237,8 @@ namespace mwse {
 				auto worldController = TES3::WorldController::get();
 
 				// Change FOV.
-				worldController->shadowCamera.cameraData.setFOV(worldController->werewolfFOV);
-				worldController->worldCamera.cameraData.setFOV(worldController->werewolfFOV);
+				worldController->shadowCamera.cameraData.setFOV(float(worldController->werewolfFOV));
+				worldController->worldCamera.cameraData.setFOV(float(worldController->werewolfFOV));
 
 				// Update faders.
 				worldController->werewolfFader->updateMaterialProperty(1.0f);
@@ -4398,18 +4537,21 @@ namespace mwse {
 			// Check to see if there are enemies nearby.
 			if (getOptionalParam<bool>(params, "checkForEnemies", true) && !worldController->mobController->processManager->canRest()) {
 				if (getOptionalParam<bool>(params, "showMessage", true)) {
-					TES3::UI::showDialogueMessage(dataHandler->nonDynamicData->GMSTs[TES3::GMST::sNotifyMessage2]->value.asString, 0, 1);
+					TES3::UI::showMessageBox(dataHandler->nonDynamicData->GMSTs[TES3::GMST::sNotifyMessage2]->value.asString, nullptr, true);
 				}
 				return false;
 			}
 
-			// Check to make sure the player isn't underwater.
+			// Check to make sure the player isn't underwater, jumping, or flying.
 			auto macp = worldController->getMobilePlayer();
-			if (getOptionalParam<bool>(params, "checkForSolidGround", true) && macp->getBasePositionIsUnderwater()) {
-				if (getOptionalParam<bool>(params, "showMessage", true)) {
-					TES3::UI::showDialogueMessage(dataHandler->nonDynamicData->GMSTs[TES3::GMST::sNotifyMessage1]->value.asString, 0, 1);
+			if (getOptionalParam<bool>(params, "checkForSolidGround", true)) {
+				const auto excludedMovement = TES3::ActorMovement::Flying | TES3::ActorMovement::Jumping;
+				if ((macp->movementFlags & excludedMovement) || macp->getBasePositionIsUnderwater()) {
+					if (getOptionalParam<bool>(params, "showMessage", true)) {
+						TES3::UI::showMessageBox(dataHandler->nonDynamicData->GMSTs[TES3::GMST::sNotifyMessage1]->value.asString, nullptr, true);
+					}
+					return false;
 				}
-				return false;
 			}
 
 			// Allow using resting/waiting param. Defaults to resting.
@@ -4580,7 +4722,7 @@ namespace mwse {
 				// Use centre of body location to match how the findActorsInProximity treats mobiles.
 				auto mobile = reference->getAttachedMobileActor();
 				if (mobile) {
-					position.value().z += 0.5 * mobile->height;
+					position.value().z += 0.5f * mobile->height;
 				}
 			}
 
@@ -4628,6 +4770,7 @@ namespace mwse {
 			tes3["cancelAnimationLoop"] = cancelAnimationLoop;
 			tes3["canRest"] = canRest;
 			tes3["cast"] = cast;
+			tes3["checkMerchantOffersService"] = checkMerchantOffersService;
 			tes3["checkMerchantTradesItem"] = checkMerchantTradesItem;
 			tes3["clearMarkLocation"] = clearMarkLocation;
 			tes3["createCell"] = createCell;
@@ -4731,6 +4874,7 @@ namespace mwse {
 			tes3["playVoiceover"] = playVoiceover;
 			tes3["positionCell"] = positionCell;
 			tes3["pushKey"] = pushKey;
+			tes3["random"] = random;
 			tes3["rayTest"] = rayTest;
 			tes3["releaseKey"] = releaseKey;
 			tes3["removeEffects"] = removeEffects;
@@ -4774,6 +4918,7 @@ namespace mwse {
 			tes3["undoTransform"] = undoTransform;
 			tes3["unhammerKey"] = unhammerKey;
 			tes3["unlock"] = unlock;
+			tes3["updateInventoryGUI"] = updateInventoryGUI;
 			tes3["updateJournal"] = updateJournal;
 			tes3["wakeUp"] = wakeUp;
 		}

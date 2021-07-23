@@ -31,6 +31,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 value (`multiple`_)
     The value to convert to a pattern.
 

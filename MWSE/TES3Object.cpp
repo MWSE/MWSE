@@ -113,7 +113,7 @@ namespace TES3 {
 		}
 	}
 
-	const char* BaseObject::getSourceFilename() {
+	const char* BaseObject::getSourceFilename() const {
 		if (sourceMod) {
 			return sourceMod->filename;
 		}
@@ -144,7 +144,21 @@ namespace TES3 {
 		BIT_SET(objectFlags, TES3::ObjectFlag::BlockedBit, value);
 	}
 
-	std::string BaseObject::toJson() {
+	bool BaseObject::getSupportsLuaData() const {
+		// Gold does all kinds of funky things. No ItemData creation on it is allowed.
+		if (objectType == ObjectType::Misc && static_cast<const Misc*>(this)->isGold()) {
+			return false;
+		}
+
+		// Projectiles cannot have custom data, it breaks the equip interface.
+		if (objectType == ObjectType::Weapon || objectType == ObjectType::Ammo) {
+			return !static_cast<const Weapon*>(this)->isProjectile();
+		}
+
+		return true;
+	}
+
+	std::string BaseObject::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3baseObject:" << getObjectID() << "\"";
 		return std::move(ss.str());
@@ -637,11 +651,17 @@ namespace TES3 {
 	}
 
 	Reference* PhysicalObject::getReference() const {
-		auto mobile = getMobile();
-		if (mobile == nullptr) {
-			return nullptr;
+		if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
+			return thisRef;
 		}
-		return mobile->reference;
+		else {
+			auto mobile = getMobile();
+			if (mobile) {
+				return mobile->reference;
+			}
+		}
+
+		return nullptr;
 	}
 }
 

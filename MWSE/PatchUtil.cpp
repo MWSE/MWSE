@@ -397,6 +397,30 @@ namespace mwse {
 		}
 
 		//
+		// Helper function for raised mod limit.
+		//
+		// Raise C runtime fopen limit from 512 to 2048. This covers the case where all mods are open during game load.
+		// Otherwise, fopen will fail and Morrowind will ignore the error, causing issues.
+		//
+		bool raiseStdioFileLimit() {
+			// Use stdio function from Morrowind's C runtime.
+			HINSTANCE hMSVCRT = GetModuleHandleA("msvcrt.dll");
+			if (hMSVCRT != NULL) {
+				auto msvcrt_setmaxstdio = reinterpret_cast<int(*)(int)>(GetProcAddress(hMSVCRT, "_setmaxstdio"));
+				if (msvcrt_setmaxstdio(2048) == 2048) {
+					return true;
+				}
+				else {
+					mwse::log::getLog() << "MWSE_RAISED_FILE_LIMIT: msvcrt_setmaxstdio(2048) failed." << std::endl;
+				}
+			}
+			else {
+				mwse::log::getLog() << "MWSE_RAISED_FILE_LIMIT: GetModuleHandleA(\"msvcrt.dll\") failed." << std::endl;
+			}
+			return false;
+		}
+
+		//
 		// Install all the patches.
 		//
 
@@ -519,7 +543,11 @@ namespace mwse {
 
 #if MWSE_RAISED_FILE_LIMIT
 			// Patch: Raise esm/esp limit from 256 to 1024.
-			if (mcp::getFeatureEnabled(mcp::feature::SavegameCorruptionFix)) {
+
+			// First, raise C runtime fopen limit from 512 to 2048.
+			bool canHandle2048OpenFiles = raiseStdioFileLimit();
+
+			if (canHandle2048OpenFiles && mcp::getFeatureEnabled(mcp::feature::SavegameCorruptionFix)) {
 				// Change hardcoded 256 checks to 1024.
 				writeValueEnforced<DWORD>(0x4B7A22 + 0x1, PatchRaiseESXLimit::ModCountVanilla, PatchRaiseESXLimit::ModCountMWSE);
 				writeValueEnforced<DWORD>(0x4BB4AE + 0x3, PatchRaiseESXLimit::ModCountVanilla, PatchRaiseESXLimit::ModCountMWSE);
@@ -590,12 +618,6 @@ namespace mwse {
 			auto NonDynamicData_showLocationOnMap = &TES3::NonDynamicData::showLocationOnMap;
 			genCallEnforced(0x505374, 0x4C8480, *reinterpret_cast<DWORD*>(&NonDynamicData_showLocationOnMap));
 			genCallEnforced(0x50CB22, 0x4C8480, *reinterpret_cast<DWORD*>(&NonDynamicData_showLocationOnMap));
-
-			// Patch: Extend NiZBufferProperty binary loading/saving to support custom test function values.
-			auto ZBufferProperty_loadBinary = &NI::ZBufferProperty::loadBinary;
-			overrideVirtualTableEnforced(0x74652C, offsetof(NI::Object_vTable, loadBinary), 0x6E7270, *reinterpret_cast<DWORD*>(&ZBufferProperty_loadBinary));
-			auto ZBufferProperty_saveBinary = &NI::ZBufferProperty::saveBinary;
-			overrideVirtualTableEnforced(0x74652C, offsetof(NI::Object_vTable, saveBinary), 0x6D7C80, *reinterpret_cast<DWORD*>(&ZBufferProperty_saveBinary));
 
 			// Patch: Fix crash when trying to remove items from incomplete references.
 			genCallEnforced(0x508D14, 0x45E5C0, reinterpret_cast<DWORD>(PatchFixupActorSelfReference));
@@ -718,7 +740,7 @@ namespace mwse {
 			return bRet;
 		}
 
-		const char* SafeGetObjectId(TES3::BaseObject* object) {
+		const char* SafeGetObjectId(const TES3::BaseObject* object) {
 			__try {
 				return object->getObjectID();
 			}
@@ -727,7 +749,7 @@ namespace mwse {
 			}
 		}
 
-		const char* SafeGetSourceFile(TES3::BaseObject* object) {
+		const char* SafeGetSourceFile(const TES3::BaseObject* object) {
 			__try {
 				return object->getSourceFilename();
 			}
@@ -738,11 +760,16 @@ namespace mwse {
 
 		template <typename T>
 		void safePrintObjectToLog(const char* title, const T* object) {
-			auto id = SafeGetObjectId(TES3::Script::currentlyExecutingScript);
-			auto source = SafeGetSourceFile(TES3::Script::currentlyExecutingScript);
-			log::getLog() << "  " << title << ": " << (id ? id : "<memory corrupted>") << " (" << (source ? source : "<memory corrupted>") << ")" << std::endl;
-			if (id) {
-				log::prettyDump(object);
+			if (object) {
+				auto id = SafeGetObjectId(object);
+				auto source = SafeGetSourceFile(object);
+				log::getLog() << "  " << title << ": " << (id ? id : "<memory corrupted>") << " (" << (source ? source : "<memory corrupted>") << ")" << std::endl;
+				if (id) {
+					log::prettyDump(object);
+				}
+			}
+			else {
+				log::getLog() << "  " << title << ": nullptr" << std::endl;
 			}
 		}
 

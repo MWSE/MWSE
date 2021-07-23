@@ -25,9 +25,9 @@ speaker (`tes3mobileActor`_, `tes3reference`_, `string`_)
 showMessage (`boolean`_)
     Default: ``false``. If set, a message may be shown to the player.
 
-.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
+.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

@@ -11,6 +11,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 reference (`tes3mobileActor`_, `tes3reference`_)
     No description available.
 

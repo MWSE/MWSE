@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["soulGem"] = {
 			type = "tes3misc",
-			readonly = true,
+			readOnly = true,
 			description = "The soul gem object.",
 		},
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The reference.",
 		},
 	},

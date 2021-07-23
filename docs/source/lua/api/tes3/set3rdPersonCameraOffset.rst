@@ -8,6 +8,8 @@ Note this function can be used once WorldController and MobilePlayer have finish
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 offset (`tes3vector3`_)
     The offset vector.
 

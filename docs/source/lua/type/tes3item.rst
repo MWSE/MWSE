@@ -45,6 +45,9 @@ Properties
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -61,6 +64,7 @@ Properties
     tes3item/sceneNode
     tes3item/sceneReference
     tes3item/sourceMod
+    tes3item/supportsLuaData
 
 .. _`deleted`: tes3item/deleted.html
 .. _`disabled`: tes3item/disabled.html
@@ -75,10 +79,11 @@ Properties
 .. _`sceneNode`: tes3item/sceneNode.html
 .. _`sceneReference`: tes3item/sceneReference.html
 .. _`sourceMod`: tes3item/sourceMod.html
+.. _`supportsLuaData`: tes3item/supportsLuaData.html
 
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

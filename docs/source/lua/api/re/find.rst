@@ -17,6 +17,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 subject (`string`_)
     The string to search.
 
@@ -48,5 +50,5 @@ Use re.find to get the position of the first numeral in a string.
     event.register("loaded", onLoaded)
 
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

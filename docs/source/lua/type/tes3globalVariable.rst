@@ -27,6 +27,9 @@ Properties
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `value`_ (`number`_)
     The value of the variable. Unlike GMSTs, globals are always numbers.
 
@@ -40,6 +43,7 @@ Properties
     tes3globalVariable/objectFlags
     tes3globalVariable/objectType
     tes3globalVariable/sourceMod
+    tes3globalVariable/supportsLuaData
     tes3globalVariable/value
 
 .. _`deleted`: tes3globalVariable/deleted.html
@@ -49,8 +53,9 @@ Properties
 .. _`objectFlags`: tes3globalVariable/objectFlags.html
 .. _`objectType`: tes3globalVariable/objectType.html
 .. _`sourceMod`: tes3globalVariable/sourceMod.html
+.. _`supportsLuaData`: tes3globalVariable/supportsLuaData.html
 .. _`value`: tes3globalVariable/value.html
 
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html

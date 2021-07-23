@@ -1,0 +1,2 @@
+local magnitude = tes3.getEffectMagnitude{reference = tes3.player, effect = tes3.effect.fortifyAttribute, attribute = tes3.attribute.speed}
+tes3.messageBox(string.format("fortify speed: %f", magnitude))

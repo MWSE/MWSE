@@ -51,6 +51,7 @@ namespace TES3 {
 			LuaData();
 
 			sol::table data;
+			sol::table tempData;
 		};
 		LuaData * luaData;
 
@@ -75,7 +76,9 @@ namespace TES3 {
 		Actor * getSoulActor();
 
 		void setLuaDataTable(sol::object data);
+		void setLuaTempDataTable(sol::object data);
 		sol::table getOrCreateLuaDataTable();
+		sol::table getOrCreateLuaTempDataTable();
 
 		std::shared_ptr<mwse::lua::ScriptContext> createContext();
 

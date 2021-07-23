@@ -6,6 +6,8 @@ Performs the picking operation.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 origin (`tes3vector3`_)
     No description available.
 

@@ -6,11 +6,13 @@ Sets a property value with ``prop`` as the property key. Properties are named va
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 propName (`string`_)
     The property name.
 
 value (`number`_)
     The value to set.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

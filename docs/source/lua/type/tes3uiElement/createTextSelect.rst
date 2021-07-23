@@ -23,6 +23,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`number`_)
     Optional. A registered identifier to help find this element later.
 
@@ -32,6 +34,6 @@ text (`string`_)
 state (`number`_)
     Optional. The initial interaction state. Defaults to normal.
 
-.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

@@ -1,4 +1,4 @@
-	#pragma once
+#pragma once
 
 #include "TES3MobileObjectLua.h"
 
@@ -16,7 +16,6 @@ namespace mwse {
 			// Basic property binding.
 			usertypeDefinition["actionBeforeCombat"] = sol::readonly_property(&TES3::MobileActor::actionBeforeCombat);
 			usertypeDefinition["actionData"] = sol::readonly_property(&TES3::MobileActor::actionData);
-			usertypeDefinition["activeMagicEffectList"] = sol::readonly_property(&TES3::MobileActor::activeMagicEffects);
 			usertypeDefinition["actorType"] = sol::readonly_property(&TES3::MobileActor::actorType);
 			usertypeDefinition["aiPlanner"] = sol::readonly_property(&TES3::MobileActor::aiPlanner);
 			usertypeDefinition["alarm"] = &TES3::MobileActor::alarm;
@@ -53,6 +52,7 @@ namespace mwse {
 			usertypeDefinition["width"] = sol::readonly_property(&TES3::MobileActor::widthInUnits);
 
 			// Indirect bindings to unions and arrays.
+			usertypeDefinition["activeMagicEffectList"] = sol::readonly_property(&TES3::MobileActor::getActiveMagicEffectsList_lua);
 			usertypeDefinition["animationController"] = sol::readonly_property(&TES3::MobileActor::getAnimationController);
 			usertypeDefinition["attributes"] = sol::readonly_property(&TES3::MobileActor::getAttributes);
 			usertypeDefinition["currentSpell"] = sol::readonly_property(&TES3::MobileActor::getCurrentSpell);
@@ -117,7 +117,7 @@ namespace mwse {
 			usertypeDefinition["isMovingRight"] = sol::property(&TES3::MobileActor::getMovementFlagRight, &TES3::MobileActor::setMovementFlagRight);
 			usertypeDefinition["isRunning"] = sol::property(&TES3::MobileActor::getMovementFlagRunning, &TES3::MobileActor::setMovementFlagRunning);
 			usertypeDefinition["isSneaking"] = sol::property(&TES3::MobileActor::getMovementFlagSneaking, &TES3::MobileActor::setMovementFlagSneaking);
-			usertypeDefinition["isStartingJump"] = sol::property(&TES3::MobileActor::getMovementFlagJumped, &TES3::MobileActor::setMovementFlagJumped);
+			usertypeDefinition["isFalling"] = sol::property(&TES3::MobileActor::getMovementFlagFalling, &TES3::MobileActor::setMovementFlagFalling);
 			usertypeDefinition["isSwimming"] = sol::property(&TES3::MobileActor::getMovementFlagSwimming, &TES3::MobileActor::setMovementFlagSwimming);
 			usertypeDefinition["isTurningLeft"] = sol::property(&TES3::MobileActor::getMovementFlagTurnLeft, &TES3::MobileActor::setMovementFlagTurnLeft);
 			usertypeDefinition["isTurningRight"] = sol::property(&TES3::MobileActor::getMovementFlagTurnRight, &TES3::MobileActor::setMovementFlagTurnRight);
@@ -128,6 +128,7 @@ namespace mwse {
 			usertypeDefinition["applyFatigueDamage"] = &TES3::MobileActor::applyFatigueDamage;
 			usertypeDefinition["applyDamage"] = &TES3::MobileActor::applyDamage_lua;
 			usertypeDefinition["calcEffectiveDamage"] = &TES3::MobileActor::calcEffectiveDamage_lua;
+			usertypeDefinition["getActiveMagicEffects"] = &TES3::MobileActor::getActiveMagicEffectsList_lua;
 			usertypeDefinition["getBootsWeight"] = &TES3::MobileActor::getBootsWeight;
 			usertypeDefinition["getViewToActor"] = &TES3::MobileActor::getViewToActor;
 			usertypeDefinition["getViewToPoint"] = &TES3::MobileActor::getViewToPoint;
@@ -139,10 +140,11 @@ namespace mwse {
 			usertypeDefinition["getWeaponSpeed"] = &TES3::MobileActor::getWeaponSpeed;
 			usertypeDefinition["hasUsedPower"] = &TES3::MobileActor::hasUsedPower;
 			usertypeDefinition["rechargePower"] = &TES3::MobileActor::rechargePower;
+			usertypeDefinition["setPowerUseTimestamp"] = &TES3::MobileActor::setPowerUseTimestamp;
 			usertypeDefinition["startCombat"] = &TES3::MobileActor::startCombat;
 			usertypeDefinition["startDialogue"] = &TES3::MobileActor::startDialogue;
 			usertypeDefinition["stopCombat"] = &TES3::MobileActor::stopCombat_lua;
-			usertypeDefinition["updateDerivedStatistics"] = &TES3::MobileActor::updateDerivedStatistics;
+			usertypeDefinition["updateDerivedStatistics"] = &TES3::MobileActor::updateDerivedStatistics_lua;
 			usertypeDefinition["updateOpacity"] = &TES3::MobileActor::updateOpacity;
 
 			// Provide single function for isAffectedByAlchemy, etc.

@@ -93,22 +93,40 @@
 
 namespace mwse {
 	namespace lua {
+		template <>
+		std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue) {
+			auto value = std::move(defaultValue);
+
+			if (maybeParams) {
+				sol::table params = maybeParams.value();
+				sol::object maybeValue = params[key];
+				if (maybeValue.valid() && maybeValue.is<std::string>()) {
+					value = std::move(maybeValue.as<std::string>());
+				}
+			}
+
+			return std::move(value);
+		}
+
 		TES3::BaseObject* getOptionalParamBaseObject(sol::optional<sol::table> maybeParams, const char* key) {
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
 				sol::object maybeObject = params[key];
 				if (maybeObject.valid()) {
 					if (maybeObject.is<std::string>()) {
-						return TES3::DataHandler::get()->nonDynamicData->resolveObject(maybeObject.as<std::string>().c_str())->getBaseObject();
+						auto obj = TES3::DataHandler::get()->nonDynamicData->resolveObject(maybeObject.as<std::string>().c_str());
+						if (obj) {
+							return obj->getBaseObject();
+						}
 					}
 					else if (maybeObject.is<TES3::BaseObject>()) {
 						return maybeObject.as<TES3::BaseObject*>()->getBaseObject();
 					}
 					else if (maybeObject.is<TES3::MobileCreature>()) {
-						maybeObject.as<TES3::MobileCreature*>()->creatureInstance->baseCreature;
+						return maybeObject.as<TES3::MobileCreature*>()->creatureInstance->baseCreature;
 					}
 					else if (maybeObject.is<TES3::MobileNPC>()) {
-						maybeObject.as<TES3::MobileNPC*>()->npcInstance->baseNPC;
+						return maybeObject.as<TES3::MobileNPC*>()->npcInstance->baseNPC;
 					}
 				}
 			}
@@ -134,7 +152,7 @@ namespace mwse {
 		}
 
 		TES3::Reference* getOptionalParamExecutionReference(sol::optional<sol::table> maybeParams) {
-			TES3::Reference* reference = NULL;
+			TES3::Reference* reference = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -152,7 +170,7 @@ namespace mwse {
 				}
 			}
 
-			if (reference == NULL) {
+			if (reference == nullptr) {
 				reference = LuaManager::getInstance().getCurrentReference();
 			}
 
@@ -177,7 +195,7 @@ namespace mwse {
 		}
 
 		TES3::Reference* getOptionalParamReference(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Reference* value = NULL;
+			TES3::Reference* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -224,7 +242,7 @@ namespace mwse {
 		}
 
 		TES3::Spell* getOptionalParamSpell(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Spell* value = NULL;
+			TES3::Spell* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -243,7 +261,7 @@ namespace mwse {
 		}
 
 		TES3::Dialogue* getOptionalParamDialogue(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Dialogue* value = NULL;
+			TES3::Dialogue* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -262,7 +280,7 @@ namespace mwse {
 		}
 
 		TES3::Sound* getOptionalParamSound(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Sound* value = NULL;
+			TES3::Sound* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -295,8 +313,7 @@ namespace mwse {
 					}
 					// Were we given a table?
 					else if (maybeValue.get_type() == sol::type::table) {
-						sol::table value = maybeValue.as<sol::table>();
-						return TES3::Vector2(value[1], value[2]);
+						return maybeValue.as<sol::table>();
 					}
 				}
 			}
@@ -383,24 +400,34 @@ namespace mwse {
 			return TES3_UI_ID_NULL;
 		}
 
-		void setVectorFromLua(TES3::Vector3* vector, sol::stack_object value) {
+		bool setVectorFromLua(TES3::Vector2& vector, sol::stack_object value) {
 			// Is it a vector?
-			if (value.is<TES3::Vector3*>()) {
-				TES3::Vector3 * newVector = value.as<TES3::Vector3*>();
-				vector->x = newVector->x;
-				vector->y = newVector->y;
-				vector->z = newVector->z;
+			if (value.is<TES3::Vector2>()) {
+				vector = value.as<TES3::Vector2&>();
+				return true;
 			}
 			// Allow a simple table to be provided.
 			else if (value.get_type() == sol::type::table) {
-				// Get the values from the table.
-				sol::table table = value.as<sol::table>();
-				if (table.size() == 3) {
-					vector->x = table[1];
-					vector->y = table[2];
-					vector->z = table[3];
-				}
+				vector = value.as<sol::table>();
+				return true;
 			}
+
+			return false;
+		}
+
+		bool setVectorFromLua(TES3::Vector3& vector, sol::stack_object value) {
+			// Is it a vector?
+			if (value.is<TES3::Vector3*>()) {
+				vector = value.as<TES3::Vector3&>();
+				return true;
+			}
+			// Allow a simple table to be provided.
+			else if (value.get_type() == sol::type::table) {
+				vector = value.as<sol::table>();
+				return true;
+			}
+
+			return false;
 		}
 
 		void logStackTrace(const char* message) {

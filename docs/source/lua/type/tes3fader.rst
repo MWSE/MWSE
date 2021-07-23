@@ -34,9 +34,6 @@ Methods
 `fadeTo`_
     Transitions the fader to a value over a given duration.
 
-`removeMaterialProperty`_
-    Updates the fader for the current frame.
-
 `setColor`_ (`boolean`_)
     Applies a coloring effect to the fader.
 
@@ -44,6 +41,9 @@ Methods
     Updates the fader for the current frame.
 
 `update`_
+    Updates the fader for the current frame.
+
+`updateMaterialProperty`_
     Updates the fader for the current frame.
 
 .. toctree::
@@ -54,20 +54,20 @@ Methods
     tes3fader/fadeIn
     tes3fader/fadeOut
     tes3fader/fadeTo
-    tes3fader/removeMaterialProperty
     tes3fader/setColor
     tes3fader/setTexture
     tes3fader/update
+    tes3fader/updateMaterialProperty
 
 .. _`activate`: tes3fader/activate.html
 .. _`deactivate`: tes3fader/deactivate.html
 .. _`fadeIn`: tes3fader/fadeIn.html
 .. _`fadeOut`: tes3fader/fadeOut.html
 .. _`fadeTo`: tes3fader/fadeTo.html
-.. _`removeMaterialProperty`: tes3fader/removeMaterialProperty.html
 .. _`setColor`: tes3fader/setColor.html
 .. _`setTexture`: tes3fader/setTexture.html
 .. _`update`: tes3fader/update.html
+.. _`updateMaterialProperty`: tes3fader/updateMaterialProperty.html
 
 Functions
 ----------------------------------------------------------------------------------------------------

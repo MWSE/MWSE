@@ -14,6 +14,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 v (`string`_)
     The index of the desired rule.
 

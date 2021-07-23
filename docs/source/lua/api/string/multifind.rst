@@ -8,6 +8,8 @@ If any of the available patterns match, the matching pattern is returned followe
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 s (`string`_)
     The string to perform finds on.
 
@@ -21,6 +23,6 @@ plain (`boolean`_)
     Default: ``false``. If true, a normal search instead of a pattern search will be performed.
 
 .. _`boolean`: ../../../lua/type/boolean.html
+.. _`number`: ../../../lua/type/number.html
 .. _`string`: ../../../lua/type/string.html
 .. _`table`: ../../../lua/type/table.html
-.. _`number`: ../../../lua/type/number.html

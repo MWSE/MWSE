@@ -76,5 +76,5 @@ element
 
 `tes3uiElement`_. Read-only. The menu element that was created. The event is filtered on element.name.
 
-.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html

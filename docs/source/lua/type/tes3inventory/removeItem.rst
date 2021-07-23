@@ -1,7 +1,7 @@
 removeItem
 ====================================================================================================
 
-Removes an item from the inventory directly. This should not be used, in favor of the tes3 API function.
+Removes an item from the inventory directly. This should not be used, in favor of the tes3.removeItem function.
 
 Parameters
 ----------------------------------------------------------------------------------------------------
@@ -24,9 +24,9 @@ deleteItemData (`boolean`_)
     Default: ``false``. If set, the itemData will be deleted after being removed.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
-.. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3item`: ../../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../../lua/type/tes3itemData.html
+.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
+.. _`tes3reference`: ../../../lua/type/tes3reference.html

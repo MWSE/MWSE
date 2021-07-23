@@ -8,6 +8,8 @@ The message accepts formatting and additional parameters matching string.format'
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 message (`string`_)
     No description available.
 

@@ -57,6 +57,7 @@ namespace NI {
 
 		void attachProperty(Property* property);
 		Pointer<Property> detachPropertyByType(PropertyType type);
+		sol::table detachAllProperties_lua(sol::this_state ts);
 
 		//
 		// Custom functions.
@@ -65,7 +66,22 @@ namespace NI {
 		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua() const;
 
 		void clearTransforms();
-		Pointer<Property> getProperty(PropertyType type);
+
+		Pointer<Property> getProperty(PropertyType type) const;
+		Pointer<AlphaProperty> getAlphaProperty() const;
+		void setAlphaProperty(sol::optional<AlphaProperty*> prop);
+		Pointer<FogProperty> getFogProperty() const;
+		void setFogProperty(sol::optional<FogProperty*> prop);
+		Pointer<MaterialProperty> getMaterialProperty() const;
+		void setMaterialProperty(sol::optional<MaterialProperty*> prop);
+		Pointer<StencilProperty> getStencilProperty() const;
+		void setStencilProperty(sol::optional<StencilProperty*> prop);
+		Pointer<TexturingProperty> getTexturingProperty() const;
+		void setTexturingProperty(sol::optional<TexturingProperty*> prop);
+		Pointer<VertexColorProperty> getVertexColorProperty() const;
+		void setVertexColorProperty(sol::optional<VertexColorProperty*> prop);
+		Pointer<ZBufferProperty> getZBufferProperty() const;
+		void setZBufferProperty(sol::optional<ZBufferProperty*> prop);
 
 		void update_lua(sol::optional<sol::table> args);
 

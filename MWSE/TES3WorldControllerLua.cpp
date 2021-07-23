@@ -5,6 +5,7 @@
 
 #include "NICamera.h"
 #include "NINode.h"
+#include "NIRenderer.h"
 
 #include "TES3AudioController.h"
 #include "TES3Fader.h"
@@ -30,10 +31,26 @@ namespace mwse {
 			// Binding for TES3::WorldControllerRenderCamera.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::WorldControllerRenderCamera::CameraData>("tes3worldControllerRenderCameraData");
+				usertypeDefinition["new"] = sol::no_constructor;
+
+				// Basic property binding.
+				usertypeDefinition["camera"] = &TES3::WorldControllerRenderCamera::CameraData::camera;
+				usertypeDefinition["farPlaneDistance"] = &TES3::WorldControllerRenderCamera::CameraData::farPlaneDistance;
+				usertypeDefinition["fov"] = sol::property(&TES3::WorldControllerRenderCamera::CameraData::getFOV, &TES3::WorldControllerRenderCamera::CameraData::setFOV);
+				usertypeDefinition["nearPlaneDistance"] = &TES3::WorldControllerRenderCamera::CameraData::nearPlaneDistance;
+				usertypeDefinition["viewportHeight"] = &TES3::WorldControllerRenderCamera::CameraData::viewportHeight;
+				usertypeDefinition["viewportWidth"] = &TES3::WorldControllerRenderCamera::CameraData::viewportWidth;
+			}
+
+			// Binding for TES3::WorldControllerRenderCamera.
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
 				auto usertypeDefinition = state.new_usertype<TES3::WorldControllerRenderCamera>("tes3worldControllerRenderCamera");
 				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
+				usertypeDefinition["cameraData"] = sol::readonly_property(&TES3::WorldControllerRenderCamera::cameraData);
 				usertypeDefinition["cameraRoot"] = sol::readonly_property(&TES3::WorldControllerRenderCamera::cameraRoot);
 				usertypeDefinition["renderer"] = sol::readonly_property(&TES3::WorldControllerRenderCamera::renderer);
 				usertypeDefinition["root"] = sol::readonly_property(&TES3::WorldControllerRenderCamera::root);
@@ -54,8 +71,8 @@ namespace mwse {
 				usertypeDefinition["armCamera"] = &TES3::WorldController::armCamera;
 				usertypeDefinition["audioController"] = sol::readonly_property(&TES3::WorldController::audioController);
 				usertypeDefinition["blindnessFader"] = sol::readonly_property(&TES3::WorldController::blindnessFader);
-				usertypeDefinition["canQuickSaveAndRest"] = &TES3::WorldController::canUseQuickSaveAndRest;
 				usertypeDefinition["characterRenderTarget"] = &TES3::WorldController::characterRenderTarget;
+				usertypeDefinition["chargableItems"] = &TES3::WorldController::chargableItems;
 				usertypeDefinition["charGenState"] = &TES3::WorldController::gvarCharGenState;
 				usertypeDefinition["countMusicTracksBattle"] = &TES3::WorldController::countMusicTracksBattle;
 				usertypeDefinition["countMusicTracksExplore"] = &TES3::WorldController::countMusicTracksExplore;
@@ -74,12 +91,11 @@ namespace mwse {
 				usertypeDefinition["enchantedItemEffectCreated"] = &TES3::WorldController::enchantedItemEffectCreated;
 				usertypeDefinition["enchantedItemEffectTextures"] = &TES3::WorldController::enchantedItemEffectTextures;
 				usertypeDefinition["flagEventMenuModeOff"] = &TES3::WorldController::flagEventMenuModeOff;
-				usertypeDefinition["flagEventMenuModeOff"] = &TES3::WorldController::flagEventMenuModeOff;
 				usertypeDefinition["flagEventMenuModeOn"] = &TES3::WorldController::flagEventMenuModeOn;
 				usertypeDefinition["flagLevitationDisabled"] = &TES3::WorldController::flagLevitationDisabled;
 				usertypeDefinition["flagMenuMode"] = &TES3::WorldController::flagMenuMode;
 				usertypeDefinition["flagTeleportingDisabled"] = &TES3::WorldController::flagTeleportingDisabled;
-				usertypeDefinition["fogOfWarController"] = &TES3::WorldController::fogOfWarController;
+				usertypeDefinition["globalScripts"] = &TES3::WorldController::globalScripts;
 				usertypeDefinition["handToHandHit2Sound"] = &TES3::WorldController::soundHandToHandHit2;
 				usertypeDefinition["handToHandHitSound"] = &TES3::WorldController::soundHandToHandHit;
 				usertypeDefinition["healthDamageSound"] = &TES3::WorldController::soundHealthDamage;
@@ -95,8 +111,7 @@ namespace mwse {
 				usertypeDefinition["lastFrameTime"] = &TES3::WorldController::lastFrameTimeMillis;
 				usertypeDefinition["lightArmorHitSound"] = &TES3::WorldController::soundLightArmorHit;
 				usertypeDefinition["listAllActors"] = &TES3::WorldController::allActors;
-				usertypeDefinition["listChargableItems"] = &TES3::WorldController::chargableItems;
-				usertypeDefinition["lstGlobalScripts"] = &TES3::WorldController::globalScripts;
+				usertypeDefinition["mapController"] = &TES3::WorldController::mapController;
 				usertypeDefinition["maxFPS"] = &TES3::WorldController::maxFPS;
 				usertypeDefinition["mediumArmorHitSound"] = &TES3::WorldController::soundMediumArmorHit;
 				usertypeDefinition["menuAlpha"] = &TES3::WorldController::menuAlpha;
@@ -114,7 +129,7 @@ namespace mwse {
 				usertypeDefinition["nodeCursor"] = &TES3::WorldController::nodeCursor;
 				usertypeDefinition["parentWindowHandle"] = &TES3::WorldController::Win32_hWndParent;
 				usertypeDefinition["projectionDistance"] = &TES3::WorldController::projectionDistance;
-				usertypeDefinition["scriptGlobals"] = &TES3::WorldController::scriptGlobals;
+				usertypeDefinition["quickSaveWhenResting"] = &TES3::WorldController::quickSaveWhenResting;
 				usertypeDefinition["shaderWaterReflectTerrain"] = &TES3::WorldController::shaderWaterReflectsTerrain;
 				usertypeDefinition["shaderWaterReflectUpdate"] = &TES3::WorldController::shaderWaterReflectUpdate;
 				usertypeDefinition["shadowCamera"] = &TES3::WorldController::shadowCamera;

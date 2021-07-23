@@ -65,6 +65,9 @@ Methods
 `length`_ (`number`_)
     Calculates the length of the vector.
 
+`lerp`_
+    Calculates the interpolated vector between this vector and another, given a transition.
+
 `negate`_
     Negates all values in the vector.
 
@@ -87,6 +90,7 @@ Methods
     tes3vector3/heightDifference
     tes3vector3/interpolate
     tes3vector3/length
+    tes3vector3/lerp
     tes3vector3/negate
     tes3vector3/normalize
     tes3vector3/normalized
@@ -99,12 +103,13 @@ Methods
 .. _`heightDifference`: tes3vector3/heightDifference.html
 .. _`interpolate`: tes3vector3/interpolate.html
 .. _`length`: tes3vector3/length.html
+.. _`lerp`: tes3vector3/lerp.html
 .. _`negate`: tes3vector3/negate.html
 .. _`normalize`: tes3vector3/normalize.html
 .. _`normalized`: tes3vector3/normalized.html
 .. _`outerProduct`: tes3vector3/outerProduct.html
 
-.. _`number`: ../../lua/type/number.html
 .. _`bool`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
 .. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

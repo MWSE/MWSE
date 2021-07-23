@@ -11,6 +11,7 @@ Functions
 
     string/endswith
     string/format
+    string/insert
     string/multifind
     string/startswith
 

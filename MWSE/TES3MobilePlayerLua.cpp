@@ -76,7 +76,7 @@ namespace mwse {
 				usertypeDefinition["animationController"] = sol::readonly_property(&TES3::MobilePlayer::getPlayerAnimationController);
 
 				// Overwrite MobileNPC::forceSneak so that it works on the player. 
-				usertypeDefinition["forceSneak"] = sol::property(&TES3::MobilePlayer::flagForceSneak, &TES3::MobilePlayer::setFlagSneak);
+				usertypeDefinition["forceSneak"] = sol::property(&TES3::MobilePlayer::getMovementFlagSneaking, &TES3::MobilePlayer::setMovementFlagSneaking);
 
 				// Basic function binding.
 				usertypeDefinition["exerciseSkill"] = &TES3::MobilePlayer::exerciseSkill;

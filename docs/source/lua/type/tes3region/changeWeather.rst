@@ -6,6 +6,8 @@ Changes the current weather for the region to the provided weather-type paramete
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 weatherId (`number`_)
     No description available.
 

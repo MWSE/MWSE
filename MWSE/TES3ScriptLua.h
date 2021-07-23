@@ -15,6 +15,8 @@ namespace mwse {
 			void new_index(std::string, sol::stack_object);
 			size_t length();
 
+			sol::table getVariableData(sol::this_state ts);
+
 		private:
 			TES3::Script* script;
 			TES3::ScriptVariables* variables;

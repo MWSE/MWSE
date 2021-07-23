@@ -3,32 +3,32 @@ return{
     eventData = {
         ["animationData"] = {
             type = "tes3animationData",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["reference"] = {
             type = "tes3reference",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["group"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["index"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["flags"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["loopCount"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
     },

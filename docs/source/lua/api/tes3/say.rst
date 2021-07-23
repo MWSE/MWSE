@@ -29,7 +29,7 @@ subtitle (`string`_)
     Optional. The subtitle to show if subtitles are enabled, or if forceSubtitle is set.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

@@ -6,6 +6,8 @@ Makes a HUD element fullscreen. If a HUD ID is provided, this is a warpper for M
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 hud (`string`_)
     Optional. No description available.
 

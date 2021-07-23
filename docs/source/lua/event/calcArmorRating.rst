@@ -31,8 +31,8 @@ npc
 
 `tes3npc`_. Read-only. The NPC object whose AR is being calculated. May not always be available.
 
-.. _`tes3armor`: ../../lua/type/tes3armor.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3npc`: ../../lua/type/tes3npc.html
+.. _`tes3armor`: ../../lua/type/tes3armor.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
+.. _`tes3npc`: ../../lua/type/tes3npc.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

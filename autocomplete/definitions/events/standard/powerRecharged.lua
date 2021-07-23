@@ -3,17 +3,17 @@ return{
     eventData = {
         ["power"] = {
             type = "tes3spell",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["mobile"] = {
             type = "tes3mobileActor",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["reference"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "Mobile’s associated reference.",
         },
     },

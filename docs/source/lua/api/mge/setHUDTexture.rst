@@ -6,6 +6,8 @@ Sets the texture for a given HUD element. If a HUD ID is provided, this is a war
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 hud (`string`_)
     No description available.
 

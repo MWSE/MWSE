@@ -36,7 +36,7 @@ basePrice
 
 `number`_. Read-only. The price before adjustment.
 
-.. _`table`: ../../lua/type/table.html
 .. _`number`: ../../lua/type/number.html
+.. _`table`: ../../lua/type/table.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

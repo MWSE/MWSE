@@ -1,7 +1,7 @@
 tes3.cancelAnimationLoop
 ====================================================================================================
 
-Signals looping animations on the actor to stop looping and play to the end.
+Signals looping animations on the actor to stop looping and play to the end. The animation will continue, playing past the loop point until the end frame. Useful for exiting looping animations cleanly.
 
 Parameters
 ----------------------------------------------------------------------------------------------------

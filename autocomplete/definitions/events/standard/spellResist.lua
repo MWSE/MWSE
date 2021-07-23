@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The caster of the spell.",
 		},
 		["target"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The target of the spell. For self-targeted spells, this matches caster.",
 		},
 		["resistedPercent"] = {
@@ -17,27 +17,27 @@ return {
 		},
 		["resistAttribute"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The attribute resisted. This is an index into a tes3mobileActor.effectAttributes. Note that the index here is 0-based, while Lua is 1-based.",
 		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
-			readonly = true,
+			readOnly = true,
 			description = "The magic source.",
 		},
 		["sourceInstance"] = {
 			type = "tes3magicSourceInstance",
-			readonly = true,
+			readOnly = true,
 			description = "The unique instance of the magic source.",
 		},
 		["effectIndex"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The index of the effect in source's effects list.",
 		},
 		["effectInstance"] = {
 			type = "tes3magicEffectInstance",
-			readonly = true,
+			readOnly = true,
 			description = "The unique instance of the magic effect.",
 		},
 	},

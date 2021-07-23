@@ -19,7 +19,7 @@ Properties
     The disabled state of the object.
 
 `effects`_ (`table`_)
-    An array-style table of the tes3effect data on the object.
+    Read-only. An array-style table of the tes3effect data on the object.
 
 `flags`_ (`number`_)
     A bit field for the enchantment's flags.
@@ -63,6 +63,9 @@ Properties
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -85,6 +88,7 @@ Properties
     tes3enchantment/sceneNode
     tes3enchantment/sceneReference
     tes3enchantment/sourceMod
+    tes3enchantment/supportsLuaData
 
 .. _`castType`: tes3enchantment/castType.html
 .. _`chargeCost`: tes3enchantment/chargeCost.html
@@ -105,6 +109,7 @@ Properties
 .. _`sceneNode`: tes3enchantment/sceneNode.html
 .. _`sceneReference`: tes3enchantment/sceneReference.html
 .. _`sourceMod`: tes3enchantment/sourceMod.html
+.. _`supportsLuaData`: tes3enchantment/supportsLuaData.html
 
 Functions
 ----------------------------------------------------------------------------------------------------
@@ -120,9 +125,9 @@ Functions
 .. _`create`: tes3enchantment/create.html
 
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

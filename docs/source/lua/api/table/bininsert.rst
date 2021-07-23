@@ -13,6 +13,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 t (`table`_)
     No description available.
 
@@ -22,5 +24,5 @@ value (`unknown`_)
 comp (`unknown`_)
     Optional. No description available.
 
-.. _`table`: ../../../lua/type/table.html
 .. _`number`: ../../../lua/type/number.html
+.. _`table`: ../../../lua/type/table.html

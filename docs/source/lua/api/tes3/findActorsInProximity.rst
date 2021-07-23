@@ -22,9 +22,9 @@ position (`tes3vector3`_)
 range (`number`_)
     The distance around the position to search. An actor is included if the centre of their body is in range.
 
+.. _`number`: ../../../lua/type/number.html
 .. _`string`: ../../../lua/type/string.html
 .. _`table`: ../../../lua/type/table.html
-.. _`number`: ../../../lua/type/number.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
 .. _`tes3vector3`: ../../../lua/type/tes3vector3.html

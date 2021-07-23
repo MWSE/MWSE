@@ -16,5 +16,5 @@ situation
 
 `number`_. Read-only. Maps to tes3.musicSituation.*, indicating combat or non-combat music.
 
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html

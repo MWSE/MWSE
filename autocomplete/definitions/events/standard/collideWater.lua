@@ -3,12 +3,12 @@ return{
     eventData = {
         ["mobile"] = {
             type = "tes3mobileObject",
-            readonly = true,
+            readOnly = true,
             description = "Mobile object which collided.",
         },
         ["inWater"] = {
             type = "boolean",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
     },

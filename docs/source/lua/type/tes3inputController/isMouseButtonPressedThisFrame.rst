@@ -11,6 +11,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 button (`number`_)
     The mouse button to test. Must be between 0 and 7.
 

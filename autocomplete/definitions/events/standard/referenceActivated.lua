@@ -3,7 +3,7 @@ return{
     eventData = {
         ["reference"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "The reference which was deactivated.",
         },
     },

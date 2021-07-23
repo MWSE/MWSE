@@ -5,8 +5,12 @@ namespace mwse::lua {
 		switch (objectType) {
 		case TES3::ObjectType::Activator:
 			return std::make_unique<ObjectCreator<TES3::Activator>>();
+		case TES3::ObjectType::Ammo:
+			return std::make_unique<ObjectCreator<TES3::Weapon>>();
 		case TES3::ObjectType::Misc:
 			return std::make_unique<ObjectCreator<TES3::Misc>>();
+		case TES3::ObjectType::Sound:
+			return std::make_unique<ObjectCreator<TES3::Sound>>();
 		case TES3::ObjectType::Static:
 			return std::make_unique<ObjectCreator<TES3::Static>>();
 		case TES3::ObjectType::Enchantment:

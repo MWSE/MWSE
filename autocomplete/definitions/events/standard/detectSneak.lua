@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["detector"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor that is doing the detecting.",
 		},
 		["target"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor that is possibly being detected.",
 		},
 		["isDetected"] = {

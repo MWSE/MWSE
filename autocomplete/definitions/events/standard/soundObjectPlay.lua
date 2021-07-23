@@ -3,27 +3,27 @@ return{
     eventData = {
         ["sound"] = {
             type = "tes3sound",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["flags"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["volume"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["pitch"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["isNot3D"] = {
             type = "boolean",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
     },

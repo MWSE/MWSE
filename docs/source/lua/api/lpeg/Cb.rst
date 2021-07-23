@@ -21,6 +21,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 name (`value`_)
     The group capture to produce.
 

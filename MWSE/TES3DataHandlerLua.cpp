@@ -50,6 +50,7 @@ namespace mwse {
 				usertypeDefinition["dialogues"] = sol::readonly_property(&TES3::NonDynamicData::dialogues);
 				usertypeDefinition["factions"] = sol::readonly_property(&TES3::NonDynamicData::factions);
 				usertypeDefinition["globals"] = sol::readonly_property(&TES3::NonDynamicData::globals);
+				usertypeDefinition["mapTexture"] = &TES3::NonDynamicData::mapTexture;
 				usertypeDefinition["objects"] = sol::readonly_property(&TES3::NonDynamicData::list);
 				usertypeDefinition["races"] = sol::readonly_property(&TES3::NonDynamicData::races);
 				usertypeDefinition["regions"] = sol::readonly_property(&TES3::NonDynamicData::regions);

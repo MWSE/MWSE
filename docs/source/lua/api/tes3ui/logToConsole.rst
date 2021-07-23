@@ -6,6 +6,8 @@ Logs a message to the console.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 text (`string`_)
     No description available.
 

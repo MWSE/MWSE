@@ -31,5 +31,5 @@ var2
 
 `number`_. Read-only. One of two undefined variables related to the event.
 
-.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html

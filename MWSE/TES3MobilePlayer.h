@@ -108,7 +108,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		void setFlagSneak(bool value);
+		void setMovementFlagSneaking(bool value);
 
 		PlayerAnimationController* getPlayerAnimationController() const;
 

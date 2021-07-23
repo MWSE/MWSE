@@ -23,5 +23,5 @@ crossfade (`number`_)
     Default: ``1.0``. The duration in seconds of the crossfade from the old to the new track. The default is 1.0.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

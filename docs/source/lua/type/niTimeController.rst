@@ -25,7 +25,7 @@ Properties
     The phase value.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `runTimeTypeInformation`_ (`niRTTI`_)
     The runtime type information for this object.
@@ -84,10 +84,10 @@ Methods
 .. _`isInstanceOfType`: niTimeController/isInstanceOfType.html
 .. _`isOfType`: niTimeController/isOfType.html
 
+.. _`boolean`: ../../lua/type/boolean.html
 .. _`niObject`: ../../lua/type/niObject.html
 .. _`niObjectNET`: ../../lua/type/niObjectNET.html
-.. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
 .. _`niTimeController`: ../../lua/type/niTimeController.html
 .. _`number`: ../../lua/type/number.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`string`: ../../lua/type/string.html

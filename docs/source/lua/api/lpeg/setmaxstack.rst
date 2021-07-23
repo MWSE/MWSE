@@ -11,6 +11,8 @@ deep recursion may also need larger limits.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 max (`number`_)
     The new stack size.
 

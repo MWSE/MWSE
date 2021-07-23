@@ -5,12 +5,20 @@
 #include "TES3Object.h"
 
 namespace TES3 {
-	namespace LeveledListFlags {
+	namespace LeveledCreatureFlags {
 		typedef unsigned int value_type;
 
 		enum Flags : value_type {
-			CalculateFromAllLevels = 0x1,
-			CalculateForEachItem = 0x2
+			CalculateFromAllLevels = 0x1
+		};
+	}
+
+	namespace LeveledItemFlags {
+		typedef unsigned int value_type;
+
+		enum Flags : value_type {
+			CalculateForEachItem = 0x1,
+			CalculateFromAllLevels = 0x2
 		};
 	}
 
@@ -35,6 +43,15 @@ namespace TES3 {
 		bool insert(BaseObject* entry, short level);
 		bool remove(BaseObject* entry, short level = -1);
 
+		//
+		// Custom functions.
+		//
+
+		bool getLeveledFlag(LeveledCreatureFlags::Flags flag) const;
+		void setLeveledFlag(LeveledCreatureFlags::Flags flag, bool value);
+		bool getCalculateFromAllLevels() const;
+		void setCalculateFromAllLevels(bool value);
+
 	};
 	static_assert(sizeof(LeveledCreature) == 0x44, "TES3::LeveledCreature failed size validation");
 
@@ -51,6 +68,17 @@ namespace TES3 {
 		Object * resolve();
 		bool insert(BaseObject* entry, short level);
 		bool remove(BaseObject* entry, short level = -1);
+
+		//
+		// Custom functions.
+		//
+
+		bool getLeveledFlag(LeveledItemFlags::Flags flag) const;
+		void setLeveledFlag(LeveledItemFlags::Flags flag, bool value);
+		bool getCalculateForEachItem() const;
+		void setCalculateForEachItem(bool value);
+		bool getCalculateFromAllLevels() const;
+		void setCalculateFromAllLevels(bool value);
 
 	};
 	static_assert(sizeof(LeveledItem) == 0x40, "TES3::LeveledItem failed size validation");

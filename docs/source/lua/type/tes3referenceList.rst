@@ -7,16 +7,16 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `cell`_ (`tes3cell`_)
-    The cell for the collection.
+    Read-only. The cell for the collection.
 
 `head`_ (`tes3reference`_)
-    The first reference in the collection.
+    Read-only. The first reference in the collection.
 
 `size`_ (`tes3reference`_)
-    The number of references in the collection.
+    Read-only. The number of references in the collection.
 
 `tail`_ (`tes3reference`_)
-    The last reference in the collection.
+    Read-only. The last reference in the collection.
 
 .. toctree::
     :hidden:
@@ -31,5 +31,5 @@ Properties
 .. _`size`: tes3referenceList/size.html
 .. _`tail`: tes3referenceList/tail.html
 
-.. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3cell`: ../../lua/type/tes3cell.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

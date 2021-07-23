@@ -22,9 +22,11 @@ namespace mwse {
 
 			// Basic function binding.
 			usertypeDefinition["tradesItemType"] = &TES3::Actor::tradesItemType;
+			usertypeDefinition["offersService"] = &TES3::Actor::offersService;
 
 			// Function exposing.
 			usertypeDefinition["onInventoryClose"] = &TES3::Actor::onCloseInventory_lua;
+			usertypeDefinition["hasItemEquipped"] = &TES3::Actor::hasItemEquipped_lua;
 		}
 	}
 }

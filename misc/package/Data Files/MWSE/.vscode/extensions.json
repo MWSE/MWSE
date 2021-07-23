@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"sumneko.lua",
-		"devcat.lua-debug"
+		"devcat.lua-debug",
+		"koihik.vscode-lua-format"
 	]
 }

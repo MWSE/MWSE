@@ -39,7 +39,7 @@ namespace mwse::lua {
 			usertypeDefinition["triangleCount"] = sol::readonly_property(&NI::TriBasedGeometryData::getTriangleCount);
 		}
 
-		// Bind NI::TriBasedGeometryData
+		// Bind NI::TriShapeData
 		{
 			// Start our usertype. We must finish this with state.set_usertype.
 			auto usertypeDefinition = state.new_usertype<NI::TriShapeData>("niTriShapeData");
@@ -51,6 +51,9 @@ namespace mwse::lua {
 
 			// Functions exposed as properties.
 			usertypeDefinition["triangleCount"] = sol::readonly_property(&NI::TriShapeData::getTriangleCount);
+
+			// Basic function binding.
+			usertypeDefinition["copy"] = &NI::TriShapeData::copyData;
 		}
 	}
 }

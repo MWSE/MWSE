@@ -34,11 +34,14 @@ namespace mwse {
 				usertypeDefinition["filename"] = sol::readonly_property(&TES3::Sound::filename);
 
 				// Basic function binding.
+				usertypeDefinition["isLooping"] = &TES3::Sound::isLooping;
+				usertypeDefinition["isPlaying"] = &TES3::Sound::isPlaying;
 				usertypeDefinition["play"] = &TES3::Sound::play_lua;
 				usertypeDefinition["stop"] = &TES3::Sound::stop;
-				usertypeDefinition["isPlaying"] = &TES3::Sound::isPlaying;
 
 				// Expose float-based volume control.
+				usertypeDefinition["maxDistance"] = sol::property(&TES3::Sound::getMaxDistance, &TES3::Sound::setMaxDistance_lua);
+				usertypeDefinition["minDistance"] = sol::property(&TES3::Sound::getMinDistance, &TES3::Sound::setMinDistance_lua);
 				usertypeDefinition["volume"] = sol::property(&TES3::Sound::getVolume, &TES3::Sound::setVolume);
 			}
 

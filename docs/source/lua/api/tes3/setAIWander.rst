@@ -27,7 +27,7 @@ reset (`boolean`_)
     Default: ``true``. No description available.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`table`: ../../../lua/type/table.html
 .. _`number`: ../../../lua/type/number.html
+.. _`table`: ../../../lua/type/table.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

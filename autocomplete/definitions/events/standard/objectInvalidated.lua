@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["object"] = {
 			type = "solObject",
-			readonly = true,
+			readOnly = true,
 			description = "The object being invalidated. Can be a tes3reference.",
 		},
 	},

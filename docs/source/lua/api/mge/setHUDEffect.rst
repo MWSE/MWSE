@@ -6,6 +6,8 @@ Sets the effect for a HUD element. If a HUD ID is provided, this is a warpper fo
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 hud (`string`_)
     Optional. No description available.
 

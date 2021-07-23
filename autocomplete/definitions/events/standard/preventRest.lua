@@ -3,12 +3,12 @@ return{
     eventData = {
         ["mobile"] = {
             type = "tes3mobileActor",
-            readonly = true,
+            readOnly = true,
             description = "Mobile actor which is preventing the player from resting", -- chech this
         },
         ["reference"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "Mobile’s associated reference.",
         },
     },

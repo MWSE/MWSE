@@ -3,27 +3,27 @@ return {
 	eventData = {
 		["block"] = {
 			type = "tes3uiElement",
-			readonly = true,
+			readOnly = true,
 			description = "The UI element that is firing this event.",
 		},
 		["parent"] = {
 			type = "tes3uiElement",
-			readonly = true,
+			readOnly = true,
 			description = "The calling element's parent.",
 		},
 		["property"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The property identifier that is being triggered.",
 		},
 		["var1"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "One of two undefined variables related to the event.",
 		},
 		["var2"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "One of two undefined variables related to the event.",
 		},
 	},

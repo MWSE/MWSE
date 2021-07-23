@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["info"] = {
 			type = "tes3dialogueInfo",
-			readonly = true,
+			readOnly = true,
 			description = "The dialogue info object.",
 		},
 		["loadOriginalText"] = {

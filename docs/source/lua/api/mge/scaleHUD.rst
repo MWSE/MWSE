@@ -6,6 +6,8 @@ Scales a HUD element. If a HUD ID is provided, this is a warpper for MGEScaleHUD
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 hud (`string`_)
     Optional. No description available.
 
@@ -15,5 +17,5 @@ x (`number`_)
 y (`number`_)
     No description available.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

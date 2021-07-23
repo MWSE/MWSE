@@ -9,6 +9,9 @@ Properties
 `affectedNodes`_ (`niNodeLinkedList`_)
     The list of nodes that a given dynamic effect will affect.
 
+`alphaProperty`_ (`niAlphaProperty`_, `nil`_)
+    Convenient access to this object's alpha property. Setting this value to be nil will erase the property, while setting it to a valid alpha property will set (or replace) it.
+
 `appCulled`_ (`boolean`_)
     A flag indicating if this object is culled. When culled, it will not render, and raycasts ignore it.
 
@@ -17,6 +20,12 @@ Properties
 
 `flags`_ (`number`_)
     Flags, dependent on the specific object type.
+
+`fogProperty`_ (`niFogProperty`_, `nil`_)
+    Convenient access to this object's fog property. Setting this value to be nil will erase the property, while setting it to a valid fog property will set (or replace) it.
+
+`materialProperty`_ (`niMaterialProperty`_, `nil`_)
+    Convenient access to this object's material property. Setting this value to be nil will erase the property, while setting it to a valid material property will set (or replace) it.
 
 `name`_ (`string`_)
     The human-facing name of the given object.
@@ -28,7 +37,7 @@ Properties
     The list of properties attached to this niAVObject.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `rotation`_ (`tes3matrix33`_)
     The object's local rotation matrix.
@@ -39,19 +48,34 @@ Properties
 `scale`_ (`number`_)
     The object's local uniform scaling factor.
 
+`stencilProperty`_ (`niStencilProperty`_, `nil`_)
+    Convenient access to this object's stencil property. Setting this value to be nil will erase the property, while setting it to a valid stencil property will set (or replace) it.
+
+`texturingProperty`_ (`niTexturingProperty`_, `nil`_)
+    Convenient access to this object's texturing property. Setting this value to be nil will erase the property, while setting it to a valid texturing property will set (or replace) it.
+
 `translation`_ (`tes3vector3`_)
     The object's local translation vector.
 
 `type`_ (`number`_)
     The enumerated type of a given dynamic effect. Types: `0 - niAmbientLight`, `1 - niDirectionalLight`, `2 - niPointLight`, `3 - niSpotLight`, `4 - niTextureEffect`.
 
+`vertexColorProperty`_ (`niVertexColorProperty`_, `nil`_)
+    Convenient access to this object's vertex coloring property. Setting this value to be nil will erase the property, while setting it to a valid vertex coloring property will set (or replace) it.
+
+`zBufferProperty`_ (`niZBufferProperty`_, `nil`_)
+    Convenient access to this object's z-buffer property. Setting this value to be nil will erase the property, while setting it to a valid z-buffer property will set (or replace) it.
+
 .. toctree::
     :hidden:
 
     niDynamicEffect/affectedNodes
+    niDynamicEffect/alphaProperty
     niDynamicEffect/appCulled
     niDynamicEffect/enabled
     niDynamicEffect/flags
+    niDynamicEffect/fogProperty
+    niDynamicEffect/materialProperty
     niDynamicEffect/name
     niDynamicEffect/parent
     niDynamicEffect/properties
@@ -59,13 +83,20 @@ Properties
     niDynamicEffect/rotation
     niDynamicEffect/runTimeTypeInformation
     niDynamicEffect/scale
+    niDynamicEffect/stencilProperty
+    niDynamicEffect/texturingProperty
     niDynamicEffect/translation
     niDynamicEffect/type
+    niDynamicEffect/vertexColorProperty
+    niDynamicEffect/zBufferProperty
 
 .. _`affectedNodes`: niDynamicEffect/affectedNodes.html
+.. _`alphaProperty`: niDynamicEffect/alphaProperty.html
 .. _`appCulled`: niDynamicEffect/appCulled.html
 .. _`enabled`: niDynamicEffect/enabled.html
 .. _`flags`: niDynamicEffect/flags.html
+.. _`fogProperty`: niDynamicEffect/fogProperty.html
+.. _`materialProperty`: niDynamicEffect/materialProperty.html
 .. _`name`: niDynamicEffect/name.html
 .. _`parent`: niDynamicEffect/parent.html
 .. _`properties`: niDynamicEffect/properties.html
@@ -73,8 +104,12 @@ Properties
 .. _`rotation`: niDynamicEffect/rotation.html
 .. _`runTimeTypeInformation`: niDynamicEffect/runTimeTypeInformation.html
 .. _`scale`: niDynamicEffect/scale.html
+.. _`stencilProperty`: niDynamicEffect/stencilProperty.html
+.. _`texturingProperty`: niDynamicEffect/texturingProperty.html
 .. _`translation`: niDynamicEffect/translation.html
 .. _`type`: niDynamicEffect/type.html
+.. _`vertexColorProperty`: niDynamicEffect/vertexColorProperty.html
+.. _`zBufferProperty`: niDynamicEffect/zBufferProperty.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
@@ -154,14 +189,39 @@ Methods
 .. _`updateEffects`: niDynamicEffect/updateEffects.html
 .. _`updateProperties`: niDynamicEffect/updateProperties.html
 
-.. _`niObject`: ../../lua/type/niObject.html
+Functions
+----------------------------------------------------------------------------------------------------
+
+`attachAffectedNode`_
+    Adds a node to the dynamic effect's affected nodes list. The node's ``:updateEffects()`` function should be called afterwards to recognize the change.
+
+`detachAffectedNode`_
+    Removes a node from the dynamic effect's affected nodes list. The node's ``:updateEffects()`` function should be called afterwards to recognize the change.
+
+.. toctree::
+    :hidden:
+
+    niDynamicEffect/attachAffectedNode
+    niDynamicEffect/detachAffectedNode
+
+.. _`attachAffectedNode`: niDynamicEffect/attachAffectedNode.html
+.. _`detachAffectedNode`: niDynamicEffect/detachAffectedNode.html
+
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
 .. _`niAVObject`: ../../lua/type/niAVObject.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niPropertyLinkedList`: ../../lua/type/niPropertyLinkedList.html
+.. _`niAlphaProperty`: ../../lua/type/niAlphaProperty.html
+.. _`niFogProperty`: ../../lua/type/niFogProperty.html
+.. _`niMaterialProperty`: ../../lua/type/niMaterialProperty.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`niObject`: ../../lua/type/niObject.html
 .. _`niProperty`: ../../lua/type/niProperty.html
+.. _`niPropertyLinkedList`: ../../lua/type/niPropertyLinkedList.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`niStencilProperty`: ../../lua/type/niStencilProperty.html
+.. _`niTexturingProperty`: ../../lua/type/niTexturingProperty.html
+.. _`niVertexColorProperty`: ../../lua/type/niVertexColorProperty.html
+.. _`nil`: ../../lua/type/nil.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

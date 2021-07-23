@@ -6,6 +6,8 @@ Fills the matrix with values from euler coordinates.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 z (`number`_)
     No description available.
 

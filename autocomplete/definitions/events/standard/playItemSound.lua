@@ -3,17 +3,17 @@ return{
     eventData = {
         ["item"] = {
             type = "tes3baseObject",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["state"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["reference"] = {
             type = "tes3reference",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
     },

@@ -15,14 +15,14 @@ Properties
 `disabled`_ (`boolean`_)
     The disabled state of the object.
 
-`effectAttributeIds`_ (`string`_)
-    An array-style table access the attributes associated with the effects.
+`effectAttributeIds`_ (`table`_)
+    Read-only. An array-style table access the attributes associated with the effects.
 
-`effects`_ (`string`_)
-    An array-style table access to the four ingredient effects. Unlike alchemy or enchanting objects, these are simple numbers representing the effect ID.
+`effects`_ (`table`_)
+    Read-only. An array-style table access to the four ingredient effects. Unlike alchemy or enchanting objects, these are simple numbers representing the effect ID.
 
-`effectsSkillIds`_ (`string`_)
-    An array-style table access the skills associated with the effects.
+`effectsSkillIds`_ (`table`_)
+    Read-only. An array-style table access the skills associated with the effects.
 
 `icon`_ (`string`_)
     The path to the object's icon.
@@ -72,6 +72,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `value`_ (`number`_)
     The value of the object.
 
@@ -103,6 +106,7 @@ Properties
     tes3ingredient/script
     tes3ingredient/sourceMod
     tes3ingredient/stolenList
+    tes3ingredient/supportsLuaData
     tes3ingredient/value
     tes3ingredient/weight
 
@@ -128,14 +132,16 @@ Properties
 .. _`script`: tes3ingredient/script.html
 .. _`sourceMod`: tes3ingredient/sourceMod.html
 .. _`stolenList`: tes3ingredient/stolenList.html
+.. _`supportsLuaData`: tes3ingredient/supportsLuaData.html
 .. _`value`: tes3ingredient/value.html
 .. _`weight`: tes3ingredient/weight.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
 .. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

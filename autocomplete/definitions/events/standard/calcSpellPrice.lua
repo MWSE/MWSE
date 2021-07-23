@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor of the merchant the player is interacting with.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "mobile’s related reference.",
 		},
 		["basePrice"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The price before adjustment.",
 		},
 		["price"] = {
@@ -22,7 +22,7 @@ return {
 		},
 		["spell"] = {
 			type = "tes3spell",
-			readonly = true,
+			readOnly = true,
 			description = "The spell currently being purchased.",
 		},
 	},

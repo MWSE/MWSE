@@ -21,6 +21,6 @@ power
 
 `tes3spell`_. Read-only. 
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

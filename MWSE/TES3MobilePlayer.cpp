@@ -112,14 +112,9 @@ namespace TES3 {
 		TES3_MobilePlayer_setVanityState(this, state);
 	}
 
-
-	void MobilePlayer::setFlagSneak(bool value) {
-		if (value) {
-			movementFlags |= TES3::ActorMovement::Sneaking;
-		}
-		else {
-			movementFlags &= ~TES3::ActorMovement::Sneaking;
-		}
+	void MobilePlayer::setMovementFlagSneaking(bool value) {
+		MobileActor::setMovementFlagSneaking(value);
+		flagForceSneak = value;
 	}
 
 	PlayerAnimationController* MobilePlayer::getPlayerAnimationController() const {

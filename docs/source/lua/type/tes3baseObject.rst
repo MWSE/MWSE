@@ -27,6 +27,9 @@ Properties
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -37,6 +40,7 @@ Properties
     tes3baseObject/objectFlags
     tes3baseObject/objectType
     tes3baseObject/sourceMod
+    tes3baseObject/supportsLuaData
 
 .. _`deleted`: tes3baseObject/deleted.html
 .. _`disabled`: tes3baseObject/disabled.html
@@ -45,7 +49,8 @@ Properties
 .. _`objectFlags`: tes3baseObject/objectFlags.html
 .. _`objectType`: tes3baseObject/objectType.html
 .. _`sourceMod`: tes3baseObject/sourceMod.html
+.. _`supportsLuaData`: tes3baseObject/supportsLuaData.html
 
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html

@@ -23,11 +23,11 @@ requiredGlobal (`tes3globalVariable`_)
 requiredRank (`number`_)
     Default: ``0``. If owner is set to faction, requitedRank variable controls minimal rank in faction the player has to have to be able to freely take the reference.
 
-.. _`tes3globalVariable`: ../../../lua/type/tes3globalVariable.html
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3npc`: ../../../lua/type/tes3npc.html
-.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
-.. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3faction`: ../../../lua/type/tes3faction.html
+.. _`tes3globalVariable`: ../../../lua/type/tes3globalVariable.html
+.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
+.. _`tes3npc`: ../../../lua/type/tes3npc.html
+.. _`tes3reference`: ../../../lua/type/tes3reference.html

@@ -9,6 +9,9 @@ Properties
 `attribute`_ (`number`_)
     The attribute associated with this effect, or -1 if no attribute is used.
 
+`cost`_ (`number`_)
+    The base magicka cost of this effect.
+
 `duration`_ (`number`_)
     How long the effect should last.
 
@@ -22,7 +25,7 @@ Properties
     The minimum magnitude of the effect.
 
 `object`_ (`tes3magicEffect`_)
-    Fetches the tes3magicEffect for the given id used.
+    Read-only. Fetches the tes3magicEffect for the given id used.
 
 `radius`_ (`number`_)
     The radius of the effect.
@@ -37,6 +40,7 @@ Properties
     :hidden:
 
     tes3effect/attribute
+    tes3effect/cost
     tes3effect/duration
     tes3effect/id
     tes3effect/max
@@ -47,6 +51,7 @@ Properties
     tes3effect/skill
 
 .. _`attribute`: tes3effect/attribute.html
+.. _`cost`: tes3effect/cost.html
 .. _`duration`: tes3effect/duration.html
 .. _`id`: tes3effect/id.html
 .. _`max`: tes3effect/max.html
@@ -56,5 +61,5 @@ Properties
 .. _`rangeType`: tes3effect/rangeType.html
 .. _`skill`: tes3effect/skill.html
 
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html

@@ -51,6 +51,6 @@ value  (`string`_)
 flags  (`number`_)
     Default: ``0``. The object flags initially set.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3misc`: ../../../lua/type/tes3misc.html

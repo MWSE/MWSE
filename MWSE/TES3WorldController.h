@@ -42,12 +42,13 @@ namespace TES3 {
 			// Other related this-call functions.
 			//
 
+			float getFOV() const;
 			void setFOV(float degrees);
 
 		};
 		void* vTable; // 0x0
-		NI::Object* renderer; // 0x4
-		NI::Object* root; // 0x8
+		NI::Renderer* renderer; // 0x4
+		NI::Node* root; // 0x8
 		NI::Node* cameraRoot; // 0xC
 		CameraData cameraData; // 0x10
 
@@ -219,18 +220,18 @@ namespace TES3 {
 	static_assert(sizeof(SplashController::ActiveSplash) == 0xC, "TES3::SplashController::ActiveSplash failed size validation");
 
 	struct WorldController {
-		int unknown_0x0;
-		int unknown_0x4;
-		float unknown_0x8;
-		float unknown_0xC;
+		int framesSinceLastFPSMeasure; // 0x0
+		int framesPerFPSMeasure; // 0x4, defaults to 3
+		float lightFlickerSimTickRate; // 0x8, defaults to 15.0
+		float minFPS; // 0xC, defaults to 5.0
 		float maxFPS; // 0x10
-		int unknown_0x14;
-		int unknown_0x18;
-		int unknown_0x1C;
+		float framesPerSecond; // 0x14
+		float lightFlickerSimTicksToSimulate; // 0x18
+		float lightFlickerSimTicksSmoothed; // 0x1C
 		unsigned int systemTimeMillis; // 0x20
-		unsigned int lastFrameTimeMillis; // 0x4
-		int unknown_0x28;
-		float deltaTime; // 0xC
+		unsigned int lastFrameTimeMillis; // 0x24
+		unsigned int lastFPSMeasureTimeMillis; // 0x28
+		float deltaTime; // 0x2C
 		NI::Renderer * renderer; // 0x30
 		AudioController * audioController; // 0x34
 		int unknown_0x38;
@@ -238,18 +239,18 @@ namespace TES3 {
 		Font * fonts[3]; // 0x40
 		InputController * inputController; // 0x4C
 		MouseController * mouseController; // 0x50
-		Script * scriptGlobals; // 0x54
+		Script * scriptCompileAndRun; // 0x54
 		WeatherController * weatherController; // 0x58
 		MobController * mobController; // 0x5C
 		KillCounter * playerKills; // 0x60
-		JournalHTML* journalHTML; // 0x64
-		SplashController* splashController; // 0x68
+		JournalHTML * journalHTML; // 0x64
+		SplashController * splashController; // 0x68
 		IteratedList<Quest*> * journalController; // 0x6C
-		SpellInstanceController * spellInstanceController; // 0x70
-		int unknown_0x74;
+		MagicInstanceController * magicInstanceController; // 0x70
+		void * vfxManager; // 0x74
 		int viewWidth; // 0x78
 		int viewHeight; // 0x7C
-		int unknown_0x80;
+		int bitDepth; // 0x80
 		int bShadows; // 0x84
 		int helpDelay; // 0x88
 		unsigned char hudStyle; // 0x8C
@@ -274,9 +275,9 @@ namespace TES3 {
 		bool flagEventMenuModeOff; // 0xD5
 		bool flagMenuMode; // 0xD6
 		char unknown_0xD7;
-		char unknown_0xD8;
+		bool collisionEnabled; // 0xD8
 		char unknown_0xD9;
-		char unknown_0xDA;
+		char disableAI; // 0xDA
 		bool stopGameLoop; // 0xDB
 		char unknown_0xDC;
 		char unknown_0xDD;
@@ -285,7 +286,7 @@ namespace TES3 {
 		bool flagTeleportingDisabled; // 0xE0
 		bool flagLevitationDisabled; // 0xE1
 		bool useBestAttack; // 0xE2
-		bool canUseQuickSaveAndRest; // 0xE3
+		bool quickSaveWhenResting; // 0xE3
 		char unknown_0xE4;
 		char unknown_0xE5;
 		char unknown_0xE6;
@@ -301,8 +302,8 @@ namespace TES3 {
 		WorldControllerRenderTarget characterRenderTarget; // 0x1A8
 		WorldControllerRenderTarget mapRenderTarget; // 0x22C
 		WorldControllerRenderCamera shadowCamera; // 0x2B0
-		void* shadowManager; // 0x2DC
-		void* fogOfWarController; // 0x2E0
+		void * shadowManager; // 0x2DC
+		void * mapController; // 0x2E0
 		UI::MenuController * menuController; // 0x2E4
 		InventoryData * inventoryData; // 0x2E8
 		Sound * soundWeaponSwish; // 0x2EC
@@ -321,7 +322,7 @@ namespace TES3 {
 		Sound * soundMenuClick; // 0x320
 		Sound * soundMenuSize; // 0x324
 		Sound * soundItemRepair; // 0x328
-		int unknown_0x32C;
+		Cell * startingCell; // 0x32C
 		float deadFloatScale; // 0x330
 		int unknown_0x334;
 		IteratedList<GlobalScript*> * globalScripts; // 0x338

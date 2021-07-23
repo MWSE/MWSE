@@ -157,7 +157,14 @@ namespace TES3 {
 	}
 
 	const auto TES3_Reference_deleteDynamicLightAttachment = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E50F0);
-	void Reference::deleteDynamicLightAttachment() {
+	void Reference::deleteDynamicLightAttachment(sol::optional<bool> removeLightFromParent) {
+		if (removeLightFromParent.value_or(false)) {
+			auto attachedLight = getAttachedDynamicLight();
+			if (attachedLight) {
+				auto light = attachedLight->light;
+				light->parentNode->detachChildHandled(light);
+			}
+		}
 		detachDynamicLightFromAffectedNodes();
 		TES3_Reference_deleteDynamicLightAttachment(this);
 	}
@@ -183,11 +190,11 @@ namespace TES3 {
 		// If the light is not part of the scene graph yet, automatically attach the light.
 		// It can be placed under the attachLight subnode, as in light entities, or the scene node otherwise.
 		if (light->parentNode == nullptr && sceneNode != nullptr) {
-			auto attachPoint = sceneNode->getObjectByNameAndType<NI::Node>("attachLight");
+			auto attachPoint = sceneNode->getObjectByNameAndType<NI::Node>("AttachLight");
 			if (attachPoint == nullptr) {
 				attachPoint = sceneNode;
 			}
-			attachPoint->attachChild(light);
+			attachPoint->attachChild(light, true);
 			attachPoint->update();
 		}
 
@@ -198,7 +205,7 @@ namespace TES3 {
 		attachmentNode = mwse::tes3::_new<TES3::LightAttachmentNode>();
 		memset(attachmentNode, 0, sizeof(TES3::LightAttachmentNode));
 		attachmentNode->light = light;
-		attachmentNode->flickerPhase = phase_arg.value_or(0);
+		attachmentNode->flickerPhase = phase_arg.value_or(0.0f);
 		attachment->data = attachmentNode;
 		
 		insertAttachment(attachment);
@@ -826,6 +833,54 @@ namespace TES3 {
 		return newNode;
 	}
 
+#if MWSE_RAISED_FILE_LIMIT
+	// New offsets and masks.
+	constexpr DWORD ModBits = 10;
+	constexpr DWORD FormBits = sizeof(DWORD) * CHAR_BIT - ModBits;
+	constexpr DWORD ModMask = ((1 << ModBits) - 1) << FormBits;
+	constexpr DWORD FormMask = (1 << FormBits) - 1;
+	constexpr DWORD ModCount = 1 << ModBits;
+#else
+	// Vanilla offsets and masks.
+	constexpr DWORD ModBits = 8;
+	constexpr DWORD FormBits = sizeof(DWORD) * CHAR_BIT - ModBits;
+	constexpr DWORD ModMask = ((1 << ModBits) - 1) << FormBits;
+	constexpr DWORD FormMask = (1 << FormBits) - 1;
+	constexpr DWORD ModCount = 1 << ModBits;
+#endif
+
+	unsigned int Reference::getSourceModId() const {
+		return sourceID >> ModBits;
+	}
+
+	unsigned int Reference::getSourceFormId() const {
+		return sourceID & FormMask;
+	}
+
+	unsigned int Reference::getTargetModId() const {
+		return targetID >> ModBits;
+	}
+
+	unsigned int Reference::getTargetFormId() const {
+		return targetID & FormMask;
+	}
+
+	sol::optional<bool> Reference::isDead() const {
+		auto mobile = getAttachedMobileActor();
+		if (mobile) {
+			return mobile->isDead();
+		}
+
+		switch (baseObject->objectType) {
+		case ObjectType::Creature:
+			return static_cast<Creature*>(getBaseObject())->health <= 1;
+		case ObjectType::NPC:
+			return static_cast<NPC*>(getBaseObject())->health <= 1;
+		}
+
+		return {};
+	}
+
 	Inventory * Reference::getInventory() {
 		// Only actors have equipment.
 		if (baseObject->objectType != ObjectType::Container &&
@@ -929,7 +984,7 @@ namespace TES3 {
 		return true;
 	}
 
-	Attachment * Reference::getAttachment(AttachmentType::AttachmentType type) {
+	Attachment * Reference::getAttachment(AttachmentType::AttachmentType type) const {
 		Attachment* attachment = attachments;
 		while (attachment && attachment->type != type) {
 			attachment = attachment->next;
@@ -937,7 +992,7 @@ namespace TES3 {
 		return attachment;
 	}
 
-	MobileObject* Reference::getAttachedMobileObject() {
+	MobileObject* Reference::getAttachedMobileObject() const {
 		auto attachment = getAttachment(AttachmentType::ActorData);
 		if (attachment) {
 			return static_cast<MobileActorAttachment*>(attachment)->data;
@@ -945,11 +1000,11 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	MobileActor* Reference::getAttachedMobileActor() {
+	MobileActor* Reference::getAttachedMobileActor() const {
 		return static_cast<MobileActor*>(getAttachedMobileObject());
 	}
 
-	MobileCreature* Reference::getAttachedMobileCreature() {
+	MobileCreature* Reference::getAttachedMobileCreature() const {
 		auto mobile = getAttachedMobileActor();
 		if (mobile == nullptr || mobile->actorType != MobileActorType::Creature) {
 			return nullptr;
@@ -957,7 +1012,7 @@ namespace TES3 {
 		return static_cast<MobileCreature*>(mobile);
 	}
 
-	MobileNPC* Reference::getAttachedMobileNPC() {
+	MobileNPC* Reference::getAttachedMobileNPC() const {
 		auto mobile = getAttachedMobileActor();
 		if (mobile == nullptr || (mobile->actorType != MobileActorType::NPC && mobile->actorType != MobileActorType::Player)) {
 			return nullptr;
@@ -965,11 +1020,11 @@ namespace TES3 {
 		return static_cast<MobileNPC*>(mobile);
 	}
 
-	MobileProjectile* Reference::getAttachedMobileProjectile() {
+	MobileProjectile* Reference::getAttachedMobileProjectile() const {
 		return static_cast<MobileProjectile*>(getAttachedMobileObject());
 	}
 
-	ItemData* Reference::getAttachedItemData() {
+	ItemData* Reference::getAttachedItemData() const {
 		auto attachment = static_cast<TES3::ItemDataAttachment*>(getAttachment(TES3::AttachmentType::Variables));
 		if (attachment) {
 			return attachment->data;
@@ -1009,7 +1064,7 @@ namespace TES3 {
 		return nullptr;
 	}
 	
-	AnimationData* Reference::getAttachedAnimationData() {
+	AnimationData* Reference::getAttachedAnimationData() const {
 		auto attachment = static_cast<TES3::AnimationAttachment*>(getAttachment(TES3::AttachmentType::Animation));
 		if (attachment) {
 			return attachment->data;
@@ -1025,7 +1080,7 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	TravelDestination* Reference::getAttachedTravelDestination() {
+	TravelDestination* Reference::getAttachedTravelDestination() const {
 		auto attachment = static_cast<TES3::TravelDestinationAttachment*>(getAttachment(TES3::AttachmentType::TravelDestination));
 		if (attachment) {
 			return attachment->data;
@@ -1070,26 +1125,36 @@ namespace TES3 {
 		return result;
 	}
 
-	sol::table Reference::getLuaTable() {
+	bool Reference::getSupportsLuaData() const {
 		auto itemData = getAttachedItemData();
 
 		// Prevent adding a lua table if there's more than one item involved.
 		if (itemData && itemData->count > 1) {
+			return false;
+		}
+
+		// Does the base object support it?
+		if (!baseObject->getSupportsLuaData()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	sol::table Reference::getLuaTable() {
+		if (!getSupportsLuaData()) {
 			return sol::nil;
 		}
 
-		// Create the item data if it doesn't already exist.
-		if (itemData == nullptr) {
-			// Gold does all kinds of funky things. No ItemData creation on it is allowed.
-			if (baseObject->objectType == ObjectType::Misc && static_cast<Misc*>(baseObject)->isGold()) {
-				return sol::nil;
-			}
+		return getOrCreateAttachedItemData()->getOrCreateLuaDataTable();
+	}
 
-			itemData = ItemData::createForObject(baseObject);
-			setAttachedItemData(itemData);
+	sol::table Reference::getLuaTempTable() {
+		if (!getSupportsLuaData()) {
+			return sol::nil;
 		}
 
-		return itemData->getOrCreateLuaDataTable();
+		return getOrCreateAttachedItemData()->getOrCreateLuaTempDataTable();
 	}
 
 	void Reference::activate_lua(Reference* target) {

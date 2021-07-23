@@ -3,27 +3,27 @@ return {
 	eventData = {
 		["deltaX"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The difference in horizontal mouse position from the previous frame.",
 		},
 		["deltaY"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The difference in vertical mouse position from the previous frame.",
 		},
 		["isControlDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if control is held.",
 		},
 		["isAltDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if alt  is held.",
 		},
 		["isSuperDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if super (Windows key) is held.",
 		},
 	},

@@ -2,34 +2,58 @@
 
 namespace NI {
 	nonstd::span<unsigned short> SkinPartition::Partition::getBones() {
-		return nonstd::span<unsigned short>(bones, numBones);
+		if (bones) {
+			return nonstd::span<unsigned short>(bones, numBones);
+		}
+		return {};
 	}
 
 	nonstd::span<unsigned short> SkinPartition::Partition::getStripLengths() {
-		return nonstd::span<unsigned short>(bones, numBones);
+		if (bones) {
+			return nonstd::span<unsigned short>(bones, numBones);
+		}
+		return {};
 	}
 
 	nonstd::span<unsigned short> SkinPartition::Partition::getTriangles() {
-		return nonstd::span<unsigned short>(triangles, numTriangles);
+		if (triangles) {
+			return nonstd::span<unsigned short>(triangles, numTriangles);
+		}
+		return {};
 	}
 
 	nonstd::span<unsigned short> SkinPartition::Partition::getVertices() {
-		return nonstd::span<unsigned short>(vertices, numVertices);
+		if (vertices) {
+			return nonstd::span<unsigned short>(vertices, numVertices);
+		}
+		return {};
 	}
 
 	nonstd::span<SkinPartition::Partition> SkinPartition::getPartitions() {
-		return nonstd::span<Partition>(partitions, partitionCount);
+		if (partitions) {
+			return nonstd::span<Partition>(partitions, partitionCount);
+		}
+		return {};
 	}
 
 	nonstd::span<SkinData::BoneData::VertexWeight> SkinData::BoneData::getWeights() {
-		return nonstd::span<VertexWeight>(weights, weightCount);
+		if (weights) {
+			return nonstd::span<VertexWeight>(weights, weightCount);
+		}
+		return {};
 	}
 
 	nonstd::span<SkinData::BoneData> SkinData::getBones() {
-		return nonstd::span<BoneData>(boneData, numBones);
+		if (boneData) {
+			return nonstd::span<BoneData>(boneData, numBones);
+		}
+		return {};
 	}
 
 	nonstd::span<AVObject*> SkinInstance::getBoneObjects() {
-		return nonstd::span<AVObject*>(bones, skinData->numBones);
+		if (bones) {
+			return nonstd::span<AVObject*>(bones, skinData->numBones);
+		}
+		return {};
 	}
 }

@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["actor"] = {
 			type = "tes3creature|tes3npc",
-			readonly = true,
+			readOnly = true,
 			description = "The actor whose soul is being evaluated.",
 		},
 		["value"] = {

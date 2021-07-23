@@ -64,6 +64,6 @@ In this example, we print the object ID of the player’s equipped light source.
 .. _`boolean`: ../../../lua/type/boolean.html
 .. _`number`: ../../../lua/type/number.html
 .. _`tes3actor`: ../../../lua/type/tes3actor.html
+.. _`tes3equipmentStack`: ../../../lua/type/tes3equipmentStack.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
-.. _`tes3equipmentStack`: ../../../lua/type/tes3equipmentStack.html

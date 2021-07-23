@@ -70,6 +70,20 @@ namespace NI {
 		return prop;
 	}
 
+	sol::table AVObject::detachAllProperties_lua(sol::this_state ts) {
+		sol::state_view state = ts;
+		auto removedProperties = state.create_table();
+
+		while (propertyNode.data) {
+			auto removed = detachPropertyByType(propertyNode.data->getType());
+			if (removed) {
+				removedProperties.add(removed);
+			}
+		}
+
+		return removedProperties;
+	}
+
 	const auto NI_CreateBoundingBoxForNode = reinterpret_cast<void(__cdecl*)(const AVObject*, TES3::Vector3*, TES3::Vector3*, const TES3::Vector3*, const TES3::Matrix33*, const float*)>(0x4EF410);
 	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua() const {
 		auto bb = std::make_shared<TES3::BoundingBox>(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MIN, FLT_MIN, FLT_MIN);
@@ -86,20 +100,92 @@ namespace NI {
 		setLocalRotationMatrix(reinterpret_cast<TES3::Matrix33*>(0x7DE664));
 	}
 
-	Pointer<Property> AVObject::getProperty(PropertyType type) {
+	Pointer<Property> AVObject::getProperty(PropertyType type) const {
 		auto propNode = &propertyNode;
-		if (propNode->data == nullptr) {
-			return nullptr;
-		}
-
-		while (propNode) {
+		while (propNode && propNode->data) {
 			if (propNode->data->getType() == type) {
 				return propNode->data;
 			}
 			propNode = propNode->next;
 		}
-
 		return nullptr;
+	}
+
+	Pointer<AlphaProperty> AVObject::getAlphaProperty() const {
+		return static_cast<AlphaProperty*>(getProperty(PropertyType::Alpha).get());
+	}
+
+	void AVObject::setAlphaProperty(sol::optional<AlphaProperty*> prop) {
+		detachPropertyByType(PropertyType::Alpha);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<FogProperty> AVObject::getFogProperty() const {
+		return static_cast<FogProperty*>(getProperty(PropertyType::Fog).get());
+	}
+
+	void AVObject::setFogProperty(sol::optional<FogProperty*> prop) {
+		detachPropertyByType(PropertyType::Fog);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<MaterialProperty> AVObject::getMaterialProperty() const {
+		return static_cast<MaterialProperty*>(getProperty(PropertyType::Material).get());
+	}
+
+	void AVObject::setMaterialProperty(sol::optional<MaterialProperty*> prop) {
+		detachPropertyByType(PropertyType::Material);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<StencilProperty> AVObject::getStencilProperty() const {
+		return static_cast<StencilProperty*>(getProperty(PropertyType::Stencil).get());
+	}
+
+	void AVObject::setStencilProperty(sol::optional<StencilProperty*> prop) {
+		detachPropertyByType(PropertyType::Stencil);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<TexturingProperty> AVObject::getTexturingProperty() const {
+		return static_cast<TexturingProperty*>(getProperty(PropertyType::Texturing).get());
+	}
+
+	void AVObject::setTexturingProperty(sol::optional<TexturingProperty*> prop) {
+		detachPropertyByType(PropertyType::Texturing);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<VertexColorProperty> AVObject::getVertexColorProperty() const {
+		return static_cast<VertexColorProperty*>(getProperty(PropertyType::VertexColor).get());
+	}
+
+	void AVObject::setVertexColorProperty(sol::optional<VertexColorProperty*> prop) {
+		detachPropertyByType(PropertyType::VertexColor);
+		if (prop) {
+			attachProperty(prop.value());
+		}
+	}
+
+	Pointer<ZBufferProperty> AVObject::getZBufferProperty() const {
+		return static_cast<ZBufferProperty*>(getProperty(PropertyType::ZBuffer).get());
+	}
+
+	void AVObject::setZBufferProperty(sol::optional<ZBufferProperty*> prop) {
+		detachPropertyByType(PropertyType::ZBuffer);
+		if (prop) {
+			attachProperty(prop.value());
+		}
 	}
 
 	void AVObject::update_lua(sol::optional<sol::table> args) {

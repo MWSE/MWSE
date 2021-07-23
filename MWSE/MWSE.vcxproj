@@ -17,6 +17,8 @@
     <ClInclude Include="LuaAttackStartEvent.h" />
     <ClInclude Include="LuaDamagedHandToHandEvent.h" />
     <ClInclude Include="LuaDamageHandToHandEvent.h" />
+    <ClInclude Include="LuaEnchantedItemCreatedEvent.h" />
+    <ClInclude Include="LuaEnchantedItemCreateFailedEvent.h" />
     <ClInclude Include="LuaInfoLinkResolveEvent.h" />
     <ClInclude Include="NIBSAnimationNode.h" />
     <ClInclude Include="LuaBarterOfferEvent.h" />
@@ -173,10 +175,11 @@
     <ClInclude Include="NITextureLua.h" />
     <ClInclude Include="NiTriBasedGeometry.h" />
     <ClInclude Include="NiTriBasedGeometryData.h" />
-    <ClInclude Include="NiTriShapeData.h" />
+    <ClInclude Include="NITriShapeData.h" />
     <ClInclude Include="NIUVController.h" />
     <ClInclude Include="NIUVData.h" />
     <ClInclude Include="NIViewer.h" />
+    <ClInclude Include="LuaPotionBrewFailedEvent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TES3ActorAnimationControllerLua.h" />
     <ClInclude Include="TES3Allocator.h" />
@@ -245,7 +248,7 @@
     <ClInclude Include="TES3PlayerAnimationControllerLua.h" />
     <ClInclude Include="TES3ScriptCompiler.h" />
     <ClInclude Include="TES3SoulGemData.h" />
-    <ClInclude Include="TES3SpellInstanceController.h" />
+    <ClInclude Include="TES3MagicInstanceController.h" />
     <ClInclude Include="TES3StdString.h" />
     <ClInclude Include="TES3StlList.h" />
     <ClInclude Include="TES3Stream.h" />
@@ -502,6 +505,8 @@
     <ClCompile Include="LuaDeterminedActionEvent.cpp" />
     <ClCompile Include="LuaDisableableEventManager.cpp" />
     <ClCompile Include="LuaDisarmTrapEvent.cpp" />
+    <ClCompile Include="LuaEnchantedItemCreatedEvent.cpp" />
+    <ClCompile Include="LuaEnchantedItemCreateFailedEvent.cpp" />
     <ClCompile Include="LuaEquipEvent.cpp" />
     <ClCompile Include="LuaBodyPartsUpdatedEvent.cpp" />
     <ClCompile Include="LuaEquippedEvent.cpp" />
@@ -555,6 +560,7 @@
     <ClCompile Include="LuaPlayItemSoundEvent.cpp" />
     <ClCompile Include="LuaPostInfoResponseEvent.cpp" />
     <ClCompile Include="LuaPotionBrewedEvent.cpp" />
+    <ClCompile Include="LuaPotionBrewFailedEvent.cpp" />
     <ClCompile Include="LuaPowerRechargedEvent.cpp" />
     <ClCompile Include="LuaPreLevelUpEvent.cpp" />
     <ClCompile Include="LuaPreventRestEvent.cpp" />
@@ -619,8 +625,9 @@
     <ClCompile Include="NiTextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="NITimeController.cpp" />
-    <ClCompile Include="NiTriBasedGeometryData.cpp" />
+    <ClCompile Include="NITriBasedGeometryData.cpp" />
     <ClCompile Include="NITriShape.cpp" />
+    <ClCompile Include="NITriShapeData.cpp" />
     <ClCompile Include="NIUVController.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -719,7 +726,7 @@
     <ClCompile Include="TES3Skill.cpp" />
     <ClCompile Include="TES3SoulGemData.cpp" />
     <ClCompile Include="TES3SoundGenerator.cpp" />
-    <ClCompile Include="TES3SpellInstanceController.cpp" />
+    <ClCompile Include="TES3MagicInstanceController.cpp" />
     <ClCompile Include="TES3Static.cpp" />
     <ClCompile Include="TES3StdString.cpp" />
     <ClCompile Include="TES3AttachmentLua.cpp" />

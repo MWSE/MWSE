@@ -19,10 +19,10 @@ Properties
     The normal vector at the point of intersection. The normal is valid only when `returnNormal = true`.
 
 `object`_ (`niAVObject`_)
-    The object of the record.
+    Read-only. The object of the record.
 
 `parent`_ (`niAVObject`_)
-    The parent of the record.
+    Read-only. The parent of the record.
 
 `reference`_ (`tes3reference`_)
     Quick reference to the associated object's reference.
@@ -61,8 +61,8 @@ Properties
 .. _`triangleIndex`: niPickRecord/triangleIndex.html
 .. _`vertexIndex`: niPickRecord/vertexIndex.html
 
-.. _`number`: ../../lua/type/number.html
 .. _`niAVObject`: ../../lua/type/niAVObject.html
+.. _`number`: ../../lua/type/number.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3vector2`: ../../lua/type/tes3vector2.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

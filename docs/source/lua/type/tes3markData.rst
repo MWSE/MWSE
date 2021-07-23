@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `cell`_ (`tes3cell`_)
-    The cell to recall to.
+    Read-only. The cell to recall to.
 
 `position`_ (`tes3vector3`_)
     The position to recall to.
@@ -27,5 +27,5 @@ Properties
 .. _`rotation`: tes3markData/rotation.html
 
 .. _`number`: ../../lua/type/number.html
-.. _`tes3vector3`: ../../lua/type/tes3vector3.html
 .. _`tes3cell`: ../../lua/type/tes3cell.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html

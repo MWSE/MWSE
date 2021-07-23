@@ -24,7 +24,7 @@ namespace mwse {
 			// Basic property binding.
 			usertypeDefinition["maxCondition"] = &TES3::RepairTool::maxCondition;
 			usertypeDefinition["quality"] = &TES3::RepairTool::quality;
-			usertypeDefinition["script"] = sol::readonly_property(&TES3::RepairTool::getScript);
+			usertypeDefinition["script"] = &TES3::RepairTool::script;
 			usertypeDefinition["value"] = &TES3::RepairTool::value;
 			usertypeDefinition["weight"] = &TES3::RepairTool::weight;
 

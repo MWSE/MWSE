@@ -6,6 +6,8 @@ Access to the material flag bitfield. Known material flags can be accessed via o
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 flagBit (`number`_)
     No description available.
 

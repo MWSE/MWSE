@@ -20,8 +20,8 @@ mixChannel (`number`_)
 volume (`number`_)
     Default: ``1.0``. A value between 0.0 and 1.0 to scale the volume off of.
 
-.. _`tes3sound`: ../../../lua/type/tes3sound.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`tes3sound`: ../../../lua/type/tes3sound.html

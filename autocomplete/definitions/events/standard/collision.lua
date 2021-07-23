@@ -3,17 +3,17 @@ return{
     eventData = {
         ["mobile"] = {
             type = "tes3mobileObject",
-            readonly = true,
+            readOnly = true,
             description = "Mobile object which collided with its target reference.",
         },
         ["reference"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "Mobile object's associated reference.",
         },
         ["target"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "Reference which mobile object has collided with.",
         },
     },

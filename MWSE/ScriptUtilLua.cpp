@@ -41,17 +41,17 @@ namespace mwse {
 			//
 
 			state["mwscript"]["activate"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
 				mwscript::Activate(script, reference);
 			};
 			state["mwscript"]["addItem"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				int count = getOptionalParam<double>(params, "count", 1.0);
-				if (item == NULL || count <= 0) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				auto count = getOptionalParam(params, "count", 1);
+				if (item == nullptr || count <= 0) {
 					return false;
 				}
 
@@ -61,11 +61,11 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["addSoulGem"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Creature* creature = getOptionalParamObject<TES3::Creature>(params, "creature");
-				TES3::Misc* soulGem = getOptionalParamObject<TES3::Misc>(params, "soulgem");
-				if (creature == NULL || soulGem == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto creature = getOptionalParamObject<TES3::Creature>(params, "creature");
+				auto soulGem = getOptionalParamObject<TES3::Misc>(params, "soulgem");
+				if (creature == nullptr || soulGem == nullptr) {
 					return false;
 				}
 
@@ -73,12 +73,12 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["addToLevCreature"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::LeveledCreature* list = getOptionalParamObject<TES3::LeveledCreature>(params, "list");
-				TES3::Actor* actor = getOptionalParamObject<TES3::Actor>(params, "creature");
-				short level = getOptionalParam<double>(params, "level", 0.0);
-				if (list == NULL || actor == NULL || level <= 0) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto list = getOptionalParamObject<TES3::LeveledCreature>(params, "list");
+				auto actor = getOptionalParamObject<TES3::Actor>(params, "creature");
+				auto level = getOptionalParam<unsigned short>(params, "level", 0);
+				if (list == nullptr || actor == nullptr || level == 0) {
 					return false;
 				}
 
@@ -86,10 +86,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["addSpell"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Spell* spell = getOptionalParamSpell(params, "spell");
-				if (spell == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto spell = getOptionalParamSpell(params, "spell");
+				if (spell == nullptr) {
 					return false;
 				}
 
@@ -97,12 +97,12 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["addToLevItem"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::BaseObject* list = getOptionalParamObject<TES3::BaseObject>(params, "list");
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				short level = getOptionalParam<double>(params, "level", 0.0);
-				if (list == NULL || item == NULL || level <= 0) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto list = getOptionalParamObject<TES3::BaseObject>(params, "list");
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				auto level = getOptionalParam<unsigned short>(params, "level", 0);
+				if (list == nullptr || item == nullptr || level == 0) {
 					return false;
 				}
 
@@ -110,9 +110,9 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["addTopic"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Dialogue* topic = getOptionalParamDialogue(params, "topic");
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto topic = getOptionalParamDialogue(params, "topic");
 				if (topic == nullptr || topic->type != TES3::DialogueType::Topic) {
 					return false;
 				}
@@ -121,19 +121,19 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["aiTravel"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				double x = getOptionalParam<double>(params, "x", 0.0);
-				double y = getOptionalParam<double>(params, "y", 0.0);
-				double z = getOptionalParam<double>(params, "z", 0.0);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto x = getOptionalParam(params, "x", 0.0f);
+				auto y = getOptionalParam(params, "y", 0.0f);
+				auto z = getOptionalParam(params, "z", 0.0f);
 
 				mwscript::AITravel(script, reference, x, y, z);
 				return true;
 			};
 			state["mwscript"]["disable"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				bool setModified = getOptionalParam<bool>(params, "modify", true);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto setModified = getOptionalParam(params, "modify", true);
 
 				if (setModified) {
 					reference->setObjectModified(true);
@@ -143,11 +143,11 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["drop"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				int count = getOptionalParam<double>(params, "count", 1.0);
-				if (item == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				auto count = getOptionalParam(params, "count", 1);
+				if (item == nullptr || count <= 0) {
 					return false;
 				}
 
@@ -155,11 +155,11 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["enable"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				bool setModified = getOptionalParam<bool>(params, "modify", true);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto setModified = getOptionalParam(params, "modify", true);
 
-				if (reference == NULL) {
+				if (reference == nullptr) {
 					return false;
 				}
 
@@ -171,10 +171,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["equip"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				if (item == NULL || reference == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				if (item == nullptr || reference == nullptr) {
 					return false;
 				}
 
@@ -182,7 +182,7 @@ namespace mwse {
 				if (event::EquipEvent::getEventEnabled()) {
 					auto& luaManager = mwse::lua::LuaManager::getInstance();
 					auto stateHandle = luaManager.getThreadSafeStateHandle();
-					sol::object response = stateHandle.triggerEvent(new event::EquipEvent(reference, item, NULL));
+					sol::object response = stateHandle.triggerEvent(new event::EquipEvent(reference, item, nullptr));
 					if (response.get_type() == sol::type::table) {
 						sol::table eventData = response;
 						if (eventData.get_or("block", false)) {
@@ -195,10 +195,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["explodeSpell"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Spell* spell = getOptionalParamSpell(params, "spell");
-				if (spell == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto spell = getOptionalParamSpell(params, "spell");
+				if (spell == nullptr) {
 					return false;
 				}
 
@@ -206,16 +206,16 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["getButtonPressed"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
 				return mwscript::GetButtonPressed(script, reference);
 			};
 			state["mwscript"]["hasItemEquipped"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				if (item == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				if (item == nullptr) {
 					return false;
 				}
 
@@ -223,63 +223,63 @@ namespace mwse {
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["getDelete"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
 				return BITMASK_TEST(reference->objectFlags, TES3::ObjectFlag::Delete);
 			};
 			state["mwscript"]["getDetected"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Reference* target = getOptionalParamReference(params, "target");
-				if (reference == NULL || target == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto target = getOptionalParamReference(params, "target");
+				if (reference == nullptr || target == nullptr) {
 					return false;
 				}
 
 				return mwscript::GetDetected(script, reference, target);
 			};
 			state["mwscript"]["getDisabled"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 				return mwscript::GetDisabled(script, reference);
 			};
 			state["mwscript"]["getDistance"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Reference* target = getOptionalParamReference(params, "target");
-				if (reference == NULL || target == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto target = getOptionalParamReference(params, "target");
+				if (reference == nullptr || target == nullptr) {
 					return -1.0f;
 				}
 
 				return mwscript::GetDistance(script, reference, target);
 			};
 			state["mwscript"]["getItemCount"] = [](sol::optional<sol::table> params) -> int {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				if (item == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				if (item == nullptr) {
 					return 0;
 				}
 
 				return mwscript::GetItemCount(script, reference, item);
 			};
 			state["mwscript"]["getPCJumping"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
+				auto script = getOptionalParamExecutionScript(params);
 				return mwscript::GetPCJumping(script);
 			};
 			state["mwscript"]["getPCRunning"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
+				auto script = getOptionalParamExecutionScript(params);
 				return mwscript::GetPCRunning(script);
 			};
 			state["mwscript"]["getPCSneaking"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
+				auto script = getOptionalParamExecutionScript(params);
 				return mwscript::GetPCSneaking(script);
 			};
 			state["mwscript"]["getSpellEffects"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Spell* spell = getOptionalParamSpell(params, "spell");
-				if (spell == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto spell = getOptionalParamSpell(params, "spell");
+				if (spell == nullptr) {
 					return false;
 				}
 
@@ -287,46 +287,46 @@ namespace mwse {
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["onActivate"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
-				bool result = reference->testActionFlag(TES3::ActionFlags::OnActivate);
+				auto result = reference->testActionFlag(TES3::ActionFlags::OnActivate);
 				reference->clearActionFlag(TES3::ActionFlags::UseEnabled);
 				reference->clearActionFlag(TES3::ActionFlags::OnActivate);
 				return result;
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["onDeath"] = [](sol::optional<sol::table> params) {
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
-				bool result = reference->testActionFlag(TES3::ActionFlags::OnDeath);
+				auto result = reference->testActionFlag(TES3::ActionFlags::OnDeath);
 				reference->clearActionFlag(TES3::ActionFlags::OnDeath);
 				return result;
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["onKnockout"] = [](sol::optional<sol::table> params) {
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
-				bool result = reference->testActionFlag(TES3::ActionFlags::OnKnockout);
+				auto result = reference->testActionFlag(TES3::ActionFlags::OnKnockout);
 				reference->clearActionFlag(TES3::ActionFlags::OnKnockout);
 				return result;
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["onMurder"] = [](sol::optional<sol::table> params) {
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
-				bool result = reference->testActionFlag(TES3::ActionFlags::OnMurder);
+				auto result = reference->testActionFlag(TES3::ActionFlags::OnMurder);
 				reference->clearActionFlag(TES3::ActionFlags::OnMurder);
 				return result;
 			};
 			state["mwscript"]["placeAtPC"] = [](sol::optional<sol::table> params) -> TES3::Reference* {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::BaseObject* object = getOptionalParamObject<TES3::BaseObject>(params, "object");
-				int count = getOptionalParam<double>(params, "count", 1.0);
-				double distance = getOptionalParam<double>(params, "distance", 256.0);
-				double direction = getOptionalParam<double>(params, "direction", 1.0);
-				if (object == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto object = getOptionalParamObject<TES3::BaseObject>(params, "object");
+				auto count = getOptionalParam(params, "count", 1);
+				auto distance = getOptionalParam(params, "distance", 256.0f);
+				auto direction = getOptionalParam(params, "direction", 1.0f);
+				if (object == nullptr) {
 					return nullptr;
 				}
 
@@ -334,10 +334,10 @@ namespace mwse {
 				return mwscript::lastCreatedPlaceAtPCReference;
 			};
 			state["mwscript"]["playSound"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Sound* sound = getOptionalParamSound(params, "sound");
-				if (sound == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto sound = getOptionalParamSound(params, "sound");
+				if (sound == nullptr) {
 					return false;
 				}
 
@@ -345,24 +345,24 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["position"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				double x = getOptionalParam<double>(params, "x", 0.0);
-				double y = getOptionalParam<double>(params, "y", 0.0);
-				double z = getOptionalParam<double>(params, "z", 0.0);
-				double rotation = getOptionalParam<double>(params, "rotation", 0.0);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto x = getOptionalParam(params, "x", 0.0f);
+				auto y = getOptionalParam(params, "y", 0.0f);
+				auto z = getOptionalParam(params, "z", 0.0f);
+				auto rotation = getOptionalParam(params, "rotation", 0.0f);
 
 				mwscript::Position(script, reference, x, y, z, rotation);
 				return true;
 			};
 			state["mwscript"]["positionCell"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				double x = getOptionalParam<double>(params, "x", 0.0);
-				double y = getOptionalParam<double>(params, "y", 0.0);
-				double z = getOptionalParam<double>(params, "z", 0.0);
-				double rotation = getOptionalParam<double>(params, "rotation", 0.0);
-				std::string cell = getOptionalParam<std::string>(params, "cell", "");
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto x = getOptionalParam(params, "x", 0.0f);
+				auto y = getOptionalParam(params, "y", 0.0f);
+				auto z = getOptionalParam(params, "z", 0.0f);
+				auto rotation = getOptionalParam(params, "rotation", 0.0f);
+				auto cell = getOptionalParam<std::string>(params, "cell", "");
 				if (cell.empty()) {
 					return false;
 				}
@@ -371,11 +371,11 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["removeItem"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
-				int count = getOptionalParam<double>(params, "count", 1.0);
-				if (item == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto item = getOptionalParamObject<TES3::Item>(params, "item");
+				auto count = getOptionalParam(params, "count", 1);
+				if (item == nullptr) {
 					return false;
 				}
 
@@ -385,10 +385,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["removeSpell"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Spell* spell = getOptionalParamSpell(params, "spell");
-				if (spell == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto spell = getOptionalParamSpell(params, "spell");
+				if (spell == nullptr) {
 					return false;
 				}
 
@@ -396,9 +396,9 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["scriptRunning"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Script* targetScript = getOptionalParamScript(params, "script");
-				if (targetScript == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto targetScript = getOptionalParamScript(params, "script");
+				if (targetScript == nullptr) {
 					return false;
 				}
 
@@ -406,18 +406,18 @@ namespace mwse {
 			};
 			// Obsolete. Do not document.
 			state["mwscript"]["setDelete"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
 
-				reference->setDeleted(getOptionalParam<bool>(params, "delete", true));
+				reference->setDeleted(getOptionalParam(params, "delete", true));
 				reference->setObjectModified(true);
 
 				return true;
 			};
 			state["mwscript"]["setLevel"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				short level = getOptionalParam<double>(params, "level", 0);
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto level = getOptionalParam<short>(params, "level", 0);
 				if (level <= 0) {
 					return false;
 				}
@@ -426,10 +426,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["startCombat"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Reference* target = getOptionalParamReference(params, "target");
-				if (target == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto target = getOptionalParamReference(params, "target");
+				if (target == nullptr) {
 					return false;
 				}
 
@@ -437,10 +437,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["startScript"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Script* targetScript = getOptionalParamScript(params, "script");
-				if (targetScript == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto targetScript = getOptionalParamScript(params, "script");
+				if (targetScript == nullptr) {
 					return false;
 				}
 
@@ -448,9 +448,9 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["stopCombat"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				if (reference == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				if (reference == nullptr) {
 					return false;
 				}
 
@@ -458,10 +458,10 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["stopScript"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Script* targetScript = getOptionalParamScript(params, "script");
-				if (targetScript == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto targetScript = getOptionalParamScript(params, "script");
+				if (targetScript == nullptr) {
 					targetScript = script;
 				}
 
@@ -473,10 +473,10 @@ namespace mwse {
 				return false;
 			};
 			state["mwscript"]["stopSound"] = [](sol::optional<sol::table> params) {
-				TES3::Script* script = getOptionalParamExecutionScript(params);
-				TES3::Reference* reference = getOptionalParamExecutionReference(params);
-				TES3::Sound* sound = getOptionalParamSound(params, "sound");
-				if (sound == NULL) {
+				auto script = getOptionalParamExecutionScript(params);
+				auto reference = getOptionalParamExecutionReference(params);
+				auto sound = getOptionalParamSound(params, "sound");
+				if (sound == nullptr) {
 					return false;
 				}
 
@@ -484,7 +484,7 @@ namespace mwse {
 				return true;
 			};
 			state["mwscript"]["wakeUpPC"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::WakeUpPC);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::WakeUpPC);
 			};
 
 			//
@@ -493,147 +493,147 @@ namespace mwse {
 
 			// General functions.
 			state["mge"]["getScreenHeight"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetHeight);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetHeight);
 				return Stack::getInstance().popLong();
 			};
 			state["mge"]["getScreenWidth"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetWidth);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetWidth);
 				return Stack::getInstance().popLong();
 			};
 			state["mge"]["getVersion"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetVersion);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetVersion);
 				return Stack::getInstance().popLong();
 			};
 			state["mge"]["log"] = [](std::string string) {
 				Stack::getInstance().pushString(string);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEOutputDebugString);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEOutputDebugString);
 			};
 
 			// HUD-related functions.
 			state["mge"]["clearHUD"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWipeAll);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWipeAll);
 			};
 			state["mge"]["disableHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEDisableHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEDisableHUD);
 				}
 				else {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDDisableHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDDisableHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["enableHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEEnableHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEEnableHUD);
 				}
 				else {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDEnableHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDEnableHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["freeHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEFreeHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEFreeHUD);
 				}
 				else {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDFreeHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDFreeHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["fullscreenHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEFullscreenHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEFullscreenHUD);
 				}
 				else {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDFullscreenHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDFullscreenHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["loadHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string texture = getOptionalParam<std::string>(params, "texture", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto texture = getOptionalParam<std::string>(params, "texture", "");
 				if (hud.empty() || texture.empty()) {
 					return false;
 				}
 
 				Stack::getInstance().pushString(texture);
 				Stack::getInstance().pushString(hud);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGELoadHUD);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGELoadHUD);
 
 				if (getOptionalParam<bool>(params, "enable", false)) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEEnableHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEEnableHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["positionHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				double x = getOptionalParam<double>(params, "x", 0.0);
-				double y = getOptionalParam<double>(params, "y", 0.0);
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto x = getOptionalParam(params, "x", 0.0f);
+				auto y = getOptionalParam(params, "y", 0.0f);
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushFloat(y);
 					Stack::getInstance().pushFloat(x);
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEPositionHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEPositionHUD);
 				}
 				else {
 					Stack::getInstance().pushFloat(y);
 					Stack::getInstance().pushFloat(x);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDPositionHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDPositionHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["scaleHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				double x = getOptionalParam<double>(params, "x", 0.0);
-				double y = getOptionalParam<double>(params, "y", 0.0);
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto x = getOptionalParam(params, "x", 0.0f);
+				auto y = getOptionalParam(params, "y", 0.0f);
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushFloat(y);
 					Stack::getInstance().pushFloat(x);
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEScaleHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEScaleHUD);
 				}
 				else {
 					Stack::getInstance().pushFloat(y);
 					Stack::getInstance().pushFloat(x);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDScaleHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDScaleHUD);
 				}
 
 				return true;
 			};
 			state["mge"]["selectHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 				if (hud.empty()) {
 					return false;
 				}
 
 				Stack::getInstance().pushString(hud);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWithHUD);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWithHUD);
 				return true;
 			};
 			state["mge"]["setHUDEffect"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string effect = getOptionalParam<std::string>(params, "effect", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto effect = getOptionalParam<std::string>(params, "effect", "");
 				if (effect.empty()) {
 					return false;
 				}
@@ -641,77 +641,77 @@ namespace mwse {
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(effect);
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEChangeHUDEffect);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEChangeHUDEffect);
 				}
 				else {
 					Stack::getInstance().pushString(effect);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDChangeHUDEffect);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDChangeHUDEffect);
 				}
 
 				return true;
 			};
 			state["mge"]["setHUDEffectFloat"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
-				float value = getOptionalParam<double>(params, "value", 0.0);
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
+				float value = getOptionalParam(params, "value", 0.0f);
 				if (variable.empty()) {
 					return false;
 				}
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWithHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWithHUD);
 				}
 
 				Stack::getInstance().pushFloat(value);
 				Stack::getInstance().pushString(variable);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDSetHUDEffectFloat);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDSetHUDEffectFloat);
 
 				return true;
 			};
 			state["mge"]["setHUDEffectLong"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
-				long value = getOptionalParam<double>(params, "value", 0.0);
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
+				auto value = getOptionalParam(params, "value", 0);
 				if (variable.empty()) {
 					return false;
 				}
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWithHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWithHUD);
 				}
 
 				Stack::getInstance().pushLong(value);
 				Stack::getInstance().pushString(variable);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDSetHUDEffectLong);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDSetHUDEffectLong);
 
 				return true;
 			};
 			state["mge"]["setHUDEffectVector4"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
-				sol::table values = getOptionalParam<sol::table>(params, "value", sol::nil);
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
+				auto values = getOptionalParam<sol::table>(params, "value", sol::nil);
 				if (variable.empty() || values == sol::nil || values.size() != 4) {
 					return false;
 				}
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWithHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWithHUD);
 				}
 
 				for (int i = 4; i > 0; i--) {
 					Stack::getInstance().pushFloat(values[i]);
 				}
 				Stack::getInstance().pushString(variable);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDSetHUDEffectVec);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDSetHUDEffectVec);
 
 				return true;
 			};
 			state["mge"]["setHUDTexture"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
-				std::string texture = getOptionalParam<std::string>(params, "texture", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
+				auto texture = getOptionalParam<std::string>(params, "texture", "");
 				if (texture.empty()) {
 					return false;
 				}
@@ -719,53 +719,53 @@ namespace mwse {
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(texture);
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEChangeHUDTexture);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEChangeHUDTexture);
 				}
 				else {
 					Stack::getInstance().pushString(texture);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGENIDChangeHUDTexture);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGENIDChangeHUDTexture);
 				}
 
 				return true;
 			};
 			state["mge"]["unselectHUD"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "hud", "");
+				auto hud = getOptionalParam<std::string>(params, "hud", "");
 				if (hud.empty()) {
 					return false;
 				}
 
 				Stack::getInstance().pushString(hud);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGECancelWithHUD);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGECancelWithHUD);
 				return true;
 			};
 
 			// Shader-related functions.
 			state["mge"]["disableShader"] = [](sol::optional<sol::table> params) {
-				std::string shader = getOptionalParam<std::string>(params, "shader", "");
+				auto shader = getOptionalParam<std::string>(params, "shader", "");
 				if (shader.empty()) {
 					return false;
 				}
 
 				Stack::getInstance().pushString(shader);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEDisableShader);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEDisableShader);
 
 				return true;
 			};
 			state["mge"]["enableShader"] = [](sol::optional<sol::table> params) {
-				std::string shader = getOptionalParam<std::string>(params, "shader", "");
+				auto shader = getOptionalParam<std::string>(params, "shader", "");
 				if (shader.empty()) {
 					return false;
 				}
 
 				Stack::getInstance().pushString(shader);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEEnableShader);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEEnableShader);
 
 				return true;
 			};
 			state["mge"]["setShaderFloat"] = [](sol::optional<sol::table> params) {
-				std::string shader = getOptionalParam<std::string>(params, "shader", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
-				float value = getOptionalParam<double>(params, "value", 0.0);
+				auto shader = getOptionalParam<std::string>(params, "shader", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
+				auto value = getOptionalParam(params, "value", 0.0f);
 				if (shader.empty() || variable.empty()) {
 					return false;
 				}
@@ -773,14 +773,14 @@ namespace mwse {
 				Stack::getInstance().pushFloat(value);
 				Stack::getInstance().pushString(variable);
 				Stack::getInstance().pushString(shader);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEShaderSetFloat);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEShaderSetFloat);
 
 				return true;
 			};
 			state["mge"]["setShaderLong"] = [](sol::optional<sol::table> params) {
-				std::string shader = getOptionalParam<std::string>(params, "shader", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
-				long value = getOptionalParam<double>(params, "value", 0.0);
+				auto shader = getOptionalParam<std::string>(params, "shader", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
+				auto value = getOptionalParam(params, "value", 0);
 				if (shader.empty() || variable.empty()) {
 					return false;
 				}
@@ -788,13 +788,13 @@ namespace mwse {
 				Stack::getInstance().pushLong(value);
 				Stack::getInstance().pushString(variable);
 				Stack::getInstance().pushString(shader);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEShaderSetLong);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEShaderSetLong);
 
 				return true;
 			};
 			state["mge"]["setShaderVector4"] = [](sol::optional<sol::table> params) {
-				std::string hud = getOptionalParam<std::string>(params, "shader", "");
-				std::string variable = getOptionalParam<std::string>(params, "variable", "");
+				auto hud = getOptionalParam<std::string>(params, "shader", "");
+				auto variable = getOptionalParam<std::string>(params, "variable", "");
 				sol::table values = getOptionalParam<sol::table>(params, "value", sol::nil);
 				if (variable.empty() || values == sol::nil || values.size() != 4) {
 					return false;
@@ -802,127 +802,127 @@ namespace mwse {
 
 				if (!hud.empty()) {
 					Stack::getInstance().pushString(hud);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEWithHUD);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEWithHUD);
 				}
 
 				for (int i = 4; i > 0; i--) {
 					Stack::getInstance().pushFloat(values[i]);
 				}
 				Stack::getInstance().pushString(variable);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEShaderSetVector);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEShaderSetVector);
 
 				return true;
 			};
 
 			// Camera zoom functions.
 			state["mge"]["disableZoom"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEDisableZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEDisableZoom);
 			};
 			state["mge"]["enableZoom"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEEnableZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEEnableZoom);
 			};
 			state["mge"]["toggleZoom"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEToggleZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEToggleZoom);
 			};
 			state["mge"]["zoomIn"] = [](sol::optional<sol::table> params) {
-				double amount = getOptionalParam<double>(params, "amount", 0.0);
+				auto amount = getOptionalParam(params, "amount", 0.0f);
 
 				if (amount == 0.0) {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEZoomIn);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEZoomIn);
 				}
 				else {
 					Stack::getInstance().pushFloat(amount);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEZoomInBy);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEZoomInBy);
 				}
 			};
 			state["mge"]["zoomOut"] = [](sol::optional<sol::table> params) {
-				double amount = getOptionalParam<double>(params, "amount", 0.0);
+				auto amount = getOptionalParam(params, "amount", 0.0f);
 
 				if (amount == 0.0) {
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEZoomOut);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEZoomOut);
 				}
 				else {
 					Stack::getInstance().pushFloat(amount);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEZoomOutBy);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEZoomOutBy);
 				}
 			};
 			state["mge"]["setZoom"] = [](sol::optional<sol::table> params) {
-				double amount = getOptionalParam<double>(params, "amount", 0.0);
-				bool animate = getOptionalParam<double>(params, "animate", false);
+				auto amount = getOptionalParam(params, "amount", 0.0f);
+				auto animate = getOptionalParam(params, "animate", false);
 
 				if (animate) {
 					Stack::getInstance().pushFloat(amount);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEZoom);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEZoom);
 				}
 				else {
 					Stack::getInstance().pushFloat(amount);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGESetZoom);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGESetZoom);
 				}
 			};
 			state["mge"]["getZoom"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetZoom);
 				return Stack::getInstance().popFloat();
 			};
 			state["mge"]["stopZoom"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEStopZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEStopZoom);
 			};
 
 			// Camera shake functions.
 			state["mge"]["enableCameraShake"] = [](sol::optional<sol::table> params) {
-				double magnitude = getOptionalParam<double>(params, "magnitude", 0.0);
+				auto magnitude = getOptionalParam(params, "magnitude", 0.0f);
 				if (magnitude != 0.0) {
 					Stack::getInstance().pushFloat(magnitude);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGESetCameraShakeMagnitude);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGESetCameraShakeMagnitude);
 				}
 
-				double acceleration = getOptionalParam<double>(params, "acceleration", 0.0);
+				auto acceleration = getOptionalParam(params, "acceleration", 0.0f);
 				if (acceleration != 0.0) {
 					Stack::getInstance().pushFloat(acceleration);
-					mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGECameraShakeZoom);
+					mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGECameraShakeZoom);
 				}
 
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEEnableCameraShake);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEEnableCameraShake);
 			};
 			state["mge"]["disableCameraShake"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEDisableCameraShake);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEDisableCameraShake);
 			};
 			state["mge"]["setCameraShakeMagnitude"] = [](sol::optional<sol::table> params) {
-				double magnitude = getOptionalParam<double>(params, "magnitude", 0.0);
+				auto magnitude = getOptionalParam(params, "magnitude", 0.0f);
 				Stack::getInstance().pushFloat(magnitude);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGESetCameraShakeMagnitude);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGESetCameraShakeMagnitude);
 			};
 			state["mge"]["setCameraShakeAcceleration"] = [](sol::optional<sol::table> params) {
-				double acceleration = getOptionalParam<double>(params, "acceleration", 0.0);
+				auto acceleration = getOptionalParam(params, "acceleration", 0.0f);
 				Stack::getInstance().pushFloat(acceleration);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGECameraShakeZoom);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGECameraShakeZoom);
 			};
 
 			// Camera rotation functions.
 			state["mge"]["getScreenRotation"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetScreenRotation);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetScreenRotation);
 				return Stack::getInstance().popFloat();
 			};
 			state["mge"]["modScreenRotation"] = [](sol::optional<sol::table> params) {
-				double rotation = getOptionalParam<double>(params, "rotation", 0.0);
+				auto rotation = getOptionalParam(params, "rotation", 0.0f);
 				Stack::getInstance().pushFloat(rotation);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGERotateScreenBy);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGERotateScreenBy);
 			};
 			state["mge"]["setScreenRotation"] = [](sol::optional<sol::table> params) {
-				double rotation = getOptionalParam<double>(params, "rotation", 0.0);
+				auto rotation = getOptionalParam(params, "rotation", 0.0f);
 				Stack::getInstance().pushFloat(rotation);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGERotateScreen);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGERotateScreen);
 			};
 			state["mge"]["startScreenRotation"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEScreenSpin);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEScreenSpin);
 			};
 			state["mge"]["stopScreenRotation"] = []() {
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEStopSpinSpin);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEStopSpinSpin);
 			};
 
 			// MGE XE rendering functions.
 			state["mge"]["setWeatherScattering"] = [](sol::optional<sol::table> params) {
-				sol::table outscatter = getOptionalParam<sol::table>(params, "outscatter", sol::nil);
-				sol::table inscatter = getOptionalParam<sol::table>(params, "inscatter", sol::nil);
+				auto outscatter = getOptionalParam<sol::table>(params, "outscatter", sol::nil);
+				auto inscatter = getOptionalParam<sol::table>(params, "inscatter", sol::nil);
 
 				if (outscatter == sol::nil || outscatter.size() != 3 || inscatter == sol::nil || inscatter.size() != 3) {
 					return false;
@@ -931,19 +931,21 @@ namespace mwse {
 				for (int i = 3; i > 0; i--) {
 					Stack::getInstance().pushFloat(inscatter[i]);
 				}
+
 				for (int i = 3; i > 0; i--) {
 					Stack::getInstance().pushFloat(outscatter[i]);
 				}
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::xSetWeatherScattering);
+
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::xSetWeatherScattering);
 				return true;
 			};
 			state["mge"]["getWeatherScattering"] = []() {
 				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-				sol::state& state = stateHandle.state;
-				sol::table inscatter = state.create_table();
-				sol::table outscatter = state.create_table();
+				auto& state = stateHandle.state;
+				auto inscatter = state.create_table();
+				auto outscatter = state.create_table();
 
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::xGetWeatherScattering);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::xGetWeatherScattering);
 				inscatter[3] = Stack::getInstance().popFloat();
 				inscatter[2] = Stack::getInstance().popFloat();
 				inscatter[1] = Stack::getInstance().popFloat();
@@ -955,31 +957,31 @@ namespace mwse {
 			};
 			state["mge"]["getWeatherDLFog"] = [](int weatherID) {
 				Stack::getInstance().pushLong(weatherID);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetWeatherDLFog);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetWeatherDLFog);
 
-				float fogOffset = Stack::getInstance().popFloat();
-				float fogDistMult = Stack::getInstance().popFloat();
+				auto fogOffset = Stack::getInstance().popFloat();
+				auto fogDistMult = Stack::getInstance().popFloat();
 				return std::make_tuple(fogDistMult, fogOffset);
 			};
 			state["mge"]["setWeatherDLFog"] = [](int weatherID, float fogDistMult, float fogOffset) {
 				Stack::getInstance().pushFloat(fogOffset);
 				Stack::getInstance().pushFloat(fogDistMult);
 				Stack::getInstance().pushLong(weatherID);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGESetWeatherDLFog);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGESetWeatherDLFog);
 			};
 			state["mge"]["getWeatherPPLLight"] = [](int weatherID) {
 				Stack::getInstance().pushLong(weatherID);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGEGetWeatherPPLLight);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetWeatherPPLLight);
 
-				float ambMult = Stack::getInstance().popFloat();
-				float sunMult = Stack::getInstance().popFloat();
+				auto ambMult = Stack::getInstance().popFloat();
+				auto sunMult = Stack::getInstance().popFloat();
 				return std::make_tuple(sunMult, ambMult);
 			};
 			state["mge"]["setWeatherPPLLight"] = [](int weatherID, float sunMult, float ambMult) {
 				Stack::getInstance().pushFloat(ambMult);
 				Stack::getInstance().pushFloat(sunMult);
 				Stack::getInstance().pushLong(weatherID);
-				mwscript::RunOriginalOpCode(NULL, NULL, OpCode::MGESetWeatherPPLLight);
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGESetWeatherPPLLight);
 			};
 		}
 	}

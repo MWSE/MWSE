@@ -10,7 +10,7 @@ Properties
     The deleted state of the object.
 
 `dialogue`_ (`tes3iterator`_)
-    A collection of dialogues associated with the quest.
+    Read-only. A collection of dialogues associated with the quest.
 
 `disabled`_ (`boolean`_)
     The disabled state of the object.
@@ -19,7 +19,7 @@ Properties
     The unique identifier for the object.
 
 `info`_ (`tes3iterator`_)
-    A collection of dialogue info associated with the quest.
+    Read-only. A collection of dialogue info associated with the quest.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -33,6 +33,9 @@ Properties
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -45,6 +48,7 @@ Properties
     tes3quest/objectFlags
     tes3quest/objectType
     tes3quest/sourceMod
+    tes3quest/supportsLuaData
 
 .. _`deleted`: tes3quest/deleted.html
 .. _`dialogue`: tes3quest/dialogue.html
@@ -55,8 +59,9 @@ Properties
 .. _`objectFlags`: tes3quest/objectFlags.html
 .. _`objectType`: tes3quest/objectType.html
 .. _`sourceMod`: tes3quest/sourceMod.html
+.. _`supportsLuaData`: tes3quest/supportsLuaData.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html

@@ -47,6 +47,6 @@ effectIndex
 `number`_. Read-only. The index of the effect in source's effects list.
 
 .. _`number`: ../../lua/type/number.html
+.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html

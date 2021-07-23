@@ -36,9 +36,9 @@ source
 
 `number`_. Read-only. The source.
 
-.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
 .. _`bool`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
+.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
+.. _`tes3object`: ../../lua/type/tes3object.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

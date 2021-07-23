@@ -22,7 +22,7 @@ Properties
     The human-facing name of the given object.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `runTimeTypeInformation`_ (`niRTTI`_)
     The runtime type information for this object.
@@ -99,9 +99,9 @@ Methods
 .. _`removeAllControllers`: niMaterialProperty/removeAllControllers.html
 .. _`removeController`: niMaterialProperty/removeController.html
 
-.. _`niObject`: ../../lua/type/niObject.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
 .. _`niColor`: ../../lua/type/niColor.html
+.. _`niObject`: ../../lua/type/niObject.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html

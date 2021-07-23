@@ -42,6 +42,12 @@ namespace TES3 {
 		IteratedList<MobileProjectile*> activeProjectiles; // 0x0
 		NI::Pointer<NI::Node> worldProjectileRoot; // 0x14
 		CriticalSection criticalSection; // 0x18
+
+		//
+		// Custom functions.
+		//
+
+		void resolveCollisions(float deltaTime);
 	};
 	static_assert(sizeof(ProjectileController) == 0x3C, "TES3::ProjectileController failed size validation");
 

@@ -9,11 +9,14 @@ Properties
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
+`calculateFromAllLevels`_ (`boolean`_)
+    If true, the leveled list is picked from the entire level range, instead of just the highest.
+
 `chanceForNothing`_ (`number`_)
-    The percent chance, from 0 to 100, for no object to be chosen.
+    Read-only. The percent chance, from 0 to 100, for no object to be chosen.
 
 `count`_ (`number`_)
-    The number of possible options in the leveled object container.
+    Read-only. The number of possible options in the leveled object container.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -22,13 +25,13 @@ Properties
     The disabled state of the object.
 
 `flags`_ (`number`_)
-    A numerical representation of bit flags for the object.
+    Read-only. A numerical representation of bit flags for the object.
 
 `id`_ (`string`_)
     The unique identifier for the object.
 
 `list`_ (`tes3iterator`_)
-    The collection that itself, containing tes3leveledListNodes.
+    Read-only. The collection that itself, containing tes3leveledListNodes.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -63,10 +66,14 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
     tes3leveledCreature/boundingBox
+    tes3leveledCreature/calculateFromAllLevels
     tes3leveledCreature/chanceForNothing
     tes3leveledCreature/count
     tes3leveledCreature/deleted
@@ -85,8 +92,10 @@ Properties
     tes3leveledCreature/sceneReference
     tes3leveledCreature/sourceMod
     tes3leveledCreature/stolenList
+    tes3leveledCreature/supportsLuaData
 
 .. _`boundingBox`: tes3leveledCreature/boundingBox.html
+.. _`calculateFromAllLevels`: tes3leveledCreature/calculateFromAllLevels.html
 .. _`chanceForNothing`: tes3leveledCreature/chanceForNothing.html
 .. _`count`: tes3leveledCreature/count.html
 .. _`deleted`: tes3leveledCreature/deleted.html
@@ -105,6 +114,7 @@ Properties
 .. _`sceneReference`: tes3leveledCreature/sceneReference.html
 .. _`sourceMod`: tes3leveledCreature/sourceMod.html
 .. _`stolenList`: tes3leveledCreature/stolenList.html
+.. _`supportsLuaData`: tes3leveledCreature/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
@@ -119,12 +129,12 @@ Methods
 
 .. _`pickFrom`: tes3leveledCreature/pickFrom.html
 
-.. _`tes3creature`: ../../lua/type/tes3creature.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3creature`: ../../lua/type/tes3creature.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

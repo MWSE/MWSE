@@ -8,5 +8,5 @@ Returns
 
 `string`_, `nil`_.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`nil`: ../../../lua/type/nil.html
+.. _`string`: ../../../lua/type/string.html

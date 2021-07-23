@@ -8,6 +8,8 @@ The capture is always removed when the element is destroyed. The capture may als
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 capture (`boolean`_)
     Turns on mouse capture for the element currently processing a mouse event if true, sending all further mouse events to that element. Turns off capture if false.
 

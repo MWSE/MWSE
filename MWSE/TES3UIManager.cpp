@@ -32,7 +32,6 @@ namespace TES3 {
 
 		const auto TES3_ui_registerID = reinterpret_cast<UI_ID (__cdecl *)(const char *)>(0x58DF10);
 		const auto TES3_ui_createChildElement = reinterpret_cast<Element* (__thiscall *)(Element*)>(0x582B50);
-		const auto TES3_ui_reattachToParent = reinterpret_cast<void (__thiscall *)(Element*, Element*)>(0x57B850);
 		const auto TES3_ui_createMenu = reinterpret_cast<Element* (__cdecl *)(UI_ID)>(0x595400);
 		const auto TES3_ui_createTooltipMenu = reinterpret_cast<Element* (__cdecl *)(UI_ID)>(0x595A40);
 		const auto TES3_ui_findMenu = reinterpret_cast<Element* (__cdecl*)(UI_ID)>(0x595370);
@@ -251,7 +250,7 @@ namespace TES3 {
 				*p = 0;
 
 				// Place menu in main layer.
-				TES3_ui_reattachToParent(help, *TES3_uiMainRoot);
+				help->reattachToParent(*TES3_uiMainRoot);
 
 				// Add an empty dummy menu to staisfy game code that expects the help menu.
 				createTooltipMenu(static_cast<UI_ID>(Property::HelpMenu));

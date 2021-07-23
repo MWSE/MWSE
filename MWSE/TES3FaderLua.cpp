@@ -23,9 +23,6 @@ namespace mwse {
 			usertypeDefinition["setTexture"] = &TES3::Fader::setTexture;
 			usertypeDefinition["updateMaterialProperty"] = &TES3::Fader::updateMaterialProperty;
 
-			// Old bindings. Kept for backwards compatibility.
-			usertypeDefinition["removeMaterialProperty"] = &TES3::Fader::updateMaterialProperty;
-
 			// Expose writing active state as mapping for activate/deactivate.
 			usertypeDefinition["active"] = sol::property(&TES3::Fader::isActive, &TES3::Fader::setActive);
 
@@ -36,6 +33,9 @@ namespace mwse {
 
 			// Expose setColor fancier.
 			usertypeDefinition["setColor"] = &TES3::Fader::setColor_lua;
+
+			// Deprecated bindings. Kept for backwards compatibility.
+			usertypeDefinition["removeMaterialProperty"] = &TES3::Fader::updateMaterialProperty;
 		}
 	}
 }

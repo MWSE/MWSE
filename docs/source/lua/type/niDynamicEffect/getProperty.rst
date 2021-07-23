@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 type (`number`_)
     No description available.
 
-.. _`number`: ../../../lua/type/number.html
 .. _`niProperty`: ../../../lua/type/niProperty.html
+.. _`number`: ../../../lua/type/number.html

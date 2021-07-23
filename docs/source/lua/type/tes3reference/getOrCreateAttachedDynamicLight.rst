@@ -15,6 +15,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 light (`niPointLight`_)
     Optional. No description available.
 

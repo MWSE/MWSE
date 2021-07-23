@@ -7,12 +7,19 @@
 #include "MemoryUtil.h"
 #include "Log.h"
 
+#include "TES3GameFile.h"
 #include "TES3Inventory.h"
+#include "TES3ItemData.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3MobileObject.h"
+#include "TES3UIElement.h"
+#include "TES3UIInventoryTile.h"
 
 namespace mwse {
 	namespace lua {
+		sol::table convertFrom;
+		sol::table convertTo;
+
 		// Structure that keeps track of an overwritten C function, telling how we convert arguments before sending them to lua.
 		class FunctionDefinition {
 		public:
@@ -122,10 +129,10 @@ namespace mwse {
 			else {
 				if (returnValue.is<double>()) {
 					// Fix this! Need some way of defining the return type.
-					return returnValue.as<double>();
+					return (DWORD)returnValue.as<double>();
 				}
 				else if (returnValue.is<bool>()) {
-					return returnValue.as<bool>();
+					return (DWORD)returnValue.as<bool>();
 				}
 				else if (returnValue.is<void*>()) {
 					return (DWORD)returnValue.as<void*>();
@@ -271,7 +278,7 @@ namespace mwse {
 				throw std::invalid_argument("Invalid 'address' parameter provided.");
 			}
 
-			sol::optional<DWORD> byte = params["byte"];
+			sol::optional<BYTE> byte = params["byte"];
 			if (!byte) {
 				throw std::invalid_argument("Invalid 'byte' parameter provided.");
 			}
@@ -295,8 +302,8 @@ namespace mwse {
 			BYTE* data = new BYTE[byteCount];
 			for (size_t i = 0; i < byteCount; i++) {
 				sol::object byte = bytes.value()[i + 1];
-				if (byte.is<double>()) {
-					data[i] = byte.as<double>();
+				if (byte.is<BYTE>()) {
+					data[i] = byte.as<BYTE>();
 				}
 				else {
 					data[i] = 0x90;
@@ -323,12 +330,12 @@ namespace mwse {
 			DWORD length = params["length"].get_or(5U);
 
 			sol::object newCall = params["call"];
-			if (newCall.is<double>()) {
+			if (newCall.is<DWORD>()) {
 				if (previousCall) {
-					return genCallEnforced(address.value(), previousCall.value(), newCall.as<double>(), length);
+					return genCallEnforced(address.value(), previousCall.value(), newCall.as<DWORD>(), length);
 				}
 				else {
-					genCallUnprotected(address.value(), newCall.as<double>(), length);
+					genCallUnprotected(address.value(), newCall.as<DWORD>(), length);
 					return true;
 				}
 			}
@@ -498,7 +505,7 @@ namespace mwse {
 
 			memory["reinterpret"] = reinterpret;
 
-			auto convertTo = memory.create_named("convertTo");
+			convertTo = memory.create_named("convertTo");
 			convertTo["bool"] = convertArgTo<bool>;
 			convertTo["byte"] = convertArgTo<BYTE>;
 			convertTo["char"] = convertArgTo<char>;
@@ -508,13 +515,18 @@ namespace mwse {
 			convertTo["string"] = convertArgTo<const char*>;
 			convertTo["tes3equipmentStackIterator"] = convertArgTo<LegacyIteratedList<TES3::EquipmentStack*>*>;
 			convertTo["tes3equipmentStackIteratorNode"] = convertArgTo<LegacyIteratedList<TES3::EquipmentStack*>::Node*>;
+			convertTo["tes3gameFile"] = convertArgTo<TES3::GameFile*>;
 			convertTo["tes3inventory"] = convertArgTo<TES3::Inventory*>;
+			convertTo["tes3inventoryTile"] = convertArgTo<TES3::UI::InventoryTile*>;
+			convertTo["tes3itemData"] = convertArgTo<TES3::ItemData*>;
+			convertTo["tes3itemStack"] = convertArgTo<TES3::ItemStack*>;
 			convertTo["tes3magicEffectInstance"] = convertArgTo<TES3::MagicEffectInstance*>;
 			convertTo["tes3mobileObject"] = convertArgTo<TES3::MobileObject*>;
 			convertTo["tes3object"] = convertArgTo<TES3::BaseObject*>;
+			convertTo["tes3uiElement"] = convertArgTo<TES3::UI::Element*>;
 			convertTo["uint"] = convertArgTo<DWORD>;
 
-			auto convertFrom = memory.create_named("convertFrom");
+			convertFrom = memory.create_named("convertFrom");
 			convertFrom["bool"] = convertArgFrom<bool>;
 			convertFrom["byte"] = convertArgFrom<byte>;
 			convertFrom["char"] = convertArgFrom<char>;
@@ -524,10 +536,15 @@ namespace mwse {
 			convertFrom["string"] = convertArgFrom<const char*>;
 			convertFrom["tes3equipmentStackIterator"] = convertArgFrom<LegacyIteratedList<TES3::EquipmentStack*>*>;
 			convertFrom["tes3equipmentStackIteratorNode"] = convertArgFrom<LegacyIteratedList<TES3::EquipmentStack*>::Node*>;
+			convertFrom["tes3gameFile"] = convertArgFrom<TES3::GameFile*>;
 			convertFrom["tes3inventory"] = convertArgFrom<TES3::Inventory*>;
+			convertFrom["tes3inventoryTile"] = convertArgFrom<TES3::UI::InventoryTile*>;
+			convertFrom["tes3itemData"] = convertArgFrom<TES3::ItemData*>;
+			convertFrom["tes3itemStack"] = convertArgFrom<TES3::ItemStack*>;
 			convertFrom["tes3magicEffectInstance"] = convertArgFrom<TES3::MagicEffectInstance*>;
 			convertFrom["tes3mobileObject"] = convertArgFrom<TES3::MobileObject*>;
 			convertFrom["tes3object"] = convertArgFrom<TES3::BaseObject*>;
+			convertFrom["tes3uiElement"] = convertArgFrom<TES3::UI::Element*>;
 			convertFrom["uint"] = convertArgFrom<unsigned int>;
 
 			//

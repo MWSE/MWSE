@@ -62,9 +62,40 @@ namespace mwse {
 			return (script->shortCount + script->longCount + script->floatCount);
 		}
 
+		sol::table ScriptContext::getVariableData(sol::this_state ts) {
+			TES3::ScriptVariables* vars = getScriptVariables();
+			if (vars == nullptr) {
+				return sol::nil;
+			}
+
+			sol::state_view state = ts;
+
+			sol::table results = state.create_table();
+
+			// Append any short variables.
+			for (int i = 0; i < script->shortCount; i++) {
+				const char* varName = script->shortVarNamePointers[i];
+				results[varName] = state.create_table_with("type", 's', "index", i, "value", vars->shortVarValues[i]);
+			}
+
+			// Append any long variables.
+			for (int i = 0; i < script->longCount; i++) {
+				const char* varName = script->longVarNamePointers[i];
+				results[varName] = state.create_table_with("type", 'l', "index", i, "value", vars->longVarValues[i]);
+			}
+
+			// Append any float variables.
+			for (int i = 0; i < script->floatCount; i++) {
+				const char* varName = script->floatVarNamePointers[i];
+				results[varName] = state.create_table_with("type", 'f', "index", i, "value", vars->floatVarValues[i]);
+			}
+
+			return results;
+		}
+
 		TES3::ScriptVariables* ScriptContext::getScriptVariables() {
 			// First, if we have an explicit variable set, use that.
-			if (variables != NULL) {
+			if (variables != nullptr) {
 				return variables;
 			}
 
@@ -98,6 +129,9 @@ namespace mwse {
 				// Allow variables to be get/set using their variable name.
 				usertypeDefinition[sol::meta_function::index] = &ScriptContext::index;
 				usertypeDefinition[sol::meta_function::new_index] = &ScriptContext::new_index;
+
+				// Allow fetching all variable values as a table.
+				usertypeDefinition["getVariableData"] = &ScriptContext::getVariableData;
 			}
 
 			// Binding for TES3::GlobalScript

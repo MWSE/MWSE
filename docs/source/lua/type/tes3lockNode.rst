@@ -31,7 +31,7 @@ Properties
 .. _`locked`: tes3lockNode/locked.html
 .. _`trap`: tes3lockNode/trap.html
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3misc`: ../../lua/type/tes3misc.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

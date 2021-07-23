@@ -1,7 +1,7 @@
 tes3.getAnimationTiming
 ====================================================================================================
 
-This function fetches reference's attached animation groups' timings.
+This function fetches a reference's attached animation groups' timings.
 
 Returns
 ----------------------------------------------------------------------------------------------------

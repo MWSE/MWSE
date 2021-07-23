@@ -7,16 +7,16 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `w`_ (`number`_)
-    The fourth value in the vector.
+    The 1st value in the vector.
 
 `x`_ (`number`_)
-    The first value in the vector.
+    The 2nd value in the vector.
 
 `y`_ (`number`_)
-    The second value in the vector.
+    The 3rd value in the vector.
 
 `z`_ (`number`_)
-    The third value in the vector.
+    The 4th value in the vector.
 
 .. toctree::
     :hidden:
@@ -37,12 +37,17 @@ Methods
 `copy`_ (`tes3vector4`_)
     Creates a copy of the vector.
 
+`length`_ (`number`_)
+    Calculates the length of the vector.
+
 .. toctree::
     :hidden:
 
     tes3vector4/copy
+    tes3vector4/length
 
 .. _`copy`: tes3vector4/copy.html
+.. _`length`: tes3vector4/length.html
 
 .. _`number`: ../../lua/type/number.html
 .. _`tes3vector4`: ../../lua/type/tes3vector4.html

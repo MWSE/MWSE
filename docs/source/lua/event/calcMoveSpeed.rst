@@ -51,11 +51,11 @@ Examples
     event.register(tes3.event.calcMoveSpeed, onCalcMoveSpeed)
 
 
-.. _`calcWalkSpeed`: ../../lua/event/calcWalkSpeed.html
-.. _`calcSwimRunSpeed`: ../../lua/event/calcSwimRunSpeed.html
 .. _`calcFlySpeed`: ../../lua/event/calcFlySpeed.html
 .. _`calcRunSpeed`: ../../lua/event/calcRunSpeed.html
+.. _`calcSwimRunSpeed`: ../../lua/event/calcSwimRunSpeed.html
 .. _`calcSwimSpeed`: ../../lua/event/calcSwimSpeed.html
+.. _`calcWalkSpeed`: ../../lua/event/calcWalkSpeed.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

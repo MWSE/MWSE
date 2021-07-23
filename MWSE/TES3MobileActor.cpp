@@ -23,12 +23,13 @@
 #include "TES3DataHandler.h"
 #include "TES3GameSetting.h"
 #include "TES3MagicEffectController.h"
+#include "TES3MagicEffectInstance.h"
+#include "TES3MagicInstanceController.h"
 #include "TES3MobController.h"
 #include "TES3MobilePlayer.h"
 #include "TES3ItemData.h"
 #include "TES3Spell.h"
 #include "TES3Reference.h"
-#include "TES3SpellInstanceController.h"
 #include "TES3WorldController.h"
 
 #include "TES3Util.h"
@@ -50,17 +51,37 @@ namespace TES3 {
 	const auto TES3_MobileActor_playVoiceover = reinterpret_cast<void(__thiscall*)(const MobileActor*, int)>(0x528F80);
 
 	MagicSourceInstance* ActiveMagicEffect::getInstance() const {
-		return WorldController::get()->spellInstanceController->getInstanceFromSerial(magicInstanceSerial);
+		return WorldController::get()->magicInstanceController->getInstanceFromSerial(magicInstanceSerial);
 	}
 
 	int ActiveMagicEffect::getMagnitude() const {
-		return magnitudeMin;
+		return unresistedMagnitude;
 	}
 
 	static_assert(offsetof(Deque<ActiveMagicEffect>::Node, data) == 0x8);
 	ActiveMagicEffect* ActiveMagicEffect::getNext_legacy() const {
 		auto node = reinterpret_cast<const Deque<ActiveMagicEffect>::Node*>(DWORD(this) - offsetof(Deque<ActiveMagicEffect>::Node, data));
 		return &node->next->data;
+	}
+
+	MagicEffectInstance * ActiveMagicEffectLua::getEffectInstance() const {
+		auto magicInstance = getInstance();
+		if (magicInstance) {
+			return magicInstance->getEffectInstance(magicInstanceEffectIndex, mobile->reference);
+		}
+		return nullptr;
+	}
+
+	ActiveMagicEffect* ActiveMagicEffectLua::getFirst_legacy() const {
+		return &mobile->activeMagicEffects.front();
+	}
+
+	ActiveMagicEffect* ActiveMagicEffectLua::getNext_legacy() {
+		// This is a bad solution that only works for the legacy codebase we have to support.
+		// Due to how ActiveMagicEffect::getNext_legacy above functions, and how ActiveMagicEffectLua
+		// is copied when pushed to lua, its possible for this copy to break. We have to overwrite it
+		// otherwise it will crash.
+		return this;
 	}
 
 	const auto TES3_MobileActor_onActorCollision = reinterpret_cast<bool(__thiscall*)(MobileActor*, int)>(0x5234A0);
@@ -481,6 +502,10 @@ namespace TES3 {
 		TES3_MobileActor_calcDerivedStats(this, baseStatistic);
 	}
 
+	void MobileActor::updateDerivedStatistics_lua(sol::optional<Statistic*> baseStatistic) {
+		TES3_MobileActor_calcDerivedStats(this, baseStatistic.value_or(nullptr));
+	}
+
 	int MobileActor::determineModifiedPrice(int basePrice, bool buying) {
 		return TES3_MobileActor_determineModifiedPrice(this, basePrice, buying);
 	}
@@ -530,8 +555,8 @@ namespace TES3 {
 	}
 
 	const auto TES3_MobileActor_dropItem = reinterpret_cast<void (__thiscall*)(MobileActor*, Object*, ItemData*, int, bool)>(0x52C460);
-	void MobileActor::dropItem(Object * item, ItemData * itemData, int count, bool exact) {
-		return TES3_MobileActor_dropItem(this, item, itemData, count, exact);
+	void MobileActor::dropItem(Object * item, ItemData * itemData, int count, bool ignoreItemData) {
+		return TES3_MobileActor_dropItem(this, item, itemData, count, ignoreItemData);
 	}
 
 	const auto TES3_MobileActor_persuade = reinterpret_cast<bool(__thiscall*)(MobileActor*, int, int)>(0x529D10);
@@ -617,13 +642,19 @@ namespace TES3 {
 			itemData = nullptr;
 
 			// Only scan if necessary; fully repaired items exist if stack count is greater than variables count.
-			if (s->variables && s->count == s->variables->size()) {
+			if (s->variables && s->count == s->variables->filledCount) {
 				int bestCondition = -1;
 				float bestCharge = -1.0f;
 
-				for (const auto& i : *s->variables) {
+				for (auto it = s->variables->cbegin(), end = it + s->variables->endIndex; it != end; ++it) {
 					// Select best condition, secondarily select best charge.
-					if (i && i->condition > bestCondition || (i->condition == bestCondition && i->charge > bestCharge)) {
+					TES3::ItemData* i = *it;
+					if (i == nullptr) {
+						// nullptr condition represents a fully repaired item.
+						itemData = nullptr;
+						break;
+					}
+					if (i->condition > bestCondition || (i->condition == bestCondition && i->charge > bestCharge)) {
 						itemData = i;
 						bestCondition = i->condition;
 						bestCharge = i->charge;
@@ -641,9 +672,13 @@ namespace TES3 {
 				float worstCharge = firstVar->charge;
 				itemData = firstVar;
 
-				for (const auto& i : *s->variables) {
+				for (auto it = s->variables->cbegin(), end = it + s->variables->endIndex; it != end; ++it) {
 					// Select worst condition, secondarily select worst charge.
-					if (i && i->condition < worstCondition || (i->condition == worstCondition && i->charge < worstCharge)) {
+					TES3::ItemData* i = *it;
+					if (i == nullptr) {
+						continue;
+					}
+					if (i->condition < worstCondition || (i->condition == worstCondition && i->charge < worstCharge)) {
 						itemData = i;
 						worstCondition = i->condition;
 						worstCharge = i->charge;
@@ -1079,12 +1114,12 @@ namespace TES3 {
 		setMobileActorMovementFlag(TES3::ActorMovement::Sneaking, value);
 	}
 
-	bool MobileActor::getMovementFlagJumped() const {
-		return getMobileActorMovementFlag(ActorMovement::Jumped);
+	bool MobileActor::getMovementFlagFalling() const {
+		return getMobileActorMovementFlag(ActorMovement::Falling);
 	}
 
-	void MobileActor::setMovementFlagJumped(bool value) {
-		setMobileActorMovementFlag(TES3::ActorMovement::Jumped, value);
+	void MobileActor::setMovementFlagFalling(bool value) {
+		setMobileActorMovementFlag(TES3::ActorMovement::Falling, value);
 	}
 
 	bool MobileActor::getMovementFlagSwimming() const {
@@ -1156,7 +1191,11 @@ namespace TES3 {
 			return {};
 		}
 
-		return node->value.castTimestamp;
+		return node->value;
+	}
+
+	void MobileActor::setPowerUseTimestamp(Spell* power, double timestamp) {
+		powers.addKey(power, timestamp);
 	}
 
 	bool MobileActor::getMobToMobCollision() const {
@@ -1177,6 +1216,29 @@ namespace TES3 {
 				mobController->disableMobileCollision(this);
 			}
 		}
+	}
+
+	sol::table MobileActor::getActiveMagicEffectsList_lua(sol::table params) {
+		sol::optional<int> effectID = params["effect"];
+		sol::optional<unsigned int> serial = params["serial"];
+
+		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::table effectsList = stateHandle.state.create_table();
+		int index = 1;
+
+		for (auto& activeEffect : activeMagicEffects) {
+			if (effectID && effectID.value() != activeEffect.magicEffectID) {
+				continue;
+			}
+			if (serial && serial.value() != activeEffect.magicInstanceSerial) {
+				continue;
+			}
+
+			effectsList[index] = ActiveMagicEffectLua(activeEffect, this);
+			index++;
+		}
+
+		return effectsList;
 	}
 
 	ActiveMagicEffect* MobileActor::getActiveMagicEffects_legacy() const {

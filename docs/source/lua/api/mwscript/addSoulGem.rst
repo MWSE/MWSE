@@ -22,9 +22,9 @@ creature (`tes3creature`_, `string`_)
 soulgem (`tes3misc`_, `string`_)
     The soul gem to store the soul in.
 
-.. _`tes3creature`: ../../../lua/type/tes3creature.html
 .. _`boolean`: ../../../lua/type/boolean.html
 .. _`string`: ../../../lua/type/string.html
+.. _`tes3creature`: ../../../lua/type/tes3creature.html
 .. _`tes3misc`: ../../../lua/type/tes3misc.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

@@ -8,6 +8,9 @@ Only one element can have control of input, and there is no automatic restoratio
 Parameters
 ----------------------------------------------------------------------------------------------------
 
-element (`tes3uiElemenet`_)
+Accepts parameters in the following order:
+
+element (`tes3uiElement`_)
     Optional. No description available.
 
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

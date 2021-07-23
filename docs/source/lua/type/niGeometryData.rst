@@ -11,34 +11,34 @@ Properties
     The bounds of the object.
 
 `colors`_ (`niColorA`_)
-    The color for the object.
+    Read-only. The color for the object.
 
 `normals`_ (`tes3vector3`_)
-    The normals list for the object.
+    Read-only. The normals list for the object.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `runTimeTypeInformation`_ (`niRTTI`_)
     The runtime type information for this object.
 
 `texCoords`_ (`tes3vector2`_)
-    The array of texture coordinates.
+    Read-only. The array of texture coordinates.
 
 `textureSets`_ (`number`_)
     The number of texture coordinate sets in the data.
 
 `textures`_ (`tes3vector2`_)
-    The array of texture coordinates.
+    Read-only. The array of texture coordinates.
 
 `uniqueID`_ (`number`_)
     A unique ID for this model, assigned at model creation.
 
 `vertexCount`_ (`number`_)
-    The vertex count for the object.
+    Read-only. The vertex count for the object.
 
 `vertices`_ (`tes3vector3`_)
-    The array of vertex position data.
+    Read-only. The array of vertex position data.
 
 .. toctree::
     :hidden:
@@ -104,10 +104,11 @@ If you already know the effective radius of the vertex data, you could more effi
 .. _`markAsChanged`: niGeometryData/markAsChanged.html
 .. _`updateModelBound`: niGeometryData/updateModelBound.html
 
-.. _`niObject`: ../../lua/type/niObject.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
+.. _`niColorA`: ../../lua/type/niColorA.html
+.. _`niObject`: ../../lua/type/niObject.html
 .. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
 .. _`tes3vector2`: ../../lua/type/tes3vector2.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

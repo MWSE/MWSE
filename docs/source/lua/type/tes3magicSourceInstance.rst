@@ -10,7 +10,7 @@ Properties
     No description available.
 
 `caster`_ (`tes3reference`_)
-    No description available.
+    Read-only. No description available.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -22,16 +22,16 @@ Properties
     The unique identifier for the object.
 
 `item`_ (`tes3item`_)
-    No description available.
+    Read-only. No description available.
 
 `itemData`_ (`tes3itemData`_)
-    No description available.
+    Read-only. No description available.
 
 `itemID`_ (`string`_)
-    No description available.
+    Read-only. No description available.
 
 `magicID`_ (`string`_)
-    No description available.
+    Read-only. No description available.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -43,22 +43,25 @@ Properties
     The type of object. Maps to values in tes3.objectType.
 
 `projectile`_ (`tes3mobileProjectile`_)
-    No description available.
+    Read-only. No description available.
 
 `source`_ (`tes3alchemy`_, `tes3enchantment`_, `tes3spell`_)
-    No description available.
+    Read-only. No description available.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
 `sourceType`_ (`number`_)
-    Shows if the source is a spell, enchantment, or alchemy.
+    Read-only. Shows if the source is a spell, enchantment, or alchemy.
 
 `state`_ (`number`_)
     Shows if the state is pre-cast, cast, beginning, working, ending, retired, etc.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `target`_ (`tes3reference`_)
-    No description available.
+    Read-only. No description available.
 
 `timestampCastBegin`_ (`number`_)
     No description available.
@@ -83,6 +86,7 @@ Properties
     tes3magicSourceInstance/sourceMod
     tes3magicSourceInstance/sourceType
     tes3magicSourceInstance/state
+    tes3magicSourceInstance/supportsLuaData
     tes3magicSourceInstance/target
     tes3magicSourceInstance/timestampCastBegin
 
@@ -103,11 +107,15 @@ Properties
 .. _`sourceMod`: tes3magicSourceInstance/sourceMod.html
 .. _`sourceType`: tes3magicSourceInstance/sourceType.html
 .. _`state`: tes3magicSourceInstance/state.html
+.. _`supportsLuaData`: tes3magicSourceInstance/supportsLuaData.html
 .. _`target`: tes3magicSourceInstance/target.html
 .. _`timestampCastBegin`: tes3magicSourceInstance/timestampCastBegin.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`getEffectInstance`_ (`tes3magicEffectInstance`_)
+    Gets the magic effect instance for a given effect index and target reference. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
 
 `getMagnitudeForIndex`_ (`number`_)
     Gets the magnitude from the casting source for a given effect index.
@@ -115,17 +123,20 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3magicSourceInstance/getEffectInstance
     tes3magicSourceInstance/getMagnitudeForIndex
 
+.. _`getEffectInstance`: tes3magicSourceInstance/getEffectInstance.html
 .. _`getMagnitudeForIndex`: tes3magicSourceInstance/getMagnitudeForIndex.html
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
-.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
+.. _`string`: ../../lua/type/string.html
 .. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
 .. _`tes3item`: ../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
+.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
+.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

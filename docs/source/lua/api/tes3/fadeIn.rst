@@ -14,5 +14,5 @@ fader (`tes3fader`_)
 duration (`number`_)
     Default: ``1.0``. Time, in seconds, for the fade.
 
-.. _`tes3fader`: ../../../lua/type/tes3fader.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3fader`: ../../../lua/type/tes3fader.html

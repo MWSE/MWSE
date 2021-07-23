@@ -45,22 +45,25 @@ namespace mwse {
 
 				// Basic property binding.
 				usertypeDefinition["creationFlags"] = sol::readonly_property(&TES3::InputController::creationFlags);
-				usertypeDefinition["mouseState"] = sol::readonly_property(&TES3::InputController::mouseState);
-				usertypeDefinition["previousMouseState"] = sol::readonly_property(&TES3::InputController::previousMouseState);
-
-				// Indirect bindings to unions and arrays.
 				usertypeDefinition["inputMaps"] = sol::readonly_property(&TES3::InputController::getInputConfigs);
 				usertypeDefinition["keyboardState"] = sol::readonly_property(&TES3::InputController::getKeyboardState);
+				usertypeDefinition["mouseState"] = sol::readonly_property(&TES3::InputController::mouseState);
 				usertypeDefinition["previousKeyboardState"] = sol::readonly_property(&TES3::InputController::getPreviousKeyboardState);
+				usertypeDefinition["previousMouseState"] = sol::readonly_property(&TES3::InputController::previousMouseState);
 
 				// Basic function binding.
-				usertypeDefinition["keybindTest"] = &TES3::InputController::keybindTest_lua;
+				usertypeDefinition["isAltDown"] = &TES3::InputController::isAltDown;
+				usertypeDefinition["isCapsLockActive"] = &TES3::InputController::isCapsLockActive;
+				usertypeDefinition["isControlDown"] = &TES3::InputController::isControlDown;
 				usertypeDefinition["isKeyDown"] = &TES3::InputController::isKeyDown;
 				usertypeDefinition["isKeyPressedThisFrame"] = &TES3::InputController::isKeyPressedThisFrame;
 				usertypeDefinition["isKeyReleasedThisFrame"] = &TES3::InputController::isKeyReleasedThisFrame;
 				usertypeDefinition["isMouseButtonDown"] = &TES3::InputController::isMouseButtonDown;
 				usertypeDefinition["isMouseButtonPressedThisFrame"] = &TES3::InputController::isMouseButtonPressedThisFrame;
 				usertypeDefinition["isMouseButtonReleasedThisFrame"] = &TES3::InputController::isMouseButtonReleasedThisFrame;
+				usertypeDefinition["isShiftDown"] = &TES3::InputController::isShiftDown;
+				usertypeDefinition["isSuperDown"] = &TES3::InputController::isSuperDown;
+				usertypeDefinition["keybindTest"] = &TES3::InputController::keybindTest_lua;
 			}
 		}
 	}

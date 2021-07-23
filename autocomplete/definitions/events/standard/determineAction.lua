@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["session"] = {
 			type = "tes3combatSession",
-			readonly = true,
+			readOnly = true,
 			description = "The combat session the action is being determined for.",
 		},
 	},

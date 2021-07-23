@@ -17,5 +17,5 @@ duration (`number`_)
 value (`number`_)
     Default: ``1.0``. No description available.
 
-.. _`tes3fader`: ../../../lua/type/tes3fader.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3fader`: ../../../lua/type/tes3fader.html

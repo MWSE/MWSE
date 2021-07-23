@@ -6,6 +6,8 @@ Sets a shader's vector variable. Wrapper for mwscript's MGEShaderSetVector.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 shader (`string`_)
     No description available.
 

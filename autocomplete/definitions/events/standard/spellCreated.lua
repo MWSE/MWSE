@@ -3,12 +3,12 @@ return{
     eventData = {
         ["spell"] = {
             type = "tes3spell",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["source"] = {
             type = "",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
     },

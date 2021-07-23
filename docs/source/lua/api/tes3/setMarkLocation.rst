@@ -18,5 +18,5 @@ cell (`tes3cell`_)
     Optional. A cell in which the mark should be placed.
 
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3vector3`: ../../../lua/type/tes3vector3.html
 .. _`tes3cell`: ../../../lua/type/tes3cell.html
+.. _`tes3vector3`: ../../../lua/type/tes3vector3.html

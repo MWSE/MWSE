@@ -13,7 +13,7 @@ Properties
     Access to the light's flags, determining if the light can be carried.
 
 `color`_ (`table`_)
-    Access to the light's base colors, in an array-style table of four values. The values can range from 0 to 255.
+    Read-only. Access to the light's base colors, in an array-style table of four values. The values can range from 0 to 255.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -88,16 +88,19 @@ Properties
     The scene graph reference node for this object.
 
 `script`_ (`tes3script`_)
-    The script that runs on the object.
+    Read-only. The script that runs on the object.
 
 `sound`_ (`tes3sound`_)
-    The sound that runs on the object.
+    Read-only. The sound that runs on the object.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `time`_ (`number`_)
     The amount of time that the light will last.
@@ -142,6 +145,7 @@ Properties
     tes3light/sound
     tes3light/sourceMod
     tes3light/stolenList
+    tes3light/supportsLuaData
     tes3light/time
     tes3light/value
     tes3light/weight
@@ -177,6 +181,7 @@ Properties
 .. _`sound`: tes3light/sound.html
 .. _`sourceMod`: tes3light/sourceMod.html
 .. _`stolenList`: tes3light/stolenList.html
+.. _`supportsLuaData`: tes3light/supportsLuaData.html
 .. _`time`: tes3light/time.html
 .. _`value`: tes3light/value.html
 .. _`weight`: tes3light/weight.html
@@ -194,13 +199,13 @@ Methods
 
 .. _`getTimeLeft`: tes3light/getTimeLeft.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3sound`: ../../lua/type/tes3sound.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3sound`: ../../lua/type/tes3sound.html

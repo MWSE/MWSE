@@ -2,6 +2,9 @@
 
 #include "LuaUtil.h"
 
+#include "TES3MagicEffectInstance.h"
+#include "TES3Reference.h"
+
 namespace TES3 {
 	MagicSourceCombo::MagicSourceCombo() {
 		source.asGeneric = nullptr;
@@ -77,6 +80,22 @@ namespace TES3 {
 
 	nonstd::span<Effect> MagicSourceInstance::getSourceEffects() const {
 		return sourceCombo.getEffectSpan();
+	}
+
+	MagicEffectInstance * MagicSourceInstance::getEffectInstance(int effectIndex, const Reference* reference) {
+		if (effectIndex < 0 || effectIndex > 7) {
+			throw std::invalid_argument("Invalid 'effectIndex' parameter. Must be a number between 0 and 7.");
+		}
+		if (reference == nullptr) {
+			return nullptr;
+		}
+
+		auto id = reference->baseObject->getObjectID();
+		auto node = effects[effectIndex].getNode(id);
+		if (node) {
+			return &node->keyValuePair.value;
+		}
+		return nullptr;
 	}
 
 	void MagicSourceInstance::playSpellVFX_lua(sol::table params) {

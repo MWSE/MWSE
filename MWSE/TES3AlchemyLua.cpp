@@ -18,8 +18,9 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Do we already have an object of this ID?
+			auto ndd = TES3::DataHandler::get()->nonDynamicData;
 			std::string id = getOptionalParam<std::string>(params, "id", "");
-			if (!id.empty() && TES3::DataHandler::get()->nonDynamicData->resolveObject(id.c_str()) != NULL) {
+			if (!id.empty() && ndd->resolveObject(id.c_str()) != NULL) {
 				return NULL;
 			}
 
@@ -86,57 +87,14 @@ namespace mwse {
 			}
 
 			// We have our alchemy object. But is it unique?
-			for (TES3::Alchemy* testObject = reinterpret_cast<TES3::Alchemy*>(TES3::DataHandler::get()->nonDynamicData->list->head);
-				testObject != NULL;
-				testObject = reinterpret_cast<TES3::Alchemy*>(testObject->nextInCollection)) {
-				// We only care about alchemy objects.
-				if (testObject->objectType != TES3::ObjectType::Alchemy) {
-					continue;
-				}
-
-				// Check object flags.
-				if (alchemy->objectFlags != testObject->objectFlags) {
-					continue;
-				}
-
-				// Check basic values.
-				if (alchemy->weight != testObject->weight || alchemy->value != testObject->value ||
-					alchemy->flags != alchemy->flags) {
-					continue;
-				}
-
-				// Check effects.
-				if (!alchemy->effectsMatchWith(testObject)) {
-					continue;
-				}
-
-				// Check script.
-				if (alchemy->script != testObject->script) {
-					continue;
-				}
-
-				// Check name.
-				if (strcmp(alchemy->name, testObject->name) != 0) {
-					continue;
-				}
-
-				// Check model.
-				if (strcmp(alchemy->model, testObject->model) != 0) {
-					continue;
-				}
-
-				// Check icon.
-				if (strcmp(alchemy->icon, testObject->icon) != 0) {
-					continue;
-				}
-
-				// If we've gotten this far, objects are almost the same. Let's use the one that already exists.
-				alchemy->vTable.base->destructor(alchemy, true);
-				return testObject;
+			auto matches = ndd->getMatchingAlchemyItem(alchemy);
+			if (matches) {
+				delete alchemy;
+				return matches;
 			}
 
 			// All good? Add and return the object.
-			if (!TES3::DataHandler::get()->nonDynamicData->addNewObject(alchemy)) {
+			if (!ndd->addNewObject(alchemy)) {
 				return NULL;
 			}
 			return alchemy;
@@ -173,7 +131,7 @@ namespace mwse {
 			usertypeDefinition["icon"] = sol::property(&TES3::Alchemy::getIconPath, &TES3::Alchemy::setIconPath);
 			usertypeDefinition["mesh"] = sol::property(&TES3::Alchemy::getModelPath, &TES3::Alchemy::setModelPath);
 			usertypeDefinition["name"] = sol::property(&TES3::Alchemy::getName, &TES3::Alchemy::setName);
-			usertypeDefinition["script"] = sol::property(&TES3::Alchemy::getScript);
+			usertypeDefinition["script"] = &TES3::Alchemy::script;
 
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition["model"] = sol::property(&TES3::Alchemy::getModelPath, &TES3::Alchemy::setModelPath);

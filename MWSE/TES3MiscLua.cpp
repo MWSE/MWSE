@@ -55,7 +55,7 @@ namespace mwse {
 				setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition["script"] = sol::readonly_property(&TES3::Misc::getScript);
+				usertypeDefinition["script"] = &TES3::Misc::script;
 				usertypeDefinition["soulGemCapacity"] = sol::readonly_property(&TES3::Misc::getSoulGemCapacity);
 				usertypeDefinition["value"] = &TES3::Misc::value;
 				usertypeDefinition["weight"] = &TES3::Misc::weight;

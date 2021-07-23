@@ -7,16 +7,16 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `actorFlags`_ (`number`_)
-    A number representing the actor flags. Truly a bit field.
+    Read-only. A number representing the actor flags. Truly a bit field.
 
 `baseObject`_ (`tes3object`_)
-    The base container object that the instance inherits from.
+    Read-only. The base container object that the instance inherits from.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `cloneCount`_ (`number`_)
-    The number of clones that exist of this actor.
+    Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -25,13 +25,13 @@ Properties
     The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
-    The items currently equipped to the actor.
+    Read-only. The items currently equipped to the actor.
 
 `id`_ (`string`_)
     The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
-    The items currently carried by the actor.
+    Read-only. The items currently carried by the actor.
 
 `isInstance`_ (`boolean`_)
     Always returns true.
@@ -84,6 +84,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -113,6 +116,7 @@ Properties
     tes3containerInstance/script
     tes3containerInstance/sourceMod
     tes3containerInstance/stolenList
+    tes3containerInstance/supportsLuaData
 
 .. _`actorFlags`: tes3containerInstance/actorFlags.html
 .. _`baseObject`: tes3containerInstance/baseObject.html
@@ -140,25 +144,36 @@ Properties
 .. _`script`: tes3containerInstance/script.html
 .. _`sourceMod`: tes3containerInstance/sourceMod.html
 .. _`stolenList`: tes3containerInstance/stolenList.html
+.. _`supportsLuaData`: tes3containerInstance/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`offersService`_ (`boolean`_)
+    Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
+
 `onInventoryClose`_
     A callback function invoked when an inventory is closed. Typically not used outside of specific purposes. You may find tes3.reference's onCloseInventory() to be more convenient to use.
+
+`tradesItemType`_ (`boolean`_)
+    Checks if the actor will buy and sell items of a given object type. e.g. actor:tradesItemType(tes3.objectType.repairItem)
 
 .. toctree::
     :hidden:
 
+    tes3containerInstance/offersService
     tes3containerInstance/onInventoryClose
+    tes3containerInstance/tradesItemType
 
+.. _`offersService`: tes3containerInstance/offersService.html
 .. _`onInventoryClose`: tes3containerInstance/onInventoryClose.html
+.. _`tradesItemType`: tes3containerInstance/tradesItemType.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

@@ -58,13 +58,16 @@ Properties
     The scene graph reference node for this object.
 
 `script`_ (`tes3script`_)
-    The script that runs on the object.
+    Read-only. The script that runs on the object.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 .. toctree::
     :hidden:
@@ -89,6 +92,7 @@ Properties
     tes3door/script
     tes3door/sourceMod
     tes3door/stolenList
+    tes3door/supportsLuaData
 
 .. _`boundingBox`: tes3door/boundingBox.html
 .. _`closeSound`: tes3door/closeSound.html
@@ -110,13 +114,14 @@ Properties
 .. _`script`: tes3door/script.html
 .. _`sourceMod`: tes3door/sourceMod.html
 .. _`stolenList`: tes3door/stolenList.html
+.. _`supportsLuaData`: tes3door/supportsLuaData.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3sound`: ../../lua/type/tes3sound.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3sound`: ../../lua/type/tes3sound.html

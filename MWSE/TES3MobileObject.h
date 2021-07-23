@@ -79,7 +79,7 @@ namespace TES3 {
 			Swimming = 0x800,
 			Jumping = 0x1000,
 			Flying = 0x2000,
-			Jumped = 0x4000
+			Falling = 0x4000
 		};
 
 		enum FlagBit {
@@ -95,7 +95,7 @@ namespace TES3 {
 			SwimmingBit = 11,
 			JumpingBit = 12,
 			FlyingBit = 13,
-			JumpedBit = 14
+			FallingBit = 14
 		};
 	}
 

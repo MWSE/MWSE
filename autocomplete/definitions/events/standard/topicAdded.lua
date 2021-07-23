@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["topic"] = {
 			type = "tes3dialogue",
-			readonly = true,
+			readOnly = true,
 			description = "The topic that was newly added to the player's list of topics.",
 		},
 	},

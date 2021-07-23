@@ -1,5 +1,6 @@
 effectId
 ====================================================================================================
 
-No description is currently available.
+`number`_. The magic effect ID.
 
+.. _`number`: ../../../lua/type/number.html

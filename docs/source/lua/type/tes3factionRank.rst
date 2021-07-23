@@ -7,13 +7,13 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `attributes`_ (`table`_)
-    An array-style table holding the two attribute requirements.
+    Read-only. An array-style table holding the two attribute requirements.
 
 `reputation`_ (`number`_)
     The reputation requirement to advance to this rank.
 
 `skills`_ (`table`_)
-    An array-style table holding the two skill requirements.
+    Read-only. An array-style table holding the two skill requirements.
 
 .. toctree::
     :hidden:
@@ -26,5 +26,5 @@ Properties
 .. _`reputation`: tes3factionRank/reputation.html
 .. _`skills`: tes3factionRank/skills.html
 
-.. _`table`: ../../lua/type/table.html
 .. _`number`: ../../lua/type/number.html
+.. _`table`: ../../lua/type/table.html

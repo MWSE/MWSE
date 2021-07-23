@@ -108,6 +108,7 @@ namespace TES3 {
 			Element* getContentElement();
 			Element* getTopLevelParent();
 			Element* performLayout(bool bUpdateTimestamp = true);
+			void reattachToParent(Element* parent);
 			bool reorderChildren(int insertBefore, int moveFrom, int count);
 			bool getAutoHeight() const;
 			void setAutoHeight(bool bAuto);

@@ -1,7 +1,7 @@
 tes3.hasOwnershipAccess
 ====================================================================================================
 
-Determines if a reference has access to another object, including its inventory.
+Determines if a reference has access to another object, including its inventory. References have access to their own things, and the player has access to dead NPC's items.
 
 Returns
 ----------------------------------------------------------------------------------------------------

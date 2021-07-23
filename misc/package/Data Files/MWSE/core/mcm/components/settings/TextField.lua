@@ -22,11 +22,11 @@ function TextField:enable()
 				tes3ui.acquireTextInput(self.elements.inputField)
 			end
 		)
-		if e.children then
-			for _, element in ipairs(e.children) do
-				registerTextInput(element)
-			end
-		end
+        if e.children then
+            for _, element in ipairs(e.children) do
+                registerAcquireTextInput(element)
+            end
+        end
 	end
 	registerAcquireTextInput(self.elements.inputField)
 

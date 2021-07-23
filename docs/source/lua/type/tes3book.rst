@@ -72,8 +72,11 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `text`_ (`string`_)
-    Loads and displays the text of the book.
+    Read-only. Loads and displays the text of the book.
 
 `type`_ (`number`_)
     The book type, where 0 is book and 1 is scroll.
@@ -109,6 +112,7 @@ Properties
     tes3book/skill
     tes3book/sourceMod
     tes3book/stolenList
+    tes3book/supportsLuaData
     tes3book/text
     tes3book/type
     tes3book/value
@@ -136,17 +140,18 @@ Properties
 .. _`skill`: tes3book/skill.html
 .. _`sourceMod`: tes3book/sourceMod.html
 .. _`stolenList`: tes3book/stolenList.html
+.. _`supportsLuaData`: tes3book/supportsLuaData.html
 .. _`text`: tes3book/text.html
 .. _`type`: tes3book/type.html
 .. _`value`: tes3book/value.html
 .. _`weight`: tes3book/weight.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

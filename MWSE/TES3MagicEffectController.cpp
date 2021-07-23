@@ -555,26 +555,29 @@ namespace TES3 {
 		return getSpellNameGMST(DataHandler::get(), EDX, gmstId)->value.asString;
 	}
 
-	const auto TES3_MagicSourceInstance_ProjectileHit = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, MobileObject::Collision*)>(0x5175C0);
-	void __fastcall OnSpellProjectileHit(MagicSourceInstance * self, DWORD EDX, MobileObject::Collision * collision) {
-		TES3_MagicSourceInstance_ProjectileHit(self, collision);
-
+	void __fastcall OnSpellProjectileHit(MagicSourceInstance * instance, DWORD EDX, MobileObject::Collision * collision) {
 		auto magicEffectController = DataHandler::get()->nonDynamicData->magicEffects;
-		auto effects = self->sourceCombo.getSourceEffects();
+		magicEffectController->spellProjectileHit(instance, collision);
+	}
+
+	void MagicEffectController::spellProjectileHit(MagicSourceInstance * instance, MobileObject::Collision * collision) {
+		instance->projectileHit(collision);
+
+		auto effects = instance->sourceCombo.getSourceEffects();
 		for (size_t i = 0; i < 8; i++) {
 			auto effectId = effects[i].effectID;
 			if (effectId == -1) {
 				break;
 			}
 
-			auto itt = magicEffectController->effectLuaCollisionFunctions.find(effectId);
-			if (itt != magicEffectController->effectLuaCollisionFunctions.end()) {
+			auto itt = effectLuaCollisionFunctions.find(effectId);
+			if (itt != effectLuaCollisionFunctions.end()) {
 				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 				sol::table params = stateHandle.state.create_table();
 				params["effectId"] = effectId;
 				params["effectIndex"] = i;
-				params["sourceInstance"] = self;
+				params["sourceInstance"] = instance;
 				params["collision"] = collision;
 
 				sol::protected_function_result result = itt->second(params);

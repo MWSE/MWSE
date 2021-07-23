@@ -11,12 +11,14 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 creatureId (`string`_)
     No description available.
 
 soundType (`number`_)
     Maps to tes3.soundGenType constants.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3soundGenerator`: ../../../lua/type/tes3soundGenerator.html

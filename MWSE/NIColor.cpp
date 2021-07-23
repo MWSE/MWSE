@@ -1,6 +1,17 @@
 #include "NIColor.h"
 
 namespace NI {
+
+	//
+	// NiColor
+	//
+
+	std::string PackedColor::toString() {
+		std::ostringstream ss;
+		ss << std::fixed << std::setprecision(2) << "<" << int(r) << ", " << int(g) << ", " << int(b) << ", " << int(a) << ">";
+		return std::move(ss.str());
+	}
+
 	Color::Color(TES3::Vector3& vector) {
 		r = vector.x;
 		g = vector.y;
@@ -74,27 +85,45 @@ namespace NI {
 		return Color(r * scalar, g * scalar, b * scalar);
 	}
 
-	Color Color::copy() {
+	Color Color::copy() const {
 		return *this;
 	}
 
-	TES3::Vector3 Color::toVector3() {
+	Color Color::lerp(const Color& to, float transition) const {
+		auto transA = 1.0f - transition;
+		return Color(r * transA + to.r * transition, g * transA + to.g * transition, b * transA + to.b * transition);
+	}
+
+	TES3::Vector3 Color::toVector3() const {
 		return TES3::Vector3(r, g, b);
 	}
 
 	void Color::clamp() {
-		r = std::fmax(0.0f, std::fmin(r, 1.0f));
-		g = std::fmax(0.0f, std::fmin(g, 1.0f));
-		b = std::fmax(0.0f, std::fmin(b, 1.0f));
+		r = std::clamp(r, 0.0f, 1.0f);
+		g = std::clamp(g, 0.0f, 1.0f);
+		b = std::clamp(b, 0.0f, 1.0f);
 	}
 
-	std::string Color::toString() {
+	std::string Color::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << r << ", " << g << ", " << b << ">";
 		return std::move(ss.str());
 	}
 
-	std::string ColorA::toString() {
+	//
+	// NiColorA
+	//
+
+	ColorA ColorA::copy() const {
+		return *this;
+	}
+
+	ColorA ColorA::lerp(const ColorA& to, float transition) const {
+		auto transA = 1.0f - transition;
+		return ColorA(r * transA + to.r * transition, g * transA + to.g * transition, b * transA + to.b * transition, a * transA + to.a * transition);
+	}
+
+	std::string ColorA::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << r << ", " << g << ", " << b << ", " << a << ">";
 		return std::move(ss.str());

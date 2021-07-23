@@ -8,6 +8,8 @@ If the default values table is passed, empty keys in the config will be filled i
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 fileName (`string`_)
     The non-extensioned name of the config file.
 

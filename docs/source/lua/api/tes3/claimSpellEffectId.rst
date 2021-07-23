@@ -14,5 +14,5 @@ name (`string`_)
 id (`number`_)
     A unique number representing the new spell effect. An error will be thrown if it's non-unique.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

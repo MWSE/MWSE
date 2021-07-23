@@ -16,5 +16,5 @@ list
 
 `tes3leveledItem`_. Read-only. The list responsible for creating a pick.
 
-.. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html
 .. _`tes3item`: ../../lua/type/tes3item.html
+.. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html

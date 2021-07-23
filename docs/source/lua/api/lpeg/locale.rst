@@ -18,6 +18,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 t (`table`_)
     Optional. The table to update.
 

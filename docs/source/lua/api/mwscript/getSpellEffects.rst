@@ -14,7 +14,7 @@ reference (`tes3reference`_, `tes3mobileActor`_, `string`_)
 spell (`tes3spell`_, `string`_)
     No description available.
 
-.. _`tes3spell`: ../../../lua/type/tes3spell.html
 .. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../../lua/type/tes3spell.html

@@ -38,5 +38,5 @@ bodyPart
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

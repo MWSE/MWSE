@@ -1,5 +1,6 @@
 magnitudeMin
 ====================================================================================================
 
-No description is currently available.
+`number`_. Deprecated.
 
+.. _`number`: ../../../lua/type/number.html

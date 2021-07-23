@@ -245,11 +245,20 @@ namespace TES3 {
 		BIT_SET(flags, EffectFlag::AllowEnchantingBit, value);
 	}
 
+	int MagicEffect::getSkillForSchool() const {
+		return reinterpret_cast<int*>(0x7926B8)[school];
+	}
+
+	const auto TES3_Effect_calculateCost = reinterpret_cast<double(__cdecl*)(const Effect*)>(0x4AA700);
+	float Effect::calculateCost() const {
+		return TES3_Effect_calculateCost(this);
+	}
+
 	MagicEffect* Effect::getEffectData() const {
 		return TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectObject(effectID);
 	}
 
-	bool Effect::matchesEffectsWith(const Effect * other ) {
+	bool Effect::matchesEffectsWith(const Effect * other ) const {
 		return effectID == other->effectID &&
 			skillID == other->skillID &&
 			attributeID == other->attributeID &&

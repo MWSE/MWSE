@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["level"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The new level obtained.",
 		},
 	},

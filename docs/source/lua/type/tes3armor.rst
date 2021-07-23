@@ -87,6 +87,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `value`_ (`number`_)
     The value of the object.
 
@@ -126,6 +129,7 @@ Properties
     tes3armor/slotName
     tes3armor/sourceMod
     tes3armor/stolenList
+    tes3armor/supportsLuaData
     tes3armor/value
     tes3armor/weight
     tes3armor/weightClass
@@ -157,6 +161,7 @@ Properties
 .. _`slotName`: tes3armor/slotName.html
 .. _`sourceMod`: tes3armor/sourceMod.html
 .. _`stolenList`: tes3armor/stolenList.html
+.. _`supportsLuaData`: tes3armor/supportsLuaData.html
 .. _`value`: tes3armor/value.html
 .. _`weight`: tes3armor/weight.html
 .. _`weightClass`: tes3armor/weightClass.html
@@ -174,13 +179,13 @@ Methods
 
 .. _`calculateArmorRating`: tes3armor/calculateArmorRating.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

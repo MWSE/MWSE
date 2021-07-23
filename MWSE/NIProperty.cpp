@@ -6,6 +6,8 @@
 #include "NIStream.h"
 #include "NITexture.h"
 
+#include "LuaUtil.h"
+
 namespace NI {
 
 	//
@@ -22,12 +24,40 @@ namespace NI {
 		NI_Property_dtor(this);
 	}
 
-	PropertyType Property::getType() {
+	PropertyType Property::getType() const {
 		return static_cast<PropertyType>(vTable.asProperty->getType(this));
 	}
 
 	void Property::update(float dt) {
 		vTable.asProperty->update(this, dt);
+	}
+
+	const auto NI_Property_setFlagBitField = reinterpret_cast<void(__thiscall*)(Property*, unsigned short, unsigned short, unsigned int)>(0x408A10);
+	void  Property::setFlagBitField(unsigned short value, unsigned short mask, unsigned int index) {
+		NI_Property_setFlagBitField(this, value, mask, index);
+	}
+
+	//
+	// NiAlphaProperty
+	//
+
+	AlphaProperty::AlphaProperty() {
+		Property::Property();
+		vTable.asProperty = (Property_vTable*)0x7465A8;
+		setFlag(false, 0);
+		setFlagBitField(6, 0xF, 1);
+		setFlagBitField(7, 0xF, 5);
+		setFlag(false, 9);
+		setFlagBitField(0, 0x7, 10);
+		alphaTestRef = 0;
+	}
+
+	AlphaProperty::~AlphaProperty() {
+
+	}
+
+	Pointer<AlphaProperty> AlphaProperty::create() {
+		return new AlphaProperty();
 	}
 
 	//
@@ -148,6 +178,28 @@ namespace NI {
 		vTable->destructor(this, false);
 	}
 
+	Pointer<Texture> TexturingProperty::Map::getTexture_lua() const {
+		return texture;
+	}
+
+	void TexturingProperty::Map::setTexture_lua(Texture* t) {
+		texture = t;
+	}
+
+	TexturingProperty::Map* TexturingProperty::Map::create(sol::optional<sol::table> params) {
+		auto texture = mwse::lua::getOptionalParam<Texture*>(params, "texture", nullptr);
+		auto clampMode = mwse::lua::getOptionalParam(params, "clampMode", ClampMode::WRAP_S_WRAP_T);
+		auto filterMode = mwse::lua::getOptionalParam(params, "filterMode", FilterMode::TRILERP);
+		auto textCoords = mwse::lua::getOptionalParam(params, "textCoords", 0u);
+
+		if (mwse::lua::getOptionalParam(params, "isBumpMap", false)) {
+			return new BumpMap(texture, clampMode, filterMode, textCoords);
+		}
+		else {
+			return new Map(texture, clampMode, filterMode, textCoords);
+		}
+	}
+
 	TexturingProperty::BumpMap::BumpMap() : Map() {
 		vTable = (VirtualTable*)0x7507B0;
 		lumaScale = 1.0f;
@@ -167,6 +219,103 @@ namespace NI {
 		bumpMat[1][0] = 0.0f;
 		bumpMat[1][1] = 0.5f;
 	}
+
+	TexturingProperty::Map* TexturingProperty::getBaseMap() {
+		return maps[size_t(MapType::BASE)];
+	}
+
+	void TexturingProperty::setBaseMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::BASE)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::BASE), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::BASE), map.value());
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getDarkMap() {
+		return maps[size_t(MapType::DARK)];
+	}
+
+	void TexturingProperty::setDarkMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::DARK)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DARK), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DARK), map.value());
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getDetailMap() {
+		return maps[size_t(MapType::DETAIL)];
+	}
+
+	void TexturingProperty::setDetailMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::DETAIL)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DETAIL), map.value());
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlossMap() {
+		return maps[size_t(MapType::GLOSS)];
+	}
+
+	void TexturingProperty::setGlossMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::GLOSS)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOSS), map.value());
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlowMap() {
+		return maps[size_t(MapType::GLOW)];
+	}
+
+	void TexturingProperty::setGlowMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::GLOW)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOW), map.value());
+		}
+	}
+
+	TexturingProperty::BumpMap* TexturingProperty::getBumpMap() {
+		return static_cast<BumpMap*>(maps[size_t(MapType::BUMP)]);
+	}
+
+	void TexturingProperty::setBumpMap(sol::optional<TexturingProperty::BumpMap*> map) {
+		auto currentMap = maps[size_t(MapType::BUMP)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::BUMP), nullptr);
+		}
+
+		if (map) {
+			maps.setAtIndex(size_t(MapType::BUMP), map.value());
+		}
+	}
+
 
 	unsigned int TexturingProperty::getDecalCount() const {
 		auto count = 0;
@@ -265,42 +414,6 @@ namespace NI {
 
 	ZBufferProperty::~ZBufferProperty() {
 
-	}
-
-	void ZBufferProperty::loadBinary(Stream* stream) {
-		// We don't want to do the normal NiProperty deserialization here.
-		ObjectNET::_loadBinary(this, stream);
-
-		// Get our raw flags.
-		unsigned short rawFlags = 0;
-		stream->inStream->read(&rawFlags, sizeof(rawFlags));
-
-		// Assign the first two bits to property flags;
-		flags = rawFlags & 0x3;
-
-		// Check for the custom test function bit.
-		if (rawFlags & 0x40) {
-			testFunction = static_cast<TestFunction>((rawFlags >> 2) & 0xF);
-		}
-	}
-
-	void ZBufferProperty::saveBinary(Stream* stream) const {
-		// We don't want to do the normal NiProperty serialization here.
-		ObjectNET::_saveBinary(this, stream);
-
-		// Pack the flags with the test function.
-		unsigned short serializedFlags = flags & 0x3;
-
-		// If we're using a non-default test function, serialize it in the flags.
-		if (testFunction != TestFunction::LESS_EQUAL) {
-			serializedFlags |= (DWORD(testFunction) & 0xF) << 2;
-			
-			// We also need to set the custom "we're using a new test function" bit.
-			serializedFlags |= 0x40;
-		}
-
-		// Write the property flags with the custom masking, instead of the usual field.
-		stream->outStream->write(&serializedFlags, sizeof(serializedFlags));
 	}
 
 	Pointer<ZBufferProperty> ZBufferProperty::create() {

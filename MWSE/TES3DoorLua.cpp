@@ -29,7 +29,7 @@ namespace mwse {
 			// Functions exposed as properties.
 			usertypeDefinition["mesh"] = sol::property(&TES3::Door::getModelPath, &TES3::Door::setModelPath);
 			usertypeDefinition["name"] = sol::property(&TES3::Door::getName, &TES3::Door::setName);
-			usertypeDefinition["script"] = sol::property(&TES3::Door::getScript);
+			usertypeDefinition["script"] = &TES3::Door::script;
 
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition["model"] = sol::property(&TES3::Door::getModelPath, &TES3::Door::setModelPath);

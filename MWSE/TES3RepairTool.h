@@ -23,6 +23,7 @@ namespace TES3 {
 		//
 
 		void setIconPath(const char* path);
+		void setName(const char* newName);
 
 	};
 	static_assert(sizeof(RepairTool) == 0xB8, "TES3::RepairTool failed size validation");

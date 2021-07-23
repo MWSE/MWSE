@@ -43,7 +43,7 @@ namespace NI {
 		setAttenuationForRadius(radius);
 
 		// Set dynamic culling radius, misplaced by Morrowind into specular.
-		float r = radius;
+		auto r = float(radius);
 		specular.r = r;
 		specular.g = r;
 		specular.b = r;

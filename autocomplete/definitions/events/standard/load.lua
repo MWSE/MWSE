@@ -7,12 +7,12 @@ return {
 		},
 		["quickload"] = {
 			type = "boolean",
-			readonly = true,
+			readOnly = true,
 			description = "If true, the load came from the quickload system.",
 		},
 		["newGame"] = {
 			type = "boolean",
-			readonly = true,
+			readOnly = true,
 			description = "If true, a new game is being started.",
 		},
 	},

@@ -6,6 +6,7 @@
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
 
+#include "LuaUtil.h"
 #include "LuaManager.h"
 
 #include "LuaContainerClosedEvent.h"
@@ -169,6 +170,11 @@ namespace TES3 {
 		return false;
 	}
 
+	bool Actor::offersService(unsigned int service) {
+		auto config = getAIConfig();
+		return (config->merchantFlags & service);
+	}
+
 	int Actor::getBloodType() const {
 		return (actorFlags >> 0xA) & 0x7;
 	}
@@ -185,6 +191,29 @@ namespace TES3 {
 
 	void Actor::onCloseInventory_lua(TES3::Reference* reference, sol::optional<int> unknown) {
 		vTable.actor->onCloseInventory(this, reference, unknown.value_or(0));
+	}
+
+	bool Actor::hasItemEquipped_lua(sol::object itemOrItemId, sol::optional<TES3::ItemData*> itemData) {
+		TES3::Item* item = nullptr;
+		
+		if (itemOrItemId.is<TES3::Item*>()) {
+			item = itemOrItemId.as<TES3::Item*>();
+		}
+		else if (itemOrItemId.is<const char*>()) {
+			auto itemId = itemOrItemId.as<const char*>();
+			auto ndd = TES3::DataHandler::get()->nonDynamicData;
+			item = ndd->resolveObjectByType<TES3::Item>(itemId);
+		}
+
+		if (item == nullptr) {
+			return false;
+		}
+		if (itemData.has_value()) {
+			return getEquippedItemExact(item, itemData.value()) != nullptr;
+		}
+		else {
+			return getEquippedItem(item) != nullptr;
+		}
 	}
 }
 

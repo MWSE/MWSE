@@ -7,16 +7,16 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `current`_ (`tes3iteratorNode`_)
-    A reference for the currently iterated node. This is used by the core game engine, but should not be accessed from lua.
+    Read-only. A reference for the currently iterated node. This is used by the core game engine, but should not be accessed from lua.
 
 `head`_ (`tes3iteratorNode`_)
-    The first node in the collection.
+    Read-only. The first node in the collection.
 
 `size`_ (`number`_)
-    The amount of items in the iterator.
+    Read-only. The amount of items in the iterator.
 
 `tail`_ (`tes3iteratorNode`_)
-    The last node in the collection.
+    Read-only. The last node in the collection.
 
 .. toctree::
     :hidden:
@@ -41,12 +41,19 @@ In this example, a list is iterated using the pairs iterator function. The node 
 
 .. code-block:: lua
 
-    local tes3iterator = tes3.player.object.equipment
-    for _, tes3iteratorNode in pairs(tes3iterator) do
-        -- tes3iteratorNode is type tes3equipmentStack, as tes3.player.object.equipment is a list of tes3equipmentStack.
-        mwse.log("Object ID: %s", tes3iteratorNode.object.id)
+    -- Check player equipment
+    for _, stack in pairs(tes3.player.object.equipment) do
+        -- stack is type tes3equipmentStack, as tes3.player.object.equipment is a list of tes3equipmentStack.
+        mwse.log("Equipment object ID: %s", stack.object.id)
+    end
+
+    -- tes3.player.object.spells is a tes3spellList with helper functions.
+    -- The actual list is spells.iterator.
+    for _, spell in pairs(tes3.player.object.spells.iterator) do
+        -- spell is type tes3spell, as tes3.player.object.spells.iterator is a list of spell.
+        mwse.log("Spell %s, cost %d", spell.name, spell.magickaCost)
     end
 
 
-.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html

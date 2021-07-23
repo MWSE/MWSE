@@ -65,12 +65,13 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		bool isOneHanded();
-		bool isTwoHanded();
-		bool isMelee();
-		bool isRanged();
-		bool isAmmo();
-		bool hasDurability();
+		bool isOneHanded() const;
+		bool isTwoHanded() const;
+		bool isMelee() const;
+		bool isRanged() const;
+		bool isAmmo() const;
+		bool isProjectile() const;
+		bool hasDurability() const;
 		void setDurability(int value);
 
 		bool getMaterialFlag(WeaponMaterialFlag::WeaponMaterialFlag) const;

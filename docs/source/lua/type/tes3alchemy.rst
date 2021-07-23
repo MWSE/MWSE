@@ -69,6 +69,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `value`_ (`number`_)
     The value of the object.
 
@@ -99,6 +102,7 @@ Properties
     tes3alchemy/script
     tes3alchemy/sourceMod
     tes3alchemy/stolenList
+    tes3alchemy/supportsLuaData
     tes3alchemy/value
     tes3alchemy/weight
 
@@ -123,6 +127,7 @@ Properties
 .. _`script`: tes3alchemy/script.html
 .. _`sourceMod`: tes3alchemy/sourceMod.html
 .. _`stolenList`: tes3alchemy/stolenList.html
+.. _`supportsLuaData`: tes3alchemy/supportsLuaData.html
 .. _`value`: tes3alchemy/value.html
 .. _`weight`: tes3alchemy/weight.html
 
@@ -139,12 +144,12 @@ Functions
 
 .. _`create`: tes3alchemy/create.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

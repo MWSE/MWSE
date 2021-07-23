@@ -3,7 +3,7 @@ return {
 	eventData = {
 		npc = {
 			type = "tes3npc",
-			readonly = true,
+			readOnly = true,
 			description = "The NPC that the guard status is being checked for.",
 		},
 		isGuard = {

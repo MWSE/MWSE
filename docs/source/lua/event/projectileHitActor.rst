@@ -26,6 +26,6 @@ firingReference
 
 `tes3reference`_. Read-only. Reference to the actor that fired the projectile.
 
-.. _`tes3weapon`: ../../lua/type/tes3weapon.html
 .. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3weapon`: ../../lua/type/tes3weapon.html

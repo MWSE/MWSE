@@ -2,11 +2,11 @@ tes3.testLineOfSight
 ====================================================================================================
 
 Checks if there is a clear line of sight between two references, or two points in space, in the same method that the game uses for actor vision. You should pass two references, or two positions and heights.
-    
-    Only certain object types count as blocking for the purposes of the test:
-    Statics, activators, containers, doors, and lights with non-zero weight.
-    
-    The collision root node is used for testing, if present in the model.
+
+Only certain object types count as blocking for the purposes of the test:
+Statics, activators, containers, doors, and lights with non-zero weight.
+
+The collision root node is used for testing, if present in the model.
 
 Returns
 ----------------------------------------------------------------------------------------------------

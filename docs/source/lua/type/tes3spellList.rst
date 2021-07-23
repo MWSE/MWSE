@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `iterator`_ (`tes3iterator`_)
-    A collection of spells. Can be iterated over using *pairs*.
+    Read-only. A collection of spells. Can be iterated over using *pairs*.
 
 .. toctree::
     :hidden:
@@ -49,6 +49,6 @@ Methods
 .. _`getCheapest`: tes3spellList/getCheapest.html
 .. _`remove`: tes3spellList/remove.html
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

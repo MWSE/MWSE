@@ -34,9 +34,9 @@ pitch (`number`_)
 soundPath (`string`_)
     Optional. The path to a custom soundfile (useful for playing sounds that are not registered in the Construction Set). Starts in Data Files\Sound.
 
-.. _`tes3sound`: ../../../lua/type/tes3sound.html
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`tes3sound`: ../../../lua/type/tes3sound.html

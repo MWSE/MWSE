@@ -25,6 +25,7 @@ namespace NI {
 	struct Node;
 	struct Object;
 	struct ObjectNET;
+	struct PackedColor;
 	struct ParticleBomb;
 	struct ParticleCollider;
 	struct ParticleColorModifier;

@@ -44,6 +44,7 @@ namespace mwse {
 				usertypeDefinition["school"] = &TES3::MagicEffect::school;
 				usertypeDefinition["size"] = &TES3::MagicEffect::size;
 				usertypeDefinition["sizeCap"] = &TES3::MagicEffect::sizeCap;
+				usertypeDefinition["skill"] = sol::readonly_property(&TES3::MagicEffect::getSkillForSchool);
 				usertypeDefinition["speed"] = &TES3::MagicEffect::speed;
 
 				// Allow access to base effect flags.
@@ -78,6 +79,7 @@ namespace mwse {
 
 				// Basic property binding.
 				usertypeDefinition["attribute"] = sol::property(&TES3::Effect::geAttributeID, &TES3::Effect::seAttributeID_lua);
+				usertypeDefinition["cost"] = sol::readonly_property(&TES3::Effect::calculateCost);
 				usertypeDefinition["duration"] = &TES3::Effect::duration;
 				usertypeDefinition["id"] = &TES3::Effect::effectID;
 				usertypeDefinition["max"] = &TES3::Effect::magnitudeMax;

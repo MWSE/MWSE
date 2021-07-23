@@ -24,7 +24,7 @@ namespace mwse {
 			// Basic property binding.
 			usertypeDefinition["maxCondition"] = &TES3::Lockpick::maxCondition;
 			usertypeDefinition["quality"] = &TES3::Lockpick::quality;
-			usertypeDefinition["script"] = sol::readonly_property(&TES3::Lockpick::getScript);
+			usertypeDefinition["script"] = &TES3::Lockpick::script;
 			usertypeDefinition["value"] = &TES3::Lockpick::value;
 			usertypeDefinition["weight"] = &TES3::Lockpick::weight;
 

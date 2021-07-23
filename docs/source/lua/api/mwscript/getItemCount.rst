@@ -15,6 +15,6 @@ item (`tes3item`_, `string`_)
     No description available.
 
 .. _`string`: ../../../lua/type/string.html
+.. _`tes3item`: ../../../lua/type/tes3item.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
-.. _`tes3item`: ../../../lua/type/tes3item.html

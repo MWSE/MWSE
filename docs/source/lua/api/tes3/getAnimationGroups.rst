@@ -1,7 +1,7 @@
 tes3.getAnimationGroups
 ====================================================================================================
 
-This function fetches reference's attached animation groups.
+This function fetches a reference's attached animation groups.
 
 Returns
 ----------------------------------------------------------------------------------------------------

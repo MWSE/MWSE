@@ -46,5 +46,5 @@ This guide introduced Event Based Programming and explained some aspects of it i
 
 For more in-depth documentation on Event Based Programming, please refer to this `Event Based Programming`_ article, or other external sources.
 
-.. _`events`: ../events.html
+.. _`events`: ../event.html
 .. _`Event Based Programming`: https://www.technologyuk.net/computing/software-development/software-design/event-driven-programming.shtml

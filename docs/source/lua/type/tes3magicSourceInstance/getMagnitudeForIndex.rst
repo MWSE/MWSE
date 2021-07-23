@@ -11,6 +11,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 index (`number`_)
     The index in the effect list to fetch, between 0 and 7.
 

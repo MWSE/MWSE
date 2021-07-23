@@ -10,8 +10,33 @@
 #include "LuaManager.h"
 
 namespace TES3 {
+	Sound::Sound() {
+		ctor();
+	}
+
+	Sound::~Sound() {
+		dtor();
+	}
+
+	const auto TES3_Sound_ctor = reinterpret_cast<Sound*(__thiscall*)(Sound*)>(0x510490);
+	Sound* Sound::ctor() {
+		return TES3_Sound_ctor(this);
+	}
+
+	const auto TES3_Sound_dtor = reinterpret_cast<void(__thiscall*)(Sound*)>(0x510500);
+	void Sound::dtor() {
+		TES3_Sound_dtor(this);
+	}
+
 	char* Sound::getObjectID() {
 		return id;
+	}
+
+	void Sound::setObjectID(const char* _id) {
+		if (strnlen_s(_id, 32) >= 32) {
+			throw std::invalid_argument("ID cannot be 32 or more characters.");
+		}
+		strncpy_s(id, _id, 32);
 	}
 
 	bool Sound::play(int playbackFlags, unsigned char volume, float pitch, bool isNot3D) {
@@ -62,13 +87,55 @@ namespace TES3 {
 		TES3_Sound_setVolumeRaw(this, volume);
 	}
 
-	const auto TES3_Sound_isPlaying = reinterpret_cast<bool(__thiscall *)(Sound*)>(0x510B80);
-	bool Sound::isPlaying() {
+	const auto TES3_Sound_isPlaying = reinterpret_cast<bool(__thiscall*)(const Sound*)>(0x510B80);
+	bool Sound::isPlaying() const {
 		return TES3_Sound_isPlaying(this);
+	}
+
+	const auto TES3_Sound_isLooping = reinterpret_cast<bool(__thiscall*)(const Sound*)>(0x510BA0);
+	bool Sound::isLooping() const {
+		return TES3_Sound_isLooping(this);
 	}
 	
 	const char* Sound::getFilename() const {
 		return filename;
+	}
+
+	void Sound::setFilename(const char* _filename) {
+		if (strnlen_s(_filename, 32) >= 32) {
+			throw std::invalid_argument("Filename cannot be 32 or more characters.");
+		}
+		strncpy_s(filename, _filename, 32);
+	}
+
+	unsigned char Sound::getMinDistance() const {
+		return minDistance;
+	}
+
+	void Sound::setMinDistance(unsigned char value) {
+		minDistance = value;
+	}
+
+	void Sound::setMinDistance_lua(double value) {
+		if (value > 255.0 || value < 0.0) {
+			throw std::invalid_argument("tes3sound.setMinDistance: Value must be between 0 and 255.");
+		}
+		setMinDistance(value);
+	}
+
+	unsigned char Sound::getMaxDistance() const {
+		return maxDistance;
+	}
+
+	void Sound::setMaxDistance(unsigned char value) {
+		maxDistance = value;
+	}
+
+	void Sound::setMaxDistance_lua(double value) {
+		if (value > 255.0 || value < 0.0) {
+			throw std::invalid_argument("tes3sound.setMaxDistance: Value must be between 0 and 255.");
+		}
+		setMaxDistance(value);
 	}
 
 	float Sound::getVolume() {

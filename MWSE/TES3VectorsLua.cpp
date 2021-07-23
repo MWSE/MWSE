@@ -30,12 +30,26 @@ namespace mwse {
 				auto usertypeDefinition = state.new_usertype<TES3::Vector2>("tes3vector2");
 				usertypeDefinition["new"] = sol::constructors<TES3::Vector2(), TES3::Vector2(float, float)>();
 
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Vector2::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Vector2::operator-;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Vector2(const TES3::Vector2&) const>(&TES3::Vector2::operator*),
+					sol::resolve<TES3::Vector2(const float) const>(&TES3::Vector2::operator*)
+				);
+				usertypeDefinition[sol::meta_function::length] = &TES3::Vector2::length;
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Vector2::toString;
+
+				// Allow objects to be serialized to json using their ID.
+				usertypeDefinition["__tojson"] = &TES3::Vector2::toJson;
+
 				// Basic property bindings.
 				usertypeDefinition["x"] = &TES3::Vector2::x;
 				usertypeDefinition["y"] = &TES3::Vector2::y;
 
 				// Basic function binding.
 				usertypeDefinition["copy"] = &TES3::Vector2::copy;
+				usertypeDefinition["length"] = &TES3::Vector2::length;
 			}
 
 			// Binding for TES3::Vector3.
@@ -76,6 +90,7 @@ namespace mwse {
 				usertypeDefinition["outerProduct"] = &TES3::Vector3::outerProduct;
 				usertypeDefinition["heightDifference"] = &TES3::Vector3::heightDifference;
 				usertypeDefinition["length"] = &TES3::Vector3::length;
+				usertypeDefinition["lerp"] = &TES3::Vector3::lerp;
 				usertypeDefinition["negate"] = &TES3::Vector3::negate;
 				usertypeDefinition["normalize"] = &TES3::Vector3::normalize;
 				usertypeDefinition["normalized"] = &TES3::Vector3::normalized;
@@ -91,14 +106,26 @@ namespace mwse {
 				auto usertypeDefinition = state.new_usertype<TES3::Vector4>("tes3vector4");
 				usertypeDefinition["new"] = sol::constructors<TES3::Vector4(), TES3::Vector4(float, float, float, float)>();
 
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Vector4::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Vector4::operator-;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Vector4(const TES3::Vector4&) const>(&TES3::Vector4::operator*),
+					sol::resolve<TES3::Vector4(const float) const>(&TES3::Vector4::operator*)
+				);
+				usertypeDefinition[sol::meta_function::length] = &TES3::Vector4::length;
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Vector4::toString;
+				usertypeDefinition["__tojson"] = &TES3::Vector4::toJson;
+
 				// Basic property bindings.
+				usertypeDefinition["w"] = &TES3::Vector4::w;
 				usertypeDefinition["x"] = &TES3::Vector4::x;
 				usertypeDefinition["y"] = &TES3::Vector4::y;
 				usertypeDefinition["z"] = &TES3::Vector4::z;
-				usertypeDefinition["w"] = &TES3::Vector4::w;
 
 				// Basic function binding.
 				usertypeDefinition["copy"] = &TES3::Vector4::copy;
+				usertypeDefinition["length"] = &TES3::Vector4::length;
 			}
 
 			// Binding for TES3::BoundingBox.
@@ -166,6 +193,40 @@ namespace mwse {
 				usertypeDefinition["invert"] = &TES3::Matrix33::invert_lua;
 				usertypeDefinition["toEulerXYZ"] = &TES3::Matrix33::toEulerXYZ_lua;
 				usertypeDefinition["toEulerZYX"] = &TES3::Matrix33::toEulerZYX_lua;
+			}
+
+			// Binding for TES3::Matrix44.
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::Matrix44>("tes3matrix44");
+				usertypeDefinition["new"] = sol::constructors<
+					TES3::Matrix44(),
+					TES3::Matrix44(const TES3::Vector4&, const TES3::Vector4&, const TES3::Vector4&, const TES3::Vector4&),
+					TES3::Matrix44(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)
+				>();
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Matrix44::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Matrix44::operator-;
+				usertypeDefinition[sol::meta_function::equal_to] = &TES3::Matrix44::operator==;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Matrix44(const float)>(&TES3::Matrix44::operator*),
+					sol::resolve<TES3::Matrix44(const TES3::Matrix44&)>(&TES3::Matrix44::operator*)
+				);
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Matrix44::toString;
+				usertypeDefinition["__tojson"] = &TES3::Matrix44::toJson;
+
+				// Basic property bindings.
+				usertypeDefinition["w"] = &TES3::Matrix44::m0;
+				usertypeDefinition["x"] = &TES3::Matrix44::m1;
+				usertypeDefinition["y"] = &TES3::Matrix44::m2;
+				usertypeDefinition["z"] = &TES3::Matrix44::m3;
+
+				// Basic function binding.
+				usertypeDefinition["copy"] = &TES3::Matrix44::copy;
+				usertypeDefinition["toZero"] = &TES3::Matrix44::toZero;
 			}
 
 			// Binding for TES3::Transform.

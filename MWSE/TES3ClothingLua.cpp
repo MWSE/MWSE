@@ -36,7 +36,7 @@ namespace mwse {
 			usertypeDefinition["isLeftPart"] = sol::property(&TES3::Clothing::isLeftPartOfPair);
 			usertypeDefinition["mesh"] = sol::property(&TES3::Clothing::getModelPath, &TES3::Clothing::setModelPath);
 			usertypeDefinition["name"] = sol::property(&TES3::Clothing::getName, &TES3::Clothing::setName);
-			usertypeDefinition["script"] = sol::property(&TES3::Clothing::getScript);
+			usertypeDefinition["script"] = &TES3::Clothing::script;
 			usertypeDefinition["slotName"] = sol::property(&TES3::Clothing::getTypeName);
 
 			// TODO: Deprecated. Remove before 2.1-stable.

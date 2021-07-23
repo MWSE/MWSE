@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[This function fetches reference's attached animation groups' timings.]],
+	description = [[This function fetches a reference's attached animation groups' timings.]],
 	arguments = {{
 		name = "params",
 		type = "table",

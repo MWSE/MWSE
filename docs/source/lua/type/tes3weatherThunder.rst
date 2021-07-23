@@ -7,25 +7,25 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `ambientDayColor`_ (`tes3vector3`_)
-    The weather's ambient day color.
+    Read-only. The weather's ambient day color.
 
 `ambientLoopSound`_ (`tes3sound`_)
-    The weather's ambient looping sound.
+    Read-only. The weather's ambient looping sound.
 
 `ambientLoopSoundId`_ (`string`_)
     The weather's ambient looping sound ID.
 
 `ambientNightColor`_ (`tes3vector3`_)
-    The weather's ambient night color.
+    Read-only. The weather's ambient night color.
 
 `ambientPlaying`_ (`bool`_)
-    The weather's ambient playing flag.
+    Read-only. The weather's ambient playing flag.
 
 `ambientSunriseColor`_ (`tes3vector3`_)
-    The weather's ambient sunrise color.
+    Read-only. The weather's ambient sunrise color.
 
 `ambientSunsetColor`_ (`tes3vector3`_)
-    The weather's ambient sunset color.
+    Read-only. The weather's ambient sunset color.
 
 `cloudTexture`_ (`string`_)
     The weather's cloud texture path.
@@ -37,28 +37,28 @@ Properties
     The weather's cloud speed.
 
 `controller`_ (`tes3weatherController`_)
-    The weather's weather controller.
+    Read-only. The weather's weather controller.
 
 `flashDecrement`_ (`number`_)
     The weather's flash decrement value.
 
 `fogDayColor`_ (`tes3vector3`_)
-    The weather's fog day color.
+    Read-only. The weather's fog day color.
 
 `fogNightColor`_ (`tes3vector3`_)
-    The weather's fog night color.
+    Read-only. The weather's fog night color.
 
 `fogSunriseColor`_ (`tes3vector3`_)
-    The weather's fog sunrise color.
+    Read-only. The weather's fog sunrise color.
 
 `fogSunsetColor`_ (`tes3vector3`_)
-    The weather's fog sunset color.
+    Read-only. The weather's fog sunset color.
 
 `glareView`_ (`number`_)
     The weather's glare view.
 
 `index`_ (`number`_)
-    The weather's index ID.
+    Read-only. The weather's index ID.
 
 `landFogDayDepth`_ (`number`_)
     The weather's land fog day depth value.
@@ -82,40 +82,40 @@ Properties
     The weather's particle radius.
 
 `rainActive`_ (`bool`_)
-    The weather's active rain flag.
+    Read-only. The weather's active rain flag.
 
 `rainLoopSound`_ (`tes3sound`_)
-    The weather's rain loop sound object.
+    Read-only. The weather's rain loop sound object.
 
 `rainLoopSoundId`_ (`string`_)
     The weather's rain loop sound ID.
 
 `skyDayColor`_ (`tes3vector3`_)
-    The weather's sky day color.
+    Read-only. The weather's sky day color.
 
 `skyNightColor`_ (`tes3vector3`_)
-    The weather's sky night color.
+    Read-only. The weather's sky night color.
 
 `skySunriseColor`_ (`tes3vector3`_)
-    The weather's sky sunrise color.
+    Read-only. The weather's sky sunrise color.
 
 `skySunsetColor`_ (`tes3vector3`_)
-    The weather's sky sunset color.
+    Read-only. The weather's sky sunset color.
 
 `sunDayColor`_ (`tes3vector3`_)
-    The weather's sun day color.
+    Read-only. The weather's sun day color.
 
 `sunNightColor`_ (`tes3vector3`_)
-    The weather's sun night color.
+    Read-only. The weather's sun night color.
 
 `sunSunriseColor`_ (`tes3vector3`_)
-    The weather's sun sunrise color.
+    Read-only. The weather's sun sunrise color.
 
 `sunSunsetColor`_ (`tes3vector3`_)
-    The weather's sun sunset color.
+    Read-only. The weather's sun sunset color.
 
 `sundiscSunsetColor`_ (`tes3vector3`_)
-    The weather's sundisc sunset color.
+    Read-only. The weather's sundisc sunset color.
 
 `threshold`_ (`number`_)
     The weather's threshold value.
@@ -124,25 +124,25 @@ Properties
     The weather's thunder frequency.
 
 `thunderSound1`_ (`tes3sound`_)
-    The weather's thunder sound 1 object.
+    Read-only. The weather's thunder sound 1 object.
 
 `thunderSound1Id`_ (`string`_)
     The weather's thunder sound 1 ID.
 
 `thunderSound2`_ (`tes3sound`_)
-    The weather's thunder sound 2 object.
+    Read-only. The weather's thunder sound 2 object.
 
 `thunderSound2Id`_ (`string`_)
     The weather's thunder sound 2 ID.
 
 `thunderSound3`_ (`tes3sound`_)
-    The weather's thunder sound 3 object.
+    Read-only. The weather's thunder sound 3 object.
 
 `thunderSound3Id`_ (`string`_)
     The weather's thunder sound 3 ID.
 
 `thunderSound4`_ (`tes3sound`_)
-    The weather's thunder sound 4 object.
+    Read-only. The weather's thunder sound 4 object.
 
 `thunderSound4Id`_ (`string`_)
     The weather's thunder sound 4 ID.
@@ -157,7 +157,7 @@ Properties
     The weather's transition delta.
 
 `underwaterSoundState`_ (`bool`_)
-    The weather's underwater sound state flag.
+    Read-only. The weather's underwater sound state flag.
 
 `windSpeed`_ (`number`_)
     The weather's wind speed.
@@ -271,9 +271,9 @@ Properties
 .. _`underwaterSoundState`: tes3weatherThunder/underwaterSoundState.html
 .. _`windSpeed`: tes3weatherThunder/windSpeed.html
 
-.. _`tes3sound`: ../../lua/type/tes3sound.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
 .. _`bool`: ../../lua/type/boolean.html
-.. _`tes3weatherController`: ../../lua/type/tes3weatherController.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`tes3sound`: ../../lua/type/tes3sound.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3weatherController`: ../../lua/type/tes3weatherController.html

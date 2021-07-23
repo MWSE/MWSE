@@ -40,7 +40,7 @@ namespace mwse {
 			usertypeDefinition["isLeftPart"] = sol::property(&TES3::Armor::isLeftPartOfPair);
 			usertypeDefinition["mesh"] = sol::property(&TES3::Armor::getModelPath, &TES3::Armor::setModelPath);
 			usertypeDefinition["name"] = sol::property(&TES3::Armor::getName, &TES3::Armor::setName);
-			usertypeDefinition["script"] = sol::property(&TES3::Armor::getScript);
+			usertypeDefinition["script"] = &TES3::Armor::script;
 			usertypeDefinition["slotName"] = sol::property(&TES3::Armor::getTypeName);
 			usertypeDefinition["weightClass"] = sol::property(&TES3::Armor::getWeightClass);
 

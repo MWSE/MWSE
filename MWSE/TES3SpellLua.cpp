@@ -75,21 +75,20 @@ namespace mwse {
 			setUserdataForTES3Object(usertypeDefinition);
 
 			// Basic property binding.
+			usertypeDefinition["basePurchaseCost"] = sol::readonly_property(&TES3::Spell::calculateBasePuchaseCost);
 			usertypeDefinition["castType"] = &TES3::Spell::castType;
+			usertypeDefinition["effects"] = sol::readonly_property(&TES3::Spell::getEffects);
 			usertypeDefinition["flags"] = &TES3::Spell::spellFlags;
 			usertypeDefinition["magickaCost"] = &TES3::Spell::magickaCost;
-
-			// Indirect bindings to unions and arrays.
-			usertypeDefinition["effects"] = sol::readonly_property(&TES3::Spell::getEffects);
+			usertypeDefinition["name"] = sol::property(&TES3::Spell::getName, &TES3::Spell::setName);
 
 			// Basic function binding.
 			usertypeDefinition["create"] = &createSpell;
 			usertypeDefinition["calculateCastChance"] = &TES3::Spell::calculateCastChance_lua;
 			usertypeDefinition["getActiveEffectCount"] = &TES3::Spell::getActiveEffectCount;
 			usertypeDefinition["getFirstIndexOfEffect"] = &TES3::Spell::getFirstIndexOfEffect;
-			usertypeDefinition["getLeastProficientEffect"] = &TES3::Spell::getLeastProficientEffect;
-			usertypeDefinition["getLeastProficientSchool"] = &TES3::Spell::getLeastProficientSchool;
-			usertypeDefinition["name"] = sol::property(&TES3::Spell::getName, &TES3::Spell::setName);
+			usertypeDefinition["getLeastProficientEffect"] = &TES3::Spell::getLeastProficientEffect_lua;
+			usertypeDefinition["getLeastProficientSchool"] = &TES3::Spell::getLeastProficientSchool_lua;
 
 			// Convenient flag access.
 			usertypeDefinition["alwaysSucceeds"] = sol::property(&TES3::Spell::getAlwaysSucceeds, &TES3::Spell::setAlwaysSucceeds);

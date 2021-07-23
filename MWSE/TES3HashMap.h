@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MemoryUtil.h"
+
 namespace TES3 {
 
 	template <typename K, typename V>
@@ -14,10 +16,10 @@ namespace TES3 {
 				KeyValuePair keyValuePair; // 0x0
 				struct {
 					K key; // 0x0
-					V value; // 0x0 + sizeof(K)
+					V value; // 0x0 + sizeof(K) + alignment
 				};
 			};
-			Node* nextNode; // 0x0 + sizeof(K) + sizeof(V)
+			Node* nextNode; // 0x0 + sizeof(K) + sizeof(V) + alignment
 		};
 		struct VirtualTable {
 			void(__thiscall* destructor)(HashMap<K, V>*, bool); // 0x0
@@ -36,14 +38,19 @@ namespace TES3 {
 		void makeKeyValuePair(KeyValuePair* kvp, K& key, V& value) const { vTable->makeKeyValuePair(this, kvp, key, value); }
 		void deleteKeyValuePair(KeyValuePair* kvp) { vTable->deleteKeyValuePair(this, kvp); }
 
-		bool containsKey(K& key) const {
+		void addKey(K& key, V& value) {
 			auto index = hashKey(key);
 			for (auto itt = buckets[index]; itt; itt = itt->nextNode) {
 				if (compareKey(key, itt->key)) {
-					return true;
+					itt->value = value;
+					return;
 				}
 			}
-			return false;
+
+			auto node = mwse::tes3::_new<Node>();
+			makeKeyValuePair(&node->keyValuePair, key, value);
+			node->nextNode = buckets[index];
+			buckets[index] = node;
 		}
 
 		bool eraseKey(K& key) {
@@ -54,6 +61,16 @@ namespace TES3 {
 					deleteKeyValuePair(&(*itt)->keyValuePair);
 					reinterpret_cast<void(__cdecl*)(void*)>(0x727530)(*itt);
 					*itt = next;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool containsKey(K& key) const {
+			auto index = hashKey(key);
+			for (auto itt = buckets[index]; itt; itt = itt->nextNode) {
+				if (compareKey(key, itt->key)) {
 					return true;
 				}
 			}

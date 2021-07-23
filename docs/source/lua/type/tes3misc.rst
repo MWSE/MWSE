@@ -25,7 +25,7 @@ Properties
     Access to the flag determining if this item is recognized as a key.
 
 `isSoulGem`_ (`boolean`_)
-    Determines if this item is a soul gem.
+    Read-only. Determines if this item is a soul gem.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -61,16 +61,19 @@ Properties
     The scene graph reference node for this object.
 
 `script`_ (`tes3script`_)
-    The script that runs on the object.
+    Read-only. The script that runs on the object.
 
 `soulGemData`_ (`tes3soulGemData`_)
-    Fetches related soul gem data, if this item is a soul gem.
+    Read-only. Fetches related soul gem data, if this item is a soul gem.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `value`_ (`number`_)
     The value of the object.
@@ -103,6 +106,7 @@ Properties
     tes3misc/soulGemData
     tes3misc/sourceMod
     tes3misc/stolenList
+    tes3misc/supportsLuaData
     tes3misc/value
     tes3misc/weight
 
@@ -128,6 +132,7 @@ Properties
 .. _`soulGemData`: tes3misc/soulGemData.html
 .. _`sourceMod`: tes3misc/sourceMod.html
 .. _`stolenList`: tes3misc/stolenList.html
+.. _`supportsLuaData`: tes3misc/supportsLuaData.html
 .. _`value`: tes3misc/value.html
 .. _`weight`: tes3misc/weight.html
 
@@ -144,12 +149,12 @@ Functions
 
 .. _`create`: tes3misc/create.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3soulGemData`: ../../lua/type/tes3soulGemData.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3soulGemData`: ../../lua/type/tes3soulGemData.html

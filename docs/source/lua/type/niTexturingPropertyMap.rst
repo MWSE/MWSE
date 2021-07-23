@@ -31,4 +31,17 @@ Properties
 .. _`texCoordSet`: niTexturingPropertyMap/texCoordSet.html
 .. _`texture`: niTexturingPropertyMap/texture.html
 
+Functions
+----------------------------------------------------------------------------------------------------
+
+`new`_
+    Creates a new basic or bump map.
+
+.. toctree::
+    :hidden:
+
+    niTexturingPropertyMap/new
+
+.. _`new`: niTexturingPropertyMap/new.html
+
 .. _`number`: ../../lua/type/number.html

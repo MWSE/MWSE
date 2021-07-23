@@ -32,7 +32,7 @@ namespace mwse {
 			usertypeDefinition["radius"] = &TES3::Light::radius;
 			usertypeDefinition["flags"] = &TES3::Light::flags;
 			usertypeDefinition["sound"] = sol::readonly_property(&TES3::Light::sound);
-			usertypeDefinition["script"] = sol::readonly_property(&TES3::Light::script);
+			usertypeDefinition["script"] = &TES3::Light::script;
 
 			// User-friendly access to flags.
 			usertypeDefinition["canCarry"] = sol::property(&TES3::Light::getCanCarry, &TES3::Light::setCanCarry);

@@ -1,7 +1,7 @@
 #include "NIGeometryData.h"
 
 namespace NI {
-	unsigned short GeometryData::getActiveVertexCount() {
+	unsigned short GeometryData::getActiveVertexCount() const {
 		return vTable.asGeometryData->getActiveVertexCount(this);
 	}
 
@@ -18,20 +18,32 @@ namespace NI {
 		NI_Bound_ComputeFromData(&bounds, vertexCount, vertex, sizeof(TES3::Vector3));
 	}
 
-	nonstd::span<ColorA> GeometryData::getColors() {
-		return nonstd::span(color, vertexCount);
+	nonstd::span<PackedColor> GeometryData::getColors() {
+		if (color) {
+			return nonstd::span(color, vertexCount);
+		}
+		return {};
 	}
 
 	nonstd::span<TES3::Vector3> GeometryData::getVertices() {
-		return nonstd::span(vertex, vertexCount);
+		if (vertex) {
+			return nonstd::span(vertex, vertexCount);
+		}
+		return {};
 	}
 
 	nonstd::span<TES3::Vector3> GeometryData::getNormals() {
-		return nonstd::span(normal, vertexCount);
+		if (normal) {
+			return nonstd::span(normal, vertexCount);
+		}
+		return {};
 	}
 
 	nonstd::span<TES3::Vector2> GeometryData::getTextureCoordinates() {
-		return nonstd::span(textureCoords, vertexCount * textureSets);
+		if (textureCoords) {
+			return nonstd::span(textureCoords, vertexCount * textureSets);
+		}
+		return {};
 	}
 }
 

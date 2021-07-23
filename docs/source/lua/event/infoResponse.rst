@@ -31,7 +31,7 @@ variables
 
 tes3scriptVariables. Read-only. The script variables.
 
-.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
 .. _`string`: ../../lua/type/string.html
+.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
+.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

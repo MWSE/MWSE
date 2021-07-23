@@ -136,7 +136,7 @@ If you plan to use the results of rayTest, you should make sure it still exists.
 
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`table`: ../../../lua/type/table.html
-.. _`number`: ../../../lua/type/number.html
-.. _`tes3vector3`: ../../../lua/type/tes3vector3.html
 .. _`niPickRecord`: ../../../lua/type/niPickRecord.html
+.. _`number`: ../../../lua/type/number.html
+.. _`table`: ../../../lua/type/table.html
+.. _`tes3vector3`: ../../../lua/type/tes3vector3.html

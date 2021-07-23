@@ -86,12 +86,22 @@ namespace mwse {
 
 			// Make remove property a bit more friendly.
 			usertypeDefinition["detachProperty"] = &NI::AVObject::detachPropertyByType;
+			usertypeDefinition["detachAllProperties"] = &NI::AVObject::detachAllProperties_lua;
 
 			// Update function with table arguments.
 			usertypeDefinition["update"] = &NI::AVObject::update_lua;
 
 			// Friendly access to flags.
 			usertypeDefinition["appCulled"] = sol::property(&NI::AVObject::getAppCulled, &NI::AVObject::setAppCulled);
+
+			// Friendly access to properties.
+			usertypeDefinition["alphaProperty"] = sol::property(&NI::AVObject::getAlphaProperty, &NI::AVObject::setAlphaProperty);
+			usertypeDefinition["fogProperty"] = sol::property(&NI::AVObject::getFogProperty, &NI::AVObject::setFogProperty);
+			usertypeDefinition["materialProperty"] = sol::property(&NI::AVObject::getMaterialProperty, &NI::AVObject::setMaterialProperty);
+			usertypeDefinition["stencilProperty"] = sol::property(&NI::AVObject::getStencilProperty, &NI::AVObject::setStencilProperty);
+			usertypeDefinition["texturingProperty"] = sol::property(&NI::AVObject::getTexturingProperty, &NI::AVObject::setTexturingProperty);
+			usertypeDefinition["vertexColorProperty"] = sol::property(&NI::AVObject::getVertexColorProperty, &NI::AVObject::setVertexColorProperty);
+			usertypeDefinition["zBufferProperty"] = sol::property(&NI::AVObject::getZBufferProperty, &NI::AVObject::setZBufferProperty);
 
 			// Legacy access. TODO: Remove.
 			usertypeDefinition["propegatePositionChange"] = &NI::AVObject::update_lua;

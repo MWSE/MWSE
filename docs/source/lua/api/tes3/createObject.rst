@@ -1,7 +1,7 @@
 tes3.createObject
 ====================================================================================================
 
-Create an object and returns it. The created object will be part of the saved game. Supported object types are those that have their own create function such as tes3activator for example.
+Create an object and returns it. The created object will be part of the saved game. Supported object types are those that have their own create function, such as tes3activator for example.
 
 Returns
 ----------------------------------------------------------------------------------------------------

@@ -41,6 +41,6 @@ flags (`number`_)
 objectFlags (`number`_)
     Default: ``0``. The object flags initially set. Force set as modified.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3enchantment`: ../../../lua/type/tes3enchantment.html

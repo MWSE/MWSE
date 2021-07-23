@@ -178,6 +178,9 @@
     <Filter Include="Source Files\Lua\Events">
       <UniqueIdentifier>{c81b5931-1a46-4ba2-b3dc-3e0a8dfd6d2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\DataAdapters\TES3\Collections">
+      <UniqueIdentifier>{4efc7251-f248-4f4c-ae1a-655f113f5426}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flags.h">
@@ -531,9 +534,6 @@
     <ClInclude Include="TES3SkillLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
-    <ClInclude Include="TES3Sound.h">
-      <Filter>Header Files\DataAdapters\TES3\Collections</Filter>
-    </ClInclude>
     <ClInclude Include="StackLua.h">
       <Filter>Header Files\Lua\Bindings</Filter>
     </ClInclude>
@@ -795,9 +795,6 @@
     <ClInclude Include="TES3DialogueConditional.h">
       <Filter>Header Files\DataAdapters\TES3\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="TES3StdString.h">
-      <Filter>Header Files\DataAdapters\TES3\_Unsorted_</Filter>
-    </ClInclude>
     <ClInclude Include="TES3MobController.h">
       <Filter>Header Files\DataAdapters\TES3\Worldspace</Filter>
     </ClInclude>
@@ -1044,7 +1041,7 @@
     <ClInclude Include="TES3CombatSessionLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
-    <ClInclude Include="TES3SpellInstanceController.h">
+    <ClInclude Include="TES3MagicInstanceController.h">
       <Filter>Header Files\DataAdapters\TES3\Magic</Filter>
     </ClInclude>
     <ClInclude Include="LuaSkillRaisedEvent.h">
@@ -1290,7 +1287,7 @@
     <ClInclude Include="NIGeometryData.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NiTriShapeData.h">
+    <ClInclude Include="NITriShapeData.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaObjectInvalidatedEvent.h">
@@ -1508,6 +1505,21 @@
     </ClInclude>
     <ClInclude Include="LuaAttackStartEvent.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3Sound.h">
+      <Filter>Header Files\DataAdapters\TES3\_Unsorted_</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3StdString.h">
+      <Filter>Header Files\DataAdapters\TES3\Collections</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaPotionBrewFailedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaEnchantedItemCreatedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaEnchantedItemCreateFailedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2477,9 +2489,6 @@
     <ClCompile Include="NIPickLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="TES3Vectors.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
     <ClCompile Include="TES3Spell.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
@@ -2500,9 +2509,6 @@
     </ClCompile>
     <ClCompile Include="TES3SpellListLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
-    </ClCompile>
-    <ClCompile Include="TES3SpellList.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3GlobalVariableLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
@@ -2568,9 +2574,6 @@
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3CrimeEvent.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
-    <ClCompile Include="TES3StdString.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3WeatherController.cpp">
@@ -2822,7 +2825,7 @@
     <ClCompile Include="TES3CombatSessionLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="TES3SpellInstanceController.cpp">
+    <ClCompile Include="TES3MagicInstanceController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3MobileActorLua.cpp">
@@ -3041,7 +3044,7 @@
     <ClCompile Include="NIGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NiTriBasedGeometryData.cpp">
+    <ClCompile Include="NITriBasedGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIGeometry.cpp">
@@ -3322,6 +3325,27 @@
     </ClCompile>
     <ClCompile Include="LuaAttackStartEvent.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3SpellList.cpp">
+      <Filter>Source Files\DataAdapters\TES3\Collections</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3StdString.cpp">
+      <Filter>Source Files\DataAdapters\TES3\Collections</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3Vectors.cpp">
+      <Filter>Source Files\DataAdapters\TES3\Collections</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaPotionBrewFailedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaEnchantedItemCreatedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaEnchantedItemCreateFailedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="NITriShapeData.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

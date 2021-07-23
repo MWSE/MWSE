@@ -6,6 +6,8 @@ Causes this reference to activate another. This will lead them to go through doo
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 reference (`tes3reference`_)
     The other reference to activate.
 

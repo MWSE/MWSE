@@ -28,7 +28,13 @@ namespace mwse {
 			usertypeDefinition["viewDistance"] = &NI::Camera::viewDistance;
 			usertypeDefinition["worldDirection"] = &NI::Camera::worldDirection;
 			usertypeDefinition["worldRight"] = &NI::Camera::worldRight;
+			usertypeDefinition["worldToCamera"] = &NI::Camera::worldToCamera;
 			usertypeDefinition["worldUp"] = &NI::Camera::worldUp;
+
+			// Basic function binding.
+			usertypeDefinition["click"] = &NI::Camera::click_lua;
+			usertypeDefinition["windowPointToRay"] = &NI::Camera::windowPointToRay_lua;
+			usertypeDefinition["worldPointToScreenPoint"] = &NI::Camera::worldPointToScreenPoint_lua;
 		}
 	}
 }

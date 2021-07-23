@@ -22,5 +22,5 @@ itemData
 `tes3itemData`_. Read-only. The item data of item.
 
 .. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

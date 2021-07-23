@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 startTime (`number`_)
     Optional. No description available.
 
-.. _`number`: ../../../lua/type/number.html
 .. _`mwseTimerController`: ../../../lua/type/mwseTimerController.html
+.. _`number`: ../../../lua/type/number.html

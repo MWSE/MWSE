@@ -1,6 +1,6 @@
 x
 ====================================================================================================
 
-`number`_. The first value in the vector.
+`number`_. The 2nd value in the vector.
 
 .. _`number`: ../../../lua/type/number.html

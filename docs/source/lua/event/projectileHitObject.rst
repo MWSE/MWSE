@@ -31,7 +31,7 @@ firingWeapon
 
 `tes3weapon`_. Read-only. The weapon that fired the projectile.
 
-.. _`tes3weapon`: ../../lua/type/tes3weapon.html
 .. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3weapon`: ../../lua/type/tes3weapon.html

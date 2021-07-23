@@ -1,5 +1,5 @@
 return {
 	type = "method",
-	description = [[Check if the sound is playing.]],
+	description = [[Returns true if the sound is actively playing.]],
    	valuetype = "boolean",
 }

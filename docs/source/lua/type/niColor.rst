@@ -50,6 +50,9 @@ Methods
 `copy`_ (`niColor`_)
     Creates a copy of the color object.
 
+`lerp`_
+    Calculates the interpolated color between this color and another, given a transition.
+
 `toVector3`_ (`tes3vector3`_)
     Creates a vector3 of the color object.
 
@@ -58,12 +61,14 @@ Methods
 
     niColor/clamp
     niColor/copy
+    niColor/lerp
     niColor/toVector3
 
 .. _`clamp`: niColor/clamp.html
 .. _`copy`: niColor/copy.html
+.. _`lerp`: niColor/lerp.html
 .. _`toVector3`: niColor/toVector3.html
 
+.. _`niColor`: ../../lua/type/niColor.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html
-.. _`niColor`: ../../lua/type/niColor.html

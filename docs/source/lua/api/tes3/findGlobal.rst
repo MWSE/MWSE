@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`string`_)
     No description available.
 
-.. _`tes3globalVariable`: ../../../lua/type/tes3globalVariable.html
 .. _`string`: ../../../lua/type/string.html
+.. _`tes3globalVariable`: ../../../lua/type/tes3globalVariable.html

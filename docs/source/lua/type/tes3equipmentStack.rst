@@ -6,6 +6,9 @@ A simple container that holds a relationship between an item, and any associated
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`itemData`_ (`tes3itemData`_)
+    Item data associated with the stack's object, if any. All equipped items except ammunition will have itemData.
+
 `object`_ (`tes3item`_)
     The core game object that the stack represents.
 
@@ -15,9 +18,11 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3equipmentStack/itemData
     tes3equipmentStack/object
     tes3equipmentStack/variables
 
+.. _`itemData`: tes3equipmentStack/itemData.html
 .. _`object`: tes3equipmentStack/object.html
 .. _`variables`: tes3equipmentStack/variables.html
 

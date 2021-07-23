@@ -16,5 +16,5 @@ book
 
 `tes3book`_. Read-only. The book whose text is being retrieved.
 
-.. _`tes3book`: ../../lua/type/tes3book.html
 .. _`string`: ../../lua/type/string.html
+.. _`tes3book`: ../../lua/type/tes3book.html

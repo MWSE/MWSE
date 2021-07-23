@@ -3,22 +3,22 @@ return {
 	eventData = {
 		["attacker"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A shortcut to the mobile's reference.",
 		},
 		["attackerMobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile who is making the attack.",
 		},
 		["target"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A shortcut to the target mobile's reference. May not always be available.",
 		},
 		["targetMobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile who is being attacked. May not always be available.",
 		},
 		["hitChance"] = {

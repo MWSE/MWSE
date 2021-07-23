@@ -1,32 +1,45 @@
 {
+    // Configure lua runtime.
     "Lua.runtime.version": "LuaJIT",
-    "Lua.runtime.path": [
-        "./core/?.lua",
-        "./lib/?.lua",
-        "./mwse/?.lua"
-    ],
-    "Lua.workspace.library": {
-        "./core": true,
-        "./lib": true,
-        "./mods": true
+    "Lua.runtime.special" : {
+        "include" : "require",
+        "dofile" : "require"
     },
+    "Lua.runtime.path":[
+        "core/?.lua",
+        "core/?/init.lua",
+        "lib/?.lua",
+        "lib/?/init.lua",
+        "mods/?.lua",
+        "mods/?/init.lua",
+        "lua/?.lua",
+        "lua/?/init.lua"
+    ],
+
+    // We are too powerful for default settings.
+    "Lua.workspace.maxPreload": 10000,
+    "Lua.workspace.preloadFileSize": 1000,
+
+    // Ignore problematic files.
     "Lua.workspace.ignoreDir": [
-        "*"
+        "./core/mwse_init.lua"
     ],
-    "Lua.diagnostics.disable": [
-    ],
-    "Lua.diagnostics.globals": [
-        "event",
-        "json",
-        "math",
-        "mge",
-        "mwscript",
-        "mwse",
-        "string",
-        "table",
-        "tes3",
-        "tes3ui",
-        "timer"
-    ],
-    "restructuredtext.confPath": "d:\\Games\\Morrowind\\mwse-source\\docs\\source"
+
+    // Ignore any potential 3rd party checks. We provide our definitions in core/meta
+    "Lua.workspace.checkThirdParty": false,
+
+    // Configure diagnostics.
+    // "Lua.diagnostics.globals": [
+    //     "event",
+    //     "json",
+    //     "math",
+    //     "mge",
+    //     "mwscript",
+    //     "mwse",
+    //     "string",
+    //     "table",
+    //     "tes3",
+    //     "tes3ui",
+    //     "timer"
+    // ],
 }

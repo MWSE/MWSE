@@ -38,6 +38,6 @@ flags (`number`_)
 effects (`table`_)
     A table of effects described, providing values for id, skill, attribute, range, radius, duration, min, and/or max.
 
+.. _`number`: ../../../lua/type/number.html
 .. _`string`: ../../../lua/type/string.html
 .. _`table`: ../../../lua/type/table.html
-.. _`number`: ../../../lua/type/number.html

@@ -6,6 +6,8 @@ This function writes information to the mgeXE.log file in the user's installatio
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 message (`string`_)
     No description available.
 

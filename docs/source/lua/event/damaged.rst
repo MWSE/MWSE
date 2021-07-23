@@ -29,7 +29,7 @@ mobile
 magicSourceInstance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`tes3magicSourceInstance`_. Read-only. tes3magicSourceInstance of a spell that caused damage. Can be nil.
+`tes3magicSourceInstance`_. tes3magicSourceInstance of a spell that caused damage. Can be nil.
 
 source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,8 +85,8 @@ Notify the player that their arrow/bolt killed their opponent
 
 
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html

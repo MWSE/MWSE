@@ -7,13 +7,13 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `x`_ (`tes3vector3`_)
-    A copy of the first row of the matrix.
+    The first row of the matrix.
 
 `y`_ (`tes3vector3`_)
-    A copy of the second row of the matrix.
+    The second row of the matrix.
 
 `z`_ (`tes3vector3`_)
-    A copy of the third row of the matrix.
+    The third row of the matrix.
 
 .. toctree::
     :hidden:

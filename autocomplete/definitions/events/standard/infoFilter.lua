@@ -3,32 +3,32 @@ return {
 	eventData = {
 		["info"] = {
 			type = "tes3dialogueInfo",
-			readonly = true,
+			readOnly = true,
 			description = "The dialogue info object.",
 		},
 		["actor"] = {
 			type = "tes3object",
-			readonly = true,
+			readOnly = true,
 			description = "The actor.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The reference.",
 		},
 		["source"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The source.",
 		},
 		["dialogue"] = {
 			type = "tes3dialogue",
-			readonly = true,
+			readOnly = true,
 			description = "The dialogue object.",
 		},
 		["passes"] = {
 			type = "bool",
-			readonly = true,
+			readOnly = true,
 			description = "Indicates if the filter passes.",
 		},
 	},

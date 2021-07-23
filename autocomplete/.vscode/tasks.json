@@ -6,17 +6,29 @@
 		{
 			"label": "Build Autocomplete",
 			"type": "shell",
-			"command": "lua .\\luacompleterc\\build.lua",
-			"group": "build"
+			"group": "build",
+			"command": "lua",
+			"args": [".\\meta-EmmyLua\\build.lua"],
+			"problemMatcher": []
 		},
 		{
 			"label": "Build Autodocs",
 			"type": "shell",
-			"command": "lua .\\readthedocs\\build.lua",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
+			"command": "lua",
+			"args": [".\\readthedocs\\build.lua"],
+			"group": "build",
+			"problemMatcher": []
+		},
+        {
+            "label": "Build All",
+            "command": "echo",
+			"args": ["Build complete!"],
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn":["Build Autocomplete", "Build Autodocs"]
+        },
 	]
 }

@@ -73,6 +73,7 @@ namespace mwse {
 			timer->duration = duration;
 			timer->timing = m_Clock + duration;
 			timer->iterations = iterations;
+			timer->iterationCount = iterations;
 			timer->callback = callback;
 			timer->isPersistent = persist;
 
@@ -124,13 +125,18 @@ namespace mwse {
 		}
 
 		bool TimerController::resetTimer(std::shared_ptr<Timer> timer) {
-			// Validate timer.
+			// Add to active list
 			if (timer->state != TimerState::Active) {
-				return false;
+				if (timer->state == TimerState::Paused) {
+					m_PausedTimers.erase(timer);
+				}
+				insertActiveTimer(timer);
 			}
 
-			// Change timing.
+			// Reset to initial state.
+			timer->state = TimerState::Active;
 			timer->timing = m_Clock + timer->duration;
+			timer->iterations = timer->iterationCount;
 
 			// Move it to the right place in the list.
 			repositionTimer(timer);

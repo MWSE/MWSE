@@ -11,7 +11,7 @@ namespace TES3 {
 		float cumulativeMagnitude; // 0x10
 		int state; // 0x14
 		signed char visual; // 0x18
-		Item * boundItem; // 0x1C
+		ItemStack * createdData; // 0x1C
 		int unknown_0x20;
 		Weapon * lastUsedWeapon; // 0x24
 		Armor * lastUsedArmor; // 0x28

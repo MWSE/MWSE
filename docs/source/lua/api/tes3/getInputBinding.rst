@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 keybind (`number`_)
     Maps to tes3.keybind constants.
 
-.. _`tes3inputConfig`: ../../../lua/type/tes3inputConfig.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3inputConfig`: ../../../lua/type/tes3inputConfig.html

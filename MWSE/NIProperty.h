@@ -19,10 +19,13 @@ namespace NI {
 		Specular = 0x9,
 		Shade = 0xA,
 		RendererSpecific = 0xB,
+
+		FirstPropertyType = Alpha,
+		LastPropertyType = RendererSpecific,
 	};
 
 	struct Property_vTable : Object_vTable {
-		PropertyType (__thiscall * getType)(Property*); // 0x2C
+		PropertyType (__thiscall * getType)(const Property*); // 0x2C
 		void (__thiscall * update)(Property*, float); // 0x30
 	};
 	static_assert(sizeof(Property_vTable) == 0x34, "NI::Property's vtable failed size validation");
@@ -37,12 +40,14 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		PropertyType getType();
+		PropertyType getType() const;
 		void update(float dt);
 
 		//
 		// Other function addresses.
 		//
+
+		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);
 		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const Property*, Stream*)>(0x6E9660);
@@ -52,6 +57,11 @@ namespace NI {
 
 	struct AlphaProperty : Property {
 		unsigned char alphaTestRef;
+
+		AlphaProperty();
+		~AlphaProperty();
+
+		static Pointer<AlphaProperty> create();
 	};
 	static_assert(sizeof(AlphaProperty) == 0x1C, "NI::AlphaProperty failed size validation");
 
@@ -182,6 +192,11 @@ namespace NI {
 			Map(Texture* texture, ClampMode clampMode = ClampMode::WRAP_S_WRAP_T, FilterMode filterMode = FilterMode::TRILERP, unsigned int textureCoords = 0);
 			~Map();
 
+			Pointer<Texture> getTexture_lua() const;
+			void setTexture_lua(Texture* texture);
+
+			static Map* create(sol::optional<sol::table> params);
+
 		};
 		struct BumpMap : Map {
 			float lumaScale;
@@ -195,6 +210,19 @@ namespace NI {
 		ApplyMode applyMode; // 0x18
 		TArray<Map*> maps; // 0x1C
 		int unknown_34; // 0x34
+
+		Map* getBaseMap();
+		void setBaseMap(sol::optional<Map*> map);
+		Map* getDarkMap();
+		void setDarkMap(sol::optional<Map*> map);
+		Map* getDetailMap();
+		void setDetailMap(sol::optional<Map*> map);
+		Map* getGlossMap();
+		void setGlossMap(sol::optional<Map*> map);
+		Map* getGlowMap();
+		void setGlowMap(sol::optional<Map*> map);
+		BumpMap* getBumpMap();
+		void setBumpMap(sol::optional<BumpMap*> map);
 
 		unsigned int getDecalCount() const;
 		bool canAddDecalMap() const;
@@ -237,9 +265,6 @@ namespace NI {
 
 		ZBufferProperty();
 		~ZBufferProperty();
-
-		void loadBinary(Stream* stream);
-		void saveBinary(Stream* stream) const;
 
 		static Pointer<ZBufferProperty> create();
 	};

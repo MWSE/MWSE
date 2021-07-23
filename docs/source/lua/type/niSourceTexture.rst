@@ -7,13 +7,13 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `fileName`_ (`string`_)
-    The platform-independent version of the filename from which the image was created, or NULL if the image was created from pixel data.
+    Read-only. The platform-independent version of the filename from which the image was created, or NULL if the image was created from pixel data.
 
 `formatPrefs`_ (`niFormatPrefs`_)
     The `NiFormatPrefs` of the texture.
 
 `height`_ (`number`_)
-    The height of the texture.
+    Read-only. The height of the texture.
 
 `isStatic`_ (`boolean`_)
     The static flag.
@@ -25,16 +25,16 @@ Properties
     The app-level pixel data.
 
 `platformFilename`_ (`string`_)
-    The platform-specific version of the filename.
+    Read-only. The platform-specific version of the filename.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `runTimeTypeInformation`_ (`niRTTI`_)
     The runtime type information for this object.
 
 `width`_ (`number`_)
-    The width of the texture.
+    Read-only. The width of the texture.
 
 .. toctree::
     :hidden:
@@ -122,10 +122,10 @@ Functions
 
 .. _`createFromPath`: niSourceTexture/createFromPath.html
 
-.. _`niObject`: ../../lua/type/niObject.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
+.. _`niFormatPrefs`: ../../lua/type/niFormatPrefs.html
+.. _`niObject`: ../../lua/type/niObject.html
 .. _`niPixelData`: ../../lua/type/niPixelData.html
 .. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niFormatPrefs`: ../../lua/type/niFormatPrefs.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html

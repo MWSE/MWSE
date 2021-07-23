@@ -8,7 +8,7 @@ namespace mwse::lua {
 		setUserdataForNIObject(usertypeDefinition);
 
 		// Basic property binding.
-		usertypeDefinition["name"] = sol::readonly_property(&NI::ExtraData::name);
+		usertypeDefinition["genericData"] = sol::readonly_property(&NI::ExtraData::getGenericData);
 		usertypeDefinition["next"] = sol::property(&NI::ExtraData::getNext, &NI::ExtraData::setNext);
 	}
 

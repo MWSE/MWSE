@@ -6,6 +6,8 @@ Sets a property value with ``prop`` as the property key. Properties are named va
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 propName (`string`_)
     The property name.
 

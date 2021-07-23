@@ -32,8 +32,8 @@ mobile
 `tes3mobileActor`_. Read-only. The mobile actor that has equipped the item.
 
 .. _`equip`: ../../lua/event/equip.html
-.. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
 .. _`tes3actor`: ../../lua/type/tes3actor.html
+.. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
+.. _`tes3itemData`: ../../lua/type/tes3itemData.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3itemData`: ../../lua/type/tes3itemData.html

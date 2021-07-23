@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["tooltip"] = {
 			type = "tes3uiElement",
-			readonly = true,
+			readOnly = true,
 			description = "The newly created tooltip element. Due to timeouts and target changes, it may be destroyed at any time.",
 		},
 		["spell"] = {
 			type = "tes3spell",
-			readonly = true,
+			readOnly = true,
 			description = "The spell being examined.",
 		},
 	},

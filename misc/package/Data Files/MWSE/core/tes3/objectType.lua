@@ -28,6 +28,7 @@ return {
 	["reference"] = 1380336978,
 	["repairItem"] = 1095779666,
 	["script"] = 1414546259,
+	["sound"] = 1314213715,
 	["soundGenerator"] = 1195658835,
 	["spell"] = 1279610963,
 	["static"] = 1413567571,

@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["activator"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The actor attempting to trigger the event.",
 		},
 		["target"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The reference that is being activated.",
 		},
 	},

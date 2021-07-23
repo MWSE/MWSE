@@ -28,8 +28,8 @@ distance (`number`_)
 direction (`number`_)
     Default: ``1``. No description available.
 
-.. _`string`: ../../../lua/type/string.html
-.. _`tes3object`: ../../../lua/type/tes3object.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
+.. _`tes3object`: ../../../lua/type/tes3object.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

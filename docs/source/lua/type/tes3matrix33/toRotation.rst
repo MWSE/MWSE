@@ -6,6 +6,8 @@ No description is currently available.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 angle (`number`_)
     No description available.
 

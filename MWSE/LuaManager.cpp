@@ -22,6 +22,7 @@
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
 #include "TES3Alchemy.h"
+#include "TES3Apparatus.h"
 #include "TES3Book.h"
 #include "TES3BodyPartManager.h"
 #include "TES3CombatSession.h"
@@ -38,6 +39,7 @@
 #include "TES3InputController.h"
 #include "TES3ItemData.h"
 #include "TES3LeveledList.h"
+#include "TES3Lockpick.h"
 #include "TES3MagicEffect.h"
 #include "TES3MagicEffectController.h"
 #include "TES3MagicEffectInstance.h"
@@ -49,7 +51,9 @@
 #include "TES3MobileProjectile.h"
 #include "TES3NPC.h"
 #include "TES3PlayerAnimationController.h"
+#include "TES3Probe.h"
 #include "TES3Reference.h"
+#include "TES3RepairTool.h"
 #include "TES3Script.h"
 #include "TES3SoulGemData.h"
 #include "TES3Sound.h"
@@ -177,6 +181,8 @@
 #include "LuaCrimeWitnessedEvent.h"
 #include "LuaDamageEvent.h"
 #include "LuaDamageHandToHandEvent.h"
+#include "LuaEnchantedItemCreatedEvent.h"
+#include "LuaEnchantedItemCreateFailedEvent.h"
 #include "LuaEquipEvent.h"
 #include "LuaFilterBarterMenuEvent.h"
 #include "LuaFilterContentsMenuEvent.h"
@@ -194,6 +200,7 @@
 #include "LuaItemTileUpdatedEvent.h"
 #include "LuaKeyDownEvent.h"
 #include "LuaKeyUpEvent.h"
+#include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLevelUpEvent.h"
 #include "LuaLoadedGameEvent.h"
 #include "LuaMagicCastedEvent.h"
@@ -206,6 +213,7 @@
 #include "LuaObjectInvalidatedEvent.h"
 #include "LuaPostInfoResponseEvent.h"
 #include "LuaPotionBrewedEvent.h"
+#include "LuaPotionBrewFailedEvent.h"
 #include "LuaPowerRechargedEvent.h"
 #include "LuaPreLevelUpEvent.h"
 #include "LuaPreventRestEvent.h"
@@ -225,6 +233,7 @@
 #include "LuaWeatherCycledEvent.h"
 #include "LuaWeatherTransitionFinishedEvent.h"
 #include "LuaWeatherTransitionStartedEvent.h"
+#include "LuaLeveledItemPickedEvent.h"
 
 #include "NITextureEffectLua.h"
 
@@ -956,10 +965,10 @@ namespace mwse {
 			inputController->readKeyState();
 
 			// We only need to check the modifier key values once.
-			bool controlDown = (inputController->keyboardState[DIK_LCONTROL] & 0x80) || (inputController->keyboardState[DIK_RCONTROL] & 0x80);
-			bool shiftDown = (inputController->keyboardState[DIK_LSHIFT] & 0x80) || (inputController->keyboardState[DIK_RSHIFT] & 0x80);
-			bool altDown = (inputController->keyboardState[DIK_LALT] & 0x80) || (inputController->keyboardState[DIK_RALT] & 0x80);
-			bool superDown = (inputController->keyboardState[DIK_LWIN] & 0x80) || (inputController->keyboardState[DIK_RWIN] & 0x80);
+			bool controlDown = inputController->isControlDown();
+			bool shiftDown = inputController->isShiftDown();
+			bool altDown = inputController->isAltDown();
+			bool superDown = inputController->isSuperDown();
 
 			// Go through the keys to see if any of the states have changed, and launch an event based on that.
 			LuaManager& luaManager = LuaManager::getInstance();
@@ -1218,14 +1227,89 @@ namespace mwse {
 			auto ingredient4 = getBrewingIngredient(0x7D2292);
 
 			// Call original function.
-			bool success = TES3_AttemptPotionBrew();
-
-			// Pass a lua event.
-			if (success && lastBrewedPotion && event::PotionBrewedEvent::getEventEnabled()) {
-				LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::PotionBrewedEvent(lastBrewedPotion, ingredient1, ingredient2, ingredient3, ingredient4));
+			if (!TES3_AttemptPotionBrew()) {
+				return false;
 			}
 
-			return success;
+			// Perform patches and fire off events.
+			if (lastBrewedPotion) {
+				// Set unused target attribute/skill ids to -1.
+				lastBrewedPotion->cleanUnusedAttributeSkillIds();
+
+				// Pass a lua event.
+				if (event::PotionBrewedEvent::getEventEnabled()) {
+					LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::PotionBrewedEvent(lastBrewedPotion, ingredient1, ingredient2, ingredient3, ingredient4));
+				}
+			}
+			else {
+				if (event::PotionBrewFailedEvent::getEventEnabled()) {
+					LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::PotionBrewFailedEvent(ingredient1, ingredient2, ingredient3, ingredient4));
+				}
+			}
+
+			return true;
+		}
+
+		//
+		// Enchantment created event.
+		//
+
+		template <typename T>
+		T* getValueFromEnchantingMenu(DWORD parentIdAddress, DWORD propertyIdAddress) {
+			auto menuEnchanting = TES3::UI::findMenu(*reinterpret_cast<TES3::UI::UI_ID*>(0x7D36BC));
+			if (!menuEnchanting) {
+				return nullptr;
+			}
+
+			auto child = menuEnchanting->findChild(*reinterpret_cast<TES3::UI::UI_ID*>(parentIdAddress));
+			if (!child) {
+				return nullptr;
+			}
+
+			return reinterpret_cast<T*>(child->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(propertyIdAddress)).ptrValue);
+		}
+
+		static TES3::Item* lastCreatedEnchantedItem = nullptr;
+		void __fastcall CacheLastEnchantedItem(TES3::Item* item, DWORD _EDX_, TES3::Enchantment* enchantment) {
+			lastCreatedEnchantedItem = item;
+			item->setEnchantment(enchantment);
+		}
+
+		const auto TES3_AttemptCreateEnchantedItem = reinterpret_cast<bool(__cdecl*)()>(0x5C3D90);
+		bool __cdecl OnCreateEnchantedItemAttempt() {
+			// Reset success state.
+			lastCreatedEnchantedItem = nullptr;
+
+			// Store the original item, the soul gem, and the contained soul since they get nuked.
+			// None of these names make sense. Blame Todd.
+			const auto ui_id_ptr_MenuEnchantment_Item = 0x7D358C;
+			const auto ui_id_ptr_MenuEnchantment_SoulGem = 0x7D35A6;
+			auto enchantedFrom = getValueFromEnchantingMenu<TES3::Item>(ui_id_ptr_MenuEnchantment_Item, ui_id_ptr_MenuEnchantment_SoulGem);
+			auto soulGemUsed = getValueFromEnchantingMenu<TES3::Misc>(ui_id_ptr_MenuEnchantment_SoulGem, ui_id_ptr_MenuEnchantment_SoulGem);
+			auto soulGemItemData = getValueFromEnchantingMenu<TES3::ItemData>(ui_id_ptr_MenuEnchantment_SoulGem, ui_id_ptr_MenuEnchantment_Item);
+			auto soulUsed = soulGemItemData ? soulGemItemData->soul : nullptr;
+
+			// TODO: Allow item data to be accessed or transferred to the newly enchanted item.
+			//auto enchantedFromItemData = getValueFromEnchantingMenu<TES3::ItemData>(ui_id_ptr_MenuEnchantment_Item, ui_id_ptr_MenuEnchantment_Item);
+
+			// Call original function.
+			if (!TES3_AttemptCreateEnchantedItem()) {
+				return false;
+			}
+
+			// Fire off any events.
+			if (lastCreatedEnchantedItem) {
+				if (event::EnchantedItemCreatedEvent::getEventEnabled()) {
+					LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::EnchantedItemCreatedEvent(lastCreatedEnchantedItem, enchantedFrom, soulGemUsed, soulUsed));
+				}
+			}
+			else {
+				if (event::EnchantedItemCreateFailedEvent::getEventEnabled()) {
+					LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::EnchantedItemCreateFailedEvent(enchantedFrom, soulGemUsed, soulUsed));
+				}
+			}
+
+			return true;
 		}
 
 		//
@@ -1684,6 +1768,50 @@ namespace mwse {
 			if (mobile && mobile->reference && wasDrawn && event::WeaponUnreadiedEvent::getEventEnabled()) {
 				LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::WeaponUnreadiedEvent(mobile->reference));
 			}
+		}
+
+		//
+		// Events: Leveled list resolving
+		//
+
+		TES3::IteratedList<TES3::ItemStack*>* __fastcall CacheContainerCloseReference(TES3::ContainerInstance* self) {
+			mwse::lua::event::LeveledItemPickedEvent::m_Reference = self->getReference();
+			return &self->inventory.itemStacks;
+		}
+
+		// We can't use the mapped function in TES3Inventory.h because of the custom inventory pointer made. That breaks getActor.
+		// So we need to get a cached reference above.
+		const auto TES3_Inventory_resolveLeveledLists = reinterpret_cast<void(__thiscall*)(TES3::Inventory*, TES3::MobileActor*)>(0x49A190);
+		void __fastcall ContainerCloseResolveLevelledLists(TES3::Inventory* inventory, DWORD _EDX_, TES3::MobileActor* mobile) {
+			TES3_Inventory_resolveLeveledLists(inventory, mobile);
+			mwse::lua::event::LeveledItemPickedEvent::m_Reference = nullptr;
+		}
+
+		TES3::Reference* __fastcall CacheLeveledCreatureSpawner(TES3::Reference* reference) {
+			// Overwritten code.
+			auto result = reference->getLeveledBaseReference();
+
+			if (result == nullptr) {
+				event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference = reference;
+			}
+
+			return result;
+		}
+
+		TES3::Object* __fastcall PickLeveledCreatureWithCachedSpawner(TES3::LeveledCreature* leveledList) {
+			auto result = leveledList->resolve();
+
+			// Clear cached spawning reference so it doesn't pollute other calls.
+			event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference = nullptr;
+
+			return result;
+		}
+
+		TES3::Object* __fastcall PickLeveledCreatureForEmptyCell(TES3::LeveledCreature* leveledList) {
+			event::LeveledCreaturePickedEvent::m_IsForEmptyCell = true;
+			auto result = leveledList->resolve();
+			event::LeveledCreaturePickedEvent::m_IsForEmptyCell = false;
+			return result;
 		}
 
 		//
@@ -2564,6 +2692,10 @@ namespace mwse {
 			return gameFile->writeChunkData(tag, data, size);
 		}
 
+		sol::protected_function fnTableEmpty;
+		sol::protected_function fnEncodeForSave;
+		sol::protected_function fnDecodeFromSave;
+
 		// The last extra data written. We'll add the lua data here if needed.
 		int __fastcall WriteItemDataCondition(TES3::GameFile * gameFile, DWORD _UNUSED_, unsigned int tag, const void * data, unsigned int size) {
 			// Overwritten code.
@@ -2574,12 +2706,10 @@ namespace mwse {
 				sol::table table = itemData->luaData->data;
 
 				// If it is empty, don't bother saving it.
-				if (!table.empty()) {
+				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+				if (!fnTableEmpty(table, true)) {
 					// Convert the table to json for storage.
-					auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-					sol::state &state = stateHandle.state;
-					// TODO: Optimize by caching function here.
-					std::string json = state["mwse"]["encodeForSave"](table);
+					std::string json = fnEncodeForSave(table);
 
 					// Call original writechunk function.
 					gameFile->writeChunkData('TAUL', json.c_str(), json.length() + 1);
@@ -2613,8 +2743,7 @@ namespace mwse {
 					auto threadID = GetCurrentThreadId();
 					auto saveLoadItemData = saveLoadItemDataMap[threadID];
 					if (saveLoadItemData && saveLoadItemData->luaData == nullptr) {
-						// TODO: Optimize by caching function here.
-						saveLoadItemData->setLuaDataTable(state["json"]["decode"](buffer));
+						saveLoadItemData->setLuaDataTable(fnDecodeFromSave(buffer));
 						saveLoadItemDataMap.erase(threadID);
 					}
 				}
@@ -2644,12 +2773,11 @@ namespace mwse {
 				sol::table table = saveLoadItemData->luaData->data;
 
 				// If it is empty, don't bother saving it.
-				if (!table.empty()) {
+				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+				sol::state& state = stateHandle.state;
+				if (!fnTableEmpty(table, true)) {
 					// Convert the table to json for storage.
-					auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-					sol::state &state = stateHandle.state;
-					// TODO: Optimize by caching function here.
-					std::string json = state["mwse"]["encodeForSave"](table);
+					std::string json = fnEncodeForSave(table);
 
 					// Call original writechunk function.
 					gameFile->writeChunkData('TAUL', json.c_str(), json.length() + 1);
@@ -2684,8 +2812,7 @@ namespace mwse {
 					auto itemData = saveLoadReferenceMap[GetCurrentThreadId()]->getAttachedItemData();
 					if (itemData) {
 						if (itemData->luaData == nullptr) {
-							// TODO: Optimize by caching function here.
-							itemData->setLuaDataTable(state["json"]["decode"](buffer));
+							itemData->setLuaDataTable(fnDecodeFromSave(buffer));
 						}
 					}
 #if _DEBUG
@@ -3029,6 +3156,11 @@ namespace mwse {
 			// Alter existing libraries.
 			luaState["os"]["exit"] = customOSExit;
 
+			// Cache some often used functions.
+			fnTableEmpty = luaState["table"]["empty"];
+			fnEncodeForSave = luaState["mwse"]["encodeForSave"];
+			fnDecodeFromSave = luaState["json"]["decode"];
+
 			// Hook the RunScript function so we can intercept Lua scripts and invoke Lua code if needed.
 			genJumpUnprotected(TES3_HOOK_RUNSCRIPT_LUACHECK, reinterpret_cast<DWORD>(HookRunScript), TES3_HOOK_RUNSCRIPT_LUACHECK_SIZE);
 
@@ -3331,9 +3463,20 @@ namespace mwse {
 			genCallEnforced(0x60E81C, 0x56A5D0, reinterpret_cast<DWORD>(OnExerciseSkill));
 			genCallEnforced(0x60ECB2, 0x56A5D0, reinterpret_cast<DWORD>(OnExerciseSkill));
 
-			// Event: Brew potion.
+			// Event: Brew potion (failed).
 			genCallEnforced(0x59C010, 0x59C030, reinterpret_cast<DWORD>(OnBrewPotionAttempt));
 			genCallEnforced(0x59D2A9, 0x6313E0, reinterpret_cast<DWORD>(CacheLastBrewedPotion));
+
+			// Event: Create enchanted item (failed).
+			genCallUnprotected(0x5C494B, reinterpret_cast<DWORD>(CacheLastEnchantedItem), 0x6); // ARMO
+			genCallUnprotected(0x5C49EF, reinterpret_cast<DWORD>(CacheLastEnchantedItem), 0x6); // WEAP/AMMO
+			genCallUnprotected(0x5C4A96, reinterpret_cast<DWORD>(CacheLastEnchantedItem), 0x6); // CLOT
+			genCallUnprotected(0x5C4B3A, reinterpret_cast<DWORD>(CacheLastEnchantedItem), 0x6); // BOOK
+			genPushEnforced(0x5C28D8, reinterpret_cast<DWORD>(OnCreateEnchantedItemAttempt));
+
+			// Clean unused alchemy attribute and skill IDs on loading.
+			auto alchemyLoadObjectSpecific = &TES3::Alchemy::loadObjectSpecific;
+			overrideVirtualTableEnforced(0x749684, offsetof(TES3::BaseObjectVirtualTable, TES3::BaseObjectVirtualTable::loadObjectSpecific), 0x4ABD90, *reinterpret_cast<DWORD*>(&alchemyLoadObjectSpecific));
 
 			// Event: Spell created from service menu.
 			genCallEnforced(0x622D05, 0x4B8980, reinterpret_cast<DWORD>(OnAddNewlyCreatedSpell));
@@ -3540,13 +3683,22 @@ namespace mwse {
 			genCallEnforced(0x49A20E, 0x4D0BD0, *reinterpret_cast<DWORD*>(&leveledItemPick));
 			genCallEnforced(0x49A25B, 0x4D0BD0, *reinterpret_cast<DWORD*>(&leveledItemPick));
 			genCallEnforced(0x4D0DD3, 0x4D0BD0, *reinterpret_cast<DWORD*>(&leveledItemPick));
+			auto inventoryResolveLeveledLists = &TES3::Inventory::resolveLeveledLists;
+			genCallEnforced(0x49D5C4, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
+			genCallEnforced(0x4A42A9, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
+			genCallEnforced(0x4A4492, 0x4957E0, reinterpret_cast<DWORD>(CacheContainerCloseReference));
+			genCallEnforced(0x4A44F8, 0x49A190, reinterpret_cast<DWORD>(ContainerCloseResolveLevelledLists));
+			genCallEnforced(0x4D83A1, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
+			genCallEnforced(0x508BB2, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
+			genCallEnforced(0x529B72, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
 
 			// Event: Leveled creature picked.
 			auto leveledCreaturePick = &TES3::LeveledCreature::resolve;
-			genCallEnforced(0x4B8C95, 0x4CF870, *reinterpret_cast<DWORD*>(&leveledCreaturePick));
-			genCallEnforced(0x4B8E80, 0x4CF870, *reinterpret_cast<DWORD*>(&leveledCreaturePick));
+			genCallEnforced(0x4B8C95, 0x4CF870, reinterpret_cast<DWORD>(PickLeveledCreatureForEmptyCell));
+			genCallEnforced(0x4B8E80, 0x4CF870, reinterpret_cast<DWORD>(PickLeveledCreatureForEmptyCell));
 			genCallEnforced(0x4CF9E7, 0x4CF870, *reinterpret_cast<DWORD*>(&leveledCreaturePick));
-			genCallEnforced(0x4CFB43, 0x4CF870, *reinterpret_cast<DWORD*>(&leveledCreaturePick));
+			genCallEnforced(0x4CFB34, 0x4E7EE0, reinterpret_cast<DWORD>(CacheLeveledCreatureSpawner));
+			genCallEnforced(0x4CFB43, 0x4CF870, reinterpret_cast<DWORD>(PickLeveledCreatureWithCachedSpawner));
 			genCallEnforced(0x635236, 0x4CF870, *reinterpret_cast<DWORD*>(&leveledCreaturePick));
 
 			// Event: Mobile Sneak Detection.
@@ -3704,7 +3856,8 @@ namespace mwse {
 			genCallEnforced(0x4B2A77, 0x4B0190, *reinterpret_cast<DWORD*>(&dialogueInfoFilter));
 
 			// Event: Execute lua from dialogue response.
-			genCallEnforced(0x4B1FB2, 0x50E5A0, reinterpret_cast<DWORD>(OnRunDialogueCommand));
+			genCallEnforced(0x4B1FB2, 0x50E5A0, reinterpret_cast<DWORD>(OnRunDialogueCommand)); // Vanilla function.
+			genJumpEnforced(0x50E594, 0x50E5A0, reinterpret_cast<DWORD>(OnRunDialogueCommand)); // MCP-added function.
 
 			// Event: Dialogue link resolve.
 			genCallEnforced(0x40B89E, 0x4BA8D0, reinterpret_cast<DWORD>(OnInfoLinkResolve));
@@ -4249,6 +4402,23 @@ namespace mwse {
 
 			// Patch custom magic effect saving and loading.
 			genJumpUnprotected(TES3_PATCH_MAGIC_SAVE_LOAD, reinterpret_cast<DWORD>(PatchMagicSaveLoad), TES3_PATCH_MAGIC_SAVE_LOAD_SIZE);
+
+			// Allow setting names of apparatus, lockpicks, probes, and repair tools.
+			auto TES3_Apparatus_setName = &TES3::Apparatus::setName;
+			auto TES3_Lockpick_setName = &TES3::Lockpick::setName;
+			auto TES3_Probe_setName = &TES3::Probe::setName;
+			auto TES3_RepairTool_setName = &TES3::RepairTool::setName;
+			overrideVirtualTableEnforced(0x748110, offsetof(TES3::ObjectVirtualTable, setName), 0x4F1C50, *reinterpret_cast<DWORD*>(&TES3_Apparatus_setName));
+			overrideVirtualTableEnforced(0x748D10, offsetof(TES3::ObjectVirtualTable, setName), 0x4F1C50, *reinterpret_cast<DWORD*>(&TES3_Lockpick_setName));
+			overrideVirtualTableEnforced(0x748FA0, offsetof(TES3::ObjectVirtualTable, setName), 0x4F1C50, *reinterpret_cast<DWORD*>(&TES3_Probe_setName));
+			overrideVirtualTableEnforced(0x7490E8, offsetof(TES3::ObjectVirtualTable, setName), 0x4F1C50, *reinterpret_cast<DWORD*>(&TES3_RepairTool_setName));
+
+			// Support for MobileSpellProjectile::explode.
+			// Initialize extra flag members in MobileProjectile::ctor.
+			writeByteUnprotected(0x5723BC, 0x89);
+			// The explode logic is deferred to execute at the same point as projectile simulation to preserve consistency.
+			auto projectileControllerResolveCollisions = &TES3::ProjectileController::resolveCollisions;
+			genCallEnforced(0x5638F8, 0x5753A0, *reinterpret_cast<DWORD*>(&projectileControllerResolveCollisions));
 
 			// Look for main.lua scripts in the usual directories.
 			executeMainModScripts("Data Files\\MWSE\\core");

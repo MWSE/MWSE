@@ -4,6 +4,6 @@ return {
 
 Only one element can have control of input, and there is no automatic restoration of control if one element takes control from another. Be careful of conflicts with other users of this function.]],
 	arguments = {
-		{ name = "element", type = "tes3uiElemenet", optional = true },
+		{ name = "element", type = "tes3uiElement", optional = true },
 	},
 }

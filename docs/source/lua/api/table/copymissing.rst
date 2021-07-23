@@ -6,6 +6,8 @@ Copies a table's contents from one table to another, including subtitles. If a n
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 to (`table`_)
     No description available.
 

@@ -6,7 +6,7 @@
 namespace NI {
 	struct GeometryData_vTable : Object_vTable {
 		void(__thiscall* setActiveVertexCount)(GeometryData*, unsigned short); // 0x2C
-		unsigned short(__thiscall* getActiveVertexCount)(GeometryData*); // 0x30
+		unsigned short(__thiscall* getActiveVertexCount)(const GeometryData*); // 0x30
 		void(__thiscall* calculateNormals)(GeometryData*); // 0x34
 	};
 	static_assert(sizeof(GeometryData_vTable) == 0x38, "NI::GeometryData_vTable failed size validation");
@@ -17,7 +17,7 @@ namespace NI {
 		Bound bounds; // 0xC
 		TES3::Vector3* vertex; // 0x1C
 		TES3::Vector3* normal; // 0x20
-		ColorA* color; // 0x24
+		PackedColor* color; // 0x24
 		TES3::Vector2* textureCoords; // 0x28
 		unsigned int uniqueID; // 0x2C
 		unsigned short revisionID; // 0x30
@@ -27,7 +27,7 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		unsigned short getActiveVertexCount();
+		unsigned short getActiveVertexCount() const;
 
 		//
 		// Custom functions.
@@ -36,7 +36,7 @@ namespace NI {
 		void markAsChanged();
 		void updateModelBound();
 
-		nonstd::span<ColorA> getColors();
+		nonstd::span<PackedColor> getColors();
 		nonstd::span<TES3::Vector3> getVertices();
 		nonstd::span<TES3::Vector3> getNormals();
 		nonstd::span<TES3::Vector2> getTextureCoordinates();

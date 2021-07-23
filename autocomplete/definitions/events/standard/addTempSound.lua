@@ -11,7 +11,7 @@ return {
         },
         ["flags"] = {
             type = "number",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["volume"] = {
@@ -20,12 +20,12 @@ return {
         },
         ["pitch"] = {
             type = "number",
-            --readonly = true,
+            --readOnly = true,
             description = "Pitch of the sound.",
         },
         ["isVoiceover"] = {
             type = "boolean",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
         ["sound"] = {

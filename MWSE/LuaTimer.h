@@ -87,6 +87,9 @@ namespace mwse {
 			// The number of iterations it has left, or -1 if it runs forever.
 			int iterations;
 
+			// The number of iterations the timer was created with.
+			int iterationCount;
+
 			// Callback for timer completion.
 			sol::object callback;
 

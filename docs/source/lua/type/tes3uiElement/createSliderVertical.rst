@@ -20,6 +20,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`number`_)
     Optional. A registered identifier to help find this element later.
 
@@ -35,5 +37,5 @@ step (`number`_)
 jump (`number`_)
     Optional. Amount changed by clicking inside the slider area. The default is 5.
 
-.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

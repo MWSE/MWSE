@@ -20,6 +20,6 @@ position (`tes3vector3`_)
     Optional. The position to search from. Must be an exterior position. Defaults to the last exterior position of the player if no position is provided.
 
 .. _`string`: ../../../lua/type/string.html
+.. _`tes3physicalObject`: ../../../lua/type/tes3physicalObject.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
 .. _`tes3vector3`: ../../../lua/type/tes3vector3.html
-.. _`tes3physicalObject`: ../../../lua/type/tes3physicalObject.html

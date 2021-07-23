@@ -3,11 +3,14 @@
 #include "TES3Util.h"
 #include "LuaUtil.h"
 
+#include "TES3Actor.h"
 #include "TES3Item.h"
+#include "TES3MobileActor.h"
 #include "TES3Reference.h"
 
 #include "LuaManager.h"
 #include "LuaConvertReferenceToItemEvent.h"
+#include "LuaLeveledItemPickedEvent.h"
 
 namespace TES3 {
 	//
@@ -52,13 +55,20 @@ namespace TES3 {
 	}
 
 	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, Vector3, Vector3, bool)>(0x49B090);
-	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool unknown) {
-		TES3_Inventory_DropItem(this, mobileActor, item, itemData, count, position, orientation, unknown);
+	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData) {
+		TES3_Inventory_DropItem(this, mobileActor, item, itemData, count, position, orientation, ignoreItemData);
 	}
 
+	// Note: A custom call to TES3_Inventory_resolveLeveledLists is made in LuaManager.cpp.
 	const auto TES3_Inventory_resolveLeveledLists = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*)>(0x49A190);
-	void Inventory::resolveLeveledLists(MobileActor* actor) {
-		TES3_Inventory_resolveLeveledLists(this, actor);
+	void Inventory::resolveLeveledLists(MobileActor* mobile) {
+		mwse::lua::event::LeveledItemPickedEvent::m_Reference = mobile ? mobile->reference : getActor()->getReference();
+		TES3_Inventory_resolveLeveledLists(this, mobile);
+		mwse::lua::event::LeveledItemPickedEvent::m_Reference = nullptr;
+	}
+
+	Actor* Inventory::getActor() {
+		return reinterpret_cast<Actor*>(reinterpret_cast<BYTE*>(this) - offsetof(Actor, inventory));
 	}
 
 	bool Inventory::containsItem(Item * item, ItemData * data) {
@@ -79,12 +89,9 @@ namespace TES3 {
 		return true;
 	}
 
-	float Inventory::calculateContainedWeight() {
-		float weight = 0.0f;
-		for (auto& stack : itemStacks) {
-			weight += stack->object->getWeight() * std::abs(stack->count);
-		}
-		return weight;
+	const auto TES3_Inventory_calculateContainedWeight = reinterpret_cast<float(__thiscall*)(const Inventory*)>(0x49A080);
+	float Inventory::calculateContainedWeight() const {
+		return TES3_Inventory_calculateContainedWeight(this);
 	}
 
 	int Inventory::getSoulGemCount() {

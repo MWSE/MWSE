@@ -109,12 +109,11 @@ function Slider:createLabel(parentBlock)
 end
 
 function Slider:makeComponent(parentBlock)
-	local sliderBlock 
-	sliderBlock = parentBlock:createBlock()
+	local sliderBlock = parentBlock:createBlock()
 	sliderBlock.flowDirection = "left_to_right"
 	sliderBlock.autoHeight = true
 	sliderBlock.widthProportional = 1.0
-	range = self.max - self.min
+	local range = self.max - self.min
 	local slider = sliderBlock:createSlider({
 		current = 0,
 		max = range
@@ -130,7 +129,6 @@ function Slider:makeComponent(parentBlock)
 	
 	--add mouseovers
 	table.insert(self.mouseOvers, sliderBlock)
-	table.insert(self.mouseOvers, sliderValueLabel)
 	--Add every piece of the slider to the mouseOvers
 	for _, sliderElement in ipairs(slider.children) do
 		table.insert(self.mouseOvers, sliderElement)

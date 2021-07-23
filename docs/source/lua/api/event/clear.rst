@@ -6,6 +6,8 @@ Removes all callbacks registered for a given event.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 eventId (`string`_)
     No description available.
 

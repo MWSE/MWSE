@@ -113,7 +113,7 @@ namespace mwse {
 				usertypeDefinition["charge"] = &TES3::ItemData::charge;
 				usertypeDefinition["count"] = &TES3::ItemData::count;
 				usertypeDefinition["condition"] = &TES3::ItemData::condition;
-				usertypeDefinition["script"] = sol::readonly_property(&TES3::ItemData::script);
+				usertypeDefinition["script"] = &TES3::ItemData::script;
 				usertypeDefinition["scriptVariables"] = &TES3::ItemData::scriptData;
 				usertypeDefinition["timeLeft"] = &TES3::ItemData::timeLeft;
 
@@ -124,6 +124,7 @@ namespace mwse {
 
 				// 
 				usertypeDefinition["data"] = sol::property(&TES3::ItemData::getOrCreateLuaDataTable, &TES3::ItemData::setLuaDataTable);
+				usertypeDefinition["tempData"] = sol::property(&TES3::ItemData::getOrCreateLuaTempDataTable, &TES3::ItemData::setLuaTempDataTable);
 
 				// Add the ability to get the unique script context from this itemdata for ease of mwscript interaction.
 				usertypeDefinition["context"] = sol::readonly_property(&TES3::ItemData::createContext);
@@ -150,6 +151,8 @@ namespace mwse {
 				// Basic property binding.
 				usertypeDefinition["itemData"] = &TES3::EquipmentStack::variables;
 				usertypeDefinition["object"] = sol::readonly_property(&TES3::EquipmentStack::object);
+
+				// Legacy bindings.
 				usertypeDefinition["variables"] = &TES3::EquipmentStack::variables;
 			}
 

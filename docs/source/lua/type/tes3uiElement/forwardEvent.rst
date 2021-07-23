@@ -6,6 +6,8 @@ Forwards an event to the original Morrowind event handler, using this element as
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`tes3uiEvent`_)
     The original UI event.
 

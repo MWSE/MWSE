@@ -27,33 +27,15 @@
 #ifndef SOL_SINGLE_CONFIG_HPP
 #define SOL_SINGLE_CONFIG_HPP
 
-// Customizations
+// Configuration options available at https://sol2.readthedocs.io/en/latest/safety.html
+
+// Enable LUAJIT support
 #define SOL_LUAJIT 1
+
+// Ensure that userdata and functions have their param types checked.
 #define SOL_SAFE_USERTYPE 1
+
 // It's _not_ wanted to propagate exceptions through Lua
 #define SOL_EXCEPTIONS_SAFE_PROPAGATION 0
-
-// beginning of sol/config.hpp
-
-/* Base, empty configuration file!
-
-     To override, place a file in your include paths of the form:
-
-. (your include path here)
-| sol (directory, or equivalent)
-  | config.hpp (your config.hpp file)
-
-     So that when sol2 includes the file
-
-#include <sol/config.hpp>
-
-     it gives you the configuration values you desire. Configuration values can be
-seen in the safety.rst of the doc/src, or at
-https://sol2.readthedocs.io/en/latest/safety.html ! You can also pass them through
-the build system, or the command line options of your compiler.
-
-*/
-
-// end of sol/config.hpp
 
 #endif // SOL_SINGLE_CONFIG_HPP

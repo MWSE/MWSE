@@ -14,7 +14,7 @@ sound (`tes3sound`_, `string`_)
 reference (`tes3reference`_, `tes3mobileActor`_, `string`_)
     Optional. The reference the sound is attached to.
 
-.. _`tes3sound`: ../../../lua/type/tes3sound.html
 .. _`string`: ../../../lua/type/string.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`tes3sound`: ../../../lua/type/tes3sound.html

@@ -5,6 +5,13 @@
 #include "TES3Util.h"
 
 namespace NI {
+	nonstd::span<BYTE> ExtraData::getGenericData() {
+		if (genericData) {
+			return nonstd::span((BYTE*)genericData, genericDataLength);
+		}
+		return {};
+	}
+
 	ExtraData* ExtraData::getNext() const {
 		return next;
 	}
@@ -30,7 +37,10 @@ namespace NI {
 	}
 
 	nonstd::span<TextKey> TextKeyExtraData::getKeys() const {
-		return nonstd::span(key, keyCount);
+		if (key) {
+			return nonstd::span(key, keyCount);
+		}
+		return {};
 	}
 }
 

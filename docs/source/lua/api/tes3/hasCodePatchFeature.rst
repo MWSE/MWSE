@@ -11,9 +11,11 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`number`_)
     No description available.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`number`: ../../../lua/type/number.html
 .. _`nil`: ../../../lua/type/nil.html
+.. _`number`: ../../../lua/type/number.html

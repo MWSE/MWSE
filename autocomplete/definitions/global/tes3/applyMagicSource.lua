@@ -7,11 +7,11 @@ return {
 		tableParams = {
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string" },
 			{ name = "source", type = "tes3object", optional = true, description = "A magic source to apply." },
-			{ name = "name", type = "string", optional = true, description = "If applying alchemy as a source, you can specifiy a name of magic source." },
+			{ name = "name", type = "string", optional = true, description = "If applying alchemy as a source, you can specifiy a name for the magic source." },
 			{
 				name = "effects",
 				optional = true,
-				description = "A table of effects to apply as a potion. Maximal number of effects is 8.",
+				description = "A table of custom effects to apply as a potion. Maximal number of effects is 8.",
 				type = "table" ,
 				tableParams = {
 					{ name = "id", type = "boolean", optional = true, default = -1, description = "ID of the effect." },
@@ -24,10 +24,10 @@ return {
 					{ name = "max", type = "number", optional = true, default = 0, description = "The maximal magnitude of the effect per tick." },
 				}
 			},
-			{ name = "createCopy", type = "boolean", optional = true, default = false, description = "This parameter controls whether the function will return original magic source or a copy of the magic source. This parameter is only used if source is alchemy." },
-			{ name = "fromStack", type = "tes3equipmentStack", optional = true, description = "The piece of equipment this magic source is coming from. The fromStack has to be an already equipped item from tes3actor.equipment. This will probably change in the future" },
-			{ name = "castChance", type = "number", optional = true, default = "This parameter allows overriding casting chance of the magic source." },
-			{ name = "target", type = "tes3reference|tes3mobileActor|string", optional = true, description = "" },
+			{ name = "createCopy", type = "boolean", optional = true, default = false, description = "This parameter controls whether the function will return the original magic source or a copy of the magic source. This parameter is only used if source is alchemy." },
+			{ name = "fromStack", type = "tes3equipmentStack", optional = true, description = "The piece of equipment this magic source is coming from. The fromStack has to be an already equipped item from tes3actor.equipment. This will probably change in the future." },
+			{ name = "castChance", type = "number", optional = true, default = "This parameter allows overriding the casting chance of the magic source." },
+			{ name = "target", type = "tes3reference|tes3mobileActor|string", optional = true, description = "The target of the magic." },
 			{ name = "bypassResistances", type = "boolean", optional = true, default = false, description = "Is this effect going to bypass magic resistance?" },
 		},
 	}},

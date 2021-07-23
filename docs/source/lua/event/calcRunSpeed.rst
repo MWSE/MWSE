@@ -30,8 +30,8 @@ type
 
 `number`_. Read-only. The type of movement that was calculated. This is always 2 for this event.
 
-.. _`calcWalkSpeed`: ../../lua/event/calcWalkSpeed.html
 .. _`calcMoveSpeed`: ../../lua/event/calcMoveSpeed.html
+.. _`calcWalkSpeed`: ../../lua/event/calcWalkSpeed.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

@@ -5,12 +5,14 @@
 #include "TES3UIElement.h"
 #include "TES3UIWidgets.h"
 
+#include "TES3Inventory.h"
 #include "TES3ItemData.h"
 #include "TES3GameFile.h"
 #include "TES3MobileObject.h"
 #include "TES3Object.h"
 
 #include "LuaUtil.h"
+#include "MemoryUtilLua.h"
 #include "TES3Util.h"
 #include "TES3UIManagerLua.h"
 
@@ -194,6 +196,11 @@ namespace TES3 {
 
 		Element* Element::performLayout(bool bUpdateTimestamp) {
 			return TES3_ui_performLayout(this, bUpdateTimestamp);
+		}
+
+		const auto TES3_ui_reattachToParent = reinterpret_cast<void(__thiscall*)(Element*, Element*)>(0x57B850);
+		void Element::reattachToParent(Element* parent) {
+			TES3_ui_reattachToParent(this, parent);
 		}
 
 		bool Element::reorderChildren(int insertBefore, int moveFrom, int count) {
@@ -461,10 +468,10 @@ namespace TES3 {
 				return WidgetButton::fromElement(this)->getText();
 			}
 			else if (part == propParagraphInput) {
-				return WidgetParagraphInput::fromElement(this)->getText();
+				return std::move(WidgetParagraphInput::fromElement(this)->getText());
 			}
 			else if (part == propTextInput) {
-				return WidgetTextInput::fromElement(this)->getText();
+				return std::move(WidgetTextInput::fromElement(this)->getText());
 			}
 
 			return getText();
@@ -960,20 +967,14 @@ namespace TES3 {
 				}
 			}
 			else {
-				if (typeCast.value() == "tes3itemData") {
-					return sol::make_object(state, static_cast<TES3::ItemData*>(ptr));
+				// New types are added to the mwse.memory.convertTo table, defined in MemoryUtilLua.cpp
+				sol::protected_function converter = mwse::lua::convertTo[typeCast.value()];
+				if (converter) {
+					return converter(DWORD(ptr));
 				}
-				else if (typeCast.value() == "tes3gameFile") {
-					return sol::make_object(state, static_cast<TES3::GameFile*>(ptr));
-				}
-				else if (typeCast.value() == "tes3inventoryTile") {
-					return sol::make_object(state, static_cast<TES3::UI::InventoryTile*>(ptr));
-				}
-				else if (typeCast.value() == "tes3uiElement") {
-					return sol::make_object(state, static_cast<TES3::UI::Element*>(ptr));
-				}
-				return sol::nil;
 			}
+
+			return sol::nil;
 		}
 
 		void Element::setPropertyObject_lua(sol::object key, sol::object value) {

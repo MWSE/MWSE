@@ -6,11 +6,13 @@ Sets an ``event`` handler to run before any existing event handler on the elemen
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 eventID (`string`_)
     The event id.
 
 callback (`function`_)
     The callback function.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`function`: ../../../lua/type/function.html
+.. _`string`: ../../../lua/type/string.html

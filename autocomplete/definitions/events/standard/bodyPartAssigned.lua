@@ -3,22 +3,22 @@ return {
     eventData = {
         ["manager"] = {
             type = "tes3bodyPartManager",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["reference"] = {
             type = "tes3reference",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["object"] = {
             type = "tes3bodyPart",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["index"] = {
             type = "number",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
         ["bodyPart"] = {
@@ -27,7 +27,7 @@ return {
         },
         ["isFirstPerson"] = {
             type = "boolean",
-            readonly = true,
+            readOnly = true,
             description = "",
         },
     },

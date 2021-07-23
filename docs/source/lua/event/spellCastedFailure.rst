@@ -31,7 +31,7 @@ sourceInstance
 
 `tes3magicSourceInstance`_. Read-only. The unique instance of the magic source.
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

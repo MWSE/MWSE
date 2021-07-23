@@ -14,6 +14,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 n (`number`_)
     The argument to produce.
 

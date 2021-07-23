@@ -6,13 +6,15 @@
 
 namespace NI {
 	struct ExtraData : Object {
-		int unknown_0x8;
-		char* name; // 0xC
+		size_t genericDataLength; // 0x8
+		void* genericData; // 0xC // Only loaded if NiExtraData isn't subclassed.
 		Pointer<ExtraData> next; // 0x10
 
 		//
 		// Custom functions.
 		//
+
+		nonstd::span<BYTE> getGenericData();
 
 		ExtraData* getNext() const;
 		void setNext(ExtraData* next);

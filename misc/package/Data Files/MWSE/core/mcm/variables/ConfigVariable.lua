@@ -23,6 +23,11 @@ end
 
 
 function ConfigVariable:set(newValue)
+	local converter = self.converter
+	if (converter) then
+		newValue = converter(newValue)
+	end
+
 	local config = mwse.loadConfig(self.path)
 	config[self.id] = newValue
 	mwse.saveConfig(self.path, config)

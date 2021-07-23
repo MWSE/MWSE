@@ -32,8 +32,15 @@ namespace TES3 {
 			Element* textInputFocus; // 0x88
 			char unknown_0x8C[0x20];
 
+			Element* getTextInputElement();
 			void acquireTextInput(Element* element);
 			void displayObjectTooltip(TES3::Object * object, TES3::ItemData * itemData, int count = 0);
+
+			//
+			// Other related this-call functions.
+			//
+
+			void flushBufferedTextEvents();
 
 			//
 			// Custom functions.

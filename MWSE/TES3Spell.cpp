@@ -2,7 +2,10 @@
 #include "LuaManager.h"
 #include "LuaSpellCastEvent.h"
 
+#include "TES3GameSetting.h"
+#include "TES3MagicEffect.h"
 #include "TES3MobileActor.h"
+#include "TES3NPC.h"
 #include "TES3Reference.h"
 #include "TES3Spell.h"
 
@@ -21,14 +24,111 @@ namespace TES3 {
 		TES3_Spell_dtor(this);
 	}
 
-	const auto TES3_Spell_getLeastProficientEffect = reinterpret_cast<Effect*(__thiscall*)(const TES3::Spell*, const NPC * npc)>(0x4AA850);
-	Effect* Spell::getLeastProficientEffect(const NPC* npc) const {
+	const auto TES3_Spell_getLeastProficientEffect = reinterpret_cast<Effect * (__thiscall*)(TES3::Spell*, const NPC * npc)>(0x4AA850);
+	Effect* Spell::getLeastProficientEffect(const NPC* npc) {
 		return TES3_Spell_getLeastProficientEffect(this, npc);
 	}
 
-	const auto TES3_Spell_getLeastProficientSchool = reinterpret_cast<int (__thiscall*)(const TES3::Spell*, const NPC * npc)>(0x4AA910);
-	int Spell::getLeastProficientSchool(const NPC* npc) const {
+	Effect* Spell::getLeastProficientEffect(const MobileActor* mobile) {
+		if (mobile == nullptr) {
+			return nullptr;
+		}
+
+		Effect* highestEffect = nullptr;
+		float highestCost = FLT_MAX;
+		for (auto i = 7; i >= 0; i--) {
+			auto effect = &effects[i];
+			if (effect->effectID == EffectID::None) {
+				continue;
+			}
+
+			auto skill = effect->getEffectData()->getSkillForSchool();
+			auto cost = mobile->getSkillValue(skill) * 2 - effect->calculateCost();
+			if (cost < highestCost) {
+				highestEffect = effect;
+				highestCost = cost;
+			}
+		}
+
+		return highestEffect;
+	}
+
+	Effect* Spell::getLeastProficientEffect_lua(sol::stack_object object) {
+		if (object.is<MobileActor*>()) {
+			return getLeastProficientEffect(object.as<MobileActor*>());
+		}
+		else if (object.is<Reference*>()) {
+			auto reference = object.as<Reference*>();
+			auto mobile = reference->getAttachedMobileActor();
+			if (mobile) {
+				return getLeastProficientEffect(mobile);
+			}
+			else if (reference->baseObject->objectType == ObjectType::NPC) {
+				return getLeastProficientEffect(static_cast<NPC*>(reference->getBaseObject()));
+			}
+		}
+		else if (object.is<NPCInstance*>()) {
+			auto npc = object.as<NPCInstance*>();
+			auto mobile = static_cast<MobileActor*>(npc->getMobile());
+			if (mobile) {
+				return getLeastProficientEffect(mobile);
+			}
+			else {
+				return getLeastProficientEffect(npc->baseNPC);
+			}
+		}
+		else if (object.is<NPC*>()) {
+			return getLeastProficientEffect(object.as<NPC*>());
+		}
+
+		throw std::invalid_argument("Argument must be able to resolve as a mobile actor or NPC.");
+	}
+
+	const auto TES3_Spell_getLeastProficientSchool = reinterpret_cast<int (__thiscall*)(TES3::Spell*, const NPC * npc)>(0x4AA910);
+	int Spell::getLeastProficientSchool(const NPC* npc) {
 		return TES3_Spell_getLeastProficientSchool(this, npc);
+	}
+
+	int Spell::getLeastProficientSchool(const MobileActor* mobile) {
+		auto leastProficientEffect = getLeastProficientEffect(mobile);
+		if (leastProficientEffect && leastProficientEffect->effectID != EffectID::None) {
+			auto effectData = leastProficientEffect->getEffectData();
+			if (effectData) {
+				return effectData->school;
+			}
+		}
+		return -1;
+	}
+
+	int Spell::getLeastProficientSchool_lua(sol::stack_object object) {
+		if (object.is<MobileActor*>()) {
+			return getLeastProficientSchool(object.as<MobileActor*>());
+		}
+		else if (object.is<Reference*>()) {
+			auto reference = object.as<Reference*>();
+			auto mobile = reference->getAttachedMobileActor();
+			if (mobile) {
+				return getLeastProficientSchool(mobile);
+			}
+			else if (reference->baseObject->objectType == ObjectType::NPC) {
+				return getLeastProficientSchool(static_cast<NPC*>(reference->getBaseObject()));
+			}
+		}
+		else if (object.is<NPCInstance*>()) {
+			auto npc = object.as<NPCInstance*>();
+			auto mobile = static_cast<MobileActor*>(npc->getMobile());
+			if (mobile) {
+				return getLeastProficientSchool(mobile);
+			}
+			else {
+				return getLeastProficientSchool(npc->baseNPC);
+			}
+		}
+		else if (object.is<NPC*>()) {
+			return getLeastProficientSchool(object.as<NPC*>());
+		}
+
+		throw std::invalid_argument("Argument must be able to resolve as a mobile actor or NPC.");
 	}
 
 	float Spell::calculateCastChance(Reference* caster, bool checkMagicka, int* weakestSchoolId) {
@@ -107,11 +207,15 @@ namespace TES3 {
 
 	int Spell::getFirstIndexOfEffect(int effectId) {
 		for (size_t i = 0; i < 8; i++) {
-			if (effects[i].effectID = effectId) {
+			if (effects[i].effectID == effectId) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	int Spell::calculateBasePuchaseCost() const {
+		return int(magickaCost * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSpellValueMult]->value.asFloat);
 	}
 
 	float Spell::calculateCastChance_lua(sol::table params) {

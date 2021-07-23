@@ -6,6 +6,8 @@ Enables MGE XE's camera shake effect. Wrapper for mwscript's MGEEnableCameraShak
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 magnitude (`number`_)
     Optional. No description available.
 

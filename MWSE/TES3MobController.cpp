@@ -9,6 +9,7 @@
 #include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
+#include "TES3MobileSpellProjectile.h"
 #include "TES3WorldController.h"
 
 namespace TES3 {
@@ -61,6 +62,20 @@ namespace TES3 {
 
 	void ProcessManager::setAIDistanceScale(float scalar) {
 		aiDistance = 1000.0f + 6000.0f * scalar;
+	}
+
+	const auto TES3_ProjectileController_resolveCollisions = reinterpret_cast<void(__thiscall*)(ProjectileController*, float)>(0x5753A0);
+	void ProjectileController::resolveCollisions(float deltaTime) {
+		// Explode flagged spell projectiles.
+		criticalSection.enter("MWSE:ProjectileController::resolveCollisions");
+		for (auto projectile : activeProjectiles) {
+			if (projectile->patchFlagExplode && (projectile->actorFlags & MobileActorFlag::ActiveInSimulation)) {
+				static_cast<MobileSpellProjectile*>(projectile)->explode();
+			}
+		}
+		criticalSection.leave();
+
+		TES3_ProjectileController_resolveCollisions(this, deltaTime);
 	}
 
 	const auto TES3_MobController_addMob = reinterpret_cast<void(__thiscall*)(MobController*, Reference*)>(0x5636A0);

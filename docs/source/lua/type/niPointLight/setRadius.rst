@@ -6,6 +6,8 @@ Sets both the light's influence radius, and its lighting attenuation to match th
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 radius (`number`_)
     No description available.
 

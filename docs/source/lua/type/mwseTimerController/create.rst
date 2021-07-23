@@ -25,6 +25,6 @@ callback (`function`_)
 iterations (`number`_)
     Optional. No description available.
 
-.. _`number`: ../../../lua/type/number.html
 .. _`function`: ../../../lua/type/function.html
 .. _`mwseTimer`: ../../../lua/type/mwseTimer.html
+.. _`number`: ../../../lua/type/number.html

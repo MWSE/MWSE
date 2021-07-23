@@ -108,6 +108,9 @@ Properties
 `specialization`_ (`number`_)
     The specialization for the class. Maps to the tes3.specialization table.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -145,6 +148,7 @@ Properties
     tes3class/skills
     tes3class/sourceMod
     tes3class/specialization
+    tes3class/supportsLuaData
 
 .. _`attributes`: tes3class/attributes.html
 .. _`bartersAlchemy`: tes3class/bartersAlchemy.html
@@ -180,8 +184,9 @@ Properties
 .. _`skills`: tes3class/skills.html
 .. _`sourceMod`: tes3class/sourceMod.html
 .. _`specialization`: tes3class/specialization.html
+.. _`supportsLuaData`: tes3class/supportsLuaData.html
 
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`number`: ../../lua/type/number.html

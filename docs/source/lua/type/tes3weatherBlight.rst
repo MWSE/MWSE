@@ -7,31 +7,31 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `ambientDayColor`_ (`tes3vector3`_)
-    The weather's ambient day color.
+    Read-only. The weather's ambient day color.
 
 `ambientLoopSound`_ (`tes3sound`_)
-    The weather's ambient looping sound.
+    Read-only. The weather's ambient looping sound.
 
 `ambientLoopSoundId`_ (`string`_)
     The weather's ambient looping sound ID.
 
 `ambientNightColor`_ (`tes3vector3`_)
-    The weather's ambient night color.
+    Read-only. The weather's ambient night color.
 
 `ambientPlaying`_ (`bool`_)
-    The weather's ambient playing flag.
+    Read-only. The weather's ambient playing flag.
 
 `ambientSunriseColor`_ (`tes3vector3`_)
-    The weather's ambient sunrise color.
+    Read-only. The weather's ambient sunrise color.
 
 `ambientSunsetColor`_ (`tes3vector3`_)
-    The weather's ambient sunset color.
+    Read-only. The weather's ambient sunset color.
 
 `blightDiseaseChance`_ (`number`_)
     The weather's blight chance value.
 
 `blightDiseases`_ (`table`_)
-    The weather's blight diseases, provided as a table of TES3Spell.
+    Read-only. The weather's blight diseases, provided as a table of TES3Spell.
 
 `cloudTexture`_ (`string`_)
     The weather's cloud texture path.
@@ -43,25 +43,25 @@ Properties
     The weather's cloud speed.
 
 `controller`_ (`tes3weatherController`_)
-    The weather's weather controller.
+    Read-only. The weather's weather controller.
 
 `fogDayColor`_ (`tes3vector3`_)
-    The weather's fog day color.
+    Read-only. The weather's fog day color.
 
 `fogNightColor`_ (`tes3vector3`_)
-    The weather's fog night color.
+    Read-only. The weather's fog night color.
 
 `fogSunriseColor`_ (`tes3vector3`_)
-    The weather's fog sunrise color.
+    Read-only. The weather's fog sunrise color.
 
 `fogSunsetColor`_ (`tes3vector3`_)
-    The weather's fog sunset color.
+    Read-only. The weather's fog sunset color.
 
 `glareView`_ (`number`_)
     The weather's glare view.
 
 `index`_ (`number`_)
-    The weather's index ID.
+    Read-only. The weather's index ID.
 
 `landFogDayDepth`_ (`number`_)
     The weather's land fog day depth value.
@@ -70,31 +70,31 @@ Properties
     The weather's land fog night depth value.
 
 `skyDayColor`_ (`tes3vector3`_)
-    The weather's sky day color.
+    Read-only. The weather's sky day color.
 
 `skyNightColor`_ (`tes3vector3`_)
-    The weather's sky night color.
+    Read-only. The weather's sky night color.
 
 `skySunriseColor`_ (`tes3vector3`_)
-    The weather's sky sunrise color.
+    Read-only. The weather's sky sunrise color.
 
 `skySunsetColor`_ (`tes3vector3`_)
-    The weather's sky sunset color.
+    Read-only. The weather's sky sunset color.
 
 `sunDayColor`_ (`tes3vector3`_)
-    The weather's sun day color.
+    Read-only. The weather's sun day color.
 
 `sunNightColor`_ (`tes3vector3`_)
-    The weather's sun night color.
+    Read-only. The weather's sun night color.
 
 `sunSunriseColor`_ (`tes3vector3`_)
-    The weather's sun sunrise color.
+    Read-only. The weather's sun sunrise color.
 
 `sunSunsetColor`_ (`tes3vector3`_)
-    The weather's sun sunset color.
+    Read-only. The weather's sun sunset color.
 
 `sundiscSunsetColor`_ (`tes3vector3`_)
-    The weather's sundisc sunset color.
+    Read-only. The weather's sundisc sunset color.
 
 `threshold`_ (`number`_)
     The weather's threshold value.
@@ -103,7 +103,7 @@ Properties
     The weather's transition delta.
 
 `underwaterSoundState`_ (`bool`_)
-    The weather's underwater sound state flag.
+    Read-only. The weather's underwater sound state flag.
 
 `windSpeed`_ (`number`_)
     The weather's wind speed.
@@ -181,10 +181,10 @@ Properties
 .. _`underwaterSoundState`: tes3weatherBlight/underwaterSoundState.html
 .. _`windSpeed`: tes3weatherBlight/windSpeed.html
 
-.. _`tes3sound`: ../../lua/type/tes3sound.html
+.. _`bool`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`number`: ../../lua/type/number.html
-.. _`bool`: ../../lua/type/boolean.html
-.. _`tes3weatherController`: ../../lua/type/tes3weatherController.html
+.. _`tes3sound`: ../../lua/type/tes3sound.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3weatherController`: ../../lua/type/tes3weatherController.html

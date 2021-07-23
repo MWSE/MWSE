@@ -5,6 +5,7 @@
 
 #include "TES3Item.h"
 #include "TES3ItemData.h"
+#include "TES3MagicEffectInstance.h"
 #include "TES3MagicSourceInstance.h"
 #include "TES3MobileProjectile.h"
 #include "TES3Reference.h"
@@ -40,6 +41,7 @@ namespace mwse {
 			usertypeDefinition["source"] = sol::readonly_property(&TES3::MagicSourceInstance::getSourceObject);
 
 			// Basic function binding.
+			usertypeDefinition["getEffectInstance"] = &TES3::MagicSourceInstance::getEffectInstance;
 			usertypeDefinition["getMagnitudeForIndex"] = &TES3::MagicSourceInstance::getMagnitude;
 			usertypeDefinition["playVisualEffect"] = &TES3::MagicSourceInstance::playSpellVFX_lua;
 

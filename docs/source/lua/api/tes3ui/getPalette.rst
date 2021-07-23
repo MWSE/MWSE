@@ -66,6 +66,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 name (`string`_)
     The name of the palette color.
 

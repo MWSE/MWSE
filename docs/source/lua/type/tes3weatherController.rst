@@ -13,7 +13,7 @@ Properties
     The current sky color.
 
 `currentWeather`_ (`tes3weather`_)
-    The current weather.
+    Read-only. The current weather.
 
 `daysRemaining`_ (`number`_)
     The days remaining.
@@ -25,40 +25,40 @@ Properties
     The hours remaining.
 
 `lastActiveRegion`_ (`tes3region`_)
-    Provides read-only access to last active region object.
+    Read-only. Provides read-only access to last active region object.
 
 `masser`_ (`tes3moon`_)
-    Provides read-only access to the Masser moon object.
+    Read-only. Provides read-only access to the Masser moon object.
 
 `nextWeather`_ (`tes3weather`_)
-    The next weather.
+    Read-only. The next weather.
 
 `sceneRainRoot`_ (`niNode`_)
-    Provides read-only access to the scene rain root NiNode.
+    Read-only. Provides read-only access to the scene rain root NiNode.
 
 `sceneSkyLight`_ (`niDirectionalLight`_)
-    Provides read-only access to the scene sky light directional light.
+    Read-only. Provides read-only access to the scene sky light directional light.
 
 `sceneSkyRoot`_ (`niNode`_)
-    Provides read-only access to the scene sky root NiNode.
+    Read-only. Provides read-only access to the scene sky root NiNode.
 
 `sceneSnowRoot`_ (`niNode`_)
-    Provides read-only access to the scene snow root NiNode.
+    Read-only. Provides read-only access to the scene snow root NiNode.
 
 `sceneStormRoot`_ (`niNode`_)
-    Provides read-only access to the scene storm root NiNode.
+    Read-only. Provides read-only access to the scene storm root NiNode.
 
 `sceneSunBase`_ (`niNode`_)
-    Provides read-only access to the scenesun base NiNode.
+    Read-only. Provides read-only access to the scenesun base NiNode.
 
 `sceneSunGlare`_ (`niNode`_)
-    Provides read-only access to the scene sun glare NiNode.
+    Read-only. Provides read-only access to the scene sun glare NiNode.
 
 `sceneSunVis`_ (`niNode`_)
-    Provides read-only access to the scene sun vis NiNode.
+    Read-only. Provides read-only access to the scene sun vis NiNode.
 
 `secunda`_ (`tes3moon`_)
-    Provides read-only access to the Secunda moon object.
+    Read-only. Provides read-only access to the Secunda moon object.
 
 `sunglareFaderAngleMax`_ (`number`_)
     The sunglare fader maximum angle.
@@ -109,7 +109,7 @@ Properties
     The underwater sunset fog value.
 
 `weathers`_ (`table`_)
-    Array-style table for the different weather types. Each object in the table is a tes3weather.
+    Read-only. Array-style table for the different weather types. Each object in the table is a tes3weather.
 
 `windVelocityCurrWeather`_ (`tes3vector3`_)
     The wind velocity for the current weather.
@@ -224,12 +224,12 @@ Methods
 .. _`switchTransition`: tes3weatherController/switchTransition.html
 .. _`updateVisuals`: tes3weatherController/updateVisuals.html
 
+.. _`niDirectionalLight`: ../../lua/type/niDirectionalLight.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`tes3weather`: ../../lua/type/tes3weather.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3moon`: ../../lua/type/tes3moon.html
-.. _`tes3vector3`: ../../lua/type/tes3vector3.html
 .. _`tes3region`: ../../lua/type/tes3region.html
-.. _`niDirectionalLight`: ../../lua/type/niDirectionalLight.html
+.. _`tes3vector3`: ../../lua/type/tes3vector3.html
+.. _`tes3weather`: ../../lua/type/tes3weather.html

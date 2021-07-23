@@ -3,27 +3,27 @@ return {
 	eventData = {
 		["element"] = {
 			type = "tesuiElement",
-			readonly = true,
+			readOnly = true,
 			description = "The command.",
 		},
 		["item"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "The reference.",
 		},
 		["itemData"] = {
 			type = "tesitemData",
-			readonly = true,
+			readOnly = true,
 			description = "The script variables.",
 		},
 		["menu"] = {
 			type = "tesuiElement",
-			readonly = true,
+			readOnly = true,
 			description = "The dialogue object.",
 		},
 		["tile"] = {
 			type = "tes3uiInventoryTile",
-			readonly = true,
+			readOnly = true,
 			description = "The dialogue info object.",
 		},
 	},

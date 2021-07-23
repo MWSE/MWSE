@@ -14,7 +14,7 @@ Parameters
 Accepts parameters through a table with the given keys:
 
 to (`tes3reference`_, `tes3mobileActor`_, `string`_)
-    The reference whose inventory will be modified.
+    The reference or mobile whose inventory will be modified.
 
 item (`tes3item`_, `string`_)
     The item to create item data for.
@@ -24,7 +24,7 @@ updateGUI (`boolean`_)
 
 .. _`boolean`: ../../../lua/type/boolean.html
 .. _`string`: ../../../lua/type/string.html
-.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
-.. _`tes3reference`: ../../../lua/type/tes3reference.html
 .. _`tes3item`: ../../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../../lua/type/tes3itemData.html
+.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
+.. _`tes3reference`: ../../../lua/type/tes3reference.html

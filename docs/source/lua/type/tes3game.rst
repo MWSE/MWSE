@@ -7,10 +7,10 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `parentWindowHandle`_ (`number`_)
-    The Windows HWND for the parent window.
+    Read-only. The Windows HWND for the parent window.
 
 `playerTarget`_ (`tes3reference`_)
-    The current activation target.
+    Read-only. The current activation target.
 
 `renderDistance`_ (`number`_)
     The game's rendering distance.
@@ -19,10 +19,10 @@ Properties
     State on if screenshots are enabled.
 
 `screenX`_ (`number`_)
-    The screen's horizontal position.
+    Read-only. The screen's horizontal position.
 
 `screenY`_ (`number`_)
-    The screen's vertical position.
+    Read-only. The screen's vertical position.
 
 `soundQuality`_ (`number`_)
     Sound quality level.
@@ -43,13 +43,13 @@ Properties
     Mix volumes for music.
 
 `windowHandle`_ (`number`_)
-    The Windows HWND for the window.
+    Read-only. The Windows HWND for the window.
 
 `wireframeProperty`_ (`niProperty`_)
-    The reused wireframe property, appled when toggling wireframe rendering.
+    Read-only. The reused wireframe property, appled when toggling wireframe rendering.
 
 `worldSceneGraphRoot`_ (`niNode`_)
-    Access to the root of the scene graph.
+    Read-only. Access to the root of the scene graph.
 
 .. toctree::
     :hidden:
@@ -87,7 +87,7 @@ Properties
 .. _`worldSceneGraphRoot`: tes3game/worldSceneGraphRoot.html
 
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`number`: ../../lua/type/number.html
 .. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`niProperty`: ../../lua/type/niProperty.html
+.. _`number`: ../../lua/type/number.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

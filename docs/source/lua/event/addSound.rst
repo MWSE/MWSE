@@ -36,7 +36,7 @@ isVoiceover
 
 `boolean`_. 
 
-.. _`tes3sound`: ../../lua/type/tes3sound.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3sound`: ../../lua/type/tes3sound.html

@@ -38,10 +38,16 @@ end
 
 function PlayerDataVar:set(newValue)
 	if tes3.player then
+		local converter = self.converter
+		if (converter) then
+			newValue = converter(newValue)
+		end
+
 		local table = tes3.player.data
 		for v in string.gmatch(self.path, "[^%.]+") do
 			table = table[v]
 		end
+		
 		table[self.id] = newValue
 	end
 end

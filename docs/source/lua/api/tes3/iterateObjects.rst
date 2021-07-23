@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 filter (`number`_)
     Maps to tes3.objectType constants.
 
-.. _`tes3object`: ../../../lua/type/tes3object.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3object`: ../../../lua/type/tes3object.html

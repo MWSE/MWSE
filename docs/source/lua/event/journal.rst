@@ -26,6 +26,6 @@ new
 
 `boolean`_. Read-only. If true, the journal is newly added to the player. This effectively means that index has increased past 0.
 
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html

@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `buttons`_ (`table`_)
-    The array-style access to 8 buttons states available on the mouse. Not all may be used.
+    Read-only. The array-style access to 8 buttons states available on the mouse. Not all may be used.
 
 `x`_ (`number`_)
     A basic property of the mouse for the X-axis.
@@ -31,5 +31,5 @@ Properties
 .. _`y`: tes3directInputMouseState/y.html
 .. _`z`: tes3directInputMouseState/z.html
 
-.. _`table`: ../../lua/type/table.html
 .. _`number`: ../../lua/type/number.html
+.. _`table`: ../../lua/type/table.html

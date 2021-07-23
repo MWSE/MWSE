@@ -55,7 +55,7 @@ Properties
     See childOffsetX.
 
 `children`_ (`table`_)
-    A table containing references to child elements. This is a copy that does not track changes.
+    Read-only. A table containing references to child elements. This is a copy that does not track changes.
 
 `color`_ (`table`_)
     Element RGB colour, an array of 3 floats with value range [0.0, 1.0]. For menus and rects, it sets the background colour. For text, it sets the text colour. For images, it multiplies the image by the colour.
@@ -86,7 +86,7 @@ Properties
     Overrides fixed, minimum and maximum sizes unless this value is ``nil`` (default).
 
 `id`_ (`number`_)
-    The element's ID.  The element can be later accessed by ``ancestor:findChild(id)``. Note that multiple elements may have the same ID, such as subparts of a widget, or list items. Therefore, you may think of ids as an element class identifier.
+    Read-only. The element's ID.  The element can be later accessed by ``ancestor:findChild(id)``. Note that multiple elements may have the same ID, such as subparts of a widget, or list items. Therefore, you may think of ids as an element class identifier.
 
 `imageScaleX`_ (`number`_)
     Image scaling multipliers. Only applies to image elements.
@@ -110,7 +110,7 @@ Properties
     Minimum dimensions for auto-size layout and resizable frames. Integer number.
 
 `name`_ (`string`_)
-    The element's name, taken from the name registered for the ID.
+    Read-only. The element's name, taken from the name registered for the ID.
 
 `paddingAllSides`_ (`number`_)
     Integer number. Padding size in pixels. Padding is the blank space between the edge of an element and its contents. Individual padding sizes default to -1, making it use the paddingAllSides setting.
@@ -128,13 +128,16 @@ Properties
     Integer number. Top padding size in pixels. When this is set to -1, the paddingAllSides setting is used for this side instead.
 
 `parent`_ (`tes3uiElement`_)
-    A reference to the parent element.
+    Read-only. A reference to the parent element.
 
 `positionX`_ (`number`_)
     Integer number. Element X position relative to its parent's top-left content area. For top-level menus there is a difference: (0, 0) is the centre of the screen.
 
 `positionY`_ (`number`_)
     Integer number. Element Y position relative to its parent's top-left content area. For top-level menus there is a difference: (0, 0) is the centre of the screen.
+
+`rawText`_ (`string`_)
+    The raw value of the element's text. This, unlike the normal text property, will not directly read widget information or handle the removal of the positional cursor.
 
 `repeatKeys`_ (`boolean`_)
     Controls if there is repeating text input when keys are held down. ``true`` by default.
@@ -206,6 +209,7 @@ Properties
     tes3uiElement/parent
     tes3uiElement/positionX
     tes3uiElement/positionY
+    tes3uiElement/rawText
     tes3uiElement/repeatKeys
     tes3uiElement/scaleMode
     tes3uiElement/text
@@ -254,6 +258,7 @@ Properties
 .. _`parent`: tes3uiElement/parent.html
 .. _`positionX`: tes3uiElement/positionX.html
 .. _`positionY`: tes3uiElement/positionY.html
+.. _`rawText`: tes3uiElement/rawText.html
 .. _`repeatKeys`: tes3uiElement/repeatKeys.html
 .. _`scaleMode`: tes3uiElement/scaleMode.html
 .. _`text`: tes3uiElement/text.html
@@ -417,9 +422,16 @@ Methods
     Properties are named variables attached to an element. Gets a property value with ``propName`` as the property key. Morrowind uses these to bind variables to the UI. Useful for element class-specific properties. Returns 0 if the property key did not have data.
 
 `getPropertyObject`_ (`object`_)
-    Properties are named variables attached to an element. Gets a property value with ``propName`` as the property key. Morrowind uses these to bind variables to the UI. Useful for element class-specific properties. Returns ``nil`` if the property key did not have data.
+    Properties are named variables attached to an element. Gets a property value with ``propName`` as the property key. Morrowind uses these to bind variables to the UI. Useful for element class-specific properties. Returns ``nil`` if the property key did not have data, or if it could not guess the type of the property value.
     
-    For ``getPropertyObject``, an expected return value not derived from ``tes3baseObject`` requires the usertype to be provided as well. A return value derived from ``tes3baseObject`` should not provide the extra parameter.
+    For ``getPropertyObject``, an expected return value not derived from ``tes3baseObject`` requires the usertype to be provided as well. Currently accepted usertypes are:
+	``tes3itemData``
+	``tes3itemStack``
+	``tes3gameFile``
+	``tes3inventoryTile``
+	``tes3uiElement``
+	
+	This is required because there is no identifying type information stored with the pointer. If the usertype is incorrect, there are no safety checks keeping the game from crashing.
 
 `getTopLevelMenu`_ (`tes3uiElement`_)
     Finds the parent menu containing the element. Useful for finding the correct menu to run layout updates on.
@@ -647,8 +659,8 @@ The standard type signature for events.
 .. _`unregister`: tes3uiElement/unregister.html
 .. _`updateLayout`: tes3uiElement/updateLayout.html
 
-.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`number`: ../../lua/type/number.html
+.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html

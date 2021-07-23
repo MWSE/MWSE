@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[This function check weather a reference is affected by a certain object or effect.
+	description = [[This function check whether a reference is affected by a certain object or effect.
 
 Note reference.object.spells:contains(spellID) will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.]],
 	arguments = {{

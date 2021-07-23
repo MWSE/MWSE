@@ -38,6 +38,12 @@ namespace TES3 {
 		unsigned char maxDistance;
 		SoundBuffer* soundBuffer;
 
+		Sound();
+		~Sound();
+
+		Sound* ctor();
+		void dtor();
+
 		//
 		// Virtual table overrides.
 		//
@@ -53,13 +59,25 @@ namespace TES3 {
 		void stop();
 		void setVolumeRaw(unsigned char volume);
 
-		bool isPlaying();
+		bool isPlaying() const;
+		bool isLooping() const;
 
 		//
 		// Custom functions.
 		//
 
+		void setObjectID(const char* id);
+
 		const char* getFilename() const;
+		void setFilename(const char* filename);
+
+		unsigned char getMinDistance() const;
+		void setMinDistance(unsigned char value);
+		void setMinDistance_lua(double value);
+
+		unsigned char getMaxDistance() const;
+		void setMaxDistance(unsigned char value);
+		void setMaxDistance_lua(double value);
 
 		float getVolume();
 		void setVolume(float volume);

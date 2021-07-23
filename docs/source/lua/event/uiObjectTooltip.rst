@@ -31,8 +31,8 @@ count
 
 `number`_. Read-only. The number of items in the stack.
 
-.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
+.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3uiElement`: ../../lua/type/tes3uiElement.html

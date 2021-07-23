@@ -18,8 +18,24 @@ namespace TES3 {
 
 		Vector2();
 		Vector2(float x, float y);
+		Vector2(sol::table table);
+
+		Vector2& operator=(const sol::table table);
+
+		bool operator==(const Vector2& vector) const;
+		bool operator!=(const Vector2& vector) const;
+		Vector2 operator+(const Vector2&) const;
+		Vector2 operator-(const Vector2&) const;
+		Vector2 operator*(const Vector2&) const;
+		Vector2 operator*(const float) const;
+
+		friend std::ostream& operator<<(std::ostream& str, const Vector2& vector);
+		std::string toString() const;
+		std::string toJson() const;
 
 		Vector2 copy() const;
+
+		float length() const;
 	};
 	static_assert(sizeof(Vector2) == 0x8, "TES3::Vector2 failed size validation");
 
@@ -59,7 +75,8 @@ namespace TES3 {
 		Vector3 crossProduct(const Vector3*) const;
 		float dotProduct(const Vector3*) const;
 		Matrix33 outerProduct(const Vector3*) const;
-			
+		
+		Vector3 lerp(const Vector3& to, float transition) const;
 		float heightDifference(const Vector3*) const;
 		float distance(const Vector3*) const;
 		float angle(const Vector3*) const;
@@ -73,15 +90,28 @@ namespace TES3 {
 	static_assert(sizeof(Vector3) == 0xC, "TES3::Vector3 failed size validation");
 
 	struct Vector4 {
+		float w;
 		float x;
 		float y;
 		float z;
-		float w;
 
 		Vector4();
-		Vector4(float x, float y, float z, float w);
+		Vector4(float w, float x, float y, float z);
+
+		bool operator==(const Vector4& other) const;
+		bool operator!=(const Vector4& other) const;
+		Vector4 operator+(const Vector4& other) const;
+		Vector4 operator-(const Vector4& other) const;
+		Vector4 operator*(const Vector4& other) const;
+		Vector4 operator*(float scalar) const;
+
+		friend std::ostream& operator<<(std::ostream& str, const Matrix33& matrix);
+		std::string toString() const;
+		std::string toJson() const;
 
 		Vector4 copy() const;
+
+		float length() const;
 	};
 	static_assert(sizeof(Vector4) == 0x10, "TES3::Vector4 failed size validation");
 
@@ -143,6 +173,42 @@ namespace TES3 {
 
 	};
 	static_assert(sizeof(Matrix33) == 0x24, "TES3::Matrix33 failed size validation");
+
+	struct Matrix44 {
+		Vector4 m0;
+		Vector4 m1;
+		Vector4 m2;
+		Vector4 m3;
+
+		Matrix44();
+		Matrix44(const Vector4& m0, const Vector4& m1, const Vector4& m2, const Vector4& m3);
+		Matrix44(float m0w, float m0x, float m0y, float m0z, float m1w, float m1x, float m1y, float m1z, float m2w, float m2x, float m2y, float m2z, float m3w, float m3x, float m3y, float m3z);
+
+		//
+		// Basic operators.
+		//
+
+		bool operator==(const Matrix44& matrix);
+		bool operator!=(const Matrix44& matrix);
+		Matrix44 operator+(const Matrix44& matrix);
+		Matrix44 operator-(const Matrix44& matrix);
+		Matrix44 operator*(const Matrix44& matrix);
+		Matrix44 operator*(float scalar);
+
+		friend std::ostream& operator<<(std::ostream& str, const Matrix44& matrix);
+		std::string toString() const;
+		std::string toJson() const;
+
+		//
+		// Set the matrix to specific useful values.
+		//
+
+		Matrix44 copy() const;
+
+		void toZero();
+
+	};
+	static_assert(sizeof(Matrix44) == 0x40, "TES3::Matrix44 failed size validation");
 
 	struct BoundingBox {
 		Vector3 minimum;

@@ -51,8 +51,8 @@ effect
 
 `tes3magicEffect`_. Read-only. The individual effect structure on source.
 
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
+.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html

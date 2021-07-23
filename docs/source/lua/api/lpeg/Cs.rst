@@ -15,6 +15,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 p (`pattern`_)
     The pattern to capture with.
 

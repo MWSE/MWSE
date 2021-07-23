@@ -23,6 +23,7 @@ namespace TES3 {
 		//
 
 		void setIconPath(const char* path);
+		void setName(const char* newName);
 
 	};
 	static_assert(sizeof(Lockpick) == 0xB8, "TES3::Lockpick failed size validation");

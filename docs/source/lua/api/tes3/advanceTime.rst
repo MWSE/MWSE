@@ -20,7 +20,7 @@ resting (`boolean`_)
     Default: ``false``. Should advancing time count as resting? If set to true invokes usual sleeping mechanics: health, fatigue and magicka restoration, and possible rest interruption. The length of the rest will be equal to hours parameter, rounded down to nearest natural number.
 
 updateEnvironment (`boolean`_)
-    Default: ``true``. No description available.
+    Default: ``true``. Controls if the weather system is updated for each hour passed.
 
 .. _`boolean`: ../../../lua/type/boolean.html
 .. _`number`: ../../../lua/type/number.html

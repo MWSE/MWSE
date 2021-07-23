@@ -7,10 +7,10 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `actorFlags`_ (`number`_)
-    A number representing the actor flags. Truly a bit field.
+    Read-only. A number representing the actor flags. Truly a bit field.
 
 `aiConfig`_ (`tes3aiConfig`_)
-    A substructure off of actors that contains information on the current AI configuration.
+    Read-only. A substructure off of actors that contains information on the current AI configuration.
 
 `attributes`_ (`table`_)
     A table of eight numbers, representing the base values for the actor's attributes.
@@ -19,16 +19,19 @@ Properties
     Direct access to the actor autocalc flag.
 
 `barterGold`_ (`number`_)
-    The actor's max health.
+    Read-only. The actor's max health.
+
+`baseDisposition`_ (`number`_)
+    The actor's base disposition.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `class`_ (`tes3class`_)
-    The class that the NPC uses.
+    Read-only. The class that the NPC uses.
 
 `cloneCount`_ (`number`_)
-    The number of clones that exist of this actor.
+    Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -36,14 +39,11 @@ Properties
 `disabled`_ (`boolean`_)
     The disabled state of the object.
 
-`disposition`_ (`number`_)
-    The actor's base disposition.
-
 `equipment`_ (`tes3iterator`_)
-    The items currently equipped to the actor.
+    Read-only. The items currently equipped to the actor.
 
 `faction`_ (`tes3faction`_)
-    The class that the NPC is joined to.
+    Read-only. The class that the NPC is joined to.
 
 `factionIndex`_ (`number`_)
     No description available.
@@ -70,19 +70,19 @@ Properties
     The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
-    The items currently carried by the actor.
+    Read-only. The items currently carried by the actor.
 
 `isAttacked`_ (`boolean`_)
-    If true, the actor's attacked flag is set.
+    Read-only. If true, the actor's attacked flag is set.
 
 `isEssential`_ (`boolean`_)
-    If true, the actor's essential flag is set.
+    Read-only. If true, the actor's essential flag is set.
 
 `isInstance`_ (`boolean`_)
     Always returns false.
 
 `isRespawn`_ (`boolean`_)
-    If true, the actor's respawn flag is set.
+    Read-only. If true, the actor's respawn flag is set.
 
 `level`_ (`number`_)
     The actor's level.
@@ -115,7 +115,7 @@ Properties
     The previous object in parent collection's list.
 
 `race`_ (`tes3race`_)
-    The race that the NPC uses.
+    Read-only. The race that the NPC uses.
 
 `reputation`_ (`number`_)
     The actor's base reputation.
@@ -139,10 +139,13 @@ Properties
     The filename of the mod that owns this object.
 
 `spells`_ (`tes3spellList`_)
-    A list of spells that the actor has access to. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(npc.spells.iterator) do print(spell.name) end
+    Read-only. A list of spells that the actor has access to. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(npc.spells.iterator) do print(spell.name) end
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 .. toctree::
     :hidden:
@@ -152,12 +155,12 @@ Properties
     tes3npc/attributes
     tes3npc/autoCalc
     tes3npc/barterGold
+    tes3npc/baseDisposition
     tes3npc/boundingBox
     tes3npc/class
     tes3npc/cloneCount
     tes3npc/deleted
     tes3npc/disabled
-    tes3npc/disposition
     tes3npc/equipment
     tes3npc/faction
     tes3npc/factionIndex
@@ -193,18 +196,19 @@ Properties
     tes3npc/sourceMod
     tes3npc/spells
     tes3npc/stolenList
+    tes3npc/supportsLuaData
 
 .. _`actorFlags`: tes3npc/actorFlags.html
 .. _`aiConfig`: tes3npc/aiConfig.html
 .. _`attributes`: tes3npc/attributes.html
 .. _`autoCalc`: tes3npc/autoCalc.html
 .. _`barterGold`: tes3npc/barterGold.html
+.. _`baseDisposition`: tes3npc/baseDisposition.html
 .. _`boundingBox`: tes3npc/boundingBox.html
 .. _`class`: tes3npc/class.html
 .. _`cloneCount`: tes3npc/cloneCount.html
 .. _`deleted`: tes3npc/deleted.html
 .. _`disabled`: tes3npc/disabled.html
-.. _`disposition`: tes3npc/disposition.html
 .. _`equipment`: tes3npc/equipment.html
 .. _`faction`: tes3npc/faction.html
 .. _`factionIndex`: tes3npc/factionIndex.html
@@ -240,31 +244,42 @@ Properties
 .. _`sourceMod`: tes3npc/sourceMod.html
 .. _`spells`: tes3npc/spells.html
 .. _`stolenList`: tes3npc/stolenList.html
+.. _`supportsLuaData`: tes3npc/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`offersService`_ (`boolean`_)
+    Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
+
 `onInventoryClose`_
     A callback function invoked when an inventory is closed. Typically not used outside of specific purposes. You may find tes3.reference's onCloseInventory() to be more convenient to use.
+
+`tradesItemType`_ (`boolean`_)
+    Checks if the actor will buy and sell items of a given object type. e.g. actor:tradesItemType(tes3.objectType.repairItem)
 
 .. toctree::
     :hidden:
 
+    tes3npc/offersService
     tes3npc/onInventoryClose
+    tes3npc/tradesItemType
 
+.. _`offersService`: tes3npc/offersService.html
 .. _`onInventoryClose`: tes3npc/onInventoryClose.html
+.. _`tradesItemType`: tes3npc/tradesItemType.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3class`: ../../lua/type/tes3class.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`tes3race`: ../../lua/type/tes3race.html
-.. _`table`: ../../lua/type/table.html
-.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
 .. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3faction`: ../../lua/type/tes3faction.html
-.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
 .. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html
+.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3class`: ../../lua/type/tes3class.html
+.. _`tes3faction`: ../../lua/type/tes3faction.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
+.. _`tes3race`: ../../lua/type/tes3race.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
 .. _`tes3spellList`: ../../lua/type/tes3spellList.html

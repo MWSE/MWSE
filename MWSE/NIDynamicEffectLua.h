@@ -14,9 +14,11 @@ namespace mwse {
 			// Basic property binding.
 			usertypeDefinition["affectedNodes"] = &NI::DynamicEffect::affectedNodes;
 			usertypeDefinition["enabled"] = &NI::DynamicEffect::enabled;
-
-			// Functions exposed as properties.
 			usertypeDefinition["type"] = sol::readonly_property(&NI::DynamicEffect::getType);
+
+			// Basic function binding.
+			usertypeDefinition["attachAffectedNode"] = &NI::DynamicEffect::attachAffectedNode;
+			usertypeDefinition["detachAffectedNode"] = &NI::DynamicEffect::detachAffectedNode;
 		}
 
 		void bindNIDynamicEffect();

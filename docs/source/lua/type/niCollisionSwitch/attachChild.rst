@@ -6,6 +6,8 @@ Attachs the child to the children list of the node.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 child (`niAVObject`_)
     No description available.
 

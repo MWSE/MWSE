@@ -37,6 +37,6 @@ buying
 `table`_. Read-only. Table of tes3what being bought. These items will be transfered to player's inventory on a successful bartering event.
 
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`table`: ../../lua/type/table.html
 .. _`number`: ../../lua/type/number.html
+.. _`table`: ../../lua/type/table.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html

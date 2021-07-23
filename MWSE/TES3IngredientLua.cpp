@@ -34,7 +34,7 @@ namespace mwse {
 			usertypeDefinition["icon"] = sol::property(&TES3::Ingredient::getIconPath, &TES3::Ingredient::setIconPath);
 			usertypeDefinition["mesh"] = sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath);
 			usertypeDefinition["name"] = sol::property(&TES3::Ingredient::getName, &TES3::Ingredient::setName);
-			usertypeDefinition["script"] = sol::property(&TES3::Ingredient::getScript);
+			usertypeDefinition["script"] = &TES3::Ingredient::script;
 
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition["model"] = sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath);

@@ -6,7 +6,7 @@ namespace NI {
 	}
 
 	void SwitchNode::setSwitchIndex(int index) {
-		if (index < 0 || index > (children.getFilledCount() - 1) || children.at(index) == nullptr) {
+		if (index < 0 || index > int(children.getFilledCount() - 1) || children.at(index) == nullptr) {
 			throw std::exception("Attempted to set switchIndex beyond bounds!");
 		}
 		switchIndex = index;

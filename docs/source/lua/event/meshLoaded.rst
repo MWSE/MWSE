@@ -16,5 +16,5 @@ path
 
 `string`_. The path to the mesh, relative to Data Files\Meshes
 
-.. _`string`: ../../lua/type/string.html
 .. _`niAVObject`: ../../lua/type/niAVObject.html
+.. _`string`: ../../lua/type/string.html

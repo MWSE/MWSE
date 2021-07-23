@@ -3,17 +3,17 @@ return {
 	eventData = {
 		reference = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A reference to the mobile actor that is equipping the item.",
 		},
 		item = {
 			type = "tes3baseObject",
-			readonly = true,
+			readOnly = true,
 			description = "The object being equipped.",
 		},
 		itemData = {
 			type = "tes3itemData",
-			readonly = true,
+			readOnly = true,
 			description = "The item data of item.",
 		},
 	},

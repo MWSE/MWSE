@@ -17,11 +17,13 @@ local spell = tes3spell.create(spellId, spellName)
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`string`_)
     The new object's ID. Must be unique.
 
 name (`string`_)
     The new object's name.
 
-.. _`tes3spell`: ../../../lua/type/tes3spell.html
 .. _`string`: ../../../lua/type/string.html
+.. _`tes3spell`: ../../../lua/type/tes3spell.html

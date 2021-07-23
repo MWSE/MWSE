@@ -41,8 +41,8 @@ toolItemData
 
 `tes3itemData`_. Read-only. The item data for the tool.
 
-.. _`number`: ../../lua/type/number.html
 .. _`bool`: ../../lua/type/boolean.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`number`: ../../lua/type/number.html
 .. _`tes3item`: ../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

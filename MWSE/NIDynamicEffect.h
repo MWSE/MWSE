@@ -19,6 +19,13 @@ namespace NI {
 
 		int getType();
 
+		//
+		// Other related this-call functions.
+		//
+
+		void attachAffectedNode(Node* node);
+		void detachAffectedNode(Node* node);
+
 	};
 	static_assert(sizeof(DynamicEffect) == 0xA8, "NI::DynamicEffect failed size validation");
 

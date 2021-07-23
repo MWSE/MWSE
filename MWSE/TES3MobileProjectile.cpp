@@ -92,7 +92,7 @@ namespace TES3 {
 
 	void MobileProjectile::setProjectileVelocity_lua(sol::stack_object value) {
 		// Use our util class to support vectors or a table.
-		mwse::lua::setVectorFromLua(&velocity, value);
+		mwse::lua::setVectorFromLua(velocity, value);
 	}
 
 }

@@ -3,32 +3,32 @@ return{
     eventData = {
         ["mobile"] = {
             type = "tes3mobileActor",
-            readonly = true,
+            readOnly = true,
             description = "The mobile actor of the merchant the player is interacting with.",
         },
         ["success"] = {
             type = "boolean",
-            --readonly = true,
+            --readOnly = true,
             description = "Whether the trade was accepted or not.",
         },
         ["value"] = {
             type = "number",
-            readonly = true,
+            readOnly = true,
             description = "Total value in gold of items being traded.",
         },
         ["offer"] = {
             type = "number",
-            readonly = true,
+            readOnly = true,
             description = "Offered gold amount.",
         },
         ["selling"] = {
             type = "table",
-            readonly = true,
+            readOnly = true,
             description = "Table of tes3what being sold. These items will be transfered to bartender's inventory on a successful bartering event.",
         },
         ["buying"] = {
             type = "table",
-            readonly = true,
+            readOnly = true,
             description = "Table of tes3what being bought. These items will be transfered to player's inventory on a successful bartering event.",
         },
     },

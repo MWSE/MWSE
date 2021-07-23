@@ -16,7 +16,7 @@ namespace NI {
 		float planarAngle; // 0x48
 		float planarAngleVariation; // 0x4C
 		TES3::Vector3 initialNormal; // 0x50
-		TES3::PackedColor initialColor; // 0x5C // TODO: Fix type.
+		PackedColor initialColor; // 0x5C
 		float initialSize; // 0x60
 		float emitStartTime; // 0x64
 		float emitStopTime; // 0x68

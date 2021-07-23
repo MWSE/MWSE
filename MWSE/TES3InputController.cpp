@@ -44,6 +44,26 @@ namespace TES3 {
 		return !(mouseState.rgbButtons[button] & 0x80) && (previousMouseState.rgbButtons[button] & 0x80);
 	}
 
+	bool InputController::isAltDown() const {
+		return (keyboardState[DIK_LALT] & 0x80) || (keyboardState[DIK_RALT]);
+	}
+
+	bool InputController::isCapsLockActive() const {
+		return (GetKeyState(VK_CAPITAL) & 0x0001);
+	}
+
+	bool InputController::isControlDown() const {
+		return (keyboardState[DIK_LCONTROL] & 0x80) || (keyboardState[DIK_RCONTROL]);
+	}
+
+	bool InputController::isShiftDown() const {
+		return (keyboardState[DIK_LSHIFT] & 0x80) || (keyboardState[DIK_RSHIFT]);
+	}
+
+	bool InputController::isSuperDown() const {
+		return (keyboardState[DIK_LWIN] & 0x80) || (keyboardState[DIK_RWIN]);
+	}
+
 	bool InputController::keybindTest_lua(unsigned int key, sol::optional<unsigned int> transition) const {
 		return keybindTest(key, transition.value_or(TES3::KeyTransition::Down));
 	}

@@ -6,11 +6,20 @@ Base class for all geometry that uses triangles.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`alphaProperty`_ (`niAlphaProperty`_, `nil`_)
+    Convenient access to this object's alpha property. Setting this value to be nil will erase the property, while setting it to a valid alpha property will set (or replace) it.
+
 `appCulled`_ (`boolean`_)
     A flag indicating if this object is culled. When culled, it will not render, and raycasts ignore it.
 
 `flags`_ (`number`_)
     Flags, dependent on the specific object type.
+
+`fogProperty`_ (`niFogProperty`_, `nil`_)
+    Convenient access to this object's fog property. Setting this value to be nil will erase the property, while setting it to a valid fog property will set (or replace) it.
+
+`materialProperty`_ (`niMaterialProperty`_, `nil`_)
+    Convenient access to this object's material property. Setting this value to be nil will erase the property, while setting it to a valid material property will set (or replace) it.
 
 `name`_ (`string`_)
     The human-facing name of the given object.
@@ -22,7 +31,7 @@ Properties
     The list of properties attached to this niAVObject.
 
 `references`_ (`string`_)
-    The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
+    Read-only. The number of references that exist for the given object. When this value hits zero, the object's memory is freed.
 
 `rotation`_ (`tes3matrix33`_)
     The object's local rotation matrix.
@@ -33,14 +42,29 @@ Properties
 `scale`_ (`number`_)
     The object's local uniform scaling factor.
 
+`stencilProperty`_ (`niStencilProperty`_, `nil`_)
+    Convenient access to this object's stencil property. Setting this value to be nil will erase the property, while setting it to a valid stencil property will set (or replace) it.
+
+`texturingProperty`_ (`niTexturingProperty`_, `nil`_)
+    Convenient access to this object's texturing property. Setting this value to be nil will erase the property, while setting it to a valid texturing property will set (or replace) it.
+
 `translation`_ (`tes3vector3`_)
     The object's local translation vector.
+
+`vertexColorProperty`_ (`niVertexColorProperty`_, `nil`_)
+    Convenient access to this object's vertex coloring property. Setting this value to be nil will erase the property, while setting it to a valid vertex coloring property will set (or replace) it.
+
+`zBufferProperty`_ (`niZBufferProperty`_, `nil`_)
+    Convenient access to this object's z-buffer property. Setting this value to be nil will erase the property, while setting it to a valid z-buffer property will set (or replace) it.
 
 .. toctree::
     :hidden:
 
+    niTriBasedGeometry/alphaProperty
     niTriBasedGeometry/appCulled
     niTriBasedGeometry/flags
+    niTriBasedGeometry/fogProperty
+    niTriBasedGeometry/materialProperty
     niTriBasedGeometry/name
     niTriBasedGeometry/parent
     niTriBasedGeometry/properties
@@ -48,10 +72,17 @@ Properties
     niTriBasedGeometry/rotation
     niTriBasedGeometry/runTimeTypeInformation
     niTriBasedGeometry/scale
+    niTriBasedGeometry/stencilProperty
+    niTriBasedGeometry/texturingProperty
     niTriBasedGeometry/translation
+    niTriBasedGeometry/vertexColorProperty
+    niTriBasedGeometry/zBufferProperty
 
+.. _`alphaProperty`: niTriBasedGeometry/alphaProperty.html
 .. _`appCulled`: niTriBasedGeometry/appCulled.html
 .. _`flags`: niTriBasedGeometry/flags.html
+.. _`fogProperty`: niTriBasedGeometry/fogProperty.html
+.. _`materialProperty`: niTriBasedGeometry/materialProperty.html
 .. _`name`: niTriBasedGeometry/name.html
 .. _`parent`: niTriBasedGeometry/parent.html
 .. _`properties`: niTriBasedGeometry/properties.html
@@ -59,7 +90,11 @@ Properties
 .. _`rotation`: niTriBasedGeometry/rotation.html
 .. _`runTimeTypeInformation`: niTriBasedGeometry/runTimeTypeInformation.html
 .. _`scale`: niTriBasedGeometry/scale.html
+.. _`stencilProperty`: niTriBasedGeometry/stencilProperty.html
+.. _`texturingProperty`: niTriBasedGeometry/texturingProperty.html
 .. _`translation`: niTriBasedGeometry/translation.html
+.. _`vertexColorProperty`: niTriBasedGeometry/vertexColorProperty.html
+.. _`zBufferProperty`: niTriBasedGeometry/zBufferProperty.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
@@ -139,14 +174,21 @@ Methods
 .. _`updateEffects`: niTriBasedGeometry/updateEffects.html
 .. _`updateProperties`: niTriBasedGeometry/updateProperties.html
 
-.. _`niObject`: ../../lua/type/niObject.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`string`: ../../lua/type/string.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
 .. _`niAVObject`: ../../lua/type/niAVObject.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niPropertyLinkedList`: ../../lua/type/niPropertyLinkedList.html
+.. _`niAlphaProperty`: ../../lua/type/niAlphaProperty.html
+.. _`niFogProperty`: ../../lua/type/niFogProperty.html
+.. _`niMaterialProperty`: ../../lua/type/niMaterialProperty.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`niObject`: ../../lua/type/niObject.html
 .. _`niProperty`: ../../lua/type/niProperty.html
+.. _`niPropertyLinkedList`: ../../lua/type/niPropertyLinkedList.html
+.. _`niRTTI`: ../../lua/type/niRTTI.html
+.. _`niStencilProperty`: ../../lua/type/niStencilProperty.html
+.. _`niTexturingProperty`: ../../lua/type/niTexturingProperty.html
+.. _`niVertexColorProperty`: ../../lua/type/niVertexColorProperty.html
+.. _`nil`: ../../lua/type/nil.html
+.. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
+.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

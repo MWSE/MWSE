@@ -31,7 +31,7 @@ Properties
     Access to the weapon flag bitfield. Known flags can be accessed via other weapon properties.
 
 `hasDurability`_ (`boolean`_)
-    Whether the weapon type has durability. Thrown weapons and ammunition are used once fired, and therefore do not use durability.
+    Read-only. Whether the weapon type has durability. Thrown weapons and ammunition are used once fired, and therefore do not use durability.
 
 `icon`_ (`string`_)
     The path to the object's icon.
@@ -43,22 +43,25 @@ Properties
     Access to the flag that controls if this weapon bypasses the "Resist normal weapons" magic effect.
 
 `isAmmo`_ (`boolean`_)
-    If true, the weapon is a type of ammunition.
+    Read-only. If true, the weapon is a type of ammunition.
 
 `isMelee`_ (`boolean`_)
-    If true, the weapon has a melee weapon type.
+    Read-only. If true, the weapon has a melee weapon type.
 
 `isOneHanded`_ (`boolean`_)
-    If true, the weapon is a one-handed melee weapon.
+    Read-only. If true, the weapon is a one-handed weapon.
+
+`isProjectile`_ (`boolean`_)
+    Read-only. If true, the weapon is a projectile.
 
 `isRanged`_ (`boolean`_)
-    If true, the weapon is a ranged weapon.
+    Read-only. If true, the weapon is a ranged weapon.
 
 `isSilver`_ (`boolean`_)
     If true, the weapon has a silver material flag.
 
 `isTwoHanded`_ (`boolean`_)
-    If true, the weapon is a two-handed melee weapon.
+    Read-only. If true, the weapon is a two-handed melee weapon.
 
 `maxCondition`_ (`number`_)
     The object's maximum condition.
@@ -100,7 +103,7 @@ Properties
     The scene graph reference node for this object.
 
 `script`_ (`tes3script`_)
-    The script that runs on the object.
+    Read-only. The script that runs on the object.
 
 `skill`_ (`tes3skill`_)
     Gets the skill data for the attack skill used by the weapon.
@@ -123,6 +126,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `thrustMax`_ (`number`_)
     Thrust damage inflicted at maximum weapon swing.
 
@@ -130,10 +136,10 @@ Properties
     Thrust damage inflicted at minimum weapon swing.
 
 `type`_ (`number`_)
-    A number representing the weapon type. Matches values from the tes3.weaponType table.
+    Read-only. A number representing the weapon type. Matches values from the tes3.weaponType table.
 
 `typeName`_ (`string`_)
-    The player-facing name for the weapon type.
+    Read-only. The player-facing name for the weapon type.
 
 `value`_ (`number`_)
     The value of the object.
@@ -159,6 +165,7 @@ Properties
     tes3weapon/isAmmo
     tes3weapon/isMelee
     tes3weapon/isOneHanded
+    tes3weapon/isProjectile
     tes3weapon/isRanged
     tes3weapon/isSilver
     tes3weapon/isTwoHanded
@@ -183,6 +190,7 @@ Properties
     tes3weapon/sourceMod
     tes3weapon/speed
     tes3weapon/stolenList
+    tes3weapon/supportsLuaData
     tes3weapon/thrustMax
     tes3weapon/thrustMin
     tes3weapon/type
@@ -205,6 +213,7 @@ Properties
 .. _`isAmmo`: tes3weapon/isAmmo.html
 .. _`isMelee`: tes3weapon/isMelee.html
 .. _`isOneHanded`: tes3weapon/isOneHanded.html
+.. _`isProjectile`: tes3weapon/isProjectile.html
 .. _`isRanged`: tes3weapon/isRanged.html
 .. _`isSilver`: tes3weapon/isSilver.html
 .. _`isTwoHanded`: tes3weapon/isTwoHanded.html
@@ -229,6 +238,7 @@ Properties
 .. _`sourceMod`: tes3weapon/sourceMod.html
 .. _`speed`: tes3weapon/speed.html
 .. _`stolenList`: tes3weapon/stolenList.html
+.. _`supportsLuaData`: tes3weapon/supportsLuaData.html
 .. _`thrustMax`: tes3weapon/thrustMax.html
 .. _`thrustMin`: tes3weapon/thrustMin.html
 .. _`type`: tes3weapon/type.html
@@ -254,12 +264,12 @@ Methods
 .. _`getMaterialFlag`: tes3weapon/getMaterialFlag.html
 .. _`setMaterialFlag`: tes3weapon/setMaterialFlag.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

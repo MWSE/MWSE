@@ -23,7 +23,7 @@ level (`number`_)
     Default: ``0``. Minimum level for the item to spawn.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3leveledItem`: ../../../lua/type/tes3leveledItem.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3item`: ../../../lua/type/tes3item.html
+.. _`tes3leveledItem`: ../../../lua/type/tes3leveledItem.html

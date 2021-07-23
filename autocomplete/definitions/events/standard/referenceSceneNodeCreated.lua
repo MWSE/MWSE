@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "Reference that the SceneNode was created for.",
 		},
 	},

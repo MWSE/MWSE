@@ -6,6 +6,8 @@ Wrapper for MGEZoom, or MGESetZoom if set to animate.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 amount (`number`_)
     No description available.
 

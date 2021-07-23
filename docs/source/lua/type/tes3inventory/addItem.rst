@@ -1,7 +1,7 @@
 addItem
 ====================================================================================================
 
-Adds an item into the inventory directly. This should not be used, in favor of the tes3 API function.
+Adds an item into the inventory directly. This should not be used, in favor of the tes3.addItem function.
 
 Parameters
 ----------------------------------------------------------------------------------------------------
@@ -20,9 +20,9 @@ itemData (`tes3itemData`_)
 count (`number`_)
     Default: ``1``. The number of items to add.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
-.. _`tes3reference`: ../../../lua/type/tes3reference.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3item`: ../../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../../lua/type/tes3itemData.html
+.. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
+.. _`tes3reference`: ../../../lua/type/tes3reference.html

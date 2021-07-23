@@ -7,19 +7,19 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `id`_ (`string`_)
-    The unique object ID.
+    Read-only. The unique object ID.
 
 `item`_ (`tes3misc`_)
-    A reference back to the misc item that the soul gem represents.
+    Read-only. A reference back to the misc item that the soul gem represents.
 
 `mesh`_ (`string`_)
-    The path to the object's mesh.
+    Read-only. The path to the object's mesh.
 
 `name`_ (`string`_)
-    The player-facing name for the object.
+    Read-only. The player-facing name for the object.
 
 `texture`_ (`string`_)
-    The path to the object's texture.
+    Read-only. The path to the object's texture.
 
 `value`_ (`number`_)
     The value of the object.
@@ -46,6 +46,6 @@ Properties
 .. _`value`: tes3soulGemData/value.html
 .. _`weight`: tes3soulGemData/weight.html
 
-.. _`string`: ../../lua/type/string.html
 .. _`number`: ../../lua/type/number.html
+.. _`string`: ../../lua/type/string.html
 .. _`tes3misc`: ../../lua/type/tes3misc.html

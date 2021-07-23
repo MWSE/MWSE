@@ -13,6 +13,7 @@
 
 #include "TES3Util.h"
 
+#include "TES3Alchemy.h"
 #include "TES3Cell.h"
 #include "TES3DialogueInfo.h"
 #include "TES3GlobalVariable.h"
@@ -230,6 +231,15 @@ namespace TES3 {
 		return reinterpret_cast<Dialogue*(__thiscall *)(NonDynamicData*, const char*)>(TES3_NonDynamicData_findDialogue)(this, name);
 	}
 
+	bool NonDynamicData::addSound(Sound* sound) {
+		if (findSound(sound->getObjectID())) {
+			return false;
+		}
+
+		sounds->push_back(sound);
+		return true;
+	}
+
 	Sound* NonDynamicData::findSound(const char* id) {
 		return reinterpret_cast<Sound*(__thiscall *)(NonDynamicData*, const char*)>(TES3_NonDynamicData_findSound)(this, id);
 	}
@@ -313,6 +323,60 @@ namespace TES3 {
 		return TES3_NonDynamicData_getBaseAnimationFile(this, isFemale, firstPerson);
 	}
 
+	Alchemy* NonDynamicData::getMatchingAlchemyItem(const Alchemy* testAgainst) const {
+		if (testAgainst->objectType != ObjectType::Alchemy) {
+			return nullptr;
+		}
+
+		for (auto item : *list) {
+			auto alch = static_cast<Alchemy*>(item);
+
+			// We only care about alchemy objects.
+			if (alch->objectType != ObjectType::Alchemy) {
+				continue;
+			}
+
+			// Check object flags.
+			if (alch->objectFlags != testAgainst->objectFlags) {
+				continue;
+			}
+
+			// Check basic values.
+			if (alch->weight != testAgainst->weight || alch->value != testAgainst->value || alch->flags != alch->flags) {
+				continue;
+			}
+
+			// Check effects.
+			if (!alch->effectsMatchWith(testAgainst)) {
+				continue;
+			}
+
+			// Check script.
+			if (alch->script != testAgainst->script) {
+				continue;
+			}
+
+			// Check name.
+			if (_strnicmp(alch->name, testAgainst->name, 32) != 0) {
+				continue;
+			}
+
+			// Check model.
+			if (_strnicmp(alch->model, testAgainst->model, 32) != 0) {
+				continue;
+			}
+
+			// Check icon.
+			if (_strnicmp(alch->icon, testAgainst->icon, 32) != 0) {
+				continue;
+			}
+
+			// Good enough. It's a match.
+			return alch;
+		}
+		return nullptr;
+	}
+
 	std::reference_wrapper<Skill[27]> NonDynamicData::getSkills() {
 		return std::ref(skills);
 	}
@@ -321,7 +385,7 @@ namespace TES3 {
 		sol::state_view state = ts;
 		sol::table results = state.create_table();
 		for (auto itt : magicEffects->effectObjects) {
-			results.add(itt.second);
+			results[itt.second->id + 1] = itt.second;
 		}
 		return results;
 	}

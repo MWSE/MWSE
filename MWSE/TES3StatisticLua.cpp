@@ -30,6 +30,9 @@ namespace mwse {
 				auto usertypeDefinition = state.new_usertype<TES3::SkillStatistic>("tes3statisticSkill");
 				usertypeDefinition["new"] = sol::no_constructor;
 
+				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Statistic>();
+
 				// Basic property binding.
 				usertypeDefinition["base"] = sol::property(&TES3::SkillStatistic::getBase, &TES3::SkillStatistic::setBase);
 				usertypeDefinition["baseRaw"] = &TES3::SkillStatistic::base;

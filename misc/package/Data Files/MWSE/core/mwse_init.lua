@@ -44,6 +44,8 @@ function require(moduleName)
 end
 
 -- Custom dofile that respects package pathing and supports lua's dot notation for paths.
+local fileLocationCache = {}
+local originalDoFile = dofile
 function dofile(path)
 	assert(path and type(path) == "string")
 
@@ -53,23 +55,39 @@ function dofile(path)
 		standardizedPath = standardizedPath:sub(0, -5)
 	end
 
+	-- Any results in cache?
+	local cachedPath = fileLocationCache[standardizedPath]
+	if (cachedPath) then
+		return originalDoFile(cachedPath)
+	end
+
 	-- First pass: Direct load. Have to manually add the .lua extension.
-	local r = loadfile(standardizedPath .. ".lua")
-	if (r) then
-		return r()
+	if (lfs.fileexists(tes3.installDirectory .. "\\" .. standardizedPath .. ".lua")) then
+		fileLocationCache[standardizedPath] = standardizedPath .. ".lua"
+		return originalDoFile(standardizedPath .. ".lua")
 	end
 
 	-- Check all package paths.
 	for ppath in package.path:gmatch("[^;]+") do
-		r = loadfile(tes3.installDirectory .. ppath:gsub("?", standardizedPath))
-		if (r) then
-			return r()
+		local adjustedPath = ppath:gsub("?", standardizedPath)
+		if (lfs.fileexists(tes3.installDirectory .. "\\" .. adjustedPath)) then
+			fileLocationCache[standardizedPath] = adjustedPath
+			return originalDoFile(adjustedPath)
 		end
 	end
 
 	-- No result? Error.
 	error("dofile: Could not resolve path " .. path)
 end
+
+-------------------------------------------------
+-- Global includes
+-------------------------------------------------
+
+_G.tes3 = require("tes3.init")
+_G.event = require("event")
+_G.json = require("dkjson")
+
 
 -------------------------------------------------
 -- Extend base API: math
@@ -102,9 +120,14 @@ function math.round(value, digits)
 	return math.floor(value * mult + 0.5) / mult
 end
 
+
 -------------------------------------------------
 -- Extend base API: table
 -------------------------------------------------
+
+-- Add LuaJIT extensions.
+require("table.clear")
+require("table.new")
 
 -- The # operator only really makes sense for continuous arrays. Get the real value.
 function table.size(t)
@@ -115,19 +138,24 @@ function table.size(t)
 	return count
 end
 
-function table.empty(t)
-	for _ in pairs(t) do
-		return false
+function table.empty(t, deepCheck)
+	if (deepCheck) then
+		for _, v in pairs(t) do
+			if (type(v) ~= "table" or not table.empty(v, true)) then
+				return false
+			end
+		end
+	else
+		for _ in pairs(t) do
+			return false
+		end
 	end
 	return true
 end
 
 function table.choice(t)
-	-- We need to get a list of all of our keys first.
-	local keys = {}
-	for k in pairs(t) do
-		table.insert(keys, k)
-	end
+	-- We need to get a list of all of our values first.
+	local keys = table.keys(t)
 
 	-- Now we want to get a random key, and return the value for that key.
 	local key = keys[math.random(#keys)]
@@ -209,6 +237,39 @@ function table.traverse(t, k)
 	end
 	return coroutine.wrap(iter)
 end
+
+function table.keys(t, sort)
+	local keys = {}
+	for k, _ in pairs(t) do
+		table.insert(keys, k)
+	end
+
+	if (sort) then
+		if (sort == true) then
+			sort = nil
+		end
+		table.sort(keys, sort)
+	end
+
+	return keys
+end
+
+function table.values(t, sort)
+	local values = {}
+	for _, v in pairs(t) do
+		table.insert(values, v)
+	end
+
+	if (sort) then
+		if (sort == true) then
+			sort = nil
+		end
+		table.sort(values, sort)
+	end
+
+	return values
+end
+
 
 -------------------------------------------------
 -- Extend base table: Add binary search/insert
@@ -300,6 +361,7 @@ function table.bininsert(t, value, comp)
 	return (iMid+iState)
 end
 
+
 -------------------------------------------------
 -- Extend base API: string
 -------------------------------------------------
@@ -324,6 +386,12 @@ function string.multifind(s, patterns, index, plain)
 end
 getmetatable("").multifind = string.multifind
 
+function string.insert(s1, s2, pos)
+	return s1:sub(1, pos) .. s2 .. s1:sub(pos + 1)
+end
+getmetatable("").insert = string.insert
+
+
 -------------------------------------------------
 -- Extend base API: debug
 -------------------------------------------------
@@ -341,14 +409,14 @@ local function getNthLine(fileName, n)
 	f:close()
 end
 
-local logTextCache = {}
+debug.logCache = {}
 
 function debug.log(value)
 	local info = debug.getinfo(2, "Sl")
 
 	if not info.source:find("^@") then
 		error("'debug.log' called from invalid source")
-		return
+		return value
 	end
 
 	-- strip the '@' tag
@@ -357,12 +425,12 @@ function debug.log(value)
 	-- include line info
 	local location = fileName:lower():gsub("data files\\mwse\\", "") .. ":" .. info.currentline
 
-	local text = logTextCache[location]
+	local text = debug.logCache[location]
 	if text == nil then
 		text = getNthLine(fileName, info.currentline)
 		if text ~= nil then
 			text = text:match("debug%.log%((.*)%)")
-			logTextCache[location] = text
+			debug.logCache[location] = text
 		end
 	end
 
@@ -401,14 +469,15 @@ local function deleteDirectoryRecursive(dir, recursive)
 end
 lfs.rmdir = deleteDirectoryRecursive
 
+-- Basic "file exists" check.
+function lfs.fileexists(filepath)
+	return lfs.attributes(filepath, "mode") == "file"
+end
 
--------------------------------------------------
--- Global includes
--------------------------------------------------
-
-_G.tes3 = require("tes3.init")
-_G.event = require("event")
-_G.json = require("dkjson")
+-- Basic "folder exists" check.
+function lfs.directoryexists(filepath)
+	return lfs.attributes(filepath, "mode") == "directory"
+end
 
 
 -------------------------------------------------
@@ -455,13 +524,14 @@ function json.encode(object, state)
 	return originalEncode(object, state)
 end
 
+
 -------------------------------------------------
 -- Extend our base API: mge
 -------------------------------------------------
 
 function mge.getUIScale()
 	-- MGE XE uses uniform scaling, so we only need check the width.
-	return mge.getScreenWidth() / tes3.getWorldController().viewWidth
+	return mge.getScreenWidth() / tes3.worldController.viewWidth
 end
 
 
@@ -507,6 +577,7 @@ function mwse.encodeForSave(object)
 	return json.encode(object, { exception = exceptionWhenSaving })
 end
 
+
 -------------------------------------------------
 -- Setup and load MWSE config.
 -------------------------------------------------
@@ -533,6 +604,7 @@ end
 
 -- Refresh the file so that it shows users what other values can be tweaked.
 mwse.saveConfig("MWSE", userConfig)
+
 
 -------------------------------------------------
 -- Extend our base API: tes3

@@ -3,37 +3,37 @@ return {
 	eventData = {
 		damage = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The amount of damage done.",
 		},
 		mobile = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor that took damage.",
 		},
 		reference = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "mobile’s associated reference.",
 		},
         	attacker = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor dealing the damage. Can be nil.",
 		},
 		attackerReference = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "attacker mobile's associated reference. Can be nil.",
 		},
 		projectile = {
 			type = "tes3mobileProjectile",
-			readonly = true,
+			readOnly = true,
 			description = "Projectile that dealt the damage. Can be nil.",
 		},
 		activeMagicEffect = {
 			type = "tes3magicEffect",
-			readonly = true,
+			readOnly = true,
 			description = "tes3magicEffect which caused damage. Can be nil.",
 		},
 		magicSourceInstance = {
@@ -43,12 +43,12 @@ return {
 		},
 		source = {
 			type ="damageSourceType",
-			readonly = true,
+			readOnly = true,
 			description = "The origin of damage. Values of this variable can be: \"script\", \"fall\", \"suffocation\", \"attack\", \"magic\", \"shield\" or nil.",
 		},
 		killingBlow = {
 			type ="boolean",
-			readonly = true,
+			readOnly = true,
 			description = "If true, the damage killed the target.",
 		},
 	},

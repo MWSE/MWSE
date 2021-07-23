@@ -7,52 +7,52 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `author`_ (`string`_)
-    The file's author.
+    Read-only. The file's author.
 
 `cellName`_ (`string`_)
-    The current cell, from a save game.
+    Read-only. The current cell, from a save game.
 
 `currentHealth`_ (`number`_)
-    The player's health, from a save game.
+    Read-only. The player's health, from a save game.
 
 `day`_ (`number`_)
-    The current day, from a save game.
+    Read-only. The current day, from a save game.
 
 `daysPassed`_ (`number`_)
-    The number of days passed, from a save game.
+    Read-only. The number of days passed, from a save game.
 
 `description`_ (`string`_)
-    The description of the file.
+    Read-only. The description of the file.
 
 `fileSize`_ (`number`_)
-    The size of the file.
+    Read-only. The size of the file.
 
 `filename`_ (`string`_)
-    The simple filename.
+    Read-only. The simple filename.
 
 `gameHour`_ (`number`_)
-    The current game hour, from a save game.
+    Read-only. The current game hour, from a save game.
 
 `masters`_ (`table`_)
-    An array-style table of the tes3gameFiles that this is dependent upon.
+    Read-only. An array-style table of the tes3gameFiles that this is dependent upon.
 
 `maxHealth`_ (`number`_)
-    The player's maximum health, from a save game.
+    Read-only. The player's maximum health, from a save game.
 
 `modifiedTime`_ (`string`_)
-    The timestamp that the file was modified.
+    Read-only. The timestamp that the file was modified.
 
 `month`_ (`number`_)
-    The current month, from a save game.
+    Read-only. The current month, from a save game.
 
 `path`_ (`string`_)
-    The path to the file.
+    Read-only. The path to the file.
 
 `playerName`_ (`string`_)
-    The player's name, from a save game.
+    Read-only. The player's name, from a save game.
 
 `year`_ (`number`_)
-    The current year, from a save game.
+    Read-only. The current year, from a save game.
 
 .. toctree::
     :hidden:
@@ -104,6 +104,6 @@ Methods
 
 .. _`deleteFile`: tes3gameFile/deleteFile.html
 
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`number`: ../../lua/type/number.html

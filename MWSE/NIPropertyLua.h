@@ -7,6 +7,7 @@ namespace mwse {
 			setUserdataForNIObjectNET(usertypeDefinition);
 
 			// Basic property binding.
+			usertypeDefinition["propertyFlags"] = &NI::Property::flags;
 			usertypeDefinition["type"] = sol::readonly_property(&NI::Property::getType);
 		}
 

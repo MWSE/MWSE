@@ -3,32 +3,32 @@ return {
 	eventData = {
 		["type"] = {
 			type = "string",
-			readonly = true,
+			readOnly = true,
 			description = "The type of crime that was committed.",
 		},
 		["position"] = {
 			type = "tes3vector",
-			readonly = true,
+			readOnly = true,
 			description = "The position that the crime ocurred at.",
 		},
 		["realTimestamp"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The timestamp that the crime ocurred at.",
 		},
 		["value"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The bounty value of the crime.",
 		},
 		["witness"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The reference that witnessed the crime.",
 		},
 		["witnessMobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor of the reference that witnessed the crime.",
 		},
 	},

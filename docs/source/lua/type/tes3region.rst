@@ -28,13 +28,16 @@ Properties
     The type of object. Maps to values in tes3.objectType.
 
 `sleepCreature`_ (`tes3leveledCreature`_)
-    The region's leveled creature that can be spawned while the player is sleeping.
+    Read-only. The region's leveled creature that can be spawned while the player is sleeping.
 
 `sounds`_ (`table`_)
-    Array-style table for the different region sounds. Each object in the table is a tes3regionSound.
+    Read-only. Array-style table for the different region sounds. Each object in the table is a tes3regionSound.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `weather`_ (`tes3weather`_)
     The region's current weather.
@@ -70,7 +73,7 @@ Properties
     The chance the Thunder weather-type will be used. Must be an integer between 0 - 100.
 
 `weatherChances`_ (`table`_)
-    Array-style table for the different weather chances. Each object in the table is a number, between 1 - 100. The index of the table is the weather type.
+    Read-only. Array-style table for the different weather chances. Each object in the table is a number, between 1 - 100. The index of the table is the weather type.
 
 .. toctree::
     :hidden:
@@ -85,6 +88,7 @@ Properties
     tes3region/sleepCreature
     tes3region/sounds
     tes3region/sourceMod
+    tes3region/supportsLuaData
     tes3region/weather
     tes3region/weatherChanceAsh
     tes3region/weatherChanceBlight
@@ -108,6 +112,7 @@ Properties
 .. _`sleepCreature`: tes3region/sleepCreature.html
 .. _`sounds`: tes3region/sounds.html
 .. _`sourceMod`: tes3region/sourceMod.html
+.. _`supportsLuaData`: tes3region/supportsLuaData.html
 .. _`weather`: tes3region/weather.html
 .. _`weatherChanceAsh`: tes3region/weatherChanceAsh.html
 .. _`weatherChanceBlight`: tes3region/weatherChanceBlight.html
@@ -140,8 +145,8 @@ Methods
 .. _`randomizeWeather`: tes3region/randomizeWeather.html
 
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
-.. _`tes3weather`: ../../lua/type/tes3weather.html
-.. _`number`: ../../lua/type/number.html
 .. _`tes3leveledCreature`: ../../lua/type/tes3leveledCreature.html
+.. _`tes3weather`: ../../lua/type/tes3weather.html

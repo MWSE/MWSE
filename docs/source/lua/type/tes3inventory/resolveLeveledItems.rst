@@ -6,6 +6,8 @@ Resolves all contained leveled lists and adds the randomized items to the invent
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 mobile (`tes3mobileActor`_)
     Optional. The mobile actor whose stats will be updated.
 

@@ -11,4 +11,6 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 .. _`tes3object`: ../../../lua/type/tes3object.html

@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["item"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "The item being filtered.",
 		},
 		["itemData"] = {
 			type = "tes3itemData",
-			readonly = true,
+			readOnly = true,
 			description = "The item data for the item being filtered.",
 		},
 		["type"] = {
 			type = "string",
-			readonly = true,
+			readOnly = true,
 			description = "The inventory filter type.",
 		},
 	},

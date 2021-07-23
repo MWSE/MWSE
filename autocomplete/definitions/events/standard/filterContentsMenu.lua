@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["tile"] = {
 			type = "tes3uiInventoryTile",
-			readonly = true,
+			readOnly = true,
 			description = "The inventory tile being filtered.",
 		},
 		["item"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "The item being filtered.",
 		},
 		["itemData"] = {
 			type = "tes3itemData",
-			readonly = true,
+			readOnly = true,
 			description = "The item data for the item being filtered.",
 		},
 	},

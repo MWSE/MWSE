@@ -145,6 +145,12 @@ namespace TES3 {
 		bool isMouseButtonPressedThisFrame(unsigned char button) const;
 		bool isMouseButtonReleasedThisFrame(unsigned char button) const;
 
+		bool isAltDown() const;
+		bool isCapsLockActive() const;
+		bool isControlDown() const;
+		bool isShiftDown() const;
+		bool isSuperDown() const;
+
 		bool keybindTest_lua(unsigned int key, sol::optional<unsigned int> transition) const;
 
 		std::reference_wrapper<unsigned char[256]> getKeyboardState();

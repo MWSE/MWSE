@@ -111,12 +111,14 @@ The standard type signature for events.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 eventID (`string`_)
     The event id.
 
 callback (`function`_)
     The callback function.
 
-.. _`string`: ../../../lua/type/string.html
-.. _`number`: ../../../lua/type/number.html
 .. _`function`: ../../../lua/type/function.html
+.. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html

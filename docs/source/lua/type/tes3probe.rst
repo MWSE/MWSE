@@ -61,13 +61,16 @@ Properties
     The scene graph reference node for this object.
 
 `script`_ (`tes3script`_)
-    The script that runs on the object.
+    Read-only. The script that runs on the object.
 
 `sourceMod`_ (`string`_)
     The filename of the mod that owns this object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `value`_ (`number`_)
     The value of the object.
@@ -99,6 +102,7 @@ Properties
     tes3probe/script
     tes3probe/sourceMod
     tes3probe/stolenList
+    tes3probe/supportsLuaData
     tes3probe/value
     tes3probe/weight
 
@@ -123,14 +127,15 @@ Properties
 .. _`script`: tes3probe/script.html
 .. _`sourceMod`: tes3probe/sourceMod.html
 .. _`stolenList`: tes3probe/stolenList.html
+.. _`supportsLuaData`: tes3probe/supportsLuaData.html
 .. _`value`: tes3probe/value.html
 .. _`weight`: tes3probe/weight.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

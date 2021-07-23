@@ -43,7 +43,7 @@ namespace TES3 {
 		int addItemWithoutData(MobileActor * mobile, Item * item, int count, bool something);
 		ItemData* addItemByReference(MobileActor * mobile, Reference * reference, int * out_count);
 		void removeItemWithData(MobileActor * mobile, Item * item, ItemData * itemData, int count, bool deleteStackData);
-		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool unknown = false);
+		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData = false);
 
 		void resolveLeveledLists(MobileActor* mobile = nullptr);
 
@@ -51,9 +51,13 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		// This makes the assumption that there are no free-floating inventories in memory, and that they only exist in actors.
+		// This is true everywhere but when checking if the game needs to declone inventories.
+		Actor* getActor();
+
 		bool containsItem(Item * item, ItemData * data = nullptr);
 
-		float calculateContainedWeight();
+		float calculateContainedWeight() const;
 
 		int getSoulGemCount();
 

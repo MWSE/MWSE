@@ -34,10 +34,10 @@ dialogue (`tes3dialogue`_, `string`_)
 info (`tes3dialogueInfo`_)
     Optional. The info associated with the dialogue.
 
-.. _`tes3dialogueInfo`: ../../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
+.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
+.. _`tes3dialogueInfo`: ../../../lua/type/tes3dialogueInfo.html
 .. _`tes3mobileActor`: ../../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../../lua/type/tes3reference.html

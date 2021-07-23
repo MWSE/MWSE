@@ -6,6 +6,8 @@ Unregisters a function  event is raised.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 eventId (`string`_)
     No description available.
 
@@ -15,6 +17,6 @@ callback (`function`_)
 options (`table`_)
     Optional. No description available.
 
+.. _`function`: ../../../lua/type/function.html
 .. _`string`: ../../../lua/type/string.html
 .. _`table`: ../../../lua/type/table.html
-.. _`function`: ../../../lua/type/function.html

@@ -44,7 +44,7 @@ namespace mwse {
 				usertypeDefinition["spellInstance"] = sol::readonly_property(&TES3::MobileSpellProjectile::getInstance);
 
 				// Basic function bindings.
-				usertypeDefinition["explode"] = &TES3::MobileSpellProjectile::explode;
+				usertypeDefinition["explode"] = &TES3::MobileSpellProjectile::explodeDeferred;
 			}
 		}
 	}

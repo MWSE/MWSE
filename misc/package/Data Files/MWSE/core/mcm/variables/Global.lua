@@ -10,6 +10,11 @@ function GlobalVar:get()
 end
 
 function GlobalVar:set(newValue)
+	local converter = self.converter
+	if (converter) then
+		newValue = converter(newValue)
+	end
+	
 	tes3.findGlobal(self.id).value = newValue
 end
 

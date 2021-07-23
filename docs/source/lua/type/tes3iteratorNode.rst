@@ -7,13 +7,13 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `data`_
-    The data stored in the node. Its type depends on the specific collection.
+    Read-only. The data stored in the node. Its type depends on the specific collection.
 
 `head`_ (`tes3iteratorNode`_)
-    The previous node in the collection.
+    Read-only. The previous node in the collection.
 
 `tail`_ (`tes3iteratorNode`_)
-    The next node in the collection.
+    Read-only. The next node in the collection.
 
 .. toctree::
     :hidden:

@@ -40,7 +40,7 @@ namespace mwse {
 
 				auto magicSourceInstance = m_MagicSourceInstance;
 				if (m_ActiveMagicEffect) {
-					eventData["activeMagicEffect"] = m_ActiveMagicEffect;
+					eventData["activeMagicEffect"] = TES3::ActiveMagicEffectLua(*m_ActiveMagicEffect, m_MobileActor);
 					magicSourceInstance = m_ActiveMagicEffect->getInstance();
 				}
 

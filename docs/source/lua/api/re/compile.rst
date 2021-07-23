@@ -14,6 +14,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 s (`string`_)
     The string to compile.
 

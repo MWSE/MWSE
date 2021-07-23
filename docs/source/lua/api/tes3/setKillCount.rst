@@ -14,6 +14,6 @@ actor (`tes3actor`_, `string`_)
 count (`number`_)
     Number of kills that will be set.
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3actor`: ../../../lua/type/tes3actor.html

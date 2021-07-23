@@ -11,6 +11,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 key (`number`_)
     The keybind to test. Constants available through ``tes3.keybind``.
 

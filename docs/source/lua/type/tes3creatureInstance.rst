@@ -7,10 +7,10 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `actorFlags`_ (`number`_)
-    A number representing the actor flags. Truly a bit field.
+    Read-only. A number representing the actor flags. Truly a bit field.
 
 `aiConfig`_ (`tes3aiConfig`_)
-    Simplified access to the base creature's AI configuration.
+    Read-only. Simplified access to the base creature's AI configuration.
 
 `attacks`_ (`table`_)
     Simplified access to the base creature's attacks. A table of three attacks, represented by a trio of tes3rangeInt.
@@ -31,7 +31,7 @@ Properties
     The bounding box for the object.
 
 `cloneCount`_ (`number`_)
-    The number of clones that exist of this actor.
+    Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
     The deleted state of the object.
@@ -40,46 +40,46 @@ Properties
     The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
-    The items currently equipped to the actor.
+    Read-only. A collection that contains the currently equipped items.
 
 `equipment`_ (`tes3iterator`_)
-    A collection that contains the currently equipped items.
+    Read-only. The items currently equipped to the actor.
 
 `fatigue`_ (`number`_)
-    The creature's current fatigue.
+    Read-only. The creature's current fatigue.
 
 `flies`_ (`boolean`_)
     Access to the creature's flies flag.
 
 `health`_ (`number`_)
-    The creature's current health.
+    Read-only. The creature's current health.
 
 `id`_ (`string`_)
     The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
-    A collection that contains the items in the actor's inventory.
+    Read-only. The items currently carried by the actor.
 
 `inventory`_ (`tes3iterator`_)
-    The items currently carried by the actor.
+    Read-only. A collection that contains the items in the actor's inventory.
 
 `isAttacked`_ (`boolean`_)
-    If true, the creature attacked flag is set.
+    Read-only. If true, the creature attacked flag is set.
 
 `isEssential`_ (`boolean`_)
-    If true, the creature essential flag is set.
+    Read-only. If true, the creature essential flag is set.
 
 `isInstance`_ (`boolean`_)
     Always returns true.
 
 `isRespawn`_ (`boolean`_)
-    If true, the creature respawn flag is set.
+    Read-only. If true, the creature respawn flag is set.
 
 `level`_ (`number`_)
-    The base level of the creature.
+    Read-only. The base level of the creature.
 
 `magicka`_ (`number`_)
-    The creature's current magicka.
+    Read-only. The creature's current magicka.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -133,10 +133,13 @@ Properties
     The filename of the mod that owns this object.
 
 `spells`_ (`tes3spellList`_)
-    Quick access to the base creature's spell list. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(creature.spells.iterator) do print(spell.name) end
+    Read-only. Quick access to the base creature's spell list. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(creature.spells.iterator) do print(spell.name) end
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `swims`_ (`boolean`_)
     Access to the creature's swims flag.
@@ -151,7 +154,7 @@ Properties
     Access to the creature's walks flag.
 
 `weapon`_ (`tes3weapon`_)
-    The creature's currently equipped weapon.
+    Read-only. The creature's currently equipped weapon.
 
 .. toctree::
     :hidden:
@@ -200,6 +203,7 @@ Properties
     tes3creatureInstance/sourceMod
     tes3creatureInstance/spells
     tes3creatureInstance/stolenList
+    tes3creatureInstance/supportsLuaData
     tes3creatureInstance/swims
     tes3creatureInstance/type
     tes3creatureInstance/usesEquipment
@@ -250,6 +254,7 @@ Properties
 .. _`sourceMod`: tes3creatureInstance/sourceMod.html
 .. _`spells`: tes3creatureInstance/spells.html
 .. _`stolenList`: tes3creatureInstance/stolenList.html
+.. _`supportsLuaData`: tes3creatureInstance/supportsLuaData.html
 .. _`swims`: tes3creatureInstance/swims.html
 .. _`type`: tes3creatureInstance/type.html
 .. _`usesEquipment`: tes3creatureInstance/usesEquipment.html
@@ -259,25 +264,35 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`offersService`_ (`boolean`_)
+    Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
+
 `onInventoryClose`_
     A callback function invoked when an inventory is closed. Typically not used outside of specific purposes. You may find tes3.reference's onCloseInventory() to be more convenient to use.
+
+`tradesItemType`_ (`boolean`_)
+    Checks if the actor will buy and sell items of a given object type. e.g. actor:tradesItemType(tes3.objectType.repairItem)
 
 .. toctree::
     :hidden:
 
+    tes3creatureInstance/offersService
     tes3creatureInstance/onInventoryClose
+    tes3creatureInstance/tradesItemType
 
+.. _`offersService`: tes3creatureInstance/offersService.html
 .. _`onInventoryClose`: tes3creatureInstance/onInventoryClose.html
+.. _`tradesItemType`: tes3creatureInstance/tradesItemType.html
 
-.. _`tes3creature`: ../../lua/type/tes3creature.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`table`: ../../lua/type/table.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3creature`: ../../lua/type/tes3creature.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
-.. _`tes3weapon`: ../../lua/type/tes3weapon.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
 .. _`tes3spellList`: ../../lua/type/tes3spellList.html
+.. _`tes3weapon`: ../../lua/type/tes3weapon.html

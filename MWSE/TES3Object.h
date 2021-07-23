@@ -64,6 +64,7 @@ namespace TES3 {
 			MobileObject = 'TCAM',
 			MobilePlayer = 'PCAM',
 			MobileProjectile = 'JRPM',
+			MobileSpellProjectile = 'PSPM',
 			NPC = '_CPN',
 			NPCClone = 'CCPN',
 			PathGrid = 'DRGP',
@@ -249,7 +250,7 @@ namespace TES3 {
 		BaseObject * getBaseObject() const;
 
 		bool isActor() const;
-		const char* getSourceFilename();
+		const char* getSourceFilename() const;
 
 		bool getDisabled() const;
 		bool getDeleted() const;
@@ -260,7 +261,9 @@ namespace TES3 {
 		bool getBlocked() const;
 		void setBlocked(bool value);
 
-		std::string toJson();
+		bool getSupportsLuaData() const;
+
+		std::string toJson() const;
 
 		bool getSourceless() const;
 		void setSourceless(bool sourceless) const;

@@ -3,7 +3,7 @@ return{
     eventData = {
         ["cell"] = {
             type = "tes3cell",
-            readonly = true,
+            readOnly = true,
             description = "The cell which was deactivated.",
         },
     },

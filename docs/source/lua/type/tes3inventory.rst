@@ -7,10 +7,12 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `flags`_ (`number`_)
-    Raw bit-based flags.
+    Read-only. Raw bit-based flags.
 
 `iterator`_ (`tes3iterator`_)
-    Direct acces to the container that holds the inventory's items.
+    Read-only. Deprecated. Use ``for index, stack in pairs(inventory)`` to iterate over inventory stacks.
+	
+Direct access to the container that holds the inventory's items.
 
 .. toctree::
     :hidden:
@@ -25,7 +27,7 @@ Methods
 ----------------------------------------------------------------------------------------------------
 
 `addItem`_
-    Adds an item into the inventory directly. This should not be used, in favor of the tes3 API function.
+    Adds an item into the inventory directly. This should not be used, in favor of the tes3.addItem function.
 
 `calculateWeight`_ (`number`_)
     Calculates the weight of all items in the container.
@@ -34,10 +36,13 @@ Methods
     Checks to see if the inventory contains an item.
 
 `dropItem`_
-    Checks to see if the inventory contains an item. This should not be used, in favor of tes3 APIs.
+    Checks to see if the inventory contains an item. This should not be used, instead use the tes3.dropItem function.
+
+`findItemStack`_ (`tes3itemStack`_)
+    Searches for an item stack in the inventory.
 
 `removeItem`_
-    Removes an item from the inventory directly. This should not be used, in favor of the tes3 API function.
+    Removes an item from the inventory directly. This should not be used, in favor of the tes3.removeItem function.
 
 `resolveLeveledItems`_
     Resolves all contained leveled lists and adds the randomized items to the inventory. This should generally not be called directly.
@@ -49,6 +54,7 @@ Methods
     tes3inventory/calculateWeight
     tes3inventory/contains
     tes3inventory/dropItem
+    tes3inventory/findItemStack
     tes3inventory/removeItem
     tes3inventory/resolveLeveledItems
 
@@ -56,9 +62,11 @@ Methods
 .. _`calculateWeight`: tes3inventory/calculateWeight.html
 .. _`contains`: tes3inventory/contains.html
 .. _`dropItem`: tes3inventory/dropItem.html
+.. _`findItemStack`: tes3inventory/findItemStack.html
 .. _`removeItem`: tes3inventory/removeItem.html
 .. _`resolveLeveledItems`: tes3inventory/resolveLeveledItems.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
+.. _`tes3itemStack`: ../../lua/type/tes3itemStack.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html

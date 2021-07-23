@@ -6,6 +6,8 @@ Triggers a UI event on an element, either using supplied event data, or by const
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 eventID (`tes3uiEvent`_, `string`_)
     The event, or event ID.
 

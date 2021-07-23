@@ -23,7 +23,7 @@ namespace mwse {
 
 			// Basic property binding.
 			usertypeDefinition["maxCondition"] = &TES3::Probe::maxCondition;
-			usertypeDefinition["script"] = sol::readonly_property(&TES3::Probe::getScript);
+			usertypeDefinition["script"] = &TES3::Probe::script;
 			usertypeDefinition["quality"] = &TES3::Probe::quality;
 			usertypeDefinition["value"] = &TES3::Probe::value;
 			usertypeDefinition["weight"] = &TES3::Probe::weight;

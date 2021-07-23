@@ -18,6 +18,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 id (`number`_)
     Optional. A registered identifier to help find this element later.
 
@@ -27,5 +29,5 @@ current (`number`_)
 max (`number`_)
     Optional. The initial maximum value.
 
-.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

@@ -6,6 +6,8 @@ Wrapper for MGESetCameraShakeMagnitude.
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 magnitude (`number`_)
     No description available.
 

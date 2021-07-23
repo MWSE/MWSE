@@ -35,6 +35,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 format (`string`_)
     The format string to use for the output.
 

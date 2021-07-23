@@ -36,6 +36,6 @@ mesh (`string`_)
 objectFlags (`number`_)
     Default: ``0``. The object flags initially set. Force set as modified.
 
+.. _`number`: ../../../lua/type/number.html
 .. _`string`: ../../../lua/type/string.html
 .. _`tes3activator`: ../../../lua/type/tes3activator.html
-.. _`number`: ../../../lua/type/number.html

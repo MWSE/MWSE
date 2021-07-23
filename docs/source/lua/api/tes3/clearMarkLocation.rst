@@ -1,5 +1,5 @@
 tes3.clearMarkLocation
 ====================================================================================================
 
-This function deletes player's mark location.
+This function deletes the player's mark location.
 

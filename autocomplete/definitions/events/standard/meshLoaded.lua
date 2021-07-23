@@ -3,12 +3,12 @@ return{
     eventData = {
         ["path"] = {
             type = "string",
-            --readonly = true,
+            --readOnly = true,
             description = "The path to the mesh, relative to Data Files\\Meshes",
         },
         ["node"] = {
             type = "niAVObject",
-            --readonly = true,
+            --readOnly = true,
             description = "",
         },
     },

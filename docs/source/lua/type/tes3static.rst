@@ -54,6 +54,9 @@ Properties
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 .. toctree::
     :hidden:
 
@@ -73,6 +76,7 @@ Properties
     tes3static/sceneReference
     tes3static/sourceMod
     tes3static/stolenList
+    tes3static/supportsLuaData
 
 .. _`boundingBox`: tes3static/boundingBox.html
 .. _`deleted`: tes3static/deleted.html
@@ -90,6 +94,7 @@ Properties
 .. _`sceneReference`: tes3static/sceneReference.html
 .. _`sourceMod`: tes3static/sourceMod.html
 .. _`stolenList`: tes3static/stolenList.html
+.. _`supportsLuaData`: tes3static/supportsLuaData.html
 
 Functions
 ----------------------------------------------------------------------------------------------------
@@ -104,11 +109,11 @@ Functions
 
 .. _`create`: tes3static/create.html
 
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`boolean`: ../../lua/type/boolean.html
+.. _`niNode`: ../../lua/type/niNode.html
+.. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
 .. _`tes3object`: ../../lua/type/tes3object.html
-.. _`number`: ../../lua/type/number.html
-.. _`niNode`: ../../lua/type/niNode.html
 .. _`tes3referenceList`: ../../lua/type/tes3referenceList.html

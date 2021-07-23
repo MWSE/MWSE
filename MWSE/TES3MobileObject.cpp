@@ -162,7 +162,7 @@ namespace TES3 {
 
 	void MobileObject::setImpulseVelocityFromLua(sol::stack_object value) {
 		// Use our util class to support vectors or a table.
-		mwse::lua::setVectorFromLua(&impulseVelocity, value);
+		mwse::lua::setVectorFromLua(impulseVelocity, value);
 	}
 
 	Vector3* MobileObject::getPosition() {
@@ -181,7 +181,7 @@ namespace TES3 {
 
 	void MobileObject::setVelocityFromLua(sol::stack_object value) {
 		// Use our util class to support vectors or a table.
-		mwse::lua::setVectorFromLua(&velocity, value);
+		mwse::lua::setVectorFromLua(velocity, value);
 	}
 
 	bool MobileObject::getMovementCollisionFlag() const {

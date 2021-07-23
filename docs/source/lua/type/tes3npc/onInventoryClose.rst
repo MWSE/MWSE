@@ -6,6 +6,8 @@ A callback function invoked when an inventory is closed. Typically not used outs
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 reference (`tes3reference`_)
     No description available.
 

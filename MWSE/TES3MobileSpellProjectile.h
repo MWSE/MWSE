@@ -13,6 +13,7 @@ namespace TES3 {
 
 		MagicSourceInstance* getInstance();
 		void explode();
+		void explodeDeferred();
 	};
 	static_assert(sizeof(MobileSpellProjectile) == 0xB4, "TES3::MobileSpellProjectile failed size validation");
 }

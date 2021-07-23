@@ -25,6 +25,9 @@ namespace mwse {
 			return value;
 		}
 
+		template <>
+		std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue);
+
 		template <typename T>
 		sol::optional<T> getOptionalParam(sol::optional<sol::table> maybeParams, const char* key) {
 			if (maybeParams) {
@@ -74,7 +77,8 @@ namespace mwse {
 		TES3::UI::UI_ID getUIIDFromObject(sol::object object);
 		TES3::UI::UI_ID getOptionalUIID(sol::optional<sol::table> maybeParams, const char* key);
 
-		void setVectorFromLua(TES3::Vector3*, sol::stack_object);
+		bool setVectorFromLua(TES3::Vector2&, sol::stack_object);
+		bool setVectorFromLua(TES3::Vector3&, sol::stack_object);
 
 		// Allow handling a default value as an unsatisfied optional.
 		template <typename T>

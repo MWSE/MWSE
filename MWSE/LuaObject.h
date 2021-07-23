@@ -5,6 +5,7 @@
 
 #include "TES3Activator.h"
 #include "TES3Misc.h"
+#include "TES3Sound.h"
 #include "TES3Static.h"
 #include "TES3Enchantment.h"
 #include "TES3Weapon.h"
@@ -134,6 +135,52 @@ namespace mwse::lua {
 	};
 
 	template<>
+	class ObjectCreator<TES3::Sound> : public ObjectCreatorBase {
+	public:
+		TES3::BaseObject* create(sol::table params, bool getIfExists) const override {
+			std::string id = getOptionalParam<std::string>(params, "id", {});
+
+			if (id.size() > 31) {
+				throw std::invalid_argument{ "tes3sound.create: 'id' parameter must be less than 32 character long." };
+			}
+
+			if (auto existingObject = TES3::DataHandler::get()->nonDynamicData->findSound(id.c_str()); existingObject != nullptr) {
+				if (getIfExists && existingObject->objectType == TES3::ObjectType::Sound) {
+					return existingObject;
+				}
+
+				throw std::invalid_argument{ "tes3sound.create: 'id' parameter already assigned to an existing object that is not a weapon item." };
+			}
+
+			std::string filename = getOptionalParam<std::string>(params, "filename", {});
+			if (filename.size() > 31) {
+				throw std::invalid_argument{ "tes3sound.create: 'filename' parameter must be less than 32 character long." };
+			}
+
+			auto soundObject = new TES3::Sound();
+			soundObject->setObjectID(id.c_str());
+			soundObject->setFilename(filename.c_str());
+			soundObject->setVolume(getOptionalParam<float>(params, "volume", 1.0f));
+			soundObject->setMinDistance_lua(getOptionalParam<double>(params, "minDistance", 0.0));
+			soundObject->setMaxDistance_lua(getOptionalParam<double>(params, "maxDistance", 0.0));
+
+			soundObject->objectFlags = getOptionalParam<unsigned int>(params, "objectFlags", 0);
+			soundObject->objectFlags |= TES3::ObjectFlag::Modified;
+
+			if (!TES3::DataHandler::get()->nonDynamicData->addSound(soundObject)) {
+				throw std::runtime_error("tes3sound.create: Could not add the newly created sound in its proper collection.");
+			}
+
+			// If created outside of a save game, mark the object as sourceless.
+			if (getOptionalParam<bool>(params, "sourceless", false) || TES3::WorldController::get()->getMobilePlayer() == nullptr) {
+				TES3::BaseObject::setSourcelessObject(soundObject);
+			}
+
+			return soundObject;
+		}
+	};
+
+	template<>
 	class ObjectCreator<TES3::Static> : public ObjectCreatorBase {
 	public:
 		TES3::BaseObject* create(sol::table params, bool getIfExists) const override {
@@ -142,10 +189,13 @@ namespace mwse::lua {
 			if (id.size() > 31)
 				throw std::invalid_argument{ "tes3static.create: 'id' parameter must be less than 32 character long." };
 
-			if (auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject(id.c_str()); existingObject != nullptr)
-				return (getIfExists && existingObject->objectType == TES3::ObjectType::Static) ?
-				existingObject :
-				throw std::invalid_argument{ "tes3static.create: 'id' parameter already assigned to an existing object that is not a static." };
+			if (auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject(id.c_str()); existingObject != nullptr) {
+				if (getIfExists && existingObject->objectType == TES3::ObjectType::Static) {
+					return existingObject;
+				}
+
+				throw std::invalid_argument{ "tes3weapon.create: 'id' parameter already assigned to an existing object that is not a weapon item." };
+			}
 
 			std::string mesh = getOptionalParam<std::string>(params, "mesh", {});
 			if (mesh.size() > 31)
@@ -181,12 +231,13 @@ namespace mwse::lua {
 				throw std::invalid_argument{ "tes3weapon.create: 'id' parameter must be less than 32 character long." };
 			}
 
+			auto objectType = getOptionalParam<unsigned int>(params, "objectType", TES3::ObjectType::Invalid);
 			if (auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject(id.c_str()); existingObject != nullptr) {
-				if (getIfExists && existingObject->objectType == TES3::ObjectType::Weapon) {
+				if (getIfExists && existingObject->objectType == objectType) {
 					return existingObject;
 				}
 
-				throw std::invalid_argument{ "tes3weapon.create: 'id' parameter already assigned to an existing object that is not a weapon item." };
+				throw std::invalid_argument{ "tes3weapon.create: 'id' parameter already assigned to an existing object of a different type." };
 			}
 
 			std::string name = getOptionalParam<std::string>(params, "name", "Miscellaneous item");
@@ -200,6 +251,10 @@ namespace mwse::lua {
 			}
 
 			auto weapon = new TES3::Weapon();
+
+			if (objectType == TES3::ObjectType::Ammo) {
+				weapon->objectType = TES3::ObjectType::Ammo;
+			}
 
 			weapon->setID(id.c_str());
 			weapon->setName(name.c_str());

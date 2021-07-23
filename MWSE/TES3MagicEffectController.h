@@ -3,6 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3MagicEffect.h"
+#include "TES3MobileObject.h"
 
 namespace TES3 {
 	constexpr int MAX_EFFECT_COUNT = SHRT_MAX;
@@ -63,6 +64,7 @@ namespace TES3 {
 		static void setEffectFlag(int id, EffectFlag::FlagBit flag, bool value);
 
 		static void InstallCustomMagicEffectController();
+		void spellProjectileHit(MagicSourceInstance * instance, MobileObject::Collision * collision);
 
 		// Implemented.
 		std::unordered_map<int, MagicEffect*> effectObjects;

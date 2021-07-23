@@ -11,7 +11,8 @@ namespace TES3 {
 		MobileActor* firingActor; // 0x80
 		Weapon* firingWeapon; // 0x84
 		unsigned char flagExpire; // 0x88
-		char padding_0x89[3];
+		unsigned char patchFlagExplode; // 0x89
+		char padding_0x8A[2];
 		float attackSwing; // 0x8C
 		float initialSpeed; // 0x90
 		int unknown_0x94;

@@ -26,6 +26,6 @@ caster
 
 `tes3reference`_. Read-only. The caster of the spell.
 
-.. _`tes3spell`: ../../lua/type/tes3spell.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

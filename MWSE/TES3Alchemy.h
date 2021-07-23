@@ -38,13 +38,20 @@ namespace TES3 {
 		void dtor();
 
 		//
+		// Related this-call functions.
+		//
+
+		bool loadObjectSpecific(TES3::GameFile* file);
+
+		//
 		// Custom functions.
 		//
 
 		size_t getActiveEffectCount();
 		int getFirstIndexOfEffect(int effectId);
-		bool effectsMatchWith(Alchemy * other);
+		bool effectsMatchWith(const Alchemy * other) const;
 		void setIconPath(const char* path);
+		void cleanUnusedAttributeSkillIds();
 
 		std::reference_wrapper<Effect[8]> getEffects();
 

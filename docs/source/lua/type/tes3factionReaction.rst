@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `faction`_ (`tes3faction`_)
-    The faction whose reaction will be adjusted.
+    Read-only. The faction whose reaction will be adjusted.
 
 `reputation`_ (`number`_)
     The reaction adjustment for the faction.

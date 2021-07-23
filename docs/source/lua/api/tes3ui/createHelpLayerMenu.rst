@@ -20,5 +20,5 @@ Accepts parameters through a table with the given keys:
 id (`number`_)
     The menu’s ID. The menu can be later accessed by tes3ui.findHelpLayerMenu(id).
 
-.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

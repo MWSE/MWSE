@@ -6,7 +6,7 @@ return {
 		type = "table",
 		tableParams = {
 			{ name = "text", type = "string", description = "The text of the new Journal entry." },
-        		{ name = "showMessage", type = "boolean", optional = true, default = true, description = "If this parameter is true, \"your journal has been updated\" message will be displayed." }
+        	{ name = "showMessage", type = "boolean", optional = true, default = true, description = "If this parameter is true, a \"Your journal has been updated\" message will be displayed." }
 		},
 	}},
 }

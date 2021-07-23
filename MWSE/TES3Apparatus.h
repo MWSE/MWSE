@@ -29,9 +29,10 @@ namespace TES3 {
 		//
 
 		void setIconPath(const char* path);
+		void setName(const char* newName);
 
 	};
-	static_assert(sizeof(Apparatus) == 0xB8, "TES3::Apparatus  failed size validation");
+	static_assert(sizeof(Apparatus) == 0xB8, "TES3::Apparatus failed size validation");
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Apparatus)

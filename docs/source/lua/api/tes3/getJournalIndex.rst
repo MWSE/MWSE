@@ -16,6 +16,6 @@ Accepts parameters through a table with the given keys:
 id (`tes3dialogue`_, `string`_)
     No description available.
 
-.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
+.. _`tes3dialogue`: ../../../lua/type/tes3dialogue.html

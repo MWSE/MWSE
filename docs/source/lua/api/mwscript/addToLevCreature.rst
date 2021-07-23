@@ -23,7 +23,7 @@ level (`number`_)
     Default: ``0``. Minimum level for the creature to spawn.
 
 .. _`boolean`: ../../../lua/type/boolean.html
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
-.. _`tes3leveledCreature`: ../../../lua/type/tes3leveledCreature.html
+.. _`string`: ../../../lua/type/string.html
 .. _`tes3actor`: ../../../lua/type/tes3actor.html
+.. _`tes3leveledCreature`: ../../../lua/type/tes3leveledCreature.html

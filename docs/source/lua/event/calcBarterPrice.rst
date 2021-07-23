@@ -48,7 +48,7 @@ basePrice
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3item`: ../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
+.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

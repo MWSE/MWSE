@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["situation"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "Maps to tes3.musicSituation.*, indicating combat or non-combat music.",
 		},
 		["music"] = {

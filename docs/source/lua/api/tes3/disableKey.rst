@@ -1,10 +1,12 @@
 tes3.disableKey
 ====================================================================================================
 
-Disables the use of a key.
+Disables the use of a keyboard key.
 
 Parameters
 ----------------------------------------------------------------------------------------------------
+
+Accepts parameters in the following order:
 
 keyCode (`number`_)
     No description available.

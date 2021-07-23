@@ -11,8 +11,10 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 spellType (`number`_)
     A value from tes3.spellType.
 
-.. _`tes3spell`: ../../../lua/type/tes3spell.html
 .. _`number`: ../../../lua/type/number.html
+.. _`tes3spell`: ../../../lua/type/tes3spell.html

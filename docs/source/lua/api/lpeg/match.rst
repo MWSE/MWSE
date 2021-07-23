@@ -23,6 +23,8 @@ Returns
 Parameters
 ----------------------------------------------------------------------------------------------------
 
+Accepts parameters in the following order:
+
 p (`pattern`_)
     The pattern to match.
 
@@ -58,5 +60,5 @@ Create a pattern that matches a word followed by the end of the string, and use 
     event.register("loaded", onLoaded)
 
 
-.. _`string`: ../../../lua/type/string.html
 .. _`number`: ../../../lua/type/number.html
+.. _`string`: ../../../lua/type/string.html
