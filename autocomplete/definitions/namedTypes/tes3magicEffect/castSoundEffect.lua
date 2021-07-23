@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = "The sound path to the sound effect to use when casting.",
+	description = "The path to the sound effect to play when casting.",
 	readOnly = true,
 	valuetype = "string",
 }
