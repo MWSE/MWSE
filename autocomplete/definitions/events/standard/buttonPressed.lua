@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["button"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The button index, 0-based, that was pressed.",
 		},
 	},

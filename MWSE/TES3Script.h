@@ -5,23 +5,34 @@
 #include "TES3Object.h"
 #include "TES3ScriptCompiler.h"
 
+namespace mwse::lua {
+	class ScriptContext;
+}
+
 namespace TES3 {
 	struct ScriptVariables {
 		struct WeaponHitFlags {
 			Weapon * weapon; // 0x0
-			mwse::bitset8 flags; // 0x4 // 0x10 is hit, 0x20 is hit attempt.
+			unsigned char flags; // 0x4 // 0x10 is hit, 0x20 is hit attempt.
 		};
 		short * shortVarValues; // 0x0
 		long * longVarValues; // 0x4
 		float * floatVarValues; // 0x8
 		int unknown_0xC;
-		Iterator<WeaponHitFlags> * hitWeapons; // 0x10
+		IteratedList<WeaponHitFlags*> * hitWeapons; // 0x10
 	};
 	static_assert(sizeof(ScriptVariables) == 0x14, "TES3::ScriptVariables failed size validation");
 
 	struct GlobalScript {
 		Reference * reference; // 0x0
 		Script * script; // 0x4
+
+		//
+		// Custom functions.
+		//
+
+		std::shared_ptr<mwse::lua::ScriptContext> createContext() const;
+
 	};
 	static_assert(sizeof(GlobalScript) == 0x8, "TES3::GlobalScript failed size validation");
 
@@ -60,6 +71,25 @@ namespace TES3 {
 		float getFloatValue(unsigned int, bool);
 		
 		void doCommand(ScriptCompiler * compiler, const char* command, int source = TES3::CompilerSource::Default, Reference * reference = nullptr, ScriptVariables * variables = nullptr, DialogueInfo * info = nullptr, Dialogue * dialogue = nullptr);
+
+		void execute(Reference* reference, ScriptVariables* data, DialogueInfo* info, Reference* reference2);
+
+		//
+		// Custom functions.
+		//
+
+		sol::table getLocalVars_lua(sol::this_state ts, sol::optional<bool> useLocals = false);
+		std::shared_ptr<mwse::lua::ScriptContext> createContext();
+
+		//
+		// Debug values.
+		//
+
+		static Script* currentlyExecutingScript;
+		static Reference* currentlyExecutingScriptReference;
+
 	};
 	static_assert(sizeof(Script) == 0x70, "TES3::Script failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Script)

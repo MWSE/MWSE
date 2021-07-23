@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The caster of the spell.",
 		},
 		["source"] = {
 			type = "tes3spell",
-			readonly = true,
+			readOnly = true,
 			description = "The magic source.",
 		},
 		["castChance"] = {
@@ -17,7 +17,7 @@ return {
 		},
 		["weakestSchool"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "Of all the magic effects in the spell, there is a magic school which the caster has the lowest skill at casting. This school determines which skill will gain experience on a successful cast.",
 		},
 	},

@@ -25,22 +25,37 @@ namespace mwse {
 				sol::table eventData = state.create_table();
 
 				if (m_MobileActor) {
-					eventData["mobile"] = makeLuaObject(m_MobileActor);
-					eventData["reference"] = makeLuaObject(m_MobileActor->reference);
+					eventData["mobile"] = m_MobileActor;
+					eventData["reference"] = m_MobileActor->reference;
 				}
 
 				if (m_Attacker) {
-					eventData["attacker"] = makeLuaObject(m_Attacker);
-					eventData["attackerReference"] = makeLuaObject(m_Attacker->reference);
+					eventData["attacker"] = m_Attacker;
+					eventData["attackerReference"] = m_Attacker->reference;
 				}
 
 				if (m_Projectile) {
-					eventData["projectile"] = makeLuaObject(m_Projectile);
+					eventData["projectile"] = m_Projectile;
 				}
 
-				if (m_MagicSourceInstance) {
-					eventData["magicSourceInstance"] = m_MagicSourceInstance;
+				auto magicSourceInstance = m_MagicSourceInstance;
+				if (m_ActiveMagicEffect) {
+					eventData["activeMagicEffect"] = TES3::ActiveMagicEffectLua(*m_ActiveMagicEffect, m_MobileActor);
+					magicSourceInstance = m_ActiveMagicEffect->getInstance();
 				}
+
+				if (magicSourceInstance) {
+					eventData["magicSourceInstance"] = magicSourceInstance;
+
+					// Get the attacker as the caster of the spell.
+					if (!m_Attacker) {
+						eventData["attackerReference"] = magicSourceInstance->caster;
+						if (magicSourceInstance->caster) {
+							eventData["attacker"] = magicSourceInstance->caster->getAttachedMobileActor();
+						}
+					}
+				}
+
 				if (m_MagicEffectInstance) {
 					eventData["magicEffectInstance"] = m_MagicEffectInstance;
 				}
@@ -59,6 +74,7 @@ namespace mwse {
 			TES3::MobileProjectile * DamageEvent::m_Projectile = nullptr;
 			TES3::MagicSourceInstance * DamageEvent::m_MagicSourceInstance = nullptr;
 			TES3::MagicEffectInstance * DamageEvent::m_MagicEffectInstance = nullptr;
+			TES3::ActiveMagicEffect * DamageEvent::m_ActiveMagicEffect = nullptr;
 			const char * DamageEvent::m_Source = nullptr;
 		}
 	}

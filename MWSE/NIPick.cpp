@@ -1,27 +1,35 @@
 #include "NIPick.h"
 
-#include "TES3Util.h"
-
-#define NI_Pick_ctor 0x6F2DF0
-#define NI_Pick_dtor 0x6F2EA0
-#define NI_Pick_pickObjects 0x6F3050
-#define NI_Pick_clearResults 0x6F2F80
+#include "MemoryUtil.h"
+#include "NIUtil.h"
 
 namespace NI {
+	const auto TES3_Pick_ctor = reinterpret_cast<Pick*(__thiscall*)(Pick*)>(0x6F2DF0);
 	Pick* Pick::malloc() {
-		return reinterpret_cast<Pick*(__thiscall *)(Pick*)>(NI_Pick_ctor)(mwse::tes3::malloc<Pick>());
+		return TES3_Pick_ctor(mwse::tes3::malloc<Pick>());
 	}
 
+	const auto TES3_Pick_dtor = reinterpret_cast<void(__thiscall*)(Pick*)>(0x6F2EA0);
 	void Pick::free() {
-		reinterpret_cast<void(__thiscall *)(Pick*)>(NI_Pick_dtor)(this);
+		TES3_Pick_dtor(this);
 		mwse::tes3::free(this);
 	}
 
-	void Pick::pickObjects(TES3::Vector3 * origin, TES3::Vector3 * direction, bool append, float maxDistance) {
-		reinterpret_cast<void(__thiscall*)(Pick*, TES3::Vector3*, TES3::Vector3*, bool, float)>(NI_Pick_pickObjects)(this, origin, direction, append, maxDistance);
+	const auto TES3_Pick_pickObjects = reinterpret_cast<bool(__thiscall*)(Pick*, const TES3::Vector3*, const TES3::Vector3*, bool, float)>(0x6F3050);
+	bool Pick::pickObjects(const TES3::Vector3 * origin, const TES3::Vector3 * direction, bool append, float maxDistance) {
+		return TES3_Pick_pickObjects(this, origin, direction, append, maxDistance);
 	}
 
+	const auto TES3_Pick_clearResults = reinterpret_cast<void(__thiscall*)(Pick*)>(0x6F2F80);
 	void Pick::clearResults() {
-		reinterpret_cast<void(__thiscall*)(Pick*)>(NI_Pick_clearResults)(this);
+		TES3_Pick_clearResults(this);
+	}
+
+	std::reference_wrapper<unsigned short[3]> PickRecord::getVertexIndex() {
+		return std::ref(vertexIndex);
+	}
+
+	TES3::Reference* PickRecord::getTES3Reference() {
+		return getAssociatedReference(object);
 	}
 }

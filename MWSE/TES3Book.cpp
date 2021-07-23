@@ -3,10 +3,10 @@
 #include "TES3Util.h"
 
 #include "LuaManager.h"
-#include "LuaUtil.h"
 
 #include "LuaBookGetTextEvent.h"
 
+#include "MemoryUtil.h"
 #include "Log.h"
 
 #define TES3_Book_loadBookText 0x4A2A90
@@ -39,5 +39,13 @@ namespace TES3 {
 
 		return reinterpret_cast<char*(__thiscall *)(Book*)>(TES3_Book_loadBookText)(this);
 	}
+
+	void Book::setIconPath(const char* path) {
+		if (strnlen_s(path, 32) >= 32) {
+			throw std::invalid_argument("Path must not be 32 or more characters.");
+		}
+		mwse::tes3::setDataString(&icon, path);
+	}
 }
 
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Book)

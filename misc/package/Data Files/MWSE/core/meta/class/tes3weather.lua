@@ -1,0 +1,37 @@
+--- @meta
+
+--- A structure that contains base weather information shared by inheriting weather structures.
+--- @class tes3weather
+--- @field ambientDayColor tes3vector3 The weather's ambient day color.
+--- @field ambientLoopSound tes3sound The weather's ambient looping sound.
+--- @field ambientLoopSoundId string The weather's ambient looping sound ID.
+--- @field ambientNightColor tes3vector3 The weather's ambient night color.
+--- @field ambientPlaying bool The weather's ambient playing flag.
+--- @field ambientSunriseColor tes3vector3 The weather's ambient sunrise color.
+--- @field ambientSunsetColor tes3vector3 The weather's ambient sunset color.
+--- @field cloudsMaxPercent number The weather's cloud maximum percentage.
+--- @field cloudsSpeed number The weather's cloud speed.
+--- @field cloudTexture string The weather's cloud texture path.
+--- @field controller tes3weatherController The weather's weather controller.
+--- @field fogDayColor tes3vector3 The weather's fog day color.
+--- @field fogNightColor tes3vector3 The weather's fog night color.
+--- @field fogSunriseColor tes3vector3 The weather's fog sunrise color.
+--- @field fogSunsetColor tes3vector3 The weather's fog sunset color.
+--- @field glareView number The weather's glare view.
+--- @field index number The weather's index ID.
+--- @field landFogDayDepth number The weather's land fog day depth value.
+--- @field landFogNightDepth number The weather's land fog night depth value.
+--- @field skyDayColor tes3vector3 The weather's sky day color.
+--- @field skyNightColor tes3vector3 The weather's sky night color.
+--- @field skySunriseColor tes3vector3 The weather's sky sunrise color.
+--- @field skySunsetColor tes3vector3 The weather's sky sunset color.
+--- @field sunDayColor tes3vector3 The weather's sun day color.
+--- @field sundiscSunsetColor tes3vector3 The weather's sundisc sunset color.
+--- @field sunNightColor tes3vector3 The weather's sun night color.
+--- @field sunSunriseColor tes3vector3 The weather's sun sunrise color.
+--- @field sunSunsetColor tes3vector3 The weather's sun sunset color.
+--- @field transitionDelta number The weather's transition delta.
+--- @field underwaterSoundState bool The weather's underwater sound state flag.
+--- @field windSpeed number The weather's wind speed.
+tes3weather = {}
+

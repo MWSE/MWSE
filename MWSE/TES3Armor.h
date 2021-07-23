@@ -2,8 +2,8 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Item.h"
+#include "TES3IteratedList.h"
 #include "TES3WearablePart.h"
 
 namespace TES3 {
@@ -45,7 +45,7 @@ namespace TES3 {
 	}
 
 	struct Armor : Item {
-		Iterator<TES3::BaseObject> stolenList; // 0x30
+		IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44
 		Script * script; // 0x48
 		char * model; // 0x4C
@@ -68,6 +68,21 @@ namespace TES3 {
 		const char * getSlotName();
 		int getWeightClass();
 
+		//
+		// Custom functions.
+		//
+
+		float getArmorScalar() const;
+
+		// Overwrite vtable call to actually do something.
+		void setDurability(int value);
+
+		void setIconPath(const char* path);
+
+		std::reference_wrapper<WearablePart[7]> getParts();
+
+		float calculateArmorRating_lua(sol::object actor);
+
 	};
 	static_assert(sizeof(Armor) == 0xC4, "TES3::Armor failed size validation");
 
@@ -75,5 +90,8 @@ namespace TES3 {
 		int slot;
 		std::string name;
 		float weight;
+		float armorScalar;
 	};
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Armor)

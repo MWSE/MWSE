@@ -3,16 +3,16 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "TES3ActorAnimationData.h"
+#include "TES3ActorAnimationController.h"
 #include "TES3MobileActor.h"
 #include "TES3Reference.h"
 
 namespace mwse {
 	namespace lua {
 		namespace event {
-			AttackEvent::AttackEvent(TES3::ActorAnimationData* animData) :
-				ObjectFilteredEvent("attack", animData->mobileActor->reference),
-				m_AnimationData(animData)
+			AttackEvent::AttackEvent(TES3::ActorAnimationController* animController) :
+				ObjectFilteredEvent("attack", animController->mobileActor->reference),
+				m_AnimationController(animController)
 			{
 
 			}
@@ -22,13 +22,13 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_AnimationData->mobileActor);
-				eventData["reference"] = makeLuaObject(m_AnimationData->mobileActor->reference);
+				eventData["mobile"] = m_AnimationController->mobileActor;
+				eventData["reference"] = m_AnimationController->mobileActor->reference;
 
-				TES3::MobileActor* target = m_AnimationData->mobileActor->actionData.hitTarget;
+				TES3::MobileActor* target = m_AnimationController->mobileActor->actionData.hitTarget;
 				if (target) {
-					eventData["targetMobile"] = makeLuaObject(target);
-					eventData["targetReference"] = makeLuaObject(target->reference);
+					eventData["targetMobile"] = target;
+					eventData["targetReference"] = target->reference;
 				}
 
 				return eventData;

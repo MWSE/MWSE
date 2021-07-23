@@ -4,6 +4,8 @@
 
 #include "LuaCalcMovementSpeedEvent.h"
 
+#include "TES3ActorAnimationController.h"
+
 #define TES3_MobileCreature_calcWalkSpeed 0x55AAF0
 
 namespace TES3 {
@@ -23,4 +25,25 @@ namespace TES3 {
 
 		return speed;
 	}
+
+	float MobileCreature::calculateMovementSpeedFromAnimationData() {
+		return animationController.asActor->calculateMovementSpeed();
+	}
+
+	std::reference_wrapper<Statistic[3]> MobileCreature::getSkillStatistics() {
+		return std::ref(skills);
+	}
+
+	Statistic* MobileCreature::getCombatSkill() {
+		return &skills[CreatureSkillID::Combat];
+	}
+
+	Statistic* MobileCreature::getMagicSkill() {
+		return &skills[CreatureSkillID::Magic];
+	}
+
+	Statistic* MobileCreature::getStealthSkill() {
+		return &skills[CreatureSkillID::Stealth];
+	}
+
 }

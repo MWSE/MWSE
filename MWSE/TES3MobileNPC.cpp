@@ -7,6 +7,7 @@
 #include "LuaCalcMovementSpeedEvent.h"
 #include "LuaCalcHitArmorPieceEvent.h"
 
+#include "TES3ActorAnimationController.h"
 #include "TES3AudioController.h"
 #include "TES3Class.h"
 #include "TES3DataHandler.h"
@@ -199,4 +200,124 @@ namespace TES3 {
 
 		return requirement;
 	}
+
+	float MobileNPC::calculateMovementSpeedFromAnimationData() {
+		return animationController.asActor->calculateMovementSpeed();
+	}
+
+	std::reference_wrapper<SkillStatistic[27]> MobileNPC::getSkillStatistics() {
+		return std::ref(skills);
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticAcrobatics() {
+		return &skills[TES3::SkillID::Acrobatics];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticAlchemy() {
+		return &skills[TES3::SkillID::Alchemy];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticAlteration() {
+		return &skills[TES3::SkillID::Alteration];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticArmorer() {
+		return &skills[TES3::SkillID::Armorer];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticAthletics() {
+		return &skills[TES3::SkillID::Athletics];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticAxe() {
+		return &skills[TES3::SkillID::Axe];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticBlock() {
+		return &skills[TES3::SkillID::Block];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticBluntWeapon() {
+		return &skills[TES3::SkillID::BluntWeapon];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticConjuration() {
+		return &skills[TES3::SkillID::Conjuration];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticDestruction() {
+		return &skills[TES3::SkillID::Destruction];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticEnchant() {
+		return &skills[TES3::SkillID::Enchant];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticHandToHand() {
+		return &skills[TES3::SkillID::HandToHand];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticHeavyArmor() {
+		return &skills[TES3::SkillID::HeavyArmor];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticIllusion() {
+		return &skills[TES3::SkillID::Illusion];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticLightArmor() {
+		return &skills[TES3::SkillID::LightArmor];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticLongBlade() {
+		return &skills[TES3::SkillID::LongBlade];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticMarksman() {
+		return &skills[TES3::SkillID::Marksman];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticMediumArmor() {
+		return &skills[TES3::SkillID::MediumArmor];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticMercantile() {
+		return &skills[TES3::SkillID::Mercantile];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticMysticism() {
+		return &skills[TES3::SkillID::Mysticism];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticRestoration() {
+		return &skills[TES3::SkillID::Restoration];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticSecurity() {
+		return &skills[TES3::SkillID::Security];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticShortBlade() {
+		return &skills[TES3::SkillID::ShortBlade];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticSneak() {
+		return &skills[TES3::SkillID::Sneak];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticSpear() {
+		return &skills[TES3::SkillID::Spear];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticSpeechcraft() {
+		return &skills[TES3::SkillID::Speechcraft];
+	}
+
+	SkillStatistic* MobileNPC::getSkillStatisticUnarmored() {
+		return &skills[TES3::SkillID::Unarmored];
+	}
+
 }
+
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3_MOBILEOBJECT(TES3::MobileNPC)

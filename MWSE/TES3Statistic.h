@@ -34,6 +34,12 @@ namespace TES3 {
 		void setBaseToCurrent();
 		void setCurrentCapped(float value, bool applyCaps);
 
+		//
+		// Custom functions.
+		//
+
+		void setCurrent_lua(float value);
+
 	};
 	static_assert(sizeof(Statistic) == 0xC, "TES3::Statistic failed size validation");
 

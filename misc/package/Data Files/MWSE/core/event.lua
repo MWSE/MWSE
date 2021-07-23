@@ -114,6 +114,11 @@ function this.unregister(eventType, callback, options)
 		-- print("event.register: Attempted to unregister '" .. eventType .. "' event callback that wasn't registered.")
 		-- print(debug.traceback())
 	-- end
+
+	-- Do we no longer care about this event?
+	if (disableableEvents[eventType] == true and generalEvents[eventType] == nil and filteredEvents[eventType] == nil) then
+		disableableEvents[eventType] = false
+	end
 end
 
 function this.clear(eventType, filter)
@@ -130,6 +135,11 @@ function this.clear(eventType, filter)
 			-- Clear out a specific event type/filter combo.
 			filteredEvents[eventType][filter] = nil
 		end
+	end
+
+	-- Do we no longer care about this event?
+	if (disableableEvents[eventType] == true and generalEvents[eventType] == nil and filteredEvents[eventType] == nil) then
+		disableableEvents[eventType] = false
 	end
 end
 

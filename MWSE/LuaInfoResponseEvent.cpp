@@ -28,10 +28,10 @@ namespace mwse {
 				sol::table eventData = state.create_table();
 
 				eventData["command"] = m_Command;
-				eventData["reference"] = makeLuaObject(m_Reference);
+				eventData["reference"] = m_Reference;
 				eventData["variables"] = m_ScriptVariables;
-				eventData["dialogue"] = makeLuaObject(m_Dialogue);
-				eventData["info"] = makeLuaObject(m_DialogueInfo);
+				eventData["dialogue"] = m_Dialogue;
+				eventData["info"] = m_DialogueInfo;
 
 				return eventData;
 			}

@@ -1,5 +1,6 @@
 #include "TES3MagicEffect.h"
 
+#include "BitUtil.h"
 #include "TES3Util.h"
 
 #include "TES3DataHandler.h"
@@ -32,18 +33,232 @@ namespace TES3 {
 		TES3_MagicEffect_clearData(this);
 	}
 
-	int MagicEffect::getNameGMST() {
+	const char* MagicEffect::getName() const {
+		return TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectName(id);
+	}
+
+	int MagicEffect::getNameGMST() const {
 		if (id < EffectID::FirstEffect || id > EffectID::LastEffect) {
 			return -1;
 		}
 		return reinterpret_cast<int*>(0x79454C)[id];
 	}
 
-	MagicEffect * Effect::getEffectData() {
+	void MagicEffect::setDescription( const char *value ) {
+		mwse::tes3::setDataString( &description, value );
+	}
+
+	const char* MagicEffect::getDescription() const noexcept
+	{
+		return description;
+	}
+
+	const char* MagicEffect::getIcon() const {
+		return icon;
+	}
+
+	void MagicEffect::setIcon(const char* path) {
+		strcpy_s(icon, sizeof(icon), path);
+	}
+
+	const char* MagicEffect::getParticleTexture() const {
+		return particleTexture;
+	}
+
+	void MagicEffect::setParticleTexture(const char* path) {
+		strcpy_s(particleTexture, sizeof(particleTexture), path);
+	}
+
+	const char* MagicEffect::getCastSoundEffect() const {
+		return castSoundEffect;
+	}
+
+	void MagicEffect::setCastSoundEffect(const char* path) {
+		strcpy_s(castSoundEffect, sizeof(castSoundEffect), path);
+	}
+
+	const char* MagicEffect::getBoltSoundEffect() const {
+		return boltSoundEffect;
+	}
+
+	void MagicEffect::setBoltSoundEffect(const char* path) {
+		strcpy_s(boltSoundEffect, sizeof(boltSoundEffect), path);
+	}
+
+	const char* MagicEffect::getHitSoundEffect() const {
+		return hitSoundEffect;
+	}
+
+	void MagicEffect::setHitSoundEffect(const char* path) {
+		strcpy_s(hitSoundEffect, sizeof(hitSoundEffect), path);
+	}
+
+	const char* MagicEffect::getAreaSoundEffect() const {
+		return areaSoundEffect;
+	}
+
+	void MagicEffect::setAreaSoundEffect(const char* path) {
+		strcpy_s(areaSoundEffect, sizeof(areaSoundEffect), path);
+	}
+
+	unsigned int MagicEffect::getEffectFlags() const {
+		return TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectFlags(id);
+	}
+
+	void MagicEffect::setEffectFlags(unsigned int flags) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlags(id, flags);
+	}
+
+	bool MagicEffect::getFlagTargetSkill() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::TargetSkillBit);
+	}
+
+	void MagicEffect::setFlagTargetSkill(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::TargetSkillBit, value);
+	}
+
+	bool MagicEffect::getFlagTargetAttribute() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::TargetAttributeBit);
+	}
+
+	void MagicEffect::setFlagTargetAttribute(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::TargetAttributeBit, value);
+	}
+
+	bool MagicEffect::getFlagNoDuration() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::NoDurationBit);
+	}
+
+	void MagicEffect::setFlagNoDuration(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::NoDurationBit, value);
+	}
+
+	bool MagicEffect::getFlagNoMagnitude() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::NoMagnitudeBit);
+	}
+
+	void MagicEffect::setFlagNoMagnitude(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::NoMagnitudeBit, value);
+	}
+
+	bool MagicEffect::getFlagHarmful() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::HarmfulBit);
+	}
+
+	void MagicEffect::setFlagHarmful(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::HarmfulBit, value);
+	}
+
+	bool MagicEffect::getFlagContinuousVFX() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::ContinuousVFXBit);
+	}
+
+	void MagicEffect::setFlagContinuousVFX(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::ContinuousVFXBit, value);
+	}
+
+	bool MagicEffect::getFlagCanCastSelf() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::CanCastSelfBit);
+	}
+
+	void MagicEffect::setFlagCanCastSelf(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::CanCastSelfBit, value);
+	}
+
+	bool MagicEffect::getFlagCanCastTouch() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::CanCastTouchBit);
+	}
+
+	void MagicEffect::setFlagCanCastTouch(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::CanCastTouchBit, value);
+	}
+
+	bool MagicEffect::getFlagCanCastTarget() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::CanCastTargetBit);
+	}
+
+	void MagicEffect::setFlagCanCastTarget(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::CanCastTargetBit, value);
+	}
+
+	bool MagicEffect::getFlagNegativeLighting() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::NegativeLightingBit);
+	}
+
+	void MagicEffect::setFlagNegativeLighting(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::NegativeLightingBit, value);
+	}
+
+	bool MagicEffect::getFlagAppliedOnce() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::AppliedOnceBit);
+	}
+
+	void MagicEffect::setFlagAppliedOnce(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::AppliedOnceBit, value);
+	}
+
+	bool MagicEffect::getFlagNonRecastable() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::NonRecastableBit);
+	}
+
+	void MagicEffect::setFlagNonRecastable(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::NonRecastableBit, value);
+	}
+
+	bool MagicEffect::getFlagIllegalDaedra() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::IllegalDaedraBit);
+	}
+
+	void MagicEffect::setFlagIllegalDaedra(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::IllegalDaedraBit, value);
+	}
+
+	bool MagicEffect::getFlagUnreflectable() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::UnreflectableBit);
+	}
+
+	void MagicEffect::setFlagUnreflectable(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::UnreflectableBit, value);
+	}
+
+	bool MagicEffect::getFlagCasterLinked() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->getEffectFlag(id, EffectFlag::CasterLinkedBit);
+	}
+
+	void MagicEffect::setFlagCasterLinked(bool value) const {
+		TES3::DataHandler::get()->nonDynamicData->magicEffects->setEffectFlag(id, TES3::EffectFlag::CasterLinkedBit, value);
+	}
+
+	bool MagicEffect::getAllowSpellmaking() const {
+		return BIT_TEST(flags, EffectFlag::AllowSpellmakingBit);
+	}
+
+	void MagicEffect::setAllowSpellmaking(bool value) {
+		BIT_SET(flags, EffectFlag::AllowSpellmakingBit, value);
+	}
+
+	bool MagicEffect::getAllowEnchanting() const {
+		return BIT_TEST(flags, EffectFlag::AllowEnchantingBit);
+	}
+
+	void MagicEffect::setAllowEnchanting(bool value) {
+		BIT_SET(flags, EffectFlag::AllowEnchantingBit, value);
+	}
+
+	int MagicEffect::getSkillForSchool() const {
+		return reinterpret_cast<int*>(0x7926B8)[school];
+	}
+
+	const auto TES3_Effect_calculateCost = reinterpret_cast<double(__cdecl*)(const Effect*)>(0x4AA700);
+	float Effect::calculateCost() const {
+		return TES3_Effect_calculateCost(this);
+	}
+
+	MagicEffect* Effect::getEffectData() const {
 		return TES3::DataHandler::get()->nonDynamicData->magicEffects->getEffectObject(effectID);
 	}
 
-	bool Effect::matchesEffectsWith(const Effect * other ) {
+	bool Effect::matchesEffectsWith(const Effect * other ) const {
 		return effectID == other->effectID &&
 			skillID == other->skillID &&
 			attributeID == other->attributeID &&
@@ -54,9 +269,34 @@ namespace TES3 {
 			magnitudeMax == other->magnitudeMax;
 	}
 
-	std::string Effect::toString() {
+	signed char Effect::getSkillID() const {
+		return skillID;
+	}
+
+	void Effect::setSkillID(signed char id) {
+		skillID = id;
+	}
+
+	void Effect::setSkillID_lua(sol::optional<signed char> id) {
+		setSkillID(id.value_or(-1));
+	}
+
+	signed char Effect::geAttributeID() const {
+		return attributeID;
+	}
+
+	void Effect::seAttributeID(signed char id) {
+		attributeID = id;
+	}
+
+	void Effect::seAttributeID_lua(sol::optional<signed char> id) {
+		seAttributeID(id.value_or(-1));
+	}
+
+
+	sol::optional<std::string> Effect::toString() const {
 		if (effectID == -1) {
-			return "";
+			return {};
 		}
 
 		// Some data we'll want to hold onto.
@@ -205,6 +445,8 @@ namespace TES3 {
 		// Add on range type.
 		ss << " " << ndd->GMSTs[GMST::sonword]->value.asString << " " << ndd->GMSTs[mwse::tes3::getCastRangeNameGMST((int)rangeType)]->value.asString;
 
-		return ss.str();
+		return std::move(ss.str());
 	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::MagicEffect)

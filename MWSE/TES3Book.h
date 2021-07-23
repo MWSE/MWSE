@@ -2,12 +2,12 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Item.h"
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	struct Book : Item {
-		Iterator<TES3::BaseObject> stolenList; // 0x30
+		IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44
 		Script * script; // 0x48
 		char * model; // 0x4C
@@ -26,6 +26,10 @@ namespace TES3 {
 
 		const char* getBookText();
 
+		void setIconPath(const char* path);
+
 	};
 	static_assert(sizeof(Book) == 0x70, "TES3::Book failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Book)

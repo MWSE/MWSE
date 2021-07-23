@@ -1,11 +1,10 @@
 #pragma once
 
-#include "sol_forward.hpp"
-
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Object.h"
+
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	namespace FactionMembershipFlag {
@@ -21,6 +20,14 @@ namespace TES3 {
 			int reqAttributes[2];
 			int reqSkills[2];
 			int reputation;
+
+			//
+			// Custom functions.
+			//
+
+			std::reference_wrapper<int[2]> getRequiredAttributeValues();
+			std::reference_wrapper<int[2]> getRequiredSkillValues();
+
 		};
 		struct ReactionNode {
 			Faction * faction;
@@ -29,14 +36,20 @@ namespace TES3 {
 		char objectID[32]; // 0x10
 		char name[32]; // 0x30
 		char rankNames[10][32]; // 0x50
-		long attributes[2]; // 0x190
+		int attributes[2]; // 0x190
 		Rank ranks[10]; // 0x198
-		long skills[7]; // 0x260
+		int skills[7]; // 0x260
 		int unknown_0x27C;
-		Iterator<ReactionNode> reactions; // 0x280
+		IteratedList<ReactionNode*> reactions; // 0x280
 		int playerRank; // 0x294
 		int playerReputation; // 0x298
-		mwse::bitset32 playerMembershipFlags; // 0x29C
+		unsigned int playerMembershipFlags; // 0x29C
+
+		//
+		// Virtual table overrides.
+		//
+
+		char* getObjectID();
 
 		//
 		// Custom functions.
@@ -45,14 +58,29 @@ namespace TES3 {
 		char * getName();
 		void setName(const char*);
 
-		bool getMembershipFlag(unsigned int);
+		const char* getRankName(size_t rank) const;
+		void setRankName(size_t rank, const char* name);
+
+		bool getMembershipFlag(unsigned int) const;
 		void setMembershipFlag(unsigned int, bool);
 
-		int getEffectivePlayerRank();
+		int getEffectivePlayerRank() const;
 		void setEffectivePlayerRank(int rank);
+
+		bool getPlayerJoined() const;
+		void setPlayerJoined(bool value);
+
+		bool getPlayerExpelled() const;
+		void setPlayerExpelled(bool value);
+
+		std::reference_wrapper<int[2]> getAttributes();
+		std::reference_wrapper<int[7]> getSkills();
+		std::reference_wrapper<Rank[10]> getRanks();
 
 	};
 	static_assert(sizeof(Faction::Rank) == 0x14, "TES3::Faction::Rank failed size validation");
 	static_assert(sizeof(Faction::ReactionNode) == 0x8, "TES3::Faction::ReactionNode failed size validation");
 	static_assert(sizeof(Faction) == 0x2A0, "TES3::Faction failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Faction)

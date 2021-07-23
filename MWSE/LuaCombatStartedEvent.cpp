@@ -22,8 +22,8 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["actor"] = makeLuaObject(m_MobileActor);
-				eventData["target"] = makeLuaObject(m_Target);
+				eventData["actor"] = m_MobileActor;
+				eventData["target"] = m_Target;
 
 				return eventData;
 			}

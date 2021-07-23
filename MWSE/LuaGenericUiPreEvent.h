@@ -12,6 +12,7 @@ namespace mwse {
 			public:
 				GenericUiPreEvent(TES3::UI::Element* parent, TES3::UI::Element* element, unsigned int prop, unsigned int var1, unsigned int var2);
 				sol::table createEventTable();
+				sol::object getEventOptions();
 
 			protected:
 				TES3::UI::Element* m_Parent;

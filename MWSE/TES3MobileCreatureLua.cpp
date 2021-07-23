@@ -3,8 +3,11 @@
 #include "LuaManager.h"
 #include "TES3MobileActorLua.h"
 
+#include "TES3Alchemy.h"
+#include "TES3Enchantment.h"
 #include "TES3MobileCreature.h"
 #include "TES3Creature.h"
+#include "TES3Spell.h"
 #include "TES3Statistic.h"
 
 namespace mwse {
@@ -15,34 +18,29 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::MobileCreature>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::MobileCreature>("tes3mobileCreature");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-			usertypeDefinition.set(sol::base_classes, sol::bases<TES3::MobileActor, TES3::MobileObject>());
-			setUserdataForMobileActor(usertypeDefinition);
+			usertypeDefinition[sol::base_classes] = sol::bases<TES3::MobileActor, TES3::MobileObject>();
+			setUserdataForTES3MobileActor(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("skills", sol::property([](TES3::MobileCreature& self) { return std::ref(self.skills); }));
-
-			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("object", sol::readonly_property([](TES3::MobileCreature& self) { return makeLuaObject(self.creatureInstance); }));
+			usertypeDefinition["object"] = sol::readonly_property(&TES3::MobileCreature::creatureInstance);
+			usertypeDefinition["skills"] = sol::property(&TES3::MobileCreature::getSkillStatistics);
 
 			// Allow read access to movement speeds.
-			usertypeDefinition.set("moveSpeed", sol::readonly_property([](TES3::MobileCreature& self) { return self.animationData.asActor->calculateMovementSpeed(); }));
-			usertypeDefinition.set("walkSpeed", sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed));
-			usertypeDefinition.set("runSpeed", sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed));
-			usertypeDefinition.set("swimSpeed", sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed));
-			usertypeDefinition.set("swimRunSpeed", sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed));
-			usertypeDefinition.set("flySpeed", sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed));
+			usertypeDefinition["moveSpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateMovementSpeedFromAnimationData);
+			usertypeDefinition["walkSpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateWalkSpeed);
+			usertypeDefinition["runSpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateRunSpeed);
+			usertypeDefinition["swimSpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateSwimSpeed);
+			usertypeDefinition["swimRunSpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateSwimRunSpeed);
+			usertypeDefinition["flySpeed"] = sol::readonly_property(&TES3::MobileCreature::calculateFlySpeed);
 
 			// Friendly access to skills.
-			usertypeDefinition.set("combat", sol::readonly_property([](TES3::MobileCreature& self) { return &self.skills[TES3::CreatureSkillID::Combat]; }));
-			usertypeDefinition.set("magic", sol::readonly_property([](TES3::MobileCreature& self) { return &self.skills[TES3::CreatureSkillID::Magic]; }));
-			usertypeDefinition.set("stealth", sol::readonly_property([](TES3::MobileCreature& self) { return &self.skills[TES3::CreatureSkillID::Stealth]; }));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3mobileCreature", usertypeDefinition);
+			usertypeDefinition["combat"] = sol::readonly_property(&TES3::MobileCreature::getCombatSkill);
+			usertypeDefinition["magic"] = sol::readonly_property(&TES3::MobileCreature::getMagicSkill);
+			usertypeDefinition["stealth"] = sol::readonly_property(&TES3::MobileCreature::getStealthSkill);
 		}
 	}
 }

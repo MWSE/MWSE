@@ -22,11 +22,15 @@
 #include "VMExecuteInterface.h"
 #include "Stack.h"
 #include "InstructionInterface.h"
+#include "MemoryUtil.h"
+
 #include "TES3Util.h"
 
-#include "TES3Collections.h"
 #include "TES3DataHandler.h"
 #include "TES3Spell.h"
+
+#include "LuaManager.h"
+#include "LuaSpellCreatedEvent.h"
 
 using namespace mwse;
 
@@ -80,8 +84,8 @@ namespace mwse
 		}
 
 		// Get spell list.
-		TES3::LinkedList<TES3::Spell>* spellsList = TES3::DataHandler::get()->nonDynamicData->spellsList;
-		TES3::Spell* spellListHead = spellsList->head;
+		auto spellsList = TES3::DataHandler::get()->nonDynamicData->spellsList;
+		TES3::Spell* spellListHead = *spellsList->begin();
 
 		// Create new spell.
 		TES3::Spell* newSpell = tes3::malloc<TES3::Spell>();
@@ -105,6 +109,11 @@ namespace mwse
 
 		// Add object to the game.
 		TES3::DataHandler::get()->nonDynamicData->addNewObject(newSpell);
+
+		// Fire off spell created event.
+		if (mwse::lua::event::SpellCreatedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::SpellCreatedEvent(newSpell, "script"));
+		}
 
 		Stack::getInstance().pushLong(true);
 

@@ -7,7 +7,7 @@ return {
 		},
 		["scripted"] = {
 			type = "boolean",
-			readonly = true,
+			readOnly = true,
 			description = "This value is true when the menu is shown from using the ShowRestMenu or equivalent function.",
 		},
 	},

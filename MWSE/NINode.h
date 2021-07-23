@@ -1,11 +1,11 @@
 #pragma once
 
 #include "NIAVObject.h"
-#include "TES3Collections.h"
+#include "NIDefines.h"
 
 namespace NI {
 	struct Node : AVObject {
-		TES3::TArray<AVObject> children; // 0x90
+		TArray<Pointer<AVObject>> children; // 0x90
 		DynamicEffectLinkedList effectList; // 0xA8
 
 		Node();
@@ -24,7 +24,17 @@ namespace NI {
 		// Custom functions.
 		//
 
-		__declspec(dllexport) Pointer<DynamicEffect> getEffect(int type);
+		static Pointer<Node> create();
+
+		Pointer<AVObject> detachChildHandled(AVObject* child);
+		Pointer<AVObject> detachChildAtHandled(size_t index);
+
+		void attachEffect(DynamicEffect* effect);
+		void detachEffect(DynamicEffect* effect);
+		Pointer<DynamicEffect> getEffect(int type);
+
+		void attachChild_lua(AVObject* child, sol::optional<bool> useFirstAvailable);
+		Pointer<AVObject> detachChildAt_lua(size_t index);
 
 	};
 	static_assert(sizeof(Node) == 0xB0, "NI::Node failed size validation");
@@ -38,3 +48,5 @@ namespace NI {
 	};
 	static_assert(sizeof(Node_vTable) == 0xA8, "NI::Node's vtable failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::Node)

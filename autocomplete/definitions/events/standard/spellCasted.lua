@@ -3,22 +3,22 @@ return {
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The caster of the spell.",
 		},
 		["target"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The target of the spell. For self-targeted spells, this matches caster.",
 		},
 		["source"] = {
 			type = "tes3spell",
-			readonly = true,
+			readOnly = true,
 			description = "The magic source.",
 		},
 		["sourceInstance"] = {
 			type = "tes3magicSourceInstance",
-			readonly = true,
+			readOnly = true,
 			description = "The unique instance of the magic source.",
 		},
 		["expGainSchool"] = {

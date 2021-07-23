@@ -28,8 +28,6 @@
 #include "Log.h"
 #include "StringUtil.h"
 
-#include <stdexcept>
-
 /**
  * This Stack class is a singleton. It provides an
  * efficient push/pop mechanism for a parameter stack.

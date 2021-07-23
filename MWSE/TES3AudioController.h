@@ -3,10 +3,6 @@
 #include "TES3Defines.h"
 #include "TES3Vectors.h"
 
-#include <dsound.h>
-#include <dshow.h>
-#undef PlaySound
-
 namespace TES3 {
 	enum class AudioMixType {
 		Master = 0,
@@ -82,6 +78,10 @@ namespace TES3 {
 		double getMusicDuration();
 		double getMusicPosition();
 		void setMusicPosition(double position);
+
+		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
+
+		static void __cdecl adjustActiveSounds();
 
 		//
 		// Wrapper functions to expose volumes in a consistent format.

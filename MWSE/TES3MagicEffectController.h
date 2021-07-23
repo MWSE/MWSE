@@ -1,15 +1,13 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "sol_forward.hpp"
-
 #include "TES3Defines.h"
 
 #include "TES3MagicEffect.h"
+#include "TES3MobileObject.h"
 
 namespace TES3 {
-#define MAX_EFFECT_COUNT SHRT_MAX
+	constexpr int MAX_EFFECT_COUNT = SHRT_MAX;
+	constexpr int EFFECT_ID_INVALID = MAX_EFFECT_COUNT - 1;
 
 	namespace MagicEffectAttribute {
 		typedef unsigned int value_type;
@@ -55,26 +53,26 @@ namespace TES3 {
 		// MagicEffect object functions.
 		MagicEffect* getEffectObject(int id);
 		void addEffectObject(MagicEffect* effect);
+		bool getEffectExists(int id);
 
 		const char * getEffectName(int id);
 
 		// Flag manipulation.
-		static mwse::bitset32 getEffectFlags(int id);
+		static unsigned int getEffectFlags(int id);
 		static void setEffectFlags(int id, unsigned int flags);
 		static bool getEffectFlag(int id, EffectFlag::FlagBit flag);
 		static void setEffectFlag(int id, EffectFlag::FlagBit flag, bool value);
 
 		static void InstallCustomMagicEffectController();
+		void spellProjectileHit(MagicSourceInstance * instance, MobileObject::Collision * collision);
 
 		// Implemented.
 		std::unordered_map<int, MagicEffect*> effectObjects;
 		std::unordered_map<int, sol::protected_function> effectLuaTickFunctions;
 		std::unordered_map<int, sol::protected_function> effectLuaCollisionFunctions;
 		std::unordered_map<int, std::string> effectCustomNames;
-
-		// Unimplemented.
 		static unsigned int effectNameGMSTs[MAX_EFFECT_COUNT];
-		static mwse::bitset32 effectFlags[MAX_EFFECT_COUNT];
+		static unsigned int effectFlags[MAX_EFFECT_COUNT];
 		static unsigned int effectCounters[MAX_EFFECT_COUNT][5];
 	};
 }

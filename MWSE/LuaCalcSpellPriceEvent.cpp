@@ -25,12 +25,12 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_MobileActor);
+				eventData["mobile"] = m_MobileActor;
 				if (m_MobileActor) {
-					eventData["reference"] = makeLuaObject(m_MobileActor->reference);
+					eventData["reference"] = m_MobileActor->reference;
 				}
 
-				eventData["spell"] = makeLuaObject(m_Spell);
+				eventData["spell"] = m_Spell;
 
 				eventData["basePrice"] = m_BasePrice;
 				eventData["price"] = m_Price;

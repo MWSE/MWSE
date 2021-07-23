@@ -21,12 +21,6 @@
 
 #pragma once
 
-#include <string>
-#include <map>
-#include <stdio.h>
-#include <wtypes.h>
-#include <tuple>
-
 #ifndef NELEM
 #define NELEM(a) (sizeof(a)/sizeof(a[0]))
 #endif

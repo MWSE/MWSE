@@ -4,8 +4,6 @@
 
 #include "TES3Object.h"
 
-#include "NIPointer.h"
-
 namespace TES3 {
 	namespace BodyPartFlag {
 		enum Flag : unsigned int {
@@ -20,7 +18,7 @@ namespace TES3 {
 		char * raceName; // 0x34
 		signed char part; // 0x38
 		bool vampiric; // 0x39
-		mwse::bitset8 flags; // 0x3A
+		unsigned char flags; // 0x3A
 		signed char partType; // 0x3B
 		NI::Pointer<NI::Node> mirroredNode; // 0x3C // Type: BSMirroredNode.
 
@@ -31,6 +29,14 @@ namespace TES3 {
 		bool getFlag(BodyPartFlag::Flag flag);
 		void setFlag(BodyPartFlag::Flag flag, bool set);
 
+		bool getIsFemale();
+		void setIsFemale(bool value);
+
+		bool getIsPlayable();
+		void setIsPlayable(bool value);
+
 	};
 	static_assert(sizeof(BodyPart) == 0x40, "TES3::BodyPart failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::BodyPart)

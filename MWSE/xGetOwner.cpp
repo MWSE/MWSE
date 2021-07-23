@@ -58,7 +58,7 @@ namespace mwse
 			return 0.0f;
 		}
 
-		char* owner = NULL;
+		const char* owner = NULL;
 
 		// Get the attached varnode.
 		auto node = reference->getAttachedItemData();

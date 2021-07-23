@@ -31,6 +31,7 @@ Functions
     tes3ui/showScrollMenu
     tes3ui/suppressTooltip
     tes3ui/updateBarterMenuTiles
+    tes3ui/updateInventoryCharacterImage
     tes3ui/updateInventorySelectTiles
     tes3ui/updateInventoryTiles
 

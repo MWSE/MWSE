@@ -1,21 +1,11 @@
-//Tes3Machine.h
 #pragma once
-
-// MGEXE needs
-// GetString
-
-#include <string>
-#include <vector>
-#include <random>
 
 #include "MgeVirtualMachine.h"
 #include "Log.h"
-//#include "MGEXETES3Types.h"
-//#include "ADDRESSSPACE.h"
-//#include "STRINGS.h"
-//#include "BREAKPOINT.h"
 
-#include "TES3Util.h"
+#include "TES3Defines.h"
+
+#include "MemoryUtil.h"
 
 struct HWBREAKPOINT;
 struct Context {};
@@ -24,11 +14,7 @@ typedef void* TES3SCRIPT;
 typedef void* VPREFERENCE;
 typedef void* VPTEMPLATE;
 
-// 22-08-2006 Tp21
-//#include "warnings.h"
-
 typedef enum { INTSWITCHREFERENCE = 1 } INTERRUPTS;
-
 
 struct TES3MACHINE : public VIRTUALMACHINE
 {

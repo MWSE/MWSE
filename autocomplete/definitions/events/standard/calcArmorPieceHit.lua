@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile who is being hit.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A shortcut to the mobile's reference.",
 		},
 		["slot"] = {

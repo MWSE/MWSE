@@ -27,6 +27,19 @@ namespace TES3 {
 		//
 
 		float calculateWalkSpeed();
+
+		//
+		// Custom functions.
+		//
+
+		float calculateMovementSpeedFromAnimationData();
+
+		std::reference_wrapper<Statistic[3]> getSkillStatistics();
+
+		Statistic* getCombatSkill();
+		Statistic* getMagicSkill();
+		Statistic* getStealthSkill();
+
 	};
 	static_assert(sizeof(MobileCreature) == 0x3D8, "TES3::MobileCreature failed size validation");
 }

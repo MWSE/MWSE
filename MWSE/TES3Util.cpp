@@ -22,40 +22,52 @@
 #include "TES3MagicSourceInstance.h"
 #include "TES3WorldController.h"
 
+#include "TES3UIManager.h"
+
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
 #include "LuaLoadGameEvent.h"
 #include "LuaLoadedGameEvent.h"
 
+#include "MemoryUtil.h"
+
 namespace mwse {
 	namespace tes3 {
 		TES3::Reference* getReference(const char* id) {
+			TES3::DataHandler* dataHandler = TES3::DataHandler::get();
+			if (!dataHandler || !dataHandler->nonDynamicData) {
+				return nullptr;
+			}
 
-			bool isplayer = !_stricmp(id, "player") || !_stricmp(id, "playersavegame");
-			if (isplayer) {
-				TES3::WorldController* worldController = TES3::WorldController::get();
-				if (worldController) {
-					return worldController->getMobilePlayer()->reference;
-				}
+			if (!_stricmp(id, "player") || !_stricmp(id, "playersavegame")) {
+				return dataHandler->nonDynamicData->playerSaveGame;
 			}
 			else {
-				TES3::DataHandler* dataHandler = TES3::DataHandler::get();
 				if (dataHandler) {
 					return dataHandler->nonDynamicData->findFirstCloneOfActor(id);
 				}
 			}
 
-			return NULL;
+			return nullptr;
 		}
 
 		TES3::Reference* getReference(std::string& id) {
 			return getReference(id.c_str());
 		}
 
-		const auto TES3_general_setStringSlot = reinterpret_cast<char*(__cdecl *)(char**, const char*)>(0x47B410);
-		char* setDataString(char** container, const char* string) {
-			return TES3_general_setStringSlot(container, string);
+		const auto TES3_general_setStringSlot = reinterpret_cast<void(__cdecl *)(char**, const char*)>(0x47B410);
+		void setDataString(char** container, const char* string, bool allowEmpty) {
+			if (allowEmpty && string && string[0] == '\0') {
+				if (*container) {
+					_delete(*container);
+				}
+				*container = _new<char>(1);
+				**container = '\0';
+			}
+			else {
+				TES3_general_setStringSlot(container, string);
+			}
 		}
 
 		bool setEffect(TES3::Effect * effects, long index, long effectId,
@@ -141,18 +153,13 @@ namespace mwse {
 			TES3::NonDynamicData* nonDynamicData = TES3::DataHandler::get()->nonDynamicData;
 			if (progress >= nonDynamicData->GMSTs[TES3::GMST::iLevelupTotal]->value.asLong) {
 				const char* levelUpMessage = nonDynamicData->GMSTs[TES3::GMST::sLevelUpMsg]->value.asString;
-				messagePlayer(levelUpMessage);
+				TES3::UI::showMessageBox(levelUpMessage);
 			}
-		}
-
-		const auto TES3_general_messagePlayer = reinterpret_cast<void(__cdecl *)(const char*, int, int)>(0x5F90C0);
-		void messagePlayer(const char* message) {
-			TES3_general_messagePlayer(message, 0, 1);
 		}
 
 
 		int getSkillNameGMST(int id) {
-			return reinterpret_cast<int*>(0x794430)[id];
+			return TES3::Skill::NAME_GMSTS[id];
 		}
 
 		int getAttributeNameGMST(int id) {
@@ -163,20 +170,20 @@ namespace mwse {
 			return reinterpret_cast<int*>(0x7947C8)[id];
 		}
 
-		static std::unordered_map<TES3::Misc*, TES3::SoulGemData*> customSoulGems;
+		static std::unordered_map<const TES3::Misc*, TES3::SoulGemData*> customSoulGems;
 
-		bool isSoulGem(TES3::Object* objectOrReference) {
-			if (reinterpret_cast<bool(__cdecl *)(TES3::Object*)>(0x49ABE0)(objectOrReference)) {
+		bool isSoulGem(const TES3::Object* objectOrReference) {
+			if (reinterpret_cast<bool(__cdecl *)(const TES3::Object*)>(0x49ABE0)(objectOrReference)) {
 				return true;
 			}
 
 			// If we were given a reference, look at the base object.
 			if (objectOrReference->objectType == TES3::ObjectType::Reference) {
-				objectOrReference = reinterpret_cast<TES3::Reference*>(objectOrReference)->baseObject;
+				objectOrReference = reinterpret_cast<const TES3::Reference*>(objectOrReference)->baseObject;
 			}
 
 			if (objectOrReference->objectType == TES3::ObjectType::Misc) {
-				auto searchResult = customSoulGems.find(reinterpret_cast<TES3::Misc*>(objectOrReference));
+				auto searchResult = customSoulGems.find(reinterpret_cast<const TES3::Misc*>(objectOrReference));
 				if (searchResult != customSoulGems.end()) {
 					return true;
 				}
@@ -185,13 +192,13 @@ namespace mwse {
 			return false;
 		}
 
-		TES3::SoulGemData * addCustomSoulGem(TES3::Misc * item) {
+		TES3::SoulGemData * addCustomSoulGem(const TES3::Misc * item) {
 			if (isSoulGem(item)) {
 				return nullptr;
 			}
 
 			auto data = new TES3::SoulGemData();
-			data->item = item;
+			data->item = const_cast<TES3::Misc*>(item);
 			data->id = item->objectID;
 			data->name = item->name;
 			data->mesh = item->model;
@@ -203,7 +210,7 @@ namespace mwse {
 			return data;
 		}
 
-		TES3::SoulGemData * getSoulGemData(TES3::Misc * item) {
+		TES3::SoulGemData * getSoulGemData(const TES3::Misc * item) {
 			TES3::SoulGemData * vanillaSoulGems = reinterpret_cast<TES3::SoulGemData*>(0x791C98);
 			for (size_t i = 0; i < 6; i++) {
 				if (vanillaSoulGems[i].item == item) {
@@ -219,9 +226,24 @@ namespace mwse {
 			return nullptr;
 		}
 
-		static std::map<int, TES3::ArmorSlotData*> customArmorSlots;
+		static std::map<int, std::shared_ptr<TES3::ClothingSlotData>> customClothingSlots;
 
-		TES3::ArmorSlotData * getArmorSlotData(int slot) {
+		std::shared_ptr<TES3::ClothingSlotData> getClothingSlotData(int slot) {
+			auto searchResult = customClothingSlots.find(slot);
+			if (searchResult != customClothingSlots.end()) {
+				return searchResult->second;
+			}
+
+			return nullptr;
+		}
+
+		void setClothingSlotData(std::shared_ptr<TES3::ClothingSlotData> data) {
+			customClothingSlots[data->slot] = data;
+		}
+
+		static std::map<int, std::shared_ptr<TES3::ArmorSlotData>> customArmorSlots;
+
+		std::shared_ptr<TES3::ArmorSlotData> getArmorSlotData(int slot) {
 			auto searchResult = customArmorSlots.find(slot);
 			if (searchResult != customArmorSlots.end()) {
 				return searchResult->second;
@@ -230,13 +252,7 @@ namespace mwse {
 			return nullptr;
 		}
 
-		void setArmorSlotData(TES3::ArmorSlotData * data) {
-			auto searchResult = customArmorSlots.find(data->slot);
-			if (searchResult != customArmorSlots.end()) {
-				delete searchResult->second;
-				customArmorSlots.erase(data->slot);
-			}
-
+		void setArmorSlotData(std::shared_ptr<TES3::ArmorSlotData> data) {
 			customArmorSlots[data->slot] = data;
 		}
 
@@ -260,6 +276,7 @@ namespace mwse {
 			TES3_newGame();
 
 			// Clear any timers.
+			TES3::DataHandler::previousVisitedCell = nullptr;
 			luaManager.clearTimers();
 
 			// Call our post-load event.
@@ -296,29 +313,19 @@ namespace mwse {
 			return TES3_ResolveAssetPath(path, out_buffer);
 		}
 
+		const auto TES3_getThreadSafeStringBuffer = reinterpret_cast<char* (__thiscall*)(char*)>(0x4D51B0);
+		char* getThreadSafeStringBuffer() {
+			return TES3_getThreadSafeStringBuffer(reinterpret_cast<char*>(0x7CB478));
+		}
+
+		const auto TES3_testLineOfSight = reinterpret_cast<bool (__cdecl*)(TES3::Vector3*, float, TES3::Vector3*, float)>(0x53B200);
+		bool testLineOfSight(TES3::Vector3* pos1, float height1, TES3::Vector3* pos2, float height2) {
+			return TES3_testLineOfSight(pos1, height1, pos2, height2);
+		}
+
 		const auto TES3_rand = reinterpret_cast<int(__cdecl*)(int)>(0x47B3B0);
 		int rand(unsigned int arg0) {
 			return TES3_rand(arg0);
-		}
-
-		const auto TES3_operator_new = reinterpret_cast<void*(__cdecl*)(size_t)>(0x727692);
-		void * _new(size_t size) {
-			return TES3_operator_new(size);
-		}
-
-		ExternalRealloc _realloc = NULL;
-		void* realloc(void* address, size_t size) {
-			return _realloc(address, size);
-		}
-
-		ExternalMalloc _malloc = NULL;
-		void* malloc(size_t size) {
-			return _malloc(size);
-		}
-
-		ExternalFree _free = NULL;
-		void free(void* address) {
-			_free(address);
 		}
 	}
 }

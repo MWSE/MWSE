@@ -4,6 +4,7 @@
 #include "TES3MobileObjectLua.h"
 
 #include "TES3MobileProjectile.h"
+#include "TES3MobileSpellProjectile.h"
 #include "TES3MobileActor.h"
 #include "TES3Weapon.h"
 
@@ -14,23 +15,37 @@ namespace mwse {
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::state& state = stateHandle.state;
 
-			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::MobileProjectile>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			// Define base mobile projectiles.
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::MobileProjectile>("tes3mobileProjectile");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-			usertypeDefinition.set(sol::base_classes, sol::bases<TES3::MobileObject>());
-			setUserdataForMobileObject(usertypeDefinition);
+				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::MobileObject>();
+				setUserdataForTES3MobileProjectile(usertypeDefinition);
+			}
 
-			// Basic property binding.
-			usertypeDefinition.set("expire", &TES3::MobileProjectile::flagExpire);
+			// Define spell projectiles.
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::MobileSpellProjectile>("tes3mobileSpellProjectile");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("firingMobile", sol::readonly_property([](TES3::MobileProjectile& self) { return makeLuaObject(self.firingActor); }));
-			usertypeDefinition.set("firingWeapon", sol::readonly_property([](TES3::MobileProjectile& self) { return makeLuaObject(self.firingWeapon); }));
+				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::MobileProjectile, TES3::MobileObject>();
+				setUserdataForTES3MobileProjectile(usertypeDefinition);
 
-			// Finish up our usertype.
-			state.set_usertype("tes3mobileProjectile", usertypeDefinition);
+				// Basic property binding.
+				usertypeDefinition["rotationSpeed"] = &TES3::MobileSpellProjectile::rotationSpeed;
+				usertypeDefinition["spellInstanceSerial"] = sol::readonly_property(&TES3::MobileSpellProjectile::spellInstanceSerial);
+
+				// Functions exposed as properties.
+				usertypeDefinition["spellInstance"] = sol::readonly_property(&TES3::MobileSpellProjectile::getInstance);
+
+				// Basic function bindings.
+				usertypeDefinition["explode"] = &TES3::MobileSpellProjectile::explodeDeferred;
+			}
 		}
 	}
 }

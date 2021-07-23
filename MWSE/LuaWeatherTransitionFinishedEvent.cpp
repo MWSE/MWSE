@@ -3,6 +3,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
+#include "TES3Weather.h"
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
@@ -22,7 +23,7 @@ namespace mwse {
 
 				auto controller = TES3::WorldController::get()->weatherController;
 
-				eventData["to"] = makeLuaObject(controller->currentWeather);
+				eventData["to"] = controller->currentWeather;
 
 				return eventData;
 			}

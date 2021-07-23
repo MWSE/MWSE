@@ -35,8 +35,42 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		__declspec(dllexport) float getSkillRequirement(int skillId);
+		float getSkillRequirement(int skillId);
+
+		float calculateMovementSpeedFromAnimationData();
+
+		std::reference_wrapper<SkillStatistic[27]> getSkillStatistics();
+
+		SkillStatistic* getSkillStatisticAcrobatics();
+		SkillStatistic* getSkillStatisticAlchemy();
+		SkillStatistic* getSkillStatisticAlteration();
+		SkillStatistic* getSkillStatisticArmorer();
+		SkillStatistic* getSkillStatisticAthletics();
+		SkillStatistic* getSkillStatisticAxe();
+		SkillStatistic* getSkillStatisticBlock();
+		SkillStatistic* getSkillStatisticBluntWeapon();
+		SkillStatistic* getSkillStatisticConjuration();
+		SkillStatistic* getSkillStatisticDestruction();
+		SkillStatistic* getSkillStatisticEnchant();
+		SkillStatistic* getSkillStatisticHandToHand();
+		SkillStatistic* getSkillStatisticHeavyArmor();
+		SkillStatistic* getSkillStatisticIllusion();
+		SkillStatistic* getSkillStatisticLightArmor();
+		SkillStatistic* getSkillStatisticLongBlade();
+		SkillStatistic* getSkillStatisticMarksman();
+		SkillStatistic* getSkillStatisticMediumArmor();
+		SkillStatistic* getSkillStatisticMercantile();
+		SkillStatistic* getSkillStatisticMysticism();
+		SkillStatistic* getSkillStatisticRestoration();
+		SkillStatistic* getSkillStatisticSecurity();
+		SkillStatistic* getSkillStatisticShortBlade();
+		SkillStatistic* getSkillStatisticSneak();
+		SkillStatistic* getSkillStatisticSpear();
+		SkillStatistic* getSkillStatisticSpeechcraft();
+		SkillStatistic* getSkillStatisticUnarmored();
 
 	};
 	static_assert(sizeof(MobileNPC) == 0x56C, "TES3::MobileNPC failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_MOBILEOBJECT(TES3::MobileNPC)

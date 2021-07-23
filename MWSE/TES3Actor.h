@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sol_forward.hpp"
-
 #include "TES3Defines.h"
 
 #include "TES3Armor.h"
@@ -37,11 +35,11 @@ namespace TES3 {
 	static_assert(sizeof(ActorVirtualTable) == 0x180, "TES3::ActorVirtualTable failed size validation");
 
 	struct Actor : PhysicalObject {
-		ActorAnimationData * animationData; // 0x30
-		mwse::bitset32 actorFlags; // 0x34
+		ActorAnimationController * animationController; // 0x30
+		unsigned int actorFlags; // 0x34
 		int cloneCount; // 0x38
 		Inventory inventory; // 0x3C
-		Iterator<EquipmentStack> equipment; // 0x58
+		IteratedList<EquipmentStack*> equipment; // 0x58
 
 		//
 		// Function wrappers for our virtual table.
@@ -52,9 +50,10 @@ namespace TES3 {
 		void setBaseBarterGold(int);
 		bool isGuard();
 		void clone(Reference*);
-		void onCloseInventory(Actor* actor, Reference* reference, int unknown = 0);
+		void onCloseInventory(Reference* reference, int unknown = 0);
 		AIPackageConfig * getAIPackageConfig();
 		void setAIPackage(AIPackageConfig* packageConfig, Reference* reference);
+		int addItem(Item* item, int count, bool something = false);
 
 		//
 		// Other related this-call functions.
@@ -73,11 +72,20 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		bool isBaseActor();
-		bool isClone();
+		bool isBaseActor() const;
+		bool isClone() const;
 
 		bool tradesItemType(ObjectType::ObjectType type);
+		bool offersService(unsigned int service);
 
+		int getBloodType() const;
+		void setBloodType(int value);
+
+		void onCloseInventory_lua(TES3::Reference* reference, sol::optional<int> unknown);
+
+		bool hasItemEquipped_lua(sol::object itemOrItemId, sol::optional<TES3::ItemData*> itemData);
 	};
 	static_assert(sizeof(Actor) == 0x6C, "TES3::Actor failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Actor)

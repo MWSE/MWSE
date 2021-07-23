@@ -2,8 +2,8 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Item.h"
+#include "TES3IteratedList.h"
 #include "TES3WearablePart.h"
 
 namespace TES3 {
@@ -20,12 +20,15 @@ namespace TES3 {
 			LeftGlove = 0x6,
 			Skirt = 0x7,
 			Ring = 0x8,
-			Amulet = 0x9
+			Amulet = 0x9,
+
+			First = Pants,
+			Last = Amulet,
 		};
 	}
 
 	struct Clothing : Item {
-		Iterator<TES3::BaseObject> stolenList; // 0x30
+		IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44
 		Script * script; // 0x48
 		char * model; // 0x4C
@@ -36,6 +39,23 @@ namespace TES3 {
 		unsigned short value; // 0xB0
 		unsigned short enchantCapacity; // 0xB2
 		Enchantment * enchantment; // 0xB4
+
+		//
+		// Custom functions.
+		//
+
+		void setIconPath(const char* path);
+		const char* getSlotName();
+
+		std::reference_wrapper<WearablePart[7]> getParts();
+
 	};
 	static_assert(sizeof(Clothing) == 0xB8, "TES3::Clothing failed size validation");
+
+	struct ClothingSlotData {
+		int slot;
+		std::string name;
+	};
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Clothing)

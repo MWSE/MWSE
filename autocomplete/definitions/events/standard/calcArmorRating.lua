@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["armor"] = {
 			type = "tes3armor",
-			readonly = true,
+			readOnly = true,
 			description = "The armor piece whose AR is being calculated.",
 		},
 		["armorRating"] = {
@@ -12,17 +12,17 @@ return {
 		},
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile whose AR is being calculated. May not always be available.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A shortcut to the mobile's reference. May not always be available.",
 		},
 		["npc"] = {
 			type = "tes3npc",
-			readonly = true,
+			readOnly = true,
 			description = "The NPC object whose AR is being calculated. May not always be available.",
 		},
 	},

@@ -22,7 +22,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["topic"] = makeLuaObject(m_Topic);
+				eventData["topic"] = m_Topic;
 				eventData["index"] = m_NewIndex;
 				eventData["previousIndex"] = m_OldIndex;
 				eventData["new"] = (m_OldIndex == 0 && m_NewIndex > m_OldIndex);

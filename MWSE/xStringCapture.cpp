@@ -25,8 +25,6 @@
 #include "Log.h"
 #include "StringUtil.h"
 
-#include <boost/regex.hpp>
-
 using namespace mwse;
 
 namespace mwse

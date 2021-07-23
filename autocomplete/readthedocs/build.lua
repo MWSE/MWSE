@@ -31,11 +31,20 @@ function json.savefile(fileName, object, config)
 	f:close()
 end
 
-function isTableEmpty(t)
+local function isTableEmpty(t)
 	for _, _ in pairs(t) do
 		return false
 	end
 	return true
+end
+
+local function getSortedKeys(t, sortFn)
+	local keys = {}
+	for k, _ in pairs(t) do
+		table.insert(keys, k)
+	end
+	table.sort(keys, sortFn)
+	return keys
 end
 
 function table.copy(t, d)
@@ -67,11 +76,11 @@ function table.deepcopy(t)
 end
 
 local match = string.match
-function trimString(s)
+local function trimString(s)
    return match(s,'^()%s*$') and '' or match(s,'^%s*(.*%S)')
 end
 
-function splitString(inputstr, sep)
+local function splitString(inputstr, sep)
 	if sep == nil then
 		sep = "%s"
 	end
@@ -141,6 +150,58 @@ local function breakoutMultipleTypes(str)
 end
 
 -- 
+-- Handle link caching to optimize RTD build times.
+-- 
+
+local cachingLinks = -1
+local writtenLinks = {}
+local originalFileWrite = nil
+
+local originalIOOpen = io.open
+local fileMetatable = nil
+
+-- Handle nested caching begin/stop
+local function beginCachingLinks()
+	cachingLinks = cachingLinks + 1
+end
+
+local function isCachingLinks()
+    return cachingLinks > -1
+end
+
+local function stopCachingLinks()
+	cachingLinks = cachingLinks - 1
+end
+
+local function isLinkCached(file, link)
+	return writtenLinks[file] and writtenLinks[file][link] == true
+end
+
+local function cachedWrite(self, str)
+	if (isCachingLinks()) then
+		writtenLinks[self] = writtenLinks[self] or {}
+		for capture in string.gmatch(str, "`.-`_") do
+			writtenLinks[self][string.sub(capture, 2, -3)] = true
+		end
+	end
+
+	return originalFileWrite(self, str)
+end
+
+function io.open(...)
+	local file = originalIOOpen(...)
+	if (file) then
+		if (not originalFileWrite) then
+			local mt = getmetatable(file)
+			originalFileWrite = mt.write
+			mt.write = cachedWrite
+		end
+		writtenLinks[file] = writtenLinks[file] or {}
+	end
+	return file
+end
+
+-- 
 -- Events
 -- 
 
@@ -153,6 +214,9 @@ local function buildEvent(folder, key)
 	-- Open the output file.
 	local outPath = "..\\docs\\source\\lua\\event\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
+
+	-- Keep track of what links are written.
+	beginCachingLinks()
 
 	-- Write out the main header.
 	file:write(key .. "\n" .. rstHeaders[1] .. "\n\n")
@@ -182,7 +246,7 @@ local function buildEvent(folder, key)
 				file:write(v.type .. ". ")
 			end
 
-			if (v.readonly) then
+			if (v.readOnly) then
 				file:write("Read-only. ")
 			end
 
@@ -214,16 +278,22 @@ local function buildEvent(folder, key)
 		end
 	end
 
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	for _, k in pairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.
@@ -269,6 +339,9 @@ local function buildAPIEntryForFunction(package)
 	-- Open the output file.
 	local outPath = "..\\docs\\source\\lua\\api\\" .. parent.key .. "\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
+
+	-- Keep track of what links are written.
+	beginCachingLinks()
 
 	-- Write out the main header.
 	file:write(parent.key .. "." .. key .. "\n" .. rstHeaders[1] .. "\n\n")
@@ -327,6 +400,7 @@ local function buildAPIEntryForFunction(package)
 				end
 			end
 		else
+			file:write("Accepts parameters in the following order:\n\n")
 			for _, param in ipairs(package.arguments) do
 				file:write((param.name or "...") .. " (" .. breakoutMultipleTypes(param.type) .. ")\n")
 				file:write("    ")
@@ -369,16 +443,22 @@ local function buildAPIEntryForFunction(package)
 		end
 	end
 
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	for _, k in ipairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.
@@ -395,6 +475,9 @@ local function buildAPIEntryForValue(package)
 	-- Open the output file.
 	local outPath = "..\\docs\\source\\lua\\api\\" .. parent.key .. "\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
+
+	-- Keep track of what links are written.
+	beginCachingLinks()
 
 	-- Write out the main header.
 	file:write(parent.key .. "." .. key .. "\n" .. rstHeaders[1] .. "\n\n")
@@ -440,16 +523,22 @@ local function buildAPIEntryForValue(package)
 		end
 	end
 
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	for _, k in pairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.
@@ -555,6 +644,9 @@ local function buildNamedTypeEntryForValue(package)
 	local outPath = "..\\docs\\source\\lua\\type\\" .. parent.key .. "\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
 
+	-- Keep track of what links are written.
+	beginCachingLinks()
+
 	-- Write out the main header.
 	file:write(key .. "\n" .. rstHeaders[1] .. "\n\n")
 
@@ -599,16 +691,22 @@ local function buildNamedTypeEntryForValue(package)
 		end
 	end
 
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	for _, k in pairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.
@@ -631,6 +729,9 @@ local function buildNamedTypeEntryForFunction(package)
 	-- Open the output file.
 	local outPath = "..\\docs\\source\\lua\\type\\" .. parent.key .. "\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
+
+	-- Keep track of what links are written.
+	beginCachingLinks()
 
 	-- Write out the main header.
 	file:write(key .. "\n" .. rstHeaders[1] .. "\n\n")
@@ -689,6 +790,7 @@ local function buildNamedTypeEntryForFunction(package)
 				end
 			end
 		else
+			file:write("Accepts parameters in the following order:\n\n")
 			for _, param in ipairs(package.arguments) do
 				file:write((param.name or "...") .. " (" .. breakoutMultipleTypes(param.type) .. ")\n")
 				file:write("    ")
@@ -731,16 +833,22 @@ local function buildNamedTypeEntryForFunction(package)
 		end
 	end
 
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../../" .. v .. ".html\n")
+	for _, k in pairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.
@@ -757,6 +865,10 @@ local function buildNamedTypeEntry(folder, key, parent)
 	-- Load our base package.
 	local path = folder .. "\\" .. key .. ".lua"
 	local package = dofile(path)
+	if (package == nil) then
+		error("Could not execute typed entry: " .. path)
+	end
+
 	package.key = key
 	package.folder = folder
 	package.parent = parent
@@ -790,7 +902,11 @@ local function writeOutPackageEntries(t, file, package, title)
 		else
 			file:write("`" .. v.key .. "`_\n")
 		end
-		file:write("    " .. (v.brief or v.description or "No description available.") .. "\n\n")
+		file:write("    ")
+		if (v.readOnly) then
+			file:write("Read-only. ")
+		end
+		file:write((v.brief or v.description or "No description available.") .. "\n\n")
 	end
 
 	-- Build out hidden TOC tree.
@@ -834,6 +950,9 @@ local function buildNamedType(folder, key)
 	-- Open the output file.
 	local outPath = "..\\docs\\source\\lua\\type\\" .. key .. ".rst"
 	local file = io.open(outPath, "w")
+
+	-- Keep track of what links are written.
+	beginCachingLinks()
 
 	-- Write out the main header.
 	file:write(key .. "\n" .. rstHeaders[1] .. "\n\n")
@@ -891,22 +1010,54 @@ local function buildNamedType(folder, key)
 	if (package.values) then table.sort(package.values, sortByKey) end
 	if (package.methods) then table.sort(package.methods, sortByKey) end
 	if (package.functions) then table.sort(package.functions, sortByKey) end
+	if (package.examples) then table.sort(package.examples, sortByKey) end
 
 	-- Write out properties, etc.
 	writeOutPackageEntries(package.values, file, package, "Properties")
 	writeOutPackageEntries(package.methods, file, package, "Methods")
 	writeOutPackageEntries(package.functions, file, package, "Functions")
 
+	-- Write out examples.
+	local packagePath = folder .. "\\" .. key .. "\\"
+	if (package.examples) then
+		file:write("Examples\n" .. rstHeaders[2] .. "\n\n")
+		for k, v in pairs(package.examples) do
+			file:write((v.title or k) .. "\n" .. rstHeaders[3] .. "\n\n")
+
+			if (v.description) then
+				file:write(v.description .. "\n\n")
+			end
+
+			file:write(".. code-block:: " .. (v.language or "lua") .. "\n\n")
+
+			local exampleFilePath = packagePath .. key .. "\\" .. k .. "." .. (v.extension or "lua")
+			for line in io.lines(exampleFilePath) do
+				if (trimString(line) ~= "") then
+					file:write("    " .. line:gsub("\t", "    ") .. "\n")
+				else
+					file:write("\n")
+				end
+			end
+			file:write("\n\n")
+		end
+	end
+
+	-- Restore original write function.
+	stopCachingLinks()
+
 	-- Write out any link information.
-	if (package.links) then
-		for k, v in pairs(package.links) do
-			file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	package.links = package.links or {}
+	for _, k in ipairs(getSortedKeys(package.links)) do
+		if isLinkCached(file, k) then
+			file:write(".. _`" .. k .. "`: ../../" .. package.links[k] .. ".html\n")
 		end
 	end
 
 	-- Also write out all our type links.
-	for k, v in pairs(typeLinks) do
-		file:write(".. _`" .. k .. "`: ../../" .. v .. ".html\n")
+	for _, k in pairs(getSortedKeys(typeLinks)) do
+		if (not package.links[k] and isLinkCached(file, k)) then
+			file:write(".. _`" .. k .. "`: ../../" .. typeLinks[k] .. ".html\n")
+		end
 	end
 
 	-- Close up shop.

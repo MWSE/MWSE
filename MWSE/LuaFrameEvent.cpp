@@ -5,10 +5,11 @@
 namespace mwse {
 	namespace lua {
 		namespace event {
-			FrameEvent::FrameEvent(float delta, bool menuMode) :
+			FrameEvent::FrameEvent(float delta, bool menuMode, double timestamp) :
 				GenericEvent("enterFrame"),
 				m_Delta(delta),
-				m_MenuMode(menuMode)
+				m_MenuMode(menuMode),
+				m_Timestamp(timestamp)
 			{
 
 			}
@@ -20,6 +21,7 @@ namespace mwse {
 
 				eventData["menuMode"] = m_MenuMode;
 				eventData["delta"] = m_Delta;
+				eventData["timestamp"] = m_Timestamp;
 
 				return eventData;
 			}

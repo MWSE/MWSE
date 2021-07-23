@@ -2,14 +2,13 @@
 
 #include "NIObjectLua.h"
 
-#include "sol.hpp"
-
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
 #include "NIRTTI.h"
 #include "NITriShape.h"
+#include "NiTriShapeData.h"
 
 namespace mwse {
 	namespace lua {
@@ -21,18 +20,23 @@ namespace mwse {
 			// Binding for NI::TriShape.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<NI::TriShape>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<NI::TriShape>("niTriShape");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<NI::AVObject, NI::ObjectNET, NI::Object>());
+				usertypeDefinition[sol::base_classes] = sol::bases<NI::TriBasedGeometry, NI::Geometry, NI::AVObject, NI::ObjectNET, NI::Object>();
 				setUserdataForNIAVObject(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("data", sol::property(&NI::TriShape::getModelData, &NI::TriShape::setModelData));
+				usertypeDefinition["data"] = sol::property(&NI::TriShape::getModelData, &NI::TriShape::setModelData);
+				usertypeDefinition["skinInstance"] = &NI::TriShape::skinInstance;
 
-				// Finish up our usertype.
-				state.set_usertype("niTriShape", usertypeDefinition);
+				// Lazy access to geometry data. Don't encourage this.
+				usertypeDefinition["normals"] = sol::readonly_property(&NI::TriShape::getNormals);
+				usertypeDefinition["vertices"] = sol::readonly_property(&NI::TriShape::getVertices);
+
+				// Basic function binding.
+				usertypeDefinition["createBoundingBox"] = &NI::TriShape::createBoundingBox_lua;
 			}
 		}
 	}

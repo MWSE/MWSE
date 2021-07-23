@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["actor"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor who is entering combat.",
 		},
 		["target"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor who combat is being triggered against.",
 		},
 	},

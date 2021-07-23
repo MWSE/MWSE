@@ -2,7 +2,6 @@
 
 #include "NIObjectNET.h"
 #include "NIPixelFormat.h"
-#include "NIPixelData.h"
 
 namespace NI {
 	struct Texture_vTable : Object_vTable {
@@ -34,6 +33,8 @@ namespace NI {
 			PixelLayout pixelLayout; // 0x0
 			MipFlag mipMapped; // 0x4
 			AlphaFormat alphaFormat; // 0x8
+
+			static constexpr auto DEFAULT_PREFS = reinterpret_cast<FormatPrefs*>(0x6FC710);
 		};
 		static_assert(sizeof(Texture::FormatPrefs) == 0xC, "NI::Texture::FormatPrefs failed size validation");
 
@@ -46,9 +47,11 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		__declspec(dllexport) unsigned int getWidth();
-		__declspec(dllexport) unsigned int getHeight();
+		unsigned int getWidth();
+		unsigned int getHeight();
 
 	};
 	static_assert(sizeof(Texture) == 0x2C, "NI::Texture failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::Texture)

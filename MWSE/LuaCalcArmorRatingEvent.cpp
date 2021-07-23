@@ -36,15 +36,15 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["armor"] = makeLuaObject(m_Armor);
+				eventData["armor"] = m_Armor;
 
 				if (m_Actor) {
-					eventData["mobile"] = makeLuaObject(m_Actor);
-					eventData["reference"] = makeLuaObject(m_Actor->reference);
+					eventData["mobile"] = m_Actor;
+					eventData["reference"] = m_Actor->reference;
 				}
 				
 				if (m_NPC) {
-					eventData["npc"] = makeLuaObject(m_NPC);
+					eventData["npc"] = m_NPC;
 				}
 
 				return eventData;

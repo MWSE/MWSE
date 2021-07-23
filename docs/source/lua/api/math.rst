@@ -10,6 +10,7 @@ Functions
     :maxdepth: 1
 
     math/clamp
+    math/lerp
     math/remap
     math/round
 

@@ -1,0 +1,3 @@
+return {
+	type = "value",
+}

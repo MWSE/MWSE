@@ -25,9 +25,6 @@
 #include "TES3Util.h"
 #include "StringUtil.h"
 
-#include <map>
-#include <Windows.h>
-
 using namespace mwse;
 
 namespace mwse {

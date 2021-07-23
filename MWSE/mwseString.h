@@ -20,10 +20,6 @@
 
 #pragma once
 
-#include <string>
-#include <map>
-#include <exception>
-
 namespace mwse {
 	/*
 		A string implementation for mwse. Derived from std::string; however, the strings

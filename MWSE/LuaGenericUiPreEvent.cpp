@@ -35,6 +35,16 @@ namespace mwse {
 				return eventData;
 			}
 
+			sol::object GenericUiPreEvent::getEventOptions() {
+				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+				sol::state& state = stateHandle.state;
+				sol::table options = state.create_table();
+
+				options["filter"] = m_Source->id;
+
+				return options;
+			}
+
 			bool GenericUiPreEvent::m_EventEnabled = false;
 		}
 	}

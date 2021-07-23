@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Attachment.h"
-#include "TES3Collections.h"
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	struct AIConfig {
@@ -10,8 +10,70 @@ namespace TES3 {
 		unsigned char flee; // 0x3
 		unsigned char alarm; // 0x4
 		char unknown_0x5[3];
-		mwse::bitset32 merchantFlags; // 0x8
-		Iterator<TravelDestination> * travelDestinations; // 0xC
+		unsigned int merchantFlags; // 0x8
+		IteratedList<TravelDestination*> * travelDestinations; // 0xC
+
+		//
+		// Custom functions.
+		//
+
+		bool getServiceFlag(unsigned int) const;
+		void setServiceFlag(unsigned int, bool);
+
+		bool getBartersAlchemy() const;
+		void setBartersAlchemy(bool set);
+
+		bool getBartersApparatus() const;
+		void setBartersApparatus(bool set);
+
+		bool getBartersArmor() const;
+		void setBartersArmor(bool set);
+
+		bool getBartersBooks() const;
+		void setBartersBooks(bool set);
+
+		bool getBartersClothing() const;
+		void setBartersClothing(bool set);
+
+		bool getBartersEnchantedItems() const;
+		void setBartersEnchantedItems(bool set);
+
+		bool getBartersIngredients() const;
+		void setBartersIngredients(bool set);
+
+		bool getBartersLights() const;
+		void setBartersLights(bool set);
+
+		bool getBartersLockpicks() const;
+		void setBartersLockpicks(bool set);
+
+		bool getBartersMiscItems() const;
+		void setBartersMiscItems(bool set);
+
+		bool getBartersProbes() const;
+		void setBartersProbes(bool set);
+
+		bool getBartersRepairTools() const;
+		void setBartersRepairTools(bool set);
+
+		bool getBartersWeapons() const;
+		void setBartersWeapons(bool set);
+
+		bool getOffersEnchanting() const;
+		void setOffersEnchanting(bool set);
+
+		bool getOffersRepairs() const;
+		void setOffersRepairs(bool set);
+
+		bool getOffersSpellmaking() const;
+		void setOffersSpellmaking(bool set);
+
+		bool getOffersSpells() const;
+		void setOffersSpells(bool set);
+
+		bool getOffersTraining() const;
+		void setOffersTraining(bool set);
+
 	};
 	static_assert(sizeof(AIConfig) == 0x10, "TES3::AIConfig failed size validation");
 }

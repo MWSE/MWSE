@@ -14,36 +14,30 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::Ingredient>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::Ingredient>("tes3ingredient");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-			usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>());
-			setUserdataForPhysicalObject(usertypeDefinition);
+			usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
+			setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("value", &TES3::Ingredient::value);
-			usertypeDefinition.set("weight", &TES3::Ingredient::weight);
+			usertypeDefinition["value"] = &TES3::Ingredient::value;
+			usertypeDefinition["weight"] = &TES3::Ingredient::weight;
 
 			// Indirect bindings to unions and arrays.
-			usertypeDefinition.set("effects", sol::readonly_property([](TES3::Ingredient& self) { return std::ref(self.effects); }));
-			usertypeDefinition.set("effectSkillIds", sol::readonly_property([](TES3::Ingredient& self) { return std::ref(self.effectSkillIds); }));
-			usertypeDefinition.set("effectAttributeIds", sol::readonly_property([](TES3::Ingredient& self) { return std::ref(self.effectAttributeIds); }));
+			usertypeDefinition["effects"] = sol::readonly_property(&TES3::Ingredient::getEffects);
+			usertypeDefinition["effectAttributeIds"] = sol::readonly_property(&TES3::Ingredient::getEffectAttributeIds);
+			usertypeDefinition["effectSkillIds"] = sol::readonly_property(&TES3::Ingredient::getEffectSkillIds);
 
 			// Functions exposed as properties.
-			usertypeDefinition.set("icon", sol::property(
-				&TES3::Ingredient::getIconPath,
-				[](TES3::Ingredient& self, const char* value) { if (strlen(value) < 32) strcpy(self.texture, value); }
-			));
-			usertypeDefinition.set("mesh", sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath));
-			usertypeDefinition.set("name", sol::property(&TES3::Ingredient::getName, &TES3::Ingredient::setName));
-			usertypeDefinition.set("script", sol::property(&TES3::Ingredient::getScript));
+			usertypeDefinition["icon"] = sol::property(&TES3::Ingredient::getIconPath, &TES3::Ingredient::setIconPath);
+			usertypeDefinition["mesh"] = sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath);
+			usertypeDefinition["name"] = sol::property(&TES3::Ingredient::getName, &TES3::Ingredient::setName);
+			usertypeDefinition["script"] = &TES3::Ingredient::script;
 
 			// TODO: Deprecated. Remove before 2.1-stable.
-			usertypeDefinition.set("model", sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3ingredient", usertypeDefinition);
+			usertypeDefinition["model"] = sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath);
 		}
 	}
 }

@@ -14,36 +14,31 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::RepairTool>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::RepairTool>("tes3repairTool");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-			usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>());
-			setUserdataForPhysicalObject(usertypeDefinition);
+			usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
+			setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("maxCondition", &TES3::RepairTool::maxCondition);
-			usertypeDefinition.set("quality", &TES3::RepairTool::quality);
-			usertypeDefinition.set("value", &TES3::RepairTool::value);
-			usertypeDefinition.set("weight", &TES3::RepairTool::weight);
-
-			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("script", sol::readonly_property([](TES3::RepairTool& self) { return makeLuaObject(self.getScript()); }));
+			usertypeDefinition["maxCondition"] = &TES3::RepairTool::maxCondition;
+			usertypeDefinition["quality"] = &TES3::RepairTool::quality;
+			usertypeDefinition["script"] = &TES3::RepairTool::script;
+			usertypeDefinition["value"] = &TES3::RepairTool::value;
+			usertypeDefinition["weight"] = &TES3::RepairTool::weight;
 
 			// Functions exposed as properties.
-			usertypeDefinition.set("icon", sol::property(
-				&TES3::RepairTool::getIconPath,
-				[](TES3::RepairTool& self, const char* value) { if (strlen(value) < 32) strcpy(self.icon, value); }
-			));
-			usertypeDefinition.set("mesh", sol::property(&TES3::RepairTool::getModelPath, &TES3::RepairTool::setModelPath));
-			usertypeDefinition.set("name", sol::property(&TES3::RepairTool::getName, &TES3::RepairTool::setName));
+			usertypeDefinition["icon"] = sol::property(&TES3::RepairTool::getIconPath, &TES3::RepairTool::setIconPath);
+			usertypeDefinition["mesh"] = sol::property(&TES3::RepairTool::getModelPath, &TES3::RepairTool::setModelPath);
+			usertypeDefinition["name"] = sol::property(&TES3::RepairTool::getName, &TES3::RepairTool::setName);
 
 			// TODO: Deprecated. Remove before 2.1-stable.
-			usertypeDefinition.set("condition", &TES3::RepairTool::maxCondition);
-			usertypeDefinition.set("model", sol::property(&TES3::RepairTool::getModelPath, &TES3::RepairTool::setModelPath));
+			usertypeDefinition["condition"] = &TES3::RepairTool::maxCondition;
+			usertypeDefinition["model"] = sol::property(&TES3::RepairTool::getModelPath, &TES3::RepairTool::setModelPath);
 			
 			// Finish up our usertype.
-			state.set_usertype("tes3repairTool", usertypeDefinition);
+			
 		}
 	}
 }

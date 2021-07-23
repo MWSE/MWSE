@@ -5,14 +5,14 @@
 #include "TES3Item.h"
 #include "TES3Vectors.h"
 
-#include "NIPointer.h"
-
 namespace TES3 {
 	namespace AttachmentType {
 		enum AttachmentType {
 			Animation = 0x0,
+			BodyPartManager = 0x1,
 			Light = 0x2,
 			Lock = 0x3,
+			LeveledBaseReference = 0x4,
 			TravelDestination = 0x5,
 			Variables = 0x6,
 			ActorData = 0x8,
@@ -40,6 +40,12 @@ namespace TES3 {
 	typedef AttachmentWithNode<AnimationData> AnimationAttachment;
 
 	//
+	// Body Part Manager.
+	//
+
+	typedef AttachmentWithNode<BodyPartManager> BodyPartManagerAttachment;
+
+	//
 	// Lights
 	//
 
@@ -60,10 +66,24 @@ namespace TES3 {
 		Misc * key; // 0x04
 		Spell * trap; // 0x08
 		bool locked; // 0x0C
+
+		//
+		// Custom functions.
+		//
+
+		Misc* getKey();
+		void setKey(Misc* key);
+
 	};
 	static_assert(sizeof(LockAttachmentNode) == 0x10, "TES3::LockAttachmentNode failed size validation");
 
 	typedef AttachmentWithNode<LockAttachmentNode> LockAttachment;
+
+	//
+	// Leveled Base Reference
+	//
+
+	typedef AttachmentWithNode<Reference> LeveledBaseReferenceAttachment;
 
 	//
 	// TravelDestination
@@ -127,7 +147,7 @@ namespace TES3 {
 	}
 
 	struct ActionAttachment : Attachment {
-		mwse::bitset32 flags;
+		unsigned int flags;
 		Reference * reference;
 	};
 	static_assert(sizeof(ActionAttachment) == 0x10, "TES3::ActionAttachment failed size validation");

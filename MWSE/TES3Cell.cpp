@@ -1,6 +1,15 @@
 #include "TES3Cell.h"
-#include "TES3Util.h"
 
+#include "MemoryUtil.h"
+
+#include "LuaManager.h"
+
+#include "LuaCellActivatedEvent.h"
+#include "LuaCellDeactivatedEvent.h"
+
+#include "TES3DataHandler.h"
+#include "TES3GameSetting.h"
+#include "TES3Region.h"
 
 namespace TES3 {
 	const auto TES3_Cell_constructor = reinterpret_cast<Cell*(__thiscall *)(Cell*)>(0x4DB500);
@@ -8,17 +17,17 @@ namespace TES3 {
 		return TES3_Cell_constructor(mwse::tes3::_new<Cell>());
 	}
 
-	const auto TES3_Cell_getFirstObjectOfType = reinterpret_cast<Reference*(__thiscall *)(Cell*, int, unsigned char)>(0x4DBEF0);
-	Reference * Cell::getFirstObjectOfType(ObjectType::ObjectType type, bool skipDeleted = true) {
+	const auto TES3_Cell_getFirstObjectOfType = reinterpret_cast<Reference*(__thiscall *)(const Cell*, int, unsigned char)>(0x4DBEF0);
+	Reference * Cell::getFirstObjectOfType(ObjectType::ObjectType type, bool skipDeleted) const {
 		return TES3_Cell_getFirstObjectOfType(this, type, skipDeleted);
 	}
 
-	bool Cell::isInterior() {
+	bool Cell::isInterior() const {
 		return getCellFlag(TES3::CellFlag::Interior);
 	}
 
-	const auto TES3_Cell_getExteriorGridX = reinterpret_cast<int(__thiscall *)(Cell*)>(0x4DB9D0);
-	int Cell::getGridX() {
+	const auto TES3_Cell_getExteriorGridX = reinterpret_cast<int(__thiscall *)(const Cell*)>(0x4DB9D0);
+	int Cell::getGridX() const {
 		return TES3_Cell_getExteriorGridX(this);
 	}
 
@@ -27,8 +36,8 @@ namespace TES3 {
 		TES3_Cell_setGridX(this, x);
 	}
 
-	const auto TES3_Cell_getExteriorGridY = reinterpret_cast<int(__thiscall *)(Cell*)>(0x4DB9F0);
-	int Cell::getGridY() {
+	const auto TES3_Cell_getExteriorGridY = reinterpret_cast<int(__thiscall *)(const Cell*)>(0x4DB9F0);
+	int Cell::getGridY() const {
 		return TES3_Cell_getExteriorGridY(this);
 	}
 
@@ -42,12 +51,26 @@ namespace TES3 {
 		TES3_Cell_setName(this, name);
 	}
 
+	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, Vector2*, float, const char*)>(0x4E3730);
+	void Cell::addMapNote(Vector2* position, float unknown, const char* text) {
+		TES3_Cell_addMapNote(this, position, unknown, text);
+	}
+
 	const auto TES3_Cell_insertReference = reinterpret_cast<void(__thiscall *)(Cell*, Reference*)>(0x4DC030);
 	void Cell::insertReference(Reference* reference) {
 		TES3_Cell_insertReference(this, reference);
+
+		// Fire off activation event.
+		if (getCellActive()) {
+			reference->setReferenceActive();
+		}
 	}
 
-	bool Cell::getCellFlag(unsigned int flag) {
+	const char* Cell::getName() const {
+		return name;
+	}
+
+	bool Cell::getCellFlag(unsigned int flag) const {
 		return (cellFlags & flag);
 	}
 
@@ -60,28 +83,27 @@ namespace TES3 {
 		}
 	}
 
-	float Cell::getFogDensity() {
+	std::optional<float> Cell::getFogDensity() const {
 		if (cellFlags & CellFlag::Interior) {
-			return VariantData.interior.fogDensity;
+			return variantData.interior.fogDensity;
 		}
-		else {
-			return -1;
-		}
+		return {};
 	}
 
 	void Cell::setFogDensity(float value) {
 		if (cellFlags & CellFlag::Interior) {
-			VariantData.interior.fogDensity = value;
+			variantData.interior.fogDensity = value;
 		}
 	}
 
-	float Cell::getWaterLevel() {
+	std::optional<float> Cell::getWaterLevel() const {
 		if (!(cellFlags & CellFlag::Interior) || cellFlags & CellFlag::BehavesAsExterior) {
 			return 0.0;
 		}
-		else {
-			return (cellFlags & CellFlag::HasWater) ? waterLevelOrRegion.waterLevel : FLT_MIN;
+		else if (cellFlags & CellFlag::HasWater) {
+			return waterLevelOrRegion.waterLevel;
 		}
+		return {};
 	}
 
 	void Cell::setWaterLevel(float value) {
@@ -95,7 +117,7 @@ namespace TES3 {
 		}
 	}
 
-	Region * Cell::getRegion() {
+	Region * Cell::getRegion() const {
 		if (!(cellFlags & CellFlag::Interior) || cellFlags & CellFlag::BehavesAsExterior) {
 			return waterLevelOrRegion.region;
 		}
@@ -104,13 +126,139 @@ namespace TES3 {
 		}
 	}
 
-	bool Cell::isPointInCell(float x, float y) {
-		if (cellFlags & CellFlag::Interior) {
-			return true;
+	TES3::PackedColor* Cell::getAmbientColor() {
+		if (cellFlags & TES3::CellFlag::Interior) {
+			return &variantData.interior.ambientColor;
 		}
-		else {
-			int cellX = toGridCoord(x), cellY = toGridCoord(y);
-			return cellX == VariantData.exterior.gridX && cellY == VariantData.exterior.gridY;
+		return nullptr;
+	}
+
+	TES3::PackedColor* Cell::getFogColor() {
+		if (cellFlags & TES3::CellFlag::Interior) {
+			return &variantData.interior.fogColor;
+		}
+		return nullptr;
+	}
+
+	TES3::PackedColor* Cell::getSunColor() {
+		if (cellFlags & TES3::CellFlag::Interior) {
+			return &variantData.interior.sunColor;
+		}
+		return nullptr;
+	}
+
+	bool Cell::getBehavesAsExterior() const {
+		return getCellFlag(TES3::CellFlag::BehavesAsExterior);
+	}
+
+	void Cell::setBehavesAsExterior(bool value) {
+		setCellFlag(TES3::CellFlag::BehavesAsExterior, value);
+	}
+
+	bool Cell::getHasWater() const {
+		return getCellFlag(TES3::CellFlag::HasWater);
+	}
+
+	void Cell::setHasWater(bool value) {
+		setCellFlag(TES3::CellFlag::HasWater, value);
+	}
+
+	bool Cell::getIsInterior() const {
+		return getCellFlag(TES3::CellFlag::Interior);
+	}
+
+	void Cell::setIsInterior(bool value) {
+		setCellFlag(TES3::CellFlag::Interior, value);
+	}
+
+	bool Cell::getSleepingIsIllegal() const {
+		return getCellFlag(TES3::CellFlag::SleepIsIllegal);
+	}
+
+	void Cell::setSleepingIsIllegal(bool value) {
+		setCellFlag(TES3::CellFlag::SleepIsIllegal, value);
+	}
+
+	static std::unordered_set<const TES3::Cell*> activeCells;
+
+	void Cell::setCellActive() {
+		// Skip if the cell is already active.
+		if (activeCells.find(this) != activeCells.end()) {
+			return;
+		}
+
+		// Fire off reference active events.
+		for (auto ref : actors) ref->setReferenceActive();
+		for (auto ref : persistentRefs) ref->setReferenceActive();
+		for (auto ref : temporaryRefs) ref->setReferenceActive();
+
+		// Add to active cells set.
+		activeCells.insert(this);
+
+		// Fire off cell activated event.
+		if (mwse::lua::event::CellActivatedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::CellActivatedEvent(this));
 		}
 	}
+
+	void Cell::setCellInactive() {
+		// Fire off reference inactive events.
+		for (auto ref : actors) ref->setReferenceInactive();
+		for (auto ref : persistentRefs) ref->setReferenceInactive();
+		for (auto ref : temporaryRefs) ref->setReferenceInactive();
+
+		// Add to active cells set.
+		activeCells.erase(this);
+
+		// Fire off cell deactivated event.
+		if (mwse::lua::event::CellDeactivatedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::CellDeactivatedEvent(this));
+		}
+	}
+
+	bool Cell::getCellActive() const {
+		return activeCells.find(this) != activeCells.end();
+	}
+
+	const char* Cell::getDisplayName() const {
+		// Try the cell name first.
+		auto name = getName();
+		if (name) {
+			return name;
+		}
+
+		// Fall back to region name.
+		auto region = getRegion();
+		if (region) {
+			return region->getName();
+		}
+
+		// Fallback to GMST.
+		return TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::sDefaultCellname]->value.asString;
+	}
+
+	std::string Cell::getEditorName() const {
+		std::stringstream ss;
+
+		ss << getDisplayName();
+		if (!isInterior()) {
+			ss << " (" << getGridX() << ", " << getGridY() << ")";
+		}
+
+		return std::move(ss.str());
+	}
+
+	bool Cell::isPointInCell(float x, float y) const {
+		if (isInterior()) {
+			return true;
+		}
+
+		return toGridCoord(x) == variantData.exterior.gridX && toGridCoord(y) == variantData.exterior.gridY;
+	}
+
+	int Cell::toGridCoord(float x) {
+		return int(x) >> 13;
+	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Cell)

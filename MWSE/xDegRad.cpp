@@ -23,9 +23,6 @@
 #include "Stack.h"
 #include "InstructionInterface.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
 using namespace mwse;
 
 namespace mwse

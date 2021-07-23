@@ -22,7 +22,7 @@ function ParagraphField:registerEnterKey(element)
 	element:register("keyEnter",
 		function()
 			local inputController = tes3.worldController.inputController
-			holdingShift = (
+			local holdingShift = (
 				inputController:isKeyDown(tes3.scanCode.lShift) or
 				inputController:isKeyDown(tes3.scanCode.rShift)
 			)

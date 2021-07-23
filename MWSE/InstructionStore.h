@@ -23,8 +23,6 @@
 #include "InstructionInterface.h"
 #include "Log.h"
 
-#include <exception>
-
 namespace mwse {
         // This can afford to be expensive for adding opcodes, as that's not done often.
         // Conversely, looking up opcodes needs to be as fast as possible.
@@ -59,7 +57,7 @@ namespace mwse {
 
             void add(InstructionInterface_t &implementation);
 
-            inline InstructionInterface_t *get(const OpCode::OpCode_t opcode) throw (IllegalOpCode)
+            inline InstructionInterface_t *get(const OpCode::OpCode_t opcode)
             {
                 unsigned int primary_index = (opcode >> 8) & 0xFF;
                 unsigned int secondary_index = opcode & 0xFF;

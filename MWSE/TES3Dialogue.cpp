@@ -4,10 +4,20 @@
 
 #include "LuaJournalEvent.h"
 
+#include "LuaUtil.h"
+
+#include "TES3MobilePlayer.h"
+#include "TES3Reference.h"
+#include "TES3WorldController.h"
+
 #define TES3_Dialogue_journalAdd 0x4B2F80
 #define TES3_Dialogue_journalSetIndex 0x50F8B0
 
 namespace TES3 {
+	const char* Dialogue::getObjectID() const {
+		return name;
+	}
+
 	bool Dialogue::addToJournal(int index, MobileActor * actor) {
 		if (type != DialogueType::Journal) {
 			return false;
@@ -68,9 +78,30 @@ namespace TES3 {
 		return TES3_Dialogue_getFilteredInfo(this, actor, reference, flag);
 	}
 
+	std::string Dialogue::toJson() {
+		std::ostringstream ss;
+		ss << "\"tes3dialogue:" << name << "\"";
+		return std::move(ss.str());
+	}
+
+	bool Dialogue::addToJournal_lua(sol::table params) {
+		int index = mwse::lua::getOptionalParam<int>(params, "index", 0);
+		TES3::MobileActor* actor = mwse::lua::getOptionalParamMobileActor(params, "actor");
+		if (actor == nullptr) {
+			actor = TES3::WorldController::get()->getMobilePlayer();
+		}
+		return addToJournal(index, actor);
+	}
+
+	DialogueInfo* Dialogue::getDeepFilteredInfo_lua(sol::table params) {
+		TES3::MobileActor* mobile = mwse::lua::getOptionalParamMobileActor(params, "actor");
+		return getDeepFilteredInfo(reinterpret_cast<TES3::Actor*>(mobile->reference->baseObject), mobile->reference, true);
+	}
+
 	const auto TES3_getDialogue = reinterpret_cast<Dialogue* (__cdecl*)(int, int)>(0x4B2C00);
 	Dialogue* Dialogue::getDialogue(int type, int page) {
 		return TES3_getDialogue(type, page);
 	}
 }
 
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Dialogue)

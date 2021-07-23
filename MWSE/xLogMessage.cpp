@@ -25,8 +25,6 @@
 #include "Log.h"
 #include "StringUtil.h"
 
-#include <cmath>
-
 using namespace mwse;
 
 namespace mwse

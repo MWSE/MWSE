@@ -4,7 +4,6 @@
 
 #include "TES3Object.h"
 
-#include "sol_forward.hpp"
 
 namespace TES3 {
 	namespace ServiceFlag {
@@ -45,26 +44,72 @@ namespace TES3 {
 		// Virtual table overrides.
 		//
 
-		char* getName();
+		const char * getObjectID() const;
+		const char * getName() const;
 
 		//
 		// Custom functions.
 		//
 
+		void setName(const char* name);
+
 		char * loadDescription();
+		sol::optional<std::string> getOrLoadDescription();
 		void setDescription(const char*);
 		void freeDescription();
 
-		bool getServiceFlag(unsigned int);
+		std::reference_wrapper<int[2]> getAttributes();
+		std::reference_wrapper<int[10]> getSkills();
+
+		bool getIsPlayable();
+		void setIsPlayable(bool value);
+
+		bool getServiceFlag(unsigned int) const;
 		void setServiceFlag(unsigned int, bool);
 
-		//
-		// Lua-specific interfaces.
-		//
+		bool getBartersAlchemy() const;
+		void setBartersAlchemy(bool value);
+		bool getBartersApparatus() const;
+		void setBartersApparatus(bool value);
+		bool getBartersArmor() const;
+		void setBartersArmor(bool value);
+		bool getBartersBooks() const;
+		void setBartersBooks(bool value);
+		bool getBartersClothing() const;
+		void setBartersClothing(bool value);
+		bool getBartersEnchantedItems() const;
+		void setBartersEnchantedItems(bool value);
+		bool getBartersIngredients() const;
+		void setBartersIngredients(bool value);
+		bool getBartersLights() const;
+		void setBartersLights(bool value);
+		bool getBartersLockpicks() const;
+		void setBartersLockpicks(bool value);
+		bool getBartersMiscItems() const;
+		void setBartersMiscItems(bool value);
+		bool getBartersProbes() const;
+		void setBartersProbes(bool value);
+		bool getBartersRepairTools() const;
+		void setBartersRepairTools(bool value);
+		bool getBartersWeapons() const;
+		void setBartersWeapons(bool value);
+		bool getOffersEnchanting() const;
+		void setOffersEnchanting(bool value);
+		bool getOffersRepairs() const;
+		void setOffersRepairs(bool value);
+		bool getOffersSpellmaking() const;
+		void setOffersSpellmaking(bool value);
+		bool getOffersSpells() const;
+		void setOffersSpells(bool value);
+		bool getOffersTraining() const;
+		void setOffersTraining(bool value);
 
-		sol::table getMajorSkills();
-		sol::table getMinorSkills();
+		void setDescription_lua(const char* value);
+		sol::table getMajorSkills_lua(sol::this_state ts);
+		sol::table getMinorSkills_lua(sol::this_state ts);
 
 	};
 	static_assert(sizeof(Class) == 0x94, "TES3::Class failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Class)

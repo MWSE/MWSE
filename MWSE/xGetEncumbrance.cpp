@@ -29,10 +29,6 @@
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
 
-#include <map>
-#include <set>
-#include <string>
-
 using namespace mwse;
 
 namespace mwse

@@ -1,13 +1,29 @@
 #pragma once
 
 #include "TES3Object.h"
-#include "TES3Collections.h"
+
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	struct Quest : BaseObject {
 		char * name; // 0x10
-		Iterator<Dialogue> dialogue; // 0x14
-		Iterator<DialogueInfo> activeInfo; // 0x28
+		IteratedList<Dialogue*> dialogue; // 0x14
+		IteratedList<DialogueInfo*> activeInfo; // 0x28
+
+		//
+		// Virtual table overrides.
+		//
+
+		char* getObjectID() const;
+
+		//
+		// Custom functions.
+		//
+
+		std::string toJson() const;
+
 	};
 	static_assert(sizeof(Quest) == 0x3C, "TES3::Quest failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Quest)

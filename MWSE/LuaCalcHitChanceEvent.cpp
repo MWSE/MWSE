@@ -22,13 +22,13 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["attackerMobile"] = makeLuaObject(m_Attacker);
-				eventData["attacker"] = makeLuaObject(m_Attacker->reference);
+				eventData["attackerMobile"] = m_Attacker;
+				eventData["attacker"] = m_Attacker->reference;
 
 				auto target = m_Attacker->actionData.hitTarget;
 				if (target) {
-					eventData["targetMobile"] = makeLuaObject(target);
-					eventData["target"] = makeLuaObject(target->reference);
+					eventData["targetMobile"] = target;
+					eventData["target"] = target->reference;
 				}
 
 				eventData["hitChance"] = m_HitChance;

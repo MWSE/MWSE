@@ -8,7 +8,7 @@ namespace mwse {
 		namespace event {
 			class ReferenceSceneNodeCreatedEvent : public ObjectFilteredEvent, public DisableableEvent<ReferenceSceneNodeCreatedEvent> {
 			public:
-				ReferenceSceneNodeCreatedEvent(TES3::Reference* activator);
+				ReferenceSceneNodeCreatedEvent(TES3::Reference* reference);
 				sol::table createEventTable();
 
 			protected:

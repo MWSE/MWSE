@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sol.hpp"
-
 namespace NI {
 	template <class T>
 	class Pointer {
@@ -56,7 +54,7 @@ namespace NI {
 			return *this;
 		}
 
-		T * get() {
+		T * get() const {
 			return m_Pointer;
 		}
 

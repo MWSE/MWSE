@@ -4,7 +4,7 @@ xLuaRunScript
 
 **Parameters:**
 
-- ``string`` **script**: The name of the script to run. Must be in *Data Files\\MWSE\\lua\\scripts*.
+- ``string`` **script**: The name of the script to run. This is relative to *Data Files\\MWSE\\mods*.
 - ``varies`` (many) **parameters**: Values that the lua script can access. 
 
 **Returned:**
@@ -41,7 +41,7 @@ First, our mwscript:
   
   xLogMessage "[luaexec|mwscript] Sending values: %d, %d, %f, '%s'" myShort myLong myFloat myString
   
-  setx retShort retLong retFloat retString to xLuaRunScript "luaexec" myShort myLong myFloat myString
+  setx retShort retLong retFloat retString to xLuaRunScript "test_mod\\luaexec" myShort myLong myFloat myString
   
   xLogMessage "[luaexec|mwscript] Got results: %d, %d, %f, '%s'" retShort, retLong, retFloat, retString
   
@@ -49,7 +49,7 @@ First, our mwscript:
   
   End
 
-Next, we have our Lua that gets the data, prints it, and sends more back:
+Next, we have our Lua file (*Data Files\\mods\\test_mod\\luaexec.lua*) that gets the data, prints it, and sends more back.
 
 .. code-block:: lua
 

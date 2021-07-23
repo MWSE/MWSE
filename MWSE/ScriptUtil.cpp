@@ -21,6 +21,7 @@
 
 #include "ScriptUtil.h"
 
+#include "TES3DataHandler.h"
 #include "TES3Spell.h"
 #include "TES3Reference.h"
 #include "TES3Creature.h"
@@ -481,6 +482,7 @@ namespace mwse
 			float cachedRotationX = getScriptTargetRotationX();
 			float cachedRotationY = getScriptTargetRotationY();
 			float cachedRotationZ = getScriptTargetRotationZ();
+			TES3::DataHandler::suppressThreadLoad = true;
 
 			// Call original opcode.
 			setScriptDestination(x, y, z);
@@ -494,6 +496,7 @@ namespace mwse
 			setScriptTargetRotationX(cachedRotationX);
 			setScriptTargetRotationY(cachedRotationY);
 			setScriptTargetRotationZ(cachedRotationZ);
+			TES3::DataHandler::suppressThreadLoad = false;
 		}
 
 		void PositionCell(TES3::Script* script, TES3::Reference* reference, float x, float y, float z, float rotation, const char* cell) {
@@ -505,6 +508,7 @@ namespace mwse
 			float cachedRotationY = getScriptTargetRotationY();
 			float cachedRotationZ = getScriptTargetRotationZ();
 			TES3::BaseObject* cachedSecondObject = getScriptSecondObject();
+			TES3::DataHandler::suppressThreadLoad = true;
 
 			// Call original opcode.
 			setScriptDestination(x, y, z);
@@ -520,6 +524,7 @@ namespace mwse
 			setScriptTargetRotationY(cachedRotationY);
 			setScriptTargetRotationZ(cachedRotationZ);
 			setScriptSecondObject(cachedSecondObject);
+			TES3::DataHandler::suppressThreadLoad = false;
 		}
 
 		void RemoveItem(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* itemTemplate, long count) {

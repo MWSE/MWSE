@@ -2,6 +2,8 @@ local tes3 = {}
 
 -- Game constants.
 tes3.actionFlag = require("tes3.actionFlag")
+tes3.activeBodyPart = require("tes3.activeBodyPart")
+tes3.activeBodyPartLayer = require("tes3.activeBodyPartLayer")
 tes3.actorType = require("tes3.actorType")
 tes3.aiPackage = require("tes3.aiPackage")
 tes3.animationGroup = require("tes3.animationGroup")
@@ -9,13 +11,18 @@ tes3.animationStartFlag = require("tes3.animationStartFlag")
 tes3.animationState = require("tes3.animationState")
 tes3.apparatusType = require("tes3.apparatusType")
 tes3.armorSlot = require("tes3.armorSlot")
+tes3.armorWeightClass = require("tes3.armorWeightClass")
 tes3.attachmentType = require("tes3.attachmentType")
 tes3.attribute = require("tes3.attribute")
 tes3.attributeName = require("tes3.attributeName")
+tes3.bodyPartAttachment = require("tes3.bodyPartAttachment")
 tes3.bookType = require("tes3.bookType")
 tes3.clothingSlot = require("tes3.clothingSlot")
+tes3.codePatchFeature = require("tes3.codePatchFeature")
 tes3.creatureType = require("tes3.creatureType")
 tes3.crimeType = require("tes3.crimeType")
+tes3.dialoguePage = require("tes3.dialoguePage")
+tes3.dialogueType = require("tes3.dialogueType")
 tes3.dynamicEffectType = require("tes3.dynamicEffectType")
 tes3.effect = require("tes3.effect")
 tes3.effectAttribute = require("tes3.effectAttribute")
@@ -29,9 +36,12 @@ tes3.justifyText = require("tes3.justifyText")
 tes3.keybind = require("tes3.keybind")
 tes3.keyTransition = require("tes3.keyTransition")
 tes3.magicSchool = require("tes3.magicSchool")
+tes3.magicSourceType = require("tes3.magicSourceType")
+tes3.merchantService = require("tes3.merchantService")
 tes3.musicSituation = require("tes3.musicSituation")
 tes3.niType = require("tes3.niType")
 tes3.objectType = require("tes3.objectType")
+tes3.physicalAttackType = require("tes3.physicalAttackType")
 tes3.scanCode = require("tes3.scanCode")
 tes3.scanCodeToNumber = require("tes3.scanCodeToNumber")
 tes3.skill = require("tes3.skill")
@@ -44,6 +54,7 @@ tes3.specializationName = require("tes3.specializationName")
 tes3.spellOrigin = require("tes3.spellOrigin")
 tes3.spellState = require("tes3.spellState")
 tes3.spellType = require("tes3.spellType")
+tes3.texturingPropertyMap = require("tes3.texturingPropertyMap")
 tes3.uiProperty = require("tes3.uiProperty")
 tes3.voiceover = require("tes3.voiceover")
 tes3.weaponType = require("tes3.weaponType")
@@ -83,23 +94,13 @@ function tes3.getAttachment(reference, attachment)
 	return reference and reference.attachments and reference.attachments[attachment]
 end
 
--- Get a reference's owner.
-function tes3.getOwner(reference)
-	local vars = tes3.getAttachment(reference, "variables")
-	if (vars) then
-		return vars.owner
-	end
-end
-
 -- Iterator to use TES3::Iterator in a for loop.
+-- Only returns values, rather than a key-value pair.
 function tes3.iterate(iterator)
-	local node = iterator.head
+	local next, t, k, v = pairs(iterator)
 	return function()
-		if (node) then
-			local data = node.nodeData
-			node = node.nextNode
-			return data
-		end
+		k, v = next(t, k)
+		return v
 	end
 end
 

@@ -7,8 +7,18 @@ namespace NI {
 		int switchIndex; // 0xB0
 		float fSavedTime;
 		int updateIndex;
-		TES3::TArray<unsigned int> childRevisionIDs;
+		TArray<unsigned int*> childRevisionIDs;
 		bool bUpdateControllers;
+
+		//
+		// Custom functions.
+		//
+
+		int getSwitchIndex();
+		void setSwitchIndex(int index);
+
 	};
 	static_assert(sizeof(SwitchNode) == 0xD8, "NI::SwitchNode failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::SwitchNode)

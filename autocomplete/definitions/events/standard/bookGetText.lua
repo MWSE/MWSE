@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["book"] = {
 			type = "tes3book",
-			readonly = true,
+			readOnly = true,
 			description = "The book whose text is being retrieved.",
 		},
 		["text"] = {

@@ -32,10 +32,15 @@ end
 
 
 function Variable:get()
-	return rawget(self, value)
+	return rawget(self, "value")
 end
 
 function Variable:set(newValue)
+	local converter = self.converter
+	if (converter) then
+		newValue = converter(newValue)
+	end
+	
 	rawset(self, "value", newValue)
 end
  

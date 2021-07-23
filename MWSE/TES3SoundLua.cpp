@@ -16,69 +16,55 @@ namespace mwse {
 			// Binding for TES3::Sound.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Sound>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Sound>("tes3sound");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::BaseObject>());
-				setUserdataForBaseObject(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::BaseObject>();
+				setUserdataForTES3BaseObject(usertypeDefinition);
 
-				// Override the id property to use the sound name, rather than the vtable.
-				usertypeDefinition.set(sol::meta_function::to_string, sol::readonly_property([](TES3::Sound& self) { return self.id; }));
-				usertypeDefinition.set("id", sol::readonly_property([](TES3::Sound& self) { return self.id; }));
+				// Base class overrides.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Sound::getObjectID;
+				usertypeDefinition["id"] = sol::readonly_property(&TES3::Sound::getObjectID);
 
 				// Allow object to be serialized to json.
-				usertypeDefinition.set("__tojson", [](TES3::Sound& self, sol::table state) {
-					std::ostringstream ss;
-					ss << "\"tes3sound:" << self.id << "\"";
-					return ss.str();
-				});
+				usertypeDefinition["__tojson"] = &TES3::Sound::toJson;
 
 				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("filename", sol::readonly_property([](TES3::Sound& self) { return self.filename; }));
+				usertypeDefinition["filename"] = sol::readonly_property(&TES3::Sound::filename);
 
 				// Basic function binding.
-				usertypeDefinition.set("play", [](TES3::Sound& self, sol::optional<sol::table> params) {
-					bool loop = getOptionalParam<bool>(params, "loop", false);
-					unsigned char volume = getOptionalParam<double>(params, "volume", 1.0) * 250;
-					float pitch = getOptionalParam<double>(params, "pitch", 1.0);
-					return self.play(loop ? TES3::SoundPlayFlags::Loop : 0, volume, pitch, true);
-				});
-				usertypeDefinition.set("stop", &TES3::Sound::stop);
-				usertypeDefinition.set("isPlaying", &TES3::Sound::isPlaying);
+				usertypeDefinition["isLooping"] = &TES3::Sound::isLooping;
+				usertypeDefinition["isPlaying"] = &TES3::Sound::isPlaying;
+				usertypeDefinition["play"] = &TES3::Sound::play_lua;
+				usertypeDefinition["stop"] = &TES3::Sound::stop;
 
-				// Finish up our usertype.
-				state.set_usertype("tes3sound", usertypeDefinition);
+				// Expose float-based volume control.
+				usertypeDefinition["maxDistance"] = sol::property(&TES3::Sound::getMaxDistance, &TES3::Sound::setMaxDistance_lua);
+				usertypeDefinition["minDistance"] = sol::property(&TES3::Sound::getMinDistance, &TES3::Sound::setMinDistance_lua);
+				usertypeDefinition["volume"] = sol::property(&TES3::Sound::getVolume, &TES3::Sound::setVolume);
 			}
 
 			// Binding for TES3::SoundGenerator.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::SoundGenerator>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::SoundGenerator>("tes3soundGenerator");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::BaseObject>());
-				setUserdataForBaseObject(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::BaseObject>();
+				setUserdataForTES3BaseObject(usertypeDefinition);
+
+				// Base class overrides.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::SoundGenerator::getObjectID;
+				usertypeDefinition["id"] = sol::readonly_property(&TES3::SoundGenerator::getObjectID);
 
 				// Allow object to be serialized to json.
-				usertypeDefinition.set("__tojson", [](TES3::SoundGenerator& self, sol::table state) {
-					std::ostringstream ss;
-					ss << "\"tes3soundGenerator:" << self.name << "\"";
-					return ss.str();
-				});
+				usertypeDefinition["__tojson"] = &TES3::SoundGenerator::toJson;
 
 				// Basic property binding.
-				usertypeDefinition.set("type", sol::readonly_property(&TES3::SoundGenerator::soundType));
-
-				// Override the id property to use the soundgen name, rather than the vtable.
-				usertypeDefinition.set("id", sol::readonly_property([](TES3::SoundGenerator& self) { return self.name; }));
-
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("sound", sol::readonly_property([](TES3::SoundGenerator& self) { return makeLuaObject(self.sound); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3soundGenerator", usertypeDefinition);
+				usertypeDefinition["sound"] = sol::readonly_property(&TES3::SoundGenerator::sound);
+				usertypeDefinition["type"] = sol::readonly_property(&TES3::SoundGenerator::soundType);
 			}
 		}
 	}

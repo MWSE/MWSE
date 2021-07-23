@@ -2,9 +2,8 @@
 
 #include "LuaManager.h"
 
-#include "UIUtil.h"
-
 #include "TES3UIElement.h"
+#include "TES3UIManager.h"
 
 namespace mwse {
 	namespace lua {
@@ -31,7 +30,7 @@ namespace mwse {
 
 				eventData["menuMode"] = m_InMenuMode;
 				if (m_InMenuMode) {
-					eventData["menu"] = tes3::ui::getTopMenu();
+					eventData["menu"] = TES3::UI::getMenuOnTop();
 				}
 
 				return eventData;
@@ -42,7 +41,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table options = state.create_table();
 
-				auto menu = tes3::ui::getTopMenu();
+				auto menu = TES3::UI::getMenuOnTop();
 				if (menu) {
 					options["filter"] = menu->name.cString;
 				}

@@ -23,8 +23,6 @@
 #include "Stack.h"
 #include "InstructionInterface.h"
 
-#include <math.h>
-
 using namespace mwse;
 
 namespace mwse

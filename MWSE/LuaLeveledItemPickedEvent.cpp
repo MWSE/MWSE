@@ -3,6 +3,10 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
+#include "TES3Actor.h"
+#include "TES3MobileActor.h"
+#include "TES3Reference.h"
+#include "TES3Inventory.h"
 #include "TES3LeveledList.h"
 
 namespace mwse {
@@ -21,13 +25,18 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["list"] = lua::makeLuaObject(m_List);
-				eventData["pick"] = lua::makeLuaObject(m_Result);
+				eventData["list"] = m_List;
+				eventData["pick"] = m_Result;
+
+				if (m_Reference) {
+					eventData["spawner"] = m_Reference;
+				}
 
 				return eventData;
 			}
 
 			bool LeveledItemPickedEvent::m_EventEnabled = false;
+			TES3::Reference* LeveledItemPickedEvent::m_Reference = nullptr;
 		}
 	}
 }

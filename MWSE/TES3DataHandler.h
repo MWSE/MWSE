@@ -1,15 +1,21 @@
 #pragma once
 
-#include <stddef.h>
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
+#include "TES3CriticalSection.h"
+#include "TES3HashMap.h"
+#include "TES3MagicEffect.h"
 #include "TES3Skill.h"
+#include "TES3StlList.h"
+
+#include "TES3AnimationData.h"
 
 #include "NIAVObject.h"
-#include "NIPointer.h"
+#include "NISourceTexture.h"
 
-#define MWSE_CUSTOM_EFFECTS
+#define MWSE_CUSTOM_EFFECTS true
+#define MWSE_RAISED_FILE_LIMIT true
+#define MWSE_CUSTOM_GLOBALS true
 
 namespace TES3 {
 	enum class LoadGameResult {
@@ -17,111 +23,165 @@ namespace TES3 {
 		Success = 0x1,
 		Block = 0x2
 	};
-
-	struct MeshData {
-		HashMap * NIFs; // 0x0
-		HashMap * KFs; // 0x4
-
-		// Path is relative to Data Files.
-		NI::AVObject * loadMesh(const char* path);
+	enum class BaseAnimationIndex : int {
+		Male,
+		MaleFirstPerson,
+		Female,
+		FemaleFirstPerson,
+		COUNT
 	};
 
-	struct NonDynamicData {
-		long unknown_0x00;
-		long unknown_0x04; // always 0?
-		void * unknown_0x08; // Points to info about the last loaded save?
-		LinkedList<Object> * list; // 0x0C
-		LinkedList<Spell> * spellsList; // 0x10
-		MeshData * meshData; // 0x14
-		GameSetting ** GMSTs; // 0x18 // Pointer to array of GMST pointers.
-		Iterator<Race> * races; // 0x1C
-		Iterator<LandTexture> * landTextures; // 0x20
-		Iterator<Class> * classes; // 0x24
-		Iterator<Faction> * factions; // 0x28
-		Iterator<Script> * scripts; // 0x2C
-		Iterator<Sound> * sounds; // 0x30
-		Iterator<SoundGenerator> * soundGenerators; // 0x34
-		Iterator<GlobalVariable> * globals; // 0x38
-		Iterator<Dialogue> * dialogues; // 0x3C
-		Iterator<Region> * regions; // 0x40
-		Iterator<void> * birthsigns; // 0x44
-		Iterator<StartScript> * startScripts; // 0x48
-		Skill skills[27]; // 0x4C
-#ifdef MWSE_CUSTOM_EFFECTS
-		MagicEffectController * magicEffects; // 0x5C8
-		unsigned char freed_0x5CC[0x97EC]; // Unused space free for plundering.
-#else
-		MagicEffect magicEffects[143]; // 0x5C8
-#endif
-		void * lights; // 0x9DB8
-		int unknown_0x9DBC[600];
-		void * unknown_0xA71C[4];
-		int unknown_0xA72C[4];
-		int unknown_0xA73C[450];
-		void * unknown_0xAE44[3];
-		int unknown_0xAE50;
-		int unknown_0xAE54;
-		int unknown_0xAE58;
-		int sgWireframeProperty; // 0xAE5C
-		void * TESFiles; // 0xAE60
-		GameFile * activeMods[256]; // 0xAE64
-		StlList<Cell> * cells; // 0xB264
-		HashMap * allObjectsById; // 0xB268
-		HashMap * unknown_0xB26C;
-		char dataFilesPath[260]; // 0xB270
-		char unknown_0xB374;
-		char unknown_0xB375;
-		char unknown_0xB376;
-		char unknown_0xB377;
-		char unknown_0xB378;
-		char unknown_0xB379;
-		char unknown_0xB37A;
-		Iterator<void> * unknown_0xB37C;
-		NI::Pointer<NI::SourceTexture> mapTexture; // 0xB380
-		Reference * playerSaveGame; // 0xB384
-		int unknown_0xB388;
-		int unknown_0xB38C;
-		int unknown_0xB390;
-		int unknown_0xB394;
-		int unknown_0xB398;
-		int unknown_0xB39C;
-		int unknown_0xB3A0;
-		int unknown_0xB3A4;
-		int unknown_0xB3A8;
+	struct MeshData {
+		HashMap<const char*, NI::Node*>* NIFs; // 0x0
+		HashMap<const char*, KeyframeDefinition*>* KFs; // 0x4
 
-		//
-		// Other related this-call functions.
-		//
+		// Path is relative to Data Files.
+		NI::AVObject* loadMesh(const char* path);
+		KeyframeDefinition* loadKeyFrame(const char* path, const char* animation);
+	};
 
-		__declspec(dllexport) bool saveGame(const char* fileName, const char* saveName);
-		__declspec(dllexport) LoadGameResult loadGame(const char* fileName);
-		__declspec(dllexport) LoadGameResult loadGameMainMenu(const char* fileName);
+	template <typename OT>
+	struct ObjectMapContainer {
+		HashMap<const char*, OT*>* map;
+	};
 
-		__declspec(dllexport) BaseObject* resolveObject(const char*);
-		__declspec(dllexport) Reference* findFirstCloneOfActor(const char*);
-		__declspec(dllexport) Spell* getSpellById(const char*);
-		__declspec(dllexport) Script* findScriptByName(const char*);
-		__declspec(dllexport) GlobalVariable* findGlobalVariable(const char*);
-		__declspec(dllexport) Dialogue* findDialogue(const char*);
-		__declspec(dllexport) Sound* findSound(const char*);
-		__declspec(dllexport) Faction* findFaction(const char*);
-		__declspec(dllexport) bool addNewObject(BaseObject*);
-		__declspec(dllexport) void deleteObject(BaseObject*);
+#if MWSE_CUSTOM_GLOBALS
+	struct GlobalHashContainer {
+		struct icomp {
+			bool operator() (const std::string_view& lhs, const std::string_view& rhs) const {
+				return _strnicmp(lhs.data(), rhs.data(), 32) < 0;
+			}
+		};
 
-		__declspec(dllexport) Cell * getCellByGrid(int x, int y);
-		__declspec(dllexport) Cell * getCellByName(const char* name);
-
-		__declspec(dllexport) MagicEffect * getMagicEffect(int id);
-
-		__declspec(dllexport) float createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+		IteratedList<GlobalVariable*> variables;
+		std::map<std::string_view, GlobalVariable*, icomp> cache;
 
 		//
 		// Custom functions.
 		//
 
+		GlobalVariable* getVariable(const char* id) const;
+		void addVariable(GlobalVariable* value);
+		void addVariableCacheOnly(GlobalVariable* value);
+
+	};
+#endif
+
+	struct NonDynamicData {
+		int activeModCount; // 0x0
+		long unknown_0x04; // always 0?
+		GameFile* unknown_0x08; // Points to info about the last loaded save?
+		LinkedObjectList<Object> * list; // 0x0C
+		LinkedObjectList<Spell> * spellsList; // 0x10
+		MeshData * meshData; // 0x14
+		GameSetting ** GMSTs; // 0x18 // Pointer to array of GMST pointers.
+		IteratedList<Race*> * races; // 0x1C
+		IteratedList<LandTexture*> * landTextures; // 0x20
+		IteratedList<Class*> * classes; // 0x24
+		IteratedList<Faction*> * factions; // 0x28
+		IteratedList<Script*> * scripts; // 0x2C
+		IteratedList<Sound*> * sounds; // 0x30
+		IteratedList<SoundGenerator*> * soundGenerators; // 0x34
+#if MWSE_CUSTOM_GLOBALS
+		GlobalHashContainer* globals; // 0x38
+#else
+		IteratedList<GlobalVariable*>* globals; // 0x38
+#endif
+		IteratedList<Dialogue*> * dialogues; // 0x3C
+		IteratedList<Region*> * regions; // 0x40
+		IteratedList<Birthsign*> * birthsigns; // 0x44
+		IteratedList<StartScript*> * startScripts; // 0x48
+		Skill skills[27]; // 0x4C
+#if MWSE_CUSTOM_EFFECTS
+		MagicEffectController * magicEffects; // 0x5C8  
+#if MWSE_RAISED_FILE_LIMIT
+		GameFile* activeMods[1024]; // 0x5CC
+		unsigned char freed_0x5CC[0x87EC]; // Unused space free for plundering.
+#else 
+		unsigned char freed_0x5CC[0x97EC]; // Unused space free for plundering.
+#endif
+#else
+		MagicEffect magicEffects[143]; // 0x5C8
+#endif
+		StlList<Light*>* lights; // 0x9DB8
+		AnimationGroup* baseAnimationGroups[4][150]; // 0x9DBC
+		NI::Pointer<NI::Node> baseSkeletons[4]; // 0xA71C
+		KeyframeDefinition* baseAnimations[4]; // 0xA72C
+		AnimationGroup* baseBeastAnimationGroups[3][150]; // 0xA73C
+		NI::Pointer<NI::Node> baseBeastSkeletons[3]; // 0x0xAE44
+		KeyframeDefinition* baseBeastAnimations[3]; // 0xAE50
+		NI::Pointer<NI::Property> collisionWireframeProperty; // 0xAE5C
+		StlList<GameFile*>* TESFiles; // 0xAE60 
+#ifdef MWSE_RAISED_FILE_LIMIT
+		unsigned char freed_0xAE64[0x400]; // Unused space free for plundering.
+#else
+		GameFile* activeMods[256]; // 0xAE64 // Relocated and resized at 0x5CC.
+#endif
+		StlList<Cell*> * cells; // 0xB264
+		ObjectMapContainer<BaseObject>* allObjectsById; // 0xB268
+		ObjectMapContainer<Dialogue>* allDialoguesById; // 0xB26C
+		char dataFilesPath[260]; // 0xB270
+		char unknown_0xB374;
+		bool isSaving; // 0xB375
+		bool isModifyingMasters; // 0xB376
+		char unknown_0xB377;
+		char unknown_0xB378;
+		char unknown_0xB379;
+		char unknown_0xB37A;
+		IteratedList<BaseObject*>* initiallyLoadedObjects; // 0xB37C
+		NI::Pointer<NI::SourceTexture> mapTexture; // 0xB380
+		Reference * playerSaveGame; // 0xB384
+		CriticalSection criticalSection; // 0xB388
+
+		//
+		// Other related this-call functions.
+		//
+
+		bool saveGame(const char* fileName, const char* saveName);
+		LoadGameResult loadGame(const char* fileName);
+		LoadGameResult loadGameMainMenu(const char* fileName);
+
+		BaseObject* resolveObject(const char*);
+		Reference* findFirstCloneOfActor(const char*);
+		Spell* getSpellById(const char*);
+		Script* findScriptByName(const char*);
+		GlobalVariable* findGlobalVariable(const char*);
+		Dialogue* findDialogue(const char*);
+		bool addSound(Sound*);
+		Sound* findSound(const char*);
+		Class* findClass(const char*);
+		Faction* findFaction(const char*);
+		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, Vector3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
+		bool addNewObject(BaseObject*);
+		void deleteObject(BaseObject*);
+		void respawnContainers();
+
+		Cell * getCellByGrid(int x, int y);
+		Cell * getCellByName(const char* name);
+		Region* getRegion(const char* id);
+
+		MagicEffect * getMagicEffect(int id);
+
+		float createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+
+		void showLocationOnMap(const char* name);
+		void drawCellMapMarker(Cell* cell, int unused = 0);
+
+		const char* getBaseAnimationFile(int isFemale = 0, int firstPerson = 0) const;
+
+		//
+		// Custom functions.
+		//
+
+		Alchemy* getMatchingAlchemyItem(const Alchemy*) const;
+
+		std::reference_wrapper<Skill[27]> getSkills();
+
+		sol::table getMagicEffects_lua(sol::this_state ts);
+
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>
-		__declspec(dllexport) T * resolveObjectByType(const char* id, ObjectType::ObjectType type = ObjectType::Invalid) {
+		T * resolveObjectByType(const char* id, ObjectType::ObjectType type = ObjectType::Invalid) {
 			TES3::BaseObject* potentialResult = resolveObject(id);
 			if (!potentialResult) {
 				return nullptr;
@@ -134,7 +194,7 @@ namespace TES3 {
 		}
 
 		template <typename T>
-		__declspec(dllexport) T* resolveObjectByType(const std::string& id, ObjectType::ObjectType type = ObjectType::Invalid) {
+		T* resolveObjectByType(const std::string& id, ObjectType::ObjectType type = ObjectType::Invalid) {
 			return resolveObjectByType<T>(id.c_str(), type);
 		}
 	};
@@ -169,7 +229,7 @@ namespace TES3 {
 
 	struct DataHandler {
 		struct ExteriorCellData {
-			mwse::bitset8 loadingFlags;
+			unsigned char loadingFlags;
 			Cell * cell;
 			void * landRenderData;
 		};
@@ -189,16 +249,16 @@ namespace TES3 {
 		Cell * currentInteriorCell; // 0xAC
 		Cell ** interiorCellBuffer; // 0xB0
 		Cell ** exteriorCellBuffer; // 0xB4
-		int unknown_0xB8;
-		int unknown_0xBC;
-		Iterator<void> collisionGrid[2304]; // 0xC0
+		int lastExteriorCellPositionX; // 0xB8
+		int lastExteriorCellPositionY; // 0xBC
+		IteratedList<Reference*> collisionReferenceGrid[48][48]; // 0xC0
 		int collision_0xB4C0;
 		int collision_0xB4C4;
 		int collision_0xB4C8;
 		int collision_0xB4CC;
-		Iterator<SoundEvent>* soundEvents; // 0xB4D0
-		Iterator<SoundEvent>* tempSoundEvents; // 0xB4D4
-		Iterator<SoundEvent>* lightSoundEvents; // 0xB4D8
+		IteratedList<SoundEvent*>* soundEvents; // 0xB4D0
+		IteratedList<SoundEvent*>* tempSoundEvents; // 0xB4D4
+		IteratedList<SoundEvent*>* lightSoundEvents; // 0xB4D8
 		bool showActorDrawBounds; // 0xB4DC
 		char unknown_0xB4DD;
 		char unknown_0xB4DE;
@@ -211,7 +271,7 @@ namespace TES3 {
 		char unknown_0xB4E5;
 		char unknown_0xB4E6;
 		char unknown_0xB4E7;
-		void * textureManager;
+		HashMap<const char*, NI::Pointer<NI::SourceTexture>>* textures; // 0xB4E8
 		void * waterController;
 		int unknown_0xB4F0;
 		int unknown_0xB4F4;
@@ -248,8 +308,8 @@ namespace TES3 {
 		char unknown_0xB531;
 		char unknown_0xB532;
 		char unknown_0xB533;
-		void * criticalSectionAudioEvents; // 0xB534
-		void * criticalSection; // 0xB538
+		CriticalSection* criticalSectionAudioEvents; // 0xB534
+		CriticalSection* criticalSection; // 0xB538
 		bool useCellTransitionFader;
 		char unknown_0xB53D;
 		char unknown_0xB53E;
@@ -261,6 +321,14 @@ namespace TES3 {
 		int exteriorCellDataBufferSize; // 0xB550
 		void * exteriorCellDataBuffer; // 0xB554
 
+		//
+		// Custom static data.
+		//
+
+		static Cell* previousVisitedCell;
+		static bool dontThreadLoad;
+		static bool suppressThreadLoad;
+
 		// Get singleton.
 		_declspec (dllexport) static DataHandler * get();
 
@@ -268,17 +336,28 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
+		Vector3 getLastExteriorPosition();
+
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
-		Sound* addSound(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);
+		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);
 		void addTemporySound(const char* path, Reference * reference = nullptr, int playbackFlags = 0, int volume = 250, float pitch = 1.0f, bool isVoiceover = false, Sound * sound = nullptr);
 		SoundEvent* getSoundPlaying(Sound*, Reference*);
 		void adjustSoundVolume(Sound*, Reference*, unsigned char volume);
 		void removeSound(Sound*, Reference*);
 
+		NI::Pointer<NI::SourceTexture> loadSourceTexture(const char* path);
+
 		void updateLightingForReference(Reference * reference);
 		void setDynamicLightingForReference(Reference* reference);
 
-		void updateCollisionGroupsForActiveCells(bool unknown = true);
+		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
+		void updateCollisionGroupsForActiveCells_raw(bool force = true);
+
+		//
+		// Custom functions.
+		//
+
+		std::reference_wrapper<ExteriorCellData* [9]> getExteriorCellData_lua();
 
 	};
 	static_assert(sizeof(DataHandler) == 0xB558, "TES3::DataHandler failed size validation");

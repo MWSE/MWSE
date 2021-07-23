@@ -3,6 +3,16 @@
 #include "TES3Defines.h"
 #include "TES3Vectors.h"
 
+// Must be added to header files that declare Ni types that can be derived.
+#define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_AIPACKAGE(T) \
+int sol_lua_push(sol::types<T>, lua_State* L, const T& obj); \
+int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj);
+
+// Must be added to source files that declare Ni types that can be derived.
+#define MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3_AIPACKAGE(T) \
+int sol_lua_push(sol::types<T>, lua_State* L, const T& obj) { return obj.getOrCreateLuaObject(L).push(L); } \
+int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOrCreateLuaObject(L).push(L); }
+
 namespace TES3 {
 	// These enums have different package ordering.
 	// Of these two enums, prefer use of AIPackageType enum for script output.
@@ -60,6 +70,23 @@ namespace TES3 {
 		bool movement();
 		bool initialize();
 		void cleanup();
+
+		//
+		// Other related this-call functions.
+		//
+
+		MobileActor* getTargetActor() const;
+		void setTargetActor(TES3::MobileActor* target);
+		void setTargetActorAsFriend(TES3::MobileActor* target);
+		void setTargetActorAsFriendIfActive(TES3::MobileActor* target);
+
+		//
+		// Custom functions
+		//
+
+		// Allow dynamic recasting to derived types.
+		sol::object getOrCreateLuaObject(lua_State* L) const;
+
 	};
 	static_assert(sizeof(AIPackage) == 0x3C, "TES3::AIPackage failed size validation");
 
@@ -67,21 +94,7 @@ namespace TES3 {
 		AIPackageConfigType type; // 0x0
 
 		// Helper function.
-		AIPackageType toPackageType() {
-			switch (type) {
-			case AIPackageConfigType::Travel:
-				return AIPackageType::Travel;
-			case AIPackageConfigType::Wander:
-				return AIPackageType::Wander;
-			case AIPackageConfigType::Escort:
-				return AIPackageType::Escort;
-			case AIPackageConfigType::Follow:
-				return AIPackageType::Follow;
-			case AIPackageConfigType::Activate:
-				return AIPackageType::Activate;
-			}
-			return AIPackageType::Wander;
-		}
+		AIPackageType toPackageType() const;
 	};
 	static_assert(sizeof(AIPackageConfig) == 0x4, "TES3::AIPackageConfig failed size validation");
 
@@ -118,7 +131,9 @@ namespace TES3 {
 		signed char unknown_0x4F;
 		Reference * activationTarget; // 0x50
 		int unknown_0x54;
-		IdleNode unknown_0x58[8];
+		IdleNode idles[8]; // 0x58
+
+		std::reference_wrapper<IdleNode[8]> getIdles();
 	};
 	static_assert(sizeof(AIPackageWander) == 0x98, "TES3::AIPackageWander failed size validation");
 	static_assert(sizeof(AIPackageWander::Config) == 0x14, "TES3::AIPackageWander::Config failed size validation");
@@ -178,3 +193,5 @@ namespace TES3 {
 	static_assert(sizeof(AIPackageActivate) == 0x54, "TES3::AIPackageActivate failed size validation");
 	static_assert(sizeof(AIPackageActivate::Config) == 0xC, "TES3::AIPackageActivate::Config failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_AIPACKAGE(TES3::AIPackage)

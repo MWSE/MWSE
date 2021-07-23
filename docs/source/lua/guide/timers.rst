@@ -35,7 +35,7 @@ Timers can repeat, based on an **iterations** parameter. This can be used to def
     end
 
     -- Create our timer to fire the above function every minute for 5 minutes.
-    timer.start({ duration = 30, callback = onTimerComplete, iterations = 5 })
+    timer.start({ duration = 60, callback = onTimerComplete, iterations = 5 })
 
 Additionally, a value of ``-1`` will create a timer that will repeat forever.
 

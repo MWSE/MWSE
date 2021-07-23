@@ -1,10 +1,8 @@
 #include "TES3InventoryLua.h"
 
-#include "sol.hpp"
 #include "LuaUtil.h"
 #include "LuaManager.h"
 
-#include "TES3CollectionsLua.h"
 #include "TES3ScriptLua.h"
 
 #include "TES3Inventory.h"
@@ -13,20 +11,10 @@
 #include "TES3Creature.h"
 #include "TES3Script.h"
 
-namespace TES3 {
-	sol::object ItemStack::getObjectLua() {
-		return mwse::lua::makeLuaObject(object);
-	}
-
-	sol::object EquipmentStack::getObjectLua() {
-		return mwse::lua::makeLuaObject(object);
-	}
-}
-
 namespace mwse {
 	namespace lua {
-		sol::object getItemDataOwner(TES3::ItemData& itemData) {
-			return makeLuaObject(itemData.owner);
+		TES3::BaseObject* getItemDataOwner(TES3::ItemData& itemData) {
+			return itemData.owner;
 		}
 
 		void setItemDataOwner(TES3::ItemData& itemData, sol::object value) {
@@ -61,7 +49,11 @@ namespace mwse {
 				return sol::make_object(state, itemData.requiredRank);
 			}
 			else if (itemData.owner->objectType == TES3::ObjectType::NPC) {
-				return makeLuaObject(itemData.requiredVariable);
+				// Unique case. Since we're returning 
+				auto& luaManager = mwse::lua::LuaManager::getInstance();
+				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				sol::state& state = stateHandle.state;
+				return sol::make_object(state, itemData.requiredVariable);
 			}
 
 			return sol::nil;
@@ -89,8 +81,8 @@ namespace mwse {
 			}
 		}
 
-		sol::object getItemDataSoul(TES3::ItemData& itemData) {
-			return makeLuaObject(itemData.getSoulActor());
+		TES3::Actor* getItemDataSoul(TES3::ItemData& itemData) {
+			return itemData.getSoulActor();
 		}
 
 		void setItemDataSoul(TES3::ItemData& itemData, sol::object soul) {
@@ -114,124 +106,77 @@ namespace mwse {
 			// Binding for TES3::ItemData
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::ItemData>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::ItemData>("tes3itemData");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("charge", &TES3::ItemData::charge);
-				usertypeDefinition.set("count", &TES3::ItemData::count);
-				usertypeDefinition.set("condition", &TES3::ItemData::condition);
-				usertypeDefinition.set("scriptVariables", &TES3::ItemData::scriptData);
-				usertypeDefinition.set("timeLeft", &TES3::ItemData::timeLeft);
-
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("script", sol::readonly_property([](TES3::ItemData& self) { return makeLuaObject(self.script); }));
+				usertypeDefinition["charge"] = &TES3::ItemData::charge;
+				usertypeDefinition["count"] = &TES3::ItemData::count;
+				usertypeDefinition["condition"] = &TES3::ItemData::condition;
+				usertypeDefinition["script"] = &TES3::ItemData::script;
+				usertypeDefinition["scriptVariables"] = &TES3::ItemData::scriptData;
+				usertypeDefinition["timeLeft"] = &TES3::ItemData::timeLeft;
 
 				// Complex properties that need special handling.
-				usertypeDefinition.set("owner", sol::property(&getItemDataOwner, &setItemDataOwner));
-				usertypeDefinition.set("requirement", sol::property(&getItemDataOwnerRequirement, &setItemDataOwnerRequirement));
-				usertypeDefinition.set("soul", sol::property(&getItemDataSoul, &setItemDataSoul));
+				usertypeDefinition["owner"] = sol::property(&getItemDataOwner, &setItemDataOwner);
+				usertypeDefinition["requirement"] = sol::property(&getItemDataOwnerRequirement, &setItemDataOwnerRequirement);
+				usertypeDefinition["soul"] = sol::property(&getItemDataSoul, &setItemDataSoul);
 
 				// 
-				usertypeDefinition.set("data", sol::property(&TES3::ItemData::getOrCreateLuaDataTable, &TES3::ItemData::setLuaDataTable));
+				usertypeDefinition["data"] = sol::property(&TES3::ItemData::getOrCreateLuaDataTable, &TES3::ItemData::setLuaDataTable);
+				usertypeDefinition["tempData"] = sol::property(&TES3::ItemData::getOrCreateLuaTempDataTable, &TES3::ItemData::setLuaTempDataTable);
 
 				// Add the ability to get the unique script context from this itemdata for ease of mwscript interaction.
-				usertypeDefinition.set("context", sol::readonly_property([](TES3::ItemData& self) { return std::shared_ptr<ScriptContext>(new ScriptContext(self.script, self.scriptData)); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3itemData", usertypeDefinition);
+				usertypeDefinition["context"] = sol::readonly_property(&TES3::ItemData::createContext);
 			}
 
 			// Binding for TES3::ItemStack
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::ItemStack>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::ItemStack>("tes3itemStack");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("count", &TES3::ItemStack::count);
-				usertypeDefinition.set("variables", &TES3::ItemStack::variables);
-
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("object", sol::readonly_property([](TES3::ItemStack& self) { return makeLuaObject(self.object); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3itemStack", usertypeDefinition);
+				usertypeDefinition["count"] = &TES3::ItemStack::count;
+				usertypeDefinition["object"] = sol::readonly_property(&TES3::ItemStack::object);
+				usertypeDefinition["variables"] = &TES3::ItemStack::variables;
 			}
 
 			// Binding for TES3::EquipmentStack
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::EquipmentStack>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::EquipmentStack>("tes3equipmentStack");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("itemData", &TES3::EquipmentStack::variables);
-				usertypeDefinition.set("variables", &TES3::EquipmentStack::variables);
+				usertypeDefinition["itemData"] = &TES3::EquipmentStack::variables;
+				usertypeDefinition["object"] = sol::readonly_property(&TES3::EquipmentStack::object);
 
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("object", sol::readonly_property([](TES3::EquipmentStack& self) { return makeLuaObject(self.object); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3equipmentStack", usertypeDefinition);
+				// Legacy bindings.
+				usertypeDefinition["variables"] = &TES3::EquipmentStack::variables;
 			}
 
 			// Binding for TES3::Inventory
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Inventory>();
-				usertypeDefinition.set("new", sol::no_constructor);
-
-				// Metamethod binding.
-				usertypeDefinition.set(sol::meta_function::pairs, [](TES3::Inventory& self) {
-					Iterator_state<TES3::ItemStack> it_state(&self.iterator);
-					return std::make_tuple(&bindIterator_pairsNext<TES3::ItemStack>, sol::user<Iterator_state<TES3::ItemStack>>(std::move(it_state)), sol::lua_nil);
-				});
-				usertypeDefinition.set(sol::meta_function::length, [](TES3::Inventory& self) {
-					return self.iterator.size;
-				});
+				auto usertypeDefinition = state.new_usertype<TES3::Inventory>("tes3inventory");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("flags", sol::readonly_property(&TES3::Inventory::flags));
-				usertypeDefinition.set("iterator", sol::readonly_property(&TES3::Inventory::iterator));
+				usertypeDefinition["flags"] = sol::readonly_property(&TES3::Inventory::flags);
+				usertypeDefinition["items"] = sol::readonly_property(&TES3::Inventory::itemStacks);
 
 				// Basic function binding.
-				usertypeDefinition.set("addItem", [](TES3::Inventory& self, sol::table params) {
-					TES3::MobileActor * mact = getOptionalParamMobileActor(params, "mobile");
-					TES3::Item * item = getOptionalParamObject<TES3::Item>(params, "item");
-					int count = getOptionalParam<int>(params, "count", 1);
-					TES3::ItemData * itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
-					self.addItem(mact, item, count, false, itemData ? &itemData : nullptr);
-				});
-				usertypeDefinition.set("contains", [](TES3::Inventory& self, sol::object itemOrItemId, sol::optional<TES3::ItemData*> itemData) {
-					if (itemOrItemId.is<TES3::Item*>()) {
-						auto item = itemOrItemId.as<TES3::Item*>();
-						return self.containsItem(item, itemData.value_or(nullptr));
-					}
-					else if (itemOrItemId.is<const char*>()) {
-						TES3::DataHandler * dataHandler = TES3::DataHandler::get();
-						if (dataHandler) {
-							auto itemId = itemOrItemId.as<const char*>();
-							auto item = dataHandler->nonDynamicData->resolveObjectByType<TES3::Item>(itemId);
-							return self.containsItem(item, itemData.value_or(nullptr));
-						}
-					}
-					return false;
-				});
-				usertypeDefinition.set("dropItem", &TES3::Inventory::dropItem);
-				usertypeDefinition.set("calculateWeight", &TES3::Inventory::calculateContainedWeight);
-				usertypeDefinition.set("removeItem", [](TES3::Inventory& self, sol::table params) {
-					TES3::MobileActor * mact = getOptionalParamMobileActor(params, "mobile");
-					TES3::Item * item = getOptionalParamObject<TES3::Item>(params, "item");
-					int count = getOptionalParam<int>(params, "count", 1);
-					TES3::ItemData * itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
-					bool deleteItemData = getOptionalParam<bool>(params, "deleteItemData", false);
-					self.removeItemWithData(mact, item, itemData, count, deleteItemData);
-				});
-				usertypeDefinition.set("resolveLeveledItems", [](TES3::Inventory& self, sol::optional<TES3::MobileActor*> actor) { self.resolveLeveledLists(actor.value_or(nullptr)); });
+				usertypeDefinition["addItem"] = &TES3::Inventory::addItem_lua;
+				usertypeDefinition["contains"] = &TES3::Inventory::contains_lua;
+				usertypeDefinition["dropItem"] = &TES3::Inventory::dropItem;
+				usertypeDefinition["calculateWeight"] = &TES3::Inventory::calculateContainedWeight;
+				usertypeDefinition["findItemStack"] = &TES3::Inventory::findItemStack;
+				usertypeDefinition["removeItem"] = &TES3::Inventory::removeItem_lua;
+				usertypeDefinition["resolveLeveledItems"] = &TES3::Inventory::resolveLeveledLists_lua;
 
-				// Finish up our usertype.
-				state.set_usertype("tes3inventory", usertypeDefinition);
+				// Legacy bindings.
+				usertypeDefinition["iterator"] = sol::readonly_property(&TES3::Inventory::itemStacks);
 			}
 		}
 	}

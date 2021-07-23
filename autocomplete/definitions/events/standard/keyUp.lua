@@ -3,22 +3,22 @@ return {
 	eventData = {
 		["keyCode"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The scan code of the key that raised the event.",
 		},
 		["isControlDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if control is held.",
 		},
 		["isAltDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if alt  is held.",
 		},
 		["isSuperDown"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "True if super (Windows key) is held.",
 		},
 	},

@@ -26,7 +26,8 @@
 #include "TES3Reference.h"
 
 #include "ScriptUtil.h"
-#include "TES3Util.h"
+
+#include "MemoryUtil.h"
 
 using namespace mwse;
 

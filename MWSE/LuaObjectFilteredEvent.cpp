@@ -35,7 +35,7 @@ namespace mwse {
 				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 				sol::state& state = stateHandle.state;
 				sol::table options = state.create_table();
-				options["filter"] = makeLuaObject(m_EventFilter);
+				options["filter"] = m_EventFilter;
 				return options;
 			}
 		}

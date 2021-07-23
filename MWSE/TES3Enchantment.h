@@ -10,24 +10,21 @@ namespace TES3 {
 		Once,
 		OnStrike,
 		OnUse,
-		Constant
+		Constant,
+		Invalid
 	};
 
-	namespace EnchantmentFlags {
-		typedef unsigned int value_type;
-
-		enum Flag : value_type {
-		};
-	}
-
 	struct Enchantment : Object {
+		Enchantment();
+		~Enchantment();
+
 		char * objectID; // 0x28
 		EnchantmentCastType castType; // 0x2C
 		unsigned short chargeCost; // 0x2E
 		unsigned short maxCharge; // 0x30
 		short pad_32; // 0x32
 		Effect effects[8]; // 0x34
-		mwse::bitset32 flags; // 0xF4
+		unsigned int flags; // 0xF4
 
 		//
 		// Custom functions.
@@ -36,6 +33,10 @@ namespace TES3 {
 		size_t getActiveEffectCount();
 		int getFirstIndexOfEffect(int effectId);
 
+		std::reference_wrapper<Effect[8]> getEffects();
+
 	};
 	static_assert(sizeof(Enchantment) == 0xF8, "TES3::Enchantment failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Enchantment)

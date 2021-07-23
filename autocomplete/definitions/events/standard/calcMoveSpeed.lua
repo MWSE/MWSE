@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor whose speed is being calculated.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "mobile’s related reference.",
 		},
 		["speed"] = {
@@ -17,7 +17,7 @@ return {
 		},
 		["type"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The type of movement that was calculated. This is always 0 for this event.",
 		},
 	},

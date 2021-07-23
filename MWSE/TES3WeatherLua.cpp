@@ -2,6 +2,9 @@
 
 #include "LuaManager.h"
 
+#include "TES3Sound.h"
+#include "TES3Spell.h"
+#include "TES3Weather.h"
 #include "TES3WeatherAsh.h"
 #include "TES3WeatherBlight.h"
 #include "TES3WeatherBlizzard.h"
@@ -21,223 +24,177 @@ namespace mwse {
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::state& state = stateHandle.state;
 
+			// Binding for TES3::Weather
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::Weather>("tes3weather");
+				usertypeDefinition["new"] = sol::no_constructor;
+
+				setUserdataForTES3Weather(usertypeDefinition);
+			}
+			
+
 			// Binding for TES3::WeatherAsh
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherAsh>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherAsh>("tes3weatherAsh");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("threshold", &TES3::WeatherAsh::stormThreshold);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherAsh", usertypeDefinition);
+				usertypeDefinition["threshold"] = &TES3::WeatherAsh::stormThreshold;
 			}
 
 			// Binding for TES3::WeatherBlight
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherBlight>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherBlight>("tes3weatherBlight");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("blightDiseaseChance", &TES3::WeatherBlight::diseaseChance);
-				usertypeDefinition.set("blightDiseases", sol::readonly_property(&TES3::WeatherBlight::blightDiseases));
-				usertypeDefinition.set("threshold", &TES3::WeatherBlight::stormThreshold);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherBlight", usertypeDefinition);
+				usertypeDefinition["blightDiseaseChance"] = &TES3::WeatherBlight::diseaseChance;
+				usertypeDefinition["blightDiseases"] = sol::readonly_property(&TES3::WeatherBlight::blightDiseases);
+				usertypeDefinition["threshold"] = &TES3::WeatherBlight::stormThreshold;
 			}
 
 			// Binding for TES3::WeatherBlizzard
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherBlizzard>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherBlizzard>("tes3weatherBlizzard");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("threshold", &TES3::WeatherBlizzard::stormThreshold);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherBlizzard", usertypeDefinition);
+				usertypeDefinition["threshold"] = &TES3::WeatherBlizzard::stormThreshold;
 			}
 
 			// Binding for TES3::WeatherClear
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherClear>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherClear>("tes3weatherClear");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherClear", usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 			}
 
 			// Binding for TES3::WeatherCloudy
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherCloudy>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherCloudy>("tes3weatherCloudy");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherCloudy", usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 			}
 
 			// Binding for TES3::WeatherFoggy
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherFoggy>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherFoggy>("tes3weatherFoggy");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherFoggy", usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 			}
 
 			// Binding for TES3::WeatherOvercast
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherOvercast>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherOvercast>("tes3weatherOvercast");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherOvercast", usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 			}
 
 			// Binding for TES3::WeatherRain
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherRain>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherRain>("tes3weatherRain");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("maxParticles", &TES3::WeatherRain::raindropsMax);
-				usertypeDefinition.set("particleEntranceSpeed", &TES3::WeatherRain::rainEntranceSpeed);
-				usertypeDefinition.set("particleHeightMax", &TES3::WeatherRain::rainHeightMax);
-				usertypeDefinition.set("particleHeightMin", &TES3::WeatherRain::rainHeightMin);
-				usertypeDefinition.set("particleRadius", &TES3::WeatherRain::rainRadius);
-				usertypeDefinition.set("rainActive", sol::readonly_property(&TES3::WeatherRain::rainPlaying));
-				usertypeDefinition.set("threshold", &TES3::WeatherRain::rainThreshold);
-
-				// Binding for IDs and paths.
-				usertypeDefinition.set("rainLoopSoundId", sol::property(
-					[](TES3::WeatherRain& self) { return self.soundIDRainLoop; },
-					[](TES3::WeatherRain& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIDRainLoop, value); }
-				));
-
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("rainLoopSound", sol::readonly_property([](TES3::WeatherRain& self) { return makeLuaObject(self.rainLoopSound); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherRain", usertypeDefinition);
+				usertypeDefinition["maxParticles"] = &TES3::WeatherRain::raindropsMax;
+				usertypeDefinition["particleEntranceSpeed"] = &TES3::WeatherRain::rainEntranceSpeed;
+				usertypeDefinition["particleHeightMax"] = &TES3::WeatherRain::rainHeightMax;
+				usertypeDefinition["particleHeightMin"] = &TES3::WeatherRain::rainHeightMin;
+				usertypeDefinition["particleRadius"] = &TES3::WeatherRain::rainRadius;
+				usertypeDefinition["rainActive"] = sol::readonly_property(&TES3::WeatherRain::rainPlaying);
+				usertypeDefinition["rainLoopSound"] = &TES3::WeatherRain::rainLoopSound;
+				usertypeDefinition["rainLoopSoundId"] = sol::property(&TES3::WeatherRain::soundIDRainLoop, &TES3::WeatherRain::setRainLoopSoundID);
+				usertypeDefinition["threshold"] = &TES3::WeatherRain::rainThreshold;
 			}
 
 			// Binding for TES3::WeatherSnow
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherSnow>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherSnow>("tes3weatherSnow");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("maxParticles", &TES3::WeatherSnow::snowflakesMax);
-				usertypeDefinition.set("particleEntranceSpeed", &TES3::WeatherSnow::snowEntranceSpeed);
-				usertypeDefinition.set("particleHeightMax", &TES3::WeatherSnow::snowHeightMax);
-				usertypeDefinition.set("particleHeightMin", &TES3::WeatherSnow::snowHeightMin);
-				usertypeDefinition.set("particleRadius", &TES3::WeatherSnow::snowRadius);
-				usertypeDefinition.set("threshold", &TES3::WeatherSnow::snowThreshold);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherSnow", usertypeDefinition);
+				usertypeDefinition["maxParticles"] = &TES3::WeatherSnow::snowflakesMax;
+				usertypeDefinition["particleEntranceSpeed"] = &TES3::WeatherSnow::snowEntranceSpeed;
+				usertypeDefinition["particleHeightMax"] = &TES3::WeatherSnow::snowHeightMax;
+				usertypeDefinition["particleHeightMin"] = &TES3::WeatherSnow::snowHeightMin;
+				usertypeDefinition["particleRadius"] = &TES3::WeatherSnow::snowRadius;
+				usertypeDefinition["threshold"] = &TES3::WeatherSnow::snowThreshold;
 			}
 
 			// Binding for TES3::WeatherThunder
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::WeatherThunder>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::WeatherThunder>("tes3weatherThunder");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::Weather>());
-				setUserdataForWeather(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::Weather>();
+				setUserdataForTES3Weather(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("flashDecrement", &TES3::WeatherThunder::flashDecrement);
-				usertypeDefinition.set("maxParticles", &TES3::WeatherThunder::raindropsMax);
-				usertypeDefinition.set("particleEntranceSpeed", &TES3::WeatherThunder::rainEntranceSpeed);
-				usertypeDefinition.set("particleHeightMax", &TES3::WeatherThunder::rainHeightMax);
-				usertypeDefinition.set("particleHeightMin", &TES3::WeatherThunder::rainHeightMin);
-				usertypeDefinition.set("particleRadius", &TES3::WeatherThunder::rainRadius);
-				usertypeDefinition.set("rainActive", &TES3::WeatherThunder::rainPlaying);
-				usertypeDefinition.set("threshold", &TES3::WeatherThunder::rainThreshold);
-				usertypeDefinition.set("thunderFrequency", &TES3::WeatherThunder::thunderFrequency);
-				usertypeDefinition.set("thunderSoundCount", &TES3::WeatherThunder::thunderSoundCount);
-				usertypeDefinition.set("thunderThreshold", &TES3::WeatherThunder::thunderThreshold);
-
-				// Binding for IDs and paths.
-				usertypeDefinition.set("rainLoopSoundId", sol::property(
-					[](TES3::WeatherThunder& self) { return self.soundIdRainLoop; },
-					[](TES3::WeatherThunder& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIdRainLoop, value); }
-				));
-				usertypeDefinition.set("thunderSound1Id", sol::property(
-					[](TES3::WeatherThunder& self) { return self.soundIdThunder1; },
-					[](TES3::WeatherThunder& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIdThunder1, value); }
-				));
-				usertypeDefinition.set("thunderSound2Id", sol::property(
-					[](TES3::WeatherThunder& self) { return self.soundIdThunder2; },
-					[](TES3::WeatherThunder& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIdThunder2, value); }
-				));
-				usertypeDefinition.set("thunderSound3Id", sol::property(
-					[](TES3::WeatherThunder& self) { return self.soundIdThunder3; },
-					[](TES3::WeatherThunder& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIdThunder3, value); }
-				));
-				usertypeDefinition.set("thunderSound4Id", sol::property(
-					[](TES3::WeatherThunder& self) { return self.soundIdThunder4; },
-					[](TES3::WeatherThunder& self, const char* value) { if (strlen(value) < 260) strcpy(self.soundIdThunder4, value); }
-				));
-
-				// Access to other objects that need to be packaged.
-				usertypeDefinition.set("rainLoopSound", sol::readonly_property([](TES3::WeatherThunder& self) { return makeLuaObject(self.rainLoopSound); }));
-				usertypeDefinition.set("thunderSound1", sol::readonly_property([](TES3::WeatherThunder& self) { return makeLuaObject(self.thunderSound1); }));
-				usertypeDefinition.set("thunderSound2", sol::readonly_property([](TES3::WeatherThunder& self) { return makeLuaObject(self.thunderSound2); }));
-				usertypeDefinition.set("thunderSound3", sol::readonly_property([](TES3::WeatherThunder& self) { return makeLuaObject(self.thunderSound3); }));
-				usertypeDefinition.set("thunderSound4", sol::readonly_property([](TES3::WeatherThunder& self) { return makeLuaObject(self.thunderSound4); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3weatherThunder", usertypeDefinition);
+				usertypeDefinition["flashDecrement"] = &TES3::WeatherThunder::flashDecrement;
+				usertypeDefinition["maxParticles"] = &TES3::WeatherThunder::raindropsMax;
+				usertypeDefinition["particleEntranceSpeed"] = &TES3::WeatherThunder::rainEntranceSpeed;
+				usertypeDefinition["particleHeightMax"] = &TES3::WeatherThunder::rainHeightMax;
+				usertypeDefinition["particleHeightMin"] = &TES3::WeatherThunder::rainHeightMin;
+				usertypeDefinition["particleRadius"] = &TES3::WeatherThunder::rainRadius;
+				usertypeDefinition["rainActive"] = &TES3::WeatherThunder::rainPlaying;
+				usertypeDefinition["rainLoopSound"] = &TES3::WeatherThunder::rainLoopSound;
+				usertypeDefinition["rainLoopSoundId"] = sol::property(&TES3::WeatherThunder::soundIdRainLoop, &TES3::WeatherThunder::setRainLoopSoundID);
+				usertypeDefinition["threshold"] = &TES3::WeatherThunder::rainThreshold;
+				usertypeDefinition["thunderFrequency"] = &TES3::WeatherThunder::thunderFrequency;
+				usertypeDefinition["thunderSound1"] = &TES3::WeatherThunder::thunderSound1;
+				usertypeDefinition["thunderSound1Id"] = sol::property(&TES3::WeatherThunder::soundIdThunder1, &TES3::WeatherThunder::setThunder1SoundID);
+				usertypeDefinition["thunderSound2"] = &TES3::WeatherThunder::thunderSound2;
+				usertypeDefinition["thunderSound2Id"] = sol::property(&TES3::WeatherThunder::soundIdThunder2, &TES3::WeatherThunder::setThunder2SoundID);
+				usertypeDefinition["thunderSound3"] = &TES3::WeatherThunder::thunderSound3;
+				usertypeDefinition["thunderSound3Id"] = sol::property(&TES3::WeatherThunder::soundIdThunder3, &TES3::WeatherThunder::setThunder3SoundID);
+				usertypeDefinition["thunderSound4"] = &TES3::WeatherThunder::thunderSound4;
+				usertypeDefinition["thunderSound4Id"] = sol::property(&TES3::WeatherThunder::soundIdThunder4, &TES3::WeatherThunder::setThunder4SoundID);
+				usertypeDefinition["thunderSoundCount"] = &TES3::WeatherThunder::thunderSoundCount;
+				usertypeDefinition["thunderThreshold"] = &TES3::WeatherThunder::thunderThreshold;
 			}
 		}
 	}

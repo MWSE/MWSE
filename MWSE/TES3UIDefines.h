@@ -6,14 +6,14 @@ namespace TES3 {
 	namespace UI {
 		struct MenuController;
 
-		typedef char Boolean;
 		typedef short UI_ID;
 
 		// Note that all properties are UI_IDs, and custom properties can be made at runtime.
 		// Therefore the Property enum contains the UI_IDs of pre-registered properties.
 		// UI_ID and Property are convertible.
 
-		enum class PropertyType {
+		enum class PropertyType : short {
+			INVALID = 0x0,
 			Integer = 0x1,
 			Float = 0x2,
 			Unknown_4 = 0x4,
@@ -283,7 +283,7 @@ namespace TES3 {
 			FocusIcon = -0x7EF9
 		};
 
-		typedef Boolean (__cdecl *EventCallback)(Element*, Property, int, int, Element*);
+		typedef bool (__cdecl *EventCallback)(Element*, Property, int, int, Element*);
 		typedef void (__cdecl *PropertyAccessCallback)(Property, int, PropertyType);
 
 		union PropertyValue {

@@ -1,7 +1,4 @@
-//VmTypes.h
 #pragma once
-
-#include <wtypes.h>
 
 typedef BYTE* VPVOID;	// so I can do arithmetic
 typedef DWORD VMSIZE;	// to hold max address

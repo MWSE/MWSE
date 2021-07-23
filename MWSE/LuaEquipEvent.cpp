@@ -23,8 +23,8 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["reference"] = makeLuaObject(m_Reference);
-				eventData["item"] = makeLuaObject(m_Item);
+				eventData["reference"] = m_Reference;
+				eventData["item"] = m_Item;
 				eventData["itemData"] = m_ItemData;
 
 				return eventData;

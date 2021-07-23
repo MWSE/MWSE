@@ -22,7 +22,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_MobileObject);
+				eventData["mobile"] = m_MobileObject;
 				eventData["inWater"] = m_InWater;
 
 				return eventData;

@@ -3,14 +3,19 @@ return {
 	eventData = {
 		["skill"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The skill that gained a new level experience.",
 		},
 		["level"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The new level of the skill.",
 		},
+        ["source"] = {
+            type = "",
+            --readOnly = true,
+            description = "",
+        },
 	},
 	filter = "skill",
 }

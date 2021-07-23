@@ -5,25 +5,22 @@
 namespace mwse {
 	namespace tes3 {
 		namespace ui {
-			__declspec(dllexport) TES3::UI::Element* getTopMenu();
+			bool requestMenuModeOff();
+			bool requestMenuModeOn(short prop = 0);
 
-			__declspec(dllexport) bool requestMenuModeOff();
-			__declspec(dllexport) bool requestMenuModeOn(short prop = 0);
+			int getButtonPressedIndex();
+			void resetButtonPressedIndex();
 
-			__declspec(dllexport) int messagePlayer(const char*);
-			__declspec(dllexport) int getButtonPressedIndex();
-			__declspec(dllexport) void resetButtonPressedIndex();
+			TES3::UI::Element* getMenuNode(short);
+			short getInventoryMenuId();
 
-			__declspec(dllexport) TES3::UI::Element* getMenuNode(short);
-			__declspec(dllexport) short getInventoryMenuId();
+			TES3::UI::InventoryTile* inventoryAddTile(int, TES3::UI::InventoryTile*);
+			signed char inventoryUpdateIcons();
+			signed char equipInventoryTile(TES3::UI::InventoryTile*);
+			signed char equipInventoryItem(TES3::PhysicalObject*, TES3::ItemData*);
+			void flagPaperDollUpdate();
 
-			__declspec(dllexport) TES3::UI::InventoryTile* inventoryAddTile(int, TES3::UI::InventoryTile*);
-			__declspec(dllexport) signed char inventoryUpdateIcons();
-			__declspec(dllexport) signed char equipInventoryTile(TES3::UI::InventoryTile*);
-			__declspec(dllexport) signed char equipInventoryItem(TES3::PhysicalObject*, TES3::ItemData*);
-			__declspec(dllexport) void flagPaperDollUpdate();
-
-			__declspec(dllexport) void showRestWaitMenu(bool allowRest, bool scripted = true);
+			void showRestWaitMenu(bool allowRest, bool scripted = true);
 		}
 	}
 }

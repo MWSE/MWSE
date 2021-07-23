@@ -21,10 +21,10 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["caster"] = makeLuaObject(m_MagicSourceInstance->caster);
-				eventData["target"] = makeLuaObject(m_MagicSourceInstance->target);
-				eventData["source"] = makeLuaObject(m_MagicSourceInstance->sourceCombo.source.asGeneric);
-				eventData["sourceInstance"] = makeLuaObject(m_MagicSourceInstance);
+				eventData["caster"] = m_MagicSourceInstance->caster;
+				eventData["target"] = m_MagicSourceInstance->target;
+				eventData["source"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
+				eventData["sourceInstance"] = m_MagicSourceInstance;
 
 				return eventData;
 			}
@@ -34,7 +34,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table options = state.create_table();
 
-				options["filter"] = makeLuaObject(m_MagicSourceInstance->sourceCombo.source.asGeneric);
+				options["filter"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
 				return options;
 			}
 

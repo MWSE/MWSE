@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <stddef.h>
-
 template <class T>
 class MemAccess
 {

@@ -27,8 +27,6 @@
 #include "TES3Script.h"
 #include "TES3GameFile.h"
 
-#include <Windows.h>
-
 using namespace mwse;
 
 namespace mwse

@@ -1,7 +1,5 @@
 #include "RngUtil.h"
 
-#include <ctime>
-
 namespace mwse
 {
 	namespace rng

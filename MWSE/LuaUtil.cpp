@@ -1,9 +1,7 @@
 #include "LuaUtil.h"
 
-#include "sol.hpp"
 #include "LuaManager.h"
 
-#include "TES3Util.h"
 #include "Log.h"
 
 #include "NIAmbientLight.h"
@@ -12,6 +10,8 @@
 #include "NICollisionSwitch.h"
 #include "NIDefines.h"
 #include "NIDirectionalLight.h"
+#include "NIDynamicEffect.h"
+#include "NIExtraData.h"
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
@@ -20,6 +20,7 @@
 #include "NIRTTI.h"
 #include "NISpotLight.h"
 #include "NISwitchNode.h"
+#include "NITextureEffect.h"
 #include "NITriShape.h"
 
 #include "TES3Defines.h"
@@ -27,6 +28,7 @@
 #include "TES3Alchemy.h"
 #include "TES3Apparatus.h"
 #include "TES3Armor.h"
+#include "TES3Birthsign.h"
 #include "TES3BodyPart.h"
 #include "TES3Book.h"
 #include "TES3Cell.h"
@@ -55,6 +57,7 @@
 #include "TES3MobileNPC.h"
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
+#include "TES3MobileSpellProjectile.h"
 #include "TES3NPC.h"
 #include "TES3Probe.h"
 #include "TES3Quest.h"
@@ -84,16 +87,52 @@
 #include "TES3WeatherSnow.h"
 #include "TES3WeatherThunder.h"
 
-#include <Windows.h>
+#include "TES3UIManager.h"
 
-#define TES3_vTable_MobileCreature 0x74AFA4
-#define TES3_vTable_MobileNPC 0x74AE6C
-#define TES3_vTable_MobilePlayer 0x74B174
-#define TES3_vTable_MobileProjectile 0x74B2B4
-#define TES3_vTable_SpellProjectile 0x74B360
+#include "MemoryUtil.h"
 
 namespace mwse {
 	namespace lua {
+		template <>
+		std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue) {
+			auto value = std::move(defaultValue);
+
+			if (maybeParams) {
+				sol::table params = maybeParams.value();
+				sol::object maybeValue = params[key];
+				if (maybeValue.valid() && maybeValue.is<std::string>()) {
+					value = std::move(maybeValue.as<std::string>());
+				}
+			}
+
+			return std::move(value);
+		}
+
+		TES3::BaseObject* getOptionalParamBaseObject(sol::optional<sol::table> maybeParams, const char* key) {
+			if (maybeParams) {
+				sol::table params = maybeParams.value();
+				sol::object maybeObject = params[key];
+				if (maybeObject.valid()) {
+					if (maybeObject.is<std::string>()) {
+						auto obj = TES3::DataHandler::get()->nonDynamicData->resolveObject(maybeObject.as<std::string>().c_str());
+						if (obj) {
+							return obj->getBaseObject();
+						}
+					}
+					else if (maybeObject.is<TES3::BaseObject>()) {
+						return maybeObject.as<TES3::BaseObject*>()->getBaseObject();
+					}
+					else if (maybeObject.is<TES3::MobileCreature>()) {
+						return maybeObject.as<TES3::MobileCreature*>()->creatureInstance->baseCreature;
+					}
+					else if (maybeObject.is<TES3::MobileNPC>()) {
+						return maybeObject.as<TES3::MobileNPC*>()->npcInstance->baseNPC;
+					}
+				}
+			}
+			return nullptr;
+		}
+
 		TES3::Script* getOptionalParamExecutionScript(sol::optional<sol::table> maybeParams) {
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -113,7 +152,7 @@ namespace mwse {
 		}
 
 		TES3::Reference* getOptionalParamExecutionReference(sol::optional<sol::table> maybeParams) {
-			TES3::Reference* reference = NULL;
+			TES3::Reference* reference = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -131,7 +170,7 @@ namespace mwse {
 				}
 			}
 
-			if (reference == NULL) {
+			if (reference == nullptr) {
 				reference = LuaManager::getInstance().getCurrentReference();
 			}
 
@@ -156,7 +195,7 @@ namespace mwse {
 		}
 
 		TES3::Reference* getOptionalParamReference(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Reference* value = NULL;
+			TES3::Reference* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -203,7 +242,7 @@ namespace mwse {
 		}
 
 		TES3::Spell* getOptionalParamSpell(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Spell* value = NULL;
+			TES3::Spell* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -222,7 +261,7 @@ namespace mwse {
 		}
 
 		TES3::Dialogue* getOptionalParamDialogue(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Dialogue* value = NULL;
+			TES3::Dialogue* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -241,7 +280,7 @@ namespace mwse {
 		}
 
 		TES3::Sound* getOptionalParamSound(sol::optional<sol::table> maybeParams, const char* key) {
-			TES3::Sound* value = NULL;
+			TES3::Sound* value = nullptr;
 
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -259,6 +298,29 @@ namespace mwse {
 			return value;
 		}
 
+		sol::optional<TES3::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key) {
+			if (maybeParams) {
+				sol::table params = maybeParams.value();
+				sol::object maybeValue = params[key];
+				if (maybeValue.valid()) {
+					// Were we given a real vector?
+					if (maybeValue.is<TES3::Vector2>()) {
+						return maybeValue.as<TES3::Vector2>();
+					}
+					// Were we given a vector3 for some reason?
+					else if (maybeValue.is<TES3::Vector3>()) {
+						return TES3::Vector2(maybeValue.as<TES3::Vector2&>().x, maybeValue.as<TES3::Vector2&>().y);
+					}
+					// Were we given a table?
+					else if (maybeValue.get_type() == sol::type::table) {
+						return maybeValue.as<sol::table>();
+					}
+				}
+			}
+
+			return {};
+		}
+
 		sol::optional<TES3::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key) {
 			if (maybeParams) {
 				sol::table params = maybeParams.value();
@@ -272,10 +334,6 @@ namespace mwse {
 					// Were we given a table?
 					else if (maybeValue.get_type() == sol::type::table) {
 						sol::table value = maybeValue.as<sol::table>();
-						TES3::Vector3* result = tes3::malloc<TES3::Vector3>();
-						result->x = value[1];
-						result->y = value[2];
-						result->z = value[3];
 						return TES3::Vector3(value[1], value[2], value[3]);
 					}
 				}
@@ -309,418 +367,67 @@ namespace mwse {
 			return value;
 		}
 
-		void setVectorFromLua(TES3::Vector3* vector, sol::stack_object value) {
+		const TES3::UI::UI_ID TES3_UI_ID_NULL = static_cast<TES3::UI::UI_ID>(TES3::UI::Property::null);
+
+		TES3::UI::Property getPropertyFromObject(sol::object object) {
+			if (object.is<TES3::UI::Property>()) {
+				return object.as<TES3::UI::Property>();
+			}
+			else if (object.is<const char*>()) {
+				return TES3::UI::registerProperty(object.as<const char*>());
+			}
+
+			throw std::invalid_argument("Could not determine property from value.");
+		}
+
+		TES3::UI::UI_ID getUIIDFromObject(sol::object object) {
+			if (object.valid()) {
+				if (object.is<TES3::UI::UI_ID>()) {
+					return object.as<TES3::UI::UI_ID>();
+				}
+				else if (object.is<const char*>()) {
+					return TES3::UI::registerID(object.as<const char*>());
+				}
+			}
+
+			return TES3_UI_ID_NULL;
+		}
+
+		TES3::UI::UI_ID getOptionalUIID(sol::optional<sol::table> maybeParams, const char* key) {
+			if (maybeParams) {
+				return getUIIDFromObject(maybeParams.value()[key]);
+			}
+			return TES3_UI_ID_NULL;
+		}
+
+		bool setVectorFromLua(TES3::Vector2& vector, sol::stack_object value) {
 			// Is it a vector?
-			if (value.is<TES3::Vector3*>()) {
-				TES3::Vector3 * newVector = value.as<TES3::Vector3*>();
-				vector->x = newVector->x;
-				vector->y = newVector->y;
-				vector->z = newVector->z;
+			if (value.is<TES3::Vector2>()) {
+				vector = value.as<TES3::Vector2&>();
+				return true;
 			}
 			// Allow a simple table to be provided.
 			else if (value.get_type() == sol::type::table) {
-				// Get the values from the table.
-				sol::table table = value.as<sol::table>();
-				if (table.size() == 3) {
-					vector->x = table[1];
-					vector->y = table[2];
-					vector->z = table[3];
-				}
+				vector = value.as<sol::table>();
+				return true;
 			}
+
+			return false;
 		}
 
-		sol::object makeLuaObject(TES3::BaseObject* object) {
-			if (object == NULL) {
-				return sol::nil;
+		bool setVectorFromLua(TES3::Vector3& vector, sol::stack_object value) {
+			// Is it a vector?
+			if (value.is<TES3::Vector3*>()) {
+				vector = value.as<TES3::Vector3&>();
+				return true;
+			}
+			// Allow a simple table to be provided.
+			else if (value.get_type() == sol::type::table) {
+				vector = value.as<sol::table>();
+				return true;
 			}
 
-			LuaManager& luaManager = LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
-
-			// Search in cache first.
-			sol::object result = stateHandle.getCachedUserdata(object);
-			if (result != sol::nil) {
-				return result;
-			}
-
-			sol::state& state = stateHandle.state;
-
-			switch (object->objectType) {
-			case TES3::ObjectType::Activator:
-				result = sol::make_object(state, reinterpret_cast<TES3::Activator*>(object));
-				break;
-			case TES3::ObjectType::Alchemy:
-				result = sol::make_object(state, reinterpret_cast<TES3::Alchemy*>(object));
-				break;
-			case TES3::ObjectType::Apparatus:
-				result = sol::make_object(state, reinterpret_cast<TES3::Apparatus*>(object));
-				break;
-			case TES3::ObjectType::Armor:
-				result = sol::make_object(state, reinterpret_cast<TES3::Armor*>(object));
-				break;
-			case TES3::ObjectType::Bodypart:
-				result = sol::make_object(state, reinterpret_cast<TES3::BodyPart*>(object));
-				break;
-			case TES3::ObjectType::Book:
-				result = sol::make_object(state, reinterpret_cast<TES3::Book*>(object));
-				break;
-			case TES3::ObjectType::Cell:
-				result = sol::make_object(state, reinterpret_cast<TES3::Cell*>(object));
-				break;
-			case TES3::ObjectType::Class:
-				result = sol::make_object(state, reinterpret_cast<TES3::Class*>(object));
-				break;
-			case TES3::ObjectType::Clothing:
-				result = sol::make_object(state, reinterpret_cast<TES3::Clothing*>(object));
-				break;
-			case TES3::ObjectType::Container:
-			{
-				if (reinterpret_cast<TES3::Actor*>(object)->actorFlags & TES3::ActorFlagContainer::IsBase) {
-					result = sol::make_object(state, reinterpret_cast<TES3::Container*>(object));
-				}
-				else {
-					result = sol::make_object(state, reinterpret_cast<TES3::ContainerInstance*>(object));
-				}
-			}
-			break;
-			case TES3::ObjectType::Creature:
-			{
-				if (reinterpret_cast<TES3::Actor*>(object)->actorFlags & TES3::ActorFlagCreature::IsBase) {
-					result = sol::make_object(state, reinterpret_cast<TES3::Creature*>(object));
-				}
-				else {
-					result = sol::make_object(state, reinterpret_cast<TES3::CreatureInstance*>(object));
-				}
-			}
-			break;
-			case TES3::ObjectType::Dialogue:
-				result = sol::make_object(state, reinterpret_cast<TES3::Dialogue*>(object));
-				break;
-			case TES3::ObjectType::DialogueInfo:
-				result = sol::make_object(state, reinterpret_cast<TES3::DialogueInfo*>(object));
-				break;
-			case TES3::ObjectType::Door:
-				result = sol::make_object(state, reinterpret_cast<TES3::Door*>(object));
-				break;
-			case TES3::ObjectType::Enchantment:
-				result = sol::make_object(state, reinterpret_cast<TES3::Enchantment*>(object));
-				break;
-			case TES3::ObjectType::Faction:
-				result = sol::make_object(state, reinterpret_cast<TES3::Faction*>(object));
-				break;
-			case TES3::ObjectType::Global:
-				result = sol::make_object(state, reinterpret_cast<TES3::GlobalVariable*>(object));
-				break;
-			case TES3::ObjectType::GameSetting:
-				result = sol::make_object(state, reinterpret_cast<TES3::GameSetting*>(object));
-				break;
-			case TES3::ObjectType::Ingredient:
-				result = sol::make_object(state, reinterpret_cast<TES3::Ingredient*>(object));
-				break;
-			case TES3::ObjectType::LeveledCreature:
-				result = sol::make_object(state, reinterpret_cast<TES3::LeveledCreature*>(object));
-				break;
-			case TES3::ObjectType::LeveledItem:
-				result = sol::make_object(state, reinterpret_cast<TES3::LeveledItem*>(object));
-				break;
-			case TES3::ObjectType::Light:
-				result = sol::make_object(state, reinterpret_cast<TES3::Light*>(object));
-				break;
-			case TES3::ObjectType::Lockpick:
-				result = sol::make_object(state, reinterpret_cast<TES3::Lockpick*>(object));
-				break;
-			case TES3::ObjectType::MagicEffect:
-				result = sol::make_object(state, reinterpret_cast<TES3::MagicEffect*>(object));
-				break;
-			case TES3::ObjectType::Misc:
-				result = sol::make_object(state, reinterpret_cast<TES3::Misc*>(object));
-				break;
-			case TES3::ObjectType::NPC:
-			{
-				if (reinterpret_cast<TES3::Actor*>(object)->actorFlags & TES3::ActorFlagNPC::IsBase) {
-					result = sol::make_object(state, reinterpret_cast<TES3::NPC*>(object));
-				}
-				else {
-					result = sol::make_object(state, reinterpret_cast<TES3::NPCInstance*>(object));
-				}
-			}
-			break;
-			case TES3::ObjectType::Probe:
-				result = sol::make_object(state, reinterpret_cast<TES3::Probe*>(object));
-				break;
-			case TES3::ObjectType::Quest:
-				result = sol::make_object(state, reinterpret_cast<TES3::Quest*>(object));
-				break;
-			case TES3::ObjectType::Race:
-				result = sol::make_object(state, reinterpret_cast<TES3::Race*>(object));
-				break;
-			case TES3::ObjectType::Reference:
-				result = sol::make_object(state, reinterpret_cast<TES3::Reference*>(object));
-				break;
-			case TES3::ObjectType::Region:
-				result = sol::make_object(state, reinterpret_cast<TES3::Region*>(object));
-				break;
-			case TES3::ObjectType::Repair:
-				result = sol::make_object(state, reinterpret_cast<TES3::RepairTool*>(object));
-				break;
-			case TES3::ObjectType::Script:
-				result = sol::make_object(state, reinterpret_cast<TES3::Script*>(object));
-				break;
-			case TES3::ObjectType::Skill:
-				result = sol::make_object(state, reinterpret_cast<TES3::Skill*>(object));
-				break;
-			case TES3::ObjectType::Sound:
-				result = sol::make_object(state, reinterpret_cast<TES3::Sound*>(object));
-				break;
-			case TES3::ObjectType::SoundGenerator:
-				result = sol::make_object(state, reinterpret_cast<TES3::SoundGenerator*>(object));
-				break;
-			case TES3::ObjectType::Spell:
-				result = sol::make_object(state, reinterpret_cast<TES3::Spell*>(object));
-				break;
-			case TES3::ObjectType::MagicSourceInstance:
-				result = sol::make_object(state, reinterpret_cast<TES3::MagicSourceInstance*>(object));
-				break;
-			case TES3::ObjectType::Static:
-				result = sol::make_object(state, reinterpret_cast<TES3::Static*>(object));
-				break;
-			case TES3::ObjectType::Ammo:
-			case TES3::ObjectType::Weapon:
-				result = sol::make_object(state, reinterpret_cast<TES3::Weapon*>(object));
-				break;
-			}
-
-			// Insert the object into cache.
-			if (result != sol::nil) {
-				stateHandle.insertUserdataIntoCache(object, result);
-			}
-
-			return result;
-		}
-
-		sol::object makeLuaObject(TES3::MobileObject* object) {
-			if (object == NULL) {
-				return sol::nil;
-			}
-
-			LuaManager& luaManager = LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
-
-			// Search in cache first.
-			sol::object result = stateHandle.getCachedUserdata(object);
-			if (result != sol::nil) {
-				return result;
-			}
-
-			sol::state& state = stateHandle.state;
-
-			switch ((unsigned int)object->vTable.mobileObject) {
-			case TES3_vTable_MobileCreature:
-				result = sol::make_object(state, reinterpret_cast<TES3::MobileCreature*>(object));
-				break;
-			case TES3_vTable_MobileNPC:
-				result = sol::make_object(state, reinterpret_cast<TES3::MobileNPC*>(object));
-				break;
-			case TES3_vTable_MobilePlayer:
-				result = sol::make_object(state, reinterpret_cast<TES3::MobilePlayer*>(object));
-				break;
-			case TES3_vTable_MobileProjectile:
-			case TES3_vTable_SpellProjectile:
-				result = sol::make_object(state, reinterpret_cast<TES3::MobileProjectile*>(object));
-				break;
-			}
-
-			// Insert the object into cache.
-			if (result != sol::nil) {
-				stateHandle.insertUserdataIntoCache(object, result);
-			}
-
-			return result;
-		}
-
-		sol::object makeLuaObject(TES3::Weather* weather) {
-			if (weather == NULL) {
-				return sol::nil;
-			}
-
-			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::state& state = stateHandle.state;
-
-			switch (weather->index) {
-			case TES3::WeatherType::Ash: return sol::make_object(state, reinterpret_cast<TES3::WeatherAsh*>(weather));
-			case TES3::WeatherType::Blight: return sol::make_object(state, reinterpret_cast<TES3::WeatherBlight*>(weather));
-			case TES3::WeatherType::Blizzard: return sol::make_object(state, reinterpret_cast<TES3::WeatherBlizzard*>(weather));
-			case TES3::WeatherType::Clear: return sol::make_object(state, reinterpret_cast<TES3::WeatherClear*>(weather));
-			case TES3::WeatherType::Cloudy: return sol::make_object(state, reinterpret_cast<TES3::WeatherCloudy*>(weather));
-			case TES3::WeatherType::Foggy: return sol::make_object(state, reinterpret_cast<TES3::WeatherFoggy*>(weather));
-			case TES3::WeatherType::Overcast: return sol::make_object(state, reinterpret_cast<TES3::WeatherOvercast*>(weather));
-			case TES3::WeatherType::Rain: return sol::make_object(state, reinterpret_cast<TES3::WeatherRain*>(weather));
-			case TES3::WeatherType::Snow: return sol::make_object(state, reinterpret_cast<TES3::WeatherSnow*>(weather));
-			case TES3::WeatherType::Thunder: return sol::make_object(state, reinterpret_cast<TES3::WeatherThunder*>(weather));
-			}
-
-			return sol::make_object(state, weather);
-		}
-
-		sol::object makeLuaObject(TES3::GameFile* gameFile) {
-			if (gameFile == nullptr) {
-				return sol::nil;
-			}
-
-			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::state& state = stateHandle.state;
-			return sol::make_object(state, gameFile);
-		}
-
-		sol::object makeLuaObject(NI::Object* object) {
-			if (object == nullptr) {
-				return sol::nil;
-			}
-
-			LuaManager& luaManager = LuaManager::getInstance();
-
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::state& state = stateHandle.state;
-
-			switch ((uintptr_t)object->getRunTimeTypeInformation()) {
-			case NI::RTTIStaticPtr::NiAlphaProperty:
-				return sol::make_object(state, reinterpret_cast<NI::AlphaProperty*>(object));
-			case NI::RTTIStaticPtr::NiAmbientLight:
-				return sol::make_object(state, reinterpret_cast<NI::AmbientLight*>(object));
-			case NI::RTTIStaticPtr::NiAVObject:
-				return sol::make_object(state, reinterpret_cast<NI::AVObject*>(object));
-			case NI::RTTIStaticPtr::NiCamera:
-				return sol::make_object(state, reinterpret_cast<NI::Camera*>(object));
-			case NI::RTTIStaticPtr::NiCollisionSwitch:
-				return sol::make_object(state, reinterpret_cast<NI::CollisionSwitch*>(object));
-			case NI::RTTIStaticPtr::NiDirectionalLight:
-				return sol::make_object(state, reinterpret_cast<NI::DirectionalLight*>(object));
-			case NI::RTTIStaticPtr::NiFogProperty:
-				return sol::make_object(state, reinterpret_cast<NI::FogProperty*>(object));
-			case NI::RTTIStaticPtr::NiMaterialProperty:
-				return sol::make_object(state, reinterpret_cast<NI::MaterialProperty*>(object));
-			case NI::RTTIStaticPtr::NiNode:
-				return sol::make_object(state, reinterpret_cast<NI::Node*>(object));
-			case NI::RTTIStaticPtr::NiObjectNET:
-				return sol::make_object(state, reinterpret_cast<NI::ObjectNET*>(object));
-			case NI::RTTIStaticPtr::NiPixelData:
-				return sol::make_object(state, reinterpret_cast<NI::PixelData*>(object));
-			case NI::RTTIStaticPtr::NiPointLight:
-				return sol::make_object(state, reinterpret_cast<NI::PointLight*>(object));
-			case NI::RTTIStaticPtr::NiSourceTexture:
-				return sol::make_object(state, reinterpret_cast<NI::SourceTexture*>(object));
-			case NI::RTTIStaticPtr::NiSpotLight:
-				return sol::make_object(state, reinterpret_cast<NI::SpotLight*>(object));
-			case NI::RTTIStaticPtr::NiStencilProperty:
-				return sol::make_object(state, reinterpret_cast<NI::StencilProperty*>(object));
-			case NI::RTTIStaticPtr::NiSwitchNode:
-				return sol::make_object(state, reinterpret_cast<NI::SwitchNode*>(object));
-			case NI::RTTIStaticPtr::NiTexturingProperty:
-				return sol::make_object(state, reinterpret_cast<NI::TexturingProperty*>(object));
-			case NI::RTTIStaticPtr::NiTriShape:
-				return sol::make_object(state, reinterpret_cast<NI::TriShape*>(object));
-			case NI::RTTIStaticPtr::NiVertexColorProperty:
-				return sol::make_object(state, reinterpret_cast<NI::VertexColorProperty*>(object));
-			}
-
-			if (object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-				return sol::make_object(state, reinterpret_cast<NI::Node*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
-				return sol::make_object(state, reinterpret_cast<NI::TriShape*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiDynamicEffect)) {
-				return sol::make_object(state, reinterpret_cast<NI::DynamicEffect*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiAVObject)) {
-				return sol::make_object(state, reinterpret_cast<NI::AVObject*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiSourceTexture)) {
-				return sol::make_object(state, reinterpret_cast<NI::SourceTexture*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiObjectNET)) {
-				return sol::make_object(state, reinterpret_cast<NI::ObjectNET*>(object));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiPixelData)) {
-				return sol::make_object(state, reinterpret_cast<NI::PixelData*>(object));
-			}
-
-			return sol::make_object(state, object);
-		}
-
-		sol::object makeLuaNiPointer(NI::Object * object) {
-			if (object == nullptr) {
-				return sol::nil;
-			}
-
-			LuaManager& luaManager = LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::state& state = stateHandle.state;
-
-			switch ((uintptr_t)object->getRunTimeTypeInformation()) {
-			case NI::RTTIStaticPtr::NiAlphaProperty:
-				return sol::make_object(state, NI::Pointer<NI::AlphaProperty>(reinterpret_cast<NI::AlphaProperty*>(object)));
-			case NI::RTTIStaticPtr::NiAmbientLight:
-				return sol::make_object(state, NI::Pointer<NI::AmbientLight>(reinterpret_cast<NI::AmbientLight*>(object)));
-			case NI::RTTIStaticPtr::NiAVObject:
-				return sol::make_object(state, NI::Pointer<NI::AVObject>(reinterpret_cast<NI::AVObject*>(object)));
-			case NI::RTTIStaticPtr::NiCamera:
-				return sol::make_object(state, NI::Pointer<NI::Camera>(reinterpret_cast<NI::Camera*>(object)));
-			case NI::RTTIStaticPtr::NiCollisionSwitch:
-				return sol::make_object(state, NI::Pointer<NI::CollisionSwitch>(reinterpret_cast<NI::CollisionSwitch*>(object)));
-			case NI::RTTIStaticPtr::NiDirectionalLight:
-				return sol::make_object(state, NI::Pointer<NI::DirectionalLight>(reinterpret_cast<NI::DirectionalLight*>(object)));
-			case NI::RTTIStaticPtr::NiFogProperty:
-				return sol::make_object(state, NI::Pointer<NI::FogProperty>(reinterpret_cast<NI::FogProperty*>(object)));
-			case NI::RTTIStaticPtr::NiMaterialProperty:
-				return sol::make_object(state, NI::Pointer<NI::MaterialProperty>(reinterpret_cast<NI::MaterialProperty*>(object)));
-			case NI::RTTIStaticPtr::NiNode:
-				return sol::make_object(state, NI::Pointer<NI::Node>(reinterpret_cast<NI::Node*>(object)));
-			case NI::RTTIStaticPtr::NiObjectNET:
-				return sol::make_object(state, NI::Pointer<NI::ObjectNET>(reinterpret_cast<NI::ObjectNET*>(object)));
-			case NI::RTTIStaticPtr::NiPixelData:
-				return sol::make_object(state, NI::Pointer<NI::PixelData>(reinterpret_cast<NI::PixelData*>(object)));
-			case NI::RTTIStaticPtr::NiPointLight:
-				return sol::make_object(state, NI::Pointer<NI::PointLight>(reinterpret_cast<NI::PointLight*>(object)));
-			case NI::RTTIStaticPtr::NiSourceTexture:
-				return sol::make_object(state, NI::Pointer<NI::SourceTexture>(reinterpret_cast<NI::SourceTexture*>(object)));
-			case NI::RTTIStaticPtr::NiSpotLight:
-				return sol::make_object(state, NI::Pointer<NI::SpotLight>(reinterpret_cast<NI::SpotLight*>(object)));
-			case NI::RTTIStaticPtr::NiStencilProperty:
-				return sol::make_object(state, NI::Pointer<NI::StencilProperty>(reinterpret_cast<NI::StencilProperty*>(object)));
-			case NI::RTTIStaticPtr::NiSwitchNode:
-				return sol::make_object(state, NI::Pointer<NI::SwitchNode>(reinterpret_cast<NI::SwitchNode*>(object)));
-			case NI::RTTIStaticPtr::NiTexturingProperty:
-				return sol::make_object(state, NI::Pointer<NI::TexturingProperty>(reinterpret_cast<NI::TexturingProperty*>(object)));
-			case NI::RTTIStaticPtr::NiTriShape:
-				return sol::make_object(state, NI::Pointer<NI::TriShape>(reinterpret_cast<NI::TriShape*>(object)));
-			case NI::RTTIStaticPtr::NiVertexColorProperty:
-				return sol::make_object(state, NI::Pointer<NI::VertexColorProperty>(reinterpret_cast<NI::VertexColorProperty*>(object)));
-			}
-
-			if (object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-				return sol::make_object(state, NI::Pointer<NI::Node>(reinterpret_cast<NI::Node*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
-				return sol::make_object(state, NI::Pointer<NI::TriShape>(reinterpret_cast<NI::TriShape*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiDynamicEffect)) {
-				return sol::make_object(state, NI::Pointer<NI::DynamicEffect>(reinterpret_cast<NI::DynamicEffect*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiAVObject)) {
-				return sol::make_object(state, NI::Pointer<NI::AVObject>(reinterpret_cast<NI::AVObject*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiSourceTexture)) {
-				return sol::make_object(state, NI::Pointer<NI::SourceTexture>(reinterpret_cast<NI::SourceTexture*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiObjectNET)) {
-				return sol::make_object(state, NI::Pointer<NI::ObjectNET>(reinterpret_cast<NI::ObjectNET*>(object)));
-			}
-			else if (object->isInstanceOfType(NI::RTTIStaticPtr::NiPixelData)) {
-				return sol::make_object(state, NI::Pointer<NI::PixelData>(reinterpret_cast<NI::PixelData*>(object)));
-			}
-
-			return sol::make_object(state, object);
+			return false;
 		}
 
 		void logStackTrace(const char* message) {

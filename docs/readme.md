@@ -10,7 +10,7 @@ The docs for this project are created for [Read the Docs](https://readthedocs.or
 
 ## Autocomplete Definitions
 
-Some portions of the docs, include Lua type information, events, and APIs, are auto-generated using the content in the autocomplete root folder. Edit these definitions instead, and run the `autocomplete\luacompleterc\build.lua` file to regenerate the needed files.
+Some portions of the docs, include Lua type information, events, and APIs, are auto-generated using the content in the autocomplete root folder. Edit these definitions instead, and run the `autocomplete\readthedocs\build.lua` file to regenerate the needed files.
 
 
 ## Building

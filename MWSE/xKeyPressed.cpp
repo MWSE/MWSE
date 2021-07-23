@@ -23,7 +23,6 @@
 #include "Stack.h"
 #include "InstructionInterface.h"
 #include "TES3Util.h"
-#include <Windows.h>
 
 using namespace mwse;
 

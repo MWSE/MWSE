@@ -9,6 +9,11 @@ function Custom:get()
 end
 
 function Custom:set(newValue)
+	local converter = self.converter
+	if (converter) then
+		newValue = converter(newValue)
+	end
+	
 	self:setter(newValue)
 end
 

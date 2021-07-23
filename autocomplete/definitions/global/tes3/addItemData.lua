@@ -5,7 +5,7 @@ return {
 		name = "params",
 		type = "table",
 		tableParams = {
-			{ name = "to", type = "tes3reference|tes3mobileActor|string", description = "The reference whose inventory will be modified." },
+			{ name = "to", type = "tes3reference|tes3mobileActor|string", description = "The reference or mobile whose inventory will be modified." },
 			{ name = "item", type = "tes3item|string", description = "The item to create item data for." },
 			{ name = "updateGUI", type = "boolean", default = true, description = "If false, the player or contents menu won't be updated." },
 		},

@@ -21,6 +21,21 @@ namespace TES3 {
 		int unknown_0x30;
 		Sound* sound;
 		SoundType soundType;
+
+		//
+		// Virtual table overrides.
+		//
+
+		const char* getObjectID() const;
+
+		//
+		// Custom functions.
+		//
+
+		std::string toJson() const;
+
 	};
 	static_assert(sizeof(SoundGenerator) == 0x3C, "TES3::SoundGenerator failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::SoundGenerator)

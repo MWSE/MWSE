@@ -2,7 +2,6 @@
 
 #include "LuaManager.h"
 #include "TES3ObjectLua.h"
-#include "TES3CollectionsLua.h"
 
 #include "TES3Faction.h"
 
@@ -16,72 +15,62 @@ namespace mwse {
 			// Binding for TES3::Faction::Rank
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Faction::Rank>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Faction::Rank>("tes3factionRank");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("reputation", &TES3::Faction::Rank::reputation);
+				usertypeDefinition["reputation"] = &TES3::Faction::Rank::reputation;
 
 				// Indirect bindings to unions and arrays.
-				usertypeDefinition.set("attributes", sol::readonly_property([](TES3::Faction::Rank& self) { return std::ref(self.reqAttributes); }));
-				usertypeDefinition.set("skills", sol::readonly_property([](TES3::Faction::Rank& self) { return std::ref(self.reqSkills); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3factionRank", usertypeDefinition);
+				usertypeDefinition["attributes"] = sol::readonly_property(&TES3::Faction::Rank::getRequiredAttributeValues);
+				usertypeDefinition["skills"] = sol::readonly_property(&TES3::Faction::Rank::getRequiredSkillValues);
 			}
 
 			// Binding for TES3::Faction::ReactionNode
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Faction::ReactionNode>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Faction::ReactionNode>("tes3factionReaction");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("reputation", &TES3::Faction::ReactionNode::reaction);
-				usertypeDefinition.set("faction", sol::readonly_property([](TES3::Faction::ReactionNode& self) { return makeLuaObject(self.faction); }));
-
-				// Finish up our usertype.
-				state.set_usertype("tes3factionReaction", usertypeDefinition);
+				usertypeDefinition["reputation"] = &TES3::Faction::ReactionNode::reaction;
+				usertypeDefinition["faction"] = sol::readonly_property(&TES3::Faction::ReactionNode::faction);
 			}
 
 			// Binding for TES3::Faction
 			//! TODO: Provide a more friendly way to access rank names. Probably needs to be hidden behind its own struct.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Faction>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Faction>("tes3faction");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<TES3::BaseObject>());
-				setUserdataForBaseObject(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<TES3::BaseObject>();
+				setUserdataForTES3BaseObject(usertypeDefinition);
+
+				// Base class overrides.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Faction::getObjectID;
+				usertypeDefinition["id"] = sol::readonly_property(&TES3::Faction::getObjectID);
 
 				// Basic property binding.
-				usertypeDefinition.set("reactions", sol::readonly_property(&TES3::Faction::reactions));
-				usertypeDefinition.set("playerReputation", &TES3::Faction::playerReputation);
-				usertypeDefinition.set("playerJoined", sol::property(
-					[](TES3::Faction& self) { return self.getMembershipFlag(TES3::FactionMembershipFlag::PlayerJoined); },
-					[](TES3::Faction& self, bool set) { self.setMembershipFlag(TES3::FactionMembershipFlag::PlayerJoined, set); }
-				));
-				usertypeDefinition.set("playerExpelled", sol::property(
-					[](TES3::Faction& self) { return self.getMembershipFlag(TES3::FactionMembershipFlag::PlayerExpelled); },
-					[](TES3::Faction& self, bool set) { self.setMembershipFlag(TES3::FactionMembershipFlag::PlayerExpelled, set); }
-				));
+				usertypeDefinition["reactions"] = sol::readonly_property(&TES3::Faction::reactions);
+				usertypeDefinition["playerReputation"] = &TES3::Faction::playerReputation;
+				usertypeDefinition["playerJoined"] = sol::property(&TES3::Faction::getPlayerJoined, &TES3::Faction::setPlayerJoined);
+				usertypeDefinition["playerExpelled"] = sol::property(&TES3::Faction::getPlayerExpelled, &TES3::Faction::setPlayerExpelled);
 
 				// Indirect bindings to unions and arrays.
-				usertypeDefinition.set("attributes", sol::property([](TES3::Faction& self) { return std::ref(self.attributes); }));
-				usertypeDefinition.set("ranks", sol::readonly_property([](TES3::Faction& self) { return std::ref(self.ranks); }));
-				usertypeDefinition.set("skills", sol::property([](TES3::Faction& self) { return std::ref(self.skills); }));
+				usertypeDefinition["attributes"] = sol::property(&TES3::Faction::getAttributes);
+				usertypeDefinition["ranks"] = sol::readonly_property(&TES3::Faction::getRanks);
+				usertypeDefinition["skills"] = sol::property(&TES3::Faction::getSkills);
 
 				// Functions exposed as properties.
-				usertypeDefinition.set("name", sol::property(&TES3::Faction::getName, &TES3::Faction::setName));
-				usertypeDefinition.set("playerRank", sol::property(&TES3::Faction::getEffectivePlayerRank, &TES3::Faction::setEffectivePlayerRank));
+				usertypeDefinition["name"] = sol::property(&TES3::Faction::getName, &TES3::Faction::setName);
+				usertypeDefinition["playerRank"] = sol::property(&TES3::Faction::getEffectivePlayerRank, &TES3::Faction::setEffectivePlayerRank);
 
-				// Finish up our usertype.
-				state.set_usertype("tes3faction", usertypeDefinition);
+				// Basic function binding.
+				usertypeDefinition["getRankName"] = &TES3::Faction::getRankName;
+				usertypeDefinition["setRankName"] = &TES3::Faction::setRankName;
 			}
-
-			// Bind iterator access.
-			bindGenericObjectIterator<TES3::Faction>("tes3factionIterator", "tes3factionIteratorNode");
 		}
 	}
 }

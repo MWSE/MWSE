@@ -1,8 +1,6 @@
 #include "NISourceTextureLua.h"
 
-#include "NIObjectLua.h"
-
-#include "sol.hpp"
+#include "NITextureLua.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
@@ -20,41 +18,39 @@ namespace mwse {
 			// Binding for NI::SourceTexture::FormatPrefs.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<NI::SourceTexture::FormatPrefs>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<NI::SourceTexture::FormatPrefs>("niFormatPrefs");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property binding.
-				usertypeDefinition.set("alphaLayout", &NI::SourceTexture::FormatPrefs::alphaFormat);
-				usertypeDefinition.set("mipLayout", &NI::SourceTexture::FormatPrefs::mipMapped);
-				usertypeDefinition.set("pixelLayout", &NI::SourceTexture::FormatPrefs::pixelLayout);
-
-				// Finish up our usertype.
-				state.set_usertype("niFormatPrefs", usertypeDefinition);
+				usertypeDefinition["alphaLayout"] = &NI::SourceTexture::FormatPrefs::alphaFormat;
+				usertypeDefinition["mipLayout"] = &NI::SourceTexture::FormatPrefs::mipMapped;
+				usertypeDefinition["pixelLayout"] = &NI::SourceTexture::FormatPrefs::pixelLayout;
 			}
 
 			// Binding for NI::SourceTexture.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<NI::SourceTexture>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<NI::SourceTexture>("niSourceTexture");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-				usertypeDefinition.set(sol::base_classes, sol::bases<NI::ObjectNET, NI::Object>());
-				setUserdataForNIObjectNET(usertypeDefinition);
+				usertypeDefinition[sol::base_classes] = sol::bases<NI::Texture, NI::ObjectNET, NI::Object>();
+				setUserdataForNITexture(usertypeDefinition);
 
 				// Basic property binding.
-				usertypeDefinition.set("formatPrefs", &NI::SourceTexture::formatPrefs);
-				usertypeDefinition.set("isStatic", &NI::SourceTexture::isStatic);
-				usertypeDefinition.set("pixelData", &NI::SourceTexture::pixelData);
+				usertypeDefinition["isStatic"] = &NI::SourceTexture::isStatic;
+				usertypeDefinition["pixelData"] = &NI::SourceTexture::pixelData;
+
+				// Basic function binding.
+				usertypeDefinition["clearPixelData"] = &NI::SourceTexture::clearPixelData;
+				usertypeDefinition["loadPixelDataFromFile"] = &NI::SourceTexture::loadPixelDataFromFile;
 
 				// Functions bound as properties.
-				usertypeDefinition.set("fileName", sol::readonly_property(&NI::SourceTexture::fileName));
-				usertypeDefinition.set("height", sol::readonly_property(&NI::SourceTexture::getHeight));
-				usertypeDefinition.set("platformFileName", sol::readonly_property(&NI::SourceTexture::platformFileName));
-				usertypeDefinition.set("width", sol::readonly_property(&NI::SourceTexture::getWidth));
+				usertypeDefinition["fileName"] = sol::readonly_property(&NI::SourceTexture::fileName);
+				usertypeDefinition["platformFileName"] = sol::readonly_property(&NI::SourceTexture::platformFileName);
 
-				// Finish up our usertype.
-				state.set_usertype("niSourceTexture", usertypeDefinition);
+				// Functions that need their results wrapped.
+				usertypeDefinition["createFromPath"] = &NI::SourceTexture::createFromPath_lua;
 			}
 		}
 	}

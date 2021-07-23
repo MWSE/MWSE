@@ -1,18 +1,17 @@
 #include "TES3MobileProjectile.h"
 
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
 #include "LuaMobileProjectileActorCollisionEvent.h"
 #include "LuaMobileProjectileObjectCollisionEvent.h"
 #include "LuaMobileProjectileTerrainCollisionEvent.h"
 #include "LuaMobileObjectCollisionEvent.h"
 
-namespace TES3 {
-	const auto TES3_MobileProjectile_onActorCollision = reinterpret_cast<bool(__thiscall *)(MobileProjectile*, int)>(0x573860);
-	const auto TES3_MobileProjectile_onObjectCollision = reinterpret_cast<bool(__thiscall *)(MobileProjectile*, int, bool)>(0x573820);
-	const auto TES3_MobileProjectile_onTerrainCollision = reinterpret_cast<bool(__thiscall *)(MobileProjectile*, int)>(0x5737F0);
-	const auto TES3_MobileProjectile_onWaterCollision = reinterpret_cast<bool(__thiscall *)(MobileProjectile*, int)>(0x573790);
+#include "TES3Reference.h"
 
+namespace TES3 {
+	const auto TES3_MobileProjectile_onActorCollision = reinterpret_cast<bool(__thiscall*)(MobileProjectile*, int)>(0x573860);
 	bool MobileProjectile::onActorCollision(int collisionIndex) {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
@@ -25,13 +24,15 @@ namespace TES3 {
 		bool result = TES3_MobileProjectile_onActorCollision(this, collisionIndex);
 
 		// Fire off our hit event.
-		if (mwse::lua::event::MobileProjectileActorCollisionEvent::getEventEnabled()) {
+		//! TODO: Make this into projectileHitMobile event with backup projectileHitActor for backwards compatibility.
+		if (mwse::lua::event::MobileProjectileActorCollisionEvent::getEventEnabled() && hitReference->baseObject->isActor()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MobileProjectileActorCollisionEvent(this, hitReference, point, pos, vel));
 		}
 
 		return result;
 	}
 
+	const auto TES3_MobileProjectile_onObjectCollision = reinterpret_cast<bool(__thiscall*)(MobileProjectile*, int, bool)>(0x573820);
 	bool MobileProjectile::onObjectCollision(int collisionIndex, bool flag) {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
@@ -51,6 +52,7 @@ namespace TES3 {
 		return result;
 	}
 
+	const auto TES3_MobileProjectile_onTerrainCollision = reinterpret_cast<bool(__thiscall*)(MobileProjectile*, int)>(0x5737F0);
 	bool MobileProjectile::onTerrainCollision(int collisionIndex) {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
@@ -68,6 +70,7 @@ namespace TES3 {
 		return result;
 	}
 
+	const auto TES3_MobileProjectile_onWaterCollision = reinterpret_cast<bool(__thiscall*)(MobileProjectile*, int)>(0x573790);
 	bool MobileProjectile::onWaterCollision(int collisionIndex) {
 		// Grab the hit reference now, it won't be available after calling the main function.
 		TES3::Reference* hitReference = this->arrayCollisionResults[collisionIndex].colliderRef;
@@ -83,4 +86,15 @@ namespace TES3 {
 		return result;
 	}
 
+	Vector3 MobileProjectile::getProjectileVelocity() const {
+		return velocity;
+	}
+
+	void MobileProjectile::setProjectileVelocity_lua(sol::stack_object value) {
+		// Use our util class to support vectors or a table.
+		mwse::lua::setVectorFromLua(velocity, value);
+	}
+
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3_MOBILEOBJECT(TES3::MobileProjectile)

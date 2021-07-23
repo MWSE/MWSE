@@ -1,7 +1,8 @@
 #pragma once
 
 #include "TES3Object.h"
-#include "TES3Collections.h"
+
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	enum class DialogueType : unsigned char {
@@ -13,10 +14,16 @@ namespace TES3 {
 	};
 
 	struct Dialogue : BaseObject {
-		const char* name;
+		char * name;
 		DialogueType type;
-		Iterator<DialogueInfo> info;
+		IteratedList<DialogueInfo*> info;
 		int journalIndex;
+
+		//
+		// Virtual table overrides.
+		//
+
+		const char * getObjectID() const;
 
 		//
 		// Other related this-call functions.
@@ -29,6 +36,15 @@ namespace TES3 {
 		DialogueInfo* getFilteredInfo(Actor* actor, Reference* reference, bool flag);
 
 		//
+		// Custom functions.
+		//
+
+		std::string toJson();
+
+		bool addToJournal_lua(sol::table params);
+		DialogueInfo* getDeepFilteredInfo_lua(sol::table params);
+
+		//
 		// Other related static functions.
 		//
 
@@ -37,3 +53,5 @@ namespace TES3 {
 	};
 	static_assert(sizeof(Dialogue) == 0x30, "TES3::Dialogue failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Dialogue)

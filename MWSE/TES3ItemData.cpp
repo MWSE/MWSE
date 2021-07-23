@@ -1,7 +1,5 @@
 #include "TES3ItemData.h"
 
-#include "TES3Util.h"
-
 #include "TES3Actor.h"
 #include "TES3DataHandler.h"
 #include "TES3Enchantment.h"
@@ -10,9 +8,11 @@
 #include "TES3Weapon.h"
 
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
-#include <unordered_set>
-#include <Windows.h>
+#include "MemoryUtil.h"
+
+#include "TES3ScriptLua.h"
 
 namespace TES3 {
 	//
@@ -45,7 +45,9 @@ namespace TES3 {
 	//
 
 	ItemData::LuaData::LuaData() {
-		data = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().state.create_table();
+		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		data = stateHandle.state.create_table();
+		tempData = stateHandle.state.create_table();
 	}
 
 	ItemData::ItemData() {
@@ -114,7 +116,10 @@ namespace TES3 {
 
 		if (itemData->luaData) {
 			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			return itemData->luaData->data.empty();
+			static sol::protected_function fnTableEmpty = stateHandle.state["table"]["empty"];
+			if (!fnTableEmpty(itemData->luaData->data, true) || !fnTableEmpty(itemData->luaData->tempData, true)) {
+				return false;
+			}
 		}
 
 		return true;
@@ -122,7 +127,7 @@ namespace TES3 {
 
 	Actor * ItemData::getSoulActor() {
 		__try {
-			if (soul != nullptr && soul->isActor()) {
+			if (soul != nullptr && charge != -1.0f && soul->isActor()) {
 				return soul;
 			}
 		}
@@ -137,6 +142,7 @@ namespace TES3 {
 		if (data == sol::nil) {
 			if (luaData != nullptr) {
 				luaData->data = sol::nil;
+				luaData->tempData = sol::nil;
 				delete luaData;
 				luaData = nullptr;
 			}
@@ -152,11 +158,43 @@ namespace TES3 {
 		}
 	}
 
+	void ItemData::setLuaTempDataTable(sol::object data) {
+		if (data == sol::nil) {
+			if (luaData != nullptr) {
+				luaData->data = sol::nil;
+				luaData->tempData = sol::nil;
+				delete luaData;
+				luaData = nullptr;
+			}
+		}
+		else if (data.is<sol::table>()) {
+			if (luaData == nullptr) {
+				luaData = new TES3::ItemData::LuaData();
+			}
+			luaData->tempData = data;
+		}
+		else {
+			throw std::exception("Invalid data type assignment. Must be a table or nil.");
+		}
+	}
+
 	sol::table ItemData::getOrCreateLuaDataTable() {
 		if (luaData == nullptr) {
 			luaData = new ItemData::LuaData();
 		}
 
 		return luaData->data;
+	}
+
+	sol::table ItemData::getOrCreateLuaTempDataTable() {
+		if (luaData == nullptr) {
+			luaData = new ItemData::LuaData();
+		}
+
+		return luaData->tempData;
+	}
+
+	std::shared_ptr<mwse::lua::ScriptContext> ItemData::createContext() {
+		return std::make_shared<mwse::lua::ScriptContext>(script, scriptData);
 	}
 }

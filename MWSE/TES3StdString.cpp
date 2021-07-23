@@ -1,7 +1,5 @@
 #include "TES3StdString.h"
 
-#include <string>
-
 namespace TES3 {
 	const auto TES3_StdString_assign = reinterpret_cast<void(__thiscall**)(StdString *, const char*, size_t)>(0x7461CC);
 

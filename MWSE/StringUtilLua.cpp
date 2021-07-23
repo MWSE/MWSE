@@ -1,7 +1,5 @@
 #include "StringUtilLua.h"
 
-#include "sol.hpp"
-
 #include "LuaManager.h"
 #include "StringUtil.h"
 

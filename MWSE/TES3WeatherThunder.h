@@ -25,6 +25,17 @@ namespace TES3 {
 		float raindropsMax; // 0x860
 		float flashDecrement; // 0x864
 		bool rainPlaying; // 0x868
+
+		//
+		// Custom functions.
+		//
+
+		bool setRainLoopSoundID(const char* id);
+		bool setThunder1SoundID(const char* id);
+		bool setThunder2SoundID(const char* id);
+		bool setThunder3SoundID(const char* id);
+		bool setThunder4SoundID(const char* id);
+
 	};
 	static_assert(sizeof(WeatherThunder) == 0x86C, "TES3::WeatherThunder failed size validation");
 }

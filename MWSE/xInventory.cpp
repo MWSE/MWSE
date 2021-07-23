@@ -66,7 +66,7 @@ namespace mwse
 			return 0.0f;
 		}
 		
-		TES3::IteratorNode<TES3::ItemStack>* firstItem = static_cast<TES3::Actor*>(reference->baseObject)->inventory.iterator.head;
+		TES3::IteratedList<TES3::ItemStack*>::Node* firstItem = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 		if (firstItem == NULL) {
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);

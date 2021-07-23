@@ -2,8 +2,8 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Item.h"
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	namespace WeaponType {
@@ -27,8 +27,17 @@ namespace TES3 {
 		};
 	}
 
+	namespace WeaponMaterialFlag {
+		typedef unsigned int value_type;
+
+		enum WeaponMaterialFlag : value_type {
+			IgnoresNormalWeaponResistance = 0x1,
+			Silver = 0x2
+		};
+	}
+
 	struct Weapon : Item {
-		Iterator<TES3::BaseObject> stolenList; // 0x30
+		IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44
 		Script * script; // 0x48
 		char * model; // 0x4C
@@ -46,19 +55,45 @@ namespace TES3 {
 		unsigned char slashMax; // 0x6D
 		unsigned char thrustMin; // 0x6E
 		unsigned char thrustMax; // 0x6F
-		mwse::bitset32 materialFlags; // 0x70
+		unsigned int materialFlags; // 0x70
 		Enchantment * enchantment; // 0x74
+
+		Weapon();
+		~Weapon();
 
 		//
 		// Custom functions.
 		//
 
-		bool isOneHanded();
-		bool isTwoHanded();
-		bool isMelee();
-		bool isRanged();
-		bool isAmmo();
-		bool hasDurability();
+		bool isOneHanded() const;
+		bool isTwoHanded() const;
+		bool isMelee() const;
+		bool isRanged() const;
+		bool isAmmo() const;
+		bool isProjectile() const;
+		bool hasDurability() const;
+		void setDurability(int value);
+
+		bool getMaterialFlag(WeaponMaterialFlag::WeaponMaterialFlag) const;
+		void setMaterialFlag(WeaponMaterialFlag::WeaponMaterialFlag, bool);
+
+		bool getIgnoresNormalWeaponResistance() const;
+		void setIgnoresNormalWeaponResistance(bool);
+		bool getIsSilver() const;
+		void setIsSilver(bool);
+
+		int getSkillId() const;
+		Skill* getSkill() const;
+
+		void setIconPath(const char* path);
+
+		//
+		// Access to this type's raw functions.
+		//
+
+		static constexpr auto _typeToSkillMap = reinterpret_cast<int*>(0x7A8C0C);
 	};
 	static_assert(sizeof(Weapon) == 0x78, "TES3::Weapon failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Weapon)

@@ -42,7 +42,7 @@ namespace mwse {
 		virtual void loadParameters(VMExecuteInterface &virtualMachine);
 
 	private:
-		bool nodeMatchesFilter(TES3::IteratorNode<TES3::EquipmentStack>* node, long typeFilter, long subtypeFilter);
+		bool nodeMatchesFilter(TES3::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);
 		long getItemSubType(TES3::BaseObject* object);
 	};
 
@@ -54,7 +54,7 @@ namespace mwse {
 
 	float xEquipmentList::execute(mwse::VMExecuteInterface &virtualMachine) {
 		// Get parameters.
-		TES3::IteratorNode<TES3::EquipmentStack>* node = reinterpret_cast<TES3::IteratorNode<TES3::EquipmentStack>*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<TES3::IteratedList<TES3::EquipmentStack*>::Node*>(mwse::Stack::getInstance().popLong());
 		long typeFilter = mwse::Stack::getInstance().popLong();
 		long subtypeFilter = mwse::Stack::getInstance().popLong() - 1;
 
@@ -115,7 +115,7 @@ namespace mwse {
 		float weight = 0;
 		char* name = NULL;
 		char* enchantId = NULL;
-		TES3::IteratorNode<TES3::EquipmentStack>* next = NULL;
+		TES3::IteratedList<TES3::EquipmentStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.
 		if (node == NULL) {
@@ -176,7 +176,7 @@ namespace mwse {
 		return 0.0f;
 	}
 
-	bool xEquipmentList::nodeMatchesFilter(TES3::IteratorNode<TES3::EquipmentStack>* node, long typeFilter, long subtypeFilter) {
+	bool xEquipmentList::nodeMatchesFilter(TES3::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter) {
 		TES3::BaseObject* object = node->data->object;
 
 		if (typeFilter != 0 && object->objectType != typeFilter) {
@@ -202,7 +202,6 @@ namespace mwse {
 			type == TES3::ObjectType::Clothing || type == TES3::ObjectType::Weapon)
 		{
 			subtype = object->vTable.object->getType(object);
-			log::getLog() << "xEquipmentList::getItemSubType : " << object->vTable.object->getObjectID(object) << " = " << subtype - 1 << std::endl;
 		}
 
 		return subtype;

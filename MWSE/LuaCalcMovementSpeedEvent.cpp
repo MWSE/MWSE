@@ -44,8 +44,8 @@ namespace mwse {
 
 				eventData["type"] = m_Type;
 				eventData["speed"] = m_Speed;
-				eventData["mobile"] = makeLuaObject(m_MobileActor);
-				eventData["reference"] = makeLuaObject(m_MobileActor->reference);
+				eventData["mobile"] = m_MobileActor;
+				eventData["reference"] = m_MobileActor->reference;
 
 				return eventData;
 			}

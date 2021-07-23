@@ -20,13 +20,6 @@
 
 #include "Log.h"
 
-#include <fstream>
-#include <ostream>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include <windows.h>
-
 using namespace mwse;
 using namespace log;
 
@@ -101,17 +94,41 @@ namespace mwse
 			return debugstream;
 		}
 
-		std::ostream& dump(std::ostream& output, void *data, size_t size)
-		{
-			unsigned char *cp = reinterpret_cast<unsigned char *>(data);
-			for (size_t i = 0; i < size; i++)
-			{
-				if (i % 16 == 0 && i != 0) output << std::endl;
-				output << std::hex << std::setw(2) << std::setfill('0') << *cp++;
-			}
-			output << std::endl;
+        void prettyDump(const void* data, const size_t length) {
+            constexpr unsigned int LINE_WIDTH = 16u;
 
-			return output;
+            // Prepare log.
+            auto& log = getLog();
+            log << std::hex << std::setfill('0');
+
+            unsigned long address = size_t(data);
+            const size_t dataEnd = address + length;
+            while (address < size_t(data) + length) {
+                // Show address
+                log << std::setw(8) << address;
+
+                // Show the hex codes
+                for (unsigned int offset = 0; offset < LINE_WIDTH; offset++) {
+                    if (address + offset < dataEnd) {
+                        log << ' ' << std::setw(2) << unsigned int(*reinterpret_cast<const unsigned char*>(address + offset));
+                    }
+                    else {
+                        log << "   ";
+                    }
+                }
+
+                // Show printable characters
+                log << "  ";
+                for (unsigned int offset = 0; offset < LINE_WIDTH; offset++) {
+                    if (address + offset < dataEnd) {
+                        if (*reinterpret_cast<const unsigned char*>(address + offset) < 32u) log << '.';
+                        else log << *reinterpret_cast<const char*>(address + offset);
+                    }
+                }
+
+                log << std::endl;
+                address += 0x10;
+            }
 		}
 	}
 }

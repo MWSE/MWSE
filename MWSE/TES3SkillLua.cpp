@@ -1,55 +1,36 @@
-#include <string>
+#include "TES3SkillLua.h"
 
 #include "LuaManager.h"
 #include "TES3ObjectLua.h"
 
-#include "TES3DataHandler.h"
-#include "TES3GameSetting.h"
 #include "TES3Skill.h"
-#include "TES3SkillLua.h"
 
 namespace mwse {
 	namespace lua {
-		static const auto arraySkillIconPaths = reinterpret_cast<const char**>(0x7BB158);
-
 		void bindTES3Skill() {
 			// Get our lua state.
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::Skill>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::Skill>("tes3skill");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
-			usertypeDefinition.set(sol::base_classes, sol::bases<TES3::BaseObject>());
-			setUserdataForBaseObject(usertypeDefinition);
+			usertypeDefinition[sol::base_classes] = sol::bases<TES3::BaseObject>();
+			setUserdataForTES3BaseObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("id", sol::readonly_property(&TES3::Skill::skill));
-			usertypeDefinition.set("attribute", &TES3::Skill::governingAttribute);
-			usertypeDefinition.set("specialization", &TES3::Skill::specialization);
+			usertypeDefinition["id"] = sol::readonly_property(&TES3::Skill::skill);
+			usertypeDefinition["attribute"] = &TES3::Skill::governingAttribute;
+			usertypeDefinition["specialization"] = &TES3::Skill::specialization;
 
 			// Functions as properties.
-			usertypeDefinition.set("name", sol::readonly_property(
-				[](const TES3::Skill& self) {
-					auto dataHandler = TES3::DataHandler::get();
-					return dataHandler->nonDynamicData->GMSTs[0x380 + self.skill]->value.asString;
-				}
-			));
-			usertypeDefinition.set("iconPath", sol::readonly_property(
-				[](const TES3::Skill& self) {
-					std::string path = "icons\\k\\";
-					path.append(arraySkillIconPaths[self.skill]);
-					return path;
-				}
-			));
+			usertypeDefinition["name"] = sol::readonly_property(&TES3::Skill::getName);
+			usertypeDefinition["iconPath"] = sol::readonly_property(&TES3::Skill::getIconPath);
 
 			// Indirect bindings to unions and arrays.
-			usertypeDefinition.set("actions", sol::readonly_property([](TES3::Skill& self) { return std::ref(self.progressActions); }));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3skill", usertypeDefinition);
+			usertypeDefinition["actions"] = sol::readonly_property(&TES3::Skill::getProgressActions);
 		}
 	}
 }

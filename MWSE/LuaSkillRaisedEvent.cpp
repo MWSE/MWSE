@@ -5,10 +5,11 @@
 namespace mwse {
 	namespace lua {
 		namespace event {
-			SkillRaisedEvent::SkillRaisedEvent(int skillId, float newLevel) :
+			SkillRaisedEvent::SkillRaisedEvent(int skillId, float newLevel, const char* source) :
 				GenericEvent("skillRaised"),
 				m_Skill(skillId),
-				m_NewLevel(newLevel)
+				m_NewLevel(newLevel),
+				m_Source(source)
 			{
 
 			}
@@ -20,6 +21,7 @@ namespace mwse {
 
 				eventData["skill"] = m_Skill;
 				eventData["level"] = m_NewLevel;
+				eventData["source"] = m_Source;
 
 				return eventData;
 			}

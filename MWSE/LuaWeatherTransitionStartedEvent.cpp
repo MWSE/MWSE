@@ -23,8 +23,8 @@ namespace mwse {
 
 				auto controller = TES3::WorldController::get()->weatherController;
 
-				eventData["from"] = makeLuaObject(controller->currentWeather);
-				eventData["to"] = makeLuaObject(controller->nextWeather);
+				eventData["from"] = controller->currentWeather;
+				eventData["to"] = controller->nextWeather;
 
 				return eventData;
 			}

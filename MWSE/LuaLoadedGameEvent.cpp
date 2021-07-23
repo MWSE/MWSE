@@ -40,8 +40,8 @@ namespace mwse {
 
 				auto mobilePlayer = TES3::WorldController::get()->getMobilePlayer();
 				if (mobilePlayer) {
-					eventData["mobile"] = makeLuaObject(mobilePlayer);
-					eventData["reference"] = makeLuaObject(mobilePlayer->reference);
+					eventData["mobile"] = mobilePlayer;
+					eventData["reference"] = mobilePlayer->reference;
 				}
 
 				return eventData;

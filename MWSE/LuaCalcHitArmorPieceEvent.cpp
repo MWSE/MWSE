@@ -23,8 +23,8 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_Mobile);
-				eventData["reference"] = makeLuaObject(m_Mobile->reference);
+				eventData["mobile"] = m_Mobile;
+				eventData["reference"] = m_Mobile->reference;
 
 				if (m_Slot != TES3::ArmorSlot::Invalid) {
 					eventData["slot"] = m_Slot;

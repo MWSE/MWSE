@@ -1,8 +1,9 @@
 #pragma once
 
 #include "NIDefines.h"
+#include "NITArray.h"
 
-#include "TES3Collections.h"
+#include "TES3Defines.h"
 #include "TES3Vectors.h"
 
 namespace NI {
@@ -35,7 +36,7 @@ namespace NI {
 		bool observeAppCullFlag;
 		bool unknown_0x12;
 		Node * root;
-		TES3::TArray<PickRecord> results;
+		TArray<PickRecord*> results;
 		PickRecord * lastAddedRecord;
 		bool returnTexture;
 		bool returnNormal;
@@ -49,7 +50,7 @@ namespace NI {
 		static Pick* malloc();
 		void free();
 
-		void pickObjects(TES3::Vector3 * origin, TES3::Vector3 * direction, bool append = false, float maxDistance = 0.0f);
+		bool pickObjects(const TES3::Vector3 * origin, const TES3::Vector3 * direction, bool append = false, float maxDistance = 0.0f);
 		void clearResults();
 
 	};
@@ -67,10 +68,12 @@ namespace NI {
 		int color;
 
 		//
-		// Other related this-call functions.
+		// Custom functions.
 		//
+		
+		std::reference_wrapper<unsigned short[3]> getVertexIndex();
 
-
+		TES3::Reference* getTES3Reference();
 
 	};
 	static_assert(sizeof(PickRecord) == 0x38, "NI::PickRecord failed size validation");

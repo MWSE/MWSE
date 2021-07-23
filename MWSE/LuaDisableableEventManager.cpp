@@ -4,8 +4,13 @@
 
 #include "LuaActivateEvent.h"
 #include "LuaActivationTargetChangedEvent.h"
+#include "LuaAddSoundEvent.h"
+#include "LuaAddTempSoundEvent.h"
 #include "LuaAddTopicEvent.h"
 #include "LuaAttackEvent.h"
+#include "LuaAttackStartEvent.h"
+#include "LuaBarterOfferEvent.h"
+#include "LuaBodyPartAssignedEvent.h"
 #include "LuaBodyPartsUpdatedEvent.h"
 #include "LuaBookGetTextEvent.h"
 #include "LuaButtonPressedEvent.h"
@@ -18,21 +23,30 @@
 #include "LuaCalcRestInterruptEvent.h"
 #include "LuaCalcSoulValueEvent.h"
 #include "LuaCalcSpellPriceEvent.h"
+#include "LuaCalcSunDamageScalarEvent.h"
 #include "LuaCalcTrainingPriceEvent.h"
 #include "LuaCalcTravelPriceEvent.h"
+#include "LuaCellActivatedEvent.h"
 #include "LuaCellChangedEvent.h"
-#include "LuaCombatStartEvent.h"
+#include "LuaCellDeactivatedEvent.h"
 #include "LuaCombatStartedEvent.h"
+#include "LuaCombatStartEvent.h"
 #include "LuaCombatStopEvent.h"
 #include "LuaCombatStoppedEvent.h"
+#include "LuaContainerClosedEvent.h"
 #include "LuaConvertReferenceToItemEvent.h"
 #include "LuaCrimeWitnessedEvent.h"
-#include "LuaDamageEvent.h"
 #include "LuaDamagedEvent.h"
+#include "LuaDamagedHandToHandEvent.h"
+#include "LuaDamageEvent.h"
+#include "LuaDamageHandToHandEvent.h"
 #include "LuaDeathEvent.h"
+#include "LuaDetectSneakEvent.h"
 #include "LuaDetermineActionEvent.h"
 #include "LuaDeterminedActionEvent.h"
 #include "LuaDisarmTrapEvent.h"
+#include "LuaEnchantedItemCreatedEvent.h"
+#include "LuaEnchantedItemCreateFailedEvent.h"
 #include "LuaEquipEvent.h"
 #include "LuaEquippedEvent.h"
 #include "LuaFilterBarterMenuEvent.h"
@@ -46,18 +60,20 @@
 #include "LuaGenericUiPreEvent.h"
 #include "LuaInfoFilterEvent.h"
 #include "LuaInfoGetTextEvent.h"
+#include "LuaInfoLinkResolveEvent.h"
 #include "LuaInfoResponseEvent.h"
+#include "LuaIsGuardEvent.h"
 #include "LuaItemDroppedEvent.h"
 #include "LuaItemTileUpdatedEvent.h"
 #include "LuaJournalEvent.h"
 #include "LuaKeyDownEvent.h"
 #include "LuaKeyEvent.h"
 #include "LuaKeyUpEvent.h"
-#include "LuaLevelUpEvent.h"
 #include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
-#include "LuaLoadGameEvent.h"
+#include "LuaLevelUpEvent.h"
 #include "LuaLoadedGameEvent.h"
+#include "LuaLoadGameEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMenuStateEvent.h"
 #include "LuaMeshLoadedEvent.h"
@@ -73,19 +89,31 @@
 #include "LuaMouseButtonUpEvent.h"
 #include "LuaMouseWheelEvent.h"
 #include "LuaMusicSelectTrackEvent.h"
+#include "LuaObjectInvalidatedEvent.h"
 #include "LuaPickLockEvent.h"
+#include "LuaPlayAnimationGroupEvent.h"
+#include "LuaPlayItemSoundEvent.h"
+#include "LuaPostInfoResponseEvent.h"
 #include "LuaPotionBrewedEvent.h"
+#include "LuaPotionBrewFailedEvent.h"
+#include "LuaPowerRechargedEvent.h"
+#include "LuaPreLevelUpEvent.h"
+#include "LuaPreventRestEvent.h"
 #include "LuaProjectileExpireEvent.h"
+#include "LuaReferenceActivatedEvent.h"
+#include "LuaReferenceDeactivatedEvent.h"
 #include "LuaReferenceSceneNodeCreatedEvent.h"
 #include "LuaRestInterruptEvent.h"
-#include "LuaSaveGameEvent.h"
 #include "LuaSavedGameEvent.h"
+#include "LuaSaveGameEvent.h"
 #include "LuaShowRestWaitMenuEvent.h"
 #include "LuaSimulateEvent.h"
 #include "LuaSkillExerciseEvent.h"
 #include "LuaSkillRaisedEvent.h"
-#include "LuaSpellCastEvent.h"
+#include "LuaSoundObjectPlayEvent.h"
 #include "LuaSpellCastedEvent.h"
+#include "LuaSpellCastEvent.h"
+#include "LuaSpellCreatedEvent.h"
 #include "LuaSpellResistEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUiObjectTooltipEvent.h"
@@ -108,115 +136,140 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<DisableableEventManager>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<DisableableEventManager>("mwseDisableableEventManager");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Give access to the enabled state.
-				usertypeDefinition.set("activate", sol::property(&ActivateEvent::getEventEnabled, &ActivateEvent::setEventEnabled));
-				usertypeDefinition.set("activationTargetChanged", sol::property(&ActivationTargetChangedEvent::getEventEnabled, &ActivationTargetChangedEvent::setEventEnabled));
-				usertypeDefinition.set("attack", sol::property(&AttackEvent::getEventEnabled, &AttackEvent::setEventEnabled));
-				usertypeDefinition.set("bodyPartsUpdated", sol::property(&BodyPartsUpdatedEvent::getEventEnabled, &BodyPartsUpdatedEvent::setEventEnabled));
-				usertypeDefinition.set("bookGetText", sol::property(&BookGetTextEvent::getEventEnabled, &BookGetTextEvent::setEventEnabled));
-				usertypeDefinition.set("buttonPressed", sol::property(&ButtonPressedEvent::getEventEnabled, &ButtonPressedEvent::setEventEnabled));
-				usertypeDefinition.set("calcArmorPieceHit", sol::property(&CalcHitArmorPiece::getEventEnabled, &CalcHitArmorPiece::setEventEnabled));
-				usertypeDefinition.set("calcArmorRating", sol::property(&CalculateArmorRatingEvent::getEventEnabled, &CalculateArmorRatingEvent::setEventEnabled));
-				usertypeDefinition.set("calcBarterPrice", sol::property(&CalculateBarterPriceEvent::getEventEnabled, &CalculateBarterPriceEvent::setEventEnabled));
-				usertypeDefinition.set("calcFlySpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("calcHitChance", sol::property(&CalcHitChanceEvent::getEventEnabled, &CalcHitChanceEvent::setEventEnabled));
-				usertypeDefinition.set("calcMoveSpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("calcRepairPrice", sol::property(&CalculateRepairPriceEvent::getEventEnabled, &CalculateRepairPriceEvent::setEventEnabled));
-				usertypeDefinition.set("calcRestInterrupt", sol::property(&CalcRestInterruptEvent::getEventEnabled, &CalcRestInterruptEvent::setEventEnabled));
-				usertypeDefinition.set("calcRunSpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("calcSoulValue", sol::property(&CalculateSoulValueEvent::getEventEnabled, &CalculateSoulValueEvent::setEventEnabled));
-				usertypeDefinition.set("calcSpellPrice", sol::property(&CalculateSpellPriceEvent::getEventEnabled, &CalculateSpellPriceEvent::setEventEnabled));
-				usertypeDefinition.set("calcSwimRunSpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("calcSwimSpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("calcTrainingPrice", sol::property(&CalculateTrainingPriceEvent::getEventEnabled, &CalculateTrainingPriceEvent::setEventEnabled));
-				usertypeDefinition.set("calcTravelPrice", sol::property(&CalculateTravelPriceEvent::getEventEnabled, &CalculateTravelPriceEvent::setEventEnabled));
-				usertypeDefinition.set("calcWalkSpeed", sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled));
-				usertypeDefinition.set("cellChanged", sol::property(&CellChangedEvent::getEventEnabled, &CellChangedEvent::setEventEnabled));
-				usertypeDefinition.set("collideWater", sol::property(&MobileObjectWaterImpactEvent::getEventEnabled, &MobileObjectWaterImpactEvent::setEventEnabled));
-				usertypeDefinition.set("collision", sol::property(&MobileObjectCollisionEvent::getEventEnabled, &MobileObjectCollisionEvent::setEventEnabled));
-				usertypeDefinition.set("combatStart", sol::property(&CombatStartEvent::getEventEnabled, &CombatStartEvent::setEventEnabled));
-				usertypeDefinition.set("combatStarted", sol::property(&CombatStartedEvent::getEventEnabled, &CombatStartedEvent::setEventEnabled));
-				usertypeDefinition.set("combatStop", sol::property(&CombatStopEvent::getEventEnabled, &CombatStopEvent::setEventEnabled));
-				usertypeDefinition.set("combatStopped", sol::property(&CombatStoppedEvent::getEventEnabled, &CombatStoppedEvent::setEventEnabled));
-				usertypeDefinition.set("convertReferenceToItem", sol::property(&ConvertReferenceToItemEvent::getEventEnabled, &ConvertReferenceToItemEvent::setEventEnabled));
-				usertypeDefinition.set("crimeWitnessed", sol::property(&CrimeWitnessedEvent::getEventEnabled, &CrimeWitnessedEvent::setEventEnabled));
-				usertypeDefinition.set("damage", sol::property(&DamageEvent::getEventEnabled, &DamageEvent::setEventEnabled));
-				usertypeDefinition.set("damaged", sol::property(&DamagedEvent::getEventEnabled, &DamagedEvent::setEventEnabled));
-				usertypeDefinition.set("death", sol::property(&DeathEvent::getEventEnabled, &DeathEvent::setEventEnabled));
-				usertypeDefinition.set("determineAction", sol::property(&DetermineActionEvent::getEventEnabled, &DetermineActionEvent::setEventEnabled));
-				usertypeDefinition.set("determinedAction", sol::property(&DeterminedActionEvent::getEventEnabled, &DeterminedActionEvent::setEventEnabled));
-				usertypeDefinition.set("enterFrame", sol::property(&FrameEvent::getEventEnabled, &FrameEvent::setEventEnabled));
-				usertypeDefinition.set("equip", sol::property(&EquipEvent::getEventEnabled, &EquipEvent::setEventEnabled));
-				usertypeDefinition.set("equipped", sol::property(&EquippedEvent::getEventEnabled, &EquippedEvent::setEventEnabled));
-				usertypeDefinition.set("exerciseSkill", sol::property(&SkillExerciseEvent::getEventEnabled, &SkillExerciseEvent::setEventEnabled));
-				usertypeDefinition.set("filterBarterMenu", sol::property(&FilterBarterMenuEvent::getEventEnabled, &FilterBarterMenuEvent::setEventEnabled));
-				usertypeDefinition.set("filterContentsMenu", sol::property(&FilterContentsMenuEvent::getEventEnabled, &FilterContentsMenuEvent::setEventEnabled));
-				usertypeDefinition.set("filterInventory", sol::property(&FilterInventoryEvent::getEventEnabled, &FilterInventoryEvent::setEventEnabled));
-				usertypeDefinition.set("filterInventorySelect", sol::property(&FilterInventorySelectEvent::getEventEnabled, &FilterInventorySelectEvent::setEventEnabled));
-				usertypeDefinition.set("filterSoulGemTarget", sol::property(&FilterSoulGemTargetEvent::getEventEnabled, &FilterSoulGemTargetEvent::setEventEnabled));
-				usertypeDefinition.set("infoFilter", sol::property(&InfoFilterEvent::getEventEnabled, &InfoFilterEvent::setEventEnabled));
-				usertypeDefinition.set("infoGetText", sol::property(&InfoGetTextEvent::getEventEnabled, &InfoGetTextEvent::setEventEnabled));
-				usertypeDefinition.set("infoResponse", sol::property(&InfoResponseEvent::getEventEnabled, &InfoResponseEvent::setEventEnabled));
-				usertypeDefinition.set("itemDropped", sol::property(&ItemDroppedEvent::getEventEnabled, &ItemDroppedEvent::setEventEnabled));
-				usertypeDefinition.set("itemTileUpdated", sol::property(&ItemTileUpdatedEvent::getEventEnabled, &ItemTileUpdatedEvent::setEventEnabled));
-				usertypeDefinition.set("journal", sol::property(&JournalEvent::getEventEnabled, &JournalEvent::setEventEnabled));
-				usertypeDefinition.set("keyDown", sol::property(&KeyDownEvent::getEventEnabled, &KeyDownEvent::setEventEnabled));
-				usertypeDefinition.set("keyUp", sol::property(&KeyUpEvent::getEventEnabled, &KeyUpEvent::setEventEnabled));
-				usertypeDefinition.set("leveledCreaturePicked", sol::property(&LeveledCreaturePickedEvent::getEventEnabled, &LeveledCreaturePickedEvent::setEventEnabled));
-				usertypeDefinition.set("leveledItemPicked", sol::property(&LeveledItemPickedEvent::getEventEnabled, &LeveledItemPickedEvent::setEventEnabled));
-				usertypeDefinition.set("levelUp", sol::property(&LevelUpEvent::getEventEnabled, &LevelUpEvent::setEventEnabled));
-				usertypeDefinition.set("load", sol::property(&LoadGameEvent::getEventEnabled, &LoadGameEvent::setEventEnabled));
-				usertypeDefinition.set("loaded", sol::property(&LoadedGameEvent::getEventEnabled, &LoadedGameEvent::setEventEnabled));
-				usertypeDefinition.set("lockPick", sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled));
-				usertypeDefinition.set("magicCasted", sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled));
-				usertypeDefinition.set("menuEnter", sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled));
-				usertypeDefinition.set("menuExit", sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled));
-				usertypeDefinition.set("meshLoaded", sol::property(&MeshLoadedEvent::getEventEnabled, &MeshLoadedEvent::setEventEnabled));
-				usertypeDefinition.set("mobileActivated", sol::property(&MobileActorActivatedEvent::getEventEnabled, &MobileActorActivatedEvent::setEventEnabled));
-				usertypeDefinition.set("mobileDeactivated", sol::property(&MobileActorDeactivatedEvent::getEventEnabled, &MobileActorDeactivatedEvent::setEventEnabled));
-				usertypeDefinition.set("mouseAxis", sol::property(&MouseAxisEvent::getEventEnabled, &MouseAxisEvent::setEventEnabled));
-				usertypeDefinition.set("mouseButtonDown", sol::property(&MouseButtonDownEvent::getEventEnabled, &MouseButtonDownEvent::setEventEnabled));
-				usertypeDefinition.set("mouseButtonUp", sol::property(&MouseButtonUpEvent::getEventEnabled, &MouseButtonUpEvent::setEventEnabled));
-				usertypeDefinition.set("mouseWheel", sol::property(&MouseWheelEvent::getEventEnabled, &MouseWheelEvent::setEventEnabled));
-				usertypeDefinition.set("musicSelectTrack", sol::property(&MusicSelectTrackEvent::getEventEnabled, &MusicSelectTrackEvent::setEventEnabled));
-				usertypeDefinition.set("potionBrewed", sol::property(&PotionBrewedEvent::getEventEnabled, &PotionBrewedEvent::setEventEnabled));
-				usertypeDefinition.set("projectileExpire", sol::property(&ProjectileExpireEvent::getEventEnabled, &ProjectileExpireEvent::setEventEnabled));
-				usertypeDefinition.set("projectileHitActor", sol::property(&MobileProjectileActorCollisionEvent::getEventEnabled, &MobileProjectileActorCollisionEvent::setEventEnabled));
-				usertypeDefinition.set("projectileHitObject", sol::property(&MobileProjectileObjectCollisionEvent::getEventEnabled, &MobileProjectileObjectCollisionEvent::setEventEnabled));
-				usertypeDefinition.set("projectileHitTerrain", sol::property(&MobileProjectileTerrainCollisionEvent::getEventEnabled, &MobileProjectileTerrainCollisionEvent::setEventEnabled));
-				usertypeDefinition.set("referenceSceneNodeCreated", sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled));
-				usertypeDefinition.set("restInterrupt", sol::property(&RestInterruptEvent::getEventEnabled, &RestInterruptEvent::setEventEnabled));
-				usertypeDefinition.set("save", sol::property(&SaveGameEvent::getEventEnabled, &SaveGameEvent::setEventEnabled));
-				usertypeDefinition.set("saved", sol::property(&SavedGameEvent::getEventEnabled, &SavedGameEvent::setEventEnabled));
-				usertypeDefinition.set("simulate", sol::property(&SimulateEvent::getEventEnabled, &SimulateEvent::setEventEnabled));
-				usertypeDefinition.set("skillRaised", sol::property(&SkillRaisedEvent::getEventEnabled, &SkillRaisedEvent::setEventEnabled));
-				usertypeDefinition.set("spellCast", sol::property(&SpellCastEvent::getEventEnabled, &SpellCastEvent::setEventEnabled));
-				usertypeDefinition.set("spellCasted", sol::property(&SpellCastedEvent::getEventEnabled, &SpellCastedEvent::setEventEnabled));
-				usertypeDefinition.set("spellCastedFailure", sol::property(&SpellCastedEvent::getEventEnabled, &SpellCastedEvent::setEventEnabled));
-				usertypeDefinition.set("spellResist", sol::property(&SpellResistEvent::getEventEnabled, &SpellResistEvent::setEventEnabled));
-				usertypeDefinition.set("spellTick", sol::property(&SpellTickEvent::getEventEnabled, &SpellTickEvent::setEventEnabled));
-				usertypeDefinition.set("topicAdded", sol::property(&AddTopicEvent::getEventEnabled, &AddTopicEvent::setEventEnabled));
-				usertypeDefinition.set("trapDisarm", sol::property(&DisarmTrapEvent::getEventEnabled, &DisarmTrapEvent::setEventEnabled));
-				usertypeDefinition.set("uiActivated", sol::property(&GenericUiActivatedEvent::getEventEnabled, &GenericUiActivatedEvent::setEventEnabled));
-				usertypeDefinition.set("uiEvent", sol::property(&GenericUiPostEvent::getEventEnabled, &GenericUiPostEvent::setEventEnabled));
-				usertypeDefinition.set("uiObjectTooltip", sol::property(&UiObjectTooltipEvent::getEventEnabled, &UiObjectTooltipEvent::setEventEnabled));
-				usertypeDefinition.set("uiPreEvent", sol::property(&GenericUiPreEvent::getEventEnabled, &GenericUiPreEvent::setEventEnabled));
-				usertypeDefinition.set("uiRefreshed", sol::property(&UiRefreshedEvent::getEventEnabled, &UiRefreshedEvent::setEventEnabled));
-				usertypeDefinition.set("uiShowRestMenu", sol::property(&ShowRestWaitMenuEvent::getEventEnabled, &ShowRestWaitMenuEvent::setEventEnabled));
-				usertypeDefinition.set("uiSpellTooltip", sol::property(&UiSpellTooltipEvent::getEventEnabled, &UiSpellTooltipEvent::setEventEnabled));
-				usertypeDefinition.set("unequipped", sol::property(&UnequippedEvent::getEventEnabled, &UnequippedEvent::setEventEnabled));
-				usertypeDefinition.set("weaponReadied", sol::property(&WeaponReadiedEvent::getEventEnabled, &WeaponReadiedEvent::setEventEnabled));
-				usertypeDefinition.set("weaponUnreadied", sol::property(&WeaponUnreadiedEvent::getEventEnabled, &WeaponUnreadiedEvent::setEventEnabled));
-				usertypeDefinition.set("weatherChangedImmediate", sol::property(&WeatherChangedImmediateEvent::getEventEnabled, &WeatherChangedImmediateEvent::setEventEnabled));
-				usertypeDefinition.set("weatherCycled", sol::property(&WeatherCycledEvent::getEventEnabled, &WeatherCycledEvent::setEventEnabled));
-				usertypeDefinition.set("weatherTransitionFinished", sol::property(&WeatherTransitionFinishedEvent::getEventEnabled, &WeatherTransitionFinishedEvent::setEventEnabled));
-				usertypeDefinition.set("weatherTransitionStarted", sol::property(&WeatherTransitionStartedEvent::getEventEnabled, &WeatherTransitionStartedEvent::setEventEnabled));
-
-				// Finish up our usertype.
-				state.set_usertype("mwseDisableableEventManager", usertypeDefinition);
+				usertypeDefinition["activate"] = sol::property(&ActivateEvent::getEventEnabled, &ActivateEvent::setEventEnabled);
+				usertypeDefinition["activationTargetChanged"] = sol::property(&ActivationTargetChangedEvent::getEventEnabled, &ActivationTargetChangedEvent::setEventEnabled);
+				usertypeDefinition["addSound"] = sol::property(&AddSoundEvent::getEventEnabled, &AddSoundEvent::setEventEnabled);
+				usertypeDefinition["addTempSound"] = sol::property(&AddTempSoundEvent::getEventEnabled, &AddTempSoundEvent::setEventEnabled);
+				usertypeDefinition["attack"] = sol::property(&AttackEvent::getEventEnabled, &AttackEvent::setEventEnabled);
+				usertypeDefinition["attackStart"] = sol::property(&AttackStartEvent::getEventEnabled, &AttackStartEvent::setEventEnabled);
+				usertypeDefinition["barterOffer"] = sol::property(&BarterOfferEvent::getEventEnabled, &BarterOfferEvent::setEventEnabled);
+				usertypeDefinition["bodyPartAssigned"] = sol::property(&BodyPartAssignedEvent::getEventEnabled, &BodyPartAssignedEvent::setEventEnabled);
+				usertypeDefinition["bodyPartsUpdated"] = sol::property(&BodyPartsUpdatedEvent::getEventEnabled, &BodyPartsUpdatedEvent::setEventEnabled);
+				usertypeDefinition["bookGetText"] = sol::property(&BookGetTextEvent::getEventEnabled, &BookGetTextEvent::setEventEnabled);
+				usertypeDefinition["buttonPressed"] = sol::property(&ButtonPressedEvent::getEventEnabled, &ButtonPressedEvent::setEventEnabled);
+				usertypeDefinition["calcArmorPieceHit"] = sol::property(&CalcHitArmorPiece::getEventEnabled, &CalcHitArmorPiece::setEventEnabled);
+				usertypeDefinition["calcArmorRating"] = sol::property(&CalculateArmorRatingEvent::getEventEnabled, &CalculateArmorRatingEvent::setEventEnabled);
+				usertypeDefinition["calcBarterPrice"] = sol::property(&CalculateBarterPriceEvent::getEventEnabled, &CalculateBarterPriceEvent::setEventEnabled);
+				usertypeDefinition["calcFlySpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["calcHitChance"] = sol::property(&CalcHitChanceEvent::getEventEnabled, &CalcHitChanceEvent::setEventEnabled);
+				usertypeDefinition["calcMoveSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["calcRepairPrice"] = sol::property(&CalculateRepairPriceEvent::getEventEnabled, &CalculateRepairPriceEvent::setEventEnabled);
+				usertypeDefinition["calcRestInterrupt"] = sol::property(&CalcRestInterruptEvent::getEventEnabled, &CalcRestInterruptEvent::setEventEnabled);
+				usertypeDefinition["calcRunSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["calcSoulValue"] = sol::property(&CalculateSoulValueEvent::getEventEnabled, &CalculateSoulValueEvent::setEventEnabled);
+				usertypeDefinition["calcSpellPrice"] = sol::property(&CalculateSpellPriceEvent::getEventEnabled, &CalculateSpellPriceEvent::setEventEnabled);
+				usertypeDefinition["calcSunDamageScalar"] = sol::property(&CalcSunDamageScalarEvent::getEventEnabled, &CalcSunDamageScalarEvent::setEventEnabled);
+				usertypeDefinition["calcSwimRunSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["calcSwimSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["calcTrainingPrice"] = sol::property(&CalculateTrainingPriceEvent::getEventEnabled, &CalculateTrainingPriceEvent::setEventEnabled);
+				usertypeDefinition["calcTravelPrice"] = sol::property(&CalculateTravelPriceEvent::getEventEnabled, &CalculateTravelPriceEvent::setEventEnabled);
+				usertypeDefinition["calcWalkSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+				usertypeDefinition["cellActivated"] = sol::property(&CellActivatedEvent::getEventEnabled, &CellActivatedEvent::setEventEnabled);
+				usertypeDefinition["cellChanged"] = sol::property(&CellChangedEvent::getEventEnabled, &CellChangedEvent::setEventEnabled);
+				usertypeDefinition["cellDeactivated"] = sol::property(&CellDeactivatedEvent::getEventEnabled, &CellDeactivatedEvent::setEventEnabled);
+				usertypeDefinition["collideWater"] = sol::property(&MobileObjectWaterImpactEvent::getEventEnabled, &MobileObjectWaterImpactEvent::setEventEnabled);
+				usertypeDefinition["collision"] = sol::property(&MobileObjectCollisionEvent::getEventEnabled, &MobileObjectCollisionEvent::setEventEnabled);
+				usertypeDefinition["combatStart"] = sol::property(&CombatStartEvent::getEventEnabled, &CombatStartEvent::setEventEnabled);
+				usertypeDefinition["combatStarted"] = sol::property(&CombatStartedEvent::getEventEnabled, &CombatStartedEvent::setEventEnabled);
+				usertypeDefinition["combatStop"] = sol::property(&CombatStopEvent::getEventEnabled, &CombatStopEvent::setEventEnabled);
+				usertypeDefinition["combatStopped"] = sol::property(&CombatStoppedEvent::getEventEnabled, &CombatStoppedEvent::setEventEnabled);
+				usertypeDefinition["containerClosed"] = sol::property(&ContainerClosedEvent::getEventEnabled, &ContainerClosedEvent::setEventEnabled);
+				usertypeDefinition["convertReferenceToItem"] = sol::property(&ConvertReferenceToItemEvent::getEventEnabled, &ConvertReferenceToItemEvent::setEventEnabled);
+				usertypeDefinition["crimeWitnessed"] = sol::property(&CrimeWitnessedEvent::getEventEnabled, &CrimeWitnessedEvent::setEventEnabled);
+				usertypeDefinition["damage"] = sol::property(&DamageEvent::getEventEnabled, &DamageEvent::setEventEnabled);
+				usertypeDefinition["damaged"] = sol::property(&DamagedEvent::getEventEnabled, &DamagedEvent::setEventEnabled);
+				usertypeDefinition["damagedHandToHand"] = sol::property(&DamagedHandToHandEvent::getEventEnabled, &DamagedHandToHandEvent::setEventEnabled);
+				usertypeDefinition["damageHandToHand"] = sol::property(&DamageHandToHandEvent::getEventEnabled, &DamageHandToHandEvent::setEventEnabled);
+				usertypeDefinition["death"] = sol::property(&DeathEvent::getEventEnabled, &DeathEvent::setEventEnabled);
+				usertypeDefinition["detectSneak"] = sol::property(&DetectSneakEvent::getEventEnabled, &DetectSneakEvent::setEventEnabled);
+				usertypeDefinition["determineAction"] = sol::property(&DetermineActionEvent::getEventEnabled, &DetermineActionEvent::setEventEnabled);
+				usertypeDefinition["determinedAction"] = sol::property(&DeterminedActionEvent::getEventEnabled, &DeterminedActionEvent::setEventEnabled);
+				usertypeDefinition["enchantedItemCreated"] = sol::property(&EnchantedItemCreatedEvent::getEventEnabled, &EnchantedItemCreatedEvent::setEventEnabled);
+				usertypeDefinition["enchantedItemCreateFailed"] = sol::property(&EnchantedItemCreateFailedEvent::getEventEnabled, &EnchantedItemCreateFailedEvent::setEventEnabled);
+				usertypeDefinition["enterFrame"] = sol::property(&FrameEvent::getEventEnabled, &FrameEvent::setEventEnabled);
+				usertypeDefinition["equip"] = sol::property(&EquipEvent::getEventEnabled, &EquipEvent::setEventEnabled);
+				usertypeDefinition["equipped"] = sol::property(&EquippedEvent::getEventEnabled, &EquippedEvent::setEventEnabled);
+				usertypeDefinition["exerciseSkill"] = sol::property(&SkillExerciseEvent::getEventEnabled, &SkillExerciseEvent::setEventEnabled);
+				usertypeDefinition["filterBarterMenu"] = sol::property(&FilterBarterMenuEvent::getEventEnabled, &FilterBarterMenuEvent::setEventEnabled);
+				usertypeDefinition["filterContentsMenu"] = sol::property(&FilterContentsMenuEvent::getEventEnabled, &FilterContentsMenuEvent::setEventEnabled);
+				usertypeDefinition["filterInventory"] = sol::property(&FilterInventoryEvent::getEventEnabled, &FilterInventoryEvent::setEventEnabled);
+				usertypeDefinition["filterInventorySelect"] = sol::property(&FilterInventorySelectEvent::getEventEnabled, &FilterInventorySelectEvent::setEventEnabled);
+				usertypeDefinition["filterSoulGemTarget"] = sol::property(&FilterSoulGemTargetEvent::getEventEnabled, &FilterSoulGemTargetEvent::setEventEnabled);
+				usertypeDefinition["infoFilter"] = sol::property(&InfoFilterEvent::getEventEnabled, &InfoFilterEvent::setEventEnabled);
+				usertypeDefinition["infoGetText"] = sol::property(&InfoGetTextEvent::getEventEnabled, &InfoGetTextEvent::setEventEnabled);
+				usertypeDefinition["infoLinkResolve"] = sol::property(&InfoLinkResolveEvent::getEventEnabled, &InfoLinkResolveEvent::setEventEnabled);
+				usertypeDefinition["infoResponse"] = sol::property(&InfoResponseEvent::getEventEnabled, &InfoResponseEvent::setEventEnabled);
+				usertypeDefinition["isGuard"] = sol::property(&IsGuardEvent::getEventEnabled, &IsGuardEvent::setEventEnabled);
+				usertypeDefinition["itemDropped"] = sol::property(&ItemDroppedEvent::getEventEnabled, &ItemDroppedEvent::setEventEnabled);
+				usertypeDefinition["itemTileUpdated"] = sol::property(&ItemTileUpdatedEvent::getEventEnabled, &ItemTileUpdatedEvent::setEventEnabled);
+				usertypeDefinition["journal"] = sol::property(&JournalEvent::getEventEnabled, &JournalEvent::setEventEnabled);
+				usertypeDefinition["keyDown"] = sol::property(&KeyDownEvent::getEventEnabled, &KeyDownEvent::setEventEnabled);
+				usertypeDefinition["keyUp"] = sol::property(&KeyUpEvent::getEventEnabled, &KeyUpEvent::setEventEnabled);
+				usertypeDefinition["leveledCreaturePicked"] = sol::property(&LeveledCreaturePickedEvent::getEventEnabled, &LeveledCreaturePickedEvent::setEventEnabled);
+				usertypeDefinition["leveledItemPicked"] = sol::property(&LeveledItemPickedEvent::getEventEnabled, &LeveledItemPickedEvent::setEventEnabled);
+				usertypeDefinition["levelUp"] = sol::property(&LevelUpEvent::getEventEnabled, &LevelUpEvent::setEventEnabled);
+				usertypeDefinition["load"] = sol::property(&LoadGameEvent::getEventEnabled, &LoadGameEvent::setEventEnabled);
+				usertypeDefinition["loaded"] = sol::property(&LoadedGameEvent::getEventEnabled, &LoadedGameEvent::setEventEnabled);
+				usertypeDefinition["lockPick"] = sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled);
+				usertypeDefinition["magicCasted"] = sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled);
+				usertypeDefinition["menuEnter"] = sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled);
+				usertypeDefinition["menuExit"] = sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled);
+				usertypeDefinition["meshLoaded"] = sol::property(&MeshLoadedEvent::getEventEnabled, &MeshLoadedEvent::setEventEnabled);
+				usertypeDefinition["mobileActivated"] = sol::property(&MobileActorActivatedEvent::getEventEnabled, &MobileActorActivatedEvent::setEventEnabled);
+				usertypeDefinition["mobileDeactivated"] = sol::property(&MobileActorDeactivatedEvent::getEventEnabled, &MobileActorDeactivatedEvent::setEventEnabled);
+				usertypeDefinition["mouseAxis"] = sol::property(&MouseAxisEvent::getEventEnabled, &MouseAxisEvent::setEventEnabled);
+				usertypeDefinition["mouseButtonDown"] = sol::property(&MouseButtonDownEvent::getEventEnabled, &MouseButtonDownEvent::setEventEnabled);
+				usertypeDefinition["mouseButtonUp"] = sol::property(&MouseButtonUpEvent::getEventEnabled, &MouseButtonUpEvent::setEventEnabled);
+				usertypeDefinition["mouseWheel"] = sol::property(&MouseWheelEvent::getEventEnabled, &MouseWheelEvent::setEventEnabled);
+				usertypeDefinition["musicSelectTrack"] = sol::property(&MusicSelectTrackEvent::getEventEnabled, &MusicSelectTrackEvent::setEventEnabled);
+				usertypeDefinition["objectInvalidated"] = sol::property(&ObjectInvalidatedEvent::getEventEnabled, &ObjectInvalidatedEvent::setEventEnabled);
+				usertypeDefinition["playGroup"] = sol::property(&PlayAnimationGroupEvent::getEventEnabled, &PlayAnimationGroupEvent::setEventEnabled);
+				usertypeDefinition["playItemSound"] = sol::property(&PlayItemSoundEvent::getEventEnabled, &PlayItemSoundEvent::setEventEnabled);
+				usertypeDefinition["postInfoResponse"] = sol::property(&PostInfoResponseEvent::getEventEnabled, &PostInfoResponseEvent::setEventEnabled);
+				usertypeDefinition["potionBrewed"] = sol::property(&PotionBrewedEvent::getEventEnabled, &PotionBrewedEvent::setEventEnabled);
+				usertypeDefinition["potionBrewFailed"] = sol::property(&PotionBrewFailedEvent::getEventEnabled, &PotionBrewFailedEvent::setEventEnabled);
+				usertypeDefinition["powerRecharged"] = sol::property(&PowerRechargedEvent::getEventEnabled, &PowerRechargedEvent::setEventEnabled);
+				usertypeDefinition["preLevelUp"] = sol::property(&PreLevelUpEvent::getEventEnabled, &PreLevelUpEvent::setEventEnabled);
+				usertypeDefinition["preventRest"] = sol::property(&PreventRestEvent::getEventEnabled, &PreventRestEvent::setEventEnabled);
+				usertypeDefinition["projectileExpire"] = sol::property(&ProjectileExpireEvent::getEventEnabled, &ProjectileExpireEvent::setEventEnabled);
+				usertypeDefinition["projectileHitActor"] = sol::property(&MobileProjectileActorCollisionEvent::getEventEnabled, &MobileProjectileActorCollisionEvent::setEventEnabled);
+				usertypeDefinition["projectileHitObject"] = sol::property(&MobileProjectileObjectCollisionEvent::getEventEnabled, &MobileProjectileObjectCollisionEvent::setEventEnabled);
+				usertypeDefinition["projectileHitTerrain"] = sol::property(&MobileProjectileTerrainCollisionEvent::getEventEnabled, &MobileProjectileTerrainCollisionEvent::setEventEnabled);
+				usertypeDefinition["referenceActivated"] = sol::property(&ReferenceActivatedEvent::getEventEnabled, &ReferenceActivatedEvent::setEventEnabled);
+				usertypeDefinition["referenceDeactivated"] = sol::property(&ReferenceDeactivatedEvent::getEventEnabled, &ReferenceDeactivatedEvent::setEventEnabled);
+				usertypeDefinition["referenceSceneNodeCreated"] = sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled);
+				usertypeDefinition["restInterrupt"] = sol::property(&RestInterruptEvent::getEventEnabled, &RestInterruptEvent::setEventEnabled);
+				usertypeDefinition["save"] = sol::property(&SaveGameEvent::getEventEnabled, &SaveGameEvent::setEventEnabled);
+				usertypeDefinition["saved"] = sol::property(&SavedGameEvent::getEventEnabled, &SavedGameEvent::setEventEnabled);
+				usertypeDefinition["simulate"] = sol::property(&SimulateEvent::getEventEnabled, &SimulateEvent::setEventEnabled);
+				usertypeDefinition["skillRaised"] = sol::property(&SkillRaisedEvent::getEventEnabled, &SkillRaisedEvent::setEventEnabled);
+				usertypeDefinition["soundObjectPlay"] = sol::property(&SoundObjectPlayEvent::getEventEnabled, &SoundObjectPlayEvent::setEventEnabled);
+				usertypeDefinition["spellCast"] = sol::property(&SpellCastEvent::getEventEnabled, &SpellCastEvent::setEventEnabled);
+				usertypeDefinition["spellCasted"] = sol::property(&SpellCastedEvent::getEventEnabled, &SpellCastedEvent::setEventEnabled);
+				usertypeDefinition["spellCastedFailure"] = sol::property(&SpellCastedEvent::getEventEnabled, &SpellCastedEvent::setEventEnabled);
+				usertypeDefinition["spellCreated"] = sol::property(&SpellCreatedEvent::getEventEnabled, &SpellCreatedEvent::setEventEnabled);
+				usertypeDefinition["spellResist"] = sol::property(&SpellResistEvent::getEventEnabled, &SpellResistEvent::setEventEnabled);
+				usertypeDefinition["spellTick"] = sol::property(&SpellTickEvent::getEventEnabled, &SpellTickEvent::setEventEnabled);
+				usertypeDefinition["topicAdded"] = sol::property(&AddTopicEvent::getEventEnabled, &AddTopicEvent::setEventEnabled);
+				usertypeDefinition["trapDisarm"] = sol::property(&DisarmTrapEvent::getEventEnabled, &DisarmTrapEvent::setEventEnabled);
+				usertypeDefinition["uiActivated"] = sol::property(&GenericUiActivatedEvent::getEventEnabled, &GenericUiActivatedEvent::setEventEnabled);
+				usertypeDefinition["uiEvent"] = sol::property(&GenericUiPostEvent::getEventEnabled, &GenericUiPostEvent::setEventEnabled);
+				usertypeDefinition["uiObjectTooltip"] = sol::property(&UiObjectTooltipEvent::getEventEnabled, &UiObjectTooltipEvent::setEventEnabled);
+				usertypeDefinition["uiPreEvent"] = sol::property(&GenericUiPreEvent::getEventEnabled, &GenericUiPreEvent::setEventEnabled);
+				usertypeDefinition["uiRefreshed"] = sol::property(&UiRefreshedEvent::getEventEnabled, &UiRefreshedEvent::setEventEnabled);
+				usertypeDefinition["uiShowRestMenu"] = sol::property(&ShowRestWaitMenuEvent::getEventEnabled, &ShowRestWaitMenuEvent::setEventEnabled);
+				usertypeDefinition["uiSpellTooltip"] = sol::property(&UiSpellTooltipEvent::getEventEnabled, &UiSpellTooltipEvent::setEventEnabled);
+				usertypeDefinition["unequipped"] = sol::property(&UnequippedEvent::getEventEnabled, &UnequippedEvent::setEventEnabled);
+				usertypeDefinition["weaponReadied"] = sol::property(&WeaponReadiedEvent::getEventEnabled, &WeaponReadiedEvent::setEventEnabled);
+				usertypeDefinition["weaponUnreadied"] = sol::property(&WeaponUnreadiedEvent::getEventEnabled, &WeaponUnreadiedEvent::setEventEnabled);
+				usertypeDefinition["weatherChangedImmediate"] = sol::property(&WeatherChangedImmediateEvent::getEventEnabled, &WeatherChangedImmediateEvent::setEventEnabled);
+				usertypeDefinition["weatherCycled"] = sol::property(&WeatherCycledEvent::getEventEnabled, &WeatherCycledEvent::setEventEnabled);
+				usertypeDefinition["weatherTransitionFinished"] = sol::property(&WeatherTransitionFinishedEvent::getEventEnabled, &WeatherTransitionFinishedEvent::setEventEnabled);
+				usertypeDefinition["weatherTransitionStarted"] = sol::property(&WeatherTransitionStartedEvent::getEventEnabled, &WeatherTransitionStartedEvent::setEventEnabled);
 			}
 		}
 	}

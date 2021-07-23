@@ -2,8 +2,8 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
 #include "TES3Item.h"
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	namespace LightFlags {
@@ -24,21 +24,21 @@ namespace TES3 {
 
 	struct Light : Item {
 		void * animationData;
-		Iterator<TES3::BaseObject> stolenList; // 0x30
+		IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char* name; // 0x48
-		char* model; // 0x4C
-		Script * script;
+		Script* script; // 0x4C
+		char* model; // 0x50
 		char* icon; // 0x54
 		float weight; // 0x58
 		long value; // 0x5C
 		int time; // 0x60
 		int radius; // 0x64
 		unsigned char color[4]; // 0x68
-		mwse::bitset32 flags; // 0x6C
+		unsigned int flags; // 0x6C
 		Sound * sound; // 0x70
 
 		//
-		// Functions to get/set flags.
+		// Custom functions.
 		//
 
 		bool getIsDynamic();
@@ -68,6 +68,14 @@ namespace TES3 {
 		bool getPulsesSlowly();
 		void setPulsesSlowly(bool);
 
+		void setIconPath(const char* path);
+
+		std::reference_wrapper<unsigned char[4]> getColor();
+
+		sol::optional<float> getTimeLeft_lua(sol::object object) const;
+
 	};
 	static_assert(sizeof(Light) == 0x74, "TES3::Light failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Light)

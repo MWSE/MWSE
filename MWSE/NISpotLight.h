@@ -10,3 +10,5 @@ namespace NI {
 	};
 	static_assert(sizeof(SpotLight) == 0xF0, "NI::SpotLight failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::SpotLight)

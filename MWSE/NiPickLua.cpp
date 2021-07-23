@@ -1,7 +1,5 @@
 #include "NIPickLua.h"
 
-#include "sol.hpp"
-
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
@@ -59,19 +57,19 @@ namespace mwse {
 				// Properties.
 				//
 
-				"object", sol::readonly_property([](NI::PickRecord& self) { return makeLuaObject(self.object); }),
-				"parent", sol::readonly_property([](NI::PickRecord& self) { return makeLuaObject(self.proxyParent); }),
+				"object", sol::readonly_property(&NI::PickRecord::object),
+				"parent", sol::readonly_property(&NI::PickRecord::proxyParent),
 				"intersection", &NI::PickRecord::intersection,
 				"distance", &NI::PickRecord::distance,
 				"triangleIndex", &NI::PickRecord::triangleIndex,
-				"vertexIndex", sol::property([](NI::PickRecord& self) { return std::ref(self.vertexIndex); }),
+				"vertexIndex", sol::property(&NI::PickRecord::getVertexIndex),
 				"texture", &NI::PickRecord::texture,
 				"normal", &NI::PickRecord::normal,
 				"color", &NI::PickRecord::color,
 
 				// Provide quick reference to the associated object's reference.
-				"reference", sol::readonly_property([](NI::PickRecord& self) { return makeLuaObject(NI::getAssociatedReference(self.object)); })
-
+				"reference", sol::readonly_property(&NI::PickRecord::getTES3Reference)
+				
 				);
 		}
 	}

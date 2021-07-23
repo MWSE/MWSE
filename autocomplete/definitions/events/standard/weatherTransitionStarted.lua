@@ -3,7 +3,7 @@ return {
 	eventData = {
 		from = {
 			type = "tes3weather",
-			readonly = true,
+			readOnly = true,
 			description = "The weather object that is the current weather.",
 		},
 		to = {

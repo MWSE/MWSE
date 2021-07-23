@@ -24,8 +24,6 @@
 #include "InstructionInterface.h"
 #include "FileUtil.h"
 
-#include <list>
-
 using namespace mwse;
 
 namespace mwse

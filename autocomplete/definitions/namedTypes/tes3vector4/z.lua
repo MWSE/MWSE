@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The third value in the vector.]],
+	description = [[The 4th value in the vector.]],
 	valuetype = "number",
 }

@@ -21,8 +21,8 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["cell"] = makeLuaObject(m_Cell);
-				eventData["previousCell"] = makeLuaObject(m_PreviousCell);
+				eventData["cell"] = m_Cell;
+				eventData["previousCell"] = m_PreviousCell;
 
 				return eventData;
 			}

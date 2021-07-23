@@ -24,7 +24,7 @@ namespace mwse {
 				sol::table eventData = state.create_table();
 
 				eventData["element"] = m_Tile->element;
-				eventData["item"] = makeLuaObject(m_Tile->item);
+				eventData["item"] = m_Tile->item;
 				eventData["itemData"] = m_Tile->itemData;
 				eventData["menu"] = m_Tile->element->getTopLevelParent();
 				eventData["tile"] = m_Tile;

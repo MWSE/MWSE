@@ -5,37 +5,22 @@
 
 namespace mwse {
 	namespace lua {
-		// Speed-optimized binding for NI::Node.
 		template <typename T>
-		void setUserdataForNINode(sol::simple_usertype<T>& usertypeDefinition) {
+		void setUserdataForNINode(sol::usertype<T>& usertypeDefinition) {
 			setUserdataForNIAVObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("children", sol::readonly_property(&NI::Node::children));
-			usertypeDefinition.set("effectList", sol::readonly_property(&NI::Node::effectList));
+			usertypeDefinition["children"] = sol::readonly_property(&NI::Node::children);
+			usertypeDefinition["effectList"] = sol::readonly_property(&NI::Node::effectList);
 
 			// Basic function binding.
-			usertypeDefinition.set("attachChild", [](NI::Node& self, NI::AVObject * child, sol::optional<bool> useFirstAvailable) {
-				self.attachChild(child, useFirstAvailable.value_or(false));
-				self.updateProperties();
-			});
-			usertypeDefinition.set("detachChild", [](NI::Node& self, NI::AVObject * child) {
-				NI::AVObject * returnedChild = nullptr;
-				self.detachChild(&returnedChild, child);
-				return makeLuaNiPointer(returnedChild);
-			});
-			usertypeDefinition.set("detachChildAt", [](NI::Node& self, unsigned int index) -> sol::object {
-				if (--index < 0) {
-					return sol::nil;
-				}
-
-				NI::AVObject * returnedChild = nullptr;
-				self.detachChildAt(&returnedChild, index);
-				return makeLuaNiPointer(returnedChild);
-			});
-
-			// Functions that need their results wrapped.
-			usertypeDefinition.set("getEffect", [](NI::Node& self, int type) { return makeLuaNiPointer(self.getEffect(type)); });
+			usertypeDefinition["attachChild"] = &NI::Node::attachChild_lua;
+			usertypeDefinition["createBoundingBox"] = &NI::Node::createBoundingBox_lua;
+			usertypeDefinition["detachChild"] = &NI::Node::detachChildHandled;
+			usertypeDefinition["detachChildAt"] = &NI::Node::detachChildAt_lua;
+			usertypeDefinition["attachEffect"] = &NI::Node::attachEffect;
+			usertypeDefinition["detachEffect"] = &NI::Node::detachEffect;
+			usertypeDefinition["getEffect"] = &NI::Node::getEffect;
 		}
 
 		void bindNINode();

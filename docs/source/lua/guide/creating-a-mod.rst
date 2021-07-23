@@ -182,6 +182,6 @@ Here is the final code in *main.lua* for the demo mod:
 .. _`Visual Studio Code`: https://code.visualstudio.com
 .. _`Morrowind Modding Discord`: https://discordapp.com/invite/QDEBbaP
 .. _`events`: ../events.html
-.. _`Development Workflow`: ../guide/development-workflows.html
-.. _`Introduction to Lua`: ../guide/introduction-to-lua.html
-.. _`Introduction To Event Based Programming`: ../guide/introduction-to-event-based-programming.html
+.. _`Development Workflow`: development-workflows.html
+.. _`Introduction to Lua`: introduction-to-lua.html
+.. _`Introduction To Event Based Programming`: introduction-to-event-based-programming.html

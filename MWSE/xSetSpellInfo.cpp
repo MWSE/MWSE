@@ -22,7 +22,7 @@
 #include "VMExecuteInterface.h"
 #include "Stack.h"
 #include "InstructionInterface.h"
-#include "TES3Util.h"
+#include "MemoryUtil.h"
 
 #include "TES3DataHandler.h"
 #include "TES3Spell.h"

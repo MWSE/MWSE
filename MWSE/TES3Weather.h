@@ -4,6 +4,16 @@
 
 #include "TES3Vectors.h"
 
+// Must be added to header files that declare Ni types that can be derived.
+#define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_WEATHER(T) \
+int sol_lua_push(sol::types<T>, lua_State* L, const T& obj); \
+int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj);
+
+// Must be added to source files that declare Ni types that can be derived.
+#define MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3_WEATHER(T) \
+int sol_lua_push(sol::types<T>, lua_State* L, const T& obj) { return obj.getOrCreateLuaObject(L).push(L); } \
+int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOrCreateLuaObject(L).push(L); }
+
 namespace TES3 {
 	struct Weather_vTable {
 		void * deleting;
@@ -48,6 +58,22 @@ namespace TES3 {
 		bool underwaterSoundState;
 		char soundIDAmbientLoop[260]; // 0x20E
 		Sound * soundAmbientLoop; // 0x314
+
+		//
+		// Custom functions.
+		//
+
+		const char* getCloudTexturePath() const;
+		bool setCloudTexturePath(const char* path);
+		const char* getAmbientLoopSoundID() const;
+		bool setAmbientLoopSoundID(const char* id);
+
+		// Storage for cached userdata.
+		sol::object getOrCreateLuaObject(lua_State* L) const;
+		static void clearCachedLuaObject(const Weather* object);
+		static void clearCachedLuaObjects();
 	};
 	static_assert(sizeof(Weather) == 0x318, "TES3::Weather failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_WEATHER(TES3::Weather)

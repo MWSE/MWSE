@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor of the merchant the player is interacting with.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "mobile’s related reference.",
 		},
 		["basePrice"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The price before adjustment.",
 		},
 		["price"] = {
@@ -22,12 +22,12 @@ return {
 		},
 		["item"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "The item to be repaired.",
 		},
 		["itemData"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "Variable node. The data associated with item. This may be nil.",
 		},
 	},

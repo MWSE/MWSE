@@ -70,7 +70,7 @@ namespace mwse
 		float totalWeight = 0.0f;
 
 		// Loop through the inventory nodes of the reference, adding weight for each item found.
-		TES3::IteratorNode<TES3::ItemStack>* inventoryListNode = static_cast<TES3::Actor*>(reference->baseObject)->inventory.iterator.head;
+		TES3::IteratedList<TES3::ItemStack*>::Node* inventoryListNode = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 		while (inventoryListNode) {
 			TES3::ItemStack* inventoryNode = inventoryListNode->data;
 			if (inventoryNode) {

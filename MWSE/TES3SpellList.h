@@ -2,15 +2,13 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
+#include "TES3IteratedList.h"
 #include "TES3Spell.h"
-
-#include <string>
 
 namespace TES3 {
 	struct SpellList {
 		int unknown_0x0;
-		Iterator<Spell> list;
+		IteratedList<Spell*> list;
 
 		//
 		// Other related this-call functions.
@@ -33,6 +31,10 @@ namespace TES3 {
 		//
 		// Custom functions.
 		//
+
+		bool add_lua(sol::object value);
+		bool remove_lua(sol::object value);
+		bool contains_lua(sol::object value);
 
 		bool containsType(SpellCastType::value_type);
 

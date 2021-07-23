@@ -72,7 +72,7 @@ namespace mwse
 		}
 
 		TES3::NPC* npc = reinterpret_cast<TES3::NPCInstance*>(reference->baseObject)->baseNPC;
-		TES3::IteratorNode<TES3::Spell>* currentNode = npc->spellList.list.head;
+		TES3::IteratedList<TES3::Spell*>::Node* currentNode = npc->spellList.list.head;
 		while (currentNode != NULL) {
 			TES3::Spell* spell = currentNode->data;
 			if (strcmp(spell->objectID, spellId.c_str()) == 0) {

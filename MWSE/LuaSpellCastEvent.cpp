@@ -25,8 +25,8 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["caster"] = makeLuaObject(m_Caster->reference);
-				eventData["source"] = makeLuaObject(m_Spell);
+				eventData["caster"] = m_Caster->reference;
+				eventData["source"] = m_Spell;
 				eventData["castChance"] = m_CastChance;
 				eventData["weakestSchool"] = m_WeakestSchool;
 
@@ -38,7 +38,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table options = state.create_table();
 
-				options["filter"] = makeLuaObject(m_Spell);
+				options["filter"] = m_Spell;
 
 				return options;
 			}

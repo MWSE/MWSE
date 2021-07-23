@@ -9,7 +9,7 @@ More details about each function can be found under the New Functions page.
 In-Development
 -----------------------------------------------------------
 
-These changes are available when building from source, or from `downloading the latest in-development build <https://nullcascade.com/mwse/mwse-dev.zip>`_.
+These changes are available when building from source, or from `downloading the latest in-development build <https://github.com/MWSE/MWSE/releases/download/build-automatic/mwse.zip>`_.
 
 The biggest change in this version is the introduction of `new Lua scripting functionality <lua/guide/introduction.html>`_. Scripts can be `overridden <lua/guide/script-overrides.html>`_, or `independently called <mwscript/functions/lua/xLuaRunScript.html>`_ to perform actions previously impossible by mwscript. There's also a powerful `event-driven <lua/event.html>`_ way to write scripted mods.
 

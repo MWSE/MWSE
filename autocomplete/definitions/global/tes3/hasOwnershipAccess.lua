@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Determines if a reference has access to another object, including its inventory.]],
+	description = [[Determines if a reference has access to another object, including its inventory. References have access to their own things, and the player has access to dead NPC's items.]],
 	arguments = {{
 		name = "params",
 		type = "table",

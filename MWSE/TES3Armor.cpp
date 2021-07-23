@@ -1,7 +1,5 @@
 #include "TES3Armor.h"
 
-#include "sol.hpp"
-
 #include "LuaManager.h"
 
 #include "LuaCalcArmorRatingEvent.h"
@@ -12,6 +10,7 @@
 #include "TES3GameSetting.h"
 #include "TES3MobileActor.h"
 #include "TES3NPC.h"
+#include "TES3Reference.h"
 #include "TES3Skill.h"
 
 namespace TES3 {
@@ -25,8 +24,7 @@ namespace TES3 {
 				sol::table eventData = eventResult;
 
 				sol::optional<int> value = eventData["armorRating"];
-				sol::optional<bool> block = eventData["block"];
-				if (block.value_or(false) && value) {
+				if (eventData.get_or("block", false) && value) {
 					return value.value();
 				}
 			}
@@ -49,7 +47,7 @@ namespace TES3 {
 				return 0.0f;
 			}
 
-			return armorRating * armorSkillValue / TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::iBaseArmorSkill]->value.asLong;
+			return armorRating * armorSkillValue / TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::iBaseArmorSkill]->value.asLong * getArmorScalar();
 		}
 
 		return TES3_Armor_calculateArmorRating(this, actor);
@@ -65,8 +63,7 @@ namespace TES3 {
 				sol::table eventData = eventResult;
 
 				sol::optional<int> value = eventData["armorRating"];
-				sol::optional<bool> block = eventData["block"];
-				if (block.value_or(false) && value) {
+				if (eventData.get_or("block", false) && value) {
 					return value.value();
 				}
 			}
@@ -89,7 +86,7 @@ namespace TES3 {
 				return 0.0f;
 			}
 
-			return armorRating * armorSkillValue / TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::iBaseArmorSkill]->value.asLong;
+			return armorRating * armorSkillValue / TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::iBaseArmorSkill]->value.asLong * getArmorScalar();
 		}
 
 		return TES3_Armor_calculateArmorRatingForNPC(this, npc);
@@ -99,7 +96,7 @@ namespace TES3 {
 	const char* Armor::getSlotName() {
 		// If this armor has weight and is of an invalid slot, return straight up armor rating.
 		if (slot < ArmorSlot::First || slot > ArmorSlot::Last) {
-			TES3::ArmorSlotData * slotData = mwse::tes3::getArmorSlotData(slot);
+			auto slotData = mwse::tes3::getArmorSlotData(slot);
 			if (slotData) {
 				return slotData->name.c_str();
 			}
@@ -115,7 +112,7 @@ namespace TES3 {
 		// Figure out custom slots.
 		if (slot < ArmorSlot::First || slot > ArmorSlot::Last) {
 			// If we have no custom data, assume light.
-			TES3::ArmorSlotData * slotData = mwse::tes3::getArmorSlotData(slot);
+			auto slotData = mwse::tes3::getArmorSlotData(slot);
 			if (slotData == nullptr) {
 				return ArmorWeightClass::Light;
 			}
@@ -136,4 +133,75 @@ namespace TES3 {
 		// Finally, we fall back to the vanilla function.
 		return TES3_Armor_getWeightClass(this);
 	}
+
+	float Armor::getArmorScalar() const {
+		// Handle custom slots.
+		if (slot < ArmorSlot::First || slot > ArmorSlot::Last) {
+			auto slotData = mwse::tes3::getArmorSlotData(slot);
+			if (slotData) {
+				return slotData->armorScalar;
+			}
+		}
+		else {
+			// Default slot values.
+			switch (slot) {
+			case ArmorSlot::Cuirass:
+				return 0.3f;
+			case ArmorSlot::Helmet:
+			case ArmorSlot::LeftPauldron:
+			case ArmorSlot::RightPauldron:
+			case ArmorSlot::Greaves:
+			case ArmorSlot::Boots:
+			case ArmorSlot::Shield:
+				return 0.1f;
+			case ArmorSlot::LeftGauntlet:
+			case ArmorSlot::RightGauntlet:
+			case ArmorSlot::LeftBracer:
+			case ArmorSlot::RightBracer:
+				return 0.05f;
+			}
+		}
+
+		return 0.0f;
+	}
+
+	void Armor::setDurability(int value) {
+		maxCondition = value;
+	}
+
+	void Armor::setIconPath(const char* path) {
+		if (strnlen_s(path, 32) >= 32) {
+			throw std::invalid_argument("Path must not be 32 or more characters.");
+		}
+		mwse::tes3::setDataString(&icon, path);
+	}
+
+	std::reference_wrapper<WearablePart[7]> Armor::getParts() {
+		return std::ref(parts);
+	}
+
+	float Armor::calculateArmorRating_lua(sol::object actor) {
+		// If we're explicitly given a mobile actor, use that.
+		if (actor.is<TES3::MobileActor>()) {
+			return calculateArmorRating(actor.as<TES3::MobileActor*>());
+		}
+
+		// If we're given a reference, try to get its mobile actor.
+		else if (actor.is<TES3::Reference>()) {
+			TES3::MobileActor* mobileActor = actor.as<TES3::Reference*>()->getAttachedMobileActor();
+			if (mobileActor) {
+				return calculateArmorRating(mobileActor);
+			}
+			else {
+				throw std::exception("Reference does not have an attached mobile actor. Is this an NPC or creature reference?");
+			}
+		}
+
+		// If we were given something else, tell them they goofed.
+		else {
+			throw std::exception("Invalid function call. Requires mobile actor or reference as a parameter.");
+		}
+	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Armor)

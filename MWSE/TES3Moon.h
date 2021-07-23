@@ -2,6 +2,8 @@
 
 #include "TES3Defines.h"
 
+#include "NIDefines.h"
+
 namespace TES3 {
 	struct Moon {
 		NI::Node * sgNode; // 0x0
@@ -30,6 +32,14 @@ namespace TES3 {
 		int index; // 0x50
 		char texturePath[260];
 		float axisOffset; // 0x158
+
+		//
+		// Custom functions.
+		//
+
+		const char* getTexturePath() const;
+		void setTexturePath(const char*);
+
 	};
 	static_assert(sizeof(Moon) == 0x15C, "TES3::Moon failed size validation");
 }

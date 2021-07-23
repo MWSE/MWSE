@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <windows.h>
 #include "MemoryUtil.h"
 
 namespace mwse {

@@ -17,15 +17,16 @@
 #include "TES3UIWidgets.h"
 
 #include "LuaManager.h"
-#include "sol.hpp"
 #include "LuaSpellTickEvent.h"
 #include "LuaUtil.h"
 
 #include "Log.h"
 
+#include "BitUtil.h"
+
 namespace TES3 {
 	unsigned int MagicEffectController::effectNameGMSTs[MAX_EFFECT_COUNT] = {};
-	mwse::bitset32 MagicEffectController::effectFlags[MAX_EFFECT_COUNT] = {};
+	unsigned int MagicEffectController::effectFlags[MAX_EFFECT_COUNT] = {};
 	unsigned int MagicEffectController::effectCounters[MAX_EFFECT_COUNT][5] = {};
 
 	MagicEffectController::MagicEffectController() {
@@ -38,17 +39,22 @@ namespace TES3 {
 		}
 	}
 
-	DWORD lastAddressFetching = NULL;
+	static MagicEffect* InvalidMagicEffect = nullptr;
+	static std::unordered_set<int> warnedMagicEffectIds;
 
 	MagicEffect* MagicEffectController::getEffectObject(int id) {
-		// Get the calling address.
-		byte ** asmEBP;
-		__asm { mov asmEBP, ebp };
-		lastAddressFetching = DWORD(asmEBP[1] - 0x5);
+		if (id == -1) {
+			return nullptr;
+		}
 
 		auto itt = effectObjects.find(id);
 		if (itt == effectObjects.end()) {
-			return nullptr;
+			// Warn only once per effect ID.
+			if (warnedMagicEffectIds.find(id) == warnedMagicEffectIds.end()) {
+				mwse::log::getLog() << "Invalid effect ID " << id << " encountered. Spoofing substitute. Uninstalling mods that add custom effects can lead to unexpected behavior and crashes." << std::endl;
+				warnedMagicEffectIds.insert(id);
+			}
+			return InvalidMagicEffect;
 		}
 
 		return itt->second;
@@ -56,6 +62,10 @@ namespace TES3 {
 
 	void MagicEffectController::addEffectObject(MagicEffect* effect) {
 		effectObjects[effect->id] = effect;
+	}
+
+	bool MagicEffectController::getEffectExists(int id) {
+		return effectObjects.find(id) != effectObjects.end();
 	}
 
 	const char * MagicEffectController::getEffectName(int id) {
@@ -71,7 +81,7 @@ namespace TES3 {
 		return itt->second.c_str();
 	}
 
-	mwse::bitset32 MagicEffectController::getEffectFlags(int id) {
+	unsigned int MagicEffectController::getEffectFlags(int id) {
 		return effectFlags[id];
 	}
 
@@ -80,11 +90,11 @@ namespace TES3 {
 	}
 
 	bool MagicEffectController::getEffectFlag(int id, EffectFlag::FlagBit flag) {
-		return effectFlags[id].test(flag);
+		return BIT_TEST(effectFlags[id], flag);
 	}
 
 	void MagicEffectController::setEffectFlag(int id, EffectFlag::FlagBit flag, bool value) {
-		effectFlags[id].set(flag, value);
+		BIT_SET(effectFlags[id], flag, value);
 	}
 
 	//
@@ -92,14 +102,38 @@ namespace TES3 {
 	//
 
 	void __fastcall InitializeController(NonDynamicData * ndd) {
-		ndd->magicEffects = new MagicEffectController();
+		auto magicEffectController = new MagicEffectController();
+		ndd->magicEffects = magicEffectController;
 
-		memset(ndd->freed_0x5CC, 0x0, 0x97EC);
+#if MWSE_RAISED_FILE_LIMIT
+		memset(ndd->activeMods, 0x0, sizeof(ndd->activeMods));
+#endif
+		memset(ndd->freed_0x5CC, 0x0, sizeof(ndd->freed_0x5CC));
 
 		for (int i = EffectID::FirstEffect; i <= EffectID::LastEffect; i++) {
 			auto effect = new MagicEffect(i);
-			ndd->magicEffects->addEffectObject(effect);
+			magicEffectController->addEffectObject(effect);
 		}
+
+		// Add an invalid effect for catching crashes.
+		InvalidMagicEffect = new MagicEffect(EFFECT_ID_INVALID);
+		InvalidMagicEffect->setDescription("This effect is invalid. This typically happens when uninstalling mods.");
+		magicEffectController->effectCustomNames[EFFECT_ID_INVALID] = "Invalid Effect";
+		magicEffectController->effectNameGMSTs[EFFECT_ID_INVALID] = -EFFECT_ID_INVALID;
+		magicEffectController->setEffectFlags(EFFECT_ID_INVALID, 0U);
+		InvalidMagicEffect->flags = 0;
+		strcpy_s(InvalidMagicEffect->particleTexture, "vfx_default.tga");
+		strcpy_s(InvalidMagicEffect->icon, "s\\Tx_S_sEfft_Unusd02.tga");
+		strcpy_s(InvalidMagicEffect->castSoundEffect, "Conjuration Cast");
+		strcpy_s(InvalidMagicEffect->boltSoundEffect, "Conjuration Bolt");
+		strcpy_s(InvalidMagicEffect->hitSoundEffect, "Conjuration Hit");
+		strcpy_s(InvalidMagicEffect->areaSoundEffect, "Conjuration Area");
+		InvalidMagicEffect->speed = 1.0f;
+		InvalidMagicEffect->size = 1.0f;
+		InvalidMagicEffect->sizeCap = 50.0f;
+		InvalidMagicEffect->lightingRed = 192;
+		InvalidMagicEffect->lightingGreen = 192;
+		InvalidMagicEffect->lightingBlue = 192;
 	}
 
 	void __stdcall DestroyController() {
@@ -113,10 +147,16 @@ namespace TES3 {
 			itt.second->resolveLinks(nonDynamicData);
 		}
 
+		// Finish up the invalid effect.
+		InvalidMagicEffect->castEffect = static_cast<PhysicalObject*>(nonDynamicData->resolveObject("VFX_DefaultCast"));
+		InvalidMagicEffect->boltEffect = static_cast<PhysicalObject*>(nonDynamicData->resolveObject("VFX_DefaultBolt"));
+		InvalidMagicEffect->hitEffect = static_cast<PhysicalObject*>(nonDynamicData->resolveObject("VFX_DefaultHit"));
+		InvalidMagicEffect->areaEffect = static_cast<PhysicalObject*>(nonDynamicData->resolveObject("VFX_DefaultArea"));
+
 		mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::GenericEvent("magicEffectsResolved"));
 	}
 
-	MagicEffect * _fastcall getMagicEffectData(NonDynamicData * ndd, DWORD _UNUSED_, int effectId) {
+	MagicEffect* _fastcall getMagicEffectData(NonDynamicData* ndd, DWORD _UNUSED_, int effectId) {
 		return ndd->magicEffects->getEffectObject(effectId);
 	}
 
@@ -144,15 +184,15 @@ namespace TES3 {
 		if (!(sourceMod->flags_4D8 & 1)) {
 			MagicEffect tempEffect;
 
-			bool wasFlag1Set = tempEffect.objectFlags.test(0);
+			bool wasFlag1Set = BIT_TEST(tempEffect.objectFlags, 0);
 			tempEffect.vTable.base->loadObjectSpecific(&tempEffect, sourceMod);
 			tempEffect.sourceMod = sourceMod;
 
 			if (wasFlag1Set) {
-				tempEffect.objectFlags.set(0, true);
+				BIT_SET_ON(tempEffect.objectFlags, 0);
 			}
 			else {
-				tempEffect.objectFlags.set(0, sourceMod->flags_4D8 & 1);
+				BIT_SET(tempEffect.objectFlags, 0, BIT_TEST(sourceMod->flags_4D8, 0));
 			}
 
 			if (sourceMod->flags_4D8 & 0x8) {
@@ -169,7 +209,7 @@ namespace TES3 {
 
 			if (!(sourceMod->flags_4D8 & 0x20)) {
 				effect->sourceMod = sourceMod;
-				effect->objectFlags.set(ObjectFlag::DeleteBit, tempEffect.objectFlags.test(ObjectFlag::DeleteBit));
+				BIT_SET(effect->objectFlags, ObjectFlag::DeleteBit, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
 			}
 
 			if (sourceMod->flags_4D8 & 0x8) {
@@ -185,18 +225,18 @@ namespace TES3 {
 
 			// 
 			effect->clearData();
-			effect->objectFlags.set(ObjectFlag::DeleteBit, 0);
+			BIT_SET_OFF(effect->objectFlags, ObjectFlag::DeleteBit);
 
 			// 
-			bool wasFlag1Set = effect->objectFlags.test(0);
+			bool wasFlag1Set = BIT_TEST(effect->objectFlags, 0);
 			effect->vTable.base->loadObjectSpecific(effect, sourceMod);
 			effect->sourceMod = sourceMod;
 
 			if (wasFlag1Set) {
-				effect->objectFlags.set(0, true);
+				BIT_SET_ON(effect->objectFlags, 0);
 			}
 			else {
-				effect->objectFlags.set(0, sourceMod->flags_4D8 & 1);
+				BIT_SET(effect->objectFlags, 0, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::ModifiedBit));
 			}
 
 			if (sourceMod->flags_4D8 & 0x8) {
@@ -358,7 +398,7 @@ namespace TES3 {
 			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SpellTickEvent(effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
 			if (eventData.valid()) {
-				if (eventData["block"] == true) {
+				if (eventData.get_or("block", false)) {
 					// We still need the main effect event function to be called for visual effects and durations to be handled.
 					int flags = (DataHandler::get()->nonDynamicData->magicEffects->getEffectFlags(effectId) >> 12) & 0xFFFFFF01;
 					int value = 0;
@@ -416,12 +456,11 @@ namespace TES3 {
 			auto effect = effectItt.second;
 			bool hasEffect = false;
 			if (effect->flags & EffectFlag::AllowEnchanting) {
-				for (auto spellListItt = spellList->getFirstNode(); spellListItt != nullptr; spellListItt = spellListItt->next) {
+				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
 					}
 
-					auto spell = spellListItt->data;
 					if (spell->castType != SpellCastType::Spell) {
 						continue;
 					}
@@ -471,12 +510,11 @@ namespace TES3 {
 			auto effect = effectItt.second;
 			bool hasEffect = false;
 			if (effect->flags & EffectFlag::AllowSpellmaking) {
-				for (auto spellListItt = spellList->getFirstNode(); spellListItt != nullptr; spellListItt = spellListItt->next) {
+				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
 					}
 
-					auto spell = spellListItt->data;
 					if (spell->castType != SpellCastType::Spell) {
 						continue;
 					}
@@ -517,25 +555,29 @@ namespace TES3 {
 		return getSpellNameGMST(DataHandler::get(), EDX, gmstId)->value.asString;
 	}
 
-	const auto TES3_MagicSourceInstance_ProjectileHit = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, MobileObject::Collision*)>(0x5175C0);
-	void __fastcall OnSpellProjectileHit(MagicSourceInstance * self, DWORD EDX, MobileObject::Collision * collision) {
-		TES3_MagicSourceInstance_ProjectileHit(self, collision);
-
+	void __fastcall OnSpellProjectileHit(MagicSourceInstance * instance, DWORD EDX, MobileObject::Collision * collision) {
 		auto magicEffectController = DataHandler::get()->nonDynamicData->magicEffects;
-		auto effects = self->sourceCombo.getSourceEffects();
+		magicEffectController->spellProjectileHit(instance, collision);
+	}
+
+	void MagicEffectController::spellProjectileHit(MagicSourceInstance * instance, MobileObject::Collision * collision) {
+		instance->projectileHit(collision);
+
+		auto effects = instance->sourceCombo.getSourceEffects();
 		for (size_t i = 0; i < 8; i++) {
 			auto effectId = effects[i].effectID;
 			if (effectId == -1) {
 				break;
 			}
 
-			auto itt = magicEffectController->effectLuaCollisionFunctions.find(effectId);
-			if (itt != magicEffectController->effectLuaCollisionFunctions.end()) {
+			auto itt = effectLuaCollisionFunctions.find(effectId);
+			if (itt != effectLuaCollisionFunctions.end()) {
 				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 				sol::table params = stateHandle.state.create_table();
 				params["effectId"] = effectId;
-				params["sourceInstance"] = mwse::lua::makeLuaObject(self);
+				params["effectIndex"] = i;
+				params["sourceInstance"] = instance;
 				params["collision"] = collision;
 
 				sol::protected_function_result result = itt->second(params);
@@ -568,6 +610,10 @@ namespace TES3 {
 
 		// Clear some more initialization of magic effect IDs.
 		mwse::genNOPUnprotected(0x4B831D, 0x22);
+
+		// Prevent free of spell effect description when help menu display it both for populating enchanting menu and spell making menu
+		mwse::genNOPUnprotected(0x6231E1, 0x5);
+		mwse::genNOPUnprotected(0x5C69C1, 0x5);
 
 		// When destructing the effect list, 
 		mwse::genCallUnprotected(0x4B821B, (DWORD)DestroyController, 0x20);
@@ -902,12 +948,12 @@ namespace TES3 {
 		mwse::writeDoubleWordEnforced(0x466988 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4AA1BB + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4AA71B + 0x3, 0x747D88, effectFlagAddresses);
-		mwse::writeDoubleWordEnforced(0x4AB439 + 0x3, 0x747D88 + 0x1, effectFlagAddresses);
+		mwse::writeDoubleWordEnforced(0x4AB439 + 0x3, 0x747D88 + 0x1, effectFlagAddresses + 0x1);
 		mwse::writeDoubleWordEnforced(0x4AB604 + 0x2, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4AB8A7 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4AB932 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4AC23D + 0x3, 0x747D88, effectFlagAddresses);
-		mwse::writeDoubleWordEnforced(0x4AC328 + 0x3, 0x747D88 + 0x1, effectFlagAddresses);
+		mwse::writeDoubleWordEnforced(0x4AC328 + 0x3, 0x747D88 + 0x1, effectFlagAddresses + 0x1);
 		mwse::writeDoubleWordEnforced(0x4D7E3C + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x4D800A + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x516F06 + 0x3, 0x747D88, effectFlagAddresses);
@@ -927,10 +973,10 @@ namespace TES3 {
 		mwse::writeDoubleWordEnforced(0x519548 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x519687 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x538A2A + 0x3, 0x747D88, effectFlagAddresses);
-		mwse::writeDoubleWordEnforced(0x538A4F + 0x3, 0x747D88 + 0x2, effectFlagAddresses);
+		mwse::writeDoubleWordEnforced(0x538A4F + 0x3, 0x747D88 + 0x2, effectFlagAddresses + 0x2);
 		mwse::writeDoubleWordEnforced(0x538A72 + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x538C59 + 0x3, 0x747D88, effectFlagAddresses);
-		mwse::writeDoubleWordEnforced(0x538C81 + 0x3, 0x747D88 + 0x2, effectFlagAddresses);
+		mwse::writeDoubleWordEnforced(0x538C81 + 0x3, 0x747D88 + 0x2, effectFlagAddresses + 0x2);
 		mwse::writeDoubleWordEnforced(0x5919FA + 0x2, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x591D2D + 0x3, 0x747D88, effectFlagAddresses);
 		mwse::writeDoubleWordEnforced(0x591DFA + 0x3, 0x747D88, effectFlagAddresses);
@@ -1012,7 +1058,7 @@ namespace TES3 {
 		memcpy_s(effectFlags, sizeof(effectFlags), (void*)0x747D88, sizeof(DWORD) * 143);
 
 		// Patch effect counters.
-		DWORD effectCounterAddress = (DWORD)&effectFlags;
+		DWORD effectCounterAddress = (DWORD)&effectCounters;
 		mwse::writeDoubleWordEnforced(0x537EE8 + 0x3, 0x787950, effectCounterAddress);
 		mwse::writeDoubleWordEnforced(0x538475 + 0x3, 0x787950, effectCounterAddress);
 

@@ -17,7 +17,7 @@ namespace TES3 {
 		ReadyingWeap = 0x8,
 		UnreadyWeap = 0x9,
 		Casting = 0xA,
-		Casting2 = 0xB,
+		CastingFollow = 0xB,
 		ReadyingMagic = 0xC,
 		UnreadyMagic = 0xD,
 		Knockdown = 0xE,
@@ -28,20 +28,31 @@ namespace TES3 {
 		Dead = 0x13,
 	};
 
+	enum class PhysicalAttackType : unsigned char {
+		None = 0,
+		Slash = 1,
+		Chop = 2,
+		Thrust = 3,
+		Projectile = 4,
+		Creature1 = 5,
+		Creature2 = 6,
+		Creature3 = 7
+	};
+
 	struct ActionData {
 		short unknown_0x0;
 		short unknown_0x2;
 		float attackSwing; // 0x4
-		float unknown_0x8;
+		float swingTimer; // 0x8
 		float physicalDamage; // 0xC
 		signed char aiBehaviourState; // 0x10
 		AttackAnimationState animStateAttack; // 0x11
-		char unknown_0x12;
-		char unknown_0x13;
-		signed char attackDirection; // 0x14
-		char unknown_0x15;
-		signed char currentAnimGroup; // 0x16
-		char unknown_0x17;
+		char blockingState; // 0x12
+		unsigned char maybe_animGroupKnockdown; // 0x13
+		PhysicalAttackType physicalAttackType; // 0x14
+		unsigned char currentAnimLayer; // 0x15
+		unsigned char currentAnimGroup; // 0x16
+		unsigned char animGroupShieldArm; // 0x17
 		short unknown_0x18;
 		short unknown_0x1A;
 		short unknown_0x1C;
@@ -51,16 +62,12 @@ namespace TES3 {
 		short lastBarterHoursPassed; // 0x28
 		short unknown_0x2A;
 		BaseObject * stolenFromFactionOrNPC; // 0x2C
-		char unknown_0x30;
-		char unknown_0x31; // Undefined.
-		char unknown_0x32; // Undefined.
-		char unknown_0x33; // Undefined.
-		Item * nockedProjectile;
-		short unknown_0x38;
+		bool attackWasBlocked; // 0x30
+		char padding_0x31[3];
+		Item * nockedProjectile; // 0x34
+		short countAIPackages; // 0x38
 		Vector3 unknown_0x3C;
-		int unknown_0x48;
-		int unknown_0x4C;
-		int unknown_0x50;
+		Vector3 unknown_0x48;
 		Vector3 unknown_0x54;
 		Vector3 walkDestination; // 0x58
 		int unknown_0x6C;

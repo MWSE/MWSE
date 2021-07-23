@@ -22,7 +22,6 @@
 #include "VMExecuteInterface.h"
 #include "Stack.h"
 #include "InstructionInterface.h"
-#include <cmath>
 #include "TES3Reference.h"
 
 using namespace mwse;

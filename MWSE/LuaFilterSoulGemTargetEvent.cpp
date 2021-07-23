@@ -23,10 +23,10 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["soulGem"] = makeLuaObject(m_SoulGem);
+				eventData["soulGem"] = m_SoulGem;
 
-				eventData["mobile"] = makeLuaObject(m_Target);
-				eventData["reference"] = makeLuaObject(m_Target->reference);
+				eventData["mobile"] = m_Target;
+				eventData["reference"] = m_Target->reference;
 
 				return eventData;
 			}

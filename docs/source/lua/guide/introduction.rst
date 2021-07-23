@@ -145,6 +145,6 @@ Not sure where to start? Take a look at setting up a `Development Workflow`_, Th
 .. _`timer`: ../api/timer.html
 .. _`Development Workflow`: development-workflows.html
 .. _`Creating a Mod`: creating-a-mod.html
-.. _`Introduction to Lua`: ../introduction-to-lua.html
-.. _`Introduction To Event Based Programming`: ../introduction-to-event-based-programming.html
+.. _`Introduction to Lua`: introduction-to-lua.html
+.. _`Introduction To Event Based Programming`: introduction-to-event-based-programming.html
 .. _`Sky Diversity`: https://www.nexusmods.com/morrowind/mods/44345

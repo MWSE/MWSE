@@ -1,7 +1,5 @@
 #include "CodePatchUtil.h"
 
-#include <Windows.h>
-
 #include "Log.h"
 
 #define DEBUG_MCP_FEATURESET false
@@ -14,10 +12,10 @@ namespace mwse {
 			// Open file.
 			HANDLE fileHandle = CreateFileA(
 				"mcpatch\\installed",
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				GENERIC_READ,
+				FILE_SHARE_READ,
 				NULL,
-				OPEN_ALWAYS,
+				OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
 				NULL
 			);
@@ -64,7 +62,7 @@ namespace mwse {
 			// Close the file handle.
 			CloseHandle(fileHandle);
 
-			return true;
+			return !featureStore.empty();
 		}
 
 		bool getFeatureEnabled(long id) {

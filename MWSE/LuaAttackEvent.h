@@ -8,11 +8,11 @@ namespace mwse {
 		namespace event {
 			class AttackEvent : public ObjectFilteredEvent, public DisableableEvent<AttackEvent> {
 			public:
-				AttackEvent(TES3::ActorAnimationData* animData);
+				AttackEvent(TES3::ActorAnimationController* animController);
 				sol::table createEventTable();
 
 			protected:
-				TES3::ActorAnimationData* m_AnimationData;
+				TES3::ActorAnimationController* m_AnimationController;
 			};
 		}
 	}

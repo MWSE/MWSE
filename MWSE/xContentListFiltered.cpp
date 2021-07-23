@@ -25,7 +25,6 @@
 #include "TES3Util.h"
 
 #include "TES3Actor.h"
-#include "TES3Collections.h"
 #include "TES3Inventory.h"
 #include "TES3Reference.h"
 
@@ -77,7 +76,7 @@ namespace mwse {
 
 	float xContentListFiltered::execute(mwse::VMExecuteInterface &virtualMachine) {
 		// Get parameters.
-		TES3::IteratorNode<TES3::ItemStack>* node = reinterpret_cast<TES3::IteratorNode<TES3::ItemStack>*>(mwse::Stack::getInstance().popLong());
+		TES3::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<TES3::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
 		long filter = mwse::Stack::getInstance().popLong();
 
 		// If we're not filtering, abandon ship.
@@ -120,17 +119,17 @@ namespace mwse {
 		}
 
 		// Results.
-		char* id = NULL;
+		const char* id = NULL;
 		long count = 0;
 		long type = 0;
 		long value = 0;
 		float weight = 0;
 		char* name = NULL;
-		TES3::IteratorNode<TES3::ItemStack>* next = NULL;
+		TES3::IteratedList<TES3::ItemStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.
 		if (node == NULL) {
-			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.iterator.head;
+			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 
 			// Pass over any records that don't match the current filter.
 			while (node && node->data && node->data->object && !passesFilter(node->data->object, filter)) {

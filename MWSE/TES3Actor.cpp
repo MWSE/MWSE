@@ -6,8 +6,10 @@
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
 
+#include "LuaUtil.h"
 #include "LuaManager.h"
 
+#include "LuaContainerClosedEvent.h"
 #include "LuaEquippedEvent.h"
 #include "LuaUnequippedEvent.h"
 
@@ -39,8 +41,11 @@ namespace TES3 {
 		vTable.actor->clone(this, reference);
 	}
 
-	void Actor::onCloseInventory(Actor* actor, Reference* reference, int unknown) {
-		vTable.actor->onCloseInventory(actor, reference, unknown);
+	void Actor::onCloseInventory(Reference* reference, int unknown) {
+		// Trigger or queue our event.
+		if (mwse::lua::event::ContainerClosedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ContainerClosedEvent(reference));
+		}
 	}
 
 	AIPackageConfig * Actor::getAIPackageConfig() {
@@ -49,6 +54,10 @@ namespace TES3 {
 
 	void Actor::setAIPackage(AIPackageConfig* packageConfig, Reference* reference) {
 		vTable.actor->setAIPackage(this, packageConfig, reference);
+	}
+
+	int Actor::addItem(Item* item, int count, bool something) {
+		return vTable.actor->addItem(this, item, count, something);
 	}
 
 	Object* Actor::equipItem(Object* item, ItemData* itemData, EquipmentStack** out_equipmentStack, MobileActor* mobileActor) {
@@ -92,6 +101,7 @@ namespace TES3 {
 			if (player->actorFlags & MobileActorFlag::BodypartsChanged) {
 				player->reference->updateBipedParts();
 				player->firstPersonReference->updateBipedParts();
+				player->updateOpacity();
 				player->actorFlags &= ~MobileActorFlag::BodypartsChanged;
 			}
 
@@ -118,11 +128,11 @@ namespace TES3 {
 		return TES3_Actor_getEquippedClothingBySlot(this, slot);
 	}
 
-	bool Actor::isBaseActor() {
+	bool Actor::isBaseActor() const {
 		return (actorFlags & TES3::ActorFlag::IsBase);
 	}
 
-	bool Actor::isClone() {
+	bool Actor::isClone() const {
 		return !(actorFlags & TES3::ActorFlag::IsBase);
 	}
 
@@ -159,4 +169,52 @@ namespace TES3 {
 
 		return false;
 	}
+
+	bool Actor::offersService(unsigned int service) {
+		auto config = getAIConfig();
+		return (config->merchantFlags & service);
+	}
+
+	int Actor::getBloodType() const {
+		return (actorFlags >> 0xA) & 0x7;
+	}
+
+	void Actor::setBloodType(int value) {
+		if (value < 0 || value > 7) {
+			throw std::invalid_argument("Type must be between 0 and 7.");
+		}
+
+		// Clear blood flags.
+		actorFlags &= ~0x1C00;
+		actorFlags |= (value << 0xA);
+	}
+
+	void Actor::onCloseInventory_lua(TES3::Reference* reference, sol::optional<int> unknown) {
+		vTable.actor->onCloseInventory(this, reference, unknown.value_or(0));
+	}
+
+	bool Actor::hasItemEquipped_lua(sol::object itemOrItemId, sol::optional<TES3::ItemData*> itemData) {
+		TES3::Item* item = nullptr;
+		
+		if (itemOrItemId.is<TES3::Item*>()) {
+			item = itemOrItemId.as<TES3::Item*>();
+		}
+		else if (itemOrItemId.is<const char*>()) {
+			auto itemId = itemOrItemId.as<const char*>();
+			auto ndd = TES3::DataHandler::get()->nonDynamicData;
+			item = ndd->resolveObjectByType<TES3::Item>(itemId);
+		}
+
+		if (item == nullptr) {
+			return false;
+		}
+		if (itemData.has_value()) {
+			return getEquippedItemExact(item, itemData.value()) != nullptr;
+		}
+		else {
+			return getEquippedItem(item) != nullptr;
+		}
+	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Actor)

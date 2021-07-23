@@ -7,10 +7,10 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `actorFlags`_ (`number`_)
-    A number representing the actor flags. Truly a bit field.
+    Read-only. A number representing the actor flags. Truly a bit field.
 
 `aiConfig`_ (`tes3aiConfig`_)
-    Simplified access to the base creature's AI configuration.
+    Read-only. Simplified access to the base creature's AI configuration.
 
 `attacks`_ (`table`_)
     Simplified access to the base creature's attacks. A table of three attacks, represented by a trio of tes3rangeInt.
@@ -21,65 +21,74 @@ Properties
 `barterGold`_ (`number`_)
     The amount of gold that the creature has to barter with.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
 `baseObject`_ (`tes3creature`_)
     Access to creature that this one is instanced from.
 
 `biped`_ (`boolean`_)
     Access to the creature's biped flag.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `cloneCount`_ (`number`_)
-    The number of clones that exist of this actor.
+    Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
-    The items currently equipped to the actor.
+    Read-only. The items currently equipped to the actor.
 
 `equipment`_ (`tes3iterator`_)
-    A collection that contains the currently equipped items.
+    Read-only. A collection that contains the currently equipped items.
 
 `fatigue`_ (`number`_)
-    The creature's current fatigue.
+    Read-only. The creature's current fatigue.
 
 `flies`_ (`boolean`_)
     Access to the creature's flies flag.
 
 `health`_ (`number`_)
-    The creature's current health.
+    Read-only. The creature's current health.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
-    A collection that contains the items in the actor's inventory.
+    Read-only. A collection that contains the items in the actor's inventory.
 
 `inventory`_ (`tes3iterator`_)
-    The items currently carried by the actor.
+    Read-only. The items currently carried by the actor.
 
 `isAttacked`_ (`boolean`_)
-    If true, the creature attacked flag is set.
+    Read-only. If true, the creature attacked flag is set.
 
 `isEssential`_ (`boolean`_)
-    If true, the creature essential flag is set.
+    Read-only. If true, the creature essential flag is set.
 
 `isInstance`_ (`boolean`_)
     Always returns true.
 
 `isRespawn`_ (`boolean`_)
-    If true, the creature respawn flag is set.
+    Read-only. If true, the creature respawn flag is set.
 
 `level`_ (`number`_)
-    The base level of the creature.
+    Read-only. The base level of the creature.
 
 `magicka`_ (`number`_)
-    The creature's current magicka.
+    Read-only. The creature's current magicka.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -94,13 +103,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -130,13 +142,19 @@ Properties
     Simplified access to the base creature's sound generator. A creature to use instead of this one for sound generation.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `spells`_ (`tes3spellList`_)
-    Simplified access to the base creature's spell list. A list of spells that the creature has access to.
+    Read-only. Quick access to the base creature's spell list. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(creature.spells.iterator) do print(spell.name) end
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 `swims`_ (`boolean`_)
     Access to the creature's swims flag.
@@ -151,7 +169,7 @@ Properties
     Access to the creature's walks flag.
 
 `weapon`_ (`tes3weapon`_)
-    The creature's currently equipped weapon.
+    Read-only. The creature's currently equipped weapon.
 
 .. toctree::
     :hidden:
@@ -161,8 +179,11 @@ Properties
     tes3creatureInstance/attacks
     tes3creatureInstance/attributes
     tes3creatureInstance/barterGold
+    tes3creatureInstance/barterGold
     tes3creatureInstance/baseObject
     tes3creatureInstance/biped
+    tes3creatureInstance/blocked
+    tes3creatureInstance/blood
     tes3creatureInstance/boundingBox
     tes3creatureInstance/cloneCount
     tes3creatureInstance/deleted
@@ -188,6 +209,7 @@ Properties
     tes3creatureInstance/objectFlags
     tes3creatureInstance/objectType
     tes3creatureInstance/owningCollection
+    tes3creatureInstance/persistent
     tes3creatureInstance/previousInCollection
     tes3creatureInstance/respawns
     tes3creatureInstance/scale
@@ -198,8 +220,10 @@ Properties
     tes3creatureInstance/soul
     tes3creatureInstance/soundCreature
     tes3creatureInstance/sourceMod
+    tes3creatureInstance/sourceless
     tes3creatureInstance/spells
     tes3creatureInstance/stolenList
+    tes3creatureInstance/supportsLuaData
     tes3creatureInstance/swims
     tes3creatureInstance/type
     tes3creatureInstance/usesEquipment
@@ -211,8 +235,11 @@ Properties
 .. _`attacks`: tes3creatureInstance/attacks.html
 .. _`attributes`: tes3creatureInstance/attributes.html
 .. _`barterGold`: tes3creatureInstance/barterGold.html
+.. _`barterGold`: tes3creatureInstance/barterGold.html
 .. _`baseObject`: tes3creatureInstance/baseObject.html
 .. _`biped`: tes3creatureInstance/biped.html
+.. _`blocked`: tes3creatureInstance/blocked.html
+.. _`blood`: tes3creatureInstance/blood.html
 .. _`boundingBox`: tes3creatureInstance/boundingBox.html
 .. _`cloneCount`: tes3creatureInstance/cloneCount.html
 .. _`deleted`: tes3creatureInstance/deleted.html
@@ -238,6 +265,7 @@ Properties
 .. _`objectFlags`: tes3creatureInstance/objectFlags.html
 .. _`objectType`: tes3creatureInstance/objectType.html
 .. _`owningCollection`: tes3creatureInstance/owningCollection.html
+.. _`persistent`: tes3creatureInstance/persistent.html
 .. _`previousInCollection`: tes3creatureInstance/previousInCollection.html
 .. _`respawns`: tes3creatureInstance/respawns.html
 .. _`scale`: tes3creatureInstance/scale.html
@@ -248,8 +276,10 @@ Properties
 .. _`soul`: tes3creatureInstance/soul.html
 .. _`soundCreature`: tes3creatureInstance/soundCreature.html
 .. _`sourceMod`: tes3creatureInstance/sourceMod.html
+.. _`sourceless`: tes3creatureInstance/sourceless.html
 .. _`spells`: tes3creatureInstance/spells.html
 .. _`stolenList`: tes3creatureInstance/stolenList.html
+.. _`supportsLuaData`: tes3creatureInstance/supportsLuaData.html
 .. _`swims`: tes3creatureInstance/swims.html
 .. _`type`: tes3creatureInstance/type.html
 .. _`usesEquipment`: tes3creatureInstance/usesEquipment.html
@@ -259,112 +289,40 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+`offersService`_ (`boolean`_)
+    Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
+
 `onInventoryClose`_
-    A callback function invoked when an inventory is closed. Typically not used outside of specific purposes.
+    A callback function invoked when an inventory is closed. Typically not used outside of specific purposes. You may find tes3.reference's onCloseInventory() to be more convenient to use.
+
+`tradesItemType`_ (`boolean`_)
+    Checks if the actor will buy and sell items of a given object type. e.g. actor:tradesItemType(tes3.objectType.repairItem)
 
 .. toctree::
     :hidden:
 
+    tes3creatureInstance/__tojson
+    tes3creatureInstance/offersService
     tes3creatureInstance/onInventoryClose
+    tes3creatureInstance/tradesItemType
 
+.. _`__tojson`: tes3creatureInstance/__tojson.html
+.. _`offersService`: tes3creatureInstance/offersService.html
 .. _`onInventoryClose`: tes3creatureInstance/onInventoryClose.html
+.. _`tradesItemType`: tes3creatureInstance/tradesItemType.html
 
-.. _`tes3creature`: ../../lua/type/tes3creature.html
-.. _`niObject`: ../../lua/type/niObject.html
-.. _`tes3npc`: ../../lua/type/tes3npc.html
-.. _`tes3book`: ../../lua/type/tes3book.html
-.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
-.. _`tes3actor`: ../../lua/type/tes3actor.html
-.. _`tes3inputConfig`: ../../lua/type/tes3inputConfig.html
-.. _`tes3itemStack`: ../../lua/type/tes3itemStack.html
-.. _`tes3globalVariable`: ../../lua/type/tes3globalVariable.html
-.. _`tes3containerInstance`: ../../lua/type/tes3containerInstance.html
-.. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
-.. _`niAVObject`: ../../lua/type/niAVObject.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3raceHeightWeight`: ../../lua/type/tes3raceHeightWeight.html
-.. _`tes3class`: ../../lua/type/tes3class.html
-.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
-.. _`tes3apparatus`: ../../lua/type/tes3apparatus.html
-.. _`tes3door`: ../../lua/type/tes3door.html
-.. _`tes3directInputMouseState`: ../../lua/type/tes3directInputMouseState.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niObjectNET`: ../../lua/type/niObjectNET.html
-.. _`tes3armor`: ../../lua/type/tes3armor.html
-.. _`tes3npcInstance`: ../../lua/type/tes3npcInstance.html
-.. _`tes3dataHandler`: ../../lua/type/tes3dataHandler.html
-.. _`tes3rangeInt`: ../../lua/type/tes3rangeInt.html
-.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
-.. _`tes3gameFile`: ../../lua/type/tes3gameFile.html
-.. _`tes3faction`: ../../lua/type/tes3faction.html
-.. _`tes3wearablePart`: ../../lua/type/tes3wearablePart.html
-.. _`tes3inputController`: ../../lua/type/tes3inputController.html
-.. _`tes3lockpick`: ../../lua/type/tes3lockpick.html
-.. _`tes3combatSession`: ../../lua/type/tes3combatSession.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`tes3vector4`: ../../lua/type/tes3vector4.html
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
-.. _`string`: ../../lua/type/string.html
-.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
-.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html
-.. _`tes3fader`: ../../lua/type/tes3fader.html
-.. _`tes3quest`: ../../lua/type/tes3quest.html
-.. _`tes3nonDynamicData`: ../../lua/type/tes3nonDynamicData.html
-.. _`tes3ingredient`: ../../lua/type/tes3ingredient.html
-.. _`tes3race`: ../../lua/type/tes3race.html
-.. _`tes3gameSetting`: ../../lua/type/tes3gameSetting.html
-.. _`tes3vector2`: ../../lua/type/tes3vector2.html
-.. _`table`: ../../lua/type/table.html
-.. _`tes3travelDestinationNode`: ../../lua/type/tes3travelDestinationNode.html
-.. _`tes3transform`: ../../lua/type/tes3transform.html
-.. _`tes3mobileNPC`: ../../lua/type/tes3mobileNPC.html
-.. _`tes3soulGemData`: ../../lua/type/tes3soulGemData.html
-.. _`tes3vector3`: ../../lua/type/tes3vector3.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3raceSkillBonus`: ../../lua/type/tes3raceSkillBonus.html
-.. _`tes3activator`: ../../lua/type/tes3activator.html
-.. _`tes3raceBodyParts`: ../../lua/type/tes3raceBodyParts.html
-.. _`tes3inventory`: ../../lua/type/tes3inventory.html
-.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3markData`: ../../lua/type/tes3markData.html
-.. _`tes3raceBaseAttribute`: ../../lua/type/tes3raceBaseAttribute.html
-.. _`tes3creatureInstance`: ../../lua/type/tes3creatureInstance.html
-.. _`tes3effect`: ../../lua/type/tes3effect.html
-.. _`tes3game`: ../../lua/type/tes3game.html
-.. _`tes3probe`: ../../lua/type/tes3probe.html
-.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`nil`: ../../lua/type/nil.html
+.. _`niNode`: ../../lua/type/niNode.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3moon`: ../../lua/type/tes3moon.html
-.. _`tes3mobilePlayer`: ../../lua/type/tes3mobilePlayer.html
-.. _`tes3mobileObject`: ../../lua/type/tes3mobileObject.html
-.. _`tes3misc`: ../../lua/type/tes3misc.html
-.. _`tes3leveledListNode`: ../../lua/type/tes3leveledListNode.html
-.. _`tes3mobileCreature`: ../../lua/type/tes3mobileCreature.html
-.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
-.. _`function`: ../../lua/type/function.html
-.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
-.. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
-.. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html
-.. _`tes3factionRank`: ../../lua/type/tes3factionRank.html
-.. _`mwseTimer`: ../../lua/type/mwseTimer.html
-.. _`tes3container`: ../../lua/type/tes3container.html
-.. _`tes3packedColor`: ../../lua/type/tes3packedColor.html
-.. _`bool`: ../../lua/type/boolean.html
-.. _`tes3equipmentStack`: ../../lua/type/tes3equipmentStack.html
-.. _`tes3clothing`: ../../lua/type/tes3clothing.html
-.. _`mwseTimerController`: ../../lua/type/mwseTimerController.html
-.. _`tes3leveledCreature`: ../../lua/type/tes3leveledCreature.html
-.. _`tes3lockNode`: ../../lua/type/tes3lockNode.html
-.. _`tes3activeMagicEffect`: ../../lua/type/tes3activeMagicEffect.html
-.. _`tes3cellExteriorData`: ../../lua/type/tes3cellExteriorData.html
-.. _`tes3light`: ../../lua/type/tes3light.html
-.. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html
-.. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
-.. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
-.. _`tes3cell`: ../../lua/type/tes3cell.html
-.. _`tes3actionData`: ../../lua/type/tes3actionData.html
-.. _`tes3itemData`: ../../lua/type/tes3itemData.html
-.. _`tes3factionReaction`: ../../lua/type/tes3factionReaction.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html
+.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
+.. _`tes3creature`: ../../lua/type/tes3creature.html
+.. _`tes3iterator`: ../../lua/type/tes3iterator.html
+.. _`tes3object`: ../../lua/type/tes3object.html
+.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
+.. _`tes3spellList`: ../../lua/type/tes3spellList.html
+.. _`tes3weapon`: ../../lua/type/tes3weapon.html

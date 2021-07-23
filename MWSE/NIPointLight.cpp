@@ -2,7 +2,7 @@
 
 #include "TES3DataHandler.h"
 
-#include "TES3Util.h"
+#include "MemoryUtil.h"
 
 namespace TES3 {
 	enum LightAttenuationFlag {
@@ -36,6 +36,17 @@ namespace NI {
 		light->quadraticAttenuation = 0.0f;
 
 		return light;
+	}
+
+	void PointLight::setRadius(unsigned int radius) {
+		// Set light attenuation.
+		setAttenuationForRadius(radius);
+
+		// Set dynamic culling radius, misplaced by Morrowind into specular.
+		auto r = float(radius);
+		specular.r = r;
+		specular.g = r;
+		specular.b = r;
 	}
 
 	void PointLight::setAttenuationForRadius(unsigned int radius) {
@@ -89,3 +100,5 @@ namespace NI {
 		revisionId++;
 	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::PointLight)

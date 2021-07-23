@@ -39,23 +39,33 @@ namespace TES3 {
 		//
 
 		int getBaseDisposition(bool);
+		bool isGuard();
+
+		bool getIsFemale() const;
+		void setIsFemale(bool value);
+		bool getIsAutoCalc() const;
+		void setIsAutoCalc(bool value);
+		bool getIsEssential_legacy() const;
+		void setIsEssential_legacy(bool value);
+		bool getRespawns_legacy() const;
+		void setRespawns_legacy(bool value);
 
 	};
 
 	struct NPC : NPCBase {
-		void * model; // 0x6C
+		char * model; // 0x6C
 		char * name; // 0x70
 		Script * script; // 0x74
 		void * linkedObjectIDs; // 0x78
 		short level; // 0x7C
-		signed char attributes[8]; // 0x7E
-		signed char skills[27]; // 0x86
-		unsigned char reputation; // 0xA1
+		unsigned char attributes[8]; // 0x7E
+		unsigned char skills[27]; // 0x86
+		unsigned char unknown_0xA1; // 0xA1 // Not reputation after all?
 		short health; // 0xA2
 		short magicka; // 0xA4
 		short fatigue; // 0xA6
 		signed char baseDisposition; // 0xA8
-		unsigned char factionIndex; // 0xA9
+		unsigned char reputation; // 0xA9
 		unsigned char factionRank; // 0xAA
 		char unknown_0xAB; // Padding.
 		int barterGold; // 0xAC
@@ -68,13 +78,20 @@ namespace TES3 {
 		void * aiPackageList; // 0xDC
 		AIConfig aiConfig; // 0xE0
 
+		//
+		// Custom functions.
+		//
+
+		std::reference_wrapper<unsigned char[8]> getAttributes();
+		std::reference_wrapper<unsigned char[27]> getSkills();
+
 	};
 	static_assert(sizeof(NPC) == 0xF0, "TES3::NPC failed size validation");
 
 	struct NPCInstance : NPCBase {
 		NPC * baseNPC; // 0x6C
 		short baseDisposition; // 0x70
-		unsigned char factionIndex; // 0x72
+		unsigned char reputation; // 0x72
 		char unknown_0x73; // Padding.
 		AIPackageConfig * aiPackageConfig; // 0x74
 
@@ -95,6 +112,22 @@ namespace TES3 {
 		void setBaseDisposition(short);
 
 		void setFactionRank(unsigned char);
+
+		int getDisposition_lua();
+
+		std::reference_wrapper<unsigned char[8]> getAttributes();
+		std::reference_wrapper<unsigned char[27]> getSkills();
+
+		Class* getBaseClass();
+		Faction* getBaseFaction();
+		Race* getBaseRace();
+		Script* getBaseScript();
+		SpellList* getBaseSpellList();
+
 	};
 	static_assert(sizeof(NPCInstance) == 0x78, "TES3::NPCInstance failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::NPCBase)
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::NPC)
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::NPCInstance)

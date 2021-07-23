@@ -2,32 +2,33 @@
 
 #include "NIDynamicEffectLua.h"
 
+#include "NIColor.h"
+
 namespace mwse {
 	namespace lua {
-		// Speed-optimized binding for NI::Light.
 		template <typename T>
-		void setUserdataForNILight(sol::simple_usertype<T>& usertypeDefinition) {
+		void setUserdataForNILight(sol::usertype<T>& usertypeDefinition) {
 			setUserdataForNIDynamicEffect(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("ambient", &NI::Light::ambient);
-			usertypeDefinition.set("diffuse", &NI::Light::diffuse);
-			usertypeDefinition.set("dimmer", &NI::Light::dimmer);
-			usertypeDefinition.set("specular", &NI::Light::specular);
+			usertypeDefinition["ambient"] = sol::property(&NI::Light::getAmbientColor, &NI::Light::setAmbientColor_lua);
+			usertypeDefinition["diffuse"] = sol::property(&NI::Light::getDiffuseColor, &NI::Light::setDiffuseColor_lua);
+			usertypeDefinition["dimmer"] = sol::property(&NI::Light::getDimmer, &NI::Light::setDimmer);
+			usertypeDefinition["specular"] = sol::property(&NI::Light::getSpecularColor, &NI::Light::setSpecularColor_lua);
 		}
 
-		// Speed-optimized binding for NI::PointLight.
 		template <typename T>
-		void setUserdataForNIPointLight(sol::simple_usertype<T>& usertypeDefinition) {
+		void setUserdataForNIPointLight(sol::usertype<T>& usertypeDefinition) {
 			setUserdataForNILight(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("constantAttenuation", &NI::PointLight::constantAttenuation);
-			usertypeDefinition.set("linearAttenuation", &NI::PointLight::linearAttenuation);
-			usertypeDefinition.set("quadraticAttenuation", &NI::PointLight::quadraticAttenuation);
+			usertypeDefinition["constantAttenuation"] = &NI::PointLight::constantAttenuation;
+			usertypeDefinition["linearAttenuation"] = &NI::PointLight::linearAttenuation;
+			usertypeDefinition["quadraticAttenuation"] = &NI::PointLight::quadraticAttenuation;
 
 			// Basic function binding.
-			usertypeDefinition.set("setAttenuationForRadius", &NI::PointLight::setAttenuationForRadius);
+			usertypeDefinition["setAttenuationForRadius"] = &NI::PointLight::setAttenuationForRadius;
+			usertypeDefinition["setRadius"] = &NI::PointLight::setRadius;
 		}
 
 		void bindNILight();

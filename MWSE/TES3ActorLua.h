@@ -2,28 +2,31 @@
 
 #include "TES3ObjectLua.h"
 
+#include "TES3Actor.h"
+
 namespace mwse {
 	namespace lua {
 		template <typename T>
-		void setUserdataForActor(sol::simple_usertype<T>& usertypeDefinition) {
-			setUserdataForPhysicalObject(usertypeDefinition);
+		void setUserdataForTES3Actor(sol::usertype<T>& usertypeDefinition) {
+			setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("actorFlags", sol::readonly_property(&TES3::Actor::actorFlags));
-			usertypeDefinition.set("cloneCount", sol::readonly_property(&TES3::Actor::cloneCount));
-			usertypeDefinition.set("equipment", sol::readonly_property(&TES3::Actor::equipment));
-			usertypeDefinition.set("inventory", sol::readonly_property(&TES3::Actor::inventory));
+			usertypeDefinition["actorFlags"] = sol::readonly_property(&TES3::Actor::actorFlags);
+			usertypeDefinition["cloneCount"] = sol::readonly_property(&TES3::Actor::cloneCount);
+			usertypeDefinition["equipment"] = sol::readonly_property(&TES3::Actor::equipment);
+			usertypeDefinition["inventory"] = sol::readonly_property(&TES3::Actor::inventory);
 
 			// Functions exposed as properties.
-			usertypeDefinition.set("barterGold", sol::property(&TES3::Actor::getBaseBarterGold, &TES3::Actor::setBaseBarterGold));
+			usertypeDefinition["barterGold"] = sol::property(&TES3::Actor::getBaseBarterGold, &TES3::Actor::setBaseBarterGold);
+			usertypeDefinition["blood"] = sol::property(&TES3::Actor::getBloodType, &TES3::Actor::setBloodType);
 
 			// Basic function binding.
-			usertypeDefinition.set("tradesItemType", &TES3::Actor::tradesItemType);
+			usertypeDefinition["tradesItemType"] = &TES3::Actor::tradesItemType;
+			usertypeDefinition["offersService"] = &TES3::Actor::offersService;
 
 			// Function exposing.
-			usertypeDefinition.set("onInventoryClose", [](TES3::Actor& self, sol::optional<TES3::Reference*> reference, sol::optional<int> unknown) {
-				self.onCloseInventory(&self, reference.value_or(nullptr), unknown.value_or(0));
-			});
+			usertypeDefinition["onInventoryClose"] = &TES3::Actor::onCloseInventory_lua;
+			usertypeDefinition["hasItemEquipped"] = &TES3::Actor::hasItemEquipped_lua;
 		}
 	}
 }

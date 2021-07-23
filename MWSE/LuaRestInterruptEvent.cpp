@@ -22,7 +22,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["creature"] = makeLuaObject(m_Creature);
+				eventData["creature"] = m_Creature;
 
 				// Add easy access to sleeping and waiting state.
 				TES3::MobilePlayer * macp = TES3::WorldController::get()->getMobilePlayer();

@@ -1,13 +1,6 @@
 #pragma once
 
-#include <unordered_map>
-#include <queue>
-
-#include <mutex>
-
 #include "TES3Util.h"
-
-#include "sol.hpp"
 
 #include "LuaBaseEvent.h"
 
@@ -34,14 +27,6 @@ namespace mwse {
 			// Trigger a thread-safe event.
 			sol::object triggerEvent(event::BaseEvent*);
 
-			// Guarded access to the userdata cache.
-			sol::object getCachedUserdata(TES3::BaseObject*);
-			sol::object getCachedUserdata(TES3::MobileObject*);
-			void insertUserdataIntoCache(TES3::BaseObject*, sol::object);
-			void insertUserdataIntoCache(TES3::MobileObject*, sol::object);
-			void removeUserdataFromCache(TES3::BaseObject*);
-			void removeUserdataFromCache(TES3::MobileObject*);
-
 			sol::state& state;
 
 		private:
@@ -59,6 +44,8 @@ namespace mwse {
 
 			// Returns a thread-locking reference to the sol2 lua state.
 			ThreadedStateHandle getThreadSafeStateHandle();
+
+			const sol::state_view& getReadOnlyStateView();
 
 			// Uses the MemoryUtil library to create the necessary injections into Morrowind.
 			void hook();
@@ -81,12 +68,22 @@ namespace mwse {
 
 			// Management functions for timers.
 			void updateTimers(float deltaTime, double simulationTimestamp, bool simulating);
+			void savePersistentTimers();
+			void restorePersistentTimers();
+			void clearPersistentTimers();
 			void clearTimers();
 			std::shared_ptr<TimerController> getTimerController(TimerType type);
+			TimerType getTimerControllerType(std::shared_ptr<TimerController> controller);
 
 			//
 			void claimLuaThread();
 			void releaseLuaThread();
+
+			bool overrideScript(const char* scriptId, sol::object function);
+
+			// Lua-bound static functions.
+			static void lua_print(sol::object object);
+
 
 		private:
 			LuaManager();
@@ -97,14 +94,6 @@ namespace mwse {
 			// Event management.
 			mwse::lua::event::DisableableEventManager m_DisableableEventManager;
 			sol::object triggerEvent(event::BaseEvent*);
-
-			// Guarded access to the userdata cache.
-			sol::object getCachedUserdata(TES3::BaseObject*);
-			sol::object getCachedUserdata(TES3::MobileObject*);
-			void insertUserdataIntoCache(TES3::BaseObject*, sol::object);
-			void insertUserdataIntoCache(TES3::MobileObject*, sol::object);
-			void removeUserdataFromCache(TES3::BaseObject*);
-			void removeUserdataFromCache(TES3::MobileObject*);
 
 			// 
 			static LuaManager singleton;
@@ -121,10 +110,7 @@ namespace mwse {
 			// Storage for our current button pressed callback.
 			sol::protected_function buttonPressedCallback = sol::nil;
 
-			// 
-			std::mutex userdataMapMutex;
-			UserdataMap userdataCache;
-
+		public:
 			// Timers.
 			std::shared_ptr<TimerController> gameTimers;
 			std::shared_ptr<TimerController> simulateTimers;

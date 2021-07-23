@@ -3,7 +3,7 @@ return {
 	eventData = {
 		["actor"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor who has left combat.",
 		},
 	},

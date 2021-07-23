@@ -1,8 +1,6 @@
-#include <string>
-
-#include "TES3UIManager.h"
 #include "TES3UIWidgets.h"
 
+#include "TES3UIManager.h"
 
 namespace TES3 {
 	namespace UI {
@@ -21,10 +19,26 @@ namespace TES3 {
 			prop[3] = registerProperty(name.c_str());
 		}
 
+		static sol::table getColourProperty(Element& e, Property(&prop)[4], sol::state_view state) {
+			return state.create_table_with(
+				1, e.getProperty(PropertyType::Float, prop[0]).floatValue,
+				2, e.getProperty(PropertyType::Float, prop[1]).floatValue,
+				3, e.getProperty(PropertyType::Float, prop[2]).floatValue,
+				4, e.getProperty(PropertyType::Float, prop[3]).floatValue
+			);
+		}
+
 		static void setColourProperty(Element& e, Property(&prop)[4], const float(&c)[3]) {
 			e.setProperty(prop[0], c[0]);
 			e.setProperty(prop[1], c[1]);
 			e.setProperty(prop[2], c[2]);
+		}
+
+		static void setColourProperty(Element& e, Property(&prop)[4], const sol::table c) {
+			e.setProperty(prop[0], c.get_or(1, 1.0f));
+			e.setProperty(prop[1], c.get_or(2, 1.0f));
+			e.setProperty(prop[2], c.get_or(3, 1.0f));
+			e.setProperty(prop[3], c.get_or(4, 1.0f));
 		}
 
 		//
@@ -58,6 +72,11 @@ namespace TES3 {
 			return static_cast<WidgetButton*>(element);
 		}
 
+		const WidgetButton* WidgetButton::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetButton*>(element);
+		}
+
 		int WidgetButton::getState() const {
 			return getProperty(PropertyType::Integer, propButtonState).integerValue;
 		}
@@ -66,15 +85,34 @@ namespace TES3 {
 			TES3_WidgetButton_updateStateColor(this);
 		}
 
+		sol::table WidgetButton::getColourIdle_lua(sol::this_state ts) { return getColourProperty(*this, propButtonIdle, ts); }
 		void WidgetButton::setColourIdle(const float(&c)[3]) { setColourProperty(*this, propButtonIdle, c); }
+		void WidgetButton::setColourIdle_lua(sol::table c) { setColourProperty(*this, propButtonIdle, c); }
+		sol::table WidgetButton::getColourOver_lua(sol::this_state ts) { return getColourProperty(*this, propButtonOver, ts); }
 		void WidgetButton::setColourOver(const float(&c)[3]) { setColourProperty(*this, propButtonOver, c); }
+		void WidgetButton::setColourOver_lua(sol::table c) { setColourProperty(*this, propButtonOver, c); }
+		sol::table WidgetButton::getColourPressed_lua(sol::this_state ts) { return getColourProperty(*this, propButtonPressed, ts); }
 		void WidgetButton::setColourPressed(const float(&c)[3]) { setColourProperty(*this, propButtonPressed, c); }
+		void WidgetButton::setColourPressed_lua(sol::table c) { setColourProperty(*this, propButtonPressed, c); }
+		sol::table WidgetButton::getColourDisabled_lua(sol::this_state ts) { return getColourProperty(*this, propButtonDisabled, ts); }
 		void WidgetButton::setColourDisabled(const float(&c)[3]) { setColourProperty(*this, propButtonDisabled, c); }
+		void WidgetButton::setColourDisabled_lua(sol::table c) { setColourProperty(*this, propButtonDisabled, c); }
+		sol::table WidgetButton::getColourDisabledOver_lua(sol::this_state ts) { return getColourProperty(*this, propButtonDisabledOver, ts); }
 		void WidgetButton::setColourDisabledOver(const float(&c)[3]) { setColourProperty(*this, propButtonDisabledOver, c); }
+		void WidgetButton::setColourDisabledOver_lua(sol::table c) { setColourProperty(*this, propButtonDisabledOver, c); }
+		sol::table WidgetButton::getColourDisabledPressed_lua(sol::this_state ts) { return getColourProperty(*this, propButtonDisabledPressed, ts); }
 		void WidgetButton::setColourDisabledPressed(const float(&c)[3]) { setColourProperty(*this, propButtonDisabledPressed, c); }
+		void WidgetButton::setColourDisabledPressed_lua(sol::table c) { setColourProperty(*this, propButtonDisabledPressed, c); }
+		sol::table WidgetButton::getColourActive_lua(sol::this_state ts) { return getColourProperty(*this, propButtonActive, ts); }
 		void WidgetButton::setColourActive(const float(&c)[3]) { setColourProperty(*this, propButtonActive, c); }
+		void WidgetButton::setColourActive_lua(sol::table c) { setColourProperty(*this, propButtonActive, c); }
+		sol::table WidgetButton::getColourActiveOver_lua(sol::this_state ts) { return getColourProperty(*this, propButtonActiveOver, ts); }
 		void WidgetButton::setColourActiveOver(const float(&c)[3]) { setColourProperty(*this, propButtonActiveOver, c); }
+		void WidgetButton::setColourActiveOver_lua(sol::table c) { setColourProperty(*this, propButtonActiveOver, c); }
+		sol::table WidgetButton::getColourActivePressed_lua(sol::this_state ts) { return getColourProperty(*this, propButtonActivePressed, ts); }
 		void WidgetButton::setColourActivePressed(const float(&c)[3]) { setColourProperty(*this, propButtonActivePressed, c); }
+		void WidgetButton::setColourActivePressed_lua(sol::table c) { setColourProperty(*this, propButtonActivePressed, c); }
+
 	
 		const char* WidgetButton::getText() const {
 			return findChild(uiidButtonText)->getText();
@@ -103,18 +141,60 @@ namespace TES3 {
 			return static_cast<WidgetFillbar*>(element);
 		}
 
-		int WidgetFillbar::getCurrent() const {
-			return getProperty(PropertyType::Integer, propFillbarCurrent).integerValue;
-		}
-		void WidgetFillbar::setCurrent(int value) {
-			setProperty(propFillbarCurrent, value);
+		const WidgetFillbar* WidgetFillbar::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetFillbar*>(element);
 		}
 
-		int WidgetFillbar::getMax() const {
-			return getProperty(PropertyType::Integer, propFillbarMax).integerValue;
+		double WidgetFillbar::getCurrent() const {
+			const auto type = getPropertyType(propFillbarCurrent);
+			if (type == PropertyType::Integer) {
+				return getProperty(PropertyType::Integer, propFillbarCurrent).integerValue;
+			}
+			else if (type == PropertyType::Float) {
+				return getProperty(PropertyType::Float, propFillbarCurrent).floatValue;
+			}
+			return 0.0;
 		}
-		void WidgetFillbar::setMax(int value) {
-			setProperty(propFillbarMax, value);
+		void WidgetFillbar::setCurrent(double value) {
+			const auto type = getPropertyType(propFillbarCurrent);
+			if (type == PropertyType::Integer) {
+				setProperty(propFillbarCurrent, (int)value);
+			}
+			else {
+				setProperty(propFillbarCurrent, (float)value);
+			}
+		}
+
+		double WidgetFillbar::getMax() const {
+			const auto type = getPropertyType(propFillbarMax);
+			if (type == PropertyType::Integer) {
+				return getProperty(PropertyType::Integer, propFillbarMax).integerValue;
+			}
+			else if (type == PropertyType::Float) {
+				return getProperty(PropertyType::Float, propFillbarMax).floatValue;
+			}
+			return 0.0;
+		}
+		void WidgetFillbar::setMax(double value) {
+			const auto type = getPropertyType(propFillbarMax);
+			if (type == PropertyType::Integer) {
+				setProperty(propFillbarMax, (int)value);
+			}
+			else {
+				setProperty(propFillbarMax, (float)value);
+			}
+		}
+
+		double WidgetFillbar::getNormalized() const {
+			const double max = getMax();
+			if (max == 0.0) {
+				return 0.0;
+			}
+			return getCurrent() / max;
+		}
+		void WidgetFillbar::setNormalized(double value) {
+			setCurrent(value * getMax());
 		}
 
 		bool WidgetFillbar::getShowText() const {
@@ -126,11 +206,18 @@ namespace TES3 {
 			setProperty(propFillbarShowText, value);
 		}
 
-		void WidgetFillbar::setFillColour(const float(&c)[3]) {
-			setProperty(propFillbarCol[0], c[0]);
-			setProperty(propFillbarCol[1], c[1]);
-			setProperty(propFillbarCol[2], c[2]);
+		sol::table WidgetFillbar::getFillColour_lua(sol::this_state ts) {
+			return getColourProperty(*this, propFillbarCol, ts);
 		}
+
+		void WidgetFillbar::setFillColour(const float(&c)[3]) {
+			setColourProperty(*this, propFillbarCol, c);
+		}
+
+		void WidgetFillbar::setFillColour_lua(sol::table c) {
+			setColourProperty(*this, propFillbarCol, c);
+		}
+
 		void WidgetFillbar::setFillAlpha(float a) {
 			setProperty(propFillbarCol[3], a);
 		}
@@ -152,17 +239,28 @@ namespace TES3 {
 			return static_cast<WidgetParagraphInput*>(element);
 		}
 
+		const WidgetParagraphInput* WidgetParagraphInput::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetParagraphInput*>(element);
+		}
+
 		int WidgetParagraphInput::getLengthLimit() const {
 			return getProperty(PropertyType::Integer, propParagraphInputMaxLength).integerValue;
 		}
+
 		void WidgetParagraphInput::setLengthLimit(int limit) {
 			setProperty(propParagraphInputMaxLength, limit);
 		}
 
+		void WidgetParagraphInput::setLengthLimit_lua(sol::optional<int> limit) {
+			setLengthLimit(limit.value_or(1023));
+		}
+
 		std::string WidgetParagraphInput::getText() const {
 			auto textInput = WidgetTextInput::fromElement(findChild(uiidParagraphInputText));
-			return textInput->getText();
+			return std::move(textInput->getText());
 		}
+
 		void WidgetParagraphInput::setText(const char* text) {
 			std::string editText = text;
 			editText.append("|");
@@ -186,6 +284,11 @@ namespace TES3 {
 		WidgetScrollBar* WidgetScrollBar::fromElement(Element* element) {
 			static bool initialized = initProperties();
 			return static_cast<WidgetScrollBar*>(element);
+		}
+
+		const WidgetScrollBar* WidgetScrollBar::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetScrollBar*>(element);
 		}
 
 		int WidgetScrollBar::getCurrent() const {
@@ -234,10 +337,16 @@ namespace TES3 {
 			return static_cast<WidgetScrollPane*>(element);
 		}
 
+		const WidgetScrollPane* WidgetScrollPane::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetScrollPane*>(element);
+		}
+
 		int WidgetScrollPane::getHorizontalPos() const {
 			auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneHScroll));
 			return scroll->getCurrent();
 		}
+
 		void WidgetScrollPane::setHorizontalPos(int value) {
 			auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneHScroll));
 			scroll->setCurrent(value);
@@ -250,6 +359,7 @@ namespace TES3 {
 			auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneVScroll));
 			return scroll->getCurrent();
 		}
+
 		void WidgetScrollPane::setVerticalPos(int value) {
 			auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneVScroll));
 			scroll->setCurrent(value);
@@ -309,11 +419,37 @@ namespace TES3 {
 			return static_cast<WidgetTextInput*>(element);
 		}
 
+		const WidgetTextInput* WidgetTextInput::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetTextInput*>(element);
+		}
+
 		int WidgetTextInput::getLengthLimit() const {
 			return getProperty(PropertyType::Integer, propTextInputLengthLimit).integerValue;
 		}
+
+		sol::optional<int> WidgetTextInput::getLengthLimit_lua() const {
+			// Convert no limit to nil
+			int n = getLengthLimit();
+			if (getNoLimit() || n <= 0) {
+				return {};
+			}
+			return n;
+		}
+
 		void WidgetTextInput::setLengthLimit(int limit) {
 			setProperty(propTextInputLengthLimit, limit);
+		}
+
+		void WidgetTextInput::setLengthLimit_lua(sol::optional<int> limit) {
+			// Convert nil to no limit
+			if (limit) {
+				setLengthLimit(limit.value());
+				setNoLimit(false);
+			}
+			else {
+				setNoLimit(true);
+			}
 		}
 
 		bool WidgetTextInput::getNoLimit() const {
@@ -342,7 +478,7 @@ namespace TES3 {
 			if (i != std::string::npos) {
 				editText.erase(i, 1);
 			}
-			return editText;
+			return std::move(editText);
 		}
 		void WidgetTextInput::setText(const char* text) {
 			// Use standard setText without adding a caret.
@@ -354,6 +490,9 @@ namespace TES3 {
 		//
 		// WidgetTextSelect
 		//
+
+		const auto TES3_ui_updateTextSelectColorForState = reinterpret_cast<bool(__cdecl*)(Element*)>(0x64CB60);
+
 		static Property propSelectState;
 		static Property propSelectIdle[4], propSelectOver[4], propSelectPressed[4];
 		static Property propSelectDisabled[4], propSelectDisabledOver[4], propSelectDisabledPressed[4];
@@ -378,21 +517,46 @@ namespace TES3 {
 			return static_cast<WidgetTextSelect*>(element);
 		}
 
+		const WidgetTextSelect* WidgetTextSelect::fromElement(const Element* element) {
+			static bool initialized = initProperties();
+			return static_cast<const WidgetTextSelect*>(element);
+		}
+
 		int WidgetTextSelect::getState() const {
 			return getProperty(PropertyType::Integer, propSelectState).integerValue;
 		}
+
 		void WidgetTextSelect::setState(int state) {
 			setProperty(propSelectState, state);
+			TES3_ui_updateTextSelectColorForState(this);
 		}
 
-		void WidgetTextSelect::setColourIdle(const float(&c)[3]) { setColourProperty(*this, propSelectIdle, c); }
-		void WidgetTextSelect::setColourOver(const float(&c)[3]) { setColourProperty(*this, propSelectOver, c); }
-		void WidgetTextSelect::setColourPressed(const float(&c)[3]) { setColourProperty(*this, propSelectPressed, c); }
-		void WidgetTextSelect::setColourDisabled(const float(&c)[3]) { setColourProperty(*this, propSelectDisabled, c); }
-		void WidgetTextSelect::setColourDisabledOver(const float(&c)[3]) { setColourProperty(*this, propSelectDisabledOver, c); }
-		void WidgetTextSelect::setColourDisabledPressed(const float(&c)[3]) { setColourProperty(*this, propSelectDisabledPressed, c); }
-		void WidgetTextSelect::setColourActive(const float(&c)[3]) { setColourProperty(*this, propSelectActive, c); }
-		void WidgetTextSelect::setColourActiveOver(const float(&c)[3]) { setColourProperty(*this, propSelectActiveOver, c); }
-		void WidgetTextSelect::setColourActivePressed(const float(&c)[3]) { setColourProperty(*this, propSelectActivePressed, c); }
+		sol::table WidgetTextSelect::getColourIdle_lua(sol::this_state ts) { return getColourProperty(*this, propSelectIdle, ts); }
+		void WidgetTextSelect::setColourIdle(const float(&c)[3]) { setColourProperty(*this, propSelectIdle, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourIdle_lua(sol::table c) { setColourProperty(*this, propSelectIdle, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourOver_lua(sol::this_state ts) { return getColourProperty(*this, propSelectOver, ts); }
+		void WidgetTextSelect::setColourOver(const float(&c)[3]) { setColourProperty(*this, propSelectOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourOver_lua(sol::table c) { setColourProperty(*this, propSelectOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourPressed_lua(sol::this_state ts) { return getColourProperty(*this, propSelectPressed, ts); }
+		void WidgetTextSelect::setColourPressed(const float(&c)[3]) { setColourProperty(*this, propSelectPressed, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourPressed_lua(sol::table c) { setColourProperty(*this, propSelectPressed, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourDisabled_lua(sol::this_state ts) { return getColourProperty(*this, propSelectDisabled, ts); }
+		void WidgetTextSelect::setColourDisabled(const float(&c)[3]) { setColourProperty(*this, propSelectDisabled, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourDisabled_lua(sol::table c) { setColourProperty(*this, propSelectDisabled, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourDisabledOver_lua(sol::this_state ts) { return getColourProperty(*this, propSelectDisabledOver, ts); }
+		void WidgetTextSelect::setColourDisabledOver(const float(&c)[3]) { setColourProperty(*this, propSelectDisabledOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourDisabledOver_lua(sol::table c) { setColourProperty(*this, propSelectDisabledOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourDisabledPressed_lua(sol::this_state ts) { return getColourProperty(*this, propSelectDisabledPressed, ts); }
+		void WidgetTextSelect::setColourDisabledPressed(const float(&c)[3]) { setColourProperty(*this, propSelectDisabledPressed, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourDisabledPressed_lua(sol::table c) { setColourProperty(*this, propSelectDisabledPressed, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourActive_lua(sol::this_state ts) { return getColourProperty(*this, propSelectActive, ts); }
+		void WidgetTextSelect::setColourActive(const float(&c)[3]) { setColourProperty(*this, propSelectActive, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourActive_lua(sol::table c) { setColourProperty(*this, propSelectActive, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourActiveOver_lua(sol::this_state ts) { return getColourProperty(*this, propSelectActiveOver, ts); }
+		void WidgetTextSelect::setColourActiveOver(const float(&c)[3]) { setColourProperty(*this, propSelectActiveOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourActiveOver_lua(sol::table c) { setColourProperty(*this, propSelectActiveOver, c); TES3_ui_updateTextSelectColorForState(this); }
+		sol::table WidgetTextSelect::getColourActivePressed_lua(sol::this_state ts) { return getColourProperty(*this, propSelectActivePressed, ts); }
+		void WidgetTextSelect::setColourActivePressed(const float(&c)[3]) { setColourProperty(*this, propSelectActivePressed, c); TES3_ui_updateTextSelectColorForState(this); }
+		void WidgetTextSelect::setColourActivePressed_lua(sol::table c) { setColourProperty(*this, propSelectActivePressed, c); TES3_ui_updateTextSelectColorForState(this); }
 	}
 }

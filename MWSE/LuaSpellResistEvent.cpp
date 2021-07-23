@@ -26,12 +26,12 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["caster"] = makeLuaObject(m_MagicSourceInstance->caster);
-				eventData["target"] = makeLuaObject(m_EffectInstance->target);
+				eventData["caster"] = m_MagicSourceInstance->caster;
+				eventData["target"] = m_EffectInstance->target;
 				eventData["resistedPercent"] = m_EffectInstance->resistedPercent;
 
-				eventData["source"] = makeLuaObject(m_MagicSourceInstance->sourceCombo.source.asGeneric);
-				eventData["sourceInstance"] = makeLuaObject(m_MagicSourceInstance);
+				eventData["source"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
+				eventData["sourceInstance"] = m_MagicSourceInstance;
 				eventData["effectIndex"] = m_EffectIndex;
 				eventData["effectInstance"] = m_EffectInstance;
 				eventData["resistAttribute"] = m_ResistAttribute;
@@ -55,7 +55,7 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table options = state.create_table();
 
-				options["filter"] = makeLuaObject(m_MagicSourceInstance->sourceCombo.source.asGeneric);
+				options["filter"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
 
 				return options;
 			}

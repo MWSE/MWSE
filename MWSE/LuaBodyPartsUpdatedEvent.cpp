@@ -21,8 +21,8 @@ namespace mwse {
 				auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 				sol::table eventData = stateHandle.state.create_table();
 
-				eventData["reference"] = makeLuaObject(m_Reference);
-				eventData["mobile"] = makeLuaObject(m_MobileActor);
+				eventData["reference"] = m_Reference;
+				eventData["mobile"] = m_MobileActor;
 
 				return eventData;
 			}

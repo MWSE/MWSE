@@ -1,47 +1,6 @@
-//Tes3Machine.cpp
-//#include <conio.h>
-
 #include "MgeTes3Machine.h"
+
 #include "mwseString.h"
-//#include "TES3MEMMAP.h"
-//#include "BUFSPACE.h"
-//#include "PROCESSMEM.h"
-//#include "DEBUGGING.h"
-//#include "cLog.h"
-
-#include <algorithm>
-#include <random>
-using namespace std;
-
-//#include "TES3OPCODES.h"
-
-//#include "INSTFLOAT.h"
-//#include "INSTINT.h"
-//#include "INSTJUMP.h"
-//#include "INSTNOP.h"
-//#include "INSTPOP.h"
-//#include "INSTPUSH.h"
-
-//#include "cInstCall.h"
-//#include "cInstCallShort.h"
-//#include "cInstReturn.h"
-//#include "cInstReturnP.h"
-//#include "cInstReturnVP.h"
-
-//#include "cInstCopyReg.h"
-//#include "cInstCopyFromStack.h"
-//#include "cInstCopyToStack.h"
-
-/*#ifdef DEBUG
-#include <stdio.h>
-#ifndef NELEMS
-#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
-#endif
-#endif*/
-// 22-08-2006 Tp21
-//#include "warnings.h"
-
-#include <ctime>
 
 #include "mwseString.h"
 #include "mwOffsets.h"

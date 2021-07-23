@@ -17,26 +17,21 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::UI::InventoryTile>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::UI::InventoryTile>("tes3inventoryTile");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Functions exposed as properties.
-			usertypeDefinition.set("count", sol::readonly_property(&TES3::UI::InventoryTile::count));
-			usertypeDefinition.set("element", sol::readonly_property(&TES3::UI::InventoryTile::element));
-			usertypeDefinition.set("flags", sol::readonly_property(&TES3::UI::InventoryTile::flags));
-			usertypeDefinition.set("isBoundItem", sol::readonly_property(&TES3::UI::InventoryTile::isBoundItem));
-			usertypeDefinition.set("itemData", sol::readonly_property(&TES3::UI::InventoryTile::itemData));
-			usertypeDefinition.set("type", sol::readonly_property(&TES3::UI::InventoryTile::tileType));
-
-			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("item", sol::readonly_property([](TES3::UI::InventoryTile& self) { return makeLuaObject(self.item); }));
+			usertypeDefinition["count"] = sol::readonly_property(&TES3::UI::InventoryTile::count);
+			usertypeDefinition["element"] = sol::readonly_property(&TES3::UI::InventoryTile::element);
+			usertypeDefinition["flags"] = sol::readonly_property(&TES3::UI::InventoryTile::flags);
+			usertypeDefinition["isBoundItem"] = sol::readonly_property(&TES3::UI::InventoryTile::isBoundItem);
+			usertypeDefinition["item"] = sol::readonly_property(&TES3::UI::InventoryTile::item);
+			usertypeDefinition["itemData"] = sol::readonly_property(&TES3::UI::InventoryTile::itemData);
+			usertypeDefinition["type"] = sol::readonly_property(&TES3::UI::InventoryTile::tileType);
 
 			// Access into flags.
-			usertypeDefinition.set("isBartered", sol::readonly_property([](TES3::UI::InventoryTile& self) { return self.getFlag(TES3::UI::InventoryTileFlag::Bartered); }));
-			usertypeDefinition.set("isEquipped", sol::readonly_property([](TES3::UI::InventoryTile& self) { return self.getFlag(TES3::UI::InventoryTileFlag::Equipped); }));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3inventoryTile", usertypeDefinition);
+			usertypeDefinition["isBartered"] = sol::property(&TES3::UI::InventoryTile::getIsBartered, &TES3::UI::InventoryTile::setIsBartered);
+			usertypeDefinition["isEquipped"] = sol::property(&TES3::UI::InventoryTile::getIsEquipped, &TES3::UI::InventoryTile::setIsEquipped);
 		}
 	}
 }

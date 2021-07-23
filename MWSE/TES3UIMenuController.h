@@ -7,13 +7,40 @@
 namespace TES3 {
 	namespace UI {
 		struct MenuInputController {
-			NI::Pick pick;
-			char unknown_0x38[0x50];
-			Element* textInputFocus;
+			NI::Pick pick; // 0x0
+			MenuController* menuController; // 0x4
+			Element* unknown_0x3C;
+			Element* unknown_0x40;
+			Element* unknown_0x44;
+			Element* unknown_0x48;
+			int unknown_0x4C;
+			int unknown_0x50;
+			int unknown_0x54;
+			char unknown_0x58;
+			char unknown_0x59;
+			int unknown_0x5C;
+			float lastInputTime; // 0x60
+			int unknown_0x64;
+			int unknown_0x68;
+			int unknown_0x6C;
+			Element* unknown_0x70;
+			int unknown_0x74;
+			int unknown_0x78;
+			int unknown_0x7C;
+			Element* unknown_0x80;
+			char unknown_0x84;
+			Element* textInputFocus; // 0x88
 			char unknown_0x8C[0x20];
 
+			Element* getTextInputElement();
 			void acquireTextInput(Element* element);
 			void displayObjectTooltip(TES3::Object * object, TES3::ItemData * itemData, int count = 0);
+
+			//
+			// Other related this-call functions.
+			//
+
+			void flushBufferedTextEvents();
 
 			//
 			// Custom functions.
@@ -22,6 +49,7 @@ namespace TES3 {
 			void updateObjectTooltip();
 		};
 		static_assert(sizeof(MenuInputController) == 0xAC, "TES3::UI::MenuInputController failed size validation");
+		static_assert(offsetof(MenuInputController, textInputFocus) == 0x88, "TES3::UI::MenuInputController::textInputFocus failed offset validation");
 
 		struct FontColor {
 			int r;
@@ -105,7 +133,7 @@ namespace TES3 {
 			char unknown_0x38;
 			char unknown_0x39;
 			char padding_0x3A[2];
-			short unknown_0x3C;
+			UI_ID unknown_0x3C;
 			FontColor fontColors[FontColorId::MAX_ID + 1];
 			int unknown_0x28C;
 			int unknown_0x290;
@@ -131,6 +159,8 @@ namespace TES3 {
 			bool getMagicMenuEnabled();
 			bool getMapMenuEnabled();
 			bool getStatsMenuEnabled();
+
+			std::reference_wrapper<FontColor[FontColorId::MAX_ID + 1]> getFontColors();
 
 		};
 		static_assert(sizeof(MenuController) == 0x2A4, "TES3::UI::MenuController failed size validation");

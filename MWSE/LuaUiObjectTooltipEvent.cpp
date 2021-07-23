@@ -27,13 +27,13 @@ namespace mwse {
 
 				// If the object is a reference, expose its base object and the reference.
 				if (m_Object->objectType == TES3::ObjectType::Reference) {
-					eventData["object"] = makeLuaObject(static_cast<TES3::Reference*>(m_Object)->baseObject);
-					eventData["reference"] = makeLuaObject(m_Object);
+					eventData["object"] = static_cast<TES3::Reference*>(m_Object)->baseObject;
+					eventData["reference"] = m_Object;
 					eventData["itemData"] = static_cast<TES3::Reference*>(m_Object)->getAttachedItemData();
 				}
 				// Otherwise just expose the object.
 				else {
-					eventData["object"] = makeLuaObject(m_Object);
+					eventData["object"] = m_Object;
 					eventData["itemData"] = m_ItemData;
 				}
 

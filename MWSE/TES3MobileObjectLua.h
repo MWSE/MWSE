@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sol.hpp"
-
 #include "LuaUtil.h"
 
 #include "TES3Reference.h"
@@ -9,24 +7,28 @@
 namespace mwse {
 	namespace lua {
 		template <typename T>
-		void setUserdataForMobileObject(sol::simple_usertype<T>& usertypeDefinition) {
+		void setUserdataForTES3MobileObject(sol::usertype<T>& usertypeDefinition) {
 			// Basic property binding.
-			usertypeDefinition.set("objectType", sol::readonly_property(&TES3::MobileObject::objectType));
-			usertypeDefinition.set("flags", sol::readonly_property(&TES3::MobileObject::actorFlags));
-			usertypeDefinition.set("boundSize", sol::readonly_property(&TES3::MobileObject::boundSize));
-			usertypeDefinition.set("cellX", sol::readonly_property(&TES3::MobileObject::cellX));
-			usertypeDefinition.set("cellY", sol::readonly_property(&TES3::MobileObject::cellY));
-			usertypeDefinition.set("height", sol::readonly_property(&TES3::MobileObject::height));
-			usertypeDefinition.set("movementFlags", sol::readonly_property(&TES3::MobileObject::movementFlags));
-			usertypeDefinition.set("prevMovementFlags", sol::readonly_property(&TES3::MobileObject::prevMovementFlags));
+			usertypeDefinition["objectType"] = sol::readonly_property(&TES3::MobileObject::objectType);
+			usertypeDefinition["flags"] = sol::readonly_property(&TES3::MobileObject::actorFlags);
+			usertypeDefinition["cellX"] = sol::readonly_property(&TES3::MobileObject::cellX);
+			usertypeDefinition["cellY"] = sol::readonly_property(&TES3::MobileObject::cellY);
+			usertypeDefinition["collisionData"] = sol::readonly_property(&TES3::MobileObject::getCollisions_lua);
+			usertypeDefinition["height"] = sol::readonly_property(&TES3::MobileObject::height);
+			usertypeDefinition["inventory"] = sol::readonly_property(&TES3::MobileObject::getInventory);
+			usertypeDefinition["movementFlags"] = sol::readonly_property(&TES3::MobileObject::movementFlags);
+			usertypeDefinition["playerDistance"] = sol::readonly_property(&TES3::MobileObject::simulationDistance);
+			usertypeDefinition["prevMovementFlags"] = sol::readonly_property(&TES3::MobileObject::prevMovementFlags);
+			usertypeDefinition["reference"] = sol::readonly_property(&TES3::MobileObject::reference);
 
 			// Vectors we want to handle differently, and allow table aliasing.
-			usertypeDefinition.set("impulseVelocity", sol::property([](TES3::MobileObject& self) { return &self.impulseVelocity; }, &TES3::MobileObject::setImpulseVelocityFromLua));
-			usertypeDefinition.set("position", sol::property([](TES3::MobileObject& self) { return &self.position; }, &TES3::MobileObject::setPositionFromLua));
-			usertypeDefinition.set("velocity", sol::property([](TES3::MobileObject& self) { return &self.velocity; }, &TES3::MobileObject::setVelocityFromLua));
+			usertypeDefinition["boundSize"] = sol::readonly_property(&TES3::MobileObject::getBoundSize);
+			usertypeDefinition["impulseVelocity"] = sol::property(&TES3::MobileObject::getImpulseVelocity, &TES3::MobileObject::setImpulseVelocityFromLua);
+			usertypeDefinition["position"] = sol::property(&TES3::MobileObject::getPosition, &TES3::MobileObject::setPositionFromLua);
+			usertypeDefinition["velocity"] = sol::property(&TES3::MobileObject::getVelocity, &TES3::MobileObject::setVelocityFromLua);
 
-			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("reference", sol::readonly_property([](TES3::MobileObject& self) { return makeLuaObject(self.reference); }));
+			// Custom property bindings.
+			usertypeDefinition["movementCollision"] = sol::property(&TES3::MobileObject::getMovementCollisionFlag, &TES3::MobileObject::setMovementCollisionFlag);
 		}
 	}
 }

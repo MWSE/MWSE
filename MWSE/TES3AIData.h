@@ -9,9 +9,8 @@ namespace TES3 {
 		MobileActor * mobileActor; // 0x4
 		int counter_0x8;
 		AIPackage * packages[32]; // 0xC
-		short indexActivePackage; // 0x8C
-		short pad_8E; // 0x8E
-		int countPackages; // 0x90
+		int nextOpenPackageIndex; // 0x8C
+		int currentPackageIndex; // 0x90
 		float unknown_0x94;
 
 		//
@@ -19,6 +18,17 @@ namespace TES3 {
 		//
 
 		AIPackage * getActivePackage();
+
+		bool allowRestingNear();
+
+		void assignMobileActor(MobileActor* mobile);
+
+		//
+		// Custom functions.
+		//
+
+		std::reference_wrapper<AIPackage* [32]> getPackages();
+
 	};
 	static_assert(sizeof(AIPlanner) == 0x98, "TES3::AIPlanner failed size validation");
 }

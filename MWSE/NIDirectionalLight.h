@@ -10,3 +10,5 @@ namespace NI {
 	};
 	static_assert(sizeof(DirectionalLight) == 0xDC, "NI::DirectionalLight failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::DirectionalLight)

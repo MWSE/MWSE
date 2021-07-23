@@ -1,6 +1,5 @@
 #include "TES3MoonLua.h"
 
-#include "sol.hpp"
 #include "LuaManager.h"
 
 #include "TES3Moon.h"
@@ -14,30 +13,27 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::Moon>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::Moon>("tes3moon");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
-			usertypeDefinition.set("axisOffset", &TES3::Moon::axisOffset);
-			usertypeDefinition.set("dailyIncrement", &TES3::Moon::dailyIncrement);
-			usertypeDefinition.set("fadeEndAngle", &TES3::Moon::fadeEndAngle);
-			usertypeDefinition.set("fadeInFinish", &TES3::Moon::fadeInFinish);
-			usertypeDefinition.set("fadeInStart", &TES3::Moon::fadeInStart);
-			usertypeDefinition.set("fadeOutFinish", &TES3::Moon::fadeOutFinish);
-			usertypeDefinition.set("fadeOutStart", &TES3::Moon::fadeOutStart);
-			usertypeDefinition.set("fadeStartAngle", &TES3::Moon::fadeStartAngle);
-			usertypeDefinition.set("index", sol::readonly_property(&TES3::Moon::index));
-			usertypeDefinition.set("isRed", &TES3::Moon::moonIsRed);
-			usertypeDefinition.set("phase", &TES3::Moon::phase);
-			usertypeDefinition.set("shadowEarlyFadeAngle", &TES3::Moon::shadowEarlyFadeAngle);
-			usertypeDefinition.set("speed", &TES3::Moon::speed);
-			usertypeDefinition.set("weatherController", sol::readonly_property(&TES3::Moon::weatherController));
+			usertypeDefinition["axisOffset"] = &TES3::Moon::axisOffset;
+			usertypeDefinition["dailyIncrement"] = &TES3::Moon::dailyIncrement;
+			usertypeDefinition["fadeEndAngle"] = &TES3::Moon::fadeEndAngle;
+			usertypeDefinition["fadeInFinish"] = &TES3::Moon::fadeInFinish;
+			usertypeDefinition["fadeInStart"] = &TES3::Moon::fadeInStart;
+			usertypeDefinition["fadeOutFinish"] = &TES3::Moon::fadeOutFinish;
+			usertypeDefinition["fadeOutStart"] = &TES3::Moon::fadeOutStart;
+			usertypeDefinition["fadeStartAngle"] = &TES3::Moon::fadeStartAngle;
+			usertypeDefinition["index"] = sol::readonly_property(&TES3::Moon::index);
+			usertypeDefinition["isRed"] = &TES3::Moon::moonIsRed;
+			usertypeDefinition["phase"] = &TES3::Moon::phase;
+			usertypeDefinition["shadowEarlyFadeAngle"] = &TES3::Moon::shadowEarlyFadeAngle;
+			usertypeDefinition["speed"] = &TES3::Moon::speed;
+			usertypeDefinition["weatherController"] = sol::readonly_property(&TES3::Moon::weatherController);
 
 			// Functions exposed as properties.
-			usertypeDefinition.set("texture", sol::readonly_property([](TES3::Moon& self) -> const char* { return self.texturePath; }));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3moon", usertypeDefinition);
+			usertypeDefinition["texture"] = sol::property(&TES3::Moon::getTexturePath, &TES3::Moon::setTexturePath);
 		}
 	}
 }

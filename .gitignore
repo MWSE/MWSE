@@ -41,3 +41,5 @@ build/dist/
 /MWSE/BuildDate.h
 /misc/package/Data Files/MWSE/.luacheckrc
 /misc/package/Data Files/MWSE/.luacompleterc
+/packages/
+misc/package/Data Files/MWSE/core/lpeg.dll

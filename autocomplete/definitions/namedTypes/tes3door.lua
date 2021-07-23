@@ -1,5 +1,5 @@
 return {
 	type = "class",
-	description = [[An door game object.]],
+	description = [[A door game object.]],
 	inherits = "tes3physicalObject",
 }

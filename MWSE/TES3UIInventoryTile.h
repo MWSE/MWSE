@@ -2,9 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
-
-#include "Bitset.h"
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	namespace UI {
@@ -38,17 +36,28 @@ namespace TES3 {
 		struct InventoryTile {
 			Item * item; // 0x0
 			ItemData * itemData; // 0x4
-			Iterator<InventoryTile_Struct0x8> * unknown_0x8;
+			IteratedList<InventoryTile_Struct0x8*> * unknown_0x8;
 			int count; // 0xC
 			Element * element; // 0x10
 			char unknown_0x14;
 			char padding_0x15[3];
-			mwse::bitset32 flags; // 0x18
+			unsigned int flags; // 0x18
 			char itemId[32]; // 0x1C
 			unsigned int tileType; // 0x3C
 			bool isBoundItem; // 0x40
 
-			bool getFlag(unsigned int flag);
+			//
+			// Custom functions.
+			//
+
+			bool getFlag(unsigned int flag) const;
+			void setFlag(unsigned int flag, bool value);
+
+			bool getIsBartered() const;
+			void setIsBartered(bool value);
+
+			bool getIsEquipped() const;
+			void setIsEquipped(bool value);
 
 		};
 		static_assert(sizeof(InventoryTile) == 0x44, "TES3::UI::InventoryTile failed size validation");

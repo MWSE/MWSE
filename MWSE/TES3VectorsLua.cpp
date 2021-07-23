@@ -1,13 +1,10 @@
 #include "TES3Vectors.h"
 
-#include "sol.hpp"
 #include "LuaManager.h"
 
 #include "TES3Vectors.h"
 
 #include "NIColor.h"
-
-#include <iomanip>
 
 namespace mwse {
 	namespace lua {
@@ -19,210 +16,232 @@ namespace mwse {
 			// Binding for TES3::Range<int>.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Range<int>>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Range<int>>("tes3rangeInt");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property bindings.
-				usertypeDefinition.set("min", &TES3::Range<int>::min);
-				usertypeDefinition.set("max", &TES3::Range<int>::max);
-
-				// Finish up our usertype.
-				state.set_usertype("tes3rangeInt", usertypeDefinition);
+				usertypeDefinition["min"] = &TES3::Range<int>::min;
+				usertypeDefinition["max"] = &TES3::Range<int>::max;
 			}
 
 			// Binding for TES3::Vector2.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Vector2>();
-				usertypeDefinition.set("new", sol::constructors<TES3::Vector2(), TES3::Vector2(float, float)>());
+				auto usertypeDefinition = state.new_usertype<TES3::Vector2>("tes3vector2");
+				usertypeDefinition["new"] = sol::constructors<TES3::Vector2(), TES3::Vector2(float, float)>();
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Vector2::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Vector2::operator-;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Vector2(const TES3::Vector2&) const>(&TES3::Vector2::operator*),
+					sol::resolve<TES3::Vector2(const float) const>(&TES3::Vector2::operator*)
+				);
+				usertypeDefinition[sol::meta_function::length] = &TES3::Vector2::length;
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Vector2::toString;
+
+				// Allow objects to be serialized to json using their ID.
+				usertypeDefinition["__tojson"] = &TES3::Vector2::toJson;
 
 				// Basic property bindings.
-				usertypeDefinition.set("x", &TES3::Vector2::x);
-				usertypeDefinition.set("y", &TES3::Vector2::y);
+				usertypeDefinition["x"] = &TES3::Vector2::x;
+				usertypeDefinition["y"] = &TES3::Vector2::y;
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::Vector2& self) { return TES3::Vector2(self); });
-
-				// Finish up our usertype.
-				state.set_usertype("tes3vector2", usertypeDefinition);
+				usertypeDefinition["copy"] = &TES3::Vector2::copy;
+				usertypeDefinition["length"] = &TES3::Vector2::length;
 			}
 
 			// Binding for TES3::Vector3.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Vector3>();
-				usertypeDefinition.set("new", sol::constructors<TES3::Vector3(), TES3::Vector3(float, float, float)>());
+				auto usertypeDefinition = state.new_usertype<TES3::Vector3>("tes3vector3");
+				usertypeDefinition["new"] = sol::constructors<TES3::Vector3(), TES3::Vector3(float, float, float)>();
 
 				// Operator overloading.
-				usertypeDefinition.set(sol::meta_function::addition, &TES3::Vector3::operator+);
-				usertypeDefinition.set(sol::meta_function::subtraction, &TES3::Vector3::operator-);
-				usertypeDefinition.set(sol::meta_function::multiplication, sol::overload(
-					sol::resolve<TES3::Vector3(const TES3::Vector3&)>(&TES3::Vector3::operator*),
-					sol::resolve<TES3::Vector3(const float)>(&TES3::Vector3::operator*)
-				));
-				usertypeDefinition.set(sol::meta_function::length, &TES3::Vector3::length);
-				usertypeDefinition.set(sol::meta_function::to_string, [](TES3::Vector3& self) {
-					std::ostringstream ss;
-					ss << std::fixed << std::setprecision(2) << "<" << self.x << ", " << self.y << ", " << self.z << ">";
-					return ss.str();
-				});
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Vector3::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Vector3::operator-;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::Vector3::operator*),
+					sol::resolve<TES3::Vector3(const float) const>(&TES3::Vector3::operator*)
+				);
+				usertypeDefinition[sol::meta_function::length] = &TES3::Vector3::length;
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Vector3::toString;
 
 				// Allow objects to be serialized to json using their ID.
-				usertypeDefinition.set("__tojson", [](TES3::Vector3& self, sol::table jsonState) {
-					std::ostringstream ss;
-					ss << "[\"x\":" << self.x << ",\"y\":" << self.y << ",\"z\":" << self.z << "]";
-					return ss.str();
-				});
+				usertypeDefinition["__tojson"] = &TES3::Vector3::toJson;
 
 				// Basic property bindings.
-				usertypeDefinition.set("x", &TES3::Vector3::x);
-				usertypeDefinition.set("y", &TES3::Vector3::y);
-				usertypeDefinition.set("z", &TES3::Vector3::z);
+				usertypeDefinition["x"] = &TES3::Vector3::x;
+				usertypeDefinition["y"] = &TES3::Vector3::y;
+				usertypeDefinition["z"] = &TES3::Vector3::z;
 
 				// These can also be used for RGB.
-				usertypeDefinition.set("r", &TES3::Vector3::x);
-				usertypeDefinition.set("g", &TES3::Vector3::y);
-				usertypeDefinition.set("b", &TES3::Vector3::z);
+				usertypeDefinition["r"] = &TES3::Vector3::x;
+				usertypeDefinition["g"] = &TES3::Vector3::y;
+				usertypeDefinition["b"] = &TES3::Vector3::z;
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::Vector3& self) { return TES3::Vector3(self); });
-				usertypeDefinition.set("cross", &TES3::Vector3::crossProduct);
-				usertypeDefinition.set("distance", &TES3::Vector3::distance);
-				usertypeDefinition.set("dot", &TES3::Vector3::dotProduct);
-				usertypeDefinition.set("outerProduct", &TES3::Vector3::outerProduct);
-				usertypeDefinition.set("heightDifference", &TES3::Vector3::heightDifference);
-				usertypeDefinition.set("length", &TES3::Vector3::length);
-				usertypeDefinition.set("negate", &TES3::Vector3::negate);
-				usertypeDefinition.set("normalize", &TES3::Vector3::normalize);
-				usertypeDefinition.set("normalized", &TES3::Vector3::normalized);
+				usertypeDefinition["angle"] = &TES3::Vector3::angle;
+				usertypeDefinition["copy"] = &TES3::Vector3::copy;
+				usertypeDefinition["cross"] = &TES3::Vector3::crossProduct;
+				usertypeDefinition["distance"] = &TES3::Vector3::distance;
+				usertypeDefinition["dot"] = &TES3::Vector3::dotProduct;
+				usertypeDefinition["outerProduct"] = &TES3::Vector3::outerProduct;
+				usertypeDefinition["heightDifference"] = &TES3::Vector3::heightDifference;
+				usertypeDefinition["length"] = &TES3::Vector3::length;
+				usertypeDefinition["lerp"] = &TES3::Vector3::lerp;
+				usertypeDefinition["negate"] = &TES3::Vector3::negate;
+				usertypeDefinition["normalize"] = &TES3::Vector3::normalize;
+				usertypeDefinition["normalized"] = &TES3::Vector3::normalized;
+				usertypeDefinition["interpolate"] = &TES3::Vector3::interpolate;
 
 				// Conversion to NI::Color.
-				usertypeDefinition.set("toColor", [](TES3::Vector3& self) { return NI::Color(self.x, self.y, self.z); });
-
-				// Finish up our usertype.
-				state.set_usertype("tes3vector3", usertypeDefinition);
+				usertypeDefinition["toColor"] = &TES3::Vector3::toNiColor;
 			}
 
 			// Binding for TES3::Vector4.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Vector4>();
-				usertypeDefinition.set("new", sol::constructors<TES3::Vector4(), TES3::Vector4(float, float, float, float)>());
+				auto usertypeDefinition = state.new_usertype<TES3::Vector4>("tes3vector4");
+				usertypeDefinition["new"] = sol::constructors<TES3::Vector4(), TES3::Vector4(float, float, float, float)>();
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Vector4::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Vector4::operator-;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Vector4(const TES3::Vector4&) const>(&TES3::Vector4::operator*),
+					sol::resolve<TES3::Vector4(const float) const>(&TES3::Vector4::operator*)
+				);
+				usertypeDefinition[sol::meta_function::length] = &TES3::Vector4::length;
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Vector4::toString;
+				usertypeDefinition["__tojson"] = &TES3::Vector4::toJson;
 
 				// Basic property bindings.
-				usertypeDefinition.set("x", &TES3::Vector4::x);
-				usertypeDefinition.set("y", &TES3::Vector4::y);
-				usertypeDefinition.set("z", &TES3::Vector4::z);
-				usertypeDefinition.set("w", &TES3::Vector4::w);
+				usertypeDefinition["w"] = &TES3::Vector4::w;
+				usertypeDefinition["x"] = &TES3::Vector4::x;
+				usertypeDefinition["y"] = &TES3::Vector4::y;
+				usertypeDefinition["z"] = &TES3::Vector4::z;
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::Vector4& self) { return TES3::Vector4(self); });
-
-				// Finish up our usertype.
-				state.set_usertype("tes3vector4", usertypeDefinition);
+				usertypeDefinition["copy"] = &TES3::Vector4::copy;
+				usertypeDefinition["length"] = &TES3::Vector4::length;
 			}
 
 			// Binding for TES3::BoundingBox.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::BoundingBox>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::BoundingBox>("tes3boundingBox");
+				usertypeDefinition["new"] = sol::no_constructor;
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::BoundingBox::toString;
+
+				// Allow objects to be serialized to json using their ID.
+				usertypeDefinition["__tojson"] = &TES3::BoundingBox::toJson;
 
 				// Basic property bindings.
-				usertypeDefinition.set("max", &TES3::BoundingBox::maximum);
-				usertypeDefinition.set("min", &TES3::BoundingBox::minimum);
+				usertypeDefinition["max"] = &TES3::BoundingBox::maximum;
+				usertypeDefinition["min"] = &TES3::BoundingBox::minimum;
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::BoundingBox& self) { return TES3::BoundingBox(self); });
-
-				// Finish up our usertype.
-				state.set_usertype("tes3boundingBox", usertypeDefinition);
+				usertypeDefinition["copy"] = &TES3::BoundingBox::copy;
 			}
 
 			// Binding for TES3::Matrix33.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Matrix33>();
-				usertypeDefinition.set("new", sol::constructors<
+				auto usertypeDefinition = state.new_usertype<TES3::Matrix33>("tes3matrix33");
+				usertypeDefinition["new"] = sol::constructors<
 						TES3::Matrix33(), 
 						TES3::Matrix33(TES3::Vector3*, TES3::Vector3*, TES3::Vector3*),
 						TES3::Matrix33(float, float, float, float, float, float, float, float, float)
-				>());
+				>();
 
 				// Operator overloading.
-				usertypeDefinition.set(sol::meta_function::addition, &TES3::Matrix33::operator+);
-				usertypeDefinition.set(sol::meta_function::subtraction, &TES3::Matrix33::operator-);
-				usertypeDefinition.set(sol::meta_function::equal_to, &TES3::Matrix33::operator==);
-				usertypeDefinition.set(sol::meta_function::multiplication, sol::overload(
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Matrix33::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Matrix33::operator-;
+				usertypeDefinition[sol::meta_function::equal_to] = &TES3::Matrix33::operator==;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
 					sol::resolve<TES3::Matrix33(const float)>(&TES3::Matrix33::operator*),
 					sol::resolve<TES3::Vector3(const TES3::Vector3&)>(&TES3::Matrix33::operator*),
 					sol::resolve<TES3::Matrix33(const TES3::Matrix33&)>(&TES3::Matrix33::operator*)
-				));
+				);
 
 				// Operator overloading.
-				usertypeDefinition.set(sol::meta_function::to_string, [](TES3::Matrix33& self) {
-					std::ostringstream ss;
-					ss << std::fixed << std::setprecision(2) << std::dec
-						<< "<<<" << self.m0.x << ", " << self.m0.y << ", " << self.m0.z << ">,\n"
-						<< "  <" << self.m1.x << ", " << self.m1.y << ", " << self.m1.z << ">,\n"
-						<< "  <" << self.m2.x << ", " << self.m2.y << ", " << self.m2.z << ">>>";
-					return ss.str();
-				});
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Matrix33::toString;
+				usertypeDefinition["__tojson"] = &TES3::Matrix33::toJson;
 
 				// Basic property bindings.
-				usertypeDefinition.set("x", sol::readonly_property([](TES3::Matrix33& self) { return self.m0; }));
-				usertypeDefinition.set("y", sol::readonly_property([](TES3::Matrix33& self) { return self.m1; }));
-				usertypeDefinition.set("z", sol::readonly_property([](TES3::Matrix33& self) { return self.m2; }));
+				usertypeDefinition["x"] = &TES3::Matrix33::m0;
+				usertypeDefinition["y"] = &TES3::Matrix33::m1;
+				usertypeDefinition["z"] = &TES3::Matrix33::m2;
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::Matrix33& self) { return TES3::Matrix33(self); });
-				usertypeDefinition.set("fromEulerXYZ", &TES3::Matrix33::fromEulerXYZ);
-				usertypeDefinition.set("reorthogonalize", &TES3::Matrix33::reorthogonalize);
-				usertypeDefinition.set("toIdentity", &TES3::Matrix33::toIdentity);
-				usertypeDefinition.set("toRotation", &TES3::Matrix33::toRotation);
-				usertypeDefinition.set("toRotationX", &TES3::Matrix33::toRotationX);
-				usertypeDefinition.set("toRotationY", &TES3::Matrix33::toRotationY);
-				usertypeDefinition.set("toRotationZ", &TES3::Matrix33::toRotationZ);
-				usertypeDefinition.set("toZero", &TES3::Matrix33::toZero);
-				usertypeDefinition.set("transpose", &TES3::Matrix33::transpose);
+				usertypeDefinition["copy"] = &TES3::Matrix33::copy;
+				usertypeDefinition["fromEulerXYZ"] = &TES3::Matrix33::fromEulerXYZ;
+				usertypeDefinition["reorthogonalize"] = &TES3::Matrix33::reorthogonalize;
+				usertypeDefinition["toIdentity"] = &TES3::Matrix33::toIdentity;
+				usertypeDefinition["toRotation"] = &TES3::Matrix33::toRotation;
+				usertypeDefinition["toRotationX"] = &TES3::Matrix33::toRotationX;
+				usertypeDefinition["toRotationY"] = &TES3::Matrix33::toRotationY;
+				usertypeDefinition["toRotationZ"] = &TES3::Matrix33::toRotationZ;
+				usertypeDefinition["toZero"] = &TES3::Matrix33::toZero;
+				usertypeDefinition["transpose"] = &TES3::Matrix33::transpose;
 
 				// Handle functions with out values.
-				usertypeDefinition.set("invert", [](TES3::Matrix33& self) {
-					TES3::Matrix33 matrix;
-					bool valid = self.invert(&matrix);
-					return std::make_tuple(matrix, valid);
-				});
-				usertypeDefinition.set("toEulerXYZ", [](TES3::Matrix33& self) {
-					float x, y, z;
-					bool isUnique = self.toEulerXYZ(&x, &y, &z);
-					return std::make_tuple(TES3::Vector3(x, y, z), isUnique);
-				});
-				usertypeDefinition.set("toEulerZYX", [](TES3::Matrix33& self) {
-					float x, y, z;
-					bool isUnique = self.toEulerZYX(&x, &y, &z);
-					return std::make_tuple(TES3::Vector3(x, y, z), isUnique);
-				});
+				usertypeDefinition["invert"] = &TES3::Matrix33::invert_lua;
+				usertypeDefinition["toEulerXYZ"] = &TES3::Matrix33::toEulerXYZ_lua;
+				usertypeDefinition["toEulerZYX"] = &TES3::Matrix33::toEulerZYX_lua;
+			}
 
-				// Finish up our usertype.
-				state.set_usertype("tes3matrix33", usertypeDefinition);
+			// Binding for TES3::Matrix44.
+			{
+				// Start our usertype. We must finish this with state.set_usertype.
+				auto usertypeDefinition = state.new_usertype<TES3::Matrix44>("tes3matrix44");
+				usertypeDefinition["new"] = sol::constructors<
+					TES3::Matrix44(),
+					TES3::Matrix44(const TES3::Vector4&, const TES3::Vector4&, const TES3::Vector4&, const TES3::Vector4&),
+					TES3::Matrix44(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)
+				>();
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::addition] = &TES3::Matrix44::operator+;
+				usertypeDefinition[sol::meta_function::subtraction] = &TES3::Matrix44::operator-;
+				usertypeDefinition[sol::meta_function::equal_to] = &TES3::Matrix44::operator==;
+				usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+					sol::resolve<TES3::Matrix44(const float)>(&TES3::Matrix44::operator*),
+					sol::resolve<TES3::Matrix44(const TES3::Matrix44&)>(&TES3::Matrix44::operator*)
+				);
+
+				// Operator overloading.
+				usertypeDefinition[sol::meta_function::to_string] = &TES3::Matrix44::toString;
+				usertypeDefinition["__tojson"] = &TES3::Matrix44::toJson;
+
+				// Basic property bindings.
+				usertypeDefinition["w"] = &TES3::Matrix44::m0;
+				usertypeDefinition["x"] = &TES3::Matrix44::m1;
+				usertypeDefinition["y"] = &TES3::Matrix44::m2;
+				usertypeDefinition["z"] = &TES3::Matrix44::m3;
+
+				// Basic function binding.
+				usertypeDefinition["copy"] = &TES3::Matrix44::copy;
+				usertypeDefinition["toZero"] = &TES3::Matrix44::toZero;
 			}
 
 			// Binding for TES3::Transform.
 			{
 				// Start our usertype. We must finish this with state.set_usertype.
-				auto usertypeDefinition = state.create_simple_usertype<TES3::Transform>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<TES3::Transform>("tes3transform");
+				usertypeDefinition["new"] = sol::no_constructor;
 
 				// Basic property bindings.
-				usertypeDefinition.set("rotation", sol::readonly_property([](TES3::Transform& self) { return self.rotation; }));
-				usertypeDefinition.set("translation", sol::readonly_property([](TES3::Transform& self) { return self.translation; }));
-				usertypeDefinition.set("scale", sol::readonly_property([](TES3::Transform& self) { return self.scale; }));
+				usertypeDefinition["rotation"] = sol::readonly_property(&TES3::Transform::rotation);
+				usertypeDefinition["translation"] = sol::readonly_property(&TES3::Transform::translation);
+				usertypeDefinition["scale"] = sol::readonly_property(&TES3::Transform::scale);
 
 				// Basic function binding.
-				usertypeDefinition.set("copy", [](TES3::Transform& self) { return TES3::Transform(self); });
-
-				// Finish up our usertype.
-				state.set_usertype("tes3transform", usertypeDefinition);
+				usertypeDefinition["copy"] = &TES3::Transform::copy;
 			}
 		}
 	}

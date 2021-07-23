@@ -2,23 +2,20 @@
 
 #include "NINode.h"
 
+#include "BitUtil.h"
+
 namespace NI {
 	struct CollisionSwitch : Node {
-		static const unsigned short flagCollision = 0x20;
-		static const size_t flagCollisionBit = 5;
+		static constexpr unsigned short flagCollision = 0x20;
 
-		CollisionSwitch() {
-			vTable.asNode = reinterpret_cast<NI::Node_vTable*>(0x74F418);
-			flags.set(flagCollisionBit, true);
-		}
+		CollisionSwitch();
 
-		bool getCollisionActive() {
-			return flags.test(flagCollisionBit);
-		}
+		bool getCollisionActive();
+		void setCollisionActive(bool active);
 
-		void setCollisionActive(bool active) {
-			flags.set(flagCollisionBit, active);
-		}
+		static Pointer<CollisionSwitch> create();
 	};
 	static_assert(sizeof(CollisionSwitch) == 0xB0, "NI::CollisionSwitch failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::CollisionSwitch)

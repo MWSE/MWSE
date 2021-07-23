@@ -6,59 +6,71 @@ A game structure that keeps track of a magic source on an object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `castChanceOverride`_ (`number`_)
     No description available.
 
 `caster`_ (`tes3reference`_)
-    No description available.
+    Read-only. No description available.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `item`_ (`tes3item`_)
-    No description available.
+    Read-only. No description available.
 
 `itemData`_ (`tes3itemData`_)
-    No description available.
+    Read-only. No description available.
 
 `itemID`_ (`string`_)
-    No description available.
+    Read-only. No description available.
 
 `magicID`_ (`string`_)
-    No description available.
+    Read-only. No description available.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `projectile`_ (`tes3mobileProjectile`_)
-    No description available.
+    Read-only. No description available.
 
 `source`_ (`tes3alchemy`_, `tes3enchantment`_, `tes3spell`_)
-    No description available.
+    Read-only. No description available.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
 
 `sourceType`_ (`number`_)
-    Shows if the source is a spell, enchantment, or alchemy.
+    Read-only. Shows if the source is a spell, enchantment, or alchemy.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `state`_ (`number`_)
     Shows if the state is pre-cast, cast, beginning, working, ending, retired, etc.
 
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
+
 `target`_ (`tes3reference`_)
-    No description available.
+    Read-only. No description available.
 
 `timestampCastBegin`_ (`number`_)
     No description available.
@@ -66,6 +78,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3magicSourceInstance/blocked
     tes3magicSourceInstance/castChanceOverride
     tes3magicSourceInstance/caster
     tes3magicSourceInstance/deleted
@@ -78,14 +91,18 @@ Properties
     tes3magicSourceInstance/modified
     tes3magicSourceInstance/objectFlags
     tes3magicSourceInstance/objectType
+    tes3magicSourceInstance/persistent
     tes3magicSourceInstance/projectile
     tes3magicSourceInstance/source
     tes3magicSourceInstance/sourceMod
     tes3magicSourceInstance/sourceType
+    tes3magicSourceInstance/sourceless
     tes3magicSourceInstance/state
+    tes3magicSourceInstance/supportsLuaData
     tes3magicSourceInstance/target
     tes3magicSourceInstance/timestampCastBegin
 
+.. _`blocked`: tes3magicSourceInstance/blocked.html
 .. _`castChanceOverride`: tes3magicSourceInstance/castChanceOverride.html
 .. _`caster`: tes3magicSourceInstance/caster.html
 .. _`deleted`: tes3magicSourceInstance/deleted.html
@@ -98,16 +115,25 @@ Properties
 .. _`modified`: tes3magicSourceInstance/modified.html
 .. _`objectFlags`: tes3magicSourceInstance/objectFlags.html
 .. _`objectType`: tes3magicSourceInstance/objectType.html
+.. _`persistent`: tes3magicSourceInstance/persistent.html
 .. _`projectile`: tes3magicSourceInstance/projectile.html
 .. _`source`: tes3magicSourceInstance/source.html
 .. _`sourceMod`: tes3magicSourceInstance/sourceMod.html
 .. _`sourceType`: tes3magicSourceInstance/sourceType.html
+.. _`sourceless`: tes3magicSourceInstance/sourceless.html
 .. _`state`: tes3magicSourceInstance/state.html
+.. _`supportsLuaData`: tes3magicSourceInstance/supportsLuaData.html
 .. _`target`: tes3magicSourceInstance/target.html
 .. _`timestampCastBegin`: tes3magicSourceInstance/timestampCastBegin.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+`getEffectInstance`_ (`tes3magicEffectInstance`_)
+    Gets the magic effect instance for a given effect index and target reference. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
 
 `getMagnitudeForIndex`_ (`number`_)
     Gets the magnitude from the casting source for a given effect index.
@@ -115,106 +141,22 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3magicSourceInstance/__tojson
+    tes3magicSourceInstance/getEffectInstance
     tes3magicSourceInstance/getMagnitudeForIndex
 
+.. _`__tojson`: tes3magicSourceInstance/__tojson.html
+.. _`getEffectInstance`: tes3magicSourceInstance/getEffectInstance.html
 .. _`getMagnitudeForIndex`: tes3magicSourceInstance/getMagnitudeForIndex.html
 
-.. _`tes3creature`: ../../lua/type/tes3creature.html
-.. _`niObject`: ../../lua/type/niObject.html
-.. _`tes3npc`: ../../lua/type/tes3npc.html
-.. _`tes3book`: ../../lua/type/tes3book.html
-.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
-.. _`tes3actor`: ../../lua/type/tes3actor.html
-.. _`tes3inputConfig`: ../../lua/type/tes3inputConfig.html
-.. _`tes3itemStack`: ../../lua/type/tes3itemStack.html
-.. _`tes3globalVariable`: ../../lua/type/tes3globalVariable.html
-.. _`tes3containerInstance`: ../../lua/type/tes3containerInstance.html
-.. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
-.. _`niAVObject`: ../../lua/type/niAVObject.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3raceHeightWeight`: ../../lua/type/tes3raceHeightWeight.html
-.. _`tes3class`: ../../lua/type/tes3class.html
-.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
-.. _`tes3apparatus`: ../../lua/type/tes3apparatus.html
-.. _`tes3door`: ../../lua/type/tes3door.html
-.. _`tes3directInputMouseState`: ../../lua/type/tes3directInputMouseState.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niObjectNET`: ../../lua/type/niObjectNET.html
-.. _`tes3armor`: ../../lua/type/tes3armor.html
-.. _`tes3npcInstance`: ../../lua/type/tes3npcInstance.html
-.. _`tes3dataHandler`: ../../lua/type/tes3dataHandler.html
-.. _`tes3rangeInt`: ../../lua/type/tes3rangeInt.html
-.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
-.. _`tes3gameFile`: ../../lua/type/tes3gameFile.html
-.. _`tes3faction`: ../../lua/type/tes3faction.html
-.. _`tes3wearablePart`: ../../lua/type/tes3wearablePart.html
-.. _`tes3inputController`: ../../lua/type/tes3inputController.html
-.. _`tes3lockpick`: ../../lua/type/tes3lockpick.html
-.. _`tes3combatSession`: ../../lua/type/tes3combatSession.html
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`tes3vector4`: ../../lua/type/tes3vector4.html
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
-.. _`string`: ../../lua/type/string.html
-.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
-.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html
-.. _`tes3fader`: ../../lua/type/tes3fader.html
-.. _`tes3quest`: ../../lua/type/tes3quest.html
-.. _`tes3nonDynamicData`: ../../lua/type/tes3nonDynamicData.html
-.. _`tes3ingredient`: ../../lua/type/tes3ingredient.html
-.. _`tes3race`: ../../lua/type/tes3race.html
-.. _`tes3gameSetting`: ../../lua/type/tes3gameSetting.html
-.. _`tes3vector2`: ../../lua/type/tes3vector2.html
-.. _`table`: ../../lua/type/table.html
-.. _`tes3travelDestinationNode`: ../../lua/type/tes3travelDestinationNode.html
-.. _`tes3transform`: ../../lua/type/tes3transform.html
-.. _`tes3mobileNPC`: ../../lua/type/tes3mobileNPC.html
-.. _`tes3soulGemData`: ../../lua/type/tes3soulGemData.html
-.. _`tes3vector3`: ../../lua/type/tes3vector3.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3raceSkillBonus`: ../../lua/type/tes3raceSkillBonus.html
-.. _`tes3activator`: ../../lua/type/tes3activator.html
-.. _`tes3raceBodyParts`: ../../lua/type/tes3raceBodyParts.html
-.. _`tes3inventory`: ../../lua/type/tes3inventory.html
-.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3markData`: ../../lua/type/tes3markData.html
-.. _`tes3raceBaseAttribute`: ../../lua/type/tes3raceBaseAttribute.html
-.. _`tes3creatureInstance`: ../../lua/type/tes3creatureInstance.html
-.. _`tes3effect`: ../../lua/type/tes3effect.html
-.. _`tes3game`: ../../lua/type/tes3game.html
-.. _`tes3probe`: ../../lua/type/tes3probe.html
-.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`nil`: ../../lua/type/nil.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3moon`: ../../lua/type/tes3moon.html
-.. _`tes3mobilePlayer`: ../../lua/type/tes3mobilePlayer.html
-.. _`tes3mobileObject`: ../../lua/type/tes3mobileObject.html
-.. _`tes3misc`: ../../lua/type/tes3misc.html
-.. _`tes3leveledListNode`: ../../lua/type/tes3leveledListNode.html
-.. _`tes3mobileCreature`: ../../lua/type/tes3mobileCreature.html
-.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
-.. _`function`: ../../lua/type/function.html
-.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
-.. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
-.. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html
-.. _`tes3factionRank`: ../../lua/type/tes3factionRank.html
-.. _`mwseTimer`: ../../lua/type/mwseTimer.html
-.. _`tes3container`: ../../lua/type/tes3container.html
-.. _`tes3packedColor`: ../../lua/type/tes3packedColor.html
-.. _`bool`: ../../lua/type/boolean.html
-.. _`tes3equipmentStack`: ../../lua/type/tes3equipmentStack.html
-.. _`tes3clothing`: ../../lua/type/tes3clothing.html
-.. _`mwseTimerController`: ../../lua/type/mwseTimerController.html
-.. _`tes3leveledCreature`: ../../lua/type/tes3leveledCreature.html
-.. _`tes3lockNode`: ../../lua/type/tes3lockNode.html
-.. _`tes3activeMagicEffect`: ../../lua/type/tes3activeMagicEffect.html
-.. _`tes3cellExteriorData`: ../../lua/type/tes3cellExteriorData.html
-.. _`tes3light`: ../../lua/type/tes3light.html
-.. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html
+.. _`string`: ../../lua/type/string.html
 .. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
 .. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
-.. _`tes3cell`: ../../lua/type/tes3cell.html
-.. _`tes3actionData`: ../../lua/type/tes3actionData.html
+.. _`tes3item`: ../../lua/type/tes3item.html
 .. _`tes3itemData`: ../../lua/type/tes3itemData.html
-.. _`tes3factionReaction`: ../../lua/type/tes3factionReaction.html
+.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
+.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html
+.. _`tes3spell`: ../../lua/type/tes3spell.html

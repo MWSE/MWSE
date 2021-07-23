@@ -12,6 +12,16 @@ namespace TES3 {
 		char unknown_0x32;
 		char unknown_0x33;
 		float value; // 0x34
+
+		//
+		// Custom functions
+		//
+
+		double getValue_lua() const;
+		void setValue_lua(double value);
+
 	};
 	static_assert(sizeof(GlobalVariable) == 0x38, "TES3::GlobalVariable failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::GlobalVariable)

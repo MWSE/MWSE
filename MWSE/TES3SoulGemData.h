@@ -11,5 +11,17 @@ namespace TES3 {
 		int value; // 0x10
 		float weight; // 0x14
 		Misc * item; // 0x18
+
+		//
+		// Custom functions
+		//
+
+		std::string toString() const;
+		std::string toJson() const;
+
+		int getValue() const;
+		float getWeight() const;
+		int getCapacity() const;
+
 	};
 }

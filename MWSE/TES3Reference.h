@@ -1,19 +1,35 @@
 #pragma once
 
-#include "sol.hpp"
+#include "TES3ScriptLua.h"
 
 #include "TES3Defines.h"
 #include "TES3Attachment.h"
 #include "TES3Vectors.h"
 
+#include "NILight.h"
+
 namespace TES3 {
 	struct Reference : Object {
-		PhysicalObject * baseObject; // 0x28
-		Vector3 orientation; // 0x2c
-		Vector3 position; // 0x38
-		Attachment * attachments; // 0x44
-		unsigned int sourceID; // 0x48
-		unsigned int targetID; // 0x4C
+		struct ReferenceData {
+			PhysicalObject* baseObject; // 0x0
+			Vector3 orientation; // 0x4
+			Vector3 position; // 0x10
+			Attachment* attachments; // 0x1C
+			unsigned int sourceID; // 0x20
+			unsigned int targetID; // 0x24
+		};
+		// Backwards compatibility union to provide direct access into ReferenceData.
+		union {
+			ReferenceData referenceData; // 0x28
+			struct {
+				PhysicalObject* baseObject; // 0x28
+				Vector3 orientation; // 0x2c
+				Vector3 position; // 0x38
+				Attachment* attachments; // 0x44
+				unsigned int sourceID; // 0x48
+				unsigned int targetID; // 0x4C
+			};
+		};
 
 		//
 		// Basic operators.
@@ -26,86 +42,145 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		__declspec(dllexport) void activate(Reference* activator, int unknown = 1);
-		__declspec(dllexport) void setActionFlag(int);
-		__declspec(dllexport) void clearActionFlag(int);
-		__declspec(dllexport) bool testActionFlag(int);
-		__declspec(dllexport) void setActionReference(Reference*);
-		__declspec(dllexport) Reference * getActionReference();
+		void ctor();
+		void dtor();
 
-		__declspec(dllexport) ItemDataAttachment* addItemDataAttachment(ItemData*);
-		__declspec(dllexport) Vector3* getOrCreateOrientationFromAttachment();
-		__declspec(dllexport) Vector3* getPositionFromAttachment();
-		__declspec(dllexport) LockAttachmentNode* getOrCreateLockNode();
-		__declspec(dllexport) ScriptVariables * getScriptVariables();
-		__declspec(dllexport) void removeAttachment(TES3::Attachment * attachment);
-		__declspec(dllexport) void ensureScriptDataIsInstanced();
+		void activate(Reference* activator, int unknown = 1);
+		void setActionFlag(int);
+		void clearActionFlag(int);
+		bool testActionFlag(int);
+		void setActionReference(Reference*);
+		Reference * getActionReference();
 
-		__declspec(dllexport) void detachDynamicLightFromAffectedNodes();
-		__declspec(dllexport) void deleteDynamicLightAttachment();
+		ItemDataAttachment* addItemDataAttachment(ItemData*);
+		Vector3* getOrCreateOrientationFromAttachment();
+		Vector3* getPositionFromAttachment();
+		LockAttachmentNode* getOrCreateLockNode();
+		Reference* getLeveledBaseReference();
+		ScriptVariables * getScriptVariables();
+		void removeAttachment(TES3::Attachment* attachment);
+		void removeAllAttachments();
+		void ensureScriptDataIsInstanced();
 
-		__declspec(dllexport) bool updateBipedParts();
+		void detachDynamicLightFromAffectedNodes();
+		void deleteDynamicLightAttachment(sol::optional<bool> removeLightFromParent = false);
+
+		void setModelPath(const char* path, bool temporary = false);
+		void reloadAnimation(const char* path);
+		bool updateBipedParts();
 
 		//
 		// Other utility functions.
 		//
 
-		__declspec(dllexport) bool enable();
-		__declspec(dllexport) bool disable();
-		__declspec(dllexport) bool getDisabled();
+		bool enable();
+		bool disable();
+		bool getDisabled() const;
 
-		__declspec(dllexport) Vector3 * getPosition();
-		__declspec(dllexport) void setPosition(const Vector3 * newPosition);
+		void setDeleted(bool deleted);
+		void setDeletedWithSafety();
 
-		__declspec(dllexport) Vector3 * getOrientation();
-		__declspec(dllexport) void setOrientation(const Vector3 * newOrientation);
+		bool getNoCollision() const;
+		void setNoCollision(bool set, bool updateCells = true);
+		void setNoCollision_lua(bool set, sol::optional<bool> updateCells);
 
-		__declspec(dllexport) TravelDestination * setTravelDestination(const Vector3 * position, const Vector3 * orientation, Cell * cell = nullptr);
+		void setReferenceActive(bool skipDeleted = true);
+		void setReferenceInactive(bool skipDeleted = true);
 
-		__declspec(dllexport) Matrix33* updateSceneMatrix(Matrix33* matrix, bool eulerXYZ = false);
+		Vector3 * getPosition();
+		void setPosition(const Vector3 * newPosition);
 
-		__declspec(dllexport) Inventory * getInventory();
-		__declspec(dllexport) Iterator<EquipmentStack> * getEquipment();
+		Vector3 * getOrientation();
+		void setOrientation(const Vector3 * newOrientation);
 
-		__declspec(dllexport) void relocate(Cell * cell, const Vector3 * position);
-		__declspec(dllexport) bool clone();
+		float getFacing();
+		void setFacing(float facing);
 
-		__declspec(dllexport) bool insertAttachment(Attachment* attachment);
-		__declspec(dllexport) Attachment* getAttachment(AttachmentType::AttachmentType type);
-		__declspec(dllexport) MobileObject* getAttachedMobileObject();
-		__declspec(dllexport) MobileActor* getAttachedMobileActor();
-		__declspec(dllexport) MobileCreature* getAttachedMobileCreature();
-		__declspec(dllexport) MobileNPC* getAttachedMobileNPC();
-		__declspec(dllexport) MobileProjectile* getAttachedMobileProjectile();
-		__declspec(dllexport) ItemData* getAttachedItemData();
-		__declspec(dllexport) void setAttachedItemData(ItemData * itemData);
-		__declspec(dllexport) ItemData* getOrCreateAttachedItemData();
-		__declspec(dllexport) LockAttachmentNode* getAttachedLockNode();
-		__declspec(dllexport) AnimationData* getAttachedAnimationData();
+		float getAngleToReference(Reference* reference);
 
-		__declspec(dllexport) LightAttachmentNode* getAttachedDynamicLight();
-		__declspec(dllexport) LightAttachmentNode* getOrCreateAttachedDynamicLight(NI::PointLight *, float);
+		TravelDestination * setTravelDestination(const Vector3 * position, const Vector3 * orientation, Cell * cell = nullptr);
 
-		__declspec(dllexport) bool getEmptyInventoryFlag();
-		__declspec(dllexport) void setEmptyInventoryFlag(bool);
+		Matrix33* updateSceneMatrix(Matrix33* matrix, bool eulerXYZ = false);
+
+		Inventory * getInventory();
+		IteratedList<EquipmentStack*> * getEquipment();
+
+		void relocate(Cell * cell, const Vector3 * position, float rotation);
+		void relocateNoRotation(Cell* cell, const Vector3* position);
+		bool clone();
+		bool onCloseInventory();
+
+		bool insertAttachment(Attachment* attachment);
+		Attachment* getAttachment(AttachmentType::AttachmentType type) const;
+		MobileObject* getAttachedMobileObject() const;
+		MobileActor* getAttachedMobileActor() const;
+		MobileCreature* getAttachedMobileCreature() const;
+		MobileNPC* getAttachedMobileNPC() const;
+		MobileProjectile* getAttachedMobileProjectile() const;
+		ItemData* getAttachedItemData() const;
+		void setAttachedItemData(ItemData * itemData);
+		ItemData* getOrCreateAttachedItemData();
+		LockAttachmentNode* getAttachedLockNode();
+		AnimationData* getAttachedAnimationData() const;
+		BodyPartManager* getAttachedBodyPartManager() ;
+		TravelDestination* getAttachedTravelDestination() const;
+
+		LightAttachmentNode* getAttachedDynamicLight();
+		LightAttachmentNode* getOrCreateAttachedDynamicLight_lua(sol::optional<NI::PointLight*> light, sol::optional<float> value);
+		NI::Pointer<NI::Light> getAttachedNiLight();
+
+		bool isLeveledSpawn();
+
+		void setDynamicLighting();
+		void updateLighting();
+
+		bool getEmptyInventoryFlag();
+		void setEmptyInventoryFlag(bool);
 
 		void attemptUnlockDisarm(MobileNPC * disarmer, Item * tool, ItemData * itemData = nullptr);
 
+		int getStackSize();
+		void setStackSize(int count);
+		
+		bool hasValidBaseObject() const;
+
 		// Override for references to raise an event when their scene node is created.
-		__declspec(dllexport) NI::Node * getSceneGraphNode();
+		NI::Node * getSceneGraphNode();
+
+		unsigned int getSourceModId() const;
+		unsigned int getSourceFormId() const;
+		unsigned int getTargetModId() const;
+		unsigned int getTargetFormId() const;
+
+		sol::optional<bool> isDead() const;
 
 		//
 		// Lua interface functions.
 		//
 
+		Cell* getCell() const;
+
 		void setPositionFromLua(sol::stack_object value);
 		void setOrientationFromLua(sol::stack_object value);
 
-		// Return a table (or nil) of attachments for this object.
-		sol::object getAttachments();
+		// Return a table of name-keyed attachments for this object.
+		sol::table getAttachments_lua(sol::this_state ts);
 
+		bool getSupportsLuaData() const;
 		sol::table getLuaTable();
+		sol::table getLuaTempTable();
+
+		// For lua activation, reverse param order.
+		void activate_lua(Reference* target);
+
+		std::shared_ptr<mwse::lua::ScriptContext> getContext_lua();
+
+		void updateSceneGraph_lua();
+
+		Reference* getThis();
 
 	};
 	static_assert(sizeof(Reference) == 0x50, "TES3::Reference failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Reference)

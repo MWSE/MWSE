@@ -4,6 +4,128 @@ References
 
 MWSE functions sometimes need magic numbers to help denote specific types. This page helps to explain what these values mean, and what they are.
 
+
+Active Body Parts
+-----------------------------------------------------------
+
+== ===============
+ID Body Part
+== ===============
+0   head
+1   hair
+2   neck
+3   chest
+4   groin
+5   skirt
+6   rightHand
+7   leftHand
+8   rightWrist
+9   leftWrist
+10  shield
+11  rightForearm
+12  leftForearm
+13  rightUpperArm
+14  leftUpperArm
+15  rightFoot
+16  leftFoot
+17  rightAnkle
+18  leftAnkle
+19  rightKnee
+20  leftKnee
+21  rightUpperLeg
+22  leftUpperLeg
+23  rightPauldron
+24  leftPauldron
+25  weapon
+26  tail
+== ===============
+
+Active Body Part Layers
+-----------------------------------------------------------
+
+== ===============
+ID Layer
+== ===============
+0  Base
+1  Clothing
+2  Armor
+== ===============
+
+Actor Types
+-----------------------------------------------------------
+
+== ===============
+ID Type
+== ===============
+0  Creature
+1  NPC
+2  Player
+== ===============
+
+AI Packages
+-----------------------------------------------------------
+
+== ===============
+ID AI Package
+== ===============
+-1  None
+0   Wander
+1   Travel
+2   Escort
+3   Follow
+4   Activate
+== ===============
+
+Animation Start Flags
+-----------------------------------------------------------
+
+== ===============
+ID Flag
+== ===============
+0  normal
+1  immediate
+2  immediateLoop
+== ===============
+
+Animation States
+-----------------------------------------------------------
+
+=== ======================
+ID  State
+=== ======================
+0   idle
+1   ready
+2   swingUp
+3   swingDown
+4   swingHit
+5   swingFollowLight
+6   swingFollowMed
+7   swingFollowHeavy
+8   readyingWeap
+9   unreadyWeap
+10  casting
+11  casting2
+12  readyingMagic
+13  unreadyMagic
+14  knockdown
+15  knockedOut
+16  pickingProbing
+18  dying
+19  dead
+=== ======================
+
+Alchemical Apparati
+-----------------------------------------------------------
+
+== ===============
+ID Apparatus
+== ===============
+0  mortarAndPestle
+1  alembic
+2  calcinator
+3  retort
+== ===============
+
 Armor Types
 -----------------------------------------------------------
 
@@ -25,6 +147,17 @@ ID  Armor Type
 
 .. note:: `xEquipmentList <functions/iteration/xEquipmentList.html>`_'s returns this value as the subtype for armor objects. Note that the values are **increased by one** by that function.
 
+Armor Weight Classes
+-----------------------------------------------------------
+
+== ===============
+ID Weight Class
+== ===============
+0  Light
+1  Medium
+2  Heavy
+== ===============
+
 Attributes
 -----------------------------------------------------------
 
@@ -40,6 +173,50 @@ ID Attribute
 6  Personality
 7  Luck
 == ============
+
+Body Part Attachments
+-----------------------------------------------------------
+
+== =================
+ID Attachment
+== =================
+0  root
+1  head
+2  neck
+3  spine
+4  pelvis
+5  rightHand
+6  leftHand
+7  rightForearm1
+8  leftForearm1
+9  rightForearm2
+10 leftForearm2
+11 rightUpperArm
+12 leftUpperArm
+13 rightFoot
+14 leftFoot
+15 rightCalf1
+16 leftCalf1
+17 rightCalf2
+18 leftCalf2
+19 rightThigh
+20 leftThigh
+21 rightClavicle
+22 leftClavicle
+23 weapon
+24 shield
+== =================
+
+
+Book Types
+-----------------------------------------------------------
+
+== =================
+ID Effect Range
+== =================
+0  Book
+1  Scroll
+== =================
 
 Clothing Types
 -----------------------------------------------------------
@@ -101,7 +278,86 @@ ID  Type
 31  Quick 10
 32  Quick Save
 33  Quick Load
+34  Escape
+35  Open Console
+36  Take Screenshot
+37  Ready Magic MCP
 === =============
+
+Creature Types
+-----------------------------------------------------------
+
+== =================
+ID Creature Type
+== =================
+0  Normal
+1  Daedra
+2  Undead
+3  Humanoid
+== =================
+
+Crime Types
+-----------------------------------------------------------
+
+== =================
+ID Crime Type
+== =================
+1  attack
+2  killing
+3  stealing
+4  pickpocket
+5  theft
+6  trespass
+7  werewolf
+== =================
+
+Dynamic Effect Types
+-----------------------------------------------------------
+
+== =================
+ID Dynamic Effect
+== =================
+0  ambientLight
+1  directionalLight
+2  pointLight
+3  spotLight
+4  textureEffect
+== =================
+
+Effect Range Types
+-----------------------------------------------------------
+
+== =================
+ID Effect Range
+== =================
+0  Self
+1  Touch
+2  Target
+== =================
+
+Enchantment Types
+-----------------------------------------------------------
+
+== =================
+ID Enchantment Type
+== =================
+0  castOnce
+1  onStrike
+2  onUse
+3  constant
+== =================
+
+Key Transitions
+-----------------------------------------------------------
+
+== =================
+ID Key Transition
+== =================
+0  Test
+1  Up
+2  Down
+3  Toggled
+== =================
 
 Magic Effects
 -----------------------------------------------------------
@@ -284,6 +540,28 @@ Value  Meaning
 
 .. note:: Negative lighting does not appear to have any effect.
 
+Magic Source Types
+-----------------------------------------------------------
+
+== =================
+ID Magic Source Type
+== =================
+1  Spell
+2  Enchantment
+3  Alchemy
+== =================
+
+Music Situations
+-----------------------------------------------------------
+
+== ===============
+ID Music Situation
+== ===============
+0  Explore
+1  Combat
+2  Uninterruptible
+== ===============
+
 Object Types
 -----------------------------------------------------------
 
@@ -378,6 +656,35 @@ ID School
 5  Restoration
 == ================
 
+Sound Generator Types
+-----------------------------------------------------------
+
+== =====================
+ID Sound Generator Type
+== =====================
+0  leftFoot
+1  rightFoot
+2  swimLeft
+3  swimRight
+4  moan
+5  roar
+6  scream
+7  land
+== =====================
+
+Sound Mix Types
+-----------------------------------------------------------
+
+== ================
+ID Sound Mix Type
+== ================
+0  Master
+1  Voice
+2  Effects
+3  Footsteps
+4  Music
+== ================
+
 Specialization Types
 -----------------------------------------------------------
 
@@ -387,6 +694,84 @@ ID Specialization
 0  Combat
 1  Magic
 2  Stealth
+== ==============
+
+Spell Origins
+-----------------------------------------------------------
+
+== ==============
+ID Spell Origin
+== ==============
+1  Module
+2  Spellmaker
+== ==============
+
+Spell States
+-----------------------------------------------------------
+
+== ==============
+ID Spell State
+== ==============
+0  preCast
+1  cast
+4  beginning
+5  working
+6  ending
+7  retired
+8  workingFortify
+9  endingFortify
+== ==============
+
+Spell Types
+-----------------------------------------------------------
+
+== ==============
+ID Spell Type
+== ==============
+0  Spell
+1  Ability
+2  Blight
+3  Disease
+4  Curse
+5  Power
+== ==============
+
+Texturing Properties
+-----------------------------------------------------------
+
+== ===================
+ID Texturing Property
+== ===================
+1  base
+2  dark
+3  detail
+4  gloss
+5  glow
+6  bump
+7  decalFirst
+7  decal1
+8  decal2
+9  decal3
+10 decal4
+11 decal5
+12 decal6
+13 decal7
+13 decalLast
+== ===================
+
+Voiceover
+-----------------------------------------------------------
+
+== ==============
+ID Voiceover
+== ==============
+0  Hello
+1  Idle
+2  Intruder
+3  Thief
+4  Hit
+5  Attack
+6  Flee
 == ==============
 
 Weapon Types
@@ -412,3 +797,21 @@ ID  Weapon Type
 === =============================================
 
 .. note:: `xEquipmentList <functions/iteration/xEquipmentList.html>`_'s returns this value as the subtype for weapon objects. Note that the values are **increased by one** by that function.
+
+Weather Types
+-----------------------------------------------------------
+
+== =============
+ID Type
+== =============
+0  Clear
+1  Cloudy
+2  Foggy
+3  Overcast
+4  Rain
+5  Thunder
+6  Ash
+7  Blight
+8  Snow
+9  Blizzard
+== =============

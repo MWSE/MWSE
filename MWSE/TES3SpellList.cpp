@@ -25,9 +25,9 @@ namespace TES3 {
 	}
 
 	bool SpellList::remove(Spell* spell) {
-		int previousSize = list.size;
+		int previousSize = list.size();
 		reinterpret_cast<void(__thiscall*)(SpellList*, Spell*)>(TES3_SpellList_removeByObject)(this, spell);
-		return list.size < previousSize;
+		return list.size() < previousSize;
 	}
 
 	bool SpellList::remove(const char* id) {
@@ -63,6 +63,37 @@ namespace TES3 {
 
 	Spell* SpellList::getCheapest() {
 		return reinterpret_cast<Spell*(__thiscall*)(SpellList*)>(TES3_SpellList_getCheapest)(this);
+	}
+
+
+	bool SpellList::add_lua(sol::object value) {
+		if (value.is<TES3::Spell*>()) {
+			return add(value.as<TES3::Spell*>());
+		}
+		else if (value.is<const char*>()) {
+			return add(value.as<const char*>());
+		}
+		return false;
+	}
+
+	bool SpellList::remove_lua(sol::object value) {
+		if (value.is<TES3::Spell*>()) {
+			return remove(value.as<TES3::Spell*>());
+		}
+		else if (value.is<const char*>()) {
+			return remove(value.as<const char*>());
+		}
+		return false;
+	}
+
+	bool SpellList::contains_lua(sol::object value) {
+		if (value.is<TES3::Spell*>()) {
+			return contains(value.as<TES3::Spell*>());
+		}
+		else if (value.is<const char*>()) {
+			return contains(value.as<const char*>());
+		}
+		return false;
 	}
 
 	bool SpellList::containsType(SpellCastType::value_type type) {

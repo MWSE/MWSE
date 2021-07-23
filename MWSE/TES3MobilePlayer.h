@@ -2,6 +2,7 @@
 
 #include "TES3Defines.h"
 
+#include "TES3Dialogue.h"
 #include "TES3MobileNPC.h"
 #include "TES3StdString.h"
 #include "TES3Vectors.h"
@@ -11,6 +12,7 @@ namespace TES3 {
 		Vector3 position; // 0x0
 		float rotation; // 0xC
 		Cell * cell; // 0x10
+
 	};
 
 	struct PlayerBounty {
@@ -74,8 +76,8 @@ namespace TES3 {
 		char unknown_0x66A; // Undefined.
 		char unknown_0x66B; // Undefined.
 		int unknown_0x66C;
-		void * birthsign; // 0x670
-		Iterator<Dialogue> * dialogueList; // 0x674
+		Birthsign * birthsign; // 0x670
+		IteratedList<Dialogue*> * dialogueList; // 0x674
 		MarkData * markLocation; // 0x678
 		Vector3 field_67C;
 		float inactivityTime; // 0x684
@@ -89,12 +91,30 @@ namespace TES3 {
 		void exerciseSkill(int skillId, float progress);
 		void levelSkill(int skillId);
 		void onDeath();
-		bool is3rdPerson();
 		int getGold();
+		void wakeUp();
 
 		int getBounty();
 		void setBounty(int value);
 		void modBounty(int delta);
+
+		bool is3rdPerson();
+		float getCameraHeight() const;
+		void setCameraHeight_lua(sol::optional<float> height);
+		int getVanityState() const;
+		void setVanityState(int state);
+
+		//
+		// Custom functions.
+		//
+
+		void setMovementFlagSneaking(bool value);
+
+		PlayerAnimationController* getPlayerAnimationController() const;
+
+		std::reference_wrapper<int[8]> getLevelupsPerAttribute();
+		std::reference_wrapper<int[3]> getLevelupsPerSpecialization();
+		std::reference_wrapper<float[27]> getSkillProgressValues();
 
 	};
 	static_assert(sizeof(MobilePlayer) == 0x694, "TES3::MobilePlayer failed size validation");

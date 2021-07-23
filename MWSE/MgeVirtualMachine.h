@@ -1,22 +1,9 @@
-//VirtualMachine.h
 #pragma once
-
-//MGE XE interface needs:
-// Push
-// Pop
-// AddInstruction
-
-#include <map>
 
 #define DEBUG_MGE_VM false
 
 #include "MgeVmtypes.h"
 #include "MgeInstruction.h"
-//#include "ADDRESSSPACE.h"
-//#include "MEMACCESSOR.h"
-
-//typedef std::map<OPCODE,INSTRUCTION*> INSTRUCTIONMAP;
-//typedef std::map<VPVOID,ADDRESSSPACE*> ADDRESSSPACEMAP;
 
 typedef enum {GP=1, GPMAX=16, IP=17, SP=18} VMREGS;
 typedef enum {FZERO=1,FPOS=2} FLAGS;

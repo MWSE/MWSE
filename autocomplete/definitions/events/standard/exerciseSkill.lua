@@ -3,7 +3,7 @@ return {
 	eventData = {
 		skill = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The skill that is gaining experience. This can be changed to provide experience to a different skill.",
 		},
 		progress = {

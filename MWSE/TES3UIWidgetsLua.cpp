@@ -1,7 +1,6 @@
 #include "TES3UIManager.h"
 #include "TES3UIWidgets.h"
 
-#include "sol.hpp"
 #include "LuaManager.h"
 
 namespace mwse {
@@ -20,102 +19,6 @@ namespace mwse {
 		using TES3::UI::registerID;
 		using TES3::UI::registerProperty;
 
-		static Property propButton, propFillbar, propParagraphInput;
-		static Property propScrollBar, propScrollPaneH, propScrollPaneV;
-		static Property propTextInput, propTextSelect;
-		static UI_ID uiidButtonText, uiidParagraphInputText;
-
-		void bindTES3UIWidgets();
-
-		void deferredPropInit() {
-			static bool init = false;
-			if (!init) {
-				propButton = registerProperty("PartButton");
-				propFillbar = registerProperty("PartFillbar");
-				propParagraphInput = registerProperty("PartParagraphInput");
-				propScrollBar = registerProperty("PartScrollBar");
-				propScrollPaneH = registerProperty("PartScrollPaneHor");
-				propScrollPaneV = registerProperty("PartScrollPaneVert");
-				propTextInput = registerProperty("PartTextInput");
-				propTextSelect = registerProperty("PartTextSelect");
-				uiidButtonText = registerID("PartButton_text_ptr");
-				uiidParagraphInputText = registerID("PartParagraphInput_text_input");
-				init = true;
-			}
-		}
-
-		sol::object makeWidget(Element& element) {
-			deferredPropInit();
-
-			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::state& state = stateHandle.state;
-			sol::object widget = sol::nil;
-			Property part = element.getProperty(PropertyType::Property, Property::is_part).propertyValue;
-
-			if (part == propButton) {
-				widget = sol::make_object(state, WidgetButton::fromElement(&element));
-			}
-			else if (part == propFillbar) {
-				widget = sol::make_object(state, WidgetFillbar::fromElement(&element));
-			}
-			else if (part == propParagraphInput) {
-				widget = sol::make_object(state, WidgetParagraphInput::fromElement(&element));
-			}
-			else if (part == propScrollBar) {
-				widget = sol::make_object(state, WidgetScrollBar::fromElement(&element));
-			}
-			else if (part == propScrollPaneH || part == propScrollPaneV) {
-				widget = sol::make_object(state, WidgetScrollPane::fromElement(&element));
-			}
-			else if (part == propTextInput) {
-				widget = sol::make_object(state, WidgetTextInput::fromElement(&element));
-			}
-			else if (part == propTextSelect) {
-				widget = sol::make_object(state, WidgetTextSelect::fromElement(&element));
-			}
-			return widget;
-		}
-
-		std::string getWidgetText(Element& element) {
-			deferredPropInit();
-
-			Property part = element.getProperty(PropertyType::Property, Property::is_part).propertyValue;
-
-			if (part == propButton) {
-				return WidgetButton::fromElement(&element)->getText();
-			}
-			else if (part == propParagraphInput) {
-				return WidgetParagraphInput::fromElement(&element)->getText();
-			}
-			else if (part == propTextInput) {
-				return WidgetTextInput::fromElement(&element)->getText();
-			}
-			else {
-				return element.getText();
-			}
-		}
-
-		void setWidgetText(Element& element, const char* text) {
-			deferredPropInit();
-
-			Property part = element.getProperty(PropertyType::Property, Property::is_part).propertyValue;
-
-			if (part == propButton) {
-				WidgetButton::fromElement(&element)->setText(text);
-			}
-			else if (part == propParagraphInput) {
-				WidgetParagraphInput::fromElement(&element)->setText(text);
-			}
-			else if (part == propTextInput) {
-				WidgetTextInput::fromElement(&element)->setText(text);
-			}
-			else {
-				element.setText(text);
-			}
-
-			element.getTopLevelParent()->timingUpdate();
-		}
-
 		void bindTES3UIWidgets() {
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::state& state = stateHandle.state;
@@ -124,181 +27,105 @@ namespace mwse {
 			// Button (PartButton)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetButton>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetButton>("tes3uiButton");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("state", sol::property(&WidgetButton::getState, &WidgetButton::setState));
-				usertypeDefinition.set("idle", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourIdle({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("over", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressed", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourPressed({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("idleDisabled", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourDisabled({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("overDisabled", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourDisabledOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressedDisabled", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourDisabledPressed({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("idleActive", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourActive({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("overActive", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourActiveOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressedActive", sol::property(
-					[](WidgetButton& self, sol::table c) { self.setColourActivePressed({ c[1], c[2], c[3] }); }
-				));
-
-				state.set_usertype("tes3uiButton", usertypeDefinition);
+				usertypeDefinition["state"] = sol::property(&WidgetButton::getState, &WidgetButton::setState);
+				usertypeDefinition["idle"] = sol::property(&WidgetButton::getColourIdle_lua, &WidgetButton::setColourIdle_lua);
+				usertypeDefinition["over"] = sol::property(&WidgetButton::getColourOver_lua, &WidgetButton::setColourOver_lua);
+				usertypeDefinition["pressed"] = sol::property(&WidgetButton::getColourPressed_lua, &WidgetButton::setColourPressed_lua);
+				usertypeDefinition["idleDisabled"] = sol::property(&WidgetButton::getColourDisabled_lua, &WidgetButton::setColourDisabled_lua);
+				usertypeDefinition["overDisabled"] = sol::property(&WidgetButton::getColourDisabledOver_lua, &WidgetButton::setColourDisabledOver_lua);
+				usertypeDefinition["pressedDisabled"] = sol::property(&WidgetButton::getColourDisabledPressed_lua, &WidgetButton::setColourDisabledPressed_lua);
+				usertypeDefinition["idleActive"] = sol::property(&WidgetButton::getColourActive_lua, &WidgetButton::setColourActive_lua);
+				usertypeDefinition["overActive"] = sol::property(&WidgetButton::getColourActiveOver_lua, &WidgetButton::setColourActiveOver_lua);
+				usertypeDefinition["pressedActive"] = sol::property(&WidgetButton::getColourActivePressed_lua, &WidgetButton::setColourActivePressed_lua);
 			}
 
 			//
 			// FillBar (PartFillbar)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetFillbar>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetFillbar>("tes3uiFillBar");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("current", sol::property(&WidgetFillbar::getCurrent, &WidgetFillbar::setCurrent));
-				usertypeDefinition.set("max", sol::property(&WidgetFillbar::getMax, &WidgetFillbar::setMax));
-				usertypeDefinition.set("showText", sol::property(&WidgetFillbar::getShowText, &WidgetFillbar::setShowText));
-				usertypeDefinition.set("fillColor", sol::property(
-					[](WidgetFillbar& self, sol::table c) { self.setFillColour({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("fillAlpha", sol::property(&WidgetFillbar::setFillAlpha));
-
-				state.set_usertype("tes3uiFillBar", usertypeDefinition);
+				usertypeDefinition["current"] = sol::property(&WidgetFillbar::getCurrent, &WidgetFillbar::setCurrent);
+				usertypeDefinition["max"] = sol::property(&WidgetFillbar::getMax, &WidgetFillbar::setMax);
+				usertypeDefinition["showText"] = sol::property(&WidgetFillbar::getShowText, &WidgetFillbar::setShowText);
+				usertypeDefinition["normalized"] = sol::property(&WidgetFillbar::getNormalized, &WidgetFillbar::setNormalized);
+				usertypeDefinition["fillColor"] = sol::property(&WidgetFillbar::getFillColour_lua, &WidgetFillbar::setFillColour_lua);
+				usertypeDefinition["fillAlpha"] = sol::property(&WidgetFillbar::setFillAlpha);
 			}
 
 			//
 			// ParagraphInput (PartParagraphInput)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetParagraphInput>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetParagraphInput>("tes3uiParagraphInput");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("lengthLimit", sol::property(
-					[](WidgetParagraphInput& self) { return self.getLengthLimit(); },
-					[](WidgetParagraphInput& self, sol::optional<int> limit) {
-						const int defaultLength = 0x3ff;
-						self.setLengthLimit(limit.value_or(defaultLength));
-					}
-				));
-
-				state.set_usertype("tes3uiParagraphInput", usertypeDefinition);
+				usertypeDefinition["lengthLimit"] = sol::property(&WidgetParagraphInput::getLengthLimit, &WidgetParagraphInput::setLengthLimit_lua);
 			}
 
 			//
 			// Slider (PartScrollBar)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetScrollBar>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetScrollBar>("tes3uiSlider");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("current", sol::property(&WidgetScrollBar::getCurrent, &WidgetScrollBar::setCurrent));
-				usertypeDefinition.set("max", sol::property(&WidgetScrollBar::getMax, &WidgetScrollBar::setMax));
-				usertypeDefinition.set("step", sol::property(&WidgetScrollBar::getStepX, &WidgetScrollBar::setStepX));
-				usertypeDefinition.set("jump", sol::property(&WidgetScrollBar::getJumpX, &WidgetScrollBar::setJumpX));
-
-				state.set_usertype("tes3uiSlider", usertypeDefinition);
+				usertypeDefinition["current"] = sol::property(&WidgetScrollBar::getCurrent, &WidgetScrollBar::setCurrent);
+				usertypeDefinition["max"] = sol::property(&WidgetScrollBar::getMax, &WidgetScrollBar::setMax);
+				usertypeDefinition["step"] = sol::property(&WidgetScrollBar::getStepX, &WidgetScrollBar::setStepX);
+				usertypeDefinition["jump"] = sol::property(&WidgetScrollBar::getJumpX, &WidgetScrollBar::setJumpX);
 			}
 
 			//
 			// ScrollPane (PartScrollPane)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetScrollPane>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetScrollPane>("tes3uiScrollPane");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("contentsChanged", &WidgetScrollPane::contentPaneChanged);
-				usertypeDefinition.set("positionX", sol::property(&WidgetScrollPane::getHorizontalPos, &WidgetScrollPane::setHorizontalPos));
-				usertypeDefinition.set("positionY", sol::property(&WidgetScrollPane::getVerticalPos, &WidgetScrollPane::setVerticalPos));
-				usertypeDefinition.set("scrollbarVisible", sol::property(&WidgetScrollPane::getScrollbarVisible, &WidgetScrollPane::setScrollbarVisible));
+				usertypeDefinition["contentsChanged"] = &WidgetScrollPane::contentPaneChanged;
+				usertypeDefinition["positionX"] = sol::property(&WidgetScrollPane::getHorizontalPos, &WidgetScrollPane::setHorizontalPos);
+				usertypeDefinition["positionY"] = sol::property(&WidgetScrollPane::getVerticalPos, &WidgetScrollPane::setVerticalPos);
+				usertypeDefinition["scrollbarVisible"] = sol::property(&WidgetScrollPane::getScrollbarVisible, &WidgetScrollPane::setScrollbarVisible);
 
 				// Quick access to the pane contents.
-				usertypeDefinition.set("contentPane", sol::readonly_property(&WidgetScrollPane::getContentPane));
+				usertypeDefinition["contentPane"] = sol::readonly_property(&WidgetScrollPane::getContentPane);
 
-				state.set_usertype("tes3uiScrollPane", usertypeDefinition);
+				
 			}
 
 			//
 			// TextInput (PartTextInput)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetTextInput>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetTextInput>("tes3uiTextInput");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("lengthLimit", sol::property(
-					[](WidgetTextInput& self) {
-						sol::optional<int> limit;
-
-						// Convert no limit to nil
-						int n = self.getLengthLimit();
-						if (!self.getNoLimit() && n > 0) {
-							limit = n;
-						}
-						return limit;
-					},
-					[](WidgetTextInput& self, sol::optional<int> limit) {
-						// Convert nil to no limit
-						if (limit) {
-							self.setLengthLimit(limit.value());
-							self.setNoLimit(false);
-						}
-						else {
-							self.setNoLimit(true);
-						}
-					}
-				));
-				usertypeDefinition.set("eraseOnFirstKey", sol::property(&WidgetTextInput::getEraseOnFirstKey, &WidgetTextInput::setEraseOnFirstKey));
-
-				state.set_usertype("tes3uiTextInput", usertypeDefinition);
+				usertypeDefinition["lengthLimit"] = sol::property(&WidgetTextInput::getLengthLimit_lua, &WidgetTextInput::setLengthLimit_lua);
+				usertypeDefinition["eraseOnFirstKey"] = sol::property(&WidgetTextInput::getEraseOnFirstKey, &WidgetTextInput::setEraseOnFirstKey);
 			}
 
 			//
 			// TextSelect (PartTextSelect)
 			//
 			{
-				auto usertypeDefinition = state.create_simple_usertype<WidgetTextSelect>();
-				usertypeDefinition.set("new", sol::no_constructor);
+				auto usertypeDefinition = state.new_usertype<WidgetTextSelect>("tes3uiTextSelect");
+				usertypeDefinition["new"] = sol::no_constructor;
 
-				usertypeDefinition.set("state", sol::property(&WidgetTextSelect::getState, &WidgetTextSelect::setState));
-				usertypeDefinition.set("idle", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourIdle({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("over", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressed", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourPressed({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("idleDisabled", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourDisabled({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("overDisabled", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourDisabledOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressedDisabled", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourDisabledPressed({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("idleActive", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourActive({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("overActive", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourActiveOver({ c[1], c[2], c[3] }); }
-				));
-				usertypeDefinition.set("pressedActive", sol::property(
-					[](WidgetTextSelect& self, sol::table c) { self.setColourActivePressed({ c[1], c[2], c[3] }); }
-				));
-
-				state.set_usertype("tes3uiTextSelect", usertypeDefinition);
+				usertypeDefinition["state"] = sol::property(&WidgetTextSelect::getState, &WidgetTextSelect::setState);
+				usertypeDefinition["idle"] = sol::property(&WidgetTextSelect::getColourIdle_lua, &WidgetTextSelect::setColourIdle_lua);
+				usertypeDefinition["over"] = sol::property(&WidgetTextSelect::getColourOver_lua, &WidgetTextSelect::setColourOver_lua);
+				usertypeDefinition["pressed"] = sol::property(&WidgetTextSelect::getColourPressed_lua, &WidgetTextSelect::setColourPressed_lua);
+				usertypeDefinition["idleDisabled"] = sol::property(&WidgetTextSelect::getColourDisabled_lua, &WidgetTextSelect::setColourDisabled_lua);
+				usertypeDefinition["overDisabled"] = sol::property(&WidgetTextSelect::getColourDisabledOver_lua, &WidgetTextSelect::setColourDisabledOver_lua);
+				usertypeDefinition["pressedDisabled"] = sol::property(&WidgetTextSelect::getColourDisabledPressed_lua, &WidgetTextSelect::setColourDisabledPressed_lua);
+				usertypeDefinition["idleActive"] = sol::property(&WidgetTextSelect::getColourActive_lua, &WidgetTextSelect::setColourActive_lua);
+				usertypeDefinition["overActive"] = sol::property(&WidgetTextSelect::getColourActiveOver_lua, &WidgetTextSelect::setColourActiveOver_lua);
+				usertypeDefinition["pressedActive"] = sol::property(&WidgetTextSelect::getColourActivePressed_lua, &WidgetTextSelect::setColourActivePressed_lua);
 			}
 		}
 

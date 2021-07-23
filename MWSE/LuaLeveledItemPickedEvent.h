@@ -11,6 +11,8 @@ namespace mwse {
 				LeveledItemPickedEvent(TES3::LeveledItem * list, TES3::Object * vanillaResult);
 				sol::table createEventTable();
 
+				static TES3::Reference* m_Reference;
+
 			protected:
 				TES3::LeveledItem* m_List;
 				TES3::Object* m_Result;

@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `attributes`_ (`table`_)
-    An array-style table of the two attribute IDs associated with the class.
+    Read-only. An array-style table of the two attribute IDs associated with the class.
 
 `bartersAlchemy`_ (`boolean`_)
     If true, the class will barter alchemy items.
@@ -48,23 +48,26 @@ Properties
 `bartersWeapons`_ (`boolean`_)
     If true, the class will barter weapon items.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `description`_ (`string`_)
     Loads from disk and returns the description of the class.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `majorSkills`_ (`table`_)
-    An array-style table of the 5 skills IDs associated with the class' major skills.
+    Read-only. An array-style table of the 5 skills IDs associated with the class' major skills.
 
 `minorSkills`_ (`table`_)
-    An array-style table of the 5 skills IDs associated with the class' major skills.
+    Read-only. An array-style table of the 5 skills IDs associated with the class' major skills.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -73,10 +76,10 @@ Properties
     The player-facing name for the object.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `offersEnchanting`_ (`boolean`_)
     If true, the class will offer repair services.
@@ -93,6 +96,9 @@ Properties
 `offersTraining`_ (`boolean`_)
     If true, the class will offer spell training services.
 
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
+
 `playable`_ (`boolean`_)
     If true, the class is selectable at character generation.
 
@@ -100,13 +106,19 @@ Properties
     The services offered by the class. This is a bit field, and its values should typically be accessed through values such as bartersAlchemy.
 
 `skills`_ (`table`_)
-    An array-style table of the 10 skills IDs associated with the class. For major or minor skills specifically, use the majorSkills and MinorSkills properties.
+    Read-only. An array-style table of the 10 skills IDs associated with the class. For major or minor skills specifically, use the majorSkills and MinorSkills properties.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `specialization`_ (`number`_)
     The specialization for the class. Maps to the tes3.specialization table.
+
+`supportsLuaData`_ (`boolean`_)
+    If true, references of this object can store temporary or persistent lua data.
 
 .. toctree::
     :hidden:
@@ -125,6 +137,7 @@ Properties
     tes3class/bartersProbes
     tes3class/bartersRepairTools
     tes3class/bartersWeapons
+    tes3class/blocked
     tes3class/deleted
     tes3class/description
     tes3class/disabled
@@ -140,11 +153,14 @@ Properties
     tes3class/offersSpellmaking
     tes3class/offersSpells
     tes3class/offersTraining
+    tes3class/persistent
     tes3class/playable
     tes3class/services
     tes3class/skills
     tes3class/sourceMod
+    tes3class/sourceless
     tes3class/specialization
+    tes3class/supportsLuaData
 
 .. _`attributes`: tes3class/attributes.html
 .. _`bartersAlchemy`: tes3class/bartersAlchemy.html
@@ -160,6 +176,7 @@ Properties
 .. _`bartersProbes`: tes3class/bartersProbes.html
 .. _`bartersRepairTools`: tes3class/bartersRepairTools.html
 .. _`bartersWeapons`: tes3class/bartersWeapons.html
+.. _`blocked`: tes3class/blocked.html
 .. _`deleted`: tes3class/deleted.html
 .. _`description`: tes3class/description.html
 .. _`disabled`: tes3class/disabled.html
@@ -175,108 +192,29 @@ Properties
 .. _`offersSpellmaking`: tes3class/offersSpellmaking.html
 .. _`offersSpells`: tes3class/offersSpells.html
 .. _`offersTraining`: tes3class/offersTraining.html
+.. _`persistent`: tes3class/persistent.html
 .. _`playable`: tes3class/playable.html
 .. _`services`: tes3class/services.html
 .. _`skills`: tes3class/skills.html
 .. _`sourceMod`: tes3class/sourceMod.html
+.. _`sourceless`: tes3class/sourceless.html
 .. _`specialization`: tes3class/specialization.html
+.. _`supportsLuaData`: tes3class/supportsLuaData.html
 
-.. _`tes3creature`: ../../lua/type/tes3creature.html
-.. _`niObject`: ../../lua/type/niObject.html
-.. _`tes3npc`: ../../lua/type/tes3npc.html
-.. _`tes3book`: ../../lua/type/tes3book.html
-.. _`tes3matrix33`: ../../lua/type/tes3matrix33.html
-.. _`tes3actor`: ../../lua/type/tes3actor.html
-.. _`tes3inputConfig`: ../../lua/type/tes3inputConfig.html
-.. _`tes3itemStack`: ../../lua/type/tes3itemStack.html
-.. _`tes3globalVariable`: ../../lua/type/tes3globalVariable.html
-.. _`tes3containerInstance`: ../../lua/type/tes3containerInstance.html
-.. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
-.. _`niAVObject`: ../../lua/type/niAVObject.html
-.. _`tes3iterator`: ../../lua/type/tes3iterator.html
-.. _`tes3raceHeightWeight`: ../../lua/type/tes3raceHeightWeight.html
-.. _`tes3class`: ../../lua/type/tes3class.html
-.. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
-.. _`tes3apparatus`: ../../lua/type/tes3apparatus.html
-.. _`tes3door`: ../../lua/type/tes3door.html
-.. _`tes3directInputMouseState`: ../../lua/type/tes3directInputMouseState.html
-.. _`niRTTI`: ../../lua/type/niRTTI.html
-.. _`niObjectNET`: ../../lua/type/niObjectNET.html
-.. _`tes3armor`: ../../lua/type/tes3armor.html
-.. _`tes3npcInstance`: ../../lua/type/tes3npcInstance.html
-.. _`tes3dataHandler`: ../../lua/type/tes3dataHandler.html
-.. _`tes3rangeInt`: ../../lua/type/tes3rangeInt.html
-.. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html
-.. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
-.. _`tes3gameFile`: ../../lua/type/tes3gameFile.html
-.. _`tes3faction`: ../../lua/type/tes3faction.html
-.. _`tes3wearablePart`: ../../lua/type/tes3wearablePart.html
-.. _`tes3inputController`: ../../lua/type/tes3inputController.html
-.. _`tes3lockpick`: ../../lua/type/tes3lockpick.html
-.. _`tes3combatSession`: ../../lua/type/tes3combatSession.html
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3class/__tojson
+
+.. _`__tojson`: tes3class/__tojson.html
+
 .. _`boolean`: ../../lua/type/boolean.html
-.. _`tes3vector4`: ../../lua/type/tes3vector4.html
-.. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
-.. _`string`: ../../lua/type/string.html
-.. _`tes3referenceList`: ../../lua/type/tes3referenceList.html
-.. _`tes3iteratorNode`: ../../lua/type/tes3iteratorNode.html
-.. _`tes3fader`: ../../lua/type/tes3fader.html
-.. _`tes3quest`: ../../lua/type/tes3quest.html
-.. _`tes3nonDynamicData`: ../../lua/type/tes3nonDynamicData.html
-.. _`tes3ingredient`: ../../lua/type/tes3ingredient.html
-.. _`tes3race`: ../../lua/type/tes3race.html
-.. _`tes3gameSetting`: ../../lua/type/tes3gameSetting.html
-.. _`tes3vector2`: ../../lua/type/tes3vector2.html
-.. _`table`: ../../lua/type/table.html
-.. _`tes3travelDestinationNode`: ../../lua/type/tes3travelDestinationNode.html
-.. _`tes3transform`: ../../lua/type/tes3transform.html
-.. _`tes3mobileNPC`: ../../lua/type/tes3mobileNPC.html
-.. _`tes3soulGemData`: ../../lua/type/tes3soulGemData.html
-.. _`tes3vector3`: ../../lua/type/tes3vector3.html
-.. _`tes3reference`: ../../lua/type/tes3reference.html
-.. _`tes3raceSkillBonus`: ../../lua/type/tes3raceSkillBonus.html
-.. _`tes3activator`: ../../lua/type/tes3activator.html
-.. _`tes3raceBodyParts`: ../../lua/type/tes3raceBodyParts.html
-.. _`tes3inventory`: ../../lua/type/tes3inventory.html
-.. _`tes3boundingBox`: ../../lua/type/tes3boundingBox.html
-.. _`tes3markData`: ../../lua/type/tes3markData.html
-.. _`tes3raceBaseAttribute`: ../../lua/type/tes3raceBaseAttribute.html
-.. _`tes3creatureInstance`: ../../lua/type/tes3creatureInstance.html
-.. _`tes3effect`: ../../lua/type/tes3effect.html
-.. _`tes3game`: ../../lua/type/tes3game.html
-.. _`tes3probe`: ../../lua/type/tes3probe.html
-.. _`tes3physicalObject`: ../../lua/type/tes3physicalObject.html
-.. _`tes3object`: ../../lua/type/tes3object.html
-.. _`nil`: ../../lua/type/nil.html
 .. _`number`: ../../lua/type/number.html
-.. _`tes3moon`: ../../lua/type/tes3moon.html
-.. _`tes3mobilePlayer`: ../../lua/type/tes3mobilePlayer.html
-.. _`tes3mobileObject`: ../../lua/type/tes3mobileObject.html
-.. _`tes3misc`: ../../lua/type/tes3misc.html
-.. _`tes3leveledListNode`: ../../lua/type/tes3leveledListNode.html
-.. _`tes3mobileCreature`: ../../lua/type/tes3mobileCreature.html
-.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
-.. _`function`: ../../lua/type/function.html
-.. _`tes3magicEffectInstance`: ../../lua/type/tes3magicEffectInstance.html
-.. _`tes3baseObject`: ../../lua/type/tes3baseObject.html
-.. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html
-.. _`tes3factionRank`: ../../lua/type/tes3factionRank.html
-.. _`mwseTimer`: ../../lua/type/mwseTimer.html
-.. _`tes3container`: ../../lua/type/tes3container.html
-.. _`tes3packedColor`: ../../lua/type/tes3packedColor.html
-.. _`bool`: ../../lua/type/boolean.html
-.. _`tes3equipmentStack`: ../../lua/type/tes3equipmentStack.html
-.. _`tes3clothing`: ../../lua/type/tes3clothing.html
-.. _`mwseTimerController`: ../../lua/type/mwseTimerController.html
-.. _`tes3leveledCreature`: ../../lua/type/tes3leveledCreature.html
-.. _`tes3lockNode`: ../../lua/type/tes3lockNode.html
-.. _`tes3activeMagicEffect`: ../../lua/type/tes3activeMagicEffect.html
-.. _`tes3cellExteriorData`: ../../lua/type/tes3cellExteriorData.html
-.. _`tes3light`: ../../lua/type/tes3light.html
-.. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html
-.. _`tes3alchemy`: ../../lua/type/tes3alchemy.html
-.. _`tes3enchantment`: ../../lua/type/tes3enchantment.html
-.. _`tes3cell`: ../../lua/type/tes3cell.html
-.. _`tes3actionData`: ../../lua/type/tes3actionData.html
-.. _`tes3itemData`: ../../lua/type/tes3itemData.html
-.. _`tes3factionReaction`: ../../lua/type/tes3factionReaction.html
+.. _`string`: ../../lua/type/string.html
+.. _`table`: ../../lua/type/table.html

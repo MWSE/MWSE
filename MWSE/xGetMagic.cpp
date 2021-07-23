@@ -50,7 +50,7 @@ namespace mwse
 	{
 		// Return values.
 		long type = 0;
-		char* id = NULL;
+		const char* id = NULL;
 
 		// Get reference to what we're finding enchantment information for.
 		TES3::Reference* reference = virtualMachine.getReference();

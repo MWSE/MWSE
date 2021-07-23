@@ -15,4 +15,10 @@ return {
 			{ name = "value", type = "number", optional = true, description = "If set, both the base and current value will be modified." },
 		},
 	}},
+	examples = {
+		["decreaseHealth"] = {
+			title = "Decrease Health of an Actor",
+			description = "In this example, the current health of an actor, the player, is decreased by 10.",
+		},
+	},
 }

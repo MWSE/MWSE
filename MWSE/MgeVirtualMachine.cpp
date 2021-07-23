@@ -1,13 +1,4 @@
-//VirtualMachine.cpp
-
 #include "MgeVirtualMachine.h"
-//#include "MEMACCESSORS.h"
-#include <algorithm>
-using namespace std;
-// 22-08-2006 Tp21
-//#include "warnings.h"
-
-//#include "cLog.h"
 
 #include "VMExecuteInterface.h"
 #include "Stack.h"

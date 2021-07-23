@@ -26,9 +26,9 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_MobileActor);
+				eventData["mobile"] = m_MobileActor;
 				if (m_MobileActor) {
-					eventData["reference"] = makeLuaObject(m_MobileActor->reference);
+					eventData["reference"] = m_MobileActor->reference;
 				}
 
 				eventData["skill"] = TES3::WorldController::get()->getMobilePlayer()->getSkillStatistic(m_SkillId);

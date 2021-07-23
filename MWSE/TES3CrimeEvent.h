@@ -2,11 +2,9 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Collections.h"
+#include "TES3IteratedList.h"
 #include "TES3StdString.h"
 #include "TES3Vectors.h"
-
-#include <string>
 
 namespace TES3 {
 	struct CrimeEvent {
@@ -18,7 +16,7 @@ namespace TES3 {
 		MobileActor * criminal; // 0x28
 		MobileActor * victim; // 0x2C
 		Faction * victimFaction; // 0x30
-		Iterator<AIPlanner> * witnesses; // 0x34
+		IteratedList<AIPlanner*> * witnesses; // 0x34
 		Actor * victimBaseActor;
 
 		CrimeEvent();

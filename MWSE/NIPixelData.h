@@ -4,6 +4,7 @@
 
 #include "NIObject.h"
 #include "NIPixelFormat.h"
+#include "NIPointer.h"
 
 namespace NI {
 	struct PixelData : Object {
@@ -17,7 +18,38 @@ namespace NI {
 		unsigned int bytesPerPixel; // 0x40 // Determined by format data.
 		unsigned int revisionID;
 
-		__declspec(dllexport) static PixelData* create(unsigned int width, unsigned int height);
-	};
+		static Pointer<PixelData> create(unsigned int width, unsigned int height, unsigned int mipMapLevels = 1);
+		static Pointer<PixelData> create_lua(unsigned int width, unsigned int height, sol::optional<unsigned int> mipMapLevels);
+
+		//
+		// Custom functions.
+		//
+
+		Pointer<SourceTexture> createSourceTexture();
+
+		unsigned int getHeight(unsigned int mipMapLevel = 0);
+		unsigned int getWidth(unsigned int mipMapLevel = 0);
+
+		unsigned int getHeight_lua(sol::optional<unsigned int> mipMapLevel);
+		unsigned int getWidth_lua(sol::optional<unsigned int> mipMapLevel);
+		void setPixelsByte_lua(sol::table data, sol::optional<unsigned int> mipMapLevel);
+		void setPixelsFloat_lua(sol::table data, sol::optional<unsigned int> mipMapLevel);
+		void fill_lua(sol::table data, sol::optional<unsigned int> mipMapLevel);
+
+ 	};
 	static_assert(sizeof(PixelData) == 0x48, "NI::PixelData failed size validation");
+
+	struct PixelRGB {
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+	};
+	static_assert(sizeof(PixelRGB) == 0x3, "NI::PixelRGB failed size validation");
+
+	struct PixelRGBA : PixelRGB {
+		unsigned char a;
+	};
+	static_assert(sizeof(PixelRGBA) == 0x4, "NI::PixelRGBA failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::PixelData)

@@ -25,8 +25,6 @@
 #include "FileUtil.h"
 #include "StringUtil.h"
 
-#include <vector>
-
 using namespace mwse;
 
 namespace mwse

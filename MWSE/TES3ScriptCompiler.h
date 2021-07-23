@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include <cstdint>
+#include "TES3IteratedList.h"
 
 namespace TES3 {
 	namespace CompilerSource {
@@ -16,22 +16,32 @@ namespace TES3 {
 		};
 	}
 
+	namespace CompilerFunction {
+		enum CompilerFunction : int {
+			BEGIN = 0x100,
+			END = 0x101,
+			INVALID = 0xFFFF,
+		};
+	}
+
 	struct ScriptCompiler {
+		typedef char Variable;
+
 		char ** shortVarNames; // 0x0
 		char ** longVarNames; // 0x4
 		char ** floatVarNames; // 0x8
 		char scriptOrCompilerId[32]; // 0xC
-		int shortvarCount;  // 0x2C
+		int shortVarCount;  // 0x2C
 		int longVarCount; // 0x30
 		int floatVarCount; // 0x34
 		int scriptDataSize; // 0x38
-		int localVarSize; // 0x3C
-		int unknown_0x40;
-		int unknown_0x44;
-		int unknown_0x48;
+		unsigned int localVariableCount; // 0x3C
+		IteratedList<Variable*>* shortVarList; // 0x40
+		IteratedList<Variable*>* longVarList; // 0x44
+		IteratedList<Variable*>* floatVarList; // 0x48
 		unsigned char * scriptLineBuffer; // 0x4C
 		int unknown_0x50;
-		int unknown_0x54;
+		int compiledScriptLength; // 0x54
 		unsigned char * scriptBuffer; // 0x58
 		char * commandIterator; // 0x5C
 		char * command; // 0x60
@@ -170,6 +180,13 @@ namespace TES3 {
 		int unknown_0x470;
 		int unknown_0x474;
 		int unknown_0x478;
+
+		bool compile(char* scriptText);
+		bool compileFunction(int function);
+
+		int parseFunctionName();
+
+		void linkVariable(Variable*);
 	};
 	static_assert(sizeof(ScriptCompiler) == 0x47C, "TES3::ScriptCompiler failed size validation");
 }

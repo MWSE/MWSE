@@ -5,13 +5,14 @@
 #include "NIProperty.h"
 #include "NITransform.h"
 
-#include "TES3Collections.h"
-
-#include "Bitset.h"
-
 namespace NI {
+	struct ObjectVelocities {
+		TES3::Vector3 localVelocity;
+		TES3::Vector3 worldVelocity;
+	};
+
 	struct AVObject : ObjectNET {
-		mwse::bitset16 flags; // 0x14
+		unsigned short flags; // 0x14
 		short pad_16;
 		Node * parentNode; // 0x18
 		TES3::Vector3 worldBoundOrigin; // 0x1C
@@ -20,7 +21,7 @@ namespace NI {
 		TES3::Vector3 localTranslate; // 0x30
 		float localScale; // 0x3C
 		TES3::Transform worldTransform; // 0x40
-		TES3::Vector3 * velocities; // 0x74
+		ObjectVelocities* velocities; // 0x74
 		void * modelABV; // 0x78
 		void * worldABV; // 0x7C
 		int (__cdecl * collideCallback)(void*); // 0x80
@@ -31,34 +32,64 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		__declspec(dllexport) AVObject * getObjectByName(const char*);
+		TES3::Vector3 getLocalVelocity() const;
+		void setLocalVelocity(TES3::Vector3*);
+
+		AVObject * getObjectByName(const char*);
 
 		template <typename T>
-		__declspec(dllexport) T * getObjectByNameAndType(const char* name) {
+		T * getObjectByNameAndType(const char* name) {
 			return static_cast<T*>(vTable.asAVObject->getObjectByName(this, name));
 		}
 
-		__declspec(dllexport) bool getAppCulled();
-		__declspec(dllexport) void setAppCulled(bool culled);
+		bool getAppCulled();
+		void setAppCulled(bool culled);
 		
 		//
 		// Other related this-call functions.
 		//
 
-		__declspec(dllexport) void update(float fTime = 0.0f, bool bUpdateControllers = false, bool bUpdateBounds = true);
-		__declspec(dllexport) void updateEffects();
-		__declspec(dllexport) void updateProperties();
-		__declspec(dllexport) void setLocalRotationMatrix(TES3::Matrix33* matrix);
+		void update(float fTime = 0.0f, bool bUpdateControllers = false, bool bUpdateBounds = true);
+		void updateEffects();
+		void updateProperties();
+		TES3::Matrix33* getLocalRotationMatrix() const;
+		void setLocalRotationMatrix(TES3::Matrix33* matrix);
 
-		__declspec(dllexport) void attachProperty(Pointer<Property> property);
-		__declspec(dllexport) Pointer<Property> * detachProperty(Pointer<Property> * out_detached, PropertyType type);
+		void attachProperty(Property* property);
+		Pointer<Property> detachPropertyByType(PropertyType type);
+		sol::table detachAllProperties_lua(sol::this_state ts);
 
 		//
 		// Custom functions.
 		//
 
-		__declspec(dllexport) void clearTransforms();
-		__declspec(dllexport) Pointer<Property> getProperty(PropertyType type);
+		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua() const;
+
+		void clearTransforms();
+
+		Pointer<Property> getProperty(PropertyType type) const;
+		Pointer<AlphaProperty> getAlphaProperty() const;
+		void setAlphaProperty(sol::optional<AlphaProperty*> prop);
+		Pointer<FogProperty> getFogProperty() const;
+		void setFogProperty(sol::optional<FogProperty*> prop);
+		Pointer<MaterialProperty> getMaterialProperty() const;
+		void setMaterialProperty(sol::optional<MaterialProperty*> prop);
+		Pointer<StencilProperty> getStencilProperty() const;
+		void setStencilProperty(sol::optional<StencilProperty*> prop);
+		Pointer<TexturingProperty> getTexturingProperty() const;
+		void setTexturingProperty(sol::optional<TexturingProperty*> prop);
+		Pointer<VertexColorProperty> getVertexColorProperty() const;
+		void setVertexColorProperty(sol::optional<VertexColorProperty*> prop);
+		Pointer<ZBufferProperty> getZBufferProperty() const;
+		void setZBufferProperty(sol::optional<ZBufferProperty*> prop);
+
+		void update_lua(sol::optional<sol::table> args);
+
+		//
+		// Access to this type's raw functions.
+		//
+
+		static constexpr auto _detachPropertyByType = reinterpret_cast<Pointer<Property> * (__thiscall*)(AVObject*, Pointer<Property>*, PropertyType)>(0x6EAE20);
 
 	};
 	static_assert(sizeof(AVObject) == 0x90, "NI::AVObject failed size validation");
@@ -93,3 +124,5 @@ namespace NI {
 	};
 	static_assert(sizeof(AVObject_vTable) == 0x94, "NI::AVObject's vtable failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::AVObject)

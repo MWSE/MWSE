@@ -1,24 +1,26 @@
 #pragma once
 
-#include "sol.hpp"
-
-#include "LuaUtil.h"
-
 #include "NIObjectLua.h"
+
+#include "NIDynamicEffect.h"
+#include "NILinkedList.h"
 
 namespace mwse {
 	namespace lua {
-		// Speed-optimized binding for NI::ObjectNET.
 		template <typename T>
-		void setUserdataForNIDynamicEffect(sol::simple_usertype<T>& usertypeDefinition) {
+		void setUserdataForNIDynamicEffect(sol::usertype<T>& usertypeDefinition) {
 			setUserdataForNIAVObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition.set("affectedNodes", &NI::DynamicEffect::affectedNodes);
-			usertypeDefinition.set("enabled", &NI::DynamicEffect::enabled);
+			usertypeDefinition["affectedNodes"] = &NI::DynamicEffect::affectedNodes;
+			usertypeDefinition["enabled"] = &NI::DynamicEffect::enabled;
+			usertypeDefinition["type"] = sol::readonly_property(&NI::DynamicEffect::getType);
 
-			// Functions exposed as properties.
-			usertypeDefinition.set("type", sol::readonly_property(&NI::DynamicEffect::getType));
+			// Basic function binding.
+			usertypeDefinition["attachAffectedNode"] = &NI::DynamicEffect::attachAffectedNode;
+			usertypeDefinition["detachAffectedNode"] = &NI::DynamicEffect::detachAffectedNode;
 		}
+
+		void bindNIDynamicEffect();
 	}
 }

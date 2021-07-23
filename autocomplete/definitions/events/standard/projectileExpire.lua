@@ -3,17 +3,17 @@ return {
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileProjectile",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile projectile that is expiring.",
 		},
 		["firingReference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "Reference to the actor that fired the projectile.",
 		},
 		["firingWeapon"] = {
 			type = "tes3weapon",
-			readonly = true,
+			readOnly = true,
 			description = "The weapon that fired the projectile.",
 		},
 	},

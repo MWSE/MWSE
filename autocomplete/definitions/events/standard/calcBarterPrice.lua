@@ -3,27 +3,27 @@ return {
 	eventData = {
 		["item"] = {
 			type = "tes3item",
-			readonly = true,
+			readOnly = true,
 			description = "The item, if any, that is being bartered.",
 		},
 		["itemData"] = {
 			type = "tes3itemData",
-			readonly = true,
+			readOnly = true,
 			description = "The item data for the bartered item.",
 		},
 		["mobile"] = {
 			type = "tes3mobileActor",
-			readonly = true,
+			readOnly = true,
 			description = "The mobile actor for who is selling or buying. May not always be available.",
 		},
 		["reference"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "A shortcut to the mobile's reference. May not always be available.",
 		},
 		["basePrice"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The base price of the item, before any event modifications.",
 		},
 		["price"] = {
@@ -32,12 +32,12 @@ return {
 		},
 		["count"] = {
 			type = "number",
-			readonly = true,
+			readOnly = true,
 			description = "The number of items being bartered.",
 		},
 		["buying"] = {
 			type = "boolean",
-			readonly = true,
+			readOnly = true,
 			description = "If true, the player is buying, otherwise the player is selling.",
 		},
 	},

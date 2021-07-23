@@ -1,12 +1,6 @@
 #pragma once
 
-#include "sol_forward.hpp"
-
-#include <cstddef>
-#include <string>
-
 #include "TES3Defines.h"
-#include "TES3Script.h"
 
 namespace mwse {
 	namespace lua {
@@ -20,6 +14,8 @@ namespace mwse {
 			sol::object index(std::string);
 			void new_index(std::string, sol::stack_object);
 			size_t length();
+
+			sol::table getVariableData(sol::this_state ts);
 
 		private:
 			TES3::Script* script;

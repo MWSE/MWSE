@@ -21,9 +21,6 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
 namespace mwse {
 	typedef long ArrayItem_t;
 	typedef std::vector<ArrayItem_t> ContainedArray_t;

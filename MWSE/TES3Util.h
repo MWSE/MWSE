@@ -29,29 +29,29 @@
 
 namespace mwse {
 	namespace tes3 {
-		__declspec(dllexport) TES3::Reference* getReference(const char* id);
-		__declspec(dllexport) TES3::Reference* getReference(std::string& id);
+		TES3::Reference* getReference(const char* id);
+		TES3::Reference* getReference(std::string& id);
 
-		__declspec(dllexport) char* setDataString(char**, const char*);
+		void setDataString(char** string, const char* contents, bool allowEmpty = false);
 
-		__declspec(dllexport) bool setEffect(TES3::Effect * effects, long index, long effectId,
+		bool setEffect(TES3::Effect * effects, long index, long effectId,
 			long skillAttributeId, long range, long area, long duration,
 			long minimumMagnitude, long maximumMagnitude);
 
-		__declspec(dllexport) void checkForLevelUp(long progress);
+		void checkForLevelUp(long progress);
 
-		__declspec(dllexport) void messagePlayer(const char* message);
+		int getSkillNameGMST(int);
+		int getAttributeNameGMST(int);
+		int getCastRangeNameGMST(int);
 
-		__declspec(dllexport) int getSkillNameGMST(int);
-		__declspec(dllexport) int getAttributeNameGMST(int);
-		__declspec(dllexport) int getCastRangeNameGMST(int);
+		TES3::SoulGemData * addCustomSoulGem(const TES3::Misc * item);
+		TES3::SoulGemData * getSoulGemData(const TES3::Misc * item);
+		bool isSoulGem(const TES3::Object* objectOrReference);
 
-		__declspec(dllexport) TES3::SoulGemData * addCustomSoulGem(TES3::Misc * item);
-		__declspec(dllexport) TES3::SoulGemData * getSoulGemData(TES3::Misc * item);
-		__declspec(dllexport) bool isSoulGem(TES3::Object* objectOrReference);
-
-		__declspec(dllexport) TES3::ArmorSlotData * getArmorSlotData(int slot);
-		__declspec(dllexport) void setArmorSlotData(TES3::ArmorSlotData * data);
+		std::shared_ptr<TES3::ClothingSlotData> getClothingSlotData(int slot);
+		void setClothingSlotData(std::shared_ptr<TES3::ClothingSlotData> data);
+		std::shared_ptr<TES3::ArmorSlotData> getArmorSlotData(int slot);
+		void setArmorSlotData(std::shared_ptr<TES3::ArmorSlotData> data);
 
 		// Used in xFirstNPC/Static/Item. The last element should never be non-null.
 		// The first eight elements are pointers to the first reference from the 8 surrounding cells.
@@ -59,56 +59,27 @@ namespace mwse {
 
 		void clearExteriorRefs();
 
-		__declspec(dllexport) void startNewGame();
+		void startNewGame();
 
-		__declspec(dllexport) int getRestHoursInterrupted();
-		__declspec(dllexport) void setRestHoursInterrupted(int);
-		__declspec(dllexport) int getRestInterruptCount();
-		__declspec(dllexport) void setRestInterruptCount(int);
+		int getRestHoursInterrupted();
+		void setRestHoursInterrupted(int);
+		int getRestInterruptCount();
+		void setRestInterruptCount(int);
 
-		__declspec(dllexport) int resolveAssetPath(const char* path, char * out_buffer = nullptr);
+		int resolveAssetPath(const char* path, char * out_buffer = nullptr);
+
+		char* getThreadSafeStringBuffer();
+
+		bool testLineOfSight(TES3::Vector3* pos1, float height1, TES3::Vector3* pos2, float height2);
+
+		inline constexpr float& getSimulationTimestamp() {
+			return *reinterpret_cast<float*>(0x7C6708);
+		};
 
 		//
 		// Original function calls in Morrowind.
 		//
 
-		__declspec(dllexport) int rand(unsigned int arg0 = 0);
-
-		template <typename T>
-		__declspec(dllexport) T * _new() {
-			return reinterpret_cast<T*(__cdecl*)(size_t)>(0x727692)(sizeof(T));
-		}
-
-		__declspec(dllexport) void * _new(size_t size);
-
-		template <typename T>
-		__declspec(dllexport) void _delete(T * address) {
-			const auto __delete = reinterpret_cast<void (__cdecl*)(T *)>(0x727530);
-			__delete(address);
-		}
-
-		typedef void* (__cdecl *ExternalRealloc)(void*, size_t);
-		extern ExternalRealloc _realloc;
-		__declspec(dllexport) void* realloc(void* address, size_t size);
-
-		typedef void* (__cdecl *ExternalMalloc)(size_t);
-		extern ExternalMalloc _malloc;
-		__declspec(dllexport) void* malloc(size_t size);
-
-		template <typename T>
-		__declspec(dllexport) T* malloc(size_t size) {
-			return reinterpret_cast<T*>(_malloc(size));
-		}
-
-		template <typename T>
-		__declspec(dllexport) T* malloc() {
-			T * ret = reinterpret_cast<T*>(_malloc(sizeof(T)));
-			memset(ret, 0, sizeof(T));
-			return ret;
-		}
-
-		typedef void(__cdecl *ExternalFree)(void*);
-		extern ExternalFree _free;
-		__declspec(dllexport) void free(void* address);
+		int rand(unsigned int arg0 = 0);
 	}
 };

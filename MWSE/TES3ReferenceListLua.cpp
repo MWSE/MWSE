@@ -1,6 +1,5 @@
 #include "TES3ReferenceLua.h"
 
-#include "sol.hpp"
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
@@ -16,19 +15,16 @@ namespace mwse {
 			sol::state& state = stateHandle.state;
 
 			// Start our usertype. We must finish this with state.set_usertype.
-			auto usertypeDefinition = state.create_simple_usertype<TES3::ReferenceList>();
-			usertypeDefinition.set("new", sol::no_constructor);
+			auto usertypeDefinition = state.new_usertype<TES3::ReferenceList>("tes3referenceList");
+			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
-			usertypeDefinition.set("size", sol::readonly_property(&TES3::ReferenceList::size));
+			usertypeDefinition["size"] = sol::readonly_property(&TES3::ReferenceList::size);
 
 			// Access to other objects that need to be packaged.
-			usertypeDefinition.set("cell", sol::readonly_property([](TES3::ReferenceList& self) { return makeLuaObject(self.cell); }));
-			usertypeDefinition.set("head", sol::readonly_property([](TES3::ReferenceList& self) { return makeLuaObject(self.head); }));
-			usertypeDefinition.set("tail", sol::readonly_property([](TES3::ReferenceList& self) { return makeLuaObject(self.tail); }));
-
-			// Finish up our usertype.
-			state.set_usertype("tes3referenceList", usertypeDefinition);
+			usertypeDefinition["cell"] = sol::readonly_property(&TES3::ReferenceList::cell);
+			usertypeDefinition["head"] = sol::readonly_property(&TES3::ReferenceList::head);
+			usertypeDefinition["tail"] = sol::readonly_property(&TES3::ReferenceList::tail);
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace mwse {
 
 	float xContentList::execute(mwse::VMExecuteInterface &virtualMachine) {
 		// Get parameters.
-		TES3::IteratorNode<TES3::ItemStack>* node = reinterpret_cast<TES3::IteratorNode<TES3::ItemStack>*>(mwse::Stack::getInstance().popLong());
+		TES3::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<TES3::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -65,17 +65,17 @@ namespace mwse {
 		}
 
 		// Results.
-		char* id = NULL;
+		const char* id = NULL;
 		long count = 0;
 		long type = 0;
 		long value = 0;
 		float weight = 0;
 		char* name = NULL;
-		TES3::IteratorNode<TES3::ItemStack>* next = NULL;
+		TES3::IteratedList<TES3::ItemStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.
 		if (node == NULL && reference->baseObject->isActor()) {
-			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.iterator.head;
+			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 		}
 
 		// Validate the node we've obtained.

@@ -1,16 +1,12 @@
 #pragma once
 
-#include "sol.hpp"
-
 #include "NIDefines.h"
-#include "NIPointer.h"
 
 #include "TES3Defines.h"
+#include "TES3UIDefines.h"
 
 #include "TES3DataHandler.h"
 #include "TES3Vectors.h"
-
-#include <unordered_map>
 
 namespace mwse {
 	namespace lua {
@@ -27,6 +23,21 @@ namespace mwse {
 			}
 
 			return value;
+		}
+
+		template <>
+		std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue);
+
+		template <typename T>
+		sol::optional<T> getOptionalParam(sol::optional<sol::table> maybeParams, const char* key) {
+			if (maybeParams) {
+				sol::table params = maybeParams.value();
+				sol::object maybeValue = params[key];
+				if (maybeValue.valid() && maybeValue.is<T>()) {
+					return maybeValue.as<T>();
+				}
+			}
+			return {};
 		}
 
 		template <typename T>
@@ -49,6 +60,7 @@ namespace mwse {
 			return value;
 		}
 
+		TES3::BaseObject* getOptionalParamBaseObject(sol::optional<sol::table> maybeParams, const char* key);
 		TES3::Script* getOptionalParamExecutionScript(sol::optional<sol::table> maybeParams);
 		TES3::Reference* getOptionalParamExecutionReference(sol::optional<sol::table> maybeParams);
 		TES3::Script* getOptionalParamScript(sol::optional<sol::table> maybeParams, const char* key);
@@ -57,19 +69,25 @@ namespace mwse {
 		TES3::Spell* getOptionalParamSpell(sol::optional<sol::table> maybeParams, const char* key);
 		TES3::Dialogue* getOptionalParamDialogue(sol::optional<sol::table> maybeParams, const char* key);
 		TES3::Sound* getOptionalParamSound(sol::optional<sol::table> maybeParams, const char* key);
+		sol::optional<TES3::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key);
 		sol::optional<TES3::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key);
 		TES3::Cell* getOptionalParamCell(sol::optional<sol::table> maybeParams, const char* key);
 
-		void setVectorFromLua(TES3::Vector3*, sol::stack_object);
+		TES3::UI::Property getPropertyFromObject(sol::object object);
+		TES3::UI::UI_ID getUIIDFromObject(sol::object object);
+		TES3::UI::UI_ID getOptionalUIID(sol::optional<sol::table> maybeParams, const char* key);
 
-		sol::object makeLuaObject(TES3::BaseObject* object);
-		sol::object makeLuaObject(TES3::MobileObject* object);
-		sol::object makeLuaObject(TES3::Weather* weather);
-		sol::object makeLuaObject(TES3::GameFile* gameFile);
-		sol::object makeLuaObject(NI::Object* object);
+		bool setVectorFromLua(TES3::Vector2&, sol::stack_object);
+		bool setVectorFromLua(TES3::Vector3&, sol::stack_object);
 
-		// Creates a NI::Pointer and packages it into a sol::object for reference counting.
-		sol::object makeLuaNiPointer(NI::Object* object);
+		// Allow handling a default value as an unsatisfied optional.
+		template <typename T>
+		sol::optional<T> valueDefaultAsNil(const T& value, const T& defaultValue) {
+			if (value == defaultValue) {
+				return {};
+			}
+			return value;
+		}
 
 		// Dumps the current stacktrace to the log.
 		void logStackTrace(const char* message = nullptr);

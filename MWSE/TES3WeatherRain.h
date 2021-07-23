@@ -13,6 +13,13 @@ namespace TES3 {
 		float raindropsMax; // 0x430
 		Sound * rainLoopSound; // 0x434
 		bool rainPlaying;  // 0x438
+
+		//
+		// Custom functions.
+		//
+
+		bool setRainLoopSoundID(const char* id);
+
 	};
 	static_assert(sizeof(WeatherRain) == 0x43C, "TES3::WeatherRain failed size validation");
 }

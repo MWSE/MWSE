@@ -1,6 +1,6 @@
-#include <string.h>
-#include "MemAccess.h"
 #include "MemoryUtil.h"
+
+#include "MemAccess.h"
 #include "Log.h"
 
 namespace mwse {
@@ -232,7 +232,7 @@ namespace mwse {
 		return true;
 	}
 
-	bool __declspec(dllexport) genNOPUnprotected(DWORD address, DWORD size) {
+	bool genNOPUnprotected(DWORD address, DWORD size) {
 		// Unprotect memory.
 		DWORD oldProtect;
 		VirtualProtect((DWORD*)address, size, PAGE_READWRITE, &oldProtect);
@@ -256,6 +256,13 @@ namespace mwse {
 
 		// Protect memory again.
 		VirtualProtect((DWORD*)address, sizeof(BYTE), oldProtect, &oldProtect);
+	}
+
+	void writeBytesUnprotected(DWORD address, const BYTE* value, size_t count) {
+		DWORD oldProtect;
+		VirtualProtect((DWORD*)address, count, PAGE_READWRITE, &oldProtect);
+		memmove_s((void*)address, count, value, count);
+		VirtualProtect((DWORD*)address, count, oldProtect, &oldProtect);
 	}
 
 	void writeDoubleWordUnprotected(DWORD address, DWORD value) {
@@ -298,12 +305,7 @@ namespace mwse {
 		// Read incremental linker trampoline to find real patch
 		patch += 5 + *reinterpret_cast<const ptrdiff_t*>(patch + 1);
 #endif
-		DWORD oldProtect;
-		VirtualProtect((DWORD*)address, size, PAGE_READWRITE, &oldProtect);
-
-		memmove_s((void*)address, size, patch, size);
-
-		VirtualProtect((DWORD*)address, size, oldProtect, &oldProtect);
+		writeBytesUnprotected(address, patch, size);
 	}
 
 	DWORD getCallAddress(DWORD address) {
@@ -317,4 +319,25 @@ namespace mwse {
 		return *reinterpret_cast<DWORD*>(address + 1) + address + 0x5;
 	}
 
+	namespace tes3 {
+		const auto TES3_operator_new = reinterpret_cast<void* (__cdecl*)(size_t)>(0x727692);
+		void* _new(size_t size) {
+			return TES3_operator_new(size);
+		}
+
+		const auto TES3_operator_realloc = reinterpret_cast<void* (__cdecl**)(void*, size_t)>(0x746288);
+		void* realloc(void* address, size_t size) {
+			return (*TES3_operator_realloc)(address, size);
+		}
+
+		const auto TES3_operator_malloc = reinterpret_cast<void* (__cdecl*)(size_t)>(0x727738);
+		void* malloc(size_t size) {
+			return TES3_operator_malloc(size);
+		}
+
+		const auto TES3_operator_free = reinterpret_cast<void(__cdecl*)(void*)>(0x727732);
+		void free(void* address) {
+			TES3_operator_free(address);
+		}
+	}
 }

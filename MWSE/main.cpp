@@ -19,10 +19,6 @@
 
 **************************************************************************/
 
-#include <windows.h>
-#include <dbghelp.h>
-#include <filesystem>
-
 #include "mwAdapter.h"
 #include "Log.h"
 #include "MgeTes3Machine.h"
@@ -31,16 +27,12 @@
 #include "CodePatchUtil.h"
 #include "PatchUtil.h"
 #include "MWSEDefs.h"
+#include "BuildDate.h"
 
 #include "LuaManager.h"
 #include "TES3Game.h"
 
 TES3MACHINE* mge_virtual_machine = NULL;
-void* external_malloc = NULL;
-void* external_free = NULL;
-void* external_realloc = NULL;
-
-static BOOL CALLBACK EnumSymbolsCallback(PSYMBOL_INFO, ULONG, PVOID);
 
 struct VersionStruct {
 	BYTE major;
@@ -69,22 +61,39 @@ VersionStruct GetMGEVersion() {
 	}
 
 	VersionStruct version;
-	version.major = HIWORD(pFileInfo->dwProductVersionMS);
-	version.minor = LOWORD(pFileInfo->dwProductVersionMS);
-	version.patch = LOWORD(pFileInfo->dwProductVersionLS >> 16);
-	version.build = HIWORD(pFileInfo->dwProductVersionLS >> 16);
+	version.major = BYTE(HIWORD(pFileInfo->dwProductVersionMS));
+	version.minor = BYTE(LOWORD(pFileInfo->dwProductVersionMS));
+	version.patch = BYTE(LOWORD(pFileInfo->dwProductVersionLS >> 16));
+	version.build = BYTE(HIWORD(pFileInfo->dwProductVersionLS >> 16));
 	delete[] pbVersionInfo;
 
 	return version;
 }
 
-bool __fastcall OnGameStructInitialized(TES3::Game * game) {
-	// Setup our lua interface before initializing.
-	mwse::lua::LuaManager::getInstance().hook();
-
+const auto TES3_Game_ctor = reinterpret_cast<TES3::Game*(__thiscall*)(TES3::Game*)>(0x417280);
+TES3::Game* __fastcall OnGameStructCreated(TES3::Game * game) {
 	// Install necessary patches.
 	mwse::patch::installPatches();
 
+	// Call overloaded function.
+	return TES3_Game_ctor(game);
+}
+
+// This is technically a this-call function, but it doesn't make any use of member data.
+const auto TES3_LoadLanguageFromINI = reinterpret_cast<void(__stdcall*)()>(0x467850);
+
+bool __fastcall OnGameStructInitialized(TES3::Game* game) {
+	// Force language recognition early so pre-initialization mods can make use of it.
+	// We want this to run before mwse_init.lua but after MO2 has had a chance to do its thing.
+	TES3_LoadLanguageFromINI();
+
+	// Setup our lua interface before initializing.
+	mwse::lua::LuaManager::getInstance().hook();
+
+	// Install our later patches.
+	mwse::patch::installPostLuaPatches();
+
+	// Call overloaded function.
 	return game->initialize();
 }
 
@@ -97,7 +106,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 
 		// Initialize log file.
 		mwse::log::OpenLog("MWSE.log");
+#ifdef APPVEYOR_BUILD_NUMBER
+		mwse::log::getLog() << "Morrowind Script Extender v" << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << "-" << APPVEYOR_BUILD_NUMBER << " (built " << __DATE__ << ") hooked." << std::endl;
+#else
 		mwse::log::getLog() << "Morrowind Script Extender v" << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << " (built " << __DATE__ << ") hooked." << std::endl;
+#endif
 
 		// Before we do anything else, ensure that we can make minidumps.
 		if (!mwse::patch::installMiniDumpHook()) {
@@ -124,17 +137,33 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 			mwse::log::getLog() << "Found MGE XE. Version: " << (int)mgeVersion.major << "." << (int)mgeVersion.minor << "." << (int)mgeVersion.patch << "." << (int)mgeVersion.build << std::endl;
 		}
 
-		// Look to see if an update to the MWSE Updater was downloaded. If so, swap the exes.
-		if (std::experimental::filesystem::exists("MWSE-Update.tmp")) {
-			if (std::experimental::filesystem::exists("MWSE-Update.exe")) {
-				std::experimental::filesystem::remove("MWSE-Update.exe");
+		// Legacy support for old updater exe swap method.
+		if (std::filesystem::exists("MWSE-Update.tmp")) {
+			if (std::filesystem::exists("MWSE-Update.exe")) {
+				std::filesystem::remove("MWSE-Update.exe");
 			}
-			std::experimental::filesystem::rename("MWSE-Update.tmp", "MWSE-Update.exe");
+			std::filesystem::rename("MWSE-Update.tmp", "MWSE-Update.exe");
+		}
+
+		// List of temporary files that the updater couldn't update, and so need to be swapped out.
+		std::vector<std::string> updaterTempFiles;
+		updaterTempFiles.push_back("MWSE-Update.exe");
+		updaterTempFiles.push_back("Newtonsoft.Json.dll");
+		
+		// Look to see if an update to the MWSE Updater was downloaded. If so, swap the temp files.
+		for (const std::string& destFile : updaterTempFiles) {
+			const std::string tempFile = destFile + ".tmp";
+			if (std::filesystem::exists(tempFile)) {
+				if (std::filesystem::exists(destFile)) {
+					std::filesystem::remove(destFile);
+				}
+				std::filesystem::rename(tempFile, destFile);
+			}
 		}
 
 		// Delete any old crash dumps.
-		if (std::experimental::filesystem::exists("MWSE_MiniDump.dmp")) {
-			std::experimental::filesystem::remove("MWSE_MiniDump.dmp");
+		if (std::filesystem::exists("MWSE_MiniDump.dmp")) {
+			std::filesystem::remove("MWSE_MiniDump.dmp");
 		}
 
 		// Initialize our main mwscript hook.
@@ -143,43 +172,41 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		// Create MGE VM interface.
 		mge_virtual_machine = new TES3MACHINE();
 
-		// Find the addresses of malloc(), realloc(), free() that MW uses, so that we can interact with its heap.
-		process = GetCurrentProcess();
-		SymInitialize(process, NULL, TRUE);
-		SymEnumSymbols(process, 0, "msvcrt!*", EnumSymbolsCallback, NULL);
-		SymCleanup(process);
-
-		// Ensure that we got malloc.
-		if (external_malloc == NULL) {
-			mwse::log::getLog() << "Error: unable to find malloc()" << std::endl;
-			exit(1);
-		}
-		else {
-			mwse::tes3::_malloc = reinterpret_cast<mwse::tes3::ExternalMalloc>(external_malloc);
-		}
-
-		// Ensure that we got free.
-		if (external_free == NULL) {
-			mwse::log::getLog() << "Error: unable to find free()" << std::endl;
-			exit(1);
-		}
-		else {
-			mwse::tes3::_free = reinterpret_cast<mwse::tes3::ExternalFree>(external_free);
-		}
-
-		// Ensure that we got realloc.
-		if (external_realloc == NULL) {
-			mwse::log::getLog() << "Error: unable to find realloc()" << std::endl;
-			exit(1);
-		}
-		else {
-			mwse::tes3::_realloc = reinterpret_cast<mwse::tes3::ExternalRealloc>(external_realloc);
-		}
-
 		// Parse and load the features installed by the Morrowind Code Patch.
-		if (!mwse::mcp::loadFeatureList()) {
-			mwse::log::getLog() << "Failed to detect Morrowind Code Patch installed features. MCP may not be installed, or the mcpatch\\installed file may have been deleted. Mods will be unable to detect MCP feature support." << std::endl;
+		if (mwse::mcp::loadFeatureList()) {
+			auto& log = mwse::log::getLog();
+			log << "Morrowind Code Patch installed features: ";
+
+			// Get a sorted list of enabled features.
+			std::vector<long> enabledFeatures;
+			for (const auto& itt : mwse::mcp::featureStore) {
+				if (itt.second) {
+					enabledFeatures.push_back(itt.first);
+				}
+			}
+			std::sort(enabledFeatures.begin(), enabledFeatures.end());
+
+			// Print them to the log.
+			log << std::dec;
+			for (auto i = 0U; i < enabledFeatures.size(); i++) {
+				if (i != 0) log << ", ";
+				log << enabledFeatures[i];
+			}
+			log << std::endl;
 		}
+		else {
+			mwse::log::getLog() << "The Morrowind Script Extender requires the Morrowind Code Patch to be installed. Ensure that you have installed it, and have not deleted the mcpatch folder." << std::endl;
+
+			auto result = MessageBox(NULL, "The Morrowind Script Extender requires the Morrowind Code Patch to be installed. Ensure that you have installed it, and have not deleted the mcpatch folder.\n\nWould you like to open the browser to visit the MCP download page?", "Morrowind Code Patch not installed!", MB_YESNO | MB_APPLMODAL | MB_ICONERROR);
+			if (result == IDYES) {
+				system("start https://www.nexusmods.com/morrowind/mods/19510?");
+			}
+
+			return FALSE;
+		}
+
+		// Install patches.
+		mwse::genCallEnforced(0x417169, 0x417280, reinterpret_cast<DWORD>(OnGameStructCreated));
 
 		// Delay our lua hook until later, to ensure that Mod Organizer's VFS is hooked up.
 		if (!mwse::genCallEnforced(0x417195, 0x417880, reinterpret_cast<DWORD>(OnGameStructInitialized))) {
@@ -218,20 +245,4 @@ TES3MACHINE* MWSEGetVM()
 bool MWSEAddInstruction(OPCODE op, INSTRUCTION *ins)
 {
 	return mge_virtual_machine->AddInstruction(op, ins);
-}
-
-static BOOL CALLBACK EnumSymbolsCallback(PSYMBOL_INFO symbol_info,
-	ULONG /*symbol_size*/,
-	PVOID /*user_context*/)
-{
-	if (strcmp(symbol_info->Name, "malloc") == 0) {
-		external_malloc = reinterpret_cast<void*>(symbol_info->Address);
-	}
-	else if (strcmp(symbol_info->Name, "free") == 0) {
-		external_free = reinterpret_cast<void*>(symbol_info->Address);
-	}
-	else if (strcmp(symbol_info->Name, "realloc") == 0) {
-		external_realloc = reinterpret_cast<void*>(symbol_info->Address);
-	}
-	return TRUE;
 }

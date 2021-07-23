@@ -1,8 +1,5 @@
 #include "TES3GameFile.h"
 
-#include <string.h>
-#include <Windows.h>
-
 #include "TES3Util.h"
 
 #include "TES3DataHandler.h"
@@ -46,14 +43,34 @@ namespace TES3 {
 		return TES3_TES3File_writeChunkData(this, tag, data, size);
 	}
 
+	const auto TES3_TES3File_writeRecordHeader = reinterpret_cast<int(__thiscall*)(GameFile*, unsigned int, unsigned int)>(0x4B6B00);
+	int GameFile::writeRecordHeader(unsigned int tag, unsigned int flags) {
+		return TES3_TES3File_writeRecordHeader(this, tag, flags);
+	}
+
+	const auto TES3_TES3File_endRecord = reinterpret_cast<int(__thiscall*)(GameFile*)>(0x4B6C50);
+	int GameFile::endRecord() {
+		return TES3_TES3File_endRecord(this);
+	}
+
+	const auto TES3_TES3File_getFirstSubrecord = reinterpret_cast<unsigned int(__thiscall*)(GameFile*)>(0x4B6750);
+	unsigned int GameFile::getFirstSubrecord() {
+		return TES3_TES3File_getFirstSubrecord(this);
+	}
+
 	const auto TES3_TES3File_hasNextSubrecord = reinterpret_cast<bool(__thiscall *)(GameFile*)>(0x4B67F0);
 	bool GameFile::hasNextSubrecord() {
 		return TES3_TES3File_hasNextSubrecord(this);
 	}
 
-	const auto TES3_TES3File_getNextSubrecord = reinterpret_cast<int(__thiscall *)(GameFile*)>(0x4B67C0);
-	int GameFile::getNextSubrecord() {
+	const auto TES3_TES3File_getNextSubrecord = reinterpret_cast<unsigned int(__thiscall *)(GameFile*)>(0x4B67C0);
+	unsigned int GameFile::getNextSubrecord() {
 		return TES3_TES3File_getNextSubrecord(this);
+	}
+
+	const auto TES3_TES3File_hasMoreRecords = reinterpret_cast<int(__thiscall*)(GameFile*)>(0x4B67F0);
+	bool GameFile::hasMoreRecords() {
+		return TES3_TES3File_hasMoreRecords(this);
 	}
 
 	bool GameFile::collectActiveMods(bool showMasterErrors) {
@@ -72,6 +89,11 @@ namespace TES3 {
 		return TES3_TES3File_setFilePointer(this, offset);
 	}
 
+	const auto TES3_TES3File_getMaster = reinterpret_cast<GameFile*(__thiscall*)(GameFile*, unsigned int)>(0x4B5CF0);
+	GameFile* GameFile::getMaster(unsigned int index) {
+		return TES3_TES3File_getMaster(this, index);
+	}
+
 	std::uint64_t GameFile::getFileSize() const {
 		auto x = reinterpret_cast<const WIN32_FIND_DATAA*>(findData);
 		uint64_t fileSize;
@@ -87,4 +109,68 @@ namespace TES3 {
 		time = (uint64_t(x->ftLastWriteTime.dwHighDateTime) << 32) + uint64_t(x->ftLastWriteTime.dwLowDateTime);
 		return time;
 	}
+
+	const char* GameFile::getFilename() const {
+		return filename;
+	}
+
+	const char* GameFile::getPath() const {
+		return path;
+	}
+
+	const char* GameFile::getAuthor() const {
+		return author;
+	}
+
+	const char* GameFile::getDescription() const {
+		return description;
+	}
+
+	float GameFile::getCurrentHealth() const {
+		return gmdt.currentHealth;
+	}
+
+	float GameFile::getMaxHealth() const {
+		return gmdt.maxHealth;
+	}
+
+	float GameFile::getGameHour() const {
+		return gmdt.gameHour;
+	}
+
+	float GameFile::getDay() const {
+		return gmdt.day;
+	}
+
+	float GameFile::getMonth() const {
+		return gmdt.month;
+	}
+
+	float GameFile::getYear() const {
+		return gmdt.year;
+	}
+
+	const char* GameFile::getCellName() const {
+		return gmdt.cellName;
+	}
+
+	float GameFile::getDaysPassed() const {
+		return gmdt.daysPassed;
+	}
+
+	const char* GameFile::getPlayerName() const {
+		return gmdt.playerName;
+	}
+
+	sol::table GameFile::getMasters_lua(sol::this_state ts) const {
+		sol::state_view state = ts;
+
+		sol::table t = state.create_table();
+		TES3::GameFile* master = arrayMasters;
+		for (int i = 1, count = masterNames->size(); i <= count; ++i, ++master) {
+			t[i] = master;
+		}
+		return t;
+	}
+
 }

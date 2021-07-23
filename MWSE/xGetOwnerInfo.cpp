@@ -49,7 +49,7 @@ namespace mwse
 
 	float xGetOwnerInfo::execute(mwse::VMExecuteInterface &virtualMachine)
 	{
-		char* id = NULL;
+		const char* id = NULL;
 		long rank = 0;
 		long type = 0;
 

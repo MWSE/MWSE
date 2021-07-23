@@ -4,7 +4,6 @@
 #include "LuaDisableableEvent.h"
 
 #include "NIObject.h"
-#include "NIPointer.h"
 
 namespace mwse {
 	namespace lua {

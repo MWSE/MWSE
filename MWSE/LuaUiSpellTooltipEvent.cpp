@@ -23,7 +23,7 @@ namespace mwse {
 				sol::table eventData = state.create_table();
 
 				eventData["tooltip"] = m_Tooltip;
-				eventData["spell"] = makeLuaObject(m_Spell);
+				eventData["spell"] = m_Spell;
 
 				return eventData;
 			}

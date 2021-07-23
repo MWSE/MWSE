@@ -3,12 +3,12 @@ return {
 	eventData = {
 		["current"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The activation target for the player, should they press the activation key.",
 		},
 		["previous"] = {
 			type = "tes3reference",
-			readonly = true,
+			readOnly = true,
 			description = "The previous activation target.",
 		},
 	},

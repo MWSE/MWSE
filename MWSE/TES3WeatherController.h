@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 #include "NIDefines.h"
 
-#include "TES3Collections.h"
+#include "TES3IteratedList.h"
 #include "TES3Vectors.h"
 
 namespace TES3 {
@@ -90,8 +90,8 @@ namespace TES3 {
 		float starsFadingDuration; // 0x138
 		int activeRainParticles; // 0x13C
 		int activeSnowParticles; // 0x140
-		Iterator<void> listActiveParticles; // 0x144
-		Iterator<void> listInactiveParticles; // 0x158
+		IteratedList<void*> listActiveParticles; // 0x144
+		IteratedList<void*> listInactiveParticles; // 0x158
 		float hoursBetweenWeatherChanges; // 0x16C
 		float transitionScalar; // 0x170
 		float hoursRemaining; // 0x174
@@ -125,13 +125,19 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
+		float calcSunDamageScalar();
 		void switchWeather(int weatherId, float startingTransition);
 		
 		//
 		// Helper functions.
 		//
 
+		std::reference_wrapper<Weather*[10]> getWeathers();
+
 		void updateVisuals();
+
+		void switchImmediate(int weather);
+		void switchTransition(int weather);
 	};
 	static_assert(sizeof(WeatherController) == 0x1F0, "TES3::WeatherController failed size validation");
 }

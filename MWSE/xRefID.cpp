@@ -50,7 +50,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		char* objectId = reference->baseObject->vTable.object->getObjectID(reference->baseObject);
+		const char* objectId = reference->baseObject->getObjectID();
 
 		Stack::getInstance().pushString(objectId);
 

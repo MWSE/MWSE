@@ -7,19 +7,32 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 
 namespace MWSE
 {
     /// <summary>
     /// The main auto updater program. The program will do the following:
-    /// 1) Reads a text file at https://nullcascade.com/mwse/version_dev
-    /// 2) Compares its version information to the local mwse-version.txt file.
-    /// 3) If the version doesn't match, it downloads the file from https://nullcascade.com/mwse/mwse-dev.zip
+    /// 1) Reads the GitHub API to find the commit hash for the latest release.
+    /// 2) Compares its information to the local mwse-version.txt file.
+    /// 3) If the version doesn't match, it downloads the file from https://github.com/MWSE/MWSE/releases/download/build-automatic/mwse.zip
     /// 4) Extracts the contents and cleans up after itself.
     /// 5) Saves the new version as mwse-version.txt.
     /// </summary>
     class AutoUpdater
     {
+        /// <summary>
+        /// Where we download the file from.
+        /// </summary>
+        static string DownloadURL = "https://github.com/MWSE/MWSE/releases/download/build-automatic/mwse.zip";
+        static string GitHubVersionInfoURL = "https://api.github.com/repos/MWSE/MWSE/releases/tags/build-automatic";
+
+        /// <summary>
+        /// Files that are in use by the updater, and so need to be extracted as temporary files.
+        /// These files are then swapped out when MWSE is loaded by running Morrowind.exe.
+        /// </summary>
+        static HashSet<string> TemporaryInstallFiles = new HashSet<string> { "MWSE-Update.exe", "Newtonsoft.Json.dll" };
+
         /// <summary>
         /// Determines if Morrowind is currently running in the background.
         /// </summary>
@@ -37,6 +50,33 @@ namespace MWSE
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Fetches a remote URL json's content, and attempts to interpret it as a C# object.
+        /// </summary>
+        /// <typeparam name="T">The object to attempt to convert to.</typeparam>
+        /// <param name="url">The URL to fetch the json from.</param>
+        /// <returns></returns>
+        private static T DownloadSerializedJsonData<T>(string url) where T : new()
+        {
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            request.Method = "GET";
+            request.Proxy = null;
+            request.PreAuthenticate = true;
+            request.UserAgent = "MWSE-Updater";
+
+            var json = string.Empty;
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            {
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    json = reader.ReadToEnd();
+                }
+
+            }
+
+            return !string.IsNullOrEmpty(json) ? JsonConvert.DeserializeObject<T>(json) : new T();
         }
 
         /// <summary>
@@ -105,6 +145,12 @@ namespace MWSE
 
             try
             {
+                // On Windows versions before 8.1, we have to force TLS support.
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.CompareTo(new Version(6, 3)) < 0)
+                {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                }
+
                 WebClient webClient = new WebClient();
 
                 // Get the currently installed version.
@@ -116,8 +162,19 @@ namespace MWSE
                     Console.WriteLine("Installed version: {0}", currentVersion);
                 }
 
+                // Download information from GitHub.
+                var releaseInfo = DownloadSerializedJsonData<GitHubRelease>(GitHubVersionInfoURL);
+                if (releaseInfo == null)
+                {
+                    Console.WriteLine("ERROR: Could not fetch remote version information!");
+#if _DEBUG
+                    Console.ReadKey();
+#endif
+                    return 2;
+                }
+
                 // Check the latest dev version.
-                String latestVersion = webClient.DownloadString("https://nullcascade.com/mwse/version_dev").Trim();
+                String latestVersion = releaseInfo.target_commitish;
                 if (String.IsNullOrEmpty(latestVersion))
                 {
                     Console.WriteLine("ERROR: Could not determine version string!");
@@ -137,9 +194,11 @@ namespace MWSE
                     if (startAfter)
                     {
                         Console.WriteLine("Starting Morrowind.");
-                        ProcessStartInfo startInfo = new ProcessStartInfo();
-                        startInfo.WorkingDirectory = installLocation;
-                        startInfo.FileName = "Morrowind.exe";
+                        ProcessStartInfo startInfo = new ProcessStartInfo
+                        {
+                            WorkingDirectory = installLocation,
+                            FileName = "Morrowind.exe"
+                        };
                         Process.Start(startInfo);
                     }
 
@@ -148,10 +207,10 @@ namespace MWSE
 
                 // Download the update.
                 Console.Write("Downloading update ...");
-                webClient.DownloadFile("https://nullcascade.com/mwse/mwse-dev.zip", "mwse-update.zip");
+                webClient.DownloadFile(DownloadURL, "mwse-update.zip");
                 Console.WriteLine(" Done.");
 
-                // Delete pre-restructure files. TODO: Remove this before stable release.
+                // Delete pre-restructure files.
                 Console.Write("Deleting old files ...");
                 if (Directory.Exists("Data Files\\MWSE\\lua\\mwse"))
                 {
@@ -196,9 +255,9 @@ namespace MWSE
                     foreach (ZipArchiveEntry file in archive.Entries)
                     {
                         string completeFileName = Path.Combine(installLocation, file.FullName);
-                        if (file.Name == "MWSE-Update.exe")
+                        if (TemporaryInstallFiles.Contains(file.Name))
                         {
-                            completeFileName = Path.Combine(installLocation, "MWSE-Update.tmp");
+                            completeFileName = Path.Combine(installLocation, file.Name + ".tmp");
                         }
 
                         if (file.Name == "")
@@ -229,23 +288,23 @@ namespace MWSE
                 if (startAfter)
                 {
                     Console.WriteLine("Starting Morrowind.");
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.WorkingDirectory = installLocation;
-                    startInfo.FileName = "Morrowind.exe";
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        WorkingDirectory = installLocation,
+                        FileName = "Morrowind.exe"
+                    };
                     Process.Start(startInfo);
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("\nThere was a problem when updating MWSE: {0}", e.Message);
-#if _DEBUG
-                Console.ReadKey();
-#endif
-            }
 
 #if _DEBUG
             Console.ReadKey();
 #endif
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("\nThere was a problem when updating MWSE: {0}", e.Message);
+                Console.ReadKey();
+            }
 
             return 0;
         }

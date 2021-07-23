@@ -51,7 +51,7 @@ namespace mwse
 	float xSpellList::execute(mwse::VMExecuteInterface &virtualMachine)
 	{
 		// Get our next node.
-		TES3::IteratorNode<TES3::Spell>* node = reinterpret_cast<TES3::IteratorNode<TES3::Spell>*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<TES3::IteratedList<TES3::Spell*>::Node*>(mwse::Stack::getInstance().popLong());
 
 		// Arguments we will be returning.
 		long spellCount = 0;
@@ -101,7 +101,7 @@ namespace mwse
 
 		// Get our data.
 		TES3::Spell* spell = node->data;
-		spellCount = npc->spellList.list.size;
+		spellCount = npc->spellList.list.size();
 		spellId = spell->objectID;
 		spellName = spell->name;
 		spellType = spell->castType;

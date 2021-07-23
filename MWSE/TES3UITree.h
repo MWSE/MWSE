@@ -9,6 +9,16 @@ namespace TES3 {
 			short key;
 			PropertyValue value;
 			PropertyType valueType;
+
+			//
+			// Custom functions.
+			//
+
+			const char* getName();
+			PropertyType getType() const;
+
+			sol::object getValue_lua(sol::this_state ts) const;
+
 		};
 		static_assert(sizeof(TreeItem) == 0xC, "TES3::UI::TreeNode failed size validation");
 

@@ -47,9 +47,9 @@ namespace TES3 {
 		LoadLinkNode * loadLinkNode; // 0x10
 		DialogueType type; // 0x14
 		int disposition; // 0x18
-		char npcRank; // 0x1C
-		char npcSex; // 0x1D
-		char pcRank; // 0x1E
+		signed char npcRank; // 0x1C
+		signed char npcSex; // 0x1D
+		signed char pcRank; // 0x1E
 		DialogueInfoFilterNode* conditions; // 0x20
 		long espFileOffset; // 0x24
 		Actor* firstHeardFrom; // 0x28
@@ -70,9 +70,24 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		sol::optional<std::string> getID();
+
+		BaseObject* getFilterObject(TES3::DialogueInfoFilterType type);
+
+		Actor* getFilterActor();
+		Race* getFilterNPCRace();
+		Class* getFilterNPCClass();
+		Faction* getFilterNPCFaction();
+		Cell* getFilterNPCCell();
+		Faction* getFilterPCFaction();
+
 		// Loads the string of numbers from disk and returns them.
 		std::string getLongIDFromFile();
+
+		std::string toJson();
 
 	};
 	static_assert(sizeof(DialogueInfo) == 0x2C, "TES3::DialogueInfo failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::DialogueInfo)

@@ -1,5 +1,11 @@
 #include "TES3Light.h"
 
+#include "TES3Util.h"
+
+#include "TES3Inventory.h"
+#include "TES3ItemData.h"
+#include "TES3Reference.h"
+
 namespace TES3 {
 	bool Light::getIsDynamic() {
 		return (flags & LightFlags::Dynamic);
@@ -117,4 +123,37 @@ namespace TES3 {
 			flags &= ~LightFlags::PulseSlow;
 		}
 	}
+
+	void Light::setIconPath(const char* path) {
+		if (strnlen_s(path, 32) >= 32) {
+			throw std::invalid_argument("Path must not be 32 or more characters.");
+		}
+		mwse::tes3::setDataString(&icon, path);
+	}
+
+	std::reference_wrapper<unsigned char[4]> Light::getColor() {
+		return std::ref(color);
+	}
+
+	sol::optional<float> Light::getTimeLeft_lua(sol::object object) const {
+		if (object.is<EquipmentStack>()) {
+			auto stack = object.as<EquipmentStack*>();
+			if (stack->object == this) {
+				return (stack->variables) ? stack->variables->timeLeft : float(time);
+			}
+		}
+		else if (object.is<Reference>()) {
+			auto reference = object.as<Reference*>();
+			if (reference->baseObject == this) {
+				auto itemData = reference->getAttachedItemData();
+				return (itemData) ? itemData->timeLeft : float(time);
+			}
+		}
+		else if (object.is<ItemData>()) {
+			return object.as<ItemData*>()->timeLeft;
+		}
+		return float(time);
+	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Light)

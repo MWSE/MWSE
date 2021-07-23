@@ -55,23 +55,49 @@ namespace TES3 {
 		char unknown_0x31; // Undefined.
 		unsigned short magickaCost; // 0x32
 		Effect effects[8]; // 0x34
-		mwse::bitset32 spellFlags; //  0xF4
+		unsigned int spellFlags; //  0xF4
+
+		Spell();
+		~Spell();
 
 		//
 		// Other related this-call functions.
 		//
 
-		float calculateCastChance(Reference* caster, bool checkMagicka = true, int* weakestSchoolId = 0);
-		float calculateCastChance(MobileActor* caster, bool checkMagicka = true, int* weakestSchoolId = 0);
+		Effect* getLeastProficientEffect(const NPC* npc);
+		Effect* getLeastProficientEffect(const MobileActor* mobile);
+		Effect* getLeastProficientEffect_lua(sol::stack_object object);
+		int getLeastProficientSchool(const NPC* npc);
+		int getLeastProficientSchool(const MobileActor* mobile);
+		int getLeastProficientSchool_lua(sol::stack_object object);
+		float calculateCastChance(Reference* caster, bool checkMagicka = true, int* weakestSchoolId = nullptr);
+		float calculateCastChance(MobileActor* caster, bool checkMagicka = true, int* weakestSchoolId = nullptr);
 		float castChanceOnCast(MobileActor* caster, bool checkMagicka, int* weakestSchoolId);
 
 		//
 		// Custom functions.
 		//
 
+		bool getSpellFlag(SpellFlag::Flag flag) const;
+		void setSpellFlag(SpellFlag::Flag flag, bool value);
+
+		bool getAutoCalc() const;
+		void setAutoCalc(bool value);
+		bool getPlayerStart() const;
+		void setPlayerStart(bool value);
+		bool getAlwaysSucceeds() const;
+		void setAlwaysSucceeds(bool value);
+
 		size_t getActiveEffectCount();
 		int getFirstIndexOfEffect(int effectId);
+
+		int calculateBasePuchaseCost() const;
+		float calculateCastChance_lua(sol::table params);
+
+		std::reference_wrapper<Effect[8]> getEffects();
 
 	};
 	static_assert(sizeof(Spell) == 0xF8, "TES3::Spell failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Spell)

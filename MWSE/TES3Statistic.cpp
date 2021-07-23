@@ -59,6 +59,10 @@ namespace TES3 {
 		reinterpret_cast<float(__thiscall *)(Statistic*, float, bool)>(TES3_Statistic_setCurrentCapped)(this, value, applyCaps);
 	}
 
+	void Statistic::setCurrent_lua(float value) {
+		setCurrentCapped(value, false);
+	}
+
 	const auto TES3_SkillStatistic_modSkillCapped = reinterpret_cast<void(__thiscall*)(SkillStatistic*, float, bool, bool)>(0x401060);
 	void SkillStatistic::modSkillCapped(float delta, bool capAt0, bool capAt100) {
 		TES3_SkillStatistic_modSkillCapped(this, delta, capAt0, capAt100);

@@ -1,10 +1,5 @@
 #pragma once
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
-
-#include "Bitset.h"
-
 namespace TES3 {
 	namespace KeyBind {
 		enum KeyBind {
@@ -84,6 +79,14 @@ namespace TES3 {
 	static_assert(sizeof(InputConfig) == 0x10, "TES3::InputConfig failed size validation");
 
 	struct InputController {
+		struct DirectInputMouseState : DIMOUSESTATE2 {
+			//
+			// Custom functions.
+			//
+
+			std::reference_wrapper<BYTE[8]> getButtons();
+
+		};
 		struct GamepadState {
 			DIJOYSTATE current;
 			DIJOYSTATE previous;
@@ -97,7 +100,7 @@ namespace TES3 {
 			int unknown_0x4;
 			int unknown_0x8;
 		};
-		mwse::bitset32 creationFlags; // 0x0
+		unsigned int creationFlags; // 0x0
 		LPDIRECTINPUT8 directInputInterface; // 0x4
 		LPDIRECTINPUTDEVICE8 * gamepadsPointers[8]; // 0x8
 		LPDIRECTINPUTDEVICE8 keyboard; // 0x28
@@ -109,8 +112,8 @@ namespace TES3 {
 		int deviceCount; // 0x18F0
 		unsigned char keyboardState[256]; // 0x18F4
 		unsigned char previousKeyboardState[256]; // 0x19F4
-		DIMOUSESTATE2 mouseState; // 0x1AF4
-		DIMOUSESTATE2 previousMouseState; // 0x1B08
+		DirectInputMouseState mouseState; // 0x1AF4
+		DirectInputMouseState previousMouseState; // 0x1B08
 		int unknown_0x1B1C;
 		unsigned int doubleClickTime; // 0x1B20
 		int unknown_0x1B24;
@@ -127,22 +130,36 @@ namespace TES3 {
 		//
 
 		void readKeyState();
-		bool keybindTest(unsigned int, unsigned int);
+		int readButtonPressed(DWORD* data);
+		bool keybindTest(unsigned int, unsigned int) const;
 
 		//
 		// Custom functions.
 		//
 
-		bool isKeyDown(unsigned char keyCode);
-		bool isKeyPressedThisFrame(unsigned char keyCode);
-		bool isKeyReleasedThisFrame(unsigned char keyCode);
+		bool isKeyDown(unsigned char keyCode) const;
+		bool isKeyPressedThisFrame(unsigned char keyCode) const;
+		bool isKeyReleasedThisFrame(unsigned char keyCode) const;
 
-		bool isMouseButtonDown(unsigned char button);
-		bool isMouseButtonPressedThisFrame(unsigned char button);
-		bool isMouseButtonReleasedThisFrame(unsigned char button);
+		bool isMouseButtonDown(unsigned char button) const;
+		bool isMouseButtonPressedThisFrame(unsigned char button) const;
+		bool isMouseButtonReleasedThisFrame(unsigned char button) const;
+
+		bool isAltDown() const;
+		bool isCapsLockActive() const;
+		bool isControlDown() const;
+		bool isShiftDown() const;
+		bool isSuperDown() const;
+
+		bool keybindTest_lua(unsigned int key, sol::optional<unsigned int> transition) const;
+
+		std::reference_wrapper<unsigned char[256]> getKeyboardState();
+		std::reference_wrapper<unsigned char[256]> getPreviousKeyboardState();
+		std::reference_wrapper<InputConfig[34]> getInputConfigs();
 
 	};
 	static_assert(sizeof(InputController) == 0x1D5C, "TES3::InputController failed size validation");
+	static_assert(sizeof(InputController::DirectInputMouseState) == sizeof(DIMOUSESTATE2), "TES3::InputController::DirectInputMouseState failed size validation");
 	static_assert(sizeof(InputController::GamepadState) == 0xA0, "TES3::InputController::GamepadState failed size validation");
 	static_assert(sizeof(InputController::DeviceAxisSupport) == 0x8, "TES3::InputController::DeviceAxisSupport failed size validation");
 	static_assert(sizeof(InputController::Unknown_0x1B28) == 0xC, "TES3::InputController::Unknown_0x1B28 failed size validation");

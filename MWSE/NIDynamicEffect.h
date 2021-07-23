@@ -10,11 +10,21 @@ namespace NI {
 		unsigned int revisionId; // 0x9C
 		NodeLinkedList affectedNodes; // 0xA0
 
+		DynamicEffect();
+		~DynamicEffect();
+
 		//
 		// vTable wrappers.
 		//
 
 		int getType();
+
+		//
+		// Other related this-call functions.
+		//
+
+		void attachAffectedNode(Node* node);
+		void detachAffectedNode(Node* node);
 
 	};
 	static_assert(sizeof(DynamicEffect) == 0xA8, "NI::DynamicEffect failed size validation");
@@ -25,3 +35,5 @@ namespace NI {
 	};
 	static_assert(sizeof(DynamicEffect_vTable) == 0x98, "NI::DynamicEffect's vtable failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::DynamicEffect)

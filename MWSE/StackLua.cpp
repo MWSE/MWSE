@@ -1,6 +1,5 @@
 #include "StackLua.h"
 
-#include "sol.hpp"
 #include "LuaUtil.h"
 #include "LuaManager.h"
 
@@ -19,15 +18,15 @@ namespace mwse {
 			// Functions for pushing values.
 			//
 
-			state["mwse"]["stack"]["pushShort"] = [](double value) {
+			state["mwse"]["stack"]["pushShort"] = [](short value) {
 				Stack::getInstance().pushShort(value);
 			};
 
-			state["mwse"]["stack"]["pushLong"] = [](double value) {
+			state["mwse"]["stack"]["pushLong"] = [](int value) {
 				Stack::getInstance().pushLong(value);
 			};
 
-			state["mwse"]["stack"]["pushFloat"] = [](double value) {
+			state["mwse"]["stack"]["pushFloat"] = [](float value) {
 				Stack::getInstance().pushFloat(value);
 			};
 
@@ -36,7 +35,7 @@ namespace mwse {
 			};
 
 			state["mwse"]["stack"]["pushObject"] = [](sol::object value) {
-				Stack::getInstance().pushLong((long)value.as<TES3::BaseObject*>());
+				Stack::getInstance().pushLong((DWORD)value.as<TES3::BaseObject*>());
 			};
 
 			//
@@ -81,11 +80,11 @@ namespace mwse {
 
 			state["mwse"]["stack"]["popObject"] = []() {
 				Stack& stack = Stack::getInstance();
-				sol::optional<sol::object> maybe_ret;
+				TES3::BaseObject* ret = nullptr;
 				if (!stack.empty()) {
-					maybe_ret = lua::makeLuaObject(reinterpret_cast<TES3::BaseObject*>(Stack::getInstance().popLong()));
+					ret = reinterpret_cast<TES3::BaseObject*>(Stack::getInstance().popLong());
 				}
-				return maybe_ret;
+				return ret;
 			};
 
 			//

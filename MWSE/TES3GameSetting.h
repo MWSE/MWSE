@@ -1557,16 +1557,30 @@ namespace TES3 {
 		long index; // 0x14 // Array index of this GMST
 
 		//
+		// Virtual table overrides.
+		//
+
+		char * getObjectID() const;
+
+		//
 		// Custom functions.
 		//
 
-		GameSettingInfo* getInfo();
-		char getType();
-		const char* getName();
-		const char* getDefaultStringValue();
-		int getDefaultIntValue();
-		float getDefaultFloatValue();
+		GameSettingInfo* getInfo() const;
+		char getType() const;
+		const char* getName() const;
+		const char* getDefaultStringValue() const;
+		int getDefaultIntValue() const;
+		float getDefaultFloatValue() const;
+
+		std::string toJson() const;
+
+		sol::object getDefaultValue_lua(sol::this_state ts) const;
+		sol::object getValue_lua(sol::this_state ts) const;
+		void setValue_lua(sol::object value, sol::this_state ts);
 
 	};
 	static_assert(sizeof(GameSetting) == 0x18, "TES3::GameSetting failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::GameSetting)

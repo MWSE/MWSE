@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sol.hpp"
-
 namespace mwse {
 	namespace lua {
 		namespace event {

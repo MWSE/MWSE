@@ -27,19 +27,19 @@ namespace mwse {
 				sol::state& state = stateHandle.state;
 				sol::table eventData = state.create_table();
 
-				eventData["mobile"] = makeLuaObject(m_MobileActor);
+				eventData["mobile"] = m_MobileActor;
 				if (m_MobileActor) {
-					eventData["reference"] = makeLuaObject(m_MobileActor->reference);
+					eventData["reference"] = m_MobileActor->reference;
 				}
 
 				//eventData["distance"] = m_Distance;
-				eventData["destination"] = makeLuaObject(m_Destination->destination);
+				eventData["destination"] = m_Destination->destination;
 
 				if (!m_CompanionList->empty()) {
 					sol::table companionList = state.create_table();
 					for (size_t i = 0; i < m_CompanionList->size(); i++) {
 						auto companion = m_CompanionList->at(i);
-						companionList[i + 1] = makeLuaObject(companion);
+						companionList[i + 1] = companion;
 					}
 					eventData["companions"] = companionList;
 				}

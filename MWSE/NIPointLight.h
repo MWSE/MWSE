@@ -2,8 +2,6 @@
 
 #include "NILight.h"
 
-#include "NIPointer.h"
-
 namespace NI {
 	struct PointLight : Light {
 		float constantAttenuation; // 0xD0
@@ -17,7 +15,10 @@ namespace NI {
 		static Pointer<PointLight> create();
 
 		void setAttenuationForRadius(unsigned int radius);
+		void setRadius(unsigned int radius);
 
 	};
 	static_assert(sizeof(PointLight) == 0xDC, "NI::PointLight failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::PointLight)

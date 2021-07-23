@@ -35,8 +35,8 @@ namespace mwse {
 				eventData["position"] = m_Crime->position;
 				eventData["realTimestamp"] = m_Crime->timestamp;
 				eventData["value"] = m_Crime->penalty;
-				eventData["witness"] = makeLuaObject(m_Witness->reference);
-				eventData["witnessMobile"] = makeLuaObject(m_Witness);
+				eventData["witness"] = m_Witness->reference;
+				eventData["witnessMobile"] = m_Witness;
 
 				return eventData;
 			}

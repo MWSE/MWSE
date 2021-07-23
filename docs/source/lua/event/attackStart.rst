@@ -1,0 +1,31 @@
+attackStart
+====================================================================================================
+
+This event is invoked whenever an actor starts an attack with their fists or a weapon, or a creature makes any attack. It is when the actor raises a melee weapon or draws an arrow. There is not necessarily a target in range, or any target at all for the player.
+
+Event Data
+----------------------------------------------------------------------------------------------------
+
+attackSpeed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`number`_. The speed multiplier of the attack animation, normally equal to the weapon speed (1.0 for no equipped weapon). May be changed to change the current attack's speed. See also tes3.actorAnimationController to change animation speed during the attack.
+
+mobile
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`tes3mobileActor`_. Read-only. The mobile actor making the attack.
+
+reference
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`tes3reference`_. Read-only. A shortcut to the reference that is attacking.
+
+attackType
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`number`_. A number from the tes3.physicalAttackType enumeration identifying the physical attack type. Can be tes3.physicalAttackType.slash, .chop, .thrust, .projectile, .creature1, .creature2, or .creature3. May be changed to change the attack's type if the original attack was slash, chop, or thrust.
+
+.. _`number`: ../../lua/type/number.html
+.. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
+.. _`tes3reference`: ../../lua/type/tes3reference.html

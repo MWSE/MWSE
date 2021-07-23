@@ -8,11 +8,11 @@ namespace mwse {
 		namespace event {
 			class MobileActorActivatedEvent : public ObjectFilteredEvent, public DisableableEvent<MobileActorActivatedEvent> {
 			public:
-				MobileActorActivatedEvent(TES3::Reference * reference);
+				MobileActorActivatedEvent(TES3::MobileObject * mobile);
 				sol::table createEventTable();
 
 			protected:
-				TES3::Reference* m_Reference;
+				TES3::MobileObject* m_Mobile;
 			};
 		}
 	}

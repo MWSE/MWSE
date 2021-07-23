@@ -71,8 +71,23 @@ namespace TES3 {
 		// Custom functions
 		//
 
-		int getNameGMST();
+		const char* getName() const;
+
+		int getNameGMST() const;
+
+		std::string getIconPath() const;
+
+		std::reference_wrapper<float[4]> getProgressActions();
+
+		//
+		// Related static data.
+		//
+
+		static constexpr auto ICON_PATHS = reinterpret_cast<const char**>(0x7BB158);
+		static constexpr auto NAME_GMSTS = reinterpret_cast<int*>(0x794430);
 
 	};
 	static_assert(sizeof(Skill) == 0x34, "TES3::Skill failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Skill)
