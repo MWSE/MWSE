@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = "Shows if the source is a spell, enchantment, or alchemy.",
+	description = "The type of this magic source. Maps to tes3.magicSourceType.* constants.",
 	readOnly = true,
 	valuetype = "number",
 }
