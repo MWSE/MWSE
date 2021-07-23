@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[The value of the object.]],
+	description = [[The capacity of the soul gem.]],
 	valuetype = "number",
 	readOnly = true,
 }
