@@ -3,6 +3,8 @@ return {
 	description = [[An array-style table of the tes3effect data on the object.]],
 	valuetype = "table",
 	readOnly = true,
+	-- tableParams here doesn't do anything. This may help someone in the future.
+	--[[
 	tableParams = {
 		{ name = "id", type = "number", description = "The base tes3magicEffect ID that the effect uses." },
 		{ name = "skill", type = "number", description = "The skill associated with this effect, or -1 if no skill is used. Maps to tes3.skill.* constants." },
@@ -13,4 +15,5 @@ return {
 		{ name = "min", type = "number", description = "The minimum magnitude of the effect." },
 		{ name = "max", type = "number", description = "The maximum magnitude of the effect." },
 	},
+	]]
 }
