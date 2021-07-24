@@ -1,7 +1,9 @@
 attack
 ====================================================================================================
 
-This event is invoked whenever an actor makes an attack with their fists or a weapon, or a creature makes any attack. Lockpicks and probes do not invoke this event.
+This event is invoked whenever an actor makes an attack with their fists or a weapon, or a creature makes any attack. It occurs at the release time of the attack, such as the downstroke of a melee weapon or when an arrow is shot. Lockpicks and probes do not invoke this event.
+
+Related events: `attackStart`_
 
 Event Data
 ----------------------------------------------------------------------------------------------------
@@ -48,5 +50,6 @@ Show a Message when the Player Attacks
     event.register("attack", myOnAttackCallback)
 
 
+.. _`attackStart`: ../../lua/event/attackStart.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

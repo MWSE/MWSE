@@ -1,7 +1,7 @@
 --- @meta
 
 --- An apparatus game object.
---- @class tes3apparatus : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3apparatus : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field icon string The path to the object's icon.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.

@@ -1,5 +1,6 @@
 return {
 	description = "The combatStart event occurs when combat is about to begin between two actors. This event allows scripts to prevent combat from starting.",
+	related = { "combatStart", "combatStarted", "combatStop", "combatStopped" },
 	eventData = {
 		["actor"] = {
 			type = "tes3mobileActor",

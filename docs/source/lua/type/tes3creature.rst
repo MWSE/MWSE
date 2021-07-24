@@ -18,8 +18,17 @@ Properties
 `attributes`_ (`table`_)
     A table of eight numbers, representing the base values for the actor's attributes.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
 `biped`_ (`boolean`_)
     Access to the creature's biped flag.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
@@ -28,10 +37,10 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
@@ -46,7 +55,7 @@ Properties
     Read-only. The actor's max health.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. The items currently carried by the actor.
@@ -82,13 +91,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -118,7 +130,10 @@ Properties
     A creature to use instead of this one for sound generation.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `spells`_ (`tes3spellList`_)
     Read-only. A list of spells that the actor has access to. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(creature.spells.iterator) do print(spell.name) end
@@ -148,7 +163,10 @@ Properties
     tes3creature/aiConfig
     tes3creature/attacks
     tes3creature/attributes
+    tes3creature/barterGold
     tes3creature/biped
+    tes3creature/blocked
+    tes3creature/blood
     tes3creature/boundingBox
     tes3creature/cloneCount
     tes3creature/deleted
@@ -172,6 +190,7 @@ Properties
     tes3creature/objectFlags
     tes3creature/objectType
     tes3creature/owningCollection
+    tes3creature/persistent
     tes3creature/previousInCollection
     tes3creature/respawns
     tes3creature/scale
@@ -182,6 +201,7 @@ Properties
     tes3creature/soul
     tes3creature/soundCreature
     tes3creature/sourceMod
+    tes3creature/sourceless
     tes3creature/spells
     tes3creature/stolenList
     tes3creature/supportsLuaData
@@ -194,7 +214,10 @@ Properties
 .. _`aiConfig`: tes3creature/aiConfig.html
 .. _`attacks`: tes3creature/attacks.html
 .. _`attributes`: tes3creature/attributes.html
+.. _`barterGold`: tes3creature/barterGold.html
 .. _`biped`: tes3creature/biped.html
+.. _`blocked`: tes3creature/blocked.html
+.. _`blood`: tes3creature/blood.html
 .. _`boundingBox`: tes3creature/boundingBox.html
 .. _`cloneCount`: tes3creature/cloneCount.html
 .. _`deleted`: tes3creature/deleted.html
@@ -218,6 +241,7 @@ Properties
 .. _`objectFlags`: tes3creature/objectFlags.html
 .. _`objectType`: tes3creature/objectType.html
 .. _`owningCollection`: tes3creature/owningCollection.html
+.. _`persistent`: tes3creature/persistent.html
 .. _`previousInCollection`: tes3creature/previousInCollection.html
 .. _`respawns`: tes3creature/respawns.html
 .. _`scale`: tes3creature/scale.html
@@ -228,6 +252,7 @@ Properties
 .. _`soul`: tes3creature/soul.html
 .. _`soundCreature`: tes3creature/soundCreature.html
 .. _`sourceMod`: tes3creature/sourceMod.html
+.. _`sourceless`: tes3creature/sourceless.html
 .. _`spells`: tes3creature/spells.html
 .. _`stolenList`: tes3creature/stolenList.html
 .. _`supportsLuaData`: tes3creature/supportsLuaData.html
@@ -238,6 +263,9 @@ Properties
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -251,10 +279,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3creature/__tojson
     tes3creature/offersService
     tes3creature/onInventoryClose
     tes3creature/tradesItemType
 
+.. _`__tojson`: tes3creature/__tojson.html
 .. _`offersService`: tes3creature/offersService.html
 .. _`onInventoryClose`: tes3creature/onInventoryClose.html
 .. _`tradesItemType`: tes3creature/tradesItemType.html

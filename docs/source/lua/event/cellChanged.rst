@@ -3,6 +3,8 @@ cellChanged
 
 The cellChanged event is occurs when the player changes cells. This might occur from going through a door, using intervention or recall spells, or from scripted repositioning.
 
+Related events: `cellActivated`_, `cellDeactivated`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -16,4 +18,6 @@ cell
 
 `tes3cell`_. Read-only. The new cell that the player has entered.
 
+.. _`cellActivated`: ../../lua/event/cellActivated.html
+.. _`cellDeactivated`: ../../lua/event/cellDeactivated.html
 .. _`tes3cell`: ../../lua/type/tes3cell.html

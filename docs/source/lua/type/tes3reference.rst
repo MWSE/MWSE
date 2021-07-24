@@ -17,6 +17,9 @@ Properties
 `baseObject`_ (`tes3physicalObject`_)
     Read-only. This is similar to the object field, but is guaranteed to provide the base-most object. If object is an actor clone, the base actor will be given instead.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `bodyPartManager`_ (`tes3bodyPartManager`_, `nil`_)
     Read-only. Access to the reference's body part manager, if available. Typically this is only available on NPC references.
 
@@ -30,13 +33,13 @@ Properties
     A generic lua table that data can be written to, and synced to/from the save. All information stored must be valid for serialization to json. For item references, this is the same table as on the tes3itemData structure. To store data that doesn't get serialized to/from the save, use tempData.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `destination`_ (`tes3travelDestinationNode`_, `nil`_)
     Read-only. Returns the travel destination node for this reference, or nil. This can be used to determine where a given door links to.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `facing`_ (`number`_)
     Convenient access to the z-component of the reference's orientation. Setting the facing sets the reference as modified.
@@ -45,7 +48,7 @@ Properties
     Sets the no-collision flag on this reference, and recalculates collision groups. Use the setNoCollisionFlag function to manage collision group recalculation instead.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isDead`_ (`boolean`_, `nil`_)
     Read-only. Returns true if the object is dead, false if they are alive, or nil if that couldn't be determined.
@@ -90,16 +93,19 @@ Properties
     Read-only. The object that the reference is for, such as a weapon, armor, or actor.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `orientation`_ (`tes3vector3`_)
     Access to the reference's orientation. Setting the orientation sets the reference as modified.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `position`_ (`tes3vector3`_)
     Access to the reference's position. Setting the position sets the reference as modified.
@@ -123,7 +129,10 @@ Properties
     The scene graph reference node for this object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stackSize`_ (`number`_)
     Access to the size of a stack, if the reference represents one or more items.
@@ -143,6 +152,7 @@ Properties
     tes3reference/activationReference
     tes3reference/attachments
     tes3reference/baseObject
+    tes3reference/blocked
     tes3reference/bodyPartManager
     tes3reference/cell
     tes3reference/context
@@ -171,6 +181,7 @@ Properties
     tes3reference/objectType
     tes3reference/orientation
     tes3reference/owningCollection
+    tes3reference/persistent
     tes3reference/position
     tes3reference/previousInCollection
     tes3reference/previousNode
@@ -179,6 +190,7 @@ Properties
     tes3reference/sceneNode
     tes3reference/sceneReference
     tes3reference/sourceMod
+    tes3reference/sourceless
     tes3reference/stackSize
     tes3reference/supportsLuaData
     tes3reference/supportsLuaData
@@ -187,6 +199,7 @@ Properties
 .. _`activationReference`: tes3reference/activationReference.html
 .. _`attachments`: tes3reference/attachments.html
 .. _`baseObject`: tes3reference/baseObject.html
+.. _`blocked`: tes3reference/blocked.html
 .. _`bodyPartManager`: tes3reference/bodyPartManager.html
 .. _`cell`: tes3reference/cell.html
 .. _`context`: tes3reference/context.html
@@ -215,6 +228,7 @@ Properties
 .. _`objectType`: tes3reference/objectType.html
 .. _`orientation`: tes3reference/orientation.html
 .. _`owningCollection`: tes3reference/owningCollection.html
+.. _`persistent`: tes3reference/persistent.html
 .. _`position`: tes3reference/position.html
 .. _`previousInCollection`: tes3reference/previousInCollection.html
 .. _`previousNode`: tes3reference/previousNode.html
@@ -223,6 +237,7 @@ Properties
 .. _`sceneNode`: tes3reference/sceneNode.html
 .. _`sceneReference`: tes3reference/sceneReference.html
 .. _`sourceMod`: tes3reference/sourceMod.html
+.. _`sourceless`: tes3reference/sourceless.html
 .. _`stackSize`: tes3reference/stackSize.html
 .. _`supportsLuaData`: tes3reference/supportsLuaData.html
 .. _`supportsLuaData`: tes3reference/supportsLuaData.html
@@ -230,6 +245,9 @@ Properties
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `activate`_
     Causes this reference to activate another. This will lead them to go through doors, pick up items, etc.
@@ -292,6 +310,7 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3reference/__tojson
     tes3reference/activate
     tes3reference/clearActionFlag
     tes3reference/clone
@@ -311,6 +330,7 @@ Methods
     tes3reference/updateLighting
     tes3reference/updateSceneGraph
 
+.. _`__tojson`: tes3reference/__tojson.html
 .. _`activate`: tes3reference/activate.html
 .. _`clearActionFlag`: tes3reference/clearActionFlag.html
 .. _`clone`: tes3reference/clone.html

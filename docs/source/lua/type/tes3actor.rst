@@ -11,6 +11,15 @@ Properties
 `actorFlags`_ (`number`_)
     Read-only. A number representing the actor flags. Truly a bit field.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
@@ -18,16 +27,16 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. The items currently carried by the actor.
@@ -39,13 +48,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -60,7 +72,10 @@ Properties
     The scene graph reference node for this object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -72,6 +87,9 @@ Properties
     :hidden:
 
     tes3actor/actorFlags
+    tes3actor/barterGold
+    tes3actor/blocked
+    tes3actor/blood
     tes3actor/boundingBox
     tes3actor/cloneCount
     tes3actor/deleted
@@ -84,15 +102,20 @@ Properties
     tes3actor/objectFlags
     tes3actor/objectType
     tes3actor/owningCollection
+    tes3actor/persistent
     tes3actor/previousInCollection
     tes3actor/scale
     tes3actor/sceneNode
     tes3actor/sceneReference
     tes3actor/sourceMod
+    tes3actor/sourceless
     tes3actor/stolenList
     tes3actor/supportsLuaData
 
 .. _`actorFlags`: tes3actor/actorFlags.html
+.. _`barterGold`: tes3actor/barterGold.html
+.. _`blocked`: tes3actor/blocked.html
+.. _`blood`: tes3actor/blood.html
 .. _`boundingBox`: tes3actor/boundingBox.html
 .. _`cloneCount`: tes3actor/cloneCount.html
 .. _`deleted`: tes3actor/deleted.html
@@ -105,16 +128,21 @@ Properties
 .. _`objectFlags`: tes3actor/objectFlags.html
 .. _`objectType`: tes3actor/objectType.html
 .. _`owningCollection`: tes3actor/owningCollection.html
+.. _`persistent`: tes3actor/persistent.html
 .. _`previousInCollection`: tes3actor/previousInCollection.html
 .. _`scale`: tes3actor/scale.html
 .. _`sceneNode`: tes3actor/sceneNode.html
 .. _`sceneReference`: tes3actor/sceneReference.html
 .. _`sourceMod`: tes3actor/sourceMod.html
+.. _`sourceless`: tes3actor/sourceless.html
 .. _`stolenList`: tes3actor/stolenList.html
 .. _`supportsLuaData`: tes3actor/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -128,10 +156,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3actor/__tojson
     tes3actor/offersService
     tes3actor/onInventoryClose
     tes3actor/tradesItemType
 
+.. _`__tojson`: tes3actor/__tojson.html
 .. _`offersService`: tes3actor/offersService.html
 .. _`onInventoryClose`: tes3actor/onInventoryClose.html
 .. _`tradesItemType`: tes3actor/tradesItemType.html

@@ -1,5 +1,6 @@
 return {
 	description = "One of the movement events, calcFlySpeed is used when calculating movement speeds when levitating or otherwise flying.",
+	related = { "calcMoveSpeed", "calcWalkSpeed", "calcRunSpeed", "calcFlySpeed", "calcSwimSpeed", "calcSwimRunSpeed" },
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",

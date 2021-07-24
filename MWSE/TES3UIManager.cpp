@@ -86,6 +86,10 @@ namespace TES3 {
 				menu->createDragFrame(id, 1);
 			}
 
+			if (params.get_or("loadable", true)) {
+				menu->setProperty(Property::savable_menu, Property::boolean_true);
+			}
+
 			return menu;
 		}
 

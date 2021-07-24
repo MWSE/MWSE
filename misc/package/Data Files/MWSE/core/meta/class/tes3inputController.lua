@@ -11,15 +11,15 @@
 tes3inputController = {}
 
 --- Returns true if either alt modifier key is pressed.
---- @return any result No description yet available.
+--- @return boolean isPressed True if either alt key is pressed.
 function tes3inputController:isAltDown() end
 
 --- Returns true if the caps lock mode is active.
---- @return any result No description yet available.
+--- @return boolean isPressed True if caps lock is active.
 function tes3inputController:isCapsLockActive() end
 
 --- Returns true if either control modifier key is pressed.
---- @return any result No description yet available.
+--- @return boolean isPressed True if either control key is pressed.
 function tes3inputController:isControlDown() end
 
 --- Performs a key down test for a given scan key code.
@@ -53,11 +53,11 @@ function tes3inputController:isMouseButtonPressedThisFrame(button) end
 function tes3inputController:isMouseButtonReleasedThisFrame(button) end
 
 --- Returns true if either shift modifier key is pressed. It does not take into account caps lock.
---- @return any result No description yet available.
+--- @return boolean isPressed True if either shift key is pressed.
 function tes3inputController:isShiftDown() end
 
 --- Returns true if either super/windows modifier key is pressed.
---- @return any result No description yet available.
+--- @return boolean isPressed True if either super/windows key is pressed.
 function tes3inputController:isSuperDown() end
 
 --- Performs a test for a given keybind, and optionally a transition state.

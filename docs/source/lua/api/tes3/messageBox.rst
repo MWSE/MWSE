@@ -6,7 +6,7 @@ Displays a message box. This may be a simple toast-style message, or a box with 
 Returns
 ----------------------------------------------------------------------------------------------------
 
-`boolean`_.
+`tes3uiElement`_, `nil`_. The UI menu created for the notification, if any.
 
 Parameters
 ----------------------------------------------------------------------------------------------------
@@ -19,6 +19,7 @@ messageOrParams (`string`_, `table`_)
 formatAdditions (`variadic`_)
     Optional. Only used if messageOrParams is a string.
 
-.. _`boolean`: ../../../lua/type/boolean.html
+.. _`nil`: ../../../lua/type/nil.html
 .. _`string`: ../../../lua/type/string.html
 .. _`table`: ../../../lua/type/table.html
+.. _`tes3uiElement`: ../../../lua/type/tes3uiElement.html

@@ -1,5 +1,6 @@
 return{
     description = "This event is triggered when a cell is deactivated.",
+	related = { "cellActivated", "cellDeactivated", "cellChanged" },
     eventData = {
         ["cell"] = {
             type = "tes3cell",

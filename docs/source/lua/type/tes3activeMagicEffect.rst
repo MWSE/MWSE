@@ -22,10 +22,13 @@ Properties
     Read-only. The magic effect instance for this effect.
 
 `harmful`_ (`boolean`_)
-    Read-only. No description available.
+    Read-only. This flag that determines if this effect is counted as a hostile action.
 
 `instance`_ (`tes3magicSourceInstance`_)
     Read-only. The magic source instance for this effect.
+
+`isSummon`_ (`boolean`_)
+    Read-only. No description available.
 
 `magnitude`_ (`number`_)
     Read-only. The unresisted magnitude of the magic effect, that is the magnitude before resistance attributes are applied. This is always an integer number. To find the actual applied magnitude, you must check the magic effect instance.
@@ -58,6 +61,7 @@ Properties
     tes3activeMagicEffect/effectInstance
     tes3activeMagicEffect/harmful
     tes3activeMagicEffect/instance
+    tes3activeMagicEffect/isSummon
     tes3activeMagicEffect/magnitude
     tes3activeMagicEffect/magnitudeMin
     tes3activeMagicEffect/mobile
@@ -73,6 +77,7 @@ Properties
 .. _`effectInstance`: tes3activeMagicEffect/effectInstance.html
 .. _`harmful`: tes3activeMagicEffect/harmful.html
 .. _`instance`: tes3activeMagicEffect/instance.html
+.. _`isSummon`: tes3activeMagicEffect/isSummon.html
 .. _`magnitude`: tes3activeMagicEffect/magnitude.html
 .. _`magnitudeMin`: tes3activeMagicEffect/magnitudeMin.html
 .. _`mobile`: tes3activeMagicEffect/mobile.html

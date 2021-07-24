@@ -436,6 +436,9 @@ Methods
 `getTopLevelMenu`_ (`tes3uiElement`_)
     Finds the parent menu containing the element. Useful for finding the correct menu to run layout updates on.
 
+`loadMenuPosition`_
+    Restores the menu's position and size information from the Morrowind.ini file. This may only be called on top-level parents.
+
 `register`_
     Sets an ``event`` handler, which can add or override an existing event handler. The use of ``registerBefore`` or ``registerAfter`` is recommended if you do not want to replace the existing event handler. The eventID can be a standard ``event`` name, or an event specific to an element class. The callback receives an argument with the event data. See below for details.
     
@@ -555,6 +558,9 @@ The standard type signature for events.
     
     Returns ``true`` if the operation succeeded, or ``false`` if at least one argument was invalid.
 
+`saveMenuPosition`_
+    Saves the menu's position and size information to the Morrowind.ini file. This may only be called on top-level parents. Note that most menus save their position automatically.
+
 `setPropertyBool`_
     Sets a property value with ``prop`` as the property key. Properties are named variables attached to an element. Gets a property value with ``propName`` as the property key. Morrowind uses these to bind variables to the UI. Useful for element class-specific properties.
 
@@ -607,10 +613,12 @@ The standard type signature for events.
     tes3uiElement/getPropertyInt
     tes3uiElement/getPropertyObject
     tes3uiElement/getTopLevelMenu
+    tes3uiElement/loadMenuPosition
     tes3uiElement/register
     tes3uiElement/registerAfter
     tes3uiElement/registerBefore
     tes3uiElement/reorderChildren
+    tes3uiElement/saveMenuPosition
     tes3uiElement/setPropertyBool
     tes3uiElement/setPropertyFloat
     tes3uiElement/setPropertyInt
@@ -647,10 +655,12 @@ The standard type signature for events.
 .. _`getPropertyInt`: tes3uiElement/getPropertyInt.html
 .. _`getPropertyObject`: tes3uiElement/getPropertyObject.html
 .. _`getTopLevelMenu`: tes3uiElement/getTopLevelMenu.html
+.. _`loadMenuPosition`: tes3uiElement/loadMenuPosition.html
 .. _`register`: tes3uiElement/register.html
 .. _`registerAfter`: tes3uiElement/registerAfter.html
 .. _`registerBefore`: tes3uiElement/registerBefore.html
 .. _`reorderChildren`: tes3uiElement/reorderChildren.html
+.. _`saveMenuPosition`: tes3uiElement/saveMenuPosition.html
 .. _`setPropertyBool`: tes3uiElement/setPropertyBool.html
 .. _`setPropertyFloat`: tes3uiElement/setPropertyFloat.html
 .. _`setPropertyInt`: tes3uiElement/setPropertyInt.html

@@ -13,7 +13,7 @@ niTriShapeData = {}
 --- ``colors``: boolean — If false, the geometry data's colors will be absent from the copy.
 --- 
 --- ``texCoords``: boolean — If false, the geometry data's texture coordinates will be absent from the copy.
---- @return any result No description yet available.
+--- @return niTriShapeData copiedData The duplicated data.
 function niTriShapeData:copy(params) end
 
 ---Table parameter definitions for ``niTriShapeData.copy``.

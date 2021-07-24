@@ -1,5 +1,6 @@
 return {
 	description = "This event fires when a dialogue info object text is retrieved.",
+	related = { "infoGetText", "infoLinkResolve", "infoResponse", "infoFilter", "postInfoResponse" },
 	eventData = {
 		["info"] = {
 			type = "tes3dialogueInfo",

@@ -1,5 +1,6 @@
 return {
 	description = "The projectileExpire event fires just prior to a fired projectile expiring.",
+	related = { "projectileHitActor", "projectileHitObject", "projectileHitTerrain", "projectileExpire" },
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileProjectile",

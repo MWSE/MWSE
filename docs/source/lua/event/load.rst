@@ -3,6 +3,8 @@ load
 
 The load event fires when the game is about to load. This event allows scripts to block loading.
 
+Related events: `loaded`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -21,5 +23,6 @@ newGame
 
 `boolean`_. Read-only. If true, a new game is being started.
 
+.. _`loaded`: ../../lua/event/loaded.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`string`: ../../lua/type/string.html

@@ -1107,6 +1107,24 @@ namespace TES3 {
 			mwse::lua::triggerEvent(this, prop.value(), 0, 0);
 		}
 
+		const auto TES3_ui_saveMenuPosition = reinterpret_cast<void(__cdecl*)(Element*)>(0x596FA0);
+		void Element::saveMenuPosition() {
+			auto topLevelParent = getTopLevelParent();
+			if (this != topLevelParent) {
+				throw std::runtime_error("This function only works on top-level elements.");
+			}
+			TES3_ui_saveMenuPosition(this);
+		}
+
+		const auto TES3_ui_loadMenuPosition = reinterpret_cast<bool(__cdecl*)(Element*, short)>(0x5972C0);
+		bool Element::loadMenuPosition() {
+			auto topLevelParent = getTopLevelParent();
+			if (this != topLevelParent) {
+				throw std::runtime_error("This function only works on top-level elements.");
+			}
+			return TES3_ui_loadMenuPosition(this, 0);
+		}
+
 		bool Element::reorderChildren_lua(sol::object insertBefore, sol::object moveFrom, int count) {
 			int indexInsertBefore, indexMoveFrom;
 

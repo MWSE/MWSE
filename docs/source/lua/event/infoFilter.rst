@@ -3,6 +3,8 @@ infoFilter
 
 This event fires when a dialogue info object is filtered.
 
+Related events: `infoGetText`_, `infoLinkResolve`_, `infoResponse`_, `postInfoResponse`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -36,6 +38,10 @@ source
 
 `number`_. Read-only. The source.
 
+.. _`infoGetText`: ../../lua/event/infoGetText.html
+.. _`infoLinkResolve`: ../../lua/event/infoLinkResolve.html
+.. _`infoResponse`: ../../lua/event/infoResponse.html
+.. _`postInfoResponse`: ../../lua/event/postInfoResponse.html
 .. _`bool`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3dialogue`: ../../lua/type/tes3dialogue.html

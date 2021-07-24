@@ -1,7 +1,7 @@
 --- @meta
 
 --- An armor game object.
---- @class tes3armor : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3armor : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field armorRating number The armor's defensive rating.
 --- @field enchantCapacity number The object's enchantment capacity.
 --- @field enchantment tes3enchantment The enchantment used by the object.
@@ -20,6 +20,6 @@
 tes3armor = {}
 
 --- Calculates what armor rating is provided for a given mobile actor.
---- @param mobile tes3mobileActor No description yet available.
+--- @param mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer No description yet available.
 function tes3armor:calculateArmorRating(mobile) end
 

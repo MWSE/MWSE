@@ -3,6 +3,8 @@ addSound
 
 This event is triggered when a sound is player by the game or when tes3.playSound is called. This event can be blocked.
 
+Related events: `addTempSound`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -36,6 +38,7 @@ isVoiceover
 
 `boolean`_. 
 
+.. _`addTempSound`: ../../lua/event/addTempSound.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

@@ -20,7 +20,6 @@
 --- @field hasNoMagnitude boolean Access to the base flag that determines if this effect doesn't make use of its magnitude.
 --- @field hitSoundEffect string The sound path to the sound effect to use when the effect hits a target.
 --- @field icon string The sound path to the icon to use for the effect.
---- @field id number The numerical id for the effect.
 --- @field illegalDaedra boolean Access to the base flag that determines if this effect summons an illegal daedra. This flag isn't used.
 --- @field isHarmful boolean Access to the base flag that determines if this effect is counted as a hostile action.
 --- @field lightingBlue number The amount of blue lighting to use when lighting projectiles.

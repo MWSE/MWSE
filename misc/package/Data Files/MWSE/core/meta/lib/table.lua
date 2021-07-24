@@ -70,13 +70,13 @@ function table.find(t, value) end
 --- Returns an array-style table of all keys in the given table, t. Optionally, it will sort the returned table.
 --- @param t table The table to get keys for.
 --- @param sort boolean|function|nil If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
---- @return any result No description yet available.
+--- @return table keys An array of all table keys.
 function table.keys(t, sort) end
 
 --- This creates a pre-sized table. This is useful for big tables if the final table size is known and automatic table resizing is too expensive.
 --- @param narray number A hint for how many elements the table will have as a sequence.
 --- @param nhash number A hint for how many other elements the table will have.
---- @return any result No description yet available.
+--- @return table newTable The pre-sized table that was created.
 function table.new(narray, nhash) end
 
 --- Removes a value from a given table. Returns true if the value was successfully removed.
@@ -103,6 +103,6 @@ function table.traverse(t, k) end
 --- Returns an array-style table of all values in the given table, t. Optionally, it will sort the returned table.
 --- @param t table The table to get values for.
 --- @param sort boolean|function|nil If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
---- @return any result No description yet available.
+--- @return table values An array of all table values.
 function table.values(t, sort) end
 

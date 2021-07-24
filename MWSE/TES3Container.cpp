@@ -3,6 +3,10 @@
 #include "BitUtil.h"
 
 namespace TES3 {
+	//
+	// ContainerBase
+	//
+
 	bool ContainerBase::getIsOrganic() const {
 		return BITMASK_TEST(actorFlags, TES3::ActorFlagContainer::Organic);
 	}
@@ -18,6 +22,24 @@ namespace TES3 {
 	void ContainerBase::setRespawns(bool value) {
 		BITMASK_SET(actorFlags, TES3::ActorFlagContainer::Respawns, value);
 	}
+
+	//
+	// Container
+	//
+
+	static const auto TES3_Container_ctor = reinterpret_cast<void(__thiscall*)(Container*)>(0x4A3BE0);
+	Container::Container() {
+		TES3_Container_ctor(this);
+	}
+
+	static const auto TES3_Container_dtor = reinterpret_cast<void(__thiscall*)(Container*)>(0x4A3CA0);
+	Container::~Container() {
+		TES3_Container_dtor(this);
+	}
+
+	//
+	// ContainerInstance
+	//
 
 	const auto TES3_ContainerInstance_onCloseInventory = reinterpret_cast<void (__thiscall*)(Actor *, Reference *, int)>(0x4A4460);
 	void ContainerInstance::onCloseInventory(Reference* reference, int unknown) {

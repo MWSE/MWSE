@@ -35,9 +35,9 @@ namespace mwse {
 
 				// Basic property binding.
 				usertypeDefinition["calculateFromAllLevels"] = sol::property(&TES3::LeveledCreature::getCalculateFromAllLevels, &TES3::LeveledCreature::setCalculateFromAllLevels);
-				usertypeDefinition["chanceForNothing"] = sol::readonly_property(&TES3::LeveledCreature::chanceForNothing);
+				usertypeDefinition["chanceForNothing"] = &TES3::LeveledCreature::chanceForNothing;
 				usertypeDefinition["count"] = sol::readonly_property(&TES3::LeveledCreature::itemCount);
-				usertypeDefinition["flags"] = sol::readonly_property(&TES3::LeveledCreature::flags);
+				usertypeDefinition["flags"] = &TES3::LeveledCreature::flags;
 				usertypeDefinition["list"] = sol::readonly_property(&TES3::LeveledCreature::itemList);
 
 				// Basic function binding.
@@ -59,9 +59,9 @@ namespace mwse {
 				// Basic property binding.
 				usertypeDefinition["calculateForEachItem"] = sol::property(&TES3::LeveledItem::getCalculateForEachItem, &TES3::LeveledItem::setCalculateForEachItem);
 				usertypeDefinition["calculateFromAllLevels"] = sol::property(&TES3::LeveledItem::getCalculateFromAllLevels, &TES3::LeveledItem::setCalculateFromAllLevels);
-				usertypeDefinition["chanceForNothing"] = sol::readonly_property(&TES3::LeveledItem::chanceForNothing);
+				usertypeDefinition["chanceForNothing"] = &TES3::LeveledItem::chanceForNothing;
 				usertypeDefinition["count"] = sol::readonly_property(&TES3::LeveledItem::itemCount);
-				usertypeDefinition["flags"] = sol::readonly_property(&TES3::LeveledItem::flags);
+				usertypeDefinition["flags"] = &TES3::LeveledItem::flags;
 				usertypeDefinition["list"] = sol::readonly_property(&TES3::LeveledItem::itemList);
 
 				// Basic function binding.

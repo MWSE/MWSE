@@ -3,6 +3,8 @@ spellCast
 
 This event is triggered just before a spell cast is resolved, at the end of the casting animation. It can control the success chance of the spell cast.
 
+Related events: `spellCasted`_, `spellCastedFailure`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -26,6 +28,8 @@ caster
 
 `tes3reference`_. Read-only. The caster of the spell.
 
+.. _`spellCasted`: ../../lua/event/spellCasted.html
+.. _`spellCastedFailure`: ../../lua/event/spellCastedFailure.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3spell`: ../../lua/type/tes3spell.html

@@ -303,6 +303,9 @@ function tes3uiElement:getPropertyObject(propName, expectedUsertype) end
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:getTopLevelMenu() end
 
+--- Restores the menu's position and size information from the Morrowind.ini file. This may only be called on top-level parents.
+function tes3uiElement:loadMenuPosition() end
+
 --- Sets an ``event`` handler, which can add or override an existing event handler. The use of ``registerBefore`` or ``registerAfter`` is recommended if you do not want to replace the existing event handler. The eventID can be a standard ``event`` name, or an event specific to an element class. The callback receives an argument with the event data. See below for details.
 ---     
 --- The original Morrowind callback is captured and can be invoked with the ``forwardEvent`` method on the event argument. If there is an existing Lua callback, it is replaced.
@@ -431,6 +434,9 @@ function tes3uiElement:registerBefore(eventID, callback) end
 --- @param count number The property name.
 --- @return boolean result No description yet available.
 function tes3uiElement:reorderChildren(insertBefore, moveFrom, count) end
+
+--- Saves the menu's position and size information to the Morrowind.ini file. This may only be called on top-level parents. Note that most menus save their position automatically.
+function tes3uiElement:saveMenuPosition() end
 
 --- Sets a property value with ``prop`` as the property key. Properties are named variables attached to an element. Gets a property value with ``propName`` as the property key. Morrowind uses these to bind variables to the UI. Useful for element class-specific properties.
 --- @param propName string The property name.

@@ -9,6 +9,6 @@
 --- @field nextController niTimeController The next NiTimeController in the list of controllers containing the calling controller.
 --- @field phase number The phase value.
 --- @field startTime number No description.
---- @field target niObjectNET The scene graph object that this animation controller is to animate.
+--- @field target niAlphaProperty|niAmbientLight|niCamera|niCollisionSwitch|niDirectionalLight|niDynamicEffect|niFogProperty|niGeometry|niLight|niMaterialProperty|niNode|niPointLight|niSourceTexture|niSpotLight|niStencilProperty|niSwitchNode|niTexturingProperty|niTriBasedGeometry|niTriShape|niVertexColorProperty The scene graph object that this animation controller is to animate.
 niTimeController = {}
 

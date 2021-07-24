@@ -7,8 +7,9 @@
 --- @field effectId number The magic effect ID.
 --- @field effectIndex number The index of the effect inside the magic source instance.
 --- @field effectInstance tes3magicEffectInstance The magic effect instance for this effect.
---- @field harmful boolean No description yet available.
+--- @field harmful boolean This flag that determines if this effect is counted as a hostile action.
 --- @field instance tes3magicSourceInstance The magic source instance for this effect.
+--- @field isSummon boolean No description yet available.
 --- @field magnitude number The unresisted magnitude of the magic effect, that is the magnitude before resistance attributes are applied. This is always an integer number. To find the actual applied magnitude, you must check the magic effect instance.
 --- @field magnitudeMin number Deprecated.
 --- @field mobile tes3magicSourceInstance The mobile affected by the magic effect.

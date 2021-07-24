@@ -3,6 +3,8 @@ damage
 
 The damage event triggers before an actor is damaged. The damage value can be modified, or the damage can be prevented completely by blocking the event.
 
+Related events: `damaged`_, `damageHandToHand`_, `damagedHandToHand`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -84,6 +86,9 @@ Change fall damage
     event.register("damage", onDamage)
 
 
+.. _`damageHandToHand`: ../../lua/event/damageHandToHand.html
+.. _`damaged`: ../../lua/event/damaged.html
+.. _`damagedHandToHand`: ../../lua/event/damagedHandToHand.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html

@@ -3,6 +3,8 @@ projectileExpire
 
 The projectileExpire event fires just prior to a fired projectile expiring.
 
+Related events: `projectileHitActor`_, `projectileHitObject`_, `projectileHitTerrain`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -21,6 +23,9 @@ firingReference
 
 `tes3reference`_. Read-only. Reference to the actor that fired the projectile.
 
+.. _`projectileHitActor`: ../../lua/event/projectileHitActor.html
+.. _`projectileHitObject`: ../../lua/event/projectileHitObject.html
+.. _`projectileHitTerrain`: ../../lua/event/projectileHitTerrain.html
 .. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3weapon`: ../../lua/type/tes3weapon.html

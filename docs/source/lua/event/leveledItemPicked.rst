@@ -3,6 +3,8 @@ leveledItemPicked
 
 This event is called after any leveled item list is resolved.
 
+Related events: `leveledCreaturePicked`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -16,5 +18,6 @@ list
 
 `tes3leveledItem`_. Read-only. The list responsible for creating a pick.
 
+.. _`leveledCreaturePicked`: ../../lua/event/leveledCreaturePicked.html
 .. _`tes3item`: ../../lua/type/tes3item.html
 .. _`tes3leveledItem`: ../../lua/type/tes3leveledItem.html

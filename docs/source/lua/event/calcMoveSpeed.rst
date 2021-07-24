@@ -12,6 +12,8 @@ The movement event flow is described below:
 - Swimming (while running): `calcWalkSpeed`_ -> `calcSwimSpeed`_ -> `calcSwimRunSpeed`_ -> **calcMoveSpeed**
 - Flying: `calcFlySpeed`_ -> **calcMoveSpeed**
 
+Related events: `calcWalkSpeed`_, `calcRunSpeed`_, `calcFlySpeed`_, `calcSwimSpeed`_, `calcSwimRunSpeed`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 

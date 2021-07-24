@@ -7,7 +7,7 @@ Properties
 ----------------------------------------------------------------------------------------------------
 
 `attributes`_ (`table`_)
-    An array-style table of the two attribute IDs associated with the class.
+    Read-only. An array-style table of the two attribute IDs associated with the class.
 
 `bartersAlchemy`_ (`boolean`_)
     If true, the class will barter alchemy items.
@@ -48,23 +48,26 @@ Properties
 `bartersWeapons`_ (`boolean`_)
     If true, the class will barter weapon items.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `description`_ (`string`_)
     Loads from disk and returns the description of the class.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `majorSkills`_ (`table`_)
-    An array-style table of the 5 skills IDs associated with the class' major skills.
+    Read-only. An array-style table of the 5 skills IDs associated with the class' major skills.
 
 `minorSkills`_ (`table`_)
-    An array-style table of the 5 skills IDs associated with the class' major skills.
+    Read-only. An array-style table of the 5 skills IDs associated with the class' major skills.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -73,10 +76,10 @@ Properties
     The player-facing name for the object.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `offersEnchanting`_ (`boolean`_)
     If true, the class will offer repair services.
@@ -93,6 +96,9 @@ Properties
 `offersTraining`_ (`boolean`_)
     If true, the class will offer spell training services.
 
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
+
 `playable`_ (`boolean`_)
     If true, the class is selectable at character generation.
 
@@ -100,10 +106,13 @@ Properties
     The services offered by the class. This is a bit field, and its values should typically be accessed through values such as bartersAlchemy.
 
 `skills`_ (`table`_)
-    An array-style table of the 10 skills IDs associated with the class. For major or minor skills specifically, use the majorSkills and MinorSkills properties.
+    Read-only. An array-style table of the 10 skills IDs associated with the class. For major or minor skills specifically, use the majorSkills and MinorSkills properties.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `specialization`_ (`number`_)
     The specialization for the class. Maps to the tes3.specialization table.
@@ -128,6 +137,7 @@ Properties
     tes3class/bartersProbes
     tes3class/bartersRepairTools
     tes3class/bartersWeapons
+    tes3class/blocked
     tes3class/deleted
     tes3class/description
     tes3class/disabled
@@ -143,10 +153,12 @@ Properties
     tes3class/offersSpellmaking
     tes3class/offersSpells
     tes3class/offersTraining
+    tes3class/persistent
     tes3class/playable
     tes3class/services
     tes3class/skills
     tes3class/sourceMod
+    tes3class/sourceless
     tes3class/specialization
     tes3class/supportsLuaData
 
@@ -164,6 +176,7 @@ Properties
 .. _`bartersProbes`: tes3class/bartersProbes.html
 .. _`bartersRepairTools`: tes3class/bartersRepairTools.html
 .. _`bartersWeapons`: tes3class/bartersWeapons.html
+.. _`blocked`: tes3class/blocked.html
 .. _`deleted`: tes3class/deleted.html
 .. _`description`: tes3class/description.html
 .. _`disabled`: tes3class/disabled.html
@@ -179,12 +192,27 @@ Properties
 .. _`offersSpellmaking`: tes3class/offersSpellmaking.html
 .. _`offersSpells`: tes3class/offersSpells.html
 .. _`offersTraining`: tes3class/offersTraining.html
+.. _`persistent`: tes3class/persistent.html
 .. _`playable`: tes3class/playable.html
 .. _`services`: tes3class/services.html
 .. _`skills`: tes3class/skills.html
 .. _`sourceMod`: tes3class/sourceMod.html
+.. _`sourceless`: tes3class/sourceless.html
 .. _`specialization`: tes3class/specialization.html
 .. _`supportsLuaData`: tes3class/supportsLuaData.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3class/__tojson
+
+.. _`__tojson`: tes3class/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html

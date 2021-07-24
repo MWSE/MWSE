@@ -1,5 +1,6 @@
 return {
 	description = "The combatStarted event occurs after combat has begun between two actors.",
+	related = { "combatStart", "combatStarted", "combatStop", "combatStopped" },
 	eventData = {
 		["actor"] = {
 			type = "tes3mobileActor",

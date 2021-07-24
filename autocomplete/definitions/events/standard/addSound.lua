@@ -1,5 +1,6 @@
 return {
     description = "This event is triggered when a sound is player by the game or when tes3.playSound is called. This event can be blocked.",
+	related = { "addTempSound" },
     eventData = {
         ["sound"] = {
             type = "tes3sound",

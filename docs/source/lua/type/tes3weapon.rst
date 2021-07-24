@@ -6,6 +6,9 @@ A weapon game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
@@ -16,10 +19,10 @@ Properties
     Chop damage inflicted at minimum weapon swing.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `enchantCapacity`_ (`number`_)
     The object's enchantment capacity.
@@ -37,7 +40,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `ignoresNormalWeaponResistance`_ (`boolean`_)
     Access to the flag that controls if this weapon bypasses the "Resist normal weapons" magic effect.
@@ -79,13 +82,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -118,7 +124,10 @@ Properties
     Slash damage inflicted at minimum weapon swing.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `speed`_ (`number`_)
     The relative attack speed of the weapon. Controls attack timing and animation speed. Standard speed is 1.0.
@@ -150,6 +159,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3weapon/blocked
     tes3weapon/boundingBox
     tes3weapon/chopMax
     tes3weapon/chopMin
@@ -177,6 +187,7 @@ Properties
     tes3weapon/objectFlags
     tes3weapon/objectType
     tes3weapon/owningCollection
+    tes3weapon/persistent
     tes3weapon/previousInCollection
     tes3weapon/reach
     tes3weapon/scale
@@ -188,6 +199,7 @@ Properties
     tes3weapon/slashMax
     tes3weapon/slashMin
     tes3weapon/sourceMod
+    tes3weapon/sourceless
     tes3weapon/speed
     tes3weapon/stolenList
     tes3weapon/supportsLuaData
@@ -198,6 +210,7 @@ Properties
     tes3weapon/value
     tes3weapon/weight
 
+.. _`blocked`: tes3weapon/blocked.html
 .. _`boundingBox`: tes3weapon/boundingBox.html
 .. _`chopMax`: tes3weapon/chopMax.html
 .. _`chopMin`: tes3weapon/chopMin.html
@@ -225,6 +238,7 @@ Properties
 .. _`objectFlags`: tes3weapon/objectFlags.html
 .. _`objectType`: tes3weapon/objectType.html
 .. _`owningCollection`: tes3weapon/owningCollection.html
+.. _`persistent`: tes3weapon/persistent.html
 .. _`previousInCollection`: tes3weapon/previousInCollection.html
 .. _`reach`: tes3weapon/reach.html
 .. _`scale`: tes3weapon/scale.html
@@ -236,6 +250,7 @@ Properties
 .. _`slashMax`: tes3weapon/slashMax.html
 .. _`slashMin`: tes3weapon/slashMin.html
 .. _`sourceMod`: tes3weapon/sourceMod.html
+.. _`sourceless`: tes3weapon/sourceless.html
 .. _`speed`: tes3weapon/speed.html
 .. _`stolenList`: tes3weapon/stolenList.html
 .. _`supportsLuaData`: tes3weapon/supportsLuaData.html
@@ -249,6 +264,9 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
 `getMaterialFlag`_ (`number`_)
     Access to the material flag bitfield. Known material flags can be accessed via other weapon properties.
 
@@ -258,9 +276,11 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3weapon/__tojson
     tes3weapon/getMaterialFlag
     tes3weapon/setMaterialFlag
 
+.. _`__tojson`: tes3weapon/__tojson.html
 .. _`getMaterialFlag`: tes3weapon/getMaterialFlag.html
 .. _`setMaterialFlag`: tes3weapon/setMaterialFlag.html
 

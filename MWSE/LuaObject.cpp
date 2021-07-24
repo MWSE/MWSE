@@ -7,6 +7,8 @@ namespace mwse::lua {
 			return std::make_unique<ObjectCreator<TES3::Activator>>();
 		case TES3::ObjectType::Ammo:
 			return std::make_unique<ObjectCreator<TES3::Weapon>>();
+		case TES3::ObjectType::Container:
+			return std::make_unique<ObjectCreator<TES3::Container>>();
 		case TES3::ObjectType::Misc:
 			return std::make_unique<ObjectCreator<TES3::Misc>>();
 		case TES3::ObjectType::Sound:

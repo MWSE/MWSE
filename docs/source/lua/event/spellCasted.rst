@@ -3,6 +3,8 @@ spellCasted
 
 This event is triggered when any spell is cast successfully; this includes spells cast via scripts. This occurs at the end of the casting animation, just after the magic projectile has been constructed.
 
+Related events: `spellCast`_, `spellCastedFailure`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -31,6 +33,8 @@ sourceInstance
 
 `tes3magicSourceInstance`_. Read-only. The unique instance of the magic source.
 
+.. _`spellCast`: ../../lua/event/spellCast.html
+.. _`spellCastedFailure`: ../../lua/event/spellCastedFailure.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3magicSourceInstance`: ../../lua/type/tes3magicSourceInstance.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

@@ -9,14 +9,17 @@ Properties
 `attributes`_ (`table`_)
     Read-only. An array-style table holding the two attributes that govern advancement.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -25,10 +28,13 @@ Properties
     The faction's player-facing name.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `playerExpelled`_ (`boolean`_)
     The player's expelled state in the faction.
@@ -52,7 +58,10 @@ Properties
     Read-only. An array-style table holding the seven skills that govern advancement.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `supportsLuaData`_ (`boolean`_)
     If true, references of this object can store temporary or persistent lua data.
@@ -61,6 +70,7 @@ Properties
     :hidden:
 
     tes3faction/attributes
+    tes3faction/blocked
     tes3faction/deleted
     tes3faction/disabled
     tes3faction/id
@@ -68,6 +78,7 @@ Properties
     tes3faction/name
     tes3faction/objectFlags
     tes3faction/objectType
+    tes3faction/persistent
     tes3faction/playerExpelled
     tes3faction/playerJoined
     tes3faction/playerRank
@@ -76,9 +87,11 @@ Properties
     tes3faction/reactions
     tes3faction/skills
     tes3faction/sourceMod
+    tes3faction/sourceless
     tes3faction/supportsLuaData
 
 .. _`attributes`: tes3faction/attributes.html
+.. _`blocked`: tes3faction/blocked.html
 .. _`deleted`: tes3faction/deleted.html
 .. _`disabled`: tes3faction/disabled.html
 .. _`id`: tes3faction/id.html
@@ -86,6 +99,7 @@ Properties
 .. _`name`: tes3faction/name.html
 .. _`objectFlags`: tes3faction/objectFlags.html
 .. _`objectType`: tes3faction/objectType.html
+.. _`persistent`: tes3faction/persistent.html
 .. _`playerExpelled`: tes3faction/playerExpelled.html
 .. _`playerJoined`: tes3faction/playerJoined.html
 .. _`playerRank`: tes3faction/playerRank.html
@@ -94,7 +108,21 @@ Properties
 .. _`reactions`: tes3faction/reactions.html
 .. _`skills`: tes3faction/skills.html
 .. _`sourceMod`: tes3faction/sourceMod.html
+.. _`sourceless`: tes3faction/sourceless.html
 .. _`supportsLuaData`: tes3faction/supportsLuaData.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3faction/__tojson
+
+.. _`__tojson`: tes3faction/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html

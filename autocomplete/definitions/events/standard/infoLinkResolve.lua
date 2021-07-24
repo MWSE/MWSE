@@ -1,5 +1,6 @@
 return {
 	description = "This event fires when a dialogue hyperlink is being resolved to a topic, during UI layout (not on link activation).",
+	related = { "infoGetText", "infoLinkResolve", "infoResponse", "infoFilter", "postInfoResponse" },
 	eventData = {
 		["topic"] = {
 			type = "string",

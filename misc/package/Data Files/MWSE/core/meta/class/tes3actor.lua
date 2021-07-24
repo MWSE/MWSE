@@ -5,6 +5,8 @@
 --- It is standard for creatures and NPCs to be composed of an actor and a mobile actor, linked together with a reference.
 --- @class tes3actor : tes3physicalObject, tes3object, tes3baseObject
 --- @field actorFlags number A number representing the actor flags. Truly a bit field.
+--- @field barterGold number Friendly access to actor's barter gold amount.
+--- @field blood number Friendly access to actor's blood type.
 --- @field cloneCount number The number of clones that exist of this actor.
 --- @field equipment tes3iterator The items currently equipped to the actor.
 --- @field inventory tes3iterator The items currently carried by the actor.
@@ -20,7 +22,7 @@ function tes3actor:offersService(service) end
 function tes3actor:onInventoryClose(reference) end
 
 --- Checks if the actor will buy and sell items of a given object type. e.g. actor:tradesItemType(tes3.objectType.repairItem)
---- @param objectType tes3objectType No description yet available.
+--- @param objectType tes3objectType tes3.objectType.* constants can be passed here.
 --- @return boolean result No description yet available.
 function tes3actor:tradesItemType(objectType) end
 

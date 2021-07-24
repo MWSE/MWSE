@@ -143,7 +143,9 @@ namespace mwse {
 			usertypeDefinition["getContentElement"] = &Element::getContentElement;
 			usertypeDefinition["getTopLevelMenu"] = &Element::getTopLevelParent;
 			usertypeDefinition["getTopLevelParent"] = &Element::getTopLevelParent;
+			usertypeDefinition["loadMenuPosition"] = &Element::loadMenuPosition;
 			usertypeDefinition["reorderChildren"] = &Element::reorderChildren_lua;
+			usertypeDefinition["saveMenuPosition"] = &Element::saveMenuPosition;
 			usertypeDefinition["updateLayout"] = &Element::updateLayout_lua;
 
 			// Creation/destruction functions.

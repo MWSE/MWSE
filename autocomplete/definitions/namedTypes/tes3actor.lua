@@ -5,4 +5,5 @@ return {
 
 It is standard for creatures and NPCs to be composed of an actor and a mobile actor, linked together with a reference.]],
 	inherits = "tes3physicalObject",
+	isAbstract = true,
 }

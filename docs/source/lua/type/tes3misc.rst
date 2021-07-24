@@ -6,20 +6,23 @@ A core miscellaneous object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `icon`_ (`string`_)
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isKey`_ (`boolean`_)
     Access to the flag determining if this item is recognized as a key.
@@ -40,13 +43,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -63,11 +69,17 @@ Properties
 `script`_ (`tes3script`_)
     Read-only. The script that runs on the object.
 
+`soulGemCapacity`_ (`number`_)
+    Read-only. Fetches capacity of the soul gem, if this item is a soul gem.
+
 `soulGemData`_ (`tes3soulGemData`_)
     Read-only. Fetches related soul gem data, if this item is a soul gem.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -84,6 +96,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3misc/blocked
     tes3misc/boundingBox
     tes3misc/deleted
     tes3misc/disabled
@@ -98,18 +111,22 @@ Properties
     tes3misc/objectFlags
     tes3misc/objectType
     tes3misc/owningCollection
+    tes3misc/persistent
     tes3misc/previousInCollection
     tes3misc/scale
     tes3misc/sceneNode
     tes3misc/sceneReference
     tes3misc/script
+    tes3misc/soulGemCapacity
     tes3misc/soulGemData
     tes3misc/sourceMod
+    tes3misc/sourceless
     tes3misc/stolenList
     tes3misc/supportsLuaData
     tes3misc/value
     tes3misc/weight
 
+.. _`blocked`: tes3misc/blocked.html
 .. _`boundingBox`: tes3misc/boundingBox.html
 .. _`deleted`: tes3misc/deleted.html
 .. _`disabled`: tes3misc/disabled.html
@@ -124,17 +141,38 @@ Properties
 .. _`objectFlags`: tes3misc/objectFlags.html
 .. _`objectType`: tes3misc/objectType.html
 .. _`owningCollection`: tes3misc/owningCollection.html
+.. _`persistent`: tes3misc/persistent.html
 .. _`previousInCollection`: tes3misc/previousInCollection.html
 .. _`scale`: tes3misc/scale.html
 .. _`sceneNode`: tes3misc/sceneNode.html
 .. _`sceneReference`: tes3misc/sceneReference.html
 .. _`script`: tes3misc/script.html
+.. _`soulGemCapacity`: tes3misc/soulGemCapacity.html
 .. _`soulGemData`: tes3misc/soulGemData.html
 .. _`sourceMod`: tes3misc/sourceMod.html
+.. _`sourceless`: tes3misc/sourceless.html
 .. _`stolenList`: tes3misc/stolenList.html
 .. _`supportsLuaData`: tes3misc/supportsLuaData.html
 .. _`value`: tes3misc/value.html
 .. _`weight`: tes3misc/weight.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+`isGold`_ (`boolean`_)
+    Returns true if the misc item is gold.
+
+.. toctree::
+    :hidden:
+
+    tes3misc/__tojson
+    tes3misc/isGold
+
+.. _`__tojson`: tes3misc/__tojson.html
+.. _`isGold`: tes3misc/isGold.html
 
 Functions
 ----------------------------------------------------------------------------------------------------

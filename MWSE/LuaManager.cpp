@@ -32,6 +32,7 @@
 #include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
 #include "TES3DialogueInfo.h"
+#include "TES3Enchantment.h"
 #include "TES3Fader.h"
 #include "TES3Game.h"
 #include "TES3GameFile.h"
@@ -181,6 +182,7 @@
 #include "LuaCrimeWitnessedEvent.h"
 #include "LuaDamageEvent.h"
 #include "LuaDamageHandToHandEvent.h"
+#include "LuaEnchantChargeUseEvent.h"
 #include "LuaEnchantedItemCreatedEvent.h"
 #include "LuaEnchantedItemCreateFailedEvent.h"
 #include "LuaEquipEvent.h"
@@ -3001,6 +3003,69 @@ namespace mwse {
 		}
 
 		//
+		// Event: Enchanted item charge needed to cast
+		//
+
+		static TES3::Enchantment* lastExaminedEnchantment = nullptr;
+
+		float __stdcall onEnchantItemChargeRequired(TES3::MobileActor* mobile, TES3::Enchantment* enchant, float charge, TES3::MagicSourceInstance* magicSource) {
+			// Restore overwritten code.
+			charge = std::max(1.0f, charge);
+
+			// Ignore cast once items, the charge calculated is later ignored.
+			if (enchant->castType != TES3::EnchantmentCastType::Once) {
+				// Fire off the event.
+				if (event::EnchantChargeUseEvent::getEventEnabled()) {
+					auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+					bool isCast = magicSource != nullptr;
+
+					sol::object eventResult = stateHandle.triggerEvent(new event::EnchantChargeUseEvent(enchant, mobile, charge, isCast));
+					if (eventResult.valid()) {
+						sol::table eventData = eventResult;
+						sol::optional<float> newCharge = eventData["charge"];
+						if (newCharge) {
+							charge = newCharge.value();
+						}
+					}
+				}
+			}
+
+			return charge;
+		}
+
+		TES3::Enchantment* __fastcall onEnchantItemChargeRequired_getEnchantment(TES3::Object* object) {
+			auto ench = object->getEnchantment();
+			lastExaminedEnchantment = ench;
+			return ench;
+		}
+
+		// _ftol substitute used to replace final operation of inlined calculations.
+		int onEnchantItemChargeRequired_ftol() {
+			float charge;
+			__asm { fstp [charge] }
+
+			auto castType = lastExaminedEnchantment->castType;
+			auto macp = TES3::WorldController::get()->getMobilePlayer();
+			charge = onEnchantItemChargeRequired(macp, lastExaminedEnchantment, charge, nullptr);
+
+			lastExaminedEnchantment = nullptr;
+			return int(charge);
+		}
+
+		__declspec(naked) void patchEnchantItemChargeRequired_onCast() {
+			__asm {
+				push esi					// magicSourceInstance
+				push ecx
+				fstp [esp]					// Charge required
+				push [esi+0xA0]				// Casting enchantment
+				push edi					// Casting mobileActor
+				call onEnchantItemChargeRequired	// Replace with call generation
+				fstp [ebp-0x18]				// Store updated charge required
+			}
+		}
+		const size_t patchEnchantItemChargeRequired_onCast_size = 0x14;
+
+		//
 		// Patch: Getting the correct radius of a light attached to a non-light entity.
 		//
 		
@@ -4374,6 +4439,20 @@ namespace mwse {
 
 			// Event: Power Recharged
 			overrideVirtualTableEnforced(0x74AC54, offsetof(PowersHashMap::VirtualTable, deleteKeyValuePair), 0x4F1C50, reinterpret_cast<DWORD>(OnDeletePowerHashMapKVP));
+
+			// Event: Enchanted item charge needed to cast.
+			writePatchCodeUnprotected(0x514F1E, (BYTE*)&patchEnchantItemChargeRequired_onCast, patchEnchantItemChargeRequired_onCast_size);
+			genCallUnprotected(0x514F2A, reinterpret_cast<DWORD>(onEnchantItemChargeRequired));
+			genCallUnprotected(0x5E014A, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_getEnchantment), 6);
+			genCallUnprotected(0x5E04EF, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_getEnchantment), 6);
+			genCallUnprotected(0x5E1FE3, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_getEnchantment), 6);
+			genCallUnprotected(0x5E3264, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_getEnchantment), 6);
+			genCallUnprotected(0x5E35F6, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_getEnchantment), 6);
+			genCallEnforced(0x5E02F6, 0x72769E, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_ftol));
+			genCallEnforced(0x5E05D1, 0x72769E, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_ftol));
+			genCallEnforced(0x5E201C, 0x72769E, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_ftol));
+			genCallEnforced(0x5E33FB, 0x72769E, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_ftol));
+			genCallEnforced(0x5E3724, 0x72769E, reinterpret_cast<DWORD>(onEnchantItemChargeRequired_ftol));
 
 			// UI framework hooks
 			TES3::UI::hook();

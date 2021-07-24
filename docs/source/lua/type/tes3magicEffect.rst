@@ -60,9 +60,6 @@ Properties
 `icon`_ (`string`_)
     The sound path to the icon to use for the effect.
 
-`id`_ (`number`_)
-    Read-only. The numerical id for the effect.
-
 `illegalDaedra`_ (`boolean`_)
     Access to the base flag that determines if this effect summons an illegal daedra. This flag isn't used.
 
@@ -132,7 +129,6 @@ Properties
     tes3magicEffect/hasNoMagnitude
     tes3magicEffect/hitSoundEffect
     tes3magicEffect/icon
-    tes3magicEffect/id
     tes3magicEffect/illegalDaedra
     tes3magicEffect/isHarmful
     tes3magicEffect/lightingBlue
@@ -168,7 +164,6 @@ Properties
 .. _`hasNoMagnitude`: tes3magicEffect/hasNoMagnitude.html
 .. _`hitSoundEffect`: tes3magicEffect/hitSoundEffect.html
 .. _`icon`: tes3magicEffect/icon.html
-.. _`id`: tes3magicEffect/id.html
 .. _`illegalDaedra`: tes3magicEffect/illegalDaedra.html
 .. _`isHarmful`: tes3magicEffect/isHarmful.html
 .. _`lightingBlue`: tes3magicEffect/lightingBlue.html

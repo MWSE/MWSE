@@ -20,7 +20,7 @@ function string.format(format, unknown) end
 --- @param s1 string The string to insert into.
 --- @param s2 string The string to insert.
 --- @param position number The position to insert s2 into s1.
---- @return any result No description yet available.
+--- @return string inserted A copy of s1 with s2 inserted into it.
 function string.insert(s1, s2, position) end
 
 --- Performs the logic of find, using a table of patterns.

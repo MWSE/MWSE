@@ -1,5 +1,6 @@
 return {
     description = "",
+	related = { "bodyPartAssigned", "bodyPartsUpdated" },
     eventData = {
         ["manager"] = {
             type = "tes3bodyPartManager",

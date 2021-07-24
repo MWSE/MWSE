@@ -1,7 +1,7 @@
 --- @meta
 
 --- A core lockpick object.
---- @class tes3lockpick : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3lockpick : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field condition number The maximum condition/health of the object.
 --- @field icon string The path to the object's icon.
 --- @field mesh string The path to the object's mesh.

@@ -1,5 +1,6 @@
 return {
 	description = "This event fires immediately after a dialogue response is processed.",
+	related = { "infoGetText", "infoLinkResolve", "infoResponse", "infoFilter", "postInfoResponse" },
 	eventData = {
 		["command"] = {
 			type = "string",

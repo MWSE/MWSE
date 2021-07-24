@@ -1,6 +1,6 @@
 id
 ====================================================================================================
 
-`string`_. The unique long string ID for the info. This is not kept in memory, and must be loaded from files for each call.
+`string`_. The unique identifier for the object.
 
 .. _`string`: ../../../lua/type/string.html

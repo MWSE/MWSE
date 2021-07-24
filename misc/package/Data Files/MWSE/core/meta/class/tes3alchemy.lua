@@ -1,9 +1,10 @@
 --- @meta
 
 --- An alchemy game object.
---- @class tes3alchemy : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3alchemy : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field autoCalc boolean If set, the value of the object is automatically calculated.
 --- @field effects table An array-style table of the tes3effect data on the object.
+--- @field flags number The alchemy item's flags.
 --- @field icon string The path to the object's icon.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
@@ -48,4 +49,13 @@ function tes3alchemy.create(params) end
 --- @field value number The new item's value.
 --- @field flags number The new alchemy item's flags.
 --- @field effects table A table of effects described, providing values for id, skill, attribute, range, radius, duration, min, and/or max.
+
+--- Returns the amount of effects the tes3alchemy object has.
+--- @return number count No description yet available.
+function tes3alchemy:getActiveEffectCount() end
+
+--- Returns the index of a first effect of a given effectId in the parent tes3alchemy object.
+--- @param effectId number The effectID to perform a check for. Maps to tes3.effect.* constants.
+--- @return number index No description yet available.
+function tes3alchemy:getFirstIndexOfEffect(effectId) end
 

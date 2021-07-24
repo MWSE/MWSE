@@ -6,14 +6,17 @@ An ingredient game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `effectAttributeIds`_ (`table`_)
     Read-only. An array-style table access the attributes associated with the effects.
@@ -28,7 +31,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -43,13 +46,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -67,7 +73,10 @@ Properties
     The script that runs on the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -84,6 +93,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3ingredient/blocked
     tes3ingredient/boundingBox
     tes3ingredient/deleted
     tes3ingredient/disabled
@@ -99,17 +109,20 @@ Properties
     tes3ingredient/objectFlags
     tes3ingredient/objectType
     tes3ingredient/owningCollection
+    tes3ingredient/persistent
     tes3ingredient/previousInCollection
     tes3ingredient/scale
     tes3ingredient/sceneNode
     tes3ingredient/sceneReference
     tes3ingredient/script
     tes3ingredient/sourceMod
+    tes3ingredient/sourceless
     tes3ingredient/stolenList
     tes3ingredient/supportsLuaData
     tes3ingredient/value
     tes3ingredient/weight
 
+.. _`blocked`: tes3ingredient/blocked.html
 .. _`boundingBox`: tes3ingredient/boundingBox.html
 .. _`deleted`: tes3ingredient/deleted.html
 .. _`disabled`: tes3ingredient/disabled.html
@@ -125,16 +138,31 @@ Properties
 .. _`objectFlags`: tes3ingredient/objectFlags.html
 .. _`objectType`: tes3ingredient/objectType.html
 .. _`owningCollection`: tes3ingredient/owningCollection.html
+.. _`persistent`: tes3ingredient/persistent.html
 .. _`previousInCollection`: tes3ingredient/previousInCollection.html
 .. _`scale`: tes3ingredient/scale.html
 .. _`sceneNode`: tes3ingredient/sceneNode.html
 .. _`sceneReference`: tes3ingredient/sceneReference.html
 .. _`script`: tes3ingredient/script.html
 .. _`sourceMod`: tes3ingredient/sourceMod.html
+.. _`sourceless`: tes3ingredient/sourceless.html
 .. _`stolenList`: tes3ingredient/stolenList.html
 .. _`supportsLuaData`: tes3ingredient/supportsLuaData.html
 .. _`value`: tes3ingredient/value.html
 .. _`weight`: tes3ingredient/weight.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3ingredient/__tojson
+
+.. _`__tojson`: tes3ingredient/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`niNode`: ../../lua/type/niNode.html

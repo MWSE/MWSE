@@ -1,5 +1,6 @@
 return{
     description = "This event is triggered when a reference is activated.",
+	related = { "referenceActivated", "referenceDeactivated" },
     eventData = {
         ["reference"] = {
             type = "tes3reference",

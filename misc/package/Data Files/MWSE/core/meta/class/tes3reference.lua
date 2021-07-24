@@ -6,7 +6,7 @@
 --- @class tes3reference : tes3object, tes3baseObject
 --- @field activationReference tes3reference The current reference, if any, that this reference will activate.
 --- @field attachments table A table with friendly named access to all supported attachments.
---- @field baseObject tes3physicalObject This is similar to the object field, but is guaranteed to provide the base-most object. If object is an actor clone, the base actor will be given instead.
+--- @field baseObject tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon This is similar to the object field, but is guaranteed to provide the base-most object. If object is an actor clone, the base actor will be given instead.
 --- @field bodyPartManager tes3bodyPartManager|nil Access to the reference's body part manager, if available. Typically this is only available on NPC references.
 --- @field cell tes3cell The cell that the reference is currently in.
 --- @field context tes3scriptContext Access to the script context for this reference and its associated script.
@@ -20,16 +20,16 @@
 --- @field isRespawn boolean If true, the references respawn flag is set.
 --- @field itemData tes3itemData Gets or sets the attached itemData for this reference. If set to nil, the item data will be unhooked but not deleted.
 --- @field leveledBaseReference tes3reference|nil If this reference is a leveled spawn, this is the leveled creature spawn reference. If this reference wasn't the result of a leveled spawn, the value is nil.
---- @field light niPointLight Direct access to the scene graph light, if a dynamic light is set.
+--- @field light niPointLight|niSpotLight Direct access to the scene graph light, if a dynamic light is set.
 --- @field lockNode tes3lockNode Quick access to the reference's lock node, if any.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3mobileProjectile|tes3mobileSpell|nil Access to the attached mobile object, if applicable.
+--- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3mobilePlayer|tes3mobileProjectile|tes3mobileSpellProjectile|tes3mobileSpell|nil Access to the attached mobile object, if applicable.
 --- @field nextNode tes3reference The next reference in the parent reference list.
 --- @field nodeData tes3reference Redundant access to this object, for iterating over a tes3referenceList.
---- @field object tes3physicalObject The object that the reference is for, such as a weapon, armor, or actor.
+--- @field object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon The object that the reference is for, such as a weapon, armor, or actor.
 --- @field orientation tes3vector3 Access to the reference's orientation. Setting the orientation sets the reference as modified.
 --- @field position tes3vector3 Access to the reference's position. Setting the position sets the reference as modified.
 --- @field previousNode tes3reference The previous reference in the parent reference list.
---- @field sceneNode niNode The scene graph node that the reference uses for rendering.
+--- @field sceneNode niCollisionSwitch|niNode|niSwitchNode The scene graph node that the reference uses for rendering.
 --- @field stackSize number Access to the size of a stack, if the reference represents one or more items.
 --- @field supportsLuaData boolean If true, this reference can store temporary or persistent lua data.
 --- @field tempData table As with the data field, a generic lua table that data can be written to. No information in this table will persist into saves. For item references, this is the same table as on the tes3itemData structure.
@@ -55,16 +55,16 @@ function tes3reference:deleteDynamicLightAttachment(removeLightFromParent) end
 function tes3reference:detachDynamicLightFromAffectedNodes() end
 
 --- Hides the reference, stops all scripts for it, detaches all dynamic lights and sounds, and closes any mobile simulation. Sets the reference as modified implicitly.
---- @return any result No description yet available.
+--- @return boolean success If true, the reference was successfully disabled.
 function tes3reference:disable() end
 
 --- Shows the reference, restarts all scripts for it, reattaches all dynamic lights and sounds, and restarts any mobile simulation if the player is close enough. Sets the reference as modified implicitly.
---- @return any result No description yet available.
+--- @return boolean success If true, the reference was successfully enabled.
 function tes3reference:enable() end
 
 --- Calculates the angle from this reference's current facing to the target reference.
 --- @param reference tes3reference The reference to calculate the angle to.
---- @return any result No description yet available.
+--- @return number angle The angle to the given reference.
 function tes3reference:getAngleTo(reference) end
 
 --- Fetches the dynamic light attachment.
@@ -76,7 +76,7 @@ function tes3reference:getAttachedDynamicLight() end
 ---     If no light is supplied as an argument, a point light of radius 512 will be automatically created.
 ---     
 ---     If the light is not attached to any part of the scene graph yet, the point light will be placed as a child of the "attachLight" subnode of the model, or a child of the model if "attachLight" is not found.
---- @param light niPointLight No description yet available.
+--- @param light niPointLight|niSpotLight No description yet available.
 --- @param phase number No description yet available.
 --- @return tes3lightNode result No description yet available.
 function tes3reference:getOrCreateAttachedDynamicLight(light, phase) end

@@ -14,6 +14,7 @@
 #include "TES3MobileObject.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
+#include "TES3WorldController.h"
 
 namespace mwse {
 	namespace lua {
@@ -524,6 +525,7 @@ namespace mwse {
 			convertTo["tes3mobileObject"] = convertArgTo<TES3::MobileObject*>;
 			convertTo["tes3object"] = convertArgTo<TES3::BaseObject*>;
 			convertTo["tes3uiElement"] = convertArgTo<TES3::UI::Element*>;
+			convertTo["tes3worldController"] = convertArgTo<TES3::WorldController*>;
 			convertTo["uint"] = convertArgTo<DWORD>;
 
 			convertFrom = memory.create_named("convertFrom");
@@ -545,6 +547,7 @@ namespace mwse {
 			convertFrom["tes3mobileObject"] = convertArgFrom<TES3::MobileObject*>;
 			convertFrom["tes3object"] = convertArgFrom<TES3::BaseObject*>;
 			convertFrom["tes3uiElement"] = convertArgFrom<TES3::UI::Element*>;
+			convertFrom["tes3worldController"] = convertArgFrom<TES3::WorldController*>;
 			convertFrom["uint"] = convertArgFrom<unsigned int>;
 
 			//

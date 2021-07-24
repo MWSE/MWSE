@@ -9,8 +9,17 @@ Properties
 `actorFlags`_ (`number`_)
     Read-only. A number representing the actor flags. Truly a bit field.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
 `baseObject`_ (`tes3object`_)
     Read-only. The base container object that the instance inherits from.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
@@ -19,16 +28,16 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. The items currently carried by the actor.
@@ -49,16 +58,19 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `organic`_ (`boolean`_)
     Determines if the container's organic flag is enabled.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -79,7 +91,10 @@ Properties
     The script that runs on the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -91,7 +106,10 @@ Properties
     :hidden:
 
     tes3containerInstance/actorFlags
+    tes3containerInstance/barterGold
     tes3containerInstance/baseObject
+    tes3containerInstance/blocked
+    tes3containerInstance/blood
     tes3containerInstance/boundingBox
     tes3containerInstance/cloneCount
     tes3containerInstance/deleted
@@ -108,6 +126,7 @@ Properties
     tes3containerInstance/objectType
     tes3containerInstance/organic
     tes3containerInstance/owningCollection
+    tes3containerInstance/persistent
     tes3containerInstance/previousInCollection
     tes3containerInstance/respawns
     tes3containerInstance/scale
@@ -115,11 +134,15 @@ Properties
     tes3containerInstance/sceneReference
     tes3containerInstance/script
     tes3containerInstance/sourceMod
+    tes3containerInstance/sourceless
     tes3containerInstance/stolenList
     tes3containerInstance/supportsLuaData
 
 .. _`actorFlags`: tes3containerInstance/actorFlags.html
+.. _`barterGold`: tes3containerInstance/barterGold.html
 .. _`baseObject`: tes3containerInstance/baseObject.html
+.. _`blocked`: tes3containerInstance/blocked.html
+.. _`blood`: tes3containerInstance/blood.html
 .. _`boundingBox`: tes3containerInstance/boundingBox.html
 .. _`cloneCount`: tes3containerInstance/cloneCount.html
 .. _`deleted`: tes3containerInstance/deleted.html
@@ -136,6 +159,7 @@ Properties
 .. _`objectType`: tes3containerInstance/objectType.html
 .. _`organic`: tes3containerInstance/organic.html
 .. _`owningCollection`: tes3containerInstance/owningCollection.html
+.. _`persistent`: tes3containerInstance/persistent.html
 .. _`previousInCollection`: tes3containerInstance/previousInCollection.html
 .. _`respawns`: tes3containerInstance/respawns.html
 .. _`scale`: tes3containerInstance/scale.html
@@ -143,11 +167,15 @@ Properties
 .. _`sceneReference`: tes3containerInstance/sceneReference.html
 .. _`script`: tes3containerInstance/script.html
 .. _`sourceMod`: tes3containerInstance/sourceMod.html
+.. _`sourceless`: tes3containerInstance/sourceless.html
 .. _`stolenList`: tes3containerInstance/stolenList.html
 .. _`supportsLuaData`: tes3containerInstance/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -161,10 +189,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3containerInstance/__tojson
     tes3containerInstance/offersService
     tes3containerInstance/onInventoryClose
     tes3containerInstance/tradesItemType
 
+.. _`__tojson`: tes3containerInstance/__tojson.html
 .. _`offersService`: tes3containerInstance/offersService.html
 .. _`onInventoryClose`: tes3containerInstance/onInventoryClose.html
 .. _`tradesItemType`: tes3containerInstance/tradesItemType.html

@@ -1,7 +1,9 @@
 attackStart
 ====================================================================================================
 
-This event is invoked whenever an actor starts an attack with their fists or a weapon, or a creature makes any attack. It is when the actor raises a melee weapon or draws an arrow. There is not necessarily a target in range, or any target at all for the player.
+This event is invoked whenever an actor starts an attack with their fists or a weapon, or a creature makes any attack. More precisely, it is when the actor raises a melee weapon or draws an arrow. There is not necessarily a target in range, or any target at all for the player.
+
+Related events: `attack`_
 
 Event Data
 ----------------------------------------------------------------------------------------------------
@@ -26,6 +28,7 @@ attackType
 
 `number`_. A number from the tes3.physicalAttackType enumeration identifying the physical attack type. Can be tes3.physicalAttackType.slash, .chop, .thrust, .projectile, .creature1, .creature2, or .creature3. May be changed to change the attack's type if the original attack was slash, chop, or thrust.
 
+.. _`attack`: ../../lua/event/attack.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

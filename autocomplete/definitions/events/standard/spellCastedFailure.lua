@@ -1,5 +1,6 @@
 return {
 	description = "This event is triggered when any spell fails to cast due to failing the cast chance check. It does not trigger when there is insufficient magicka.",
+	related = { "spellCast", "spellCasted", "spellCastedFailure" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",

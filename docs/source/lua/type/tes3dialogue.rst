@@ -6,14 +6,17 @@ A parent-level dialogue, such as a topic, voice, greeting, persuasion response, 
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `info`_ (`tes3iterator`_)
     Read-only. A collection of individual entries in the dialogue.
@@ -25,13 +28,19 @@ Properties
     The modification state of the object since the last save.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `supportsLuaData`_ (`boolean`_)
     If true, references of this object can store temporary or persistent lua data.
@@ -42,6 +51,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3dialogue/blocked
     tes3dialogue/deleted
     tes3dialogue/disabled
     tes3dialogue/id
@@ -50,10 +60,13 @@ Properties
     tes3dialogue/modified
     tes3dialogue/objectFlags
     tes3dialogue/objectType
+    tes3dialogue/persistent
     tes3dialogue/sourceMod
+    tes3dialogue/sourceless
     tes3dialogue/supportsLuaData
     tes3dialogue/type
 
+.. _`blocked`: tes3dialogue/blocked.html
 .. _`deleted`: tes3dialogue/deleted.html
 .. _`disabled`: tes3dialogue/disabled.html
 .. _`id`: tes3dialogue/id.html
@@ -62,12 +75,17 @@ Properties
 .. _`modified`: tes3dialogue/modified.html
 .. _`objectFlags`: tes3dialogue/objectFlags.html
 .. _`objectType`: tes3dialogue/objectType.html
+.. _`persistent`: tes3dialogue/persistent.html
 .. _`sourceMod`: tes3dialogue/sourceMod.html
+.. _`sourceless`: tes3dialogue/sourceless.html
 .. _`supportsLuaData`: tes3dialogue/supportsLuaData.html
 .. _`type`: tes3dialogue/type.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `addToJournal`_ (`boolean`_)
     Adds the dialogue to the player's journal, if applicable, at a given index.
@@ -78,9 +96,11 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3dialogue/__tojson
     tes3dialogue/addToJournal
     tes3dialogue/getInfo
 
+.. _`__tojson`: tes3dialogue/__tojson.html
 .. _`addToJournal`: tes3dialogue/addToJournal.html
 .. _`getInfo`: tes3dialogue/getInfo.html
 

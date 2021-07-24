@@ -18,14 +18,17 @@ Properties
 `behavesAsExterior`_ (`boolean`_)
     If true, the cell behaves as an exterior instead of an interior for certain properties. Only available on interior cells.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `cellFlags`_ (`number`_)
     A numeric representation of the packed bit flags for the cell, typically accessed from other properties.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `displayName`_ (`string`_)
     The name of the cell as displayed on the in-game UI. For exterior cells without an assigned name, this is the region name.
@@ -49,7 +52,7 @@ Properties
     If true, the cell has water. Only applies to interior cells.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isInterior`_ (`boolean`_)
     If true, the cell is an interior.
@@ -61,10 +64,13 @@ Properties
     The name and id of the cell. See also displayName and editorName.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `pickObjectsRoot`_ (`niNode`_)
     The scenegraph node containing player-interactable objects from this cell.
@@ -76,7 +82,10 @@ Properties
     If true, the player may not rest in the cell.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `staticObjectsRoot`_ (`tes3region`_)
     The scenegraph node containing static non-player-interactable objects from this cell.
@@ -100,6 +109,7 @@ Properties
     tes3cell/actors
     tes3cell/ambientColor
     tes3cell/behavesAsExterior
+    tes3cell/blocked
     tes3cell/cellFlags
     tes3cell/deleted
     tes3cell/disabled
@@ -116,10 +126,12 @@ Properties
     tes3cell/name
     tes3cell/objectFlags
     tes3cell/objectType
+    tes3cell/persistent
     tes3cell/pickObjectsRoot
     tes3cell/region
     tes3cell/restingIsIllegal
     tes3cell/sourceMod
+    tes3cell/sourceless
     tes3cell/staticObjectsRoot
     tes3cell/statics
     tes3cell/sunColor
@@ -130,6 +142,7 @@ Properties
 .. _`actors`: tes3cell/actors.html
 .. _`ambientColor`: tes3cell/ambientColor.html
 .. _`behavesAsExterior`: tes3cell/behavesAsExterior.html
+.. _`blocked`: tes3cell/blocked.html
 .. _`cellFlags`: tes3cell/cellFlags.html
 .. _`deleted`: tes3cell/deleted.html
 .. _`disabled`: tes3cell/disabled.html
@@ -146,10 +159,12 @@ Properties
 .. _`name`: tes3cell/name.html
 .. _`objectFlags`: tes3cell/objectFlags.html
 .. _`objectType`: tes3cell/objectType.html
+.. _`persistent`: tes3cell/persistent.html
 .. _`pickObjectsRoot`: tes3cell/pickObjectsRoot.html
 .. _`region`: tes3cell/region.html
 .. _`restingIsIllegal`: tes3cell/restingIsIllegal.html
 .. _`sourceMod`: tes3cell/sourceMod.html
+.. _`sourceless`: tes3cell/sourceless.html
 .. _`staticObjectsRoot`: tes3cell/staticObjectsRoot.html
 .. _`statics`: tes3cell/statics.html
 .. _`sunColor`: tes3cell/sunColor.html
@@ -159,14 +174,19 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
 `iterateReferences`_
     Used in a for loop, iterates over objects in the cell.
 
 .. toctree::
     :hidden:
 
+    tes3cell/__tojson
     tes3cell/iterateReferences
 
+.. _`__tojson`: tes3cell/__tojson.html
 .. _`iterateReferences`: tes3cell/iterateReferences.html
 
 .. _`boolean`: ../../lua/type/boolean.html

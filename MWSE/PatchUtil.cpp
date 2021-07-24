@@ -421,6 +421,17 @@ namespace mwse {
 		}
 
 		//
+		// Patch: Fix empty menu positions from saving to the ini.
+		//
+
+		BOOL __stdcall PatchNonEmptyWritePrivateProfileStringA(LPCSTR lpAppName, LPCSTR lpKeyName, LPCSTR lpString, LPCSTR lpFileName) {
+			if (lpString == nullptr || strnlen_s(lpString, 1) == 0) {
+				return FALSE;
+			}
+			return WritePrivateProfileStringA(lpAppName, lpKeyName, lpString, lpFileName);
+		}
+
+		//
 		// Install all the patches.
 		//
 
@@ -638,6 +649,9 @@ namespace mwse {
 
 			// Patch: Correctly initialize MobileProjectile tag/objectType
 			genCallEnforced(0x572444, 0x4EE8A0, reinterpret_cast<DWORD>(PatchInitializeMobileProjectileType));
+
+			// Patch: Prevent the game from saving empty menu names to the INI file.
+			genCallUnprotected(0x5972AA, reinterpret_cast<DWORD>(PatchNonEmptyWritePrivateProfileStringA), 0x6);
 		}
 
 		void installPostLuaPatches() {

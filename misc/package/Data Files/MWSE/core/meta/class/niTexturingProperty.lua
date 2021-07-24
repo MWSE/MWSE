@@ -22,6 +22,6 @@ function niTexturingProperty:addDecalMap(texture) end
 
 --- Attempts to remove a decal at a given index.
 --- @param index number The index of the decal to remove.
---- @return any result No description yet available.
+--- @return boolean removed True if the decal was removed.
 function niTexturingProperty:removeDecalMap(index) end
 

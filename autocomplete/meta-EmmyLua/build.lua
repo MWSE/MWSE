@@ -7,6 +7,10 @@ local metaFolder = "..\\misc\\package\\Data Files\\MWSE\\core\\meta\\"
 
 local defaultNoDescriptionText = "No description yet available."
 
+-- Base containers to hold our compiled data.
+local libraries = {}
+local classes = {}
+
 -- 
 -- Utility functions.
 -- 
@@ -167,10 +171,12 @@ local function getConsistentReturnValues(package)
 	elseif (package.valuetype) then
 		return { { name = "result", type = package.valuetype } }
 	elseif (type(package.returns) == "table") then
-		if (#package.returns == 1) then
+		if (package.returns.name or package.returns.type) then
 			return { package.returns }
+		elseif (#package.returns > 0) then
+			return package.returns
 		end
-		return package.returns
+		error("Invalid parameters table.")
 	end
 end
 
@@ -181,10 +187,32 @@ local function getRemappedType(package)
 	return (package.namespace or package.key)
 end
 
+local function getAllPossibleVariationsOfType(type)
+	if (not type) then
+		return nil
+	end
+
+	local types = {}
+	for _, t in ipairs(splitString(type, "|")) do
+		local class = classes[t]
+		if (class) then
+			table.insert(types, class.allDescendentKeys or t)
+		else
+			table.insert(types, t)
+		end
+	end
+
+	return table.concat(types, "|")
+end
+
 local function getParamNames(package)
 	local params = {}
 	for _, param in ipairs(package.arguments or {}) do
-		table.insert(params, param.name or "unknown")
+		if (param.type == "variadic") then
+			table.insert(params, "...")
+		else
+			table.insert(params, param.name or "unknown")
+		end
 	end
 	return params
 end
@@ -196,27 +224,31 @@ local function writeFunction(package, file, namespaceOverride)
 	for i, argument in ipairs(package.arguments or {}) do
 		local type = argument.type
 		local description = argument.description or defaultNoDescriptionText
-		if (i == 1 and argument.tableParams) then
+		if (argument.tableParams) then
 			type = package.namespace .. ".params"
 			description = "This table accepts the following values:"
 			for _, tableArgument in ipairs(argument.tableParams) do
-				description = description .. string.format("\n\n``%s``: %s — %s", tableArgument.name or "unknown", tableArgument.type or "any", formatLineBreaks(tableArgument.description or defaultNoDescriptionText))
+				description = description .. string.format("\n\n``%s``: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type) or "any", formatLineBreaks(tableArgument.description or defaultNoDescriptionText))
 			end
 		end
-		file:write(string.format("--- @param %s %s %s\n", argument.name or "unknown", type, formatLineBreaks(description)))
+		if (argument.type == "variadic") then
+			file:write(string.format("--- @vararg %s %s\n", getAllPossibleVariationsOfType(argument.variadicType) or "any", formatLineBreaks(description)))
+		else
+			file:write(string.format("--- @param %s %s %s\n", argument.name or "unknown", getAllPossibleVariationsOfType(type), formatLineBreaks(description)))
+		end
 	end
 
 	for _, returnPackage in ipairs(getConsistentReturnValues(package) or {}) do
-		file:write(string.format("--- @return %s %s %s\n", returnPackage.type or "any", returnPackage.name or "result", returnPackage.description or defaultNoDescriptionText))
+		file:write(string.format("--- @return %s %s %s\n", getAllPossibleVariationsOfType(returnPackage.type) or "any", returnPackage.name or "result", returnPackage.description or defaultNoDescriptionText))
 	end
 
 	file:write(string.format("function %s(%s) end\n\n", namespaceOverride or package.namespace, table.concat(getParamNames(package), ", ")))
 
-	if (package.arguments and #package.arguments == 1 and package.arguments[1].tableParams) then
+	if (package.arguments and #package.arguments > 0 and package.arguments[1].tableParams) then
 		file:write(string.format("---Table parameter definitions for ``%s``.\n", package.namespace))
 		file:write(string.format("--- @class %s.params\n", package.namespace))
 		for _, param in ipairs(package.arguments[1].tableParams) do
-			file:write(string.format("--- @field %s %s %s\n", param.name, param.type, param.description or defaultNoDescriptionText))
+			file:write(string.format("--- @field %s %s %s\n", param.name, getAllPossibleVariationsOfType(param.type), param.description or defaultNoDescriptionText))
 		end
 		file:write("\n")
 	end
@@ -240,6 +272,10 @@ local function compileEntry(folder, key, parent)
 	package.parent = parent
 	package.namespace = getFullPackageNamespace(package)
 
+	-- Setup children access on parents.
+	parent.children = parent.children or {}
+	parent.children[key] = package
+
 	-- Add to things.
 	local collection = package.type .. "s"
 	parent[collection] = parent[collection] or {}
@@ -249,7 +285,7 @@ end
 local function compile(folder, key, owningCollection, acceptedType)
 	-- Load our base package.
 	local path = folder .. "\\" .. key .. ".lua"
-	log("Compiling: " .. path .. " ...")
+	log("Compiling %s: %s ...", acceptedType, key)
 	local package = dofile(path)
 	package.key = key
 
@@ -270,7 +306,6 @@ local function compile(folder, key, owningCollection, acceptedType)
 	owningCollection[key] = package
 end
 
-local libraries = {}
 for entry in lfs.dir(definitionsFolder .. "\\global") do
 	local extension = entry:match("[^.]+$")
 	if (extension == "lua") then
@@ -278,11 +313,51 @@ for entry in lfs.dir(definitionsFolder .. "\\global") do
 	end
 end
 
-local classes = {}
 for entry in lfs.dir(definitionsFolder .. "\\namedTypes") do
 	local extension = entry:match("[^.]+$")
 	if (extension == "lua") then
 		compile(definitionsFolder .. "\\namedTypes", entry:match("[^/]+$"):sub(1, -1 * (#extension + 2)), classes, "class")
+	end
+end
+
+--
+-- Figure out type explosions. Explosions are cool.
+--
+
+-- Figure out inheritances.
+for _, class in pairs(classes) do
+	if (class.inherits) then
+		local parent = classes[class.inherits]
+		if (parent) then
+			parent.directDescendents = parent.directDescendents or {}
+			parent.directDescendents[class.key] = class
+			
+			while (parent) do
+				parent.allDescendents = parent.allDescendents or {}
+				parent.allDescendents[class.key] = class
+				parent = classes[parent.inherits]
+			end
+		end
+	end
+end
+
+-- Update allDescendentKeys
+-- Explosions. I should have kept calling them explosion keys. Way cooler.
+for _, class in pairs(classes) do
+	if (class.allDescendents) then
+		local allDescendentKeys = {}
+		if (not class.isAbstract) then
+			table.insert(allDescendentKeys, class.key)
+		end
+		for _, descendent in pairs(class.allDescendents) do
+			if (not descendent.isAbstract) then
+				table.insert(allDescendentKeys, descendent.key)
+			end
+		end
+		if (#allDescendentKeys > 0) then
+			table.sort(allDescendentKeys)
+			class.allDescendentKeys = table.concat(allDescendentKeys, "|")
+		end
 	end
 end
 
@@ -331,7 +406,7 @@ local function build(key, collection, type)
 
 	-- Write out fields.
 	for _, value in ipairs(package.values or {}) do
-		file:write(string.format("--- @field %s %s %s\n", value.key, value.valuetype or "any", formatLineBreaks(value.description or defaultNoDescriptionText)))
+		file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype) or "any", formatLineBreaks(value.description or defaultNoDescriptionText)))
 	end
 
 	-- Finalize the main class definition.
@@ -359,10 +434,6 @@ for entry in lfs.dir(definitionsFolder .. "\\global") do
 		build(entry:match("[^/]+$"):sub(1, -1 * (#extension + 2)), libraries, "lib")
 	end
 end
-
---
--- Classes
---
 
 for entry in lfs.dir(definitionsFolder .. "\\namedTypes") do
 	local extension = entry:match("[^.]+$")

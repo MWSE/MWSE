@@ -274,6 +274,9 @@ namespace TES3 {
 			void forwardEvent_lua(sol::table eventData) const;
 			void triggerEvent_lua(sol::object params);
 
+			void saveMenuPosition();
+			bool loadMenuPosition();
+
 			bool reorderChildren_lua(sol::object insertBefore, sol::object moveFrom, int count);
 			void updateLayout_lua(sol::optional<bool> updateTimestamp = true);
 

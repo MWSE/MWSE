@@ -14,6 +14,6 @@ Parameters
 Accepts parameters in the following order:
 
 objectType (`tes3objectType`_)
-    No description available.
+    tes3.objectType.* constants can be passed here.
 
 .. _`boolean`: ../../../lua/type/boolean.html

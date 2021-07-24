@@ -1,5 +1,6 @@
 return {
 	description = "This event is triggered when any spell is cast successfully; this includes spells cast via scripts. This occurs at the end of the casting animation, just after the magic projectile has been constructed.",
+	related = { "spellCast", "spellCasted", "spellCastedFailure" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",

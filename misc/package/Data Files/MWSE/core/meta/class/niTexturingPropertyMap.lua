@@ -20,7 +20,7 @@ niTexturingPropertyMap = {}
 --- ``textCoords``: number — The texture coordinates to set the map to use.
 --- 
 --- ``isBumpMap``: boolean — If true, a bump map will be created instead.
---- @return any result No description yet available.
+--- @return niTexturingPropertyMap map The created basic or bump map.
 function niTexturingPropertyMap.new(params) end
 
 ---Table parameter definitions for ``niTexturingPropertyMap.new``.

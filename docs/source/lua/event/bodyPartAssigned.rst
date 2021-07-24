@@ -3,6 +3,8 @@ bodyPartAssigned
 
 
 
+Related events: `bodyPartsUpdated`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -36,6 +38,7 @@ bodyPart
 
 `tes3bodyPart`_. 
 
+.. _`bodyPartsUpdated`: ../../lua/event/bodyPartsUpdated.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3bodyPart`: ../../lua/type/tes3bodyPart.html

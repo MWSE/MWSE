@@ -21,11 +21,20 @@ Properties
 `barterGold`_ (`number`_)
     The amount of gold that the creature has to barter with.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
 `baseObject`_ (`tes3creature`_)
     Access to creature that this one is instanced from.
 
 `biped`_ (`boolean`_)
     Access to the creature's biped flag.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
@@ -34,16 +43,16 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
-
-`equipment`_ (`tes3iterator`_)
-    Read-only. A collection that contains the currently equipped items.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
+
+`equipment`_ (`tes3iterator`_)
+    Read-only. A collection that contains the currently equipped items.
 
 `fatigue`_ (`number`_)
     Read-only. The creature's current fatigue.
@@ -55,13 +64,13 @@ Properties
     Read-only. The creature's current health.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
-
-`inventory`_ (`tes3iterator`_)
-    Read-only. The items currently carried by the actor.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. A collection that contains the items in the actor's inventory.
+
+`inventory`_ (`tes3iterator`_)
+    Read-only. The items currently carried by the actor.
 
 `isAttacked`_ (`boolean`_)
     Read-only. If true, the creature attacked flag is set.
@@ -94,13 +103,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -130,7 +142,10 @@ Properties
     Simplified access to the base creature's sound generator. A creature to use instead of this one for sound generation.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `spells`_ (`tes3spellList`_)
     Read-only. Quick access to the base creature's spell list. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(creature.spells.iterator) do print(spell.name) end
@@ -164,8 +179,11 @@ Properties
     tes3creatureInstance/attacks
     tes3creatureInstance/attributes
     tes3creatureInstance/barterGold
+    tes3creatureInstance/barterGold
     tes3creatureInstance/baseObject
     tes3creatureInstance/biped
+    tes3creatureInstance/blocked
+    tes3creatureInstance/blood
     tes3creatureInstance/boundingBox
     tes3creatureInstance/cloneCount
     tes3creatureInstance/deleted
@@ -191,6 +209,7 @@ Properties
     tes3creatureInstance/objectFlags
     tes3creatureInstance/objectType
     tes3creatureInstance/owningCollection
+    tes3creatureInstance/persistent
     tes3creatureInstance/previousInCollection
     tes3creatureInstance/respawns
     tes3creatureInstance/scale
@@ -201,6 +220,7 @@ Properties
     tes3creatureInstance/soul
     tes3creatureInstance/soundCreature
     tes3creatureInstance/sourceMod
+    tes3creatureInstance/sourceless
     tes3creatureInstance/spells
     tes3creatureInstance/stolenList
     tes3creatureInstance/supportsLuaData
@@ -215,8 +235,11 @@ Properties
 .. _`attacks`: tes3creatureInstance/attacks.html
 .. _`attributes`: tes3creatureInstance/attributes.html
 .. _`barterGold`: tes3creatureInstance/barterGold.html
+.. _`barterGold`: tes3creatureInstance/barterGold.html
 .. _`baseObject`: tes3creatureInstance/baseObject.html
 .. _`biped`: tes3creatureInstance/biped.html
+.. _`blocked`: tes3creatureInstance/blocked.html
+.. _`blood`: tes3creatureInstance/blood.html
 .. _`boundingBox`: tes3creatureInstance/boundingBox.html
 .. _`cloneCount`: tes3creatureInstance/cloneCount.html
 .. _`deleted`: tes3creatureInstance/deleted.html
@@ -242,6 +265,7 @@ Properties
 .. _`objectFlags`: tes3creatureInstance/objectFlags.html
 .. _`objectType`: tes3creatureInstance/objectType.html
 .. _`owningCollection`: tes3creatureInstance/owningCollection.html
+.. _`persistent`: tes3creatureInstance/persistent.html
 .. _`previousInCollection`: tes3creatureInstance/previousInCollection.html
 .. _`respawns`: tes3creatureInstance/respawns.html
 .. _`scale`: tes3creatureInstance/scale.html
@@ -252,6 +276,7 @@ Properties
 .. _`soul`: tes3creatureInstance/soul.html
 .. _`soundCreature`: tes3creatureInstance/soundCreature.html
 .. _`sourceMod`: tes3creatureInstance/sourceMod.html
+.. _`sourceless`: tes3creatureInstance/sourceless.html
 .. _`spells`: tes3creatureInstance/spells.html
 .. _`stolenList`: tes3creatureInstance/stolenList.html
 .. _`supportsLuaData`: tes3creatureInstance/supportsLuaData.html
@@ -263,6 +288,9 @@ Properties
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -276,10 +304,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3creatureInstance/__tojson
     tes3creatureInstance/offersService
     tes3creatureInstance/onInventoryClose
     tes3creatureInstance/tradesItemType
 
+.. _`__tojson`: tes3creatureInstance/__tojson.html
 .. _`offersService`: tes3creatureInstance/offersService.html
 .. _`onInventoryClose`: tes3creatureInstance/onInventoryClose.html
 .. _`tradesItemType`: tes3creatureInstance/tradesItemType.html

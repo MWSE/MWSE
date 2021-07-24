@@ -21,12 +21,12 @@
 tes3nonDynamicData = {}
 
 --- Inserts a newly created object into the proper collections.
---- @param object tes3baseObject No description yet available.
+--- @param object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon No description yet available.
 --- @return boolean result No description yet available.
 function tes3nonDynamicData:addNewObject(object) end
 
 --- Removes an object from the proper collections.
---- @param object tes3baseObject No description yet available.
+--- @param object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon No description yet available.
 function tes3nonDynamicData:deleteObject(object) end
 
 --- Draws a map marker box for an exterior cell onto the world map.
@@ -60,7 +60,7 @@ function tes3nonDynamicData:findSound(id) end
 
 --- Locates a general object for a given ID.
 --- @param id string No description yet available.
---- @return tes3baseObject result No description yet available.
+--- @return tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon result No description yet available.
 function tes3nonDynamicData:resolveObject(id) end
 
 --- Draws map marker boxes onto the world map for all cells with names starting with the prefix. e.g. showLocationOnMap("Vivec") draws boxes for all cells in Vivec, because the cell names "Vivec, Arena", "Vivec, Temple", etc. matches.

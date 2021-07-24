@@ -45,6 +45,7 @@
 #include "LuaDetermineActionEvent.h"
 #include "LuaDeterminedActionEvent.h"
 #include "LuaDisarmTrapEvent.h"
+#include "LuaEnchantChargeUseEvent.h"
 #include "LuaEnchantedItemCreatedEvent.h"
 #include "LuaEnchantedItemCreateFailedEvent.h"
 #include "LuaEquipEvent.h"
@@ -188,6 +189,7 @@ namespace mwse {
 				usertypeDefinition["detectSneak"] = sol::property(&DetectSneakEvent::getEventEnabled, &DetectSneakEvent::setEventEnabled);
 				usertypeDefinition["determineAction"] = sol::property(&DetermineActionEvent::getEventEnabled, &DetermineActionEvent::setEventEnabled);
 				usertypeDefinition["determinedAction"] = sol::property(&DeterminedActionEvent::getEventEnabled, &DeterminedActionEvent::setEventEnabled);
+				usertypeDefinition["enchantChargeUse"] = sol::property(&EnchantChargeUseEvent::getEventEnabled, &EnchantChargeUseEvent::setEventEnabled);
 				usertypeDefinition["enchantedItemCreated"] = sol::property(&EnchantedItemCreatedEvent::getEventEnabled, &EnchantedItemCreatedEvent::setEventEnabled);
 				usertypeDefinition["enchantedItemCreateFailed"] = sol::property(&EnchantedItemCreateFailedEvent::getEventEnabled, &EnchantedItemCreateFailedEvent::setEventEnabled);
 				usertypeDefinition["enterFrame"] = sol::property(&FrameEvent::getEventEnabled, &FrameEvent::setEventEnabled);

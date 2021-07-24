@@ -32,7 +32,8 @@ namespace mwse {
 			usertypeDefinition["attributes"] = sol::readonly_property(&TES3::Class::getAttributes);
 			usertypeDefinition["skills"] = sol::readonly_property(&TES3::Class::getSkills);
 
-			// Provide friendly access to service flags.usertypeDefinition["bartersAlchemy"] = sol::property(&TES3::Class::getBartersAlchemy, &TES3::Class::setBartersAlchemy);
+			// Provide friendly access to service flags.
+			usertypeDefinition["bartersAlchemy"] = sol::property(&TES3::Class::getBartersAlchemy, &TES3::Class::setBartersAlchemy);
 			usertypeDefinition["bartersApparatus"] = sol::property(&TES3::Class::getBartersApparatus, &TES3::Class::setBartersApparatus);
 			usertypeDefinition["bartersArmor"] = sol::property(&TES3::Class::getBartersArmor, &TES3::Class::setBartersArmor);
 			usertypeDefinition["bartersBooks"] = sol::property(&TES3::Class::getBartersBooks, &TES3::Class::setBartersBooks);

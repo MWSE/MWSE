@@ -1521,6 +1521,9 @@
     <ClInclude Include="LuaEnchantedItemCreateFailedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaEnchantChargeUseEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3323,9 +3326,6 @@
     <ClCompile Include="LuaDamagedHandToHandEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="LuaAttackStartEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TES3SpellList.cpp">
       <Filter>Source Files\DataAdapters\TES3\Collections</Filter>
     </ClCompile>
@@ -3346,6 +3346,12 @@
     </ClCompile>
     <ClCompile Include="NITriShapeData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaAttackStartEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaEnchantChargeUseEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

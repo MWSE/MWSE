@@ -3,6 +3,8 @@ damageHandToHand
 
 The damageHandToHand event triggers before an actor takes fatigue damage from hand-to-hand combat. It does not trigger on health damage, but the 'damage' event will. The fatigueDamage value can be modified, or can be prevented completely by blocking the event. The player as attacker will gain hand-to-hand experience only if fatigueDamage is greater than zero.
 
+Related events: `damage`_, `damaged`_, `damagedHandToHand`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -31,6 +33,9 @@ reference
 
 `tes3reference`_. Read-only. The mobile’s associated reference.
 
+.. _`damage`: ../../lua/event/damage.html
+.. _`damaged`: ../../lua/event/damaged.html
+.. _`damagedHandToHand`: ../../lua/event/damagedHandToHand.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3mobileActor`: ../../lua/type/tes3mobileActor.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html

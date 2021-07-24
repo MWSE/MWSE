@@ -3,6 +3,8 @@ addTempSound
 
 
 
+Related events: `addSound`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -41,6 +43,7 @@ isVoiceover
 
 `boolean`_. 
 
+.. _`addSound`: ../../lua/event/addSound.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`string`: ../../lua/type/string.html

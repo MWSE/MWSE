@@ -11,6 +11,6 @@
 tes3leveledItem = {}
 
 --- Chooses a random item from the list, based on the player's level.
---- @return tes3item result No description yet available.
+--- @return tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon result No description yet available.
 function tes3leveledItem:pickFrom() end
 

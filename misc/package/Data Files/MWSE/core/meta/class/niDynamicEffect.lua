@@ -8,10 +8,10 @@
 niDynamicEffect = {}
 
 --- Adds a node to the dynamic effect's affected nodes list. The node's ``:updateEffects()`` function should be called afterwards to recognize the change.
---- @param node niNode The node to add to the affected nodes list.
+--- @param node niCollisionSwitch|niNode|niSwitchNode The node to add to the affected nodes list.
 function niDynamicEffect.attachAffectedNode(node) end
 
 --- Removes a node from the dynamic effect's affected nodes list. The node's ``:updateEffects()`` function should be called afterwards to recognize the change.
---- @param node niNode The node to remove from the affected nodes list.
+--- @param node niCollisionSwitch|niNode|niSwitchNode The node to remove from the affected nodes list.
 function niDynamicEffect.detachAffectedNode(node) end
 

@@ -3,6 +3,8 @@ damaged
 
 The damaged event triggers after an actor has been damaged.
 
+Related events: `damage`_, `damageHandToHand`_, `damagedHandToHand`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -84,6 +86,9 @@ Notify the player that their arrow/bolt killed their opponent
     event.register("damaged", onDamaged)
 
 
+.. _`damage`: ../../lua/event/damage.html
+.. _`damageHandToHand`: ../../lua/event/damageHandToHand.html
+.. _`damagedHandToHand`: ../../lua/event/damagedHandToHand.html
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`number`: ../../lua/type/number.html
 .. _`tes3magicEffect`: ../../lua/type/tes3magicEffect.html

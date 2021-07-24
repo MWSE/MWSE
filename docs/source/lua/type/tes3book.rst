@@ -6,14 +6,17 @@ A book game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `enchantCapacity`_ (`number`_)
     The object's enchantment capacity.
@@ -25,7 +28,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -40,13 +43,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -67,7 +73,10 @@ Properties
     The skill learned from the book, or -1 if the book doesn't have one, or has already been read.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -90,6 +99,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3book/blocked
     tes3book/boundingBox
     tes3book/deleted
     tes3book/disabled
@@ -104,6 +114,7 @@ Properties
     tes3book/objectFlags
     tes3book/objectType
     tes3book/owningCollection
+    tes3book/persistent
     tes3book/previousInCollection
     tes3book/scale
     tes3book/sceneNode
@@ -111,6 +122,7 @@ Properties
     tes3book/script
     tes3book/skill
     tes3book/sourceMod
+    tes3book/sourceless
     tes3book/stolenList
     tes3book/supportsLuaData
     tes3book/text
@@ -118,6 +130,7 @@ Properties
     tes3book/value
     tes3book/weight
 
+.. _`blocked`: tes3book/blocked.html
 .. _`boundingBox`: tes3book/boundingBox.html
 .. _`deleted`: tes3book/deleted.html
 .. _`disabled`: tes3book/disabled.html
@@ -132,6 +145,7 @@ Properties
 .. _`objectFlags`: tes3book/objectFlags.html
 .. _`objectType`: tes3book/objectType.html
 .. _`owningCollection`: tes3book/owningCollection.html
+.. _`persistent`: tes3book/persistent.html
 .. _`previousInCollection`: tes3book/previousInCollection.html
 .. _`scale`: tes3book/scale.html
 .. _`sceneNode`: tes3book/sceneNode.html
@@ -139,12 +153,26 @@ Properties
 .. _`script`: tes3book/script.html
 .. _`skill`: tes3book/skill.html
 .. _`sourceMod`: tes3book/sourceMod.html
+.. _`sourceless`: tes3book/sourceless.html
 .. _`stolenList`: tes3book/stolenList.html
 .. _`supportsLuaData`: tes3book/supportsLuaData.html
 .. _`text`: tes3book/text.html
 .. _`type`: tes3book/type.html
 .. _`value`: tes3book/value.html
 .. _`weight`: tes3book/weight.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3book/__tojson
+
+.. _`__tojson`: tes3book/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`niNode`: ../../lua/type/niNode.html

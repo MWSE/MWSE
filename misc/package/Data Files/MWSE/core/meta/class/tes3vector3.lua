@@ -47,7 +47,7 @@ function tes3vector3:length() end
 --- Calculates the interpolated vector between this vector and another, given a transition.
 --- @param toVector tes3vector3 The vector to interpolate towards.
 --- @param transition number The interpolation value. Must be between 0.0 (closer to this vector) and 1.0 (closer to the other vector).
---- @return any result No description yet available.
+--- @return tes3vector3 lerpedVector The calculated value.
 function tes3vector3:lerp(toVector, transition) end
 
 --- Negates all values in the vector.

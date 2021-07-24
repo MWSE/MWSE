@@ -3,6 +3,8 @@ projectileHitTerrain
 
 The projectileHitTerrain event fires when a projectile collides with terrain.
 
+Related events: `projectileHitActor`_, `projectileHitObject`_, `projectileExpire`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -36,6 +38,9 @@ velocity
 
 `tes3vector3`_. Read-only. The velocity of the mobile projectile.
 
+.. _`projectileExpire`: ../../lua/event/projectileExpire.html
+.. _`projectileHitActor`: ../../lua/event/projectileHitActor.html
+.. _`projectileHitObject`: ../../lua/event/projectileHitObject.html
 .. _`tes3mobileProjectile`: ../../lua/type/tes3mobileProjectile.html
 .. _`tes3reference`: ../../lua/type/tes3reference.html
 .. _`tes3vector3`: ../../lua/type/tes3vector3.html

@@ -23,7 +23,7 @@ id (`string`_)
     The new object's ID. Must be unique.
 
 name (`string`_)
-    The new object's name.
+    Optional. The new object's name.
 
 .. _`string`: ../../../lua/type/string.html
 .. _`tes3spell`: ../../../lua/type/tes3spell.html

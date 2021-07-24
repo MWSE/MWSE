@@ -19,6 +19,7 @@
     <ClInclude Include="LuaDamageHandToHandEvent.h" />
     <ClInclude Include="LuaEnchantedItemCreatedEvent.h" />
     <ClInclude Include="LuaEnchantedItemCreateFailedEvent.h" />
+    <ClInclude Include="LuaEnchantChargeUseEvent.h" />
     <ClInclude Include="LuaInfoLinkResolveEvent.h" />
     <ClInclude Include="NIBSAnimationNode.h" />
     <ClInclude Include="LuaBarterOfferEvent.h" />
@@ -507,6 +508,7 @@
     <ClCompile Include="LuaDisarmTrapEvent.cpp" />
     <ClCompile Include="LuaEnchantedItemCreatedEvent.cpp" />
     <ClCompile Include="LuaEnchantedItemCreateFailedEvent.cpp" />
+    <ClCompile Include="LuaEnchantChargeUseEvent.cpp" />
     <ClCompile Include="LuaEquipEvent.cpp" />
     <ClCompile Include="LuaBodyPartsUpdatedEvent.cpp" />
     <ClCompile Include="LuaEquippedEvent.cpp" />

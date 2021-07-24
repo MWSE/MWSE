@@ -1,5 +1,6 @@
 return {
 	description = "The menuEnter event fires when the player enters menu mode.",
+	related = { "menuEnter", "menuExit" },
 	eventData = {
 		["menu"] = {
 			type = "tes3uiElement",

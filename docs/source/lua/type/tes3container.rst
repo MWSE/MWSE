@@ -9,6 +9,15 @@ Properties
 `actorFlags`_ (`number`_)
     Read-only. A number representing the actor flags. Truly a bit field.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
@@ -19,16 +28,16 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. The items currently carried by the actor.
@@ -49,16 +58,19 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `organic`_ (`boolean`_)
     Determines if the container's organic flag is enabled.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -79,7 +91,10 @@ Properties
     The script that runs on the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -91,6 +106,9 @@ Properties
     :hidden:
 
     tes3container/actorFlags
+    tes3container/barterGold
+    tes3container/blocked
+    tes3container/blood
     tes3container/boundingBox
     tes3container/capacity
     tes3container/cloneCount
@@ -108,6 +126,7 @@ Properties
     tes3container/objectType
     tes3container/organic
     tes3container/owningCollection
+    tes3container/persistent
     tes3container/previousInCollection
     tes3container/respawns
     tes3container/scale
@@ -115,10 +134,14 @@ Properties
     tes3container/sceneReference
     tes3container/script
     tes3container/sourceMod
+    tes3container/sourceless
     tes3container/stolenList
     tes3container/supportsLuaData
 
 .. _`actorFlags`: tes3container/actorFlags.html
+.. _`barterGold`: tes3container/barterGold.html
+.. _`blocked`: tes3container/blocked.html
+.. _`blood`: tes3container/blood.html
 .. _`boundingBox`: tes3container/boundingBox.html
 .. _`capacity`: tes3container/capacity.html
 .. _`cloneCount`: tes3container/cloneCount.html
@@ -136,6 +159,7 @@ Properties
 .. _`objectType`: tes3container/objectType.html
 .. _`organic`: tes3container/organic.html
 .. _`owningCollection`: tes3container/owningCollection.html
+.. _`persistent`: tes3container/persistent.html
 .. _`previousInCollection`: tes3container/previousInCollection.html
 .. _`respawns`: tes3container/respawns.html
 .. _`scale`: tes3container/scale.html
@@ -143,11 +167,15 @@ Properties
 .. _`sceneReference`: tes3container/sceneReference.html
 .. _`script`: tes3container/script.html
 .. _`sourceMod`: tes3container/sourceMod.html
+.. _`sourceless`: tes3container/sourceless.html
 .. _`stolenList`: tes3container/stolenList.html
 .. _`supportsLuaData`: tes3container/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -161,10 +189,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3container/__tojson
     tes3container/offersService
     tes3container/onInventoryClose
     tes3container/tradesItemType
 
+.. _`__tojson`: tes3container/__tojson.html
 .. _`offersService`: tes3container/offersService.html
 .. _`onInventoryClose`: tes3container/onInventoryClose.html
 .. _`tradesItemType`: tes3container/tradesItemType.html

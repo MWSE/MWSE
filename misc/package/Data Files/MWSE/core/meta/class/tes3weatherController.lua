@@ -4,21 +4,21 @@
 --- @class tes3weatherController
 --- @field currentFogColor tes3vector3 The current fog color.
 --- @field currentSkyColor tes3vector3 The current sky color.
---- @field currentWeather tes3weather The current weather.
+--- @field currentWeather tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder The current weather.
 --- @field daysRemaining number The days remaining.
 --- @field hoursBetweenWeatherChange number The hours between weather changes. Stored as a float value.
 --- @field hoursRemaining number The hours remaining.
 --- @field lastActiveRegion tes3region Provides read-only access to last active region object.
 --- @field masser tes3moon Provides read-only access to the Masser moon object.
---- @field nextWeather tes3weather The next weather.
---- @field sceneRainRoot niNode Provides read-only access to the scene rain root NiNode.
+--- @field nextWeather tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder The next weather.
+--- @field sceneRainRoot niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene rain root NiNode.
 --- @field sceneSkyLight niDirectionalLight Provides read-only access to the scene sky light directional light.
---- @field sceneSkyRoot niNode Provides read-only access to the scene sky root NiNode.
---- @field sceneSnowRoot niNode Provides read-only access to the scene snow root NiNode.
---- @field sceneStormRoot niNode Provides read-only access to the scene storm root NiNode.
---- @field sceneSunBase niNode Provides read-only access to the scenesun base NiNode.
---- @field sceneSunGlare niNode Provides read-only access to the scene sun glare NiNode.
---- @field sceneSunVis niNode Provides read-only access to the scene sun vis NiNode.
+--- @field sceneSkyRoot niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene sky root NiNode.
+--- @field sceneSnowRoot niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene snow root NiNode.
+--- @field sceneStormRoot niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene storm root NiNode.
+--- @field sceneSunBase niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scenesun base NiNode.
+--- @field sceneSunGlare niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene sun glare NiNode.
+--- @field sceneSunVis niCollisionSwitch|niNode|niSwitchNode Provides read-only access to the scene sun vis NiNode.
 --- @field secunda tes3moon Provides read-only access to the Secunda moon object.
 --- @field sunglareFaderAngleMax number The sunglare fader maximum angle.
 --- @field sunglareFaderColor tes3vector3 The sunglare fader color.

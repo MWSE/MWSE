@@ -1,5 +1,6 @@
 return {
     description = "",
+	related = { "addSound" },
     eventData = {
         ["path"] = {
             type = "string",

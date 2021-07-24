@@ -3,6 +3,8 @@ postInfoResponse
 
 This event fires immediately after a dialogue response is processed.
 
+Related events: `infoGetText`_, `infoLinkResolve`_, `infoResponse`_, `infoFilter`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -31,6 +33,10 @@ variables
 
 tes3scriptVariables. Read-only. The script variables.
 
+.. _`infoFilter`: ../../lua/event/infoFilter.html
+.. _`infoGetText`: ../../lua/event/infoGetText.html
+.. _`infoLinkResolve`: ../../lua/event/infoLinkResolve.html
+.. _`infoResponse`: ../../lua/event/infoResponse.html
 .. _`string`: ../../lua/type/string.html
 .. _`tes3dialogue`: ../../lua/type/tes3dialogue.html
 .. _`tes3dialogueInfo`: ../../lua/type/tes3dialogueInfo.html

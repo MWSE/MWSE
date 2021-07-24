@@ -10,6 +10,8 @@ The movement event flow is described below:
 - Swimming: **calcWalkSpeed** -> `calcSwimSpeed`_ -> `calcMoveSpeed`_
 - Swimming (while running): **calcWalkSpeed** -> `calcSwimSpeed`_ -> `calcSwimRunSpeed`_ -> `calcMoveSpeed`_
 
+Related events: `calcMoveSpeed`_, `calcRunSpeed`_, `calcFlySpeed`_, `calcSwimSpeed`_, `calcSwimRunSpeed`_
+
 Event Data
 ----------------------------------------------------------------------------------------------------
 
@@ -33,6 +35,7 @@ type
 
 `number`_. Read-only. The type of movement that was calculated. This is always 1 for this event.
 
+.. _`calcFlySpeed`: ../../lua/event/calcFlySpeed.html
 .. _`calcMoveSpeed`: ../../lua/event/calcMoveSpeed.html
 .. _`calcRunSpeed`: ../../lua/event/calcRunSpeed.html
 .. _`calcSwimRunSpeed`: ../../lua/event/calcSwimRunSpeed.html

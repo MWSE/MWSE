@@ -6,20 +6,23 @@ An apparatus game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `icon`_ (`string`_)
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -34,13 +37,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -61,7 +67,10 @@ Properties
     The script that runs on the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -81,6 +90,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3apparatus/blocked
     tes3apparatus/boundingBox
     tes3apparatus/deleted
     tes3apparatus/disabled
@@ -93,6 +103,7 @@ Properties
     tes3apparatus/objectFlags
     tes3apparatus/objectType
     tes3apparatus/owningCollection
+    tes3apparatus/persistent
     tes3apparatus/previousInCollection
     tes3apparatus/quality
     tes3apparatus/scale
@@ -100,12 +111,14 @@ Properties
     tes3apparatus/sceneReference
     tes3apparatus/script
     tes3apparatus/sourceMod
+    tes3apparatus/sourceless
     tes3apparatus/stolenList
     tes3apparatus/supportsLuaData
     tes3apparatus/type
     tes3apparatus/value
     tes3apparatus/weight
 
+.. _`blocked`: tes3apparatus/blocked.html
 .. _`boundingBox`: tes3apparatus/boundingBox.html
 .. _`deleted`: tes3apparatus/deleted.html
 .. _`disabled`: tes3apparatus/disabled.html
@@ -118,6 +131,7 @@ Properties
 .. _`objectFlags`: tes3apparatus/objectFlags.html
 .. _`objectType`: tes3apparatus/objectType.html
 .. _`owningCollection`: tes3apparatus/owningCollection.html
+.. _`persistent`: tes3apparatus/persistent.html
 .. _`previousInCollection`: tes3apparatus/previousInCollection.html
 .. _`quality`: tes3apparatus/quality.html
 .. _`scale`: tes3apparatus/scale.html
@@ -125,11 +139,25 @@ Properties
 .. _`sceneReference`: tes3apparatus/sceneReference.html
 .. _`script`: tes3apparatus/script.html
 .. _`sourceMod`: tes3apparatus/sourceMod.html
+.. _`sourceless`: tes3apparatus/sourceless.html
 .. _`stolenList`: tes3apparatus/stolenList.html
 .. _`supportsLuaData`: tes3apparatus/supportsLuaData.html
 .. _`type`: tes3apparatus/type.html
 .. _`value`: tes3apparatus/value.html
 .. _`weight`: tes3apparatus/weight.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3apparatus/__tojson
+
+.. _`__tojson`: tes3apparatus/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`niNode`: ../../lua/type/niNode.html

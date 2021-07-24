@@ -6,6 +6,9 @@ A core light object. This isn't actually a light in the rendering engine, but so
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
@@ -16,10 +19,10 @@ Properties
     Read-only. Access to the light's base colors, in an array-style table of four values. The values can range from 0 to 255.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `flickers`_ (`boolean`_)
     Access to the light's flags, determining if the light attenuation flickers.
@@ -31,7 +34,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isDynamic`_ (`boolean`_)
     Access to the light's flags, determining if the light affects dynamically moving objects.
@@ -58,13 +61,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -94,7 +100,10 @@ Properties
     Read-only. The sound that runs on the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -114,6 +123,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3light/blocked
     tes3light/boundingBox
     tes3light/canCarry
     tes3light/color
@@ -134,6 +144,7 @@ Properties
     tes3light/objectFlags
     tes3light/objectType
     tes3light/owningCollection
+    tes3light/persistent
     tes3light/previousInCollection
     tes3light/pulses
     tes3light/pulsesSlowly
@@ -144,12 +155,14 @@ Properties
     tes3light/script
     tes3light/sound
     tes3light/sourceMod
+    tes3light/sourceless
     tes3light/stolenList
     tes3light/supportsLuaData
     tes3light/time
     tes3light/value
     tes3light/weight
 
+.. _`blocked`: tes3light/blocked.html
 .. _`boundingBox`: tes3light/boundingBox.html
 .. _`canCarry`: tes3light/canCarry.html
 .. _`color`: tes3light/color.html
@@ -170,6 +183,7 @@ Properties
 .. _`objectFlags`: tes3light/objectFlags.html
 .. _`objectType`: tes3light/objectType.html
 .. _`owningCollection`: tes3light/owningCollection.html
+.. _`persistent`: tes3light/persistent.html
 .. _`previousInCollection`: tes3light/previousInCollection.html
 .. _`pulses`: tes3light/pulses.html
 .. _`pulsesSlowly`: tes3light/pulsesSlowly.html
@@ -180,6 +194,7 @@ Properties
 .. _`script`: tes3light/script.html
 .. _`sound`: tes3light/sound.html
 .. _`sourceMod`: tes3light/sourceMod.html
+.. _`sourceless`: tes3light/sourceless.html
 .. _`stolenList`: tes3light/stolenList.html
 .. _`supportsLuaData`: tes3light/supportsLuaData.html
 .. _`time`: tes3light/time.html
@@ -189,14 +204,19 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
 `getTimeLeft`_ (`number`_)
     Gets the time remaining for a light, given a tes3itemData, tes3reference, or tes3equipmentStack.
 
 .. toctree::
     :hidden:
 
+    tes3light/__tojson
     tes3light/getTimeLeft
 
+.. _`__tojson`: tes3light/__tojson.html
 .. _`getTimeLeft`: tes3light/getTimeLeft.html
 
 .. _`boolean`: ../../lua/type/boolean.html

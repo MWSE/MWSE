@@ -6,17 +6,20 @@ A static game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `mesh`_ (`string`_)
     The path to the object's mesh.
@@ -28,13 +31,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -49,7 +55,10 @@ Properties
     The scene graph reference node for this object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -60,6 +69,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3static/blocked
     tes3static/boundingBox
     tes3static/deleted
     tes3static/disabled
@@ -70,14 +80,17 @@ Properties
     tes3static/objectFlags
     tes3static/objectType
     tes3static/owningCollection
+    tes3static/persistent
     tes3static/previousInCollection
     tes3static/scale
     tes3static/sceneNode
     tes3static/sceneReference
     tes3static/sourceMod
+    tes3static/sourceless
     tes3static/stolenList
     tes3static/supportsLuaData
 
+.. _`blocked`: tes3static/blocked.html
 .. _`boundingBox`: tes3static/boundingBox.html
 .. _`deleted`: tes3static/deleted.html
 .. _`disabled`: tes3static/disabled.html
@@ -88,13 +101,28 @@ Properties
 .. _`objectFlags`: tes3static/objectFlags.html
 .. _`objectType`: tes3static/objectType.html
 .. _`owningCollection`: tes3static/owningCollection.html
+.. _`persistent`: tes3static/persistent.html
 .. _`previousInCollection`: tes3static/previousInCollection.html
 .. _`scale`: tes3static/scale.html
 .. _`sceneNode`: tes3static/sceneNode.html
 .. _`sceneReference`: tes3static/sceneReference.html
 .. _`sourceMod`: tes3static/sourceMod.html
+.. _`sourceless`: tes3static/sourceless.html
 .. _`stolenList`: tes3static/stolenList.html
 .. _`supportsLuaData`: tes3static/supportsLuaData.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3static/__tojson
+
+.. _`__tojson`: tes3static/__tojson.html
 
 Functions
 ----------------------------------------------------------------------------------------------------

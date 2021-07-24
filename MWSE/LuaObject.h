@@ -4,6 +4,7 @@
 #include "TES3Util.h"
 
 #include "TES3Activator.h"
+#include "TES3Container.h"
 #include "TES3Misc.h"
 #include "TES3Sound.h"
 #include "TES3Static.h"
@@ -74,6 +75,57 @@ namespace mwse::lua {
 			}
 
 			return activator;
+		}
+	};
+
+	template<>
+	class ObjectCreator<TES3::Container> : public ObjectCreatorBase {
+	public:
+		TES3::BaseObject* create(sol::table params, bool getIfExists) const override {
+			std::string id = getOptionalParam<std::string>(params, "id", {});
+
+			if (id.size() > 31)
+				throw std::invalid_argument{ "tes3container.create: 'id' parameter must be less than 32 character long." };
+
+			if (auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject(id.c_str()); existingObject != nullptr)
+				return (getIfExists && existingObject->objectType == TES3::ObjectType::Container) ?
+				existingObject :
+				throw std::invalid_argument{ "tes3container.create: 'id' parameter already assigned to an existing object that is not a misc item." };
+
+			std::string name = getOptionalParam<std::string>(params, "name", "Container");
+			if (name.size() > 31)
+				throw std::invalid_argument{ "tes3container.create: 'name' parameter must be less than 32 character long." };
+
+			std::string mesh = getOptionalParam<std::string>(params, "mesh", {});
+			if (mesh.size() > 31)
+				throw std::invalid_argument{ "tes3container.create: 'mesh' parameter must be less than 32 character long." };
+
+			auto container = new TES3::Container();
+
+			container->setID(id.c_str());
+			container->setName(name.c_str());
+			container->setModelPath(mesh.c_str());
+
+			auto script = getOptionalParamScript(params, "script");
+			if (script != nullptr)
+				container->script = script;
+
+			container->capacity = getOptionalParam(params, "capacity", 0.0f);
+			container->objectFlags = getOptionalParam(params, "objectFlags", 0u);
+			container->setIsOrganic(getOptionalParam(params, "isOrganic", container->getIsOrganic()));
+			container->setRespawns(getOptionalParam(params, "respawns", container->getRespawns()));
+			container->actorFlags = getOptionalParam(params, "actorFlags", 0u);
+			container->objectFlags |= TES3::ObjectFlag::Modified;
+
+			if (!TES3::DataHandler::get()->nonDynamicData->addNewObject(container))
+				throw std::runtime_error("tes3container.create: could not add the newly created misc item in its proper collection.");
+
+			// If created outside of a save game, mark the object as sourceless.
+			if (getOptionalParam<bool>(params, "sourceless", false) || TES3::WorldController::get()->getMobilePlayer() == nullptr) {
+				TES3::BaseObject::setSourcelessObject(container);
+			}
+
+			return container;
 		}
 	};
 

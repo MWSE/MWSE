@@ -18,14 +18,14 @@ tes3spell = {}
 --- 
 --- ``checkMagicka``: boolean — Determines if the caster's magicka should be taken into account during the calculation.
 --- 
---- ``caster``: tes3reference|tes3mobileActor — The caster to perform the calculation against.
+--- ``caster``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer — The caster to perform the calculation against.
 --- @return number result No description yet available.
 function tes3spell.calculateCastChance(params) end
 
 ---Table parameter definitions for ``tes3spell.calculateCastChance``.
 --- @class tes3spell.calculateCastChance.params
 --- @field checkMagicka boolean Determines if the caster's magicka should be taken into account during the calculation.
---- @field caster tes3reference|tes3mobileActor The caster to perform the calculation against.
+--- @field caster tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The caster to perform the calculation against.
 
 --- Creates a new spell object, which will be stored as part of the current saved game.
 --- @param id string The new object's ID. Must be unique.
@@ -42,12 +42,12 @@ function tes3spell.getActiveEffectCount() end
 function tes3spell.getFirstIndexOfEffect(effectId) end
 
 --- Returns the effect of the spell that a given actor is least proficient with.
---- @param actor tes3mobileActor|tes3reference|tes3npc|tes3npcInstance The actor to calculate for. A mobile actor is preferred, as passing only a tes3npc will not use up to date skill information.
---- @return any result No description yet available.
+--- @param actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|tes3npc|tes3npcInstance The actor to calculate for. A mobile actor is preferred, as passing only a tes3npc will not use up to date skill information.
+--- @return tes3effect|nil effect The least proficient effect, or nil if the spell has no valid effects.
 function tes3spell.getLeastProficientEffect(actor) end
 
 --- Returns the school of the least proficient effect on the spell, for a given actor.
---- @param actor tes3mobileActor|tes3reference|tes3npc|tes3npcInstance The actor to calculate for. A mobile actor is preferred, as passing only a tes3npc will not use up to date skill information.
---- @return any result No description yet available.
+--- @param actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|tes3npc|tes3npcInstance The actor to calculate for. A mobile actor is preferred, as passing only a tes3npc will not use up to date skill information.
+--- @return number|nil schoolID The least proficient school ID, or nil if the spell has no valid effects.
 function tes3spell.getLeastProficientSchool(actor) end
 

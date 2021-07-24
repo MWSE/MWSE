@@ -8,7 +8,7 @@
 --- @field partType number No description yet available.
 --- @field playable boolean A flag that marks this body part as selectable during character generation.
 --- @field raceName string The name of the race associated with this body part.
---- @field sceneNode niNode The NiNode-derived object for the object's loaded mesh.
+--- @field sceneNode niCollisionSwitch|niNode|niSwitchNode The NiNode-derived object for the object's loaded mesh.
 --- @field vampiric boolean A flag that marks this body part as used for vampires.
 tes3bodyPart = {}
 

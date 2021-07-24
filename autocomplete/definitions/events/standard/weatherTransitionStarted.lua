@@ -1,5 +1,6 @@
 return {
 	description = "The weatherTransitionStarted event occurs when the currently simulated weather has started to gradually transition to a new weather.",
+	related = { "weatherCycled", "weatherTransitionFinished", "weatherChangedImmediate", "weatherTransitionStarted", "weatherChangedImmediate" },
 	eventData = {
 		from = {
 			type = "tes3weather",

@@ -1,7 +1,7 @@
 --- @meta
 
 --- A weapon game object.
---- @class tes3weapon : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3weapon : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field chopMax number Chop damage inflicted at maximum weapon swing.
 --- @field chopMin number Chop damage inflicted at minimum weapon swing.
 --- @field enchantCapacity number The object's enchantment capacity.

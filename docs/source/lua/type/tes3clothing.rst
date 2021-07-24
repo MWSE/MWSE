@@ -6,14 +6,17 @@ A clothing game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `enchantCapacity`_ (`number`_)
     The object's enchantment capacity.
@@ -25,7 +28,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isLeftPart`_ (`boolean`_)
     Determines if the armor is the left part of a pair.
@@ -43,16 +46,19 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
 
 `parts`_ (`table`_)
     An array-style table of the tes3wearablePart data on the object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -76,7 +82,10 @@ Properties
     The name of the slot used by the armor.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -93,6 +102,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3clothing/blocked
     tes3clothing/boundingBox
     tes3clothing/deleted
     tes3clothing/disabled
@@ -109,6 +119,7 @@ Properties
     tes3clothing/objectType
     tes3clothing/owningCollection
     tes3clothing/parts
+    tes3clothing/persistent
     tes3clothing/previousInCollection
     tes3clothing/scale
     tes3clothing/sceneNode
@@ -117,11 +128,13 @@ Properties
     tes3clothing/slot
     tes3clothing/slotName
     tes3clothing/sourceMod
+    tes3clothing/sourceless
     tes3clothing/stolenList
     tes3clothing/supportsLuaData
     tes3clothing/value
     tes3clothing/weight
 
+.. _`blocked`: tes3clothing/blocked.html
 .. _`boundingBox`: tes3clothing/boundingBox.html
 .. _`deleted`: tes3clothing/deleted.html
 .. _`disabled`: tes3clothing/disabled.html
@@ -138,6 +151,7 @@ Properties
 .. _`objectType`: tes3clothing/objectType.html
 .. _`owningCollection`: tes3clothing/owningCollection.html
 .. _`parts`: tes3clothing/parts.html
+.. _`persistent`: tes3clothing/persistent.html
 .. _`previousInCollection`: tes3clothing/previousInCollection.html
 .. _`scale`: tes3clothing/scale.html
 .. _`sceneNode`: tes3clothing/sceneNode.html
@@ -146,10 +160,24 @@ Properties
 .. _`slot`: tes3clothing/slot.html
 .. _`slotName`: tes3clothing/slotName.html
 .. _`sourceMod`: tes3clothing/sourceMod.html
+.. _`sourceless`: tes3clothing/sourceless.html
 .. _`stolenList`: tes3clothing/stolenList.html
 .. _`supportsLuaData`: tes3clothing/supportsLuaData.html
 .. _`value`: tes3clothing/value.html
 .. _`weight`: tes3clothing/weight.html
+
+Methods
+----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
+.. toctree::
+    :hidden:
+
+    tes3clothing/__tojson
+
+.. _`__tojson`: tes3clothing/__tojson.html
 
 .. _`boolean`: ../../lua/type/boolean.html
 .. _`niNode`: ../../lua/type/niNode.html

@@ -1,7 +1,7 @@
 --- @meta
 
 --- A book game object.
---- @class tes3book : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3book : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field enchantCapacity number The object's enchantment capacity.
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon.

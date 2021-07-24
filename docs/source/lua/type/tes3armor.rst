@@ -9,14 +9,17 @@ Properties
 `armorRating`_ (`number`_)
     The armor's defensive rating.
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `enchantCapacity`_ (`number`_)
     The object's enchantment capacity.
@@ -28,7 +31,7 @@ Properties
     The path to the object's icon.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `isLeftPart`_ (`boolean`_)
     Determines if the armor is the left part of a pair.
@@ -49,16 +52,19 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
 
 `parts`_ (`table`_)
     An array-style table of the tes3wearablePart data on the object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -82,7 +88,10 @@ Properties
     The name of the slot used by the armor.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -103,6 +112,7 @@ Properties
     :hidden:
 
     tes3armor/armorRating
+    tes3armor/blocked
     tes3armor/boundingBox
     tes3armor/deleted
     tes3armor/disabled
@@ -120,6 +130,7 @@ Properties
     tes3armor/objectType
     tes3armor/owningCollection
     tes3armor/parts
+    tes3armor/persistent
     tes3armor/previousInCollection
     tes3armor/scale
     tes3armor/sceneNode
@@ -128,6 +139,7 @@ Properties
     tes3armor/slot
     tes3armor/slotName
     tes3armor/sourceMod
+    tes3armor/sourceless
     tes3armor/stolenList
     tes3armor/supportsLuaData
     tes3armor/value
@@ -135,6 +147,7 @@ Properties
     tes3armor/weightClass
 
 .. _`armorRating`: tes3armor/armorRating.html
+.. _`blocked`: tes3armor/blocked.html
 .. _`boundingBox`: tes3armor/boundingBox.html
 .. _`deleted`: tes3armor/deleted.html
 .. _`disabled`: tes3armor/disabled.html
@@ -152,6 +165,7 @@ Properties
 .. _`objectType`: tes3armor/objectType.html
 .. _`owningCollection`: tes3armor/owningCollection.html
 .. _`parts`: tes3armor/parts.html
+.. _`persistent`: tes3armor/persistent.html
 .. _`previousInCollection`: tes3armor/previousInCollection.html
 .. _`scale`: tes3armor/scale.html
 .. _`sceneNode`: tes3armor/sceneNode.html
@@ -160,6 +174,7 @@ Properties
 .. _`slot`: tes3armor/slot.html
 .. _`slotName`: tes3armor/slotName.html
 .. _`sourceMod`: tes3armor/sourceMod.html
+.. _`sourceless`: tes3armor/sourceless.html
 .. _`stolenList`: tes3armor/stolenList.html
 .. _`supportsLuaData`: tes3armor/supportsLuaData.html
 .. _`value`: tes3armor/value.html
@@ -169,14 +184,19 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
 `calculateArmorRating`_
     Calculates what armor rating is provided for a given mobile actor.
 
 .. toctree::
     :hidden:
 
+    tes3armor/__tojson
     tes3armor/calculateArmorRating
 
+.. _`__tojson`: tes3armor/__tojson.html
 .. _`calculateArmorRating`: tes3armor/calculateArmorRating.html
 
 .. _`boolean`: ../../lua/type/boolean.html

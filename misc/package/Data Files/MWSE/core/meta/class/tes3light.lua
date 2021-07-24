@@ -1,7 +1,7 @@
 --- @meta
 
 --- A core light object. This isn't actually a light in the rendering engine, but something like a lamp or torch.
---- @class tes3light : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3light : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field canCarry boolean Access to the light's flags, determining if the light can be carried.
 --- @field color table Access to the light's base colors, in an array-style table of four values. The values can range from 0 to 255.
 --- @field flickers boolean Access to the light's flags, determining if the light attenuation flickers.

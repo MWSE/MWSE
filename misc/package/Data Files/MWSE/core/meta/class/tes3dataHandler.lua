@@ -18,8 +18,8 @@
 --- @field nonDynamicData tes3nonDynamicData A child structure where core game objects are held.
 --- @field threadSleepTime number No description yet available.
 --- @field useCellTransitionFader boolean An engine flag that controls if there is a fade in/out between cells.
---- @field worldLandscapeRoot niNode One of the core parent scene graph nodes.
---- @field worldObjectRoot niNode One of the core parent scene graph nodes.
---- @field worldPickObjectRoot niNode One of the core parent scene graph nodes.
+--- @field worldLandscapeRoot niCollisionSwitch|niNode|niSwitchNode One of the core parent scene graph nodes.
+--- @field worldObjectRoot niCollisionSwitch|niNode|niSwitchNode One of the core parent scene graph nodes.
+--- @field worldPickObjectRoot niCollisionSwitch|niNode|niSwitchNode One of the core parent scene graph nodes.
 tes3dataHandler = {}
 

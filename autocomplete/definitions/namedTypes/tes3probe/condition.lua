@@ -5,4 +5,5 @@ return {
 The maximum condition/health of the object.]],
 	valuetype = "number",
 	depracted = true,
+	valuetype = "number",
 }

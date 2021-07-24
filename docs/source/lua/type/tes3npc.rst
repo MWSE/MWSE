@@ -21,8 +21,17 @@ Properties
 `barterGold`_ (`number`_)
     Read-only. The actor's max health.
 
+`barterGold`_ (`number`_)
+    Friendly access to actor's barter gold amount.
+
 `baseDisposition`_ (`number`_)
     The actor's base disposition.
+
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
+`blood`_ (`number`_)
+    Friendly access to actor's blood type.
 
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
@@ -34,10 +43,10 @@ Properties
     Read-only. The number of clones that exist of this actor.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `equipment`_ (`tes3iterator`_)
     Read-only. The items currently equipped to the actor.
@@ -67,7 +76,7 @@ Properties
     The actor's max health.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `inventory`_ (`tes3iterator`_)
     Read-only. The items currently carried by the actor.
@@ -103,13 +112,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -136,7 +148,10 @@ Properties
     A table of twenty seven numbers, representing the base values for the NPC's skills.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `spells`_ (`tes3spellList`_)
     Read-only. A list of spells that the actor has access to. It is a tes3spellList, which is a list wrapper with helper functions. The actual list is accessed with .iterator. e.g. for _, spell in pairs(npc.spells.iterator) do print(spell.name) end
@@ -155,7 +170,10 @@ Properties
     tes3npc/attributes
     tes3npc/autoCalc
     tes3npc/barterGold
+    tes3npc/barterGold
     tes3npc/baseDisposition
+    tes3npc/blocked
+    tes3npc/blood
     tes3npc/boundingBox
     tes3npc/class
     tes3npc/cloneCount
@@ -185,6 +203,7 @@ Properties
     tes3npc/objectFlags
     tes3npc/objectType
     tes3npc/owningCollection
+    tes3npc/persistent
     tes3npc/previousInCollection
     tes3npc/race
     tes3npc/reputation
@@ -194,6 +213,7 @@ Properties
     tes3npc/script
     tes3npc/skills
     tes3npc/sourceMod
+    tes3npc/sourceless
     tes3npc/spells
     tes3npc/stolenList
     tes3npc/supportsLuaData
@@ -203,7 +223,10 @@ Properties
 .. _`attributes`: tes3npc/attributes.html
 .. _`autoCalc`: tes3npc/autoCalc.html
 .. _`barterGold`: tes3npc/barterGold.html
+.. _`barterGold`: tes3npc/barterGold.html
 .. _`baseDisposition`: tes3npc/baseDisposition.html
+.. _`blocked`: tes3npc/blocked.html
+.. _`blood`: tes3npc/blood.html
 .. _`boundingBox`: tes3npc/boundingBox.html
 .. _`class`: tes3npc/class.html
 .. _`cloneCount`: tes3npc/cloneCount.html
@@ -233,6 +256,7 @@ Properties
 .. _`objectFlags`: tes3npc/objectFlags.html
 .. _`objectType`: tes3npc/objectType.html
 .. _`owningCollection`: tes3npc/owningCollection.html
+.. _`persistent`: tes3npc/persistent.html
 .. _`previousInCollection`: tes3npc/previousInCollection.html
 .. _`race`: tes3npc/race.html
 .. _`reputation`: tes3npc/reputation.html
@@ -242,12 +266,16 @@ Properties
 .. _`script`: tes3npc/script.html
 .. _`skills`: tes3npc/skills.html
 .. _`sourceMod`: tes3npc/sourceMod.html
+.. _`sourceless`: tes3npc/sourceless.html
 .. _`spells`: tes3npc/spells.html
 .. _`stolenList`: tes3npc/stolenList.html
 .. _`supportsLuaData`: tes3npc/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `offersService`_ (`boolean`_)
     Checks if the actor will offer a service in dialogue. This an offer and may still be refused by dialogue checks. To also get the result of dialogue checks, use tes3.checkMerchantOffersService.
@@ -261,10 +289,12 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3npc/__tojson
     tes3npc/offersService
     tes3npc/onInventoryClose
     tes3npc/tradesItemType
 
+.. _`__tojson`: tes3npc/__tojson.html
 .. _`offersService`: tes3npc/offersService.html
 .. _`onInventoryClose`: tes3npc/onInventoryClose.html
 .. _`tradesItemType`: tes3npc/tradesItemType.html

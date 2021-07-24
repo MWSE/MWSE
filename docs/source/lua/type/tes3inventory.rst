@@ -9,6 +9,9 @@ Properties
 `flags`_ (`number`_)
     Read-only. Raw bit-based flags.
 
+`items`_ (`tes3iterator`_)
+    Read-only. Direct acces to the container that holds the inventory's items.
+
 `iterator`_ (`tes3iterator`_)
     Read-only. Deprecated. Use ``for index, stack in pairs(inventory)`` to iterate over inventory stacks.
 	
@@ -18,9 +21,11 @@ Direct access to the container that holds the inventory's items.
     :hidden:
 
     tes3inventory/flags
+    tes3inventory/items
     tes3inventory/iterator
 
 .. _`flags`: tes3inventory/flags.html
+.. _`items`: tes3inventory/items.html
 .. _`iterator`: tes3inventory/iterator.html
 
 Methods

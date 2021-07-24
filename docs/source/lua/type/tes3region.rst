@@ -6,14 +6,17 @@ A structure that contains region information.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `modified`_ (`boolean`_)
     The modification state of the object since the last save.
@@ -22,10 +25,13 @@ Properties
     The region's name. Must be a string less than 32 characters.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `sleepCreature`_ (`tes3leveledCreature`_)
     Read-only. The region's leveled creature that can be spawned while the player is sleeping.
@@ -34,7 +40,10 @@ Properties
     Read-only. Array-style table for the different region sounds. Each object in the table is a tes3regionSound.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `supportsLuaData`_ (`boolean`_)
     If true, references of this object can store temporary or persistent lua data.
@@ -78,6 +87,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3region/blocked
     tes3region/deleted
     tes3region/disabled
     tes3region/id
@@ -85,9 +95,11 @@ Properties
     tes3region/name
     tes3region/objectFlags
     tes3region/objectType
+    tes3region/persistent
     tes3region/sleepCreature
     tes3region/sounds
     tes3region/sourceMod
+    tes3region/sourceless
     tes3region/supportsLuaData
     tes3region/weather
     tes3region/weatherChanceAsh
@@ -102,6 +114,7 @@ Properties
     tes3region/weatherChanceThunder
     tes3region/weatherChances
 
+.. _`blocked`: tes3region/blocked.html
 .. _`deleted`: tes3region/deleted.html
 .. _`disabled`: tes3region/disabled.html
 .. _`id`: tes3region/id.html
@@ -109,9 +122,11 @@ Properties
 .. _`name`: tes3region/name.html
 .. _`objectFlags`: tes3region/objectFlags.html
 .. _`objectType`: tes3region/objectType.html
+.. _`persistent`: tes3region/persistent.html
 .. _`sleepCreature`: tes3region/sleepCreature.html
 .. _`sounds`: tes3region/sounds.html
 .. _`sourceMod`: tes3region/sourceMod.html
+.. _`sourceless`: tes3region/sourceless.html
 .. _`supportsLuaData`: tes3region/supportsLuaData.html
 .. _`weather`: tes3region/weather.html
 .. _`weatherChanceAsh`: tes3region/weatherChanceAsh.html
@@ -129,6 +144,9 @@ Properties
 Methods
 ----------------------------------------------------------------------------------------------------
 
+`__tojson`_ (`string`_)
+    Serializes the object to json.
+
 `changeWeather`_
     Changes the current weather for the region to the provided weather-type parameter.
 
@@ -138,9 +156,11 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3region/__tojson
     tes3region/changeWeather
     tes3region/randomizeWeather
 
+.. _`__tojson`: tes3region/__tojson.html
 .. _`changeWeather`: tes3region/changeWeather.html
 .. _`randomizeWeather`: tes3region/randomizeWeather.html
 

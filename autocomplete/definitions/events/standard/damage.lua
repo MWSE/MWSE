@@ -1,5 +1,6 @@
 return {
 	description = "The damage event triggers before an actor is damaged. The damage value can be modified, or the damage can be prevented completely by blocking the event.",
+	related = { "damage", "damaged", "damageHandToHand", "damagedHandToHand" },
 	eventData = {
 		damage = {
 			type = "number",

@@ -13,7 +13,7 @@ Properties
     The core game object that the stack represents.
 
 `variables`_ (`tes3itemData`_)
-    Variables that are associated with the stack's object, if any.
+    Variables that are associated with the stack's object, if any. Another alias for itemData.
 
 .. toctree::
     :hidden:

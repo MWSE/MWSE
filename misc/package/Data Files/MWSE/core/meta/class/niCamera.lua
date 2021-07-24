@@ -4,8 +4,8 @@
 --- @class niCamera : niAVObject, niObjectNET, niObject
 --- @field lodAdjust number The level-of-detail adjustment value for the camera. A higher value will lower the LOD of the objects drawn by the camera.
 --- @field port tes3vector4 The port on the backbuffer of the camera.
---- @field renderer niObject The renderer of the camera.
---- @field scene niObject The scene of the camera.
+--- @field renderer niAlphaProperty|niAmbientLight|niCamera|niCollisionSwitch|niDirectionalLight|niDynamicEffect|niFogProperty|niGeometry|niGeometryData|niLight|niMaterialProperty|niNode|niPixelData|niPointLight|niSourceTexture|niSpotLight|niStencilProperty|niSwitchNode|niTexturingProperty|niTimeController|niTriBasedGeometry|niTriBasedGeometryData|niTriShape|niTriShapeData|niVertexColorProperty The renderer of the camera.
+--- @field scene niAlphaProperty|niAmbientLight|niCamera|niCollisionSwitch|niDirectionalLight|niDynamicEffect|niFogProperty|niGeometry|niGeometryData|niLight|niMaterialProperty|niNode|niPixelData|niPointLight|niSourceTexture|niSpotLight|niStencilProperty|niSwitchNode|niTexturingProperty|niTimeController|niTriBasedGeometry|niTriBasedGeometryData|niTriShape|niTriShapeData|niVertexColorProperty The scene of the camera.
 --- @field viewDistance number The view distance of the camera.
 --- @field worldDirection tes3vector3 Defines the X-axis of the camera.
 --- @field worldRight tes3vector3 Defines the Z-axis of the camera.
@@ -21,6 +21,6 @@ function niCamera:windowPointToRay(point) end
 
 --- Given a world coordinate position, calculates where that point relates to the screen space.
 --- @param point tes3vector3 The world position to calculate screen position for.
---- @return any result No description yet available.
+--- @return tes3vector2 screenPosition The screen space position. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
 function niCamera:worldPointToScreenPoint(point) end
 

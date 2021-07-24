@@ -10,7 +10,7 @@
 --- @field agility tes3statistic Direct access to the actor's agility attribute statistic.
 --- @field aiPlanner tes3aiPlanner Access to the mobile's AI planner and AI package information.
 --- @field alarm number The actor's alarm AI value.
---- @field animationController tes3actorAnimationController No description yet available.
+--- @field animationController tes3actorAnimationController|tes3playerAnimationController No description yet available.
 --- @field armorRating number The actor's current armour rating, taking equipment condition into account. Armour mitigation can be automatically applied to damage by using the applyDamage function.
 --- 
 --- Armour mitigation calculation:
@@ -249,7 +249,7 @@ function tes3mobileActor:rechargePower(power) end
 function tes3mobileActor:setPowerUseTimestamp(power, timestamp) end
 
 --- Forces the actor into combat with another actor.
---- @param target tes3mobileActor No description yet available.
+--- @param target tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer No description yet available.
 function tes3mobileActor:startCombat(target) end
 
 --- Starts dialogue with this actor for the player.

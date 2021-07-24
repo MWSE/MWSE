@@ -6,20 +6,20 @@ A sound object created in the TES3 CS.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `filename`_ (`string`_)
     Read-only. Path to the sound file.
 
 `id`_ (`string`_)
     Read-only. The unique identifier for the object.
-
-`id`_ (`string`_)
-    The unique identifier for the object.
 
 `maxDistance`_ (`number`_)
     The maximum distance the sound will be played at. Defaults to 0. If both this and minDistance are 0, the values are ignored.
@@ -31,13 +31,19 @@ Properties
     The modification state of the object since the last save.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `supportsLuaData`_ (`boolean`_)
     If true, references of this object can store temporary or persistent lua data.
@@ -48,36 +54,43 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3sound/blocked
     tes3sound/deleted
     tes3sound/disabled
     tes3sound/filename
-    tes3sound/id
     tes3sound/id
     tes3sound/maxDistance
     tes3sound/minDistance
     tes3sound/modified
     tes3sound/objectFlags
     tes3sound/objectType
+    tes3sound/persistent
     tes3sound/sourceMod
+    tes3sound/sourceless
     tes3sound/supportsLuaData
     tes3sound/volume
 
+.. _`blocked`: tes3sound/blocked.html
 .. _`deleted`: tes3sound/deleted.html
 .. _`disabled`: tes3sound/disabled.html
 .. _`filename`: tes3sound/filename.html
-.. _`id`: tes3sound/id.html
 .. _`id`: tes3sound/id.html
 .. _`maxDistance`: tes3sound/maxDistance.html
 .. _`minDistance`: tes3sound/minDistance.html
 .. _`modified`: tes3sound/modified.html
 .. _`objectFlags`: tes3sound/objectFlags.html
 .. _`objectType`: tes3sound/objectType.html
+.. _`persistent`: tes3sound/persistent.html
 .. _`sourceMod`: tes3sound/sourceMod.html
+.. _`sourceless`: tes3sound/sourceless.html
 .. _`supportsLuaData`: tes3sound/supportsLuaData.html
 .. _`volume`: tes3sound/volume.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `__tojson`_ (`string`_)
     Serializes the object to json.
@@ -98,11 +111,13 @@ Methods
     :hidden:
 
     tes3sound/__tojson
+    tes3sound/__tojson
     tes3sound/isLooping
     tes3sound/isPlaying
     tes3sound/play
     tes3sound/stop
 
+.. _`__tojson`: tes3sound/__tojson.html
 .. _`__tojson`: tes3sound/__tojson.html
 .. _`isLooping`: tes3sound/isLooping.html
 .. _`isPlaying`: tes3sound/isPlaying.html

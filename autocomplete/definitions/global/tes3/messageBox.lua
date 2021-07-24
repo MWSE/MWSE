@@ -15,6 +15,7 @@ return {
 		},
 		{ name = "formatAdditions", type = "variadic", optional = true, description = "Only used if messageOrParams is a string." },
 	},
-	returns = "soundIsPlaying",
-	valuetype = "boolean",
+	returns = {
+		{ name = "element", type = "tes3uiElement|nil", description = "The UI menu created for the notification, if any." }
+	}
 }

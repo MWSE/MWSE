@@ -35,9 +35,9 @@ function tes3.addArmorSlot(params) end
 --- Adds an item to a given reference's inventory or mobile's inventory.
 --- @param params tes3.addItem.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — Who to give items to.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — Who to give items to.
 --- 
---- ``item``: tes3item|string — The item to add.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to add.
 --- 
 --- ``itemData``: tes3itemData — The item data for the item.
 --- 
@@ -50,13 +50,13 @@ function tes3.addArmorSlot(params) end
 --- ``limit``: boolean — If false, items can be placed into containers that shouldn't normally be allowed. This includes organic containers, and containers that are full.
 --- 
 --- ``updateGUI``: boolean — If false, the function won't manually resync the player's GUI state. This can result in some optimizations, though `tes3ui.forcePlayerInventoryUpdate()` must manually be called after all inventory updates are finished.
---- @return any result No description yet available.
+--- @return number addedCount No description yet available.
 function tes3.addItem(params) end
 
 ---Table parameter definitions for ``tes3.addItem``.
 --- @class tes3.addItem.params
---- @field reference tes3reference|tes3mobileActor|string Who to give items to.
---- @field item tes3item|string The item to add.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to give items to.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to add.
 --- @field itemData tes3itemData The item data for the item.
 --- @field soul tes3creature For creating filled soul gems.
 --- @field count number The maximum number of items to add.
@@ -67,18 +67,18 @@ function tes3.addItem(params) end
 --- Creates an item data if there is room for a new stack in a given inventory. This can be then used to add custom user data or adjust an item's condition. This will return nil if no item data could be allocated for the item -- for example if the reference doesn't have the item in their inventory or each item of that type already has item data.
 --- @param params tes3.addItemData.params This table accepts the following values:
 --- 
---- ``to``: tes3reference|tes3mobileActor|string — The reference or mobile whose inventory will be modified.
+--- ``to``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference or mobile whose inventory will be modified.
 --- 
---- ``item``: tes3item|string — The item to create item data for.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to create item data for.
 --- 
 --- ``updateGUI``: boolean — If false, the player or contents menu won't be updated.
---- @return any result No description yet available.
+--- @return tes3itemData createdData No description yet available.
 function tes3.addItemData(params) end
 
 ---Table parameter definitions for ``tes3.addItemData``.
 --- @class tes3.addItemData.params
---- @field to tes3reference|tes3mobileActor|string The reference or mobile whose inventory will be modified.
---- @field item tes3item|string The item to create item data for.
+--- @field to tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference or mobile whose inventory will be modified.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to create item data for.
 --- @field updateGUI boolean If false, the player or contents menu won't be updated.
 
 --- This function creates a new journal entry. It can be called once the world controller is loaded.
@@ -127,13 +127,13 @@ function tes3.addJournalEntry(params) end
 --- 
 --- ``areaSound``: string — Must be a string no longer than 31 characters long.
 --- 
---- ``castVFX``: tes3physicalObject — No description yet available.
+--- ``castVFX``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon — No description yet available.
 --- 
---- ``boltVFX``: tes3physicalObject — No description yet available.
+--- ``boltVFX``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon — No description yet available.
 --- 
---- ``hitVFX``: tes3physicalObject — No description yet available.
+--- ``hitVFX``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon — No description yet available.
 --- 
---- ``areaVFX``: tes3physicalObject — No description yet available.
+--- ``areaVFX``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon — No description yet available.
 --- 
 --- ``allowEnchanting``: boolean — Can this effect be used in a custom enchantment?
 --- 
@@ -192,10 +192,10 @@ function tes3.addMagicEffect(params) end
 --- @field boltSound string Path to the sound which will be played when a spell with this effect is in flight. Must be a string no longer than 31 characters long.
 --- @field hitSound string Path to the sound which will be played when a spell with this effect hits something. Must be a string no longer than 31 characters long.
 --- @field areaSound string Must be a string no longer than 31 characters long.
---- @field castVFX tes3physicalObject No description yet available.
---- @field boltVFX tes3physicalObject No description yet available.
---- @field hitVFX tes3physicalObject No description yet available.
---- @field areaVFX tes3physicalObject No description yet available.
+--- @field castVFX tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon No description yet available.
+--- @field boltVFX tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon No description yet available.
+--- @field hitVFX tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon No description yet available.
+--- @field areaVFX tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon No description yet available.
 --- @field allowEnchanting boolean Can this effect be used in a custom enchantment?
 --- @field allowSpellmaking boolean Can this effect be used in a custom spell?
 --- @field appliesOnce boolean No description yet available.
@@ -232,7 +232,7 @@ function tes3.addSoulGem(params) end
 --- 
 --- ``sound``: tes3sound|string — The sound object, or id of the sound to look for.
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to attach the sound to.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to attach the sound to.
 --- 
 --- ``mixChannel``: number — The channel to base volume off of. Maps to tes3.audioMixType constants.
 --- 
@@ -242,7 +242,7 @@ function tes3.adjustSoundVolume(params) end
 ---Table parameter definitions for ``tes3.adjustSoundVolume``.
 --- @class tes3.adjustSoundVolume.params
 --- @field sound tes3sound|string The sound object, or id of the sound to look for.
---- @field reference tes3reference|tes3mobileActor|string The reference to attach the sound to.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to attach the sound to.
 --- @field mixChannel number The channel to base volume off of. Maps to tes3.audioMixType constants.
 --- @field volume number A value between 0.0 and 1.0 to scale the volume off of.
 
@@ -266,9 +266,9 @@ function tes3.advanceTime(params) end
 --- 
 --- @param params tes3.applyMagicSource.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- 
---- ``source``: tes3object — A magic source to apply.
+--- ``source``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon — A magic source to apply.
 --- 
 --- ``name``: string — If applying alchemy as a source, you can specifiy a name for the magic source.
 --- 
@@ -280,7 +280,7 @@ function tes3.advanceTime(params) end
 --- 
 --- ``castChance``: number — No description yet available.
 --- 
---- ``target``: tes3reference|tes3mobileActor|string — The target of the magic.
+--- ``target``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The target of the magic.
 --- 
 --- ``bypassResistances``: boolean — Is this effect going to bypass magic resistance?
 --- @return tes3magicSourceInstance instance No description yet available.
@@ -288,14 +288,14 @@ function tes3.applyMagicSource(params) end
 
 ---Table parameter definitions for ``tes3.applyMagicSource``.
 --- @class tes3.applyMagicSource.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
---- @field source tes3object A magic source to apply.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
+--- @field source tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon A magic source to apply.
 --- @field name string If applying alchemy as a source, you can specifiy a name for the magic source.
 --- @field effects table A table of custom effects to apply as a potion. Maximal number of effects is 8.
 --- @field createCopy boolean This parameter controls whether the function will return the original magic source or a copy of the magic source. This parameter is only used if source is alchemy.
 --- @field fromStack tes3equipmentStack The piece of equipment this magic source is coming from. The fromStack has to be an already equipped item from tes3actor.equipment. This will probably change in the future.
 --- @field castChance number No description yet available.
---- @field target tes3reference|tes3mobileActor|string The target of the magic.
+--- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The target of the magic.
 --- @field bypassResistances boolean Is this effect going to bypass magic resistance?
 
 --- Changes a reference to werewolf form. This function works only on a reference infected with Lycanthropy, be it the player or any other reference. Returns true if successful.
@@ -312,12 +312,12 @@ function tes3.beginTransform(params) end
 --- Signals looping animations on the actor to stop looping and play to the end. The animation will continue, playing past the loop point until the end frame. Useful for exiting looping animations cleanly.
 --- @param params tes3.cancelAnimationLoop.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — The reference to the actor.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The reference to the actor.
 function tes3.cancelAnimationLoop(params) end
 
 ---Table parameter definitions for ``tes3.cancelAnimationLoop``.
 --- @class tes3.cancelAnimationLoop.params
---- @field reference tes3mobileActor|tes3reference|string The reference to the actor.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The reference to the actor.
 
 --- This function returns true if player can rest.
 --- @return boolean canRest No description yet available.
@@ -328,9 +328,9 @@ function tes3.canRest() end
 --- When the caster is the player, the target parameter is optional; without a target, the player's touch effects will only hit targets in front of them, and target effects will create a projectile in the direction the player is facing. Currently as a limitation, instant must be true to allow the player to cast spells.
 --- @param params tes3.cast.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The caster reference.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The caster reference.
 --- 
---- ``target``: tes3reference|tes3mobileActor|string — The target reference. Optional only if the caster is the player.
+--- ``target``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The target reference. Optional only if the caster is the player.
 --- 
 --- ``spell``: tes3spell|string — The spell the caster uses.
 --- 
@@ -339,27 +339,27 @@ function tes3.canRest() end
 --- ``alwaysSucceeds``: boolean — When true, the spell cannot fail and does not consume magicka. When false, it is cast using the actor's spell skill, and requires and takes enough magicka to cast. Only applies when 'instant' is true.
 --- 
 --- ``bypassResistances``: boolean — The spell will bypass the target's resistances. Only applies when 'instant' is true.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.cast(params) end
 
 ---Table parameter definitions for ``tes3.cast``.
 --- @class tes3.cast.params
---- @field reference tes3reference|tes3mobileActor|string The caster reference.
---- @field target tes3reference|tes3mobileActor|string The target reference. Optional only if the caster is the player.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The caster reference.
+--- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The target reference. Optional only if the caster is the player.
 --- @field spell tes3spell|string The spell the caster uses.
 --- @field instant boolean When true, the spell is cast instantly. No animation is performed.
 --- @field alwaysSucceeds boolean When true, the spell cannot fail and does not consume magicka. When false, it is cast using the actor's spell skill, and requires and takes enough magicka to cast. Only applies when 'instant' is true.
 --- @field bypassResistances boolean The spell will bypass the target's resistances. Only applies when 'instant' is true.
 
 --- Checks if a merchant will offer a service to you, including dialogue checks like disposition and faction membership. A specific service can be checked, or if no service is given, a generic dialogue check is made. If the service if refused, the dialogue reply for the refusal may also returned (it may be nil, as there may not always be a reply available).
---- @param reference tes3reference|tes3mobileActor|string No description yet available.
+--- @param reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @param service number The specific service to check for availability. Uses the tes3.merchantService.* constants.
 --- @return boolean, tes3DialogueInfo offersService, refusalReply No description yet available.
 function tes3.checkMerchantOffersService(reference, service) end
 
 --- Determines if a merchant trades in a given item.
---- @param item tes3item|string No description yet available.
---- @param reference tes3reference|tes3mobileActor|string No description yet available.
+--- @param item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string No description yet available.
+--- @param reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @return boolean trades No description yet available.
 function tes3.checkMerchantTradesItem(item, reference) end
 
@@ -395,7 +395,7 @@ function tes3.createObject(params) end
 --- Similar to mwscript's PlaceAtPC or PlaceAtMe, this creates a new reference in the game world.
 --- @param params tes3.createReference.params This table accepts the following values:
 --- 
---- ``object``: tes3physicalObject|string — The object to create a reference of.
+--- ``object``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon|string — The object to create a reference of.
 --- 
 --- ``position``: tes3vector3|table — The location to create the reference at.
 --- 
@@ -404,12 +404,12 @@ function tes3.createObject(params) end
 --- ``cell``: tes3cell|string|table — The cell to create the reference in. This is only needed for interior cells.
 --- 
 --- ``scale``: number — A scale for the reference.
---- @return any result No description yet available.
+--- @return tes3reference newReference No description yet available.
 function tes3.createReference(params) end
 
 ---Table parameter definitions for ``tes3.createReference``.
 --- @class tes3.createReference.params
---- @field object tes3physicalObject|string The object to create a reference of.
+--- @field object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon|string The object to create a reference of.
 --- @field position tes3vector3|table The location to create the reference at.
 --- @field orientation tes3vector3|table The new orientation for the created reference.
 --- @field cell tes3cell|string|table The cell to create the reference in. This is only needed for interior cells.
@@ -418,15 +418,15 @@ function tes3.createReference(params) end
 --- Decreases player's kill count of a certain type of actor by one.
 --- @param params tes3.decrementKillCount.params This table accepts the following values:
 --- 
---- ``actor``: tes3actor|string — The actor (or their ID).
+--- ``actor``: tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string — The actor (or their ID).
 function tes3.decrementKillCount(params) end
 
 ---Table parameter definitions for ``tes3.decrementKillCount``.
 --- @class tes3.decrementKillCount.params
---- @field actor tes3actor|string The actor (or their ID).
+--- @field actor tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string The actor (or their ID).
 
 --- Deletes a game object from the system. This can be dangerous, use with caution.
---- @param object tes3object The object to delete.
+--- @param object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon The object to delete.
 function tes3.deleteObject(object) end
 
 --- Disables the use of a keyboard key.
@@ -436,9 +436,9 @@ function tes3.disableKey(keyCode) end
 --- Drops one or more items from a reference's inventory onto the ground at their feet. It will unequip the item if it is equipped. The return value will be nil if no matching item was found.
 --- @param params tes3.dropItem.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — The reference whose inventory will be modified.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The reference whose inventory will be modified.
 --- 
---- ``item``: tes3item|string — The item to drop.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to drop.
 --- 
 --- ``itemData``: tes3itemData — The item data of the specific item to drop. Without this, the first matching item in the inventory will drop.
 --- 
@@ -447,13 +447,13 @@ function tes3.disableKey(keyCode) end
 --- ``count``: number — The number of items to drop.
 --- 
 --- ``updateGUI``: boolean — If false, the player or contents menu won't be updated.
---- @return any result No description yet available.
+--- @return tes3reference createdReference No description yet available.
 function tes3.dropItem(params) end
 
 ---Table parameter definitions for ``tes3.dropItem``.
 --- @class tes3.dropItem.params
---- @field reference tes3mobileActor|tes3reference|string The reference whose inventory will be modified.
---- @field item tes3item|string The item to drop.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The reference whose inventory will be modified.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to drop.
 --- @field itemData tes3itemData The item data of the specific item to drop. Without this, the first matching item in the inventory will drop.
 --- @field matchNoItemData boolean If true, matches an item without item data. This can be used when you want to drop an item that isn't equipped (equipped items always have item data).
 --- @field count number The number of items to drop.
@@ -508,17 +508,17 @@ function tes3.fadeTo(params) end
 --- Searches for active mobile actors which are within ``range`` distance from the ``reference`` or ``position`` argument. It only finds mobiles which have active AI, and can include the player. This function is used by the game for area-of-effect hits. It has a small amount of overhead, so try not to use it too much.
 --- @param params tes3.findActorsInProximity.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The position to search from, taken from a reference. Uses the position of the centre of the body if the reference is an actor.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The position to search from, taken from a reference. Uses the position of the centre of the body if the reference is an actor.
 --- 
 --- ``position``: tes3vector3 — The position to search from.
 --- 
 --- ``range``: number — The distance around the position to search. An actor is included if the centre of their body is in range.
---- @return any result No description yet available.
+--- @return table mobileList No description yet available.
 function tes3.findActorsInProximity(params) end
 
 ---Table parameter definitions for ``tes3.findActorsInProximity``.
 --- @class tes3.findActorsInProximity.params
---- @field reference tes3reference|tes3mobileActor|string The position to search from, taken from a reference. Uses the position of the centre of the body if the reference is an actor.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The position to search from, taken from a reference. Uses the position of the centre of the body if the reference is an actor.
 --- @field position tes3vector3 The position to search from.
 --- @field range number The distance around the position to search. An actor is included if the centre of their body is in range.
 
@@ -547,15 +547,15 @@ function tes3.findClass(params) end
 --- Using the same engine function used by the vanilla intervention spells, locations the first reference of a given object in the exterior world.
 --- @param params tes3.findClosestExteriorReferenceOfObject.params This table accepts the following values:
 --- 
---- ``object``: tes3physicalObject|string — The object to search for.
+--- ``object``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon|string — The object to search for.
 --- 
 --- ``position``: tes3vector3 — The position to search from. Must be an exterior position. Defaults to the last exterior position of the player if no position is provided.
---- @return any result No description yet available.
+--- @return tes3reference reference No description yet available.
 function tes3.findClosestExteriorReferenceOfObject(params) end
 
 ---Table parameter definitions for ``tes3.findClosestExteriorReferenceOfObject``.
 --- @class tes3.findClosestExteriorReferenceOfObject.params
---- @field object tes3physicalObject|string The object to search for.
+--- @field object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3static|tes3weapon|string The object to search for.
 --- @field position tes3vector3 The position to search from. Must be an exterior position. Defaults to the last exterior position of the player if no position is provided.
 
 --- Locates a root dialogue topic that can then be filtered down for a specific actor to return a specific dialogue info. For example, a type of ``tes3.dialogueType.greeting`` and a page of ``tes3.dialoguePage.greeting.greeting0`` will return the "Greeting 0" topic.
@@ -564,7 +564,7 @@ function tes3.findClosestExteriorReferenceOfObject(params) end
 --- ``type``: number — The type of dialogue to look for. Uses tes3.dialogueType.* constants.
 --- 
 --- ``page``: number — The page of dialogue to fetch. Uses tes3.dialoguePage.* constants.
---- @return any result No description yet available.
+--- @return tes3dialogue dialogue No description yet available.
 function tes3.findDialogue(params) end
 
 ---Table parameter definitions for ``tes3.findDialogue``.
@@ -627,13 +627,13 @@ function tes3.getAnimationGroups(params) end
 --- This function fetches a reference's attached animation groups' timings.
 --- @param params tes3.getAnimationTiming.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — A reference whose animation groups' timings to fetch.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — A reference whose animation groups' timings to fetch.
 --- @return table result No description yet available.
 function tes3.getAnimationTiming(params) end
 
 ---Table parameter definitions for ``tes3.getAnimationTiming``.
 --- @class tes3.getAnimationTiming.params
---- @field reference tes3reference|tes3mobileActor|string A reference whose animation groups' timings to fetch.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string A reference whose animation groups' timings to fetch.
 
 --- Returns a 1-indexed table of active archives.
 --- @return table archives No description yet available.
@@ -676,16 +676,16 @@ function tes3.getCell(params) end
 
 --- Gets the number of days that have passed leading up to the start of a given month.
 --- @param month number The 0-based month index.
---- @return any result No description yet available.
+--- @return number days No description yet available.
 function tes3.getCumulativeDaysForMonth(month) end
 
 --- Returns an actor's current AI package ID, just as the mwscript function `GetCurrentAIPackage` would.
---- @param reference tes3mobileActor|tes3reference No description yet available.
+--- @param reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
 --- @return number packageID No description yet available.
 function tes3.getCurrentAIPackageId(reference) end
 
 --- Gets the currently active weather, from the player's current region.
---- @return tes3weather weather No description yet available.
+--- @return tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder weather No description yet available.
 function tes3.getCurrentWeather() end
 
 --- Returns a table with values x and y that contain the current cursor position.
@@ -708,7 +708,7 @@ function tes3.getDialogueInfo(dialogue, id) end
 --- [Examples available in online documentation](https://mwse.readthedocs.io/en/latest/lua/api/tes3/getEffectMagnitude.html).
 --- @param params tes3.getEffectMagnitude.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — An associated mobile should exist for this function to be able to work.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — An associated mobile should exist for this function to be able to work.
 --- 
 --- ``effect``: tes3.effect.* constants — Effect ID. Can be any of the predefined spell effects, or one added by tes3.claimSpellEffectId.
 --- 
@@ -720,7 +720,7 @@ function tes3.getEffectMagnitude(params) end
 
 ---Table parameter definitions for ``tes3.getEffectMagnitude``.
 --- @class tes3.getEffectMagnitude.params
---- @field reference tes3reference|tes3mobileActor|string An associated mobile should exist for this function to be able to work.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string An associated mobile should exist for this function to be able to work.
 --- @field effect tes3.effect.* constants Effect ID. Can be any of the predefined spell effects, or one added by tes3.claimSpellEffectId.
 --- @field skill tes3.skill.* constants If effect parameter specified is: Absorb, Damage, Drain, Fortify or Restore Skill, a skill should be provided. This also applies to any custom spell effect which operates on a certain skill.
 --- @field attribute tes3.attribute.* constants If effect parameter specified is: Absorb, Damage, Drain, Fortify or Restore Attribute, an attribute should be provided. This also applies to any custom spell effect which operates on a certain attribute.
@@ -730,7 +730,7 @@ function tes3.getEffectMagnitude(params) end
 --- [Examples available in online documentation](https://mwse.readthedocs.io/en/latest/lua/api/tes3/getEquippedItem.html).
 --- @param params tes3.getEquippedItem.params This table accepts the following values:
 --- 
---- ``actor``: tes3reference|tes3mobileActor|tes3actor — No description yet available.
+--- ``actor``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance — No description yet available.
 --- 
 --- ``enchanted``: boolean — If true, filters to enchanted items.
 --- 
@@ -744,7 +744,7 @@ function tes3.getEquippedItem(params) end
 
 ---Table parameter definitions for ``tes3.getEquippedItem``.
 --- @class tes3.getEquippedItem.params
---- @field actor tes3reference|tes3mobileActor|tes3actor No description yet available.
+--- @field actor tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance No description yet available.
 --- @field enchanted boolean If true, filters to enchanted items.
 --- @field objectType number Maps to tes3.objectType constants. Used to filter equipment by type.
 --- @field slot number Maps to tes3.armorSlot or tes3.clothingSlot. Used to filter equipment by slot.
@@ -776,8 +776,8 @@ function tes3.getGlobal(id) end
 function tes3.getInputBinding(keybind) end
 
 --- This function checks item's stolen flag.
---- @param item tes3item The item to check.
---- @param from tes3baseObject Where the item was stolen from.
+--- @param item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon The item to check.
+--- @param from tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon Where the item was stolen from.
 --- @return boolean isStolen No description yet available.
 function tes3.getItemIsStolen(item, from) end
 
@@ -795,24 +795,24 @@ function tes3.getJournalIndex(params) end
 --- Returns how many times the player killed an actor. If no actor is specified, total number of kills player commited will be returned.
 --- @param params tes3.getKillCount.params This table accepts the following values:
 --- 
---- ``actor``: tes3actor|string — The actor (or their ID) for whom to retrieve player's kill count.
+--- ``actor``: tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string — The actor (or their ID) for whom to retrieve player's kill count.
 --- @return number count No description yet available.
 function tes3.getKillCount(params) end
 
 ---Table parameter definitions for ``tes3.getKillCount``.
 --- @class tes3.getKillCount.params
---- @field actor tes3actor|string The actor (or their ID) for whom to retrieve player's kill count.
+--- @field actor tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string The actor (or their ID) for whom to retrieve player's kill count.
 
 --- Returns a table with complete player kill counts. The table returned is formated so actor IDs are table keys and kill count of that type of actor is value.
 --- @return table killMap No description yet available.
 function tes3.getKillCounts() end
 
 --- Gets the language as an ISO string (e.g. "eng"), determined by the language entry in Morrowind.ini.
---- @return any result No description yet available.
+--- @return string code No description yet available.
 function tes3.getLanguage() end
 
 --- Gets the language code, determined by the language entry in Morrowind.ini.
---- @return any result No description yet available.
+--- @return number code No description yet available.
 function tes3.getLanguageCode() end
 
 --- Returns the last exterior position of the player.
@@ -822,24 +822,24 @@ function tes3.getLastExteriorPosition() end
 --- Determines if a given reference is a locked door or container.
 --- @param params tes3.getLocked.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- @return boolean isLocked No description yet available.
 function tes3.getLocked(params) end
 
 ---Table parameter definitions for ``tes3.getLocked``.
 --- @class tes3.getLocked.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Gets an locked reference's lock level. If no lock data is available, it will return nil.
 --- @param params tes3.getLockLevel.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- @return number level No description yet available.
 function tes3.getLockLevel(params) end
 
 ---Table parameter definitions for ``tes3.getLockLevel``.
 --- @class tes3.getLockLevel.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Fetches the core game Magic Effect object for a given ID.
 --- @param id number No description yet available.
@@ -863,12 +863,12 @@ function tes3.getModList() end
 
 --- Fetches the core game object for a given object ID.
 --- @param id string No description yet available.
---- @return tes3object object No description yet available.
+--- @return tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon object No description yet available.
 function tes3.getObject(id) end
 
 --- Returns the object's owner, or nil if the object is unowned.
 --- @param reference tes3reference No description yet available.
---- @return tes3object object No description yet available.
+--- @return tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon object No description yet available.
 function tes3.getOwner(reference) end
 
 --- Fetches the cell that the player is currently in.
@@ -876,11 +876,11 @@ function tes3.getOwner(reference) end
 function tes3.getPlayerCell() end
 
 --- Returns the position of the player's eyes.
---- @return any result No description yet available.
+--- @return tes3vector3 position No description yet available.
 function tes3.getPlayerEyePosition() end
 
 --- Returns the look direction of the player's eyes.
---- @return any result No description yet available.
+--- @return tes3vector3 position No description yet available.
 function tes3.getPlayerEyeVector() end
 
 --- Gets the gold count carried by the player.
@@ -934,14 +934,14 @@ function tes3.getSoundGenerator(creatureId, soundType) end
 --- 
 --- ``sound``: tes3sound|string — The sound object, or the ID of the sound to look for.
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- @return boolean soundIsPlaying No description yet available.
 function tes3.getSoundPlaying(params) end
 
 ---Table parameter definitions for ``tes3.getSoundPlaying``.
 --- @class tes3.getSoundPlaying.params
 --- @field sound tes3sound|string The sound object, or the ID of the sound to look for.
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Returns the lowercase identifying name of a specialization type for a given numerical, 0-based index. E.g. "magic".
 --- @return string name No description yet available.
@@ -954,13 +954,13 @@ function tes3.getTopMenu() end
 --- Gets the trap on a given reference.
 --- @param params tes3.getTrap.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- @return tes3spell spell No description yet available.
 function tes3.getTrap(params) end
 
 ---Table parameter definitions for ``tes3.getTrap``.
 --- @class tes3.getTrap.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Returns the number of kills player commited as a Werewolf.
 --- @return number werewolfKills No description yet available.
@@ -978,26 +978,26 @@ function tes3.hasCodePatchFeature(id) end
 --- Determines if a reference has access to another object, including its inventory. References have access to their own things, and the player has access to dead NPC's items.
 --- @param params tes3.hasOwnershipAccess.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The actor to check permissions for.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The actor to check permissions for.
 --- 
---- ``target``: tes3reference|tes3mobileActor|string — The reference to check access of.
+--- ``target``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to check access of.
 --- @return boolean hasAccess No description yet available.
 function tes3.hasOwnershipAccess(params) end
 
 ---Table parameter definitions for ``tes3.hasOwnershipAccess``.
 --- @class tes3.hasOwnershipAccess.params
---- @field reference tes3reference|tes3mobileActor|string The actor to check permissions for.
---- @field target tes3reference|tes3mobileActor|string The reference to check access of.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The actor to check permissions for.
+--- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to check access of.
 
 --- Increases player's kill count of a certain type of actor by one.
 --- @param params tes3.incrementKillCount.params This table accepts the following values:
 --- 
---- ``actor``: tes3actor|string — The actor (or their ID) for whom to increase player's kill count.
+--- ``actor``: tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string — The actor (or their ID) for whom to increase player's kill count.
 function tes3.incrementKillCount(params) end
 
 ---Table parameter definitions for ``tes3.incrementKillCount``.
 --- @class tes3.incrementKillCount.params
---- @field actor tes3actor|string The actor (or their ID) for whom to increase player's kill count.
+--- @field actor tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string The actor (or their ID) for whom to increase player's kill count.
 
 --- Returns if the game is in 3rd person.
 --- @return boolean state No description yet available.
@@ -1008,7 +1008,7 @@ function tes3.is3rdPerson() end
 --- Note reference.object.spells:contains(spellID) will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
 --- @param params tes3.isAffectedBy.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- 
 --- ``effect``: tes3.effect — A tes3.effect constant to check for.
 --- 
@@ -1018,7 +1018,7 @@ function tes3.isAffectedBy(params) end
 
 ---Table parameter definitions for ``tes3.isAffectedBy``.
 --- @class tes3.isAffectedBy.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @field effect tes3.effect A tes3.effect constant to check for.
 --- @field object tes3alchemy|tes3enchantment|tes3spell|tes3magicEffect|string An object to check for.
 
@@ -1034,7 +1034,7 @@ function tes3.iterate(iterator) end
 
 --- Iteration function used for looping over game options.
 --- @param filter number Maps to tes3.objectType constants.
---- @return tes3object object No description yet available.
+--- @return tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon object No description yet available.
 function tes3.iterateObjects(filter) end
 
 --- Loads an animation and uses it to override existing animations on an actor. Animation groups present in the file will replace the actor's animation groups. The actor's model must be already loaded into memory to have its animations modified. The overridden animations only persist until the actor is unloaded.
@@ -1044,14 +1044,14 @@ function tes3.iterateObjects(filter) end
 --- Calling this without a file argument will reset the reference's animations to default.
 --- @param params tes3.loadAnimation.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — The reference to the actor that is having its animations modified.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The reference to the actor that is having its animations modified.
 --- 
 --- ``file``: string — The specified animation base file that will be loaded. e.g. For an animation composed of files anim.nif, xanim.nif and xanim.kf, you should pass file="anim.nif". The animation target skeleton _must_ match the skeleton of the actor to work. i.e. 3rd person anims for NPCs and tes3.player, 1st person anims for firstPersonReference.
 function tes3.loadAnimation(params) end
 
 ---Table parameter definitions for ``tes3.loadAnimation``.
 --- @class tes3.loadAnimation.params
---- @field reference tes3mobileActor|tes3reference|string The reference to the actor that is having its animations modified.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The reference to the actor that is having its animations modified.
 --- @field file string The specified animation base file that will be loaded. e.g. For an animation composed of files anim.nif, xanim.nif and xanim.kf, you should pass file="anim.nif". The animation target skeleton _must_ match the skeleton of the actor to work. i.e. 3rd person anims for NPCs and tes3.player, 1st person anims for firstPersonReference.
 
 --- Loads a game.
@@ -1061,7 +1061,7 @@ function tes3.loadGame(filename) end
 --- Loads a mesh file and provides a scene graph object.
 --- @param path string Path, relative to Data Files/Meshes.
 --- @param useCache boolean If false, a new object will be created even if it had been previously loaded.
---- @return niNode model No description yet available.
+--- @return niCollisionSwitch|niNode|niSwitchNode model No description yet available.
 function tes3.loadMesh(path, useCache) end
 
 --- Loads a source texture file and provides the niSourceTexture object.
@@ -1073,7 +1073,7 @@ function tes3.loadSourceTexture(path, useCache) end
 --- Locks an object, and optionally sets a locked reference's lock level. Returns true if the object can be and wasn't already locked.
 --- @param params tes3.lock.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- 
 --- ``level``: number — No description yet available.
 --- @return boolean locked No description yet available.
@@ -1081,7 +1081,7 @@ function tes3.lock(params) end
 
 ---Table parameter definitions for ``tes3.lock``.
 --- @class tes3.lock.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @field level number No description yet available.
 
 --- This function returns a function that iterates over a tes3tarray object. This is useful for for loops.
@@ -1090,7 +1090,7 @@ function tes3.lock(params) end
 function tes3.loopTArray(tarray) end
 
 --- Returns a safe handle for the object. To use the object use :getObject(). To check if it still exists use :valid().
---- @return tes3object object No description yet available.
+--- @return tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3reference|tes3spell|tes3static|tes3weapon object No description yet available.
 function tes3.makeSafeObjectHandle() end
 
 --- Returns true if the player is currently in menu mode.
@@ -1109,9 +1109,17 @@ function tes3.menuMode() end
 --- ``showInDialog``: boolean — Specifying showInDialog = false forces the toast-style message, which is not shown in the dialog menu. Defaults to true.
 --- 
 --- ``duration``: float — Overrides how long the toast-style message remains visible.
---- @param formatAdditions variadic Only used if messageOrParams is a string.
---- @return boolean soundIsPlaying No description yet available.
-function tes3.messageBox(messageOrParams, formatAdditions) end
+--- @vararg any Only used if messageOrParams is a string.
+--- @return tes3uiElement|nil element The UI menu created for the notification, if any.
+function tes3.messageBox(messageOrParams, ...) end
+
+---Table parameter definitions for ``tes3.messageBox``.
+--- @class tes3.messageBox.params
+--- @field message string No description yet available.
+--- @field buttons table An array of strings to use for buttons.
+--- @field callback function No description yet available.
+--- @field showInDialog boolean Specifying showInDialog = false forces the toast-style message, which is not shown in the dialog menu. Defaults to true.
+--- @field duration float Overrides how long the toast-style message remains visible.
 
 --- Modifies a statistic on a given actor. This should be used instead of manually setting values on the game structures, to ensure that events and GUI elements are properly handled. Either skill, attribute, or name must be provided.
 ---
@@ -1128,7 +1136,7 @@ function tes3.messageBox(messageOrParams, formatAdditions) end
 --- 
 --- ``name``: string — A generic name of an attribute to set.
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
 --- 
 --- ``skill``: number — The skill to set.
 --- 
@@ -1142,7 +1150,7 @@ function tes3.modStatistic(params) end
 --- @field current number If set, the current value will be modified.
 --- @field limit boolean If set, the attribute won't rise above 100 or fall below 0.
 --- @field name string A generic name of an attribute to set.
---- @field reference tes3mobileActor|tes3reference|string No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 --- @field skill number The skill to set.
 --- @field value number If set, both the base and current value will be modified.
 
@@ -1156,7 +1164,7 @@ function tes3.onMainMenu() end
 --- Attempts a persuasion attempt on an actor, potentially adjusting their disposition. Returns true if the attempt was a success.
 --- @param params tes3.persuade.params This table accepts the following values:
 --- 
---- ``actor``: tes3mobileActor|tes3reference|string — The actor to try to persuade.
+--- ``actor``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The actor to try to persuade.
 --- 
 --- ``index``: number — If an index is provided, 0-indexed with the following results: admire, intimidate, taunt, bribe (10), bribe (100), bribe (1000).
 --- 
@@ -1166,7 +1174,7 @@ function tes3.persuade(params) end
 
 ---Table parameter definitions for ``tes3.persuade``.
 --- @class tes3.persuade.params
---- @field actor tes3mobileActor|tes3reference|string The actor to try to persuade.
+--- @field actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The actor to try to persuade.
 --- @field index number If an index is provided, 0-indexed with the following results: admire, intimidate, taunt, bribe (10), bribe (100), bribe (1000).
 --- @field modifier number If no index is provided, this is the direct modifier to try.
 
@@ -1177,7 +1185,7 @@ function tes3.persuade(params) end
 --- As a special case, tes3.playAnimation{reference = ..., group = 0} returns control to the AI, as the AI knows that is the actor's neutral idle state.
 --- @param params tes3.playAnimation.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — The reference that will play the animation.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The reference that will play the animation.
 --- 
 --- ``group``: number — The animation group id to start playing -- a value from 0 to 149. Applies the animation to the whole body. Maps to tes3.animationGroup.* constants.
 --- 
@@ -1196,7 +1204,7 @@ function tes3.playAnimation(params) end
 
 ---Table parameter definitions for ``tes3.playAnimation``.
 --- @class tes3.playAnimation.params
---- @field reference tes3mobileActor|tes3reference|string The reference that will play the animation.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The reference that will play the animation.
 --- @field group number The animation group id to start playing -- a value from 0 to 149. Applies the animation to the whole body. Maps to tes3.animationGroup.* constants.
 --- @field lower number Sets the animation group id for the lower body. This is used to combine different animations for each body section. Maps to tes3.animationGroup.* constants.
 --- @field upper number Sets the animation group id for the upper body. This is used to combine different animations for each body section. Maps to tes3.animationGroup.* constants.
@@ -1208,18 +1216,18 @@ function tes3.playAnimation(params) end
 --- Plays the sound responsible for picking up or putting down an item.
 --- @param params tes3.playItemPickupSound.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to attach the sound to.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to attach the sound to.
 --- 
---- ``item``: tes3item — No description yet available.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon — No description yet available.
 --- 
 --- ``pickup``: boolean — If false, the place down item will be used.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.playItemPickupSound(params) end
 
 ---Table parameter definitions for ``tes3.playItemPickupSound``.
 --- @class tes3.playItemPickupSound.params
---- @field reference tes3reference|tes3mobileActor|string The reference to attach the sound to.
---- @field item tes3item No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to attach the sound to.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon No description yet available.
 --- @field pickup boolean If false, the place down item will be used.
 
 --- Plays a sound on a given reference. Provides control over volume (including volume channel), pitch, and loop control.
@@ -1227,7 +1235,7 @@ function tes3.playItemPickupSound(params) end
 --- 
 --- ``sound``: tes3sound|string — The sound object, or id of the sound to look for.
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to attach the sound to.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to attach the sound to.
 --- 
 --- ``loop``: boolean — If true, the sound will loop.
 --- 
@@ -1238,13 +1246,13 @@ function tes3.playItemPickupSound(params) end
 --- ``pitch``: number — The pitch-shift multiplier. For 22kHz audio (most typical) it can have the range [0.005, 4.5]; for 44kHz audio it can have the range [0.0025, 2.25].
 --- 
 --- ``soundPath``: string — The path to a custom soundfile (useful for playing sounds that are not registered in the Construction Set). Starts in Data Files\Sound.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.playSound(params) end
 
 ---Table parameter definitions for ``tes3.playSound``.
 --- @class tes3.playSound.params
 --- @field sound tes3sound|string The sound object, or id of the sound to look for.
---- @field reference tes3reference|tes3mobileActor|string The reference to attach the sound to.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to attach the sound to.
 --- @field loop boolean If true, the sound will loop.
 --- @field mixChannel number The channel to base volume off of. Maps to tes3.audioMixType constants.
 --- @field volume number A value between 0.0 and 1.0 to scale the volume off of.
@@ -1254,7 +1262,7 @@ function tes3.playSound(params) end
 --- Causes a target actor to play a voiceover.
 --- @param params tes3.playVoiceover.params This table accepts the following values:
 --- 
---- ``actor``: tes3mobileActor|tes3reference|string — The actor to play a voiceover.
+--- ``actor``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The actor to play a voiceover.
 --- 
 --- ``voiceover``: number — Maps to tes3.voiceover constants.
 --- @return boolean played No description yet available.
@@ -1262,13 +1270,13 @@ function tes3.playVoiceover(params) end
 
 ---Table parameter definitions for ``tes3.playVoiceover``.
 --- @class tes3.playVoiceover.params
---- @field actor tes3mobileActor|tes3reference|string The actor to play a voiceover.
+--- @field actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The actor to play a voiceover.
 --- @field voiceover number Maps to tes3.voiceover constants.
 
 --- Positions a reference to another place.
 --- @param params tes3.positionCell.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to reposition.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to reposition.
 --- 
 --- ``cell``: tes3cell — The cell to move the reference to. If not provided, the reference will be moved to a cell in the exterior worldspace at the position provided.
 --- 
@@ -1281,12 +1289,12 @@ function tes3.playVoiceover(params) end
 --- ``suppressFader``: boolean — When moving the player, can be used to prevent the fade in and out visual effect.
 --- 
 --- ``teleportCompanions``: boolean — If used on the player, determines if companions should also be teleported.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.positionCell(params) end
 
 ---Table parameter definitions for ``tes3.positionCell``.
 --- @class tes3.positionCell.params
---- @field reference tes3reference|tes3mobileActor|string The reference to reposition.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to reposition.
 --- @field cell tes3cell The cell to move the reference to. If not provided, the reference will be moved to a cell in the exterior worldspace at the position provided.
 --- @field position tes3vector3|table The position to move the reference to.
 --- @field orientation tes3vector3|table The position to move the reference to.
@@ -1375,9 +1383,9 @@ function tes3.removeEffects(reference, effect, castType, chance, removeSpell) en
 --- Removes an item from a given reference's inventory.
 --- @param params tes3.removeItem.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — Who to remove items from.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — Who to remove items from.
 --- 
---- ``item``: tes3item|string — The item to remove.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to remove.
 --- 
 --- ``itemData``: tes3itemData — The item data for the exact item to remove.
 --- 
@@ -1388,13 +1396,13 @@ function tes3.removeEffects(reference, effect, castType, chance, removeSpell) en
 --- ``playSound``: boolean — If false, the up/down sound for the item won't be played.
 --- 
 --- ``updateGUI``: boolean — If false, the function won't manually resync the player's GUI state. This can result in some optimizations, though `tes3ui.forcePlayerInventoryUpdate()` must manually be called after all inventory updates are finished.
---- @return any result No description yet available.
+--- @return number removedCount No description yet available.
 function tes3.removeItem(params) end
 
 ---Table parameter definitions for ``tes3.removeItem``.
 --- @class tes3.removeItem.params
---- @field reference tes3reference|tes3mobileActor|string Who to remove items from.
---- @field item tes3item|string The item to remove.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to remove items from.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to remove.
 --- @field itemData tes3itemData The item data for the exact item to remove.
 --- @field deleteItemData tes3itemData Whether to delete the item data after remove succeeds. Automatically set if itemData is used. Does not need to be specified for normal usage.
 --- @field count number The maximum number of items to remove.
@@ -1406,13 +1414,13 @@ function tes3.removeItem(params) end
 --- 
 --- ``sound``: tes3sound|string — The sound object, or id of the sound to look for.
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference the sound is attached to.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference the sound is attached to.
 function tes3.removeSound(params) end
 
 ---Table parameter definitions for ``tes3.removeSound``.
 --- @class tes3.removeSound.params
 --- @field sound tes3sound|string The sound object, or id of the sound to look for.
---- @field reference tes3reference|tes3mobileActor|string The reference the sound is attached to.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference the sound is attached to.
 
 --- This function will compile and run a mwscript chunk of code. This is not ideal to use, but can be used for features not yet exposed to lua.
 --- @param params tes3.runLegacyScript.params This table accepts the following values:
@@ -1425,12 +1433,12 @@ function tes3.removeSound(params) end
 --- 
 --- ``variables``: tes3scriptVariables — If a reference is provided, the reference's variables will be used.
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to target for execution.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to target for execution.
 --- 
 --- ``dialogue``: tes3dialogue|string — If compiling for dialogue context, the dialogue associated with the script.
 --- 
 --- ``info``: tes3dialogueInfo — The info associated with the dialogue.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.runLegacyScript(params) end
 
 ---Table parameter definitions for ``tes3.runLegacyScript``.
@@ -1439,7 +1447,7 @@ function tes3.runLegacyScript(params) end
 --- @field source number The compilation source to use. Defaults to tes3.scriptSource.default
 --- @field command string The script text to compile and run.
 --- @field variables tes3scriptVariables If a reference is provided, the reference's variables will be used.
---- @field reference tes3reference|tes3mobileActor|string The reference to target for execution.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to target for execution.
 --- @field dialogue tes3dialogue|string If compiling for dialogue context, the dialogue associated with the script.
 --- @field info tes3dialogueInfo The info associated with the dialogue.
 
@@ -1462,7 +1470,7 @@ function tes3.saveGame(params) end
 --- **Note**: MP3 voice files must conform to the MPEG Layer-3, 64 Kbps 44100 kHz, 16-bit mono specification.
 --- @param params tes3.say.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to make say something.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to make say something.
 --- 
 --- ``soundPath``: string — A path to a valid sound file.
 --- 
@@ -1477,7 +1485,7 @@ function tes3.say(params) end
 
 ---Table parameter definitions for ``tes3.say``.
 --- @class tes3.say.params
---- @field reference tes3reference|tes3mobileActor|string The reference to make say something.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to make say something.
 --- @field soundPath string A path to a valid sound file.
 --- @field pitch number A pitch shift to adjust the sound with.
 --- @field volume number The volume to play the sound at, relative to the voice mix channel.
@@ -1493,7 +1501,7 @@ function tes3.set3rdPersonCameraOffset(offset) end
 --- Configures a mobile actor to activate an object.
 --- @param params tes3.setAIActivate.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference — No description yet available.
 --- 
 --- ``target``: tes3reference — No description yet available.
 --- 
@@ -1502,16 +1510,16 @@ function tes3.setAIActivate(params) end
 
 ---Table parameter definitions for ``tes3.setAIActivate``.
 --- @class tes3.setAIActivate.params
---- @field reference tes3mobileActor|tes3reference No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
 --- @field target tes3reference No description yet available.
 --- @field reset boolean No description yet available.
 
 --- Configures a mobile actor to escort another actor to a destination.
 --- @param params tes3.setAIEscort.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference — No description yet available.
 --- 
---- ``target``: tes3reference|tes3mobileActor — No description yet available.
+--- ``target``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer — No description yet available.
 --- 
 --- ``destination``: tes3vector3|table — No description yet available.
 --- 
@@ -1524,8 +1532,8 @@ function tes3.setAIEscort(params) end
 
 ---Table parameter definitions for ``tes3.setAIEscort``.
 --- @class tes3.setAIEscort.params
---- @field reference tes3mobileActor|tes3reference No description yet available.
---- @field target tes3reference|tes3mobileActor No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
+--- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer No description yet available.
 --- @field destination tes3vector3|table No description yet available.
 --- @field duration number No description yet available.
 --- @field cell tes3cell|string No description yet available.
@@ -1534,9 +1542,9 @@ function tes3.setAIEscort(params) end
 --- Configures a mobile actor to follow another actor to a destination.
 --- @param params tes3.setAIFollow.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference — No description yet available.
 --- 
---- ``target``: tes3reference|tes3mobileActor — No description yet available.
+--- ``target``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer — No description yet available.
 --- 
 --- ``destination``: tes3vector3|table — No description yet available.
 --- 
@@ -1549,8 +1557,8 @@ function tes3.setAIFollow(params) end
 
 ---Table parameter definitions for ``tes3.setAIFollow``.
 --- @class tes3.setAIFollow.params
---- @field reference tes3mobileActor|tes3reference No description yet available.
---- @field target tes3reference|tes3mobileActor No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
+--- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer No description yet available.
 --- @field destination tes3vector3|table No description yet available.
 --- @field duration number No description yet available.
 --- @field cell tes3cell|string No description yet available.
@@ -1559,7 +1567,7 @@ function tes3.setAIFollow(params) end
 --- Configures a mobile actor to travel to a destination.
 --- @param params tes3.setAITravel.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference — No description yet available.
 --- 
 --- ``destination``: tes3vector3|table — No description yet available.
 --- 
@@ -1568,14 +1576,14 @@ function tes3.setAITravel(params) end
 
 ---Table parameter definitions for ``tes3.setAITravel``.
 --- @class tes3.setAITravel.params
---- @field reference tes3mobileActor|tes3reference No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
 --- @field destination tes3vector3|table No description yet available.
 --- @field reset boolean No description yet available.
 
 --- Configures a mobile actor to wander around a cell.
 --- @param params tes3.setAIWander.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference — No description yet available.
 --- 
 --- ``idles``: table — No description yet available.
 --- 
@@ -1590,7 +1598,7 @@ function tes3.setAIWander(params) end
 
 ---Table parameter definitions for ``tes3.setAIWander``.
 --- @class tes3.setAIWander.params
---- @field reference tes3mobileActor|tes3reference No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference No description yet available.
 --- @field idles table No description yet available.
 --- @field range number No description yet available.
 --- @field duration number No description yet available.
@@ -1600,14 +1608,14 @@ function tes3.setAIWander(params) end
 --- This function sets a reference's animation groups' timings to a specified value.
 --- @param params tes3.setAnimationTiming.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — A reference whose animation groups' timings to set.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — A reference whose animation groups' timings to set.
 --- 
 --- ``timing``: number|table — If one parameter is provided, all animation data timings will be set to the timing provided. If a table with 3 timings is provided, animation data timings will be set accordingly.
 function tes3.setAnimationTiming(params) end
 
 ---Table parameter definitions for ``tes3.setAnimationTiming``.
 --- @class tes3.setAnimationTiming.params
---- @field reference tes3reference|tes3mobileActor|string A reference whose animation groups' timings to set.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string A reference whose animation groups' timings to set.
 --- @field timing number|table If one parameter is provided, all animation data timings will be set to the timing provided. If a table with 3 timings is provided, animation data timings will be set accordingly.
 
 --- Sets or changes the destination of a door to a new location.
@@ -1632,7 +1640,7 @@ function tes3.setDestination(params) end
 --- Enables or disables a reference.
 --- @param params tes3.setEnabled.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to enable/disable.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to enable/disable.
 --- 
 --- ``toggle``: boolean — If true, the enabled state will be toggled.
 --- 
@@ -1642,7 +1650,7 @@ function tes3.setEnabled(params) end
 
 ---Table parameter definitions for ``tes3.setEnabled``.
 --- @class tes3.setEnabled.params
---- @field reference tes3reference|tes3mobileActor|string The reference to enable/disable.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to enable/disable.
 --- @field toggle boolean If true, the enabled state will be toggled.
 --- @field enabled boolean If not toggling, will set true to enable or false to disable.
 
@@ -1653,8 +1661,8 @@ function tes3.setEnabled(params) end
 function tes3.setGlobal(id, value) end
 
 --- This function changes an item's stolen flag. Morrowind handles stealing by marking the base item (not the inventory stack) with with NPCs that you have stolen that item from. The NPC will recognize an item is stolen if they are marked as stolen on the base item.
---- @param item tes3item The item whose stolen flag to modify.
---- @param from tes3baseObject The location the item is stolen from.
+--- @param item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon The item whose stolen flag to modify.
+--- @param from tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon The location the item is stolen from.
 --- @param stolen boolean If this parameter is set to true, the item will be flagged as stolen. Otherwise, the item's stolen flag will be removed.
 function tes3.setItemIsStolen(item, from, stolen) end
 
@@ -1665,7 +1673,7 @@ function tes3.setItemIsStolen(item, from, stolen) end
 --- 
 --- ``index``: number — No description yet available.
 --- 
---- ``speaker``: tes3mobileActor|tes3reference|string — No description yet available.
+--- ``speaker``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
 --- 
 --- ``showMessage``: boolean — If set, a message may be shown to the player.
 --- @return boolean wasSet No description yet available.
@@ -1675,26 +1683,26 @@ function tes3.setJournalIndex(params) end
 --- @class tes3.setJournalIndex.params
 --- @field id tes3dialogue|string No description yet available.
 --- @field index number No description yet available.
---- @field speaker tes3mobileActor|tes3reference|string No description yet available.
+--- @field speaker tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 --- @field showMessage boolean If set, a message may be shown to the player.
 
 --- Sets player's kill count of a certain type of actor.
 --- @param params tes3.setKillCount.params This table accepts the following values:
 --- 
---- ``actor``: tes3actor|string — The actor (or their ID) for whom to set player's kill count.
+--- ``actor``: tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string — The actor (or their ID) for whom to set player's kill count.
 --- 
 --- ``count``: number — Number of kills that will be set.
 function tes3.setKillCount(params) end
 
 ---Table parameter definitions for ``tes3.setKillCount``.
 --- @class tes3.setKillCount.params
---- @field actor tes3actor|string The actor (or their ID) for whom to set player's kill count.
+--- @field actor tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string The actor (or their ID) for whom to set player's kill count.
 --- @field count number Number of kills that will be set.
 
 --- Sets a locked reference's lock level. This does not lock the object.
 --- @param params tes3.setLockLevel.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- 
 --- ``level``: number — No description yet available.
 --- @return boolean set No description yet available.
@@ -1702,7 +1710,7 @@ function tes3.setLockLevel(params) end
 
 ---Table parameter definitions for ``tes3.setLockLevel``.
 --- @class tes3.setLockLevel.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @field level number No description yet available.
 
 --- This function sets the player's mark location to the one specified.
@@ -1724,7 +1732,7 @@ function tes3.setMarkLocation(params) end
 --- This function sets the owner of a reference.
 --- @param params tes3.setOwner.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — A reference whose owner to set.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — A reference whose owner to set.
 --- 
 --- ``remove``: boolean — If this parameter is set to true, reference's owner field will be removed.
 --- 
@@ -1737,7 +1745,7 @@ function tes3.setOwner(params) end
 
 ---Table parameter definitions for ``tes3.setOwner``.
 --- @class tes3.setOwner.params
---- @field reference tes3reference|tes3mobileActor|string A reference whose owner to set.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string A reference whose owner to set.
 --- @field remove boolean If this parameter is set to true, reference's owner field will be removed.
 --- @field owner tes3npc|tes3faction|string Assigns this NPC or a faction as the owner of the reference.
 --- @field requiredGlobal tes3globalVariable If owner is set to NPC, requiredGlobal variable can be set.
@@ -1772,14 +1780,14 @@ function tes3.setPlayerControlState(params) end
 --- Sets an object (of any kind) to be sourceless, which are objects the game does not store in savegames. This can be useful for mod-created temporary objects which are not necessary to save.
 --- @param params tes3.setSourceless.params This table accepts the following values:
 --- 
---- ``object``: tes3baseObject — 
+--- ``object``: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon — 
 --- 
 --- ``sourceless``: boolean — 
 function tes3.setSourceless(params) end
 
 ---Table parameter definitions for ``tes3.setSourceless``.
 --- @class tes3.setSourceless.params
---- @field object tes3baseObject 
+--- @field object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3sound|tes3soundGenerator|tes3spell|tes3static|tes3weapon 
 --- @field sourceless boolean 
 
 --- Sets a statistic on a given actor. This should be used instead of manually setting values on the game structures, to ensure that events and GUI elements are properly handled. Either skill, attribute, or name must be provided.
@@ -1795,7 +1803,7 @@ function tes3.setSourceless(params) end
 --- 
 --- ``name``: string — A generic name of an attribute to set.
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — No description yet available.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
 --- 
 --- ``skill``: number — The skill to set.
 --- 
@@ -1809,14 +1817,14 @@ function tes3.setStatistic(params) end
 --- @field current number If set, the current value will be set.
 --- @field limit boolean If set, the attribute won't rise above 100 or fall below 0.
 --- @field name string A generic name of an attribute to set.
---- @field reference tes3mobileActor|tes3reference|string No description yet available.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 --- @field skill number The skill to set.
 --- @field value number If set, both the base and current value will be set.
 
 --- Sets the trap on a given reference.
 --- @param params tes3.setTrap.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- 
 --- ``spell``: tes3spell|string — No description yet available.
 --- @return boolean trapped No description yet available.
@@ -1824,7 +1832,7 @@ function tes3.setTrap(params) end
 
 ---Table parameter definitions for ``tes3.setTrap``.
 --- @class tes3.setTrap.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 --- @field spell tes3spell|string No description yet available.
 
 --- Toggles the camera into third person mode. Returns true if changed to vanity mode.
@@ -1896,12 +1904,12 @@ function tes3.showRestMenu(params) end
 --- Skips a given reference's animation for a single frame.
 --- @param params tes3.skipAnimationFrame.params This table accepts the following values:
 --- 
---- ``reference``: tes3mobileActor|tes3reference|string — The reference whose animation frame will be skipped.
+--- ``reference``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — The reference whose animation frame will be skipped.
 function tes3.skipAnimationFrame(params) end
 
 ---Table parameter definitions for ``tes3.skipAnimationFrame``.
 --- @class tes3.skipAnimationFrame.params
---- @field reference tes3mobileActor|tes3reference|string The reference whose animation frame will be skipped.
+--- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string The reference whose animation frame will be skipped.
 
 --- This function interrupts the current music to play the specified music track.
 --- @param params tes3.streamMusic.params This table accepts the following values:
@@ -1911,7 +1919,7 @@ function tes3.skipAnimationFrame(params) end
 --- ``situation``: number — Determines what kind of gameplay situation the music should stay active for. Explore music plays during non-combat, and ends when combat starts. Combat music starts during combat, and ends when combat ends. Uninterruptible music always plays, ending only when the track does.
 --- 
 --- ``crossfade``: number — The duration in seconds of the crossfade from the old to the new track. The default is 1.0.
---- @return any result No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.streamMusic(params) end
 
 ---Table parameter definitions for ``tes3.streamMusic``.
@@ -1962,11 +1970,11 @@ function tes3.togglePOV() end
 --- Moves one or more items from one reference to another. Returns the actual amount of items successfully transferred.
 --- @param params tes3.transferItem.params This table accepts the following values:
 --- 
---- ``from``: tes3reference|tes3mobileActor|string — Who to take items from.
+--- ``from``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — Who to take items from.
 --- 
---- ``to``: tes3reference|tes3mobileActor|string — Who to give items to.
+--- ``to``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — Who to give items to.
 --- 
---- ``item``: tes3item|string — The item to transfer.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to transfer.
 --- 
 --- ``itemData``: tes3itemData — The specific item data to transfer if, for example, you want to transfer a specific player item.
 --- 
@@ -1977,14 +1985,14 @@ function tes3.togglePOV() end
 --- ``limitCapacity``: boolean — If false, items can be placed into containers that shouldn't normally be allowed. This includes organic containers, and containers that are full.
 --- 
 --- ``updateGUI``: boolean — If false, the function won't manually resync the player's GUI state. This can result in some optimizations, though `tes3ui.forcePlayerInventoryUpdate()` must manually be called after all inventory updates are finished.
---- @return any result No description yet available.
+--- @return number transferredCount No description yet available.
 function tes3.transferItem(params) end
 
 ---Table parameter definitions for ``tes3.transferItem``.
 --- @class tes3.transferItem.params
---- @field from tes3reference|tes3mobileActor|string Who to take items from.
---- @field to tes3reference|tes3mobileActor|string Who to give items to.
---- @field item tes3item|string The item to transfer.
+--- @field from tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to take items from.
+--- @field to tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to give items to.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to transfer.
 --- @field itemData tes3itemData The specific item data to transfer if, for example, you want to transfer a specific player item.
 --- @field count number The maximum number of items to transfer.
 --- @field playSound boolean If false, the up/down sound for the item won't be played.
@@ -1994,7 +2002,7 @@ function tes3.transferItem(params) end
 --- Emulates the player committing a crime.
 --- @param params tes3.triggerCrime.params This table accepts the following values:
 --- 
---- ``criminal``: tes3mobileActor|tes3reference|string — No description yet available.
+--- ``criminal``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
 --- 
 --- ``forceDetection``: boolean — Can be set to true to ignore normal detection checks.
 --- 
@@ -2002,17 +2010,17 @@ function tes3.transferItem(params) end
 --- 
 --- ``value``: number — Penalty for the crime. Defaults to 25 for pickpocketing.
 --- 
---- ``victim``: tes3mobileActor|tes3reference|string — No description yet available.
---- @return any result No description yet available.
+--- ``victim``: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
+--- @return boolean executed No description yet available.
 function tes3.triggerCrime(params) end
 
 ---Table parameter definitions for ``tes3.triggerCrime``.
 --- @class tes3.triggerCrime.params
---- @field criminal tes3mobileActor|tes3reference|string No description yet available.
+--- @field criminal tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 --- @field forceDetection boolean Can be set to true to ignore normal detection checks.
 --- @field type number Maps to tes3.crimeType constants.
 --- @field value number Penalty for the crime. Defaults to 25 for pickpocketing.
---- @field victim tes3mobileActor|tes3reference|string No description yet available.
+--- @field victim tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 
 --- Changes a reference back from werewolf form to human. This function works only on a reference infected with Lycanthropy, be it the player or any other reference. Returns true if successful.
 --- @param params tes3.undoTransform.params This table accepts the following values:
@@ -2032,23 +2040,23 @@ function tes3.unhammerKey(keyCode) end
 --- Unlocks an object. Returns true if the object can be and wasn't already unlocked.
 --- @param params tes3.unlock.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — No description yet available.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
 --- @return boolean unlocked No description yet available.
 function tes3.unlock(params) end
 
 ---Table parameter definitions for ``tes3.unlock``.
 --- @class tes3.unlock.params
---- @field reference tes3reference|tes3mobileActor|string No description yet available.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Forces the GUI to update inventory-relevant elements for a given reference. This can be used after many calls to inventory-manipulating functions while passing updateGUI as false to resync inventory tiles, container weights, and companion data.
 --- @param params tes3.updateInventoryGUI.params This table accepts the following values:
 --- 
---- ``reference``: tes3reference|tes3mobileActor|string — The reference to update GUI elements for.
+--- ``reference``: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — The reference to update GUI elements for.
 function tes3.updateInventoryGUI(params) end
 
 ---Table parameter definitions for ``tes3.updateInventoryGUI``.
 --- @class tes3.updateInventoryGUI.params
---- @field reference tes3reference|tes3mobileActor|string The reference to update GUI elements for.
+--- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to update GUI elements for.
 
 --- Updates the journal index in a way similar to the mwscript function Journal.
 --- @param params tes3.updateJournal.params This table accepts the following values:

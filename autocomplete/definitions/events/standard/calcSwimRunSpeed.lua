@@ -1,5 +1,6 @@
 return {
 	description = "One of the movement events, calcSwimRunSpeed is used when calculating the movement speed while in water when running.",
+	related = { "calcMoveSpeed", "calcWalkSpeed", "calcRunSpeed", "calcFlySpeed", "calcSwimSpeed", "calcSwimRunSpeed" },
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",

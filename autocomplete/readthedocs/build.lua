@@ -234,6 +234,21 @@ local function buildEvent(folder, key)
 		file:write("No description is currently available for this event." .. "\n\n")
 	end
 
+	-- Print and link related events.
+	package.links = package.links or {}
+	if (package.related) then
+		local prefix = "Related events: "
+		for _, k in ipairs(package.related) do
+			-- Avoid self-reference link, so that link groups can be copy-pasted.
+			if (k ~= key) then
+				package.links[k] = string.format("lua/event/%s", k)
+				file:write(string.format("%s`%s`_", prefix, k))
+				prefix = ", "
+			end
+		end
+		file:write("\n\n")
+	end
+	
 	-- Write out event data.
 	if (package.eventData) then
 		file:write("Event Data\n" .. rstHeaders[2] .. "\n\n")

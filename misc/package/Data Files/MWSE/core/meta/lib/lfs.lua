@@ -29,12 +29,12 @@ function lfs.dir(path) end
 
 --- Simple check to determine if a directory exists.
 --- @param path string The path to determine existance of.
---- @return any result No description yet available.
+--- @return boolean success true if the directory exists.
 function lfs.directoryexists(path) end
 
 --- Simple check to determine if a file exists.
 --- @param path string The path to determine existance of.
---- @return any result No description yet available.
+--- @return boolean success true if the file exists.
 function lfs.fileexists(path) end
 
 --- Creates a link. This is a hard link by default.

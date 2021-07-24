@@ -1,5 +1,6 @@
 return {
 	description = "One of the movement events, calcWalkSpeed is used when calculating the base walk speed.",
+	related = { "calcMoveSpeed", "calcWalkSpeed", "calcRunSpeed", "calcFlySpeed", "calcSwimSpeed", "calcSwimRunSpeed" },
 	eventData = {
 		["mobile"] = {
 			type = "tes3mobileActor",

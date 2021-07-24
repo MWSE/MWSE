@@ -6,6 +6,9 @@ A game structure that keeps track of a magic source on an object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `castChanceOverride`_ (`number`_)
     No description available.
 
@@ -13,13 +16,13 @@ Properties
     Read-only. No description available.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `item`_ (`tes3item`_)
     Read-only. No description available.
@@ -37,10 +40,13 @@ Properties
     The modification state of the object since the last save.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `projectile`_ (`tes3mobileProjectile`_)
     Read-only. No description available.
@@ -49,10 +55,13 @@ Properties
     Read-only. No description available.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
 
 `sourceType`_ (`number`_)
     Read-only. Shows if the source is a spell, enchantment, or alchemy.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `state`_ (`number`_)
     Shows if the state is pre-cast, cast, beginning, working, ending, retired, etc.
@@ -69,6 +78,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3magicSourceInstance/blocked
     tes3magicSourceInstance/castChanceOverride
     tes3magicSourceInstance/caster
     tes3magicSourceInstance/deleted
@@ -81,15 +91,18 @@ Properties
     tes3magicSourceInstance/modified
     tes3magicSourceInstance/objectFlags
     tes3magicSourceInstance/objectType
+    tes3magicSourceInstance/persistent
     tes3magicSourceInstance/projectile
     tes3magicSourceInstance/source
     tes3magicSourceInstance/sourceMod
     tes3magicSourceInstance/sourceType
+    tes3magicSourceInstance/sourceless
     tes3magicSourceInstance/state
     tes3magicSourceInstance/supportsLuaData
     tes3magicSourceInstance/target
     tes3magicSourceInstance/timestampCastBegin
 
+.. _`blocked`: tes3magicSourceInstance/blocked.html
 .. _`castChanceOverride`: tes3magicSourceInstance/castChanceOverride.html
 .. _`caster`: tes3magicSourceInstance/caster.html
 .. _`deleted`: tes3magicSourceInstance/deleted.html
@@ -102,10 +115,12 @@ Properties
 .. _`modified`: tes3magicSourceInstance/modified.html
 .. _`objectFlags`: tes3magicSourceInstance/objectFlags.html
 .. _`objectType`: tes3magicSourceInstance/objectType.html
+.. _`persistent`: tes3magicSourceInstance/persistent.html
 .. _`projectile`: tes3magicSourceInstance/projectile.html
 .. _`source`: tes3magicSourceInstance/source.html
 .. _`sourceMod`: tes3magicSourceInstance/sourceMod.html
 .. _`sourceType`: tes3magicSourceInstance/sourceType.html
+.. _`sourceless`: tes3magicSourceInstance/sourceless.html
 .. _`state`: tes3magicSourceInstance/state.html
 .. _`supportsLuaData`: tes3magicSourceInstance/supportsLuaData.html
 .. _`target`: tes3magicSourceInstance/target.html
@@ -113,6 +128,9 @@ Properties
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `getEffectInstance`_ (`tes3magicEffectInstance`_)
     Gets the magic effect instance for a given effect index and target reference. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
@@ -123,9 +141,11 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3magicSourceInstance/__tojson
     tes3magicSourceInstance/getEffectInstance
     tes3magicSourceInstance/getMagnitudeForIndex
 
+.. _`__tojson`: tes3magicSourceInstance/__tojson.html
 .. _`getEffectInstance`: tes3magicSourceInstance/getEffectInstance.html
 .. _`getMagnitudeForIndex`: tes3magicSourceInstance/getMagnitudeForIndex.html
 

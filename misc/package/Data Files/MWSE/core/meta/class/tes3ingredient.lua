@@ -1,7 +1,7 @@
 --- @meta
 
 --- An ingredient game object.
---- @class tes3ingredient : tes3physicalObject, tes3object, tes3baseObject
+--- @class tes3ingredient : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field effectAttributeIds table An array-style table access the attributes associated with the effects.
 --- @field effects table An array-style table access to the four ingredient effects. Unlike alchemy or enchanting objects, these are simple numbers representing the effect ID.
 --- @field effectsSkillIds table An array-style table access the skills associated with the effects.

@@ -40,6 +40,17 @@ Whenever you register your function for an event, it is executed every time the 
 
 Different filters can be applied to different events. Please refer to the documentation for the event that you want to filter for more information.
 
+Priority
+--------------------------------------------------------
+The order in which functions registered for the same event are executed can be controlled by providing 'priority' argument.  
+
+.. code-block:: lua
+   :linenos:
+
+    event.register("activate", OnActivateObject, { priority = -111 });
+    
+Functions registered with higher priority will run first. Priority defaults to 0 if the argument is not provided.
+
 Conclusion
 --------------------------------------------------------
 This guide introduced Event Based Programming and explained some aspects of it in relation to MWSE. This guide also explained how to use event filtering when registering events in MWSE.

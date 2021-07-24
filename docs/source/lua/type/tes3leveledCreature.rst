@@ -6,6 +6,9 @@ A leveled creature game object.
 Properties
 ----------------------------------------------------------------------------------------------------
 
+`blocked`_ (`boolean`_)
+    The blocked state of the object.
+
 `boundingBox`_ (`tes3boundingBox`_)
     The bounding box for the object.
 
@@ -13,22 +16,22 @@ Properties
     If true, the leveled list is picked from the entire level range, instead of just the highest.
 
 `chanceForNothing`_ (`number`_)
-    Read-only. The percent chance, from 0 to 100, for no object to be chosen.
+    The percent chance, from 0 to 100, for no object to be chosen.
 
 `count`_ (`number`_)
     Read-only. The number of possible options in the leveled object container.
 
 `deleted`_ (`boolean`_)
-    The deleted state of the object.
+    Read-only. The deleted state of the object.
 
 `disabled`_ (`boolean`_)
-    The disabled state of the object.
+    Read-only. The disabled state of the object.
 
 `flags`_ (`number`_)
-    Read-only. A numerical representation of bit flags for the object.
+    A numerical representation of bit flags for the object.
 
 `id`_ (`string`_)
-    The unique identifier for the object.
+    Read-only. The unique identifier for the object.
 
 `list`_ (`tes3iterator`_)
     Read-only. The collection that itself, containing tes3leveledListNodes.
@@ -40,13 +43,16 @@ Properties
     The next object in parent collection's list.
 
 `objectFlags`_ (`number`_)
-    The raw flags of the object.
+    Read-only. The raw flags of the object.
 
 `objectType`_ (`number`_)
-    The type of object. Maps to values in tes3.objectType.
+    Read-only. The type of object. Maps to values in tes3.objectType.
 
 `owningCollection`_ (`tes3referenceList`_)
     The collection responsible for holding this object.
+
+`persistent`_ (`boolean`_)
+    The persistent flag of the object.
 
 `previousInCollection`_ (`tes3object`_)
     The previous object in parent collection's list.
@@ -61,7 +67,10 @@ Properties
     The scene graph reference node for this object.
 
 `sourceMod`_ (`string`_)
-    The filename of the mod that owns this object.
+    Read-only. The filename of the mod that owns this object.
+
+`sourceless`_ (`boolean`_)
+    The soruceless flag of the object.
 
 `stolenList`_ (`tes3iterator`_)
     A list of actors that the object has been stolen from.
@@ -72,6 +81,7 @@ Properties
 .. toctree::
     :hidden:
 
+    tes3leveledCreature/blocked
     tes3leveledCreature/boundingBox
     tes3leveledCreature/calculateFromAllLevels
     tes3leveledCreature/chanceForNothing
@@ -86,14 +96,17 @@ Properties
     tes3leveledCreature/objectFlags
     tes3leveledCreature/objectType
     tes3leveledCreature/owningCollection
+    tes3leveledCreature/persistent
     tes3leveledCreature/previousInCollection
     tes3leveledCreature/scale
     tes3leveledCreature/sceneNode
     tes3leveledCreature/sceneReference
     tes3leveledCreature/sourceMod
+    tes3leveledCreature/sourceless
     tes3leveledCreature/stolenList
     tes3leveledCreature/supportsLuaData
 
+.. _`blocked`: tes3leveledCreature/blocked.html
 .. _`boundingBox`: tes3leveledCreature/boundingBox.html
 .. _`calculateFromAllLevels`: tes3leveledCreature/calculateFromAllLevels.html
 .. _`chanceForNothing`: tes3leveledCreature/chanceForNothing.html
@@ -108,16 +121,21 @@ Properties
 .. _`objectFlags`: tes3leveledCreature/objectFlags.html
 .. _`objectType`: tes3leveledCreature/objectType.html
 .. _`owningCollection`: tes3leveledCreature/owningCollection.html
+.. _`persistent`: tes3leveledCreature/persistent.html
 .. _`previousInCollection`: tes3leveledCreature/previousInCollection.html
 .. _`scale`: tes3leveledCreature/scale.html
 .. _`sceneNode`: tes3leveledCreature/sceneNode.html
 .. _`sceneReference`: tes3leveledCreature/sceneReference.html
 .. _`sourceMod`: tes3leveledCreature/sourceMod.html
+.. _`sourceless`: tes3leveledCreature/sourceless.html
 .. _`stolenList`: tes3leveledCreature/stolenList.html
 .. _`supportsLuaData`: tes3leveledCreature/supportsLuaData.html
 
 Methods
 ----------------------------------------------------------------------------------------------------
+
+`__tojson`_ (`string`_)
+    Serializes the object to json.
 
 `pickFrom`_ (`tes3creature`_)
     Chooses a random item from the list, based on the player's level.
@@ -125,8 +143,10 @@ Methods
 .. toctree::
     :hidden:
 
+    tes3leveledCreature/__tojson
     tes3leveledCreature/pickFrom
 
+.. _`__tojson`: tes3leveledCreature/__tojson.html
 .. _`pickFrom`: tes3leveledCreature/pickFrom.html
 
 .. _`boolean`: ../../lua/type/boolean.html

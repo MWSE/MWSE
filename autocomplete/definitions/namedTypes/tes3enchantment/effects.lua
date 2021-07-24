@@ -15,5 +15,5 @@ return {
 		{ name = "min", type = "number", description = "The minimum magnitude of the effect." },
 		{ name = "max", type = "number", description = "The maximum magnitude of the effect." },
 	},
-	]]
+  ]]
 }

@@ -46,7 +46,7 @@ tes3mobileNPC = {}
 --- Equips an item, optionally adding the item if needed. If the best match is already equipped, it does not perform an unequip-equip cycle, but does return true.
 --- @param params tes3mobileNPC.equip.params This table accepts the following values:
 --- 
---- ``item``: tes3item|string — The item to equip.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to equip.
 --- 
 --- ``itemData``: tes3itemData — The item data of the specific item to equip.
 --- 
@@ -60,7 +60,7 @@ function tes3mobileNPC:equip(params) end
 
 ---Table parameter definitions for ``tes3mobileNPC.equip``.
 --- @class tes3mobileNPC.equip.params
---- @field item tes3item|string The item to equip.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to equip.
 --- @field itemData tes3itemData The item data of the specific item to equip.
 --- @field addItem boolean If true, the item will be added to the actor's inventory if needed.
 --- @field selectBestCondition boolean If true, the item in the inventory with the best condition and best charge will be selected.
@@ -69,7 +69,7 @@ function tes3mobileNPC:equip(params) end
 --- Unequips one or more items from the actor.
 --- @param params tes3mobileNPC.unequip.params This table accepts the following values:
 --- 
---- ``item``: tes3item|string — The item to unequip.
+--- ``item``: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string — The item to unequip.
 --- 
 --- ``type``: number — The item type to unequip. Only used if no other parameter is provided.
 --- 
@@ -81,7 +81,7 @@ function tes3mobileNPC:unequip(params) end
 
 ---Table parameter definitions for ``tes3mobileNPC.unequip``.
 --- @class tes3mobileNPC.unequip.params
---- @field item tes3item|string The item to unequip.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3weapon|string The item to unequip.
 --- @field type number The item type to unequip. Only used if no other parameter is provided.
 --- @field armorSlot number The armor slot to unequip.
 --- @field clothingSlot number The clothing slot to unequip.

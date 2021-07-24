@@ -16,7 +16,7 @@
 --- @field hasWater boolean If true, the cell has water. Only applies to interior cells.
 --- @field isInterior boolean If true, the cell is an interior.
 --- @field name string The name and id of the cell. See also displayName and editorName.
---- @field pickObjectsRoot niNode The scenegraph node containing player-interactable objects from this cell.
+--- @field pickObjectsRoot niCollisionSwitch|niNode|niSwitchNode The scenegraph node containing player-interactable objects from this cell.
 --- @field region tes3region The region associated with the cell. Only available on exterior cells, or interior cells that behave as exterior cells.
 --- @field restingIsIllegal boolean If true, the player may not rest in the cell.
 --- @field staticObjectsRoot tes3region The scenegraph node containing static non-player-interactable objects from this cell.

@@ -20,7 +20,7 @@ function niColor:copy() end
 --- Calculates the interpolated color between this color and another, given a transition.
 --- @param tocolor niColor The color to interpolate towards.
 --- @param transition number The interpolation value. Must be between 0.0 (closer to this color) and 1.0 (closer to the other color).
---- @return any result No description yet available.
+--- @return niColor lerpedcolor The calculated value.
 function niColor:lerp(tocolor, transition) end
 
 --- Creates a vector3 of the color object.

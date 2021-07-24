@@ -5,7 +5,7 @@
 --- @field name string The region's name. Must be a string less than 32 characters.
 --- @field sleepCreature tes3leveledCreature The region's leveled creature that can be spawned while the player is sleeping.
 --- @field sounds table Array-style table for the different region sounds. Each object in the table is a tes3regionSound.
---- @field weather tes3weather The region's current weather.
+--- @field weather tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder The region's current weather.
 --- @field weatherChanceAsh number The chance the Ash weather-type will be used. Must be an integer between 0 - 100.
 --- @field weatherChanceBlight number The chance the Blight weather-type will be used. Must be an integer between 0 - 100.
 --- @field weatherChanceBlizzard number The chance the Blizzard weather-type will be used. Must be an integer between 0 - 100.
