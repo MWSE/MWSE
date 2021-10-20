@@ -15,6 +15,8 @@
     <ClInclude Include="BitUtil.h" />
     <ClInclude Include="BSAnimationManager.h" />
     <ClInclude Include="LuaEquipmentReevaluatedEvent.h" />
+    <ClInclude Include="NIQuaternion.h" />
+    <ClInclude Include="NIQuaternionLua.h" />
     <ClInclude Include="NIScreenPolygon.h" />
     <ClInclude Include="TES3AnimationDataLua.h" />
     <ClInclude Include="TES3CutscenePlayer.h" />
@@ -642,6 +644,8 @@
     <ClCompile Include="NIParticlesLua.cpp" />
     <ClCompile Include="NIParticleSystemController.cpp" />
     <ClCompile Include="NIProperty.cpp" />
+    <ClCompile Include="NIQuaternion.cpp" />
+    <ClCompile Include="NIQuaternionLua.cpp" />
     <ClCompile Include="NIRenderedTexture.cpp" />
     <ClCompile Include="NIRenderer.cpp" />
     <ClCompile Include="NISkinInstance.cpp" />

@@ -82,6 +82,20 @@ tes3matrix33:fromEulerZYX(z, y, x)
 
 ***
 
+### `fromQuaternion`
+
+Fill the matrix by converting a quaternion.
+
+```lua
+tes3matrix33:fromQuaternion(quaternion)
+```
+
+**Parameters**:
+
+* `quaternion` ([niQuaternion](../../types/niQuaternion))
+
+***
+
 ### `invert`
 
 Inverts the matrix.
@@ -148,6 +162,20 @@ Converts the matrix to the identity matrix's values.
 ```lua
 tes3matrix33:toIdentity()
 ```
+
+***
+
+### `toQuaternion`
+
+Convert the matrix into a quaternion.
+
+```lua
+local result = tes3matrix33:toQuaternion()
+```
+
+**Returns**:
+
+* `result` ([niQuaternion](../../types/niQuaternion))
 
 ***
 

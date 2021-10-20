@@ -1,6 +1,7 @@
 #include "TES3Vectors.h"
 
 #include "NIColor.h"
+#include "NIQuaternion.h"
 
 namespace TES3 {
 	constexpr double MATH_PI = 3.14159265358979323846;
@@ -373,6 +374,8 @@ namespace TES3 {
 
 	const auto TES3_Matrix33_reorthogonalize = reinterpret_cast<bool(__thiscall*)(Matrix33*)> (0x6E84A0);
 
+	const auto NI_Quaternion_FromRotation = reinterpret_cast<TES3::Matrix33 * (__thiscall*)(const NI::Quaternion*, TES3::Matrix33*)>(0x6FBEF0);
+
 	Matrix33::Matrix33() : m0(), m1(), m2() {
 
 	}
@@ -572,6 +575,16 @@ namespace TES3 {
 		float x, y, z = 0.0f;
 		bool isUnique = toEulerZYX(&x, &y, &z);
 		return std::make_tuple(Vector3(x, y, z), isUnique);
+	}
+
+	void Matrix33::fromQuaternion(const NI::Quaternion* q) {
+		NI_Quaternion_FromRotation(q, this);
+	}
+
+	NI::Quaternion Matrix33::toQuaternion() {
+		NI::Quaternion result;
+		result.fromRotation(this);
+		return result;
 	}
 
 	//

@@ -172,6 +172,9 @@ namespace TES3 {
 		bool toEulerZYX(float* x, float* y, float* z) const;
 		std::tuple<Vector3, bool> toEulerZYX_lua() const;
 
+		void fromQuaternion(const NI::Quaternion* q);
+		NI::Quaternion toQuaternion();
+
 		bool reorthogonalize();
 
 	};

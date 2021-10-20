@@ -43,6 +43,7 @@ namespace NI {
 	struct PlanarCollider;
 	struct PointLight;
 	struct Property;
+	struct Quaternion;
 	struct RenderedTexture;
 	struct Renderer;
 	struct RotatingParticles;

@@ -159,6 +159,7 @@
 #include "NIPickLua.h"
 #include "NIPixelDataLua.h"
 #include "NIPropertyLua.h"
+#include "NIQuaternionLua.h"
 #include "NISkinInstanceLua.h"
 #include "NISourceTextureLua.h"
 #include "NISwitchNodeLua.h"
@@ -515,6 +516,7 @@ namespace mwse::lua {
 		bindNIPick();
 		bindNIPixelData();
 		bindNIProperties();
+		bindNIQuaternion();
 		bindNISkinInstance();
 		bindNISourceTexture();
 		bindNISwitchNode();

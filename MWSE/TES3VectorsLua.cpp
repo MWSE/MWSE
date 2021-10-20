@@ -5,6 +5,7 @@
 #include "TES3Vectors.h"
 
 #include "NIColor.h"
+#include "NIQuaternion.h"
 
 namespace mwse::lua {
 	void bindTES3Vectors() {
@@ -179,6 +180,7 @@ namespace mwse::lua {
 			// Basic function binding.
 			usertypeDefinition["copy"] = &TES3::Matrix33::copy;
 			usertypeDefinition["fromEulerXYZ"] = &TES3::Matrix33::fromEulerXYZ;
+			usertypeDefinition["fromQuaternion"] = &TES3::Matrix33::fromQuaternion;
 			usertypeDefinition["reorthogonalize"] = &TES3::Matrix33::reorthogonalize;
 			usertypeDefinition["toIdentity"] = &TES3::Matrix33::toIdentity;
 			usertypeDefinition["toRotation"] = &TES3::Matrix33::toRotation;
@@ -192,6 +194,7 @@ namespace mwse::lua {
 			usertypeDefinition["invert"] = &TES3::Matrix33::invert_lua;
 			usertypeDefinition["toEulerXYZ"] = &TES3::Matrix33::toEulerXYZ_lua;
 			usertypeDefinition["toEulerZYX"] = &TES3::Matrix33::toEulerZYX_lua;
+			usertypeDefinition["toQuaternion"] = &TES3::Matrix33::toQuaternion;
 		}
 
 		// Binding for TES3::Matrix44.
