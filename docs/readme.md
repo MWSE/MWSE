@@ -12,6 +12,12 @@ The docs for this project are created for [GitHub Pages](https://pages.github.co
 
 Some portions of the docs, include Lua type information, events, and APIs, are auto-generated using the content in the autocomplete root folder. Edit these definitions instead, and run the configured vscode build task in the autocomplete folder to regenerate the needed files.
 
+There are three basic types of definitions:
+- [event definitions](https://github.com/MWSE/MWSE/tree/master/docs/event-definitions-guide.md)
+- [type definitions](https://github.com/MWSE/MWSE/tree/master/docs/type-definitions-guide.md)
+- [function definitions](https://github.com/MWSE/MWSE/tree/master/docs/function-definitions-guide.md)
+
+Clicking on the links above will take you to a guide for writing mentioned definitions.
 
 ## Building
 
@@ -26,6 +32,8 @@ pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin
 Another build task is available in vscode to live test the docs locally.
 
 ## Developing Tips
+
+When writing the examples, always use `tes3.*` constants when available. Also, consider suggesting when a certain function accepts values from `tes3.*` namespace.
 
 ### Admonitions
 
