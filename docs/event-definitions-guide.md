@@ -3,7 +3,7 @@
 Event definitions are formatted as regular Lua tables. The available fields are:
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| type  | `string` | This should always be `"event"` for event definitions. |
+| type  | `string` |  This flag is used when generating syntax highlighting files. This should always be `"event"` for event definitions. |
 | description | `string` | The description for the event. |
 | eventData | `table` | A table describing the data made available by the event. |
 | filter | `string` | This allow specifying by which of the eventData parameters the event can be filtered. The name of the parameter should be enclosed in `""`. |
@@ -14,7 +14,7 @@ Event definitions are formatted as regular Lua tables. The available fields are:
 eventData table entries can have the following fields:
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| type  | `string` | This allows to specify the type of the value in evenData. You can put string names for basic Lua types: `number`, `boolean` and `string`, or objects exposed by MWSE, such as `tes3reference`. If the value can be of two or more types, then you should pass all the types split by `|`. For example, `tes3mobileCreature|tes3mobileNPC|nil`. |
+| type  | `string` | This allows to specify the type of the value in `evenData`. You can put string names for basic Lua types: `number`, `boolean` and `string`, or objects exposed by MWSE, such as `tes3reference`. If the value can be of two or more types, then you should pass all the types split by `|`. For example, `tes3mobileCreature|tes3mobileNPC|nil`. |
 | readOnly | `boolean` | This will mark the value as read-only. |
 | description | `string` | The description for the value. You can pass a string with `""` or `[[]]`. |
 

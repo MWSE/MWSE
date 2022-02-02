@@ -8,7 +8,7 @@ Function definitions can be found in autocomplete\definitions\global. Some funct
 Each library definition is just a regular Lua table. The following fields are available:
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| type  | `string` | The type should always be `"lib"` for library definitions. |
+| type  | `string` |  This flag is used when generating syntax highlighting files. The type should always be `"lib"` for library definitions. |
 | deprecated | `boolean` | Passing `true` here will mark all the functions and values exposed by the library as deprecated in a IDE and the documentation page. |
 | description | `string` | The description for the library. You can pass a string with `""` or `[[]]`. |
 | link | `string` | If present, the generated autocomplete files will allow the IDEs to provide the link to the documentation for that library. |
@@ -31,7 +31,7 @@ All the function definitions of a certain library are found in the folder of the
 Each function definition is just a regular Lua table. The following fields are available:
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| type  | `string` | The type should always be `"function"` for function definitions. |
+| type  | `string` |  This flag is used when generating syntax highlighting files. The type should always be `"function"` for function definitions. |
 | description | `string` | The description for the function. You can pass a string with `""` or `[[]]`. |
 | arguments | `table` | The arguments the function accepts. |
 | examples | `table` | A table with entries that are the names of the files included as examples. Each entry is a table itself with on available field, `title`. The title will be shown as the title of the example on the documentation page. |
