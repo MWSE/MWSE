@@ -33,7 +33,11 @@ Another build task is available in vscode to live test the docs locally.
 
 ## Developing Tips
 
-When writing the examples, always use `tes3.*` constants when available. Also, consider suggesting when a certain function accepts values from `tes3.*` namespace.
+When writing the examples, always use `tes3.*` constants when available. Also, consider suggesting when a certain function accepts values from `tes3.*` namespace. Note that some older areas of the documentation might not follow the conventions established in the guides above. Those can be updated if editing the affected definitions.
+
+Some parts of the documentation are written by hand. Namely, those in:
+- docs\source\references
+- docs\source\guides
 
 ### Admonitions
 
