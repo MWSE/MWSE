@@ -22,6 +22,7 @@ eventData table entries can have the following fields:
 An example of a event definition is the `activate` event definition file found in autocomplete\definitions\events\standard:
 
 ```Lua
+-- autocomplete\definitions\events\standard\activate.lua
 return {
 	type = "event",
 	description = [[This event is invoked whenever something is activated, typically by the player. Activation is usually done with the associated activate/use key, but may also be forced by scripts.

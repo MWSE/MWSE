@@ -16,6 +16,7 @@ Each library definition is just a regular Lua table. The following fields are av
 For example, the table library definition looks like this:
 
 ```Lua
+-- autocomplete\definitions\global\table.lua
 return {
 	type = "lib",
 	description = "This library provides generic functions for table manipulation. It provides all its functions inside the table table.",
@@ -35,7 +36,7 @@ Each function definition is just a regular Lua table. The following fields are a
 | description | `string` | The description for the function. You can pass a string with `""` or `[[]]`. |
 | arguments | `table` | The arguments the function accepts. |
 | examples | `table` | A table with entries that are the names of the files included as examples. Each entry is a table itself with on available field, `title`. The title will be shown as the title of the example on the documentation page. |
-| returns | `table` | The return table. |
+| returns | `table` | The table with return values. |
 
 `returns` table has entries which are nested tables for each of the returned values, with the following fields:
 | Field | Type | Description |
@@ -46,6 +47,7 @@ Each function definition is just a regular Lua table. The following fields are a
 
 An example of a function with multiple return values is `tes3.checkMerchantOffersService()`. Its definition looks like this:
 ```Lua
+-- autocomplete\definitions\global\tes3\checkMerchantOffersService.lua
 return {
 	type = "function",
 	description = [[Checks if a merchant will offer a service to you, including dialogue checks like disposition and faction membership. A specific service can be checked, or if no service is given, a generic dialogue check is made. If the service is refused, the dialogue reply for the refusal may also be returned (it may be nil, as there may not always be a reply available).]],
@@ -71,6 +73,7 @@ Some functions accept multiple arguments. In that case the arguments table shoul
 An example of such function is `tes3.claimSpellEffectId()`. This is the definition for that function:
 
 ```Lua
+-- autocomplete\definitions\global\tes3\claimSpellEffectId.lua
 return {
 	type = "function",
 	description = [[This function is used to claim a unique spell effect name and id. This is needed before actually creating a new effect by calling `tes3.addMagicEffect()`. A claimed effect id is then available as: `tes3.effect.effectName` (just like any other spell effect). For examples of this function in practice see [`tes3.addMagicEffect()`](https://mwse.github.io/MWSE/apis/tes3/#tes3addmagiceffect) example.]],
@@ -84,6 +87,7 @@ return {
 Some other functions accept a table called `params`. In that case you can follow this convention (the function definition for `tes3.addItem()`):
 
 ```Lua
+-- autocomplete\definitions\global\tes3\addItem.lua
 return {
 	type = "function",
 	description = [[Adds an item to a given reference's inventory or mobile's inventory.]],
