@@ -35,9 +35,29 @@ Quick access to the base NPC's attributes.
 
 ***
 
+### `autoCalc`
+
+Direct access to the actor autocalc flag.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `barterGold`
 
 Friendly access to actor's barter gold amount.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `baseDisposition`
+
+The actor's base disposition.
 
 **Returns**:
 
@@ -157,7 +177,7 @@ The bounding box for the object.
 
 ### `factionIndex`
 
-No description yet available.
+Deprecated. Use `reputation` instead.
 
 **Returns**:
 
@@ -172,6 +192,16 @@ No description yet available.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `female`
+
+Direct access to the actor female flag.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -235,6 +265,16 @@ No description yet available.
 
 ***
 
+### `isGuard`
+
+*Read-only*. If true, the actor is a guard.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isInstance`
 
 Always returns true.
@@ -282,6 +322,16 @@ True if this object is an editor marker for a gameplay location. These include t
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `mesh`
+
+The path to the object's mesh.
+
+**Returns**:
+
+* `result` (string)
 
 ***
 
@@ -392,6 +442,16 @@ The previous object in parent collection's list.
 **Returns**:
 
 * `result` ([tes3reference](../../types/tes3reference))
+
+***
+
+### `reputation`
+
+The actor's reputation.
+
+**Returns**:
+
+* `result` (number)
 
 ***
 

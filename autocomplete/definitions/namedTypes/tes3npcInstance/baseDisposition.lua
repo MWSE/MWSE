@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The actor's reputation.]],
+	description = [[The actor's base disposition.]],
 	valuetype = "number",
 }

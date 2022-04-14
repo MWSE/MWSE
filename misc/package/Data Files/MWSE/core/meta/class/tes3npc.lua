@@ -9,7 +9,7 @@
 --- @field baseDisposition number The actor's base disposition.
 --- @field class tes3class *Read-only*. The class that the NPC uses.
 --- @field faction tes3faction *Read-only*. The class that the NPC is joined to.
---- @field factionIndex number No description yet available.
+--- @field factionIndex number Deprecated. Use `reputation` instead.
 --- @field factionRank number The NPC's rank in their faction.
 --- @field fatigue number The actor's max fatigue.
 --- @field female boolean Direct access to the actor female flag.
@@ -26,7 +26,7 @@
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field race tes3race *Read-only*. The race that the NPC uses.
---- @field reputation number The actor's base reputation.
+--- @field reputation number The actor's reputation.
 --- @field script tes3script The script that runs on the object.
 --- @field skills table A table of twenty seven numbers, representing the base values for the NPC's skills.
 --- @field soul number|nil The soul value for this NPC. This is typically `nil`, unless the `calcSouLValue` event provides one for this actor.

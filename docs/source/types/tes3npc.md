@@ -157,7 +157,7 @@ The bounding box for the object.
 
 ### `factionIndex`
 
-No description yet available.
+Deprecated. Use `reputation` instead.
 
 **Returns**:
 
@@ -427,7 +427,7 @@ The previous object in parent collection's list.
 
 ### `reputation`
 
-The actor's base reputation.
+The actor's reputation.
 
 **Returns**:
 
