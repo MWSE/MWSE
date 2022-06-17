@@ -14,3 +14,7 @@ function debug.clearLogCacheForFile(file) end
 --- @return string value No description yet available.
 function debug.log(value) end
 
+--- Prints node name tree structure of passed `niNode` object.
+--- @param root niNode The root node to traverse and print the tree for.
+function debug.printNodeTree(root)
+
