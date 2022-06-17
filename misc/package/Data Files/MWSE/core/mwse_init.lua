@@ -674,6 +674,22 @@ function debug.log(value)
 	return value
 end
 
+function debug.printNodeTree(root)
+	local function walk(node, level)
+		if node then
+			print(string.format("%s- %s", string.rep("\t", level), node.name))
+			if node.children then
+				for _, child in ipairs(node.children) do
+					if child then
+						walk(child, level + 1)
+					end
+				end
+			end
+		end
+	end
+	walk(root, 0)
+end
+
 
 -------------------------------------------------
 -- Extend 3rd API: lfs
