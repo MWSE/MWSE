@@ -73,7 +73,7 @@ end
 local function tcp(params)
    params = params or {}
    -- Default settings
-   for k, v in pairs(cfg) do 
+   for k, v in pairs(cfg) do
       params[k] = params[k] or v
    end
    -- Force client mode
@@ -93,7 +93,7 @@ local function tcp(params)
          self.sock:sni(host)
          self.sock:settimeout(_M.TIMEOUT)
          try(self.sock:dohandshake())
-         reg(self, getmetatable(self.sock))
+         reg(self)
          return 1
       end
       return conn

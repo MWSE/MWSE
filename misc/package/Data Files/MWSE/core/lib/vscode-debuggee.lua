@@ -1,3 +1,5 @@
+---@diagnostic disable
+
 local debuggee = {}
 
 local socket = require 'socket.core'
@@ -1028,7 +1030,7 @@ function handlers.evaluate(req)
 	-- 환경 준비.
 	-- 뭘 요구할지 모르니까 로컬, 업밸류, 글로벌을 죄다 복사해둔다.
 	-- 우선순위는 글로벌-업밸류-로컬 순서니까
-	-- 그 반대로 갖다놓아서 나중 것이 앞의 것을 덮어쓰게 한다. 
+	-- 그 반대로 갖다놓아서 나중 것이 앞의 것을 덮어쓰게 한다.
 	local depth = req.arguments.frameId
 	local tempG = {}
 	local declared = {}
