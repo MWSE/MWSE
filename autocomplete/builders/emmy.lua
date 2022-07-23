@@ -132,13 +132,22 @@ local function writeFunction(package, file, namespaceOverride)
 		if (argument.tableParams) then
 			local types = type:split("|")
 			table.removevalue(types, "table")
-			table.insert(types, package.namespace .. ".params")
 
-			type = table.concat(types, "|")
+			-- Check if a function can be called without any arguments. If all the
+			-- fields in the table are optional, mark the whole table as optional.
+			local optionalCount = 0
 			description = "This table accepts the following values:"
 			for _, tableArgument in ipairs(argument.tableParams) do
 				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
+				if tableArgument.optional then
+					optionalCount = optionalCount + 1
+				end
 			end
+			if optionalCount == #argument.tableParams then
+				argument.optional = true
+			end
+			table.insert(types, package.namespace .. ".params")
+			type = table.concat(types, "|")
 		end
 		if (argument.type == "variadic") then
 			file:write(string.format("--- @param ... %s %s\n", getAllPossibleVariationsOfType(argument.variadicType, argument) or "any?", formatLineBreaks(description)))
