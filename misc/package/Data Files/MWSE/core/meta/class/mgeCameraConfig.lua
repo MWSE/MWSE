@@ -19,7 +19,7 @@ mgeCameraConfig = {}
 function mgeCameraConfig.stopZoom() end
 
 --- Sets up continuous camera zoom. The zoom speed starts at `rate`. The speed will approach `targetRate` over time, if provided.
---- @param params mgeCameraConfig.zoomContinuous.params This table accepts the following values:
+--- @param params mgeCameraConfig.zoomContinuous.params? This table accepts the following values:
 --- 
 --- `rate`: number? — *Optional*. No description yet available.
 --- 

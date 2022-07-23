@@ -871,7 +871,7 @@ function tes3.findClosestExteriorReferenceOfObject(params) end
 --- Locates a root dialogue topic that can then be filtered down for a specific actor to return a specific dialogue info. Specify either `topic`, or both `type` and `page` for other types of dialogue.
 --- 
 --- For example, `tes3.findDialogue({type = tes3.dialogueType.greeting, page = tes3.dialoguePage.greeting.greeting0})` will return the "Greeting 0" topic, which is not available using a topic ID.
---- @param params tes3.findDialogue.params This table accepts the following values:
+--- @param params tes3.findDialogue.params? This table accepts the following values:
 --- 
 --- `topic`: string? — *Optional*. The dialogue topic to look for.
 --- 
@@ -1142,7 +1142,7 @@ function tes3.getJournalIndex(params) end
 --- @field id tes3dialogue|string No description yet available.
 
 --- Returns how many times the player killed an actor. If no actor is specified, total number of kills player commited will be returned.
---- @param params tes3.getKillCount.params This table accepts the following values:
+--- @param params tes3.getKillCount.params? This table accepts the following values:
 --- 
 --- `actor`: tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance|string|nil — *Optional*. The actor (or their ID) for whom to retrieve player's kill count.
 --- @return number count No description yet available.
@@ -1949,7 +1949,7 @@ function tes3.removeSpell(params) end
 --- @field updateGUI boolean? *Default*: `true`. If true, the GUI will be updated respecting the removal of the spell. This can be useful to disable when batch-removing many spells. The batch should be ended with [`tes3.updateMagicGUI`](https://mwse.github.io/MWSE/apis/tes3/#tes3updatemagicgui) to reflect the changes.
 
 --- Removes one or more visual effects created either through magical effects or `tes3.createVisualEffect()`.
---- @param params tes3.removeVisualEffect.params This table accepts the following values:
+--- @param params tes3.removeVisualEffect.params? This table accepts the following values:
 --- 
 --- `vfx`: tes3vfx? — *Optional*. If provided, the specific VFX handle will be deleted.
 --- 
@@ -2308,7 +2308,7 @@ function tes3.setOwner(params) end
 --- @field requiredRank number? *Default*: `0`. If `owner` is set to faction, `requitedRank` variable controls minimal rank in faction the player has to have to be able to freely take the reference.
 
 --- Enables or disables player's controls state.
---- @param params tes3.setPlayerControlState.params This table accepts the following values:
+--- @param params tes3.setPlayerControlState.params? This table accepts the following values:
 --- 
 --- `enabled`: boolean? — *Default*: `false`. Setting this to false will disable any kind of control.
 --- 
@@ -2386,7 +2386,7 @@ function tes3.setTrap(params) end
 --- Toggles the camera into vanity mode. In vanity mode the camera is in third person and it is orbiting slowly around the player character. Returns true if changed to vanity mode.
 --- 
 --- Note that unlike the vanity mode caused by not doing anything for a while, this vanity mode must be toggled to go off.
---- @param params tes3.setVanityMode.params This table accepts the following values:
+--- @param params tes3.setVanityMode.params? This table accepts the following values:
 --- 
 --- `enabled`: boolean? — *Default*: `true`. This flag sets the vanity mode as enabled or disabled.
 --- 
@@ -2444,7 +2444,7 @@ function tes3.showDialogueMenu(params) end
 --- @field checkAllowWerewolfForceGreeting boolean? *Default*: `true`. If true, the `AllowWerewolfForceGreeting` variable must exist on the reference's script to allow opening a dialogue while the player is a werewolf. This can be set to false to override the vanilla behavior.
 
 --- This function opens the repair service menu.
---- @param params tes3.showRepairServiceMenu.params This table accepts the following values:
+--- @param params tes3.showRepairServiceMenu.params? This table accepts the following values:
 --- 
 --- `serviceActor`: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string|nil — *Optional*. The actor to use for calculating the service price.
 function tes3.showRepairServiceMenu(params) end
@@ -2456,7 +2456,7 @@ function tes3.showRepairServiceMenu(params) end
 --- This function opens the resting menu and returns true on success. If the player can't rest currently, it returns false.
 --- 
 --- Various parameters can be used to allow resting in situations not normally possible.
---- @param params tes3.showRestMenu.params This table accepts the following values:
+--- @param params tes3.showRestMenu.params? This table accepts the following values:
 --- 
 --- `checkForEnemies`: boolean? — *Default*: `true`. Perform a check whether there are enemies nearby before opening rest menu. If there are, false is returned.
 --- 
@@ -2603,7 +2603,7 @@ function tes3.transferItem(params) end
 --- @field updateGUI boolean? *Default*: `true`. If false, the function won't manually resync the player's GUI state. This can result in some optimizations, though [`tes3ui.forcePlayerInventoryUpdate()`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uiforceplayerinventoryupdate) must manually be called after all inventory updates are finished.
 
 --- Emulates the player committing a crime. Returns `true` if the crime was witnessed by an actor.
---- @param params tes3.triggerCrime.params This table accepts the following values:
+--- @param params tes3.triggerCrime.params? This table accepts the following values:
 --- 
 --- `type`: number? — *Default*: `tes3.crimeType.theft`. The type of crime to be committed. Maps to values in the [`tes3.crimeType`](https://mwse.github.io/MWSE/references/crime-types/) table.
 --- 

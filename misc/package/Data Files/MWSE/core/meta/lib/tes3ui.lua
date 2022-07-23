@@ -215,7 +215,7 @@ function tes3ui.setConsoleReference(reference) end
 function tes3ui.showBookMenu(text) end
 
 --- This function creates a dialogue message. The message can have three styles. The style `2` makes a selectable text. That way by calling this function multiple time you can create a selection of responses.
---- @param params tes3ui.showDialogueMessage.params This table accepts the following values:
+--- @param params tes3ui.showDialogueMessage.params? This table accepts the following values:
 --- 
 --- `text`: string? — *Default*: ``. The text of the shown message.
 --- 

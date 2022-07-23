@@ -10,7 +10,7 @@ mwscript = {}
 
 --- Use [`tes3reference:activate()`](https://mwse.github.io/MWSE/types/tes3reference/#activate) or [`tes3.setAIActivate()`](https://mwse.github.io/MWSE/apis/tes3/#tes3setaiactivate) instead. Wrapper for the `Activate` mwscript function.
 --- @deprecated
---- @param params mwscript.activate.params This table accepts the following values:
+--- @param params mwscript.activate.params? This table accepts the following values:
 --- 
 --- `reference`: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil — *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 function mwscript.activate(params) end
@@ -239,7 +239,7 @@ function mwscript.getDetected(params) end
 
 --- Use [`object.disabled`](https://mwse.github.io/MWSE/types/tes3baseObject/#disabled) on any object inheriting from `tes3baseObject`. Wrapper for the `GetDisabled` mwscript function.
 --- @deprecated
---- @param params mwscript.getDisabled.params This table accepts the following values:
+--- @param params mwscript.getDisabled.params? This table accepts the following values:
 --- 
 --- `reference`: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil — *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @return boolean result No description yet available.
@@ -474,7 +474,7 @@ function mwscript.scriptRunning(params) end
 
 --- Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.
 --- @deprecated
---- @param params mwscript.setDelete.params This table accepts the following values:
+--- @param params mwscript.setDelete.params? This table accepts the following values:
 --- 
 --- `reference`: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil — *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- 
