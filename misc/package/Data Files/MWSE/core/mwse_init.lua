@@ -788,9 +788,7 @@ function mwse.log(str, ...)
 end
 
 function mwse.loadConfig(fileName, defaults, recursive)
-	if (recursive == nil) then
-		recursive = true
-	end
+	local recursive = recursive or true
 
 	local result = json.loadfile(string.format("config\\%s", fileName))
 
