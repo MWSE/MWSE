@@ -352,13 +352,13 @@ function table.deepcopy(t)
 	return copy
 end
 
-function table.copymissing(to, from)
+function table.copymissing(to, from, recursive)
 	if (type(to) ~= "table" or type(from) ~= "table") then
 		error("Arguments for table.copymissing must be tables.")
 	end
 
 	for k, v in pairs(from) do
-		if (type(to[k]) == "table" and type(v) == "table") then
+		if (recursive) and (type(to[k]) == "table" and type(v) == "table") then
 			table.copymissing(to[k], v)
 		else
 			if (to[k] == nil) then
@@ -787,12 +787,16 @@ function mwse.log(str, ...)
 	print(tostring(str):format(...))
 end
 
-function mwse.loadConfig(fileName, defaults)
+function mwse.loadConfig(fileName, defaults, recursive)
+	if (recursive == nil) then
+		recursive = true
+	end
+
 	local result = json.loadfile(string.format("config\\%s", fileName))
 
 	if (result) then
 		if (type(defaults) == "table") then
-			table.copymissing(result, defaults)
+			table.copymissing(result, defaults, recursive)
 		end
 	else
 		result = defaults
