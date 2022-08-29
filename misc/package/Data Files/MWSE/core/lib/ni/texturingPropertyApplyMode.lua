@@ -1,5 +1,5 @@
 return {
-	["replace"] = 0,
-	["decal"] = 1,
-	["modulate"] = 2,
+	["REPLACE"] = 0,
+	["DECAL"] = 1,
+	["MODULATE"] = 2,
 }

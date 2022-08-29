@@ -1,5 +1,5 @@
 return {
-	["none"] = 0,
-	["linear"] = 1,
-	["exponential"] = 2,
+	["None"] = 0,
+	["Linear"] = 1,
+	["Exponential"] = 2,
 }

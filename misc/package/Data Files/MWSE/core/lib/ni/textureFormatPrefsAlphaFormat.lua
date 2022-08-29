@@ -1,6 +1,6 @@
 return {
-	["none"] = 0,
-	["binary"] = 1,
-	["smooth"] = 2,
-	["default"] = 3,
+	["NONE"] = 0,
+	["BINARY"] = 1,
+	["SMOOTH"] = 2,
+	["ALPHA_DEFAULT"] = 3,
 }

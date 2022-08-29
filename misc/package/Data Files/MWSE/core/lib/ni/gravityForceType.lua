@@ -1,4 +1,4 @@
 return {
-	["planar"] = 0,
-	["spherical"] = 1,
+	["Planar"] = 0,
+	["Spherical"] = 1,
 }

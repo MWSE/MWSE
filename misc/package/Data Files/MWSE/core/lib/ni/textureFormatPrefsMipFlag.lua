@@ -1,5 +1,5 @@
 return {
-	["no"] = 0,
-	["yes"] = 1,
-	["default"] = 2,
+	["NO"] = 0,
+	["YES"] = 1,
+	["MIP_DEFAULT"] = 2,
 }

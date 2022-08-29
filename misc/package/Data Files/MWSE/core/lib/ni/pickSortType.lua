@@ -1,4 +1,4 @@
 return {
-	["sort"] = 0,
-	["noSort"] = 1,
+	["SORT"] = 0,
+	["NO_SORT"] = 1,
 }

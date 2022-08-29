@@ -1,4 +1,4 @@
 return {
-	["modelCoordinates"] = 0,
-	["worldCoordinates"] = 1,
+	["MODEL_COORDINATES"] = 0,
+	["WORLD_COORDINATES"] = 1,
 }

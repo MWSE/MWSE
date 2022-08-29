@@ -1,4 +1,4 @@
 return {
-	["boundIntersect"] = 0,
-	["triangleIntersect"] = 1,
+	["BOUND_INTERSECT"] = 0,
+	["TRIANGLE_INTERSECT"] = 1,
 }

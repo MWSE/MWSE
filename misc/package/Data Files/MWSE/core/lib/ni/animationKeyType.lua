@@ -1,8 +1,7 @@
 return {
-	["noInterp"] = 0,
-	["linear"] = 1,
-	["bezier"] = 2,
-	["tcb"] = 3,
+	["NoInterp"] = 0,
+	["Linear"] = 1,
+	["Bezier"] = 2,
 	["TCB"] = 3,
-	["euler"] = 4,
+	["Euler"] = 4,
 }

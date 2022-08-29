@@ -1,17 +1,17 @@
 return {
-	["alpha"] = 0x0,
-	["fog"] = 0x1,
-	["material"] = 0x2,
-	["stencil"] = 0x3,
-	["texturing"] = 0x4,
-	["vertexColor"] = 0x5,
-	["wireframe"] = 0x6,
-	["zBuffer"] = 0x7,
-	["dither"] = 0x8,
-	["specular"] = 0x9,
-	["shade"] = 0xA,
-	["rendererSpecific"] = 0xB,
+	["Alpha"] = 0x0,
+	["Fog"] = 0x1,
+	["Material"] = 0x2,
+	["Stencil"] = 0x3,
+	["Texturing"] = 0x4,
+	["VertexColor"] = 0x5,
+	["Wireframe"] = 0x6,
+	["ZBuffer"] = 0x7,
+	["Dither"] = 0x8,
+	["Specular"] = 0x9,
+	["Shade"] = 0xA,
+	["RendererSpecific"] = 0xB,
 
-	["firstPropertyType"] = 0x0,
-	["lastPropertyType"] = 0xB
+	["FirstPropertyType"] = 0x0,
+	["LastPropertyType"] = 0xB
 }
