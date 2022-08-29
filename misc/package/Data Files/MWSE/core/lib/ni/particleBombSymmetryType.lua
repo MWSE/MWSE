@@ -1,5 +1,5 @@
 return {
-	["Spherical"] = 0,
-	["Cylindrical"] = 1,
-	["Planar"] = 2,
+	["SPHERICAL"] = 0,
+	["CYLINDRICAL"] = 1,
+	["PLANAR"] = 2,
 }

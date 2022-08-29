@@ -1,4 +1,4 @@
 return {
-	["Planar"] = 0,
-	["Spherical"] = 1,
+	["FORCE_PLANAR"] = 0,
+	["FORCE_SPHERICAL"] = 1,
 }
