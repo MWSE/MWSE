@@ -547,7 +547,7 @@ function mwscript.stopCombat(params) end
 --- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @field target tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Actor to stop combat with.
 
---- Wrapper for the `StopCombat` mwscript function.
+--- Wrapper for the `StopScript` mwscript function.
 --- @deprecated
 --- @param params mwscript.stopScript.params This table accepts the following values:
 --- 

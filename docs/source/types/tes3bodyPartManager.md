@@ -153,7 +153,7 @@ myObject:setBodyPartByIdForObject(object, index, bodyPartId, isFirstPerson)
 
 ### `setBodyPartForObject`
 
-The method sets a new body part for a given object.
+The method sets a new body part for a given object. Triggers `bodyPart` event.
 
 ```lua
 myObject:setBodyPartForObject(object, index, bodyPart, isFirstPerson)

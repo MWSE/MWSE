@@ -1,9 +1,14 @@
 return {
 	type = "function",
-	description = [[Changes the 3rd person camera's offset from the player's head.
+	description = [[Changes the 3rd person camera offset from the player's head.
 
-Note this function can be used once WorldController and MobilePlayer have finished initializing.]],
-	arguments = {
-		{ name = "offset", type = "tes3vector3", description = "The offset vector." },
-	},
+!!! important
+	This function can be used once tes3worldController and tes3mobilePlayer have finished initializing.]],
+	arguments = {{
+		name = "params",
+		type = "table",
+		tableParams = {
+			{ name = "offset", type = "tes3vector3", description = "The offset vector." },
+		},
+	}},
 }

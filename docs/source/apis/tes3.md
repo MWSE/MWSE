@@ -1464,9 +1464,10 @@ local changedPOV = tes3.force3rdPerson()
 
 ### `tes3.get3rdPersonCameraOffset`
 
-Returns the camera's offset from the player's head while in 3rd person view.
+Returns the camera offset from the player's head while in 3rd person view.
 
-Note this function can be used once WorldController and MobilePlayer have finished initializing.
+!!! tip
+	If used before initialized event, this function returns empty table.
 
 ```lua
 local cameraOffset = tes3.get3rdPersonCameraOffset()
@@ -3604,17 +3605,19 @@ tes3.say({ reference = ..., soundPath = ..., pitch = ..., volume = ..., forceSub
 
 ### `tes3.set3rdPersonCameraOffset`
 
-Changes the 3rd person camera's offset from the player's head.
+Changes the 3rd person camera offset from the player's head.
 
-Note this function can be used once WorldController and MobilePlayer have finished initializing.
+!!! important
+	This function can be used once tes3worldController and tes3mobilePlayer have finished initializing.
 
 ```lua
-tes3.set3rdPersonCameraOffset(offset)
+tes3.set3rdPersonCameraOffset({ offset = ... })
 ```
 
 **Parameters**:
 
-* `offset` ([tes3vector3](../../types/tes3vector3)): The offset vector.
+* `params` (table)
+	* `offset` ([tes3vector3](../../types/tes3vector3)): The offset vector.
 
 ***
 

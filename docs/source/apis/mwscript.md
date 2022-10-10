@@ -729,7 +729,7 @@ local executed = mwscript.stopCombat({ reference = ..., target = ... })
 
 ### `mwscript.stopScript`
 
-Wrapper for the `StopCombat` mwscript function.
+Wrapper for the `StopScript` mwscript function.
 
 ```lua
 local executed = mwscript.stopScript({ reference = ..., script = ... })

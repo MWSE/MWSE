@@ -922,9 +922,10 @@ function tes3.force1stPerson() end
 --- @return boolean changedPOV No description yet available.
 function tes3.force3rdPerson() end
 
---- Returns the camera's offset from the player's head while in 3rd person view.
+--- Returns the camera offset from the player's head while in 3rd person view.
 --- 
---- Note this function can be used once WorldController and MobilePlayer have finished initializing.
+--- !!! tip
+--- 	If used before initialized event, this function returns empty table.
 --- @return tes3vector3 cameraOffset No description yet available.
 function tes3.get3rdPersonCameraOffset() end
 
@@ -2056,11 +2057,18 @@ function tes3.say(params) end
 --- @field forceSubtitle boolean? *Default*: `false`. If true a subtitle will be shown, even if subtitles are disabled.
 --- @field subtitle string? *Optional*. The subtitle to show if subtitles are enabled, or if forceSubtitle is set.
 
---- Changes the 3rd person camera's offset from the player's head.
+--- Changes the 3rd person camera offset from the player's head.
 --- 
---- Note this function can be used once WorldController and MobilePlayer have finished initializing.
---- @param offset tes3vector3 The offset vector.
-function tes3.set3rdPersonCameraOffset(offset) end
+--- !!! important
+--- 	This function can be used once tes3worldController and tes3mobilePlayer have finished initializing.
+--- @param params tes3.set3rdPersonCameraOffset.params This table accepts the following values:
+--- 
+--- `offset`: tes3vector3 — The offset vector.
+function tes3.set3rdPersonCameraOffset(params) end
+
+---Table parameter definitions for `tes3.set3rdPersonCameraOffset`.
+--- @class tes3.set3rdPersonCameraOffset.params
+--- @field offset tes3vector3 The offset vector.
 
 --- Configures a mobile actor to activate an object.
 --- @param params tes3.setAIActivate.params This table accepts the following values:
