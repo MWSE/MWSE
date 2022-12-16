@@ -6,6 +6,7 @@ The MWSE Logger library allows you to register a logger for your mod. It provide
 - Change log level via MCM
 - Log messages can be color coded according to log level (via MWSE MCM)
 - Optional setting to print messages to a separate log file
+- Optional setting to print messages to the in-game console
 
 ## Log Levels
 
@@ -47,6 +48,7 @@ In your main.lua, place the logger creation before other source files are includ
 
 In the other source files:
 ```lua
+local logger = require("logging.logger")
 local log = logger.getLogger("Test Mod")
 
 log:info("This is an info message")
