@@ -16,6 +16,7 @@ local ansicolors = require("logging.colors")
 
 ---@class MWSELogger
 ---@field name string Name of mod, also counts as unique id of logger
+---@field logToConsole boolean If `true`, all the logged messages will also be logged to console
 ---@field doLog fun(self: MWSELogger, logLevel: MWSELoggerLogLevels): boolean Check log level to determine if log should be written out
 ---@field info fun(self: MWSELogger, message: string, ...) Log info message
 ---@field debug fun(self: MWSELogger, message: string, ...) Log debug message

@@ -30,8 +30,9 @@ In the MWSE MCM, there is an option to enable log colors. This will display logs
 ```lua
 local logger = require("logging.logger")
 local log = logger.new{
-    name = "Test Mod",
-    logLevel = "TRACE",
+	name = "Test Mod",
+	logLevel = "TRACE",
+	logToConsole = true,
 }
 log:trace("This is a trace message")
 log:debug("This is a debug message")
@@ -40,6 +41,11 @@ log:warn("This is a warn message")
 log:error("This is an error message")
 
 log:setLogLevel("INFO")
+
+-- To disable logging to the in-game console, set the logToConsole field to false
+log.logToConsole = false
+
+-- After this point no logging messages will be logged to the in-game console
 ```
 
 ## Using your logger in different source files
@@ -59,19 +65,19 @@ log:info("This is an info message")
 In your MCM config, create a dropdown with the following options:
 ```lua
 settings:createDropdown{
-  label = "Logging Level",
-  description = "Set the log level.",
-  options = {
-    { label = "TRACE", value = "TRACE"},
-    { label = "DEBUG", value = "DEBUG"},
-    { label = "INFO", value = "INFO"},
-    { label = "WARN", value = "WARN"},
-    { label = "ERROR", value = "ERROR"},
-    { label = "NONE", value = "NONE"},
-  },
-  variable = mwse.mcm.createTableVariable{ id = "logLevel", table = mcmConfig },
-  callback = function(self)
-    log:setLogLevel(self.variable.value)
-  end
+	label = "Logging Level",
+	description = "Set the log level.",
+	options = {
+		{ label = "TRACE", value = "TRACE"},
+		{ label = "DEBUG", value = "DEBUG"},
+		{ label = "INFO", value = "INFO"},
+		{ label = "WARN", value = "WARN"},
+		{ label = "ERROR", value = "ERROR"},
+		{ label = "NONE", value = "NONE"},
+	},
+	variable = mwse.mcm.createTableVariable{ id = "logLevel", table = mcmConfig },
+	callback = function(self)
+		log:setLogLevel(self.variable.value)
+	end
 }
 ```
