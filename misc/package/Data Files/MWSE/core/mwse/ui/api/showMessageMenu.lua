@@ -20,7 +20,7 @@
 ---@field cancelText string
 ---@field header string|function The optional header displayed above the message. Can also be a function that returns a string.
 ---@field message string|function **Required** The message at the top of the messagebox. Can also be a function that returns a string.
----@field customBlock fun(parent) A custom element to be displayed below the header
+---@field customBlock fun(parent: tes3uiElement) A custom element to be displayed below the header
 ---@field page number
 ---@field pageSize number
 
