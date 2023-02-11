@@ -6,6 +6,9 @@ repo_url: https://github.com/MWSE/MWSE
 
 plugins:
   - awesome-pages
+  - git-revision-date-localized:
+      type: datetime
+      enable_creation_date: true
   - mermaid2:
       arguments:
         theme: |
@@ -44,7 +47,6 @@ theme:
     - content.tabs.link
     # - header.autohide
     # - navigation.expand
-    # - navigation.footer
     - navigation.indexes
     - navigation.instant
     - navigation.sections
