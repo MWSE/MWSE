@@ -209,6 +209,9 @@ These effects build off of the [standard magic effects](../magic-effects). If yo
 | fortifyIntelligence          | 791       | [Class Starting Spells](https://www.nexusmods.com/morrowind/mods/49010)                            |
 | fortifyAgility               | 793       | [Class Starting Spells](https://www.nexusmods.com/morrowind/mods/49010)                            |
 | fortifyPersonality           | 796       | [Class Starting Spells](https://www.nexusmods.com/morrowind/mods/49010)                            |
+| healthLeech                  | 900       | [Leech Effects](https://www.nexusmods.com/morrowind/mods/52943)                                    |
+| magickaLeech                 | 901       | [Leech Effects](https://www.nexusmods.com/morrowind/mods/52943)                                    |
+| fatigueLeech                 | 902       | [Leech Effects](https://www.nexusmods.com/morrowind/mods/52943)                                    |
 | forbidSleep                  | 1201      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDouble        | 1202      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDoublePotion  | 1203      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
