@@ -34,6 +34,8 @@ docs/source/.vscode/
 docs/source/_build/
 .vscode/
 .vs/
+.idea/
+.idea/**
 build/dist/
 /deps/LuaJIT/src/*.exp
 /deps/LuaJIT/src/jit/vmdef.lua

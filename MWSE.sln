@@ -10,8 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MWSE", "MWSE\MWSE.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dep_Boost", "deps\boost\Dep_Boost\Dep_Boost.vcxproj", "{633E0327-60A7-49C5-B1CF-870280D7DA07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MWSE-Update", "MWSE-Update\MWSE-Update.csproj", "{1656E43D-6595-41FF-BCCA-C26CE9F1793F}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lpeg", "deps\lpeg\lpeg.vcxproj", "{98486B79-9258-45CD-B357-36B7CE809788}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MWSE-Tests", "MWSE-Tests\MWSE-Tests.vcxproj", "{21986B2A-9A0A-4630-BE82-A270232159F2}"
@@ -19,6 +17,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedSE", "SharedSE\SharedSE.vcxitems", "{AABD3611-7360-404E-996C-26462E50A8A5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CSSE", "CSSE\CSSE.vcxproj", "{50562D0F-55B1-49EA-BDBE-D6922BE5957D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MWSE-Update", "MWSE-Update\MWSE-Update.csproj", "{DEA1014D-4FCE-4F2D-BEE5-88F843145BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +34,6 @@ Global
 		{633E0327-60A7-49C5-B1CF-870280D7DA07}.Debug|x86.Build.0 = Debug|Win32
 		{633E0327-60A7-49C5-B1CF-870280D7DA07}.Release|x86.ActiveCfg = Release|Win32
 		{633E0327-60A7-49C5-B1CF-870280D7DA07}.Release|x86.Build.0 = Release|Win32
-		{1656E43D-6595-41FF-BCCA-C26CE9F1793F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1656E43D-6595-41FF-BCCA-C26CE9F1793F}.Debug|x86.Build.0 = Debug|Any CPU
-		{1656E43D-6595-41FF-BCCA-C26CE9F1793F}.Release|x86.ActiveCfg = Release|Any CPU
-		{1656E43D-6595-41FF-BCCA-C26CE9F1793F}.Release|x86.Build.0 = Release|Any CPU
 		{98486B79-9258-45CD-B357-36B7CE809788}.Debug|x86.ActiveCfg = Debug|Win32
 		{98486B79-9258-45CD-B357-36B7CE809788}.Debug|x86.Build.0 = Debug|Win32
 		{98486B79-9258-45CD-B357-36B7CE809788}.Release|x86.ActiveCfg = Release|Win32
@@ -50,6 +46,10 @@ Global
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Debug|x86.Build.0 = Debug|Win32
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Release|x86.ActiveCfg = Release|Win32
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Release|x86.Build.0 = Release|Win32
+		{DEA1014D-4FCE-4F2D-BEE5-88F843145BB8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEA1014D-4FCE-4F2D-BEE5-88F843145BB8}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEA1014D-4FCE-4F2D-BEE5-88F843145BB8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEA1014D-4FCE-4F2D-BEE5-88F843145BB8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
