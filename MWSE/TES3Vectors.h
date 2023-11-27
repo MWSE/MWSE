@@ -141,7 +141,7 @@ namespace TES3 {
 		Matrix33 operator+(const Matrix33& matrix);
 		Matrix33 operator-(const Matrix33& matrix);
 		Matrix33 operator*(const Matrix33& matrix);
-		Vector3 operator*(const Vector3& vector);
+		Vector3 operator*(const Vector3& vector) const;
 		Matrix33 operator*(float scalar);
 
 		friend std::ostream& operator<<(std::ostream& str, const Matrix33& matrix);
@@ -166,6 +166,7 @@ namespace TES3 {
 		//
 
 		Matrix33 transpose();
+		Vector3 transposeMult(const Vector3& vector) const;
 
 		Matrix33 invert() const;
 		bool invert(Matrix33* out_matrix) const;

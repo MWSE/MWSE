@@ -398,7 +398,7 @@ namespace TES3 {
 	const auto TES3_Matrix33_addMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E7F60);
 	const auto TES3_Matrix33_subtractMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E8000);
 	const auto TES3_Matrix33_multiplyMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E80A0);
-	const auto TES3_Matrix33_multiplyVector = reinterpret_cast<Vector3 * (__thiscall*)(Matrix33*, Vector3*, const Vector3*)>(0x6E8230);
+	const auto TES3_Matrix33_multiplyVector = reinterpret_cast<Vector3 * (__thiscall*)(const Matrix33*, Vector3*, const Vector3*)>(0x6E8230);
 	const auto TES3_Matrix33_multiplyScalar = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, float)>(0x6E81B0);
 
 	const auto TES3_Matrix33_toIdentity = reinterpret_cast<void(__thiscall*)(Matrix33*)>(0x6E7CF0);
@@ -411,6 +411,7 @@ namespace TES3 {
 	const auto TES3_Matrix33_toEulerXYZ = reinterpret_cast<bool(__thiscall*)(const Matrix33*, float*, float*, float*)> (0x6E8C50);
 
 	const auto TES3_Matrix33_transpose = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*)> (0x6E8420);
+	const auto TES3_Matrix33_transposeMult = reinterpret_cast<Vector3 * (__cdecl*)(Vector3*, const Vector3*, const Matrix33*)> (0x6E8290);
 	const auto TES3_Matrix33_inverseRaw = reinterpret_cast<bool(__thiscall*)(const Matrix33*, Matrix33*)> (0x6E82F0);
 	const auto TES3_Matrix33_inverse = reinterpret_cast<Matrix33 * (__thiscall*)(const Matrix33*, Matrix33*)> (0x6E83E0);
 
@@ -474,7 +475,7 @@ namespace TES3 {
 		return result;
 	}
 
-	Vector3 Matrix33::operator*(const Vector3& vector) {
+	Vector3 Matrix33::operator*(const Vector3& vector) const {
 		Vector3 result;
 		TES3_Matrix33_multiplyVector(this, &result, &vector);
 		return result;
@@ -550,6 +551,12 @@ namespace TES3 {
 	Matrix33 Matrix33::transpose() {
 		Matrix33 result;
 		TES3_Matrix33_transpose(this, &result);
+		return result;
+	}
+
+	Vector3 Matrix33::transposeMult(const Vector3& vector) const {
+		Vector3 result;
+		TES3_Matrix33_transposeMult(&result, &vector, this);
 		return result;
 	}
 

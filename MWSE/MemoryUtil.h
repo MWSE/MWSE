@@ -27,6 +27,26 @@ namespace mwse {
 		DWORD callbackAddress;
 	};
 
+	/// <summary>
+	/// As MemAccess, but with a constant address. Useful to define globals in the base executable that will never change location.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <typeparam name="address"></typeparam>
+	template <typename T, DWORD address>
+	class ExternalGlobal {
+	public:
+		ExternalGlobal() = delete;
+		~ExternalGlobal() = delete;
+
+		static inline T& get() {
+			return *reinterpret_cast<T*>(address);
+		}
+
+		static inline void set(T value) {
+			*reinterpret_cast<T*>(address) = value;
+		}
+	};
+
 	// Code to generate a jump in memory. Don't forget to unprotect it first!
 	void genJump(DWORD Address, DWORD To);
 

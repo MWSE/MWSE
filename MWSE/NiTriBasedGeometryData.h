@@ -19,6 +19,8 @@ namespace NI {
 		// vTable wrappers.
 		//
 
+		unsigned short* getTriList();
+		const unsigned short* getTriList() const;
 		unsigned short getActiveTriangleCount() const;
 		void setActiveTriangleCount(unsigned short count);
 

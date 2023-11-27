@@ -81,7 +81,12 @@ bool __fastcall OnGameStructInitialized(TES3::Game* game) {
 	mwse::patch::installPostLuaPatches();
 
 	// Call overloaded function.
-	return game->initialize();
+	auto initialized = game->initialize();
+
+	// Install any patches that need to run after most core structures are initialized.
+	mwse::patch::installPostInitializationPatches();
+
+	return initialized;
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {

@@ -92,6 +92,8 @@ namespace NI {
 		Pointer<Property> detachPropertyByType(PropertyType type);
 		sol::table detachAllProperties_lua(sol::this_state ts);
 
+		bool intersectBounds(const TES3::Vector3* position, const TES3::Vector3* direction, float* out_result) const;
+
 		//
 		// Custom functions.
 		//

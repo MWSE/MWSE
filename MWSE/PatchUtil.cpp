@@ -34,6 +34,7 @@
 #include "NILinesData.h"
 #include "NIPick.h"
 #include "NISortAdjustNode.h"
+#include "NiTriBasedGeometry.h"
 #include "NIUVController.h"
 
 #include "BitUtil.h"
@@ -883,19 +884,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Use skinned-object-aware picks
-	//
-
-	bool __fastcall PatchPickSkinnedAware(NI::Pick* pick, DWORD _EDX_, TES3::Vector3* origin, TES3::Vector3* direction, bool append, float maxDist) {
-		if (Configuration::UseSkinnedAccurateActivationRaytests) {
-			return pick->pickObjectsWithSkinDeforms(origin, direction, append, maxDist);
-		}
-		else {
-			return pick->pickObjects(origin, direction, append, maxDist);
-		}
-	}
-
-	//
 	// Install all the patches.
 	//
 
@@ -1311,10 +1299,11 @@ namespace mwse::patch {
 		genCallEnforced(0x581484, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
 		genCallEnforced(0x582DFA, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
 
-		// Patch: Use skinned-object-aware picks
-		genCallEnforced(0x41D3D0, 0x6F3050, reinterpret_cast<DWORD>(PatchPickSkinnedAware));
-		genCallEnforced(0x41D5E6, 0x6F3050, reinterpret_cast<DWORD>(PatchPickSkinnedAware));
-		genCallEnforced(0x41D6C4, 0x6F3050, reinterpret_cast<DWORD>(PatchPickSkinnedAware));
+		// Patch: Improve raycast accuracy.
+		auto NiTriBasedGeometry_FindIntersections = &NI::TriBasedGeometry::findIntersections;
+		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriShape
+		overrideVirtualTableEnforced(0x750A00, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriStrips
+		overrideVirtualTableEnforced(0x750CC0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriBasedGeometry
 	}
 
 	void installPostLuaPatches() {
@@ -1336,6 +1325,14 @@ namespace mwse::patch {
 		if (Configuration::PatchNiFlipController) {
 			auto NiFlipController_clone = &NI::FlipController::copy;
 			genCallEnforced(0x715D26, DWORD(NI::FlipController::_copy), *reinterpret_cast<DWORD*>(&NiFlipController_clone));
+		}
+	}
+
+	void installPostInitializationPatches() {
+		// Patch: Improve raycast accuracy by default.
+		if (Configuration::UseSkinnedAccurateActivationRaytests) {
+			using gPickIgnoresSkinInstances = mwse::ExternalGlobal<bool, 0x7DEA4C>;
+			gPickIgnoresSkinInstances::set(false);
 		}
 	}
 

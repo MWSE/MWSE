@@ -108,6 +108,11 @@ namespace NI {
 		return removedProperties;
 	}
 
+	const auto NI_AVObject_IntersectBounds = reinterpret_cast<bool(__thiscall*)(const AVObject*, const TES3::Vector3*, const TES3::Vector3*, float*)>(0x6EB930);
+	bool AVObject::intersectBounds(const TES3::Vector3* position, const TES3::Vector3* direction, float* out_result) const {
+		return NI_AVObject_IntersectBounds(this, position, direction, out_result);
+	}
+
 	const auto NI_CreateBoundingBoxForNode = reinterpret_cast<void(__cdecl*)(const AVObject*, TES3::Vector3*, TES3::Vector3*, const TES3::Vector3*, const TES3::Matrix33*, const float*)>(0x4EF410);
 	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua() const {
 		constexpr auto min = std::numeric_limits<float>::min();

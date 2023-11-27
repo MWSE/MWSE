@@ -3,6 +3,7 @@
 #include "NIDefines.h"
 #include "NITArray.h"
 #include "NIColor.h"
+#include "NIPointer.h"
 
 #include "TES3Defines.h"
 #include "TES3Vectors.h"
@@ -20,7 +21,8 @@ namespace NI {
 
 	enum class PickIntersectType {
 		BOUND_INTERSECT,
-		TRIANGLE_INTERSECT
+		TRIANGLE_INTERSECT,
+		UNKNOWN_2,
 	};
 
 	enum class PickCoordinateType {
@@ -36,7 +38,7 @@ namespace NI {
 		bool frontOnly;
 		bool observeAppCullFlag;
 		bool unknown_0x12;
-		Node * root;
+		Pointer<Node> root;
 		TArray<PickRecord*> results;
 		PickRecord * lastAddedRecord;
 		bool returnTexture;
@@ -51,16 +53,17 @@ namespace NI {
 		static Pick* malloc();
 		void free();
 
+		PickRecord* addRecord();
+
 		bool pickObjects(const TES3::Vector3 * origin, const TES3::Vector3 * direction, bool append = false, float maxDistance = 0.0f);
-		bool pickObjectsWithSkinDeforms(const TES3::Vector3* origin, const TES3::Vector3* direction, bool append = false, float maxDistance = 0.0f);
 		void clearResults();
 
 	};
 	static_assert(sizeof(Pick) == 0x38, "NI::Pick failed size validation");
 
 	struct PickRecord {
-		Geometry* object;
-		AVObject * proxyParent;
+		Pointer<Geometry> object;
+		Pointer<AVObject> proxyParent;
 		TES3::Vector3 intersection;
 		float distance;
 		unsigned short triangleIndex;
@@ -68,6 +71,9 @@ namespace NI {
 		TES3::Vector2 texture;
 		TES3::Vector3 normal;
 		PackedColor color;
+
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
 
 		//
 		// Custom functions.

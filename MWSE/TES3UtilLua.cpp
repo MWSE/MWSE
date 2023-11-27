@@ -955,16 +955,16 @@ namespace mwse::lua {
 			}
 		}
 
+		// Determine/setup our accurate skinning state.
+		using gPickIgnoresSkinInstances = mwse::ExternalGlobal<bool, 0x7DEA4C>;
+		const auto previousPickIgnoresSkinInstances = gPickIgnoresSkinInstances::get();
+		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
+		gPickIgnoresSkinInstances::set(!accurateSkinned);
+
 		// Our pick is configured. Let's run it! (Use normalized direction for skinned mesh fix later.)
 		auto directionNormalized = direction.value().normalized();
-		auto pickSuccess = false;
-		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
-		if (accurateSkinned) {
-			pickSuccess = rayTestCache->pickObjectsWithSkinDeforms(&position.value(), &directionNormalized, false, maxDistance);
-		}
-		else {
-			pickSuccess = rayTestCache->pickObjects(&position.value(), &directionNormalized, false, maxDistance);
-		}
+		const auto pickSuccess = rayTestCache->pickObjects(&position.value(), &directionNormalized, false, maxDistance);
+		gPickIgnoresSkinInstances::set(previousPickIgnoresSkinInstances);
 
 		// Restore previous cull states.
 		for (auto itt = ignoreRestoreList.begin(); itt != ignoreRestoreList.end(); ++itt) {
@@ -991,7 +991,7 @@ namespace mwse::lua {
 
 				// Skinned nodes only have usable scaled distance data.
 				if (r->object->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
-					auto node = static_cast<const NI::TriShape*>(r->object);
+					auto node = static_cast<const NI::TriShape*>(r->object.get());
 					if (node->skinInstance) {
 						r->distance *= float(skinnedCorrection);
 						r->intersection = position.value() + direction.value() * r->distance;

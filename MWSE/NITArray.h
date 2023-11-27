@@ -357,6 +357,25 @@ namespace NI {
 			return index;
 		}
 
+		int getFirstEmptyIndex() const {
+			for (auto i = 0u; i < endIndex; ++i) {
+				if (!storage[i]) {
+					return i;
+				}
+			}
+			return endIndex;
+		}
+
+		void addToFirstEmptyIndex(const_reference value) {
+			if (!value) {
+				return;
+			}
+
+			const auto index = getFirstEmptyIndex();
+			growToFit(index);
+			setAtIndex(index, value);
+		}
+
 		size_type getFilledCount() const { return filledCount; }
 		size_type getEndIndex() const { return endIndex; }
 

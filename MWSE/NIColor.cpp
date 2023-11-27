@@ -5,6 +5,14 @@ namespace NI {
 	// NiPackedColor
 	//
 
+	PackedColor PackedColor::operator*(float scalar) const {
+		const auto _r = unsigned char(float(r) * scalar);
+		const auto _g = unsigned char(float(g) * scalar);
+		const auto _b = unsigned char(float(b) * scalar);
+		const auto _a = unsigned char(float(a) * scalar);
+		return { _b, _g, _r, _a };
+	}
+
 	std::string PackedColor::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << int(r) << ", " << int(g) << ", " << int(b) << ", " << int(a) << ">";

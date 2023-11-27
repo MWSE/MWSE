@@ -177,7 +177,7 @@ namespace mwse::lua {
 			usertypeDefinition[sol::meta_function::equal_to] = &TES3::Matrix33::operator==;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
 				sol::resolve<TES3::Matrix33(const float)>(&TES3::Matrix33::operator*),
-				sol::resolve<TES3::Vector3(const TES3::Vector3&)>(&TES3::Matrix33::operator*),
+				sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::Matrix33::operator*),
 				sol::resolve<TES3::Matrix33(const TES3::Matrix33&)>(&TES3::Matrix33::operator*)
 			);
 
