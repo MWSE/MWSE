@@ -148,7 +148,9 @@ namespace NI {
 					const auto vertex3m1 = (*vertex3 - *vertex1);
 					normal = (*vertex2 - *vertex1).crossProduct(&vertex3m1);
 				}
-				normal = normal * (1.0f / normal.length());
+
+				normal.normalize();
+
 				if (pick->coordinateType == PickCoordinateType::WORLD_COORDINATES) {
 					result->normal = worldTransform.rotation * normal;
 				}

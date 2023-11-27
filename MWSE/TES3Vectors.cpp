@@ -3,10 +3,9 @@
 #include "NIColor.h"
 #include "NIQuaternion.h"
 
-namespace TES3 {
-	constexpr double MATH_PI = 3.14159265358979323846;
-	constexpr double MATH_PI_2 = MATH_PI / 2;
+#include "MathUtil.h"
 
+namespace TES3 {
 	//
 	// Vector2
 	//
@@ -91,7 +90,7 @@ namespace TES3 {
 
 	bool Vector2::normalize() {
 		float len = length();
-		if (len > 0.0f) {
+		if (len > mwse::math::M_NORMALIZE_EPSILON) {
 			x = x / len;
 			y = y / len;
 			return true;
@@ -288,17 +287,22 @@ namespace TES3 {
 	}
 
 	bool Vector3::normalize() {
-		float len = length();
-		if (len > 0.0f) {
+		const auto len = length();
+		if (len > mwse::math::M_NORMALIZE_EPSILON) {
 			x = x / len;
 			y = y / len;
 			z = z / len;
+			constexpr auto foo = std::numeric_limits<float>::epsilon();
 			return true;
 		}
-		x = 0;
-		y = 0;
-		z = 0;
-		return false;
+		else {
+			x = 0, y = 0, z = 0;
+			x, y, z = 0, 0, 0;
+			x = 0.0f;
+			y = 0.0f;
+			z = 0.0f;
+			return false;
+		}
 	}
 
 	Vector3 Vector3::normalized() const {
@@ -603,8 +607,8 @@ namespace TES3 {
 		*y = asin(m2.x);
 		*z = 0;
 
-		if (*y < MATH_PI_2) {
-			if (*y > -MATH_PI_2) {
+		if (*y < mwse::math::M_PI_2) {
+			if (*y > -mwse::math::M_PI_2) {
 				*z = -atan2(m1.x, m0.x);
 				*x = -atan2(m2.y, m2.z);
 				return true;

@@ -14,4 +14,5 @@ namespace mwse::math {
 	constexpr auto M_2_SQRTPI = 1.12837916709551257390; // 2/sqrt(pi)
 	constexpr auto M_SQRT2 = 1.41421356237309504880; // sqrt(2)
 	constexpr auto M_SQRT1_2 = 0.707106781186547524401; // 1/sqrt(2)
+	constexpr auto M_NORMALIZE_EPSILON = 1e-6f; // Epsilon for NiVector normalization.
 }
