@@ -1,11 +1,11 @@
 #include "NiTriBasedGeometryData.h"
 
 namespace NI {
-	unsigned short* TriBasedGeometryData::getTriList() {
+	Triangle* TriBasedGeometryData::getTriList() {
 		return vTable.asTriBasedGeometryData->getTriList(this);
 	}
 
-	const unsigned short* TriBasedGeometryData::getTriList() const {
+	const Triangle* TriBasedGeometryData::getTriList() const {
 		return vTable.asTriBasedGeometryData->getTriList_const(this);
 	}
 

@@ -67,6 +67,7 @@ namespace NI {
 	struct TexturingProperty;
 	struct TimeController;
 	struct Transform;
+	struct Triangle;
 	struct TriBasedGeometry;
 	struct TriBasedGeometryData;
 	struct TriShape;

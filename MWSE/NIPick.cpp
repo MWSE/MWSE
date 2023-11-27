@@ -24,9 +24,6 @@ namespace NI {
 		auto record = new PickRecord();
 		lastAddedRecord = record;
 		results.addToFirstEmptyIndex(record);
-		if (results[0] == nullptr) {
-			int x = 4;
-		}
 		return record;
 	}
 

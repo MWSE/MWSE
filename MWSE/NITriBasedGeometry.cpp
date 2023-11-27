@@ -27,6 +27,8 @@ namespace NI {
 
 	const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const TES3::Vector3*, const TES3::Vector3*, Pick*)>(0x6F0350);
 	bool TriBasedGeometry::findIntersections(const TES3::Vector3* position, const TES3::Vector3* direction, Pick* pick) {
+		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
+		// This will be removed in the future when the config option is removed, once we're confident of performance and accuracy.
 		if (!mwse::Configuration::UseSkinnedAccurateActivationRaytests) {
 			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
 		}
@@ -36,13 +38,16 @@ namespace NI {
 			return false;
 		}
 
-		// Get the bounds distance.
+		// Check against intersection bounds first.
 		auto boundsDistance = 0.0f;
 		if (!intersectBounds(position, direction, &boundsDistance)) {
 			return false;
 		}
 
-		// Perform a basic bounds intersection test.
+		// If we are just a bounds-based pick, we're basically done.
+		// Additionally, fall back to this if we have a skinInstance and gPickIgnoresSkinInstances has been set.
+		// Note that gPickIgnoresSkinInstances is true by default, but MWSE changes it to false.
+		// A 3rd party program, such as MGE XE, may set this to restore mostly vanilla behavior on skinned geometry.
 		if (pick->intersectType == PickIntersectType::BOUND_INTERSECT ||
 			pick->intersectType == PickIntersectType::UNKNOWN_2 ||
 			skinInstance && gPickIgnoresSkinInstances::get())
@@ -51,6 +56,11 @@ namespace NI {
 			result->object = this;
 			result->distance = boundsDistance;
 			return true;
+		}
+
+		// At this point we should be using tri-based picks.
+		if (pick->intersectType != PickIntersectType::TRIANGLE_INTERSECT) {
+			return false;
 		}
 
 		const auto modelData = getModelData();
@@ -62,7 +72,7 @@ namespace NI {
 			return false;
 		}
 
-		// Deform vertices if we're looking at a skinned object.
+		// Deform vertices if we're looking at a skinned object. This isn't thread-safe which shouldn't be a problem.
 		if (skinInstance) {
 			const auto vertexCount = modelData->getActiveVertexCount();
 			deformVertices.reserve(vertexCount);
@@ -72,22 +82,25 @@ namespace NI {
 			skinInstance->deform(modelData->vertex, modelData->normal, vertexCount, vertices, normals);
 		}
 
-		// Calculate for non-uniform scaling.
+		// Calculate our base position/direction for non-uniform scaling.
 		const auto inverseScale = 1.0f / worldTransform.scale;
 		const auto worldRotationInverse = worldTransform.rotation.invert() * inverseScale;
 		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
 		const auto directionScaled = worldRotationInverse * (*direction);
 
+		// Loop through all the triangles 
 		auto addedResult = false;
 		for (auto i = 0u; i < activeTriCount; ++i) {
-			const auto triOffset = i * 3;
-			const auto index1 = triList[triOffset];
-			const auto index2 = triList[triOffset + 1];
-			const auto index3 = triList[triOffset + 2];
+			// Get some shorthand variables we'll use throughout.
+			const auto& triangle = triList[i];
+			const auto index1 = triangle.vertices[0];
+			const auto index2 = triangle.vertices[1];
+			const auto index3 = triangle.vertices[2];
 			const auto vertex1 = &vertices[index1];
 			const auto vertex2 = &vertices[index2];
 			const auto vertex3 = &vertices[index3];
 
+			// Perform our test for the triangle, and calculate the weight to each index.
 			auto distance = std::numeric_limits<float>::infinity();
 			TES3::Vector3 intersection = {};
 			float weight2, weight3;
@@ -95,8 +108,10 @@ namespace NI {
 				continue;
 			}
 
+			// The above function only calculated the weight of the 2nd and 3rd vertex, so we need to get the final weight.
 			const auto weight1 = 1.0f - weight2 - weight3;
 
+			// At this point we know we have a valid result and can start allocating memory for it.
 			addedResult = true;
 			const auto result = pick->addRecord();
 			result->object = this;
@@ -106,6 +121,7 @@ namespace NI {
 			result->vertexIndex[2] = index3;
 			result->distance = distance;
 
+			// Calculate intersection.
 			if (pick->coordinateType == PickCoordinateType::WORLD_COORDINATES) {
 				result->intersection = worldTransform * intersection;
 			}
@@ -113,6 +129,7 @@ namespace NI {
 				result->intersection = intersection;
 			}
 
+			// Calculate weighted texture coordinates.
 			const auto textureCoords = modelData->textureCoords;
 			if (pick->returnTexture && textureCoords) {
 				result->texture = textureCoords[index1] * weight1 + textureCoords[index2] * weight2 + textureCoords[index3] * weight3;
@@ -121,6 +138,7 @@ namespace NI {
 				result->texture = gPickDefaultTextureCoords::get();
 			}
 
+			// Calculate weighted normals. 
 			if (pick->returnNormal) {
 				TES3::Vector3 normal = {};
 				if (pick->returnSmoothNormal && normals) {
@@ -139,6 +157,7 @@ namespace NI {
 				}
 			}
 
+			// Calculate weighted vertex colors.
 			const auto colors = modelData->color;
 			if (pick->returnColor && colors) {
 				const auto r = unsigned char(float(colors[index1].r) * weight1 + float(colors[index2].r) * weight2 + float(colors[index3].r) * weight3);
