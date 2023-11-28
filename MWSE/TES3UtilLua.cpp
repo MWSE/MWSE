@@ -851,10 +851,16 @@ namespace mwse::lua {
 			rayTestCache->clearResults();
 		}
 
+		// Determine if we are doing an accurate test.
+		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
+		const auto existingUseNewSkinning = Configuration::UseSkinnedAccurateActivationRaytests;
+		Configuration::UseSkinnedAccurateActivationRaytests = accurateSkinned;
+
 		// Added ablity to use any node
 		// In Lua Script use "root = tes3.mobilePlayer.firstPersonReference.sceneNode"
 		// to have rayTest scan 1st person scene node
 		rayTestCache->root = getOptionalParam<NI::Node*>(params, "root", TES3::Game::get()->worldRoot);
+		Configuration::UseSkinnedAccurateActivationRaytests = existingUseNewSkinning;
 
 		// Are we finding all or the first?
 		if (getOptionalParam<bool>(params, "findAll", false)) {
@@ -971,7 +977,7 @@ namespace mwse::lua {
 		}
 
 		// Fix distances and missing intersection data for skinned nodes.
-		if (!Configuration::UseSkinnedAccurateActivationRaytests) {
+		if (!accurateSkinned) {
 			const auto distanceScale = 1.0 / direction.value().length();
 			const auto skinnedCorrection = (maxDistance != 0.0f) ? maxDistance : 1.0f;
 
