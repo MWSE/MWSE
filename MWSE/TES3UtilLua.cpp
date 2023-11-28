@@ -851,16 +851,10 @@ namespace mwse::lua {
 			rayTestCache->clearResults();
 		}
 
-		// Determine if we are doing an accurate test.
-		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
-		const auto existingUseNewSkinning = Configuration::UseSkinnedAccurateActivationRaytests;
-		Configuration::UseSkinnedAccurateActivationRaytests = accurateSkinned;
-
 		// Added ablity to use any node
 		// In Lua Script use "root = tes3.mobilePlayer.firstPersonReference.sceneNode"
 		// to have rayTest scan 1st person scene node
 		rayTestCache->root = getOptionalParam<NI::Node*>(params, "root", TES3::Game::get()->worldRoot);
-		Configuration::UseSkinnedAccurateActivationRaytests = existingUseNewSkinning;
 
 		// Are we finding all or the first?
 		if (getOptionalParam<bool>(params, "findAll", false)) {
@@ -962,9 +956,15 @@ namespace mwse::lua {
 			}
 		}
 
+		// Determine if we are doing an accurate test.
+		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
+		const auto existingUseNewSkinning = Configuration::UseSkinnedAccurateActivationRaytests;
+		Configuration::UseSkinnedAccurateActivationRaytests = accurateSkinned;
+
 		// Our pick is configured. Let's run it!
 		const auto directionNormalized = direction.value().normalized();
 		const auto pickSuccess = rayTestCache->pickObjects(&position.value(), &directionNormalized, false, maxDistance);
+		Configuration::UseSkinnedAccurateActivationRaytests = existingUseNewSkinning;
 
 		// Restore previous cull states.
 		for (auto itt = ignoreRestoreList.begin(); itt != ignoreRestoreList.end(); ++itt) {
