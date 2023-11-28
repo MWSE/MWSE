@@ -292,7 +292,6 @@ namespace TES3 {
 			x = x / len;
 			y = y / len;
 			z = z / len;
-			constexpr auto foo = std::numeric_limits<float>::epsilon();
 			return true;
 		}
 		else {
