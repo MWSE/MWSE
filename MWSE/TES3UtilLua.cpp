@@ -13,6 +13,7 @@
 #include "CodePatchUtil.h"
 #include "LuaObject.h"
 #include "MemoryUtil.h"
+#include "MWSEConfig.h"
 
 #include "NICamera.h"
 #include "NINode.h"
@@ -955,16 +956,9 @@ namespace mwse::lua {
 			}
 		}
 
-		// Determine/setup our accurate skinning state.
-		using gPickIgnoresSkinInstances = mwse::ExternalGlobal<bool, 0x7DEA4C>;
-		const auto previousPickIgnoresSkinInstances = gPickIgnoresSkinInstances::get();
-		const auto accurateSkinned = getOptionalParam<bool>(params, "accurateSkinned", false);
-		gPickIgnoresSkinInstances::set(!accurateSkinned);
-
-		// Our pick is configured. Let's run it! (Use normalized direction for skinned mesh fix later.)
-		auto directionNormalized = direction.value().normalized();
+		// Our pick is configured. Let's run it!
+		const auto directionNormalized = direction.value().normalized();
 		const auto pickSuccess = rayTestCache->pickObjects(&position.value(), &directionNormalized, false, maxDistance);
-		gPickIgnoresSkinInstances::set(previousPickIgnoresSkinInstances);
 
 		// Restore previous cull states.
 		for (auto itt = ignoreRestoreList.begin(); itt != ignoreRestoreList.end(); ++itt) {
@@ -977,9 +971,9 @@ namespace mwse::lua {
 		}
 
 		// Fix distances and missing intersection data for skinned nodes.
-		if (!accurateSkinned) {
-			auto distanceScale = 1.0 / direction.value().length();
-			auto skinnedCorrection = (maxDistance != 0.0) ? maxDistance : 1.0;
+		if (!Configuration::UseSkinnedAccurateActivationRaytests) {
+			const auto distanceScale = 1.0 / direction.value().length();
+			const auto skinnedCorrection = (maxDistance != 0.0f) ? maxDistance : 1.0f;
 
 			for (auto& r : rayTestCache->results) {
 				if (r == nullptr) {
@@ -993,7 +987,7 @@ namespace mwse::lua {
 				if (r->object->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
 					auto node = static_cast<const NI::TriShape*>(r->object.get());
 					if (node->skinInstance) {
-						r->distance *= float(skinnedCorrection);
+						r->distance *= skinnedCorrection;
 						r->intersection = position.value() + direction.value() * r->distance;
 						r->normal = (r->intersection - node->worldBoundOrigin).normalized();
 					}

@@ -4,6 +4,7 @@
 #include "NISkinInstance.h"
 
 #include "MWSEConfig.h"
+#include "Log.h"
 
 #include "MemoryUtil.h"
 
@@ -13,7 +14,6 @@ namespace NI {
 		NI_TriBasedGeometry_ctorFromData(this, data);
 	}
 
-	using gPickIgnoresSkinInstances = mwse::ExternalGlobal<bool, 0x7DEA4C>;
 	using gPickDefaultTextureCoords = mwse::ExternalGlobal<TES3::Vector2, 0x7DED80>;
 	using gPickDefaultColor = mwse::ExternalGlobal<NI::PackedColor, 0x7DE814>;
 
@@ -45,12 +45,8 @@ namespace NI {
 		}
 
 		// If we are just a bounds-based pick, we're basically done.
-		// Additionally, fall back to this if we have a skinInstance and gPickIgnoresSkinInstances has been set.
-		// Note that gPickIgnoresSkinInstances is true by default, but MWSE changes it to false.
-		// A 3rd party program, such as MGE XE, may set this to restore mostly vanilla behavior on skinned geometry.
 		if (pick->intersectType == PickIntersectType::BOUND_INTERSECT ||
-			pick->intersectType == PickIntersectType::UNKNOWN_2 ||
-			skinInstance && gPickIgnoresSkinInstances::get())
+			pick->intersectType == PickIntersectType::UNKNOWN_2)
 		{
 			auto result = pick->addRecord();
 			result->object = this;
