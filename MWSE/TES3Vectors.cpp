@@ -110,6 +110,13 @@ namespace TES3 {
 	// Vector3
 	//
 
+	const Vector3 Vector3::UNIT_X = { 1.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::UNIT_NEG_X = { -1.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::UNIT_Y = { 0.0f, 1.0f, 0.0f };
+	const Vector3 Vector3::UNIT_NEG_Y = { 0.0f, -1.0f, 0.0f };
+	const Vector3 Vector3::UNIT_Z = { 0.0f, 0.0f, 1.0f };
+	const Vector3 Vector3::UNIT_NEG_Z = { 0.0f, 0.0f, -1.0f };
+
 	Vector3::Vector3() :
 		x(0.0f),
 		y(0.0f),
@@ -653,7 +660,7 @@ namespace TES3 {
 		const auto forward = direction.normalized();
 		auto left = worldUp.crossProduct(&forward);
 		if (left.dotProduct(&left) < mwse::math::M_NORMALIZE_EPSILON) {
-			left = forward.crossProduct(&Vector3(0.0f, -1.0f, 0.0f));
+			left = forward.crossProduct(&Vector3::UNIT_NEG_Y);
 		}
 		left.normalize();
 		const auto up = forward.crossProduct(&left);

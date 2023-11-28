@@ -93,6 +93,13 @@ namespace TES3 {
 		Vector3 normalized() const;
 		Vector3 interpolate(const Vector3&, const float) const;
 
+		const static Vector3 UNIT_X;
+		const static Vector3 UNIT_NEG_X;
+		const static Vector3 UNIT_Y;
+		const static Vector3 UNIT_NEG_Y;
+		const static Vector3 UNIT_Z;
+		const static Vector3 UNIT_NEG_Z;
+
 	};
 	static_assert(sizeof(Vector3) == 0xC, "TES3::Vector3 failed size validation");
 
