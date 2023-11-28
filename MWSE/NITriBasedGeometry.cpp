@@ -150,6 +150,7 @@ namespace NI {
 			// Calculate weighted vertex colors.
 			const auto colors = modelData->color;
 			if (pick->returnColor && colors) {
+				// Vanilla can overflow or make less accurate color calculations. We don't care to follow that behavior and will be a bit more accurate.
 				const auto r = unsigned char(float(colors[index1].r) * weight1 + float(colors[index2].r) * weight2 + float(colors[index3].r) * weight3);
 				const auto g = unsigned char(float(colors[index1].g) * weight1 + float(colors[index2].g) * weight2 + float(colors[index3].g) * weight3);
 				const auto b = unsigned char(float(colors[index1].b) * weight1 + float(colors[index2].b) * weight2 + float(colors[index3].b) * weight3);
