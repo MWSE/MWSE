@@ -4,7 +4,6 @@
 #include "NISkinInstance.h"
 
 #include "MWSEConfig.h"
-#include "Log.h"
 
 #include "MemoryUtil.h"
 
@@ -45,18 +44,11 @@ namespace NI {
 		}
 
 		// If we are just a bounds-based pick, we're basically done.
-		if (pick->intersectType == PickIntersectType::BOUND_INTERSECT ||
-			pick->intersectType == PickIntersectType::UNKNOWN_2)
-		{
+		if (pick->intersectType != PickIntersectType::TRIANGLE_INTERSECT) {
 			auto result = pick->addRecord();
 			result->object = this;
 			result->distance = boundsDistance;
 			return true;
-		}
-
-		// At this point we should be using tri-based picks.
-		if (pick->intersectType != PickIntersectType::TRIANGLE_INTERSECT) {
-			return false;
 		}
 
 		const auto modelData = getModelData();
@@ -98,7 +90,7 @@ namespace NI {
 
 			// Perform our test for the triangle, and calculate the weight to each index.
 			auto distance = std::numeric_limits<float>::infinity();
-			TES3::Vector3 intersection = {};
+			TES3::Vector3 intersection;
 			float weight2, weight3;
 			if (!FindIntersectRayWithTriangle(&worldScaled, &directionScaled, vertex1, vertex2, vertex3, pick->frontOnly, &intersection, &distance, &weight2, &weight3)) {
 				continue;
