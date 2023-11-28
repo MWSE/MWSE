@@ -8,10 +8,10 @@ return {
 		tableParams = {
 			{ name = "label", type = "string", optional = true, description = "Text shown above the text field." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "Creates a variable of given class for this setting." },
+			{ name = "numbersOnly", type = "boolean", optional = true, default = false, description = "If true, only numbers will be allowed in this TextField." },
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
 			{ name = "height", type = "integer", optional = true, description = "Fixes the height of the paragraph field to a custom value." },
 			{ name = "sNewValue", type = "string", optional = true, description = [[The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".]] },
-			{ name = "sNumbersOnly", type = "string", optional = true, description = 'The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".' },
 			{ name = "callback", type = "fun(self: mwseMCMParagraphField)", optional = true, description = "This allows overriding the default implementation of this method" },
 			{ name = "inGameOnly", type = "boolean", optional = true, default = false, description = "If true, the setting is disabled while the game is on main menu." },
 			{ name = "restartRequired", type = "boolean", optional = true, default = false, description = "If true, updating this Setting will notify the player to restart the game." },

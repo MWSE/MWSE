@@ -201,7 +201,7 @@ This array of UI elements will have an event handler registered to trigger "MCM:
 ### `numbersOnly`
 <div class="search_terms" style="display: none">numbersonly</div>
 
-If true, only numbers will be allowed for this variable in TextFields.
+If true, only numbers will be allowed in this TextField.
 
 **Returns**:
 
@@ -567,7 +567,7 @@ myObject:makeComponent(parentBlock)
 Creates a new ParagraphField.
 
 ```lua
-local paragraphField = myObject:new({ label = ..., variable = ..., description = ..., height = ..., sNewValue = ..., sNumbersOnly = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ..., class = ..., componentType = ..., parentComponent = ... })
+local paragraphField = myObject:new({ label = ..., variable = ..., numbersOnly = ..., description = ..., height = ..., sNewValue = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ..., class = ..., componentType = ..., parentComponent = ... })
 ```
 
 **Parameters**:
@@ -575,10 +575,10 @@ local paragraphField = myObject:new({ label = ..., variable = ..., description =
 * `data` (table): *Optional*.
 	* `label` (string): *Optional*. Text shown above the text field.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): *Optional*. Creates a variable of given class for this setting.
+	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed in this TextField.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 	* `height` (integer): *Optional*. Fixes the height of the paragraph field to a custom value.
 	* `sNewValue` (string): *Optional*. The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
-	* `sNumbersOnly` (string): *Optional*. The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".
 	* `callback` (fun(self: [mwseMCMParagraphField](../types/mwseMCMParagraphField.md))): *Optional*. This allows overriding the default implementation of this method
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.

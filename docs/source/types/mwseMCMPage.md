@@ -736,7 +736,7 @@ myObject:createOuterContainer(parentBlock)
 Creates a new nested ParagraphField.
 
 ```lua
-local paragraphField = myObject:createParagraphField({ label = ..., buttonText = ..., variable = ..., description = ..., height = ..., sNewValue = ..., sNumbersOnly = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+local paragraphField = myObject:createParagraphField({ label = ..., buttonText = ..., variable = ..., numbersOnly = ..., description = ..., height = ..., sNewValue = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -745,10 +745,10 @@ local paragraphField = myObject:createParagraphField({ label = ..., buttonText =
 	* `label` (string): *Optional*. Text shown above the text field.
 	* `buttonText` (string): *Optional*. The text shown on the button next to the input field. The default text is a localized version of: "Submit".
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): Creates a variable of given class for this setting.
+	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed in this TextField.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 	* `height` (integer): *Optional*. Fixes the height of the paragraph field to a custom value.
 	* `sNewValue` (string): *Optional*. The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
-	* `sNumbersOnly` (string): *Optional*. The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".
 	* `callback` (fun(self: [mwseMCMParagraphField](../types/mwseMCMParagraphField.md))): *Optional*. This allows overriding the default implementation of this method
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
@@ -866,7 +866,7 @@ myObject:createSubcomponentsContainer(parentBlock)
 Creates a new nested TextField.
 
 ```lua
-local textField = myObject:createTextField({ label = ..., buttonText = ..., variable = ..., description = ..., press = ..., sNewValue = ..., sNumbersOnly = ..., minHeight = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+local textField = myObject:createTextField({ label = ..., buttonText = ..., variable = ..., numbersOnly = ..., description = ..., press = ..., sNewValue = ..., minHeight = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -875,10 +875,10 @@ local textField = myObject:createTextField({ label = ..., buttonText = ..., vari
 	* `label` (string): *Optional*. Text shown above the text field.
 	* `buttonText` (string): *Optional*. The text shown on the button next to the input field. The default text is a localized version of: "Submit".
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
+	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed in this TextField.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 	* `press` (fun(self: [mwseMCMTextField](../types/mwseMCMTextField.md))): *Optional*. This allows overriding the default implementation of this method. Can be overriden to add a confirmation message before updating. This function should call `self:update()` at the end.
 	* `sNewValue` (string): *Optional*. The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
-	* `sNumbersOnly` (string): *Optional*. The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".
 	* `minHeight` (integer): *Optional*. The minimum height set on the `self.element.border` UI element.
 	* `callback` (fun(self: [mwseMCMTextField](../types/mwseMCMTextField.md))): *Optional*. This allows overriding the default implementation of this method. See its [description](../types/mwseMCMTextField.md#callback).
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.

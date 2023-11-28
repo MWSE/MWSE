@@ -652,6 +652,9 @@ namespace TES3 {
 	void Matrix33::lookAt(Vector3 direction, Vector3 worldUp) {
 		auto forward = direction.normalized();
 		auto left = worldUp.crossProduct(&forward);
+		if (left.dotProduct(&left) < 1e-6) {
+			left = forward.crossProduct(&Vector3(0.0, -1.0, 0.0));
+		}
 		left.normalize();
 		auto up = forward.crossProduct(&left);
 		m0.x = -left.x;

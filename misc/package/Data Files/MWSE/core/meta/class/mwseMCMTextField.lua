@@ -8,7 +8,7 @@
 --- @field elements mwseMCMParagraphFieldElements|mwseMCMTextFieldElements This dictionary-style table holds all the UI elements of the TextField, for easy access.
 --- @field label string Text shown above the text field.
 --- @field minHeight integer|nil The minimum height set on the `self.elements.border` UI element.
---- @field numbersOnly boolean If true, only numbers will be allowed for this variable in TextFields.
+--- @field numbersOnly boolean If true, only numbers will be allowed in this TextField.
 --- @field sNewValue string The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
 mwseMCMTextField = {}
 
@@ -36,13 +36,13 @@ function mwseMCMTextField:makeComponent(parentBlock) end
 --- 
 --- `variable`: mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil — *Optional*. A variable for this setting.
 --- 
+--- `numbersOnly`: boolean? — *Default*: `false`. If true, only numbers will be allowed in this TextField.
+--- 
 --- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- 
 --- `press`: nil|fun(self: mwseMCMTextField) — *Optional*. This allows overriding the default implementation of this method. Can be overriden to add a confirmation message before updating. This function should call `self:update()` at the end.
 --- 
 --- `sNewValue`: string? — *Optional*. The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
---- 
---- `sNumbersOnly`: string? — *Optional*. The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".
 --- 
 --- `minHeight`: integer? — *Optional*. The minimum height set on the `self.element.border` UI element.
 --- 
@@ -77,10 +77,10 @@ function mwseMCMTextField:new(data) end
 --- @field label string? *Optional*. Text shown above the text field.
 --- @field buttonText string? *Optional*. The text shown on the button next to the input field. The default text is a localized version of: "Submit".
 --- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil *Optional*. A variable for this setting.
+--- @field numbersOnly boolean? *Default*: `false`. If true, only numbers will be allowed in this TextField.
 --- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- @field press nil|fun(self: mwseMCMTextField) *Optional*. This allows overriding the default implementation of this method. Can be overriden to add a confirmation message before updating. This function should call `self:update()` at the end.
 --- @field sNewValue string? *Optional*. The message shown after a new value is submitted. This can be formatted with a '%s' which will be replaced with the new value. The default text is a localized version of: "New value: '%s'".
---- @field sNumbersOnly string? *Optional*. The text shown in a messageBox when the user entered an invalid input when `self.variable.numbersOnly` is true. The default text is a localized version of: "Value must be a number.".
 --- @field minHeight integer? *Optional*. The minimum height set on the `self.element.border` UI element.
 --- @field callback nil|fun(self: mwseMCMTextField) *Optional*. This allows overriding the default implementation of this method. See its [description](../types/mwseMCMTextField.md#callback).
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
