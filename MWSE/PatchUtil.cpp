@@ -1329,9 +1329,7 @@ namespace mwse::patch {
 	}
 
 	void installPostInitializationPatches() {
-		// Patch: Improve raycast accuracy by default.
-		using gPickIgnoresSkinInstances = mwse::ExternalGlobal<bool, 0x7DEA4C>;
-		gPickIgnoresSkinInstances::set(false);
+
 	}
 
 	//
