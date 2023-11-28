@@ -649,14 +649,14 @@ namespace TES3 {
 		return Vector3(m0.z, m1.z, m2.z);
 	}
 
-	void Matrix33::lookAt(Vector3 direction, Vector3 worldUp) {
-		auto forward = direction.normalized();
+	void Matrix33::lookAt(const Vector3& direction, const Vector3& worldUp) {
+		const auto forward = direction.normalized();
 		auto left = worldUp.crossProduct(&forward);
-		if (left.dotProduct(&left) < 1e-6) {
-			left = forward.crossProduct(&Vector3(0.0, -1.0, 0.0));
+		if (left.dotProduct(&left) < mwse::math::M_NORMALIZE_EPSILON) {
+			left = forward.crossProduct(&Vector3(0.0f, -1.0f, 0.0f));
 		}
 		left.normalize();
-		auto up = forward.crossProduct(&left);
+		const auto up = forward.crossProduct(&left);
 		m0.x = -left.x;
 		m1.x = -left.y;
 		m2.x = -left.z;
