@@ -841,12 +841,10 @@ namespace mwse::lua {
 		// Get optional maximum search distance.
 		auto maxDistance = getOptionalParam<float>(params, "maxDistance", 0.0f);
 
-		// Create our pick if it doesn't exist.
+		// Create our pick if it doesn't exist. If it does exist, clear all results.
 		if (rayTestCache == nullptr) {
 			rayTestCache = NI::Pick::malloc();
 		}
-
-		// Or clean up results otherwise.
 		else {
 			rayTestCache->clearResults();
 		}
@@ -978,24 +976,24 @@ namespace mwse::lua {
 
 		// Fix distances and missing intersection data for skinned nodes.
 		if (!accurateSkinned) {
-			const auto distanceScale = 1.0 / direction.value().length();
+			const auto distanceScale = 1.0f / direction.value().length();
 			const auto skinnedCorrection = (maxDistance != 0.0f) ? maxDistance : 1.0f;
 
-			for (auto& r : rayTestCache->results) {
+			for (const auto& r : rayTestCache->results) {
 				if (r == nullptr) {
 					continue;
 				}
 
 				// Adjust distance as if direction was not normalized.
-				r->distance *= float(distanceScale);
+				r->distance *= distanceScale;
 
 				// Skinned nodes only have usable scaled distance data.
-				if (r->object->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
-					auto node = static_cast<const NI::TriShape*>(r->object.get());
-					if (node->skinInstance) {
+				if (r->object->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
+					const auto geometry = static_cast<const NI::TriBasedGeometry*>(r->object.get());
+					if (geometry->skinInstance) {
 						r->distance *= skinnedCorrection;
 						r->intersection = position.value() + direction.value() * r->distance;
-						r->normal = (r->intersection - node->worldBoundOrigin).normalized();
+						r->normal = (r->intersection - geometry->worldBoundOrigin).normalized();
 					}
 				}
 			}
