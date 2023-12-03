@@ -26,79 +26,33 @@ function KeyBinder:getText()
 	return self:getComboString(self.variable.value)
 end
 
-local mouseWheelDirectionName = {
-	[1] = "Mouse wheel up",
-	[-1] = "Mouse wheel down",
-}
-
---- @param wheel integer|nil
---- @return string|nil result
-function KeyBinder:getMouseWheelText(wheel)
-	local name = mouseWheelDirectionName[wheel]
-	if name then
-		return mwse.mcm.i18n(name)
-	end
-end
-
-local mouseButtonName = {
-	[0] = "Left mouse button",
-	[1] = "Right mouse button",
-	[2] = "Middle mouse button",
-}
-
---- @param buttonIndex number|nil
---- @return string|nil result
-function KeyBinder:getMouseButtonText(buttonIndex)
-	-- Only work with button indices supporte by the inputController
-	if not buttonIndex or buttonIndex > 7 or buttonIndex < 0 then
-		return
-	end
-	local name = mouseButtonName[buttonIndex]
-	if name then
-		return mwse.mcm.i18n(name)
-	end
-
-	return string.format(mwse.mcm.i18n("Mouse %s"), buttonIndex)
-end
-
 --- @param keyCombo mwseKeyMouseCombo
 --- @return string result
 function KeyBinder:getComboString(keyCombo)
-	-- Returns "SHIFT-X" if shift is held down but the active key is not Shift,
-	-- otherwise just "X" (X being the key being pressed)
-	-- And so on for Alt and Ctrl
-
-	local keyCode = keyCombo.keyCode
-	local comboText = mwse.mcm.getKeyCodeLetter(keyCode)
-
-	if self.allowMouse then
-		comboText = comboText or
-		            self:getMouseWheelText(keyCombo.mouseWheel) or
-		            self:getMouseButtonText(keyCombo.mouseButton)
-	end
-
 	-- Add failsafe for malformed keyCombos
-	if not comboText then
-		local inspect = require("inspect")
-		mwse.log("[KeyBinder]: couldn't resolve any text for the given combo:\n%s", inspect(keyCombo))
-		comboText = string.format("{%s}", mwse.mcm.i18n("unknown key"))
+	local hasMouse = keyCombo.mouseButton or keyCombo.mouseWheel
+	if hasMouse and not self.allowMouse then
+		mwse.log("[KeyBinder: WARN]: A KeyBinder with allowMouse = false got a key combination containing " ..
+			"mouseButton/mouseWheel. The combination is:\n%s", json.encode(keyCombo))
+		-- Make it a soft error
+		keyCombo.mouseButton = false
+		keyCombo.mouseWheel = false
 	end
 
-	-- if you set allowCombinations to false, nothing functionally changes
-	-- but the player doesn't see the prefix
-	if not self.allowCombinations then
-		return comboText
+	local hasModifier = keyCombo.isAltDown or keyCombo.isShiftDown or keyCombo.isControlDown
+	if hasModifier and not self.allowCombinations then
+		mwse.log("[KeyBinder: WARN]: A KeyBinder with allowCombinations = false got a key combination containing " ..
+			"modifer key. The combination is:\n%s", json.encode(keyCombo))
+		-- Make it a soft error: don't show the modifier in the KeyBinder button. It stays in the config.
+		keyCombo.isAltDown = false
+		keyCombo.isShiftDown = false
+		keyCombo.isControlDown = false
 	end
 
-	local hasAlt = (keyCombo.isAltDown and keyCode ~= tes3.scanCode.lAlt
-	                                   and keyCode ~= tes3.scanCode.rAlt)
-	local hasShift = (keyCombo.isShiftDown and keyCode ~= tes3.scanCode.lShift
-	                                       and keyCode ~= tes3.scanCode.rShift)
-	local hasCtrl = (keyCombo.isControlDown and keyCode ~= tes3.scanCode.lCtrl
-	                                        and keyCode ~= tes3.scanCode.rCtrl)
-	local prefix = (hasAlt and "Alt - " or hasShift and "Shift - " or hasCtrl and "Ctrl - " or "")
+	local comboText = mwse.mcm.getKeyComboName(keyCombo) or
+	                  string.format("{%s}", mwse.mcm.i18n("unknown key"))
 
-	return (prefix .. comboText)
+	return comboText
 end
 
 

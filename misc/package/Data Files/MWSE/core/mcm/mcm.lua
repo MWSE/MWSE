@@ -32,12 +32,72 @@ end
 
 --- @param keyCode integer|nil
 --- @return string|nil letter
-function mcm.getKeyCodeLetter(keyCode)
+function mcm.getKeyCodeName(keyCode)
 	local letter = table.find(tes3.scanCode, keyCode)
 	local returnString = tes3.scanCodeToNumber[keyCode] or letter
 	if returnString then
 		return string.upper(returnString)
 	end
+end
+
+local mouseWheelDirectionName = {
+	[1] = "Mouse wheel up",
+	[-1] = "Mouse wheel down",
+}
+
+--- @param wheel integer|nil
+--- @return string|nil result
+function mcm.getMouseWheelName(wheel)
+	local name = mouseWheelDirectionName[wheel]
+	if name then
+		return mwse.mcm.i18n(name)
+	end
+end
+
+local mouseButtonName = {
+	[0] = "Left mouse button",
+	[1] = "Right mouse button",
+	[2] = "Middle mouse button",
+}
+
+--- @param buttonIndex number|nil
+--- @return string|nil result
+function mcm.getMouseButtonName(buttonIndex)
+	-- Only work with button indices supporte by the inputController
+	if not buttonIndex or buttonIndex > 7 or buttonIndex < 0 then
+		return
+	end
+	local name = mouseButtonName[buttonIndex]
+	if name then
+		return mwse.mcm.i18n(name)
+	end
+
+	return string.format(mwse.mcm.i18n("Mouse %s"), buttonIndex)
+end
+
+--- @param keyCombo mwseKeyMouseCombo
+--- @return string|nil result
+function mcm.getKeyComboName(keyCombo)
+	-- Returns "SHIFT-X" if shift is held down but the active key is not Shift,
+	-- otherwise just "X" (X being the key being pressed)
+	-- And so on for Alt and Ctrl
+
+	local keyCode = keyCombo.keyCode
+	local comboText = mwse.mcm.getKeyCodeName(keyCode) or
+	                  mwse.mcm.getMouseWheelName(keyCombo.mouseWheel) or
+	                  mwse.mcm.getMouseButtonName(keyCombo.mouseButton)
+
+	-- No valid name yet, nothing to do.
+	if not comboText then
+		return
+	end
+
+	local hasAlt = keyCombo.isAltDown and keyCode ~= tes3.scanCode.lAlt and keyCode ~= tes3.scanCode.rAlt
+	local hasShift = keyCombo.isShiftDown and keyCode ~= tes3.scanCode.lShift and keyCode ~= tes3.scanCode.rShift
+	local hasCtrl = keyCombo.isControlDown and keyCode ~= tes3.scanCode.lCtrl and keyCode ~= tes3.scanCode.rCtrl
+	local prefix = (hasAlt and "Alt - " or hasShift and "Shift - " or hasCtrl and "Ctrl - " or "")
+
+	return (prefix .. comboText)
 end
 
 -- Depreciated
