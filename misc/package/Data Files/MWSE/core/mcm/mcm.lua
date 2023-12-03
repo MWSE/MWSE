@@ -30,6 +30,16 @@ function mcm.testKeyBind(keybind)
 	       keybind.isAltDown == inputController:isAltDown() and keybind.isControlDown == inputController:isControlDown()
 end
 
+--- @param keyCode integer|nil
+--- @return string|nil letter
+function mcm.getKeyCodeLetter(keyCode)
+	local letter = table.find(tes3.scanCode, keyCode)
+	local returnString = tes3.scanCodeToNumber[keyCode] or letter
+	if returnString then
+		return string.upper(returnString)
+	end
+end
+
 -- Depreciated
 function mcm.registerModData(mcmData)
 	-- object returned to be used in modConfigMenu

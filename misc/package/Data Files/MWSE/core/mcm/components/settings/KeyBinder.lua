@@ -26,16 +26,6 @@ function KeyBinder:getText()
 	return self:getComboString(self.variable.value)
 end
 
---- @param keyCode integer|nil
---- @return string|nil letter
-function KeyBinder:getLetter(keyCode)
-	local letter = table.find(tes3.scanCode, keyCode)
-	local returnString = tes3.scanCodeToNumber[keyCode] or letter
-	if returnString then
-		return string.upper(returnString)
-	end
-end
-
 local mouseWheelDirectionName = {
 	[1] = "Mouse wheel up",
 	[-1] = "Mouse wheel down",
@@ -79,7 +69,7 @@ function KeyBinder:getComboString(keyCombo)
 	-- And so on for Alt and Ctrl
 
 	local keyCode = keyCombo.keyCode
-	local comboText = self:getLetter(keyCode)
+	local comboText = mwse.mcm.getKeyCodeLetter(keyCode)
 
 	if self.allowMouse then
 		comboText = comboText or
