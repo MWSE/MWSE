@@ -1596,6 +1596,10 @@ function tes3.isCharGenRunning() end
 --- @return boolean result No description yet available.
 function tes3.isCharGenStarted() end
 
+--- Returns true if the game has initialized.
+--- @return boolean isInitialized No description yet available.
+function tes3.isInitialized() end
+
 --- Compares two key objects and returns their equality. Returns true if the objects are equal, false otherwise.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3iskeyequal).

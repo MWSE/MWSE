@@ -3123,6 +3123,21 @@ local result = tes3.isCharGenStarted()
 
 ***
 
+### `tes3.isInitialized`
+<div class="search_terms" style="display: none">isinitialized, initialized</div>
+
+Returns true if the game has initialized.
+
+```lua
+local isInitialized = tes3.isInitialized()
+```
+
+**Returns**:
+
+* `isInitialized` (boolean)
+
+***
+
 ### `tes3.isKeyEqual`
 <div class="search_terms" style="display: none">iskeyequal, keyequal</div>
 
