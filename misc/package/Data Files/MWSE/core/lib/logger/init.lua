@@ -90,10 +90,12 @@ Additionally, you can write
 **NOTE:** The `log` **must** be on the `>=` side of the comparison if using this syntax. Writing `log <= 4` will result in an error. 
 ]]
 ---@class Logger
+---@field modName string the name of the mod this logger is for
 ---@field level Logger.LEVEL
+---@field moduleName string? the module this logger belongs to, or `nil` if it's a general purpose logger
+---@field children table<string, Logger> all the child logggers, indexed by their `moduleName`
 ---@field useColors boolean should colors be used when writing log statements? Default: `false`
 ---@field writeToFile boolean if true, we will write the log contents to a file with the same name as this mod.
----@field modName string the name of the mod this logger is for
 ---@field includeTimestamp boolean should the current time be printed when writing log messages? Default: `false`
 ---@field file file*? the file the log is being written to, if `writeToFile == true`, otherwise its nil.
 local Logger = {
@@ -133,6 +135,8 @@ setmetatable(Logger, LoggerMetatable)
 ---|"TRACE"     Many debug messages will be printed
 
 
+
+
 -- metatable used by log objects
 local logMetatable = {
     __call = function(self, ...) self:debug(...) end,
@@ -140,11 +144,23 @@ local logMetatable = {
     __le = function(num, self) return num <= self.level end,
     __len = function(self) return self.level end,
     __index = Logger,
+    ---@param self Logger
+    ---@param str string
+    __concat = function(self, str)
+        return self:makeChild(str)
+    end,
     __tostring = function(self)
-        return string.format(
-            "Logger(modName=\"%s\", level=%i, levelStr=%s)",
-            self.modName, self.level, table.find(Logger.LEVEL, self.level)
-        )
+        if self.moduleName then 
+            return string.format(
+                "Logger(modName=\"%s\", moduleName=\"%s\", level=%i, levelStr=%s)",
+                self.modName, self.moduleName, self.level, table.find(Logger.LEVEL, self.level)
+            )
+        else
+            return string.format(
+                    "Logger(modName=\"%s\", level=%i, levelStr=%s)",
+                    self.modName, self.level, table.find(Logger.LEVEL, self.level)
+                )
+        end
     end,
 }
 
@@ -153,6 +169,7 @@ local logMetatable = {
 ---@class Logger.newParams
 ---@field modName string the name of the mod this logger is for
 ---@field level Logger.LEVEL|Logger.LEVEL_STRING|nil the log level to set this object to. Default: "INFO"
+---@field moduleName string? the module this logger belongs to, or `nil` if it's a general purpose logger
 ---@field useColors boolean? should colors be used when writing log statements? Default: `false`
 ---@field includeTimestamp boolean? should the current time be printed when writing log messages? Default: `false`
 ---@field writeToFile string|boolean|nil whether to write the log messages to a file, or the name of the file to write to. if `false` or `nil`, messages will be written to `MWSE.log`
@@ -174,18 +191,52 @@ In addition to `modName`, you may specify
 ---@param params Logger.newParams
 function Logger.new(params)
     -- if it's just a string, treat it as the `modName`
-    if type(params) == "string" then params = {modName=params} end
+    if type(params) == "string" then
+        params = {modName=params} 
+    end
+    -- do some error checking to make sure `params` are correct
+    assert(params.modName ~= nil, "Error: Could not create a Logger because modName was nil.")
+    assert(type(params.modName) == "string", "Error: Could not create a Logger. modName must be a string.")
 
-    -- if a logger for the given mod has already been made, then return that logger and move on
-    if loggers[params.modName] then return loggers[params.modName] end
+    if params.moduleName == nil then
+        params.modName, params.moduleName = unpack(params.modName:split("/"))
+    end
+
+    local parentLog
+    -- if a logger for the given mod has already been made
+    if loggers[params.modName] then 
+        local log = loggers[params.modName]
+        
+        if params.moduleName ~= nil then
+            -- we were given a `moduleName`, so we should check if that given child log exists
+            if log.children[params.moduleName] then
+                -- return the child if it exists
+                return log.children[params.moduleName]
+            else
+                -- otherwise, mark that the log we're making is a child of this log.
+                parentLog = log
+                -- copy over information from parentLog into `params`, taking care to not overwrite `params`
+                for _,k in ipairs{"useColors", "writeToFile", "level", "includeTimestamp"} do
+                    if params[k] == nil then
+                        params[k] = parentLog[k]
+                    end
+                end
+
+            end
+        else
+            return log
+        end
+    end
 
     ---@type Logger
     local log = {
-        modName = params.modName, 
+        modName = params.modName,
+        moduleName = params.moduleName,
         useColors=params.useColors or false,
         writeToFile = params.writeToFile or false,
         level = Logger.LEVEL.INFO, -- we'll set it with the dedicated function so we can do fancy stuff
         includeTimestamp = params.includeTimestamp or false,
+        children = {},
     }
 
     if log.writeToFile then
@@ -196,14 +247,16 @@ function Logger.new(params)
             fileName = log.modName .. ".log"
         end
         log.file = io.open(fileName, "w")
-    else
-        log.writeToFile = false
     end
     setmetatable(log, logMetatable)
     
-    loggers[params.modName] = log
+    if parentLog == nil then
+        loggers[params.modName] = log
+    else
+        parentLog.children[params.modName] = log
+    end
 
-    log:setLevel(params.level)
+    log:setLevel(params.level) -- checks if it was `nil`
 
     return log -- this gets sent right into the `init` method below, but it's metatable gets set first.
 end
@@ -231,13 +284,46 @@ local COLORS = {
 The difference between `.get` and `.new` is that if a logger does not exist, `.new` will create one, while `.get` will not.
 ]]
 ---@param modName string name of the mod
+---@param moduleName string the name of the module
 ---@return Logger? logger
-function Logger.get(modName) return loggers[modName] end
+function Logger.get(modName, moduleName)
+    if moduleName == nil then
+        modName, moduleName = unpack(modName:split("/"))
+    end
+    local log = loggers[modName]
+    if log then
+        if moduleName ~= nil then 
+            return log.children[moduleName]
+        end
+        return log
+    end
+end
 
 
+function Logger:getLevelStr()
+    return table.find(Logger.LEVEL, self.level)
+end
 
 
+function Logger:makeChild(moduleName)
+    return self.new{
+        modName=self.modName,
+        level=self.level,
+        moduleName=moduleName, 
+        useColors=self.useColors,
+        writeToFile=self.writeToFile,
+        includeTimestamp=self.includeTimestamp
+    }
+end
 local LogLevel = Logger.LEVEL
+
+
+--- get the parent of this logger. only really used internally
+---@return Logger
+function Logger:getParent()
+    return loggers[self.modName]
+end
+
 
 --[[Change the current logging level. You can specify a string or number.
 e.g. to set the `log.level` to "DEBUG", you can write any of the following:
@@ -248,42 +334,57 @@ e.g. to set the `log.level` to "DEBUG", you can write any of the following:
 ---@param self Logger
 ---@param level Logger.LEVEL|Logger.LEVEL_STRING
 function Logger:setLevel(level)
+    
+
+    local lvl -- the actual level we should use, instead of a string or something
     if LogLevel[level] then 
-        self.level = LogLevel[level]
+        lvl = LogLevel[level]
     elseif type(level) == "number" then 
         if LogLevel.NONE <= level and level <= LogLevel.TRACE then
             ---@diagnostic disable-next-line: assign-type-mismatch
-            self.level = level
+            lvl = level
         end
     elseif type(level) == "string" and LogLevel[level:upper()] then 
-        self.level = LogLevel[level:upper()]
+        lvl = LogLevel[level:upper()]
+    end
+    if lvl then
+        -- make sure we updated all registered loggers for the mod, not just this one
+        local parent = self:getParent()
+        parent.level = lvl
+        for _, child in pairs(parent.children) do
+            child.level = lvl
+        end
     end
 end
 
 
---- write to log. only used internally
----@param LogStr Logger.LEVEL_STRING
-function Logger:write(LogStr,...)
-    local s, s1, s2
-    local n = select("#",...)
-    
+---@param includeTimestamp boolean Whether logs should use timestamps
+function Logger:setIncludeTimestamp(includeTimestamp)
+    -- we need to know what to do
+    if includeTimestamp == nil then return end
+    local parent = self:getParent()
 
+    parent.includeTimestamp = includeTimestamp
+    for _, logger in pairs(parent.children) do
+        logger.includeTimestamp = includeTimestamp
+    end
+
+end
+
+--- for internal use only. it generates the header message that will be enclosed in square brackets when printing log messages.
+function Logger:_makeHeader(LogStr)
+    local header_t = {}
+    
+    if self.moduleName ~= nil then
+        header_t[1] = string.format("%s (%s):", self.modName, self.moduleName)
+    else
+        header_t[1] = string.format("%s:", self.modName)
+    end
     if self.useColors then
         -- e.g. turn "ERROR" into "ERROR" (but written in red)
         LogStr = colors(string.format("%%{%s}%s", COLORS[LogStr], LogStr))
     end
-    
-    if n == 1 then
-        s = string.format("[%s: %s] %s", self.modName, LogStr, ...)
-    else
-        s1, s2 = ...
-        if n == 2 and type(s2) == "function" then 
-            s = string.format("[%s: %s] %s", self.modName, LogStr, string.format(s1, s2()))
-        else
-            s = string.format("[%s: %s] %s", self.modName, LogStr, string.format(s1, select(2,...)))
-        end 
-    end
-
+    header_t[#header_t+1] = LogStr
     if self.includeTimestamp then
         local socket = require("socket")
         local timestamp = socket.gettime()
@@ -294,9 +395,30 @@ function Logger:write(LogStr,...)
         local timeTable = os.date("*t", timestamp)
 
         -- format time components into H:M:S:MS string
-        local formattedTime = string.format("%02d:%02d:%02d.%03d", timeTable.hour, timeTable.min, timeTable.sec, milliseconds)
-        s = string.format("[%s] %s", formattedTime, s)
+        local formattedTime = string.format(": %02d:%02d:%02d.%03d", timeTable.hour, timeTable.min, timeTable.sec, milliseconds)
+        header_t[#header_t+1] = formattedTime
     end
+    return table.concat(header_t," ")
+end
+
+--- write to log. only used internally
+---@param LogStr Logger.LEVEL_STRING
+function Logger:write(LogStr,...)
+    local s, s1, s2
+    local n, header = select("#",...), self:_makeHeader(LogStr)
+    
+    if n == 1 then
+        s = string.format("[%s] %s", header, ...)
+    else
+        s1, s2 = ...
+        if n == 2 and type(s2) == "function" then 
+            s = string.format("[%s] %s", header, string.format(s1, s2()))
+        else
+            s = string.format("[%s] %s", header, string.format(s1, select(2,...)))
+        end
+    end
+
+    
     if self.writeToFile ~= false then
         self.file:write(s .. "\n"); self.file:flush()
     else
@@ -432,6 +554,7 @@ end
 
 
 do
+
     -- =========================================================================
     -- table log formatting
     -- =========================================================================
@@ -443,42 +566,32 @@ do
 ---@param LogStr Logger.LEVEL_STRING
 ---@param t Logger.writeParams
 function Logger:writet(LogStr, t)
+    local header = self:_makeHeader(LogStr)
     local s
-    if self.useColors then
-        -- e.g. turn "ERROR" into "ERROR" (but written in red)
-        LogStr = colors(string.format("%%{%s}%s", COLORS[LogStr], LogStr))
-    end
     
-    
-    if t.msg then 
-        if type(t.args) == "function" then
-            s = string.format("[%s: %s] %s", self.modName, LogStr, string.format(t.msg, unpack(t.args()) ))
-        elseif type(t.args) == "table" then
-            s = string.format("[%s: %s] %s", self.modName, LogStr, string.format(t.msg, unpack(t.args) ))
-        end
+    -- args is going to be what we're actually printing if `msg == nil`. it will support associative tables.
+    -- _args is just to deal with the case that `t.args` is a function
+    local args, _args = {}, (type(t.args) == "function" and t.args()) or t.args
+
+    local i,n = 1, #_args
+
+    if t.msg then
+        s = string.format("[%s] %s", header, t.msg:format(unpack(_args)))
     else
         local sep = (type(t.sep) == "string" and t.sep) or "\n\t"
 
-        if type(t.args) == "function" then
-            s = string.format("[%s: %s] %s", self.modName, LogStr, table.concat(t.args(), sep))
-        elseif type(t.args) == "table" then
-            s = string.format("[%s: %s] %s", self.modName, LogStr, table.concat(t.args, sep))
+        for k,v in pairs(_args) do
+            if i <= n then      
+                table.insert(args,v)
+            else
+                table.insert(args,string.format("%s=%s",k,v))
+            end
+            i = i + 1
         end
+        s = string.format("[%s] %s", header, table.concat(args, sep))
     end
 
-    if self.includeTimestamp then
-        local socket = require("socket")
-        local timestamp = socket.gettime()
-        local milliseconds = math.floor((timestamp % 1) * 1000)
-        timestamp = math.floor(timestamp)
-
-        -- convert timestamp to a table containing time components
-        local timeTable = os.date("*t", timestamp)
-
-        -- format time components into H:M:S:MS string
-        local formattedTime = string.format("%02d:%02d:%02d.%03d", timeTable.hour, timeTable.min, timeTable.sec, milliseconds)
-        s = string.format("[%s] %s", formattedTime, s)
-    end
+    
     if self.writeToFile ~= false then
         self.file:write(s .. "\n"); self.file:flush()
     else
@@ -650,6 +763,7 @@ end
 function Logger:addToMCM(componentOrParams, config, createCategory)
 
     local label, description, component
+
     -- if it's not a page or category
     if type(componentOrParams) == "table" and not componentOrParams.componentType then 
         component = componentOrParams.component
@@ -714,7 +828,7 @@ function Logger:addToMCM(componentOrParams, config, createCategory)
         variable = (config and mwse.mcm.createTableVariable{ id = "logLevel", table = config}) or nil,
         callback = function (dropdown)
             self:setLevel(dropdown.variable.value)
-            self("updated log level to " .. self.level)
+            self("updated log level to %i (%s)", self.level, self:getLevelStr())
         end
     }
 end
