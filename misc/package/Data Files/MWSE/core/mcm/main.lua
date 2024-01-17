@@ -26,6 +26,16 @@ local modConfigContainer = nil
 mwse.mcm = require("mcm.mcm")
 mwse.mcm.i18n = mwse.loadTranslations("mcm")
 
+
+function mwse.mcm.getAllRegisteredModNames(sort) return table.keys(configMods, sort) end
+
+function mwse.mcm.setHidden(modName, hidden)
+	if configMods[modName] then
+		if hidden == nil then hidden = true end
+		configMods[modName].hidden = hidden
+	end
+end
+
 --- Callback for when a mod name has been clicked in the left pane.
 --- @param e tes3uiEventData
 local function onClickModName(e)

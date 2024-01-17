@@ -838,6 +838,21 @@ local button = mwse.mcm.createYesNoButton(parent, { label = ..., description = .
 
 ***
 
+### `mwse.mcm.getAllRegisteredModNames`
+<div class="search_terms" style="display: none">getAllRegisteredMods</div>
+
+Returns a list containing the names of all mods that have been registered to the MCM.
+
+**Parameters**:
+
+* `sort` (boolean, function, nil): *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
+
+**Returns**:
+
+* `modNames` (table): An array containing the names of all mods that have been registered to the MCM.
+
+***
+
 ### `mwse.mcm.register`
 <div class="search_terms" style="display: none">register</div>
 
@@ -852,6 +867,18 @@ mwse.mcm.register(template)
 **Parameters**:
 
 * `template` ([mwseMCMTemplate](../types/mwseMCMTemplate.md))
+
+***
+
+### `mwse.mcm.setHidden`
+<div class="search_terms" style="display: none">setHidden</div>
+
+This function will hide or unhide a mod in the MCM. The MCM must be closed and reopened for changes to take effect.
+
+**Parameters**:
+
+* `modName` (string): The name of the mod to hide or unhide.
+* `hidden` (boolean|nil): *Optional*. If true, the mod will be hidden. If false, the mod will be unhidden (i.e. shown). Default: true.
 
 ***
 
