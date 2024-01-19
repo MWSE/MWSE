@@ -107,6 +107,11 @@ function tes3reference:getAttachedDynamicLight() end
 --- @return tes3lightNode result No description yet available.
 function tes3reference:getOrCreateAttachedDynamicLight(light, phase) end
 
+--- Checks if the bounding box of another reference intersects the bounding box of this reference. This can be used to see if objects are "too close together".
+--- @param other tes3reference The other reference to check.
+--- @return boolean result No description yet available.
+function tes3reference:intersects(other) end
+
 --- A function that tells the game that an inventory has been closed, if you are simulating inventory operations. It has the capability of un-cloning an inventory if it has not been modified. Typically not used outside of specific purposes.
 --- @return boolean result No description yet available.
 function tes3reference:onCloseInventory() end

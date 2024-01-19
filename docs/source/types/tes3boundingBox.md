@@ -64,25 +64,6 @@ local result = myObject:copy()
 
 ***
 
-### `intersects`
-<div class="search_terms" style="display: none">intersects</div>
-
-Checks if another bounding box intersects this one. This can be used to see if objects are "too close together".
-
-```lua
-local result = myObject:intersects(other)
-```
-
-**Parameters**:
-
-* `other` ([tes3boundingBox](../types/tes3boundingBox.md)): The other bounding box to check.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `vertices`
 <div class="search_terms" style="display: none">vertices</div>
 

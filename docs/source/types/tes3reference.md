@@ -902,6 +902,25 @@ local result = myObject:getOrCreateAttachedDynamicLight(light, phase)
 
 ***
 
+### `intersects`
+<div class="search_terms" style="display: none">intersects</div>
+
+Checks if the bounding box of another reference intersects the bounding box of this reference. This can be used to see if objects are "too close together".
+
+```lua
+local result = myObject:intersects(other)
+```
+
+**Parameters**:
+
+* `other` ([tes3reference](../types/tes3reference.md)): The other reference to check.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `onCloseInventory`
 <div class="search_terms" style="display: none">oncloseinventory</div>
 
