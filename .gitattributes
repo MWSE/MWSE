@@ -45,9 +45,6 @@
 *.gch binary
 *.pch binary
 
-*.lua text eol=crlf
-*.md text eol=crlf
-
 # Compiled Dynamic libraries
 *.so binary
 *.dylib binary
