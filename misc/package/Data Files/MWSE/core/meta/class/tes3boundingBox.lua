@@ -16,6 +16,11 @@ function tes3boundingBox:__tostring() end
 --- @return tes3boundingBox result No description yet available.
 function tes3boundingBox:copy() end
 
+--- Checks if another bounding box intersects this one. This can be used to see if objects are "too close together".
+--- @param other tes3boundingBox The other bounding box to check.
+--- @return boolean result No description yet available.
+function tes3boundingBox:intersects(other) end
+
 --- Returns a table containing the 8 vertices comprising this bounding box.
 --- @return tes3vector3[] result No description yet available.
 function tes3boundingBox:vertices() end
