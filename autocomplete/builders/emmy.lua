@@ -338,17 +338,23 @@ local function build(package)
 	end
 
 	-- Write out operator overloads
-	for _, operator in ipairs(package.operators or {}) do
-		for _, overload in ipairs(operator.overloads) do
-			-- Handle unary operators
-			local rightSideType = ""
-			if overload.rightType then
-				rightSideType = string.format("(%s)", overload.rightType)
-			end
+	if (package.operators) then
+		table.sort(package.operators, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, operator in ipairs(package.operators) do
+			for _, overload in ipairs(operator.overloads) do
+				-- Handle unary operators
+				local rightSideType = ""
+				if overload.rightType then
+					rightSideType = string.format("(%s)", overload.rightType)
+				end
 
-			file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
+				file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
+			end
 		end
 	end
+
 
 	-- Write out fields.
 	if (package.values) then
