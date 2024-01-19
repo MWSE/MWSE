@@ -28,6 +28,10 @@ tes3vector3 = {}
 --- @return tes3vector3 vector No description yet available.
 function tes3vector3.new(x, y, z) end
 
+--- Converts the vector to a string with 2 decimal places.
+--- @return string result No description yet available.
+function tes3vector3:__tostring() end
+
 --- The returns the angle between the two vectors in radians.
 --- @param vec tes3vector3 No description yet available.
 --- @return number result No description yet available.
@@ -94,8 +98,4 @@ function tes3vector3:outerProduct(vec) end
 --- Converts the vector to `niColor` object.
 --- @return niColor result No description yet available.
 function tes3vector3:toColor() end
-
---- Converts the vector to a string with 2 decimal places.
---- @return string result No description yet available.
-function tes3vector3:__tostring() end
 

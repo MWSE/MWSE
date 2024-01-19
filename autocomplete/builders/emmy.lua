@@ -351,9 +351,14 @@ local function build(package)
 	end
 
 	-- Write out fields.
-	for _, value in ipairs(package.values or {}) do
-		if (not value.deprecated) then
-			file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+	if (package.values) then
+		table.sort(package.values, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.values) do
+			if (not value.deprecated) then
+				file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+			end
 		end
 	end
 
@@ -390,13 +395,21 @@ local function build(package)
 	end
 
 	-- Write out functions.
-	for _, value in ipairs(package.functions or {}) do
-		writeFunction(value, file)
+	if (package.functions) then
+		table.sort(package.functions, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.functions) do
+			writeFunction(value, file)
+		end
 	end
 
 	-- Write out methods.
-	if (package.type == "class") then
-		for _, value in ipairs(package.methods or {}) do
+	if (package.type == "class" and package.methods) then
+		table.sort(package.methods, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.methods) do
 			writeFunction(value, file, package.key .. ":" .. value.key)
 		end
 	end

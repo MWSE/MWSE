@@ -27,6 +27,10 @@ tes3matrix33 = {}
 --- @return tes3matrix33 matrix No description yet available.
 function tes3matrix33.new(x0, y0, z0, x1, y1, z1, x2, y2, z2) end
 
+--- Converts the matrix to a string with 2 decimal places.
+--- @return string result No description yet available.
+function tes3matrix33:__tostring() end
+
 --- Creates a copy of the matrix.
 --- @return tes3matrix33 result No description yet available.
 function tes3matrix33:copy() end
@@ -117,8 +121,4 @@ function tes3matrix33:toZero() end
 --- No description yet available.
 --- @return tes3matrix33 result No description yet available.
 function tes3matrix33:transpose() end
-
---- Converts the matrix to a string with 2 decimal places.
---- @return string result No description yet available.
-function tes3matrix33:__tostring() end
 
