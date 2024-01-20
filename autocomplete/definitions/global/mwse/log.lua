@@ -5,6 +5,6 @@ return {
 The message accepts formatting and additional parameters matching string.format's usage.]],
 	arguments = {
 		{ name = "message", type = "string" },
-		{ name = "formatValues", type = "variadic", optional = true }
+		{type = "variadic", description="Formatting arguments. These are passed to `string.format`.", optional = true }
 	},
 }

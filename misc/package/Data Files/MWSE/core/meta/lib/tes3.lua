@@ -1719,7 +1719,7 @@ function tes3.menuMode() end
 --- `showInDialog`: boolean? — *Default*: `true`. Specifying showInDialog = false forces the toast-style message, which is not shown in the dialog menu.
 --- 
 --- `duration`: number? — *Optional*. Overrides how long the toast-style message remains visible.
---- @param ... any? *Optional*. Only used if messageOrParams is a string.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`, provided `messageOrParams` is a `string`.
 --- @return tes3uiElement|nil element The UI menu created for the notification, if any.
 function tes3.messageBox(messageOrParams, ...) end
 

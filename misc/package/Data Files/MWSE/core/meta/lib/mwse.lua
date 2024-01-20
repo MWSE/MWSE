@@ -64,7 +64,7 @@ function mwse.loadTranslations(mod) end
 --- 
 --- The message accepts formatting and additional parameters matching string.format's usage.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. No description yet available.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwse.log(message, ...) end
 
 --- Converts a TES3 object type (e.g. from tes3.objectType) into an uppercase, 4-character string.

@@ -13,7 +13,7 @@ return {
 				{ name = "duration", type = "number", description = "Overrides how long the toast-style message remains visible.", optional = true },
 			},
 		},
-		{ name = "formatAdditions", type = "variadic", optional = true, description = "Only used if messageOrParams is a string." },
+		{ type = "variadic", optional = true, description = "Formatting arguments. These are passed to `string.format`, provided `messageOrParams` is a `string`." },
 	},
 	returns = {
 		{ name = "element", type = "tes3uiElement|nil", description = "The UI menu created for the notification, if any." }

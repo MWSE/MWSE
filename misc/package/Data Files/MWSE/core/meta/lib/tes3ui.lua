@@ -174,7 +174,7 @@ function tes3ui.leaveMenuMode() end
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uilog).
 --- @param message string No description yet available.
---- @param ... any? *Optional*. No description yet available.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function tes3ui.log(message, ...) end
 
 --- Logs a message to the console. Consider using `tes3ui.log` instead of this function if you do not need to make use of the `isCommand` parameter.
@@ -364,7 +364,7 @@ function tes3ui.showMessageMenu(params) end
 
 --- Creates a new notify menu with a formatted string. A notify menu is a toast-style display that shows at the bottom of the screen. It will expire after an amount of time, determined by the length of the message and the `fMessageTimePerChar` GMST.
 --- @param string string The message to display. If it supports formatting, additional arguments are used.
---- @param ... any Optional values to feed to formatting found in the first parameter.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 --- @return tes3uiElement menu The notify menu created.
 function tes3ui.showNotifyMenu(string, ...) end
 
