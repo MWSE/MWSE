@@ -625,5 +625,44 @@ function common.getEnumerationsMap(namespace)
 	return enums
 end
 
-
+-- get the name and type of the package, handling the case when `type == "variadic"`
+---@param arg any package to get the name and type of
+---@param defaultName string|boolean|nil? default name to use when `name == nil and type ~= "variadic".
+--- if a `string`, then this string will be used as a default name.
+--- if `false`, then no default name will be used.
+--- if `nil`, then the default name will be "unnamed".
+--- Default: "unnamed".
+---@param defaultType string|boolean|nil? default type to use when `arg.type == nil` (or `arg.variadicType == nil` in the case of variadic arguments)
+--- if a `string`, then this string will be used as a default type.
+--- if `false`, then no default type will be used.
+--- if `nil`, then the default type will be "any".
+---@return string? name, string? type
+function common.getNameAndType(arg, defaultName, defaultType)
+	local name, type
+	if arg.type == "variadic" then
+		name = "..."
+		type = arg.variadicType
+	else
+		name = arg.name
+		type = arg.type
+	end
+	-- handle default name
+	if not name then
+		if defaultName == nil or defaultName == true then
+			name = "unnamed"
+		elseif defaultName ~= false then
+			name = defaultName
+		end
+	end
+	-- handle default type
+	if not type then
+		if defaultType == nil or defaultType == true then
+			type = "any"
+		elseif defaultType ~= false then
+			type = defaultType
+		end
+	end
+---@diagnostic disable-next-line: return-type-mismatch
+	return name, type
+end
 return common

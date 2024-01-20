@@ -195,8 +195,9 @@ local function build(package, outDir)
 			if (#returns > 1) then
 				file:cachedwrite("The function has more than one return value.\n\n")
 			end
-			for _, ret in pairs(returns) do
-				file:cachedwrite("%s (%s)\n    %s\n\n", ret.name, breakoutMultipleTypes(ret.type or "any"), getArgumentDescription(ret))
+			for _, ret in ipairs(returns) do -- changed to `ipairs`
+				local name, type = common.getNameAndType(ret)
+				file:cachedwrite("%s (%s)\n    %s\n\n", name, breakoutMultipleTypes(type), getArgumentDescription(ret))
 			end
 			-- file:cachedwrite("\n") -- TODO: Re-add this once output is matched.
 		end
@@ -207,12 +208,14 @@ local function build(package, outDir)
 			if (package.arguments[1].tableParams) then
 				file:cachedwrite("Accepts parameters through a table with the given keys:\n\n")
 				for _, arg in ipairs(package.arguments[1].tableParams) do
-					file:cachedwrite("%s (%s)\n    %s\n\n", arg.name or "unnamed", breakoutMultipleTypes(arg.type or "any"), getArgumentDescription(arg))
+					local name, type = common.getNameAndType(arg)
+					file:cachedwrite("%s (%s)\n    %s\n\n", name, breakoutMultipleTypes(type), getArgumentDescription(arg))
 				end
 			else
 				file:cachedwrite("Accepts parameters in the following order:\n\n")
 				for _, arg in ipairs(package.arguments) do
-					file:cachedwrite("%s (%s)\n    %s\n\n", arg.name or "unnamed", breakoutMultipleTypes(arg.type or "any"), getArgumentDescription(arg))
+					local name, type = common.getNameAndType(arg)
+					file:cachedwrite("%s (%s)\n    %s\n\n",name, breakoutMultipleTypes(type), getArgumentDescription(arg))
 				end
 			end
 			-- file:cachedwrite("\n") -- TODO: Re-add this once output is matched.

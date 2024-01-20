@@ -240,7 +240,7 @@ mwse.log(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*.
+* `...`: *Optional*.
 
 ***
 

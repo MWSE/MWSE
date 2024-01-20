@@ -364,7 +364,7 @@ function tes3ui.showMessageMenu(params) end
 
 --- Creates a new notify menu with a formatted string. A notify menu is a toast-style display that shows at the bottom of the screen. It will expire after an amount of time, determined by the length of the message and the `fMessageTimePerChar` GMST.
 --- @param string string The message to display. If it supports formatting, additional arguments are used.
---- @param ... any? Optional values to feed to formatting found in the first parameter.
+--- @param ... any Optional values to feed to formatting found in the first parameter.
 --- @return tes3uiElement menu The notify menu created.
 function tes3ui.showNotifyMenu(string, ...) end
 

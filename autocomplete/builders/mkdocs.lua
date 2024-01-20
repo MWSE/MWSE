@@ -285,11 +285,11 @@ end
 
 local function writeArgument(file, argument, indent)
 	indent = indent or ""
+	local name, type = common.getNameAndType(argument, nil, false) -- `false` means no default type
+	file:write(string.format("%s* `%s`", indent, name))
 
-	file:write(string.format("%s* `%s`", indent, argument.name or "unnamed"))
-
-	if (argument.type) then
-		file:write(string.format(" (%s)", breakoutTypeLinks(argument.type)))
+	if type then
+		file:write(string.format(" (%s)", breakoutTypeLinks(type)))
 	end
 
 	local description = common.getDescriptionString(argument, false)
@@ -479,7 +479,8 @@ local function writePackageDetails(file, package)
 		if (returns) then
 			local returnNames = {}
 			for i, ret in ipairs(returns) do
-				table.insert(returnNames, ret.name or string.format("unnamed%d", i))
+				local name = common.getNameAndType(ret, string.format("unnamed%d", i))
+				table.insert(returnNames, name)
 			end
 			file:write(string.format("local %s = ", table.concat(returnNames, ", ")))
 		end

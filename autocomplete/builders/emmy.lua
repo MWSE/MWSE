@@ -152,11 +152,8 @@ end
 local function getParamNames(package)
 	local params = {}
 	for _, param in ipairs(package.arguments or {}) do
-		if (param.type == "variadic") then
-			table.insert(params, "...")
-		else
-			table.insert(params, param.name or "unknown")
-		end
+		local name = common.getNameAndType(param,"unknown")
+		table.insert(params, name)
 	end
 	return params
 end
@@ -172,29 +169,33 @@ local function writeFunction(package, file, namespaceOverride)
 	local functionHasTableArguments = false
 
 	for _, argument in ipairs(package.arguments or {}) do
-		local type = argument.type
+		local name, type = common.getNameAndType(argument)
 		local description = common.getDescriptionString(argument)
 		if (argument.tableParams) then
 			functionHasTableArguments = true
 			local types = type:split("|")
 			table.removevalue(types, "table")
-			table.insert(types, package.namespace .. "." .. argument.name)
+			table.insert(types, package.namespace .. "." .. name)
 
 			type = table.concat(types, "|")
 			description = "This table accepts the following values:"
 			for _, tableArgument in ipairs(argument.tableParams) do
-				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
+				local tblArgname, tblArgType = common.getNameAndType(tableArgument)
+				description = description .. string.format("\n\n`%s`: %s — %s", 
+					tblArgname, getAllPossibleVariationsOfType(tblArgType, tableArgument), formatLineBreaks(common.getDescriptionString(tableArgument))
+				)
 			end
 		end
-		if (argument.type == "variadic") then
-			file:write(string.format("--- @param ... %s %s\n", getAllPossibleVariationsOfType(argument.variadicType, argument) or "any?", formatLineBreaks(description)))
-		else
-			file:write(string.format("--- @param %s %s %s\n", argument.name or "unknown", getAllPossibleVariationsOfType(type, argument), formatLineBreaks(description)))
-		end
+		file:write(string.format("--- @param %s %s %s\n", name, getAllPossibleVariationsOfType(type, argument), formatLineBreaks(description)))
 	end
 
 	for _, returnPackage in ipairs(common.getConsistentReturnValues(package) or {}) do
-		file:write(string.format("--- @return %s %s %s\n", getAllPossibleVariationsOfType(returnPackage.type, returnPackage) or "any", returnPackage.name or "result", formatLineBreaks(common.getDescriptionString(returnPackage))))
+		local returnName, returnType = common.getNameAndType(returnPackage, "result")
+		file:write(string.format("--- @return %s %s %s\n", 
+			getAllPossibleVariationsOfType(returnType, returnPackage), 
+			returnName, 
+			formatLineBreaks(common.getDescriptionString(returnPackage)))
+		)
 	end
 
 	file:write(string.format("function %s(%s) end\n\n", namespaceOverride or package.namespace, table.concat(getParamNames(package), ", ")))
@@ -206,7 +207,8 @@ local function writeFunction(package, file, namespaceOverride)
 				file:write(string.format("--- @class %s.%s\n", package.namespace, argument.name))
 
 				for _, param in ipairs(argument.tableParams) do
-					file:write(string.format("--- @field %s %s %s\n", param.name, getAllPossibleVariationsOfType(param.type, param), formatLineBreaks(common.getDescriptionString(param))))
+					local name, type = common.getNameAndType(param)
+					file:write(string.format("--- @field %s %s %s\n", name, getAllPossibleVariationsOfType(type, param), formatLineBreaks(common.getDescriptionString(param))))
 				end
 				file:write("\n")
 			end

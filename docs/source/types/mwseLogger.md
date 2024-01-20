@@ -58,7 +58,7 @@ myObject:assert(condition, message, formatValues)
 
 * `condition` (boolean)
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 
 ***
 
@@ -74,7 +74,7 @@ myObject:debug(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 
 ***
 
@@ -109,7 +109,7 @@ myObject:error(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 
 ***
 
@@ -125,7 +125,7 @@ myObject:info(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 
 ***
 
@@ -171,7 +171,7 @@ myObject:trace(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 
 ***
 
@@ -187,5 +187,5 @@ myObject:warn(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...`: *Optional*. Formatting and additional parameters matching string.format's usage.
 

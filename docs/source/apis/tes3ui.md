@@ -500,7 +500,7 @@ tes3ui.log(message, formatValues)
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*.
+* `...`: *Optional*.
 
 ??? example "Example: Print the type of each of the player's skills to the console"
 
@@ -925,7 +925,7 @@ local menu = tes3ui.showNotifyMenu(string, formatValues)
 **Parameters**:
 
 * `string` (string): The message to display. If it supports formatting, additional arguments are used.
-* `formatValues` (variadic): Optional values to feed to formatting found in the first parameter.
+* `...`: Optional values to feed to formatting found in the first parameter.
 
 **Returns**:
 

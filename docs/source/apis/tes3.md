@@ -3519,7 +3519,7 @@ local element = tes3.messageBox({ message = ..., buttons = ..., callback = ..., 
 	* `callback` (fun(e: [tes3messageBoxCallbackData](../types/tes3messageBoxCallbackData.md))): *Optional*. The callback function will be executed after a button was pressed. The callback function will be passed a table with `button` field corresponding to 0-based index of the button from passed `buttons` array.
 	* `showInDialog` (boolean): *Default*: `true`. Specifying showInDialog = false forces the toast-style message, which is not shown in the dialog menu.
 	* `duration` (number): *Optional*. Overrides how long the toast-style message remains visible.
-* `formatAdditions` (variadic): *Optional*. Only used if messageOrParams is a string.
+* `...`: *Optional*. Only used if messageOrParams is a string.
 
 **Returns**:
 
