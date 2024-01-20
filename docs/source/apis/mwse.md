@@ -234,13 +234,13 @@ This function writes information to the mwse.log file in the user's installation
 The message accepts formatting and additional parameters matching string.format's usage.
 
 ```lua
-mwse.log(message, formatValues)
+mwse.log(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 

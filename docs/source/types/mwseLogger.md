@@ -51,14 +51,14 @@ Name of the mod, also counts as unique id of the logger.
 Assert a condition and log an error if it fails.
 
 ```lua
-myObject:assert(condition, message, formatValues)
+myObject:assert(condition, message, ...)
 ```
 
 **Parameters**:
 
 * `condition` (boolean)
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -68,13 +68,13 @@ myObject:assert(condition, message, formatValues)
 Log debug message.
 
 ```lua
-myObject:debug(message, formatValues)
+myObject:debug(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -103,13 +103,13 @@ local doLog = myObject:doLog(logLevel)
 Log error message.
 
 ```lua
-myObject:error(message, formatValues)
+myObject:error(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -119,13 +119,13 @@ myObject:error(message, formatValues)
 Log info message.
 
 ```lua
-myObject:info(message, formatValues)
+myObject:info(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -165,13 +165,13 @@ myObject:setOutputFile(outputFile)
 Log trace message.
 
 ```lua
-myObject:trace(message, formatValues)
+myObject:trace(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -181,11 +181,11 @@ myObject:trace(message, formatValues)
 Log warn message.
 
 ```lua
-myObject:warn(message, formatValues)
+myObject:warn(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*. Formatting and additional parameters matching string.format's usage.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 

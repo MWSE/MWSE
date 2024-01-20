@@ -494,13 +494,13 @@ local result = tes3ui.leaveMenuMode()
 Logs a message to the console. The message accepts formatting and additional parameters matching string.format's usage.
 
 ```lua
-tes3ui.log(message, formatValues)
+tes3ui.log(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ??? example "Example: Print the type of each of the player's skills to the console"
 
@@ -919,13 +919,13 @@ tes3ui.showMessageMenu({ id = ..., buttons = ..., callbackParams = ..., cancels 
 Creates a new notify menu with a formatted string. A notify menu is a toast-style display that shows at the bottom of the screen. It will expire after an amount of time, determined by the length of the message and the `fMessageTimePerChar` GMST.
 
 ```lua
-local menu = tes3ui.showNotifyMenu(string, formatValues)
+local menu = tes3ui.showNotifyMenu(string, ...)
 ```
 
 **Parameters**:
 
 * `string` (string): The message to display. If it supports formatting, additional arguments are used.
-* `formatValues` (variadic): Optional values to feed to formatting found in the first parameter.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 **Returns**:
 

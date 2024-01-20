@@ -35,6 +35,10 @@
 *.h++ text
 *.hh text
 
+# marking lua and md files as text, with crlf set to true so that documentation can be built on other operating systems
+*.lua text eol=crlf
+*.md text eol=crlf
+
 # Compiled Object files
 *.slo binary
 *.lo binary

@@ -152,11 +152,7 @@ end
 local function getParamNames(package)
 	local params = {}
 	for _, param in ipairs(package.arguments or {}) do
-		if (param.type == "variadic") then
-			table.insert(params, "...")
-		else
-			table.insert(params, param.name or "unknown")
-		end
+		table.insert(params, param.name or "unknown")
 	end
 	return params
 end
@@ -186,11 +182,11 @@ local function writeFunction(package, file, namespaceOverride)
 				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
 			end
 		end
-		if (argument.type == "variadic") then
-			file:write(string.format("--- @param ... %s %s\n", getAllPossibleVariationsOfType(argument.variadicType, argument) or "any?", formatLineBreaks(description)))
-		else
-			file:write(string.format("--- @param %s %s %s\n", argument.name or "unknown", getAllPossibleVariationsOfType(type, argument), formatLineBreaks(description)))
-		end
+		file:write(string.format("--- @param %s %s %s\n", 
+			argument.name or "unknown", 
+			getAllPossibleVariationsOfType(type, argument) or "any", 
+			formatLineBreaks(description))
+		)
 	end
 
 	for _, returnPackage in ipairs(common.getConsistentReturnValues(package) or {}) do
