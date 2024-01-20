@@ -919,6 +919,20 @@ local result = myObject:intersects(other)
 
 * `result` (boolean)
 
+??? example "Example: Check if the player is too close to another reference."
+
+	The example below illustrates how you might detect whether the player is too close to a given object. The passed `reference` could be to a container, prop, NPC, etc.
+
+	```lua
+	--- This function returns `true` if the player is too close to the specified reference.
+	---@param reference tes3reference
+	---@return boolean
+	local function isPlayerTooClose(reference)
+	    return tes3.player:intersects(reference)
+	end
+
+	```
+
 ***
 
 ### `onCloseInventory`

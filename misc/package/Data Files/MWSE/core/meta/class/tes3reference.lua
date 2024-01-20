@@ -108,6 +108,8 @@ function tes3reference:getAttachedDynamicLight() end
 function tes3reference:getOrCreateAttachedDynamicLight(light, phase) end
 
 --- Checks if the bounding box of another reference intersects the bounding box of this reference. This can be used to see if objects are "too close together".
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3reference/#intersects).
 --- @param other tes3reference The other reference to check.
 --- @return boolean result No description yet available.
 function tes3reference:intersects(other) end
