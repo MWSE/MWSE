@@ -283,9 +283,15 @@ local function sortPackagesByKey(A, B)
 	return A.key:lower() < B.key:lower()
 end
 
-local function writeArgument(file, argument, indent)
+--- writes an arugment
+--- @param file any
+--- @param argument any argument to Write
+--- @param indent any current indentation level
+--- @param defaultName string|boolean? default name to use
+--- @param defaultType string|boolean? default type to use
+local function writeArgument(file, argument, indent, defaultName, defaultType)
 	indent = indent or ""
-	local name, type = common.getNameAndType(argument, nil, false) -- `false` means no default type
+	local name, type = common.getNameAndType(argument, defaultName, defaultType)
 	file:write(string.format("%s* `%s`", indent, name))
 
 	if type then
@@ -514,7 +520,7 @@ local function writePackageDetails(file, package)
 	if (returns) then
 		file:write(string.format("**Returns**:\n\n"))
 		for _, ret in ipairs(returns) do
-			writeArgument(file, ret, "")
+			writeArgument(file, ret, "", nil, false) -- specifying `false` here will result in not printing unspecified types when formatting return values. 
 		end
 		file:write("\n")
 	end

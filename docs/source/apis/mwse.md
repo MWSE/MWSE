@@ -240,7 +240,7 @@ mwse.log(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 

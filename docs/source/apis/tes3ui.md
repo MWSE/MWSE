@@ -500,7 +500,7 @@ tes3ui.log(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ??? example "Example: Print the type of each of the player's skills to the console"
 
@@ -925,7 +925,7 @@ local menu = tes3ui.showNotifyMenu(string, unknown)
 **Parameters**:
 
 * `string` (string): The message to display. If it supports formatting, additional arguments are used.
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 **Returns**:
 

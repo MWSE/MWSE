@@ -58,7 +58,7 @@ myObject:assert(condition, message, unknown)
 
 * `condition` (boolean)
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -74,7 +74,7 @@ myObject:debug(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -109,7 +109,7 @@ myObject:error(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -125,7 +125,7 @@ myObject:info(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -171,7 +171,7 @@ myObject:trace(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -187,5 +187,5 @@ myObject:warn(message, unknown)
 **Parameters**:
 
 * `message` (string)
-* `...`: *Optional*. Formatting arguments. These are passed to `string.format`.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
