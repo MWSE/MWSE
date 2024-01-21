@@ -68,6 +68,25 @@ namespace TES3 {
 		return str;
 	}
 
+	float Vector2::distance(const Vector2* vec2) const {
+		float dx = x - vec2->x;
+		float dy = y - vec2->y;
+		return sqrt(dx * dx + dy * dy);
+	}
+
+	
+	float Vector2::distanceChebyshev(const Vector2* vec2) const {
+		float dx = fabs(x - vec2->x);
+		float dy = fabs(y - vec2->y);
+		return std::max(dx,dy);
+	}
+
+	float Vector2::distanceManhattan(const Vector2* vec2) const {
+		float dx = fabs(x - vec2->x);
+		float dy = fabs(y - vec2->y);
+		return dx + dy;
+	}
+
 	std::string Vector2::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
@@ -279,6 +298,26 @@ namespace TES3 {
 		return sqrt(dz * dz + dx * dx + dy * dy);
 	}
 
+	float Vector3::distanceChebyshev(const Vector3* vec3) const {
+		float dx = fabs(x - vec3->x);
+		float dy = fabs(y - vec3->y);
+		float dz = fabs(z - vec3->z);
+		return std::max(std::max(dx,dy),dz);
+	}
+
+	float Vector3::distanceManhattan(const Vector3* vec3) const {
+		float dx = fabs(x - vec3->x);
+		float dy = fabs(y - vec3->y);
+		float dz = fabs(z - vec3->z);
+		return dx + dy + dz;
+	}
+
+	float Vector3::distanceXY(const Vector3* vec3) const {
+		float dx = x - vec3->x;
+		float dy = y - vec3->y;
+		return sqrt(dx * dx + dy * dy);
+	}
+
 	float Vector3::angle(const Vector3* v) const {
 		return acosf(dotProduct(v) / (length() * v->length()));
 	}
@@ -392,6 +431,30 @@ namespace TES3 {
 
 	Vector4 Vector4::copy() const {
 		return *this;
+	}
+
+	float Vector4::distance(const Vector4* vec4) const {
+		float dx = x - vec4->x;
+		float dy = y - vec4->y;
+		float dz = z - vec4->z;
+		float dw = w - vec4->w;
+		return sqrt(dz * dz + dw * dw + dx * dx + dy * dy);
+	}
+
+	float Vector4::distanceChebyshev(const Vector4* vec4) const {
+		float dx = fabs(x - vec4->x);
+		float dy = fabs(y - vec4->y);
+		float dz = fabs(z - vec4->z);
+		float dw = fabs(w - vec4->w);
+		return std::max(std::max(dx,dy),std::max(dz,dw));
+	}
+
+	float Vector4::distanceManhattan(const Vector4* vec4) const {
+		float dx = fabs(x - vec4->x);
+		float dy = fabs(y - vec4->y);
+		float dz = fabs(z - vec4->z);
+		float dw = fabs(w - vec4->w);
+		return dx + dy + dz + dw;
 	}
 
 	float Vector4::length() const {

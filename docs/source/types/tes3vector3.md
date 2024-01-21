@@ -165,6 +165,110 @@ local result = myObject:distance(vec)
 
 ***
 
+### `distanceChebyshev`
+<div class="search_terms" style="display: none">distancechebyshev</div>
+
+Calculates the distance to another vector, using the Chebyshev metric, which is defined as
+
+	math.max(math.abs(v1.x - v2.x), math.abs(v1.y - v2.y), math.abs(v1.z - v2.z))
+
+This is useful for ensuring that the x, y, and z coordinates between two vectors are all (independently) within a certain distance from each other.
+
+Here is a geometric description of the difference between the normal distance and the Chebyshev distance for two `tes3vector3`s  `v1` and `v2`:
+* If `v1:distance(v2) <= 1`, then `v2` is contained in a sphere around `v1` with radius 1 (i.e. diameter 2).
+* If `v1:distanceChebyshev(v2) <= 1`, then `v2` is contained within a cube centered around `v1`, where the cube has length 2.
+
+
+```lua
+local result = myObject:distanceChebyshev(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector3](../types/tes3vector3.md))
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `distanceManhattan`
+<div class="search_terms" style="display: none">distancemanhattan</div>
+
+Calculates the distance to another vector, using the Manhattan (i.e. City Block) metric. 
+In the two-dimensional case, the Manhattan metric can be thought of 
+as the distance that two taxis will have to travel if they're following a grid system.
+The formula for the Manhattan distance is
+
+	math.abs(v1.x - v2.x) + math.abs(v1.y - v2.y) + math.abs(v1.z - v2.z)
+
+This is useful for checking how far you'd actually have to move if you're only allowed to move along one axis at a time.
+
+
+```lua
+local result = myObject:distanceManhattan(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector3](../types/tes3vector3.md))
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `distanceXY`
+<div class="search_terms" style="display: none">distancexy</div>
+
+Calculates the distance between the XY-coordinates of two vectors.
+
+This method offers a way of calculating distances between vectors in situations where it's more convenient to ignore the z-coordinates.
+
+
+```lua
+local result = myObject:distanceXY(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector3](../types/tes3vector3.md))
+
+**Returns**:
+
+* `result` (number)
+
+??? example "Example: Items on bookshelves."
+
+	Let's say you want to make a function that checks if two ingredients are close together. This will involve looking at the distance between two `tes3reference`s.
+One way to do this would be to use the normal `tes3vector3:distance` method, but this has a drawback: it doesn't work consistently with ingredients on bookshelves. If two ingredients are on the same shelf, their `z`-coordinates contribute very little to the distance between them, while the situation is reversed for ingredients on different shelves.
+This problem is remedied by using `tes3vector3:distanceXY` as follows:
+
+	```lua
+	-- Check if two items are on the same bookshelf
+	---@param ref1 tes3reference reference to one ingredient
+	---@param ref2 tes3reference reference to another ingredient
+	local function isOnSameShelf(ref1, ref2)
+		local maxDistXY = 75 -- XY tolerance
+		local maxDistZ = 150 -- Z tolerance
+	
+		-- distanceXY ignores the Z coordinate, which has the effect of 
+		-- "pretending" `ref1` and `ref2` are on the same shelf
+		local distanceXY = ref1.position:distanceXY(ref2.position)
+		-- check the height difference separately, to make sure it's not too crazy 
+		-- for example, if we're inside a building, this would make sure that 
+		--  `ref1` and `ref2` are on the same floor of the building.
+		local distanceZ = ref1.position:heightDifference(ref2.position)
+	
+		return distanceXY <= maxDistXY and distanceZ <= maxDistZ
+	end
+
+	```
+
+***
+
 ### `dot`
 <div class="search_terms" style="display: none">dot</div>
 

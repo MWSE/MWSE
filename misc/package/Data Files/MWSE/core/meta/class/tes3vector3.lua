@@ -51,6 +51,43 @@ function tes3vector3:cross(vec) end
 --- @return number result No description yet available.
 function tes3vector3:distance(vec) end
 
+--- Calculates the distance to another vector, using the Chebyshev metric, which is defined as
+--- 
+--- 	math.max(math.abs(v1.x - v2.x), math.abs(v1.y - v2.y), math.abs(v1.z - v2.z))
+--- 
+--- This is useful for ensuring that the x, y, and z coordinates between two vectors are all (independently) within a certain distance from each other.
+--- 
+--- Here is a geometric description of the difference between the normal distance and the Chebyshev distance for two `tes3vector3`s  `v1` and `v2`:
+--- * If `v1:distance(v2) <= 1`, then `v2` is contained in a sphere around `v1` with radius 1 (i.e. diameter 2).
+--- * If `v1:distanceChebyshev(v2) <= 1`, then `v2` is contained within a cube centered around `v1`, where the cube has length 2.
+--- 
+--- @param vec tes3vector3 No description yet available.
+--- @return number result No description yet available.
+function tes3vector3:distanceChebyshev(vec) end
+
+--- Calculates the distance to another vector, using the Manhattan (i.e. City Block) metric. 
+--- In the two-dimensional case, the Manhattan metric can be thought of 
+--- as the distance that two taxis will have to travel if they're following a grid system.
+--- The formula for the Manhattan distance is
+--- 
+--- 	math.abs(v1.x - v2.x) + math.abs(v1.y - v2.y) + math.abs(v1.z - v2.z)
+--- 
+--- This is useful for checking how far you'd actually have to move if you're only allowed to move along one axis at a time.
+--- 
+--- @param vec tes3vector3 No description yet available.
+--- @return number result No description yet available.
+function tes3vector3:distanceManhattan(vec) end
+
+--- Calculates the distance between the XY-coordinates of two vectors.
+--- 
+--- This method offers a way of calculating distances between vectors in situations where it's more convenient to ignore the z-coordinates.
+--- 
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3vector3/#distancexy).
+--- @param vec tes3vector3 No description yet available.
+--- @return number result No description yet available.
+function tes3vector3:distanceXY(vec) end
+
 --- Calculates the dot product with another vector.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3vector3/#dot).
