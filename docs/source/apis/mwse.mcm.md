@@ -593,6 +593,55 @@ local paragraphField = mwse.mcm.createParagraphField(parent, { label = ..., butt
 
 ***
 
+### `mwse.mcm.createPercentageSlider`
+<div class="search_terms" style="display: none">createpercentageslider, percentageslider</div>
+
+Creates a new `PercentageSlider` inside given the `parent` menu. A `PercentageSlider` is a hybrid of the `Slider` and `DecimalSlider` classes. 
+Values are stored in the range 0.0-1.0, but displayed in the range 0-100. All MCM related parameters (`min`, `max`, etc) will always refer to the **displayed** values.
+Changing the `min` and `max` will let you have percentages outside the range 0-100.
+
+The canonical way to use this function is to pass `parent` and `data` arguments. If passing only `data` table, then this `PercentageSlider`'s UI element tree won't be created. It can be created later with the `create` method:
+
+```lua
+local mySlider = mwse.mcm.createPercentageSlider({ ... })
+mySlider:create(parent)
+```
+
+The same is done by this function if you pass both `parent` and `data` arguments.
+
+
+```lua
+local slider = mwse.mcm.createPercentageSlider(parent, { label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `parent` ([tes3uiElement](../types/tes3uiElement.md), mwse.mcm.createPercentageSlider.data): The UI element inside which the new `PercentageSlider` will be created.
+* `data` (table): *Optional*.
+	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `min` (number): *Default*: `0`. Minimum (displayed) value of slider.
+	* `max` (number): *Default*: `100`. Maximum (displayed) value of slider.
+	* `step` (number): *Default*: `1`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+	* `callback` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `postCreate` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `slider` ([mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))
+
+***
+
 ### `mwse.mcm.createPlayerData`
 <div class="search_terms" style="display: none">createplayerdata, playerdata</div>
 

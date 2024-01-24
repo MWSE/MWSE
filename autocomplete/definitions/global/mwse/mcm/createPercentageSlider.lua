@@ -1,8 +1,8 @@
 return {
 	type = "function",
 	description = [[Creates a new `PercentageSlider` inside given the `parent` menu. A `PercentageSlider` is a hybrid of the `Slider` and `DecimalSlider` classes. 
-Values are stored in the range 0.0-1.0, but displayed in the range 1-100. All MCM related parameters (`min`, `max`, etc) will always refer to the **displayed** values.
-Changing the `min` and `max` will let you have percentages outside the range 1-100.
+Values are stored in the range 0.0-1.0, but displayed in the range 0-100. All MCM related parameters (`min`, `max`, etc) will always refer to the **displayed** values.
+Changing the `min` and `max` will let you have percentages outside the range 0-100.
 
 The canonical way to use this function is to pass `parent` and `data` arguments. If passing only `data` table, then this `PercentageSlider`'s UI element tree won't be created. It can be created later with the `create` method:
 

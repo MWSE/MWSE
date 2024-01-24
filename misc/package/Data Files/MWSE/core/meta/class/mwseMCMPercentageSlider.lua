@@ -2,39 +2,43 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- A setting is a component that the player interacts with in some way. Interacting with a setting may update a mwseMCMVariable, or it may call a custom function.
---- @class mwseMCMSetting : mwseMCMComponent
---- @field callback nil|fun(self: mwseMCMSetting) The custom function called when the player interacts with this Setting.
---- @field componentType "Setting" The type of this component.
---- @field inGameOnly  boolean If true, the setting is disabled while the game is on main menu.
---- @field makeComponent nil|fun(self: mwseMCMSetting, innerContainer: tes3uiElement) This method must be implemented by child classes of mwseMCMSetting.
---- @field restartRequired boolean If true, updating this Setting will notify the player to restart the game.
---- @field restartRequiredMessage string The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect.".
---- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|nil The Variable this setting will update.
-mwseMCMSetting = {}
+--- A slider for dealing with percentages. Values will be stored in the range 0.0-1.0 and displayed in the range 0-100.
+--- @class mwseMCMPercentageSlider : mwseMCMSlider, mwseMCMSetting, mwseMCMComponent
+--- @field elements mwseMCMSliderElements This dictionary-style table holds all the UI elements of the Slider, for easy access.
+--- @field jump number How far the slider jumps when you click an area inside the slider. Default is `0`.
+--- @field max number Maximum (displayed) value of slider. Default is `100`. (The maximum stored value will be `1.0`.)
+--- @field min number Minimum (displayed) value of slider. Default is `100`. (The minimum stored value will be `1.0`.)
+--- @field step number How far the slider moves when you press the arrows. Default is `1`.
+mwseMCMPercentageSlider = {}
 
---- This method creates the UI elements that comprise this Setting.
+--- This method creates the UI elements specific to Slider.
 --- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMSetting:create(parentBlock) end
+function mwseMCMPercentageSlider:createContentsContainer(parentBlock) end
 
---- This method creates the UI elements specific to a Setting. To call this method, the mwseMCMSetting-derived type needs to have [`makeComponent`](./mwseMCMSetting.md#makecomponent) method implemented.
+--- This method creates the sliderBlock and slider UI elements of the Slider.
 --- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMSetting:createContentsContainer(parentBlock) end
+function mwseMCMPercentageSlider:makeComponent(parentBlock) end
 
---- Creates a new Setting.
---- @param data mwseMCMSetting.new.data? This table accepts the following values:
+--- Creates a new PercentageSlider.
+--- @param data mwseMCMPercentageSlider.new.data? This table accepts the following values:
 --- 
---- `label`: string? — *Optional*. The Setting's label.
---- 
---- `text`: string? — *Optional*. The Setting's text.
+--- `label`: string? — *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 --- 
 --- `variable`: mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil — *Optional*. A variable for this setting.
 --- 
 --- `defaultSetting`: unknown? — *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
 --- 
+--- `min`: number? — *Default*: `0`. Minimum (displayed) value of slider.
+--- 
+--- `max`: number? — *Default*: `1`. Maximum (displayed) value of slider.
+--- 
+--- `step`: number? — *Default*: `0.01`. How far the slider moves when you press the arrows.
+--- 
+--- `jump`: number? — *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+--- 
 --- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- 
---- `callback`: nil|fun(self: mwseMCMSetting) — *Optional*. The custom function called when the player interacts with this Setting.
+--- `callback`: nil|fun(self: mwseMCMPercentageSlider) — *Optional*. The custom function called when the player interacts with this Setting.
 --- 
 --- `inGameOnly`: boolean? — *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 --- 
@@ -50,24 +54,27 @@ function mwseMCMSetting:createContentsContainer(parentBlock) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
---- `postCreate`: nil|fun(self: mwseMCMSetting) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+--- `postCreate`: nil|fun(self: mwseMCMPercentageSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- 
 --- `class`: string? — *Optional*. No description yet available.
 --- 
 --- `componentType`: string? — *Optional*. No description yet available.
 --- 
 --- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
---- @return mwseMCMActiveInfo|mwseMCMButton|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMOnOffButton|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSlider|mwseMCMTextField|mwseMCMYesNoButton setting No description yet available.
-function mwseMCMSetting:new(data) end
+--- @return mwseMCMPercentageSlider slider No description yet available.
+function mwseMCMPercentageSlider:new(data) end
 
----Table parameter definitions for `mwseMCMSetting.new`.
---- @class mwseMCMSetting.new.data
---- @field label string? *Optional*. The Setting's label.
---- @field text string? *Optional*. The Setting's text.
+---Table parameter definitions for `mwseMCMPercentageSlider.new`.
+--- @class mwseMCMPercentageSlider.new.data
+--- @field label string? *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 --- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil *Optional*. A variable for this setting.
 --- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+--- @field min number? *Default*: `0`. Minimum (displayed) value of slider.
+--- @field max number? *Default*: `1`. Maximum (displayed) value of slider.
+--- @field step number? *Default*: `0.01`. How far the slider moves when you press the arrows.
+--- @field jump number? *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
 --- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
---- @field callback nil|fun(self: mwseMCMSetting) *Optional*. The custom function called when the player interacts with this Setting.
+--- @field callback nil|fun(self: mwseMCMPercentageSlider) *Optional*. The custom function called when the player interacts with this Setting.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 --- @field restartRequired boolean? *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
 --- @field restartRequiredMessage string? *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
@@ -75,11 +82,18 @@ function mwseMCMSetting:new(data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
---- @field postCreate nil|fun(self: mwseMCMSetting) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+--- @field postCreate nil|fun(self: mwseMCMPercentageSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
 --- @field componentType string? *Optional*. No description yet available.
 --- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
---- Calls the Setting's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
-function mwseMCMSetting:update() end
+--- This registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
+--- @param element tes3uiElement No description yet available.
+function mwseMCMPercentageSlider:registerSliderElement(element) end
+
+--- Updates the variable's value to the current value of the slider element. Calls the Slider's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
+function mwseMCMPercentageSlider:update() end
+
+--- Updates the label text of the slider to show the current value of the slider.
+function mwseMCMPercentageSlider:updateValueLabel() end
 
