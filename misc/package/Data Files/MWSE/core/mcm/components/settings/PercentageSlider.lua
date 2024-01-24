@@ -17,10 +17,6 @@ local Setting = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMPercentageSlider : mwseMCMSlider
 local PercentageSlider = Parent:new()
-PercentageSlider.min = 0.0
-PercentageSlider.max = 1.0
-PercentageSlider.step = 0.01
-PercentageSlider.jump = 0.05
 
 function PercentageSlider:updateValueLabel()
 	local newValue = "" ---@type string|number
@@ -28,7 +24,6 @@ function PercentageSlider:updateValueLabel()
 	if self.elements.slider then
 		newValue = self.elements.slider.widget.current + self.min
 	end
-
 	if string.find(self.label, "%s", 1, true) then
 		self.elements.label.text = string.format(self.label, newValue)
 	else
@@ -42,6 +37,26 @@ function PercentageSlider:update()
 	self.variable.value = (self.elements.slider.widget.current + self.min) / 100
 	-- Bypass Slider:update to avoid overwriting the variable with an unscaled value.
 	Setting.update(self)
+end
+
+function PercentageSlider:enable()
+	Parent.enable(self)
+	if self.variable.value then
+		self.elements.slider.widget.current = (self.variable.value * 100) - self.min
+		self:updateValueLabel()
+	end
+	-- Register slider elements so that the value only updates when the mouse is released
+	for _, sliderElement in ipairs(self.elements.slider.children) do
+		self:registerSliderElement(sliderElement)
+		for _, innerElement in ipairs(sliderElement.children) do
+			self:registerSliderElement(innerElement)
+		end
+	end
+
+	-- But we want the label to update in real time so you can see where it's going to end up
+	self.elements.slider:register(tes3.uiEvent.partScrollBarChanged, function(e)
+		self:updateValueLabel()
+	end)
 end
 
 return PercentageSlider
