@@ -81,6 +81,7 @@ end
 ---| "KeyBinder"
 ---| "OnOffButton"
 ---| "ParagraphField"
+---| "PercentageSlider"
 ---| "Setting"
 ---| "Slider"
 ---| "TextField"

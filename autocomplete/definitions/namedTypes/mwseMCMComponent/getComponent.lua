@@ -6,28 +6,30 @@ return {
 		type = "mwseMCMComponent|table",
 		tableParams = {
 			{ name = "class", type = "string", description = [[The component type to get. On of the following:
+		- `"Template"`
+		- `"Page"`
+		- `"SideBarPage"`
+		- `"MouseOverPage"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
 		- `"Button"`
-		- `"DecimalSlider"`
+		- `"YesNoButton"`
+		- `"OnOffButton"`
 		- `"Dropdown"`
 		- `"KeyBinder"`
-		- `"OnOffButton"`
 		- `"ParagraphField"`
 		- `"Setting"`
 		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 		- `"TextField"`
-		- `"YesNoButton"`
-		- `"Template"`]] },
+		]] },
 			{ name = "label", type = "string", optional = true, description = "The label text to set for the new component. Not all component types have a label." },
 			{ name = "indent", type = "integer", optional = true, default = 12, description = "The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component." },
 			{ name = "childIndent", type = "integer", optional = true, description = "The left padding size in pixels. Used on all the child components." },
