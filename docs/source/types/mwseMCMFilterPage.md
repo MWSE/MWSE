@@ -837,6 +837,42 @@ local paragraphField = myObject:createParagraphField({ label = ..., buttonText =
 
 ***
 
+### `createPercentageSlider`
+<div class="search_terms" style="display: none">createpercentageslider, percentageslider</div>
+
+Creates a new nested PercentageSlider. These store values in the range 0.0-1.0 and display them in the range 0%-100%. All MCM related settings refer to the **displayed** values.
+
+```lua
+local slider = myObject:createPercentageSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `data` (table)
+	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `min` (number): *Default*: `0`. Minimum (displayed) value of slider.
+	* `max` (number): *Default*: `100`. Maximum (displayed) value of slider.
+	* `step` (number): *Default*: `1`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+	* `callback` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `postCreate` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `slider` ([mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))
+
+***
+
 ### `createRightColumn`
 <div class="search_terms" style="display: none">createrightcolumn, rightcolumn</div>
 
@@ -1094,28 +1130,30 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 * `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
 	* `class` (string): The component type to get. On of the following:
+		- `"Template"`
+		- `"Page"`
+		- `"SideBarPage"`
+		- `"MouseOverPage"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
 		- `"Button"`
-		- `"DecimalSlider"`
+		- `"YesNoButton"`
+		- `"OnOffButton"`
 		- `"Dropdown"`
 		- `"KeyBinder"`
-		- `"OnOffButton"`
 		- `"ParagraphField"`
 		- `"Setting"`
 		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 		- `"TextField"`
-		- `"YesNoButton"`
-		- `"Template"`
+		
 	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
