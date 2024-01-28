@@ -16,21 +16,25 @@ local Parent = require("mcm.components.settings.Slider")
 ---@field decimalPlaces integer
 local PercentageSlider = Parent:new()
 
--- probably a bit weird to implement a `decimalPlaces` and not inherit from `DecimalSlider`,
---  but we have to overwrite all the funcationality of DecimalSlider anyway, and the default values
--- of a PercentageSlider are more consistent with the default values of `Slider`.
+--[[ probably a bit weird to implement a `decimalPlaces` and not inherit from `DecimalSlider`,
+	but we have to overwrite all the functionality of DecimalSlider anyway, and the default values
+	of a `PercentageSlider` are more consistent with the default values of `Slider`
+]]
 
--- also, the decimal place conversions in the code are going to be a bit weird, because
+--[[the decimal place conversions in the code are going to be a bit weird, because
 
--- (1) the user wants to store values in a range [0,1]
--- (2) the user wants values to be displayed in the range [0,100]
--- (3) sliders can only store integer values
+	(1) the user wants to store values in a range [0,1]
+	(2) the user wants values to be displayed in the range [0,100]
+	(3) sliders can only store integer values
 
--- so, assuming `min == 0`, the conversions are:
--- (1) <-> (2): scale by `100`
--- (1) <-> (3): scale by `10^(2 + decimalPlaces)`
--- (2) <-> (3): scale by `10^decimalPlaces`
+so, assuming `min == 0`, the conversions are:
+	(1) <-> (2): scale by `100`
+	(2) <-> (3): scale by `10^decimalPlace`
 
+`min` opens up its own can of worms because the minimum value stored in the config should be `min / 100`
+so, the config value will be getting scaled by `10 ^ (2 + decimalPlaces)`, 
+while `min` will only be getting scaled by `10 ^ decimalPlaces`
+]]
 
 PercentageSlider.decimalPlaces = 0
 
@@ -39,6 +43,7 @@ PercentageSlider.decimalPlaces = 0
 --- @return mwseMCMPercentageSlider slider
 function PercentageSlider:new(data)
 	-- make sure `decimalPlaces` is ok, then do parent behavior
+	-- unlike `DecimalSlider`, here we allow `decimalPlaces` to be `>= 0`
 	if data and data.decimalPlaces ~= nil then
 		assert(
 			data.decimalPlaces >= 0 and data.decimalPlaces % 1 == 0, 
@@ -89,7 +94,7 @@ end
 
 
 function PercentageSlider:updateValueLabel()
-	local newValue = "" ---@type string|number
+	local newValue = 0 ---@type string|number
 
 	if self.elements.slider then
 		-- (3) -> (1) -> (2) conversion
@@ -98,7 +103,14 @@ function PercentageSlider:updateValueLabel()
 	if string.find(self.label, "%s", 1, true) then
 		self.elements.label.text = string.format(self.label, newValue)
 	else
-		self.elements.label.text = string.format("%s: %s%%", self.label, newValue)
+		local s = "%s: %i%%"
+		-- only include decimal places when we're supposed to
+		if self.decimalPlaces > 0 then
+			-- so sorry that anyone has to look at this
+			-- this will simplify to "%s: %.1f%%" (in the case where `decimalPlaces` == 1)
+			s = string.format("%%s: %%.%uf%%%%", self.decimalPlaces)
+		end
+		self.elements.label.text = s:format(self.label, newValue)
 	end
 end
 
