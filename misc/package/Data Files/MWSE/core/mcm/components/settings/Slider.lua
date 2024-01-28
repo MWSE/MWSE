@@ -15,8 +15,7 @@
 		in a slider widget, and outputting the corresponding variable value.
 
 		Usually, children of this component implement some of the following methods:
-		- convertToWidgetValue - convert variable value to widget value
-		- convertToVariableValue - convert widget value to slider value
+		- convertToWidgetValue - convert variable value to widget value. this will automatically define `convertToVariableValue` as well.
 		- updateValueLabel - customize how the current variable value should be formatted in the widget display text.
 ]]--
 
@@ -29,13 +28,41 @@ local Parent = require("mcm.components.settings.Setting")
 --- @class mwseMCMSlider
 local Slider = Parent:new()
 Slider.min = 0
+Slider.decimalPlaces = 0
 Slider.max = 100
 Slider.step = 1
 Slider.jump = 5
 
 
+function Slider:new(data)
+
+	-- initialize metatable, make variable, etc
+	local t = Parent.new(self, data)
+		
+	-- range of values (as requested by the user, not taking slider behavior into account)
+	local dist = t.max - t.min
+
+	if rawget(t, "jump") == nil then
+		t.jump = math.min(dist, 5 * t.step)
+	end
+
+	assert(dist > 0, "Invalid 'max' and 'min' parameters provided. 'max' must be greater than 'min'.")
+	assert(t.step > 0, "Invalid 'step' parameter provided. It must be greater than 0.")
+	assert(t.step <= dist + math.epsilon, "Invalid 'step' parameter provided. It cannot be greater than 'max' - 'min'")
+	assert(t.jump > 0, "Invalid 'jump' parameter provided. It must be greater than 0.")
+	assert(t.jump <= dist + math.epsilon, "Invalid 'jump' parameter provided. It cannot be greater than 'max' - 'min'")
+
+	assert(
+		t.decimalPlaces % 1 == 0 and t.decimalPlaces >= 0, 
+		"Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
+	)
+
+	return t
+end
+
+
 function Slider:convertToWidgetValue(variableValue)
-	return variableValue - self.min
+	return  (variableValue - self.min) * (10 ^ self.decimalPlaces)
 end
 
 
@@ -48,13 +75,21 @@ function Slider:convertToVariableValue(widgetValue)
 	return (widgetValue - a) / C				-- `returnVal == widgetValue + 10`
 end
 
+
 function Slider:updateValueLabel()
 	local labelElement = self.elements.label
 
 	if string.find(self.label, "%s", nil, true) then
 		labelElement.text = self.label:format(self.variable.value)
 	else
-		labelElement.text = string.format("%s: %s", self.label, self.variable.value)
+		local s = "%s: %i"
+		-- only include decimal places when we're supposed to
+		if self.decimalPlaces > 0 then
+			-- so sorry that anyone has to look at this
+			-- this will simplify to "%s: %.1f" (in the case where `decimalPlaces` == 1)
+			s = string.format("%%s: %%.%uf", self.decimalPlaces)
+		end
+		labelElement.text = s:format(self.label, self.variable.value)
 	end
 end
 
@@ -140,62 +175,20 @@ end
 --- @param parentBlock tes3uiElement
 function Slider:makeComponent(parentBlock)
 
-	--[[We know that `convertToWidgetValue` is a function `f` of the form 
-		
-		`f(x) == C * x - K * min`
-
-	and we know that `f(m) == 0`, where `m` is the minimum config value. So, the relationship between `m` and `min` is 
-	`C * m = K * min`.
-
-	For the purposes of calculating the slider `range`, `jump`, and `step`, we want to pretend `C` and `K` are the same.
-	We could do this by setting
-
-		`g(x) = f(K / C * x) == K * x - K * min`,
-
-	But there's a problem here: we only know what `K` is whenever `min` is not zero.
-	We can bypass this problem by temporarily setting `min = 1`, so that `K == f(0)`.
-	Likewise, we can get `C` by setting `min = 0`.
-	(Note that we want to use `K` instead of `C` because `K` specifies the MCM values.)
-	]]
-
-	local min = self.min
-	self.min = 1
-	local K = self:convertToWidgetValue(0)
-	self.min = 0 -- this is an easy way to get `C`, but there are others.
-	local C = self:convertToWidgetValue(1)
-	self.min = min
-
-	
-	--[[`g` is a copy of `convertToWidgetValue` that treats `self.min`, `self.max`, `self.step`, and `self.jump`
-	as if those values were the corresponding values that get stored in the config.
-	
-	e.g., in the case of a `PercentageSlider` with `self.min = 10` and `self.max = 100`, we'd have 
-		`C == 100` and `K == 1`, so `K / C == 1 / 100`. The effect of this is that 
-	 	`g(self.min) == self:convertToWidgetValue(0.1) == 0` and 
-		`g(self.max) == self:convertToWidgetValue(1) == 90`
-
-	So, the ranges can be calculated correctly.
-	]]
-	local function g(x) return self:convertToWidgetValue((K / C) * x) end
-
-
-
 	local sliderBlock = parentBlock:createBlock()
 	sliderBlock.flowDirection = tes3.flowDirection.leftToRight
 	sliderBlock.autoHeight = true
 	sliderBlock.widthProportional = 1.0
 
-
-	local range = g(self.max)
-
-	local slider = sliderBlock:createSlider({ current = 0, max = range })
+	local slider = sliderBlock:createSlider{ 
+		current = 0,
+		max = self:convertToWidgetValue(self.max),
+		-- get the `step` and `jump` by starting from `self.min`, incrementing a bit, then converting
+		-- to the slider settings and seeing where we end up
+		step = self:convertToWidgetValue(self.step + self.min),
+		jump = self:convertToWidgetValue(self.jump + self.min),
+	}
 	slider.widthProportional = 1.0
-
-	-- Set custom values from setting data
-	-- get the `step` and `jump` by starting from `self.min`, incrementing a bit, then converting
-	-- to the slider settings, then see where we end up
-	slider.widget.step = g(self.step + self.min)
-	slider.widget.jump = g(self.jump + self.min)
 
 	self.elements.slider = slider
 	self.elements.sliderBlock = sliderBlock

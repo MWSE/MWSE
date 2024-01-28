@@ -13,30 +13,15 @@ local Parent = require("mcm.components.settings.Slider")
 
 
 --- @class mwseMCMPercentageSlider : mwseMCMSlider
----@field decimalPlaces integer
 local PercentageSlider = Parent:new()
 
-PercentageSlider.decimalPlaces = 0
-
-
---- @param data mwseMCMPercentageSlider.new.data?
---- @return mwseMCMPercentageSlider slider
-function PercentageSlider:new(data)
-	-- make sure `decimalPlaces` is ok, then do parent behavior
-	-- unlike `DecimalSlider`, here we allow `decimalPlaces` to be `>= 0`
-	if data and data.decimalPlaces ~= nil then
-		assert(
-			data.decimalPlaces >= 0 and data.decimalPlaces % 1 == 0, 
-			"Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
-		)
-	end
-	---@diagnostic disable-next-line: param-type-mismatch, return-type-mismatch
-	return Parent.new(self, data)
-end
-
+PercentageSlider.min = 0.0
+PercentageSlider.max = 1.0
+PercentageSlider.step = 0.01
+PercentageSlider.jump = 0.05
 
 function PercentageSlider:convertToWidgetValue(variableValue)
-	return (100 * variableValue - self.min) * 10 ^ self.decimalPlaces
+	return (variableValue - self.min) * 10 ^ (2 + self.decimalPlaces)
 end
 
 function PercentageSlider:updateValueLabel()
@@ -55,6 +40,5 @@ function PercentageSlider:updateValueLabel()
 		labelElement.text = s:format(self.label, self.variable.value)
 	end
 end
-
 
 return PercentageSlider
