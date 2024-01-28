@@ -36,29 +36,24 @@ function DecimalSlider:new(data)
 	return Parent.new(self, data) -- the `__index` metamethod will make the `min`, `max`, etc fields default to the values specified above.
 end
 
-function DecimalSlider:scaleToSliderRange(value)
-	return value * 10 ^ self.decimalPlaces
+
+function DecimalSlider:convertToSliderValue(variableValue)
+	return 10 ^ self.decimalPlaces * (variableValue - self.min)
 end
 
-function DecimalSlider:scaleToVariableRange(value)
-	return value / 10 ^ self.decimalPlaces
+function DecimalSlider:convertToVariableValue(sliderValue)
+	return self.min + sliderValue / 10 ^ self.decimalPlaces
 end
 
 function DecimalSlider:updateValueLabel()
-	local newValue = 0
-	local labelText = ""
+	local labelElement = self.elements.label
 
-	if self.elements.slider then
-		newValue = self:getNewValue()
-	end
-
-	if string.find(self.label, "%", 1, true) then
-		labelText = string.format(self.label, newValue)
+	if string.find(self.label, "%s", 1, true) then
+		labelElement.text = self.label:format(self.variable.value)
 	else
-		labelText = self.label .. string.format(string.format(": %%.%uf", self.decimalPlaces), newValue)
+		local s = string.format("%%s: %%.%uf", self.decimalPlaces)
+		labelElement.text = s:format(self.label, self.variable.value)
 	end
-
-	self.elements.label.text = labelText
 end
 
 return DecimalSlider
