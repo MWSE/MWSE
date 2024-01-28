@@ -35,11 +35,6 @@ function PercentageSlider:new(data)
 end
 
 
-function PercentageSlider:convertToVariableValue(sliderValue)
-	return (self.min + sliderValue * 10 ^ self.decimalPlaces) / 100
-
-end
-
 function PercentageSlider:convertToWidgetValue(variableValue)
 	return (100 * variableValue - self.min) * 10 ^ self.decimalPlaces
 end

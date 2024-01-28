@@ -41,10 +41,6 @@ function DecimalSlider:convertToWidgetValue(variableValue)
 	return 10 ^ self.decimalPlaces * (variableValue - self.min)
 end
 
-function DecimalSlider:convertToVariableValue(sliderValue)
-	return self.min + sliderValue / 10 ^ self.decimalPlaces
-end
-
 function DecimalSlider:updateValueLabel()
 	local labelElement = self.elements.label
 

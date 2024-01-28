@@ -38,8 +38,14 @@ function Slider:convertToWidgetValue(variableValue)
 	return variableValue - self.min
 end
 
+
+-- `y == C * x + a` ~> (y - a) / C == x
+
 function Slider:convertToVariableValue(widgetValue)
-	return widgetValue + self.min
+	-- e.g., consider  `min == 10`. then 
+	local a = self:convertToWidgetValue(0) 		-- `a == -10`
+	local C = self:convertToWidgetValue(1) - a	-- `C == -9 - (-10) == 1
+	return (widgetValue - a) / C				-- `returnVal == widgetValue + 10`
 end
 
 function Slider:updateValueLabel()
