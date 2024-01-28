@@ -26,9 +26,9 @@ end
 
 function PercentageSlider:updateValueLabel()
 	local labelElement = self.elements.label
-
+	local percentageValue = 100 * self.variable.value
 	if string.find(self.label, "%s", 1, true) then
-		labelElement.text = string.format(self.label, self.variable.value)
+		labelElement.text = string.format(self.label, percentageValue)
 	else
 		local s = "%s: %i%%"
 		-- only include decimal places when we're supposed to
@@ -37,7 +37,7 @@ function PercentageSlider:updateValueLabel()
 			-- this will simplify to "%s: %.1f%%" (in the case where `decimalPlaces` == 1)
 			s = string.format("%%s: %%.%uf%%%%", self.decimalPlaces)
 		end
-		labelElement.text = s:format(self.label, self.variable.value)
+		labelElement.text = s:format(self.label, percentageValue)
 	end
 end
 
