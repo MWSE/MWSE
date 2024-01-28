@@ -77,6 +77,17 @@ This method creates the contents of a component. Not every component implements 
 
 ***
 
+### `decimalPlaces`
+<div class="search_terms" style="display: none">decimalplaces</div>
+
+The number of (displayed) decimal places of precision. Must be a nonnegative integer. e.g., specifying `1` will allow "5.4" to be displayed. Default is `0`.
+
+**Returns**:
+
+* `result` (integer)
+
+***
+
 ### `description`
 <div class="search_terms" style="display: none">description</div>
 
@@ -135,11 +146,11 @@ If true, the setting is disabled while the game is on main menu.
 ### `jump`
 <div class="search_terms" style="display: none">jump</div>
 
-How far the slider jumps when you click an area inside the slider. Default is `0`.
+How far the slider jumps when you click an area inside the slider. Default is `5`.
 
 **Returns**:
 
-* `result` (number)
+* `result` (integer)
 
 ***
 
@@ -293,7 +304,7 @@ How far the slider moves when you press the arrows. Default is `1`.
 
 **Returns**:
 
-* `result` (number)
+* `result` (integer)
 
 ***
 
@@ -511,6 +522,36 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 ***
 
+### `getCurrentWidgetValue`
+<div class="search_terms" style="display: none">getcurrentwidgetvalue, currentwidgetvalue</div>
+
+Reads the current variable value and scales it to the value range used by the underlying `tes3uiSlider` widget.
+
+```lua
+local value = myObject:getCurrentWidgetValue()
+```
+
+**Returns**:
+
+* `value` (integer)
+
+***
+
+### `getNewValue`
+<div class="search_terms" style="display: none">getnewvalue, newvalue</div>
+
+Reads the current value of the underlying `tes3uiSlider` widget and scales it to the value range used by the variable.
+
+```lua
+local value = myObject:getNewValue()
+```
+
+**Returns**:
+
+* `value` (number)
+
+***
+
 ### `makeComponent`
 <div class="search_terms" style="display: none">makecomponent</div>
 
@@ -529,7 +570,7 @@ myObject:makeComponent(parentBlock)
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 
-Creates a new PercentageSlider.
+Creates a new Slider.
 
 ```lua
 local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ..., class = ..., componentType = ..., parentComponent = ... })
@@ -541,12 +582,12 @@ local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ...,
 	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): *Optional*. A variable for this setting.
 	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
-	* `min` (number): *Default*: `0`. Minimum (displayed) value of slider.
-	* `max` (number): *Default*: `1`. Maximum (displayed) value of slider.
-	* `step` (number): *Default*: `0.01`. How far the slider moves when you press the arrows.
-	* `jump` (number): *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+	* `min` (integer): *Default*: `0`. Minimum value of slider.
+	* `max` (integer): *Default*: `100`. Maximum value of slider.
+	* `step` (integer): *Default*: `1`. How far the slider moves when you press the arrows.
+	* `jump` (integer): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
-	* `callback` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `callback` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
@@ -554,14 +595,14 @@ local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ...,
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
 	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
-	* `postCreate` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+	* `postCreate` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 	* `class` (string): *Optional*.
 	* `componentType` (string): *Optional*.
 	* `parentComponent` ([mwseMCMComponent](../types/mwseMCMComponent.md)): *Optional*.
 
 **Returns**:
 
-* `slider` ([mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))
+* `slider` ([mwseMCMSlider](../types/mwseMCMSlider.md))
 
 ***
 
@@ -626,6 +667,44 @@ myObject:registerSliderElement(element)
 **Parameters**:
 
 * `element` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `scaleToSliderRange`
+<div class="search_terms" style="display: none">scaletosliderrange</div>
+
+Scales given `value` from the variable range to the range used by the underlying `tes3uiSlider` widget.
+
+```lua
+local scaledValue = myObject:scaleToSliderRange(value)
+```
+
+**Parameters**:
+
+* `value` (number)
+
+**Returns**:
+
+* `scaledValue` (number)
+
+***
+
+### `scaleToVariableRange`
+<div class="search_terms" style="display: none">scaletovariablerange</div>
+
+Scales given `value` from the underlying `tes3uiSlider` widget's range to the range used by the variable.
+
+```lua
+local scaledValue = myObject:scaleToVariableRange(value)
+```
+
+**Parameters**:
+
+* `value` (number)
+
+**Returns**:
+
+* `scaledValue` (number)
 
 ***
 
