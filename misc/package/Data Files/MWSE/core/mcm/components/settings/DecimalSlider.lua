@@ -37,7 +37,7 @@ function DecimalSlider:new(data)
 end
 
 
-function DecimalSlider:convertToSliderValue(variableValue)
+function DecimalSlider:convertToWidgetValue(variableValue)
 	return 10 ^ self.decimalPlaces * (variableValue - self.min)
 end
 

@@ -11,12 +11,12 @@
 		- The `Slider:convertToWidgetValue(variableValue)` method is responsible for taking in a variable value
 		and outputting the appropriate value to use on the slider widget.
 
-		- The `Slider:convertToSliderValue(widgetValue)` method is responsible for taking in a value stored 
+		- The `Slider:convertToVariableValue(widgetValue)` method is responsible for taking in a value stored 
 		in a slider widget, and outputting the corresponding variable value.
 
 		Usually, children of this component implement some of the following methods:
 		- convertToWidgetValue - convert variable value to widget value
-		- convertToSliderValue - convert widget value to slider value
+		- convertToVariableValue - convert widget value to slider value
 		- updateValueLabel - customize how the current variable value should be formatted in the widget display text.
 ]]--
 
@@ -90,6 +90,7 @@ end
 
 function Slider:enable()
 	Parent.enable(self)
+	-- if the variable exists, use it to update the widget and the displayed label
 	if self.variable.value then
 		self:updateWidgetValue()
 		self:updateValueLabel()
@@ -137,7 +138,7 @@ function Slider:makeComponent(parentBlock)
 	sliderBlock.autoHeight = true
 	sliderBlock.widthProportional = 1.0
 
-	local minwidgetValue = self:convertToWidgetValue(self.min)
+	local minWidgetValue = self:convertToWidgetValue(self.min) -- this should always be `0`
 
 	--[[in most settings, `convertToWidgetValue` will be a function of the form
 		`f(x) = C * (x - min)`
@@ -147,7 +148,7 @@ function Slider:makeComponent(parentBlock)
 				== C * (max - min) - C * (min - min)
 				== C * (max - min)
 	]]
-	local range = self:convertToWidgetValue(self.max) - minwidgetValue
+	local range = self:convertToWidgetValue(self.max) - minWidgetValue
 
 
 
@@ -155,15 +156,15 @@ function Slider:makeComponent(parentBlock)
 	slider.widthProportional = 1.0
 
 	-- Set custom values from setting data
-	--[[ continuing the example from earlier, if `f(x) = C * x + min` then
+	--[[ continuing the example from earlier, if `f(x) = C * (x - min)` then
 		widget.step	== f(step + min) - f(min)
 					== C * (step + min - min) - C * (min - min)
 					== C * step
 
 	similarly, `widget.jump == C * jump`
 	]]
-	slider.widget.step = self:convertToWidgetValue(self.step + self.min) - minwidgetValue
-	slider.widget.jump = self:convertToWidgetValue(self.jump + self.min) - minwidgetValue
+	slider.widget.step = self:convertToWidgetValue(self.step + self.min) - minWidgetValue
+	slider.widget.jump = self:convertToWidgetValue(self.jump + self.min) - minWidgetValue
 
 	self.elements.slider = slider
 	self.elements.sliderBlock = sliderBlock

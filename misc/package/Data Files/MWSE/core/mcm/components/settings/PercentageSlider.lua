@@ -40,7 +40,7 @@ function PercentageSlider:convertToVariableValue(sliderValue)
 
 end
 
-function PercentageSlider:convertToSliderValue(variableValue)
+function PercentageSlider:convertToWidgetValue(variableValue)
 	return (100 * variableValue - self.min) * 10 ^ self.decimalPlaces
 end
 
