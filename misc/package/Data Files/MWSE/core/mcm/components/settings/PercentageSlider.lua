@@ -16,7 +16,7 @@ local Parent = require("mcm.components.settings.Slider")
 ---@field decimalPlaces integer
 local PercentageSlider = Parent:new()
 
--- probably a bit weird to implement a decimalPlaces and not inherit from `DecimalSlider`,
+-- probably a bit weird to implement a `decimalPlaces` and not inherit from `DecimalSlider`,
 --  but we have to overwrite all the funcationality of DecimalSlider anyway, and the default values
 -- of a PercentageSlider are more consistent with the default values of `Slider`.
 
@@ -35,8 +35,8 @@ local PercentageSlider = Parent:new()
 PercentageSlider.decimalPlaces = 0
 
 
---- @param data mwseMCMDecimalSlider.new.data?
---- @return mwseMCMDecimalSlider slider
+--- @param data mwseMCMPercentageSlider.new.data?
+--- @return mwseMCMPercentageSlider slider
 function PercentageSlider:new(data)
 	-- make sure `decimalPlaces` is ok, then do parent behavior
 	if data and data.decimalPlaces ~= nil then
@@ -49,35 +49,51 @@ function PercentageSlider:new(data)
 	return Parent.new(self, data) -- the `__index` metamethod will make the `min`, `max`, etc fields default to the values specified above.
 end
 
-function PercentageSlider:getNewValue()
-	return (self.elements.slider.widget.current / 100  + self.min) / 10^self.decimalPlaces
+
+function PercentageSlider:scaleToSliderRange(value)
+	-- (2) -> (3) conversion
+	return value * 10 ^ self.decimalPlaces
 end
 
-function PercentageSlider:updateValueLabel()
-	local newValue = "" ---@type string|number
-
-	if self.elements.slider then
-		newValue = self.elements.slider.widget.current + self.min
-	end
-	if string.find(self.label, "%s", 1, true) then
-		self.elements.label.text = string.format(self.label, newValue)
-	else
-		self.elements.label.text = string.format("%s: %s%%", self.label, newValue)
-	end
+function PercentageSlider:scaleToVariableRange(value)
+	-- (3) -> (2) conversion
+	return value / 10 ^ self.decimalPlaces
 end
+
+
 
 function PercentageSlider:getCurrentWidgetValue()
-	return self.variable.value * 10^(2 + self.decimalPlaces) - self.min^self.decimalPlaces
+	-- (1) -> (2) conversion
+	-- note that the minimum value to store in the config is `self.min / 100`, 
+	-- which is why `min` isn't getting  multiplying it by 100 here 
+	local newValue = self.variable.value * 100 
+	-- (2) -> (3) conversion
+	return self:scaleToSliderRange(newValue - self.min)
 end
 
+--[[
+	let x = variable, s = slider, m = min, d = decimalPlaces. then
+
+	s = (100x - m) * 10^d
+	
+	~> 100x + m = s/10^d
+	~> x = (s/10^d + m) / 100 
+]]
+
+function PercentageSlider:getNewValue()
+	-- (3) -> (2) conversion
+	local newValue = self.min + self:scaleToVariableRange(self.elements.slider.widget.current)
+	-- (2) -> (1) conversion
+	return newValue / 100
+end
 
 
 function PercentageSlider:updateValueLabel()
 	local newValue = "" ---@type string|number
 
 	if self.elements.slider then
-		-- this is the (2) <-> (3) conversion mentioned earlier, so we scale by `10^decimalPlaces`
-		newValue = (self.min + self.elements.slider.widget.current) / 10^self.decimalPlaces
+		-- (3) -> (1) -> (2) conversion
+		newValue = self:getNewValue() * 100
 	end
 	if string.find(self.label, "%s", 1, true) then
 		self.elements.label.text = string.format(self.label, newValue)
