@@ -61,25 +61,5 @@ function PercentageSlider:updateValueLabel()
 	end
 end
 
---- @param parentBlock tes3uiElement
-function PercentageSlider:makeComponent(parentBlock)
-
-	-- it hurt to write this method. 
-	-- the `min`, `max`, `etc` should probably be stored as the values seen in the config, not the MCM.
-	local oldMin, oldMax, oldStep, oldJump = self.min, self.max, self.step, self.jump
-
-	self.min = self.min / 100
-	self.max = self.max / 100
-	self.step = self.step / 100
-	self.jump = self.jump / 100
-
-	Parent.makeComponent(self, parentBlock)
-
-	self.min = oldMin
-	self.max = oldMax
-	self.step = oldStep
-	self.jump = oldJump
-end
-
 
 return PercentageSlider

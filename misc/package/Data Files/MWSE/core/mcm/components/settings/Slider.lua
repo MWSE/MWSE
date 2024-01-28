@@ -133,38 +133,63 @@ end
 
 --- @param parentBlock tes3uiElement
 function Slider:makeComponent(parentBlock)
+
+	--[[We know that `convertToWidgetValue` is a function `f` of the form 
+		
+		`f(x) == C * x - K * min`
+
+	and we know that `f(m) == 0`, where `m` is the minimum config value. So, the relationship between `m` and `min` is 
+	`C * m = K * min`.
+
+	For the purposes of calculating the slider `range`, `jump`, and `step`, we want to pretend `C` and `K` are the same.
+	We could do this by setting
+
+		`g(x) = f(K / C * x) == K * x - K * min`,
+
+	But there's a problem here: we only know what `K` is whenever `min` is not zero.
+	We can bypass this problem by temporarily setting `min = 1`, so that `K == f(0)`.
+	Likewise, we can get `C` by setting `min = 0`.
+	(Note that we want to use `K` instead of `C` because `K` specifies the MCM values.)
+	]]
+
+	local min = self.min
+	self.min = 1
+	local K = self:convertToWidgetValue(0)
+	self.min = 0 -- this is an easy way to get `C`, but there are others.
+	local C = self:convertToWidgetValue(1)
+	self.min = min
+
+	
+	--[[`g` is a copy of `convertToWidgetValue` that treats `self.min`, `self.max`, `self.step`, and `self.jump`
+	as if those values were the corresponding values that get stored in the config.
+	
+	e.g., in the case of a `PercentageSlider` with `self.min = 10` and `self.max = 100`, we'd have 
+		`C == 100` and `K == 1`, so `K / C == 1 / 100`. The effect of this is that 
+	 	`g(self.min) == self:convertToWidgetValue(0.1) == 0` and 
+		`g(self.max) == self:convertToWidgetValue(1) == 90`
+
+	So, the ranges can be calculated correctly.
+	]]
+	local function g(x) return self:convertToWidgetValue((K / C) * x) end
+
+
+
 	local sliderBlock = parentBlock:createBlock()
 	sliderBlock.flowDirection = tes3.flowDirection.leftToRight
 	sliderBlock.autoHeight = true
 	sliderBlock.widthProportional = 1.0
 
-	local minWidgetValue = self:convertToWidgetValue(self.min) -- this should always be `0`
 
-	--[[in most settings, `convertToWidgetValue` will be a function of the form
-		`f(x) = C * (x - min)`
-	where `min == self.min` and `C` is a constant.
-	in this setting, 
-		range 	== f(max) - f(min)
-				== C * (max - min) - C * (min - min)
-				== C * (max - min)
-	]]
-	local range = self:convertToWidgetValue(self.max) - minWidgetValue
-
-
+	local range = g(self.max)
 
 	local slider = sliderBlock:createSlider({ current = 0, max = range })
 	slider.widthProportional = 1.0
 
 	-- Set custom values from setting data
-	--[[ continuing the example from earlier, if `f(x) = C * (x - min)` then
-		widget.step	== f(step + min) - f(min)
-					== C * (step + min - min) - C * (min - min)
-					== C * step
-
-	similarly, `widget.jump == C * jump`
-	]]
-	slider.widget.step = self:convertToWidgetValue(self.step + self.min) - minWidgetValue
-	slider.widget.jump = self:convertToWidgetValue(self.jump + self.min) - minWidgetValue
+	-- get the `step` and `jump` by starting from `self.min`, incrementing a bit, then converting
+	-- to the slider settings, then see where we end up
+	slider.widget.step = g(self.step + self.min)
+	slider.widget.jump = g(self.jump + self.min)
 
 	self.elements.slider = slider
 	self.elements.sliderBlock = sliderBlock
