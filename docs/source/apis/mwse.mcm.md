@@ -593,6 +593,54 @@ local paragraphField = mwse.mcm.createParagraphField(parent, { label = ..., butt
 
 ***
 
+### `mwse.mcm.createPercentageSlider`
+<div class="search_terms" style="display: none">createpercentageslider, percentageslider</div>
+
+Creates a new `PercentageSlider` inside given `parent` menu.
+
+The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, `PercentageSlider`'s UI element tree won't be created. To do so, use `PercentageSlider`'s `create` method:
+
+```lua
+local mySlider = mwse.mcm.createPercentageSlider({ ... })
+mySlider:create(parent)
+```
+
+The same is done by this function if you pass both `parent` and `data` arguments.
+
+
+```lua
+local slider = mwse.mcm.createPercentageSlider(parent, { label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `parent` ([tes3uiElement](../types/tes3uiElement.md), mwse.mcm.createPercentageSlider.data): The UI element inside which the new `PercentageSlider` will be created.
+* `data` (table): *Optional*.
+	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `min` (number): *Default*: `0`. Minimum value of slider.
+	* `max` (number): *Default*: `1`. Maximum value of slider.
+	* `step` (number): *Default*: `0.01`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+	* `decimalPlaces` (integer): *Default*: `2`. The number of decimal places of precision. Must be a positive integer.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+	* `callback` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `postCreate` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `slider` ([mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))
+
+***
+
 ### `mwse.mcm.createPlayerData`
 <div class="search_terms" style="display: none">createplayerdata, playerdata</div>
 
@@ -634,7 +682,7 @@ The same is done by this function if you pass both `parent` and `data` arguments
 
 
 ```lua
-local slider = mwse.mcm.createSlider(parent, { label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+local slider = mwse.mcm.createSlider(parent, { label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -644,10 +692,11 @@ local slider = mwse.mcm.createSlider(parent, { label = ..., variable = ..., defa
 	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
 	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
-	* `min` (integer): *Default*: `0`. Minimum value of slider.
-	* `max` (integer): *Default*: `100`. Maximum value of slider.
-	* `step` (integer): *Default*: `1`. How far the slider moves when you press the arrows.
-	* `jump` (integer): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `min` (number): *Default*: `0`. Minimum value of slider.
+	* `max` (number): *Default*: `100`. Maximum value of slider.
+	* `step` (number): *Default*: `1`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `decimalPlaces` (integer): *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 	* `callback` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
