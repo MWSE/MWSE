@@ -559,7 +559,15 @@ function table.bininsert(t, value, comp)
 end
 
 
-
+function table.combine(...)
+	local tbl = {}
+	for _, t in ipairs{...} do
+		for k,v in pairs(t) do
+			tbl[k] = v
+		end
+	end
+	return tbl
+end
 
 function table.append(tbl, ...)
 	for _, t in ipairs{...} do
