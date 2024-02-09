@@ -107,9 +107,9 @@ function KeyBinder:getComboString(keyCombo)
 	local hasCtrl = (keyCombo.isControlDown and keyCode ~= tes3.scanCode.lCtrl
 	                                        and keyCode ~= tes3.scanCode.rCtrl)
 	local prefixes = {}
-	if hasShift then table.insert(prefixes,"Shift") end
-	if hasAlt then table.insert(prefixes,"Alt") end
-	if hasCtrl then table.insert(prefixes,"Ctrl") end
+	if hasShift then table.insert(prefixes, "Shift") end
+	if hasAlt then table.insert(prefixes, "Alt") end
+	if hasCtrl then table.insert(prefixes, "Ctrl") end
 	table.insert(prefixes, comboText)
 	return table.concat(prefixes, " - ")
 end
