@@ -115,7 +115,7 @@ The left padding size in pixels. Only used if the `childIndent` isn't set on the
 ### `inGameOnly`
 <div class="search_terms" style="display: none">ingameonly</div>
 
-Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
+If true, then this component will be disabled when on the main menu.
 
 **Returns**:
 

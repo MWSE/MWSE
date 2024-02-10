@@ -42,7 +42,7 @@
 --- @field description string|nil If in a [Sidebar Page](./mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- @field elements mwseMCMButtonElements|mwseMCMCategoryElements|mwseMCMComponentElements|mwseMCMDropdownElements|mwseMCMExclusionsPageElements|mwseMCMFilterPageElements|mwseMCMInfoElements|mwseMCMMouseOverPageElements|mwseMCMParagraphFieldElements|mwseMCMSideBarPageElements|mwseMCMSliderElements|mwseMCMTemplateElements|mwseMCMTextFieldElements This dictionary holds all the UI elements of the Component, for easy access.
 --- @field indent integer The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
---- @field inGameOnly boolean Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
+--- @field inGameOnly boolean If true, then this component will be disabled when on the main menu.
 --- @field label string The text of the component. Not all component types have a label.
 --- @field mouseOvers tes3uiElement[]|nil This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 --- @field paddingBottom integer The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.

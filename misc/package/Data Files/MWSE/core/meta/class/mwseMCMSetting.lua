@@ -6,7 +6,7 @@
 --- @class mwseMCMSetting : mwseMCMComponent
 --- @field callback nil|fun(self: mwseMCMSetting) The custom function called when the player interacts with this Setting.
 --- @field componentType "Setting" The type of this component.
---- @field inGameOnly  boolean If true, the setting is disabled while the game is on main menu.
+--- @field inGameOnly boolean If true, the setting is disabled while the game is on main menu. This field takes precedence over `mwseMCMVariable.inGameOnly`.
 --- @field makeComponent nil|fun(self: mwseMCMSetting, innerContainer: tes3uiElement) This method must be implemented by child classes of mwseMCMSetting.
 --- @field restartRequired boolean If true, updating this Setting will notify the player to restart the game.
 --- @field restartRequiredMessage string The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect.".
