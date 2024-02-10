@@ -13,10 +13,6 @@
 --- @field pressedColor number[] The color used when the dropdown is being pressed. By default set to `tes3ui.getPalette(tes3.palette.normalPressedColor)`.
 mwseMCMDropdown = {}
 
---- This method creates the UI elements specific to Dropdown.
---- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMDropdown:createContentsContainer(parentBlock) end
-
 --- Creates the expanded dropdown UI element parent dropdownParent and the text select entries inside for each option of the dropdown. If the dropdown is expanded, then calling this method will close the dropdown.
 function mwseMCMDropdown:createDropdown() end
 

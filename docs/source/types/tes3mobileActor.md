@@ -371,7 +371,7 @@ This is the time measured in hours from the beginning of the game when the actor
 ### `encumbrance`
 <div class="search_terms" style="display: none">encumbrance</div>
 
-*Read-only*. Access to the actor's encumbrance statistic. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
+*Read-only*. Access to the actor's encumbrance statistic. When modifying this value, prefer to use `tes3.modStatistic` or `tes3.setStatistic` to also update the UI immediately.
 
 **Returns**:
 
@@ -404,7 +404,7 @@ This is the time measured in hours from the beginning of the game when the actor
 ### `fatigue`
 <div class="search_terms" style="display: none">fatigue</div>
 
-*Read-only*. Access to the actor's fatigue statistic. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
+*Read-only*. Access to the actor's fatigue statistic. When modifying this value, prefer to use `tes3.modStatistic` or `tes3.setStatistic` to also update the UI immediately.
 
 **Returns**:
 
@@ -547,7 +547,7 @@ No description yet available.
 ### `health`
 <div class="search_terms" style="display: none">health</div>
 
-*Read-only*. Access to the actor's health statistic. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
+*Read-only*. Access to the actor's health statistic. When modifying this value, prefer to use `tes3.modStatistic` or `tes3.setStatistic` to also update the UI immediately.
 
 **Returns**:
 
@@ -1013,7 +1013,7 @@ Direct access to the actor's levitate effect attribute.
 ### `magicka`
 <div class="search_terms" style="display: none">magicka</div>
 
-*Read-only*. Access to the actor's magicka statistic. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
+*Read-only*. Access to the actor's magicka statistic. When modifying this value, prefer to use `tes3.modStatistic` or `tes3.setStatistic` to also update the UI immediately.
 
 **Returns**:
 

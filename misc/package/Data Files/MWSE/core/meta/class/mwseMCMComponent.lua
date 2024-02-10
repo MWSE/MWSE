@@ -36,7 +36,7 @@
 --- @class mwseMCMComponent
 --- @field childIndent integer|nil The left padding size in pixels. Used on all the child components.
 --- @field childSpacing integer|nil The bottom border size in pixels. Used on all the child components.
---- @field class string 
+--- @field class string Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 --- @field componentType string For mwseMCMComponent this is set to `"Component"`.
 --- @field createContentsContainer nil|fun(self: mwseMCMComponent, outerContainer: tes3uiElement) This method creates the contents of a component. Not every component implements this method.
 --- @field description string|nil If in a [Sidebar Page](./mwseMCMSideBarPage.md), the description will be shown on mouseover.
@@ -44,7 +44,7 @@
 --- @field indent integer The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- @field inGameOnly boolean Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
 --- @field label string The text of the component. Not all component types have a label.
---- @field mouseOvers tes3uiElement[]|nil This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+--- @field mouseOvers tes3uiElement[]|nil This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 --- @field paddingBottom integer The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil 
 --- @field postCreate nil|fun(self: mwseMCMComponent) Custom formatting function to make adjustments to any element saved in `self.elements`.
@@ -228,7 +228,7 @@ function mwseMCMComponent:prepareData(data) end
 --- @param component table? *Default*: `self`. No description yet available.
 function mwseMCMComponent:printComponent(component) end
 
---- Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+--- Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 --- @param mouseOverList tes3uiElement[]? *Optional*. If this argument isn't passed, does nothing.
 function mwseMCMComponent:registerMouseOverElements(mouseOverList) end
 

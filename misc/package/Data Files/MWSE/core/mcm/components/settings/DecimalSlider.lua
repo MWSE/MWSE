@@ -27,11 +27,11 @@ function DecimalSlider:new(data)
 	-- make sure `decimalPlaces` is ok, then do parent behavior
 	if data and data.decimalPlaces ~= nil then
 		assert(
-			data.decimalPlaces % 1 == 0 and data.decimalPlaces >= 0, 
+			data.decimalPlaces % 1 == 0 and data.decimalPlaces >= 0,
 			"Invalid 'decimalPlaces' parameter provided. It must be a positive whole number."
 		)
 	end
-	---@diagnostic disable-next-line: param-type-mismatch, return-type-mismatch
+	--- @diagnostic disable-next-line: param-type-mismatch, return-type-mismatch
 	return Parent.new(self, data) -- the `__index` metamethod will make the `min`, `max`, etc fields default to the values specified above.
 end
 

@@ -47,7 +47,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -179,7 +179,7 @@ This method must be implemented by child classes of mwseMCMSetting.
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -374,7 +374,7 @@ myObject:create(parentBlock)
 ### `createContentsContainer`
 <div class="search_terms" style="display: none">createcontentscontainer, contentscontainer</div>
 
-This method creates the UI elements specific to Dropdown.
+This method creates the UI elements specific to a Setting. To call this method, the mwseMCMSetting-derived type needs to have [`makeComponent`](./mwseMCMSetting.md#makecomponent) method implemented.
 
 ```lua
 myObject:createContentsContainer(parentBlock)
@@ -533,6 +533,21 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 ***
 
+### `insertMouseovers`
+<div class="search_terms" style="display: none">insertmouseovers</div>
+
+Recursively walks over children of given `element` and inserts them into `self.mouseOvers`.
+
+```lua
+myObject:insertMouseovers(element)
+```
+
+**Parameters**:
+
+* `element` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `makeComponent`
 <div class="search_terms" style="display: none">makecomponent</div>
 
@@ -624,7 +639,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)

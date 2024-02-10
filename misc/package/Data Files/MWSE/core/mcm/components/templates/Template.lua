@@ -39,15 +39,79 @@ function Template:saveOnClose(fileName, config)
 	end
 end
 
+--- This can be replaced with fuzzy or wildcard matching
+--- @param str string
+--- @param substr string
+local function ciContains(str, substr)
+	return (str:lower():find(substr, 1, true)) and true or false
+end
+
+--- @param searchText string
+--- @param component mwseMCMCategory|mwseMCMSideBarPage|mwseMCMSetting|mwseMCMInfo
+--- @param fields string[]
+--- @return boolean?
+local function searchFields(searchText, component, fields)
+	for _, key in ipairs(fields) do
+		local text = component[key]
+		if text and ciContains(text, searchText) then
+			return true
+		end
+	end
+end
+
+--- Recursively iterates over all the subcomponents and returns true if searchText
+--- matches a label or description of a setting
+--- @param searchText string
+--- @param component mwseMCMCategory|mwseMCMSideBarPage|mwseMCMSetting|mwseMCMInfo
+--- @param searchLabels boolean
+--- @param searchDescriptions boolean
+--- @return boolean?
+local function searchComponentRecursive(searchText, component, searchLabels, searchDescriptions)
+	-- Most components have a label. Infos and Hyperlinks have self.text.
+	if searchLabels and searchFields(searchText, component, { "label", "text" }) then
+		return true
+	end
+
+	-- Most components have a description.
+	if searchDescriptions and searchFields(searchText, component, { "description" }) then
+		return true
+	end
+
+	-- Search through the settings on each page or nested category
+	for _, subcomp in ipairs(component.components or {}) do
+		if searchComponentRecursive(searchText, subcomp, searchLabels, searchDescriptions) then
+			return true
+		end
+	end
+
+	-- Search default description in SidebarPage
+	local sidebar = component.sidebar
+	if sidebar and searchComponentRecursive(searchText, sidebar, searchLabels, searchDescriptions) then
+		return true
+	end
+
+	-- Backwards compatibility for mods using `sidebarComponents` in SidebarPages
+	for _, subcomp in ipairs(component.sidebarComponents or {}) do
+		--- @cast subcomp mwseMCMSetting
+		if searchComponentRecursive(searchText, subcomp, searchLabels, searchDescriptions) then
+			return true
+		end
+	end
+end
+
 --- @param searchText string
 --- @return boolean result
 function Template:onSearchInternal(searchText)
-	local searchLabels = table.get(self, "searchChildLabels", true)
-	local searchDescriptions = table.get(self, "searchChildDescriptions", false)
+	local searchLabels = table.get(self, "searchChildLabels", true) --[[@as boolean]]
+	local searchDescriptions = table.get(self, "searchChildDescriptions", true) --[[@as boolean]]
 
 	-- Go through and search children.
 	if (searchLabels or searchDescriptions) then
-
+		for _, page in ipairs(self.pages) do
+			if searchComponentRecursive(searchText, page, searchLabels, searchDescriptions) then
+				return true
+			end
+		end
 	end
 
 	-- Do we have a custom search handler?

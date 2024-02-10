@@ -449,18 +449,22 @@ namespace se::cs::dialog::object_window {
 	}
 
 	bool TabColumnActorRespawns::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Container;
+		switch (objectType) {
+		case ObjectType::Creature:
+		case ObjectType::NPC:
+		case ObjectType::Container:
+			return true;
+		}
+		return false;
 	}
 
 	void TabColumnActorRespawns::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
-		const auto object = static_cast<const Container*>(getObjectFromDisplayInfo(displayInfo));
+		const auto object = getObjectFromDisplayInfo(displayInfo);
 		display(displayInfo, object->getRespawns());
 	}
 
 	int TabColumnActorRespawns::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		const auto a = static_cast<const Container*>(lParam1);
-		const auto b = static_cast<const Container*>(lParam2);
-		return sort(a->getRespawns(), b->getRespawns(), sortOrderAsc);
+		return sort(lParam1->getRespawns(), lParam2->getRespawns(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorRespawns::getSettings() const {

@@ -427,6 +427,7 @@ namespace mwse::lua {
 		tes3ui["setConsoleReference"] = TES3::UI::setConsoleReference;
 		tes3ui["showBookMenu"] = TES3::UI::showBookMenu;
 		tes3ui["showDialogueMessage"] = TES3::UI::showDialogueMessage_lua;
+		tes3ui["showMagicSelectMenu"] = TES3::UI::showMagicSelectMenu_lua;
 		tes3ui["showInventorySelectMenu"] = TES3::UI::showInventorySelectMenu_lua;
 		tes3ui["showJournal"] = TES3::UI::showJournal;
 		tes3ui["showScrollMenu"] = TES3::UI::showScrollMenu;

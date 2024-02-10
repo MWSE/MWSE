@@ -12,7 +12,7 @@ local Parent = require("mcm.components.settings.Slider")
 
 
 
---- @class mwseMCMPercentageSlider : mwseMCMSlider
+--- @class mwseMCMPercentageSlider
 local PercentageSlider = Parent:new()
 
 PercentageSlider.min = 0.0
@@ -33,7 +33,6 @@ function PercentageSlider:updateValueLabel()
 		local s = "%s: %i%%"
 		-- only include decimal places when we're supposed to
 		if self.decimalPlaces > 0 then
-			-- so sorry that anyone has to look at this
 			-- this will simplify to "%s: %.1f%%" (in the case where `decimalPlaces` == 1)
 			s = string.format("%%s: %%.%uf%%%%", self.decimalPlaces)
 		end

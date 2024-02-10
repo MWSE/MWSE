@@ -746,7 +746,7 @@ local variable = mwse.mcm.createTableVariable({ id = ..., table = ..., defaultSe
 Creates a new Template.
 
 ```lua
-local template = mwse.mcm.createTemplate({ name = ..., label = ..., headerImagePath = ..., onClose = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
+local template = mwse.mcm.createTemplate({ name = ..., label = ..., headerImagePath = ..., onClose = ..., searchChildLabels = ..., searchChildDescriptions = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -756,6 +756,8 @@ local template = mwse.mcm.createTemplate({ name = ..., label = ..., headerImageP
 	* `label` (string): *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
 	* `headerImagePath` (string): *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
+	* `searchChildLabels` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
+	* `searchChildDescriptions` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
 	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
 	* `pages` (mwseMCMPage.new.data[]): *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.

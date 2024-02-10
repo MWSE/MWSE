@@ -13,7 +13,7 @@ The `tes3ui` library provides access to manipulating the game's GUI.
 ### `tes3ui.acquireTextInput`
 <div class="search_terms" style="display: none">acquiretextinput</div>
 
-Sends all text input to the specified element.  Calling this function with a nil argument will release text input and allow keybinds to work. Suppresses most keybinds while active, except the Journal open/close keybind (it's up to the individual menu implementation).
+Sends all text input to the specified element. Calling this function with a nil argument will release text input and allow keybinds to work. Suppresses most keybinds while active, except the Journal open/close keybind (it's up to the individual menu implementation).
 
 Only one element can have control of input, and there is no automatic restoration of control if one element takes control from another. Be careful of conflicts with other users of this function.
 
@@ -67,7 +67,7 @@ tes3ui.captureMouseDrag(capture)
 ### `tes3ui.choice`
 <div class="search_terms" style="display: none">choice</div>
 
-Creates a simple dialogue choice, as per the `Choice` mwscript function.
+Creates a simple dialogue choice, as per the `Choice` mwscript function. To add more options call this function multiple times.
 
 ```lua
 tes3ui.choice(text, index)
@@ -734,7 +734,7 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 	* `leaveMenuMode` (boolean): *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
 	* `noResultsText` (string): *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 	* `noResultsCallback` (function): *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
-	* `filter` (function, string): *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
+	* `filter` (string, fun(params: [tes3ui.showInventorySelectMenu.filterParams](../types/tes3ui.showInventorySelectMenu.filterParams.md)): boolean): *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 
 		If assigning a string, the available values are present in [`tes3.inventorySelectFilter`](https://mwse.github.io/MWSE/references/inventory-select-filters/) namespace. The available filters are:
 
@@ -747,20 +747,8 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
 		- `soulgemFilled`: Only filled soulgems will be shown.
 
-		If assigning a function it will be called when determining if an item should be added to the inventory select menu. A table `filterParams` will be passed to this function. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
-
-		- `filterParams` (table)
-			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that is being filtered.
-			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that is being filtered. Can be `nil`.
-
-	* `callback` (function): *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected. A table `callbackParams` will be passed to this function.
-		- `callbackParams` (table)
-			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that has been selected. Can be `nil`.
-			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that has been selected. Can be `nil`.
-			- `count` (number): The number of items that have been selected. Only valid if `item` is not `nil`.
-			- `inventory` ([tes3inventory](https://mwse.github.io/MWSE/types/tes3inventory/)): The inventory containing the items.
-			- `actor` ([tes3actor](https://mwse.github.io/MWSE/types/tes3actor/)): The actor containing the inventory.
-
+		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
+	* `callback` (fun(params: [tes3ui.showInventorySelectMenu.callbackParams](../types/tes3ui.showInventorySelectMenu.callbackParams.md))): *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.
 
 ??? example "Example: Bribe an NPC with items from your inventory"
 
@@ -884,6 +872,31 @@ local wasShown = tes3ui.showJournal()
 **Returns**:
 
 * `wasShown` (boolean)
+
+***
+
+### `tes3ui.showMagicSelectMenu`
+<div class="search_terms" style="display: none">showmagicselectmenu, magicselectmenu</div>
+
+This function opens the magic select menu, which lets the player select a spell or enchanted item. This is originally used by the quick key menu. The spells or enchanted items are taken from the player's spell list and inventory. The selected spell or item can be retrieved in the function assigned to `callback`.
+
+```lua
+tes3ui.showMagicSelectMenu({ title = ..., selectSpells = ..., selectPowers = ..., selectEnchanted = ..., callback = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `title` (string): The text used for the title of the magic select menu.
+	* `selectSpells` (boolean): *Default*: `true`. If spells are included in the selection list.
+	* `selectPowers` (boolean): *Default*: `true`. If powers are included in the selection list.
+	* `selectEnchanted` (boolean): *Default*: `true`. If enchanted items are included in the selection list.
+	* `callback` (fun(params: [tes3ui.showMagicSelectMenu.callbackParams](../types/tes3ui.showMagicSelectMenu.callbackParams.md))): *Optional*. A function which will be called once the magic select menu has been closed, including when no item or spell has been selected. A table `callbackParams` will be passed to this function.
+		- `callbackParams` (table)
+			- `spell` ([tes3spell](https://mwse.github.io/MWSE/types/tes3spell/)): The spell or power that has been selected. Can be `nil`.
+			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The enchanted item that has been selected. The actual magic will be `item.enchantment`. Can be `nil`.
+			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the enchanted item that has been selected. Fully recharged items may not have itemData. Can be `nil`.
+
 
 ***
 

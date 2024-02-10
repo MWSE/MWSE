@@ -160,7 +160,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -303,7 +303,7 @@ This method must be implemented by child classes of mwseMCMSetting.
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -447,17 +447,6 @@ local result = myObject:checkDisabled()
 
 ***
 
-### `closeMenu`
-<div class="search_terms" style="display: none">closemenu, menu</div>
-
-Closes the popup menu.
-
-```lua
-myObject:closeMenu()
-```
-
-***
-
 ### `create`
 <div class="search_terms" style="display: none">create</div>
 
@@ -535,21 +524,6 @@ myObject:createLabelBlock(parentBlock)
 
 ***
 
-### `createMenu`
-<div class="search_terms" style="display: none">createmenu, menu</div>
-
-Creates the popup menu.
-
-```lua
-local menu = myObject:createMenu()
-```
-
-**Returns**:
-
-* `menu` ([tes3uiElement](../types/tes3uiElement.md))
-
-***
-
 ### `createOuterContainer`
 <div class="search_terms" style="display: none">createoutercontainer, outercontainer</div>
 
@@ -562,6 +536,21 @@ myObject:createOuterContainer(parentBlock)
 **Parameters**:
 
 * `parentBlock` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `createPopupMenu`
+<div class="search_terms" style="display: none">createpopupmenu, popupmenu</div>
+
+Creates the popup menu.
+
+```lua
+local menu = myObject:createPopupMenu()
+```
+
+**Returns**:
+
+* `menu` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 
@@ -730,6 +719,21 @@ local result = myObject:getText()
 
 ***
 
+### `insertMouseovers`
+<div class="search_terms" style="display: none">insertmouseovers</div>
+
+Recursively walks over children of given `element` and inserts them into `self.mouseOvers`.
+
+```lua
+myObject:insertMouseovers(element)
+```
+
+**Parameters**:
+
+* `element` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `keySelected`
 <div class="search_terms" style="display: none">keyselected</div>
 
@@ -821,7 +825,7 @@ local data = myObject:prepareData(data)
 ### `press`
 <div class="search_terms" style="display: none">press</div>
 
-Calls the `update` method.
+Calls `showKeyBindMessage` method.
 
 ```lua
 myObject:press()
@@ -847,7 +851,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)
@@ -888,7 +892,7 @@ myObject:showKeyBindMessage()
 ### `update`
 <div class="search_terms" style="display: none">update</div>
 
-Calls `showKeyBindMessage` method.
+Sets the button UI element text to `self.buttonText`. Calls the Button's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
 
 ```lua
 myObject:update()

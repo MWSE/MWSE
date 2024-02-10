@@ -291,44 +291,7 @@ local effect = tes3.addMagicEffect({ id = ..., name = ..., baseCost = ..., schoo
 	* `targetsSkills` (boolean): *Default*: `true`. A flag which controls whether this effect targets a certain skill or skills.
 	* `unreflectable` (boolean): *Default*: `true`. A flag which controls whether this effect can be reflected.
 	* `usesNegativeLighting` (boolean): *Default*: `true`. A flag which controls whether this effect uses negative lighting.
-	* `onTick` (fun(e: [tes3magicEffectTickEventData](../types/tes3magicEffectTickEventData.md))): *Optional*. A function which will be called on each tick of a spell containing this effect. A table `tickParams` will be passed to the callback function. Note: `dt`(frame time) scaling is handled automatically.
-		- `tickParams` (table)
-			- `effectId` (number)
-			- `sourceInstance` ([tes3magicSourceInstance](https://mwse.github.io/MWSE/types/tes3magicSourceInstance/)): Access to the magic source of the effect instance.
-			- `deltaTime` (number): The time passed since the last tick of the spell.
-			- `effectInstance` ([tes3magicEffectInstance](https://mwse.github.io/MWSE/types/tes3magicEffectInstance/)): Access to the magic effect instance.
-			- `effectIndex` (number): The index of the effect in the spell.
-
-		In addition, a function registered as `onTick` can also call the following methods:
-
-		- trigger(`triggerParams`): Allows the effect to run through the normal spell event system.
-			**Parameters:**
-			- `triggerParams` (table)
-				- `negateOnExpiry` (boolean): *Optional. Default:* `true` If this flag is `true`, the effect will be negated on expiry.
-				- `isUncapped` (boolean): *Optional.*
-				- `attribute` ([tes3.effectAttribute](https://mwse.github.io/MWSE/references/effect-attributes/)): *Optional. Default:* `tes3.effectAttribute.nonResistable` The attribute used in resistance calculations agains this effect. Maps to values in [`tes3.effectAttribute`](https://mwse.github.io/MWSE/references/effect-attributes/) namespace.
-				- `type` ([tes3.effectEventType](https://mwse.github.io/MWSE/references/effect-event-types/)): *Optional. Default:* `tes3.effectEventType.boolean`. This flag controls how the effect behaves. For example, `tes3.effectEventType.modStatistic` will make the effect work as calling `tes3.modStatistic`. Maps to values in [`tes3.effectEventType`](https://mwse.github.io/MWSE/references/effect-event-types/) namespace.
-				- `value` (number): *Optional. Default:* `0`. The variable this effect changes.
-				- `resistanceCheck(resistParams)` (function): *Optional.* The function passed as `resistanceCheck` will be used on any of the game's spell resistance checks. For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired. So, returning `true` from this function will set your effect to expired, and depending on your trigger code may stop processing. The function passed here must return boolean values.
-					**Parameters**
-					- `resistParams` (table)
-						- `sourceInstance` ([tes3magicSourceInstance](https://mwse.github.io/MWSE/types/tes3magicSourceInstance/)): Access to the magic source of the effect instance.
-						- `effectInstance` ([tes3magicEffectInstance](https://mwse.github.io/MWSE/types/tes3magicEffectInstance/)): Access to the magic effect instance.
-						- `effectIndex` (number): The index of the effect in the spell.
-
-		- triggerBoundWeapon(`id`): Performs vanilla weapon summoning logic. It will create a summoned version of the weapon with provided ID.
-			**Parameters:**
-			- `id` (string): The ID of the weapon object to summon.
-
-		- triggerBoundArmor(`id`, `id2`): Performs vanilla armor summoning logic. It summons one armor object with the provided ID. To summon gauntlets, provide two IDs.
-			**Parameters:**
-			- `id` (string): The ID of the armor object to summon.
-			- `id2` (string): *Optional.* The ID of the additional gauntlet object to summon. The second item ID can only be a gauntlet object.
-
-		- triggerSummon(`id`): Performs vanilla creature summoning logic. It will create a summoned version of a creature with provided ID.
-			**Parameters:**
-			- `id` (string): The ID of the creature object to summon.
-
+	* `onTick` (fun(e: [tes3magicEffectTickEventData](../types/tes3magicEffectTickEventData.md))): *Optional*. A function which will be called on each tick of a spell containing this effect. Note: `dt` (frame time) scaling is handled automatically. This function typically calls `e:trigger()` to run the effect through the normal spell event system.
 	* `onCollision` (fun(e: [tes3magicEffectCollisionEventData](../types/tes3magicEffectCollisionEventData.md))): *Optional*. A function which will be called when a spell containing this spell effect collides with something.
 
 **Returns**:
@@ -3301,7 +3264,7 @@ local iterator = tes3.iterate(iterator)
 ### `tes3.iterateObjects`
 <div class="search_terms" style="display: none">iterateobjects</div>
 
-Iteration function used for looping over game options.
+Iteration function used for looping over game objects.
 
 ```lua
 local objectIterator = tes3.iterateObjects(filter)
@@ -3580,7 +3543,7 @@ tes3.modStatistic({ reference = ..., attribute = ..., skill = ..., name = ..., b
 	* `reference` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string)
 	* `attribute` ([tes3.attribute](../references/attributes.md)): *Optional*. The attribute to set. Uses a value from [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/)
 	* `skill` ([tes3.skill](../references/skills.md)): *Optional*. The skill to set. Uses a value from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/)
-	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka or fatigue.
+	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka, fatigue or encumbrance.
 	* `base` (number): *Optional*. If set, the base value will be modified.
 	* `current` (number): *Optional*. If set, the current value will be modified.
 	* `value` (number): *Optional*. If set, both the base and current value will be modified.
@@ -4612,7 +4575,7 @@ tes3.setStatistic({ reference = ..., attribute = ..., skill = ..., name = ..., b
 	* `reference` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string)
 	* `attribute` ([tes3.attribute](../references/attributes.md), integer): *Optional*. The attribute to set. Uses a value from [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/)
 	* `skill` ([tes3.skill](../references/skills.md), integer): *Optional*. The skill to set. Uses a value from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/)
-	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka or fatigue.
+	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka, fatigue or encumbrance.
 	* `base` (number): *Optional*. If set, the base value will be set.
 	* `current` (number): *Optional*. If set, the current value will be set.
 	* `value` (number): *Optional*. If set, both the base and current value will be set.

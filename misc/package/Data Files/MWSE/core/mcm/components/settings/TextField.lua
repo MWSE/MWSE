@@ -15,22 +15,16 @@ TextField.defaultSetting = ""
 function TextField:enable()
 	self.elements.inputField.text = self.variable.value or ""
 
-	self.elements.border:register("mouseClick", function()
-		tes3ui.acquireTextInput(self.elements.inputField)
-	end)
-
 	--- @param e tes3uiElement
 	local function registerAcquireTextInput(e)
 		e:register("mouseClick", function()
 			tes3ui.acquireTextInput(self.elements.inputField)
 		end)
-		if e.children then
-			for _, element in ipairs(e.children) do
-				registerAcquireTextInput(element)
-			end
+		for _, element in ipairs(e.children or {}) do
+			registerAcquireTextInput(element)
 		end
 	end
-	registerAcquireTextInput(self.elements.inputField)
+	registerAcquireTextInput(self.elements.border)
 
 	self.elements.submitButton:register("mouseClick", function(e)
 		self:press()
@@ -125,10 +119,7 @@ function TextField:makeComponent(parentBlock)
 	self.elements.border = border
 	self.elements.inputField = inputField
 
-	table.insert(self.mouseOvers, self.elements.border)
-	table.insert(self.mouseOvers, self.elements.inputField)
-	table.insert(self.mouseOvers, self.elements.label)
-
+	self:insertMouseovers(self.elements.border)
 end
 
 return TextField

@@ -8,10 +8,8 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
--- Parent class
 local Parent = require("mcm.components.settings.Button")
 
---- Class object
 --- @class mwseMCMYesNoButton
 local YesNoButton = Parent:new()
 YesNoButton.defaultSetting = false
@@ -24,9 +22,7 @@ end
 function YesNoButton:press()
 	-- Toggle variable
 	self.variable.value = not self.variable.value
-	-- Set button text
-	self:setText(self:getText())
-	-- Do this after changing the variable so the callback is correct
+	-- Do this after changing the variable so the callback is correct, and the text is updated
 	self:update()
 end
 

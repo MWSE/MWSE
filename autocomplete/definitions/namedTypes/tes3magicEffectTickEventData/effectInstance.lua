@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The time passed since the last tick of the spell.]],
+	description = [[Access to the magic effect instance.]],
 	valuetype = "tes3magicEffectInstance",
 }

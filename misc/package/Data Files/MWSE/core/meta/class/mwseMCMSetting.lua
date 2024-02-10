@@ -21,6 +21,10 @@ function mwseMCMSetting:create(parentBlock) end
 --- @param parentBlock tes3uiElement No description yet available.
 function mwseMCMSetting:createContentsContainer(parentBlock) end
 
+--- Recursively walks over children of given `element` and inserts them into `self.mouseOvers`.
+--- @param element tes3uiElement No description yet available.
+function mwseMCMSetting:insertMouseovers(element) end
+
 --- Creates a new Setting.
 --- @param data mwseMCMSetting.new.data? This table accepts the following values:
 --- 

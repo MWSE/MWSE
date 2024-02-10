@@ -36,7 +36,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -157,7 +157,7 @@ The label on the left list. The default is a localised version of "Blocked".
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -1300,7 +1300,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)

@@ -4,13 +4,8 @@
 --- @meta
 --- A button setting that cycles between given option states. Has similar uses to Dropdown setting.
 --- @class mwseMCMCycleButton : mwseMCMButton, mwseMCMSetting, mwseMCMComponent
---- @field leftSide boolean If true, the cycle button is created on the left, while the label text is created on the right. If false, label text is on the left.
 --- @field options tes3uiCycleButtonOption[] This table holds the text and variable value for each of the cycle button's options.
 mwseMCMCycleButton = {}
-
---- This method creates the cycle button's button and label UI elements.
---- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMCycleButton:createContentsContainer(parentBlock) end
 
 --- This method is unused in cycle button setting.
 function mwseMCMCycleButton:getText() end

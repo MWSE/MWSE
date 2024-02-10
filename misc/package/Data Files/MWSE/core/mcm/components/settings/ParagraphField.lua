@@ -25,8 +25,10 @@ end
 function ParagraphField:registerEnterKey(element)
 	element:register("keyEnter", function()
 		local inputController = tes3.worldController.inputController
-		local holdingShift = (inputController:isKeyDown(tes3.scanCode.lShift) or
-		                     inputController:isKeyDown(tes3.scanCode.rShift))
+		local holdingShift = (
+			inputController:isKeyDown(tes3.scanCode.lShift) or
+			inputController:isKeyDown(tes3.scanCode.rShift)
+		)
 		if not holdingShift then
 			self:update()
 		else
@@ -61,20 +63,7 @@ function ParagraphField:makeComponent(parentBlock)
 	end
 
 	self:registerEnterKey(inputField)
-
-	-- mouseOvers
-	table.insert(self.mouseOvers, self.elements.label)
-	--- @param children tes3uiElement[]
-	local function addMouseovers(children)
-		for _, element in ipairs(children) do
-			table.insert(self.mouseOvers, element)
-			if element.children then
-				addMouseovers(element.children)
-			end
-		end
-	end
-	addMouseovers(inputField.children)
-
+	self:insertMouseovers(border)
 end
 
 return ParagraphField

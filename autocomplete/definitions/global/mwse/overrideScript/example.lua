@@ -17,7 +17,7 @@ local raceMap = {
 
 local function raceCheck()
 	-- It's almost always the desired behavior to stop the mwscript,
-	-- since we are overriding the it.
+	-- since we are overriding it.
 	---@diagnostic disable-next-line: deprecated
 	mwscript.stopScript({ script = raceCheckScriptID })
 

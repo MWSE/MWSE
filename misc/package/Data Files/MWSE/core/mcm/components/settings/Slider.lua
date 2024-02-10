@@ -5,13 +5,13 @@
 		MCM sliders allow specifying minimal value different than 0. The implementation adds/subtracts
 		`self.min` when reading/writing to the current tes3uiSlider's `widget.current` to account for
 		that offset (so tes3uiSlider's value range is [0, self.max - self.min]). In addition, children
-		may implement support for different conversions (e.g. to support floating-point values). 
+		may implement support for different conversions (e.g. to support floating-point values).
 		This is accomplished by overloading the `convertToWidgetValue` and `convertToVariableValue` methods.
 
 		- The `Slider:convertToWidgetValue(variableValue)` method is responsible for taking in a variable value
 		and outputting the appropriate value to use on the slider widget.
 
-		- The `Slider:convertToVariableValue(widgetValue)` method is responsible for taking in a value stored 
+		- The `Slider:convertToVariableValue(widgetValue)` method is responsible for taking in a value stored
 		in a slider widget, and outputting the corresponding variable value.
 
 		Usually, children of this component implement some of the following methods:
@@ -38,7 +38,7 @@ function Slider:new(data)
 
 	-- initialize metatable, make variable, etc
 	local t = Parent.new(self, data)
-		
+
 	-- range of values (as requested by the user, not taking slider behavior into account)
 	local dist = t.max - t.min
 
@@ -53,7 +53,7 @@ function Slider:new(data)
 	assert(t.jump <= dist + math.epsilon, "Invalid 'jump' parameter provided. It cannot be greater than 'max' - 'min'")
 
 	assert(
-		t.decimalPlaces % 1 == 0 and t.decimalPlaces >= 0, 
+		t.decimalPlaces % 1 == 0 and t.decimalPlaces >= 0,
 		"Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
 	)
 
@@ -62,14 +62,14 @@ end
 
 
 function Slider:convertToWidgetValue(variableValue)
-	return  (variableValue - self.min) * (10 ^ self.decimalPlaces)
+	return (variableValue - self.min) * (10 ^ self.decimalPlaces)
 end
 
 
 -- `y == C * x + a` ~> (y - a) / C == x
 
 function Slider:convertToVariableValue(widgetValue)
-	-- e.g., consider  `min == 10`. then 
+	-- e.g., consider `min == 10`. Then
 	local a = self:convertToWidgetValue(0) 		-- `a == -10`
 	local C = self:convertToWidgetValue(1) - a	-- `C == -9 - (-10) == 1
 	return (widgetValue - a) / C				-- `returnVal == widgetValue + 10`
@@ -85,7 +85,6 @@ function Slider:updateValueLabel()
 		local s = "%s: %i"
 		-- only include decimal places when we're supposed to
 		if self.decimalPlaces > 0 then
-			-- so sorry that anyone has to look at this
 			-- this will simplify to "%s: %.1f" (in the case where `decimalPlaces` == 1)
 			s = string.format("%%s: %%.%uf", self.decimalPlaces)
 		end
@@ -180,7 +179,7 @@ function Slider:makeComponent(parentBlock)
 	sliderBlock.autoHeight = true
 	sliderBlock.widthProportional = 1.0
 
-	local slider = sliderBlock:createSlider{ 
+	local slider = sliderBlock:createSlider{
 		current = 0,
 		max = self:convertToWidgetValue(self.max),
 		-- get the `step` and `jump` by starting from `self.min`, incrementing a bit, then converting
@@ -193,15 +192,7 @@ function Slider:makeComponent(parentBlock)
 	self.elements.slider = slider
 	self.elements.sliderBlock = sliderBlock
 
-	-- add mouseovers
-	table.insert(self.mouseOvers, sliderBlock)
-	-- Add every piece of the slider to the mouseOvers
-	for _, sliderElement in ipairs(slider.children) do
-		table.insert(self.mouseOvers, sliderElement)
-		for _, innerElement in ipairs(sliderElement.children) do
-			table.insert(self.mouseOvers, innerElement)
-		end
-	end
+	self:insertMouseovers(sliderBlock)
 end
 
 return Slider

@@ -22,9 +22,7 @@ end
 function OnOffButton:press()
 	-- Toggle variable
 	self.variable.value = not self.variable.value
-	-- Set button text
-	self:setText(self:getText())
-	-- Do this after changing the variable so the callback is correct
+	-- Do this after changing the variable so the callback is correct, and the text is updated
 	self:update()
 end
 

@@ -24,8 +24,6 @@ function CycleButton:makeComponent(parentBlock)
 	button.borderAllSides = 0
 	button.borderRight = self.indent
 	button.autoWidth = true
-	self.elements.button = button
-	table.insert(self.mouseOvers, button)
 
 	local widget = button.widget --[[@as tes3uiCycleButton]]
 	if self:checkDisabled() then
@@ -48,6 +46,7 @@ function CycleButton:makeComponent(parentBlock)
 		e.source:forwardEvent(e)
 	end)
 	self.elements.button = button
+	table.insert(self.mouseOvers, button)
 end
 
 function CycleButton:enable()
@@ -56,10 +55,6 @@ end
 
 function CycleButton:disable()
 	self.elements.label.color = tes3ui.getPalette("disabled_color")
-end
-
-function CycleButton:update()
-	Parent.update(self)
 end
 
 function CycleButton:getText() end

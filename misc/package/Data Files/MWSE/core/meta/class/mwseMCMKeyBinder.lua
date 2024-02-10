@@ -38,12 +38,9 @@
 --- @field keybindName string|nil The keybind name. Shown in the popup menu header. This string is formatted into a localized version of "SET %s KEYBIND.". If none is provided the popup has "SET NEW KEYBIND." as header text.
 mwseMCMKeyBinder = {}
 
---- Closes the popup menu.
-function mwseMCMKeyBinder:closeMenu() end
-
 --- Creates the popup menu.
 --- @return tes3uiElement menu No description yet available.
-function mwseMCMKeyBinder:createMenu() end
+function mwseMCMKeyBinder:createPopupMenu() end
 
 --- Returns a string representing given `keyCombo`. For example, "Ctrl - C".
 --- @param keyCombo mwseKeyMouseCombo No description yet available.
@@ -141,9 +138,9 @@ function mwseMCMKeyBinder:new(data) end
 --- @field componentType string? *Optional*. No description yet available.
 --- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
+--- Calls `showKeyBindMessage` method.
+function mwseMCMKeyBinder:press() end
+
 --- Shows the rebind prompt popup. The popup is active until some valid input is given.
 function mwseMCMKeyBinder:showKeyBindMessage() end
-
---- Calls `showKeyBindMessage` method.
-function mwseMCMKeyBinder:update() end
 
