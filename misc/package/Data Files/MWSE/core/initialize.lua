@@ -558,6 +558,58 @@ function table.bininsert(t, value, comp)
 	return (iMid+iState)
 end
 
+function table.combine(...)
+	local tbl = {}
+	for _, t in ipairs{...} do
+		for k,v in pairs(t) do
+			tbl[k] = v
+		end
+	end
+	return tbl
+end
+
+function table.append(tbl, ...)
+	for _, t in ipairs{...} do
+		for k,v in pairs(t) do
+			tbl[k] = v
+		end
+	end
+end
+
+-- helper function, since `deepcopy` only takes one parameter
+local function deepappend(t1, t2)
+
+	for k, v in pairs(t2) do
+		if type(v) == "table" then
+			if type(t1[k]) ~= "table" then t1[k] = {} end
+			deepappend(t1[k], v)
+		else
+			t1[k] = v
+		end
+	end
+	local t2meta = getmetatable(t2)
+	if t2meta then
+		local t1meta = getmetatable(t1) or {}
+		setmetatable(t1, deepappend(t1meta, t2meta))
+	end
+	return t1
+end
+
+function table.deepappend(tbl, ...)
+	for _, t in ipairs{...} do
+		deepappend(tbl, t)
+	end
+end
+
+function table.appendmissing(tbl, ...)
+	for _, t in ipairs{...} do
+		for k,v in pairs(t) do
+			if tbl[k] == nil then
+				tbl[k] = v
+			end
+		end
+	end
+end
 
 -- functional programming stuff
 
@@ -586,6 +638,27 @@ function table.filterarray(t, f, ...)
 			table.insert(tbl, v)
 		end
 	end
+	return tbl
+end
+
+function table.sub(t, i, j, step)
+	local tbl = {}
+	local n = #t
+	-- wrap the indices
+	i = 1 + (i - 1) % n
+	j = 1 + (j - 1) % n
+	if step > 0 then
+		for k=i, j, step do
+			-- lowest index will be with `k == i`, and this should get sent to `1`
+			tbl[k - i - 1] = t[k]
+		end
+	elseif step < 0 then
+		for k=j, i, step do
+			-- lowest index will be with `k == i`, and this should get sent to `1`
+			tbl[k - i + 1] = t[k]
+		end
+	end
+
 	return tbl
 end
 
