@@ -616,7 +616,7 @@ end
 function table.map(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
-		tbl[k] = f(v, ...)
+		tbl[k] = f(k, v, ...)
 	end
 	return tbl
 end
@@ -624,7 +624,7 @@ end
 function table.filter(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
-		if f(v, ...) then
+		if f(k, v, ...) then
 			tbl[k] = v
 		end
 	end
@@ -633,8 +633,8 @@ end
 
 function table.filterarray(t, f, ...)
 	local tbl = {}
-	for _, v in ipairs(t) do
-		if f(v, ...) then
+	for i, v in ipairs(t) do
+		if f(i, v, ...) then
 			table.insert(tbl, v)
 		end
 	end
@@ -643,24 +643,45 @@ end
 
 function table.apply(t, f, ...)
 	for k, v in pairs(t) do
-		t[k] = f(v, ...)
+		t[k] = f(k, v, ...)
 	end
 end
 
 function table.any(t, f, ...)
-	for _, v in pairs(t) do
-		if f(v, ...) then 
-			return true 
+	for k, v in pairs(t) do
+		if f(k, v, ...) then 
+			return true, k, v
 		end
 	end
 	return false
 end
 
+function table.firstresultarray(t, f, ...)
+	local res
+	for _, v in ipairs(t) do
+		res = {f(v, ...)}
+		if res[1] then
+			return table.unpack(res)
+		end
+	end
+end
+
+
+function table.firstresult(t, f, ...)
+	local res
+	for k, v in pairs(t) do
+		res = {f(k, v, ...)}
+		if res[1] then
+			return table.unpack(res)
+		end
+	end
+end
+
 -- could write this as `return not table.all(t, {(v, ...) => not f(v,...)}, ...)`
 -- but doing it explicitly is a bit more readable and requires fewer function calls
 function table.all(t, f, ...)
-	for _, v in pairs(t) do
-		if not f(v, ...) then 
+	for k, v in pairs(t) do
+		if not f(k, v, ...) then 
 			return false
 		end
 	end
@@ -704,12 +725,9 @@ end
 getmetatable("").endswith = string.endswith
 
 function string.multifind(s, patterns, index, plain)
-	for _, pattern in ipairs(patterns) do
-		local r = { string.find(s, pattern, index, plain) }
-		if (#r > 0) then
-			return pattern, unpack(r)
-		end
-	end
+	return table.firstresultarray(patterns, function(pattern, index, plain)
+		return string.find(s, pattern, index, plain)
+	end, index, plain)
 end
 getmetatable("").multifind = string.multifind
 
