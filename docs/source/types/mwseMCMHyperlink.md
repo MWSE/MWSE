@@ -231,17 +231,6 @@ Set to the value of `sCancel` GMST.
 
 ***
 
-### `sExecute`
-<div class="search_terms" style="display: none">sexecute</div>
-
-The message shown when the user clicks this link. The default text is a localized version of "Open web browser?".
-
-**Returns**:
-
-* `result` (string)
-
-***
-
 ### `sNo`
 <div class="search_terms" style="display: none">sno</div>
 
@@ -444,17 +433,6 @@ Enables the component's UI elements. That includes: changing the color of the UI
 
 ```lua
 myObject:enable()
-```
-
-***
-
-### `execute`
-<div class="search_terms" style="display: none">execute</div>
-
-Creates a messageBox asking the user if they want to open the given url in a web browser. If the user clicks yes, the `self.url` is opened in the default browser.
-
-```lua
-myObject:execute()
 ```
 
 ***
