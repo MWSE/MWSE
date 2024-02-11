@@ -4,12 +4,8 @@
 --- @meta
 --- A clickable hyperlink.
 --- @class mwseMCMHyperlink : mwseMCMInfo, mwseMCMSetting, mwseMCMComponent
---- @field sExecute string The message shown when the user clicks this link. The default text is a localized version of "Open web browser?".
 --- @field url string The URL for this hyperlink.
 mwseMCMHyperlink = {}
-
---- Creates a messageBox asking the user if they want to open the given url in a web browser. If the user clicks yes, the `self.url` is opened in the default browser.
-function mwseMCMHyperlink:execute() end
 
 --- This method creates the link (a text select) UI element of the Hyperlink and stores it in `self.elements.info`.
 --- @param parentBlock tes3uiElement No description yet available.
