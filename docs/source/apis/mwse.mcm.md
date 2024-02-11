@@ -117,7 +117,7 @@ local variable = mwse.mcm.createConfigVariable({ id = ..., path = ..., defaultSe
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
@@ -144,7 +144,7 @@ local variable = mwse.mcm.createCustom({ id = ..., getter = ..., setter = ..., i
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
@@ -306,7 +306,7 @@ local variable = mwse.mcm.createGlobal({ id = ..., numbersOnly = ..., converter 
 * `variable` (table, string): If passing only a string, it will be used as variable's id.
 	* `id` (string): The id of the Morrowind Global.
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
@@ -658,7 +658,7 @@ local variable = mwse.mcm.createPlayerData({ id = ..., path = ..., defaultSettin
 	* `defaultSetting` (unknown): *Optional*. If `id` does not exist in the `tes3.player.data` field, it will be initialized to this value. It's best to initialize this yourself though, as this will not create the value until you've entered the MCM.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
@@ -732,7 +732,7 @@ local variable = mwse.mcm.createTableVariable({ id = ..., table = ..., defaultSe
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
@@ -837,7 +837,7 @@ local variable = mwse.mcm.createVariable({ id = ..., inGameOnly = ..., numbersOn
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 

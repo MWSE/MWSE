@@ -222,7 +222,7 @@ local i18n = mwse.loadTranslations(mod)
 
 **Returns**:
 
-* `i18n` (fun(key: string, data: any?): string): The callable translation results.
+* `i18n` (fun(key: string, data: any): string): The callable translation results.
 
 ***
 

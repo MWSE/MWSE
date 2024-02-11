@@ -30,7 +30,7 @@ local result = table.bininsert(t, value, comp)
 
 * `t` (table)
 * `value` (unknown)
-* `comp` (fun(a: , b: ): boolean): *Optional*.
+* `comp` (fun(a, b): boolean): *Optional*.
 
 **Returns**:
 
@@ -205,7 +205,7 @@ local result = table.filter(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, nil))
+* `f` (fun(k: unknown, v: unknown, ...))
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -230,7 +230,7 @@ local result = table.filterarray(arr, f, ...)
 **Parameters**:
 
 * `arr` (table)
-* `f` (fun(i: integer, v: unknown, nil))
+* `f` (fun(i: integer, v: unknown, ...))
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -353,7 +353,7 @@ local result = table.map(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, nil))
+* `f` (fun(k: unknown, v: unknown, ...))
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:

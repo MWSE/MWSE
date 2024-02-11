@@ -40,7 +40,7 @@ This function is called when the value of the variable is changed. The function 
 
 **Returns**:
 
-* `result` (fun(newValue: ): unknown)
+* `result` (fun(newValue): unknown)
 
 ***
 
@@ -130,7 +130,7 @@ local variable = myObject:new({ id = ..., numbersOnly = ..., converter = ... })
 * `variable` (table, string): If passing only a string, it will be used as variable's id.
 	* `id` (string): The id of the Morrowind Global.
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 
