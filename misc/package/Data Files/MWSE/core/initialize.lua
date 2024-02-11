@@ -641,6 +641,12 @@ function table.filterarray(t, f, ...)
 	return tbl
 end
 
+function table.apply(t, f, ...)
+	for k, v in pairs(t) do
+		t[k] = f(v, ...)
+	end
+end
+
 function table.sub(t, i, j, step)
 	local tbl = {}
 	local n = #t
