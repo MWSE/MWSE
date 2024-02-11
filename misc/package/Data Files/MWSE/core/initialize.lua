@@ -647,6 +647,27 @@ function table.apply(t, f, ...)
 	end
 end
 
+function table.any(t, f, ...)
+	for _, v in pairs(t) do
+		if f(v, ...) then 
+			return true 
+		end
+	end
+	return false
+end
+
+-- could write this as `return not table.all(t, {(v, ...) => not f(v,...)}, ...)`
+-- but doing it explicitly is a bit more readable and requires fewer function calls
+function table.all(t, f, ...)
+	for _, v in pairs(t) do
+		if not f(v, ...) then 
+			return false
+		end
+	end
+	return true
+end
+
+
 function table.sub(t, i, j, step)
 	local tbl = {}
 	local n = #t
