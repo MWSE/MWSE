@@ -564,7 +564,7 @@ end
 function table.map(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
-		tbl[k] = f(v, ...)
+		tbl[k] = f(k, v, ...)
 	end
 	return tbl
 end
@@ -572,7 +572,7 @@ end
 function table.filter(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
-		if f(v, ...) then
+		if f(k, v, ...) then
 			tbl[k] = v
 		end
 	end
@@ -581,8 +581,8 @@ end
 
 function table.filterarray(t, f, ...)
 	local tbl = {}
-	for _, v in ipairs(t) do
-		if f(v, ...) then
+	for i, v in ipairs(t) do
+		if f(i, v, ...) then
 			table.insert(tbl, v)
 		end
 	end

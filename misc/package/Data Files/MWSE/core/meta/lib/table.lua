@@ -78,27 +78,28 @@ function table.deepcopy(t) end
 --- @return boolean result No description yet available.
 function table.empty(t, deepCheck) end
 
---- Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(v)` was not `false` or `nil`.
---- Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(v, 10)` on each value `v` of `t`.
+--- Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(k, v)` was not `false` or `nil`.
+--- Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(k, v, 10)` on each pair `k, v` of `t`.
 --- 
 --- !!! warning
 ---  	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
 --- 
 --- @param t table No description yet available.
---- @param f fun(v: unknown, ...) No description yet available.
+--- @param f fun(k: unknown, v: unknown, ...) No description yet available.
 --- @param ... any Additional parameters to pass to `f`.
 --- @return table result The result of using `f` to filter out elements of `t`.
 function table.filter(t, f, ...) end
 
---- Creates a new array-style table that results from using `f` to filter out elements of an array-style table `t`. i.e., `table.filterarray(t,f)` will consist of only the pairs `i, v` of `t` for which `f(v)` was not `false` or `nil`.
---- Any additional arguments will be passed to `f`. For example, `table.filterarray(t, f, 10)` would call `f(v, 10)` on each value `v` of `t`.
+--- Creates a new array-style table that results from using `f` to filter out elements of an array-style table `arr`. i.e., `table.filterarray(arr, f)` 
+--- will consist of only the pairs `i, v` of `arr` for which `f(i, v)` was not `false` or `nil`.
+--- Any additional arguments will be passed to `f`. For example, `table.filterarray(arr, f, 10)` would call `f(i, v, 10)` on each value pair `i, v` of `arr`.
 --- 
 --- When an element gets filtered out, the index of subsequent items will be shifted down, so that the resulting table plays nicely with the `#` operator and the `ipairs` function.
---- @param t table No description yet available.
---- @param f fun(v: unknown, ...) No description yet available.
+--- @param arr table No description yet available.
+--- @param f fun(i: integer, v: unknown, ...) No description yet available.
 --- @param ... any Additional parameters to pass to `f`.
 --- @return table result The result of using `f` to filter out elements of `t`.
-function table.filterarray(t, f, ...) end
+function table.filterarray(arr, f, ...) end
 
 --- Returns the key for a given value, or `nil` if the table does not contain the value.
 --- @param t table No description yet available.
@@ -131,10 +132,10 @@ function table.invert(t) end
 --- @return table keys An array of all table keys.
 function table.keys(t, sort) end
 
---- Creates a new table consisting of key value pairs `k, f(v)`, where `k, v` is a pair in `t`.
---- Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(v, 10)` on each value `v` of `t`.
+--- Creates a new table consisting of key value pairs `k, f(k, v)`, where `k, v` is a pair in `t`.
+--- Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(k, v, 10)` on each value `v` of `t`.
 --- @param t table No description yet available.
---- @param f fun(v: unknown, ...) No description yet available.
+--- @param f fun(k: unknown, v: unknown, ...) No description yet available.
 --- @param ... any Additional parameters to pass to `f`.
 --- @return table result The result of applying `f` to each value in `t`.
 function table.map(t, f, ...) end
