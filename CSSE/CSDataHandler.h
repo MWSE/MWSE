@@ -96,8 +96,8 @@ namespace se::cs {
 		NI::Node* editorLandscapeRoot; // 0x134
 		NI::DirectionalLight* editorDirectionalLight; // 0x138
 		NI::FogProperty* editorFogProperty; // 0x13C
-		int unknown_140;
-		int unknown_144;
+		int currentGridX; // 0x140
+		int currentGridY; // 0x144
 		int unknown_148;
 		Cell* currentInteriorCell; // 0x14C
 		void* interiorCellBuffer; // 0x150

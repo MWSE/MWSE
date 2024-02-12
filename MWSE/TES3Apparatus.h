@@ -24,6 +24,8 @@ namespace TES3 {
 		float weight; // 0xB0
 		long value; // 0xB4
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Apparatus;
+
 		Apparatus() = delete;
 		~Apparatus() = delete;
 

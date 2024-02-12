@@ -6,16 +6,21 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This library provides generic functions for table manipulation. It provides all its functions inside the table table.
+This library provides generic functions for table manipulation. It provides all its functions inside the `table` table.
 
 ## Functions
 
 ### `table.bininsert`
 <div class="search_terms" style="display: none">bininsert</div>
 
-Inserts a given value through BinaryInsert into the table sorted by [, comp].
+Inserts a given value through BinaryInsert into an array-style `table` `t`, assuming `t` was sorted by `comp`.
 
-If 'comp' is given, then it must be a function that receives two table elements, and returns true when the first is less than the second, e.g. comp = function(a, b) return a > b end, will give a sorted table, with the biggest value on position 1. [, comp] behaves as in table.sort(table, value [, comp]) returns the index where 'value' was inserted
+If 'comp' is given, then it must be a function that receives two values in `t` and returns `true` when the first is less than the second.
+i.e., `comp(a,b) == true` would mean `a` is less than `b`.
+
+If you want to sort in reverse order, you may set `comp = function(a, b) return a > b end`.
+
+This function will return the index where `value` was inserted into `t`.
 
 ```lua
 local result = table.bininsert(t, value, comp)
@@ -25,7 +30,7 @@ local result = table.bininsert(t, value, comp)
 
 * `t` (table)
 * `value` (unknown)
-* `comp` (unknown): *Optional*.
+* `comp` (fun(a, b): boolean): *Optional*.
 
 **Returns**:
 
@@ -36,15 +41,21 @@ local result = table.bininsert(t, value, comp)
 ### `table.binsearch`
 <div class="search_terms" style="display: none">binsearch</div>
 
-Performs a binary search for a given value.
+Performs a binary search for a given `value` inside a specified `table` `t`.
 
-If the value is found: It returns a table holding all the mathing indices (e.g. { startindice,endindice } ) endindice may be the same as startindice if only one matching indice was found
+If the `value` is found in `t`, then a `table` providing the range of all matching indices is returned. (e.g. `{ startindice, endindice }`.) 
+If only one matching index was found, then `startindice` will be the same as `endindice`.
 
-If compval is given: then it must be a function that takes one value and returns a second value2, to be compared with the input value, e.g.: compvalue = function( value ) return value[1] end
+If `value` is not found in `t`, then `nil` is returned.
 
-If reversed is set to true: then the search assumes that the table is sorted in reverse order (largest value at position 1) note when reversed is given compval must be given as well, it can be nil/_ in this case
+If `compval` is given, then it must be a function that takes in an element of `t` and returns a value to use for comparisons.
+For example, to compare arrays based on their first entry, you can write `compvalue = function(value) return value[1] end`.
 
-Return value: on success: a table holding matching indices (e.g. { startindice,endindice } ) on failure: nil
+Note that `compval` is different from the `comp` that is specified in the `bininsert` function.
+
+If `reversed == true`, then the search assumes that `t` is sorted in reverse order (i.e., largest value at position 1).
+Note that specifying `reversed` requires specifying `compval`. 
+You can circumvent this by passing `nil` for `compval`. e.g., `binsearch(tbl, value, nil, true)`.
 
 ```lua
 local result = table.binsearch(t, value, compval, reversed)
@@ -53,9 +64,9 @@ local result = table.binsearch(t, value, compval, reversed)
 **Parameters**:
 
 * `t` (table)
-* `value` (unknown)
-* `compval` (unknown): *Optional*.
-* `reversed` (unknown): *Optional*.
+* `value` (unknown): The value to search for.
+* `compval` (function): *Optional*. A function that returns the value to use in comparisons.
+* `reversed` (boolean): *Optional*. If true, then `binsearch` will assume `t` is sorted in reverse order.
 
 **Returns**:
 
@@ -158,7 +169,9 @@ local result = table.deepcopy(t)
 ### `table.empty`
 <div class="search_terms" style="display: none">empty</div>
 
-Returns true if the table is empty, otherwise, it returns false.
+Checks if a table is empty. 
+	
+	If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
 
 ```lua
 local result = table.empty(t, deepCheck)
@@ -167,7 +180,7 @@ local result = table.empty(t, deepCheck)
 **Parameters**:
 
 * `t` (table)
-* `deepCheck` (boolean): *Default*: `false`. If true, subtables will also be checked to see if they are empty.
+* `deepCheck` (boolean): *Default*: `false`. If `true`, subtables will also be checked to see if they are empty.
 
 **Returns**:
 
@@ -175,10 +188,61 @@ local result = table.empty(t, deepCheck)
 
 ***
 
+### `table.filter`
+<div class="search_terms" style="display: none">filter</div>
+
+Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(k, v)` was not `false` or `nil`.
+Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(k, v, 10)` on each pair `k, v` of `t`.
+
+!!! warning
+ 	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
+
+
+```lua
+local result = table.filter(t, f, ...)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `f` (fun(k: unknown, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of using `f` to filter out elements of `t`.
+
+***
+
+### `table.filterarray`
+<div class="search_terms" style="display: none">filterarray</div>
+
+Creates a new array-style table that results from using `f` to filter out elements of an array-style table `arr`. i.e., `table.filterarray(arr, f)` 
+will consist of only the pairs `i, v` of `arr` for which `f(i, v)` was not `false` or `nil`.
+Any additional arguments will be passed to `f`. For example, `table.filterarray(arr, f, 10)` would call `f(i, v, 10)` on each value pair `i, v` of `arr`.
+
+When an element gets filtered out, the index of subsequent items will be shifted down, so that the resulting table plays nicely with the `#` operator and the `ipairs` function.
+
+```lua
+local result = table.filterarray(arr, f, ...)
+```
+
+**Parameters**:
+
+* `arr` (table)
+* `f` (fun(i: integer, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of using `f` to filter out elements of `t`.
+
+***
+
 ### `table.find`
 <div class="search_terms" style="display: none">find</div>
 
-Returns the key for a given value, or nil if the table does not contain the value.
+Returns the key for a given value, or `nil` if the table does not contain the value.
 
 ```lua
 local result = table.find(t, value)
@@ -276,6 +340,28 @@ local keys = table.keys(t, sort)
 
 ***
 
+### `table.map`
+<div class="search_terms" style="display: none">map</div>
+
+Creates a new table consisting of key value pairs `k, f(k, v)`, where `k, v` is a pair in `t`.
+Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(k, v, 10)` on each value `v` of `t`.
+
+```lua
+local result = table.map(t, f, ...)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `f` (fun(k: unknown, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of applying `f` to each value in `t`.
+
+***
+
 ### `table.new`
 <div class="search_terms" style="display: none">new</div>
 
@@ -287,8 +373,8 @@ local newTable = table.new(narray, nhash)
 
 **Parameters**:
 
-* `narray` (number): A hint for how many elements the table will have as a sequence.
-* `nhash` (number): A hint for how many other elements the table will have.
+* `narray` (number): A hint for how many elements the array part of the table will have. Allocates fields for [0, narray].
+* `nhash` (number): A hint for how many elements the hash part of the table will have.
 
 **Returns**:
 

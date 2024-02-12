@@ -8,10 +8,13 @@ Variable types are:
 - 'i' integer
 - 'f' float
 - 's' string
-- 'a' float array
+- 'B' boolean array
+- 'I' integer array
+- 'F' float array (was 'a' for MGE v0.16.x and earlier)
 - '2' vec2
 - '3' vec3
 - '4' vec4
+- 'V' vec4 array
 - 'm' matrix]],
 	valuetype = "table<string, string>",
 }

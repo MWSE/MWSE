@@ -152,11 +152,7 @@ end
 local function getParamNames(package)
 	local params = {}
 	for _, param in ipairs(package.arguments or {}) do
-		if (param.type == "variadic") then
-			table.insert(params, "...")
-		else
-			table.insert(params, param.name or "unknown")
-		end
+		table.insert(params, param.name or "unknown")
 	end
 	return params
 end
@@ -186,11 +182,11 @@ local function writeFunction(package, file, namespaceOverride)
 				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
 			end
 		end
-		if (argument.type == "variadic") then
-			file:write(string.format("--- @param ... %s %s\n", getAllPossibleVariationsOfType(argument.variadicType, argument) or "any?", formatLineBreaks(description)))
-		else
-			file:write(string.format("--- @param %s %s %s\n", argument.name or "unknown", getAllPossibleVariationsOfType(type, argument), formatLineBreaks(description)))
-		end
+		file:write(string.format("--- @param %s %s %s\n", 
+			argument.name or "unknown", 
+			getAllPossibleVariationsOfType(type, argument) or "any", 
+			formatLineBreaks(description))
+		)
 	end
 
 	for _, returnPackage in ipairs(common.getConsistentReturnValues(package) or {}) do
@@ -338,22 +334,33 @@ local function build(package)
 	end
 
 	-- Write out operator overloads
-	for _, operator in ipairs(package.operators or {}) do
-		for _, overload in ipairs(operator.overloads) do
-			-- Handle unary operators
-			local rightSideType = ""
-			if overload.rightType then
-				rightSideType = string.format("(%s)", overload.rightType)
-			end
+	if (package.operators) then
+		table.sort(package.operators, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, operator in ipairs(package.operators) do
+			for _, overload in ipairs(operator.overloads) do
+				-- Handle unary operators
+				local rightSideType = ""
+				if overload.rightType then
+					rightSideType = string.format("(%s)", overload.rightType)
+				end
 
-			file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
+				file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
+			end
 		end
 	end
 
+
 	-- Write out fields.
-	for _, value in ipairs(package.values or {}) do
-		if (not value.deprecated) then
-			file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+	if (package.values) then
+		table.sort(package.values, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.values) do
+			if (not value.deprecated) then
+				file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+			end
 		end
 	end
 
@@ -361,7 +368,7 @@ local function build(package)
 	if (package.type == "lib" and package.key == "event") then
 		file:write(string.format("--- @field register fun(eventId: string, callback: fun(e: table): boolean?, options: table?)\n"))
 		for _, key in ipairs(table.keys(events, true)) do
-			file:write(string.format("--- @field register fun(eventId: '\"%s\"', callback: fun(e: %sEventData): boolean?, options: table?)\n", key, key))
+			file:write(string.format("--- @field register fun(eventId: '\"%s\"', callback: (fun(e: %sEventData): boolean?), options: table?)\n", key, key))
 		end
 	end
 
@@ -390,13 +397,21 @@ local function build(package)
 	end
 
 	-- Write out functions.
-	for _, value in ipairs(package.functions or {}) do
-		writeFunction(value, file)
+	if (package.functions) then
+		table.sort(package.functions, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.functions) do
+			writeFunction(value, file)
+		end
 	end
 
 	-- Write out methods.
-	if (package.type == "class") then
-		for _, value in ipairs(package.methods or {}) do
+	if (package.type == "class" and package.methods) then
+		table.sort(package.methods, function(a, b)
+			return a.key:lower() < b.key:lower()
+		end)
+		for _, value in ipairs(package.methods) do
 			writeFunction(value, file, package.key .. ":" .. value.key)
 		end
 	end

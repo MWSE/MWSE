@@ -12,7 +12,7 @@
 --- @field class tes3class *Read-only*. Quick access to the base NPC's class.
 --- @field disposition number *Read-only*. The actor's effective disposition, with all modifiers applied.
 --- @field faction tes3faction *Read-only*. Quick access to the base NPC's faction.
---- @field factionIndex number Deprecated. Use `reputation` instead.
+--- @field factionRank number *Read-only*. Quick access to the base NPC's faction rank.
 --- @field fatigue number *Read-only*. Quick access to the base NPC's fatigue.
 --- @field female boolean Direct access to the actor female flag.
 --- @field health number *Read-only*. Quick access to the base NPC's health.

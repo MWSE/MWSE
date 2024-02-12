@@ -1,30 +1,31 @@
 #include "LuaManager.h"
 
-#include "mwOffsets.h"
+#include "BitUtil.h"
+#include "BuildDate.h"
 #include "Log.h"
-#include "TES3Util.h"
 #include "MemoryUtil.h"
+#include "mwOffsets.h"
+#include "MWSEConfig.h"
+#include "MWSEDefs.h"
+#include "MWSEUtilLua.h"
 #include "ScriptUtil.h"
 #include "StringUtil.h"
+#include "TES3Util.h"
 #include "UIUtil.h"
-#include "MWSEDefs.h"
-#include "BuildDate.h"
-#include "MWSEUtilLua.h"
 #include "WindowsUtil.h"
-#include "MWSEConfig.h"
-#include "BitUtil.h"
 
 #include "LuaTimer.h"
 
 #include "LuaScript.h"
 
-#include "TES3Defines.h"
+#include "TES3Activator.h"
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
 #include "TES3Alchemy.h"
 #include "TES3Apparatus.h"
 #include "TES3Archive.h"
 #include "TES3AudioController.h"
+#include "TES3BodyPart.h"
 #include "TES3BodyPartManager.h"
 #include "TES3Book.h"
 #include "TES3CombatSession.h"
@@ -32,8 +33,10 @@
 #include "TES3Creature.h"
 #include "TES3CrimeEvent.h"
 #include "TES3DataHandler.h"
+#include "TES3Defines.h"
 #include "TES3Dialogue.h"
 #include "TES3DialogueInfo.h"
+#include "TES3Door.h"
 #include "TES3Enchantment.h"
 #include "TES3Fader.h"
 #include "TES3Game.h"
@@ -44,6 +47,7 @@
 #include "TES3InputController.h"
 #include "TES3ItemData.h"
 #include "TES3LeveledList.h"
+#include "TES3Light.h"
 #include "TES3Lockpick.h"
 #include "TES3MagicEffect.h"
 #include "TES3MagicEffectController.h"
@@ -64,6 +68,7 @@
 #include "TES3SoulGemData.h"
 #include "TES3Sound.h"
 #include "TES3Spell.h"
+#include "TES3Static.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
 #include "TES3UIManager.h"
@@ -77,8 +82,8 @@
 #include "MemoryUtilLua.h"
 #include "MGEPostShadersLua.h"
 #include "MGEUtilLua.h"
-#include "StackLua.h"
 #include "ScriptUtilLua.h"
+#include "StackLua.h"
 #include "StringUtilLua.h"
 #include "TES3UtilLua.h"
 
@@ -88,6 +93,7 @@
 #include "TES3AILua.h"
 #include "TES3AlchemyLua.h"
 #include "TES3AnimationDataLua.h"
+#include "TES3AnimationGroupLua.h"
 #include "TES3ApparatusLua.h"
 #include "TES3ArchiveLua.h"
 #include "TES3ArmorLua.h"
@@ -109,8 +115,8 @@
 #include "TES3EnchantmentLua.h"
 #include "TES3FactionLua.h"
 #include "TES3FaderLua.h"
-#include "TES3GameLua.h"
 #include "TES3GameFileLua.h"
+#include "TES3GameLua.h"
 #include "TES3GameSettingLua.h"
 #include "TES3GlobalVariableLua.h"
 #include "TES3IngredientLua.h"
@@ -125,12 +131,12 @@
 #include "TES3MagicEffectLua.h"
 #include "TES3MagicSourceInstanceLua.h"
 #include "TES3MiscLua.h"
-#include "TES3MobManagerLua.h"
 #include "TES3MobileActorLua.h"
 #include "TES3MobileCreatureLua.h"
 #include "TES3MobileNPCLua.h"
 #include "TES3MobilePlayerLua.h"
 #include "TES3MobileProjectileLua.h"
+#include "TES3MobManagerLua.h"
 #include "TES3MoonLua.h"
 #include "TES3NPCLua.h"
 #include "TES3PlayerAnimationControllerLua.h"
@@ -166,9 +172,10 @@
 #include "NIColorLua.h"
 #include "NIExtraDataLua.h"
 #include "NIGeometryDataLua.h"
+#include "NILightLua.h"
+#include "NILinesLua.h"
 #include "NINodeLua.h"
 #include "NIObjectLua.h"
-#include "NILightLua.h"
 #include "NIParticlesLua.h"
 #include "NIPickLua.h"
 #include "NIPixelDataLua.h"
@@ -194,6 +201,7 @@
 #include "LuaBarterOfferEvent.h"
 #include "LuaCalcBarterPriceEvent.h"
 #include "LuaCalcBlockChanceEvent.h"
+#include "LuaCalcChargenStatsEvent.h"
 #include "LuaCalcEnchantmentPriceEvent.h"
 #include "LuaCalcHitArmorPieceEvent.h"
 #include "LuaCalcHitChanceEvent.h"
@@ -206,7 +214,6 @@
 #include "LuaCalcSpellPriceEvent.h"
 #include "LuaCalcTrainingPriceEvent.h"
 #include "LuaCalcTravelPriceEvent.h"
-#include "LuaCalcChargenStatsEvent.h"
 #include "LuaCellChangedEvent.h"
 #include "LuaCrimeWitnessedEvent.h"
 #include "LuaDamageEvent.h"
@@ -247,6 +254,8 @@
 #include "LuaMouseWheelEvent.h"
 #include "LuaMusicChangeTrackEvent.h"
 #include "LuaMusicSelectTrackEvent.h"
+#include "LuaObjectCopiedEvent.h"
+#include "LuaObjectCreatedEvent.h"
 #include "LuaObjectInvalidatedEvent.h"
 #include "LuaPostInfoResponseEvent.h"
 #include "LuaPotionBrewedEvent.h"
@@ -265,8 +274,8 @@
 #include "LuaSpellCastedEvent.h"
 #include "LuaSpellCreatedEvent.h"
 #include "LuaSpellMagickaUseEvent.h"
-#include "LuaSpellResistEvent.h"
 #include "LuaSpellResistedEvent.h"
+#include "LuaSpellResistEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUiRefreshedEvent.h"
 #include "LuaUiSkillTooltipEvent.h"
@@ -470,6 +479,7 @@ namespace mwse::lua {
 		bindTES3AI();
 		bindTES3Alchemy();
 		bindTES3AnimationData();
+		bindTES3AnimationGroup();
 		bindTES3Apparatus();
 		bindTES3Archive();
 		bindTES3Armor();
@@ -553,6 +563,7 @@ namespace mwse::lua {
 		bindNIGeometryData();
 		bindNINode();
 		bindNIObject();
+		bindNILines();
 		bindNILight();
 		bindNIParticles();
 		bindNIPick();
@@ -4182,7 +4193,7 @@ namespace mwse::lua {
 		isWeaponAnim:
 			cmp cl, 0x80			// AnimGroup_SpellCast (added test)
 			je weapon
-			cmp cl, 0x8A			// AnimGroup_Crossbow
+			cmp cl, 0x83			// AnimGroup_Attack1 (added creature and h2h attacks)
 			jb done
 			cmp cl, 0x8F			// AnimGroup_WeaponTwoWide
 			ja done
@@ -4202,6 +4213,22 @@ namespace mwse::lua {
 		// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
 		animData->weaponSpeed = animData->getCastSpeed() + FLT_MIN;
 	}
+
+	//
+	// Patch: calcMoveSpeed event for creatures.
+	//
+	
+	__declspec(naked) void patchCreatureCalcMoveSpeed() {
+		__asm {
+			mov ecx, esi	// Size: 0x2
+			nop				// Replaced with a call generation. Can't do so here, because offsets aren't accurate.
+			nop				// ^
+			nop				// ^
+			nop				// ^
+			nop				// ^ Size: 0x5
+		}
+	}
+	const size_t patchCreatureCalcMoveSpeed_size = 0x7;
 
 	//
 	// Allow changing the delta time scalar in a safer spot.
@@ -4482,6 +4509,51 @@ namespace mwse::lua {
 
 		return std::fabs(attacker->getPosition()->z - target->getPosition()->z) < attackReach
 			&& *out_distanceBetweenActors < attackReach;
+	}
+
+	//
+	// Event: objectCopied
+	//
+
+	void DispatchCopiedObjectEvent(TES3::Object* copy, TES3::Object* original) {
+		using mwse::lua::LuaManager;
+		using mwse::lua::event::ObjectCopiedEvent;
+
+		ObjectCopiedEvent::ms_LastCopied = copy;
+		ObjectCopiedEvent::ms_LastCopiedFrom = original;
+
+		if (ObjectCopiedEvent::getEventEnabled()) {
+			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+			stateHandle.triggerEvent(new ObjectCopiedEvent(copy, original));
+		}
+	}
+
+	template <typename T, DWORD address>
+	void __fastcall CopyObject(T* self, DWORD _EDX_, T* from, BYTE unknown) {
+		reinterpret_cast<void(__thiscall*)(T*, const T*, BYTE)>(address)(self, from, unknown);
+		DispatchCopiedObjectEvent(self, from);
+	}
+
+	template <typename T, DWORD address>
+	bool OverwriteCopyObjectVirtualCall(TES3::VirtualTableAddress::VirtualTableAddress vTableAddress) {
+		static_assert(std::is_base_of<TES3::Object, T>::value, "Attempt to override virtual table of non-TES3::Object class.");
+		return overrideVirtualTableEnforced(vTableAddress, 0x24, address, reinterpret_cast<DWORD>(&CopyObject<T, address>));
+	}
+
+	//
+	// Event: objectCreated
+	//
+
+	const auto TES3_AddObjectToHashMapById = reinterpret_cast<int(__thiscall*)(void*, const char*, TES3::BaseObject*)>(0x481D80);
+	int __fastcall AddObjectToHashMapById(void* hashMap, DWORD _EDX_, const char* id, TES3::BaseObject* object) {
+		const auto result = TES3_AddObjectToHashMapById(hashMap, id, object);
+
+		if (mwse::lua::event::ObjectCreatedEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			stateHandle.triggerEvent(new mwse::lua::event::ObjectCreatedEvent(object));
+		}
+
+		return result;
 	}
 
 	//
@@ -4872,6 +4944,10 @@ namespace mwse::lua {
 		// Event: Damage(d)HandToHand
 		genCallEnforced(0x5576D4, 0x5581B0, reinterpret_cast<DWORD>(OnApplyFatigueDamageFromAttack_Wrapper));
 
+		// Allow changes to hitstun test function.
+		auto hitStunTestAndReportCrime = &TES3::MobileActor::hitStunTestAndReportCrime;
+		genCallEnforced(0x556AE9, 0x557840, *reinterpret_cast<DWORD*>(&hitStunTestAndReportCrime));
+
 		// Event: Shield blocked
 		writePatchCodeUnprotected(0x5575EC, (BYTE*)&patchOnShieldWearFromBlocking, patchOnShieldWearFromBlocking_size);
 		genCallEnforced(0x5575EF, 0x558690, reinterpret_cast<DWORD>(OnShieldWearFromBlocking));
@@ -4963,6 +5039,14 @@ namespace mwse::lua {
 		genCallEnforced(0x540C7D, 0x53E1A0, *reinterpret_cast<DWORD*>(&calculateMoveSpeed));
 		genCallEnforced(0x55968B, 0x53E1A0, *reinterpret_cast<DWORD*>(&calculateMoveSpeed));
 
+		// Event: Calculate creature movement speed (animation only). Creature anim code doesn't use the 0x53E1A0 helper function.
+		auto calculateCreatureMovementSpeed = &TES3::ActorAnimationController::calculateCreatureMovementSpeed;
+		writePatchCodeUnprotected(0x540BB1, reinterpret_cast<BYTE*>(patchCreatureCalcMoveSpeed), patchCreatureCalcMoveSpeed_size);
+		genCallUnprotected(0x540BB1 + 2, *reinterpret_cast<DWORD*>(&calculateCreatureMovementSpeed));
+		genNOPUnprotected(0x540C19, 0xA);
+		writePatchCodeUnprotected(0x540C19, reinterpret_cast<BYTE*>(patchCreatureCalcMoveSpeed), patchCreatureCalcMoveSpeed_size);
+		genCallUnprotected(0x540C19 + 2, *reinterpret_cast<DWORD*>(&calculateCreatureMovementSpeed));
+
 		// Event: Calculate walk speed.
 		auto calculateCreatureWalkSpeed = &TES3::MobileCreature::calculateWalkSpeed;
 		auto calculateNPCWalkSpeed = &TES3::MobileNPC::calculateWalkSpeed;
@@ -4979,7 +5063,6 @@ namespace mwse::lua {
 		// Event: Calculate swim speed.
 		auto calculateSwimSpeed = &TES3::MobileActor::calculateSwimSpeed;
 		genCallEnforced(0x53E227, 0x5270B0, *reinterpret_cast<DWORD*>(&calculateSwimSpeed));
-		genCallEnforced(0x540BB3, 0x5270B0, *reinterpret_cast<DWORD*>(&calculateSwimSpeed));
 		genCallEnforced(0x548D87, 0x5270B0, *reinterpret_cast<DWORD*>(&calculateSwimSpeed));
 
 		// Event: Calculate swim "run" speed.
@@ -6136,6 +6219,56 @@ namespace mwse::lua {
 		genCallEnforced(0x5E6264, 0x5F4E70, reinterpret_cast<DWORD>(TES3::UI::updateCurrentMagicFromSpell));
 		genCallEnforced(0x5E234B, 0x5F4DB0, reinterpret_cast<DWORD>(TES3::UI::updateCurrentMagicFromEquipmentStack));
 		genCallEnforced(0x5E444C, 0x5F4DB0, reinterpret_cast<DWORD>(TES3::UI::updateCurrentMagicFromEquipmentStack));
+
+		// Event: objectCopied
+		OverwriteCopyObjectVirtualCall<TES3::Activator, 0x49FD20>(TES3::VirtualTableAddress::Activator);
+		OverwriteCopyObjectVirtualCall<TES3::Alchemy, 0x4AC450>(TES3::VirtualTableAddress::Alchemy);
+		OverwriteCopyObjectVirtualCall<TES3::Apparatus, 0x4A01E0>(TES3::VirtualTableAddress::Apparatus);
+		OverwriteCopyObjectVirtualCall<TES3::Armor, 0x4A0BF0>(TES3::VirtualTableAddress::Armor);
+		OverwriteCopyObjectVirtualCall<TES3::BodyPart, 0x4A1710>(TES3::VirtualTableAddress::BodyPart);
+		OverwriteCopyObjectVirtualCall<TES3::Book, 0x4A24E0>(TES3::VirtualTableAddress::Book);
+		OverwriteCopyObjectVirtualCall<TES3::Clothing, 0x4A3590>(TES3::VirtualTableAddress::Clothing);
+		OverwriteCopyObjectVirtualCall<TES3::ContainerBase, 0x4A4070>(TES3::VirtualTableAddress::ContainerBase);
+		OverwriteCopyObjectVirtualCall<TES3::ContainerInstance, 0x4A5250>(TES3::VirtualTableAddress::ContainerInstance);
+		OverwriteCopyObjectVirtualCall<TES3::CreatureBase, 0x49D1B0>(TES3::VirtualTableAddress::CreatureBase);
+		OverwriteCopyObjectVirtualCall<TES3::CreatureInstance, 0x49E8B0>(TES3::VirtualTableAddress::CreatureInstance);
+		OverwriteCopyObjectVirtualCall<TES3::Door, 0x4A56B0>(TES3::VirtualTableAddress::Door);
+		OverwriteCopyObjectVirtualCall<TES3::Enchantment, 0x4AB530>(TES3::VirtualTableAddress::Enchantment);
+		OverwriteCopyObjectVirtualCall<TES3::Ingredient, 0x4A5C70>(TES3::VirtualTableAddress::Ingredient);
+		OverwriteCopyObjectVirtualCall<TES3::LeveledCreature, 0x4CF5C0>(TES3::VirtualTableAddress::LeveledCreature);
+		OverwriteCopyObjectVirtualCall<TES3::LeveledItem, 0x4D0920>(TES3::VirtualTableAddress::LeveledItem);
+		OverwriteCopyObjectVirtualCall<TES3::Light, 0x4D2120>(TES3::VirtualTableAddress::Light);
+		OverwriteCopyObjectVirtualCall<TES3::Lockpick, 0x4A61B0>(TES3::VirtualTableAddress::Lockpick);
+		OverwriteCopyObjectVirtualCall<TES3::Misc, 0x4A67A0>(TES3::VirtualTableAddress::Miscellaneous);
+		OverwriteCopyObjectVirtualCall<TES3::NPCBase, 0x4D7340>(TES3::VirtualTableAddress::NPCBase);
+		OverwriteCopyObjectVirtualCall<TES3::NPCInstance, 0x4D9870>(TES3::VirtualTableAddress::NPCInstance);
+		OverwriteCopyObjectVirtualCall<TES3::Probe, 0x4A6C70>(TES3::VirtualTableAddress::Probe);
+		OverwriteCopyObjectVirtualCall<TES3::RepairTool, 0x4A7160>(TES3::VirtualTableAddress::RepairTool);
+		OverwriteCopyObjectVirtualCall<TES3::Spell, 0x4AA7B0>(TES3::VirtualTableAddress::Spell);
+		OverwriteCopyObjectVirtualCall<TES3::Static, 0x4A74D0>(TES3::VirtualTableAddress::Static);
+		OverwriteCopyObjectVirtualCall<TES3::Weapon, 0x4F2600>(TES3::VirtualTableAddress::Weapon);
+
+		// Event: objectCreated
+		genCallEnforced(0x49711F, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4A427A, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4B8B07, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4BA922, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4BEA1B, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4BEBC6, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C0CE5, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C1CDF, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C1D8D, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C1E36, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C1F01, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C1FAB, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2055, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2160, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2249, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2320, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2406, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C24D0, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C259A, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+		genCallEnforced(0x4C2664, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
 
 		// UI framework hooks
 		TES3::UI::hook();

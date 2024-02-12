@@ -210,7 +210,7 @@ function tes3.onMainMenu()
 end
 
 local function getLuaModRuntime(key)
-	return mwse.activeLuaMods[key:gsub("[/\\]", "."):lower()]
+	return mwse.activeLuaMods[key:gsub("[/\\]", "."):lower()] --- @diagnostic disable-line
 end
 
 function tes3.getLuaModMetadata(key)

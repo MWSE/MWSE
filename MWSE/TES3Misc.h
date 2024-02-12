@@ -16,6 +16,8 @@ namespace TES3 {
 		long value; // 0x58
 		unsigned int flags; // 0x5C
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Misc;
+
 		Misc();
 		~Misc();
 

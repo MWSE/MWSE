@@ -6,15 +6,17 @@
 #include "LuaAddSoundEvent.h"
 #include "LuaAddTempSoundEvent.h"
 #include "LuaKeyframesLoadEvent.h"
+#include "LuaKeyframesLoadedEvent.h"
 #include "LuaLoadedGameEvent.h"
 #include "LuaLoadGameEvent.h"
-#include "LuaMeshLoadEvent.h"
 #include "LuaMeshLoadedEvent.h"
+#include "LuaMeshLoadEvent.h"
 #include "LuaSavedGameEvent.h"
 #include "LuaSaveGameEvent.h"
 
 #include "TES3Util.h"
 
+#include "TES3Actor.h"
 #include "TES3Alchemy.h"
 #include "TES3Cell.h"
 #include "TES3DialogueInfo.h"
@@ -24,8 +26,8 @@
 #include "TES3Reference.h"
 #include "TES3Sound.h"
 #include "TES3Spell.h"
-#include "TES3WorldController.h"
 #include "TES3UIManager.h"
+#include "TES3WorldController.h"
 
 namespace TES3 {
 
@@ -155,7 +157,14 @@ namespace TES3 {
 		path = keyframesPath.c_str();
 		sequenceName = sequenceString.c_str();
 
-		return TES3_MeshData_loadKeyframes(this, path, sequenceName);
+		auto keyframeDefinition = TES3_MeshData_loadKeyframes(this, path, sequenceName);
+		if (keyframeDefinition && mwse::lua::event::KeyframesLoadedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(
+				new mwse::lua::event::KeyframesLoadedEvent(path, sequenceName, keyframeDefinition)
+			);
+		}
+
+		return keyframeDefinition;
 	}
 
 	//
@@ -461,6 +470,10 @@ namespace TES3 {
 			results[itt.second->id + 1] = itt.second;
 		}
 		return results;
+	}
+
+	bool NonDynamicData::objectExists(const std::string_view& id) {
+		return resolveObject(id.data()) != nullptr;
 	}
 
 	//

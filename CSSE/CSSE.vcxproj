@@ -43,9 +43,13 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\SharedSE\MWSE.props" />
+    <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\SharedSE\MWSE.props" />
+    <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -83,8 +87,8 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>copy /y "$(TargetDir)CSSE.dll" "$(SolutionDir)..\CSSE.dll"
-copy /y "$(TargetDir)CSSE.pdb" "$(SolutionDir)..\CSSE.pdb"</Command>
+      <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
+copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>set buildTime=
@@ -124,8 +128,8 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>copy /y "$(TargetDir)CSSE.dll" "$(SolutionDir)..\CSSE.dll"
-copy /y "$(TargetDir)CSSE.pdb" "$(SolutionDir)..\CSSE.pdb"</Command>
+      <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
+copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>set buildTime=
@@ -146,6 +150,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="CSClass.cpp" />
     <ClCompile Include="CSContainer.cpp" />
     <ClCompile Include="CSCreature.cpp" />
+    <ClCompile Include="CSDialogue.cpp" />
     <ClCompile Include="CSDialogueInfo.cpp" />
     <ClCompile Include="CSFaction.cpp" />
     <ClCompile Include="CSGameSetting.cpp" />
@@ -170,6 +175,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogEditSpellObjectWindow.cpp" />
     <ClCompile Include="DialogLandscapeEditSettingsWindow.cpp" />
     <ClCompile Include="DialogPreviewWindow.cpp" />
+    <ClCompile Include="DialogProcContext.cpp" />
     <ClCompile Include="DialogReferenceData.cpp" />
     <ClCompile Include="DialogScriptEditorWindow.cpp" />
     <ClCompile Include="DialogScriptListWindow.cpp" />
@@ -191,6 +197,8 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogRenderWindow.cpp" />
     <ClCompile Include="DialogSearchAndReplaceWindow.cpp" />
     <ClCompile Include="LogUtil.cpp" />
+    <ClCompile Include="MetadataUtil.cpp" />
+    <ClCompile Include="ModMetadata.cpp" />
     <ClCompile Include="NILinesData.cpp" />
     <ClCompile Include="ObjectWindowTabData.cpp" />
     <ClCompile Include="PathUtil.cpp" />
@@ -204,6 +212,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="RenderWindowWidgets.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="TextureRenderer.cpp" />
+    <ClCompile Include="TomlUtil.cpp" />
     <ClCompile Include="WindowMain.cpp" />
     <ClCompile Include="WinUIUtil.cpp" />
   </ItemGroup>
@@ -216,13 +225,17 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="CSArchive.h" />
     <ClInclude Include="CSBirthsign.h" />
     <ClInclude Include="CSClass.h" />
+    <ClInclude Include="CSDoor.h" />
     <ClInclude Include="CSRace.h" />
     <ClInclude Include="CSRegion.h" />
     <ClInclude Include="CSSE.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
+    <ClInclude Include="DialogProcContext.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MetadataUtil.h" />
+    <ClInclude Include="ModMetadata.h" />
     <ClInclude Include="PathUtil.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -302,6 +315,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="RenderWindowWidgets.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="TextureRenderer.h" />
+    <ClInclude Include="TomlUtil.h" />
     <ClInclude Include="WindowMain.h" />
     <ClInclude Include="WinUIUtil.h" />
   </ItemGroup>

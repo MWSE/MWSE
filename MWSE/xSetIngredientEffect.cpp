@@ -25,7 +25,7 @@ namespace mwse {
 		long skillAttributeId = Stack::getInstance().popLong();
 
 		// Get the ingredient.
-		TES3::Ingredient* ingredient = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Ingredient>(id, TES3::ObjectType::Ingredient);
+		const auto ingredient = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Ingredient>(id);
 		if (ingredient == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetIngredientEffect: No ingredient record found with id '" << id << "'." << std::endl;

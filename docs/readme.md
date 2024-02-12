@@ -24,13 +24,9 @@ Clicking on the links above will take you to a guide for writing the mentioned d
 
 Documentation can also be built locally for testing or personal use. To do this you will need a copy of [Python](https://www.python.org/).
 
-The following modules need to be installed:
+Run `.\install.bat` to install the required dependencies, then run `.\serve.bat` to build and serve the documentation locally.
 
-```bat
-pip install mkdocs mkdocs-material mkdocs-awesome-pages-plugin mkdocs-mermaid2-plugin mkdocs-git-revision-date-localized-plugin
-```
-
-Another build task is available in vscode to live test the docs locally.
+Alternatively build tasks for both are available in vscode.
 
 ## Developing Tips
 

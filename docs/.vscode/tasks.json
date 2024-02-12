@@ -4,13 +4,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "mkdocs - Install",
+			"type": "shell",
+			"command": "./install.bat",
+		},
+		{
 			"label": "mkdocs - Start Server",
 			"type": "shell",
-			"command": "python",
-			"args": [
-				"-m",
-				"mkdocs",
-				"serve"
+			"command": "./serve.bat",
+			"dependsOn": [
+				"mkdocs - Install"
 			],
 			"problemMatcher": [],
 			"group": {

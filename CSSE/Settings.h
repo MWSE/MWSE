@@ -45,6 +45,8 @@ namespace se::cs {
 			float fov = 53.1301024f;
 			int multisamples = 0;
 			int fps_limit = 60;
+			std::vector<int> grid_steps = { 8, 16, 32, 64, 128, 256, 512 };
+			std::vector<int> angle_steps = { 5, 15, 30, 45, 90 };
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;
@@ -105,6 +107,7 @@ namespace se::cs {
 			ColumnSettings column_count = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_creature_bipedal = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_creature_movement_type = { ColumnSettings::DEFAULT_SIZE_ID };
+			ColumnSettings column_creature_soul = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_creature_sound = { ColumnSettings::DEFAULT_SIZE_ID };
 			ColumnSettings column_creature_use_weapon_and_shield = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_effect = { ColumnSettings::DEFAULT_SIZE_ID };
@@ -240,11 +243,12 @@ namespace se::cs {
 
 		bool valid = true;
 		bool enabled = true;
+		toml::value loadedConfig = {};
 
 		std::filesystem::path file_location() const;
 
 		void load();
-		void save() const;
+		void save();
 
 		void from_toml(const toml::value& v);
 		toml::value into_toml() const;

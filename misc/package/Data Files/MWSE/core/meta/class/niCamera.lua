@@ -36,13 +36,13 @@ function niCamera:swapBuffers() end
 --- Given a screen space position, calculates the world position and outlook direction. This can be useful when trying to find a reference under a UI element, such as the cusor.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/types/niCamera/#windowpointtoray).
---- @param point tes3vector2|number[] The screen position to calculate a world ray for. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
+--- @param point tes3vector2|number[] The screen position to calculate a world ray for. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen. The screen size settings used are scaled by MGE XE UI scaling setting. These can be retrieved with [`tes3ui.getViewportSize`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize).
 --- @return tes3vector3 origin The world point that the given screen position looks out from.
 --- @return tes3vector3 direction The look direction of the camera from the given origin point.
 function niCamera:windowPointToRay(point) end
 
---- Given a world coordinate position, calculates where that point relates to the screen space.
+--- Given a world coordinate position, calculates where that point relates to the screen space. Returns `nil` if the world point is ourside of camera's view.
 --- @param point tes3vector3 The world position to calculate screen position for.
---- @return tes3vector2 screenPosition The screen space position. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
+--- @return tes3vector2|nil screenPosition The screen space position. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
 function niCamera:worldPointToScreenPoint(point) end
 

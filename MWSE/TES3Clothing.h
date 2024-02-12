@@ -40,6 +40,8 @@ namespace TES3 {
 		unsigned short enchantCapacity; // 0xB2
 		Enchantment * enchantment; // 0xB4
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Clothing;
+
 		Clothing();
 		~Clothing();
 

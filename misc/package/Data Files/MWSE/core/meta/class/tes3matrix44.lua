@@ -34,14 +34,14 @@ tes3matrix44 = {}
 --- @return tes3matrix44 matrix No description yet available.
 function tes3matrix44.new(w0, x0, y0, z0, w1, x1, y1, z1, w2, x2, y2, z2, w3, x3, y3, z3) end
 
+--- Converts the matrix to a string with 2 decimal places.
+--- @return string result No description yet available.
+function tes3matrix44:__tostring() end
+
 --- Creates a copy of the matrix.
 --- @return tes3matrix44 result No description yet available.
 function tes3matrix44:copy() end
 
 --- Zeroes out all values in the matrix.
 function tes3matrix44:toZero() end
-
---- Converts the matrix to a string with 2 decimal places.
---- @return string result No description yet available.
-function tes3matrix44:__tostring() end
 

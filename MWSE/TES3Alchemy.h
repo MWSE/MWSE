@@ -27,6 +27,8 @@ namespace TES3 {
 		Effect effects[8]; // 0x5C
 		unsigned short flags; // 0x011C
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Alchemy;
+
 		//
 		// Basic operators.
 		//

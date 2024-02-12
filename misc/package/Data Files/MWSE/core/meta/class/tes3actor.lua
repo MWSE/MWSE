@@ -7,7 +7,9 @@
 --- It is standard for creatures and NPCs to be composed of an actor and a mobile actor, linked together with a reference.
 --- @class tes3actor : tes3physicalObject, tes3object, tes3baseObject
 --- @field actorFlags number *Read-only*. A number representing the actor flags. Truly a bit field.
---- @field barterGold number Friendly access to actor's barter gold amount.
+--- @field barterGold number The actor's base barter gold amount. This is the amount of the barter gold an actor initially has, and also when barter gold is refreshed. The actor's current barter gold amount is held in `tes3mobileActor.barterGold`.
+--- 
+--- Barter gold is reset on talking to an actor if fBarterGoldResetDelay hours have passed since the last transaction. If you want to change the base amount, for example in an investment mod, you must edit the barterGold of the baseObject.
 --- @field blood integer Friendly access to actor's blood type, in [0, 7] range. The available blood types are defined in the Morrowind.ini file, and assigned to the actor via the Construction Set.
 --- @field cloneCount number *Read-only*. The number of clones that exist of this actor.
 --- @field equipment tes3equipmentStack[] *Read-only*. The items currently equipped to the actor.

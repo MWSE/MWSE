@@ -40,6 +40,8 @@ namespace TES3 {
 		char * description; // 0x8C
 		unsigned int descriptionOffset; // 0x90
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Class;
+
 		Class() = delete;
 		~Class() = delete;
 

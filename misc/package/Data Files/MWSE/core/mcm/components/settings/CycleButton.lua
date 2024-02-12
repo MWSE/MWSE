@@ -9,7 +9,7 @@
 --- @diagnostic disable: duplicate-set-field
 
 -- Parent class
-local Parent = require("mcm.components.settings.Setting")
+local Parent = require("mcm.components.settings.Button")
 
 --- Class object
 --- @class mwseMCMCycleButton
@@ -24,8 +24,6 @@ function CycleButton:makeComponent(parentBlock)
 	button.borderAllSides = 0
 	button.borderRight = self.indent
 	button.autoWidth = true
-	self.elements.button = button
-	table.insert(self.mouseOvers, button)
 
 	local widget = button.widget --[[@as tes3uiCycleButton]]
 	if self:checkDisabled() then
@@ -47,33 +45,22 @@ function CycleButton:makeComponent(parentBlock)
 		end
 		e.source:forwardEvent(e)
 	end)
+	self.elements.button = button
+	table.insert(self.mouseOvers, button)
 end
 
---- @param parentBlock tes3uiElement
-function CycleButton:createOuterContainer(parentBlock)
-	Parent.createOuterContainer(self, parentBlock)
-	-- A bit weird but it seems to line buttons up better with other settings
-	self.elements.outerContainer.borderTop = self.paddingBottom
-	self.elements.outerContainer.borderBottom = 0
-	self.elements.outerContainer.flowDirection = tes3.flowDirection.leftToRight
+function CycleButton:enable()
+	self.elements.label.color = tes3ui.getPalette("normal_color")
 end
 
---- @param parentBlock tes3uiElement
-function CycleButton:createInnerContainer(parentBlock)
-	Parent.createInnerContainer(self, parentBlock)
-	self.elements.innerContainer.paddingLeft = 0
+function CycleButton:disable()
+	self.elements.label.color = tes3ui.getPalette("disabled_color")
 end
 
---- @param parentBlock tes3uiElement
-function CycleButton:createContentsContainer(parentBlock)
-	self:createInnerContainer(parentBlock)
-	if self.leftSide then
-		self:makeComponent(self.elements.innerContainer)
-	end
-	self:createLabel(self.elements.innerContainer)
-	if not self.leftSide then
-		self:makeComponent(self.elements.innerContainer)
-	end
-end
+function CycleButton:getText() end
+
+function CycleButton:setText() end
+
+function CycleButton:press() end
 
 return CycleButton

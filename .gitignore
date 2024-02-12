@@ -49,3 +49,4 @@ misc/package/Data Files/MWSE/core/lpeg.dll
 !/autocomplete/lua/**.*
 #Keep definitions for debug library extensions
 !/autocomplete/definitions/global/**
+/SharedSE/MWSE.User.props

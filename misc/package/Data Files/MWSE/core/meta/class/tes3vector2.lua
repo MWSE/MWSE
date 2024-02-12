@@ -19,6 +19,10 @@ tes3vector2 = {}
 --- @return tes3vector2 vector No description yet available.
 function tes3vector2.new(x, y) end
 
+--- Converts the vector to a string with 2 decimal places.
+--- @return string result No description yet available.
+function tes3vector2:__tostring() end
+
 --- Creates a copy of the vector.
 --- @return tes3vector2 result No description yet available.
 function tes3vector2:copy() end
@@ -34,8 +38,4 @@ function tes3vector2:normalize() end
 --- Get a normalized copy of the vector.
 --- @return tes3vector2 result No description yet available.
 function tes3vector2:normalized() end
-
---- Converts the vector to a string with 2 decimal places.
---- @return string result No description yet available.
-function tes3vector2:__tostring() end
 

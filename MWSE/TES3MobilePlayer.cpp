@@ -78,6 +78,11 @@ namespace TES3 {
 		return TES3_MobilePlayer_getGoldHeld(this);
 	}
 
+	const auto TES3_MobilePlayer_modGoldHeld = reinterpret_cast<void(__thiscall*)(MobilePlayer*, int)>(0x52B480);
+	void MobilePlayer::modGold(int value) {
+		TES3_MobilePlayer_modGoldHeld(this, value);
+	}
+
 	const auto TES3_MobilePlayer_wakeUp = reinterpret_cast<void(__thiscall*)(MobilePlayer*)>(0x56BBB0);
 	void MobilePlayer::wakeUp() {
 		TES3_MobilePlayer_wakeUp(this);

@@ -60,7 +60,7 @@ end
 function Category:update()
 	for _, component in ipairs(self.components) do
 		if component.update then
-			component.update()
+			component:update()
 		end
 	end
 end

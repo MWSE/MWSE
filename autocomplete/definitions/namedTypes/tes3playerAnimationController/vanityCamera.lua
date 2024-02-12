@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[]],
+	description = [[The vanity camera scene node.]],
 	readOnly = true,
 	valuetype = "niCamera",
 }

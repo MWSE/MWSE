@@ -11,6 +11,8 @@
 #include "DialogEditNPCObjectWindow.h"
 #include "DialogEditSpellObjectWindow.h"
 
+#include "DialogProcContext.h"
+
 namespace se::cs::dialog::edit_object_window {
 
 	//
@@ -24,25 +26,23 @@ namespace se::cs::dialog::edit_object_window {
 	// Extended window messages.
 	//
 
-	std::optional<LRESULT> messageResult;
-
 	std::chrono::high_resolution_clock::time_point initializationTimer;
 
-	void PatchDialogProc_BeforeInitialize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeInitialize(DialogProcContext& context) {
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
 			initializationTimer = std::chrono::high_resolution_clock::now();
 		}
 
 		// Optimize redraws.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
-			SendDlgItemMessageA(hWnd, CONTROL_ID_SCRIPT_COMBO, WM_SETREDRAW, FALSE, NULL);
+			SendDlgItemMessageA(context.getWindowHandle(), CONTROL_ID_SCRIPT_COMBO, WM_SETREDRAW, FALSE, NULL);
 		}
 	}
 
-	void PatchDialogProc_AfterInitialize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
 		// Restore redraws.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
-			SendDlgItemMessageA(hWnd, CONTROL_ID_SCRIPT_COMBO, WM_SETREDRAW, TRUE, NULL);
+			SendDlgItemMessageA(context.getWindowHandle(), CONTROL_ID_SCRIPT_COMBO, WM_SETREDRAW, TRUE, NULL);
 		}
 
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
@@ -52,29 +52,29 @@ namespace se::cs::dialog::edit_object_window {
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		messageResult = {};
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x41AFD0);
 
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_BeforeInitialize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeInitialize(context);
 			break;
 		}
 
-		if (messageResult) {
-			return messageResult.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_VanillaDialogProc = reinterpret_cast<WNDPROC>(0x41AFD0);
-		const auto vanillaResult = CS_VanillaDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterInitialize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterInitialize(context);
 			break;
 		}
 
-		return messageResult.value_or(vanillaResult);
+		return context.getResult();
 	}
 
 	//

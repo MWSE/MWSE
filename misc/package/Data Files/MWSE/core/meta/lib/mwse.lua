@@ -64,7 +64,7 @@ function mwse.loadTranslations(mod) end
 --- 
 --- The message accepts formatting and additional parameters matching string.format's usage.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. No description yet available.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwse.log(message, ...) end
 
 --- Converts a TES3 object type (e.g. from tes3.objectType) into an uppercase, 4-character string.
@@ -99,12 +99,11 @@ function mwse.registerModConfig(name, package) end
 --- @field onSearch nil|fun(searchText: string): boolean *Optional*. A custom search handler function. This function should return true if this mod should show up in search results for given `searchText`.
 --- @field onClose nil|fun(modConfigContainer: tes3uiElement) *Optional*. This function is called when the mod's configuration menu is closed. Typically, it's used to save the current config table.
 
---- Saves a config table to Data Files\\MWSE\\config\\{fileName}.json.
---- @param fileName string No description yet available.
---- @param object unknown No description yet available.
---- @param config table? *Optional*. No description yet available.
---- @return table result No description yet available.
-function mwse.saveConfig(fileName, object, config) end
+--- Saves a config table to Data Files\\MWSE\\config\\{fileName}.json. The config is converted to JSON during saving.
+--- @param fileName string Usually named after your mod.
+--- @param config table The config table to save.
+--- @param jsonOptions table? *Optional*. Used to optionally pass encoding options to the dkjson encoder.
+function mwse.saveConfig(fileName, config, jsonOptions) end
 
 --- Converts an uppercase, 4-character string into a TES3 object type.
 --- @param tag string No description yet available.

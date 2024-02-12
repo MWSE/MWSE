@@ -21,9 +21,51 @@ local KeyBinder = Parent:new()
 KeyBinder.allowCombinations = true
 KeyBinder.allowMouse = false
 
---- @return string result
-function KeyBinder:getText()
-	return self:getComboString(self.variable.value)
+
+
+--- @param keyCode integer|nil
+--- @return string|nil letter
+function KeyBinder:getLetter(keyCode)
+	local letter = table.find(tes3.scanCode, keyCode)
+	local returnString = tes3.scanCodeToNumber[keyCode] or letter
+	if returnString then
+		return string.upper(returnString)
+	end
+end
+
+local mouseWheelDirectionName = {
+	[1] = "Mouse wheel up",
+	[-1] = "Mouse wheel down",
+}
+
+--- @param wheel integer|nil
+--- @return string|nil result
+function KeyBinder:getMouseWheelText(wheel)
+	local name = mouseWheelDirectionName[wheel]
+	if name then
+		return mwse.mcm.i18n(name)
+	end
+end
+
+local mouseButtonName = {
+	[0] = "Left mouse button",
+	[1] = "Right mouse button",
+	[2] = "Middle mouse button",
+}
+
+--- @param buttonIndex number|nil
+--- @return string|nil result
+function KeyBinder:getMouseButtonText(buttonIndex)
+	-- Only work with button indices supporte by the inputController
+	if not buttonIndex or buttonIndex > 7 or buttonIndex < 0 then
+		return
+	end
+	local name = mouseButtonName[buttonIndex]
+	if name then
+		return mwse.mcm.i18n(name)
+	end
+
+	return string.format(mwse.mcm.i18n("Mouse %s"), buttonIndex)
 end
 
 --- @param keyCombo mwseKeyMouseCombo
@@ -55,6 +97,7 @@ function KeyBinder:getComboString(keyCombo)
 	return comboText
 end
 
+KeyBinder.convertToLabelValue = KeyBinder.getComboString
 
 --- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
 function KeyBinder:keySelected(e)
@@ -73,16 +116,14 @@ function KeyBinder:keySelected(e)
 		variable.isControlDown = e.isControlDown
 	end
 
-	self:setText(self:getText())
-	if self.callback then
-		self:callback()
-	end
+	self:update()
+	self.elements.outerContainer:updateLayout()
 end
 
 local popupId = tes3ui.registerID("KeyBinderPopup")
 
 --- @return tes3uiElement menu
-function KeyBinder:createMenu()
+function KeyBinder:createPopupMenu()
 	local menu = tes3ui.findHelpLayerMenu(popupId)
 
 	if not menu then
@@ -118,40 +159,30 @@ function KeyBinder:createMenu()
 	return menu
 end
 
-function KeyBinder:closeMenu()
-	local menu = tes3ui.findMenu(popupId)
-	if menu then
-		menu:destroy()
-	end
-end
-
---- @param eventId string
---- @param callback function
---- @param options? event.isRegistered.options
-local function unregisterEvent(eventId, callback, options)
-	if event.isRegistered(eventId, callback, options) then
-		event.unregister(eventId, callback, options --[[@as event.unregister.options]])
-	end
-end
 
 function KeyBinder:showKeyBindMessage()
-	self:createMenu()
+	self:createPopupMenu()
 
 	--- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
 	local function waitInput(e)
 		-- Unregister this function once we got some input
-		unregisterEvent(tes3.event.keyUp, waitInput)
-		unregisterEvent(tes3.event.mouseButtonDown, waitInput)
-		unregisterEvent(tes3.event.mouseWheel, waitInput)
+		event.unregister(tes3.event.keyUp, waitInput)
+		if self.allowMouse then
+			event.unregister(tes3.event.mouseButtonDown, waitInput)
+			event.unregister(tes3.event.mouseWheel, waitInput)
+		end
 
-		-- Allow closing the menu using escape
+		local popup = tes3ui.findMenu(popupId)
+		if popup then
+			popup:destroy()
+		end
+
+		-- Allow closing the menu using escape, wihout binding anything
 		if e.keyCode == tes3.scanCode.esc then
-			self:closeMenu()
 			return
 		end
 
 		self:keySelected(e)
-		self:closeMenu()
 	end
 
 	event.register(tes3.event.keyUp, waitInput)
@@ -161,7 +192,7 @@ function KeyBinder:showKeyBindMessage()
 	end
 end
 
-function KeyBinder:update()
+function KeyBinder:press()
 	-- Display message to change keybinding
 	self:showKeyBindMessage()
 end
@@ -173,7 +204,6 @@ end
 function KeyBinder:createOuterContainer(parentBlock)
 	Parent.createOuterContainer(self, parentBlock)
 	self.elements.outerContainer.autoWidth = false
-	self.elements.outerContainer.widthProportional = 1.0
 	-- self.elements.outerContainer.borderRight = self.indent
 end
 

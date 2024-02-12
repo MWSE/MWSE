@@ -19,4 +19,8 @@ namespace NI {
 			++revisionID;
 		}
 	}
+
+	void GeometryData::updateModelBound() {
+		bounds.computeFromData(vertexCount, vertex, sizeof(Vector3));
+	}
 }

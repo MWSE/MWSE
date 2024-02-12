@@ -33,8 +33,7 @@ function Dropdown:selectOption(option)
 	self.variable.value = option.value
 	self.elements.textBox.text = option.label
 	self.dropdownActive = false
-
-	Parent.update(self)
+	self:update()
 end
 
 function Dropdown:createDropdown()
@@ -124,13 +123,6 @@ end
 function Dropdown:createOuterContainer(parentBlock)
 	Parent.createOuterContainer(self, parentBlock)
 	self.elements.outerContainer.paddingRight = self.indent -- * 2
-end
-
---- @param parentBlock tes3uiElement
-function Dropdown:createContentsContainer(parentBlock)
-	self:createLabel(parentBlock)
-	self:createInnerContainer(parentBlock)
-	self:makeComponent(self.elements.innerContainer)
 end
 
 return Dropdown

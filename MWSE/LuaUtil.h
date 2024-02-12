@@ -48,7 +48,7 @@ namespace mwse::lua {
 			sol::object maybeValue = params[key];
 			if (maybeValue.valid()) {
 				if (maybeValue.is<std::string>()) {
-					value = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<T>(maybeValue.as<std::string>().c_str());
+					value = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<T>(maybeValue.as<std::string>());
 				}
 				else if (maybeValue.is<T*>()) {
 					value = maybeValue.as<T*>();

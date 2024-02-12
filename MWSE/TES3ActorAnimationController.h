@@ -87,6 +87,7 @@ namespace TES3 {
 		//
 
 		float calculateMovementSpeed();
+		float calculateCreatureMovementSpeed();
 		float calculateAttackSwing();
 
 		float getOpacity();

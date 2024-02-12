@@ -135,3 +135,6 @@
 // NI::Stream::LoadingObject
 #define SE_NI_STREAM_LOADINGOBJECT_VTBL 0x0
 
+// NI::Bound
+#define SE_NI_BOUND_FNADDR_COMPUTEFROMDATA 0x5B13F0
+

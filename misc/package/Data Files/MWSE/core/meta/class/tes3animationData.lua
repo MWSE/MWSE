@@ -6,20 +6,20 @@
 --- 
 --- Animations are divided into three layers. The layer 0 is the base layer containing all the base animations for every humanoid in the game, including the player (when in third person). These animations come from `base_anim.nif`. Layer 1 is for female animations. Any animations present in `base_anim_female.nif` override their male counterparts for humanoid races. For beast races, layer 1 animations come from `base_anim_kna.nif`. Layer 2 are the custom animations assigned to the actor.
 --- @class tes3animationData
---- @field actorNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
---- @field animationGroups table<tes3.animationGroup, tes3animationGroup> *Read-only*. A table of the animation group objects, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
---- @field animationGroupSoundgenCounts table<tes3.animationGroup, number> *Read-only*. The number of sound generators for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
---- @field animGroupLayerIndicies table<tes3.animationGroup, tes3.activeBodyPartLayer> *Read-only*. The layer from which each of the actor's animation groups come, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
---- @field approxRootTravelSpeeds table<tes3.animationGroup, number> *Read-only*. The approximate root node travel speed for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
+--- @field actorNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode Easy access to the actor's scene node.
+--- @field animationGroups tes3animationGroup[] *Read-only*. An array of animation group objects applying to this actor, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+--- @field animGroupLayerIndices number[] *Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+--- @field animGroupSoundGenCounts number[] *Read-only*. The number of sound generators for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+--- @field approxRootTravelDistances number[] *Read-only*. The approximate root node travel distance over a cycle for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 --- @field blinkMorphEndTime number Blink animation end time for `headMorphTiming`. Timing is specific to the current head model.
 --- @field blinkMorphStartTime number Blink animation start time for `headMorphTiming`. Timing is specific to the current head model.
 --- @field castSpeed number The animation speed multiplier for the spell casting animation. This is a feature added by MWSE.
 --- 
 --- It functions slightly differently to the other animation speed multipliers. It is not reset by the AI like the movement and weapon speeds. Therefore, it can be set before a spell is cast, as well as during casting. The speed will affect all further casting by the actor.
---- @field currentAnimGroupLayers number[] *Read-only*. 
---- @field currentAnimGroups number[] *Read-only*. The currently playing [animation group](https://mwse.github.io/MWSE/references/animation-groups/), on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/).
---- @field currentNodeIndices number[] *Read-only*. 
---- @field currentSoundgenIndices number[] *Read-only*. The index of the currently used sound generator for each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/).
+--- @field currentActionIndices number[] *Read-only*. The action index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index. The meaning of an action index depends on the specific animation group.
+--- @field currentAnimGroupLayers number[] *Read-only*. The layer index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
+--- @field currentAnimGroups number[] *Read-only*. The currently playing [animation group](https://mwse.github.io/MWSE/references/animation-groups/), on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
+--- @field currentSoundGenIndices number[] *Read-only*. The index of the currently used sound generator for each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 --- @field deltaTime number The time in seconds since the last update.
 --- @field flags number 
 --- @field hasOverrideAnimations boolean *Read-only*. True if the actor has some custom animations in the override layer. For example, drumming or sitting. These are assigned in the Construction Set or using [tes3.loadAnimation](https://mwse.github.io/MWSE/apis/tes3/#tes3loadanimation).
@@ -36,10 +36,10 @@
 --- 
 --- @field loopCounts number[] *Read-only*. 
 --- @field manager niKeyframeManager 
---- @field modelRootNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
+--- @field movementRootNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode Easy access to the actor's "MRT" movement root node.
 --- @field movementSpeed number *Read-only*. The animation speed multiplier of movement animations. This includes walking, running, crouching, swimming, turning, jumping and other movement related animations.
 --- @field nextLoopCounts number 
---- @field positionDeltaModelRoot tes3vector3 
+--- @field positionDeltaMovementRoot tes3vector3 Tracks the change from the last frame of the "MRT" child node that controls animation driven movement.
 --- @field spine1Node niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
 --- @field spine2Node niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
 --- @field spineAngle number 
@@ -75,4 +75,9 @@ function tes3animationData:setHeadNode(head) end
 --- @param kfData tes3keyframeDefinition 
 --- @return boolean success No description yet available.
 function tes3animationData:setOverrideLayerKeyframes(kfData) end
+
+--- Swaps the animations and related animation driven data for the two animation groups given. Groups are indexed by [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/). It can be used on animation groups of the same class with matching actions, e.g. runForward1h and runForward2c. It will also work on animations that are currently playing, except attack animations. Changing an attack animation during an attack will permanently break the character controller until you change it back. Currently playing movement animations may be reset slightly to resynchronize the movement cycle.
+--- @param group1 number An animation group to swap from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/).
+--- @param group2 number An animation group to swap from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/).
+function tes3animationData:swapAnimationGroups(group1, group2) end
 

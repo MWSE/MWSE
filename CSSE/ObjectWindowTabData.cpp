@@ -449,18 +449,22 @@ namespace se::cs::dialog::object_window {
 	}
 
 	bool TabColumnActorRespawns::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Container;
+		switch (objectType) {
+		case ObjectType::Creature:
+		case ObjectType::NPC:
+		case ObjectType::Container:
+			return true;
+		}
+		return false;
 	}
 
 	void TabColumnActorRespawns::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
-		const auto object = static_cast<const Container*>(getObjectFromDisplayInfo(displayInfo));
+		const auto object = getObjectFromDisplayInfo(displayInfo);
 		display(displayInfo, object->getRespawns());
 	}
 
 	int TabColumnActorRespawns::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		const auto a = static_cast<const Container*>(lParam1);
-		const auto b = static_cast<const Container*>(lParam2);
-		return sort(a->getRespawns(), b->getRespawns(), sortOrderAsc);
+		return sort(lParam1->getRespawns(), lParam2->getRespawns(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorRespawns::getSettings() const {
@@ -662,6 +666,33 @@ namespace se::cs::dialog::object_window {
 
 	TabColumn::ColumnSettings& TabColumnCreatureMovementType::getSettings() const {
 		return settings.object_window.column_creature_movement_type;
+	}
+
+	//
+	// Column: Creature Soul Value
+	//
+
+	TabColumnCreatureSoulValue::TabColumnCreatureSoulValue() : TabColumn("Soul", LVCFMT_CENTER) {
+
+	}
+
+	bool TabColumnCreatureSoulValue::supportsObjectType(ObjectType::ObjectType objectType) const {
+		return objectType == ObjectType::Creature;
+	}
+
+	void TabColumnCreatureSoulValue::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
+		auto object = static_cast<const Creature*>(getObjectFromDisplayInfo(displayInfo));
+		display(displayInfo, object->soul);
+	}
+
+	int TabColumnCreatureSoulValue::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
+		const auto a = static_cast<const Creature*>(lParam1)->soul;
+		const auto b = static_cast<const Creature*>(lParam2)->soul;
+		return sort(a, b, sortOrderAsc);
+	}
+
+	TabColumn::ColumnSettings& TabColumnCreatureSoulValue::getSettings() const {
+		return settings.object_window.column_creature_soul;
 	}
 
 	//
@@ -2229,6 +2260,7 @@ namespace se::cs::dialog::object_window {
 	TabColumnCreatureIsBipedal TabController::tabColumnCreatureIsBipedal;
 	TabColumnCreatureList TabController::tabColumnCreatureList;
 	TabColumnCreatureMovementType TabController::tabColumnCreatureMovementType;
+	TabColumnCreatureSoulValue TabController::tabColumnCreatureSoul;
 	TabColumnCreatureSound TabController::tabColumnCreatureSound;
 	TabColumnCreatureUsesWeaponAndShield TabController::tabColumnCreatureUsesWeaponAndShield;
 	TabColumnEffect TabController::tabColumnEffect1(0);
@@ -2486,6 +2518,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnCreatureMovementType.addToController(this, hWnd);
 			tabColumnCreatureUsesWeaponAndShield.addToController(this, hWnd);
 			tabColumnCreatureIsBipedal.addToController(this, hWnd);
+			tabColumnCreatureSoul.addToController(this, hWnd);
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;

@@ -222,7 +222,7 @@ local i18n = mwse.loadTranslations(mod)
 
 **Returns**:
 
-* `i18n` (fun(key: string, data: any?): string): The callable translation results.
+* `i18n` (fun(key: string, data: any): string): The callable translation results.
 
 ***
 
@@ -234,13 +234,13 @@ This function writes information to the mwse.log file in the user's installation
 The message accepts formatting and additional parameters matching string.format's usage.
 
 ```lua
-mwse.log(message, formatValues)
+mwse.log(message, ...)
 ```
 
 **Parameters**:
 
 * `message` (string)
-* `formatValues` (variadic): *Optional*.
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
 
 ***
 
@@ -305,7 +305,7 @@ local success = mwse.overrideScript(scriptId, callback)
 	
 	local function raceCheck()
 		-- It's almost always the desired behavior to stop the mwscript,
-		-- since we are overriding the it.
+		-- since we are overriding it.
 		---@diagnostic disable-next-line: deprecated
 		mwscript.stopScript({ script = raceCheckScriptID })
 	
@@ -346,21 +346,17 @@ mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ... })
 ### `mwse.saveConfig`
 <div class="search_terms" style="display: none">saveconfig</div>
 
-Saves a config table to Data Files\\MWSE\\config\\{fileName}.json.
+Saves a config table to Data Files\\MWSE\\config\\{fileName}.json. The config is converted to JSON during saving.
 
 ```lua
-local result = mwse.saveConfig(fileName, object, config)
+mwse.saveConfig(fileName, config, jsonOptions)
 ```
 
 **Parameters**:
 
-* `fileName` (string)
-* `object` (unknown)
-* `config` (table): *Optional*.
-
-**Returns**:
-
-* `result` (table)
+* `fileName` (string): Usually named after your mod.
+* `config` (table): The config table to save.
+* `jsonOptions` (table): *Optional*. Used to optionally pass encoding options to the dkjson encoder.
 
 ***
 

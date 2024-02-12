@@ -103,7 +103,7 @@ function mwse.mcm.createActiveInfo(parent, data) end
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMButton) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMButton|mwseMCMKeyBinder|mwseMCMOnOffButton|mwseMCMYesNoButton button No description yet available.
+--- @return mwseMCMButton|mwseMCMCycleButton|mwseMCMKeyBinder|mwseMCMOnOffButton|mwseMCMYesNoButton button No description yet available.
 function mwse.mcm.createButton(parent, data) end
 
 ---Table parameter definitions for `mwse.mcm.createButton`.
@@ -206,7 +206,7 @@ function mwse.mcm.createCustom(variable) end
 --- 
 --- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- 
---- `options`: mwseMCMDropdownOption[] — This table holds the text and variable value for each of the cycle button's options.
+--- `options`: tes3uiCycleButtonOption[] — This table holds the text and variable value for each of the cycle button's options.
 --- 
 --- `leftSide `: boolean? — *Default*: `true`. If true, the button will be created on the left and label on the right.
 --- 
@@ -238,7 +238,7 @@ function mwse.mcm.createCycleButton(parent, data) end
 --- @class mwse.mcm.createCycleButton.data
 --- @field label string? *Optional*. Text shown next to the button.
 --- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
---- @field options mwseMCMDropdownOption[] This table holds the text and variable value for each of the cycle button's options.
+--- @field options tes3uiCycleButtonOption[] This table holds the text and variable value for each of the cycle button's options.
 --- @field leftSide  boolean? *Default*: `true`. If true, the button will be created on the left and label on the right.
 --- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable A variable for this cycle button.
 --- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
@@ -300,6 +300,8 @@ function mwse.mcm.createCycleButton(parent, data) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
+--- `convertToLabelValue`: fun(self: mwseMCMDecimalSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- 
 --- `postCreate`: nil|fun(self: mwseMCMDecimalSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @return mwseMCMDecimalSlider slider No description yet available.
 function mwse.mcm.createDecimalSlider(parent, data) end
@@ -323,6 +325,7 @@ function mwse.mcm.createDecimalSlider(parent, data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
+--- @field convertToLabelValue fun(self: mwseMCMDecimalSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
 --- @field postCreate nil|fun(self: mwseMCMDecimalSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new Dropdown inside given `parent` menu.
@@ -774,6 +777,82 @@ function mwse.mcm.createParagraphField(parent, data) end
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
 --- @field postCreate nil|fun(self: mwseMCMParagraphField) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
+--- Creates a new `PercentageSlider` inside given `parent` menu.
+--- 
+--- The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, `PercentageSlider`'s UI element tree won't be created. To do so, use `PercentageSlider`'s `create` method:
+--- 
+--- ```lua
+--- local mySlider = mwse.mcm.createPercentageSlider({ ... })
+--- mySlider:create(parent)
+--- ```
+--- 
+--- The same is done by this function if you pass both `parent` and `data` arguments.
+--- 
+--- @param parent tes3uiElement|mwse.mcm.createPercentageSlider.data The UI element inside which the new `PercentageSlider` will be created.
+--- @param data mwse.mcm.createPercentageSlider.data? This table accepts the following values:
+--- 
+--- `label`: string? — *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+--- 
+--- `variable`: mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable — A variable for this setting.
+--- 
+--- `defaultSetting`: unknown? — *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+--- 
+--- `min`: number? — *Default*: `0`. Minimum value of slider.
+--- 
+--- `max`: number? — *Default*: `1`. Maximum value of slider.
+--- 
+--- `step`: number? — *Default*: `0.01`. How far the slider moves when you press the arrows.
+--- 
+--- `jump`: number? — *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+--- 
+--- `decimalPlaces`: integer? — *Default*: `2`. The number of decimal places of precision. Must be a positive integer.
+--- 
+--- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+--- 
+--- `callback`: nil|fun(self: mwseMCMPercentageSlider) — *Optional*. The custom function called when the player interacts with this Setting.
+--- 
+--- `inGameOnly`: boolean? — *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+--- 
+--- `restartRequired`: boolean? — *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+--- 
+--- `restartRequiredMessage`: string? — *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+--- 
+--- `indent`: integer? — *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+--- 
+--- `childIndent`: integer? — *Optional*. The left padding size in pixels. Used on all the child components.
+--- 
+--- `paddingBottom`: integer? — *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+--- 
+--- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
+--- 
+--- `convertToLabelValue`: fun(self: mwseMCMPercentageSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- 
+--- `postCreate`: nil|fun(self: mwseMCMPercentageSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+--- @return mwseMCMPercentageSlider slider No description yet available.
+function mwse.mcm.createPercentageSlider(parent, data) end
+
+---Table parameter definitions for `mwse.mcm.createPercentageSlider`.
+--- @class mwse.mcm.createPercentageSlider.data
+--- @field label string? *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+--- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable A variable for this setting.
+--- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+--- @field min number? *Default*: `0`. Minimum value of slider.
+--- @field max number? *Default*: `1`. Maximum value of slider.
+--- @field step number? *Default*: `0.01`. How far the slider moves when you press the arrows.
+--- @field jump number? *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+--- @field decimalPlaces integer? *Default*: `2`. The number of decimal places of precision. Must be a positive integer.
+--- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+--- @field callback nil|fun(self: mwseMCMPercentageSlider) *Optional*. The custom function called when the player interacts with this Setting.
+--- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+--- @field restartRequired boolean? *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+--- @field restartRequiredMessage string? *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+--- @field indent integer? *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+--- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
+--- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+--- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
+--- @field convertToLabelValue fun(self: mwseMCMPercentageSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
+--- @field postCreate nil|fun(self: mwseMCMPercentageSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
 --- Creates a new PlayerData variable.
 --- @param variable mwse.mcm.createPlayerData.variable This table accepts the following values:
 --- 
@@ -811,6 +890,8 @@ function mwse.mcm.createPlayerData(variable) end
 --- 
 --- The same is done by this function if you pass both `parent` and `data` arguments.
 --- 
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/mwse.mcm/#mwsemcmcreateslider).
 --- @param parent tes3uiElement|mwse.mcm.createSlider.data The UI element inside which the new Slider will be created.
 --- @param data mwse.mcm.createSlider.data? This table accepts the following values:
 --- 
@@ -820,13 +901,15 @@ function mwse.mcm.createPlayerData(variable) end
 --- 
 --- `defaultSetting`: unknown? — *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
 --- 
---- `min`: integer? — *Default*: `0`. Minimum value of slider.
+--- `min`: number? — *Default*: `0`. Minimum value of slider.
 --- 
---- `max`: integer? — *Default*: `100`. Maximum value of slider.
+--- `max`: number? — *Default*: `100`. Maximum value of slider.
 --- 
---- `step`: integer? — *Default*: `1`. How far the slider moves when you press the arrows.
+--- `step`: number? — *Default*: `1`. How far the slider moves when you press the arrows.
 --- 
---- `jump`: integer? — *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- `jump`: number? — *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- 
+--- `decimalPlaces`: integer? — *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 --- 
 --- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- 
@@ -846,8 +929,10 @@ function mwse.mcm.createPlayerData(variable) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
+--- `convertToLabelValue`: fun(self: mwseMCMSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- 
 --- `postCreate`: nil|fun(self: mwseMCMSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMSlider slider No description yet available.
+--- @return mwseMCMDecimalSlider|mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
 function mwse.mcm.createSlider(parent, data) end
 
 ---Table parameter definitions for `mwse.mcm.createSlider`.
@@ -855,10 +940,11 @@ function mwse.mcm.createSlider(parent, data) end
 --- @field label string? *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 --- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable A variable for this setting.
 --- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
---- @field min integer? *Default*: `0`. Minimum value of slider.
---- @field max integer? *Default*: `100`. Maximum value of slider.
---- @field step integer? *Default*: `1`. How far the slider moves when you press the arrows.
---- @field jump integer? *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- @field min number? *Default*: `0`. Minimum value of slider.
+--- @field max number? *Default*: `100`. Maximum value of slider.
+--- @field step number? *Default*: `1`. How far the slider moves when you press the arrows.
+--- @field jump number? *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- @field decimalPlaces integer? *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 --- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- @field callback nil|fun(self: mwseMCMSlider) *Optional*. The custom function called when the player interacts with this Setting.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
@@ -868,6 +954,7 @@ function mwse.mcm.createSlider(parent, data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
+--- @field convertToLabelValue fun(self: mwseMCMSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
 --- @field postCreate nil|fun(self: mwseMCMSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new TableVariable.
@@ -910,6 +997,10 @@ function mwse.mcm.createTableVariable(variable) end
 --- 
 --- `onClose`: nil|fun(modConfigContainer: tes3uiElement) — *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
 --- 
+--- `searchChildLabels`: boolean? — *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
+--- 
+--- `searchChildDescriptions`: boolean? — *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
+--- 
 --- `onSearch`: nil|fun(searchText: string): boolean — *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
 --- 
 --- `pages`: mwseMCMPage.new.data[]? — *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
@@ -934,6 +1025,8 @@ function mwse.mcm.createTemplate(data) end
 --- @field label string? *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
 --- @field headerImagePath string? *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 --- @field onClose nil|fun(modConfigContainer: tes3uiElement) *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
+--- @field searchChildLabels boolean? *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
+--- @field searchChildDescriptions boolean? *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
 --- @field onSearch nil|fun(searchText: string): boolean *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
 --- @field pages mwseMCMPage.new.data[]? *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
 --- @field indent integer? *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.

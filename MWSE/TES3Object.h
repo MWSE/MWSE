@@ -149,7 +149,7 @@ namespace TES3 {
 		Sound * (__thiscall * getSound)(const Object*); // 0x50
 		char * (__thiscall * getRaceID)(const Object*); // 0x54
 		char * (__thiscall * getClassID)(const Object*); // 0x58
-		char * (__thiscall * getBirthsignID)(const Object*); // 0x5C
+		char * (__thiscall * getFactionID)(const Object*); // 0x5C
 		Race * (__thiscall * getRace)(const Object*); // 0x60
 		Class * (__thiscall * getClass)(const Object*); // 0x64
 		Faction * (__thiscall * getFaction)(const Object*); // 0x68
@@ -162,7 +162,7 @@ namespace TES3 {
 		int (__thiscall * getReputation)(const Object*); // 0x84
 		int (__thiscall * setReputation)(Object*, int); // 0x88
 		int (__thiscall * getDispositionRaw)(const Object*); // 0x8C
-		signed char(__thiscall * modFactionIndex)(Object*, signed char); // 0x90
+		int (__thiscall * modReputation)(Object*, int); // 0x90
 		int (__thiscall * getType)(const Object*); // 0x94
 		char * (__thiscall * getTypeName)(const Object*); // 0x98
 		float (__thiscall * getWeight)(const Object*); // 0x9C
@@ -218,6 +218,8 @@ namespace TES3 {
 		ObjectType::ObjectType objectType; // 0x4
 		unsigned int objectFlags; // 0x8
 		GameFile * sourceMod; // 0xC
+
+		static constexpr auto OBJECT_TYPE = ObjectType::Invalid;
 
 		//
 		// Basic operators.
@@ -310,7 +312,7 @@ namespace TES3 {
 		Sound * getSound() const;
 		char * getRaceID() const;
 		char * getClassID() const;
-		char * getBirthsignID() const;
+		char * getFactionID() const;
 		Race * getRace() const;
 		Class * getClass() const;
 		Faction * getFaction() const;
@@ -322,7 +324,7 @@ namespace TES3 {
 		int getReputation() const;
 		int setReputation(int);
 		int getDispositionRaw() const;
-		signed char modFactionIndex(signed char);
+		int modReputation(int);
 		int getType() const;
 		char * getTypeName() const;
 		float getWeight() const;

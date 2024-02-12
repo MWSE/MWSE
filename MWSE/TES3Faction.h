@@ -45,6 +45,8 @@ namespace TES3 {
 		int playerReputation; // 0x298
 		unsigned int playerMembershipFlags; // 0x29C
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Faction;
+
 		Faction() = delete;
 		~Faction() = delete;
 

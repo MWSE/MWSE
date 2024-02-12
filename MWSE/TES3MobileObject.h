@@ -81,7 +81,7 @@ namespace TES3 {
 			Jumping = 0x1000,
 			Flying = 0x2000,
 			Falling = 0x4000,
-			Unknown = 0x8000
+			Sliding = 0x8000
 		};
 
 		enum FlagBit {
@@ -97,7 +97,8 @@ namespace TES3 {
 			SwimmingBit = 11,
 			JumpingBit = 12,
 			FlyingBit = 13,
-			FallingBit = 14
+			FallingBit = 14,
+			SlidingBit = 15
 		};
 	}
 
@@ -151,7 +152,7 @@ namespace TES3 {
 		void (__thiscall* decideActionAI)(MobileActor*); // 0xA8
 		bool (__thiscall* is3rdPerson)(MobileActor*); // 0xAC
 		void (__thiscall* changeWerewolf)(MobileActor*, bool); // 0xB0
-		void (__thiscall* calculateWalkSpeed)(MobileActor*); // 0xB4
+		float (__thiscall* calculateWalkSpeed)(MobileActor*); // 0xB4
 		void (__thiscall* onDeath)(MobileActor*); // 0xB8
 		int (__thiscall* getWeaponAttackMin)(MobileActor*); // 0xBC
 		int (__thiscall* getWeaponAttackMax)(MobileActor*); // 0xC0

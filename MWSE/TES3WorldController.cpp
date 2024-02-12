@@ -390,10 +390,13 @@ namespace TES3 {
 		// Write to in-memory HTML.
 		if (data) {
 			const auto dataLength = strlen(data);
-			if (dataLength + textLength >= length) {
-				// Grow to the next heighest multiple of 1024 that fits.
+			if (dataLength + textLength >= dataBufferSize) {
+				// Grow to the next highest multiple of 1024 that fits.
 				unsigned int newTextLength = dataLength + textLength;
-				data = (char*)mwse::tes3::realloc(data, newTextLength + (1024 - newTextLength % 1024));
+				unsigned int newBufferSize = newTextLength + (1024 - newTextLength % 1024);
+
+				data = (char*)mwse::tes3::realloc(data, newBufferSize);
+				dataBufferSize = newBufferSize;
 			}
 			strcat(data, text);
 		}

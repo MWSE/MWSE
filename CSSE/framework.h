@@ -85,6 +85,7 @@
 #include <nonstd/span.hpp>
 
 // 3rd party library: toml11
+#define TOML11_PRESERVE_COMMENTS_BY_DEFAULT
 #include <toml.hpp>
 
 // DirectInput/Sound requirements.

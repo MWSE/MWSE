@@ -102,6 +102,7 @@ namespace TES3 {
 		void progressSkillLevelIfRequirementsMet(int skillId);
 		void onDeath();
 		int getGold();
+		void modGold(int value);
 		void wakeUp();
 
 		int getBounty();

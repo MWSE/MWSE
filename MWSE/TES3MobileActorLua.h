@@ -117,6 +117,7 @@ namespace mwse::lua {
 		usertypeDefinition["isMovingLeft"] = sol::property(&TES3::MobileActor::getMovementFlagLeft, &TES3::MobileActor::setMovementFlagLeft);
 		usertypeDefinition["isMovingRight"] = sol::property(&TES3::MobileActor::getMovementFlagRight, &TES3::MobileActor::setMovementFlagRight);
 		usertypeDefinition["isRunning"] = sol::property(&TES3::MobileActor::getMovementFlagRunning, &TES3::MobileActor::setMovementFlagRunning);
+		usertypeDefinition["isSliding"] = sol::property(&TES3::MobileActor::getMovementFlagSliding, &TES3::MobileActor::setMovementFlagSliding);
 		usertypeDefinition["isSneaking"] = sol::property(&TES3::MobileActor::getMovementFlagSneaking, &TES3::MobileActor::setMovementFlagSneaking);
 		usertypeDefinition["isFalling"] = sol::property(&TES3::MobileActor::getMovementFlagFalling, &TES3::MobileActor::setMovementFlagFalling);
 		usertypeDefinition["isSwimming"] = sol::property(&TES3::MobileActor::getMovementFlagSwimming, &TES3::MobileActor::setMovementFlagSwimming);

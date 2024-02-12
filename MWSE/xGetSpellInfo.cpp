@@ -30,7 +30,7 @@ namespace mwse {
 		long origin = 0;
 
 		// Get spell data by id.
-		TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId, TES3::ObjectType::Spell);;
+		const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId);;
 		if (spell != NULL) {
 			name = spell->name;
 			type = long(spell->castType);

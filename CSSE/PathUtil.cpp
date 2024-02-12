@@ -1,5 +1,7 @@
 #include "PathUtil.h"
 
+#include "StringUtil.h"
+
 namespace se::cs::path {
 	std::filesystem::path getDocumentsPath() {
 		CHAR path[MAX_PATH] = {};
@@ -23,6 +25,18 @@ namespace se::cs::path {
 
 	std::filesystem::path getSavePath() {
 		return getInstallPath() / "Saves";
+	}
+
+	std::optional<std::string> getLowerPath(const std::filesystem::directory_entry& path) {
+		try {
+			auto lowerPath = path.path().string();
+			string::to_lower(lowerPath);
+
+			return lowerPath;
+		}
+		catch (std::exception&) {
+			return {};
+		}
 	}
 
 	namespace openmw {

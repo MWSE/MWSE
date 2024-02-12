@@ -61,7 +61,7 @@
 #include "TES3MobileCreature.h"
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
-#include "TES3PlayerAnimationController.h" 
+#include "TES3PlayerAnimationController.h"
 #include "TES3Race.h"
 #include "TES3Reference.h"
 #include "TES3Region.h"
@@ -482,7 +482,7 @@ namespace mwse::lua {
 			// Set up our event callback.
 			LuaManager::getInstance().setButtonPressedCallback(params["callback"]);
 
-			// Temporary hook into the function that creates message boxes. 
+			// Temporary hook into the function that creates message boxes.
 			reinterpret_cast<void(__cdecl*)(const char*, ...)>(0x5F1AA0)(message.c_str(), buttonTextStruct, NULL);
 			return TES3::UI::findMenu("MenuMessage");
 		}
@@ -643,7 +643,7 @@ namespace mwse::lua {
 
 	TES3::SoundGenerator* getSoundGenerator(std::string creatureId, unsigned int type) {
 		auto nonDynamicData = TES3::DataHandler::get()->nonDynamicData;
-		auto creature = nonDynamicData->resolveObjectByType<TES3::Creature>(creatureId, TES3::ObjectType::Creature);
+		auto creature = nonDynamicData->resolveObjectByType<TES3::Creature>(creatureId);
 		if (creature == nullptr) {
 			return nullptr;
 		}
@@ -2338,14 +2338,16 @@ namespace mwse::lua {
 			}
 		}
 		else {
-			TES3::DataHandler::suppressThreadLoad = true;
+			bool suppressThreadLoad = true;
+			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
+
 			if (userProvidedOrientation) {
 				reference->relocate(cell, &position.value(), orientation.value().z * (180.0f / math::M_PI));
 			}
 			else {
 				reference->relocateNoRotation(cell, &position.value());
 			}
-			TES3::DataHandler::suppressThreadLoad = false;
+			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
 
 			// Script item data needs to be instanced if the reference is now active but has not been seen before.
 			reference->ensureScriptDataIsInstanced();
@@ -3316,7 +3318,7 @@ namespace mwse::lua {
 		auto playerMobile = worldController->getMobilePlayer();
 		if (mobile == playerMobile) {
 			if (getOptionalParam<bool>(params, "playSound", true)) {
-				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Down);
+				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Up);
 			}
 
 			if (getOptionalParam<bool>(params, "showMessage", false)) {
@@ -3491,9 +3493,9 @@ namespace mwse::lua {
 		// Play the relevant sound.
 		auto worldController = TES3::WorldController::get();
 		auto playerMobile = worldController->getMobilePlayer();
-		if (playerMobile && getOptionalParam<bool>(params, "playSound", true)) {
+		if (mobile == playerMobile && getOptionalParam<bool>(params, "playSound", true)) {
 			if (mobile == playerMobile) {
-				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Up);
+				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Down);
 			}
 		}
 
@@ -3548,7 +3550,8 @@ namespace mwse::lua {
 			throw std::runtime_error("Function called while mobile player animation controller is unavailable.");
 		}
 
-		animController->togglePOV = true;
+		// Switch even if player is incapacitated.
+		animController->switchPOVMode = 2;
 
 		return animController->is3rdPerson;
 	}
@@ -3725,10 +3728,10 @@ namespace mwse::lua {
 		// Play the relevant sound.
 		if (playerMobile && getOptionalParam<bool>(params, "playSound", true)) {
 			if (toMobile == playerMobile) {
-				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Down);
+				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Up);
 			}
 			else if (fromMobile == playerMobile) {
-				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Up);
+				worldController->playItemUpDownSound(item, TES3::ItemSoundState::Down);
 			}
 		}
 
@@ -4366,6 +4369,23 @@ namespace mwse::lua {
 		}
 	}
 
+	void setExpelled(sol::table params) {
+		TES3::Faction* faction = getOptionalParamObject<TES3::Faction>(params, "faction");
+		if (faction == nullptr) {
+			throw std::invalid_argument("Invalid 'faction' parameter provided");
+		}
+
+		if (getOptionalParam<bool>(params, "expelled", true)) {
+			faction->setPlayerExpelled(true);
+			std::string message = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::sExpelledMessage]->value.asString;
+			message.append(faction->getName());
+			TES3::UI::showMessageBox(message.c_str(), nullptr, true);
+		}
+		else {
+			faction->setPlayerExpelled(false);
+		}
+	}
+
 	sol::optional<std::tuple<unsigned char, unsigned char, unsigned char>> getCurrentAnimationGroups(sol::table params) {
 		TES3::Reference* reference = getOptionalParamExecutionReference(params);
 		if (reference == nullptr) {
@@ -4612,7 +4632,7 @@ namespace mwse::lua {
 		sol::state_view state = thisState;
 		sol::table result = state.create_table();
 		for (size_t i = 0; i < animGroup->actionCount; ++i, noteLabel += 8) {
-			result[*noteLabel] = animGroup->actionTimes[i];
+			result[*noteLabel] = animGroup->actionTimings[i];
 		}
 		return result;
 	}
@@ -5496,7 +5516,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid positional params provided. Must provided two references or two positions/heights.");
 		}
 
-		// 
+		//
 		sol::optional<TES3::Vector3> position2;
 		float height1, height2;
 
@@ -5569,12 +5589,41 @@ namespace mwse::lua {
 
 	int calculatePrice(sol::table params) {
 		bool buying = getOptionalParam(params, "buying", !getOptionalParam(params, "selling", false));
+		bool isBartering = getOptionalParam(params, "bartering", false);
+		bool isRepairing = getOptionalParam(params, "repairing", false);
+		bool isTraining = getOptionalParam(params, "training", false);
 
 		// Get the base value.
 		auto object = getOptionalParamObject<TES3::Object>(params, "object");
+		auto itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
 		auto basePrice = getOptionalParam(params, "basePrice", object ? object->getValue() : 0);
 		if (object && object->objectType == TES3::ObjectType::Spell) {
 			basePrice = static_cast<TES3::Spell*>(object)->getValue();
+		}
+		if (isRepairing) {
+			// Standard repair price calculation. Note it uses integer divisions.
+			if (object && itemData) {
+				auto fRepairMult = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fRepairMult];
+				auto maxCondition = object->getDurability();
+				int repairRatio = std::max(1, maxCondition / std::max(1, basePrice));
+				int x = (maxCondition - itemData->condition) / repairRatio;
+				basePrice = int(fRepairMult->value.asFloat * x);
+			}
+			else {
+				throw std::invalid_argument("Invalid 'object' or 'itemData' parameter provided.");
+			}
+		}
+		else if (isTraining) {
+			// Standard training price calculation.
+			auto skill = getOptionalParam(params, "skill", TES3::SkillID::Invalid);
+			if (skill >= TES3::SkillID::FirstSkill && skill <= TES3::SkillID::LastSkill) {
+				auto iTrainingMod = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::iTrainingMod];
+				auto& skillAttr = TES3::WorldController::get()->getMobilePlayer()->skills[skill];
+				basePrice = int(iTrainingMod->value.asLong * skillAttr.base);
+			}
+			else {
+				throw std::invalid_argument("Invalid 'skill' parameter provided.");
+			}
 		}
 
 		// Get the first-modified value.
@@ -5586,23 +5635,21 @@ namespace mwse::lua {
 
 		// Fire off the appropriate event.
 		event::BaseEvent* firedEvent = nullptr;
-		if (getOptionalParam(params, "bartering", false)) {
+		if (isBartering) {
 			if (event::CalculateSpellPriceEvent::getEventEnabled() && object && object->objectType == TES3::ObjectType::Spell) {
 				firedEvent = new event::CalculateSpellPriceEvent(merchant, basePrice, price, static_cast<TES3::Spell*>(object));
 			}
 			else if (event::CalculateBarterPriceEvent::getEventEnabled()) {
 				auto count = getOptionalParam(params, "count", 1);
-				auto itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
 				firedEvent = new event::CalculateBarterPriceEvent(merchant, basePrice, price, buying, count, object, itemData);
 			}
 		}
-		else if (getOptionalParam(params, "repairing", false)) {
+		else if (isRepairing) {
 			if (event::CalculateRepairPriceEvent::getEventEnabled()) {
-				auto itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
 				firedEvent = new event::CalculateRepairPriceEvent(merchant, basePrice, price, object, itemData);
 			}
 		}
-		else if (getOptionalParam(params, "training", false)) {
+		else if (isTraining) {
 			if (event::CalculateTrainingPriceEvent::getEventEnabled()) {
 				auto skill = getOptionalParam(params, "skill", TES3::SkillID::Invalid);
 				firedEvent = new event::CalculateTrainingPriceEvent(merchant, basePrice, price, skill);
@@ -5917,6 +5964,49 @@ namespace mwse::lua {
 		return TES3::UI::findMenu("MenuContents") == nullptr;
 	}
 
+	bool payMerchant(sol::optional<sol::table> params) {
+		auto mobile = getOptionalParamMobileActor(params, "merchant");
+		if (!mobile) {
+			throw std::runtime_error("Invalid 'merchant' parameter provided.");
+		}
+		auto costParam = getOptionalParam<int>(params, "cost");
+		if (!costParam) {
+			throw std::runtime_error("Invalid 'cost' parameter provided.");
+		}
+
+		auto worldController = TES3::WorldController::get();
+		auto macp = worldController->getMobilePlayer();
+		int playerGold = macp->getGold();
+		int cost = costParam.value();
+
+		bool success = false;
+		if (cost > 0 && cost <= playerGold) {
+			success = true;
+		}
+		else if (cost < 0 && (-cost) <= mobile->barterGold) {
+			success = true;
+		}
+
+		if (success) {
+			// Transfer gold.
+			macp->modGold(-cost);
+			mobile->barterGold += cost;
+
+			// Extend refresh timeout for barterGold refresh system. This prevents the change from being overwritten immediately.
+			auto hourStamp = worldController->gvarDaysPassed->value * 24 + worldController->gvarGameHour->value;
+			if (mobile->actionData.lastBarterHoursPassed == 0) {
+				mobile->actionData.lastBarterHoursPassed = hourStamp;
+			}
+			else {
+				auto resetDelay = int(TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fBarterGoldResetDelay]->value.asFloat);
+				if (hourStamp >= mobile->actionData.lastBarterHoursPassed + resetDelay) {
+					mobile->actionData.lastBarterHoursPassed = hourStamp;
+				}
+			}
+		}
+		return success;
+	}
+
 	void bindTES3Util() {
 		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.state;
@@ -6059,6 +6149,7 @@ namespace mwse::lua {
 		tes3["messageBox"] = messageBox;
 		tes3["modStatistic"] = modStatistic;
 		tes3["newGame"] = newGame;
+		tes3["payMerchant"] = payMerchant;
 		tes3["persuade"] = persuade;
 		tes3["playAnimation"] = playAnimation;
 		tes3["playItemPickupSound"] = playItemPickupSound;
@@ -6087,6 +6178,7 @@ namespace mwse::lua {
 		tes3["setAnimationTiming"] = setAnimationTiming;
 		tes3["setDestination"] = setDestination;
 		tes3["setEnabled"] = setEnabled;
+		tes3["setExpelled"] = setExpelled;
 		tes3["setGlobal"] = setGlobal;
 		tes3["setItemIsStolen"] = setItemIsStolen;
 		tes3["setJournalIndex"] = setJournalIndex;

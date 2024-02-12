@@ -55,15 +55,17 @@ local function checkDependencies()
                 logger:debug("Found metadata file: %s", file)
                 local filePath = path .. "\\" .. file
                 local metadata = toml.loadFile(filePath)
-                if metadata then
-                    logger:debug("Checking dependencies for: %s", metadata.package.name)
-                    local manager = DependencyManager.new {
+                if not metadata then
+                    logger:error("Could not load metadata file: %s", file)
+                elseif not metadata.package then
+                    logger:error("Metadata file does not contain a package table: %s", file)
+                else
+                    logger:debug("Checking dependencies for: %s", metadata.package.name or "[unknown]")
+                    local manager = DependencyManager.new{
                         metadata = metadata,
                         logLevel = LOG_LEVEL
                     }
                     manager:checkDependencies()
-                else
-                    logger:error("Could not load metadata file: %s", file)
                 end
             end
         end

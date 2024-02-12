@@ -17,7 +17,9 @@ namespace se::cs {
 	struct Dialogue : BaseObject {
 		const char* id; // 0x10
 		DialogueType type; // 0x14
-		NI::IteratedList<DialogueInfo*> topics; // 0x18
+		NI::IteratedList<DialogueInfo*> infos; // 0x18
+
+		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const;
 	};
 	static_assert(sizeof(Dialogue) == 0x2C, "Dialogue failed size validation");
 }

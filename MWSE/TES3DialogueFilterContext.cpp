@@ -94,6 +94,11 @@ namespace TES3 {
 	using ConditionalLoadFunction = std::function<void(DialogueFilterContext::ConditionalContext*)>;
 
 	void loadFunctionReactionLow(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
@@ -101,6 +106,7 @@ namespace TES3 {
 
 		const auto faction = speakerBase->getFaction();
 		if (faction == nullptr) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -108,6 +114,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionReactionHigh(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
@@ -115,6 +126,7 @@ namespace TES3 {
 
 		const auto faction = speakerBase->getFaction();
 		if (faction == nullptr) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -122,6 +134,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionRankRequirement(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
@@ -136,6 +153,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionReputation(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speaker = context->parentContext->speaker;
 		if (speaker->objectType != ObjectType::NPC) {
 			return;
@@ -145,6 +167,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionHealthPercent(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto mobile = context->parentContext->speakerMobile;
 		if (mobile == nullptr || !mobile->isActor()) {
 			return;
@@ -153,47 +180,92 @@ namespace TES3 {
 	}
 
 	void loadFunctionPCReputation(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->npcInstance->getReputation();
 	}
 
 	void loadFunctionPCLevel(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->npcInstance->getLevel();
 	}
 
 	void loadFunctionPCHealthPercent(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->health.getNormalized() * 100.0f;
 	}
 
 	void loadFunctionPCMagicka(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->magicka.getCurrent();
 	}
 
 	void loadFunctionPCFatigue(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->fatigue.getCurrent();
 	}
 
 	void loadFunctionPCStrength(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeStrength()->getCurrent();
 	}
 
 	void loadFunctionPCSkill(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		const auto skill = (int)context->conditional->function - (int)DialogueConditionalFunction::PCBlock;
 		context->compareValue = macp->getSkillStatistic(skill)->getCurrent();
 	}
 
 	void loadFunctionPCSex(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->npcInstance->isFemale() ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionPCExpelled(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
@@ -208,26 +280,51 @@ namespace TES3 {
 	}
 
 	void loadFunctionPCCommonDisease(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->hasCommonDisease() ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionPCBlightDisease(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->hasBlightDisease() ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionPCClothingModifier(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->npcInstance->getEquipmentValue(false);
 	}
 
 	void loadFunctionPCCrimeLevel(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getBounty();
 	}
 
 	void loadFunctionSameSex(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		const auto match = macp->npcInstance->isFemale() == context->parentContext->speakerBaseActor->isFemale();
 		context->compareValue = match ? 1.0f : 0.0f;
@@ -235,6 +332,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionSameRace(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		const auto match = macp->npcInstance->getRace() == context->parentContext->speakerBaseActor->getRace();
 		context->compareValue = match ? 1.0f : 0.0f;
@@ -242,21 +344,27 @@ namespace TES3 {
 	}
 
 	void loadFunctionSameFaction(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
 		}
 
 		const auto faction = speakerBase->getFaction();
-		if (faction == nullptr) {
-			return;
-		}
-
-		context->compareValue = faction->getPlayerJoined() ? 1.0f : 0.0f;
+		context->compareValue = faction && faction->getPlayerJoined() ? 1.0f : 0.0f;
 		context->compareOperator = DialogueConditionalComparator::Equal;
 	}
 
 	void loadFunctionFactionRankDifference(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
 			return;
@@ -264,6 +372,7 @@ namespace TES3 {
 
 		const auto faction = speakerBase->getFaction();
 		if (faction == nullptr) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -271,6 +380,11 @@ namespace TES3 {
 	}
 
 	void loadFunctionDetected(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto worldController = WorldController::get();
 		const auto mobile = context->parentContext->speakerMobile;
 		const auto macp = worldController->getMobilePlayer();
@@ -279,11 +393,21 @@ namespace TES3 {
 	}
 
 	void loadFunctionAlarmed(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto isAlarmed = context->parentContext->speakerMobile->actionData.aiBehaviorState == AIBehavior::Alarmed;
 		context->compareValue = isAlarmed ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionChoice(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto uiidMenuDialogue = *reinterpret_cast<UI::UI_ID*>(0x7D3442);
 		const auto menuDialog = UI::findMenu(uiidMenuDialogue);
 		if (menuDialog == nullptr) {
@@ -315,46 +439,91 @@ namespace TES3 {
 	}
 
 	void loadFunctionPCIntelligence(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeIntelligence()->getCurrent();
 	}
 
 	void loadFunctionPCWillpower(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeWillpower()->getCurrent();
 	}
 
 	void loadFunctionPCAgility(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeAgility()->getCurrent();
 	}
 
 	void loadFunctionPCSpeed(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeSpeed()->getCurrent();
 	}
 
 	void loadFunctionPCEndurance(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeEndurance()->getCurrent();
 	}
 
 	void loadFunctionPCPersonality(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributePersonality()->getCurrent();
 	}
 
 	void loadFunctionPCLuck(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->getAttributeLuck()->getCurrent();
 	}
 
 	void loadFunctionPCCorprus(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->hasCorprusDisease() ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionWeather(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		// Ignore if we are indoors.
 		if (DataHandler::get()->currentInteriorCell) {
 			return;
@@ -364,30 +533,60 @@ namespace TES3 {
 	}
 
 	void loadFunctionPCVampire(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->hasVampirism() ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionLevel(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerBaseActor->getLevel();
 	}
 
 	void loadFunctionAttacked(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto attacked = context->parentContext->speakerMobile->getFlagAttacked();
 		context->compareValue = attacked ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionTalkedToPC(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto attacked = context->parentContext->speakerMobile->getFlagTalkedTo();
 		context->compareValue = attacked ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionPCHealth(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		context->compareValue = macp->health.getCurrent();
 	}
 
 	void loadFunctionCreatureTarget(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto target = context->parentContext->speakerMobile->actionData.target;
 		if (target == nullptr) {
 			return;
@@ -405,37 +604,77 @@ namespace TES3 {
 	}
 
 	void loadFunctionFriendHit(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerMobile->friendlyFireHitCount;
 	}
 
 	void loadFunctionFight(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerMobile->fight;
 	}
 
 	void loadFunctionHello(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerMobile->hello;
 	}
 
 	void loadFunctionAlarm(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerMobile->alarm;
 	}
 
 	void loadFunctionFlee(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->parentContext->speakerMobile->flee;
 	}
 
 	void loadFunctionShouldAttack(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto macp = WorldController::get()->getMobilePlayer();
 		const auto fightWeight = context->parentContext->speakerMobile->getActionWeightFight(macp);
 		context->compareValue = fightWeight < 100.0f ? 0.0f : 1.0f;
 	}
 
 	void loadFunctionWerewolf(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		const auto isWerewolf = context->parentContext->speakerMobile->getIsWerewolf();
 		context->compareValue = isWerewolf ? 1.0f : 0.0f;
 	}
 
 	void loadFunctionPCWerewolfKills(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = WorldController::get()->playerKills->werewolfKills;
 	}
 
@@ -525,6 +764,11 @@ namespace TES3 {
 	}
 
 	void loadGlobalValue(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = context->conditional->globalVariable->getValue();
 	}
 
@@ -546,6 +790,9 @@ namespace TES3 {
 		if (context->parentContext->speakerReference) {
 			variables = context->parentContext->speakerReference->getScriptVariables();
 		}
+		else {
+			context->resultOverride = true;
+		}
 
 		switch (varType) {
 		case 'f':
@@ -565,12 +812,17 @@ namespace TES3 {
 	}
 
 	void loadJournalIndex(DialogueFilterContext::ConditionalContext* context) {
+		if (context->parentContext->speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
 		context->compareValue = context->conditional->journal->journalIndex;
 	}
 
 	void loadItemCount(DialogueFilterContext::ConditionalContext* context) {
 		const auto speakerReference = context->parentContext->speakerReference;
 		if (speakerReference == nullptr) {
+			context->resultOverride = true;
 			return;
 		}
 
@@ -589,6 +841,12 @@ namespace TES3 {
 	}
 
 	void loadDeadActorCount(DialogueFilterContext::ConditionalContext* context) {
+		const auto speakerReference = context->parentContext->speakerReference;
+		if (speakerReference == nullptr) {
+			context->resultOverride = true;
+			return;
+		}
+
 		context->compareValue = WorldController::get()->playerKills->getKillCount(context->conditional->actor);
 	}
 

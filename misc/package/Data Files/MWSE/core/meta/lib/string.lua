@@ -2,11 +2,14 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- This library provides generic functions for string manipulation, such as finding and extracting substrings, and pattern matching. When indexing a string in Lua, the first character is at position 1 (not at 0, as in C). Indices are allowed to be negative and are interpreted as indexing backwards, from the end of the string. Thus, the last character is at position -1, and so on.
+--- This library provides generic functions for string manipulation, such as finding and extracting substrings, and pattern matching. When indexing a string in Lua, the first character is at position `1` (not at `0`, as in C). Indices are allowed to be negative and are interpreted as indexing backwards, from the end of the string. Thus, the last character is at position `-1`, and so on.
+--- Several functions in this library (e.g., `find`, `gfind`, `gsub`), make use of [Lua patterns](https://www.lua.org/pil/20.2.html).
 --- @class stringlib
 string = {}
 
---- Returns true if a string ends with a given pattern.
+--- Returns `true` if a `string` ends with a given substring.
+--- This function **does not** use pattern matching.
+--- 
 --- @param s string No description yet available.
 --- @param pattern string No description yet available.
 --- @return boolean result No description yet available.
@@ -36,39 +39,49 @@ function string.endswith(s, pattern) end
 --- `%p`	  | Pointer address.										| b8000000
 --- `%%`	  | The literal `%` character.							  | %
 --- @param format string The format string to use for the output.
---- @param values any? *Optional*. Values to format into the given string.
+--- @param ... any? *Optional*. Values to format into the specified `string`.
 --- @return string result No description yet available.
-function string.format(format, values) end
+function string.format(format, ...) end
 
---- Returns a string where one string has been inserted into another at a given position.
+--- Returns a string where one string has been inserted into another, after a specified position.
+--- 		
+--- For example, `string.insert("12345678", "abcdefgh", 5)` will return `"12345abcdefgh678"`.
 --- @param s1 string The string to insert into.
 --- @param s2 string The string to insert.
---- @param position number The position to insert s2 into s1.
---- @return string inserted A copy of s1 with s2 inserted into it.
+--- @param position integer An index of `s1`. The `s2` `string` will be inserted after this index.
+--- @return string result A copy of `s1`, with `s2` inserted into it after the specified `position`.
 function string.insert(s1, s2, position) end
 
---- Performs the logic of find, using a table of patterns.
+--- Performs the logic of `string.find` on a `string` `s`, using a `table` of patterns.
 --- 
---- If any of the available patterns match, the matching pattern is returned followed by the normal results of the find.
---- @param s string The string to perform finds on.
---- @param pattern table An array-style table that contains pattern strings.
---- @param index number? *Default*: `1`. Start index of the find.
---- @param plain boolean? *Default*: `false`. If true, a normal search instead of a pattern search will be performed.
-function string.multifind(s, pattern, index, plain) end
+--- If any of the `patterns` are found in `s`, then the matching `pattern` will be returned, followed by the normal results of `string.find`.
+--- 	
+--- The `patterns` are checked in the order they are passed. i.e., this function will first try to match `patterns[1]`, then `patterns[2]`, and so on.
+--- @param s string The `string` to `find` `patterns` in.
+--- @param patterns table An array-style `table` that contains the patterns to match.
+--- @param index integer? *Default*: `1`. Start index of the `find`. (Same meaning as in `string.find`.)
+--- @param plain boolean? *Default*: `false`. If `true`, then a normal search will be performed instead of a pattern search. (Same meaning as in `string.find`.)
+--- @return string? pattern *Optional*. If a pattern was matched, then this will be the first pattern that was matched. If no patterns matched, this will be `nil`.
+--- @return integer? startindex *Optional*. If a `pattern` was matched, this is the index of `s` where the matching `pattern` begins.
+--- @return integer? endindex *Optional*. If a `pattern` was matched, this is the index of `s` where the matching `pattern` ends.
+function string.multifind(s, patterns, index, plain) end
 
---- Returns an array-style table with `str` split by `sep`. The `sep`erator is not part of the results. By default the `sep`erator is `%s`, splitting the given `str`ing by spaces.
+--- Returns an array-style table with a `string` split by a specified separator.
+--- The seperator is not part of the results. 
+--- By default the `sep == "%s"`, which will result in `str` getting split by whitespace characters (e.g. spaces and tabs).
 --- @param str string The string to split.
 --- @param sep string? *Default*: `"%s"`. The token to split the string by.
 --- @return string[] split No description yet available.
 function string.split(str, sep) end
 
---- Returns true if a string begins with a given pattern.
+--- Returns `true` if a `string` begins with a given substring.
+--- This function **does not** use pattern matching.
 --- @param s string No description yet available.
---- @param pattern string No description yet available.
+--- @param substring string No description yet available.
 --- @return boolean result No description yet available.
-function string.startswith(s, pattern) end
+function string.startswith(s, substring) end
 
---- Returns a copy of the string, with whitespace removed from the start and end.
+--- Returns a copy of the string, with whitespace characters (e.g. spaces and tabs) removed from the start and end.
 --- @param s string No description yet available.
 --- @return string trimmed No description yet available.
 function string.trim(s) end

@@ -70,7 +70,7 @@ The types are arranged into functional groupings. Within each grouping, indentat
 #### Geometry Data Classes
 - niObject
 	- niGeometryData
-		- <span style = "color:Turquoise">niLinesData</span>
+		- niLinesData
 		- niTriBasedGeomData
 			- niParticlesData
 				- <span  style = "color:YellowGreen">niAutoNormalParticlesData</span>
@@ -84,7 +84,7 @@ The types are arranged into functional groupings. Within each grouping, indentat
 	- niObjectNET
 		- niAVObject
 			- <span style = "color:Turquoise">niGeometry</span>
-				- <span style = "color:Turquoise">niLines</span>
+				- niLines
 				- <span style = "color:Turquoise">niTriBasedGeometry</span>
 					- niTriShape
 					- <span  style = "color:YellowGreen">niTriStrips</span>
@@ -347,7 +347,7 @@ graph LR
 
 	%% Turquoise
 	classDef notExposed color:#000, fill: #40E0D0, stroke: #333, stroke-width: 2px;
-	class B,DA,HA,HK,L,Q,R,W notExposed;
+	class B,HA,HK,L,Q,R,W notExposed;
 
 	%% YellowGreen
 	classDef notResearched color:#000, fill: #ADFF2F, stroke: #333, stroke-width: 2px;
@@ -464,7 +464,7 @@ graph LR
 
 	%% Turquoise
 	classDef notExposed color:#000, fill: #40E0D0, stroke: #333, stroke-width: 2px;
-	class EAC,EACA,EACC notExposed;
+	class EAC,EACC notExposed;
 
 	%% YellowGreen
 	classDef notResearched color:#000, fill: #ADFF2F, stroke: #333, stroke-width: 2px;

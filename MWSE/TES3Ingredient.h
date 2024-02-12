@@ -18,6 +18,8 @@ namespace TES3 {
 		int effectSkillIds[4]; // 0xC0
 		int effectAttributeIds[4]; // 0xD0
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Ingredient;
+
 		Ingredient() = delete;
 		~Ingredient() = delete;
 

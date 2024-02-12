@@ -25,6 +25,8 @@ namespace TES3 {
 		Enchantment * enchantment;
 		int unknown_0x6C;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Book;
+
 		Book();
 		~Book();
 

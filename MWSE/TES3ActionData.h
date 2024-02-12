@@ -59,7 +59,7 @@ namespace TES3 {
 		short unknown_0x1E;
 		MobileActor * target; // 0x20
 		MobileActor * hitTarget; // 0x24
-		short lastBarterHoursPassed; // 0x28
+		unsigned short lastBarterHoursPassed; // 0x28
 		short unknown_0x2A;
 		BaseObject * stolenFromFactionOrNPC; // 0x2C
 		bool attackWasBlocked; // 0x30

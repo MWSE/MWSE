@@ -73,6 +73,8 @@ namespace TES3 {
 		IteratedList<DialogueInfo*> info;
 		int journalIndex;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Dialogue;
+
 		Dialogue() = delete;
 		~Dialogue() = delete;
 

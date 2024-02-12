@@ -79,6 +79,8 @@ namespace TES3 {
 		long espFileOffset; // 0x24
 		Actor* firstHeardFrom; // 0x28
 
+		static constexpr auto OBJECT_TYPE = ObjectType::DialogueInfo;
+
 		DialogueInfo() = delete;
 		~DialogueInfo() = delete;
 

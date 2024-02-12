@@ -60,6 +60,20 @@ namespace se::string {
 		}
 	}
 
+	bool starts_with(const std::string_view& string, const std::string_view& substring) {
+		if (substring.size() >= string.size()) {
+			return false;
+		}
+		return string.compare(0, substring.size(), substring) == 0;
+	}
+
+	bool ends_with(const std::string_view& string, const std::string_view& substring) {
+		if (substring.size() >= string.size()) {
+			return false;
+		}
+		return string.compare(string.size() - substring.size(), substring.size(), substring) == 0;
+	}
+
 	bool replace(std::string& str, const std::string_view from, const std::string_view to) {
 		size_t start_pos = str.find(from);
 		if (start_pos == std::string::npos)

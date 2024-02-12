@@ -3,7 +3,8 @@ return {
 	description = [[Logs a message to the console. The message accepts formatting and additional parameters matching string.format's usage.]],
 	arguments = {
 		{ name = "message", type = "string" },
-		{ name = "formatValues", type = "variadic", optional = true }
+		{ name = "...", type = "any", description = "Formatting arguments. These are passed to `string.format`.", optional = true },
+
 	},
 	examples = {
 		["logPlayerSkillTypes"] = {

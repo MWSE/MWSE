@@ -2,7 +2,7 @@
 
 It is possible to use lua inside the mwscript results pane in the dialogue menu of the Construction Set.
 
-Additional functions are available to extend the usefulness of this feature, including [`tes3ui.choice`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uichoice) and [`tes3.applyTextDefines`](https://mwse.github.io/MWSE/apis/tes3/#tes3applyTextDefines).
+Additional functions are available to extend the usefulness of this feature, including [`tes3ui.choice`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uichoice) and [`tes3.applyTextDefines`](https://mwse.github.io/MWSE/apis/tes3/#tes3applytextdefines).
 
 !!! note
 	The execution order of the Results pane is not mixed. All lua commands will be executed before the mwscript is parsed and executed.

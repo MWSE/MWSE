@@ -38,6 +38,8 @@ namespace TES3 {
 		unsigned int flags; // 0x3C
 		signed char chanceForNothing; // 0x40
 
+		static constexpr auto OBJECT_TYPE = ObjectType::LeveledCreature;
+
 		LeveledCreature() = delete;
 		~LeveledCreature() = delete;
 
@@ -66,6 +68,8 @@ namespace TES3 {
 		int itemCount; // 0x34
 		unsigned int flags; // 0x38
 		signed char chanceForNothing; // 0x3C
+
+		static constexpr auto OBJECT_TYPE = ObjectType::LeveledItem;
 
 		LeveledItem() = delete;
 		~LeveledItem() = delete;

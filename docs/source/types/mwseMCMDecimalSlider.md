@@ -8,7 +8,7 @@
 
 A slider for setting decimal values at given number of decimal places.
 
-This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMSlider](../types/mwseMCMSlider.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
 ## Properties
 
 ### `callback`
@@ -47,7 +47,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -146,7 +146,7 @@ If true, the setting is disabled while the game is on main menu.
 ### `jump`
 <div class="search_terms" style="display: none">jump</div>
 
-How far the slider jumps when you click an area inside the slider. Default is `0.05`.
+How far the slider jumps when you click an area inside the slider. Default is `5 * step`.
 
 **Returns**:
 
@@ -157,7 +157,7 @@ How far the slider jumps when you click an area inside the slider. Default is `0
 ### `label`
 <div class="search_terms" style="display: none">label</div>
 
-The text of the component. Not all component types have a label.
+Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 
 **Returns**:
 
@@ -201,7 +201,7 @@ Minimum value of slider. Default is `0.0`.
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -286,10 +286,32 @@ Set to the value of `sNo` GMST.
 
 ***
 
+### `sOff`
+<div class="search_terms" style="display: none">soff</div>
+
+Set to the value of `sOff` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `sOK`
 <div class="search_terms" style="display: none">sok</div>
 
 Set to the value of `sOK` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `sOn`
+<div class="search_terms" style="display: none">son</div>
+
+Set to the value of `sOn` GMST.
 
 **Returns**:
 
@@ -353,6 +375,123 @@ local result = myObject:checkDisabled()
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `convertToLabelValue`
+<div class="search_terms" style="display: none">converttolabelvalue</div>
+
+This function specifies how values stored in the `variable` field should correspond to values displayed in the slider label.
+The default behavior is to consistently format decimal places (i.e., if `decimalPlaces == 2`, make sure two decimal places are shown.)
+This can be overwritten in the `createNewSlider` method, allowing for custom formatting of variable values.
+
+```lua
+local labelValue = myObject:convertToLabelValue(variableValue)
+```
+
+**Parameters**:
+
+* `variableValue` (number)
+
+**Returns**:
+
+* `labelValue` (number, string)
+
+??? example "Example: DistanceSlider"
+
+	The following example shows how the `convertToLabelValue` parameter can be used to create a slider for a config setting that handles distances. The config setting will be stored using game units, but the displayed value will be in real-world units. Recall that 1 game unit corresponds to 22.1 feet, and 1 foot is 0.3048 meters.
+
+	```lua
+	mwse.mcm.createSlider{
+	    parent = myPage,
+	    label = "My distance slider",
+	    variable = mwse.mcm.createTableVariable{id = "distance", config = myConfig},
+	    convertToValueLabel = function(self, variableValue)
+	        local feet = variableValue / 22.1
+		    local meters = 0.3048 * feet
+	        if self.decimalPlaces == 0 then
+	            return string.format("%i ft (%.2f m)", feet, meters)
+	        end
+	        return string.format(
+	            -- if `decimalPlaces == 1, then this string will simplify to 
+	            -- "%.1f ft (%.3f m)"
+	            string.format("%%.%uf ft (%%.%uf m)", self.decimalPlaces, self.decimalPlaces + 2),
+	            feet, meters
+	        )
+	    end,
+	
+	    max = 22.1 * 10,    -- max is 10 feet
+	    step = 22.1,        -- increment by 1 foot 
+	    jump = 22.1 * 5,
+	}
+
+	```
+
+??? example "Example: SkillSlider"
+
+	Here is an (admittedly less practical) example to help highlight the different ways `convertToLabelValue` can be used. In this example, it will be used to create a slider that stores a `tes3.skill` constant in the config, and then displays the name of the corresponding skill.
+
+	```lua
+	mwse.mcm.createSlider{
+	    parent = myPage,
+	    label = "My skill slider",
+	    variable = mwse.mcm.createTableVariable{id = "skillId", config = myConfig},
+	    convertToValueLabel = function(self, variableValue)
+	        local skillName = tes3.getSkillName(math.round(variableValue))
+	        if skillName then 
+	            return skillName
+	        end
+	        return "N/A"
+	    end,
+	
+	    max = 26 -- there are 27 skills and indexing starts at 0
+	}
+
+	```
+
+***
+
+### `convertToVariableValue`
+<div class="search_terms" style="display: none">converttovariablevalue</div>
+
+This function specifies how values stored in the slider widget should correspond to values stored in the `variable` field.
+		
+This conversion is necessary because the widget can only store whole numbers, and the range of allowed values must start at 0, while the corresponding `variable` can store decimal numbers and the range can start at any number.
+In the vast majority of use-cases, you do not need to call this method directly.
+
+```lua
+local variableValue = myObject:convertToVariableValue(widgetValue)
+```
+
+**Parameters**:
+
+* `widgetValue` (number)
+
+**Returns**:
+
+* `variableValue` (number)
+
+***
+
+### `convertToWidgetValue`
+<div class="search_terms" style="display: none">converttowidgetvalue</div>
+
+This method specifies how values stored in the `variable` field should correspond to values stored in the slider UI widget.
+
+This conversion is necessary because the widget can only store whole numbers, and the range of allowed values must start at 0, while the corresponding `variable` can store decimal numbers and the range can start at any number.
+In the vast majority of use-cases, you do not need to call this method directly.
+
+```lua
+local widgetValue = myObject:convertToWidgetValue(variableValue)
+```
+
+**Parameters**:
+
+* `variableValue` (number)
+
+**Returns**:
+
+* `widgetValue` (number)
 
 ***
 
@@ -483,28 +622,30 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 * `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
 	* `class` (string): The component type to get. On of the following:
+		- `"Template"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
+		- `"MouseOverPage"`
+		- `"Page"`
+		- `"SideBarPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Button"`
-		- `"DecimalSlider"`
-		- `"Dropdown"`
-		- `"KeyBinder"`
-		- `"OnOffButton"`
-		- `"ParagraphField"`
 		- `"Setting"`
-		- `"Slider"`
-		- `"TextField"`
+		- `"Button"`
+		- `"OnOffButton"`
 		- `"YesNoButton"`
-		- `"Template"`
+		- `"CycleButton"`
+		- `"KeyBinder"`
+		- `"Dropdown"`
+		- `"TextField"`
+		- `"ParagraphField"`
+		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -520,10 +661,25 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 ***
 
+### `insertMouseovers`
+<div class="search_terms" style="display: none">insertmouseovers</div>
+
+Recursively walks over children of given `element` and inserts them into `self.mouseOvers`.
+
+```lua
+myObject:insertMouseovers(element)
+```
+
+**Parameters**:
+
+* `element` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `makeComponent`
 <div class="search_terms" style="display: none">makecomponent</div>
 
-This method creates the sliderBlock and slider UI elements of the Slider.
+Creates the sliderBlock and slider UI elements of the Slider.
 
 ```lua
 myObject:makeComponent(parentBlock)
@@ -612,7 +768,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)
@@ -627,7 +783,7 @@ myObject:registerMouseOverElements(mouseOverList)
 ### `registerSliderElement`
 <div class="search_terms" style="display: none">registersliderelement</div>
 
-This registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
+Registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
 
 ```lua
 myObject:registerSliderElement(element)
@@ -642,7 +798,7 @@ myObject:registerSliderElement(element)
 ### `update`
 <div class="search_terms" style="display: none">update</div>
 
-Updates the variable's value to the current value of the slider element. Calls the Slider's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
+Calls `updateVariableValue`, then calls the Slider's `callback` method (if it exists). Then notifies the player to restart the game if `restartRequired == true`.
 
 ```lua
 myObject:update()
@@ -653,9 +809,31 @@ myObject:update()
 ### `updateValueLabel`
 <div class="search_terms" style="display: none">updatevaluelabel, valuelabel</div>
 
-Updates the label text of the slider to show the current value of the slider.
+Updates the label text of the slider to show the current value of this slider's `variable`.
 
 ```lua
 myObject:updateValueLabel()
+```
+
+***
+
+### `updateVariableValue`
+<div class="search_terms" style="display: none">updatevariablevalue, variablevalue</div>
+
+Updates the value stored in this Slider's `variable` field, using the current value of this Slider's widget (after converting that value).
+
+```lua
+myObject:updateVariableValue()
+```
+
+***
+
+### `updateWidgetValue`
+<div class="search_terms" style="display: none">updatewidgetvalue, widgetvalue</div>
+
+Updates the value stored in the slider widget, using the current value of this Slider's `variable` (after converting that value).
+
+```lua
+myObject:updateWidgetValue()
 ```
 

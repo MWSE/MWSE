@@ -15,16 +15,15 @@
 --- - 'i' integer
 --- - 'f' float
 --- - 's' string
---- - 'a' float array
+--- - 'B' boolean array
+--- - 'I' integer array
+--- - 'F' float array (was 'a' for MGE v0.16.x and earlier)
 --- - '2' vec2
 --- - '3' vec3
 --- - '4' vec4
+--- - 'V' vec4 array
 --- - 'm' matrix
 mgeShaderHandle = {}
-
---- Reloads and recompiles the shader. Returns if the reload was successful.
---- @return boolean success No description yet available.
-function mgeShaderHandle:reload() end
 
 --- Serializes the object to json.
 --- @return string result No description yet available.
@@ -33,4 +32,8 @@ function mgeShaderHandle:__tojson() end
 --- Serializes the object to string.
 --- @return string result No description yet available.
 function mgeShaderHandle:__tostring() end
+
+--- Reloads and recompiles the shader. Returns if the reload was successful.
+--- @return boolean success No description yet available.
+function mgeShaderHandle:reload() end
 

@@ -72,8 +72,8 @@ local function getSortedObjectList(params)
 				doAdd = false
 			end
 		end
-
-		if params.noScripted and obj.script ~= nil then
+		
+		if params.noScripted and obj--[[@as tes3activator]].script ~= nil then
 			doAdd = false
 		end
 
@@ -202,18 +202,25 @@ function ExclusionsPage:toggleFiltered(listName)
 	if child then
 		local itemList = child.parent.children
 		for _, item in ipairs(itemList) do
-
 			if item.visible then
-				--- @diagnostic disable-next-line: missing-fields
-				self:toggle({ source = item })
+				local list = item.parent.parent.parent
+				if list == self.elements.leftList then
+					list = self.elements.rightList
+					local var = self.variable.value
+					var[item.text] = false
+					self.variable.value = var
+				else
+					list = self.elements.leftList
+					local var = self.variable.value
+					var[item.text] = true
+					self.variable.value = var
+				end
 			end
-
 		end
 	end
-
-	self:resetSearchBars()
-	self.elements[listName].widget:contentsChanged()
-
+	--destroy and recreate page
+	self.elements.outerContainer.parent:destroyChildren()
+	self:create(self.elements.outerContainer.parent)
 end
 
 --- @param filter tes3uiElement
@@ -259,10 +266,8 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 	input:register("keyPress", function(e)
 		local inputController = tes3.worldController.inputController
 		local pressedTab = (inputController:isKeyDown(tes3.scanCode.tab))
-		local backspacedNothing = ((inputController:isKeyDown(tes3.scanCode.delete) or
-		                            inputController:isKeyDown(tes3.scanCode.backspace))
-		                            and input.text == placeholderText)
-
+		local pressedDelete = (inputController:isKeyDown(tes3.scanCode.delete)) or (inputController:isKeyDown(tes3.scanCode.backspace))
+		local backspacedNothing = pressedDelete and input.text == placeholderText
 		if pressedTab then
 			-- Prevent alt-tabbing from creating spacing.
 			return

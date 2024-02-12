@@ -11,6 +11,8 @@ namespace TES3 {
 		char *name; // 0x38
 		Script * script;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Activator;
+
 		Activator();
 		~Activator();
 	};

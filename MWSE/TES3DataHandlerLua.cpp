@@ -53,7 +53,7 @@ namespace mwse::lua {
 			usertypeDefinition["globals"] = sol::readonly_property(&TES3::NonDynamicData::globals);
 			usertypeDefinition["isSavingOrLoading"] = sol::readonly_property(&TES3::NonDynamicData::isSavingOrLoading);
 			usertypeDefinition["landTextures"] = sol::readonly_property(&TES3::NonDynamicData::landTextures);
-			usertypeDefinition["lastLoadedFile"] = sol::readonly_property(&TES3::NonDynamicData::unknown_0x08);
+			usertypeDefinition["lastLoadedFile"] = sol::readonly_property(&TES3::NonDynamicData::lastLoadedOrSavedGame);
 			usertypeDefinition["mapTexture"] = &TES3::NonDynamicData::mapTexture;
 			usertypeDefinition["objects"] = sol::readonly_property(&TES3::NonDynamicData::list);
 			usertypeDefinition["races"] = sol::readonly_property(&TES3::NonDynamicData::races);

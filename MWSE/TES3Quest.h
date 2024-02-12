@@ -10,6 +10,8 @@ namespace TES3 {
 		IteratedList<Dialogue*> dialogue; // 0x14
 		IteratedList<DialogueInfo*> activeInfo; // 0x28
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Quest;
+
 		Quest() = delete;
 		~Quest() = delete;
 

@@ -153,6 +153,13 @@ namespace mge::lua {
 		api->cameraShakeSetAcceleration(value);
 	}
 
+	float CameraConfig::getNearRenderDistance() {
+		return static_cast<MGEAPIv3*>(api)->nearRenderDistanceGet();
+	}
+
+	void CameraConfig::setNearRenderDistance(float distance) {
+		static_cast<MGEAPIv3*>(api)->nearRenderDistanceSet(distance);
+	}
 
 	//
 	// ShadersConfig

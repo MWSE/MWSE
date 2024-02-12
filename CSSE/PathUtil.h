@@ -13,6 +13,8 @@ namespace se::cs::path {
 	// e.g. C:\Games\Morrowind\Saves
 	std::filesystem::path getSavePath();
 
+	std::optional<std::string> getLowerPath(const std::filesystem::directory_entry& path);
+
 	namespace openmw {
 		// e.g. C:\Users\<user>\Documents\My Games\OpenMW
 		std::filesystem::path getConfigPath();

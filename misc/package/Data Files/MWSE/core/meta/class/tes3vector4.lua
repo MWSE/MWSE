@@ -24,6 +24,10 @@ tes3vector4 = {}
 --- @return tes3vector4 vector No description yet available.
 function tes3vector4.new(x, y, z, w) end
 
+--- Converts the vector to a string with 2 decimal places.
+--- @return string result No description yet available.
+function tes3vector4:__tostring() end
+
 --- Creates a copy of the vector.
 --- @return tes3vector4 result No description yet available.
 function tes3vector4:copy() end
@@ -31,8 +35,4 @@ function tes3vector4:copy() end
 --- Calculates the length of the vector.
 --- @return number result No description yet available.
 function tes3vector4:length() end
-
---- Converts the vector to a string with 2 decimal places.
---- @return string result No description yet available.
-function tes3vector4:__tostring() end
 

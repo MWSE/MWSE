@@ -3,10 +3,18 @@
 
 --- @meta
 --- A pair of vectors marking a bounding box.
+--- 	
+--- !!! warning "Bounding boxes will always be centered at the world origin."
+--- 	i.e., their midpoint will always be `(0,0,0)`. You may want to offset the `min` and `max` of the bounding box by a specified position before using them.
+--- 
 --- @class tes3boundingBox
 --- @field max tes3vector3 The maximum bound of the box.
 --- @field min tes3vector3 The minimum bound of the box.
 tes3boundingBox = {}
+
+--- Converts the bounding box to a string with 2 decimal places. The minimum bounds are printed first, then the maximal bounds.
+--- @return string result No description yet available.
+function tes3boundingBox:__tostring() end
 
 --- Creates a copy of the bounding box.
 --- @return tes3boundingBox result No description yet available.
@@ -15,8 +23,4 @@ function tes3boundingBox:copy() end
 --- Returns a table containing the 8 vertices comprising this bounding box.
 --- @return tes3vector3[] result No description yet available.
 function tes3boundingBox:vertices() end
-
---- Converts the bounding box to a string with 2 decimal places. The minimum bounds are printed first, then the maximal bounds.
---- @return string result No description yet available.
-function tes3boundingBox:__tostring() end
 

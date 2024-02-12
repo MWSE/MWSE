@@ -3,6 +3,8 @@
 #include "LogUtil.h"
 #include "MemoryUtil.h"
 
+#include "DialogProcContext.h"
+
 namespace se::cs::dialog::reference_data {
 
 	//
@@ -16,36 +18,34 @@ namespace se::cs::dialog::reference_data {
 	// Extended window messages.
 	//
 
-	std::optional<LRESULT> messageResult;
-
 	std::chrono::high_resolution_clock::time_point initializationTimer;
 
-	void PatchDialogProc_BeforeInitialize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void setRedrawOnExpensiveWindows(HWND hWnd, bool redraw) {
+		if constexpr (!ENABLE_ALL_OPTIMIZATIONS) {
+			return;
+		}
+
+		const auto wParam = redraw ? TRUE : FALSE;
+		SendDlgItemMessageA(hWnd, CONTROL_ID_KEY_COMBO, WM_SETREDRAW, wParam, NULL);
+		SendDlgItemMessageA(hWnd, CONTROL_ID_LOAD_CELL_COMBO, WM_SETREDRAW, wParam, NULL);
+		SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_COMBO, WM_SETREDRAW, wParam, NULL);
+		SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_VARIABLE_RANK_COMBO, WM_SETREDRAW, wParam, NULL);
+		SendDlgItemMessageA(hWnd, CONTROL_ID_SOUL_COMBO, WM_SETREDRAW, wParam, NULL);
+		SendDlgItemMessageA(hWnd, CONTROL_ID_TRAP_COMBO, WM_SETREDRAW, wParam, NULL);
+	}
+
+	void PatchDialogProc_BeforeInitialize(DialogProcContext& context) {
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
 			initializationTimer = std::chrono::high_resolution_clock::now();
 		}
 
 		// Optimize redraws.
-		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
-			SendDlgItemMessageA(hWnd, CONTROL_ID_KEY_COMBO, WM_SETREDRAW, FALSE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_LOAD_CELL_COMBO, WM_SETREDRAW, FALSE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_COMBO, WM_SETREDRAW, FALSE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_VARIABLE_RANK_COMBO, WM_SETREDRAW, FALSE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_SOUL_COMBO, WM_SETREDRAW, FALSE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_TRAP_COMBO, WM_SETREDRAW, FALSE, NULL);
-		}
+		setRedrawOnExpensiveWindows(context.getWindowHandle(), false);
 	}
 
-	void PatchDialogProc_AfterInitialize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
 		// Restore redraws.
-		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
-			SendDlgItemMessageA(hWnd, CONTROL_ID_KEY_COMBO, WM_SETREDRAW, TRUE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_LOAD_CELL_COMBO, WM_SETREDRAW, TRUE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_COMBO, WM_SETREDRAW, TRUE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_OWNER_VARIABLE_RANK_COMBO, WM_SETREDRAW, TRUE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_SOUL_COMBO, WM_SETREDRAW, TRUE, NULL);
-			SendDlgItemMessageA(hWnd, CONTROL_ID_TRAP_COMBO, WM_SETREDRAW, TRUE, NULL);
-		}
+		setRedrawOnExpensiveWindows(context.getWindowHandle(), true);
 		
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
 			auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
@@ -54,29 +54,29 @@ namespace se::cs::dialog::reference_data {
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		messageResult = {};
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x41EF80);
 
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_BeforeInitialize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeInitialize(context);
 			break;
 		}
 
-		if (messageResult) {
-			return messageResult.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_VanillaDialogProc = reinterpret_cast<WNDPROC>(0x41EF80);
-		const auto vanillaResult = CS_VanillaDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterInitialize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterInitialize(context);
 			break;
 		}
 
-		return messageResult.value_or(vanillaResult);
+		return context.getResult();
 	}
 
 	//

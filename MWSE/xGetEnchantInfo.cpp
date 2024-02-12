@@ -29,7 +29,7 @@ namespace mwse {
 		long autocalc = 0;
 
 		// Validate effect index.
-		TES3::Enchantment* enchantment = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId, TES3::ObjectType::Enchantment);
+		const auto enchantment = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId);
 		if (enchantment != NULL) {
 			type = int(enchantment->castType);
 			cost = enchantment->chargeCost;

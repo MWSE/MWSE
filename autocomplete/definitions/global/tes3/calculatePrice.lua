@@ -15,7 +15,7 @@ return {
 			{ name = "training", type = "boolean", optional = true, default = false, description = "If `true`, a [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event will be triggered, passing the given `skill` ID." },
 			{ name = "count", type = "number", optional = true, default = 1, description = "If `bartering`, the count passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) event." },
 			{ name = "itemData", type = "tes3itemData", optional = true, description = "If `bartering` or `repairing`, the item data passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event." },
-			{ name = "skill", type = "tes3.skill|integer", description = "If `training`, the skill ID passed to the [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event. Maps to values in [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) table." },
+			{ name = "skill", type = "tes3.skill|integer", optional = true, description = "If `training`, the skill ID passed to the [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event. Maps to values in [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) table." },
 		},
 	}},
 	returns = {

@@ -18,6 +18,8 @@ namespace TES3 {
 		unsigned short maxCondition; // 0xB4
 		short unknown_0xB6;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Lockpick;
+
 		Lockpick() = delete;
 		~Lockpick() = delete;
 

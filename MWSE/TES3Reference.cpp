@@ -984,6 +984,12 @@ namespace TES3 {
 			reference->position = *position;
 			reference->orientation.z = rotationInRadians;
 
+			auto attachment = static_cast<NewOrientationAttachment*>(reference->getAttachment(AttachmentType::NewOrientation));
+			if (attachment) {
+				attachment->position = reference->position;
+				attachment->orientation = reference->orientation;
+			}
+
 			// Update scene node, if loaded.
 			// Note: Calling reference->getSceneGraphNode() here can crash if the reference is to a base actor,
 			// which may still be moved before ever being visited and cloned. getSceneGraphNode expects a clone actor.

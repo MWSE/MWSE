@@ -1,8 +1,8 @@
 #include "PatchUtil.h"
 
-#include "mwOffsets.h"
-#include "MemoryUtil.h"
 #include "Log.h"
+#include "MemoryUtil.h"
+#include "mwOffsets.h"
 
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
@@ -17,6 +17,7 @@
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
+#include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
 #include "TES3Misc.h"
 #include "TES3MobilePlayer.h"
@@ -38,16 +39,16 @@
 #include "NIUVController.h"
 
 #include "BitUtil.h"
-#include "TES3Util.h"
 #include "ScriptUtil.h"
+#include "TES3Util.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "MWSEConfig.h"
-#include "MWSEDefs.h"
 #include "BuildDate.h"
 #include "CodePatchUtil.h"
+#include "MWSEConfig.h"
+#include "MWSEDefs.h"
 
 namespace mwse::patch {
 
@@ -884,6 +885,105 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Respect symbolic links.
+	// 
+	// Unlike most of the Win32 API, FindFirstFileA and FindNextFileA don't respect symbolic links and
+	// instead return information about the link itself instead of its target.
+	// 
+	// This patch makes it return the file size of the target file, rather than the symlink itself (0).
+	//
+
+	static std::unordered_map<HANDLE, std::string> findFilePaths;
+	static std::recursive_mutex findFileMutex;
+
+	std::optional<std::string> getFindFilePath(HANDLE hFindFile) {
+		findFileMutex.lock();
+		const auto itt = findFilePaths.find(hFindFile);
+		if (itt == findFilePaths.end()) {
+			findFileMutex.unlock();
+			return {};
+		}
+
+		findFileMutex.unlock();
+		return itt->second;
+	}
+
+	void PatchFixSymlinkData(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData) {
+		const auto path = getFindFilePath(hFindFile);
+		if (!path) {
+			return;
+		}
+
+		const auto fullPath = std::filesystem::path(path.value()) / lpFindFileData->cFileName;
+		if (!std::filesystem::exists(fullPath)) {
+			return;
+		}
+
+		const auto fileSize = std::filesystem::file_size(fullPath);
+		lpFindFileData->nFileSizeHigh = unsigned int(fileSize / std::numeric_limits<unsigned int>::max());
+		lpFindFileData->nFileSizeLow = unsigned int(fileSize);
+	}
+
+	HANDLE __stdcall PatchFindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData) {
+		auto result = FindFirstFileA(lpFileName, lpFindFileData);
+		if (result == INVALID_HANDLE_VALUE) {
+			return result;
+		}
+
+		findFileMutex.lock();
+		findFilePaths[result] = std::filesystem::path(lpFileName).parent_path().string();
+		findFileMutex.unlock();
+
+		// Check to see if it resolved to a symbolic link.
+		if (lpFindFileData->dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT && lpFindFileData->dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
+			PatchFixSymlinkData(result, lpFindFileData);
+		}
+
+		return result;
+	}
+
+	BOOL __stdcall PatchFindNextFileA(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData) {
+		auto result = FindNextFileA(hFindFile, lpFindFileData);
+		if (!result) {
+			return result;
+		}
+
+		// Check to see if it resolved to a symbolic link.
+		if (lpFindFileData->dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT && lpFindFileData->dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
+			PatchFixSymlinkData(hFindFile, lpFindFileData);
+		}
+
+		return result;
+	}
+
+	BOOL __stdcall PatchFindClose(HANDLE hFindFile) {
+		findFileMutex.lock();
+		const auto itt = findFilePaths.find(hFindFile);
+		if (itt != findFilePaths.end()) {
+			findFilePaths.erase(itt);
+		}
+		findFileMutex.unlock();
+
+		return FindClose(hFindFile);
+	}
+
+	//
+	// Patch: Guard against invalid light flicker/pulse updates.
+	//
+
+	const auto TES3_Light_UpdateFlickerPulse = reinterpret_cast<void(__thiscall*)(TES3::Light*, NI::Node*, float*, TES3::ItemData*)>(0x4D33D0);
+	void __fastcall PatchEntityLightFlickerPulseUpdate(TES3::Light* light, DWORD _EDX_, NI::Node* sgNode, float* flickerPhase, TES3::ItemData* itemData) {
+		if (sgNode == nullptr) {
+#if _DEBUG
+			log::getLog() << "[MWSE] Warning: Light '" << light->getObjectID() << "' attempting to update update flicker/phase without a scene graph node." << std::endl;
+#endif
+			return;
+		}
+
+		TES3_Light_UpdateFlickerPulse(light, sgNode, flickerPhase, itemData);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -1304,6 +1404,15 @@ namespace mwse::patch {
 		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriShape
 		overrideVirtualTableEnforced(0x750A00, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriStrips
 		overrideVirtualTableEnforced(0x750CC0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriBasedGeometry
+
+		// Patch: Respect targets when searching for symlinks.
+		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));
+		writeDoubleWordUnprotected(0x746118, reinterpret_cast<DWORD>(&PatchFindNextFileA));
+		writeDoubleWordUnprotected(0x74611C, reinterpret_cast<DWORD>(&PatchFindClose));
+
+		// Patch: Guard against invalid light flicker/pulse updates.
+		genCallEnforced(0x49B75E, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
+		genCallEnforced(0x4D33BF, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 	}
 
 	void installPostLuaPatches() {

@@ -45,7 +45,7 @@ namespace se::cs {
 		void* unknown_0xB4;
 		void* unknown_0xB8;
 		bool(__thiscall* getIsEssential)(const Object*); // 0xBC
-		void* unknown_0xC0;
+		bool(__thiscall* getRespawns)(const Object*); // 0xC0
 		void* unknown_0xC4;
 		void* unknown_0xC8;
 		void* unknown_0xCC;
@@ -151,6 +151,10 @@ namespace se::cs {
 
 		inline bool getIsEssential() const {
 			return vtbl.object->getIsEssential(this);
+		}
+
+		inline bool getRespawns() const {
+			return vtbl.object->getRespawns(this);
 		}
 
 		inline int getLevel() const {

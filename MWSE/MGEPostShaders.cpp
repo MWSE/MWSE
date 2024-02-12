@@ -50,6 +50,8 @@ namespace mge {
 		return table;
 	}
 
+	alignas(16) static char shaderVariableAPIBuffer[4096];
+
 	sol::object ShaderHandleLua::getVariable(sol::this_state ts, const char* varName) const {
 		sol::state_view state(ts);
 		auto v = variableTypes.find(varName);
@@ -90,14 +92,15 @@ namespace mge {
 				}
 			}
 			break;
-		case 'a':
+		case 'a': // API v1
+		case 'F': // API v3
 			{
 				// Array of floats.
-				const size_t max_count = 256;
-				float result[max_count];
-				size_t count = max_count;
+				float* result = reinterpret_cast<float*>(shaderVariableAPIBuffer);
+				size_t count = sizeof(shaderVariableAPIBuffer) / sizeof(float);
+
 				// Count is set to the actual length, if the call is successful.
-				if (api->shaderGetFloatArray(handle, varName, &result[0], &count)) {
+				if (api->shaderGetFloatArray(handle, varName, result, &count)) {
 					auto table = state.create_table(count, 0);
 
 					for (auto i = 0u; i < count; ++i) {
@@ -136,7 +139,11 @@ namespace mge {
 			break;
 		case 'm':
 			{
-				// TODO: Matrix get
+				// 4x4 matrix.
+				TES3::Matrix44 mat;
+				if (api->shaderGetMatrix(handle, varName, &mat.m0.x)) {
+					return sol::make_object(state, mat);
+				}
 			}
 			break;
 		}
@@ -163,26 +170,58 @@ namespace mge {
 		case 's':
 			api->shaderSetString(handle, varName, value.as<const char*>());
 			break;
-		case 'a':
+		case 'B': // API v3
+			{
+				// Array of booleans (as integers).
+				auto values = value.as<sol::table>();
+				if (values != sol::nil) {
+					size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(int), values.size());
+					auto valueBuffer = reinterpret_cast<int*>(shaderVariableAPIBuffer);
+
+					for (auto i = 0u; i < count; ++i) {
+						valueBuffer[i] = values[i + 1] ? 1 : 0;
+					}
+					static_cast<mge::MGEAPIv3*>(api)->shaderSetBoolArray(handle, varName, valueBuffer, &count);
+				}
+			}
+			break;
+		case 'I': // API v3
+			{
+				// Array of ints.
+				auto values = value.as<sol::table>();
+				if (values != sol::nil) {
+					size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(int), values.size());
+					int* valueBuffer = reinterpret_cast<int*>(shaderVariableAPIBuffer);
+
+					for (auto i = 0u; i < count; ++i) {
+						valueBuffer[i] = int(values[i + 1]);
+					}
+					static_cast<mge::MGEAPIv3*>(api)->shaderSetIntArray(handle, varName, valueBuffer, &count);
+				}
+			}
+			break;
+		case 'a': // API v1
+		case 'F': // API v3
 			{
 				// Array of floats.
 				auto values = value.as<sol::table>();
 				if (values != sol::nil) {
-					size_t count = values.size();
-					std::vector<float> valueBuffer(count);
+					size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(float), values.size());
+					float* valueBuffer = reinterpret_cast<float*>(shaderVariableAPIBuffer);
+
 					for (auto i = 0u; i < count; ++i) {
 						valueBuffer[i] = values[i+1];
 					}
-					api->shaderSetFloatArray(handle, varName, valueBuffer.data(), &count);
+					api->shaderSetFloatArray(handle, varName, valueBuffer, &count);
 				}
-				break;
 			}
+			break;
 		case '2':
 			{
 				// Float vectors of length 2.
 				TES3::Vector2 vec;
 
-				if (value.is<TES3::Vector2*>()) {
+				if (value.is<TES3::Vector2>()) {
 					vec = *value.as<TES3::Vector2*>();
 					api->shaderSetVector(handle, varName, &vec.x, 2);
 				}
@@ -193,13 +232,13 @@ namespace mge {
 					api->shaderSetVector(handle, varName, &vec.x, 2);
 				}
 			}
-		break;
+			break;
 		case '3':
 			{
 				// Float vectors of length 3.
 				TES3::Vector3 vec;
 
-				if (value.is<TES3::Vector3*>()) {
+				if (value.is<TES3::Vector3>()) {
 					vec = *value.as<TES3::Vector3*>();
 					api->shaderSetVector(handle, varName, &vec.x, 3);
 				}
@@ -211,13 +250,13 @@ namespace mge {
 					api->shaderSetVector(handle, varName, &vec.x, 3);
 				}
 			}
-		break;
+			break;
 		case '4':
 			{
 				// Float vectors of length 4.
 				TES3::Vector4 vec;
 
-				if (value.is<TES3::Vector4*>()) {
+				if (value.is<TES3::Vector4>()) {
 					vec = *value.as<TES3::Vector4*>();
 					api->shaderSetVector(handle, varName, &vec.x, 4);
 				}
@@ -231,9 +270,39 @@ namespace mge {
 				}
 			}
 			break;
+		case 'V': // API v3
+		{
+			// Array of vector4s.
+			auto values = value.as<sol::table>();
+			if (values != sol::nil) {
+				size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(TES3::Vector4), values.size());
+				TES3::Vector4* valueBuffer = reinterpret_cast<TES3::Vector4*>(shaderVariableAPIBuffer);
+
+				for (auto i = 0u; i < count; ++i) {
+					sol::object item = values[i + 1];
+					if (item.is<TES3::Vector4>()) {
+						valueBuffer[i] = *item.as<TES3::Vector4*>();
+					}
+				}
+				static_cast<mge::MGEAPIv3*>(api)->shaderSetVectorArray(handle, varName, &valueBuffer->x, &count);
+			}
+		}
+		break;
 		case 'm':
 			{
-				// TODO: Matrix set
+				// 4x4 matrix.
+				if (value.is<TES3::Matrix44>()) {
+					TES3::Matrix44 mat = *value.as<TES3::Matrix44*>();
+					api->shaderSetMatrix(handle, varName, &mat.m0.x);
+				}
+				else if (value.is<TES3::Matrix33*>()) {
+					auto mat33 = *value.as<TES3::Matrix33*>();
+					TES3::Matrix44 mat(mat33.m0.x, mat33.m0.y, mat33.m0.z, 0,
+						mat33.m1.x, mat33.m1.y, mat33.m1.z, 0,
+						mat33.m2.x, mat33.m2.y, mat33.m2.z, 0,
+						0, 0, 0, 1);
+					api->shaderSetMatrix(handle, varName, &mat.m0.x);
+				}
 			}
 			break;
 		}

@@ -13,6 +13,8 @@ namespace TES3 {
 		Sound * openSound; // 0x78
 		Sound * closeSound; // 0x7C
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Door;
+
 		Door() = delete;
 		~Door() = delete;
 	};

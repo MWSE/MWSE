@@ -25,6 +25,10 @@
 
 #include "Settings.h"
 
+#include "DialogProcContext.h"
+
+#include "EditBasicExtended.h"
+
 namespace se::cs::dialog::text_search_window {
 	constexpr auto LOG_PERFORMANCE_RESULTS = false;
 	constexpr auto REPLACE_SEARCH_LOGIC = true;
@@ -145,8 +149,16 @@ namespace se::cs::dialog::text_search_window {
 			// Search dialogues.
 			for (const auto& dialogue : *recordHandler->dialogues) {
 				DialogueResult* result = nullptr;
-				for (const auto& info : dialogue->topics) {
-					if (info->text && string::complex_contains(info->text, needle, caseSensitive, regex)) {
+
+				if (dialogue->search(needle, caseSensitive, regex)) {
+					if (result == nullptr) {
+						result = new DialogueResult();
+						result->dialogue = dialogue;
+					}
+				}
+
+				for (const auto& info : dialogue->infos) {
+					if (info->search(needle, caseSensitive, regex)) {
 						if (result == nullptr) {
 							result = new DialogueResult();
 							result->dialogue = dialogue;
@@ -158,7 +170,7 @@ namespace se::cs::dialog::text_search_window {
 				if (result) {
 					dialogueResults->push_back(result);
 				}
-		}
+			}
 
 			// Search objects.
 			TextSearchGatherObjectResults(needle, objectResults, caseSensitive, regex);
@@ -181,19 +193,19 @@ namespace se::cs::dialog::text_search_window {
 	// Patch: Extend window messages.
 	//
 
-	bool PatchDialogProc_preventMainHandler = false;
-
-	void PatchDialogProc_OnNotify_DoubleClick_ObjectResult(HWND hWnd, UINT msg, WPARAM wParam, LPNMITEMACTIVATE lParam) {
+	void PatchDialogProc_OnNotify_DoubleClick_ObjectResult(DialogProcContext& context) {
 		using namespace se::cs::winui;
 
+		const auto lParam = context.getNotificationItemActivateData();
 		const auto object = (BaseObject*)ListView_GetItemData(lParam->hdr.hwndFrom, lParam->iItem, lParam->iSubItem);
 
 		window::main::showObjectEditWindow(object);
 	}
 
-	void PatchDialogProc_OnNotify_DoubleClick_DialogueResult(HWND hWnd, UINT msg, WPARAM wParam, LPNMITEMACTIVATE lParam) {
+	void PatchDialogProc_OnNotify_DoubleClick_DialogueResult(DialogProcContext& context) {
 		using namespace se::cs::winui;
 
+		const auto lParam = context.getNotificationItemActivateData();
 		const auto result = (DialogueResult*)ListView_GetItemData(lParam->hdr.hwndFrom, lParam->iItem, lParam->iSubItem);
 		auto object = result->dialogue;
 
@@ -201,58 +213,71 @@ namespace se::cs::dialog::text_search_window {
 		dialog::dialogue_window::focusDialogue(object);
 	}
 
-	void PatchDialogProc_OnNotify_DoubleClick_DialogueInfoResult(HWND hWnd, UINT msg, WPARAM wParam, LPNMITEMACTIVATE lParam) {
+	void PatchDialogProc_OnNotify_DoubleClick_DialogueInfoResult(DialogProcContext& context) {
 		using namespace se::cs::winui;
 
+		const auto lParam = context.getNotificationItemActivateData();
 		const auto object = (DialogueInfo*)ListView_GetItemData(lParam->hdr.hwndFrom, lParam->iItem, lParam->iSubItem);
 
 		dialog::dialogue_window::createOrFocus();
 		dialog::dialogue_window::focusDialogue(object->getDialogue(), object);
 	}
 
-	void PatchDialogProc_OnNotify_DoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPNMHDR lParam) {
-		auto itemActivate = (LPNMITEMACTIVATE)lParam;
-		switch (lParam->idFrom) {
+	void PatchDialogProc_OnNotify_DoubleClick(DialogProcContext& context) {
+		auto itemActivate = context.getNotificationItemActivateData();
+		switch (itemActivate->hdr.idFrom) {
 		case CONTROL_ID_OBJECT_RESULTS_LIST:
-			PatchDialogProc_OnNotify_DoubleClick_ObjectResult(hWnd, msg, wParam, itemActivate);
+			PatchDialogProc_OnNotify_DoubleClick_ObjectResult(context);
 			break;
 		case CONTROL_ID_TOPIC_RESULTS_LIST:
-			PatchDialogProc_OnNotify_DoubleClick_DialogueResult(hWnd, msg, wParam, itemActivate);
+			PatchDialogProc_OnNotify_DoubleClick_DialogueResult(context);
 			break;
 		case CONTROL_ID_INFO_RESULTS_LIST:
-			PatchDialogProc_OnNotify_DoubleClick_DialogueInfoResult(hWnd, msg, wParam, itemActivate);
+			PatchDialogProc_OnNotify_DoubleClick_DialogueInfoResult(context);
 			break;
 		}
 	}
 
-	void PatchDialogProc_OnNotify(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		const auto hdr = (LPNMHDR)lParam;
-
+	void PatchDialogProc_OnNotify(DialogProcContext& context) {
+		const auto hdr = context.getNotificationData();
 		switch (hdr->code) {
 		case NM_DBLCLK:
-			PatchDialogProc_OnNotify_DoubleClick(hWnd, msg, wParam, hdr);
+			PatchDialogProc_OnNotify_DoubleClick(context);
 			break;
 		}
+	}
+
+	void CALLBACK PatchDialogProc_AfterCreate(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+
+		auto hDlgFilterEdit = GetDlgItem(hWnd, CONTROL_ID_SEARCH_EDIT);
+		SetWindowSubclass(hDlgFilterEdit, ui_subclass::edit::BasicExtendedProc, NULL, NULL);
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		PatchDialogProc_preventMainHandler = false;
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x438610);
 
 		switch (msg) {
 		case WM_NOTIFY:
-			PatchDialogProc_OnNotify(hWnd, msg, wParam, lParam);
+			PatchDialogProc_OnNotify(context);
 			break;
 		}
 
-		if (PatchDialogProc_preventMainHandler) {
-			return TRUE;
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
+		}
+		else {
+			context.callOriginalFunction();
 		}
 
-		// Call original function.
-		const auto CS_RenderWindowDialogProc = reinterpret_cast<WNDPROC>(0x438610);
-		auto result = CS_RenderWindowDialogProc(hWnd, msg, wParam, lParam);
+		switch (msg) {
+		case WM_INITDIALOG:
+			PatchDialogProc_AfterCreate(context);
+			break;
+		}
 
-		return result;
+		return context.getResult();
 	}
 
 	void installPatches() {

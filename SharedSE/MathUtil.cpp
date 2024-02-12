@@ -1,3 +1,5 @@
+#pragma intrinsic(_BitScanReverse)
+
 #include "MathUtil.h"
 #include "NiVector3.h"
 
@@ -27,5 +29,16 @@ namespace se::math {
 			}
 		}
 		return { -1.0, {} };
+	}
+
+	unsigned int roundDownToPowerOfTwo(unsigned int x) {
+		if (x == 0) {
+			return 0;
+		}
+		else {
+			unsigned long int index;
+			_BitScanReverse(&index, x);
+			return (1u << index);
+		}
 	}
 }

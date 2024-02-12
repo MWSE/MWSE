@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The root pick type for the object.]],
-	valuetype = "niPickType",
+	description = [[The root of the scene graph on which the next picking operation will be performed.]],
+	valuetype = "niNode",
 }

@@ -42,7 +42,7 @@ namespace mwse {
 			// Get the desired effect.
 			TES3::Effect* effect = NULL;
 			if (effectType == TES3::ObjectType::Spell) {
-				TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(effectId.c_str(), TES3::ObjectType::Spell);
+				const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(effectId.c_str());
 				if (spell) {
 					effect = &spell->effects[effectIndex - 1];
 				}
@@ -53,7 +53,7 @@ namespace mwse {
 				}
 			}
 			else if (effectType == TES3::ObjectType::Enchantment) {
-				TES3::Enchantment* enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(effectId.c_str(), TES3::ObjectType::Enchantment);
+				const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(effectId.c_str());
 				if (enchant) {
 					effect = &enchant->effects[effectIndex - 1];
 				}
@@ -64,7 +64,7 @@ namespace mwse {
 				}
 			}
 			else if (effectType == TES3::ObjectType::Alchemy) {
-				TES3::Alchemy* alchemy = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Alchemy>(effectId.c_str(), TES3::ObjectType::Alchemy);
+				const auto alchemy = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Alchemy>(effectId.c_str());
 				if (alchemy) {
 					effect = &alchemy->effects[effectIndex - 1];
 				}

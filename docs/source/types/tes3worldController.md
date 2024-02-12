@@ -648,7 +648,9 @@ The kind of music being played. Only updates when music is not muted.
 - `1` Combat music
 - `2` Main menu music
 
-Note: These values are available as [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
+!!! tip 
+	These values are available via the [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
+
 
 **Returns**:
 
@@ -780,7 +782,7 @@ If subtitles are shown. Corresponds to the "Subtitles" option in the Options men
 ### `simulationTimeScalar`
 <div class="search_terms" style="display: none">simulationtimescalar</div>
 
-A scalar used for simulation time. At the start of every frame, the `deltaTime` is multiplied by this value. Doing this here is safer than doing it in another event.
+A scalar used for simulation time. At the start of every frame, the `deltaTime` is multiplied by this value. Doing this here is safer than doing it in another event. This value doesn't need to be modified every frame. You need to restore it to its original value to cancel the time scaling.
 
 **Returns**:
 
@@ -890,7 +892,7 @@ Automatically choose the best attack direction for attacks. Corresponds to the "
 ### `viewHeight`
 <div class="search_terms" style="display: none">viewheight</div>
 
-*Read-only*. The height of the UI viewport in pixels. Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
+*Read-only*. The height of the UI viewport in pixels (also returned by [`tes3ui.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize)). Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
 
 **Returns**:
 
@@ -901,7 +903,7 @@ Automatically choose the best attack direction for attacks. Corresponds to the "
 ### `viewWidth`
 <div class="search_terms" style="display: none">viewwidth</div>
 
-*Read-only*. The width of the UI viewport in pixels. Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
+*Read-only*. The width of the UI viewport in pixels (also used by [`tes3ui.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize)). Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
 
 **Returns**:
 

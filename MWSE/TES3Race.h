@@ -96,6 +96,8 @@ namespace TES3 {
 			BodyPart* bodyParts[int(PartIndex::COUNT) * 2 * 2]; // 0xE8 // Body parts for both sexes and each vampirism state.
 		};
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Race;
+
 		Race() = delete;
 		~Race() = delete;
 

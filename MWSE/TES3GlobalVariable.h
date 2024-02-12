@@ -13,6 +13,8 @@ namespace TES3 {
 		char unknown_0x33;
 		float value; // 0x34
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Global;
+
 		GlobalVariable() = delete;
 		~GlobalVariable() = delete;
 

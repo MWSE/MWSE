@@ -33,9 +33,9 @@ namespace mwse {
 		// Validate effect index.
 		if (effectIndex >= 1 && effectIndex <= 8) {
 			// Get the desired effect.
-			TES3::Enchantment* enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(effectId, TES3::ObjectType::Enchantment);
+			const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(effectId);
 			if (enchant) {
-				TES3::Effect* effect = &enchant->effects[effectIndex - 1];
+				const auto effect = &enchant->effects[effectIndex - 1];
 				// If we found an effect, set the values.
 				if (effect && effect->effectID != TES3::EffectID::None) {
 					effectEnumId = effect->effectID;

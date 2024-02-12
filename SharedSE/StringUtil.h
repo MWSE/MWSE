@@ -28,6 +28,9 @@ namespace se::string {
 
 	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, bool caseSensitive, std::regex* regex);
 
+	bool starts_with(const std::string_view& string, const std::string_view& substring);
+	bool ends_with(const std::string_view& string, const std::string_view& substring);
+
 	bool replace(std::string& str, const std::string_view from, const std::string_view to);
 
 	inline void ltrim(std::string& s) {

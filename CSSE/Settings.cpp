@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 #include "LogUtil.h"
+#include "TomlUtil.h"
 #include "PathUtil.h"
 
 namespace se::cs {
@@ -112,6 +113,8 @@ namespace se::cs {
 		use_legacy_grid_snap = toml::find_or(v, "use_legacy_grid_snap", use_legacy_grid_snap);
 		use_legacy_object_movement = toml::find_or(v, "use_legacy_object_movement", use_legacy_object_movement);
 		use_world_axis_rotations_by_default = toml::find_or(v, "use_world_axis_rotations_by_default", use_world_axis_rotations_by_default);
+		grid_steps = toml::find_or(v, "grid_steps", grid_steps);
+		angle_steps = toml::find_or(v, "angle_steps", angle_steps);
 	}
 
 	toml::value Settings_t::RenderWindowSettings::into_toml() const {
@@ -125,6 +128,8 @@ namespace se::cs {
 				{ "use_legacy_grid_snap", use_legacy_grid_snap },
 				{ "use_legacy_object_movement", use_legacy_object_movement },
 				{ "use_world_axis_rotations_by_default", use_world_axis_rotations_by_default },
+				{ "grid_steps", grid_steps },
+				{ "angle_steps", angle_steps },
 			}
 		);
 	}
@@ -173,6 +178,7 @@ namespace se::cs {
 		column_count = toml::find_or(v, "column_count", column_count);
 		column_creature_bipedal = toml::find_or(v, "column_creature_bipedal", column_creature_bipedal);
 		column_creature_movement_type = toml::find_or(v, "column_creature_movement_type", column_creature_movement_type);
+		column_creature_soul = toml::find_or(v, "column_creature_soul", column_creature_soul);
 		column_creature_sound = toml::find_or(v, "column_creature_sound", column_creature_sound);
 		column_creature_use_weapon_and_shield = toml::find_or(v, "column_creature_use_weapon_and_shield", column_creature_use_weapon_and_shield);
 		column_effect = toml::find_or(v, "column_effect", column_effect);
@@ -257,6 +263,7 @@ namespace se::cs {
 				{ "column_count", column_count },
 				{ "column_creature_bipedal", column_creature_bipedal },
 				{ "column_creature_movement_type", column_creature_movement_type },
+				{ "column_creature_soul", column_creature_soul },
 				{ "column_creature_sound", column_creature_sound },
 				{ "column_creature_use_weapon_and_shield", column_creature_use_weapon_and_shield },
 				{ "column_effect", column_effect },
@@ -454,6 +461,8 @@ namespace se::cs {
 	}
 
 	toml::value Settings_t::TestEnvironment::into_toml() const {
+		toml::value foo = {};
+
 		return toml::value(
 			{
 				{ "start_new_game", start_new_game },
@@ -507,8 +516,8 @@ namespace se::cs {
 		const auto path = file_location();
 		if (std::filesystem::exists(path)) {
 			try {
-				const auto data = toml::parse(path);
-				from_toml(data);
+				loadedConfig = toml::parse(path);
+				from_toml(loadedConfig);
 			}
 			catch (toml::syntax_error& e) {
 				valid = false;
@@ -519,7 +528,7 @@ namespace se::cs {
 		}
 	}
 
-	void Settings_t::save() const {
+	void Settings_t::save() {
 		if (!valid) {
 			return;
 		}
@@ -528,8 +537,10 @@ namespace se::cs {
 		outFile.open(file_location());
 
 		if (!outFile.fail()) {
-			const toml::value data = settings;
+			toml::value data = settings;
+			toml_util::copyComments(data, loadedConfig);
 			outFile << std::setw(80) << std::setprecision(8) << data;
+			loadedConfig = data;
 		}
 		else {
 			log::stream << "Failed to save settings file " << file_location().string() << "." << std::endl;

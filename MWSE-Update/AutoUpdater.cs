@@ -97,6 +97,31 @@ namespace MWSE
 		}
 
 		/// <summary>
+		/// Deletes a folder if it exists. Because the original function is apparently too dumb.
+		/// </summary>
+		/// <param name="path">The path to delete.</param>
+		/// <param name="recursive">If true, subfolders will also be deleted. As they should be.</param>
+		static void DeleteFolderIfExists(string path, bool recursive)
+		{
+			if (Directory.Exists(path))
+			{
+				Directory.Delete(path, recursive);
+			}
+		}
+
+		/// <summary>
+		/// Deletes a file if it exists. Because the original function is apparently too dumb.
+		/// </summary>
+		/// <param name="path">The path to delete.</param>
+		static void DeleteFileIfExists(string path)
+		{
+			if (File.Exists(path))
+			{
+				File.Delete(path);
+			}
+		}
+
+		/// <summary>
 		/// Program entry point.
 		/// </summary>
 		/// <param name="args">
@@ -238,34 +263,14 @@ namespace MWSE
 
 				// Delete pre-restructure files.
 				Console.Write("Deleting old files ...");
-				if (Directory.Exists("Data Files\\MWSE\\lua\\mwse"))
-				{
-					Directory.Delete("Data Files\\MWSE\\lua\\mwse", true);
-				}
-				if (File.Exists("Data Files\\MWSE\\lua\\mwse_init.lua"))
-				{
-					File.Delete("Data Files\\MWSE\\lua\\mwse_init.lua");
-				}
-				if (File.Exists("Data Files\\MWSE\\lua\\dkjson.lua"))
-				{
-					File.Delete("Data Files\\MWSE\\lua\\dkjson.lua");
-				}
-				if (File.Exists("Data Files\\MWSE\\lua\\lfs.lua"))
-				{
-					File.Delete("Data Files\\MWSE\\lua\\lfs.lua");
-				}
-				if (File.Exists("Data Files\\MWSE\\lua\\lfs.dll"))
-				{
-					File.Delete("Data Files\\MWSE\\lua\\lfs.dll");
-				}
-				if (File.Exists("MWSE.pdb"))
-				{
-					File.Delete("MWSE.pdb");
-				}
-				if (File.Exists("MWSELog.txt"))
-				{
-					File.Delete("MWSELog.txt");
-				}
+				DeleteFolderIfExists("Data Files\\MWSE\\lua\\mwse", true);
+				DeleteFileIfExists("Data Files\\MWSE\\lua\\mwse_init.lua");
+				DeleteFileIfExists("Data Files\\MWSE\\lua\\dkjson.lua");
+				DeleteFileIfExists("Data Files\\MWSE\\lua\\lfs.lua");
+				DeleteFileIfExists("Data Files\\MWSE\\lua\\lfs.dll");
+				DeleteFileIfExists("Data Files\\Meshes\\MWSE\\Widgets.nif");
+				DeleteFileIfExists("MWSE.pdb");
+				DeleteFileIfExists("MWSELog.txt");
 				Console.WriteLine(" Done.");
 
 				// Delete old core files so they can be refreshed.

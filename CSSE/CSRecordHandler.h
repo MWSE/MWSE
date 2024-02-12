@@ -98,6 +98,8 @@ namespace se::cs {
 		Cell* getCellByIndex(size_t index) const;
 		Cell* getCellByID(const char* id) const;
 
+		Reference* getReference(const PhysicalObject* object) const;
+
 		const char* getBaseAnimation(int sex, bool firstPerson = false) const;
 		bool isBaseAnimation(const char* animation) const;
 

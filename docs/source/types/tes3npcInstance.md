@@ -76,7 +76,9 @@ Direct access to the actor autocalc flag.
 ### `barterGold`
 <div class="search_terms" style="display: none">bartergold</div>
 
-Friendly access to actor's barter gold amount.
+The actor's base barter gold amount. This is the amount of the barter gold an actor initially has, and also when barter gold is refreshed. The actor's current barter gold amount is held in `tes3mobileActor.barterGold`.
+
+Barter gold is reset on talking to an actor if fBarterGoldResetDelay hours have passed since the last transaction. If you want to change the base amount, for example in an investment mod, you must edit the barterGold of the baseObject.
 
 **Returns**:
 
@@ -216,10 +218,10 @@ The bounding box for the object.
 
 ***
 
-### `factionIndex`
-<div class="search_terms" style="display: none">factionindex</div>
+### `factionRank`
+<div class="search_terms" style="display: none">factionrank</div>
 
-Deprecated. Use `reputation` instead.
+*Read-only*. Quick access to the base NPC's faction rank.
 
 **Returns**:
 

@@ -46,7 +46,7 @@ function metatable:__newindex(key, value)
 		return setter(self, value)
 	end
 
-	error(string.format("Invalid access to property '%s'. This property is read-only.", key))
+	error(string.format("Invalid access to property '%s'. This property is read-only.", key), 2)
 end
 
 function metatable:get_index()

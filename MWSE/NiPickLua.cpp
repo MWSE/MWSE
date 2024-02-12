@@ -32,7 +32,7 @@ namespace mwse::lua {
 			"coordinateType", &NI::Pick::coordinateType,
 			"frontOnly", &NI::Pick::frontOnly,
 			"observeAppCullFlag", &NI::Pick::observeAppCullFlag,
-			"root", &NI::Pick::pickType,
+			"root", &NI::Pick::root,
 			"results", sol::readonly_property(&NI::Pick::results),
 			"lastAddedRecord", &NI::Pick::lastAddedRecord,
 			"returnTexture", &NI::Pick::returnTexture,

@@ -22,6 +22,8 @@ namespace TES3 {
 		Sound* sound;
 		SoundType soundType;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::SoundGenerator;
+
 		SoundGenerator() = delete;
 		~SoundGenerator() = delete;
 

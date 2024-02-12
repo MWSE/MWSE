@@ -210,7 +210,7 @@ namespace TES3 {
 	struct JournalHTML {
 		bool changedSinceLastSync; // 0x0
 		char* data; // 0x4
-		unsigned int length; // 0x8
+		unsigned int dataBufferSize; // 0x8
 
 		JournalHTML() = delete;
 		~JournalHTML() = delete;

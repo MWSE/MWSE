@@ -4,19 +4,45 @@
 --- @meta
 --- A slider for setting numerical values.
 --- @class mwseMCMSlider : mwseMCMSetting, mwseMCMComponent
+--- @field decimalPlaces integer The number of decimal places of precision. Must be a nonnegative integer. Default is `0`.
 --- @field elements mwseMCMSliderElements This dictionary-style table holds all the UI elements of the Slider, for easy access.
---- @field jump integer How far the slider jumps when you click an area inside the slider. Default is `5`.
+--- @field jump number How far the slider jumps when you click an area inside the slider. Default is `5 * step`.
 --- @field label string Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
---- @field max integer Maximum value of slider. Default is `100`.
---- @field min integer Minimum value of slider. Default is `0`.
---- @field step integer How far the slider moves when you press the arrows. Default is `1`.
+--- @field max number Maximum value of slider. Default is `100`.
+--- @field min number Minimum value of slider. Default is `0`.
+--- @field step number How far the slider moves when you press the arrows. Default is `1`.
 mwseMCMSlider = {}
+
+--- This function specifies how values stored in the `variable` field should correspond to values displayed in the slider label.
+--- The default behavior is to consistently format decimal places (i.e., if `decimalPlaces == 2`, make sure two decimal places are shown.)
+--- This can be overwritten in the `createNewSlider` method, allowing for custom formatting of variable values.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/mwseMCMSlider/#converttolabelvalue).
+--- @param variableValue number No description yet available.
+--- @return number|string labelValue No description yet available.
+function mwseMCMSlider:convertToLabelValue(variableValue) end
+
+--- This function specifies how values stored in the slider widget should correspond to values stored in the `variable` field.
+--- 		
+--- This conversion is necessary because the widget can only store whole numbers, and the range of allowed values must start at 0, while the corresponding `variable` can store decimal numbers and the range can start at any number.
+--- In the vast majority of use-cases, you do not need to call this method directly.
+--- @param widgetValue number No description yet available.
+--- @return number variableValue No description yet available.
+function mwseMCMSlider:convertToVariableValue(widgetValue) end
+
+--- This method specifies how values stored in the `variable` field should correspond to values stored in the slider UI widget.
+--- 
+--- This conversion is necessary because the widget can only store whole numbers, and the range of allowed values must start at 0, while the corresponding `variable` can store decimal numbers and the range can start at any number.
+--- In the vast majority of use-cases, you do not need to call this method directly.
+--- @param variableValue number No description yet available.
+--- @return number widgetValue No description yet available.
+function mwseMCMSlider:convertToWidgetValue(variableValue) end
 
 --- This method creates the UI elements specific to Slider.
 --- @param parentBlock tes3uiElement No description yet available.
 function mwseMCMSlider:createContentsContainer(parentBlock) end
 
---- This method creates the sliderBlock and slider UI elements of the Slider.
+--- Creates the sliderBlock and slider UI elements of the Slider.
 --- @param parentBlock tes3uiElement No description yet available.
 function mwseMCMSlider:makeComponent(parentBlock) end
 
@@ -29,13 +55,15 @@ function mwseMCMSlider:makeComponent(parentBlock) end
 --- 
 --- `defaultSetting`: unknown? — *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
 --- 
---- `min`: integer? — *Default*: `0`. Minimum value of slider.
+--- `min`: number? — *Default*: `0`. Minimum value of slider.
 --- 
---- `max`: integer? — *Default*: `100`. Maximum value of slider.
+--- `max`: number? — *Default*: `100`. Maximum value of slider.
 --- 
---- `step`: integer? — *Default*: `1`. How far the slider moves when you press the arrows.
+--- `step`: number? — *Default*: `1`. How far the slider moves when you press the arrows.
 --- 
---- `jump`: integer? — *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- `jump`: number? — *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- 
+--- `decimalPlaces`: integer? — *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 --- 
 --- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- 
@@ -61,8 +89,8 @@ function mwseMCMSlider:makeComponent(parentBlock) end
 --- 
 --- `componentType`: string? — *Optional*. No description yet available.
 --- 
---- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
---- @return mwseMCMSlider slider No description yet available.
+--- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
+--- @return mwseMCMDecimalSlider|mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
 function mwseMCMSlider:new(data) end
 
 ---Table parameter definitions for `mwseMCMSlider.new`.
@@ -70,10 +98,11 @@ function mwseMCMSlider:new(data) end
 --- @field label string? *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 --- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil *Optional*. A variable for this setting.
 --- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
---- @field min integer? *Default*: `0`. Minimum value of slider.
---- @field max integer? *Default*: `100`. Maximum value of slider.
---- @field step integer? *Default*: `1`. How far the slider moves when you press the arrows.
---- @field jump integer? *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- @field min number? *Default*: `0`. Minimum value of slider.
+--- @field max number? *Default*: `100`. Maximum value of slider.
+--- @field step number? *Default*: `1`. How far the slider moves when you press the arrows.
+--- @field jump number? *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+--- @field decimalPlaces integer? *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 --- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 --- @field callback nil|fun(self: mwseMCMSlider) *Optional*. The custom function called when the player interacts with this Setting.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
@@ -86,15 +115,21 @@ function mwseMCMSlider:new(data) end
 --- @field postCreate nil|fun(self: mwseMCMSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
 --- @field componentType string? *Optional*. No description yet available.
---- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
+--- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
---- This registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
+--- Registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
 --- @param element tes3uiElement No description yet available.
 function mwseMCMSlider:registerSliderElement(element) end
 
---- Updates the variable's value to the current value of the slider element. Calls the Slider's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
+--- Calls `updateVariableValue`, then calls the Slider's `callback` method (if it exists). Then notifies the player to restart the game if `restartRequired == true`.
 function mwseMCMSlider:update() end
 
---- Updates the label text of the slider to show the current value of the slider.
+--- Updates the label text of the slider to show the current value of this slider's `variable`.
 function mwseMCMSlider:updateValueLabel() end
+
+--- Updates the value stored in this Slider's `variable` field, using the current value of this Slider's widget (after converting that value).
+function mwseMCMSlider:updateVariableValue() end
+
+--- Updates the value stored in the slider widget, using the current value of this Slider's `variable` (after converting that value).
+function mwseMCMSlider:updateWidgetValue() end
 

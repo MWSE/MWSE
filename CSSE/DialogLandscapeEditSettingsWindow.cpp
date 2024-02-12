@@ -9,10 +9,11 @@
 #include "CSRecordHandler.h"
 #include "CSRegion.h"
 
+#include "DialogProcContext.h"
+
 namespace se::cs::dialog::landscape_edit_settings_window {
 	constexpr auto MIN_WIDTH = 416u + 17u;
 	constexpr auto MIN_HEIGHT = 474u + 14u;
-
 
 	namespace LandscapeEditFlag {
 		enum LandscapeEditFlag : unsigned int {
@@ -242,22 +243,22 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 	// Patch: Extend Render Window message handling.
 	//
 
-	static std::optional<LRESULT> PatchDialogProc_OverrideResult = {};
-
-	void PatchDialogProc_BeforeDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeDestroy(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		saveTextureListColomnWidths(hWnd);
 		settings.landscape_window.size.width -= IsDlgButtonChecked(hWnd, CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON) ? 270 : 0;
 	}
 
-	void PatchDialogProc_AfterDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterDestroy(DialogProcContext& context) {
 		// Cleanup global handle address so we can rely on it being NULL.
 		gWindowHandle::set(0x0);
 	}
 
-	void PatchDialogProc_BeforeCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		const auto command = HIWORD(wParam);
-		const auto id = LOWORD(wParam);
-		switch (command) {
+	void PatchDialogProc_BeforeCommand(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		const auto code = context.getCommandNotificationCode();
+		const auto id = context.getCommandControlIdentifier();
+		switch (code) {
 		case BN_CLICKED:
 			switch (id) {
 			case CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON:
@@ -268,13 +269,12 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 		}
 	}
 
-	std::optional<LRESULT> forcedReturnType = {};
-
-	void PatchDialogProc_AfterInitialize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
 		using se::cs::winui::AddStyles;
 		using se::cs::winui::RemoveStyles;
 		using se::cs::winui::SetWindowIdByValue;
 
+		const auto hWnd = context.getWindowHandle();
 		restoreTextureListColomnWidths(hWnd);
 
 		// Give IDs to controls that don't normally have one.
@@ -329,21 +329,18 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 		RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
-	void PatchDialogProc_GetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		const auto showPreviewImagePadding = IsDlgButtonChecked(hWnd, CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON) ? 270 : 0;
-		const auto info = (LPMINMAXINFO)lParam;
+	void PatchDialogProc_GetMinMaxInfo(DialogProcContext& context) {
+		const auto showPreviewImagePadding = IsDlgButtonChecked(context.getWindowHandle(), CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON) ? 270 : 0;
+		const auto info = context.getMinMaxInfo();
 		info->ptMinTrackSize.x = MIN_WIDTH + showPreviewImagePadding;
 		info->ptMinTrackSize.y = MIN_HEIGHT;
 
-		forcedReturnType = 0;
+		context.setResult(0);
 	}
 
-	void PatchDialogProc_AfterMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		int short xPos = LOWORD(lParam);
-		int short yPos = HIWORD(lParam);
-
-		settings.landscape_window.x_position = xPos - 8;
-		settings.landscape_window.y_position = yPos - 31;
+	void PatchDialogProc_AfterMove(DialogProcContext& context) {
+		settings.landscape_window.x_position = context.getMovedX() - 8;
+		settings.landscape_window.y_position = context.getMovedY() - 31;
 	}
 
 	namespace ResizeConstants {
@@ -419,13 +416,14 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 
 #define ResizeStaticEditSpinHelper(hParent, primaryOrSecondary, color, x, y) ResizeStaticEditSpin(hParent, CONTROL_ID_##primaryOrSecondary##_COLOR_##color##_STATIC, CONTROL_ID_##primaryOrSecondary##_COLOR_##color##_EDIT, CONTROL_ID_##primaryOrSecondary##_COLOR_##color##_SPIN, x, y)
 
-	void PatchDialogProc_BeforeSize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeSize(DialogProcContext& context) {
 		using namespace ResizeConstants;
 
+		const auto hWnd = context.getWindowHandle();
 		const auto showPreviewImagePadding = IsDlgButtonChecked(hWnd, CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON) ? 270 : 0;
 	
-		const auto clientWidth = LOWORD(lParam);
-		const auto clientHeight = HIWORD(lParam);
+		const auto clientWidth = context.getSizeX();
+		const auto clientHeight = context.getSizeY();
 		const auto sectionWidth = clientWidth - WINDOW_EDGE_PADDING * 2 - showPreviewImagePadding;
 
 
@@ -586,46 +584,47 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			settings.landscape_window.size = winSize;
 		}
 
-		forcedReturnType = TRUE;
+		context.setResult(TRUE);
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		PatchDialogProc_OverrideResult.reset();
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x44D470);
 
 		switch (msg) {
 		case WM_SIZE:
-			PatchDialogProc_BeforeSize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeSize(context);
 			break;
 		case WM_DESTROY:
-			PatchDialogProc_BeforeDestroy(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeDestroy(context);
 			break;
 		case WM_COMMAND:
-			PatchDialogProc_BeforeCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand(context);
 		}
 
-		if (PatchDialogProc_OverrideResult) {
-			return PatchDialogProc_OverrideResult.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-		// Call original function.
-		const auto CS_RenderWindowDialogProc = reinterpret_cast<WNDPROC>(0x44D470);
-		auto vanillaResult = CS_RenderWindowDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		switch (msg) {
 		case WM_DESTROY:
-			PatchDialogProc_AfterDestroy(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterDestroy(context);
 			break;
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterInitialize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterInitialize(context);
 			break;
 		case WM_GETMINMAXINFO:
-			PatchDialogProc_GetMinMaxInfo(hWnd, msg, wParam, lParam);
+			PatchDialogProc_GetMinMaxInfo(context);
 			break;
 		case WM_MOVE:
-			PatchDialogProc_AfterMove(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterMove(context);
 			break;
 		}
 
-		return PatchDialogProc_OverrideResult.value_or(vanillaResult);
+		return context.getResult();
 	}
 
 	//

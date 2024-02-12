@@ -27,6 +27,33 @@ namespace TES3 {
 		return speed;
 	}
 
+	float ActorAnimationController::calculateCreatureMovementSpeed() {
+		auto movementFlags = mobileActor->movementFlags;
+		float speed = 0;
+
+		// Call the relevant function to get the default movement speed.
+		if (movementFlags & ActorMovement::Flying) {
+			speed = TES3_ActorAnimationController_calculateMovementSpeed(this);
+		}
+		else if (movementFlags & ActorMovement::Swimming) {
+			speed = mobileActor->calculateSwimSpeed();
+		}
+		else {
+			speed = mobileActor->vTable.mobileActor->calculateWalkSpeed(mobileActor);
+		}
+
+		// Launch our event, and overwrite the speed with what was given back to us.
+		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Move, this->mobileActor, speed));
+			if (eventData.valid()) {
+				speed = eventData["speed"];
+			}
+		}
+
+		return speed;
+	}
+
 	float ActorAnimationController::calculateAttackSwing() {
 		if (mobileActor->actionData.animStateAttack != AttackAnimationState::SwingUp) {
 			return 0.0;
@@ -36,7 +63,7 @@ namespace TES3 {
 		{
 			return 1.0;
 		}
-		
+
 		return std::clamp(mobileActor->actionData.swingTimer / (maxAttackTiming - startTime), 0.0f, 1.0f);
 	}
 
@@ -103,7 +130,7 @@ namespace TES3 {
 		}
 		// Fall back to chameleon, based on magnitude.
 		else if (chameleon > 0) {
-			setOpacity(std::clamp(1.0f - (float(chameleon) / 100.0f), 0.25f, 75.0f));
+			setOpacity(std::clamp(1.0f - (float(chameleon) / 100.0f), 0.25f, 0.75f));
 		}
 		// If all else fails we go for no Opacity.
 		else {

@@ -9,6 +9,7 @@
 #include "TES3DataHandler.h"
 #include "TES3DialogueFilterContext.h"
 #include "TES3Faction.h"
+#include "TES3MobileCreature.h"
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
 #include "TES3Race.h"
@@ -46,7 +47,9 @@ namespace TES3 {
 		if (context.filterActor && context.speakerBaseActor != context.filterActor) {
 			return false;
 		}
-		if (context.speakerBaseActor->objectType == ObjectType::Creature && context.filterActor == nullptr) {
+
+		// Creatures have no valid conditions other than their ID check.
+		if (context.speakerBaseActor->objectType == ObjectType::Creature && context.filterActor != context.speakerBaseActor) {
 			return false;
 		}
 
@@ -75,8 +78,6 @@ namespace TES3 {
 
 		// NPC only conditions.
 		if (context.speakerBaseActor->objectType == ObjectType::NPC) {
-			const auto speakerFaction = context.speakerBaseActor->getFaction();
-
 			// Check for race condition.
 			if (context.filterRace && context.speakerBaseActor->getRace() != context.filterRace) {
 				return false;
@@ -93,19 +94,22 @@ namespace TES3 {
 				return false;
 			}
 
-			// Check for player faction membership/rank in speaker's faction.
-			if (pcRank != -1 && !context.filterPlayerFaction) {
-				if (speakerFaction == nullptr || pcRank > speakerFaction->getEffectivePlayerRank()) {
+			// Check for faction condition, with no-faction special case.
+			const auto speakerFaction = context.speakerBaseActor->getFaction();
+			if (context.filterFaction) {
+				if (reinterpret_cast<int>(context.filterFaction) == -1) {
+					if (speakerFaction) {
+						return false;
+					}
+				}
+				else if (speakerFaction != context.filterFaction) {
 					return false;
 				}
 			}
 
-			// Check for faction condition, with no-faction special case.
-			if (context.filterFaction) {
-				if (reinterpret_cast<int>(context.filterFaction) == -1 && speakerFaction != nullptr) {
-					return false;
-				}
-				if (speakerFaction != context.filterFaction) {
+			// Check for player faction membership/rank in speaker's faction.
+			if (pcRank != -1 && !context.filterPlayerFaction) {
+				if (speakerFaction == nullptr || pcRank > speakerFaction->getEffectivePlayerRank()) {
 					return false;
 				}
 			}

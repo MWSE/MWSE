@@ -114,6 +114,8 @@ return {
 	["mouseWheel"] = "mouseWheel",
 	["musicChangeTrack"] = "musicChangeTrack",
 	["musicSelectTrack"] = "musicSelectTrack",
+	["objectCopied"] = "objectCopied",
+	["objectCreated"] = "objectCreated",
 	["objectInvalidated"] = "objectInvalidated",
 	["playGroup"] = "playGroup",
 	["playItemSound"] = "playItemSound",

@@ -15,8 +15,8 @@ Setting.componentType = "Setting"
 Setting.restartRequired = false
 Setting.restartRequiredMessage = mwse.mcm.i18n("The game must be restarted before this change will come into effect.")
 
----@param data mwseMCMSetting.new.data|nil
----@return mwseMCMSetting
+--- @param data mwseMCMSetting.new.data|nil
+--- @return mwseMCMSetting
 function Setting:new(data)
 	local t = Parent:new(data)
 
@@ -31,6 +31,13 @@ function Setting:new(data)
 	self.__index = self
 	--- @cast t mwseMCMSetting
 	return t
+end
+
+function Setting:insertMouseovers(element)
+	table.insert(self.mouseOvers, element)
+	for _, child in ipairs(element.children or {}) do
+		self:insertMouseovers(child)
+	end
 end
 
 function Setting:update()
@@ -58,6 +65,11 @@ function Setting:createContentsContainer(parentBlock)
 	self:createLabel(parentBlock)
 	self:createInnerContainer(parentBlock)
 	self:makeComponent(self.elements.innerContainer)
+end
+
+
+function Setting:convertToLabelValue(variableValue)
+	return variableValue
 end
 
 return Setting

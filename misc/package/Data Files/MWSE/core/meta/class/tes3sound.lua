@@ -10,6 +10,10 @@
 --- @field volume number Direct access to sound's volume.
 tes3sound = {}
 
+--- Serializes the object to json.
+--- @return string result No description yet available.
+function tes3sound:__tojson() end
+
 --- Returns `true` if the sound is actively looping.
 --- @return boolean result No description yet available.
 function tes3sound:isLooping() end
@@ -27,8 +31,4 @@ function tes3sound:play(playbackFlags, volume, pitch, isNot3D) end
 
 --- This stops playing the sound.
 function tes3sound:stop() end
-
---- Serializes the object to json.
---- @return string result No description yet available.
-function tes3sound:__tojson() end
 

@@ -11,7 +11,7 @@ namespace TES3 {
 		TES3::Vector3 cameraOffset; // 0xD8
 		NI::Pick * pickData; // 0xE4
 		bool is3rdPerson; // 0xE8
-		bool togglePOV; // 0xE9
+		unsigned char switchPOVMode; // 0xE9
 		bool allowVerticalAirControl; // 0xEA
 		int vanityCameraEnabled; // 0xEC
 		bool useThirdPersonAfterVanityCameraDone; // 0xF0
@@ -39,6 +39,8 @@ namespace TES3 {
 		bool force1stPerson();
 		bool force3rdPerson();
 
+		float getVanityCameraAngle() const;
+		void setVanityCameraAngle(float angle);
 	};
 	static_assert(sizeof(PlayerAnimationController) == 0x124, "TES3::PlayerAnimationController failed size validation");
 }

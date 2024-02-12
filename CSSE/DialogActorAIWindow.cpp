@@ -4,6 +4,8 @@
 #include "CSDataHandler.h"
 #include "CSRecordHandler.h"
 
+#include "DialogProcContext.h"
+
 #include "LogUtil.h"
 
 namespace se::cs::dialog::actor_ai_window {
@@ -15,11 +17,9 @@ namespace se::cs::dialog::actor_ai_window {
 	// Main patching function.
 	//
 
-	std::optional<LRESULT> forcedReturnType = {};
-
 	auto initializationTimer = std::chrono::high_resolution_clock::now();
 
-	void CALLBACK PatchDialogProc_BeforeInit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_BeforeInit(DialogProcContext& context) {
 		// Begin measure of initialization time.
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
 			initializationTimer = std::chrono::high_resolution_clock::now();
@@ -27,6 +27,7 @@ namespace se::cs::dialog::actor_ai_window {
 
 		// Disable redraw.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
+			const auto hWnd = context.getWindowHandle();
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_ADD_PACKAGE_COMBO), WM_SETREDRAW, FALSE, NULL);
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_TRAVEL_SERVICE_1_COMBO), WM_SETREDRAW, FALSE, NULL);
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_TRAVEL_SERVICE_2_COMBO), WM_SETREDRAW, FALSE, NULL);
@@ -35,9 +36,10 @@ namespace se::cs::dialog::actor_ai_window {
 		}
 	}
 
-	void CALLBACK PatchDialogProc_AfterInit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_AfterInit(DialogProcContext& context) {
 		// Reenable redraw.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
+			const auto hWnd = context.getWindowHandle();
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_ADD_PACKAGE_COMBO), WM_SETREDRAW, TRUE, NULL);
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_TRAVEL_SERVICE_1_COMBO), WM_SETREDRAW, TRUE, NULL);
 			SendMessageA(GetDlgItem(hWnd, CONTROL_ID_TRAVEL_SERVICE_2_COMBO), WM_SETREDRAW, TRUE, NULL);
@@ -52,56 +54,57 @@ namespace se::cs::dialog::actor_ai_window {
 		}
 	}
 
-	void CALLBACK PatchDialogProc_BeforeCommand_FromTravelReturnButton(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		const auto userData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
+	void CALLBACK PatchDialogProc_BeforeCommand_FromTravelReturnButton(DialogProcContext& context) {
+		const auto userData = (UserData*)GetWindowLongA(context.getWindowHandle(), GWL_USERDATA);
 
 		// Prevent any command from doing anything if we have no cell.
 		if (userData->returnCell == nullptr) {
-			forcedReturnType = TRUE;
+			context.setResult(TRUE);
 			return;
 		}
 	}
 
-	void CALLBACK PatchDialogProc_BeforeCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_BeforeCommand(DialogProcContext& context) {
+		const auto wParam = context.getWParam();
 		const auto command = HIWORD(wParam);
 		const auto id = LOWORD(wParam);
 
 		switch (id) {
 		case CONTROL_ID_TRAVEL_SERVICE_RETURN_BUTTON:
-			PatchDialogProc_BeforeCommand_FromTravelReturnButton(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand_FromTravelReturnButton(context);
 			break;
 		}
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		forcedReturnType = {};
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x4A7900);
 
 		// Handle pre-patches.
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_BeforeInit(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeInit(context);
 			break;
 		case WM_COMMAND:
-			PatchDialogProc_BeforeCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand(context);
 			break;
 		}
 
-		if (forcedReturnType) {
-			return forcedReturnType.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_ObjectWindowDialogProc = reinterpret_cast<WNDPROC>(0x4A7900);
-		auto result = CS_ObjectWindowDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		// Handle post-patches.
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterInit(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterInit(context);
 			break;
 		}
 
-		return forcedReturnType.value_or(result);
+		return context.getResult();
 	}
 
 	void installPatches() {

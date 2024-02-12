@@ -46,7 +46,7 @@ The index of the effect in the spell.
 ### `effectInstance`
 <div class="search_terms" style="display: none">effectinstance</div>
 
-The time passed since the last tick of the spell.
+Access to the magic effect instance.
 
 **Returns**:
 
@@ -91,14 +91,14 @@ For example, the only effect in vanilla Morrowind that implements this function 
 **Returns**:
 
 * `eventResult` (boolean)
-* `modifiedValue` (boolean, integer, number, [tes3statistic](../types/tes3statistic.md)): The returned type depends on the passed `type` parameter.
+* `modifiedValue` (boolean, integer, number, [tes3statistic](../types/tes3statistic.md)): The passed `value`, scaled by resistance. The returned type depends on the passed `type` parameter.
 
 ***
 
 ### `triggerBoundArmor`
 <div class="search_terms" style="display: none">triggerboundarmor</div>
 
-Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s).
+Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s). To summon gauntlets, provide two IDs.
 
 ```lua
 myObject:triggerBoundArmor(id, id2)
@@ -107,7 +107,7 @@ myObject:triggerBoundArmor(id, id2)
 **Parameters**:
 
 * `id` (string): The ID of the armor object to summon.
-* `id2` (string): *Optional*. The ID of the additional armor object to summon.
+* `id2` (string): *Optional*. The ID of the additional gauntlet object to summon. The second item ID can only be a gauntlet object.
 
 ***
 

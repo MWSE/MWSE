@@ -26,6 +26,8 @@ namespace TES3 {
 		int minDistance; // 0x50
 		int maxDistance; // 0x58
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Sound;
+
 		SoundBuffer() = delete;
 		~SoundBuffer() = delete;
 	};

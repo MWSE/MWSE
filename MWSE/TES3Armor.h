@@ -59,6 +59,8 @@ namespace TES3 {
 		int armorRating; // 0xBC
 		Enchantment * enchantment; // 0xC0
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Armor;
+
 		Armor();
 		~Armor();
 

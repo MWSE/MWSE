@@ -9,6 +9,8 @@ namespace TES3 {
 		Static();
 		~Static();
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Static;
+
 		char * model;
 	};
 	static_assert(sizeof(Static) == 0x34, "TES3::Static failed size validation");

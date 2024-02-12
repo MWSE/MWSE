@@ -31,6 +31,7 @@ namespace TES3 {
 			};
 		};
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Reference;
 		constexpr static auto INVALID_ATTACHMENT = reinterpret_cast<Attachment*>(0x3F800000);
 
 		//

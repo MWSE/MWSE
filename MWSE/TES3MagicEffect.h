@@ -248,6 +248,8 @@ namespace TES3 {
 		float speed; // 0x0108
 		float sizeCap; // 0x010C
 
+		static constexpr auto OBJECT_TYPE = ObjectType::MagicEffect;
+
 		MagicEffect();
 		MagicEffect(int id);
 		~MagicEffect();

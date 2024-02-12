@@ -63,6 +63,8 @@ namespace TES3 {
 		unsigned int materialFlags; // 0x70
 		Enchantment * enchantment; // 0x74
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Weapon;
+
 		Weapon();
 		~Weapon();
 

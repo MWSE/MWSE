@@ -160,7 +160,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -303,7 +303,7 @@ This method must be implemented by child classes of mwseMCMSetting.
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -388,10 +388,32 @@ Set to the value of `sNo` GMST.
 
 ***
 
+### `sOff`
+<div class="search_terms" style="display: none">soff</div>
+
+Set to the value of `sOff` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `sOK`
 <div class="search_terms" style="display: none">sok</div>
 
 Set to the value of `sOK` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `sOn`
+<div class="search_terms" style="display: none">son</div>
+
+Set to the value of `sOn` GMST.
 
 **Returns**:
 
@@ -447,14 +469,22 @@ local result = myObject:checkDisabled()
 
 ***
 
-### `closeMenu`
-<div class="search_terms" style="display: none">closemenu, menu</div>
+### `convertToLabelValue`
+<div class="search_terms" style="display: none">converttolabelvalue</div>
 
-Closes the popup menu.
+This function specifies how values stored in the `variable` field should correspond to values displayed by this setting.
 
 ```lua
-myObject:closeMenu()
+local labelValue = myObject:convertToLabelValue(variableValue)
 ```
+
+**Parameters**:
+
+* `variableValue` (number)
+
+**Returns**:
+
+* `labelValue` (number, string)
 
 ***
 
@@ -535,21 +565,6 @@ myObject:createLabelBlock(parentBlock)
 
 ***
 
-### `createMenu`
-<div class="search_terms" style="display: none">createmenu, menu</div>
-
-Creates the popup menu.
-
-```lua
-local menu = myObject:createMenu()
-```
-
-**Returns**:
-
-* `menu` ([tes3uiElement](../types/tes3uiElement.md))
-
-***
-
 ### `createOuterContainer`
 <div class="search_terms" style="display: none">createoutercontainer, outercontainer</div>
 
@@ -562,6 +577,21 @@ myObject:createOuterContainer(parentBlock)
 **Parameters**:
 
 * `parentBlock` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `createPopupMenu`
+<div class="search_terms" style="display: none">createpopupmenu, popupmenu</div>
+
+Creates the popup menu.
+
+```lua
+local menu = myObject:createPopupMenu()
+```
+
+**Returns**:
+
+* `menu` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 
@@ -619,28 +649,30 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 * `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
 	* `class` (string): The component type to get. On of the following:
+		- `"Template"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
+		- `"MouseOverPage"`
+		- `"Page"`
+		- `"SideBarPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Button"`
-		- `"DecimalSlider"`
-		- `"Dropdown"`
-		- `"KeyBinder"`
-		- `"OnOffButton"`
-		- `"ParagraphField"`
 		- `"Setting"`
-		- `"Slider"`
-		- `"TextField"`
+		- `"Button"`
+		- `"OnOffButton"`
 		- `"YesNoButton"`
-		- `"Template"`
+		- `"CycleButton"`
+		- `"KeyBinder"`
+		- `"Dropdown"`
+		- `"TextField"`
+		- `"ParagraphField"`
+		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -725,6 +757,21 @@ local result = myObject:getText()
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `insertMouseovers`
+<div class="search_terms" style="display: none">insertmouseovers</div>
+
+Recursively walks over children of given `element` and inserts them into `self.mouseOvers`.
+
+```lua
+myObject:insertMouseovers(element)
+```
+
+**Parameters**:
+
+* `element` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 
@@ -819,7 +866,7 @@ local data = myObject:prepareData(data)
 ### `press`
 <div class="search_terms" style="display: none">press</div>
 
-Calls the `update` method.
+Calls `showKeyBindMessage` method.
 
 ```lua
 myObject:press()
@@ -845,7 +892,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)
@@ -886,7 +933,7 @@ myObject:showKeyBindMessage()
 ### `update`
 <div class="search_terms" style="display: none">update</div>
 
-Calls `showKeyBindMessage` method.
+Sets the button UI element text to `self.buttonText`. Calls the Button's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
 
 ```lua
 myObject:update()

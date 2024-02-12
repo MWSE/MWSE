@@ -293,5 +293,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -346,6 +346,7 @@ namespace TES3 {
 		void setWeaponReady(bool value);
 		bool forceWeaponAttack_lua(sol::optional<sol::table> params);
 		bool hitStun_lua(sol::optional<sol::table> params);
+		void hitStunTestAndReportCrime(float damage, bool wasKillingBlow);
 
 		void updateOpacity();
 		void notifyActorDeadOrDestroyed(MobileActor* mobileActor);
@@ -456,6 +457,8 @@ namespace TES3 {
 		void setMovementFlagRight(bool value);
 		bool getMovementFlagRunning() const;
 		void setMovementFlagRunning(bool value);
+		bool getMovementFlagSliding() const;
+		void setMovementFlagSliding(bool value);
 		bool getMovementFlagSneaking() const;
 		void setMovementFlagSneaking(bool value);
 		bool getMovementFlagFalling() const;

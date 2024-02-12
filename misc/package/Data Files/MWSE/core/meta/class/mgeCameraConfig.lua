@@ -5,6 +5,7 @@
 --- Allows control of MGE camera features.
 --- @class mgeCameraConfig
 --- @field fov number Horizontal FOV, in degrees.
+--- @field nearRenderDistance number The active world render distance in world units. This is the non-distant part that Morrowind simulates. Reducing this distance will affect the visible actor range and full detail world rendering, in exchange for better performance. This value is limited to between 2500-7168 units, and defaults to 7168 units.
 --- @field shakeAcceleration number Camera shake acceleration. Camera shake must be enabled to see an effect.
 --- @field shakeEnable boolean Set if camera shake is active.
 --- @field shakeMagnitude number Camera shake magnitude. Camera shake must be enabled to see an effect.

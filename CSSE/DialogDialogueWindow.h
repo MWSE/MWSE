@@ -80,6 +80,7 @@ namespace se::cs::dialog::dialogue_window {
 	constexpr UINT CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON = 2013;
 	constexpr UINT CONTROL_ID_CURRENT_TEXT_CHAR_COUNT = 2014;
 	constexpr UINT CONTROL_ID_CURRENT_TEXT_MAX_CHAR_COUNT = 2015;
+	constexpr UINT CONTROL_ID_FILTER_CELL_SETTING_COMBO = 2016;
 
 	// Global variables
 	using ghWnd = memory::ExternalGlobal<HWND, 0x6CE9A0>;
@@ -102,10 +103,20 @@ namespace se::cs::dialog::dialogue_window {
 	static_assert(sizeof(DialogueWindowData_Vanilla) == 0x34, "DialogueWindowData failed size validation");
 
 	struct DialogueWindowData : DialogueWindowData_Vanilla {
+		enum class CellFilterMode : unsigned int {
+			UseCellReference,
+			UseRenderWindowCell,
+			IgnoreCellFilter,
+		};
+
+		CellFilterMode cellFilterMode;
 		bool modeShowModifiedOnly;
+
 	};
 
 	HWND createOrFocus(Actor* filter = nullptr);
+
+	HWND getActiveDialogueWindow();
 
 	bool focusDialogue(Dialogue* dialogue, DialogueInfo* info = nullptr);
 

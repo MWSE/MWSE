@@ -61,6 +61,12 @@
     <Filter Include="Source Files\UI\DialogClasses">
       <UniqueIdentifier>{e27d27d9-0a04-49a6-a7ba-63ca1d35d1eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Metadata">
+      <UniqueIdentifier>{4449a4dc-e573-49a7-9f26-670871381d55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Metadata">
+      <UniqueIdentifier>{e6b55397-019d-43f0-adb3-85987e0df10a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CSSE.cpp">
@@ -107,6 +113,21 @@
     </ClCompile>
     <ClCompile Include="CSObject.cpp">
       <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="TomlUtil.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="MetadataUtil.cpp">
+      <Filter>Source Files\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="ModMetadata.cpp">
+      <Filter>Source Files\Metadata</Filter>
+    </ClCompile>
+    <ClCompile Include="CSDialogue.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogProcContext.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -392,6 +413,21 @@
       <Filter>Header Files\CS</Filter>
     </ClInclude>
     <ClInclude Include="CSBirthsign.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="TomlUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ModMetadata.h">
+      <Filter>Header Files\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="MetadataUtil.h">
+      <Filter>Header Files\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogProcContext.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CSDoor.h">
       <Filter>Header Files\CS</Filter>
     </ClInclude>
   </ItemGroup>

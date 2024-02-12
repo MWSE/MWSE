@@ -2,11 +2,11 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- The tes3ui library provides access to manipulating the game's GUI.
+--- The `tes3ui` library provides access to manipulating the game's GUI.
 --- @class tes3uilib
 tes3ui = {}
 
---- Sends all text input to the specified element.  Calling this function with a nil argument will release text input and allow keybinds to work. Suppresses most keybinds while active, except the Journal open/close keybind (it's up to the individual menu implementation).
+--- Sends all text input to the specified element. Calling this function with a nil argument will release text input and allow keybinds to work. Suppresses most keybinds while active, except the Journal open/close keybind (it's up to the individual menu implementation).
 --- 
 --- Only one element can have control of input, and there is no automatic restoration of control if one element takes control from another. Be careful of conflicts with other users of this function.
 --- @param element tes3uiElement|nil The element to focus, or `nil` to clear focus.
@@ -20,7 +20,7 @@ function tes3ui.acquireTextInput(element) end
 --- @param capture boolean Turns on mouse capture for the element currently processing a mouse event if true, sending all further mouse events to that element. Turns off capture if false.
 function tes3ui.captureMouseDrag(capture) end
 
---- Creates a simple dialogue choice, as per the `Choice` mwscript function.
+--- Creates a simple dialogue choice, as per the `Choice` mwscript function. To add more options call this function multiple times.
 --- @param text string The text to display for the choice.
 --- @param index number The choice index associated with the given text.
 function tes3ui.choice(text, index) end
@@ -174,7 +174,7 @@ function tes3ui.leaveMenuMode() end
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uilog).
 --- @param message string No description yet available.
---- @param ... any? *Optional*. No description yet available.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function tes3ui.log(message, ...) end
 
 --- Logs a message to the console. Consider using `tes3ui.log` instead of this function if you do not need to make use of the `isCommand` parameter.
@@ -253,7 +253,7 @@ function tes3ui.showDialogueMessage(params) end
 --- 
 --- `noResultsCallback`: function? — *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 --- 
---- `filter`: function|string|nil — *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
+--- `filter`: string|nil|fun(params: tes3ui.showInventorySelectMenu.filterParams): boolean — *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 --- --- 
 --- --- 		If assigning a string, the available values are present in [`tes3.inventorySelectFilter`](https://mwse.github.io/MWSE/references/inventory-select-filters/) namespace. The available filters are:
 --- --- 
@@ -266,21 +266,9 @@ function tes3ui.showDialogueMessage(params) end
 --- --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
 --- --- 		- `soulgemFilled`: Only filled soulgems will be shown.
 --- --- 
---- --- 		If assigning a function it will be called when determining if an item should be added to the inventory select menu. A table `filterParams` will be passed to this function. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
---- --- 
---- --- 		- `filterParams` (table)
---- --- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that is being filtered.
---- --- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that is being filtered. Can be `nil`.
---- --- 
+--- --- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 --- 
---- `callback`: function? — *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected. A table `callbackParams` will be passed to this function.
---- --- 		- `callbackParams` (table)
---- --- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that has been selected. Can be `nil`.
---- --- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that has been selected. Can be `nil`.
---- --- 			- `count` (number): The number of items that have been selected. Only valid if `item` is not `nil`.
---- --- 			- `inventory` ([tes3inventory](https://mwse.github.io/MWSE/types/tes3inventory/)): The inventory containing the items.
---- --- 			- `actor` ([tes3actor](https://mwse.github.io/MWSE/types/tes3actor/)): The actor containing the inventory.
---- --- 
+--- `callback`: nil|fun(params: tes3ui.showInventorySelectMenu.callbackParams) — *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.
 function tes3ui.showInventorySelectMenu(params) end
 
 ---Table parameter definitions for `tes3ui.showInventorySelectMenu`.
@@ -290,7 +278,7 @@ function tes3ui.showInventorySelectMenu(params) end
 --- @field leaveMenuMode boolean? *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
 --- @field noResultsText string? *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 --- @field noResultsCallback function? *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
---- @field filter function|string|nil *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
+--- @field filter string|nil|fun(params: tes3ui.showInventorySelectMenu.filterParams): boolean *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 --- 
 --- 		If assigning a string, the available values are present in [`tes3.inventorySelectFilter`](https://mwse.github.io/MWSE/references/inventory-select-filters/) namespace. The available filters are:
 --- 
@@ -303,24 +291,44 @@ function tes3ui.showInventorySelectMenu(params) end
 --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
 --- 		- `soulgemFilled`: Only filled soulgems will be shown.
 --- 
---- 		If assigning a function it will be called when determining if an item should be added to the inventory select menu. A table `filterParams` will be passed to this function. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
---- 
---- 		- `filterParams` (table)
---- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that is being filtered.
---- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that is being filtered. Can be `nil`.
---- 
---- @field callback function? *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected. A table `callbackParams` will be passed to this function.
---- 		- `callbackParams` (table)
---- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The item that has been selected. Can be `nil`.
---- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the item that has been selected. Can be `nil`.
---- 			- `count` (number): The number of items that have been selected. Only valid if `item` is not `nil`.
---- 			- `inventory` ([tes3inventory](https://mwse.github.io/MWSE/types/tes3inventory/)): The inventory containing the items.
---- 			- `actor` ([tes3actor](https://mwse.github.io/MWSE/types/tes3actor/)): The actor containing the inventory.
---- 
+--- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
+--- @field callback nil|fun(params: tes3ui.showInventorySelectMenu.callbackParams) *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.
 
 --- Opens the journal menu. This can return false if the player hasn't gone through character generation, or if the journal was already open.
 --- @return boolean wasShown No description yet available.
 function tes3ui.showJournal() end
+
+--- This function opens the magic select menu, which lets the player select a spell or enchanted item. This is originally used by the quick key menu. The spells or enchanted items are taken from the player's spell list and inventory. The selected spell or item can be retrieved in the function assigned to `callback`.
+--- @param params tes3ui.showMagicSelectMenu.params This table accepts the following values:
+--- 
+--- `title`: string — The text used for the title of the magic select menu.
+--- 
+--- `selectSpells`: boolean? — *Default*: `true`. If spells are included in the selection list.
+--- 
+--- `selectPowers`: boolean? — *Default*: `true`. If powers are included in the selection list.
+--- 
+--- `selectEnchanted`: boolean? — *Default*: `true`. If enchanted items are included in the selection list.
+--- 
+--- `callback`: nil|fun(params: tes3ui.showMagicSelectMenu.callbackParams) — *Optional*. A function which will be called once the magic select menu has been closed, including when no item or spell has been selected. A table `callbackParams` will be passed to this function.
+--- --- 		- `callbackParams` (table)
+--- --- 			- `spell` ([tes3spell](https://mwse.github.io/MWSE/types/tes3spell/)): The spell or power that has been selected. Can be `nil`.
+--- --- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The enchanted item that has been selected. The actual magic will be `item.enchantment`. Can be `nil`.
+--- --- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the enchanted item that has been selected. Fully recharged items may not have itemData. Can be `nil`.
+--- --- 
+function tes3ui.showMagicSelectMenu(params) end
+
+---Table parameter definitions for `tes3ui.showMagicSelectMenu`.
+--- @class tes3ui.showMagicSelectMenu.params
+--- @field title string The text used for the title of the magic select menu.
+--- @field selectSpells boolean? *Default*: `true`. If spells are included in the selection list.
+--- @field selectPowers boolean? *Default*: `true`. If powers are included in the selection list.
+--- @field selectEnchanted boolean? *Default*: `true`. If enchanted items are included in the selection list.
+--- @field callback nil|fun(params: tes3ui.showMagicSelectMenu.callbackParams) *Optional*. A function which will be called once the magic select menu has been closed, including when no item or spell has been selected. A table `callbackParams` will be passed to this function.
+--- 		- `callbackParams` (table)
+--- 			- `spell` ([tes3spell](https://mwse.github.io/MWSE/types/tes3spell/)): The spell or power that has been selected. Can be `nil`.
+--- 			- `item` ([tes3item](https://mwse.github.io/MWSE/types/tes3item/)): The enchanted item that has been selected. The actual magic will be `item.enchantment`. Can be `nil`.
+--- 			- `itemData` ([tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/)): The item data of the enchanted item that has been selected. Fully recharged items may not have itemData. Can be `nil`.
+--- 
 
 --- Displays a message box. This may be a simple toast-style message, or a box with choice buttons.
 --- @param params tes3ui.showMessageMenu.params This table accepts the following values:
@@ -364,7 +372,7 @@ function tes3ui.showMessageMenu(params) end
 
 --- Creates a new notify menu with a formatted string. A notify menu is a toast-style display that shows at the bottom of the screen. It will expire after an amount of time, determined by the length of the message and the `fMessageTimePerChar` GMST.
 --- @param string string The message to display. If it supports formatting, additional arguments are used.
---- @param ... any? Optional values to feed to formatting found in the first parameter.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 --- @return tes3uiElement menu The notify menu created.
 function tes3ui.showNotifyMenu(string, ...) end
 
@@ -402,4 +410,7 @@ function tes3ui.updateInventoryTiles() end
 
 --- Forces the game to update the spellmaking menu GUI.
 function tes3ui.updateSpellmakingMenu() end
+
+--- Force-refreshes the stats pane to account for changed values.
+function tes3ui.updateStatsPane() end
 

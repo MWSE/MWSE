@@ -5,6 +5,8 @@
 namespace TES3 {
 	// Probes are effectively just lockpicks.
 	struct Probe : Lockpick {
+		static constexpr auto OBJECT_TYPE = ObjectType::Probe;
+
 		Probe() = delete;
 		~Probe() = delete;
 	};

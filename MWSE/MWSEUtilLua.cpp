@@ -75,6 +75,11 @@ namespace mwse::lua {
 		lua_mwse["buildDate"] = MWSE_BUILD_DATE;
 		lua_mwse["buildNumber"] = buildNumber;
 		lua_mwse["version"] = MWSE_VERSION_INTEGER;
+#if _DEBUG
+		lua_mwse["debugBuild"] = true;
+#else
+		lua_mwse["debugBuild"] = false;
+#endif
 
 		// Basic function binding.
 		lua_mwse["breakpoint"] = breakpoint;

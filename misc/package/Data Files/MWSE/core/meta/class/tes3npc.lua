@@ -10,7 +10,6 @@
 --- @field baseDisposition number The actor's base disposition.
 --- @field class tes3class *Read-only*. The class that the NPC uses.
 --- @field faction tes3faction *Read-only*. The class that the NPC is joined to.
---- @field factionIndex number Deprecated. Use `reputation` instead.
 --- @field factionRank number The NPC's rank in their faction.
 --- @field fatigue number The actor's max fatigue.
 --- @field female boolean Direct access to the actor female flag.

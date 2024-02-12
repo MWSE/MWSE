@@ -15,6 +15,21 @@
 --- @field scaleType ni.animationKeyType *Read-only*. The type of animation key used for scale keys. Maps to values in [`ni.animationKeyType`](https://mwse.github.io/MWSE/references/ni/animation-key-types/) table.
 niKeyframeData = {}
 
+--- Returns the index of the closest position key with timing less than or equal to given `time` argument.
+--- @param time number No description yet available.
+--- @return integer|nil lastKeyIndex No description yet available.
+function niKeyframeData:getPositionKeyIndex(time) end
+
+--- Returns the index of the closest rotation key with timing less than or equal to given `time` argument.
+--- @param time number No description yet available.
+--- @return integer|nil lastKeyIndex No description yet available.
+function niKeyframeData:getRotationKeyIndex(time) end
+
+--- Returns the index of the closest scale key with timing less than or equal to given `time` argument.
+--- @param time number No description yet available.
+--- @return integer|nil lastKeyIndex No description yet available.
+function niKeyframeData:getScaleKeyIndex(time) end
+
 --- This updates the keyframe data's position, rotation, and scale keys as is appropriate for their key types.
 function niKeyframeData:updateDerivedValues() end
 

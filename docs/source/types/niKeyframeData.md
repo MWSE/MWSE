@@ -160,6 +160,63 @@ local result = myObject:clone()
 
 ***
 
+### `getPositionKeyIndex`
+<div class="search_terms" style="display: none">getpositionkeyindex, positionkeyindex</div>
+
+Returns the index of the closest position key with timing less than or equal to given `time` argument.
+
+```lua
+local lastKeyIndex = myObject:getPositionKeyIndex(time)
+```
+
+**Parameters**:
+
+* `time` (number)
+
+**Returns**:
+
+* `lastKeyIndex` (integer, nil)
+
+***
+
+### `getRotationKeyIndex`
+<div class="search_terms" style="display: none">getrotationkeyindex, rotationkeyindex</div>
+
+Returns the index of the closest rotation key with timing less than or equal to given `time` argument.
+
+```lua
+local lastKeyIndex = myObject:getRotationKeyIndex(time)
+```
+
+**Parameters**:
+
+* `time` (number)
+
+**Returns**:
+
+* `lastKeyIndex` (integer, nil)
+
+***
+
+### `getScaleKeyIndex`
+<div class="search_terms" style="display: none">getscalekeyindex, scalekeyindex</div>
+
+Returns the index of the closest scale key with timing less than or equal to given `time` argument.
+
+```lua
+local lastKeyIndex = myObject:getScaleKeyIndex(time)
+```
+
+**Parameters**:
+
+* `time` (number)
+
+**Returns**:
+
+* `lastKeyIndex` (integer, nil)
+
+***
+
 ### `isInstanceOfType`
 <div class="search_terms" style="display: none">isinstanceoftype, instanceoftype</div>
 

@@ -20,9 +20,12 @@ namespace NI {
 		sol::object getPositionKeys_lua(sol::this_state L);
 		sol::object getScaleKeys_lua(sol::this_state L);
 
+		sol::optional<int> getRotationKeyIndex_lua(sol::this_state L, float time);
+		sol::optional<int> getPositionKeyIndex_lua(sol::this_state L, float time);
+		sol::optional<int> getScaleKeyIndex_lua(sol::this_state L, float time);
+
 		void updateDerivedValues();
 		void replaceScaleData(FloatKey* keys, unsigned int numKeys, AnimationKey::KeyType keyType);
-
 	};
 	static_assert(sizeof(KeyframeData) == 0x2C, "NI::KeyframeData failed size validation");
 

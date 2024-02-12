@@ -273,6 +273,9 @@ namespace mwse::lua {
 			usertypeDefinition["scaleType"] = sol::readonly_property(&NI::KeyframeData::scaleType);
 
 			// Basic function binding.
+			usertypeDefinition["getRotationKeyIndex"] = &NI::KeyframeData::getRotationKeyIndex_lua;
+			usertypeDefinition["getPositionKeyIndex"] = &NI::KeyframeData::getPositionKeyIndex_lua;
+			usertypeDefinition["getScaleKeyIndex"] = &NI::KeyframeData::getScaleKeyIndex_lua;
 			usertypeDefinition["updateDerivedValues"] = &NI::KeyframeData::updateDerivedValues;
 		}
 

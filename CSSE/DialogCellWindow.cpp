@@ -13,6 +13,8 @@
 
 #include "Settings.h"
 
+#include "DialogProcContext.h"
+
 namespace se::cs::dialog::cell_window {
 	using gActiveEditCell = memory::ExternalGlobal<Cell*, 0x6CDFF4>;
 
@@ -116,7 +118,7 @@ namespace se::cs::dialog::cell_window {
 			LVFINDINFOA findInfo = { LVFI_PARAM, NULL, (LPARAM)cell, {}, {} };
 			int index = SendDlgItemMessageA(hWnd, CONTROL_ID_CELL_LIST_VIEW, LVM_FINDITEM, -1, (LPARAM)&findInfo);
 			if (index != -1) {
-				LVITEMA listItem;
+				LVITEMA listItem = {};
 				listItem.state = LVIS_SELECTED;
 				listItem.stateMask = LVIS_SELECTED;
 				SendDlgItemMessageA(hWnd, CONTROL_ID_CELL_LIST_VIEW, LVM_SETITEMSTATE, index, (LPARAM)&listItem);
@@ -166,10 +168,12 @@ namespace se::cs::dialog::cell_window {
 		}
 	}
 
-	void CALLBACK PatchDialogProc_AfterSize(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_AfterSize(DialogProcContext& context) {
 		using winui::GetRectHeight;
 		using winui::GetRectWidth;
 		using winui::GetWindowRelativeRect;
+
+		const auto hDlg = context.getWindowHandle();
 
 		auto cellListView = GetDlgItem(hDlg, CONTROL_ID_CELL_LIST_VIEW);
 		auto refsListView = GetDlgItem(hDlg, CONTROL_ID_REFS_LIST_VIEW);
@@ -180,6 +184,7 @@ namespace se::cs::dialog::cell_window {
 		// Update globals.
 		cellWindowSearchControl = searchEdit;
 
+		const auto lParam = context.getLParam();
 		const auto mainWidth = LOWORD(lParam);
 		const auto mainHeight = HIWORD(lParam);
 
@@ -205,7 +210,8 @@ namespace se::cs::dialog::cell_window {
 		RedrawWindow(hDlg, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
-	void CALLBACK PatchDialogProc_AfterCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_AfterCreate(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		auto hInstance = (HINSTANCE)GetWindowLongA(hWnd, GWLP_HINSTANCE);
 
 		// Ensure our custom filter box is added.
@@ -228,9 +234,9 @@ namespace se::cs::dialog::cell_window {
 		}
 	}
 
-	std::optional<LRESULT> forcedReturnResult = {};
-
-	void PatchDialogProc_BeforeCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeCommand(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		const auto wParam = context.getWParam();
 		const auto command = HIWORD(wParam);
 		const auto id = LOWORD(wParam);
 
@@ -254,11 +260,12 @@ namespace se::cs::dialog::cell_window {
 		}
 	}
 
-	inline void OnNotifyFromListView(HWND hWnd, UINT msg, WPARAM id, LPARAM lParam) {
-		const auto hdr = (NMHDR*)lParam;
+	void OnNotifyFromListView(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		const auto hdr = (NMHDR*)context.getLParam();
 
 		if (hdr->code == NM_CUSTOMDRAW && settings.object_window.highlight_modified_items) {
-			LPNMLVCUSTOMDRAW lplvcd = (LPNMLVCUSTOMDRAW)lParam;
+			LPNMLVCUSTOMDRAW lplvcd = (LPNMLVCUSTOMDRAW)hdr;
 
 			if (lplvcd->nmcd.dwDrawStage == CDDS_PREPAINT) {
 				SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
@@ -278,51 +285,51 @@ namespace se::cs::dialog::cell_window {
 					}
 				}
 			}
-			forcedReturnResult = TRUE;
+			context.setResult(TRUE);
 		}
 	}
 
-	inline void PatchDialogProc_BeforeNotify(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		switch (wParam) {
+	void PatchDialogProc_BeforeNotify(DialogProcContext& context) {
+		switch (context.getWParam()) {
 		case CONTROL_ID_CELL_LIST_VIEW:
 		case CONTROL_ID_REFS_LIST_VIEW:
-			OnNotifyFromListView(hWnd, msg, wParam, lParam);
+			OnNotifyFromListView(context);
 			break;
 		}
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		// Handle pre-patches.
-		forcedReturnResult = {};
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x40EFA0);
 
+		// Handle pre-patches.
 		switch (msg) {
 		case WM_COMMAND:
-			PatchDialogProc_BeforeCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand(context);
 			break;
 		case WM_NOTIFY:
-			PatchDialogProc_BeforeNotify(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify(context);
 			break;
 		}
 
-		if (forcedReturnResult.has_value()) {
-			return forcedReturnResult.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_CellViewDialogProc = reinterpret_cast<WNDPROC>(0x40EFA0);
-		auto result = CS_CellViewDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		// Handle post-patches.
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterCreate(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCreate(context);
 			break;
 		case WM_SIZE:
-			PatchDialogProc_AfterSize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterSize(context);
 			break;
 		}
 
-		return result;
+		return context.getResult();
 	}
 
 	void installPatches() {

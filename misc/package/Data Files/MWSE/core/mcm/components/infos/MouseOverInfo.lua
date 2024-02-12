@@ -24,9 +24,7 @@ end
 
 --- @param parentBlock tes3uiElement
 function MouseOverInfo:makeComponent(parentBlock)
-
 	Parent.makeComponent(self, parentBlock)
-	local info = self.elements.info
 
 	--- @param component mwseMCMMouseOverInfo
 	local function updateInfo(component)

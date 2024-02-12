@@ -15,9 +15,6 @@ namespace TES3 {
 	};
 
 	struct Enchantment : Object {
-		Enchantment();
-		~Enchantment();
-
 		char * objectID; // 0x28
 		EnchantmentCastType castType; // 0x2C
 		unsigned short chargeCost; // 0x2E
@@ -25,6 +22,11 @@ namespace TES3 {
 		short pad_32; // 0x32
 		Effect effects[8]; // 0x34
 		unsigned int flags; // 0xF4
+
+		static constexpr auto OBJECT_TYPE = ObjectType::Enchantment;
+
+		Enchantment();
+		~Enchantment();
 
 		//
 		// Custom functions.

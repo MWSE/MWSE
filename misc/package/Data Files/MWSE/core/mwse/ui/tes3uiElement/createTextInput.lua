@@ -23,7 +23,19 @@ local function preTextInputKeyPress(e)
 
 	-- Is this field numbers-only?
 	if (characterEntered and element:getLuaData("numeric") and characterEntered and not tonumber(characterEntered)) then
-		return false
+		-- minus sign is okay so long as it's the first character
+		if characterEntered == "-" then
+			if element.text and #element.text > 0 then
+				return false
+			end
+		-- periods are okay so long as there aren't any others 
+		elseif characterEntered == "." then
+			if element.text and element.text:find("%.") then
+				return false
+			end
+		else
+			return false
+		end
 	end
 
 	-- Update previous text.

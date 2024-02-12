@@ -6,8 +6,8 @@
 --- @class niPathController : niTimeController, niObject
 --- @field allowFlip boolean Changes how the up vector of the local coordinate frame is calculated. When disabled, it will align towards the +Z axis. When enabled, it will use the local path derivatives with smoothing controlled by `smoothing`. This allows the object to turn upside down, but orientation changes at keyframes may be jerky.
 --- @field bank boolean Controls if banking behaviour is enabled. The target object will roll so that its top side faces inside/outside the path, depending on `bankDirection`.
---- @field bankDirection number The banking alignment direction used when `bank` mode is enabled. 1 = bank inside, -1 = bank outside.
 --- @field bank_related_data number Temporary name. Some other scalar property related to the banking logic.
+--- @field bankDirection number The banking alignment direction used when `bank` mode is enabled. 1 = bank inside, -1 = bank outside.
 --- @field constantVelocity boolean Controls if constant velocity behaviour is enabled. It specifies if the curve represented by the path keyframe data should be parameterized by arc length when enabled, or by time when disabled.
 --- @field flipFollowAxis boolean Selects the + or - axis direction of the object that points along the path. Combines with `followAxis` to fully specify the axis.
 --- @field follow boolean Controls if follow behaviour is enabled. This sets if the controller orients the target object to point along the path.

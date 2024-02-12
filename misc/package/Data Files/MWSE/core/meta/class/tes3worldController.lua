@@ -63,7 +63,9 @@
 --- - `1` Combat music
 --- - `2` Main menu music
 --- 
---- Note: These values are available as [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
+--- !!! tip 
+--- 	These values are available via the [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
+--- 
 --- @field nodeCursor niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The scenegraph node for the target crosshair.
 --- @field parentWindowHandle HWND *Read-only*. Handle to the parent window.
 --- @field projectionDistance number 
@@ -75,7 +77,7 @@
 --- @field shadowCamera tes3worldControllerRenderCamera|tes3worldControllerRenderTarget *Read-only*. The access to the camera used for shadows rendering.
 --- @field shadows integer An integer in the range of `0` to `6`. Controls the amount of actor shadows drawn. The maximum value of `6` is loose; it is determined by the "Number of Shadows" INI setting. Corresponds to the "Real-time shadows" option in the Options menu.
 --- @field showSubtitles boolean If subtitles are shown. Corresponds to the "Subtitles" option in the Options menu.
---- @field simulationTimeScalar number A scalar used for simulation time. At the start of every frame, the `deltaTime` is multiplied by this value. Doing this here is safer than doing it in another event.
+--- @field simulationTimeScalar number A scalar used for simulation time. At the start of every frame, the `deltaTime` is multiplied by this value. Doing this here is safer than doing it in another event. This value doesn't need to be modified every frame. You need to restore it to its original value to cancel the time scaling.
 --- @field splashController tes3splashController *Read-only*. Access to the splash controller.
 --- @field splashscreenCamera tes3worldControllerRenderCamera|tes3worldControllerRenderTarget *Read-only*. The access to the camera used to render splashscreens.
 --- @field stopGameLoop boolean When true, the game simulation loop will stop. Not normally used, and may have other unknown effects.
@@ -85,8 +87,8 @@
 --- @field transitionFader tes3fader *Read-only*. Screen overlay fader for cell transitions.
 --- @field useBestAttack boolean Automatically choose the best attack direction for attacks. Corresponds to the "Always use best attack" option in the Options menu.
 --- @field vfxManager tes3vfxManager *Read-only*. Access to the VFX manager.
---- @field viewHeight number *Read-only*. The height of the UI viewport in pixels. Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
---- @field viewWidth number *Read-only*. The width of the UI viewport in pixels. Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
+--- @field viewHeight number *Read-only*. The height of the UI viewport in pixels (also returned by [`tes3ui.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize)). Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
+--- @field viewWidth number *Read-only*. The width of the UI viewport in pixels (also used by [`tes3ui.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize)). Affected by UI scaling. For screen resolution, use [`tes3.getViewportSize()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getviewportsize).
 --- @field weaponSwishSound tes3sound The sound played when an attack with a melee weapon is performed. It always plays when a melee attack is released, irrespective of hit or miss.
 --- @field weatherController tes3weatherController *Read-only*. The weather controller.
 --- @field werewolfFader tes3fader *Read-only*. Screen overlay fader for werewolf vision.

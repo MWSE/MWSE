@@ -2,6 +2,7 @@
 
 #include "LogUtil.h"
 #include "MemoryUtil.h"
+#include "MetadataUtil.h"
 #include "StringUtil.h"
 #include "WindowsUtil.h"
 #include "WinUIUtil.h"
@@ -20,6 +21,8 @@
 #include "WindowMain.h"
 
 #include "Settings.h"
+
+#include "DialogProcContext.h"
 
 namespace se::cs::dialog::object_window {
 	using memory::ExternalGlobal;
@@ -174,6 +177,11 @@ namespace se::cs::dialog::object_window {
 
 	// TODO: Make use of the new object-class search features.
 	bool PatchFilterObjectWindow_ObjectMatchesSearchText(const Object* object) {
+		// Hide deprecated objects.
+		if (metadata::isDeprecated(object)) {
+			return false;
+		}
+
 		if (modeShowModifiedOnly && !object->getModified()) {
 			return false;
 		}
@@ -266,24 +274,23 @@ namespace se::cs::dialog::object_window {
 	// Patch: Extend Object Window message handling.
 	//
 
-	std::optional<LRESULT> forcedReturnType = {};
-
-	void CALLBACK PatchDialogProc_BeforeSize(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_BeforeSize(DialogProcContext& context) {
 		using winui::GetRectHeight;
 		using winui::GetRectWidth;
 		using winui::TabCtrl_GetInteriorRect;
 
 		// Update view menu.
 		auto mainWindow = GetMenu(window::main::ghWnd::get());
-		if (wParam) {
-			if (wParam == SIZE_MINIMIZED) {
-				CheckMenuItem(mainWindow, 40199u, MF_BYCOMMAND);
-			}
-		}
-		else {
+		switch (context.getWParam()) {
+		case SIZE_RESTORED:
 			CheckMenuItem(mainWindow, 40199u, MF_CHECKED);
+			break;
+		case SIZE_MINIMIZED:
+			CheckMenuItem(mainWindow, 40199u, MF_BYCOMMAND);
+			break;
 		}
 
+		const auto hDlg = context.getWindowHandle();
 		auto tabControl = GetDlgItem(hDlg, CONTROL_ID_TABS);
 		auto objectListView = GetDlgItem(hDlg, CONTROL_ID_LIST_VIEW);
 		auto showModifiedButton = GetDlgItem(hDlg, CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON);
@@ -295,8 +302,8 @@ namespace se::cs::dialog::object_window {
 		ghWndObjectList::set(objectListView);
 		objectWindowSearchControl = searchEdit;
 
-		const auto mainWidth = LOWORD(lParam);
-		const auto mainHeight = HIWORD(lParam);
+		const auto mainWidth = context.getSizeX();
+		const auto mainHeight = context.getSizeY();
 
 		constexpr auto BASIC_PADDING = 2;
 		constexpr auto STATIC_HEIGHT = 13;
@@ -321,7 +328,8 @@ namespace se::cs::dialog::object_window {
 		RedrawWindow(hDlg, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
-	void CALLBACK PatchDialogProc_AfterCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void CALLBACK PatchDialogProc_AfterCreate(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		auto hInstance = (HINSTANCE)GetWindowLongA(hWnd, GWLP_HINSTANCE);
 
 		// Change the tabs to be button-based so that they don't have the selected tab stack always on the bottom.
@@ -351,10 +359,11 @@ namespace se::cs::dialog::object_window {
 		}
 	}
 
-	inline void OnNotifyFromMainListView(HWND hWnd, UINT msg, WPARAM id, LPARAM lParam) {
+	inline void OnNotifyFromMainListView(DialogProcContext& context) {
 		using windows::isKeyDown;
 
-		const auto hdr = (NMHDR*)lParam;
+		const auto hWnd = context.getWindowHandle();
+		const auto hdr = context.getNotificationData();
 
 		if (hdr->code == LVN_KEYDOWN) {
 			const auto keydownHDR = (LV_KEYDOWN*)hdr;
@@ -366,10 +375,10 @@ namespace se::cs::dialog::object_window {
 			// I've tried DWLP_MSGRESULT, subclassing, blocking this notification, changing styles, and so much else.
 			// Somehow, this is the only thing that has worked...
 			Sleep(20);
-			forcedReturnType = TRUE;
+			context.setResult(TRUE);
 		}
 		else if (hdr->code == NM_CUSTOMDRAW && settings.object_window.highlight_modified_items) {
-			LPNMLVCUSTOMDRAW lplvcd = (LPNMLVCUSTOMDRAW)lParam;
+			LPNMLVCUSTOMDRAW lplvcd = (LPNMLVCUSTOMDRAW)context.getLParam();
 			if (lplvcd->nmcd.dwDrawStage == CDDS_PREPAINT) {
 				SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
 			}
@@ -388,16 +397,16 @@ namespace se::cs::dialog::object_window {
 					}
 				}
 			}
-			forcedReturnType = TRUE;
+			context.setResult(TRUE);
 		}
 		else if (hdr->code == LVN_COLUMNCLICK) {
 			if constexpr (!REPLACE_TAB_COLUMN_LOGIC) {
 				return;
 			}
 
-			forcedReturnType = 0;
+			context.setResult(FALSE);
 
-			auto notifyColumnClick = (LPNMLISTVIEW)lParam;
+			auto notifyColumnClick = (LPNMLISTVIEW)context.getLParam();
 
 			char buffer[64] = {};
 
@@ -429,21 +438,20 @@ namespace se::cs::dialog::object_window {
 		}
 	}
 
-	inline void OnNotifyFromMainTabControl(HWND hWnd, UINT msg, WPARAM id, LPARAM lParam) {
-		const auto hdr = (NMHDR*)lParam;
-
+	inline void OnNotifyFromMainTabControl(DialogProcContext& context) {
+		const auto hdr = context.getNotificationData();
 		if (hdr->code == TCN_SELCHANGING && settings.object_window.clear_filter_on_tab_switch) {
 			SetWindowTextA(objectWindowSearchControl, "");
 		}
 	}
 
-	inline void PatchDialogProc_BeforeNotify(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		switch (wParam) {
+	inline void PatchDialogProc_BeforeNotify(DialogProcContext& context) {
+		switch (context.getNotificationControlIdentifier()) {
 		case CONTROL_ID_LIST_VIEW:
-			OnNotifyFromMainListView(hWnd, msg, wParam, lParam);
+			OnNotifyFromMainListView(context);
 			break;
 		case CONTROL_ID_TABS:
-			OnNotifyFromMainTabControl(hWnd, msg, wParam, lParam);
+			OnNotifyFromMainTabControl(context);
 			break;
 		}
 	}
@@ -494,9 +502,10 @@ namespace se::cs::dialog::object_window {
 		}
 	}
 
-	void PatchDialogProc_BeforeCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		const auto command = HIWORD(wParam);
-		const auto id = LOWORD(wParam);
+	void PatchDialogProc_BeforeCommand(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		const auto command = context.getCommandNotificationCode();
+		const auto id = context.getCommandControlIdentifier();
 		switch (command) {
 		case BN_CLICKED:
 			switch (id) {
@@ -517,7 +526,7 @@ namespace se::cs::dialog::object_window {
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		forcedReturnType = {};
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x451320);
 
 		// Handle pre-patches.
 		switch (msg) {
@@ -525,32 +534,32 @@ namespace se::cs::dialog::object_window {
 			objectWindowSearchControl = NULL;
 			break;
 		case WM_SIZE:
-			PatchDialogProc_BeforeSize(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeSize(context);
 			return FALSE;
 		case WM_NOTIFY:
-			PatchDialogProc_BeforeNotify(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify(context);
 			break;
 		case WM_COMMAND:
-			PatchDialogProc_BeforeCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand(context);
 			break;
 		}
 
-		if (forcedReturnType) {
-			return forcedReturnType.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_ObjectWindowDialogProc = reinterpret_cast<WNDPROC>(0x451320);
-		auto result = CS_ObjectWindowDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		// Handle post-patches.
 		switch (msg) {
 		case WM_INITDIALOG:
-			PatchDialogProc_AfterCreate(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCreate(context);
 			break;
 		}
 
-		return forcedReturnType.value_or(result);
+		return context.getResult();
 	}
 
 	int getTabForObjectType(ObjectType::ObjectType objectType) {

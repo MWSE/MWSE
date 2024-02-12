@@ -12,6 +12,7 @@
 #include "CSGameFile.h"
 #include "CSGameSetting.h"
 #include "CSRecordHandler.h"
+#include "CSReference.h"
 #include "CSScript.h"
 
 #include "NICamera.h"
@@ -32,13 +33,15 @@
 #include "CSSE.h"
 #include "resource.h"
 
+#include "DialogProcContext.h"
+
 namespace se::cs::window::main {
 
 	struct ObjectEditLParam {
 		ObjectType::ObjectType objectType; // 0x0
 		BaseObject* object; // 0x4
-		int unknown_0x8;
-		int unknown_0xC;
+		Reference* reference; // 0x8
+		Reference::ReferenceData* referenceData; // 0xC
 	};
 
 	HWND showComboBasedEditWindow(const BaseObject* object, HWND hWnd, LPCSTR lpTemplateName, DLGPROC dlgProc, int comboBoxId) {
@@ -305,9 +308,19 @@ namespace se::cs::window::main {
 	}
 
 	HWND showDefaultObjectEditWindow(BaseObject* object) {
+		Reference* reference = nullptr;
+		if (object->objectType == ObjectType::Reference) {
+			reference = static_cast<Reference*>(object);
+			object = reference->baseObject;
+		}
+
 		ObjectEditLParam lParam = {};
 		lParam.objectType = object->objectType;
 		lParam.object = object;
+		lParam.reference = reference;
+		if (reference) {
+			lParam.referenceData = &reference->referenceData;
+		}
 
 		DLGPROC proc = (DLGPROC)0x402F9A;
 		switch (object->objectType) {
@@ -457,8 +470,6 @@ namespace se::cs::window::main {
 	// Patch: Extend window messages.
 	//
 
-	std::optional<LRESULT> messageResultOverride;
-
 	void setupQuickStart() {
 		char* commandLineFile = (char*)0x6CE6CC;
 
@@ -515,7 +526,7 @@ namespace se::cs::window::main {
 		return menu;
 	}
 
-	void PatchDialogProc_BeforeFinishInitialization(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeFinishInitialization(DialogProcContext& context) {
 		// Handle quickstart.
 		setupQuickStart();
 	}
@@ -548,8 +559,9 @@ namespace se::cs::window::main {
 		return result;
 	}
 
-	void PatchDialogProc_BeforeCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		switch (wParam) {
+	void PatchDialogProc_BeforeCommand(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		switch (context.getCommandControlIdentifier()) {
 		case MENU_ID_CSSE_SETTINGS:
 			showSettingsDialog(hWnd);
 			break;
@@ -562,14 +574,16 @@ namespace se::cs::window::main {
 		}
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_NewGame(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_NewGame(DialogProcContext& context) {
 		settings.test_environment.start_new_game = true;
 		settings.test_environment.load_save_morrowind = "";
 
+		const auto hWnd = context.getWindowHandle();
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_MORROWIND, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
 		TCHAR szFile[260] = {};
 		ofn.lStructSize = sizeof(ofn);
@@ -593,14 +607,17 @@ namespace se::cs::window::main {
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_MORROWIND, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_MainMenu(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_MainMenu(DialogProcContext& context) {
 		settings.test_environment.start_new_game = false;
 		settings.test_environment.load_save_morrowind = "";
-
+		
+		const auto hWnd = context.getWindowHandle();
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_MORROWIND, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind(HWND hWnd, UINT msg, WPARAM wParam, NMMOUSE* lParam) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+
 		auto menu = CreatePopupMenu();
 		if (menu == NULL) {
 			return;
@@ -644,30 +661,32 @@ namespace se::cs::window::main {
 		case RESERVED_ERROR:
 			break;
 		case TEST_NEW_GAME:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_NewGame(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_NewGame(context);
 			break;
 		case TEST_LOAD_GAME:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(context);
 			break;
 		case TEST_TO_MAIN_MENU:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_MainMenu(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_MainMenu(context);
 			break;
 		}
 
 		// Cleanup our menus.
 		DestroyMenu(menu);
 
-		messageResultOverride = TRUE;
+		context.setResult(TRUE);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_NewGame(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_NewGame(DialogProcContext& context) {
 		settings.test_environment.start_new_game = true;
 		settings.test_environment.load_save_openmw = "";
 
+		const auto hWnd = context.getWindowHandle();
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_OPENMW, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
 		TCHAR szFile[260] = {};
 		ofn.lStructSize = sizeof(ofn);
@@ -698,14 +717,16 @@ namespace se::cs::window::main {
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_OPENMW, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_MainMenu(HWND hWnd) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_MainMenu(DialogProcContext& context) {
 		settings.test_environment.start_new_game = false;
 		settings.test_environment.load_save_openmw = "";
 
+		const auto hWnd = context.getWindowHandle();
 		SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_TEST_IN_GAME_OPENMW, NULL);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW(HWND hWnd, UINT msg, WPARAM wParam, NMMOUSE* lParam) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
 		auto menu = CreatePopupMenu();
 		if (menu == NULL) {
 			return;
@@ -749,34 +770,36 @@ namespace se::cs::window::main {
 		case RESERVED_ERROR:
 			break;
 		case TEST_NEW_GAME:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_NewGame(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_NewGame(context);
 			break;
 		case TEST_LOAD_GAME:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(context);
 			break;
 		case TEST_TO_MAIN_MENU:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_MainMenu(hWnd);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_MainMenu(context);
 			break;
 		}
 
 		// Cleanup our menus.
 		DestroyMenu(menu);
 
-		messageResultOverride = TRUE;
+		context.setResult(TRUE);
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipRightClick(HWND hWnd, UINT msg, WPARAM wParam, NMMOUSE* lParam) {
-		switch (lParam->dwItemSpec) {
+	void PatchDialogProc_BeforeNotify_TooltipRightClick(DialogProcContext& context) {
+		const auto lParam = context.getNotificationItemActivateData();
+		switch (lParam->iItem) {
 		case WM_COMMAND_TEST_IN_GAME_MORROWIND:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind(context);
 			break;
 		case WM_COMMAND_TEST_IN_GAME_OPENMW:
-			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW(context);
 			break;
 		}
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInMorrowind(HWND hWnd, UINT msg, WPARAM wParam, NMTTDISPINFOA* lParam) {
+	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInMorrowind(DialogProcContext& context) {
+		const auto lParam = context.getNotificationTooltipGetDisplayInfo();
 		const auto& environment = settings.test_environment;
 		if (!environment.load_save_morrowind.empty()) {
 			constexpr auto allowance = sizeof(lParam->szText) - sizeof("Test in Morrowind (%s)") - 2u;
@@ -785,24 +808,25 @@ namespace se::cs::window::main {
 				sprintf_s(lParam->szText, "Test in Morrowind (%s)", environment.load_save_morrowind.c_str());
 			}
 			else {
-				auto clipped = environment.load_save_morrowind;
+				std::string clipped = environment.load_save_morrowind;
 				clipped.resize(allowance - 3);
 				clipped += "...";
 				sprintf_s(lParam->szText, "Test in Morrowind (%s)", clipped.c_str());
 			}
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 		else if (environment.start_new_game) {
 			strcpy_s(lParam->szText, "Test in Morrowind (New Game)");
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 		else {
 			strcpy_s(lParam->szText, "Test in Morrowind (Normal Start)");
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 	}
 
-	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInOpenMW(HWND hWnd, UINT msg, WPARAM wParam, NMTTDISPINFOA* lParam) {
+	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInOpenMW(DialogProcContext& context) {
+		const auto lParam = context.getNotificationTooltipGetDisplayInfo();
 		const auto& environment = settings.test_environment;
 
 		if (!environment.load_save_openmw.empty()) {
@@ -818,49 +842,51 @@ namespace se::cs::window::main {
 			}
 
 			sprintf_s(lParam->szText, "Test in OpenMW (%s)", clipped.c_str());
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 		else if (environment.start_new_game) {
 			strcpy_s(lParam->szText, "Test in OpenMW (New Game)");
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 		else {
 			strcpy_s(lParam->szText, "Test in OpenMW (Normal Start)");
-			messageResultOverride = TRUE;
+			context.setResult(TRUE);
 		}
 	}
 
 	// Catch tooltip info requests to add custom tooltips to new toolbar buttons.
-	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo(HWND hWnd, UINT msg, WPARAM wParam, NMTTDISPINFOA* lParam) {
-		const char* tooltip = nullptr;
+	void PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo(DialogProcContext& context) {
+		const auto lParam = context.getNotificationTooltipGetDisplayInfo();
 		switch (lParam->hdr.idFrom) {
 		case WM_COMMAND_TEST_IN_GAME_MORROWIND:
-			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInMorrowind(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInMorrowind(context);
 			break;
 		case WM_COMMAND_TEST_IN_GAME_OPENMW:
-			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInOpenMW(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo_TestInOpenMW(context);
 			break;
 		}
 	}
 
-	void PatchDialogProc_BeforeNotify(HWND hWnd, UINT msg, WPARAM wParam, NMHDR* lParam) {
+	void PatchDialogProc_BeforeNotify(DialogProcContext& context) {
+		const auto lParam = context.getNotificationData();
 		switch (lParam->code) {
 		case NM_RCLICK:
-			PatchDialogProc_BeforeNotify_TooltipRightClick(hWnd, msg, wParam, (NMMOUSE*)lParam);
+			PatchDialogProc_BeforeNotify_TooltipRightClick(context);
 			break;
 		case TTN_GETDISPINFO:
-			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo(hWnd, msg, wParam, (NMTTDISPINFOA*)lParam);
+			PatchDialogProc_BeforeNotify_TooltipGetDisplayInfo(context);
 			break;
 		}
 	}
 
-	void PatchDialogProc_BeforeClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_BeforeClose(DialogProcContext& context) {
 		auto sgController = dialog::render_window::SceneGraphController::get();
 		sgController->clearWidgets();
 	}
 
-	void PatchDialogProc_AfterCreate_CreateNewCSSEMenu(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterCreate_CreateNewCSSEMenu(DialogProcContext& context) {
 		// Add MWSE to the menu.
+		const auto hWnd = context.getWindowHandle();
 		auto menu = GetMenu(hWnd);
 		if (!menu) {
 			return;
@@ -875,7 +901,7 @@ namespace se::cs::window::main {
 		InsertMenuItemA(menu, 6, TRUE, &newExtenderMenu);
 	}
 
-	void PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(DialogProcContext& context) {
 		using winui::Toolbar_AddButton;
 		using winui::Toolbar_AddSeparator;
 
@@ -894,53 +920,53 @@ namespace se::cs::window::main {
 		}
 	}
 
-	void PatchDialogProc_AfterCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		PatchDialogProc_AfterCreate_CreateNewCSSEMenu(hWnd, msg, wParam, lParam);
-		PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(hWnd, msg, wParam, lParam);
+	void PatchDialogProc_AfterCreate(DialogProcContext& context) {
+		PatchDialogProc_AfterCreate_CreateNewCSSEMenu(context);
+		PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(context);
 	}
 
-	void PatchDialogProc_AfterCommand_ToggleLandscapeEditing(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterCommand_ToggleLandscapeEditing(DialogProcContext& context) {
 		// Restore focus to the render window.
 		SetFocus(memory::ExternalGlobal<HWND, 0x6CE93C>::get());
 	}
 
 	static std::optional<UINT> testAfterSave = {};
 
-	void PatchDialogProc_AfterCommand_TestInMorrowind(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterCommand_TestInMorrowind(DialogProcContext& context) {
 		if (gActiveFileModified::get()) {
 			testAfterSave = WM_COMMAND_TEST_IN_GAME_MORROWIND;
-			SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_SAVE, NULL);
+			SendMessageA(context.getWindowHandle(), WM_COMMAND, WM_COMMAND_SAVE, NULL);
 		}
 		else {
 			LaunchMorrowind();
 		}
 	}
 
-	void PatchDialogProc_AfterCommand_TestInOpenMW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterCommand_TestInOpenMW(DialogProcContext& context) {
 		if (gActiveFileModified::get()) {
 			testAfterSave = WM_COMMAND_TEST_IN_GAME_OPENMW;
-			SendMessageA(hWnd, WM_COMMAND, WM_COMMAND_SAVE, NULL);
+			SendMessageA(context.getWindowHandle(), WM_COMMAND, WM_COMMAND_SAVE, NULL);
 		}
 		else {
 			LaunchOpenMW();
 		}
 	}
 
-	void PatchDialogProc_AfterCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		switch (wParam) {
+	void PatchDialogProc_AfterCommand(DialogProcContext& context) {
+		switch (context.getCommandControlIdentifier()) {
 		case WM_COMMAND_TOGGLE_LANDSCAPE_EDITING:
-			PatchDialogProc_AfterCommand_ToggleLandscapeEditing(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCommand_ToggleLandscapeEditing(context);
 			break;
 		case WM_COMMAND_TEST_IN_GAME_MORROWIND:
-			PatchDialogProc_AfterCommand_TestInMorrowind(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCommand_TestInMorrowind(context);
 			break;
 		case WM_COMMAND_TEST_IN_GAME_OPENMW:
-			PatchDialogProc_AfterCommand_TestInOpenMW(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCommand_TestInOpenMW(context);
 			break;
 		}
 	}
 
-	void PatchDialogProc_AfterSave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	void PatchDialogProc_AfterSave(DialogProcContext& context) {
 		if (testAfterSave) {
 			switch (testAfterSave.value()) {
 			case WM_COMMAND_TEST_IN_GAME_MORROWIND:
@@ -954,46 +980,61 @@ namespace se::cs::window::main {
 		}
 	}
 
+	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		auto statusWindow = FindWindowEx(hWnd, NULL, "msctls_statusbar32", NULL);
+
+		if (!statusWindow) {
+			return;
+		}
+
+		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
+		SendMessage(statusWindow, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
+	}
+
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-		messageResultOverride.reset();
+		DialogProcContext context(hWnd, msg, wParam, lParam, 0x444590);
 
 		// Handle pre-patches.
 		switch (msg) {
 		case WM_COMMAND:
-			PatchDialogProc_BeforeCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeCommand(context);
 			break;
 		case WM_NOTIFY:
-			PatchDialogProc_BeforeNotify(hWnd, msg, wParam, (NMHDR*)lParam);
+			PatchDialogProc_BeforeNotify(context);
 			break;
 		case WM_CLOSE:
-			PatchDialogProc_BeforeClose(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeClose(context);
 			break;
 		case WM_FINISH_INITIALIZATION:
-			PatchDialogProc_BeforeFinishInitialization(hWnd, msg, wParam, lParam);
+			PatchDialogProc_BeforeFinishInitialization(context);
 			break;
 		}
 
-		if (messageResultOverride) {
-			return messageResultOverride.value();
+		// Call original function, or return early if we already have a result.
+		if (context.hasResult()) {
+			return context.getResult();
 		}
-
-		// Call original function.
-		const auto CS_MainWindowDialogProc = reinterpret_cast<WNDPROC>(0x444590);
-		auto result = CS_MainWindowDialogProc(hWnd, msg, wParam, lParam);
+		else {
+			context.callOriginalFunction();
+		}
 
 		switch (msg) {
 		case WM_CREATE:
-			PatchDialogProc_AfterCreate(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCreate(context);
 			break;
 		case WM_COMMAND:
-			PatchDialogProc_AfterCommand(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterCommand(context);
 			break;
 		case WM_SAVE:
-			PatchDialogProc_AfterSave(hWnd, msg, wParam, lParam);
+			PatchDialogProc_AfterSave(context);
+			break;
+		case WM_FINISH_INITIALIZATION:
+			PatchDialogProc_AfterInitialize(context);
 			break;
 		}
 
-		return messageResultOverride.value_or(result);
+		return context.getResult();
 	}
 
 	void installPatches() {

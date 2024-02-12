@@ -29,7 +29,7 @@ namespace mwse {
 		// Get the desired effect.
 		TES3::Effect* effects = NULL;
 		if (type == TES3::ObjectType::Spell) {
-			TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(id.c_str());
+			const auto spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(id.c_str());
 			if (spell) {
 				effects = spell->effects;
 				effectCount = spell->getActiveEffectCount();
@@ -43,7 +43,7 @@ namespace mwse {
 			}
 		}
 		else if (type == TES3::ObjectType::Enchantment) {
-			TES3::Enchantment* enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(id.c_str(), TES3::ObjectType::Enchantment);
+			const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(id.c_str());
 			if (enchant) {
 				effects = enchant->effects;
 				effectCount = enchant->getActiveEffectCount();
@@ -57,7 +57,7 @@ namespace mwse {
 			}
 		}
 		else if (type == TES3::ObjectType::Alchemy) {
-			TES3::Alchemy* alchemy = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Alchemy>(id.c_str(), TES3::ObjectType::Alchemy);
+			const auto alchemy = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Alchemy>(id.c_str());
 			if (alchemy) {
 				effects = alchemy->effects;
 				effectCount = alchemy->getActiveEffectCount();

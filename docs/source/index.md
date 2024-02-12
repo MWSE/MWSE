@@ -30,6 +30,8 @@ Contributing to MWSE requires a copy of [Visual Studio 2022](https://www.visuals
 
 - Workloads:
 	- Desktop development with C++
+- Individual Components:
+	- C++ MFC (only required for Construction Set Extender development)
 
 #### LuaJIT
 
@@ -39,6 +41,10 @@ Contributing to MWSE requires a copy of [Visual Studio 2022](https://www.visuals
 cd deps\LuaJIT\src
 msvcbuild.bat
 ```
+
+### Configuration
+
+Project configuration is done via a .props file. To specify your own Morrowind installation directory, copy the SharedSE/MWSE.props file and rename the copy to SharedSE/MWSE.User.props. Use the Property Manager's User Macros page or directly edit the file to specify the location that Visual Studio should copy DLLs/PDBs to and where it should do its debugging. The directory is expected to have a trailing slash.
 
 
 ### GitHub

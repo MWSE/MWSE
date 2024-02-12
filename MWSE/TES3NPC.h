@@ -32,6 +32,8 @@ namespace TES3 {
 	}
 
 	struct NPCBase : Actor {
+		static constexpr auto OBJECT_TYPE = ObjectType::NPC;
+
 		// No data, this is only used for shared functions.
 
 		NPCBase() = delete;
@@ -66,12 +68,12 @@ namespace TES3 {
 		short level; // 0x7C
 		unsigned char attributes[8]; // 0x7E
 		unsigned char skills[27]; // 0x86
-		unsigned char unknown_0xA1; // 0xA1 // Not reputation after all?
+		unsigned char unknown_0xA1; // Padding.
 		short health; // 0xA2
 		short magicka; // 0xA4
 		short fatigue; // 0xA6
 		signed char baseDisposition; // 0xA8
-		unsigned char reputation; // 0xA9
+		unsigned char initialReputation; // 0xA9
 		unsigned char factionRank; // 0xAA
 		char unknown_0xAB; // Padding.
 		int barterGold; // 0xAC
@@ -136,6 +138,7 @@ namespace TES3 {
 
 		Class* getBaseClass();
 		Faction* getBaseFaction();
+		unsigned char getBaseFactionRank();
 		Race* getBaseRace();
 		Script* getBaseScript();
 		SpellList* getBaseSpellList();

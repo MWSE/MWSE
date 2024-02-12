@@ -36,7 +36,7 @@ The variable type to create. One of the following:
 
 **Returns**:
 
-* `result` (nil, fun(newValue: ): unknown?)
+* `result` (nil, fun(newValue): unknown?)
 
 ***
 

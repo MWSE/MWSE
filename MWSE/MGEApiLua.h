@@ -45,6 +45,10 @@ namespace mge::lua {
 		static void setCameraShakeMagnitude(float value);
 		static float getCameraShakeAcceleration();
 		static void setCameraShakeAcceleration(float value);
+
+		// API v3+ for following functions
+		static float getNearRenderDistance();
+		static void setNearRenderDistance(float distance);
 	};
 
 	class RenderFeatures {

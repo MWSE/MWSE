@@ -123,6 +123,11 @@ namespace se::memory {
 	// Code to generate a call in memory. This function unprotects the memory.
 	bool genJumpEnforced(DWORD address, DWORD previousTo, DWORD to, DWORD size = 0x5);
 
+	template <typename T>
+	bool genJumpEnforced(DWORD address, DWORD previousTo, T to, DWORD size = 0x5) {
+		return genJumpEnforced(address, previousTo, *reinterpret_cast<DWORD*>(&to), size);
+	}
+
 	// Code to generate a call in memory. This function unprotects the memory.
 	void genCallUnprotected(DWORD address, DWORD to, DWORD size = 0x5);
 

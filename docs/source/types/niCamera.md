@@ -937,7 +937,7 @@ local origin, direction = myObject:windowPointToRay(point)
 
 **Parameters**:
 
-* `point` ([tes3vector2](../types/tes3vector2.md), number[]): The screen position to calculate a world ray for. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
+* `point` ([tes3vector2](../types/tes3vector2.md), number[]): The screen position to calculate a world ray for. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen. The screen size settings used are scaled by MGE XE UI scaling setting. These can be retrieved with [`tes3ui.getViewportSize`](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uigetviewportsize).
 
 **Returns**:
 
@@ -985,7 +985,7 @@ local origin, direction = myObject:windowPointToRay(point)
 ### `worldPointToScreenPoint`
 <div class="search_terms" style="display: none">worldpointtoscreenpoint</div>
 
-Given a world coordinate position, calculates where that point relates to the screen space.
+Given a world coordinate position, calculates where that point relates to the screen space. Returns `nil` if the world point is ourside of camera's view.
 
 ```lua
 local screenPosition = myObject:worldPointToScreenPoint(point)
@@ -997,5 +997,5 @@ local screenPosition = myObject:worldPointToScreenPoint(point)
 
 **Returns**:
 
-* `screenPosition` ([tes3vector2](../types/tes3vector2.md)): The screen space position. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
+* `screenPosition` ([tes3vector2](../types/tes3vector2.md), nil): The screen space position. Screen space is measured as ([-screenWidth/2, screenWidth/2], [-screenHeight/2, screenHeight/2]) with up-right being positive and an origin at the center of the screen.
 

@@ -15,7 +15,7 @@ Animations are divided into three layers. The layer 0 is the base layer containi
 ### `actorNode`
 <div class="search_terms" style="display: none">actornode</div>
 
-
+Easy access to the actor's scene node.
 
 **Returns**:
 
@@ -26,44 +26,44 @@ Animations are divided into three layers. The layer 0 is the base layer containi
 ### `animationGroups`
 <div class="search_terms" style="display: none">animationgroups</div>
 
-*Read-only*. A table of the animation group objects, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
+*Read-only*. An array of animation group objects applying to this actor, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
-* `result` (table&lt;[tes3.animationGroup](../references/animation-groups.md), tes3animationGroup&gt;)
+* `result` ([tes3animationGroup](../types/tes3animationGroup.md)[])
 
 ***
 
-### `animationGroupSoundgenCounts`
-<div class="search_terms" style="display: none">animationgroupsoundgencounts</div>
+### `animGroupLayerIndices`
+<div class="search_terms" style="display: none">animgrouplayerindices</div>
 
-*Read-only*. The number of sound generators for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
+*Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
-* `result` (table&lt;[tes3.animationGroup](../references/animation-groups.md), number&gt;)
+* `result` (number[])
 
 ***
 
-### `animGroupLayerIndicies`
-<div class="search_terms" style="display: none">animgrouplayerindicies</div>
+### `animGroupSoundGenCounts`
+<div class="search_terms" style="display: none">animgroupsoundgencounts</div>
 
-*Read-only*. The layer from which each of the actor's animation groups come, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
+*Read-only*. The number of sound generators for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
-* `result` (table&lt;[tes3.animationGroup](../references/animation-groups.md), [tes3.activeBodyPartLayer](../references/active-body-part-layers.md)&gt;)
+* `result` (number[])
 
 ***
 
-### `approxRootTravelSpeeds`
-<div class="search_terms" style="display: none">approxroottravelspeeds</div>
+### `approxRootTravelDistances`
+<div class="search_terms" style="display: none">approxroottraveldistances</div>
 
-*Read-only*. The approximate root node travel speed for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
+*Read-only*. The approximate root node travel distance over a cycle for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
-* `result` (table&lt;[tes3.animationGroup](../references/animation-groups.md), number&gt;)
+* `result` (number[])
 
 ***
 
@@ -102,10 +102,21 @@ It functions slightly differently to the other animation speed multipliers. It i
 
 ***
 
+### `currentActionIndices`
+<div class="search_terms" style="display: none">currentactionindices</div>
+
+*Read-only*. The action index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index. The meaning of an action index depends on the specific animation group.
+
+**Returns**:
+
+* `result` (number[])
+
+***
+
 ### `currentAnimGroupLayers`
 <div class="search_terms" style="display: none">currentanimgrouplayers</div>
 
-*Read-only*. 
+*Read-only*. The layer index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
@@ -116,7 +127,7 @@ It functions slightly differently to the other animation speed multipliers. It i
 ### `currentAnimGroups`
 <div class="search_terms" style="display: none">currentanimgroups</div>
 
-*Read-only*. The currently playing [animation group](https://mwse.github.io/MWSE/references/animation-groups/), on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/).
+*Read-only*. The currently playing [animation group](https://mwse.github.io/MWSE/references/animation-groups/), on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
@@ -124,21 +135,10 @@ It functions slightly differently to the other animation speed multipliers. It i
 
 ***
 
-### `currentNodeIndices`
-<div class="search_terms" style="display: none">currentnodeindices</div>
-
-*Read-only*. 
-
-**Returns**:
-
-* `result` (number[])
-
-***
-
-### `currentSoundgenIndices`
+### `currentSoundGenIndices`
 <div class="search_terms" style="display: none">currentsoundgenindices</div>
 
-*Read-only*. The index of the currently used sound generator for each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/).
+*Read-only*. The index of the currently used sound generator for each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
@@ -277,10 +277,10 @@ Value      | Behavior
 
 ***
 
-### `modelRootNode`
-<div class="search_terms" style="display: none">modelrootnode, elrootnode</div>
+### `movementRootNode`
+<div class="search_terms" style="display: none">movementrootnode</div>
 
-
+Easy access to the actor's "MRT" movement root node.
 
 **Returns**:
 
@@ -310,10 +310,10 @@ Value      | Behavior
 
 ***
 
-### `positionDeltaModelRoot`
-<div class="search_terms" style="display: none">positiondeltamodelroot</div>
+### `positionDeltaMovementRoot`
+<div class="search_terms" style="display: none">positiondeltamovementroot</div>
 
-
+Tracks the change from the last frame of the "MRT" child node that controls animation driven movement.
 
 **Returns**:
 
@@ -492,4 +492,20 @@ local success = myObject:setOverrideLayerKeyframes(kfData)
 **Returns**:
 
 * `success` (boolean)
+
+***
+
+### `swapAnimationGroups`
+<div class="search_terms" style="display: none">swapanimationgroups</div>
+
+Swaps the animations and related animation driven data for the two animation groups given. Groups are indexed by [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/). It can be used on animation groups of the same class with matching actions, e.g. runForward1h and runForward2c. It will also work on animations that are currently playing, except attack animations. Changing an attack animation during an attack will permanently break the character controller until you change it back. Currently playing movement animations may be reset slightly to resynchronize the movement cycle.
+
+```lua
+myObject:swapAnimationGroups(group1, group2)
+```
+
+**Parameters**:
+
+* `group1` (number): An animation group to swap from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/).
+* `group2` (number): An animation group to swap from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/).
 

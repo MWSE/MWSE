@@ -37,7 +37,7 @@ namespace mwse::lua {
 			usertypeDefinition["health"] = &TES3::NPC::health;
 			usertypeDefinition["level"] = &TES3::NPC::level;
 			usertypeDefinition["magicka"] = &TES3::NPC::magicka;
-			usertypeDefinition["reputation"] = &TES3::NPC::reputation;
+			usertypeDefinition["reputation"] = &TES3::NPC::initialReputation;
 			usertypeDefinition["class"] = &TES3::NPC::class_;
 			usertypeDefinition["faction"] = &TES3::NPC::faction;
 			usertypeDefinition["race"] = &TES3::NPC::race;
@@ -72,7 +72,7 @@ namespace mwse::lua {
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition["model"] = sol::property(&TES3::NPC::getModelPath, &TES3::NPC::setModelPath);
 			usertypeDefinition["essential"] = sol::property(&TES3::NPC::getIsEssential_legacy, &TES3::NPC::setIsEssential_legacy);
-			usertypeDefinition["factionIndex"] = &TES3::NPC::reputation;
+			usertypeDefinition["factionIndex"] = &TES3::NPC::initialReputation;
 			usertypeDefinition["respawns"] = sol::property(&TES3::NPC::getRespawns_legacy, &TES3::NPC::setRespawns_legacy);
 		}
 
@@ -104,6 +104,7 @@ namespace mwse::lua {
 
 			// Convenient base object access.
 			usertypeDefinition["class"] = sol::readonly_property(&TES3::NPCInstance::getBaseClass);
+			usertypeDefinition["factionRank"] = sol::readonly_property(&TES3::NPCInstance::getBaseFactionRank);
 			usertypeDefinition["faction"] = sol::readonly_property(&TES3::NPCInstance::getBaseFaction);
 			usertypeDefinition["race"] = sol::readonly_property(&TES3::NPCInstance::getBaseRace);
 			usertypeDefinition["script"] = sol::readonly_property(&TES3::NPCInstance::getBaseScript);

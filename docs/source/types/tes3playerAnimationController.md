@@ -14,7 +14,7 @@ This type inherits the following: [tes3actorAnimationController](../types/tes3ac
 ### `allowVerticalAirControl`
 <div class="search_terms" style="display: none">allowverticalaircontrol</div>
 
-*Read-only*. 
+Controls if additional vertical movement is possible while jumping or falling, by looking up and down and moving forward in the air. It is unphysical and not used by any normal gameplay mechanic. It is independent of flying movement.
 
 **Returns**:
 
@@ -102,7 +102,7 @@ The actor's movement animations group. Maps to values in [`tes3.animationGroup`]
 ### `cameraOffset`
 <div class="search_terms" style="display: none">cameraoffset</div>
 
-*Read-only*. Additional offset applied to the camera's position during the third person.
+Additional offset applied to the camera's position in the third person view. It may be overridden by MGE.
 
 **Returns**:
 
@@ -297,21 +297,21 @@ For NPCs this corresponds to how long the weapon was charged by the NPC after th
 
 ***
 
-### `togglePOV`
-<div class="search_terms" style="display: none">togglepov, pov</div>
+### `switchPOVMode`
+<div class="search_terms" style="display: none">switchpovmode</div>
 
-*Read-only*. This property is set to `true` for one frame to change the point of view. Since this property is read-only, you can use [tes3.force1stPerson](https://mwse.github.io/MWSE/apis/tes3/#tes3force1stperson) and [tes3.force3rdPerson](https://mwse.github.io/MWSE/apis/tes3/#tes3force3rdperson).
+This property is briefly set to `1` (doesn't switch when incapacitated) or `2` (always switch) for one frame to change the point of view. You should prefer to use [tes3.force1stPerson](https://mwse.github.io/MWSE/apis/tes3/#tes3force1stperson) and [tes3.force3rdPerson](https://mwse.github.io/MWSE/apis/tes3/#tes3force3rdperson).
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (integer)
 
 ***
 
 ### `useThirdPersonAfterVanityCameraDone`
 <div class="search_terms" style="display: none">usethirdpersonaftervanitycameradone</div>
 
-*Read-only*. This flag is set to `true` if vanity mode was entered from third person view. If vanity mode was entered from first person view, this flag is set to `false`.
+This flag is set to `true` if vanity mode was entered from third person view. If vanity mode was entered from first person view, this flag is set to `false`.
 
 **Returns**:
 
@@ -322,7 +322,7 @@ For NPCs this corresponds to how long the weapon was charged by the NPC after th
 ### `vanityCamera`
 <div class="search_terms" style="display: none">vanitycamera</div>
 
-*Read-only*. 
+*Read-only*. The vanity camera scene node.
 
 **Returns**:
 
@@ -330,10 +330,21 @@ For NPCs this corresponds to how long the weapon was charged by the NPC after th
 
 ***
 
+### `vanityCameraAngle`
+<div class="search_terms" style="display: none">vanitycameraangle</div>
+
+The current heading of the orbiting vanity camera, in radians. An angle of 0 places the camera to the north of the player.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `vanityCameraDistance`
 <div class="search_terms" style="display: none">vanitycameradistance</div>
 
-*Read-only*. The orbiting radius of the camera during vanity mode in [game units](https://mwse.github.io/MWSE/references/general/game-units/). Measured from the center of the player's head.
+The orbiting radius of the camera during vanity mode in [game units](https://mwse.github.io/MWSE/references/general/game-units/). Measured from the center of the player's head.
 
 **Returns**:
 
@@ -344,7 +355,7 @@ For NPCs this corresponds to how long the weapon was charged by the NPC after th
 ### `vanityCameraEnabled`
 <div class="search_terms" style="display: none">vanitycameraenabled</div>
 
-*Read-only*. The value of this property is `1` during vanity camera mode, and `0` otherwise.
+The value of this property is `1` during vanity camera mode, and `0` otherwise.
 
 **Returns**:
 
@@ -355,7 +366,7 @@ For NPCs this corresponds to how long the weapon was charged by the NPC after th
 ### `vanityCameraZ`
 <div class="search_terms" style="display: none">vanitycameraz</div>
 
-*Read-only*. The offset on up-down (world z) axis of the camera in third person or during vanity mode from the player's head height in [game units](https://mwse.github.io/MWSE/references/general/game-units/).
+The offset on up-down (world z) axis of the camera in third person or during vanity mode from the player's head height in [game units](https://mwse.github.io/MWSE/references/general/game-units/).
 
 **Returns**:
 

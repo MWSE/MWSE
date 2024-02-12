@@ -68,6 +68,25 @@ local data, error = toml.loadFile(path)
 
 ***
 
+### `toml.loadMetadata`
+<div class="search_terms" style="display: none">loadmetadata</div>
+
+Loads a toml metadata file with a given key. This function is identical to `toml.loadFile` with a mod's metadata key to determine its path. Active lua mods already have their metadata loaded, which can be retrieved using `tes3.getLuaModMetadata()`.
+
+```lua
+local data = toml.loadMetadata(key)
+```
+
+**Parameters**:
+
+* `key` (string): The key for the metadata. This is the prefix before `-metadata.toml`, and matches a file found in Data Files.
+
+**Returns**:
+
+* `data` (table?): The decoded data, or `nil` if the file could not be loaded.
+
+***
+
 ### `toml.saveFile`
 <div class="search_terms" style="display: none">savefile</div>
 

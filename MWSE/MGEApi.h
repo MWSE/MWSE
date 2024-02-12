@@ -1,7 +1,7 @@
 #pragma once
 
 namespace mge {
-	static const int supported_api_version = 2;
+	static const int supported_api_version = 3;
 
 	struct MGEAPI {
 		virtual int getAPIVersion() const = 0;
@@ -213,6 +213,19 @@ namespace mge {
 
 		virtual void weatherScatteringSkylightGet(float* skylight);
 		virtual void weatherScatteringSkylightSet(float skylight[3]);
+	};
+
+	struct MGEAPIv3 : public MGEAPIv2 {
+		virtual float nearRenderDistanceGet();
+		virtual void nearRenderDistanceSet(float distance);
+
+		virtual bool shaderGetBoolArray(ShaderHandle handle, const char* variableName, int* values, size_t* count);
+		virtual bool shaderGetIntArray(ShaderHandle handle, const char* variableName, int* values, size_t* count);
+		virtual bool shaderGetVectorArray(ShaderHandle handle, const char* variableName, float* values, size_t* count);
+
+		virtual bool shaderSetBoolArray(ShaderHandle handle, const char* variableName, const int* values, size_t* count);
+		virtual bool shaderSetIntArray(ShaderHandle handle, const char* variableName, const int* values, size_t* count);
+		virtual bool shaderSetVectorArray(ShaderHandle handle, const char* variableName, const float* values, size_t* count);
 	};
 
 	inline MGEAPIv1* api = nullptr;

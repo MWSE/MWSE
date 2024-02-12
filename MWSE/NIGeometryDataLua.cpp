@@ -5,6 +5,7 @@
 
 #include "NIGeometryData.h"
 #include "NIRTTI.h"
+#include "NILinesData.h"
 #include "NiTriBasedGeometryData.h"
 #include "NITriShapeData.h"
 
@@ -19,6 +20,17 @@ namespace mwse::lua {
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::GeometryData>("niGeometryData");
 			usertypeDefinition[sol::base_classes] = sol::bases<NI::Object>();
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			// Base class binding.
+			setUserdataForNIGeometryData(usertypeDefinition);
+		}
+
+		// Bind NI::LinesData
+		{
+			// Start our usertype.
+			auto usertypeDefinition = state.new_usertype<NI::LinesData>("niLinesData");
+			usertypeDefinition[sol::base_classes] = sol::bases<NI::Object, NI::GeometryData>();
 			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Base class binding.

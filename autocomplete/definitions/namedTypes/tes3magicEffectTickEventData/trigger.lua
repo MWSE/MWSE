@@ -51,7 +51,10 @@ For example, the only effect in vanilla Morrowind that implements this function 
 	}},
 	returns = {
 		{ name = "eventResult", type = "boolean" },
-		{ name = "modifiedValue", type = "boolean|integer|number|tes3statistic", description = "The returned type depends on the passed `type` parameter." }
-
+		{
+			name = "modifiedValue",
+			type = "boolean|integer|number|tes3statistic",
+			description = "The passed `value`, scaled by resistance. The returned type depends on the passed `type` parameter."
+		}
 	}
 }

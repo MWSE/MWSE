@@ -53,3 +53,4 @@ The following patches are included by MWSE.
 - Fixes transparency effects from invisibility/chameleon from being desynced when changing equipment.
 - Prevents empty menu positions from saving to the ini file.
 - Updates animations for third person and first person player reference when idle mode is flagged.
+- Symbolically linked files now list and load correctly.

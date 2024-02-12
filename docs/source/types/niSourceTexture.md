@@ -492,7 +492,7 @@ local texture = niSourceTexture.createFromPath(path, useCached)
 
 **Parameters**:
 
-* `path` (string): The filepath of the texture to load.
+* `path` (string): The filepath of the texture to load. Relative to `Data Files\`.
 * `useCached` (boolean): *Default*: `true`. If true, the texture will be stored in the normal texture source cache, so that multiple calls to the same path will return the same object. This behavior can be disabled if necessary.
 
 **Returns**:

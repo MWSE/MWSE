@@ -22,6 +22,7 @@ namespace se::cs::window::main {
 	constexpr UINT WM_COMMAND_TOGGLE_BRIGHTEN_LIGHTS = 0x9D10;
 	constexpr UINT WM_COMMAND_TOGGLE_FOG = 0x9D24;
 	constexpr UINT WM_COMMAND_OPEN_DIALOGUE_MENU = 0x9D34;
+	constexpr UINT WM_COMMAND_OPEN_SEARCH_AND_REPLACE = 0x9CF3;
 	constexpr UINT WM_COMMAND_OPEN_SCRIPTS_MENU = 0x9CE3;
 	constexpr UINT WM_COMMAND_OPEN_SOUND_MENU = 0x9D35;
 
@@ -30,9 +31,9 @@ namespace se::cs::window::main {
 	constexpr UINT WM_COMMAND_TEST_IN_GAME_OPENMW = 0xA001;
 
 	// CSSE added menu
-	constexpr UINT MENU_ID_CSSE_SETTINGS = 100000;
-	constexpr UINT MENU_ID_CSSE_TEST_ENVIRONMENT = 100002;
-	constexpr UINT MENU_ID_CSSE_ABOUT = 100001;
+	constexpr UINT MENU_ID_CSSE_SETTINGS = 0x4000;
+	constexpr UINT MENU_ID_CSSE_TEST_ENVIRONMENT = 0x4001;
+	constexpr UINT MENU_ID_CSSE_ABOUT = 0x4002;
 
 	// Global variables.
 	using hInstance = memory::ExternalGlobal<HINSTANCE, 0x6CE930>;

@@ -67,6 +67,8 @@ namespace TES3 {
 		char* description;
 		unsigned int descriptionFileOffset;
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Skill;
+
 		Skill() = delete;
 		~Skill() = delete;
 

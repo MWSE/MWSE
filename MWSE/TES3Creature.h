@@ -58,6 +58,8 @@ namespace TES3 {
 	}
 
 	struct CreatureBase : Actor {
+		static constexpr auto OBJECT_TYPE = ObjectType::Creature;
+
 		//
 		// Custom functions.
 		//

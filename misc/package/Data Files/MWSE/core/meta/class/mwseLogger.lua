@@ -12,12 +12,12 @@ mwseLogger = {}
 --- Assert a condition and log an error if it fails.
 --- @param condition boolean No description yet available.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:assert(condition, message, ...) end
 
 --- Log debug message.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:debug(message, ...) end
 
 --- Returns true if the messages of the given log level will be logged.
@@ -27,12 +27,12 @@ function mwseLogger:doLog(logLevel) end
 
 --- Log error message.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:error(message, ...) end
 
 --- Log info message.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:info(message, ...) end
 
 --- Set the log level. Options are: "TRACE", "DEBUG", "INFO", "WARN", "ERROR" and "NONE".
@@ -45,11 +45,11 @@ function mwseLogger:setOutputFile(outputFile) end
 
 --- Log trace message.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:trace(message, ...) end
 
 --- Log warn message.
 --- @param message string No description yet available.
---- @param ... any? *Optional*. Formatting and additional parameters matching string.format's usage.
+--- @param ... any? *Optional*. Formatting arguments. These are passed to `string.format`.
 function mwseLogger:warn(message, ...) end
 

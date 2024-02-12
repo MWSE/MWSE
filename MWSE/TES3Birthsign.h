@@ -14,6 +14,8 @@ namespace TES3 {
 		TES3::SpellList spellList;			// 0x3C
 		unsigned int descriptionFileOffset; // 0x54
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Birthsign;
+
 		Birthsign() = delete;
 		~Birthsign() = delete;
 		

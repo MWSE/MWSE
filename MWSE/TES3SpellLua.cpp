@@ -15,7 +15,7 @@
 namespace mwse::lua {
 	TES3::Spell* createSpell(std::string id, sol::optional<std::string> name) {
 		// Make sure a spell doesn't already exist with this id.
-		if (TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(id, TES3::ObjectType::Spell) != nullptr) {
+		if (TES3::DataHandler::get()->nonDynamicData->objectExists(id)) {
 			return nullptr;
 		}
 

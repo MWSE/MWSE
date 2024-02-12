@@ -18,6 +18,8 @@ namespace TES3 {
 		short unknown_0xB2;
 		float quality; // 0xB4
 
+		static constexpr auto OBJECT_TYPE = ObjectType::Repair;
+
 		RepairTool() = delete;
 		~RepairTool() = delete;
 

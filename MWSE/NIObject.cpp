@@ -16,6 +16,7 @@
 #include "NIDirectionalLight.h"
 #include "NIExtraData.h"
 #include "NIKeyframeController.h"
+#include "NILines.h"
 #include "NILookAtController.h"
 #include "NINode.h"
 #include "NIObjectNET.h"
@@ -190,6 +191,9 @@ namespace NI {
 				break;
 			case RTTIStaticPtr::NiKeyframeData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<KeyframeData*>(this)));
+				break;
+			case RTTIStaticPtr::NiLines:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<Lines*>(this)));
 				break;
 			case RTTIStaticPtr::NiLookAtController:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<LookAtController*>(this)));

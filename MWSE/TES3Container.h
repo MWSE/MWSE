@@ -22,6 +22,8 @@ namespace TES3 {
 	}
 
 	struct ContainerBase : Actor {
+		static constexpr auto OBJECT_TYPE = ObjectType::Container;
+
 		//
 		// Custom functions.
 		//

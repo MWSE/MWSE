@@ -28,4 +28,6 @@ namespace se::math {
 		const NI::Vector3& planeOrigin, 
 		const NI::Vector3& planeNormal
 	);
+
+	unsigned int roundDownToPowerOfTwo(unsigned int x);
 }
