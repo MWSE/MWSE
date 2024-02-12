@@ -277,6 +277,37 @@ end
 require("table.clear")
 require("table.new")
 
+table.sorters = {
+	lt = function(a, b) return a < b end,
+
+	gt = function(a, b) return a > b end,
+
+	index = function(index) 
+		return function(a, b)
+			return a[index] < b[index]
+		end
+	end,
+
+	array = function(a, b)
+		for i = 1, math.min(#a, #b) do
+			if a[i] ~= b[i] then
+				return a[i] < b[i]
+			end
+		end
+	end,
+
+	---@param f fun(a,b): boolean
+	reverse = function(f) 
+		return function(a, b)
+			return f(b, a) 
+		end
+	end,
+
+	lowercase = function(a, b)
+		return a:lower() < b:lower()
+	end,
+}
+
 -- The # operator only really makes sense for continuous arrays. Get the real value.
 function table.size(t)
 	local count = 0
@@ -363,16 +394,12 @@ function table.deepcopy(t)
 	return copy
 end
 
-function table.copymissing(to, from)
-	if (type(to) ~= "table" or type(from) ~= "table") then
-		error("Arguments for table.copymissing must be tables.")
-	end
-
-	for k, v in pairs(from) do
-		if (type(to[k]) == "table" and type(v) == "table") then
-			table.copymissing(to[k], v)
-		else
-			if (to[k] == nil) then
+function table.copymissing(to, ...)
+	for _, from in ipairs{...} do
+		for k, v in pairs(from) do
+			if type(to[k]) == "table" and type(v) == "table" then
+				table.copymissing(to[k], v)
+			elseif to[k] == nil then
 				to[k] = v
 			end
 		end
@@ -490,37 +517,39 @@ end
 		on success: a table holding matching indices (e.g. { startindice,endindice } )
 		on failure: nil
 ]]--
-local function default_fcompval( value ) return value end
-local function fcompf( a,b ) return a < b end
-local function fcompr( a,b ) return a > b end
-function table.binsearch( t,value,compval,reversed )
+
+function table.binsearch(t, value, getCompVal, reversed)
 	-- Initialise functions
-	local compval = compval or default_fcompval
-	local fcomp = reversed and fcompr or fcompf
 	--  Initialise numbers
-	local iStart,iEnd,iMid = 1,#t,0
-	-- Binary Search
-	while iStart <= iEnd do
+	local lower, upper = 1, #t
+
+	local comp = reversed and table.sorters.gt or table.sorters.lt
+	local midpt, other, first, last
+
+	value = getCompVal(value)
+
+	while lower <= upper do
 		-- calculate middle
-		iMid = math.floor( (iStart+iEnd)/2 )
+		midpt = math.floor((upper + lower) / 2)
 		-- get compare value
-		local value2 = compval( t[iMid] )
-		-- get all values that match
-		if value == value2 then
-			local tfound,num = { iMid,iMid },iMid - 1
-			while value == compval( t[num] ) do
-				tfound[1],num = num,num - 1
+		other = getCompVal(t[midpt])
+		if value == other then
+			for i = midpt + 1, upper do
+				if getCompVal(t[i]) ~= value then
+					last = i - 1
+				end
 			end
-			num = iMid + 1
-			while value == compval( t[num] ) do
-				tfound[2],num = num,num + 1
+			for i = midpt - 1, lower, -1 do
+				if getCompVal(t[i]) ~= value then
+					first = i + 1
+				end
 			end
-			return tfound
+			return first, last
 		-- keep searching
-		elseif fcomp( value,value2 ) then
-			iEnd = iMid - 1
+		elseif comp(value, other) then
+			upper = midpt - 1
 		else
-			iStart = iMid + 1
+			lower = midpt + 1
 		end
 	end
 end
@@ -537,25 +566,28 @@ end
 	[, comp] behaves as in table.sort(table, value [, comp])
 	returns the index where 'value' was inserted
 ]]--
-local fcomp_default = function( a,b ) return a < b end
-function table.bininsert(t, value, comp)
+function table.bininsert(t, value, getCompVal, reversed)
 	-- Initialise compare function
-	local comp = comp or fcomp_default
+	local comp = reversed and table.sorters.gt or table.sorters.lt
 	--  Initialise numbers
-	local iStart,iEnd,iMid,iState = 1,#t,1,0
+	local lower, upper, midpt, offset = 1, #t, 1, 0
+
+	value = getCompVal(value)
+	local other
 	-- Get insert position
-	while iStart <= iEnd do
+	while lower <= upper do
 		-- calculate middle
-		iMid = math.floor( (iStart+iEnd)/2 )
+		midpt = math.floor((lower + upper) / 2)
+		other = getCompVal(midpt)
 		-- compare
-		if comp( value,t[iMid] ) then
-			iEnd,iState = iMid - 1,0
+		if comp(value, other) then
+			upper, offset = midpt - 1, 0
 		else
-			iStart,iState = iMid + 1,1
+			lower, offset = midpt + 1, 1
 		end
 	end
-	table.insert( t,(iMid+iState),value )
-	return (iMid+iState)
+	table.insert(t, midpt + offset, value)
+	return midpt + offset
 end
 
 function table.combine(...)
