@@ -648,45 +648,23 @@ function table.min(t, comp)
 	local kmin, vmin = next(t)
 	-- return now if `t` is empty
 	if not kmin then return end
-	if comp then
-		-- iterate throguh `t`, starting at `kmin`
-		for k, v in next, t, kmin do
-			-- means `v < vmin`
-			if comp(v, vmin) then
-				kmin, vmin = k, v
-			end
-		end
-	else
-		for k, v in next, t, kmin do
-			if v < vmin then
-				kmin, vmin = k, v
-			end
+
+	comp = comp or table.sorters.lt
+	-- iterate throguh `t`, starting at `kmin`
+	for k, v in next, t, kmin do
+		-- means `v < vmin`
+		if comp(v, vmin) then
+			kmin, vmin = k, v
 		end
 	end
 	return kmin, vmin
 end
 
 function table.max(t, comp)
-	-- set `kmax` and `vmax` to be the first entries of `t`
-	local kmax, vmax = next(t)
-	-- return now if `t` is empty
-	if not kmax then return end
-	if comp then
-		-- iterate throguh `t`, starting at `kmax`
-		for k, v in next, t, kmax do
-			-- means `vmax < v`
-			if comp(vmax, v) then
-				kmax, vmax = k, v
-			end
-		end
-	else
-		for k, v in next, t, kmax do
-			if vmax < v then
-				kmax, vmax = k, v
-			end
-		end
+	if comp == nil or comp == true then
+		return table.min(t, table.sorters.gt)
 	end
-	return kmax, vmax
+	return table.min(t, table.sorters.reverse(comp))
 end
 
 -- functional programming stuff
@@ -818,6 +796,18 @@ function table.filterarray(t, f, ...)
 	return tbl
 end
 
+function table.topairs(t, comp)
+	local arr = {}
+	for k,v in pairs(t) do
+		table.insert(arr, {k,v})
+	end
+	if comp then
+		if comp == true then
+			comp = function(a,b) return a[2] < b[2] end
+		end
+		table.sort(arr, comp)
+	end
+end
 -------------------------------------------------
 -- Extend base API: string
 -------------------------------------------------
