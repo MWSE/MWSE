@@ -67,21 +67,16 @@ end
 
 function Category:checkDisabled()
 	-- dont disable if there are no subcomponents
-	if next(self.components) == nil then return false end
+	if table.empty(self.components) then return false end
 
-	-- If has variables and all are inGameOnly, disable Category
-	local allSubcomponentsDisabled = true
+	-- dont disable if one subcomponent isn't disabled
 	for _, component in ipairs(self.components) do
-		-- only check nested categories if they're nonempty
-		if component.componentType == "Category" then
-			if next(component.components) ~= nil then
-				allSubcomponentsDisabled = allSubcomponentsDisabled and component:checkDisabled()
-			end
-		else
-			allSubcomponentsDisabled = allSubcomponentsDisabled and component:checkDisabled()
+		if not component:checkDisabled() then
+			return false
 		end
 	end
-	return (allSubcomponentsDisabled and not tes3.player)
+	-- disable if there are nested components and they're all disabled
+	return true
 end
 
 -- UI METHODS
