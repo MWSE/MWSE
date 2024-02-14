@@ -7,6 +7,8 @@
 --- @field components mwseMCMCategory[]|mwseMCMExclusionsPage[]|mwseMCMFilterPage[]|mwseMCMMouseOverPage[]|mwseMCMPage[]|mwseMCMSideBarPage[]|mwseMCMSideBySideBlock[]|mwseMCMActiveInfo[]|mwseMCMButton[]|mwseMCMCycleButton[]|mwseMCMDecimalSlider[]|mwseMCMDropdown[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMKeyBinder[]|mwseMCMMouseOverInfo[]|mwseMCMOnOffButton[]|mwseMCMParagraphField[]|mwseMCMPercentageSlider[]|mwseMCMSetting[]|mwseMCMSlider[]|mwseMCMTextField[]|mwseMCMYesNoButton[]|mwseMCMActiveInfo[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMMouseOverInfo[] An array of all the components in this Category.
 --- @field componentType "Category" The type of this component.
 --- @field elements mwseMCMCategoryElements|mwseMCMExclusionsPageElements|mwseMCMFilterPageElements|mwseMCMMouseOverPageElements|mwseMCMSideBarPageElements This dictionary-style table holds all the UI elements of the Category, for easy access.
+--- @field inGameOnly boolean If `true`, then this component, as well as any nested components, will only be shown when in game. i.e., after a save has been loaded.
+--- If `false` or `nil`, then this component will be hidden if all subcomponents are disabled (e.g., if all subcomponents have `inGameOnly == true` and a save hasn't been loaded).
 --- @field label string The category label.
 mwseMCMCategory = {}
 
