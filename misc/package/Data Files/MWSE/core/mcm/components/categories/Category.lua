@@ -66,6 +66,11 @@ function Category:update()
 end
 
 function Category:checkDisabled()
+	-- allow the user to override the behavior
+	if self.inGameOnly then 
+		return not tes3.player
+	end
+
 	-- dont disable if there are no subcomponents
 	if table.empty(self.components) then return false end
 
