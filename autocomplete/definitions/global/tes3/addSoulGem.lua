@@ -10,7 +10,7 @@ return {
 	}},
 	examples = {
 		["customSoulGem"] = {
-			title = "Make the Dwemer Tube a Soul gem. Also, make sure Fargoth's soul alway ends up in it if the player has one avilable.",
+			title = "Make Dwemer Tubes be treated as Soul gems. Also, make sure Fargoth's soul always ends up in one if the player has one avilable.",
 		}
 	},
 	returns = {{ name = "wasAdded", type = "boolean" }},
