@@ -107,6 +107,7 @@ namespace se::cs {
 			ColumnSettings column_count = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_creature_bipedal = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_creature_movement_type = { ColumnSettings::DEFAULT_SIZE_ID };
+			ColumnSettings column_creature_soul = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_creature_sound = { ColumnSettings::DEFAULT_SIZE_ID };
 			ColumnSettings column_creature_use_weapon_and_shield = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_effect = { ColumnSettings::DEFAULT_SIZE_ID };

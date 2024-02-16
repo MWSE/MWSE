@@ -21,10 +21,7 @@ local KeyBinder = Parent:new()
 KeyBinder.allowCombinations = true
 KeyBinder.allowMouse = false
 
---- @return string result
-function KeyBinder:getText()
-	return self:getComboString(self.variable.value)
-end
+
 
 --- @param keyCode integer|nil
 --- @return string|nil letter
@@ -106,11 +103,15 @@ function KeyBinder:getComboString(keyCombo)
 	                                       and keyCode ~= tes3.scanCode.rShift)
 	local hasCtrl = (keyCombo.isControlDown and keyCode ~= tes3.scanCode.lCtrl
 	                                        and keyCode ~= tes3.scanCode.rCtrl)
-	local prefix = (hasAlt and "Alt - " or hasShift and "Shift - " or hasCtrl and "Ctrl - " or "")
-
-	return (prefix .. comboText)
+	local prefixes = {}
+	if hasShift then table.insert(prefixes, "Shift") end
+	if hasAlt then table.insert(prefixes, "Alt") end
+	if hasCtrl then table.insert(prefixes, "Ctrl") end
+	table.insert(prefixes, comboText)
+	return table.concat(prefixes, " - ")
 end
 
+KeyBinder.convertToLabelValue = KeyBinder.getComboString
 
 --- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
 function KeyBinder:keySelected(e)
@@ -129,16 +130,14 @@ function KeyBinder:keySelected(e)
 		variable.isControlDown = e.isControlDown
 	end
 
-	self:setText(self:getText())
-	if self.callback then
-		self:callback()
-	end
+	self:update()
+	self.elements.outerContainer:updateLayout()
 end
 
 local popupId = tes3ui.registerID("KeyBinderPopup")
 
 --- @return tes3uiElement menu
-function KeyBinder:createMenu()
+function KeyBinder:createPopupMenu()
 	local menu = tes3ui.findHelpLayerMenu(popupId)
 
 	if not menu then
@@ -174,40 +173,30 @@ function KeyBinder:createMenu()
 	return menu
 end
 
-function KeyBinder:closeMenu()
-	local menu = tes3ui.findMenu(popupId)
-	if menu then
-		menu:destroy()
-	end
-end
-
---- @param eventId string
---- @param callback function
---- @param options? event.isRegistered.options
-local function unregisterEvent(eventId, callback, options)
-	if event.isRegistered(eventId, callback, options) then
-		event.unregister(eventId, callback, options --[[@as event.unregister.options]])
-	end
-end
 
 function KeyBinder:showKeyBindMessage()
-	self:createMenu()
+	self:createPopupMenu()
 
 	--- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
 	local function waitInput(e)
 		-- Unregister this function once we got some input
-		unregisterEvent(tes3.event.keyUp, waitInput)
-		unregisterEvent(tes3.event.mouseButtonDown, waitInput)
-		unregisterEvent(tes3.event.mouseWheel, waitInput)
+		event.unregister(tes3.event.keyUp, waitInput)
+		if self.allowMouse then
+			event.unregister(tes3.event.mouseButtonDown, waitInput)
+			event.unregister(tes3.event.mouseWheel, waitInput)
+		end
 
-		-- Allow closing the menu using escape
+		local popup = tes3ui.findMenu(popupId)
+		if popup then
+			popup:destroy()
+		end
+
+		-- Allow closing the menu using escape, wihout binding anything
 		if e.keyCode == tes3.scanCode.esc then
-			self:closeMenu()
 			return
 		end
 
 		self:keySelected(e)
-		self:closeMenu()
 	end
 
 	event.register(tes3.event.keyUp, waitInput)
@@ -217,7 +206,7 @@ function KeyBinder:showKeyBindMessage()
 	end
 end
 
-function KeyBinder:update()
+function KeyBinder:press()
 	-- Display message to change keybinding
 	self:showKeyBindMessage()
 end
@@ -229,7 +218,6 @@ end
 function KeyBinder:createOuterContainer(parentBlock)
 	Parent.createOuterContainer(self, parentBlock)
 	self.elements.outerContainer.autoWidth = false
-	self.elements.outerContainer.widthProportional = 1.0
 	-- self.elements.outerContainer.borderRight = self.indent
 end
 

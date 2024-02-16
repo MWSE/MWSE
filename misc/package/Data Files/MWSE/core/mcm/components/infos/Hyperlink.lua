@@ -11,19 +11,6 @@ local Parent = require("mcm.components.infos.Info")
 --- @class mwseMCMHyperlink
 --- @field exec string *Deprecated*
 local Hyperlink = Parent:new()
-Hyperlink.sExecute = mwse.mcm.i18n("Open web browser?")
-
-function Hyperlink:execute()
-	tes3.messageBox({
-		message = self.sExecute,
-		buttons = { self.sYes, self.sNo },
-		callback = function(e)
-			if e.button == 0 then
-				os.openURL(self.url)
-			end
-		end,
-	})
-end
 
 --- @param parentBlock tes3uiElement
 function Hyperlink:makeComponent(parentBlock)
@@ -37,22 +24,16 @@ function Hyperlink:makeComponent(parentBlock)
 		self:printComponent()
 	end
 
-	local link = parentBlock:createTextSelect{ text = self.text }
-	link.color = tes3ui.getPalette("link_color")
-	link.widget.idle = tes3ui.getPalette("link_color")
-	link.widget.over = tes3ui.getPalette("link_over_color")
-	link.widget.pressed = tes3ui.getPalette("link_pressed_color")
+	local link = parentBlock:createHyperlink({
+		text = self.text,
+		url = self.url,
+	})
 
 	link.borderRight = self.indent -- * 2
 	link.wrapText = true
-	link.text = self.text
 	link.autoHeight = true
 	link.autoWidth = true
 	link.widthProportional = 1.0
-	link:register("mouseClick", function(e)
-		self:execute()
-	end)
-
 	self.elements.info = link
 	return link
 end

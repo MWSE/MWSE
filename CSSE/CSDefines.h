@@ -16,6 +16,7 @@ namespace se::cs {
 	struct DataHandler;
 	struct Dialogue;
 	struct DialogueInfo;
+	struct Door;
 	struct Effect;
 	struct Enchantment;
 	struct Faction;

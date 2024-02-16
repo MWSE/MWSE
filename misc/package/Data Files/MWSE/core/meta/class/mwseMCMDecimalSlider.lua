@@ -5,20 +5,10 @@
 --- A slider for setting decimal values at given number of decimal places.
 --- @class mwseMCMDecimalSlider : mwseMCMSlider, mwseMCMSetting, mwseMCMComponent
 --- @field decimalPlaces integer The number of decimal places of precision. Must be a positive integer. Default is `2`.
---- @field elements mwseMCMSliderElements This dictionary-style table holds all the UI elements of the Slider, for easy access.
---- @field jump number How far the slider jumps when you click an area inside the slider. Default is `0.05`.
 --- @field max number Maximum value of slider. Default is `1.0`.
 --- @field min number Minimum value of slider. Default is `0.0`.
 --- @field step number How far the slider moves when you press the arrows. Default is `0.01`.
 mwseMCMDecimalSlider = {}
-
---- This method creates the UI elements specific to Slider.
---- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMDecimalSlider:createContentsContainer(parentBlock) end
-
---- This method creates the sliderBlock and slider UI elements of the Slider.
---- @param parentBlock tes3uiElement No description yet available.
-function mwseMCMDecimalSlider:makeComponent(parentBlock) end
 
 --- Creates a new DecimalSlider.
 --- @param data mwseMCMDecimalSlider.new.data? This table accepts the following values:
@@ -63,7 +53,7 @@ function mwseMCMDecimalSlider:makeComponent(parentBlock) end
 --- 
 --- `componentType`: string? — *Optional*. No description yet available.
 --- 
---- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
+--- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
 --- @return mwseMCMDecimalSlider slider No description yet available.
 function mwseMCMDecimalSlider:new(data) end
 
@@ -89,15 +79,5 @@ function mwseMCMDecimalSlider:new(data) end
 --- @field postCreate nil|fun(self: mwseMCMDecimalSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
 --- @field componentType string? *Optional*. No description yet available.
---- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
-
---- This registers event handlers for `tes3.uiEvent.mouseClick` and `tes3.uiEvent.mouseRelease` that call `self:update()`.
---- @param element tes3uiElement No description yet available.
-function mwseMCMDecimalSlider:registerSliderElement(element) end
-
---- Updates the variable's value to the current value of the slider element. Calls the Slider's callback method and if `restartRequired` is set to true, notifies the player to restart the game.
-function mwseMCMDecimalSlider:update() end
-
---- Updates the label text of the slider to show the current value of the slider.
-function mwseMCMDecimalSlider:updateValueLabel() end
+--- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDecimalSlider|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 

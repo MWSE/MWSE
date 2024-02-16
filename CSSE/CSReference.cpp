@@ -8,14 +8,19 @@ namespace se::cs {
 		return Reference_getLightAttachment(this);
 	}
 
+	TravelDestination* Reference::getTravelDestination() const {
+		const auto Reference_getTravelDestination = reinterpret_cast<TravelDestination * (__thiscall*)(const Reference*)>(0x53D950);
+		return Reference_getTravelDestination(this);
+	}
+
+	Reference* Reference::getDoorMarkerBackReference() const {
+		const auto Reference_getAttachment7 = reinterpret_cast<Reference * (__thiscall*)(const Reference*)>(0x53F3B0);
+		return Reference_getAttachment7(this);
+	}
+
 	void Reference::setAsEdited() const {
 		const auto Reference_setModifiedUpdateBaseObjectAndAttachment7 = reinterpret_cast<void(__thiscall*)(const Reference*)>(0x4026E4);
 		Reference_setModifiedUpdateBaseObjectAndAttachment7(this);
-	}
-
-	Reference* Reference::getAttachment7() const {
-		const auto Reference_getAttachment7 = reinterpret_cast<Reference * (__thiscall*)(const Reference*)>(0x53F3B0);
-		return Reference_getAttachment7(this);
 	}
 
 	void Reference::updateRotationMatrixForRaceAndSex(NI::Matrix33& matrix, bool unknown) const {

@@ -222,7 +222,7 @@ local i18n = mwse.loadTranslations(mod)
 
 **Returns**:
 
-* `i18n` (fun(key: string, data: any?): string): The callable translation results.
+* `i18n` (fun(key: string, data: any): string): The callable translation results.
 
 ***
 
@@ -305,7 +305,7 @@ local success = mwse.overrideScript(scriptId, callback)
 	
 	local function raceCheck()
 		-- It's almost always the desired behavior to stop the mwscript,
-		-- since we are overriding the it.
+		-- since we are overriding it.
 		---@diagnostic disable-next-line: deprecated
 		mwscript.stopScript({ script = raceCheckScriptID })
 	

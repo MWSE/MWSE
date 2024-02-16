@@ -30,7 +30,7 @@ local result = table.bininsert(t, value, comp)
 
 * `t` (table)
 * `value` (unknown)
-* `comp` (fun(a: , b: ): boolean): *Optional*.
+* `comp` (fun(a, b): boolean): *Optional*.
 
 **Returns**:
 
@@ -188,6 +188,57 @@ local result = table.empty(t, deepCheck)
 
 ***
 
+### `table.filter`
+<div class="search_terms" style="display: none">filter</div>
+
+Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(k, v)` was not `false` or `nil`.
+Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(k, v, 10)` on each pair `k, v` of `t`.
+
+!!! warning
+ 	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
+
+
+```lua
+local result = table.filter(t, f, ...)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `f` (fun(k: unknown, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of using `f` to filter out elements of `t`.
+
+***
+
+### `table.filterarray`
+<div class="search_terms" style="display: none">filterarray</div>
+
+Creates a new array-style table that results from using `f` to filter out elements of an array-style table `arr`. i.e., `table.filterarray(arr, f)` 
+will consist of only the pairs `i, v` of `arr` for which `f(i, v)` was not `false` or `nil`.
+Any additional arguments will be passed to `f`. For example, `table.filterarray(arr, f, 10)` would call `f(i, v, 10)` on each value pair `i, v` of `arr`.
+
+When an element gets filtered out, the index of subsequent items will be shifted down, so that the resulting table plays nicely with the `#` operator and the `ipairs` function.
+
+```lua
+local result = table.filterarray(arr, f, ...)
+```
+
+**Parameters**:
+
+* `arr` (table)
+* `f` (fun(i: integer, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of using `f` to filter out elements of `t`.
+
+***
+
 ### `table.find`
 <div class="search_terms" style="display: none">find</div>
 
@@ -286,6 +337,28 @@ local keys = table.keys(t, sort)
 **Returns**:
 
 * `keys` (table): An array of all table keys.
+
+***
+
+### `table.map`
+<div class="search_terms" style="display: none">map</div>
+
+Creates a new table consisting of key value pairs `k, f(k, v)`, where `k, v` is a pair in `t`.
+Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(k, v, 10)` on each value `v` of `t`.
+
+```lua
+local result = table.map(t, f, ...)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `f` (fun(k: unknown, v: unknown, ...))
+* `...` (any): Additional parameters to pass to `f`.
+
+**Returns**:
+
+* `result` (table): The result of applying `f` to each value in `t`.
 
 ***
 

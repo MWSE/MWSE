@@ -1,5 +1,5 @@
 return {
 	type = "value",
 	description = [[Maximum value of slider. Default is `100`.]],
-	valuetype = "integer",
+	valuetype = "number",
 }

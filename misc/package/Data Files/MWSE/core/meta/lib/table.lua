@@ -78,6 +78,29 @@ function table.deepcopy(t) end
 --- @return boolean result No description yet available.
 function table.empty(t, deepCheck) end
 
+--- Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(k, v)` was not `false` or `nil`.
+--- Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(k, v, 10)` on each pair `k, v` of `t`.
+--- 
+--- !!! warning
+---  	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
+--- 
+--- @param t table No description yet available.
+--- @param f fun(k: unknown, v: unknown, ...) No description yet available.
+--- @param ... any Additional parameters to pass to `f`.
+--- @return table result The result of using `f` to filter out elements of `t`.
+function table.filter(t, f, ...) end
+
+--- Creates a new array-style table that results from using `f` to filter out elements of an array-style table `arr`. i.e., `table.filterarray(arr, f)` 
+--- will consist of only the pairs `i, v` of `arr` for which `f(i, v)` was not `false` or `nil`.
+--- Any additional arguments will be passed to `f`. For example, `table.filterarray(arr, f, 10)` would call `f(i, v, 10)` on each value pair `i, v` of `arr`.
+--- 
+--- When an element gets filtered out, the index of subsequent items will be shifted down, so that the resulting table plays nicely with the `#` operator and the `ipairs` function.
+--- @param arr table No description yet available.
+--- @param f fun(i: integer, v: unknown, ...) No description yet available.
+--- @param ... any Additional parameters to pass to `f`.
+--- @return table result The result of using `f` to filter out elements of `t`.
+function table.filterarray(arr, f, ...) end
+
 --- Returns the key for a given value, or `nil` if the table does not contain the value.
 --- @param t table No description yet available.
 --- @param value unknown No description yet available.
@@ -108,6 +131,14 @@ function table.invert(t) end
 --- @param sort boolean|function|nil *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
 --- @return table keys An array of all table keys.
 function table.keys(t, sort) end
+
+--- Creates a new table consisting of key value pairs `k, f(k, v)`, where `k, v` is a pair in `t`.
+--- Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(k, v, 10)` on each value `v` of `t`.
+--- @param t table No description yet available.
+--- @param f fun(k: unknown, v: unknown, ...) No description yet available.
+--- @param ... any Additional parameters to pass to `f`.
+--- @return table result The result of applying `f` to each value in `t`.
+function table.map(t, f, ...) end
 
 --- This creates a pre-sized table. This is useful for big tables if the final table size is known and automatic table resizing is too expensive.
 --- @param narray number A hint for how many elements the array part of the table will have. Allocates fields for [0, narray].

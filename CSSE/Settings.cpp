@@ -178,6 +178,7 @@ namespace se::cs {
 		column_count = toml::find_or(v, "column_count", column_count);
 		column_creature_bipedal = toml::find_or(v, "column_creature_bipedal", column_creature_bipedal);
 		column_creature_movement_type = toml::find_or(v, "column_creature_movement_type", column_creature_movement_type);
+		column_creature_soul = toml::find_or(v, "column_creature_soul", column_creature_soul);
 		column_creature_sound = toml::find_or(v, "column_creature_sound", column_creature_sound);
 		column_creature_use_weapon_and_shield = toml::find_or(v, "column_creature_use_weapon_and_shield", column_creature_use_weapon_and_shield);
 		column_effect = toml::find_or(v, "column_effect", column_effect);
@@ -262,6 +263,7 @@ namespace se::cs {
 				{ "column_count", column_count },
 				{ "column_creature_bipedal", column_creature_bipedal },
 				{ "column_creature_movement_type", column_creature_movement_type },
+				{ "column_creature_soul", column_creature_soul },
 				{ "column_creature_sound", column_creature_sound },
 				{ "column_creature_use_weapon_and_shield", column_creature_use_weapon_and_shield },
 				{ "column_effect", column_effect },

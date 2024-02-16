@@ -28,7 +28,6 @@ namespace se::cs {
 		float capacity; // 0x90
 
 		bool getIsOrganic() const;
-		bool getRespawns() const;
 	};
 	static_assert(sizeof(Container) == 0x94, "Container failed size validation");
 }

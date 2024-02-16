@@ -36,7 +36,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -124,7 +124,7 @@ The left padding size in pixels. Only used if the `childIndent` isn't set on the
 ### `inGameOnly`
 <div class="search_terms" style="display: none">ingameonly</div>
 
-Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
+If true, then this component will be disabled when on the main menu.
 
 **Returns**:
 
@@ -146,7 +146,7 @@ The text of the component. Not all component types have a label.
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -245,6 +245,28 @@ Set to the value of `sCancel` GMST.
 
 ***
 
+### `searchChildDescriptions`
+<div class="search_terms" style="display: none">searchchilddescriptions</div>
+
+If true, when the user searches the MCM list, all the pages and settings in this MCM template will be searched over. The matching will be performed on setting `description` fields.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `searchChildLabels`
+<div class="search_terms" style="display: none">searchchildlabels</div>
+
+If true, when the user searches the MCM list, all the pages and settings in this MCM template will be searched over. The matching will be performed on setting `label` and `text` fields.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `sNo`
 <div class="search_terms" style="display: none">sno</div>
 
@@ -256,10 +278,32 @@ Set to the value of `sNo` GMST.
 
 ***
 
+### `sOff`
+<div class="search_terms" style="display: none">soff</div>
+
+Set to the value of `sOff` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `sOK`
 <div class="search_terms" style="display: none">sok</div>
 
 Set to the value of `sOK` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `sOn`
+<div class="search_terms" style="display: none">son</div>
+
+Set to the value of `sOn` GMST.
 
 **Returns**:
 
@@ -641,28 +685,30 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 * `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
 	* `class` (string): The component type to get. On of the following:
+		- `"Template"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
+		- `"MouseOverPage"`
+		- `"Page"`
+		- `"SideBarPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Button"`
-		- `"DecimalSlider"`
-		- `"Dropdown"`
-		- `"KeyBinder"`
-		- `"OnOffButton"`
-		- `"ParagraphField"`
 		- `"Setting"`
-		- `"Slider"`
-		- `"TextField"`
+		- `"Button"`
+		- `"OnOffButton"`
 		- `"YesNoButton"`
-		- `"Template"`
+		- `"CycleButton"`
+		- `"KeyBinder"`
+		- `"Dropdown"`
+		- `"TextField"`
+		- `"ParagraphField"`
+		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -684,7 +730,7 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 Creates a new Template.
 
 ```lua
-local template = myObject:new({ name = ..., label = ..., headerImagePath = ..., onClose = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., class = ..., parentComponent = ... })
+local template = myObject:new({ name = ..., label = ..., headerImagePath = ..., onClose = ..., searchChildLabels = ..., searchChildDescriptions = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., class = ..., parentComponent = ... })
 ```
 
 **Parameters**:
@@ -694,6 +740,8 @@ local template = myObject:new({ name = ..., label = ..., headerImagePath = ..., 
 	* `label` (string): *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
 	* `headerImagePath` (string): *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
+	* `searchChildLabels` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
+	* `searchChildDescriptions` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
 	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
 	* `pages` (mwseMCMPage.new.data[]): *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
@@ -714,7 +762,7 @@ local template = myObject:new({ name = ..., label = ..., headerImagePath = ..., 
 ### `onSearchInternal`
 <div class="search_terms" style="display: none">onsearchinternal</div>
 
-This method calls the `onSearch` handler if it exists.
+Performs searching routine for given `searchText`.
 
 ```lua
 local result = myObject:onSearchInternal(searchText)
@@ -726,7 +774,7 @@ local result = myObject:onSearchInternal(searchText)
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (boolean): True if given `searchText` matches this MCM template.
 
 ***
 
@@ -767,7 +815,7 @@ myObject:printComponent(component)
 ### `register`
 <div class="search_terms" style="display: none">register</div>
 
-A convenience function that registers the mod's configuration menu using its Template.
+A convenience function that registers the mod's configuration menu using its Template. In addition, sets `self:onSearchInternal` as the `onSearch` handler.
 
 You don't need to call `mwse.registerModConfig` or `mwse.mcm.register` if calling this function.
 
@@ -780,7 +828,7 @@ myObject:register()
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)

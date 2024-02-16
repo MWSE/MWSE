@@ -469,6 +469,42 @@ namespace se::cs::dialog::dialogue_window {
 	}
 
 	//
+	// Patch: Change behavior of local variable filtering.
+	// 
+	// By default the game shows all locals. This change makes it so that if filtering by an actor, it will only show
+	// locals that are on that NPC.
+	//
+
+	void __cdecl PatchFillConditionCombos(HWND hWnd, int controlIdOffset, int conditionType) {
+		const auto CS_FillConditionCombos = reinterpret_cast<void(__cdecl*)(HWND, int, int)>(0x4E7C00);
+
+		const auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		const auto filterScript = (userData && userData->currentFilterObject) ? userData->currentFilterObject->getScript() : nullptr;
+
+		// We only care if we are filtering for local variables, and have a script.
+		if (filterScript == nullptr || (conditionType != DialogueInfo::Condition::TypeLocal && conditionType != DialogueInfo::Condition::TypeNotLocal)) {
+			CS_FillConditionCombos(hWnd, controlIdOffset, conditionType);
+			return;
+		}
+
+		// Here we just want to clear the combo and add all the filtered actor's local variables.
+		const auto hConditionCombo = GetDlgItem(hWnd, controlIdOffset + CONTROL_ID_CONDITION_FUNCTION1_VARIABLE_COMBO);
+		ComboBox_ResetContent(hConditionCombo);
+		for (auto i = 0; i < filterScript->header.numShorts; ++i) {
+			auto index = ComboBox_AddString(hConditionCombo, filterScript->getShortVarName(i));
+			ComboBox_SetItemData(hConditionCombo, index, 's');
+		}
+		for (auto i = 0; i < filterScript->header.numLongs; ++i) {
+			auto index = ComboBox_AddString(hConditionCombo, filterScript->getLongVarName(i));
+			ComboBox_SetItemData(hConditionCombo, index, 'l');
+		}
+		for (auto i = 0; i < filterScript->header.numFloats; ++i) {
+			auto index = ComboBox_AddString(hConditionCombo, filterScript->getFloatVarName(i));
+			ComboBox_SetItemData(hConditionCombo, index, 'f');
+		}
+	}
+
+	//
 	// Patch: Change behavior of cell filtering.
 	//
 
@@ -1351,6 +1387,9 @@ namespace se::cs::dialog::dialogue_window {
 
 		// Patch: Allow filtering of topic list.
 		genCallEnforced(0x4E7143, 0x404160, reinterpret_cast<DWORD>(PatchTopicListAddItem));
+
+		// Patch: Change behavior of local variable filtering.
+		genJumpEnforced(0x40484A, 0x4E7C00, reinterpret_cast<DWORD>(PatchFillConditionCombos));
 
 		// Patch: Change behavior of cell filtering.
 		genNOPUnprotected(0x4F1D25, 0x4F1DA6 - 0x4F1D25);

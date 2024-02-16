@@ -16,16 +16,17 @@
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
+#include "CSDoor.h"
 #include "CSGameFile.h"
 #include "CSLandTexture.h"
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 #include "CSStatic.h"
 
-#include "Settings.h"
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowSelectionData.h"
 #include "RenderWindowWidgets.h"
+#include "Settings.h"
 
 #include "DialogLandscapeEditSettingsWindow.h"
 #include "WindowMain.h"
@@ -2161,26 +2162,71 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
-	void PatchDialogProc_BeforeKeyDown(DialogProcContext& context) {
+	void focusReference(const Reference* reference) {
+		const auto CS_DataHandler_403A8F = reinterpret_cast<void(__thiscall*)(DataHandler*, Cell*, const NI::Vector3*)>(0x403A8F);
+		const auto CS_DataHandler_4034B8 = reinterpret_cast<void(__thiscall*)(DataHandler*, const NI::Vector3*)>(0x4034B8);
+		const auto CS_SendCommandToLoadCell = reinterpret_cast<void(__cdecl*)(const NI::Vector3*, const Reference*)>(0x403A12);
+
+		const auto dataHandler = DataHandler::get();
+		const auto cell = reference->getCell();
+		if (cell->getIsInterior()) {
+			CS_DataHandler_403A8F(dataHandler, cell, &reference->position);
+		}
+		else if (dataHandler->currentInteriorCell) {
+			CS_DataHandler_4034B8(dataHandler, &reference->position);
+		}
+
+		CS_SendCommandToLoadCell(&reference->position, reference);
+	}
+
+	void PatchDialogProc_BeforeKeyDown_F2(DialogProcContext& context) {
 		using windows::isControlDown;
 		using windows::isShiftDown;
 
-		const auto landscapeEditWindow = landscape_edit_settings_window::gWindowHandle::get();
-
 		const auto selectionData = SelectionData::get();
+		if (selectionData->firstTarget == nullptr) {
+			return;
+		}
+
+		const auto reference = selectionData->firstTarget->reference;
+
+		// If we are holding the shift key, open the base object editor.
+		if (isShiftDown()) {
+			window::main::showObjectEditWindow(reference->baseObject);
+		}
+		// If control is down, focus the associated marker/door.
+		else if (isControlDown()) {
+			const auto baseObject = reference->baseObject;
+			// Door markers focus the associated door.
+			if (baseObject == Static::gDoorMarker::get()) {
+				const auto loadDoor = reference->getDoorMarkerBackReference();
+				if (loadDoor) {
+					focusReference(loadDoor);
+				}
+			}
+			else if (baseObject->objectType == ObjectType::Door) {
+				const auto travelDestination = reference->getTravelDestination();
+				if (travelDestination) {
+					focusReference(travelDestination->destination);
+				}
+			}
+		}
+		// If no modifier keys are pressed, edit the reference.
+		else {
+			window::main::showObjectEditWindow(reference);
+		}
+
+		context.setResult(TRUE);
+	}
+
+	void PatchDialogProc_BeforeKeyDown(DialogProcContext& context) {
+		using windows::isControlDown;
+
+		const auto landscapeEditWindow = landscape_edit_settings_window::gWindowHandle::get();
 
 		switch (context.getKeyVirtualCode()) {
 		case VK_F2:
-			if (selectionData->firstTarget) {
-				const auto reference = selectionData->firstTarget->reference;
-				if (isShiftDown()) {
-					window::main::showObjectEditWindow(reference->baseObject);
-				}
-				else {
-					window::main::showObjectEditWindow(reference);
-				}
-				context.setResult(TRUE);
-			}
+			PatchDialogProc_BeforeKeyDown_F2(context);
 			break;
 		case VK_OEM_4: // [
 			if (landscapeEditWindow) {

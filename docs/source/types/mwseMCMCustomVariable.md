@@ -40,7 +40,7 @@ This function is called when the value of the variable is changed. The function 
 
 **Returns**:
 
-* `result` (fun(newValue: ): unknown)
+* `result` (fun(newValue): unknown)
 
 ***
 
@@ -150,7 +150,7 @@ local variable = myObject:new({ id = ..., getter = ..., setter = ..., inGameOnly
 	* `numbersOnly` (boolean): *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 	* `restartRequiredMessage` (string): *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
-	* `converter` (fun(newValue: ): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+	* `converter` (fun(newValue): unknown): *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 **Returns**:
 

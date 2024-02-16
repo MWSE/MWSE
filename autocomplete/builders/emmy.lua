@@ -83,22 +83,21 @@ end
 
 --- @param types string[]
 local function insertNil(types)
-	local hasNil = false
-	for _, type in ipairs(types) do
+	for i, type in ipairs(types) do
 		if type == "nil" then
-			hasNil = true
-		elseif type:startswith("fun(") then
+			return
+		end
+		if type:startswith("fun(") then
 			-- If the type ends with "|fun(): someReturnType", don't append nil
 			-- at the end. That won't make the argument optional, but will
 			-- change the type of the function's return value
-			table.insert(types, #types, "nil")
-			hasNil = true
-			break
+			-- Instead, we'll insert `nil` right before `fun(...):...`, so that
+			-- the full type will look like `...|nil|fun(...):...|...`
+			table.insert(types, i, "nil")
+			return
 		end
 	end
-	if (not hasNil) then
-		table.insert(types, "nil")
-	end
+	table.insert(types, "nil")
 end
 
 local function getAllPossibleVariationsOfType(type, package)

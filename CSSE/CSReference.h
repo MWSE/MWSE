@@ -14,7 +14,7 @@ namespace se::cs {
 			LeveledBaseReference = 4,
 			TravelDestination = 5,
 			Variables = 6,
-			Unknown7 = 7,
+			LoadDoorBackReference = 7,
 			ActorData = 8,
 			Action = 9,
 			NewOrientation = 10,
@@ -31,12 +31,23 @@ namespace se::cs {
 	};
 	static_assert(sizeof(AttachmentWithNode<void>) == 0xC, "TES3::AttachmentWithNode failed size validation");
 
+	typedef AttachmentWithNode<Reference*> LoadDoorBackReferenceAttachment;
+
 	struct LightAttachmentNode {
 		NI::Pointer<NI::Light> light; // 0x0 // Note: This seems like it may be part of a larger structure.
 		float flickerPhase; // 0x4
 	};
 	static_assert(sizeof(LightAttachmentNode) == 0x8, "TES3::LightAttachmentNode failed size validation");
 	typedef AttachmentWithNode<LightAttachmentNode> LightAttachment;
+
+
+	struct TravelDestination {
+		Cell* cell; // 0x0
+		char* cellName; // 0x4
+		Reference* destination; // 0x8
+	};
+	static_assert(sizeof(TravelDestination) == 0xC, "TES3::TravelDestination failed size validation");
+	typedef AttachmentWithNode<TravelDestination> TravelDestinationAttachment;
 
 	struct Reference : Object {
 		struct ReferenceData {
@@ -64,11 +75,12 @@ namespace se::cs {
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
 		LightAttachmentNode* getLightAttachment() const;
+		TravelDestination* getTravelDestination() const;
+		Reference* getDoorMarkerBackReference() const;
 
 		// Sets reference as modified, sets baseObject's flag 80, and if there is an attachment7 it sets that as modified too.
 		void setAsEdited() const;
 
-		Reference* getAttachment7() const;
 
 		void updateRotationMatrixForRaceAndSex(NI::Matrix33& matrix, bool unknown = false) const;
 

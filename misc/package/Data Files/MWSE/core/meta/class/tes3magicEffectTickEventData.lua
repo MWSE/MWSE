@@ -7,7 +7,7 @@
 --- @field deltaTime number The time passed since the last tick of the spell.
 --- @field effectId tes3.effect|integer Maps to values in [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table.
 --- @field effectIndex integer The index of the effect in the spell.
---- @field effectInstance tes3magicEffectInstance The time passed since the last tick of the spell.
+--- @field effectInstance tes3magicEffectInstance Access to the magic effect instance.
 --- @field sourceInstance tes3magicSourceInstance Access to the magic source of the effect instance.
 tes3magicEffectTickEventData = {}
 
@@ -28,7 +28,7 @@ tes3magicEffectTickEventData = {}
 --- --- 
 --- --- For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired.
 --- @return boolean eventResult No description yet available.
---- @return boolean|integer|number|tes3statistic|tes3statisticSkill modifiedValue The returned type depends on the passed `type` parameter.
+--- @return boolean|integer|number|tes3statistic|tes3statisticSkill modifiedValue The passed `value`, scaled by resistance. The returned type depends on the passed `type` parameter.
 function tes3magicEffectTickEventData:trigger(params) end
 
 ---Table parameter definitions for `tes3magicEffectTickEventData.trigger`.
@@ -42,9 +42,9 @@ function tes3magicEffectTickEventData:trigger(params) end
 --- 
 --- For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired.
 
---- Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s).
+--- Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s). To summon gauntlets, provide two IDs.
 --- @param id string The ID of the armor object to summon.
---- @param id2 string? *Optional*. The ID of the additional armor object to summon.
+--- @param id2 string? *Optional*. The ID of the additional gauntlet object to summon. The second item ID can only be a gauntlet object.
 function tes3magicEffectTickEventData:triggerBoundArmor(id, id2) end
 
 --- Performs vanilla weapon summoning logic. It will create a summoned version of the weapon with provided ID.

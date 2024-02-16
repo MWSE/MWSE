@@ -36,7 +36,7 @@ The bottom border size in pixels. Used on all the child components.
 ### `class`
 <div class="search_terms" style="display: none">class</div>
 
-
+Every MCM component has a unique string indentifier specific to that component. These strings are the filename of the file implementing a component. These are found in `core\\mcm\\components`.
 
 **Returns**:
 
@@ -124,7 +124,8 @@ The left padding size in pixels. Only used if the `childIndent` isn't set on the
 ### `inGameOnly`
 <div class="search_terms" style="display: none">ingameonly</div>
 
-Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
+If `true`, then this component, as well as any nested components, will only be shown when in game. i.e., after a save has been loaded.
+If `false` or `nil`, then this component will be hidden if all subcomponents are disabled (e.g., if all subcomponents have `inGameOnly == true` and a save hasn't been loaded).
 
 **Returns**:
 
@@ -157,7 +158,7 @@ The label on the left list. The default is a localised version of "Blocked".
 ### `mouseOvers`
 <div class="search_terms" style="display: none">mouseovers</div>
 
-This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements]() method.
+This array of UI elements will have an event handler registered to trigger "MCM:MouseOver" event. For more info, see [registerMouseOverElements](#registermouseoverelements) method.
 
 **Returns**:
 
@@ -264,10 +265,32 @@ Set to the value of `sNo` GMST.
 
 ***
 
+### `sOff`
+<div class="search_terms" style="display: none">soff</div>
+
+Set to the value of `sOff` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `sOK`
 <div class="search_terms" style="display: none">sok</div>
 
 Set to the value of `sOK` GMST.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `sOn`
+<div class="search_terms" style="display: none">son</div>
+
+Set to the value of `sOn` GMST.
 
 **Returns**:
 
@@ -522,7 +545,7 @@ local button = myObject:createCycleButton({ label = ..., description = ..., opti
 Creates a new nested DecimalSlider.
 
 ```lua
-local slider = myObject:createDecimalSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+local slider = myObject:createDecimalSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -545,6 +568,7 @@ local slider = myObject:createDecimalSlider({ label = ..., variable = ..., defau
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
 	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `convertToLabelValue` (fun(self: [mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md), variableValue: number): number, string): *Optional*. Define a custom formatting function for displaying variable values.
 	* `postCreate` (fun(self: [mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 **Returns**:
@@ -890,6 +914,44 @@ local paragraphField = myObject:createParagraphField({ label = ..., buttonText =
 
 ***
 
+### `createPercentageSlider`
+<div class="search_terms" style="display: none">createpercentageslider, percentageslider</div>
+
+Creates a new nested `PercentageSlider`.
+
+```lua
+local slider = myObject:createPercentageSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `data` (table)
+	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `min` (number): *Default*: `0`. Minimum value of slider.
+	* `max` (number): *Default*: `1`. Maximum value of slider.
+	* `step` (number): *Default*: `0.01`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
+	* `decimalPlaces` (integer): *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+	* `callback` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `convertToLabelValue` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md), variableValue: number): number, string): *Optional*. Define a custom formatting function for displaying variable values.
+	* `postCreate` (fun(self: [mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `slider` ([mwseMCMPercentageSlider](../types/mwseMCMPercentageSlider.md))
+
+***
+
 ### `createSearchBar`
 <div class="search_terms" style="display: none">createsearchbar, searchbar</div>
 
@@ -955,7 +1017,7 @@ local category = myObject:createSideBySideBlock({ label = ..., description = ...
 Creates a new nested Slider.
 
 ```lua
-local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -964,10 +1026,11 @@ local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetti
 	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
 	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
-	* `min` (integer): *Default*: `0`. Minimum value of slider.
-	* `max` (integer): *Default*: `100`. Maximum value of slider.
-	* `step` (integer): *Default*: `1`. How far the slider moves when you press the arrows.
-	* `jump` (integer): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `min` (number): *Default*: `0`. Minimum value of slider.
+	* `max` (number): *Default*: `100`. Maximum value of slider.
+	* `step` (number): *Default*: `1`. How far the slider moves when you press the arrows.
+	* `jump` (number): *Default*: `5`. How far the slider jumps when you click an area inside the slider.
+	* `decimalPlaces` (integer): *Default*: `0`. The number of decimal places of precision. Must be a nonnegative integer.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
 	* `callback` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
@@ -977,11 +1040,64 @@ local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetti
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
 	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `convertToLabelValue` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md), variableValue: number): number, string): *Optional*. Define a custom formatting function for displaying variable values.
 	* `postCreate` (fun(self: [mwseMCMSlider](../types/mwseMCMSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 **Returns**:
 
 * `slider` ([mwseMCMSlider](../types/mwseMCMSlider.md))
+
+??? example "Example: DistanceSlider"
+
+	The following example shows how the `convertToLabelValue` parameter can be used to create a slider for a config setting that handles distances. The config setting will be stored using game units, but the displayed value will be in real-world units. Recall that 1 game unit corresponds to 22.1 feet, and 1 foot is 0.3048 meters.
+
+	```lua
+	mwse.mcm.createSlider{
+	    parent = myPage,
+	    label = "My distance slider",
+	    variable = mwse.mcm.createTableVariable{id = "distance", config = myConfig},
+	    convertToLabelValue = function(self, variableValue)
+	        local feet = variableValue / 22.1
+		    local meters = 0.3048 * feet
+	        if self.decimalPlaces == 0 then
+	            return string.format("%i ft (%.2f m)", feet, meters)
+	        end
+	        return string.format(
+	            -- if `decimalPlaces == 1, then this string will simplify to 
+	            -- "%.1f ft (%.3f m)"
+	            string.format("%%.%uf ft (%%.%uf m)", self.decimalPlaces, self.decimalPlaces + 2),
+	            feet, meters
+	        )
+	    end,
+	
+	    max = 22.1 * 10,    -- max is 10 feet
+	    step = 22.1,        -- increment by 1 foot 
+	    jump = 22.1 * 5,
+	}
+
+	```
+
+??? example "Example: SkillSlider"
+
+	Here is an (admittedly less practical) example to help highlight the different ways `convertToLabelValue` can be used. In this example, it will be used to create a slider that stores a `tes3.skill` constant in the config, and then displays the name of the corresponding skill.
+
+	```lua
+	mwse.mcm.createSlider{
+	    parent = myPage,
+	    label = "My skill slider",
+	    variable = mwse.mcm.createTableVariable{id = "skillId", config = myConfig},
+	    convertToLabelValue = function(self, variableValue)
+	        local skillName = tes3.getSkillName(math.round(variableValue))
+	        if skillName then 
+	            return skillName
+	        end
+	        return "N/A"
+	    end,
+	
+	    max = 26 -- there are 27 skills and indexing starts at 0
+	}
+
+	```
 
 ***
 
@@ -1150,28 +1266,30 @@ local component = myObject:getComponent({ class = ..., label = ..., indent = ...
 
 * `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
 	* `class` (string): The component type to get. On of the following:
+		- `"Template"`
+		- `"ExclusionsPage"`
+		- `"FilterPage"`
+		- `"MouseOverPage"`
+		- `"Page"`
+		- `"SideBarPage"`
 		- `"Category"`
 		- `"SideBySideBlock"`
 		- `"ActiveInfo"`
 		- `"Hyperlink"`
 		- `"Info"`
 		- `"MouseOverInfo"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Button"`
-		- `"DecimalSlider"`
-		- `"Dropdown"`
-		- `"KeyBinder"`
-		- `"OnOffButton"`
-		- `"ParagraphField"`
 		- `"Setting"`
-		- `"Slider"`
-		- `"TextField"`
+		- `"Button"`
+		- `"OnOffButton"`
 		- `"YesNoButton"`
-		- `"Template"`
+		- `"CycleButton"`
+		- `"KeyBinder"`
+		- `"Dropdown"`
+		- `"TextField"`
+		- `"ParagraphField"`
+		- `"Slider"`
+		- `"DecimalSlider"`
+		- `"PercentageSlider"`
 	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -1260,7 +1378,7 @@ myObject:printComponent(component)
 ### `registerMouseOverElements`
 <div class="search_terms" style="display: none">registermouseoverelements</div>
 
-Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the mwseMCMSideBarPage.
+Registers an event handler on each given UI element for the `tes3.uiEvent.mouseOver` and `tes3.uiEvent.mouseLeave` that will trigger "MCM:MouseOver" event. That event is used by the MCM to update the sidebar on the [mwseMCMSideBarPage](https://mwse.github.io/MWSE/types/mwseMCMSideBarPage/).
 
 ```lua
 myObject:registerMouseOverElements(mouseOverList)

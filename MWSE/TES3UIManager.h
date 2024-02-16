@@ -103,6 +103,7 @@ namespace TES3::UI {
 
 	sol::table getPalette_lua(sol::this_state ts, const char* name);
 
+	void showMagicSelectMenu_lua(sol::table params);
 	void showInventorySelectMenu_lua(sol::table params);
 
 	void __cdecl createResponseText(Element* parent, const char* text, int type, int answerIndex = -1);

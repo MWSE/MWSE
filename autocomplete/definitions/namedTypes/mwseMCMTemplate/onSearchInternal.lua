@@ -1,8 +1,10 @@
 return {
 	type = "method",
-	description = [[This method calls the `onSearch` handler if it exists.]],
+	description = [[Performs searching routine for given `searchText`.]],
 	arguments = {
 		{ name = "searchText", type = "string" }
 	},
-	valuetype = "boolean",
+	returns = {
+		{ name = "result", type = "boolean", description = "True if given `searchText` matches this MCM template." }
+	}
 }

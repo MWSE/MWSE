@@ -104,6 +104,7 @@ namespace se::cs::dialog::object_window {
 	DEFINE_COLUMN(CreatureIsBipedal);
 	DEFINE_COLUMN(CreatureList);
 	DEFINE_COLUMN(CreatureMovementType);
+	DEFINE_COLUMN(CreatureSoulValue);
 	DEFINE_COLUMN(CreatureSound);
 	DEFINE_COLUMN(CreatureUsesWeaponAndShield);
 	DEFINE_COLUMN(Enchanting);
@@ -193,6 +194,7 @@ namespace se::cs::dialog::object_window {
 		static TabColumnCreatureIsBipedal tabColumnCreatureIsBipedal;
 		static TabColumnCreatureList tabColumnCreatureList;
 		static TabColumnCreatureMovementType tabColumnCreatureMovementType;
+		static TabColumnCreatureSoulValue tabColumnCreatureSoul;
 		static TabColumnCreatureSound tabColumnCreatureSound;
 		static TabColumnCreatureUsesWeaponAndShield tabColumnCreatureUsesWeaponAndShield;
 		static TabColumnEffect tabColumnEffect1;

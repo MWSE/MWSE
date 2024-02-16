@@ -559,6 +559,36 @@ function table.bininsert(t, value, comp)
 end
 
 
+-- functional programming stuff
+
+function table.map(t, f, ...)
+	local tbl = {}
+	for k, v in pairs(t) do
+		tbl[k] = f(k, v, ...)
+	end
+	return tbl
+end
+
+function table.filter(t, f, ...)
+	local tbl = {}
+	for k, v in pairs(t) do
+		if f(k, v, ...) then
+			tbl[k] = v
+		end
+	end
+	return tbl
+end
+
+function table.filterarray(t, f, ...)
+	local tbl = {}
+	for i, v in ipairs(t) do
+		if f(i, v, ...) then
+			table.insert(tbl, v)
+		end
+	end
+	return tbl
+end
+
 -------------------------------------------------
 -- Extend base API: string
 -------------------------------------------------

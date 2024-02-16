@@ -33,8 +33,7 @@ function Dropdown:selectOption(option)
 	self.variable.value = option.value
 	self.elements.textBox.text = option.label
 	self.dropdownActive = false
-
-	Parent.update(self)
+	self:update()
 end
 
 function Dropdown:createDropdown()

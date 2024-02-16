@@ -214,7 +214,7 @@ local function breakoutTypeLinks(type, nested)
 				paramStr = paramStr:trim()
 				-- name: "e", type: "mwseTimerCallbackData" or
 				-- name: "param2", type: nil
-				local name, type = paramStr:match("([%w]+)[:]?[%s]?(.*)")
+				local name, type = table.unpack(paramStr:split("%s?:%s?"))
 				p[i] = ("%s%s"):format(
 					name,
 					type and (": " .. breakoutTypeLinks(type, true)) or ""

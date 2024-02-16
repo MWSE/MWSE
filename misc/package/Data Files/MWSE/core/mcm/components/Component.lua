@@ -15,6 +15,8 @@ Component.sOK = tes3.findGMST(tes3.gmst.sOK).value --[[@as string]]
 Component.sCancel = tes3.findGMST(tes3.gmst.sCancel).value --[[@as string]]
 Component.sYes = tes3.findGMST(tes3.gmst.sYes).value --[[@as string]]
 Component.sNo = tes3.findGMST(tes3.gmst.sNo).value --[[@as string]]
+Component.sOn = tes3.findGMST(tes3.gmst.sOn).value --[[@as string]]
+Component.sOff = tes3.findGMST(tes3.gmst.sOff).value --[[@as string]]
 
 -- CONTROL METHODS
 

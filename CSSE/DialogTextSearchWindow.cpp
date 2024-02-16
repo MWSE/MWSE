@@ -27,6 +27,8 @@
 
 #include "DialogProcContext.h"
 
+#include "EditBasicExtended.h"
+
 namespace se::cs::dialog::text_search_window {
 	constexpr auto LOG_PERFORMANCE_RESULTS = false;
 	constexpr auto REPLACE_SEARCH_LOGIC = true;
@@ -245,6 +247,13 @@ namespace se::cs::dialog::text_search_window {
 		}
 	}
 
+	void CALLBACK PatchDialogProc_AfterCreate(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+
+		auto hDlgFilterEdit = GetDlgItem(hWnd, CONTROL_ID_SEARCH_EDIT);
+		SetWindowSubclass(hDlgFilterEdit, ui_subclass::edit::BasicExtendedProc, NULL, NULL);
+	}
+
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x438610);
 
@@ -260,6 +269,12 @@ namespace se::cs::dialog::text_search_window {
 		}
 		else {
 			context.callOriginalFunction();
+		}
+
+		switch (msg) {
+		case WM_INITDIALOG:
+			PatchDialogProc_AfterCreate(context);
+			break;
 		}
 
 		return context.getResult();

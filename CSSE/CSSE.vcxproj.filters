@@ -427,6 +427,9 @@
     <ClInclude Include="DialogProcContext.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="CSDoor.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
