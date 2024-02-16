@@ -544,39 +544,37 @@ end
 		on success: a table holding matching indices (e.g. { startindice,endindice } )
 		on failure: nil
 ]]--
-
-function table.binsearch(t, value, getCompVal, reversed)
+local function default_fcompval( value ) return value end
+local function fcompf( a,b ) return a < b end
+local function fcompr( a,b ) return a > b end
+function table.binsearch( t,value,compval,reversed )
 	-- Initialise functions
+	compval = compval or default_fcompval
+	local fcomp = reversed and fcompr or fcompf
 	--  Initialise numbers
-	local lower, upper = 1, #t
-
-	local comp = reversed and table.sorters.gt or table.sorters.lt
-	local midpt, other, first, last
-
-	value = getCompVal(value)
-
-	while lower <= upper do
+	local iStart,iEnd,iMid = 1,#t,0
+	-- Binary Search
+	while iStart <= iEnd do
 		-- calculate middle
-		midpt = math.floor((upper + lower) / 2)
+		iMid = math.floor( (iStart+iEnd)/2 )
 		-- get compare value
-		other = getCompVal(t[midpt])
-		if value == other then
-			for i = midpt + 1, upper do
-				if getCompVal(t[i]) ~= value then
-					last = i - 1
-				end
+		local value2 = compval( t[iMid] )
+		-- get all values that match
+		if value == value2 then
+			local tfound,num = { iMid,iMid },iMid - 1
+			while value == compval( t[num] ) do
+				tfound[1],num = num,num - 1
 			end
-			for i = midpt - 1, lower, -1 do
-				if getCompVal(t[i]) ~= value then
-					first = i + 1
-				end
+			num = iMid + 1
+			while value == compval( t[num] ) do
+				tfound[2],num = num,num + 1
 			end
-			return first, last
+			return tfound
 		-- keep searching
-		elseif comp(value, other) then
-			upper = midpt - 1
+		elseif fcomp( value,value2 ) then
+			iEnd = iMid - 1
 		else
-			lower = midpt + 1
+			iStart = iMid + 1
 		end
 	end
 end
@@ -593,28 +591,25 @@ end
 	[, comp] behaves as in table.sort(table, value [, comp])
 	returns the index where 'value' was inserted
 ]]--
-function table.bininsert(t, value, getCompVal, reversed)
+local fcomp_default = function( a,b ) return a < b end
+function table.bininsert(t, value, comp)
 	-- Initialise compare function
-	local comp = reversed and table.sorters.gt or table.sorters.lt
+	comp = comp or fcomp_default
 	--  Initialise numbers
-	local lower, upper, midpt, offset = 1, #t, 1, 0
-
-	value = getCompVal(value)
-	local other
+	local iStart,iEnd,iMid,iState = 1,#t,1,0
 	-- Get insert position
-	while lower <= upper do
+	while iStart <= iEnd do
 		-- calculate middle
-		midpt = math.floor((lower + upper) / 2)
-		other = getCompVal(midpt)
+		iMid = math.floor( (iStart+iEnd)/2 )
 		-- compare
-		if comp(value, other) then
-			upper, offset = midpt - 1, 0
+		if comp( value,t[iMid] ) then
+			iEnd,iState = iMid - 1,0
 		else
-			lower, offset = midpt + 1, 1
+			iStart,iState = iMid + 1,1
 		end
 	end
-	table.insert(t, midpt + offset, value)
-	return midpt + offset
+	table.insert( t,(iMid+iState),value )
+	return (iMid+iState)
 end
 
 function table.combine(...)
