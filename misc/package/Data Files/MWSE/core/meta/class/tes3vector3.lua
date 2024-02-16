@@ -46,7 +46,7 @@ function tes3vector3:copy() end
 --- @return tes3vector3 result No description yet available.
 function tes3vector3:cross(vec) end
 
---- Calculates the distance to another vector.
+--- Calculates the distance to another vector in the standard way.
 --- @param vec tes3vector3 No description yet available.
 --- @return number result No description yet available.
 function tes3vector3:distance(vec) end

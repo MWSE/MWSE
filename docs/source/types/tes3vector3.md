@@ -149,7 +149,7 @@ local result = myObject:cross(vec)
 ### `distance`
 <div class="search_terms" style="display: none">distance</div>
 
-Calculates the distance to another vector.
+Calculates the distance to another vector in the standard way.
 
 ```lua
 local result = myObject:distance(vec)
