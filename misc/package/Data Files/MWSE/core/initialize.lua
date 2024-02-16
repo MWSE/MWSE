@@ -486,12 +486,39 @@ function table.getset(t, key, default)
 end
 
 function table.wrapindex(t, index)
-	local size = #t
-	local newIndex = index % size
-	if (newIndex == 0) then
-		newIndex = size
+	-- shift down, modulo, shift up
+	return (index - 1) % #t + 1
+end
+
+function table.dfs(t, predicate)
+	local k1, v1, t1
+	for k, v in pairs(t) do
+		if predicate(k, v) then 
+			return k, v, t 
+		end
+		if type(v) == "table" then
+			k1, v1, t1 = table.dfs(v, predicate)
+			if k1 then
+				return k1, v1, t1
+			end
+		end
 	end
-	return newIndex
+end
+
+function table.bfs(t, predicate)
+	local k1, v1, t1
+	local toExplore = {}
+	for k, v in pairs(t) do
+		if predicate(k, v) then 
+			return k, v, t 
+		end
+		if type(v) == "table" then
+			table.insert(toExplore, v)
+		end
+	end
+	for _, tbl in ipairs(toExplore) do
+		k1, v1, t1 = table.bfs(tbl, predicate)
+	end
 end
 
 
@@ -712,7 +739,7 @@ function table.any(t, f, ...)
 	return false
 end
 
-function table.firstresultarray(t, f, ...)
+function table.firstarray(t, f, ...)
 	local res
 	for _, v in ipairs(t) do
 		res = {f(v, ...)}
@@ -723,7 +750,7 @@ function table.firstresultarray(t, f, ...)
 end
 
 
-function table.firstresult(t, f, ...)
+function table.first(t, f, ...)
 	local res
 	for k, v in pairs(t) do
 		res = {f(k, v, ...)}
@@ -823,7 +850,7 @@ end
 getmetatable("").endswith = string.endswith
 
 function string.multifind(s, patterns, index, plain)
-	return table.firstresultarray(patterns, function(pattern, index, plain)
+	return table.first(patterns, function(pattern, index, plain)
 		return string.find(s, pattern, index, plain)
 	end, index, plain)
 end
