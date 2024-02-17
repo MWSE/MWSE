@@ -78,7 +78,7 @@ namespace TES3 {
 	float Vector2::distanceChebyshev(const Vector2* vec2) const {
 		float dx = fabs(x - vec2->x);
 		float dy = fabs(y - vec2->y);
-		return std::max(dx,dy);
+		return std::max(dx, dy);
 	}
 
 	float Vector2::distanceManhattan(const Vector2* vec2) const {
@@ -302,7 +302,7 @@ namespace TES3 {
 		float dx = fabs(x - vec3->x);
 		float dy = fabs(y - vec3->y);
 		float dz = fabs(z - vec3->z);
-		return std::max(std::max(dx,dy),dz);
+		return std::max(std::max(dx, dy), dz);
 	}
 
 	float Vector3::distanceManhattan(const Vector3* vec3) const {
@@ -446,7 +446,7 @@ namespace TES3 {
 		float dy = fabs(y - vec4->y);
 		float dz = fabs(z - vec4->z);
 		float dw = fabs(w - vec4->w);
-		return std::max(std::max(dx,dy),std::max(dz,dw));
+		return std::max(std::max(dx, dy), std::max(dz, dw));
 	}
 
 	float Vector4::distanceManhattan(const Vector4* vec4) const {

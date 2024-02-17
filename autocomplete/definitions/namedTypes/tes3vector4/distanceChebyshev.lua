@@ -11,7 +11,7 @@ Here is a geometric description of the difference between the normal distance an
 * If `v1:distanceChebyshev(v2) <= 1`, then `v2` is contained within a cube centered around `v1`, where the cube has length 2.
 ]],
 	arguments = {
-		{ name = "vec", type = "tes3vector3" },
+		{ name = "vec", type = "tes3vector4" },
 	},
 	valuetype = "number",
 }

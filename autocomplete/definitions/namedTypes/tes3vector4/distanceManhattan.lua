@@ -10,7 +10,7 @@ The formula for the Manhattan distance is
 This is useful for checking how far you'd actually have to move if you're only allowed to move along one axis at a time.
 ]],
 	arguments = {
-		{ name = "vec", type = "tes3vector3" },
+		{ name = "vec", type = "tes3vector4" },
 	},
 	valuetype = "number",
 }

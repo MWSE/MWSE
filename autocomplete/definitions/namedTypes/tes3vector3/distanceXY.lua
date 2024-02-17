@@ -8,7 +8,7 @@ This method offers a way of calculating distances between vectors in situations 
 		{ name = "vec", type = "tes3vector3" },
 	},
 	valuetype = "number",
-	examples={
+	examples = {
 		["shelves"] = {
 			title = "Items on bookshelves.",
 			description = "\z
@@ -21,12 +21,6 @@ This method offers a way of calculating distances between vectors in situations 
 				for ingredients on different shelves.\n\z
 				This problem is remedied by using `tes3vector3:distanceXY` as follows:\z
 			",
-				-- \z
-				-- Let's say you want to test whether two `tes3reference`s are close together. You could do this by typing \z
-				-- `pos1:distance(pos2) < maxDist`, but this has a drawback: it doesn't properly handle scenarios where  on bookshelves. \z
-				-- To be more specific, if you compared an ingredient on a bottom shelf to an ingredient on the top shelf, the difference in their z-coordinates \z
-				-- could be greater than `maxDist`. Here's how you might solve that problem.\z
-			-- ",
 		},
 	},
 }
