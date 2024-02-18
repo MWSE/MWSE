@@ -7,6 +7,7 @@ return {
 This is useful for ensuring that the x and y coordinates between two vectors are all (independently) within a certain distance from each other.
 
 Here is a geometric description of the difference between the normal distance and the Chebyshev distance for two `tes3vector2`s  `v1` and `v2`:
+
 * If `v1:distance(v2) <= 1`, then `v2` is contained in a circle around `v1` with radius 1 (i.e. diameter 2).
 * If `v1:distanceChebyshev(v2) <= 1`, then `v2` is contained within a square centered around `v1`, where the square sides have length 2.
 ]],
