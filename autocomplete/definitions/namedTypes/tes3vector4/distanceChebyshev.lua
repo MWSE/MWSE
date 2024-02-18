@@ -1,6 +1,6 @@
 return {
 	type = "method",
-	description = [[Calculates the distance to another vector, using the Chebyshev metric, which is defined as
+	description = [[Calculates the distance to another vector, using the [Chebyshev metric](https://en.wikipedia.org/wiki/Chebyshev_distance), which is defined as
 
 	math.max(math.abs(v1.x - v2.x), math.abs(v1.y - v2.y), math.abs(v1.z - v2.z), math.abs(v1.w - v2.w))
 

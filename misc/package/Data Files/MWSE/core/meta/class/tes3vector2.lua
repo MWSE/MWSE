@@ -32,7 +32,7 @@ function tes3vector2:copy() end
 --- @return number result No description yet available.
 function tes3vector2:distance(vec) end
 
---- Calculates the distance to another vector, using the Chebyshev metric, which is defined as
+--- Calculates the distance to another vector, using the [Chebyshev metric](https://en.wikipedia.org/wiki/Chebyshev_distance), which is defined as
 --- 
 --- 	math.max(math.abs(v1.x - v2.x), math.abs(v1.y - v2.y))
 --- 
@@ -47,7 +47,7 @@ function tes3vector2:distance(vec) end
 --- @return number result No description yet available.
 function tes3vector2:distanceChebyshev(vec) end
 
---- Calculates the distance to another vector, using the Manhattan (i.e. City Block) metric. In the two-dimensional case, the Manhattan metric can be thought of as the distance that two taxis will have to travel if they're following a grid system. The formula for the Manhattan distance is
+--- Calculates the distance to another vector, using the [Manhattan (i.e. city block) metric](https://en.wikipedia.org/wiki/Taxicab_geometry). In the two-dimensional case, the Manhattan metric can be thought of as the distance that two taxis will have to travel if they're following a grid system. The formula for the Manhattan distance is
 --- 
 --- 	math.abs(v1.x - v2.x) + math.abs(v1.y - v2.y) 
 --- 

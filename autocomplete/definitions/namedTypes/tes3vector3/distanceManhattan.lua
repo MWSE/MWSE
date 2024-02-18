@@ -1,6 +1,6 @@
 return {
 	type = "method",
-	description = [[Calculates the distance to another vector, using the Manhattan (i.e. City Block) metric. 
+	description = [[Calculates the distance to another vector, using the [Manhattan (i.e. city block) metric](https://en.wikipedia.org/wiki/Taxicab_geometry). 
 In the two-dimensional case, the Manhattan metric can be thought of 
 as the distance that two taxis will have to travel if they're following a grid system.
 The formula for the Manhattan distance is
