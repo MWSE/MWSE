@@ -89,7 +89,7 @@ local result = myObject:copy()
 ### `distance`
 <div class="search_terms" style="display: none">distance</div>
 
-Calculates the distance to another vector in the standard way.
+Calculates the distance to another vector in the standard way, i.e., using the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance).
 
 ```lua
 local result = myObject:distance(vec)
@@ -97,7 +97,7 @@ local result = myObject:distance(vec)
 
 **Parameters**:
 
-* `vec` ([tes3vector3](../types/tes3vector3.md))
+* `vec` ([tes3vector4](../types/tes3vector4.md))
 
 **Returns**:
 
@@ -125,7 +125,7 @@ local result = myObject:distanceChebyshev(vec)
 
 **Parameters**:
 
-* `vec` ([tes3vector3](../types/tes3vector3.md))
+* `vec` ([tes3vector4](../types/tes3vector4.md))
 
 **Returns**:
 
@@ -152,7 +152,7 @@ local result = myObject:distanceManhattan(vec)
 
 **Parameters**:
 
-* `vec` ([tes3vector3](../types/tes3vector3.md))
+* `vec` ([tes3vector4](../types/tes3vector4.md))
 
 **Returns**:
 
