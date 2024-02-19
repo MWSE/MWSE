@@ -1701,21 +1701,23 @@ function tes3.newGame() end
 --- @return boolean onMainMenu No description yet available.
 function tes3.onMainMenu() end
 
---- Pays a merchant gold. The money is transferred to their barter gold (non-inventory trading gold), and also updates the last barter timer, so that it works the same way a transaction affeects the barter gold reset cycle. This is useful for simulating paying for services. The function will return true if there was enough gold to complete the payment.
+--- Pays a merchant a specified amount of gold and updates the merchant's "last barter timer". This should be used to simulate paying for services. You may also want to play a trade-related sound of your choice upon successful completion.
 --- 
---- A negative cost will allow payment from the merchant's barter gold to the player. You may also want to play a trade-related sound of your choice upon successful completion.
+--- If `cost` is positive, then that amount of gold will be removed from the player's inventory and added to the merchant's available barter gold.
+--- 
+--- If `cost` is negative, then that amount of gold will be added to the player's inventory and removed from the merchant's available barter gold.
 --- @param params tes3.payMerchant.params This table accepts the following values:
 --- 
 --- `merchant`: tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer — The merchant to pay.
 --- 
---- `cost`: number — The amount of gold to transfer to the merchant. May be negative to transfer gold to the player.
---- @return boolean success True if the transaction completed. False if there was not enough gold.
+--- `cost`: number — The amount of gold to pay the merchant. If negative, the merchant will pay the player.
+--- @return boolean success `true` if the transaction completed. `false` if there was not enough gold.
 function tes3.payMerchant(params) end
 
 ---Table parameter definitions for `tes3.payMerchant`.
 --- @class tes3.payMerchant.params
 --- @field merchant tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The merchant to pay.
---- @field cost number The amount of gold to transfer to the merchant. May be negative to transfer gold to the player.
+--- @field cost number The amount of gold to pay the merchant. If negative, the merchant will pay the player.
 
 --- Attempts a persuasion attempt on an actor, potentially adjusting their disposition. Returns true if the attempt was a success.
 --- @param params tes3.persuade.params This table accepts the following values:
