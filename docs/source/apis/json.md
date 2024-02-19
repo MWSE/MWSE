@@ -39,8 +39,8 @@ Current version of dkjson.
 
 Decode string into a table.
 
-!!! warning "json does not support `integer` indices"
-	As a result, the `table` returned by this function won't have any integer indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
+!!! warning "json does not support `number` indices"
+	As a result, the `table` returned by this function won't have any `number` indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
 	You should be mindful of this when using this function.
 
 
@@ -65,8 +65,8 @@ local result = json.decode(s, position, nullValue)
 
 Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data struture that contains reference cycles.
 
-!!! warning "json does not support `integer` indices"
-	This function will convert all `integer` indices to `string` indices. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading/decoding json files.
+!!! warning "json does not support `number` indices"
+	This function will convert all `number` indices to `string` indices. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading/decoding json files.
 
 
 ```lua
@@ -87,10 +87,10 @@ local result = json.encode(object, state)
 ### `json.loadfile`
 <div class="search_terms" style="display: none">loadfile</div>
 
-Loads the contents of a file through json.decode. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
+Loads the contents of a file through `json.decode`. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
 
-!!! warning "json does not support `integer` indices"
-	As a result, the `table` returned by this function won't have any integer indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
+!!! warning "json does not support `number` indices"
+	The `table` returned by this function won't have any `number` indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
 	You should be mindful of this when using this function.
 	If you're using this to load a configuration file for your mod, it's recommended you use [`mwse.loadConfig`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
 
@@ -131,7 +131,7 @@ local result = json.quotestring(s)
 ### `json.savefile`
 <div class="search_terms" style="display: none">savefile</div>
 
-Saves a serializable table to Data Files\\MWSE\\{fileName}.json, using json.encode.
+Saves a serializable table to Data Files\\MWSE\\{`fileName`}.json, using `json.encode`.
 
 ```lua
 json.savefile(fileName, object, config)
