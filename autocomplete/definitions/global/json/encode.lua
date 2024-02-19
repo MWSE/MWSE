@@ -1,9 +1,9 @@
 return {
 	type = "function",
-	description = [[Create a string representing the object. Object can be a table, a string, a number, a boolean, nil, json.null or any object with a function __tojson in its metatable. A table can only use strings and numbers as keys and its values have to be valid objects as well. It raises an error for any invalid data types or reference cycles.
+	description = [[Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data struture that contains reference cycles.
 
-!!! warning
-	If the table being encoded has both string and integer indices, this action will convert all the integer indices to strings. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading json files.
+!!! warning "json does not support `integer` indices"
+	This function will convert all `integer` indices to `string` indices. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading/decoding json files.
 ]],
 	link = "http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation",
 	arguments = {

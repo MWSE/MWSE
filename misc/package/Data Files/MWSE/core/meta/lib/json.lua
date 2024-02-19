@@ -10,8 +10,9 @@ json = {}
 
 --- Decode string into a table.
 --- 
---- !!! warning
---- 	If the table encoded as json had both string and integer indices, this process converted all the integer indices to strings. For example, `[1]` was converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered.
+--- !!! warning "json does not support `integer` indices"
+--- 	As a result, the `table` returned by this function won't have any integer indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
+--- 	You should be mindful of this when using this function.
 --- 
 --- @param s string No description yet available.
 --- @param position number? *Default*: `1`. No description yet available.
@@ -19,21 +20,22 @@ json = {}
 --- @return table result No description yet available.
 function json.decode(s, position, nullValue) end
 
---- Create a string representing the object. Object can be a table, a string, a number, a boolean, nil, json.null or any object with a function __tojson in its metatable. A table can only use strings and numbers as keys and its values have to be valid objects as well. It raises an error for any invalid data types or reference cycles.
+--- Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data struture that contains reference cycles.
 --- 
---- !!! warning
---- 	If the table being encoded has both string and integer indices, this action will convert all the integer indices to strings. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading json files.
+--- !!! warning "json does not support `integer` indices"
+--- 	This function will convert all `integer` indices to `string` indices. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading/decoding json files.
 --- 
 --- @param object table No description yet available.
 --- @param state table? No description yet available.
 --- @return string result No description yet available.
 function json.encode(object, state) end
 
---- Loads the contents of a file through json.decode. Files loaded from Data Files\\MWSE\\{fileName}.json.
+--- Loads the contents of a file through json.decode. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
 --- 
---- !!! warning
---- 	All of the keys in the `table` returned by function will be `string`s. For example, if you're decoding an array-style table, then the first entry will be `["1"]` instead of `[1]`.
---- 	If you're using this function to load your mod's configuration file, consider using [`mwse.loadConfig()`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
+--- !!! warning "json does not support `integer` indices"
+--- 	As a result, the `table` returned by this function won't have any integer indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
+--- 	You should be mindful of this when using this function.
+--- 	If you're using this to load a configuration file for your mod, it's recommended you use [`mwse.loadConfig`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
 --- 
 --- @param fileName string No description yet available.
 --- @return table result No description yet available.
