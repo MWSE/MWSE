@@ -85,7 +85,7 @@ function table.empty(t, deepCheck) end
 ---  	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
 --- 
 --- @param t table No description yet available.
---- @param f fun(k: unknown, v: unknown, ...): boolean|unknown No description yet available.
+--- @param f fun(k: unknown, v: unknown, ...): boolean No description yet available.
 --- @param ... any Additional parameters to pass to `f`.
 --- @return table result The result of using `f` to filter out elements of `t`.
 function table.filter(t, f, ...) end
@@ -96,7 +96,7 @@ function table.filter(t, f, ...) end
 --- 
 --- When an element gets filtered out, the index of subsequent items will be shifted down, so that the resulting table plays nicely with the `#` operator and the `ipairs` function.
 --- @param arr table No description yet available.
---- @param f fun(i: integer, v: unknown, ...): boolean|unknown No description yet available.
+--- @param f fun(i: integer, v: unknown, ...): boolean No description yet available.
 --- @param ... any Additional parameters to pass to `f`.
 --- @return table result The result of using `f` to filter out elements of `t`.
 function table.filterarray(arr, f, ...) end

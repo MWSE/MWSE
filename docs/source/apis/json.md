@@ -39,9 +39,8 @@ Current version of dkjson.
 
 Decode string into a table.
 
-!!! warning "json does not support `number` indices"
-	As a result, the `table` returned by this function won't have any `number` indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
-	You should be mindful of this when using this function.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
 
 
 ```lua
@@ -63,10 +62,10 @@ local result = json.decode(s, position, nullValue)
 ### `json.encode`
 <div class="search_terms" style="display: none">encode</div>
 
-Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data struture that contains reference cycles.
+Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data structure that contains reference cycles.
 
-!!! warning "json does not support `number` indices"
-	This function will convert all `number` indices to `string` indices. For example, `[1]` is converted to `["1"]`. This should be taken into account when loading/decoding json files.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table has any `string` indices, then this function will convert all `number` indices to `string` indices. For example, `[1]` could be converted to `["1"]`. This should be taken into account when loading/decoding json files.
 
 
 ```lua
@@ -89,9 +88,8 @@ local result = json.encode(object, state)
 
 Loads the contents of a file through `json.decode`. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
 
-!!! warning "json does not support `number` indices"
-	The `table` returned by this function won't have any `number` indices. (e.g., the first key of an array-style table will be decoded as `["1"]`, not as `[1`].)
-	You should be mindful of this when using this function.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
 	If you're using this to load a configuration file for your mod, it's recommended you use [`mwse.loadConfig`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
 
 
