@@ -356,7 +356,7 @@ mwse.saveConfig(fileName, config, jsonOptions)
 
 * `fileName` (string): Usually named after your mod.
 * `config` (table): The config table to save.
-* `jsonOptions` (table): *Optional*. Used to optionally pass encoding options to the dkjson encoder.
+* `jsonOptions` (table): *Optional*. Encoding options. These get passed to the `dkjson` encoder.
 
 ***
 

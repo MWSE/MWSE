@@ -1192,8 +1192,9 @@ function tes3.getLockLevel(params) end
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string No description yet available.
 
 --- Fetches the contents of the [metadata file](https://mwse.github.io/MWSE/guides/metadata/) associated with a given lua mod key.
+--- The mod key should match the value of `lua-mod` specified in the `[tools.mwse]` section of the relevant metadata file.
 --- @param modKey string The key for the lua mod, which must match the file location and the metadata file's `[tools.mwse]` contents.
---- @return table|nil metadata No description yet available.
+--- @return MWSE.Metadata|nil metadata No description yet available.
 function tes3.getLuaModMetadata(modKey) end
 
 --- Fetches the core game Magic Effect object for a given ID. Can return custom magic effects added with `tes3.addMagicEffect`.

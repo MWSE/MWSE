@@ -449,7 +449,7 @@ local wasAdded = tes3.addSoulGem({ item = ... })
 
 * `wasAdded` (boolean)
 
-??? example "Example: Make the Dwemer Tube a Soul gem. Also, make sure Fargoth's soul alway ends up in it if the player has one avilable."
+??? example "Example: Make Dwemer Tubes be treated as Soul gems. Also, make sure Fargoth's soul always ends up in one if the player has one avilable."
 
 	```lua
 	local function onInitialized()
@@ -2329,6 +2329,7 @@ local level = tes3.getLockLevel({ reference = ... })
 <div class="search_terms" style="display: none">getluamodmetadata, luamodmetadata</div>
 
 Fetches the contents of the [metadata file](https://mwse.github.io/MWSE/guides/metadata/) associated with a given lua mod key.
+The mod key should match the value of `lua-mod` specified in the `[tools.mwse]` section of the relevant metadata file.
 
 ```lua
 local metadata = tes3.getLuaModMetadata(modKey)
@@ -2340,7 +2341,7 @@ local metadata = tes3.getLuaModMetadata(modKey)
 
 **Returns**:
 
-* `metadata` (table, nil)
+* `metadata` (MWSE.Metadata, nil)
 
 ***
 

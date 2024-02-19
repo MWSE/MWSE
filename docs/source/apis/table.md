@@ -205,7 +205,7 @@ local result = table.filter(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...))
+* `f` (fun(k: unknown, v: unknown, ...): boolean, unknown)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -230,7 +230,7 @@ local result = table.filterarray(arr, f, ...)
 **Parameters**:
 
 * `arr` (table)
-* `f` (fun(i: integer, v: unknown, ...))
+* `f` (fun(i: integer, v: unknown, ...): boolean, unknown)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -353,7 +353,7 @@ local result = table.map(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...))
+* `f` (fun(k: unknown, v: unknown, ...): unknown)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
