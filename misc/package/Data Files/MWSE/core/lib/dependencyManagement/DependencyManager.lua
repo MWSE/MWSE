@@ -110,7 +110,7 @@ function DependencyManager:checkDependencies()
             self.logger:warn("MWSE lua-mod: \"%s\".", luaMod)
         end
         self.logger:warn("No dependency checking will be performed.")
-        self.logger:warn("This can result from uncomplete mod installation or uninstallation.")
+        self.logger:warn("This can result from incomplete mod installation/uninstallation.")
 
         return true
     end
