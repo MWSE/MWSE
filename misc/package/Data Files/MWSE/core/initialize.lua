@@ -887,18 +887,20 @@ end
 
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
-	local isDefaultsTable = (type(defaults) == "table")
 
-	if (result) then
-		if (isDefaultsTable) then
-			table.copymissing(result, defaults)
-		end
-	else
-		result = defaults
+	-- no defaults table? bail
+	if type(defaults) ~= "table" then return result end
+
+	-- json file didnt exist? bail
+	if not result then
+		-- make a deepcopy so that the default config doesnt get edited by mistake
+		return table.deepcopy(defaults)
 	end
-	if (isDefaultsTable) then
-		restoreIntegerKeys(result, defaults)
-	end
+
+	-- copy missing things into the config, then restore the integer keys
+	-- this is so that subtables are handled correctly
+	restoreIntegerKeys(result, defaults)
+	table.copymissing(result, defaults)
 
 	return result
 end
