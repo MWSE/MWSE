@@ -863,44 +863,55 @@ function mwse.log(str, ...)
 	print(tostring(str):format(...))
 end
 
--- This will convert the table keys that were converted to
--- strings when they were saved to json. This happens since
--- json dictionaries can only have string keys. Use defaults
--- table to check which keys are integers.
-local function restoreIntegerKeys(configTable, defaults)
-	for key, val in pairs(defaults or {}) do
-		local defaultKeyType = type(key)
-		local defaultValType = type(val)
-		local stringKey = tostring(key)
-		if ((defaultKeyType == "number") and
-			(configTable[stringKey] ~= nil)) then
-				configTable[key] = configTable[stringKey]
-				configTable[stringKey] = nil
+-- helper function for `mwse.loadConfig`. 
+-- this function is responsible for:
+-- 1) restoring numeric keys (i.e. keys that should be numbers, but were turned into strings by `json.savefile`)
+-- 2) adding missing values to `config` that are present in `defaultConfig`
+--
+-- both of these things need to be done recursively, so it's not possible to use `table.copymissing`.
+-- (i.e., we may need to alternate between converting integer keys and adding missing values)
+---@param config table
+---@param defaultConfig table
+local function fixLoadedResult(config, defaultConfig)
+	local configValue
+	for key, defaultValue in pairs(defaultConfig) do
+		configValue = config[key]
+
+		-- check if we need to convert a string key to a numeric key
+		if configValue == nil and type(key) == "number" and config[tostring(key)] ~= nil then
+			config[key] = config[tostring(key)]
+			config[tostring(key)] = nil
+			configValue = config[key]
 		end
 
-		-- Handle subtables
-		if (defaultValType == "table") then
-			restoreIntegerKeys(configTable[key], defaults[key])
+		-- recheck the config value because it may have changed in the last code block
+		if configValue ~= nil then
+			-- if the default value is a table, we need to fix values recursively
+			if type(defaultValue) == "table" and type(configValue) == "table" then
+				fixLoadedResult(configValue, defaultValue)
+			else
+				-- no change needed
+			end
+		else -- configValue == nil
+			-- make sure the config gets a copy of any subtables
+			if type(defaultValue) == "table" then
+				config[key] = table.deepcopy(defaultValue)
+			else
+				config[key] = defaultValue
+			end
 		end
 	end
 end
 
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
+	
+	if not result and not defaults then return end -- mimic old behavior and return nil
 
-	-- no defaults table? bail
-	if type(defaults) ~= "table" then return result end
+	result = result or {} -- make sure the user gets something
 
-	-- json file didnt exist? bail
-	if not result then
-		-- make a deepcopy so that the default config doesnt get edited by mistake
-		return table.deepcopy(defaults)
-	end
-
-	-- copy missing things into the config, then restore the integer keys
-	-- this is so that subtables are handled correctly
-	restoreIntegerKeys(result, defaults)
-	table.copymissing(result, defaults)
+	-- the for loop in `fixLoadedResult` wont be iterated at all if `defaults` evaluates to false
+	fixLoadedResult(result, defaults or {})
 
 	return result
 end
