@@ -51,9 +51,9 @@ namespace mwse::lua {
 		lua_mwscript["addItem"] = [](sol::optional<sol::table> params) {
 			auto script = getOptionalParamExecutionScript(params);
 			auto reference = getOptionalParamExecutionReference(params);
-			auto item = getOptionalParamObject<TES3::Item>(params, "item");
+			auto item = getOptionalParamObject<TES3::PhysicalObject>(params, "item");
 			auto count = getOptionalParam(params, "count", 1);
-			if (item == nullptr || count <= 0) {
+			if (item == nullptr || (!item->isItem() && item->objectType != TES3::ObjectType::LeveledItem) || count <= 0) {
 				return false;
 			}
 
