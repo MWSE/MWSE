@@ -6,7 +6,7 @@ return {
 		type = "table",
 		tableParams = {
 			{ name = "mobile", type = "tes3mobileActor|tes3reference|string", optional = true, description = "The mobile actor whose stats will be updated." },
-			{ name = "item", type = "tes3item", description = "The item to add." },
+			{ name = "item", type = "tes3item|tes3leveledItem|string", description = "The item to add. Leveled items will only work properly when added to inventories of non-instanced objects." },
 			{ name = "itemData", type = "tes3itemData", optional = true, description = "Any associated item data to add." },
 			{ name = "count", type = "number", optional = true, default = 1, description = "The number of items to add." },
 		}
