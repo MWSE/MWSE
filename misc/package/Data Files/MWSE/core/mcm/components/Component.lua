@@ -25,14 +25,22 @@ do -- set GMST values
 	Component.sOn = "On" 			---@type string
 	Component.sOff = "Off" 			---@type string
 
-	event.register("initialized", function (e)
+	local function setGMSTS()
 		Component.sOK = tes3.findGMST(tes3.gmst.sOK).value 			--[[@as string]]
 		Component.sCancel = tes3.findGMST(tes3.gmst.sCancel).value 	--[[@as string]]
 		Component.sYes = tes3.findGMST(tes3.gmst.sYes).value 		--[[@as string]]
 		Component.sNo = tes3.findGMST(tes3.gmst.sNo).value 			--[[@as string]]
 		Component.sOn = tes3.findGMST(tes3.gmst.sOn).value 			--[[@as string]]
 		Component.sOff = tes3.findGMST(tes3.gmst.sOff).value 		--[[@as string]]
-	end, {doOnce=true, priority=1000000})
+	end
+	
+	-- already initialized? set the GMSTs now
+	if tes3.isInitialized() then
+		setGMSTS()
+	else
+		-- havent initialized yet? make sure we set the GMSTS when we initialize
+		event.register("initialized", setGMSTS, {doOnce=true, priority=10000})
+	end
 end
 
 -- CONTROL METHODS
