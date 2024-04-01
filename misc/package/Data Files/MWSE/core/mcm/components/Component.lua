@@ -11,12 +11,29 @@ local Component = {}
 Component.componentType = "Component"
 Component.paddingBottom = 4
 Component.indent = 12
-Component.sOK = tes3.findGMST(tes3.gmst.sOK).value --[[@as string]]
-Component.sCancel = tes3.findGMST(tes3.gmst.sCancel).value --[[@as string]]
-Component.sYes = tes3.findGMST(tes3.gmst.sYes).value --[[@as string]]
-Component.sNo = tes3.findGMST(tes3.gmst.sNo).value --[[@as string]]
-Component.sOn = tes3.findGMST(tes3.gmst.sOn).value --[[@as string]]
-Component.sOff = tes3.findGMST(tes3.gmst.sOff).value --[[@as string]]
+
+do -- set GMST values
+
+	-- the GMSTs aren't available until the game initializes, so we'll set them here and
+	-- then update them later once the GMSTs are available. it shouldn't really matter what
+	-- they're set to before the game initializes, so long as it's a string
+
+	Component.sOK = "OK" 			---@type string
+	Component.sCancel = "Cancel" 	---@type string
+	Component.sYes = "Yes" 			---@type string
+	Component.sNo = "No" 			---@type string
+	Component.sOn = "On" 			---@type string
+	Component.sOff = "Off" 			---@type string
+
+	event.register("initialized", function (e)
+		Component.sOK = tes3.findGMST(tes3.gmst.sOK).value 			--[[@as string]]
+		Component.sCancel = tes3.findGMST(tes3.gmst.sCancel).value 	--[[@as string]]
+		Component.sYes = tes3.findGMST(tes3.gmst.sYes).value 		--[[@as string]]
+		Component.sNo = tes3.findGMST(tes3.gmst.sNo).value 			--[[@as string]]
+		Component.sOn = tes3.findGMST(tes3.gmst.sOn).value 			--[[@as string]]
+		Component.sOff = tes3.findGMST(tes3.gmst.sOff).value 		--[[@as string]]
+	end, {doOnce=true, priority=1000000})
+end
 
 -- CONTROL METHODS
 
