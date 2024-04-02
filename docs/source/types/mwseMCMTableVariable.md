@@ -64,7 +64,7 @@ Key in the config file used to store the variable.
 
 **Returns**:
 
-* `result` (string)
+* `result` (string, number)
 
 ***
 

@@ -961,7 +961,7 @@ function mwse.mcm.createSlider(parent, data) end
 --- Creates a new TableVariable.
 --- @param variable mwse.mcm.createTableVariable.variable This table accepts the following values:
 --- 
---- `id`: string — Key in the config file used to store the variable.
+--- `id`: string|number — Key in the config file used to store the variable.
 --- 
 --- `table`: table — The table to save the data to.
 --- 
@@ -979,7 +979,7 @@ function mwse.mcm.createTableVariable(variable) end
 
 ---Table parameter definitions for `mwse.mcm.createTableVariable`.
 --- @class mwse.mcm.createTableVariable.variable
---- @field id string Key in the config file used to store the variable.
+--- @field id string|number Key in the config file used to store the variable.
 --- @field table table The table to save the data to.
 --- @field defaultSetting unknown? *Optional*. If `id` does not exist in the table, it will be initialised to this value.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.

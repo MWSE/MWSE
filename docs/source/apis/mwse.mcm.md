@@ -756,7 +756,7 @@ local variable = mwse.mcm.createTableVariable({ id = ..., table = ..., defaultSe
 **Parameters**:
 
 * `variable` (table)
-	* `id` (string): Key in the config file used to store the variable.
+	* `id` (string, number): Key in the config file used to store the variable.
 	* `table` (table): The table to save the data to.
 	* `defaultSetting` (unknown): *Optional*. If `id` does not exist in the table, it will be initialised to this value.
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
