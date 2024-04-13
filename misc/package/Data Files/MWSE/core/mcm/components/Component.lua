@@ -6,6 +6,10 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
+if not tes3.isInitialized() then
+	error("Trying to use an MCM Component before \"modConfigReady\" event triggered.")
+end
+
 --- @class mwseMCMComponent
 local Component = {}
 Component.componentType = "Component"
