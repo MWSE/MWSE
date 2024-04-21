@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.]],
+	description = [[Use [`tes3reference:delete()`](https://mwse.github.io/MWSE/types/tes3reference/#delete) instead. Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.]],
 	arguments = {{
 		name = "params",
 		type = "table",

@@ -181,9 +181,9 @@ local function writeFunction(package, file, namespaceOverride)
 				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
 			end
 		end
-		file:write(string.format("--- @param %s %s %s\n", 
-			argument.name or "unknown", 
-			getAllPossibleVariationsOfType(type, argument) or "any", 
+		file:write(string.format("--- @param %s %s %s\n",
+			argument.name or "unknown",
+			getAllPossibleVariationsOfType(type, argument) or "any",
 			formatLineBreaks(description))
 		)
 	end
@@ -332,12 +332,34 @@ local function build(package)
 		writeFunction(package, file)
 	end
 
+	-- A map of operator metamethods supported by Lua Language Server (LLS).
+	-- We document __eq operator currently not supported by LLS. This issue
+	-- is tracked upstream at:
+	-- https://github.com/LuaLS/lua-language-server/issues/1882
+	local supportedOperators = {
+		unm = true,
+		add = true,
+		sub = true,
+		mul = true,
+		div = true,
+		idiv = true,
+		mod = true,
+		pow = true,
+		concat = true,
+		len = true,
+		-- TODO: enable once it's supported by LLS, or we could just remove this map altogether.
+		-- eq = true,
+	}
+
 	-- Write out operator overloads
 	if (package.operators) then
 		table.sort(package.operators, function(a, b)
 			return a.key:lower() < b.key:lower()
 		end)
 		for _, operator in ipairs(package.operators) do
+			if not supportedOperators[operator.key] then
+				goto continue
+			end
 			for _, overload in ipairs(operator.overloads) do
 				-- Handle unary operators
 				local rightSideType = ""
@@ -347,6 +369,7 @@ local function build(package)
 
 				file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
 			end
+			::continue::
 		end
 	end
 

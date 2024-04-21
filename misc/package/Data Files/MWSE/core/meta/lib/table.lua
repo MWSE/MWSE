@@ -70,9 +70,9 @@ function table.copymissing(to, from) end
 --- @return table result No description yet available.
 function table.deepcopy(t) end
 
---- Checks if a table is empty. 
---- 	
---- 	If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
+--- Checks if a table is empty.
+--- 
+--- If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
 --- @param t table No description yet available.
 --- @param deepCheck boolean? *Default*: `false`. If `true`, subtables will also be checked to see if they are empty.
 --- @return boolean result No description yet available.

@@ -1,16 +1,17 @@
 # Operator Definitions Guide
 
 Operator overloads are documented similarly to the methods of their parent class. The operator oveload definition file is just a regular Lua table. The name of the operator needs to be the same as the Lua [operator metamethod](http://lua-users.org/wiki/MetatableEvents) name without the two leading underscores. The supported operators are:
-- unm - unary minus
-- add - addition
-- sub - subtraction
-- mul - multiplication
-- div - division
+- unm - unary minus.
+- add - addition.
+- sub - subtraction.
+- mul - multiplication.
+- div - division.
 - idiv - floor division (division with rounding down to nearest integer), the `//` operator.
-- mod - the `%` operator
-- pow - the `^` operator
+- mod - the `%` operator.
+- pow - the `^` operator.
 - concat - the `..` operator.
-- len - the `#` operator
+- len - the `#` operator.
+- eq - the `==` operator. Currently, these will only be shown in our documentation, they don't contribute to autocomplete, an issue tracked at: https://github.com/LuaLS/lua-language-server/issues/1882.
 
 The format of operator definition is:
 

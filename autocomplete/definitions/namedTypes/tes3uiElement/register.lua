@@ -52,7 +52,14 @@ Widget-specific events:
 * Slider:
 	* **PartScrollBar_changed**
 		Triggers on value change; moving the slider is not enough if the value is the same.
-
+* Cycle Button:
+	* **valueChanged**
+		Triggers after the selected `index` has been changed.
+* Text Input:
+	* **textCleared**
+		Triggers after the text has been cleared by the user in text input widgets that have `placeholderText` set.
+	* **textUpdated**
+		Triggers after the text of the text input has changed.
 ***
 
 #### Event forwarding
@@ -100,6 +107,9 @@ EventData:
 * **relativeY** (`number`)
 	See *relativeX* description.
 
+
+!!! Note
+	When a UI element is destroyed, you don't have to manually unregister your custom event handlers. The engine does it automatically.
 ]],
 	arguments = {
 		{ name = "eventID", type = "tes3.uiEvent", description = "The UI event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/)." },

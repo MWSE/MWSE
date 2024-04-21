@@ -1955,7 +1955,7 @@ local dialogueInfo = tes3.getDialogueInfo({ dialogue = ..., id = ... })
 ### `tes3.getEffectMagnitude`
 <div class="search_terms" style="display: none">geteffectmagnitude, effectmagnitude</div>
 
-This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied.
+This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied. This function respects [`hasNoMagnitude`](https://mwse.github.io/MWSE/types/tes3magicEffect/#hasnomagnitude) flag, returning 0 for both `magnitude` and `effectiveMagnitude` for such effects.
 
 ```lua
 local effectiveMagnitude, magnitude = tes3.getEffectMagnitude({ reference = ..., effect = ..., skill = ..., attribute = ... })
@@ -3814,13 +3814,10 @@ Performs a ray test and returns various information related to the result(s). If
 
 !!! tip Improving performance of rayTest
 
-		1. Keep maximum size of objects reasonable, as well as triangle counts
-
-		2. Whenever possible set a maxDistance in your rayTest calls
-
-		3. Keep a cached table of ignored objects that you pass to rayTest
-
-		4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
+	1. Keep maximum size of objects reasonable, as well as triangle counts
+	2. Whenever possible set a maxDistance in your rayTest calls
+	3. Keep a cached table of ignored objects that you pass to rayTest
+	4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
 
 
 ```lua
@@ -3844,7 +3841,7 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 	* `returnNormal` (boolean): *Default*: `false`. Calculate and return the vertex normal at intersections.
 	* `returnSmoothNormal` (boolean): *Default*: `false`. Use normal interpolation for calculating vertex normals.
 	* `returnTexture` (boolean): *Default*: `false`. Calculate and return the texture coordinate at intersections.
-	* `ignore` (table&lt;integer, [niNode](../types/niNode.md)|[tes3reference](../types/tes3reference.md)&gt;): *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
+	* `ignore` (table&lt;integer, [niNode](../types/niNode.md)|[tes3reference](../types/tes3reference.md)&gt;): *Optional*. An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.
 	* `accurateSkinned` (boolean): *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
 
 **Returns**:
@@ -4135,8 +4132,8 @@ local executed = tes3.runLegacyScript({ script = ..., source = ..., command = ..
 **Parameters**:
 
 * `params` (table)
-	* `script` ([tes3script](../types/tes3script.md), string): *Default*: `tes3.worldController.scriptGlobals`. The base script to base the execution from.
-	* `source` (number): The compilation source to use. Defaults to tes3.scriptSource.default
+	* `script` ([tes3script](../types/tes3script.md), string): *Default*: `tes3.worldController.scriptCompileAndRun`. The base script to base the execution from.
+	* `source` ([tes3.compilerSource](../references/compiler-sources.md)): *Default*: `tes3.compilerSource.default`. The compilation source to use.
 	* `command` (string): The script text to compile and run.
 	* `variables` (tes3scriptVariables): *Optional*. If a reference is provided, the reference's variables will be used.
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): The reference to target for execution.

@@ -5,8 +5,8 @@ return {
 		name = "params",
 		type = "table",
 		tableParams = {
-			{ name = "script", type = "tes3script|string", optional = true, default = "tes3.worldController.scriptGlobals", description = "The base script to base the execution from." },
-			{ name = "source", type = "number", description = "The compilation source to use. Defaults to tes3.scriptSource.default" },
+			{ name = "script", type = "tes3script|string", optional = true, default = "tes3.worldController.scriptCompileAndRun", description = "The base script to base the execution from." },
+			{ name = "source", type = "tes3.compilerSource", default = "tes3.compilerSource.default", description = "The compilation source to use." },
 			{ name = "command", type = "string", description = "The script text to compile and run." },
 			{ name = "variables", type = "tes3scriptVariables", optional = true, description = "If a reference is provided, the reference's variables will be used." },
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string", description = "The reference to target for execution." },
