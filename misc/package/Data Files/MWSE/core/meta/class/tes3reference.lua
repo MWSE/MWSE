@@ -70,7 +70,7 @@ function tes3reference:clearActionFlag(flagIndex) end
 --- @return boolean cloned Returns `true` if the reference was successfully cloned. Returns `false` if the reference was already cloned or can't be cloned.
 function tes3reference:clone() end
 
---- Disables the reference, removes all its attachments, resets its scale, and sets the reference to be deleted.
+--- Disables the reference, removes all its attachments, resets its scale, marks it as modified, and sets the reference to be deleted, trigerring `referenceDeactivated` event.
 function tes3reference:delete() end
 
 --- Deletes the dynamic light attachment, if it exists. This will automatically detach the dynamic light from affected nodes.

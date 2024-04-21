@@ -1022,7 +1022,7 @@ function tes3.getDialogueInfo(params) end
 --- @field dialogue tes3dialogue|string The dialogue that the info belongs to.
 --- @field id string The numerical, unique id for the info object.
 
---- This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied.
+--- This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied. This function respects [`hasNoMagnitude`](https://mwse.github.io/MWSE/types/tes3magicEffect/#hasnomagnitude) flag, returning 0 for both `magnitude` and `effectiveMagnitude` for such effects.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3geteffectmagnitude).
 --- @param params tes3.getEffectMagnitude.params This table accepts the following values:
@@ -1874,13 +1874,10 @@ function tes3.random(seed) end
 --- 
 --- !!! tip Improving performance of rayTest
 --- 
---- 		1. Keep maximum size of objects reasonable, as well as triangle counts
---- 
---- 		2. Whenever possible set a maxDistance in your rayTest calls
---- 
---- 		3. Keep a cached table of ignored objects that you pass to rayTest
---- 
---- 		4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
+--- 	1. Keep maximum size of objects reasonable, as well as triangle counts
+--- 	2. Whenever possible set a maxDistance in your rayTest calls
+--- 	3. Keep a cached table of ignored objects that you pass to rayTest
+--- 	4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
 --- 
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3raytest).
@@ -1914,7 +1911,7 @@ function tes3.random(seed) end
 --- 
 --- `returnTexture`: boolean? — *Default*: `false`. Calculate and return the texture coordinate at intersections.
 --- 
---- `ignore`: table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil — *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
+--- `ignore`: table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil — *Optional*. An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.
 --- 
 --- `accurateSkinned`: boolean? — *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
 --- @return niPickRecord|niPickRecord[]|nil result No description yet available.
@@ -1936,7 +1933,7 @@ function tes3.rayTest(params) end
 --- @field returnNormal boolean? *Default*: `false`. Calculate and return the vertex normal at intersections.
 --- @field returnSmoothNormal boolean? *Default*: `false`. Use normal interpolation for calculating vertex normals.
 --- @field returnTexture boolean? *Default*: `false`. Calculate and return the texture coordinate at intersections.
---- @field ignore table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
+--- @field ignore table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil *Optional*. An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.
 --- @field accurateSkinned boolean? *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
 
 --- Simulates releasing a keyboard key.
@@ -2084,9 +2081,9 @@ function tes3.removeVisualEffect(params) end
 --- This function will compile and run a mwscript chunk of code. This is not ideal to use, but can be used for features not yet exposed to lua.
 --- @param params tes3.runLegacyScript.params This table accepts the following values:
 --- 
---- `script`: tes3script|string|nil — *Default*: `tes3.worldController.scriptGlobals`. The base script to base the execution from.
+--- `script`: tes3script|string|nil — *Default*: `tes3.worldController.scriptCompileAndRun`. The base script to base the execution from.
 --- 
---- `source`: number — The compilation source to use. Defaults to tes3.scriptSource.default
+--- `source`: tes3.compilerSource? — *Default*: `tes3.compilerSource.default`. The compilation source to use.
 --- 
 --- `command`: string — The script text to compile and run.
 --- 
@@ -2102,8 +2099,8 @@ function tes3.runLegacyScript(params) end
 
 ---Table parameter definitions for `tes3.runLegacyScript`.
 --- @class tes3.runLegacyScript.params
---- @field script tes3script|string|nil *Default*: `tes3.worldController.scriptGlobals`. The base script to base the execution from.
---- @field source number The compilation source to use. Defaults to tes3.scriptSource.default
+--- @field script tes3script|string|nil *Default*: `tes3.worldController.scriptCompileAndRun`. The base script to base the execution from.
+--- @field source tes3.compilerSource? *Default*: `tes3.compilerSource.default`. The compilation source to use.
 --- @field command string The script text to compile and run.
 --- @field variables tes3scriptVariables? *Optional*. If a reference is provided, the reference's variables will be used.
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string The reference to target for execution.
@@ -3456,6 +3453,13 @@ tes3.codePatchFeature = require("tes3.codePatchFeature")
 ---| `tes3.codePatchFeature.waterwalkFix`
 ---| `tes3.codePatchFeature.weaponReachIssues`
 ---| `tes3.codePatchFeature.weaponResistanceChange`
+
+tes3.compilerSource = require("tes3.compilerSource")
+
+--- @alias tes3.compilerSource
+---| `tes3.compilerSource.console`
+---| `tes3.compilerSource.default`
+---| `tes3.compilerSource.dialogue`
 
 tes3.contentType = require("tes3.contentType")
 

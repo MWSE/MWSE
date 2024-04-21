@@ -162,9 +162,9 @@ local result = table.deepcopy(t)
 ### `table.empty`
 <div class="search_terms" style="display: none">empty</div>
 
-Checks if a table is empty. 
-	
-	If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
+Checks if a table is empty.
+
+If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
 
 ```lua
 local result = table.empty(t, deepCheck)

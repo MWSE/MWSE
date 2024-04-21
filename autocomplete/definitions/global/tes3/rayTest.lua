@@ -4,13 +4,10 @@ return {
 
 !!! tip Improving performance of rayTest
 
-		1. Keep maximum size of objects reasonable, as well as triangle counts
-
-		2. Whenever possible set a maxDistance in your rayTest calls
-
-		3. Keep a cached table of ignored objects that you pass to rayTest
-
-		4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
+	1. Keep maximum size of objects reasonable, as well as triangle counts
+	2. Whenever possible set a maxDistance in your rayTest calls
+	3. Keep a cached table of ignored objects that you pass to rayTest
+	4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
 ]],
 	arguments = {{
 		name = "params",
@@ -30,7 +27,7 @@ return {
 			{ name = "returnNormal", type = "boolean", optional = true, default = false, description = "Calculate and return the vertex normal at intersections." },
 			{ name = "returnSmoothNormal", type = "boolean", optional = true, default = false, description = "Use normal interpolation for calculating vertex normals." },
 			{ name = "returnTexture", type = "boolean", optional = true, default = false, description = "Calculate and return the texture coordinate at intersections." },
-			{ name = "ignore", type = "table<integer, niNode|tes3reference>", description = "An array of references and/or scene graph nodes to cull from the result(s).", optional = true },
+			{ name = "ignore", type = "table<integer, niNode|tes3reference>", description = "An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.", optional = true },
 			{ name = "accurateSkinned", type = "boolean", default = false, optional = true, description = "If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation." },
 		},
 	}},
