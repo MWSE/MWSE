@@ -1870,14 +1870,23 @@ function tes3.pushKey(keyCode) end
 --- @param seed number? *Optional*. If provided, it the number generator is seeded with this value. Pointers to objects may be used, such as a reference's sceneNode, to create a consistent if less than random seed.
 function tes3.random(seed) end
 
---- Performs a ray test and returns various information related to the result(s). If `findAll` is set, the result will be a table of results, otherwise only the first result is returned.
+--- Performs a ray test and returns various information related to the result(s). The ray test works by effectively shooting out a line, starting at `position` and pointing towards `direction`, and then checking to see which objects intersect that line.
+--- 	
+--- Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
+--- 	
+--- 1. `root`: Things that aren't a `child` of the specified `root` will be skipped. (If `root` is not provided, then nothing will be skipped by this process.)
+--- 2. `ignore`: objects in this array will be skipped.
+--- 3. `maxDistance`: if specified, only objects within the specified distance will be checked.
+--- 4. `findAll`: If `true`, then all intersections will be returned. Otherwise, only the first intersection will be returned.
 --- 
 --- !!! tip Improving performance of rayTest
+--- 	You should always try to follow these suggestions as best you can, as they can noticeably improve the performance of this function. 
+--- 	(Although, some of these are fine to ignore if you're calling `tes3.rayTest` fairly infrequently. For example, you can probably get away with skipping the `root` parameter if `tes3.rayTest` is only used in a callback in the `activate` event.)
 --- 
---- 	1. Keep maximum size of objects reasonable, as well as triangle counts
---- 	2. Whenever possible set a maxDistance in your rayTest calls
---- 	3. Keep a cached table of ignored objects that you pass to rayTest
---- 	4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
+--- 	1. Set a `maxDistance`.
+--- 	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
+--- 	3. Try to keep a cached copy of the array used for the `ignore` parameter (if possible).
+--- 	4. Keep maximum size of objects reasonable, and try to limit triangle counts.
 --- 
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3raytest).
@@ -1889,31 +1898,31 @@ function tes3.random(seed) end
 --- 
 --- `findAll`: boolean? — *Default*: `false`. If true, the ray test won't stop after the first result.
 --- 
---- `maxDistance`: number? — *Default*: `0`. The maximum distance that the test will run.
+--- `maxDistance`: number? — *Default*: `0`. The maximum distance that the test will run. If set to `0`, no maximum distance will be used.
 --- 
---- `sort`: boolean? — *Default*: `true`. If true, the results will be sorted by distance from the origin position.
+--- `ignore`: table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil — *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
 --- 
---- `useModelBounds`: boolean? — *Default*: `false`. If true, model bounds will be tested for intersection. Otherwise triangles will be used.
+--- `root`: niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil — *Default*: `tes3.game.worldRoot`. Node pointer to node scene. Only nodes that are a child of this root will be checked by this function. This option can considerably increase performance if used properly. Common choices for the root node are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot) (for most static objects), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot) (for containers, NPCs, plants, doors, etc).
 --- 
---- `useModelCoordinates`: boolean? — *Default*: `false`. If true, model coordinates will be used instead of world coordinates.
+--- `useModelBounds`: boolean? — *Default*: `false`. If `true`, model bounds will be tested for intersection. Otherwise triangles will be used. This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
 --- 
---- `useBackTriangles`: boolean? — *Default*: `false`. Include intersections with back-facing triangles.
+--- `useModelCoordinates`: boolean? — *Default*: `false`. If true, model coordinates will be used instead of world coordinates. Typically not needed.
+--- 
+--- `useBackTriangles`: boolean? — *Default*: `false`. Include intersections with back-facing triangles. This essentially makes it possible to intersect with the "back-side" of an object, which could make it possible to return a hit on an object if the `position` parameter is "inside" the object in question.This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
 --- 
 --- `observeAppCullFlag`: boolean? — *Default*: `true`. Ignore intersections with culled (hidden) models.
 --- 
---- `root`: niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil — *Default*: `tes3.game.worldRoot`. Node pointer to node scene. To reduce the computational work, consider passing only a smaller subset of the `worldRoot` to improve performance. The typical nodes you can pass here are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot).
+--- `accurateSkinned`: boolean? — *Default*: `false`. If `true`, skinned objects will be deformed, allowing for more accurate collision checking. This **significantly** slows down the operation, and is rarely needed.
 --- 
---- `returnColor`: boolean? — *Default*: `false`. Calculate and return the vertex color at intersections.
+--- `sort`: boolean? — *Default*: `true`. Sort results by distance from the specified `position`? Only applicable if `findAll == true`.
 --- 
---- `returnNormal`: boolean? — *Default*: `false`. Calculate and return the vertex normal at intersections.
+--- `returnColor`: boolean? — *Default*: `false`. Calculate and return the vertex color at intersections?
 --- 
---- `returnSmoothNormal`: boolean? — *Default*: `false`. Use normal interpolation for calculating vertex normals.
+--- `returnNormal`: boolean? — *Default*: `false`. Calculate and return the vertex normal at intersections?
 --- 
---- `returnTexture`: boolean? — *Default*: `false`. Calculate and return the texture coordinate at intersections.
+--- `returnSmoothNormal`: boolean? — *Default*: `false`. Use normal interpolation for calculating vertex normals?
 --- 
---- `ignore`: table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil — *Optional*. An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.
---- 
---- `accurateSkinned`: boolean? — *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
+--- `returnTexture`: boolean? — *Default*: `false`. Calculate and return the texture coordinate at intersections?
 --- @return niPickRecord|niPickRecord[]|nil result No description yet available.
 function tes3.rayTest(params) end
 
@@ -1922,19 +1931,19 @@ function tes3.rayTest(params) end
 --- @field position tes3vector3|number[] Position of the ray origin.
 --- @field direction tes3vector3|number[] Direction of the ray. Does not have to be unit length.
 --- @field findAll boolean? *Default*: `false`. If true, the ray test won't stop after the first result.
---- @field maxDistance number? *Default*: `0`. The maximum distance that the test will run.
---- @field sort boolean? *Default*: `true`. If true, the results will be sorted by distance from the origin position.
---- @field useModelBounds boolean? *Default*: `false`. If true, model bounds will be tested for intersection. Otherwise triangles will be used.
---- @field useModelCoordinates boolean? *Default*: `false`. If true, model coordinates will be used instead of world coordinates.
---- @field useBackTriangles boolean? *Default*: `false`. Include intersections with back-facing triangles.
+--- @field maxDistance number? *Default*: `0`. The maximum distance that the test will run. If set to `0`, no maximum distance will be used.
+--- @field ignore table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
+--- @field root niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil *Default*: `tes3.game.worldRoot`. Node pointer to node scene. Only nodes that are a child of this root will be checked by this function. This option can considerably increase performance if used properly. Common choices for the root node are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot) (for most static objects), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot) (for containers, NPCs, plants, doors, etc).
+--- @field useModelBounds boolean? *Default*: `false`. If `true`, model bounds will be tested for intersection. Otherwise triangles will be used. This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
+--- @field useModelCoordinates boolean? *Default*: `false`. If true, model coordinates will be used instead of world coordinates. Typically not needed.
+--- @field useBackTriangles boolean? *Default*: `false`. Include intersections with back-facing triangles. This essentially makes it possible to intersect with the "back-side" of an object, which could make it possible to return a hit on an object if the `position` parameter is "inside" the object in question.This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
 --- @field observeAppCullFlag boolean? *Default*: `true`. Ignore intersections with culled (hidden) models.
---- @field root niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil *Default*: `tes3.game.worldRoot`. Node pointer to node scene. To reduce the computational work, consider passing only a smaller subset of the `worldRoot` to improve performance. The typical nodes you can pass here are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot).
---- @field returnColor boolean? *Default*: `false`. Calculate and return the vertex color at intersections.
---- @field returnNormal boolean? *Default*: `false`. Calculate and return the vertex normal at intersections.
---- @field returnSmoothNormal boolean? *Default*: `false`. Use normal interpolation for calculating vertex normals.
---- @field returnTexture boolean? *Default*: `false`. Calculate and return the texture coordinate at intersections.
---- @field ignore table<integer?, niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|tes3reference|nil>|nil *Optional*. An array of references and/or scene graph nodes to cull from the result(s). In most cases when testing from the camera position, it's desirable to pass `ignore = { tes3.player }`.
---- @field accurateSkinned boolean? *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
+--- @field accurateSkinned boolean? *Default*: `false`. If `true`, skinned objects will be deformed, allowing for more accurate collision checking. This **significantly** slows down the operation, and is rarely needed.
+--- @field sort boolean? *Default*: `true`. Sort results by distance from the specified `position`? Only applicable if `findAll == true`.
+--- @field returnColor boolean? *Default*: `false`. Calculate and return the vertex color at intersections?
+--- @field returnNormal boolean? *Default*: `false`. Calculate and return the vertex normal at intersections?
+--- @field returnSmoothNormal boolean? *Default*: `false`. Use normal interpolation for calculating vertex normals?
+--- @field returnTexture boolean? *Default*: `false`. Calculate and return the texture coordinate at intersections?
 
 --- Simulates releasing a keyboard key.
 --- @param keyCode tes3.scanCode Maps to values in [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-codes/) namespace.
