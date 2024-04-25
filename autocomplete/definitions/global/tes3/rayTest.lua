@@ -4,14 +4,14 @@ return {
 	
 Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
 	
-1. `root`: Things that aren't a `child` of the specified `root` will be skipped. (If `root` is not provided, then nothing will be skipped by this process.)
-2. `ignore`: objects in this array will be skipped.
-3. `maxDistance`: if specified, only objects within the specified distance will be checked.
+1. `root`: Things that aren't a `child` of the specified `root` will be skipped. If `root` is not provided, then nothing will be skipped by this process.
+2. `ignore`: Objects in this array will be skipped.
+3. `maxDistance`: If specified, only objects within the specified distance will be checked.
 4. `findAll`: If `true`, then all intersections will be returned. Otherwise, only the first intersection will be returned.
 
 !!! tip Improving performance of rayTest
-	You should always try to follow these suggestions as best you can, as they can noticeably improve the performance of this function. 
-	(Although, some of these are fine to ignore if you're calling `tes3.rayTest` fairly infrequently. For example, you can probably get away with skipping the `root` parameter if `tes3.rayTest` is only used in a callback in the `activate` event.)
+	The performance of `tes3.rayTest` depends quite a bit on the parameters the function is called with.
+	The following suggestions will help to minimize the performance impact of calls to `tes3.rayTest`.
 
 	1. Set a `maxDistance`.
 	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
