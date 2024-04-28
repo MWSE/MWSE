@@ -30,7 +30,6 @@
 --- 	- [Text field](./mwseMCMTextField.md)
 --- 	- [Paragraph field](./mwseMCMParagraphField.md)
 --- 	- [Slider](./mwseMCMSlider.md)
---- 	- [Decimal slider](./mwseMCMDecimalSlider.md)
 --- 	- [Percentage slider](./mwseMCMPercentageSlider.md)
 --- 
 --- @class mwseMCMComponent

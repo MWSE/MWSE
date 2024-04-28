@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Use [`tes3npc.level`](https://mwse.github.io/MWSE/types/tes3npc/#level) instead. Wrapper for the `SetLevel` mwscript function.]],
+	description = [[Wrapper for the `SetLevel` mwscript function.]],
 	arguments = {{
 		name = "params",
 		type = "table",

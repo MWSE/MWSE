@@ -1955,7 +1955,7 @@ local dialogueInfo = tes3.getDialogueInfo({ dialogue = ..., id = ... })
 ### `tes3.getEffectMagnitude`
 <div class="search_terms" style="display: none">geteffectmagnitude, effectmagnitude</div>
 
-This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied.
+This function returns the total effective magnitude and total base magnitude of a certain magic effect affecting a reference. It returns a pair of numbers, the first being the effective magnitude after all the actor's resistances are applied (see examples). The second number is the magnitude before any of the actor's resistances are applied. This function respects [`hasNoMagnitude`](https://mwse.github.io/MWSE/types/tes3magicEffect/#hasnomagnitude) flag, returning 0 for both `magnitude` and `effectiveMagnitude` for such effects.
 
 ```lua
 local effectiveMagnitude, magnitude = tes3.getEffectMagnitude({ reference = ..., effect = ..., skill = ..., attribute = ... })
@@ -3810,21 +3810,27 @@ tes3.random(seed)
 ### `tes3.rayTest`
 <div class="search_terms" style="display: none">raytest</div>
 
-Performs a ray test and returns various information related to the result(s). If `findAll` is set, the result will be a table of results, otherwise only the first result is returned.
+Performs a ray test and returns various information related to the result(s). The ray test works by effectively shooting out a line, starting at `position` and pointing towards `direction`, and then checking to see which objects intersect that line.
+	
+Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
+	
+1. `root`: Things that aren't a `child` of the specified `root` will be skipped. If `root` is not provided, then nothing will be skipped by this process.
+2. `ignore`: Objects in this array will be skipped.
+3. `maxDistance`: If specified, only objects within the specified distance will be checked.
+4. `findAll`: If `true`, then all intersections will be returned. Otherwise, only the first intersection will be returned.
 
 !!! tip Improving performance of rayTest
+	The performance of `tes3.rayTest` depends quite a bit on the parameters the function is called with.
+	The following suggestions will help to minimize the performance impact of calls to `tes3.rayTest`.
 
-		1. Keep maximum size of objects reasonable, as well as triangle counts
-
-		2. Whenever possible set a maxDistance in your rayTest calls
-
-		3. Keep a cached table of ignored objects that you pass to rayTest
-
-		4. Whenever possible call ray test on only a subset of the game's scene graph. It can be `worldPickRoot` for interactable objects, `worldLandscapeRoot`, or `worldObjectRoot` for other static, non-interactable objects. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself. If your mod's logic only needs specific things you can narrow it down for big performance improvement.
+	1. Set a `maxDistance`.
+	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
+	3. Try to keep a cached copy of the array used for the `ignore` parameter (if possible).
+	4. Keep maximum size of objects reasonable, and try to limit triangle counts.
 
 
 ```lua
-local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., maxDistance = ..., sort = ..., useModelBounds = ..., useModelCoordinates = ..., useBackTriangles = ..., observeAppCullFlag = ..., root = ..., returnColor = ..., returnNormal = ..., returnSmoothNormal = ..., returnTexture = ..., ignore = ..., accurateSkinned = ... })
+local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., maxDistance = ..., ignore = ..., root = ..., useModelBounds = ..., useModelCoordinates = ..., useBackTriangles = ..., observeAppCullFlag = ..., accurateSkinned = ..., sort = ..., returnColor = ..., returnNormal = ..., returnSmoothNormal = ..., returnTexture = ... })
 ```
 
 **Parameters**:
@@ -3833,19 +3839,19 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 	* `position` ([tes3vector3](../types/tes3vector3.md), number[]): Position of the ray origin.
 	* `direction` ([tes3vector3](../types/tes3vector3.md), number[]): Direction of the ray. Does not have to be unit length.
 	* `findAll` (boolean): *Default*: `false`. If true, the ray test won't stop after the first result.
-	* `maxDistance` (number): *Default*: `0`. The maximum distance that the test will run.
-	* `sort` (boolean): *Default*: `true`. If true, the results will be sorted by distance from the origin position.
-	* `useModelBounds` (boolean): *Default*: `false`. If true, model bounds will be tested for intersection. Otherwise triangles will be used.
-	* `useModelCoordinates` (boolean): *Default*: `false`. If true, model coordinates will be used instead of world coordinates.
-	* `useBackTriangles` (boolean): *Default*: `false`. Include intersections with back-facing triangles.
-	* `observeAppCullFlag` (boolean): *Default*: `true`. Ignore intersections with culled (hidden) models.
-	* `root` ([niNode](../types/niNode.md)): *Default*: `tes3.game.worldRoot`. Node pointer to node scene. To reduce the computational work, consider passing only a smaller subset of the `worldRoot` to improve performance. The typical nodes you can pass here are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot).
-	* `returnColor` (boolean): *Default*: `false`. Calculate and return the vertex color at intersections.
-	* `returnNormal` (boolean): *Default*: `false`. Calculate and return the vertex normal at intersections.
-	* `returnSmoothNormal` (boolean): *Default*: `false`. Use normal interpolation for calculating vertex normals.
-	* `returnTexture` (boolean): *Default*: `false`. Calculate and return the texture coordinate at intersections.
+	* `maxDistance` (number): *Default*: `0`. The maximum distance that the test will run. If set to `0`, no maximum distance will be used.
 	* `ignore` (table&lt;integer, [niNode](../types/niNode.md)|[tes3reference](../types/tes3reference.md)&gt;): *Optional*. An array of references and/or scene graph nodes to cull from the result(s).
-	* `accurateSkinned` (boolean): *Default*: `false`. If true, the raytest will deform skinned objects to accurately raytest against them. This significantly slows down the operation.
+	* `root` ([niNode](../types/niNode.md)): *Default*: `tes3.game.worldRoot`. Node pointer to node scene. Only nodes that are a child of this root will be checked by this function. This option can considerably increase performance if used properly. Common choices for the root node are: [`tes3.game.worldLandscapeRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldLandscapeRoot), [`worldObjectRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldObjectRoot) (for most static objects), and [`worldPickRoot`](https://mwse.github.io/MWSE/types/tes3game/#worldPickRoot) (for containers, NPCs, plants, doors, etc).
+	* `useModelBounds` (boolean): *Default*: `false`. If `true`, model bounds will be tested for intersection. Otherwise triangles will be used. This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
+	* `useModelCoordinates` (boolean): *Default*: `false`. If true, model coordinates will be used instead of world coordinates. Typically not needed.
+	* `useBackTriangles` (boolean): *Default*: `false`. Include intersections with back-facing triangles. This essentially makes it possible to intersect with the "back-side" of an object, which could make it possible to return a hit on an object if the `position` parameter is "inside" the object in question.This will result in more accurate collision testing, but will be more computationally expensive. This is rarely needed.
+	* `observeAppCullFlag` (boolean): *Default*: `true`. Ignore intersections with culled (hidden) models.
+	* `accurateSkinned` (boolean): *Default*: `false`. If `true`, skinned objects will be deformed, allowing for more accurate collision checking. This **significantly** slows down the operation, and is rarely needed.
+	* `sort` (boolean): *Default*: `true`. Sort results by distance from the specified `position`? Only applicable if `findAll == true`.
+	* `returnColor` (boolean): *Default*: `false`. Calculate and return the vertex color at intersections?
+	* `returnNormal` (boolean): *Default*: `false`. Calculate and return the vertex normal at intersections?
+	* `returnSmoothNormal` (boolean): *Default*: `false`. Use normal interpolation for calculating vertex normals?
+	* `returnTexture` (boolean): *Default*: `false`. Calculate and return the texture coordinate at intersections?
 
 **Returns**:
 
@@ -3853,7 +3859,7 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 
 ??? example "Example: Get Activation Target"
 
-	This example performs a ray test to match the normal activation target test. Unlike `tes3.getPlayerTarget()` this will return objects not normally available for activation.
+	This example performs a `tes3.rayTest` to match the normal activation target test. Unlike `tes3.getPlayerTarget()` this will return objects not normally available for activation.
 
 	```lua
 	local hitResult = tes3.rayTest({ position = tes3.getPlayerEyePosition(), direction = tes3.getPlayerEyeVector() })
@@ -3868,7 +3874,7 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 
 ??? example "Example: Get Camera Target"
 
-	This example performs a ray test to see what the camera is currently looking at.
+	See what the player's camera is looking at.
 
 	```lua
 	local hitResult = tes3.rayTest({ position = tes3.getCameraPosition(), direction = tes3.getCameraVector() })
@@ -3883,7 +3889,7 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 
 ??? example "Example: Multiple Results"
 
-	This example performs a ray test and displays all results in the entire ray test, rather than ending at the first object hit.
+	This example performs a `tes3.rayTest` and displays all results in the entire ray test, rather than ending at the first object hit.
 
 	```lua
 	local results = tes3.rayTest{ position = tes3.getCameraPosition(), direction = tes3.getCameraVector(), findAll = true }
@@ -3895,7 +3901,7 @@ local result = tes3.rayTest({ position = ..., direction = ..., findAll = ..., ma
 
 	```
 
-??? example "Example: Save rayTest result for use at a later point"
+??? example "Example: Save `tes3.rayTest` result for use at a later point"
 
 	If you plan to use the results of rayTest, you should make sure it still exists. For example, an object which was in a list of results of rayTest can get unloaded when the player changes cells and become invalid, so it shouldn't be accessed.
 
@@ -4135,8 +4141,8 @@ local executed = tes3.runLegacyScript({ script = ..., source = ..., command = ..
 **Parameters**:
 
 * `params` (table)
-	* `script` ([tes3script](../types/tes3script.md), string): *Default*: `tes3.worldController.scriptGlobals`. The base script to base the execution from.
-	* `source` (number): The compilation source to use. Defaults to tes3.scriptSource.default
+	* `script` ([tes3script](../types/tes3script.md), string): *Default*: `tes3.worldController.scriptCompileAndRun`. The base script to base the execution from.
+	* `source` ([tes3.compilerSource](../references/compiler-sources.md)): *Default*: `tes3.compilerSource.default`. The compilation source to use.
 	* `command` (string): The script text to compile and run.
 	* `variables` (tes3scriptVariables): *Optional*. If a reference is provided, the reference's variables will be used.
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): The reference to target for execution.

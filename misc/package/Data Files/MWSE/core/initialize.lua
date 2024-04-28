@@ -473,54 +473,52 @@ end
 -------------------------------------------------
 
 --[[
-	table.binsearch( table, value [, compval [, reversed] ] )
+	table.binsearch( table, value [, comp [, findAll] ] )
 
-	Searches the table through BinarySearch for the given value.
-	If the  value is found:
-		it returns a table holding all the mathing indices (e.g. { startindice,endindice } )
-		endindice may be the same as startindice if only one matching indice was found
-	If compval is given:
-		then it must be a function that takes one value and returns a second value2,
-		to be compared with the input value, e.g.:
-		compvalue = function( value ) return value[1] end
-	If reversed is set to true:
-		then the search assumes that the table is sorted in reverse order (largest value at position 1)
-		note when reversed is given compval must be given as well, it can be nil/_ in this case
+	finds a value by performing a binary search.
+	If the `value` is found:
+		if `findAll` evaluates to true, then the lowest matching index and the highest matching index will be returned.
+		otherwise, the first index to match will be returned.
+	If `comp` is given:
+		comparisons will be performed as though the array was sorted via `table.sort(tbl, comp)`.
+	If `findAll == true`:
+		two indices will be returned, corresponding to the lowest and highest indices whose corresponding elements are equal to `value`.
 	Return value:
-		on success: a table holding matching indices (e.g. { startindice,endindice } )
+		on success: two integers: `lowestMatch, highestMatch`
 		on failure: nil
 ]]--
-local function default_fcompval( value ) return value end
-local function fcompf( a,b ) return a < b end
-local function fcompr( a,b ) return a > b end
-function table.binsearch( t,value,compval,reversed )
-	-- Initialise functions
-	local compval = compval or default_fcompval
-	local fcomp = reversed and fcompr or fcompf
-	--  Initialise numbers
-	local iStart,iEnd,iMid = 1,#t,0
+function table.binsearch(tbl, value, comp, findAll)
+	-- initialize the index variables
+	local first, last, midpt = 1, #tbl, 0
+	local floor = math.floor
+	comp = comp or function(a,b) return a < b end -- set to default if not given
 	-- Binary Search
-	while iStart <= iEnd do
+	while first <= last do
 		-- calculate middle
-		iMid = math.floor( (iStart+iEnd)/2 )
-		-- get compare value
-		local value2 = compval( t[iMid] )
-		-- get all values that match
-		if value == value2 then
-			local tfound,num = { iMid,iMid },iMid - 1
-			while value == compval( t[num] ) do
-				tfound[1],num = num,num - 1
+		midpt = floor((first + last) / 2)
+
+		if comp(value, tbl[midpt]) then -- `value < tbl[midpt]`
+
+			last = midpt - 1 -- value is in the first half
+
+		elseif comp(tbl[midpt], value) then -- `tbl[midpt] < value`
+
+			first = midpt + 1 -- value is in the second half
+
+		else -- `tbl[midpt] == value`
+
+			-- only want the first match? bail
+			if not findAll then return midpt, midpt end
+
+			-- find all the remaining matches
+			local lowestMatch, highestMatch = midpt, midpt
+			while value == tbl[lowestMatch - 1] do
+				lowestMatch = lowestMatch - 1
 			end
-			num = iMid + 1
-			while value == compval( t[num] ) do
-				tfound[2],num = num,num + 1
+			while value == tbl[highestMatch + 1] do
+				highestMatch = highestMatch + 1
 			end
-			return tfound
-		-- keep searching
-		elseif fcomp( value,value2 ) then
-			iEnd = iMid - 1
-		else
-			iStart = iMid + 1
+			return lowestMatch, highestMatch
 		end
 	end
 end

@@ -330,6 +330,7 @@ local operatorToTitle = {
 	pow = "Exponentiation (`^`)",
 	concat = "Concatenation (`..`)",
 	len = "Length (`#`)",
+	eq = "Equality (`==`)",
 }
 
 local function writeOperatorPackage(file, operator, package)

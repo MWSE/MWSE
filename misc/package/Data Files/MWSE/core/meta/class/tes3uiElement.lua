@@ -38,10 +38,14 @@
 --- @field contentType tes3.contentType *Read-only*. The type of content this `tes3uiElement` represents. Maps to values in the [`tes3.contentType`](https://mwse.github.io/MWSE/references/content-types/) table.
 --- @field disabled boolean Disables user actions on this element. Widgets may stop accepting mouse and keyboard input while disabled.
 --- @field flowDirection tes3.flowDirection Indicates which direction child elements are laid out. These values are available as [`tes3.flowDirection`](https://mwse.github.io/MWSE/references/flow-directions/) enumeration.
---- @field font number Index of font to use for text.
---- 		0 - Magic Cards (default)
---- 		1 - Century Sans
---- 		2 - Daedric
+--- @field font integer Index of font to use for text. These indices are mapped to actual font files in the `Morrowind.ini` file under the [Fonts] section. The table below lists the default fonts mapping.
+--- 
+--- Index | description
+--- ----- | -----------
+--- 0     | `magic_cards_regular` (Magic Cards, default)
+--- 1     | `century_gothic_font_regular` (Century Sans)
+--- 2     | `daedric_font`
+--- 
 --- @field height integer The element's height in pixels.
 --- @field heightProportional number Sets element dimensions using a proportional sizer. The sizer starts with the parent dimension in the flow direction, subtracts any fixed dimension children leaving the proportional sizer space. Each proportionally sized element then gets an equal division of the space, multiplied by this member. Values above 1.0 are permissible.
 --- 
@@ -584,7 +588,14 @@ function tes3uiElement:move(params) end
 --- * Slider:
 --- 	* **PartScrollBar_changed**
 --- 		Triggers on value change; moving the slider is not enough if the value is the same.
---- 
+--- * Cycle Button:
+--- 	* **valueChanged**
+--- 		Triggers after the selected `index` has been changed.
+--- * Text Input:
+--- 	* **textCleared**
+--- 		Triggers after the text has been cleared by the user in text input widgets that have `placeholderText` set.
+--- 	* **textUpdated**
+--- 		Triggers after the text of the text input has changed.
 --- ***
 --- 
 --- #### Event forwarding
@@ -632,6 +643,9 @@ function tes3uiElement:move(params) end
 --- * **relativeY** (`number`)
 --- 	See *relativeX* description.
 --- 
+--- 
+--- !!! Note
+--- 	When a UI element is destroyed, you don't have to manually unregister your custom event handlers. The engine does it automatically.
 --- 
 --- @param eventID tes3.uiEvent The UI event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/).
 --- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function. Returning `false` from this function may cancel an interaction for certain events, such as unfocus.
@@ -707,19 +721,19 @@ function tes3uiElement:sortChildren(sortFunction) end
 function tes3uiElement:triggerEvent(eventID) end
 
 --- Unregisters an `event` handler.
---- @param eventID string The event id.
+--- @param eventID tes3.uiEvent The event id.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregister(eventID) end
 
 --- Unregisters a function previously registered using `:registerAfter`.
---- @param eventID string The event id.
---- @param callback function The callback function.
+--- @param eventID tes3.uiEvent The event id.
+--- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregisterAfter(eventID, callback) end
 
 --- Unregisters a function previously registered using `:registerBefore`.
---- @param eventID string The event id.
---- @param callback function The callback function.
+--- @param eventID tes3.uiEvent The event id.
+--- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregisterBefore(eventID, callback) end
 
