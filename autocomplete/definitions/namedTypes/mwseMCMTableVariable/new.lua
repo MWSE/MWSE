@@ -5,7 +5,7 @@ return {
 		name = "variable",
 		type = "table",
 		tableParams = {
-			{ name = "id", type = "string", description = "Key in the config file used to store the variable." },
+			{ name = "id", type = "string|number", description = "Key in the config file used to store the variable." },
 			{ name = "table", type = "table", description = "The table to save the data to." },
 			{ name = "defaultSetting", type = "unknown", optional = true, description = "If `id` does not exist in the table, it will be initialised to this value." },
 			{ name = "inGameOnly", type = "boolean", optional = true, default = false, description = "If true, the setting containing this variable will be disabled if the game is on main menu." },
