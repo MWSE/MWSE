@@ -906,7 +906,7 @@ end
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
 	
-	if not result and not defaults then return end -- mimic old behavior and return nil
+	if not result and not defaults then return end
 
 	result = result or {} -- make sure the user gets something
 
