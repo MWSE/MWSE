@@ -15,8 +15,14 @@ end
 local configMods = {}
 
 --- The current package that we are configuring.
+-- used to properly deselect mod config menus when clicking on different mod names
 --- @type mwseModConfig?
 local currentModConfig = nil
+
+--- name of the last mod selected in the MCM. 
+-- used to reopen the most recently closed mod config menu when the MCM is reopened between play sessions.
+-- stored separately from `currentModConfig` for stability reasons
+local lastModName = nil ---@type string
 
 --- The previously selected element.
 --- @type tes3uiElement?
@@ -100,6 +106,7 @@ end
 --- Callback for when a mod name has been clicked in the left pane.
 --- @param e tes3uiEventData
 local function onClickModName(e)
+	local modName = e.source.text
 	-- If we have a current mod, fire its close event.
 	if (currentModConfig and currentModConfig.onClose) then
 		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
@@ -109,9 +116,9 @@ local function onClickModName(e)
 	end
 
 	-- Update the current mod package.
-	currentModConfig = configMods[e.source.text]
+	currentModConfig = configMods[modName]
 	if (not currentModConfig) then
-		error(string.format("No mod config could be found for key '%s'.", e.source.text))
+		error(string.format("No mod config could be found for key '%s'.", modName))
 		return
 	end
 
@@ -134,8 +141,10 @@ local function onClickModName(e)
 
 	-- Change the mod config title bar to include the mod's name.
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu") --[[@as tes3uiElement]]
-	menu.text = mwse.mcm.i18n("Mod Configuration - %s", { e.source.text })
+	menu.text = mwse.mcm.i18n("Mod Configuration - %s", { modName })
 	menu:updateLayout()
+	-- record that this was the most recently opened mod config menu
+	lastModName = modName
 end
 
 --- Callback for when the close button has been clicked.
@@ -263,7 +272,6 @@ local function onClickModConfigButton()
 
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
 	if (not menu) then
-
 		-- Create the main menu frame.
 		menu = tes3ui.createMenu({ id = "MWSE:ModConfigMenu", dragFrame = true })
 		menu.text = mwse.mcm.i18n("Mod Configuration")
@@ -407,6 +415,15 @@ local function onClickModConfigButton()
 		-- Cause the menu to refresh itself.
 		menu:updateLayout()
 		modList.widget:contentsChanged()
+
+		if lastModName ~= nil then
+			for _, child in ipairs(modListContents.children) do
+				if child.children[1].text == lastModName then
+					child.children[1]:triggerEvent(tes3.uiEvent.mouseClick)
+					break
+				end
+			end
+		end
 	else
 		menu.visible = true
 	end
