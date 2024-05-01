@@ -5,13 +5,21 @@
 	extend to provide a single place for users to configure their mods.
 ]]
 
---- Storage for mod config packages.
---- @type table<string, mwseModConfig>
-local configMods = {}
+--- @class mwseLegacyMod : mwse.registerModConfig.package
+--- @field name string
 
---- The current package that we are configuring.
---- @type mwseModConfig?
-local currentModConfig = nil
+--- Storage for mod config packages.
+
+-- Stores all mod templates, indexed by display string
+local modTemplates = {} ---@type table<string, mwseMCMTemplate>
+
+local legacyMods = {} ---@type table<string, mwseLegacyMod>
+
+local currentModName = nil ---@type string?
+local lastModName = nil ---@type string?
+local lastPageIndex = nil ---@type integer?
+
+
 
 --- The previously selected element.
 --- @type tes3uiElement?
@@ -22,27 +30,27 @@ local previousModConfigSelector = nil
 local modConfigContainer = nil
 
 --- @type table
-local config = mwse.loadConfig("MWSE.MCM", {
-	favorites = {},
-})
+local config = mwse.loadConfig("MWSE.MCM", { favorites = {}, })
 
--- Try to migrate over existing favorites.
-if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
-	-- Migrate over the contents of the old file, and overwrite 
-	config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
+do -- sanitize config
+	-- Try to migrate over existing favorites.
+	if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
+		-- Migrate over the contents of the old file, and overwrite 
+		config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
 
-	-- Delete old file (and directory if it is empty).
-	os.remove("config\\core\\MCM Favorite Mods.json")
-	lfs.rmdir("config\\core", false)
-end
-
--- Convert array-style favorites list to the newer dictionary format.
-if (#config.favorites > 0) then
-	local newFavorites = {}
-	for _, favorite in ipairs(config.favorites) do
-		newFavorites[favorite] = true
+		-- Delete old file (and directory if it is empty).
+		os.remove("config\\core\\MCM Favorite Mods.json")
+		lfs.rmdir("config\\core", false)
 	end
-	config.favorites = newFavorites
+
+	-- Convert array-style favorites list to the newer dictionary format.
+	if (#config.favorites > 0) then
+		local newFavorites = {}
+		for _, favorite in ipairs(config.favorites) do
+			newFavorites[favorite] = true
+		end
+		config.favorites = newFavorites
+	end
 end
 
 -- Expose the mcm API.
@@ -52,110 +60,166 @@ mwse.mcm.i18n = mwse.loadTranslations("mcm")
 -- credit to Pherim for the default icons
 local favoriteIcons = {
 	idle = "textures/mwse/menu_modconfig_favorite_idle.dds",
-	-- hover over a favorite to remove it
 	over = "textures/mwse/menu_modconfig_favorite_over.dds",
 	pressed = "textures/mwse/menu_modconfig_favorite_pressed.dds",
-	-- id = "FavoriteButton"
 }
 
 local nonFavoriteIcons = {
 	idle = "textures/mwse/menu_modconfig_nonfavorite_idle.dds",
-	-- hover over a favorite to remove it
 	over = "textures/mwse/menu_modconfig_nonfavorite_over.dds",
 	pressed = "textures/mwse/menu_modconfig_nonfavorite_pressed.dds",
 }
 
+-- takes in a mod name and returns the key used by the favorites config
+-- this is so that favorites can be stored using the actual name of the mod, rather than
+-- the value displayed in the mod list (in case those values differ)
+---@param uiModName string
+local function getFavoritesKey(uiModName)
+	return (modTemplates[uiModName] or legacyMods[uiModName]).name
+end
+
 --- Checks to see if a mod is favorited.
---- @param mod string The name of the mod to check the state of.
+--- @param uiModName string The name of the mod to check the state of.
 --- @return boolean isFavorite If true, the mod will be favorited.
-local function isFavorite(mod)
-	return config.favorites[mod] == true
+local function isFavorite(uiModName)
+	return config.favorites[getFavoritesKey(uiModName)] == true
 end
 
 --- Sets a mod favorite status.
---- @param mod string The name of the mod to set the state of.
---- @param favorited boolean
-local function setFavorite(mod, favorited)
-	if (favorited) then
-		config.favorites[mod] = true
-	else
-		config.favorites[mod] = nil
-	end
+--- @param uiModName string The name of the mod to set the state of.
+--- @param favorited boolean should the mod be favorited?
+local function setFavorite(uiModName, favorited)
+	config.favorites[getFavoritesKey(uiModName)] = favorited or nil
 end
 
 --- Toggles the favorited state of a mod.
---- @param mod string The name of the mod to toggle favoriting for.
-local function toggleFavorited(mod)
-	setFavorite(mod, not isFavorite(mod))
+--- @param uiModName string The name of the mod to toggle favoriting for.
+local function toggleFavorited(uiModName)
+	local name = getFavoritesKey(uiModName)
+	config.favorites[name] = not config.favorites[name] or nil
 end
 
---- sort the given packages
----@param a mwseModConfig
----@param b mwseModConfig
----@return boolean -- true if `a < b`
-local function sortPackages(a, b)
-	-- check if `a` and `b` have different "favorite" statuses
-	-- `not a.favorite ~= not b.favorite` handles the case when `a.favorite == nil` and `b.favorite == false`
-	if not isFavorite(a.name) ~= not isFavorite(b.name) then
-		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
-		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
-		return isFavorite(a.name)
-	end
-	return a.name:lower() < b.name:lower()
-end
+
 
 -- update the image icons for the various states of the favorite button
 ---@param imageButton tes3uiElement
-local function updateFavoriteImageButton(imageButton, favorite)
-	local iconTable = favorite and favoriteIcons or nonFavoriteIcons
+---@param modName string
+local function updateFavoriteImageButton(imageButton, modName)
+	local iconTable = isFavorite(modName) and favoriteIcons or nonFavoriteIcons
 	imageButton.children[1].contentPath = iconTable.idle
 	imageButton.children[2].contentPath = iconTable.over
 	imageButton.children[3].contentPath = iconTable.pressed
+end
+
+--- compares two mod names, based on their favorite status and their names
+---@param a string
+---@param b string
+---@return boolean -- true if `a < b`
+local function compareModNames(a, b)
+	-- check if `a` and `b` have different "favorite" statuses
+	if isFavorite(a) ~= isFavorite(b) then
+		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
+		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
+		return isFavorite(a)
+	end
+	return a:lower() < b:lower()
 end
 
 local function saveConfig()
 	mwse.saveConfig("MWSE.MCM", config)
 end
 
---- Callback for when a mod name has been clicked in the left pane.
---- @param e tes3uiEventData
-local function onClickModName(e)
-	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
-		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
+-- closes the currently opened mod template, if it exists
+-- this is called when the user closes the MCM, or when the user clicks on a different mod template
+local function closeCurrentModConfig()
+	-- if not currentTemplate then return end
+	if not currentModName then return end
+	
+	local onClose
+	local template = modTemplates[currentModName]
+	if template then
+		lastPageIndex = table.find(template.pages, template.currentPage)
+		onClose = template.onClose
+	else -- it's a legacy mod
+		onClose = (legacyMods[currentModName] or {}).onClose
+	end
+
+	if onClose then
+		local status, error = pcall(onClose, modConfigContainer)
 		if (status == false) then
 			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
 		end
 	end
+end
+ 
 
-	-- Update the current mod package.
-	currentModConfig = configMods[e.source.text]
-	if (not currentModConfig) then
-		error(string.format("No mod config could be found for key '%s'.", e.source.text))
+--- Callback for when a mod name has been clicked in the left pane.
+--- @param e tes3uiEventData
+local function onClickModName(e)
+	
+	if not modConfigContainer then
+		error("mod config container not found!")
+	end
+	
+	local modNameButton = e.source
+	local modName = modNameButton.text
+	-- If we have a current mod, fire its close event.
+	closeCurrentModConfig()
+	currentModName = modName
+
+
+	local onCreate
+	local template = modTemplates[modName]
+	if template then
+		onCreate = function(container) template:create(container) end
+	elseif legacyMods[modName] then
+		onCreate = legacyMods[modName].onCreate
+	else
+		error(string.format("No mod config could be found for key '%s'.", modName))
 		return
 	end
 
 	if (previousModConfigSelector) then
 		previousModConfigSelector.widget.state = tes3.uiState.normal
 	end
-	e.source.widget.state = tes3.uiState.active
-	previousModConfigSelector = e.source
+	modNameButton.widget.state = tes3.uiState.active
+	previousModConfigSelector = modNameButton
 
 	-- Destroy and recreate the parent container.
 	modConfigContainer:destroyChildren()
 
 	-- Fire the mod's creation event if it has one.
-	if (currentModConfig.onCreate) then
-		local status, error = pcall(currentModConfig.onCreate, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config create callback: %s\n%s", error, debug.traceback())
-		end
+	local status, err = pcall(onCreate, modConfigContainer)
+	if (status == false) then
+		mwse.log("Error in mod config create callback: %s\n%s", err, debug.traceback())
 	end
 
 	-- Change the mod config title bar to include the mod's name.
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu") --[[@as tes3uiElement]]
-	menu.text = mwse.mcm.i18n("Mod Configuration - %s", { e.source.text })
+	menu.text = mwse.mcm.i18n("Mod Configuration - %s", { modName })
 	menu:updateLayout()
+	lastModName = modName
+end
+
+local function setActiveModMenu(modName, pageIndex)
+	if not modName then return end
+	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
+	if not menu then return end
+	local modList = menu:findChild("ModList")
+	local modListContents = modList and modList:getContentElement()
+
+	for _, child in ipairs(modListContents.children) do
+		local modNameButton = child.children[1]
+		if modNameButton.text == modName then
+			modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
+			local template = modTemplates[modNameButton.text]
+			local lastPage = template and pageIndex and template.pages[pageIndex]
+			if lastPage then
+				template:clickTab(lastPage)
+			end
+			return
+		end
+	end
 end
 
 --- Callback for when the close button has been clicked.
@@ -165,14 +229,8 @@ local function onClickCloseButton(e)
 
 	-- save the list of favorites
 	saveConfig()
-
 	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
-		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
-		end
-	end
+	closeCurrentModConfig()
 
 	-- Destroy the mod config menu.
 	local modConfigMenu = tes3ui.findMenu("MWSE:ModConfigMenu")
@@ -192,9 +250,9 @@ end
 --- @param e tes3uiEventData
 local function onClickFavoriteButton(e)
 	-- `source` is the button, which is right of the mod name, so we need to up and then down-left
-	local package = configMods[e.source.parent.children[1].text]
-	toggleFavorited(package.name)
-	updateFavoriteImageButton(e.source, isFavorite(package.name))
+	local modName = e.source.parent.children[1].text
+	toggleFavorited(modName)
+	updateFavoriteImageButton(e.source, modName)
 
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
 	if not menu then return end
@@ -207,7 +265,7 @@ local function onClickFavoriteButton(e)
 	end
 
 	modListContents:sortChildren(function(a, b)
-		return sortPackages(configMods[a.children[1].text], configMods[b.children[1].text])
+		return compareModNames(a.children[1].text, b.children[1].text)
 	end)
 
 	modList:getTopLevelMenu():updateLayout()
@@ -224,21 +282,18 @@ end
 --- @param modName string
 --- @param searchText string
 local function filterModByName(modName, searchText)
-	-- Perform a basic search.
-	local nameMatch = modName:lower():find(searchText, nil, true)
-	if (nameMatch ~= nil) then
-		return true
+	-- first try a basic search, then do the internal search
+	if modName:lower():find(searchText, nil, true) then return true end
+	
+	-- support legacy mods
+	local template = modTemplates[modName]
+	if template then
+		return template:onSearchInternal(searchText)
 	end
 
-	-- Get the mod package.
-	local package = configMods[modName]
-
-	-- Do we have a custom filter package?
-	if (package.onSearch and package.onSearch(searchText)) then
-		return true
-	end
-
-	return false
+	local package = legacyMods[modName]
+	return package and package.onSearch and package.onSearch(searchText) 
+		or false
 end
 
 --- @param e tes3uiEventData
@@ -246,10 +301,10 @@ local function onSearchUpdated(e)
 	local lowerSearchText = e.source.text:lower()
 	local mcm = e.source:getTopLevelMenu()
 	local modList = mcm:findChild("ModList")
-	local modListContents = modList:getContentElement()
-	for _, child in ipairs(modListContents.children) do
+	for _, child in ipairs(modList:getContentElement().children) do
 		child.visible = filterModByName(child.children[1].text, lowerSearchText)
 	end
+
 	mcm:updateLayout()
 	modList.widget:contentsChanged()
 end
@@ -258,16 +313,16 @@ end
 local function onSearchCleared(e)
 	local mcm = e.source:getTopLevelMenu()
 	local modList = mcm:findChild("ModList")
-	local modListContents = modList:getContentElement()
-	for _, child in ipairs(modListContents.children) do
+	for _, child in ipairs(modList:getContentElement().children) do
 		child.visible = true
 	end
 	mcm:updateLayout()
 	modList.widget:contentsChanged()
 end
 
+
 local function cleanupMCM(e)
-	currentModConfig = nil
+	currentModName = nil
 	modConfigContainer = nil
 	previousModConfigSelector = nil
 end
@@ -279,7 +334,9 @@ local function onClickModConfigButton()
 	tes3.worldController.menuClickSound:play()
 
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
-	if (not menu) then
+	if menu then
+		menu.visible = true
+	else
 		-- Create the main menu frame.
 		menu = tes3ui.createMenu({ id = "MWSE:ModConfigMenu", dragFrame = true })
 		menu.text = mwse.mcm.i18n("Mod Configuration")
@@ -336,19 +393,18 @@ local function onClickModConfigButton()
 		modList.heightProportional = 1.0
 		modList:setPropertyBool("PartScrollPane_hide_if_unneeded", true)
 
-		local configModsList = {} --- @type mwseModConfig[]
-		for _, package in pairs(configMods) do
-			if not package.hidden then
-				table.insert(configModsList, package)
-			end
+		local sortedModNames = table.keys(modTemplates) ---@type string[]
+
+		for legacyModName in pairs(legacyMods) do
+			table.insert(sortedModNames, legacyModName)
 		end
 
-		table.sort(configModsList, sortPackages)
+		table.sort(sortedModNames, compareModNames)
 
 		-- Fill in the mod list.
 		local modListContents = modList:getContentElement()
 
-		for _, package in ipairs(configModsList) do
+		for _, modName in ipairs(sortedModNames) do
 			local entryBlock = modListContents:createBlock{id = "ModEntryBlock"}
 			entryBlock.flowDirection = tes3.flowDirection.leftToRight
 			entryBlock.autoHeight = true
@@ -357,20 +413,19 @@ local function onClickModConfigButton()
 			entryBlock.widthProportional = 1.0
 			entryBlock.childAlignY = 0.5
 
-			local modNameButton = entryBlock:createTextSelect({ id = "ModEntry", text = package.name })
+			local modNameButton = entryBlock:createTextSelect({ id = "ModEntry", text = modName })
 			modNameButton:register("mouseClick", onClickModName)
 			modNameButton.wrapText = true
 			modNameButton.widthProportional = 0.95
 			modNameButton.borderRight = 16
 			modNameButton.heightProportional = 1
 
-			local iconTable = isFavorite(package.name) and favoriteIcons or nonFavoriteIcons
+			local iconTable = isFavorite(modName) and favoriteIcons or nonFavoriteIcons
 
 			local imageButton = entryBlock:createImageButton(iconTable)
-			updateFavoriteImageButton(imageButton, isFavorite(package.name))
+			updateFavoriteImageButton(imageButton, modName)
 			imageButton.childAlignY = 0.5
 			imageButton.absolutePosAlignX = .97
-			-- imageButton.absolutePosAlignY = 1.0
 			imageButton.absolutePosAlignY = 0.5
 
 			imageButton:register(tes3.uiEvent.mouseClick, onClickFavoriteButton)
@@ -423,8 +478,8 @@ local function onClickModConfigButton()
 		-- Cause the menu to refresh itself.
 		menu:updateLayout()
 		modList.widget:contentsChanged()
-	else
-		menu.visible = true
+
+		setActiveModMenu(lastModName, lastPageIndex)
 	end
 
 	-- Hide main menu.
@@ -438,17 +493,6 @@ local function onClickModConfigButton()
 	tes3ui.enterMenuMode(menu.id)
 end
 
--- Get the number of mods that aren't hidden.
-local function getActiveModConfigCount()
-	local count = 0
-	for _, package in pairs(configMods) do
-		-- Allow package.hidden to be set to prevent it from showing up in the list.
-		if (not package.hidden) then
-			count = count + 1
-		end
-	end
-	return count
-end
 
 --- Callback for when the MenuOptions element is created. We'll extend it with our new button.
 --- @param e uiActivatedEventData
@@ -459,7 +503,7 @@ local function onCreatedMenuOptions(e)
 	end
 
 	-- Don't show the UI if we don't have any mod configs to show.
-	if (getActiveModConfigCount() == 0) then
+	if (table.empty(modTemplates)) then
 		return
 	end
 
@@ -490,24 +534,45 @@ local function onCreatedMenuOptions(e)
 end
 event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 
---- @class mwseModConfig : mwse.registerModConfig.package
---- @field name string
---- @field hidden boolean hide it?
----@field favorite boolean is this mod a favorite
+
+--- checks if a given mod name was taken
+---@param modName string
+---@return boolean isTaken
+local function isModNameTaken(modName)
+	return (modTemplates[modName] or legacyMods[modName]) ~= nil
+end
 
 --- Define a new function in the mwse namespace that lets mods register for mod config.
 --- @param name string
---- @param package mwse.registerModConfig.package
+--- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
-	-- Prevent duplicate registration.
-	if (configMods[name] ~= nil) then
-		error(string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
+	-- check if it's a `mwseMCMTemplate`
+	if package.componentType == "Template" and package.class == "Template" then
+		mwse.registerModTemplate(package)
+		return
 	end
-	--- @cast package mwseModConfig
-
-	-- Add the package to the list.
+	-- Prevent duplicate registration.
+	assert(not isModNameTaken(name), 
+		string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name)
+	)
+	--- @cast package mwseLegacyMod
 	package.name = name
-	configMods[name] = package
+	legacyMods[name] = package
+	mwse.log("[MCM] Registered legacy mod config: %s", name)
+
+end
+
+---@param template mwseMCMTemplate
+function mwse.registerModTemplate(template)
+	assert(template, "mwse.registerTemplate: No template provided")
+	assert(type(template) == "table" and template.componentType == "Template", "mwse.registerTemplate: Invalid template provided")
+
+	local name = template.name
+	assert(not isModNameTaken(name), 
+		string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name)
+	)
+	modTemplates[name] = template
+	mwse.log("[MCM] Registered mod config: %s", name)
 end
 
 --- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.

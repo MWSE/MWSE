@@ -11,16 +11,19 @@ end
 
 --- @param template mwseMCMTemplate
 function mcm.register(template)
-	local modConfig = {}
-
-	--- @param container tes3uiElement
-	modConfig.onCreate = function(container)
-		template:create(container)
-		modConfig.onClose = template.onClose
-	end
-	mwse.log("%s mod config registered", template.name)
-	mwse.registerModConfig(template.name, modConfig)
+	mwse.registerModTemplate(template)
 end
+
+
+-- Depreciated
+function mcm.registerModData(mcmData)
+	event.register("modConfigReady", function()
+		mcm.register(require("core.mcm.components.templates.Template"):new(mcmData))
+	end, {doOnce=true})
+end
+
+-- Depreciated
+mcm.registerMCM = mcm.registerModData
 
 --- @param keybind mwseKeyCombo
 --- @return boolean pressed
@@ -28,32 +31,6 @@ function mcm.testKeyBind(keybind)
 	local inputController = tes3.worldController.inputController
 	return inputController:isKeyDown(keybind.keyCode) and keybind.isShiftDown == inputController:isShiftDown() and
 	       keybind.isAltDown == inputController:isAltDown() and keybind.isControlDown == inputController:isControlDown()
-end
-
--- Depreciated
-function mcm.registerModData(mcmData)
-	-- object returned to be used in modConfigMenu
-	local modConfig = {}
-
-	---CREATE MCM---
-	--- @param container tes3uiElement
-	function modConfig.onCreate(container)
-		local templateClass = mcmData.template or "Template"
-		local templatePath = ("mcm.components.templates." .. templateClass)
-		local template = require(templatePath):new(mcmData) --[[@as mwseMCMTemplate]]
-		template:create(container)
-		modConfig.onClose = template.onClose
-	end
-
-	mwse.log("%s mod config registered", mcmData.name)
-
-	return modConfig
-end
-
--- Depreciated
-function mcm.registerMCM(mcmData)
-	local newMCM = mcm.registerModData(mcmData)
-	mwse.registerModConfig(mcmData.name, newMCM)
 end
 
 --[[
