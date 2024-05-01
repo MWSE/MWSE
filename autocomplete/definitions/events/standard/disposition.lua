@@ -10,7 +10,7 @@ return {
 		["mobile"] = {
 			type = "tes3mobileActor",
 			readOnly = true,
-			description = "Convenient access to the `reference`'s mobile.",
+			description = "Convenient access to the `reference`'s mobile. The mobile may not be available if the target has not been visited recently, e.g. when scripts access dispositions.",
 		},
 		["disposition"] = {
 			type = "number",

@@ -263,6 +263,7 @@ function mwse.mcm.createCycleButton(parent, data) end
 --- 
 --- The same is done by this function if you pass both `parent` and `data` arguments.
 --- 
+--- @deprecated
 --- @param parent tes3uiElement|mwse.mcm.createDecimalSlider.data The UI element inside which the new DecimalSlider will be created.
 --- @param data mwse.mcm.createDecimalSlider.data? This table accepts the following values:
 --- 
@@ -932,7 +933,7 @@ function mwse.mcm.createPlayerData(variable) end
 --- `convertToLabelValue`: nil|fun(self: mwseMCMSlider, variableValue: number): number|string — *Optional*. Define a custom formatting function for displaying variable values.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMDecimalSlider|mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
+--- @return mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
 function mwse.mcm.createSlider(parent, data) end
 
 ---Table parameter definitions for `mwse.mcm.createSlider`.
@@ -960,7 +961,7 @@ function mwse.mcm.createSlider(parent, data) end
 --- Creates a new TableVariable.
 --- @param variable mwse.mcm.createTableVariable.variable This table accepts the following values:
 --- 
---- `id`: string — Key in the config file used to store the variable.
+--- `id`: string|number — Key in the config file used to store the variable.
 --- 
 --- `table`: table — The table to save the data to.
 --- 
@@ -978,7 +979,7 @@ function mwse.mcm.createTableVariable(variable) end
 
 ---Table parameter definitions for `mwse.mcm.createTableVariable`.
 --- @class mwse.mcm.createTableVariable.variable
---- @field id string Key in the config file used to store the variable.
+--- @field id string|number Key in the config file used to store the variable.
 --- @field table table The table to save the data to.
 --- @field defaultSetting unknown? *Optional*. If `id` does not exist in the table, it will be initialised to this value.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.

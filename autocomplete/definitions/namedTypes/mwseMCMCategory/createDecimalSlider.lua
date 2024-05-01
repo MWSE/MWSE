@@ -1,5 +1,6 @@
 return {
 	type = "method",
+	deprecated = true,
 	description = [[Creates a new nested DecimalSlider.]],
 	arguments = {{
 		name = "data",

@@ -22,9 +22,12 @@ namespace mwse::lua::event {
 		auto& state = stateHandle.state;
 		auto eventData = state.create_table();
 
+		// Make sure to handle the case where the mobile isn't available.
 		auto mobile = m_NPC->getMobile();
+		auto reference = m_NPC->getReference();
+
 		eventData["mobile"] = mobile;
-		eventData["reference"] = mobile->reference;
+		eventData["reference"] = reference;
 
 		eventData["disposition"] = m_Disposition;
 		eventData["clamped"] = m_Clamp;

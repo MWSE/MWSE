@@ -59,6 +59,7 @@ namespace TES3 {
 	struct EquipmentStack;
 	struct Faction;
 	struct Fader;
+	struct Font;
 	struct Game;
 	struct GameFile;
 	struct GameSetting;

@@ -7,14 +7,14 @@
 --- The TableVariable can be used to save multiple changes to a config file only when the menu is closed. Load the config file with `mwse.loadConfig()`, pass it to any TableVariables in your MCM, and then save it using the `template:saveOnClose()` function.
 --- @class mwseMCMTableVariable : mwseMCMVariable
 --- @field defaultSetting unknown If `id` does not exist in the table, it will be initialised to this value.
---- @field id string Key in the config file used to store the variable.
+--- @field id string|number Key in the config file used to store the variable.
 --- @field table table The table to save the data to.
 mwseMCMTableVariable = {}
 
 --- Creates a new variable of this type.
 --- @param variable mwseMCMTableVariable.new.variable This table accepts the following values:
 --- 
---- `id`: string — Key in the config file used to store the variable.
+--- `id`: string|number — Key in the config file used to store the variable.
 --- 
 --- `table`: table — The table to save the data to.
 --- 
@@ -32,7 +32,7 @@ function mwseMCMTableVariable:new(variable) end
 
 ---Table parameter definitions for `mwseMCMTableVariable.new`.
 --- @class mwseMCMTableVariable.new.variable
---- @field id string Key in the config file used to store the variable.
+--- @field id string|number Key in the config file used to store the variable.
 --- @field table table The table to save the data to.
 --- @field defaultSetting unknown? *Optional*. If `id` does not exist in the table, it will be initialised to this value.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.

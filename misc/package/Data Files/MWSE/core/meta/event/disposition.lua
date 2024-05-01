@@ -9,5 +9,5 @@
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field clamped boolean *Read-only*. If true, the `disposition` value will end up clamped between 0 and 100.
 --- @field disposition number The precalculated disposition. This can be set to override the value.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. Convenient access to the `reference`'s mobile.
+--- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. Convenient access to the `reference`'s mobile. The mobile may not be available if the target has not been visited recently, e.g. when scripts access dispositions.
 --- @field reference tes3reference *Read-only*. The reference whose disposition is being calculated.

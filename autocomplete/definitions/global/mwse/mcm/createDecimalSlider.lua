@@ -1,5 +1,6 @@
 return {
 	type = "function",
+	deprecated = true,
 	description = [[Creates a new DecimalSlider inside given `parent` menu.
 
 The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, DecimalSlider's UI element tree won't be created. To do so, use DecimalSlider's `create` method:

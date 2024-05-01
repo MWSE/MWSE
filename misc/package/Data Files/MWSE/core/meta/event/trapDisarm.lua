@@ -6,7 +6,7 @@
 --- @class trapDisarmEventData
 --- @field block boolean If set to `true`, vanilla logic will be suppressed. Returning `false` will set this to `true`.
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
---- @field chance number *Read-only*. The chance the trap disarm will be successful.
+--- @field chance number The chance that the probe attempt will be successful. May be modified. If set to a value `<= 0`, the attempt will fail and the "Trap too complex" message will be displayed.
 --- @field disarmer tes3mobileNPC|tes3mobilePlayer *Read-only*. The Mobile NPC doing the disarming.
 --- @field lockData tes3lockNode *Read-only*. The lock data of the reference.
 --- @field reference tes3reference *Read-only*. The reference that triggered the event (container, door, etc.).

@@ -103,14 +103,14 @@ function DependencyManager:checkDependencies()
         self.logger:warn("Metadata file (%s) found pointing to missing mod files:",
             self.metadata.package.name
         )
-        if not pluginExists then
+        if plugin and not pluginExists then
             self.logger:warn("Plugin: \"%s\".", plugin)
         end
-        if not luaModExists then
+        if luaMod and not luaModExists then
             self.logger:warn("MWSE lua-mod: \"%s\".", luaMod)
         end
         self.logger:warn("No dependency checking will be performed.")
-        self.logger:warn("This can result from uncomplete mod installation or uninstallation.")
+        self.logger:warn("This can result from incomplete mod installation/uninstallation.")
 
         return true
     end

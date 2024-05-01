@@ -8,5 +8,6 @@
 --- @field attribute tes3.attribute *Read-only*. Skill's governing attribute. Maps to [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/) constants.
 --- @field description string Loads from disk and returns the description of the skill.
 --- @field iconPath string *Read-only*. The path to the icon for the skill.
+--- @field id tes3.skill *Read-only*. The unique identifier for this skill.
 --- @field name string *Read-only*. The player-facing name of the skill.
 --- @field specialization tes3.specialization The specialization in which the skill belongs. Maps to values in the [`tes3.specialization`](https://mwse.github.io/MWSE/references/specializations/) table.

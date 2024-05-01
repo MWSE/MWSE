@@ -988,6 +988,75 @@ tes3ui.suppressTooltip(suppress)
 
 ***
 
+### `tes3ui.textLayout.getFontHeight`
+<div class="search_terms" style="display: none">textlayout.getfontheight</div>
+
+Gets font height metrics for a font.
+
+```lua
+local maxGlyphHeight, lineHeight = tes3ui.textLayout.getFontHeight({ font = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `font` (number): *Default*: `0`. The index of the font.
+
+**Returns**:
+
+* `maxGlyphHeight` (number): Maximum pixel height of a single line of text.
+* `lineHeight` (number): Pixel spacing between lines in a paragraph.
+
+***
+
+### `tes3ui.textLayout.getTextExtent`
+<div class="search_terms" style="display: none">textlayout.gettextextent</div>
+
+Calculates expected size information for text content.
+
+```lua
+local width, height, verticalAdvance = tes3ui.textLayout.getTextExtent({ text = ..., font = ..., firstLineOnly = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `text` (string): The text to use.
+	* `font` (number): *Default*: `0`. The index of the font.
+	* `firstLineOnly` (boolean): *Default*: `false`. Only process the first line of the text.
+
+**Returns**:
+
+* `width` (number): Pixel width of the widest line of the text.
+* `height` (number): Pixel height of a label containing this text. Includes the extra space and rounding added by the label layout.
+* `verticalAdvance` (number): The vertical displacement that a following text element would use. It is zero for text without newlines, and increases with each newline.
+
+***
+
+### `tes3ui.textLayout.wrapText`
+<div class="search_terms" style="display: none">textlayout.wraptext</div>
+
+Performs word wrapping of text.
+
+```lua
+local wrappedText, lineCount = tes3ui.textLayout.wrapText({ text = ..., font = ..., maxWidth = ..., ignoreLinkDelimiters = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `text` (string): The text to wrap.
+	* `font` (number): *Default*: `0`. The index of the font.
+	* `maxWidth` (number): *Default*: `-1`. The wrapping width in pixels.
+	* `ignoreLinkDelimiters` (boolean): *Default*: `false`.
+
+**Returns**:
+
+* `wrappedText` (string): The wrapped text, with `\n` as line breaks.
+* `lineCount` (number): The number of lines in the output wrapped text.
+
+***
+
 ### `tes3ui.updateBarterMenuTiles`
 <div class="search_terms" style="display: none">updatebartermenutiles, bartermenutiles</div>
 

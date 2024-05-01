@@ -91,11 +91,11 @@ Loads from disk and returns the description of the skill.
 ### `id`
 <div class="search_terms" style="display: none">id</div>
 
-*Read-only*. The unique identifier for the object.
+*Read-only*. The unique identifier for this skill.
 
 **Returns**:
 
-* `result` (string)
+* `result` ([tes3.skill](../references/skills.md))
 
 ***
 

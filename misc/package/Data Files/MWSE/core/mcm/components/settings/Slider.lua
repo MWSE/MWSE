@@ -35,7 +35,6 @@ Slider.jump = 5
 
 
 function Slider:new(data)
-
 	-- initialize metatable, make variable, etc
 	local t = Parent.new(self, data)
 
@@ -46,16 +45,27 @@ function Slider:new(data)
 		t.jump = math.min(dist, 5 * t.step)
 	end
 
-	assert(dist > 0, "Invalid 'max' and 'min' parameters provided. 'max' must be greater than 'min'.")
-	assert(t.step > 0, "Invalid 'step' parameter provided. It must be greater than 0.")
-	assert(t.step <= dist + math.epsilon, "Invalid 'step' parameter provided. It cannot be greater than 'max' - 'min'")
-	assert(t.jump > 0, "Invalid 'jump' parameter provided. It must be greater than 0.")
-	assert(t.jump <= dist + math.epsilon, "Invalid 'jump' parameter provided. It cannot be greater than 'max' - 'min'")
+	assert(dist > 0, "mcm.Slider: Invalid 'max' and 'min' parameters provided. 'max' must be greater than 'min'.")
+	assert(t.step > 0, "mcm.Slider: Invalid 'step' parameter provided. It must be greater than 0.")
+	assert(t.jump > 0, "mcm.Slider: Invalid 'jump' parameter provided. It must be greater than 0.")
 
 	assert(
 		t.decimalPlaces % 1 == 0 and t.decimalPlaces >= 0,
-		"Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
+		"mcm.Slider: Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
 	)
+
+	-- Avoid breaking existing mods that have variable min or max but a fixed step/jump.
+	-- Clamp instead of asserting.
+	if t.step > dist + math.epsilon then
+		mwse.log("mcm.Slider: 'step' parameter is greater than 'max' - 'min'")
+		mwse.log(debug.traceback())
+		t.step = dist
+	end
+	if t.jump > dist + math.epsilon then
+		mwse.log("mcm.Slider: 'jump' parameter is greater than 'max' - 'min'")
+		mwse.log(debug.traceback())
+		t.jump = dist
+	end
 
 	return t
 end

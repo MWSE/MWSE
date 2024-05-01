@@ -25,7 +25,7 @@ event.register(tes3.event.disposition, dispositionCallback)
 
 * `clamped` (boolean): *Read-only*. If true, the `disposition` value will end up clamped between 0 and 100.
 * `disposition` (number): The precalculated disposition. This can be set to override the value.
-* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. Convenient access to the `reference`'s mobile.
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. Convenient access to the `reference`'s mobile. The mobile may not be available if the target has not been visited recently, e.g. when scripts access dispositions.
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference whose disposition is being calculated.
 
 ## Examples

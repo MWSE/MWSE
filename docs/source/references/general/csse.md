@@ -171,7 +171,7 @@ chargenstate = -1.0
 * The field of view (FOV) and antialiasing (multisamples) can be overwritten in the config file.
 * The update rate of the render window can be changed from the default of 25 FPS. By default it now runs at (up to) 60 FPS.
 * Fixed an issue with bound calculations. Any bound-related functions, such as focusing the camera (C or T keys) on a light will never send the camera into the stratosphere.
-* New widgets exist when moving or rotating a reference. Axis lines are shown when snapping. Holding control while moving or rotating a reference will force on grid/angel snapping, and show markers to show where the reference will snap to. Using the mouse wheel while doing this will adjust the grid/angel snap values.
+* New widgets exist when moving or rotating a reference. Axis lines are shown when snapping. Holding control while moving or rotating a reference will force on grid/angle snapping, and show markers to show where the reference will snap to. Using the mouse wheel while doing this will adjust the grid/angle snap values.
 * Using F2 with a reference selected will bring up the window to edit that reference. Holding shift will bring up the window to edit the base object instead.
 * Ctrl+H now opens the Search & Replace window.
 * Ctrl+F2 with a door selected will focus the associated door marker. The same can be done on a door marker, to select the door that leads to it.

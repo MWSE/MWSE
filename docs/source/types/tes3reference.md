@@ -780,7 +780,7 @@ local cloned = myObject:clone()
 ### `delete`
 <div class="search_terms" style="display: none">delete</div>
 
-Disables the reference, removes all its attachments, resets its scale, and sets the reference to be deleted.
+Disables the reference, removes all its attachments, resets its scale, marks it as modified, and sets the reference to be deleted, trigerring `referenceDeactivated` event.
 
 ```lua
 myObject:delete()

@@ -23,7 +23,7 @@ event.register(tes3.event.trapDisarm, trapDisarmCallback)
 
 ## Event Data
 
-* `chance` (number): *Read-only*. The chance the trap disarm will be successful.
+* `chance` (number): The chance that the probe attempt will be successful. May be modified. If set to a value `<= 0`, the attempt will fail and the "Trap too complex" message will be displayed.
 * `disarmer` ([tes3mobileNPC](../types/tes3mobileNPC.md)): *Read-only*. The Mobile NPC doing the disarming.
 * `lockData` ([tes3lockNode](../types/tes3lockNode.md)): *Read-only*. The lock data of the reference.
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference that triggered the event (container, door, etc.).
