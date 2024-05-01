@@ -169,6 +169,7 @@ end
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
 	local tabsBlock = self.elements.tabsBlock
+	if not tabsBlock then return end -- The tabs block won't exist  if `self.pages <= 1`.
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
