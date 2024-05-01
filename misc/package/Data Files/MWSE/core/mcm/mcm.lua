@@ -18,10 +18,10 @@ end
 -- Depreciated. All this does is make a new `mwseMCMTemplate` when the time is right.
 function mcm.registerModData(mcmData)
 	if tes3.isInitialized() then
-		mcm.register(require("core.mcm.components.templates.Template"):new(mcmData))
+		mcm.register(require("mcm.components.templates.Template"):new(mcmData))
 	else
 		event.register("modConfigReady", function()
-			mcm.register(require("core.mcm.components.templates.Template"):new(mcmData))
+			mcm.register(require("mcm.components.templates.Template"):new(mcmData))
 		end, {doOnce=true})
 	end
 end

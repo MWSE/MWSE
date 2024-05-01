@@ -587,24 +587,25 @@ function mwse.registerModConfig(name, package)
 		return
 	end
 	-- Prevent duplicate registration when the `package` is not `nil`
-	assert(nameTaken, string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name))
+	assert(not nameTaken, string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
 	-- Actually register the package.
 	--- @cast package mwseLegacyMod
 	package.name = name
 	legacyMods[name] = package
 	mwse.log("[MCM] Registered legacy mod config: %s", name)
-
 end
 
 -- New registration function.
 ---@param template mwseMCMTemplate
 function mwse.registerModTemplate(template)
-	assert(template, "mwse.registerTemplate: No template provided")
-	assert(type(template) == "table" and template.componentType == "Template", "mwse.registerTemplate: Invalid template provided")
+	assert(template, "mwse.registerModTemplate: No template provided")
+	assert(type(template) == "table" and template.componentType == "Template", 
+		"mwse.registerModTemplate: Invalid template provided"
+	)
 
 	local name = template.name
 	assert(not isModNameTaken(name), 
-		string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name)
+		string.format("mwse.registerModTemplate: A mod with the name %s has already been registered!", name)
 	)
 	-- Actually register the package.
 	modTemplates[name] = template
