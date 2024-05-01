@@ -11,15 +11,29 @@
 --- Storage for mod config packages.
 
 -- Stores all mod templates, indexed by display string
+-- Most mods make their MCMs using `mwseMCMTemplate`, and storing the template allows for
+-- direct access to the mods menu structure
 local modTemplates = {} ---@type table<string, mwseMCMTemplate>
 
+-- This will store legacy config menus that were made without using `mwseMCMTemplate`.
+-- These mods were registered using `mwse.registerModConfig(...)` instead of `template:register()`.
+-- The lua code dump says this accounts for roughly 80 mods (and a few of those hits are false positives).
 local legacyMods = {} ---@type table<string, mwseLegacyMod>
 
+-- Stores the name of the currently active mod. 
+-- Could correspond to a `mwseMCMTemplate` or a legacy mod.
 local currentModName = nil ---@type string?
+
+-- Stores the name of the last active mod. Used to reopen the MCM to the right mod page.
+-- Could correspond to a `mwseMCMTemplate` or a legacy mod.
 local lastModName = nil ---@type string?
+
+-- Stores the index of the most recently looked at tab. 
+-- This is used to reopen the menu to the last seen tab.
+-- This will only work for mods made using a `mwseMCMTemplate`,
+-- as there are no guarantees as to how the pages of legacy mods are organized.
+-- As such, it's only updated when a `mwseMCMTemplate` mod is interacted with.
 local lastPageIndex = nil ---@type integer?
-
-
 
 --- The previously selected element.
 --- @type tes3uiElement?
@@ -111,7 +125,7 @@ local function updateFavoriteImageButton(imageButton, modName)
 	imageButton.children[3].contentPath = iconTable.pressed
 end
 
---- compares two mod names, based on their favorite status and their names
+--- Compares two mod names, based on their favorite status and their names.
 ---@param a string
 ---@param b string
 ---@return boolean -- true if `a < b`
@@ -129,14 +143,15 @@ local function saveConfig()
 	mwse.saveConfig("MWSE.MCM", config)
 end
 
--- closes the currently opened mod template, if it exists
--- this is called when the user closes the MCM, or when the user clicks on a different mod template
+-- Closes the currently opened mod config menu, if it exists.
+-- This is called when the user closes the MCM, or when the user clicks on a different mod name.
 local function closeCurrentModConfig()
 	-- if not currentTemplate then return end
 	if not currentModName then return end
 	
 	local onClose
 	local template = modTemplates[currentModName]
+	-- was it made using a template or the legacy structure?
 	if template then
 		lastPageIndex = table.find(template.pages, template.currentPage)
 		onClose = template.onClose
@@ -167,10 +182,11 @@ local function onClickModName(e)
 	closeCurrentModConfig()
 	currentModName = modName
 
-
 	local onCreate
 	local template = modTemplates[modName]
+
 	if template then
+		-- templates are created using methods, but we are expecting a regular function
 		onCreate = function(container) template:create(container) end
 	elseif legacyMods[modName] then
 		onCreate = legacyMods[modName].onCreate
@@ -201,6 +217,7 @@ local function onClickModName(e)
 	lastModName = modName
 end
 
+-- Used to reopen the MCM to the most recently viewed menu,, and ideally the most recently viewed tab of that menu.
 local function setActiveModMenu(modName, pageIndex)
 	if not modName then return end
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
@@ -210,10 +227,15 @@ local function setActiveModMenu(modName, pageIndex)
 
 	for _, child in ipairs(modListContents.children) do
 		local modNameButton = child.children[1]
+
 		if modNameButton.text == modName then
 			modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
+
 			local template = modTemplates[modNameButton.text]
-			local lastPage = template and pageIndex and template.pages[pageIndex]
+			-- bail out early if it's a legacy mod
+			if not template then return end
+			-- try to reopen the right tab
+			local lastPage = pageIndex and template.pages[pageIndex]
 			if lastPage then
 				template:clickTab(lastPage)
 			end
@@ -285,12 +307,13 @@ local function filterModByName(modName, searchText)
 	-- first try a basic search, then do the internal search
 	if modName:lower():find(searchText, nil, true) then return true end
 	
-	-- support legacy mods
+	-- if the mod has a template, use the template's search logic
 	local template = modTemplates[modName]
 	if template then
 		return template:onSearchInternal(searchText)
 	end
 
+	-- otherwise, see if the legacy mod has any custom search logic
 	local package = legacyMods[modName]
 	return package and package.onSearch and package.onSearch(searchText) 
 		or false
@@ -393,15 +416,17 @@ local function onClickModConfigButton()
 		modList.heightProportional = 1.0
 		modList:setPropertyBool("PartScrollPane_hide_if_unneeded", true)
 
+		-- List of all mod names (both legacy mods and mods made using a `mwseMCMTemplate`).
 		local sortedModNames = table.keys(modTemplates) ---@type string[]
 
+		-- Add in the legacy mods.
 		for legacyModName in pairs(legacyMods) do
 			table.insert(sortedModNames, legacyModName)
 		end
 
 		table.sort(sortedModNames, compareModNames)
 
-		-- Fill in the mod list.
+		-- Fill in the mod list UI.
 		local modListContents = modList:getContentElement()
 
 		for _, modName in ipairs(sortedModNames) do
@@ -479,6 +504,7 @@ local function onClickModConfigButton()
 		menu:updateLayout()
 		modList.widget:contentsChanged()
 
+		-- Reopen the most recently viewed config menu (if there was one)
 		setActiveModMenu(lastModName, lastPageIndex)
 	end
 
@@ -542,19 +568,27 @@ local function isModNameTaken(modName)
 	return (modTemplates[modName] or legacyMods[modName]) ~= nil
 end
 
+
 --- Define a new function in the mwse namespace that lets mods register for mod config.
+--- @deprecated
 --- @param name string
 --- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
-	-- check if it's a `mwseMCMTemplate`
+
+	local nameTaken = isModNameTaken(name)
+	-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore
+	-- According to the lua code dump, only 6 mods used the `mcm.registerModData` function, and they all called
+	-- `registerModConfig` immediately afterwards.
+	if nameTaken and package == nil then return end
+
+	-- Check if it's a `mwseMCMTemplate`, and call the new registration function if possible.
 	if package.componentType == "Template" and package.class == "Template" then
 		mwse.registerModTemplate(package)
 		return
 	end
-	-- Prevent duplicate registration.
-	assert(not isModNameTaken(name), 
-		string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name)
-	)
+	-- Prevent duplicate registration when the `package` is not `nil`
+	assert(nameTaken, string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name))
+	-- Actually register the package.
 	--- @cast package mwseLegacyMod
 	package.name = name
 	legacyMods[name] = package
@@ -562,6 +596,7 @@ function mwse.registerModConfig(name, package)
 
 end
 
+-- New registration function.
 ---@param template mwseMCMTemplate
 function mwse.registerModTemplate(template)
 	assert(template, "mwse.registerTemplate: No template provided")
@@ -571,6 +606,7 @@ function mwse.registerModTemplate(template)
 	assert(not isModNameTaken(name), 
 		string.format("mwse.registerTemplate: A mod with the name %s has already been registered!", name)
 	)
+	-- Actually register the package.
 	modTemplates[name] = template
 	mwse.log("[MCM] Registered mod config: %s", name)
 end
