@@ -10,14 +10,15 @@
 local configMods = {}
 
 --- The current package that we are configuring.
--- used to properly deselect mod config menus when clicking on different mod names
+--- Used to properly deselect mod config menus when clicking on different mod names.
 --- @type mwseModConfig?
 local currentModConfig = nil
 
---- name of the last mod selected in the MCM. 
--- used to reopen the most recently closed mod config menu when the MCM is reopened between play sessions.
--- stored separately from `currentModConfig` for stability reasons
-local lastModName = nil ---@type string
+--- Name of the last mod selected in the MCM.
+--- Used to reopen the most recently closed mod config menu when the MCM is reopened during a play session.
+--- Stored separately from `currentModConfig` for stability reasons.
+--- @type string
+local lastModName = nil
 
 --- The previously selected element.
 --- @type tes3uiElement?
@@ -34,7 +35,7 @@ local config = mwse.loadConfig("MWSE.MCM", {
 
 -- Try to migrate over existing favorites.
 if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
-	-- Migrate over the contents of the old file, and overwrite 
+	-- Migrate over the contents of the old file, and overwrite.
 	config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
 
 	-- Delete old file (and directory if it is empty).
@@ -163,7 +164,7 @@ local function onClickModName(e)
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu") --[[@as tes3uiElement]]
 	menu.text = mwse.mcm.i18n("Mod Configuration - %s", { modName })
 	menu:updateLayout()
-	-- record that this was the most recently opened mod config menu
+	-- Record that this was the most recently opened mod config menu.
 	lastModName = modName
 end
 
