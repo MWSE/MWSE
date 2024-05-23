@@ -50,6 +50,9 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["copy"] = &TES3::Vector2::copy;
+			usertypeDefinition["distance"] = &TES3::Vector2::distance;
+			usertypeDefinition["distanceChebyshev"] = &TES3::Vector2::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &TES3::Vector2::distanceManhattan;
 			usertypeDefinition["length"] = &TES3::Vector2::length;
 			usertypeDefinition["normalize"] = &TES3::Vector2::normalize;
 			usertypeDefinition["normalized"] = &TES3::Vector2::normalized;
@@ -97,6 +100,9 @@ namespace mwse::lua {
 			usertypeDefinition["copy"] = &TES3::Vector3::copy;
 			usertypeDefinition["cross"] = &TES3::Vector3::crossProduct;
 			usertypeDefinition["distance"] = &TES3::Vector3::distance;
+			usertypeDefinition["distanceChebyshev"] = &TES3::Vector3::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &TES3::Vector3::distanceManhattan;
+			usertypeDefinition["distanceXY"] = &TES3::Vector3::distanceXY;
 			usertypeDefinition["dot"] = &TES3::Vector3::dotProduct;
 			usertypeDefinition["outerProduct"] = &TES3::Vector3::outerProduct;
 			usertypeDefinition["heightDifference"] = &TES3::Vector3::heightDifference;
@@ -137,6 +143,9 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["copy"] = &TES3::Vector4::copy;
+			usertypeDefinition["distance"] = &TES3::Vector4::distance;
+			usertypeDefinition["distanceChebyshev"] = &TES3::Vector4::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &TES3::Vector4::distanceManhattan;
 			usertypeDefinition["length"] = &TES3::Vector4::length;
 		}
 

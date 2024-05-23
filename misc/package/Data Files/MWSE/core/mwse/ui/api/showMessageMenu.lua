@@ -31,7 +31,12 @@ end
 --- @param e tes3uiEventData
 local function callbackCloseMenu(e)
 	local menu = e.source:getTopLevelMenu()
-	tes3ui.leaveMenuMode()
+	local menuData = callbackGetMenuData(e)
+	
+	if menuData.leaveMenuMode then
+		tes3ui.leaveMenuMode()
+	end
+
 	menu:destroy()
 end
 
@@ -343,6 +348,10 @@ function tes3ui.showMessageMenu(params)
 	-- Initialize some default values.
 	copiedParams.page = copiedParams.page or 1
 	copiedParams.pageSize = copiedParams.pageSize or 30
+	if copiedParams.leaveMenuMode == nil then
+		-- Default to leaving menu mode for backwards compatibility.
+		copiedParams.leaveMenuMode = true
+	end
 
 	-- Create our menu.
 	recreateMenu(menu)

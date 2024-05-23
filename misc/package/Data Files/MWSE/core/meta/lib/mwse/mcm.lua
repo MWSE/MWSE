@@ -263,6 +263,7 @@ function mwse.mcm.createCycleButton(parent, data) end
 --- 
 --- The same is done by this function if you pass both `parent` and `data` arguments.
 --- 
+--- @deprecated
 --- @param parent tes3uiElement|mwse.mcm.createDecimalSlider.data The UI element inside which the new DecimalSlider will be created.
 --- @param data mwse.mcm.createDecimalSlider.data? This table accepts the following values:
 --- 
@@ -300,7 +301,7 @@ function mwse.mcm.createCycleButton(parent, data) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
---- `convertToLabelValue`: fun(self: mwseMCMDecimalSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- `convertToLabelValue`: nil|fun(self: mwseMCMDecimalSlider, variableValue: number): number|string — *Optional*. Define a custom formatting function for displaying variable values.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMDecimalSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @return mwseMCMDecimalSlider slider No description yet available.
@@ -325,7 +326,7 @@ function mwse.mcm.createDecimalSlider(parent, data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
---- @field convertToLabelValue fun(self: mwseMCMDecimalSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
+--- @field convertToLabelValue nil|fun(self: mwseMCMDecimalSlider, variableValue: number): number|string *Optional*. Define a custom formatting function for displaying variable values.
 --- @field postCreate nil|fun(self: mwseMCMDecimalSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new Dropdown inside given `parent` menu.
@@ -825,7 +826,7 @@ function mwse.mcm.createParagraphField(parent, data) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
---- `convertToLabelValue`: fun(self: mwseMCMPercentageSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- `convertToLabelValue`: nil|fun(self: mwseMCMPercentageSlider, variableValue: number): number|string — *Optional*. Define a custom formatting function for displaying variable values.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMPercentageSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @return mwseMCMPercentageSlider slider No description yet available.
@@ -850,7 +851,7 @@ function mwse.mcm.createPercentageSlider(parent, data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
---- @field convertToLabelValue fun(self: mwseMCMPercentageSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
+--- @field convertToLabelValue nil|fun(self: mwseMCMPercentageSlider, variableValue: number): number|string *Optional*. Define a custom formatting function for displaying variable values.
 --- @field postCreate nil|fun(self: mwseMCMPercentageSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new PlayerData variable.
@@ -929,10 +930,10 @@ function mwse.mcm.createPlayerData(variable) end
 --- 
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
---- `convertToLabelValue`: fun(self: mwseMCMSlider, variableValue: number): number|nil|string — *Optional*. Define a custom formatting function for displaying variable values.
+--- `convertToLabelValue`: nil|fun(self: mwseMCMSlider, variableValue: number): number|string — *Optional*. Define a custom formatting function for displaying variable values.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMSlider) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMDecimalSlider|mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
+--- @return mwseMCMPercentageSlider|mwseMCMSlider slider No description yet available.
 function mwse.mcm.createSlider(parent, data) end
 
 ---Table parameter definitions for `mwse.mcm.createSlider`.
@@ -954,13 +955,13 @@ function mwse.mcm.createSlider(parent, data) end
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
---- @field convertToLabelValue fun(self: mwseMCMSlider, variableValue: number): number|nil|string *Optional*. Define a custom formatting function for displaying variable values.
+--- @field convertToLabelValue nil|fun(self: mwseMCMSlider, variableValue: number): number|string *Optional*. Define a custom formatting function for displaying variable values.
 --- @field postCreate nil|fun(self: mwseMCMSlider) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new TableVariable.
 --- @param variable mwse.mcm.createTableVariable.variable This table accepts the following values:
 --- 
---- `id`: string — Key in the config file used to store the variable.
+--- `id`: string|number — Key in the config file used to store the variable.
 --- 
 --- `table`: table — The table to save the data to.
 --- 
@@ -978,7 +979,7 @@ function mwse.mcm.createTableVariable(variable) end
 
 ---Table parameter definitions for `mwse.mcm.createTableVariable`.
 --- @class mwse.mcm.createTableVariable.variable
---- @field id string Key in the config file used to store the variable.
+--- @field id string|number Key in the config file used to store the variable.
 --- @field table table The table to save the data to.
 --- @field defaultSetting unknown? *Optional*. If `id` does not exist in the table, it will be initialised to this value.
 --- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
@@ -1204,7 +1205,7 @@ function mwse.mcm.register(template) end
 --- @param template table No description yet available.
 function mwse.mcm.registerMCM(template) end
 
---- This function check whether a certain key combination is currently pressed. It will only check ctrl, shift and alt modifier keys, matching the KeyBinder. It doesn't check mouse.
+--- This function checks whether a certain key combination is currently pressed. It will only check ctrl, shift and alt modifier keys. It doesn't check mouse.
 --- @param keybind mwseKeyCombo|mwseKeyMouseCombo No description yet available.
 --- @return boolean pressed No description yet available.
 function mwse.mcm.testKeyBind(keybind) end

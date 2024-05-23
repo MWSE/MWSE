@@ -74,7 +74,7 @@ function mwse.longToString(type) end
 
 --- Configures MWSE to execute a given function instead when a script would run.
 --- 
---- In most cases its intended to stop the execution of the original mwscript script. You can do so in the callback function by calling `mwscript.stopScript()`.
+--- In most cases its intended to stop the execution of the original global mwscript. You can do so in the callback function by calling `mwscript.stopScript()`.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/mwse/#mwseoverridescript).
 --- @param scriptId string No description yet available.
@@ -102,7 +102,7 @@ function mwse.registerModConfig(name, package) end
 --- Saves a config table to Data Files\\MWSE\\config\\{fileName}.json. The config is converted to JSON during saving.
 --- @param fileName string Usually named after your mod.
 --- @param config table The config table to save.
---- @param jsonOptions table? *Optional*. Used to optionally pass encoding options to the dkjson encoder.
+--- @param jsonOptions table? *Optional*. Encoding options. These get passed to the `dkjson` encoder.
 function mwse.saveConfig(fileName, config, jsonOptions) end
 
 --- Converts an uppercase, 4-character string into a TES3 object type.

@@ -55,14 +55,14 @@ The following fields are available:
     The following fields are available:
 
     * `lua-mod` - The path to the main.lua associated with this mod. For example, if your main.lua file is located in `"Data Files\MWSE\mods\g7\myMod\main.lua"`, then this field should be set to `"g7.myMod"`.
-    * `load-order` - The priority for when this mod is loaded. Lower numbers are loaded first.
+    * `load-priority` - The priority for when this mod is loaded. Lower numbers are loaded first.
     * `wait-until-initialize` - Whether to wait until the game has initialized before loading this mod.
 
     Example:
     ```toml
         [tools.mwse]
         lua-mod = "mer.myMod"
-        load-order = 100
+        load-priority = 100
         wait-until-initialize = true
     ```
 
@@ -210,7 +210,7 @@ The following dependencies are available:
 
 ## Versions
 
-The version strings in `[package]`, `[dependencies.mge-xe]` and `[dependencies.mods]` uses semver (Semantic Versioning) format. This consists of three numbers separated by periods, such as `1.2.3`. The first number is the `major` version, the second is the `minor` version, and the third is the `patch` version. You should increment the major version when you make a breaking change, the minor version when you add new features, and the patch version when you make bug fixes.
+The version strings in `[package]`, `[dependencies.mge-xe]`, and `[dependencies.mods]` follow the semver (Semantic Versioning) format, which consists of three numbers separated by periods. The syntax is `<MAJOR>`.`<MINOR>`.`<PATCH>`. For example, `1.2.3` means the major version is 1, the minor version is 2, and the patch version is 3. You should increment the major version when you make a breaking change, the minor version when you add new features, and the patch version when you make bug fixes.
 
 For more information on semver, see the [semver website](https://semver.org/).
 
@@ -220,7 +220,7 @@ When specifying a version for a mod or mge-xe dependency, use a comparison opera
 
 Available dependency operators are: `^`, `=`, `>=`, `<=`, `>`, `<`.
 
-Most operators are self explanatory, but the most useful one is the pessemistic operator: `^`. This will assert that the major version is the same, and the minor/patch versions are the same or higher than the target version. This is because a major version update indicates a breaking change. For example, if your target version is `^1.2.3`, then `1.2.3`, `1.3.3`, and `1.2.4` will be compatible, but `2.0.0`, `1.1.3`, and `1.2.2` will not.
+The  `=`, `>=`, `<=`, `>`, and `<` operators all function as expected. The pessemistic operator (`^`) works by using `=` on major versions and `<=` on minor and patch versions. For example, if your target version is `^1.2.3`, then `1.2.3`, `1.3.3`, and `1.2.4` will be compatible, but `2.0.0`, `1.1.3`, and `1.2.2` will not. The idea behind the `^` operator is that changes in major versions signify breaking changes, which can introduce incompatibilities. 
 
 ## Full Example
 
@@ -239,7 +239,7 @@ version = "7.8.9"
 # MWSE specific information about this mod
 [tools.mwse]
 lua-mod = "mer.myMod"
-load-order = 100
+load-priority = 100
 wait-until-initialized = true
 
 # Dependencies are checked on `initialized` and warn the player if any are missing

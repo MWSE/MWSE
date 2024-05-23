@@ -2,7 +2,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- A 3 by 3 matrix. You can perform following arithmetic with this type: `==`.
+--- A 3 by 3 matrix.
 --- @class tes3matrix33
 --- @operator add(tes3matrix33): tes3matrix33
 --- @operator mul(tes3matrix33): tes3matrix33

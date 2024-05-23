@@ -64,6 +64,78 @@ local result = myObject:copy()
 
 ***
 
+### `distance`
+<div class="search_terms" style="display: none">distance</div>
+
+Calculates the distance to another vector in the standard way, i.e., using the [Euclidean distance](https://en.wikipedia.org/wiki/Euclidean_distance).
+
+```lua
+local result = myObject:distance(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector2](../types/tes3vector2.md))
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `distanceChebyshev`
+<div class="search_terms" style="display: none">distancechebyshev</div>
+
+Calculates the distance to another vector, using the [Chebyshev metric](https://en.wikipedia.org/wiki/Chebyshev_distance), which is defined as
+
+	math.max(math.abs(v1.x - v2.x), math.abs(v1.y - v2.y))
+
+This is useful for ensuring that the x and y coordinates between two vectors are all (independently) within a certain distance from each other.
+
+Here is a geometric description of the difference between the normal distance and the Chebyshev distance for two `tes3vector2`s  `v1` and `v2`:
+
+* If `v1:distance(v2) <= 1`, then `v2` is contained in a circle around `v1` with radius 1 (i.e. diameter 2).
+* If `v1:distanceChebyshev(v2) <= 1`, then `v2` is contained within a square centered around `v1`, where the square sides have length 2.
+
+
+```lua
+local result = myObject:distanceChebyshev(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector2](../types/tes3vector2.md))
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `distanceManhattan`
+<div class="search_terms" style="display: none">distancemanhattan</div>
+
+Calculates the distance to another vector, using the [Manhattan (i.e. city block) metric](https://en.wikipedia.org/wiki/Taxicab_geometry). In the two-dimensional case, the Manhattan metric can be thought of as the distance that two taxis will have to travel if they're following a grid system. The formula for the Manhattan distance is
+
+	math.abs(v1.x - v2.x) + math.abs(v1.y - v2.y) 
+
+This is useful for checking how far you'd actually have to move if you're only allowed to move along one axis at a time.
+
+
+```lua
+local result = myObject:distanceManhattan(vec)
+```
+
+**Parameters**:
+
+* `vec` ([tes3vector2](../types/tes3vector2.md))
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `length`
 <div class="search_terms" style="display: none">length</div>
 
@@ -153,7 +225,7 @@ local vector = tes3vector2.new(x, y)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | The per-element multiplication of two vectors. |
+| [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | The per-element multiplication of two vectors, also known as [Hadamard product](https://en.wikipedia.org/wiki/Hadamard_product_(matrices)). |
 | [tes3vector2](../types/tes3vector2.md) | number | [tes3vector2](../types/tes3vector2.md) | Multiplies the vector by a scalar. |
 
 ***

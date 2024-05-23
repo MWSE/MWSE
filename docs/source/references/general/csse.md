@@ -101,24 +101,18 @@ MG_BCShrooms = 100
 chargenstate = -1.0
 ```
 
-### Object Window
+### Main Window
 
-* Significantly improved UI responsiveness.
-* The tab style has been changed to be more button-like. This prevents tabs from moving around.
-* Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, or book text fragments.
-	* Regex search options and case-sensitive search options can be enabled in the config file.
-* The footer also supports a toggle button to only show modified objects.
-* The data rendering and behavior has been completely rewritten. Strings and alignment is more consistent. New columns can be added.
-	* A new modified column is displayed, showing if the object is modified. This can be sorted on.
-* Fixed issue where box selection in the object window would cause the mouse to snap to the edge of the screen.
-* Modified objects are highlighted with a light green background.
-* Deleted objects are highlighted with a light red background.
-* The spell list lists the range of the spell.
+* The status bars at the bottom of the construction set have been widened. They should always have enough room to show the relevent information.
 
 ### Actor Editing Windows
 
 * The AI window opens more quickly.
 * Clicking on the return button in the AI window when no cell has been loaded no longer crashes the CS.
+
+### Cell View
+
+* Significantly improved UI responsiveness.
 
 ### Dialogue Window
 
@@ -134,6 +128,27 @@ chargenstate = -1.0
 * Select all control (Ctrl+A) now functions in the edit boxes.
 * The window will remember the user preferences for column widths, as well as the overall window size.
 * Conditional columns display the value being compared against to make it easier at a glance what the INFO requires.
+* The cell filtering behavior can be changed using a new dropdown under the actor filter dropdown.
+	* Filter with first reference's cell: The first reference of an actor's cell will be used when parsing Cell Fun/Var checks. This is the vanilla and default construction set behavior.
+	* Filter with render window cell: The currently open cell in the render window will be used instead of the reference's current cell when filtering dialogue.
+	* Ignore cell filter: Cell filtering will be ignored completely; any cell will assume to pass.
+* When filtering by an actor and choosing local variables to filter by, only locals already defined on that actor's script will show in the dropdown list.
+
+### Object Window
+
+* Significantly improved UI responsiveness.
+* The tab style has been changed to be more button-like. This prevents tabs from moving around.
+* Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, or book text fragments.
+	* Regex search options and case-sensitive search options can be enabled in the config file.
+* The footer also supports a toggle button to only show modified objects.
+* The data rendering and behavior has been completely rewritten. Strings and alignment is more consistent. New columns can be added.
+	* A new modified column is displayed, showing if the object is modified. This can be sorted on.
+* Fixed issue where box selection in the object window would cause the mouse to snap to the edge of the screen.
+* Modified objects are highlighted with a light green background.
+* Deleted objects are highlighted with a light red background.
+* The spell list lists the range of the spell.
+* The creature list now shows the soul value of creatures.
+* Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under `tools.csse.deprecated`. Objects matching these IDs will not be displayed in the Object Window.
 
 ### Render Window
 
@@ -156,6 +171,10 @@ chargenstate = -1.0
 * The field of view (FOV) and antialiasing (multisamples) can be overwritten in the config file.
 * The update rate of the render window can be changed from the default of 25 FPS. By default it now runs at (up to) 60 FPS.
 * Fixed an issue with bound calculations. Any bound-related functions, such as focusing the camera (C or T keys) on a light will never send the camera into the stratosphere.
+* New widgets exist when moving or rotating a reference. Axis lines are shown when snapping. Holding control while moving or rotating a reference will force on grid/angle snapping, and show markers to show where the reference will snap to. Using the mouse wheel while doing this will adjust the grid/angle snap values.
+* Using F2 with a reference selected will bring up the window to edit that reference. Holding shift will bring up the window to edit the base object instead.
+* Ctrl+H now opens the Search & Replace window.
+* Ctrl+F2 with a door selected will focus the associated door marker. The same can be done on a door marker, to select the door that leads to it.
 
 The following changes to the rendering window apply when landscape editing:
 
@@ -173,7 +192,8 @@ The following changes to the rendering window apply when landscape editing:
 * Elements may now be double clicked to open the relevant edit window. The right context will be shown, if applicable. For example, a faction will be automatically selected, or a particular INFO record will be displayed.
 * Full searches work correctly on long text, such as script or book text.
 * Searches can be performed with regex, or made case-sensitive through the settings window.
+* The search input box responds to basic keyboard shortcuts.
 
-### Cell View
+### Use Report
 
-* Significantly improved UI responsiveness.
+* Rows in the first list can now be double-clicked. Doing so will bring up a window to edit the related object.

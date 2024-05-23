@@ -72,7 +72,7 @@ namespace se::cs::dialog::edit_alchemy_object_window {
 		}
 
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
-			auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
+			const auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
 			log::stream << "Displaying alchemy object data took " << timeToInitialize.count() << "ms" << std::endl;
 		}
 	}

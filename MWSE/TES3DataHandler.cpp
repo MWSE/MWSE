@@ -484,10 +484,10 @@ namespace TES3 {
 		return *reinterpret_cast<TES3::DataHandler**>(0x7C67E0);
 	}
 
-	Vector3 DataHandler::getLastExteriorPosition() {
+	Vector3 DataHandler::getLastExteriorPosition() const {
 		if (currentInteriorCell && lastExteriorCellPositionX != INT_MAX && lastExteriorCellPositionY != INT_MAX) {
-			auto x = float(lastExteriorCellPositionX * TES3::Cell::exteriorGridWidth);
-			auto y = float(lastExteriorCellPositionY * TES3::Cell::exteriorGridWidth);
+			const auto x = float(lastExteriorCellPositionX * TES3::Cell::exteriorGridWidth);
+			const auto y = float(lastExteriorCellPositionY * TES3::Cell::exteriorGridWidth);
 			return Vector3(x, y, 0.0f);
 		}
 		else {

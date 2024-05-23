@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A 3 by 3 matrix. You can perform following arithmetic with this type: `==`.
+A 3 by 3 matrix.
 
 ## Properties
 
@@ -456,6 +456,14 @@ local matrix = tes3matrix33.new(x0, y0, z0, x1, y1, z1, x2, y2, z2)
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
 | [tes3matrix33](../types/tes3matrix33.md) | [tes3matrix33](../types/tes3matrix33.md) | [tes3matrix33](../types/tes3matrix33.md) | The matrix addition. |
+
+***
+
+### Equality (`==`)
+
+| Left operand type | Right operand type | Result type | Description |
+| ----------------- | ------------------ | ----------- | ----------- |
+| [tes3matrix33](../types/tes3matrix33.md) | [tes3matrix33](../types/tes3matrix33.md) | boolean | True if both matrices point to the same data. |
 
 ***
 

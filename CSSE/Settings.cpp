@@ -325,6 +325,11 @@ namespace se::cs {
 		column_used = toml::find_or(v, "column_used", column_used);
 		column_filename = toml::find_or(v, "column_filename", column_filename);
 
+		edit_circle_vertex = toml::find_or(v, "edit_circle_vertex", edit_circle_vertex);
+		edit_circle_soften_vertex = toml::find_or(v, "edit_circle_soften_vertex", edit_circle_soften_vertex);
+		edit_circle_flatten_vertex = toml::find_or(v, "edit_circle_flatten_vertex", edit_circle_flatten_vertex);
+		edit_circle_color_vertex = toml::find_or(v, "edit_circle_color_vertex", edit_circle_color_vertex);
+
 		show_preview_enabled = toml::find_or(v, "show_preview_enabled", show_preview_enabled);
 	}
 

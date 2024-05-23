@@ -2,8 +2,8 @@ return {
 	type = "function",
 	description = [[Decode string into a table.
 
-!!! warning
-	If the table encoded as json had both string and integer indices, this process converted all the integer indices to strings. For example, `[1]` was converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
 ]],
 	link = "http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation",
 	arguments = {

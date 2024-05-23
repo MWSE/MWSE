@@ -473,54 +473,52 @@ end
 -------------------------------------------------
 
 --[[
-	table.binsearch( table, value [, compval [, reversed] ] )
+	table.binsearch( table, value [, comp [, findAll] ] )
 
-	Searches the table through BinarySearch for the given value.
-	If the  value is found:
-		it returns a table holding all the mathing indices (e.g. { startindice,endindice } )
-		endindice may be the same as startindice if only one matching indice was found
-	If compval is given:
-		then it must be a function that takes one value and returns a second value2,
-		to be compared with the input value, e.g.:
-		compvalue = function( value ) return value[1] end
-	If reversed is set to true:
-		then the search assumes that the table is sorted in reverse order (largest value at position 1)
-		note when reversed is given compval must be given as well, it can be nil/_ in this case
+	finds a value by performing a binary search.
+	If the `value` is found:
+		if `findAll` evaluates to true, then the lowest matching index and the highest matching index will be returned.
+		otherwise, the first index to match will be returned.
+	If `comp` is given:
+		comparisons will be performed as though the array was sorted via `table.sort(tbl, comp)`.
+	If `findAll == true`:
+		two indices will be returned, corresponding to the lowest and highest indices whose corresponding elements are equal to `value`.
 	Return value:
-		on success: a table holding matching indices (e.g. { startindice,endindice } )
+		on success: two integers: `lowestMatch, highestMatch`
 		on failure: nil
 ]]--
-local function default_fcompval( value ) return value end
-local function fcompf( a,b ) return a < b end
-local function fcompr( a,b ) return a > b end
-function table.binsearch( t,value,compval,reversed )
-	-- Initialise functions
-	local compval = compval or default_fcompval
-	local fcomp = reversed and fcompr or fcompf
-	--  Initialise numbers
-	local iStart,iEnd,iMid = 1,#t,0
+function table.binsearch(tbl, value, comp, findAll)
+	-- initialize the index variables
+	local first, last, midpt = 1, #tbl, 0
+	local floor = math.floor
+	comp = comp or function(a,b) return a < b end -- set to default if not given
 	-- Binary Search
-	while iStart <= iEnd do
+	while first <= last do
 		-- calculate middle
-		iMid = math.floor( (iStart+iEnd)/2 )
-		-- get compare value
-		local value2 = compval( t[iMid] )
-		-- get all values that match
-		if value == value2 then
-			local tfound,num = { iMid,iMid },iMid - 1
-			while value == compval( t[num] ) do
-				tfound[1],num = num,num - 1
+		midpt = floor((first + last) / 2)
+
+		if comp(value, tbl[midpt]) then -- `value < tbl[midpt]`
+
+			last = midpt - 1 -- value is in the first half
+
+		elseif comp(tbl[midpt], value) then -- `tbl[midpt] < value`
+
+			first = midpt + 1 -- value is in the second half
+
+		else -- `tbl[midpt] == value`
+
+			-- only want the first match? bail
+			if not findAll then return midpt, midpt end
+
+			-- find all the remaining matches
+			local lowestMatch, highestMatch = midpt, midpt
+			while value == tbl[lowestMatch - 1] do
+				lowestMatch = lowestMatch - 1
 			end
-			num = iMid + 1
-			while value == compval( t[num] ) do
-				tfound[2],num = num,num + 1
+			while value == tbl[highestMatch + 1] do
+				highestMatch = highestMatch + 1
 			end
-			return tfound
-		-- keep searching
-		elseif fcomp( value,value2 ) then
-			iEnd = iMid - 1
-		else
-			iStart = iMid + 1
+			return lowestMatch, highestMatch
 		end
 	end
 end
@@ -863,42 +861,55 @@ function mwse.log(str, ...)
 	print(tostring(str):format(...))
 end
 
--- This will convert the table keys that were converted to
--- strings when they were saved to json. This happens since
--- json dictionaries can only have string keys. Use defaults
--- table to check which keys are integers.
-local function restoreIntegerKeys(configTable, defaults)
-	for key, val in pairs(defaults or {}) do
-		local defaultKeyType = type(key)
-		local defaultValType = type(val)
-		local stringKey = tostring(key)
-		if ((defaultKeyType == "number") and
-			(configTable[stringKey] ~= nil)) then
-				configTable[key] = configTable[stringKey]
-				configTable[stringKey] = nil
+-- helper function for `mwse.loadConfig`. 
+-- this function is responsible for:
+-- 1) restoring numeric keys (i.e. keys that should be numbers, but were turned into strings by `json.savefile`)
+-- 2) adding missing values to `config` that are present in `defaultConfig`
+--
+-- both of these things need to be done recursively, so it's not possible to use `table.copymissing`.
+-- (i.e., we may need to alternate between converting integer keys and adding missing values)
+---@param config table
+---@param defaultConfig table
+local function fixLoadedResult(config, defaultConfig)
+	local configValue
+	for key, defaultValue in pairs(defaultConfig) do
+		configValue = config[key]
+
+		-- check if we need to convert a string key to a numeric key
+		if configValue == nil and type(key) == "number" and config[tostring(key)] ~= nil then
+			config[key] = config[tostring(key)]
+			config[tostring(key)] = nil
+			configValue = config[key]
 		end
 
-		-- Handle subtables
-		if (defaultValType == "table") then
-			restoreIntegerKeys(configTable[key], defaults[key])
+		-- recheck the config value because it may have changed in the last code block
+		if configValue ~= nil then
+			-- if the default value is a table, we need to fix values recursively
+			if type(defaultValue) == "table" and type(configValue) == "table" then
+				fixLoadedResult(configValue, defaultValue)
+			else
+				-- no change needed
+			end
+		else -- configValue == nil
+			-- make sure the config gets a copy of any subtables
+			if type(defaultValue) == "table" then
+				config[key] = table.deepcopy(defaultValue)
+			else
+				config[key] = defaultValue
+			end
 		end
 	end
 end
 
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
-	local isDefaultsTable = (type(defaults) == "table")
+	
+	if not result and not defaults then return end
 
-	if (result) then
-		if (isDefaultsTable) then
-			table.copymissing(result, defaults)
-		end
-	else
-		result = defaults
-	end
-	if (isDefaultsTable) then
-		restoreIntegerKeys(result, defaults)
-	end
+	result = result or {} -- make sure the user gets something
+
+	-- the for loop in `fixLoadedResult` wont be iterated at all if `defaults` evaluates to false
+	fixLoadedResult(result, defaults or {})
 
 	return result
 end

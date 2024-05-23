@@ -35,7 +35,7 @@ function mwscript.addItem(params) end
 --- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string The item to be added.
 --- @field count number? *Default*: `1`. The number of items to be added.
 
---- use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
+--- Use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
 --- @deprecated
 --- @param params mwscript.addSoulGem.params This table accepts the following values:
 --- 
@@ -302,7 +302,7 @@ function mwscript.getReference() end
 --- @return tes3script result No description yet available.
 function mwscript.getScript() end
 
---- Use  [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.
+--- Use [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.
 --- @deprecated
 --- @param params mwscript.getSpellEffects.params This table accepts the following values:
 --- 
@@ -458,7 +458,7 @@ function mwscript.removeSpell(params) end
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @field spell tes3spell|string No description yet available.
 
---- Wrapper for the `ScriptRunning` mwscript function.
+--- Wrapper for the `ScriptRunning` mwscript function. Only checks global scripts.
 --- @deprecated
 --- @param params mwscript.scriptRunning.params This table accepts the following values:
 --- 
@@ -470,7 +470,7 @@ function mwscript.scriptRunning(params) end
 --- @class mwscript.scriptRunning.params
 --- @field script tes3script|string No description yet available.
 
---- Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.
+--- Use [`tes3reference:delete()`](https://mwse.github.io/MWSE/types/tes3reference/#delete) instead. Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.
 --- @deprecated
 --- @param params mwscript.setDelete.params? This table accepts the following values:
 --- 
@@ -485,7 +485,7 @@ function mwscript.setDelete(params) end
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @field delete boolean? *Default*: `true`. Setting this to true deletes the reference and triggers `referenceDeactivated` event. Setting this to false effectively undeletes/activates the reference and triggers `referenceActivated` event.
 
---- Use [`tes3npc.level`](https://mwse.github.io/MWSE/types/tes3npc/#level) instead. Wrapper for the `SetLevel` mwscript function.
+--- Wrapper for the `SetLevel` mwscript function.
 --- @deprecated
 --- @param params mwscript.setLevel.params This table accepts the following values:
 --- 
@@ -515,7 +515,7 @@ function mwscript.startCombat(params) end
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @field target tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Actor to start combat with.
 
---- Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/?h=script#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function.
+--- Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/?h=script#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function. Starts the script as a global script.
 --- @deprecated
 --- @param params mwscript.startScript.params This table accepts the following values:
 --- 
@@ -545,7 +545,7 @@ function mwscript.stopCombat(params) end
 --- @field reference tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string|nil *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
 --- @field target tes3reference|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Actor to stop combat with.
 
---- Wrapper for the `StopScript` mwscript function.
+--- Wrapper for the `StopScript` mwscript function. It can only stop global scripts.
 --- @deprecated
 --- @param params mwscript.stopScript.params This table accepts the following values:
 --- 

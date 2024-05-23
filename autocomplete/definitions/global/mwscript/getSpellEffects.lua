@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Use  [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.]],
+	description = [[Use [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.]],
 	arguments = {{
 		name = "params",
 		type = "table",

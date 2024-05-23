@@ -482,7 +482,8 @@ namespace se::cs::dialog::dialogue_window {
 		const auto filterScript = (userData && userData->currentFilterObject) ? userData->currentFilterObject->getScript() : nullptr;
 
 		// We only care if we are filtering for local variables, and have a script.
-		if (filterScript == nullptr || (conditionType != DialogueInfo::Condition::TypeLocal && conditionType != DialogueInfo::Condition::TypeNotLocal)) {
+		// Not Local conditions should not be filtered.
+		if (filterScript == nullptr || conditionType != DialogueInfo::Condition::TypeLocal) {
 			CS_FillConditionCombos(hWnd, controlIdOffset, conditionType);
 			return;
 		}
@@ -491,15 +492,15 @@ namespace se::cs::dialog::dialogue_window {
 		const auto hConditionCombo = GetDlgItem(hWnd, controlIdOffset + CONTROL_ID_CONDITION_FUNCTION1_VARIABLE_COMBO);
 		ComboBox_ResetContent(hConditionCombo);
 		for (auto i = 0; i < filterScript->header.numShorts; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getShortVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getShortVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 's');
 		}
 		for (auto i = 0; i < filterScript->header.numLongs; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getLongVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getLongVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 'l');
 		}
 		for (auto i = 0; i < filterScript->header.numFloats; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getFloatVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getFloatVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 'f');
 		}
 	}

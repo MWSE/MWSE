@@ -19,6 +19,7 @@
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
+#include "LuaMusicSelectTrackEvent.h"
 #include "LuaSimulatedEvent.h"
 
 #include "LuaManager.h"
@@ -591,6 +592,30 @@ namespace TES3 {
 		}
 
 		flagLevitationDisabled = disable;
+	}
+
+	const auto TES3_WorldController_selectNextMusicTrack = reinterpret_cast<bool(__thiscall*)(const WorldController*, MusicSituation)>(0x410EA0);
+	bool WorldController::selectNextMusicTrack(MusicSituation situation) const {
+		// Fire off the event.
+		if (mwse::lua::event::MusicSelectTrackEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::MusicSelectTrackEvent((int)situation));
+			if (eventData.valid()) {
+				sol::optional<std::string> musicPath = eventData["music"];
+				if (musicPath) {
+					char* buffer = mwse::tes3::getThreadSafeStringBuffer();
+					snprintf(buffer, 512, "Data Files/music/%s", musicPath.value().c_str());
+					return true;
+				}
+
+				// Only allow blocking if a music path was not provided.
+				if (eventData.get_or("block", false)) {
+					return false;
+				}
+			}
+		}
+
+		return TES3_WorldController_selectNextMusicTrack(this, situation);
 	}
 
 	int WorldController::getShadowLevel() const {

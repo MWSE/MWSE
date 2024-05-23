@@ -1078,6 +1078,69 @@ namespace TES3::UI {
 		createResponseText(nullptr, text, 2, index);
 	}
 
+	std::tuple<int, int> textLayoutGetFontHeight_lua(sol::table params) {
+		int fontIndex = mwse::lua::getOptionalParam<int>(params, "font", 0);
+
+		if (fontIndex < 0 || fontIndex >= 3) {
+			throw std::invalid_argument("Invalid 'font' parameter provided.");
+		}
+
+		auto font = TES3::WorldController::get()->fonts[fontIndex];
+		return { font->maxGlyphHeight, font->fontData->lineHeight };
+	}
+
+	const auto TES3_UI_Font_getTextExtent = reinterpret_cast<void(__thiscall*)(TES3::Font*, const char*, float*, float*, int, int, bool)>(0x40B190);
+	void textLayoutGetTextExtent(TES3::Font* font, const char* text, float* out_width, float* out_verticalAdvance, int maxCharsOrLineMode, bool useLineHeight) {
+		TES3_UI_Font_getTextExtent(font, text, out_width, out_verticalAdvance, maxCharsOrLineMode, 0, useLineHeight);
+	}
+
+	std::tuple<int, int, int> textLayoutGetTextExtent_lua(sol::table params) {
+		sol::optional<const char*> text = params["text"];
+		int fontIndex = mwse::lua::getOptionalParam<int>(params, "font", 0);
+		bool firstLineOnly = mwse::lua::getOptionalParam<bool>(params, "firstLineOnly", false);
+
+		if (fontIndex < 0 || fontIndex >= 3) {
+			throw std::invalid_argument("Invalid 'font' parameter provided.");
+		}
+		if (!text) {
+			throw std::invalid_argument("Invalid 'text' parameter provided.");
+		}
+		
+		auto font = TES3::WorldController::get()->fonts[fontIndex];
+		float width, verticalAdvance;
+		textLayoutGetTextExtent(font, text.value(), &width, &verticalAdvance, firstLineOnly ? -2 : -1, false);
+
+		// Calculated label height from text layout system.
+		float height = std::floor(verticalAdvance + font->maxGlyphHeight + 1.5f);
+
+		return { width, height, verticalAdvance };
+	}
+
+	const auto TES3_UI_Font_wrapTextInPlace = reinterpret_cast<int(__thiscall*)(TES3::Font*, char*, unsigned int, bool, char)>(0x40BBC0);
+	int textLayoutWrapTextInPlace(TES3::Font* font, char* textBuffer, unsigned int maxWidth, bool ignoreLinkDelimiters, char newlineReplacement) {
+		return TES3_UI_Font_wrapTextInPlace(font, textBuffer, maxWidth, ignoreLinkDelimiters, newlineReplacement);
+	}
+
+	std::tuple<std::string, int> textLayoutWrapText_lua(sol::table params) {
+		sol::optional<const char*> text = params["text"];
+		int fontIndex = mwse::lua::getOptionalParam<int>(params, "font", 0);
+		int maxWidth = mwse::lua::getOptionalParam<int>(params, "maxWidth", -1);
+		bool ignoreLinkDelimiters = mwse::lua::getOptionalParam<bool>(params, "ignoreLinkDelimiters", false);
+
+		if (fontIndex < 0 || fontIndex >= 3) {
+			throw std::invalid_argument("Invalid 'font' parameter provided.");
+		}
+		if (!text) {
+			throw std::invalid_argument("Invalid 'text' parameter provided.");
+		}
+
+		auto font = TES3::WorldController::get()->fonts[fontIndex];
+		std::string textBuffer{ text.value() };
+
+		int lineCount = textLayoutWrapTextInPlace(font, textBuffer.data(), maxWidth, ignoreLinkDelimiters, '\n');
+		return { textBuffer, lineCount };
+	}
+
 	void pushNewUIID(DWORD address, const char* name) {
 		DWORD id = registerID(name);
 		mwse::genPushEnforced(address, id);

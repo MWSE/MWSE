@@ -335,6 +335,8 @@ function tes3ui.showMagicSelectMenu(params) end
 --- 
 --- `id`: string? — *Default*: `MenuMessage`. The menu ID of the message menu.
 --- 
+--- `leaveMenuMode`: boolean? — *Default*: `true`. Determines if menu mode should be exited after a choice is made. By default it will exit menu mode, for backwards compatibility with existing mods.
+--- 
 --- `buttons`: tes3ui.showMessageMenu.params.button[] — **Required** The list of buttons.
 --- 
 --- `callbackParams`: table? — *Optional*. The table of parameters to pass to the callback functions.
@@ -359,6 +361,7 @@ function tes3ui.showMessageMenu(params) end
 ---Table parameter definitions for `tes3ui.showMessageMenu`.
 --- @class tes3ui.showMessageMenu.params
 --- @field id string? *Default*: `MenuMessage`. The menu ID of the message menu.
+--- @field leaveMenuMode boolean? *Default*: `true`. Determines if menu mode should be exited after a choice is made. By default it will exit menu mode, for backwards compatibility with existing mods.
 --- @field buttons tes3ui.showMessageMenu.params.button[] **Required** The list of buttons.
 --- @field callbackParams table? *Optional*. The table of parameters to pass to the callback functions.
 --- @field cancels boolean? *Default*: `false`. When set to true, a cancel button is automatically added to the buttom of the list, even when paginated.
@@ -386,6 +389,58 @@ function tes3ui.stealHelpMenu() end
 --- Controls hiding of world object tooltips.
 --- @param suppress boolean Turns on suppression if true, immediately hiding any active tooltip and further world object tooltips. Turns off suppression if false.
 function tes3ui.suppressTooltip(suppress) end
+
+--- Gets font height metrics for a font.
+--- @param params tes3ui.textLayout.getFontHeight.params This table accepts the following values:
+--- 
+--- `font`: number? — *Default*: `0`. The index of the font.
+--- @return number maxGlyphHeight Maximum pixel height of a single line of text.
+--- @return number lineHeight Pixel spacing between lines in a paragraph.
+function tes3ui.textLayout.getFontHeight(params) end
+
+---Table parameter definitions for `tes3ui.textLayout.getFontHeight`.
+--- @class tes3ui.textLayout.getFontHeight.params
+--- @field font number? *Default*: `0`. The index of the font.
+
+--- Calculates expected size information for text content.
+--- @param params tes3ui.textLayout.getTextExtent.params This table accepts the following values:
+--- 
+--- `text`: string — The text to use.
+--- 
+--- `font`: number? — *Default*: `0`. The index of the font.
+--- 
+--- `firstLineOnly`: boolean? — *Default*: `false`. Only process the first line of the text.
+--- @return number width Pixel width of the widest line of the text.
+--- @return number height Pixel height of a label containing this text. Includes the extra space and rounding added by the label layout.
+--- @return number verticalAdvance The vertical displacement that a following text element would use. It is zero for text without newlines, and increases with each newline.
+function tes3ui.textLayout.getTextExtent(params) end
+
+---Table parameter definitions for `tes3ui.textLayout.getTextExtent`.
+--- @class tes3ui.textLayout.getTextExtent.params
+--- @field text string The text to use.
+--- @field font number? *Default*: `0`. The index of the font.
+--- @field firstLineOnly boolean? *Default*: `false`. Only process the first line of the text.
+
+--- Performs word wrapping of text.
+--- @param params tes3ui.textLayout.wrapText.params This table accepts the following values:
+--- 
+--- `text`: string — The text to wrap.
+--- 
+--- `font`: number? — *Default*: `0`. The index of the font.
+--- 
+--- `maxWidth`: number? — *Default*: `-1`. The wrapping width in pixels.
+--- 
+--- `ignoreLinkDelimiters`: boolean? — *Default*: `false`. No description yet available.
+--- @return string wrappedText The wrapped text, with `\n` as line breaks.
+--- @return number lineCount The number of lines in the output wrapped text.
+function tes3ui.textLayout.wrapText(params) end
+
+---Table parameter definitions for `tes3ui.textLayout.wrapText`.
+--- @class tes3ui.textLayout.wrapText.params
+--- @field text string The text to wrap.
+--- @field font number? *Default*: `0`. The index of the font.
+--- @field maxWidth number? *Default*: `-1`. The wrapping width in pixels.
+--- @field ignoreLinkDelimiters boolean? *Default*: `false`. No description yet available.
 
 --- Forces the game to update the barter menu's tile GUI elements.
 function tes3ui.updateBarterMenuTiles() end

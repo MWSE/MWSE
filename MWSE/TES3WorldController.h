@@ -190,13 +190,30 @@ namespace TES3 {
 	static_assert(sizeof(InventoryData) == 0x24, "TES3::InventoryData failed size validation");
 
 	struct Font {
+		struct FontData {
+			struct TextureData {
+				int unknown_0;
+				char filename[32];
+			};
+			struct GlyphData {
+				int unknown_0;
+				TES3::Vector2 topLeft, topRight, bottomLeft, bottomRight;
+				float width, height, leftKerning, rightKerning, ascent;
+			};
+
+			float lineHeight; // 0x0
+			int textureCount; // 0x4
+			TextureData textures[8]; // 0x8
+			GlyphData glyphs[256]; // 0x12C
+		};
+
 		short propertyCount; // 0x0
 		const char* filePath; // 0x4
 		NI::Property* texturingProperties[8]; // 0x8 // Up to 8 NiTexturingProperty pointers, filled count is stored by propertyCount.
 		NI::Property* vertexColorProperty; // 0x28 // NiVertexColorProperty.
-		int unknown_0x2C;
-		int unknown_0x30;
-		void* rawFontData; // 0x34 // The raw .fnt file contents.
+		float maxGlyphHeight; // 0x2C // Maximum possible height of a single line of text.
+		float layoutCurrentYOffset; // 0x30 // Running Y offset from UI layout function.
+		FontData* fontData; // 0x34 // The .fnt file contents.
 
 		Font() = delete;
 		~Font() = delete;
@@ -206,6 +223,7 @@ namespace TES3 {
 		char* getSubstituteResult() const;
 	};
 	static_assert(sizeof(Font) == 0x38, "TES3::Font failed size validation");
+	static_assert(sizeof(Font::FontData) == 0x3928, "TES3::Font::FontData failed size validation");
 
 	struct JournalHTML {
 		bool changedSinceLastSync; // 0x0
@@ -431,6 +449,9 @@ namespace TES3 {
 		void rechargerAddItem(Object* item, ItemData* itemData, Enchantment* enchantment);
 		bool getLevitationDisabled() const;
 		void setLevitationDisabled(bool disable);
+
+		// This puts the next music track into the game's thread-safe string buffer.
+		bool selectNextMusicTrack(MusicSituation situation) const;
 
 		//
 		// Custom functions.

@@ -110,6 +110,12 @@ namespace TES3::UI {
 	void createResponseText_lua(sol::table params);
 	void choice(const char* text, int index);
 
+	std::tuple<int, int> textLayoutGetFontHeight_lua(sol::table params);
+	void textLayoutGetTextExtent(TES3::Font* font, const char* text, float* out_width, float* out_verticalAdvance, int maxCharsOrLineMode, bool useLineHeight);
+	std::tuple<int, int, int> textLayoutGetTextExtent_lua(sol::table params);
+	int textLayoutWrapTextInPlace(TES3::Font* font, char* textBuffer, unsigned int maxWidth, bool ignoreLinkDelimiters, char newlineReplacement);
+	std::tuple<std::string, int> textLayoutWrapText_lua(sol::table params);
+
 	//
 	// Helper functions.
 	//

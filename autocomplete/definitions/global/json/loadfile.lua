@@ -1,9 +1,10 @@
 return {
 	type = "function",
-	description = [[Loads the contents of a file through json.decode. Files loaded from Data Files\\MWSE\\{fileName}.json.
+	description = [[Loads the contents of a file through `json.decode`. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
 
-!!! warning
-	If the table encoded as json had both string and integer indices, this process converted all the integer indices to strings. For example, `[1]` was converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered. If you need to save and load your mod's configuration file, consider using [`mwse.loadConfig()`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) as that function will do this for you.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
+	If you're using this to load a configuration file for your mod, it's recommended you use [`mwse.loadConfig`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
 ]],
 	arguments = {
 		{ name = "fileName", type = "string" },

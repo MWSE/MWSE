@@ -51,7 +51,7 @@ function Setting:update()
 end
 
 function Setting:checkDisabled()
-	-- For components with no variable
+	-- override the variable
 	if self.inGameOnly ~= nil then
 		return not tes3.player and self.inGameOnly
 	end

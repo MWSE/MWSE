@@ -23,6 +23,7 @@ return {
 			{ name = "childIndent", type = "integer", optional = true, description = "The left padding size in pixels. Used on all the child components." },
 			{ name = "paddingBottom", type = "integer", optional = true, default = 4, description = "The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component." },
 			{ name = "childSpacing", type = "integer", optional = true, description = "The bottom border size in pixels. Used on all the child components." },
+			{ name = "convertToLabelValue", type = "fun(self: mwseMCMSlider, variableValue: number): number|string", optional = true, description = "Define a custom formatting function for displaying variable values." },
 			{ name = "postCreate", type = "fun(self: mwseMCMSlider)", optional = true, description = "Can define a custom formatting function to make adjustments to any element saved in `self.elements`." },
 			{ name = "class", type = "string", optional = true },
 			{ name = "componentType", type = "string", optional = true },

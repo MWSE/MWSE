@@ -30,15 +30,19 @@ return {
 		name = "slider", type = "mwseMCMSlider"
 	}},
 	examples = {
+		["DecimalSlider"] = {
+			title = "DecimalSlider",
+			description = "The following example shows how to create a slider that keeps the variable value a floating point number with precision of 2 decimal places."
+		},
 		["..\\..\\mwseMCMSlider\\convertToLabelValue\\DistanceSlider"] = {
 			title = "DistanceSlider",
-            description = "The following example shows how the `convertToLabelValue` parameter can be used to create a slider for a config setting that handles distances. \z
-                The config setting will be stored using game units, but the displayed value will be in real-world units. Recall that 1 game unit corresponds to 22.1 feet, and 1 foot is 0.3048 meters."
+			description = "The following example shows how the `convertToLabelValue` parameter can be used to create a slider for a config setting that handles distances. \z
+				The config setting will be stored using game units, but the displayed value will be in real-world units. Recall that 1 game unit corresponds to 22.1 feet, and 1 foot is 0.3048 meters."
 		},
 		["..\\..\\mwseMCMSlider\\convertToLabelValue\\SkillSlider"] = {
 			title = "SkillSlider",
-            description = "Here is an (admittedly less practical) example to help highlight the different ways `convertToLabelValue` can be used. \z
-                In this example, it will be used to create a slider that stores a `tes3.skill` constant in the config, and then displays the name of the corresponding skill."
+			description = "Here is an (admittedly less practical) example to help highlight the different ways `convertToLabelValue` can be used. \z
+				In this example, it will be used to create a slider that stores a `tes3.skill` constant in the config, and then displays the name of the corresponding skill."
 		},
 	},
 

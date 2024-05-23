@@ -39,8 +39,8 @@ Current version of dkjson.
 
 Decode string into a table.
 
-!!! warning
-	If the table encoded as json had both string and integer indices, this process converted all the integer indices to strings. For example, `[1]` was converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
 
 
 ```lua
@@ -62,10 +62,10 @@ local result = json.decode(s, position, nullValue)
 ### `json.encode`
 <div class="search_terms" style="display: none">encode</div>
 
-Create a string representing the object. Object can be a table, a string, a number, a boolean, nil, json.null or any object with a function __tojson in its metatable. A table can only use strings and numbers as keys and its values have to be valid objects as well. It raises an error for any invalid data types or reference cycles.
+Create a string representing the object. Object can be a `table`, `string`, `number`, `boolean`, `nil`, `json.null`,  or any object with a `__tojson` function in its `metatable`. A `table` can only use strings and numbers as keys, and its values have to be valid objects as well. This function will raise an error if called on an invalid data type or on a data structure that contains reference cycles.
 
-!!! warning
-	If the table you are encoding as json has both string and integer indices, this action will convert all the integer indices to strings. For example, `[1]` is converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table has any `string` indices, then this function will convert all `number` indices to `string` indices. For example, `[1]` could be converted to `["1"]`. This should be taken into account when loading/decoding json files.
 
 
 ```lua
@@ -86,10 +86,11 @@ local result = json.encode(object, state)
 ### `json.loadfile`
 <div class="search_terms" style="display: none">loadfile</div>
 
-Loads the contents of a file through json.decode. Files loaded from Data Files\\MWSE\\{fileName}.json.
+Loads the contents of a file through `json.decode`. Files loaded from "Data Files\\MWSE\\{`fileName`}.json".
 
-!!! warning
-	If the table encoded as json had both string and integer indices, this process converted all the integer indices to strings. For example, `[1]` was converted to `["1"]`. So, when loading mixed tables from json, this needs to be considered. If you need to save and load your mod's configuration file, consider using [`mwse.loadConfig()`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) as that function will do this for you.
+!!! warning "json does not support mixed `string` and `number` indices"
+	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
+	If you're using this to load a configuration file for your mod, it's recommended you use [`mwse.loadConfig`](https://mwse.github.io/MWSE/apis/mwse/#mwseloadconfig) instead.
 
 
 ```lua
@@ -128,7 +129,7 @@ local result = json.quotestring(s)
 ### `json.savefile`
 <div class="search_terms" style="display: none">savefile</div>
 
-Saves a serializable table to Data Files\\MWSE\\{fileName}.json, using json.encode.
+Saves a serializable table to Data Files\\MWSE\\{`fileName`}.json, using `json.encode`.
 
 ```lua
 json.savefile(fileName, object, config)

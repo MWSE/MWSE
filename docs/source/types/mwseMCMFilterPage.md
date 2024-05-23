@@ -113,7 +113,8 @@ The left padding size in pixels. Only used if the `childIndent` isn't set on the
 ### `inGameOnly`
 <div class="search_terms" style="display: none">ingameonly</div>
 
-Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).
+If `true`, then this component, as well as any nested components, will only be shown when in game. i.e., after a save has been loaded.
+If `false` or `nil`, then this component will be hidden if all subcomponents are disabled (e.g., if all subcomponents have `inGameOnly == true` and a save hasn't been loaded).
 
 **Returns**:
 
@@ -348,7 +349,7 @@ local result = myObject:checkDisabled()
 ### `create`
 <div class="search_terms" style="display: none">create</div>
 
-This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createContentsContainer) method implemented.
+This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createcontentscontainer) method implemented.
 
 ```lua
 myObject:create(parentBlock)
@@ -498,44 +499,6 @@ local button = myObject:createCycleButton({ label = ..., description = ..., opti
 **Returns**:
 
 * `button` ([mwseMCMCycleButton](../types/mwseMCMCycleButton.md))
-
-***
-
-### `createDecimalSlider`
-<div class="search_terms" style="display: none">createdecimalslider, decimalslider</div>
-
-Creates a new nested DecimalSlider.
-
-```lua
-local slider = myObject:createDecimalSlider({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ... })
-```
-
-**Parameters**:
-
-* `data` (table)
-	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
-	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this setting.
-	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
-	* `min` (number): *Default*: `0`. Minimum value of slider.
-	* `max` (number): *Default*: `1`. Maximum value of slider.
-	* `step` (number): *Default*: `0.01`. How far the slider moves when you press the arrows.
-	* `jump` (number): *Default*: `0.05`. How far the slider jumps when you click an area inside the slider.
-	* `decimalPlaces` (integer): *Default*: `2`. The number of decimal places of precision. Must be a positive integer.
-	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
-	* `callback` (fun(self: [mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md))): *Optional*. The custom function called when the player interacts with this Setting.
-	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
-	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
-	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
-	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
-	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
-	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
-	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
-	* `convertToLabelValue` (fun(self: [mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md), variableValue: number): number, string): *Optional*. Define a custom formatting function for displaying variable values.
-	* `postCreate` (fun(self: [mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
-
-**Returns**:
-
-* `slider` ([mwseMCMDecimalSlider](../types/mwseMCMDecimalSlider.md))
 
 ***
 
@@ -1012,27 +975,29 @@ local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetti
 	The following example shows how the `convertToLabelValue` parameter can be used to create a slider for a config setting that handles distances. The config setting will be stored using game units, but the displayed value will be in real-world units. Recall that 1 game unit corresponds to 22.1 feet, and 1 foot is 0.3048 meters.
 
 	```lua
+	--- @type tes3uiElement, table
+	local myPage, myConfig
 	mwse.mcm.createSlider{
-	    parent = myPage,
-	    label = "My distance slider",
-	    variable = mwse.mcm.createTableVariable{id = "distance", config = myConfig},
-	    convertToValueLabel = function(self, variableValue)
-	        local feet = variableValue / 22.1
-		    local meters = 0.3048 * feet
-	        if self.decimalPlaces == 0 then
-	            return string.format("%i ft (%.2f m)", feet, meters)
-	        end
-	        return string.format(
-	            -- if `decimalPlaces == 1, then this string will simplify to 
-	            -- "%.1f ft (%.3f m)"
-	            string.format("%%.%uf ft (%%.%uf m)", self.decimalPlaces, self.decimalPlaces + 2),
-	            feet, meters
-	        )
-	    end,
+		parent = myPage,
+		label = "My distance slider",
+		variable = mwse.mcm.createTableVariable{ id = "distance", table = myConfig },
+		convertToLabelValue = function(self, variableValue)
+			local feet = variableValue / 22.1
+			local meters = 0.3048 * feet
+			if self.decimalPlaces == 0 then
+				return string.format("%i ft (%.2f m)", feet, meters)
+			end
+			return string.format(
+				-- if `decimalPlaces == 1, then this string will simplify to
+				-- "%.1f ft (%.3f m)"
+				string.format("%%.%uf ft (%%.%uf m)", self.decimalPlaces, self.decimalPlaces + 2),
+				feet, meters
+			)
+		end,
 	
-	    max = 22.1 * 10,    -- max is 10 feet
-	    step = 22.1,        -- increment by 1 foot 
-	    jump = 22.1 * 5,
+		max = 22.1 * 10,    -- max is 10 feet
+		step = 22.1,        -- increment by 1 foot
+		jump = 22.1 * 5,
 	}
 
 	```
@@ -1042,19 +1007,41 @@ local slider = myObject:createSlider({ label = ..., variable = ..., defaultSetti
 	Here is an (admittedly less practical) example to help highlight the different ways `convertToLabelValue` can be used. In this example, it will be used to create a slider that stores a `tes3.skill` constant in the config, and then displays the name of the corresponding skill.
 
 	```lua
+	--- @type tes3uiElement, table
+	local myPage, myConfig
 	mwse.mcm.createSlider{
-	    parent = myPage,
-	    label = "My skill slider",
-	    variable = mwse.mcm.createTableVariable{id = "skillId", config = myConfig},
-	    convertToValueLabel = function(self, variableValue)
-	        local skillName = tes3.getSkillName(math.round(variableValue))
-	        if skillName then 
-	            return skillName
-	        end
-	        return "N/A"
-	    end,
+		parent = myPage,
+		label = "My skill slider",
+		variable = mwse.mcm.createTableVariable{ id = "skillId", table = myConfig },
+		convertToLabelValue = function(self, variableValue)
+			local skillName = tes3.getSkillName(math.round(variableValue))
+			if skillName then
+				return skillName
+			end
+			return "N/A"
+		end,
 	
-	    max = 26 -- there are 27 skills and indexing starts at 0
+		max = 26 -- there are 27 skills and indexing starts at 0
+	}
+
+	```
+
+??? example "Example: DecimalSlider"
+
+	The following example shows how to create a slider that keeps the variable value a floating point number with precision of 2 decimal places.
+
+	```lua
+	--- @type tes3uiElement, table
+	local myPage, myConfig
+	mwse.mcm.createSlider{
+		parent = myPage,
+		label = "My slider",
+		variable = mwse.mcm.createTableVariable{ id = "someval", table = myConfig },
+		min = 0.00,
+		max = 1.00,
+		step = 0.01,
+		jump = 0.05,
+		decimalPlaces = 2
 	}
 
 	```

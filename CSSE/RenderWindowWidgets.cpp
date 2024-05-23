@@ -162,7 +162,7 @@ namespace se::cs::dialog::render_window {
 				v.y = vertices[i - 1].y;
 				v.z = 0;
 			}
-			colors[i] = { 255, 255, 255, 255 / 6 };
+			colors[i] = { 1.0f, 1.0f, 1.0f, 0.2f };
 			flags[i] = (i % 2) == 0;
 		}
 
@@ -279,8 +279,8 @@ namespace se::cs::dialog::render_window {
 			vertices[i]     = { innerRadius * cs, innerRadius * sn, 0.0 };
 			vertices[i + 1] = { outerRadius * cs, outerRadius * sn, 0.0 };
 
-			colors[i]     = { 255, 255, 255, 255 / 2 };
-			colors[i + 1] = { 255, 255, 255, 255 / 2 };
+			colors[i]     = { 1.0f, 1.0f, 1.0f, 0.5f };
+			colors[i + 1] = { 1.0f, 1.0f, 1.0f, 0.5f };
 
 			flags[i]     = 1;
 			flags[i + 1] = 0;

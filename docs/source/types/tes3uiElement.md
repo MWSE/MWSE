@@ -257,14 +257,18 @@ Indicates which direction child elements are laid out. These values are availabl
 ### `font`
 <div class="search_terms" style="display: none">font</div>
 
-Index of font to use for text.
-		0 - Magic Cards (default)
-		1 - Century Sans
-		2 - Daedric
+Index of font to use for text. These indices are mapped to actual font files in the `Morrowind.ini` file under the [Fonts] section. The table below lists the default fonts mapping.
+
+Index | description
+----- | -----------
+0     | `magic_cards_regular` (Magic Cards, default)
+1     | `century_gothic_font_regular` (Century Sans)
+2     | `daedric_font`
+
 
 **Returns**:
 
-* `result` (number)
+* `result` (integer)
 
 ***
 
@@ -1459,7 +1463,14 @@ Widget-specific events:
 * Slider:
 	* **PartScrollBar_changed**
 		Triggers on value change; moving the slider is not enough if the value is the same.
-
+* Cycle Button:
+	* **valueChanged**
+		Triggers after the selected `index` has been changed.
+* Text Input:
+	* **textCleared**
+		Triggers after the text has been cleared by the user in text input widgets that have `placeholderText` set.
+	* **textUpdated**
+		Triggers after the text of the text input has changed.
 ***
 
 #### Event forwarding
@@ -1507,6 +1518,9 @@ EventData:
 * **relativeY** (`number`)
 	See *relativeX* description.
 
+
+!!! Note
+	When a UI element is destroyed, you don't have to manually unregister your custom event handlers. The engine does it automatically.
 
 
 ```lua
@@ -1755,7 +1769,7 @@ local wasUnregistered = myObject:unregister(eventID)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
 
 **Returns**:
 
@@ -1774,8 +1788,8 @@ local wasUnregistered = myObject:unregisterAfter(eventID, callback)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
-* `callback` (function): The callback function.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
+* `callback` (integer, fun(e: [tes3uiEventData](../types/tes3uiEventData.md)): boolean?): The callback function.
 
 **Returns**:
 
@@ -1794,8 +1808,8 @@ local wasUnregistered = myObject:unregisterBefore(eventID, callback)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
-* `callback` (function): The callback function.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
+* `callback` (integer, fun(e: [tes3uiEventData](../types/tes3uiEventData.md)): boolean?): The callback function.
 
 **Returns**:
 

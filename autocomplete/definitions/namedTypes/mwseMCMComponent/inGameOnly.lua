@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[Used only on components without a variable. For components with a variable, the variable's `inGameOnly` field is used. For more info see [checkDisabled](./mwseMCMComponent.md#checkdisabled).]],
+	description = [[If true, then this component will be disabled when on the main menu.]],
 	valuetype = "boolean",
 }

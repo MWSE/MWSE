@@ -906,13 +906,14 @@ tes3ui.showMagicSelectMenu({ title = ..., selectSpells = ..., selectPowers = ...
 Displays a message box. This may be a simple toast-style message, or a box with choice buttons.
 
 ```lua
-tes3ui.showMessageMenu({ id = ..., buttons = ..., callbackParams = ..., cancels = ..., cancelText = ..., cancelCallback = ..., header = ..., message = ..., customBlock = ..., page = ..., pageSize = ... })
+tes3ui.showMessageMenu({ id = ..., leaveMenuMode = ..., buttons = ..., callbackParams = ..., cancels = ..., cancelText = ..., cancelCallback = ..., header = ..., message = ..., customBlock = ..., page = ..., pageSize = ... })
 ```
 
 **Parameters**:
 
 * `params` (table)
 	* `id` (string): *Default*: `MenuMessage`. The menu ID of the message menu.
+	* `leaveMenuMode` (boolean): *Default*: `true`. Determines if menu mode should be exited after a choice is made. By default it will exit menu mode, for backwards compatibility with existing mods.
 	* `buttons` ([tes3ui.showMessageMenu.params.button](../types/tes3ui.showMessageMenu.params.button.md)[]): **Required** The list of buttons.
 	* `callbackParams` (table): *Optional*. The table of parameters to pass to the callback functions.
 	* `cancels` (boolean): *Default*: `false`. When set to true, a cancel button is automatically added to the buttom of the list, even when paginated.
@@ -984,6 +985,75 @@ tes3ui.suppressTooltip(suppress)
 **Parameters**:
 
 * `suppress` (boolean): Turns on suppression if true, immediately hiding any active tooltip and further world object tooltips. Turns off suppression if false.
+
+***
+
+### `tes3ui.textLayout.getFontHeight`
+<div class="search_terms" style="display: none">textlayout.getfontheight</div>
+
+Gets font height metrics for a font.
+
+```lua
+local maxGlyphHeight, lineHeight = tes3ui.textLayout.getFontHeight({ font = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `font` (number): *Default*: `0`. The index of the font.
+
+**Returns**:
+
+* `maxGlyphHeight` (number): Maximum pixel height of a single line of text.
+* `lineHeight` (number): Pixel spacing between lines in a paragraph.
+
+***
+
+### `tes3ui.textLayout.getTextExtent`
+<div class="search_terms" style="display: none">textlayout.gettextextent</div>
+
+Calculates expected size information for text content.
+
+```lua
+local width, height, verticalAdvance = tes3ui.textLayout.getTextExtent({ text = ..., font = ..., firstLineOnly = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `text` (string): The text to use.
+	* `font` (number): *Default*: `0`. The index of the font.
+	* `firstLineOnly` (boolean): *Default*: `false`. Only process the first line of the text.
+
+**Returns**:
+
+* `width` (number): Pixel width of the widest line of the text.
+* `height` (number): Pixel height of a label containing this text. Includes the extra space and rounding added by the label layout.
+* `verticalAdvance` (number): The vertical displacement that a following text element would use. It is zero for text without newlines, and increases with each newline.
+
+***
+
+### `tes3ui.textLayout.wrapText`
+<div class="search_terms" style="display: none">textlayout.wraptext</div>
+
+Performs word wrapping of text.
+
+```lua
+local wrappedText, lineCount = tes3ui.textLayout.wrapText({ text = ..., font = ..., maxWidth = ..., ignoreLinkDelimiters = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `text` (string): The text to wrap.
+	* `font` (number): *Default*: `0`. The index of the font.
+	* `maxWidth` (number): *Default*: `-1`. The wrapping width in pixels.
+	* `ignoreLinkDelimiters` (boolean): *Default*: `false`.
+
+**Returns**:
+
+* `wrappedText` (string): The wrapped text, with `\n` as line breaks.
+* `lineCount` (number): The number of lines in the output wrapped text.
 
 ***
 

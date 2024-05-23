@@ -166,6 +166,11 @@ namespace se::cs {
 			ColumnSettings column_used = { 37u };
 			ColumnSettings column_filename{ 147u };
 
+			std::array<float, 3> edit_circle_vertex = { 1.0f, 0.0f, 0.0f };
+			std::array<float, 3> edit_circle_soften_vertex = { 0.0f, 0.0f, 1.0f };
+			std::array<float, 3> edit_circle_flatten_vertex = { 0.0f, 1.0f, 0.0f };
+			std::array<float, 3> edit_circle_color_vertex = { 1.0f, 1.0f, 0.0f };
+
 			bool show_preview_enabled = false;
 
 			void from_toml(const toml::value& v);

@@ -29,6 +29,7 @@
 #include "DialogScriptListWindow.h"
 #include "DialogSearchAndReplaceWindow.h"
 #include "DialogTextSearchWindow.h"
+#include "DialogUseReportWindow.h"
 
 #include "TextureRenderer.h"
 
@@ -641,6 +642,7 @@ namespace se::cs {
 		dialog::script_list_window::installPatches();
 		dialog::search_and_replace_window::installPatches();
 		dialog::text_search_window::installPatches();
+		dialog::use_report_window::installPatches();
 		TextureRenderer::installPatches();
 	}
 

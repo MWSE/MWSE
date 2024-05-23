@@ -7,6 +7,7 @@ return {
 			type = "table",
 			tableParams = {
 				{ name = "id", type = "string", optional = true, default = "MenuMessage", description = "The menu ID of the message menu." },
+				{ name = "leaveMenuMode", type = "boolean", optional = true, default = true, description = "Determines if menu mode should be exited after a choice is made. By default it will exit menu mode, for backwards compatibility with existing mods." },
 				{ name = "buttons", type = "tes3ui.showMessageMenu.params.button[]", description = "**Required** The list of buttons." },
 				{ name = "callbackParams", type = "table", optional = true, description = "The table of parameters to pass to the callback functions." },
 				{ name = "cancels", type = "boolean", optional = true, default = false, description = "When set to true, a cancel button is automatically added to the buttom of the list, even when paginated." },

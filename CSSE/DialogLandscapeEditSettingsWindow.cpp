@@ -11,6 +11,8 @@
 
 #include "DialogProcContext.h"
 
+#include "DialogRenderWindow.h"
+
 namespace se::cs::dialog::landscape_edit_settings_window {
 	constexpr auto MIN_WIDTH = 416u + 17u;
 	constexpr auto MIN_HEIGHT = 474u + 14u;
@@ -60,6 +62,8 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			EnableWindow(GetDlgItem(hWnd, CONTROL_ID_FLATTEN_VERTICES_CHECKBOX), TRUE);
 			EnableWindow(GetDlgItem(hWnd, CONTROL_ID_SOFTEN_VERTICES_CHECKBOX), TRUE);
 		}
+
+		render_window::updateLandscapeCircleWidget();
 	}
 
 	bool getFlattenLandscapeVertices() {
@@ -76,6 +80,8 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			setSoftenLandscapeVertices(false);
 			setEditLandscapeColor(false);
 		}
+
+		render_window::updateLandscapeCircleWidget();
 	}
 
 	bool getSoftenLandscapeVertices() {
@@ -92,6 +98,8 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			setFlattenLandscapeVertices(false);
 			setEditLandscapeColor(false);
 		}
+
+		render_window::updateLandscapeCircleWidget();
 	}
 
 	LandTexture* getSelectedTexture() {
@@ -154,7 +162,6 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 
 		return false;
 	}
-
 
 	bool incrementEditRadius() {
 		auto hWnd = gWindowHandle::get();
@@ -258,11 +265,28 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 		const auto hWnd = context.getWindowHandle();
 		const auto code = context.getCommandNotificationCode();
 		const auto id = context.getCommandControlIdentifier();
-		switch (code) {
-		case BN_CLICKED:
-			switch (id) {
-			case CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON:
+		switch (id) {
+		case CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON:
+			switch (code) {
+			case BN_CLICKED:
 				togglePreviewTextureShown(hWnd, id);
+				break;
+			}
+			break;
+		}
+	}
+
+	void PatchDialogProc_AfterCommand(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+		const auto code = context.getCommandNotificationCode();
+		const auto id = context.getCommandControlIdentifier();
+		switch (id) {
+		case CONTROL_ID_FLATTEN_VERTICES_CHECKBOX:
+		case CONTROL_ID_SOFTEN_VERTICES_CHECKBOX:
+		case CONTROL_ID_EDIT_COLORS_CHECKBOX:
+			switch (code) {
+			case BN_CLICKED:
+				render_window::updateLandscapeCircleWidget();
 				break;
 			}
 			break;
@@ -599,6 +623,7 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			break;
 		case WM_COMMAND:
 			PatchDialogProc_BeforeCommand(context);
+			break;
 		}
 
 		// Call original function, or return early if we already have a result.
@@ -610,6 +635,9 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 		}
 
 		switch (msg) {
+		case WM_COMMAND:
+			PatchDialogProc_AfterCommand(context);
+			break;
 		case WM_DESTROY:
 			PatchDialogProc_AfterDestroy(context);
 			break;

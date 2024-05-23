@@ -8,7 +8,6 @@
 --- 
 --- - [template:register()](../types/mwseMCMTemplate.md#register)
 --- - [mwse.mcm.register()](../apis/mwse.mcm.md#mwsemcmregister)
---- - [mwse.registerModConfig()](../apis/mwse.md#registermodconfig)
 --- 
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/events/modConfigReady).

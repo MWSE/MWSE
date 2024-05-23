@@ -41,36 +41,29 @@ local result = table.bininsert(t, value, comp)
 ### `table.binsearch`
 <div class="search_terms" style="display: none">binsearch</div>
 
-Performs a binary search for a given `value` inside a specified `table` `t`.
+Performs a binary search for a given `value` inside a specified array-style `table` `tbl`.
 
-If the `value` is found in `t`, then a `table` providing the range of all matching indices is returned. (e.g. `{ startindice, endindice }`.) 
-If only one matching index was found, then `startindice` will be the same as `endindice`.
+If the `value` is in `tbl`, then its corresponding `index` will be returned. Otherwise, this function will return `nil`.
+If `findAll == true`, then this `binsearch` will return the lowest and highest indices that store `value`. (These indices will be equal if there is only one copy of `value` in `tbl`.)
 
-If `value` is not found in `t`, then `nil` is returned.
+You can optionally provide a `comp` function. If provided, `binsearch` will treat `tbl` as if it had been sorted by `table.sort(tbl, comp)`.
 
-If `compval` is given, then it must be a function that takes in an element of `t` and returns a value to use for comparisons.
-For example, to compare arrays based on their first entry, you can write `compvalue = function(value) return value[1] end`.
-
-Note that `compval` is different from the `comp` that is specified in the `bininsert` function.
-
-If `reversed == true`, then the search assumes that `t` is sorted in reverse order (i.e., largest value at position 1).
-Note that specifying `reversed` requires specifying `compval`. 
-You can circumvent this by passing `nil` for `compval`. e.g., `binsearch(tbl, value, nil, true)`.
 
 ```lua
-local result = table.binsearch(t, value, compval, reversed)
+local index, highestMatch = table.binsearch(tbl, value, comp, findAll)
 ```
 
 **Parameters**:
 
-* `t` (table)
+* `tbl` (table)
 * `value` (unknown): The value to search for.
-* `compval` (function): *Optional*. A function that returns the value to use in comparisons.
-* `reversed` (boolean): *Optional*. If true, then `binsearch` will assume `t` is sorted in reverse order.
+* `comp` (fun(a, b): boolean): *Optional*. The function used to sort `tbl`. If not provided, then the standard `<` operator will be used.
+* `findAll` (boolean): *Default*: `false`. If true,
 
 **Returns**:
 
-* `result` (table)
+* `index` (integer, nil): An `index` such that `tbl[index] == value`, if such an index exists. `nil` otherwise. If `findAll == true`, this will be the smallest index such that `tbl[index] == value`.
+* `highestMatch` (integer, nil): If a match was found, and if `findAll == true`, then this will be the largest `index` such that `tbl[index] == vale`. `nil` otherwise.
 
 ***
 
@@ -169,9 +162,9 @@ local result = table.deepcopy(t)
 ### `table.empty`
 <div class="search_terms" style="display: none">empty</div>
 
-Checks if a table is empty. 
-	
-	If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
+Checks if a table is empty.
+
+If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
 
 ```lua
 local result = table.empty(t, deepCheck)
@@ -205,7 +198,7 @@ local result = table.filter(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...))
+* `f` (fun(k: unknown, v: unknown, ...): boolean)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -230,7 +223,7 @@ local result = table.filterarray(arr, f, ...)
 **Parameters**:
 
 * `arr` (table)
-* `f` (fun(i: integer, v: unknown, ...))
+* `f` (fun(i: integer, v: unknown, ...): boolean)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -353,7 +346,7 @@ local result = table.map(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...))
+* `f` (fun(k: unknown, v: unknown, ...): unknown)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:

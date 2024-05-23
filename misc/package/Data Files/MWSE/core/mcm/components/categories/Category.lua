@@ -66,24 +66,22 @@ function Category:update()
 end
 
 function Category:checkDisabled()
-	-- If has variables and all are inGameOnly, disable Category
-	local isDisabled = true
-	local hasSettings = false
+	-- allow the user to override the behavior
+	if self.inGameOnly then 
+		return not tes3.player
+	end
+
+	-- dont disable if there are no subcomponents
+	if table.empty(self.components) then return false end
+
+	-- dont disable if one subcomponent isn't disabled
 	for _, component in ipairs(self.components) do
-		if component.componentType == "Setting" and component.variable then
-			hasSettings = true
-			if component.variable.inGameOnly == false then
-				isDisabled = false
-			end
-		elseif component.componentType == "Category" then
-			local componentDisabled = component:checkDisabled()
-			isDisabled = component:checkDisabled()
-			if componentDisabled then
-				hasSettings = true
-			end
+		if not component:checkDisabled() then
+			return false
 		end
 	end
-	return (hasSettings and not tes3.player and isDisabled)
+	-- disable if there are nested components and they're all disabled
+	return true
 end
 
 -- UI METHODS

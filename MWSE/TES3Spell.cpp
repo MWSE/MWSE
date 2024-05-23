@@ -235,6 +235,19 @@ namespace TES3 {
 		return 0.0f;
 	}
 
+	int Spell::getAutoCalcMagickaCost() const {
+		float cost = 0;
+
+		for (size_t i = 0; i < 8; ++i) {
+			if (effects[i].effectID != -1) {
+				cost += effects[i].calculateCost();
+			}
+		}
+
+		// The original specifically rounds .5 up, instead of using the default rounding mode.
+		return int(std::lroundf(cost));
+	}
+
 	bool Spell::isActiveCast() const {
 		return castType == SpellCastType::Spell || castType == SpellCastType::Power;
 	}
