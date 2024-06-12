@@ -67,19 +67,29 @@ local function remapFilter(options, showWarnings)
 	options.filter = filter.id:lower()
 end
 
+local function isCallbackValid(callback)
+	local callbackType = type(callback)
+	if callbackType == "function" then return true end
+	if callbackType ~= "table" then return false end
+
+	local callbackMeta = getmetatable(callback)
+	if callbackMeta and callbackMeta.__call then return true end
+
+	return false
+end
+
 function this.register(eventType, callback, options)
 	-- Validate event type.
 	if (type(eventType) ~= "string" or eventType == "") then
 		return error("event.register: Event type must be a valid string.")
 	end
 
-	-- Validate callback.
-	if (type(callback) ~= "function") then
+	if not isCallbackValid(callback) then
 		return error("event.register: Event callback must be a function.")
 	end
 
 	-- Make sure options is an empty table if nothing else.
-	local options = options or {}
+	options = options or {}
 
 	-- If 'doOnce' was set, wrap with a call to unregister.
 	if options.doOnce then
