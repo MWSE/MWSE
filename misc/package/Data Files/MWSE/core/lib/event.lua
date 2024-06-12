@@ -71,11 +71,9 @@ local function isCallbackValid(callback)
 	local callbackType = type(callback)
 	if callbackType == "function" then return true end
 	-- If it's a table, check if it has a `__call` metamethod.
-	if callbackType == "table" then
-		local callbackMeta = getmetatable(callback)
-		if callbackMeta and callbackMeta.__call then 
-			return true
-		end
+	local callbackMeta = getmetatable(callback)
+	if callbackMeta and callbackMeta.__call then 
+		return true
 	end
 
 	return false
