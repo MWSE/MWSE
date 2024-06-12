@@ -70,10 +70,13 @@ end
 local function isCallbackValid(callback)
 	local callbackType = type(callback)
 	if callbackType == "function" then return true end
-	if callbackType ~= "table" then return false end
-
-	local callbackMeta = getmetatable(callback)
-	if callbackMeta and callbackMeta.__call then return true end
+	-- If it's a table, check if it has a `__call` metamethod.
+	if callbackType == "table" then
+		local callbackMeta = getmetatable(callback)
+		if callbackMeta and callbackMeta.__call then 
+			return true
+		end
+	end
 
 	return false
 end
@@ -130,8 +133,9 @@ function this.unregister(eventType, callback, options)
 	end
 
 	-- Validate callback.
-	if (type(callback) ~= "function") then
-		return error("event.unregister: Event callback must be a valid function.")
+
+	if not isCallbackValid(callback) then
+		return error("event.unregister: Event callback must be a function.")
 	end
 
 	-- Make sure options is an empty table if nothing else.
@@ -160,8 +164,8 @@ function this.isRegistered(eventType, callback, options)
 	end
 
 	-- Validate callback.
-	if (type(callback) ~= "function") then
-		return error("event.isRegistered: Event callback must be a valid function.")
+	if not isCallbackValid(callback) then
+		return error("event.isRegistered: Event callback must be a function.")
 	end
 
 	-- Make sure options is an empty table if nothing else.
