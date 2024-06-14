@@ -402,22 +402,20 @@ local function onClickModConfigButton()
 				image.width = 16
 				image.paddingTop = 3
 			end
-			modNameButton:register(tes3.uiEvent.mouseOver, function (e)
-				imageButton:triggerEvent(tes3.uiEvent.mouseOver)
+
+			-- Forward mouseOver and mouseLeave events to the `imageButton`
+			-- This is so that the favorites icon lights up whenever hovering over the mod label.
+
+			---@param e tes3uiEventData
+			local function forwardToImageButton(e)
+				imageButton:triggerEvent(e)
 				e.source:forwardEvent(e)
-			end)
-			modNameButton:register(tes3.uiEvent.mouseLeave, function (e)
-				imageButton:triggerEvent(tes3.uiEvent.mouseLeave)
-				e.source:forwardEvent(e)
-			end)
-			entryBlock:register(tes3.uiEvent.mouseOver, function (e)
-				imageButton:triggerEvent(tes3.uiEvent.mouseOver)
-				e.source:forwardEvent(e)
-			end)
-			entryBlock:register(tes3.uiEvent.mouseLeave, function (e)
-				imageButton:triggerEvent(tes3.uiEvent.mouseLeave)
-				e.source:forwardEvent(e)
-			end)
+			end
+
+			modNameButton:register(tes3.uiEvent.mouseOver, forwardToImageButton)
+			modNameButton:register(tes3.uiEvent.mouseLeave, forwardToImageButton)
+			entryBlock:register(tes3.uiEvent.mouseOver, forwardToImageButton)
+			entryBlock:register(tes3.uiEvent.mouseLeave, forwardToImageButton)
 		end
 
 		-- Create container for mod content. This will be deleted whenever the pane is reloaded.
