@@ -5,6 +5,7 @@
 	extend to provide a single place for users to configure their mods.
 ]]
 
+
 --- @class mwseLegacyMod : mwse.registerModConfig.package
 --- @field name string
 
@@ -12,21 +13,18 @@
 
 -- Stores all mod templates, indexed by display string
 -- Most mods make their MCMs using `mwseMCMTemplate`, and storing the template allows for
--- direct access to the mods menu structure
+-- direct access to the mods menu structure.
 local modTemplates = {} ---@type table<string, mwseMCMTemplate>
 
 -- This will store legacy config menus that were made without using `mwseMCMTemplate`.
 -- These mods were registered using `mwse.registerModConfig(...)` instead of `template:register()`.
--- The lua code dump says this accounts for roughly 80 mods (and a few of those hits are false positives).
+-- The lua code dump says this accounts for roughly 80 Lua mods in total (and a few of those hits are false positives).
 local legacyMods = {} ---@type table<string, mwseLegacyMod>
 
 -- Stores the name of the currently active mod. 
 -- Could correspond to a `mwseMCMTemplate` or a legacy mod.
 local currentModName = nil ---@type string?
 
--- Stores the name of the last active mod. Used to reopen the MCM to the right mod page.
--- Could correspond to a `mwseMCMTemplate` or a legacy mod.
-local lastModName = nil ---@type string?
 
 -- Stores the index of the most recently looked at tab. 
 -- This is used to reopen the menu to the last seen tab.
@@ -49,22 +47,27 @@ local previousModConfigSelector = nil
 --- @type tes3uiElement?
 local modConfigContainer = nil
 
+local fmt = string.format
 
 local config = mwse.loadConfig("MWSE.MCM", { favorites = {}, }) --[[@as {favorites: table<string, boolean>}]]
 
 -- Try to migrate over existing favorites.
-if table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json") then
+if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
 	-- Migrate over the contents of the old file, and overwrite.
-	local oldFavorites = json.loadfile("config\\core\\MCM Favorite Mods")
+	config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
 
 	-- Delete old file (and directory if it is empty).
 	os.remove("config\\core\\MCM Favorite Mods.json")
 	lfs.rmdir("config\\core", false)
+end
 
-	-- Convert array-style favorites list to the newer dictionary format.
-	for _, favorite in ipairs(oldFavorites or {}) do
-		config.favorites[favorite] = true
+-- Convert array-style favorites list to the newer dictionary format.
+if (#config.favorites > 0) then
+	local newFavorites = {}
+	for _, favorite in ipairs(config.favorites) do
+		newFavorites[favorite] = true
 	end
+	config.favorites = newFavorites
 end
 
 -- Expose the mcm API.
@@ -84,49 +87,29 @@ local nonFavoriteIcons = {
 	pressed = "textures/mwse/menu_modconfig_nonfavorite_pressed.dds",
 }
 
--- takes in a mod name and returns the key used by the favorites config
--- this is so that favorites can be stored using the actual name of the mod, rather than
--- the value displayed in the mod list (in case those values differ)
----@param uiModName string
-local function getFavoritesKey(uiModName)
-	return (modTemplates[uiModName] or legacyMods[uiModName]).name
-end
 
 --- Checks to see if a mod is favorited.
---- @param uiModName string The name of the mod to check the state of.
+--- @param modName string The name of the mod to check the state of.
 --- @return boolean isFavorite If true, the mod will be favorited.
-local function isFavorite(uiModName)
-	return config.favorites[getFavoritesKey(uiModName)] == true
+local function isFavorite(modName)
+	return config.favorites[modName] == true
 end
 
 --- Sets a mod favorite status.
 --- @param uiModName string The name of the mod to set the state of.
 --- @param favorited boolean should the mod be favorited?
 local function setFavorite(uiModName, favorited)
-	config.favorites[getFavoritesKey(uiModName)] = favorited or nil
+	config.favorites[uiModName] = favorited or nil
 end
 
 --- Toggles the favorited state of a mod.
---- @param uiModName string The name of the mod to toggle favoriting for.
-local function toggleFavorited(uiModName)
-	local name = getFavoritesKey(uiModName)
-	config.favorites[name] = not config.favorites[name] or nil
+--- @param modName string The name of the mod to toggle favoriting for.
+local function toggleFavorited(modName)
+	-- Make it be `nil` instead of `false` so we don't bloat up the config file with a bunch of disabled mods.
+	-- The `isFavorite` function handles `nil` values, so this isn't a problem.
+	config.favorites[modName] = not config.favorites[modName] or nil
 end
 
---- sort the given packages
---- @param a mwseModConfig
---- @param b mwseModConfig
---- @return boolean -- true if `a < b`
-local function sortPackages(a, b)
-	-- check if `a` and `b` have different "favorite" statuses
-	-- `not a.favorite ~= not b.favorite` handles the case when `a.favorite == nil` and `b.favorite == false`
-	if not isFavorite(a.name) ~= not isFavorite(b.name) then
-		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
-		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
-		return isFavorite(a.name)
-	end
-	return a.name:lower() < b.name:lower()
-end
 
 -- update the image icons for the various states of the favorite button
 ---@param imageButton tes3uiElement
@@ -139,15 +122,16 @@ local function updateFavoriteImageButton(imageButton, modName)
 end
 
 --- Compares two mod names, based on their favorite status and their names.
----@param a string
----@param b string
+---@param a string Name of the first mod to compare.
+---@param b string Name of the second mod to compare.
 ---@return boolean -- true if `a < b`
 local function compareModNames(a, b)
+	local aIsFavorite = isFavorite(a)
 	-- check if `a` and `b` have different "favorite" statuses
-	if isFavorite(a) ~= isFavorite(b) then
+	if aIsFavorite ~= isFavorite(b) then
 		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
 		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
-		return isFavorite(a)
+		return aIsFavorite
 	end
 	return a:lower() < b:lower()
 end
@@ -169,14 +153,17 @@ local function closeCurrentModConfig()
 		lastPageIndex = table.find(template.pages, template.currentPage)
 		onClose = template.onClose
 	else -- it's a legacy mod
-		onClose = (legacyMods[currentModName] or {}).onClose
+		onClose = table.get(legacyMods[currentModName], "onClose")
 	end
 
-	if onClose then
-		local status, error = pcall(onClose, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
-		end
+	if not onClose then return end
+
+	local status, error = pcall(onClose, modConfigContainer)
+
+	if (status == false) then
+		mwse.log('Error in mod config close callback for mod "%s": %s\n%s', 
+			currentModName, error, debug.traceback()
+		)
 	end
 end
  
@@ -186,7 +173,7 @@ end
 local function onClickModName(e)
 	
 	if not modConfigContainer then
-		error("mod config container not found!")
+		error(fmt('mod config container not found for "%s"!', e.source and e.source.text))
 	end
 	
 	local modNameButton = e.source
@@ -204,7 +191,7 @@ local function onClickModName(e)
 	elseif legacyMods[modName] then
 		onCreate = legacyMods[modName].onCreate
 	else
-		error(string.format("No mod config could be found for key '%s'.", modName))
+		error(fmt("No mod config could be found for key '%s'.", modName))
 		return
 	end
 
@@ -230,14 +217,21 @@ local function onClickModName(e)
 	lastModName = modName
 end
 
--- Used to reopen the MCM to the most recently viewed menu,, and ideally the most recently viewed tab of that menu.
+-- Used to reopen the MCM to the most recently viewed menu, and ideally the most recently viewed tab of that menu.
+---@param modName string Name of the mod to open.
+---@param pageIndex integer? The index of the mods MCM to set as active. Only works if `modName` corresponds to a `mwseTemplate`.
 local function setActiveModMenu(modName, pageIndex)
 	if not modName then return end
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
 	if not menu then return end
 	local modList = menu:findChild("ModList")
 	local modListContents = modList and modList:getContentElement()
-
+	if not modListContents then return end
+	
+	-- Iterate through each mod button and check if the text matches `modName`.
+	-- If there's a match:
+	--	 1. Click on that mod button. 
+	--	 2. Check if `modName` corresponds to a `modTemplate`. If it does, update the active tab.
 	for _, child in ipairs(modListContents.children) do
 		local modNameButton = child.children[1]
 
@@ -252,7 +246,7 @@ local function setActiveModMenu(modName, pageIndex)
 			if lastPage then
 				template:clickTab(lastPage)
 			end
-			return
+			return -- Found the mod, so stop iterating.
 		end
 	end
 end
@@ -307,6 +301,8 @@ local function onClickFavoriteButton(e)
 		return
 	end
 
+	-- Favorites have been updated, resort the list of mods to take the new configuration into account.
+	-- Sorting is done by comparing the `modName`s in each `entryBlock`.
 	modListContents:sortChildren(function(a, b)
 		return compareModNames(a.children[1].text, b.children[1].text)
 	end)
@@ -371,163 +367,161 @@ local function cleanupMCM(e)
 	previousModConfigSelector = nil
 end
 
+---@return tes3uiElement menu
+local function makeRootMenu()
+	-- Create the main menu frame.
+	local menu = tes3ui.createMenu({ id = "MWSE:ModConfigMenu", dragFrame = true })
+	menu.text = mwse.mcm.i18n("Mod Configuration")
+	menu.minWidth = 600
+	menu.minHeight = 500
+	menu.width = 1200
+	menu.height = 800
+	menu.positionX = menu.width / -2
+	menu.positionY = menu.height / 2
+	menu:registerAfter("destroy", cleanupMCM)
+
+	-- Register and block unfocus event, to prevent players
+	-- messing up state by opening their inventory.
+	menu:register("unfocus", function() return false end)
+
+	-- Create the left-right flow.
+	local mainHorizontalBlock = menu:createBlock({ id = "MainFlow" })
+	mainHorizontalBlock.flowDirection = "left_to_right"
+	mainHorizontalBlock.widthProportional = 1.0
+	mainHorizontalBlock.heightProportional = 1.0
+
+	local leftBlock = mainHorizontalBlock:createBlock({ id = "LeftFlow" })
+	leftBlock.flowDirection = "top_to_bottom"
+	leftBlock.width = 250
+	leftBlock.minWidth = 250
+	leftBlock.maxWidth = 250
+	leftBlock.widthProportional = -1.0
+	leftBlock.heightProportional = 1.0
+
+	local searchBlock = leftBlock:createThinBorder({ id = "SearchBlock" })
+	searchBlock.widthProportional = 1.0
+	searchBlock.autoHeight = true
+
+	local searchBar = searchBlock:createTextInput({
+		id = "SearchBar",
+		placeholderText = mwse.mcm.i18n("Search..."),
+		autoFocus = true,
+	})
+	searchBar.borderLeft = 5
+	searchBar.borderRight = 5
+	searchBar.borderTop = 3
+	searchBar.borderBottom = 5
+	searchBar:registerAfter("textUpdated", onSearchUpdated)
+	searchBar:registerAfter("textCleared", onSearchCleared)
+
+	-- Make clicking on the block focus the search input.
+	searchBlock:register("mouseClick", focusSearchBar)
+
+	-- Create the mod list.
+	local modList = leftBlock:createVerticalScrollPane({ id = "ModList" })
+	modList.widthProportional = 1.0
+	modList.heightProportional = 1.0
+	modList:setPropertyBool("PartScrollPane_hide_if_unneeded", true)
+
+	-- List of all mod names (both legacy mods and mods made using a `mwseMCMTemplate`).
+	local sortedModNames = table.keys(modTemplates) ---@type string[]
+
+	-- Add in the legacy mods.
+	for legacyModName in pairs(legacyMods) do
+		table.insert(sortedModNames, legacyModName)
+	end
+
+	table.sort(sortedModNames, compareModNames)
+
+	-- Fill in the mod list UI.
+	local modListContents = modList:getContentElement()
+
+	for _, modName in ipairs(sortedModNames) do
+		local entryBlock = modListContents:createBlock{id = "ModEntryBlock"}
+		entryBlock.flowDirection = tes3.flowDirection.leftToRight
+		entryBlock.autoHeight = true
+		entryBlock.autoWidth = true
+
+		entryBlock.widthProportional = 1.0
+		entryBlock.childAlignY = 0.5
+
+		local modNameButton = entryBlock:createTextSelect({ id = "ModEntry", text = modName })
+		modNameButton:register("mouseClick", onClickModName)
+		modNameButton.wrapText = true
+		modNameButton.widthProportional = 0.95
+		modNameButton.borderRight = 16
+		modNameButton.heightProportional = 1
+
+		-- Icons will be updated by `updateFavoriteImageButton`.
+		local imageButton = entryBlock:createImageButton(nonFavoriteIcons)
+		updateFavoriteImageButton(imageButton, modName)
+		imageButton.childAlignY = 0.5
+		imageButton.absolutePosAlignX = .97
+		imageButton.absolutePosAlignY = 0.5
+
+		imageButton:register(tes3.uiEvent.mouseClick, onClickFavoriteButton)
+		---@param image tes3uiElement
+		for _, image in ipairs(imageButton.children) do
+			image.scaleMode = true
+			image.height = 16
+			image.width = 16
+			image.paddingTop = 3
+		end
+	end
+
+	-- Create container for mod content. This will be deleted whenever the pane is reloaded.
+	modConfigContainer = mainHorizontalBlock:createBlock({ id = "ModContainer" })
+	modConfigContainer.flowDirection = "top_to_bottom"
+	modConfigContainer.widthProportional = 1.0
+	modConfigContainer.heightProportional = 1.0
+	modConfigContainer.paddingLeft = 4
+
+	local containerPane = modConfigContainer:createThinBorder({ id = "ContainerPane" })
+	containerPane.widthProportional = 1.0
+	containerPane.heightProportional = 1.0
+	containerPane.paddingAllSides = 12
+	containerPane.flowDirection = "top_to_bottom"
+
+	-- Splash screen.
+	local splash = containerPane:createImage({ id = "MWSESplash", path = "textures/mwse/menu_modconfig_splash.tga" })
+	splash.absolutePosAlignX = 0.5
+	splash.borderTop = 25
+
+	-- Create a link back to the website.
+	local site = containerPane:createHyperlink({ id = "MWSELink", text = "mwse.github.io/MWSE", url = "https://mwse.github.io/MWSE" })
+	site.absolutePosAlignX = 0.5
+
+	-- Create bottom button block.
+	local bottomBlock = menu:createBlock({ id = "BottomFlow" })
+	bottomBlock.widthProportional = 1.0
+	bottomBlock.autoHeight = true
+	bottomBlock.childAlignX = 1.0
+
+	-- Add a close button to the bottom block.
+	local closeButton = bottomBlock:createButton({
+		id = "MWSE:ModConfigMenu_Close",
+		text = tes3.findGMST(tes3.gmst.sClose).value
+	})
+	closeButton:register("mouseClick", onClickCloseButton)
+	event.register("keyDown", onClickCloseButton, { filter = tes3.scanCode.escape })
+
+	-- Cause the menu to refresh itself.
+	menu:updateLayout()
+	modList.widget:contentsChanged()
+
+	-- Reopen the most recently viewed config menu (if there was one)
+	setActiveModMenu(lastModName, lastPageIndex)
+	return menu
+end
+
 -- Callback for when the mod config button has been clicked.
 -- Here, we'll create the GUI and set up everything.
 local function onClickModConfigButton()
 	-- Play the click sound.
 	tes3.worldController.menuClickSound:play()
 
-	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
-	if menu then
-		menu.visible = true
-	else
-		-- Create the main menu frame.
-		menu = tes3ui.createMenu({ id = "MWSE:ModConfigMenu", dragFrame = true })
-		menu.text = mwse.mcm.i18n("Mod Configuration")
-		menu.minWidth = 600
-		menu.minHeight = 500
-		menu.width = 1200
-		menu.height = 800
-		menu.positionX = menu.width / -2
-		menu.positionY = menu.height / 2
-		menu:registerAfter("destroy", cleanupMCM)
-
-		-- Register and block unfocus event, to prevent players
-		-- messing up state by opening their inventory.
-		menu:register("unfocus", function(e)
-			return false
-		end)
-
-		-- Create the left-right flow.
-		local mainHorizontalBlock = menu:createBlock({ id = "MainFlow" })
-		mainHorizontalBlock.flowDirection = "left_to_right"
-		mainHorizontalBlock.widthProportional = 1.0
-		mainHorizontalBlock.heightProportional = 1.0
-
-		local leftBlock = mainHorizontalBlock:createBlock({ id = "LeftFlow" })
-		leftBlock.flowDirection = "top_to_bottom"
-		leftBlock.width = 250
-		leftBlock.minWidth = 250
-		leftBlock.maxWidth = 250
-		leftBlock.widthProportional = -1.0
-		leftBlock.heightProportional = 1.0
-
-		local searchBlock = leftBlock:createThinBorder({ id = "SearchBlock" })
-		searchBlock.widthProportional = 1.0
-		searchBlock.autoHeight = true
-
-		local searchBar = searchBlock:createTextInput({
-			id = "SearchBar",
-			placeholderText = mwse.mcm.i18n("Search..."),
-			autoFocus = true,
-		})
-		searchBar.borderLeft = 5
-		searchBar.borderRight = 5
-		searchBar.borderTop = 3
-		searchBar.borderBottom = 5
-		searchBar:registerAfter("textUpdated", onSearchUpdated)
-		searchBar:registerAfter("textCleared", onSearchCleared)
-
-		-- Make clicking on the block focus the search input.
-		searchBlock:register("mouseClick", focusSearchBar)
-
-		-- Create the mod list.
-		local modList = leftBlock:createVerticalScrollPane({ id = "ModList" })
-		modList.widthProportional = 1.0
-		modList.heightProportional = 1.0
-		modList:setPropertyBool("PartScrollPane_hide_if_unneeded", true)
-
-		-- List of all mod names (both legacy mods and mods made using a `mwseMCMTemplate`).
-		local sortedModNames = table.keys(modTemplates) ---@type string[]
-
-		-- Add in the legacy mods.
-		for legacyModName in pairs(legacyMods) do
-			table.insert(sortedModNames, legacyModName)
-		end
-
-		table.sort(sortedModNames, compareModNames)
-
-		-- Fill in the mod list UI.
-		local modListContents = modList:getContentElement()
-
-		for _, modName in ipairs(sortedModNames) do
-			local entryBlock = modListContents:createBlock{id = "ModEntryBlock"}
-			entryBlock.flowDirection = tes3.flowDirection.leftToRight
-			entryBlock.autoHeight = true
-			entryBlock.autoWidth = true
-
-			entryBlock.widthProportional = 1.0
-			entryBlock.childAlignY = 0.5
-
-			local modNameButton = entryBlock:createTextSelect({ id = "ModEntry", text = modName })
-			modNameButton:register("mouseClick", onClickModName)
-			modNameButton.wrapText = true
-			modNameButton.widthProportional = 0.95
-			modNameButton.borderRight = 16
-			modNameButton.heightProportional = 1
-
-			local iconTable = isFavorite(modName) and favoriteIcons or nonFavoriteIcons
-
-			local imageButton = entryBlock:createImageButton(iconTable)
-			updateFavoriteImageButton(imageButton, modName)
-			imageButton.childAlignY = 0.5
-			imageButton.absolutePosAlignX = .97
-			imageButton.absolutePosAlignY = 0.5
-
-			imageButton:register(tes3.uiEvent.mouseClick, onClickFavoriteButton)
-			---@param image tes3uiElement
-			for _, image in ipairs(imageButton.children) do
-				image.scaleMode = true
-				image.height = 16
-				image.width = 16
-				image.paddingTop = 3
-			end
-		end
-
-		-- Create container for mod content. This will be deleted whenever the pane is reloaded.
-		modConfigContainer = mainHorizontalBlock:createBlock({ id = "ModContainer" })
-		modConfigContainer.flowDirection = "top_to_bottom"
-		modConfigContainer.widthProportional = 1.0
-		modConfigContainer.heightProportional = 1.0
-		modConfigContainer.paddingLeft = 4
-
-		local containerPane = modConfigContainer:createThinBorder({ id = "ContainerPane" })
-		containerPane.widthProportional = 1.0
-		containerPane.heightProportional = 1.0
-		containerPane.paddingAllSides = 12
-		containerPane.flowDirection = "top_to_bottom"
-
-		-- Splash screen.
-		local splash = containerPane:createImage({ id = "MWSESplash", path = "textures/mwse/menu_modconfig_splash.tga" })
-		splash.absolutePosAlignX = 0.5
-		splash.borderTop = 25
-
-		-- Create a link back to the website.
-		local site = containerPane:createHyperlink({ id = "MWSELink", text = "mwse.github.io/MWSE", url = "https://mwse.github.io/MWSE" })
-		site.absolutePosAlignX = 0.5
-
-		-- Create bottom button block.
-		local bottomBlock = menu:createBlock({ id = "BottomFlow" })
-		bottomBlock.widthProportional = 1.0
-		bottomBlock.autoHeight = true
-		bottomBlock.childAlignX = 1.0
-
-
-		-- Add a close button to the bottom block.
-		local closeButton = bottomBlock:createButton({
-			id = "MWSE:ModConfigMenu_Close",
-			text = tes3.findGMST(tes3.gmst.sClose).value --[[@as string]]
-		})
-		closeButton:register("mouseClick", onClickCloseButton)
-		event.register("keyDown", onClickCloseButton, { filter = tes3.scanCode.escape })
-
-		-- Cause the menu to refresh itself.
-		menu:updateLayout()
-		modList.widget:contentsChanged()
-
-		-- Reopen the most recently viewed config menu (if there was one)
-		setActiveModMenu(lastModName, lastPageIndex)
-	end
+	local menu = tes3ui.findMenu("MWSE:ModConfigMenu") or makeRootMenu()
+	menu.visible = true
 
 	-- Hide main menu.
 	local mainMenu = tes3ui.findMenu(tes3ui.registerID("MenuOptions"))
@@ -550,7 +544,7 @@ local function onCreatedMenuOptions(e)
 	end
 
 	-- Don't show the UI if we don't have any mod configs to show.
-	if (table.empty(modTemplates)) then
+	if (table.empty(modTemplates) and table.empty(legacyMods)) then
 		return
 	end
 
@@ -596,19 +590,20 @@ end
 --- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
 
-	local nameTaken = isModNameTaken(name)
-	-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore
-	-- According to the lua code dump, only 6 mods used the `mcm.registerModData` function, and they all called
-	-- `registerModConfig` immediately afterwards.
-	if nameTaken and package == nil then return end
-
+	if isModNameTaken(name) then
+		-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore
+		-- According to the lua code dump, only 6 mods used the `mcm.registerModData` function, and they all called
+		-- `registerModConfig` immediately afterwards.
+		if package ~= nil then
+			error(fmt('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
+		end
+		return
+	end
 	-- Check if it's a `mwseMCMTemplate`, and call the new registration function if possible.
 	if package.componentType == "Template" and package.class == "Template" then
 		mwse.registerModTemplate(package)
 		return
 	end
-	-- Prevent duplicate registration when the `package` is not `nil`
-	assert(not nameTaken, string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
 	-- Actually register the package.
 	--- @cast package mwseLegacyMod
 	package.name = name
@@ -626,7 +621,7 @@ function mwse.registerModTemplate(template)
 
 	local name = template.name
 	assert(not isModNameTaken(name), 
-		string.format("mwse.registerModTemplate: A mod with the name %s has already been registered!", name)
+		fmt("mwse.registerModTemplate: A mod with the name %s has already been registered!", name)
 	)
 	-- Actually register the package.
 	modTemplates[name] = template

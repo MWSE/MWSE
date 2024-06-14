@@ -118,39 +118,27 @@ function Category:createContentsContainer(parentBlock)
 end
 
 function Category.__index(tbl, key)
-	local meta = getmetatable(tbl)
-	local prefixLen = string.len("create")
-	if string.sub(key, 1, prefixLen) == "create" then
-		local class = string.sub(key, prefixLen + 1)
-		local component
-		local classPaths = require("mcm.classPaths")
-
-		for _, path in pairs(classPaths.components) do
-
-			local classPath = (path .. class)
-			local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-			local fileExists = lfs.fileexists(fullPath)
-
-			if fileExists then
-				component = require(classPath)
-				break
-			end
-		end
-
-		if component then
-			--- @cast component mwseMCMComponent
-			--- @param self mwseMCMCategory
-			return function(self, data)
-				data = self:prepareData(data)
-				data.class = class
-				component = component:new(data)
-				table.insert(self.components, component)
-				return component
-			end
-		end
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- Make a new `Category.create<Component>` method.
+	-- Otherwise, look the value up in the `metatable`.
+	
+	if not key:startswith("create") or mwse.mcm[key] == nil then
+		return getmetatable(tbl)[key]
 	end
 
-	return meta[key]
+	Category[key] = function(self, data)
+		if not data then
+			data = {}
+		elseif type(data) == "string" then
+			data = { label = data }
+		end
+		data.parentComponent = self
+		local component = mwse.mcm[key](data)
+		table.insert(self.components, component)
+		return component
+	end
+
+	return Category[key]
 end
 
 return Category

@@ -61,6 +61,7 @@ function Component:printComponent(component)
 	mwse.log("}")
 end
 
+---@deprecated
 --- @param data string|mwseMCMComponent.new.data|nil
 --- @return mwseMCMComponent.new.data data
 function Component:prepareData(data)
@@ -112,22 +113,10 @@ function Component:getComponent(componentData)
 		mwse.log("ERROR: No class found for component:")
 		self:printComponent(componentData)
 	end
-	local component
-	local classPaths = require("mcm.classPaths")
-	for _, path in pairs(classPaths.components) do
-		local classPath = (path .. componentData.class)
-		local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-		local fileExists = lfs.fileexists(fullPath)
-
-		if fileExists then
-			component = require(classPath)
-			break
-		end
-	end
-	if component then
-		--- @cast component mwseMCMComponent
-		self:prepareData(componentData)
-		return component:new(componentData)
+	local componentClass = mwse.mcm.getComponentClass(componentData.class)
+	if componentClass then
+		componentData.parentComponent = self
+		return componentClass:new(componentData)
 	else
 		mwse.log("Error: class %s not found", componentData.class)
 	end

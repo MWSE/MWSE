@@ -169,7 +169,6 @@ end
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
 	local tabsBlock = self.elements.tabsBlock
-	if not tabsBlock then return end -- The tabs block won't exist  if `self.pages <= 1`.
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
@@ -313,38 +312,46 @@ function Template:createContentsContainer(parentBlock)
 end
 
 function Template:register()
-	mwse.registerModTemplate(self)
+	local mcm = {}
+
+	--- @param container tes3uiElement
+	mcm.onCreate = function(container)
+		self:create(container)
+		mcm.onClose = self.onClose
+	end
+
+	--- @param searchText string
+	--- @return boolean
+	mcm.onSearch = function(searchText)
+		return self:onSearchInternal(searchText)
+	end
+
+	mwse.registerModConfig(self.name, mcm)
+	mwse.log("%s mod config registered", self.name)
 end
 
 function Template.__index(tbl, key)
-	local meta = getmetatable(tbl)
-	local prefixLen = string.len("create")
-	if string.sub(key, 1, prefixLen) == "create" then
-		local component
-
-		local class = string.sub(key, prefixLen + 1)
-		local classPaths = require("mcm.classPaths")
-		local classPath = classPaths.all.pages .. class
-		local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-		local fileExists = lfs.fileexists(fullPath)
-		if fileExists then
-			component = require(classPath)
-		end
-
-		if component then
-			--- @cast component mwseMCMPage
-			--- @param self mwseMCMTemplate
-			return function(self, data)
-				data = self:prepareData(data) --[[@as mwseMCMPage.new.data]]
-				data.class = class
-				component = component:new(data)
-				table.insert(self.pages, component)
-				return component
-			end
-		end
-
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- Make a new `Template.create<Component>` method.
+	-- Otherwise, look the value up in the `metatable`.
+	
+	if not key:startswith("create") or mwse.mcm[key] == nil then
+		return getmetatable(tbl)[key]
 	end
-	return meta[key]
+
+	Template[key] = function(self, data)
+		if not data then
+			data = {}
+		elseif type(data) == "string" then
+			data = { label = data }
+		end
+		data.parentComponent = self
+		local component = mwse.mcm[key](data)
+		table.insert(self.pages, component)
+		return component
+	end
+
+	return Template[key]
 end
 
 return Template
