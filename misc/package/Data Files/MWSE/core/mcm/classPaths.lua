@@ -1,4 +1,3 @@
----@deprecated Replaced by `mwse.mcm.getComponentClass` and `mwse.mcm.getVariableClass`
 local this = {}
 
 this.basePath = "/Data Files/MWSE/core/"

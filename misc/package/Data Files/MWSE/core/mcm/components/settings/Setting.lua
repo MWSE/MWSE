@@ -23,7 +23,8 @@ function Setting:new(data)
 	if data and data.variable then
 		-- create setting variable
 		t.variable.defaultSetting = t.variable.defaultSetting or t.defaultSetting
-		t.variable = mwse.mcm.getVariableClass(t.variable.class):new(t.variable)
+		local typePath = ("mcm.variables." .. t.variable.class)
+		t.variable = require(typePath):new(t.variable)
 	end
 
 	setmetatable(t, self)
