@@ -136,14 +136,23 @@ mcm.components = {}
 mcm.variables = {}
 local prefixLength = #"Data Files\\MWSE\\core\\"
 
+-- Store component/variable paths so we only have to iterate the directory once. 
+-- (Testing has shown this results in a noticeable boost in performance.)
+
 local componentPaths = {}
-for filePath, dir, fileName in lfs.walkdir("data files\\mwse\\core\\mcm\\components\\") do
-	componentPaths[fileName:sub(1, #fileName - 4)] = filePath:sub(prefixLength, #filePath - 4):gsub("[\\/]", ".")
-end
 local variablePaths = {}
 
+for filePath, dir, fileName in lfs.walkdir("data files\\mwse\\core\\mcm\\components\\") do
+	-- For example, when adding the path of `mwseMCMPage`:
+	-- The key   will be:  "Page" 
+	--        instead of:  "Page.lua"
+	-- The value will be:  "mcm.components.pages.Page" 
+	-- 		  instead of:  "data files\\mwse\\core\\mcm\\components\\pages\\Page.lua"
+	componentPaths[fileName:sub(1, #fileName - 4)] = filePath:sub(1 + prefixLength, #filePath - 4):gsub("[\\/]", ".")
+end
+
 for filePath, dir, fileName in lfs.walkdir("data files\\mwse\\core\\mcm\\variables\\") do
-	variablePaths[fileName:sub(1, #fileName - 4)] = filePath:sub(prefixLength, #filePath - 4):gsub("[\\/]", ".")
+	variablePaths[fileName:sub(1, #fileName - 4)] = filePath:sub(1 + prefixLength, #filePath - 4):gsub("[\\/]", ".")
 end
 
 ---@protected

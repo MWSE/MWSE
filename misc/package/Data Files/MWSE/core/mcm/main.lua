@@ -591,8 +591,8 @@ end
 function mwse.registerModConfig(name, package)
 
 	if isModNameTaken(name) then
-		-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore
-		-- According to the lua code dump, only 6 mods used the `mcm.registerModData` function, and they all called
+		-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore.
+		-- According to the lua code dump, only 4 mods used the `mcm.registerModData` function, and they all called
 		-- `registerModConfig` immediately afterwards.
 		if package ~= nil then
 			error(fmt('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
