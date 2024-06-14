@@ -1,10 +1,8 @@
-local mcm = {
-	version = 1.5,
-	
-	---@deprecated
-	---@private
-	noParent = true,
-}
+local mcm = {}
+---@deprecated
+mcm.noParent = true
+mcm.version = 1.5
+
 --- @param template mwseMCMTemplate
 function mcm.register(template)
 	local modConfig = {}
@@ -129,12 +127,12 @@ end
 
 ]]--
 
-local strLengthCreate = #"create"
+local strLengthCreate = string.len("create")
 
 
 mcm.components = {}
 mcm.variables = {}
-local prefixLength = #"Data Files\\MWSE\\core\\"
+local prefixLength = string.len("Data Files\\MWSE\\core\\")
 
 -- Store component/variable paths so we only have to iterate the directory once. 
 -- (Testing has shown this results in a noticeable boost in performance.)
@@ -148,11 +146,11 @@ for filePath, dir, fileName in lfs.walkdir("data files\\mwse\\core\\mcm\\compone
 	--        instead of:  "Page.lua"
 	-- The value will be:  "mcm.components.pages.Page" 
 	-- 		  instead of:  "data files\\mwse\\core\\mcm\\components\\pages\\Page.lua"
-	componentPaths[fileName:sub(1, #fileName - 4)] = filePath:sub(1 + prefixLength, #filePath - 4):gsub("[\\/]", ".")
+	componentPaths[fileName:sub(1, fileName:len() - 4)] = filePath:sub(1 + prefixLength, filePath:len() - 4):gsub("[\\/]", ".")
 end
 
 for filePath, dir, fileName in lfs.walkdir("data files\\mwse\\core\\mcm\\variables\\") do
-	variablePaths[fileName:sub(1, #fileName - 4)] = filePath:sub(1 + prefixLength, #filePath - 4):gsub("[\\/]", ".")
+	variablePaths[fileName:sub(1, fileName:len() - 4)] = filePath:sub(1 + prefixLength, filePath:len() - 4):gsub("[\\/]", ".")
 end
 
 ---@protected
