@@ -297,7 +297,9 @@ local function onClickModConfigButton()
 	tes3.worldController.menuClickSound:play()
 
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
-	if (not menu) then
+	if menu then
+		menu.visible = true
+	else
 		-- Create the main menu frame.
 		menu = tes3ui.createMenu({ id = "MWSE:ModConfigMenu", dragFrame = true })
 		menu.text = mwse.mcm.i18n("Mod Configuration")
@@ -377,6 +379,7 @@ local function onClickModConfigButton()
 
 			local modNameButton = entryBlock:createTextSelect({ id = "ModEntry", text = package.name })
 			modNameButton:register("mouseClick", onClickModName)
+			
 			modNameButton.wrapText = true
 			modNameButton.widthProportional = 0.95
 			modNameButton.borderRight = 16
@@ -399,6 +402,22 @@ local function onClickModConfigButton()
 				image.width = 16
 				image.paddingTop = 3
 			end
+			modNameButton:register(tes3.uiEvent.mouseOver, function (e)
+				imageButton:triggerEvent(tes3.uiEvent.mouseOver)
+				e.source:forwardEvent(e)
+			end)
+			modNameButton:register(tes3.uiEvent.mouseLeave, function (e)
+				imageButton:triggerEvent(tes3.uiEvent.mouseLeave)
+				e.source:forwardEvent(e)
+			end)
+			entryBlock:register(tes3.uiEvent.mouseOver, function (e)
+				imageButton:triggerEvent(tes3.uiEvent.mouseOver)
+				e.source:forwardEvent(e)
+			end)
+			entryBlock:register(tes3.uiEvent.mouseLeave, function (e)
+				imageButton:triggerEvent(tes3.uiEvent.mouseLeave)
+				e.source:forwardEvent(e)
+			end)
 		end
 
 		-- Create container for mod content. This will be deleted whenever the pane is reloaded.
@@ -450,8 +469,7 @@ local function onClickModConfigButton()
 				end
 			end
 		end
-	else
-		menu.visible = true
+		
 	end
 
 	-- Hide main menu.
