@@ -34,7 +34,5 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DamageHandToHandEvent::m_EventEnabled = false;
 	TES3::MobileActor* DamageHandToHandEvent::m_Attacker = nullptr;
 }

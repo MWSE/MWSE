@@ -73,8 +73,6 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DamageEvent::m_EventEnabled = false;
 	TES3::MobileActor* DamageEvent::m_Attacker = nullptr;
 	TES3::MobileProjectile* DamageEvent::m_Projectile = nullptr;
 	TES3::MagicSourceInstance* DamageEvent::m_MagicSourceInstance = nullptr;

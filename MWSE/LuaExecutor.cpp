@@ -15,9 +15,15 @@ namespace mwse::lua {
 	}
 
 	LuaExecutor::~LuaExecutor() {
-		CloseHandle(handleCreatedProcess);
-		CloseHandle(handleCreatedThread);
+		if (handleCreatedProcess) {
+			CloseHandle(handleCreatedProcess);
+		}
+		if (handleCreatedThread) {
+			CloseHandle(handleCreatedThread);
+		}
+
 		// TODO: Pipe handles aren't closed. When trying to close them, something hangs. No idea why...
+
 		if (backgroundAliveFuture.valid()) {
 			backgroundAliveFuture.wait();
 		}

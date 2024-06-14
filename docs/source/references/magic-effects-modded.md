@@ -233,10 +233,15 @@ These effects build off of the [standard magic effects](./magic-effects.md). If 
 | summonIronGolem              | 7704      | [Atronach Expansion](https://www.nexusmods.com/morrowind/mods/22189)                               |
 | summonSwampMyconid           | 7705      | [Atronach Expansion](https://www.nexusmods.com/morrowind/mods/22189)                               |
 | summonTelvanniMyconid        | 7706      | [Atronach Expansion](https://www.nexusmods.com/morrowind/mods/22189)                               |
-| sanguineRose                 | 7770      | [The Sanguine Rose](https://www.nexusmods.com/morrowind/mods/46214)                                |
-| flawedSummonDaedroth         | 7800      | [OOAB Grazelands](https://www.nexusmods.com/morrowind/mods/49075)                                  |
-| ss20SoulManipulation         | 8113      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173) |
-| ss20ManipulateSouls          | 8114      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173) |
-| selfRepair                   | 8500      | [DRIP - Dynamic Randomised Item Properties](https://www.nexusmods.com/morrowind/mods/51242)        |
-| identify                     | 9599      | [Unidentified Items (JosephMcKean Edit)](https://www.nexusmods.com/morrowind/mods/53161)           |
-| npcSoulTrap                  | 10000     | [Seph's NPC Soul Trapping](https://www.nexusmods.com/morrowind/mods/50744)                         |
+| sanguineRose                 | 7770      | [The Sanguine Rose](https://www.nexusmods.com/morrowind/mods/46214)                               |
+| flawedSummonDaedroth         | 7800      | [OOAB Grazelands](https://www.nexusmods.com/morrowind/mods/49075)                               |
+| ss20SoulManipulation         | 8113      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173)  |
+| ss20ManipulateSouls          | 8114      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173)  |
+| selfRepair                   | 8500      | [DRIP - Dynamic Randomised Item Properties](https://www.nexusmods.com/morrowind/mods/51242)  |
+| identify                     | 9599      | [Unidentified Items (JosephMcKean Edit)](https://www.nexusmods.com/morrowind/mods/53161)            |
+| npcSoulTrap                  | 10000     | [Seph's NPC Soul Trapping](https://www.nexusmods.com/morrowind/mods/50744)                          |
+| fortifyMagickaRegen          | 23235     | [Fortify Magicka Regeneration](https://www.nexusmods.com/morrowind/mods/54158)                               |
+| drainMagickaRegen            | 23236     | [Fortify Magicka Regeneration](https://www.nexusmods.com/morrowind/mods/54158)                               |
+| bsRepairTarget               | 23331     | [Magical Repairing](https://www.nexusmods.com/morrowind/mods/54414)                               |
+| bsRepairArmor                | 23332     | [Magical Repairing](https://www.nexusmods.com/morrowind/mods/54414)                               |
+| bsRepairWeapon               | 23333     | [Magical Repairing](https://www.nexusmods.com/morrowind/mods/54414)                               |

@@ -102,6 +102,7 @@ namespace se::cs {
 			ColumnSettings column_blocked = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_book_is_scroll = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_book_teaches = { ColumnSettings::DEFAULT_SIZE_ID };
+			ColumnSettings column_chance_for_none = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_charge = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_cost = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_count = { ColumnSettings::DEFAULT_SIZE_SHORT };

@@ -46,8 +46,6 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool LeveledCreaturePickedEvent::m_EventEnabled = false;
 	TES3::Reference* LeveledCreaturePickedEvent::m_LastLeveledSourceReference = nullptr;
 	bool LeveledCreaturePickedEvent::m_IsForEmptyCell = false;
 }

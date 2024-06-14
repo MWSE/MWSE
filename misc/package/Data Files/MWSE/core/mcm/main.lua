@@ -35,6 +35,12 @@ local lastModName = nil ---@type string?
 -- As such, it's only updated when a `mwseMCMTemplate` mod is interacted with.
 local lastPageIndex = nil ---@type integer?
 
+--- Name of the last mod selected in the MCM.
+--- Used to reopen the most recently closed mod config menu when the MCM is reopened during a play session.
+--- Stored separately from `currentModConfig` for stability reasons.
+--- @type string
+local lastModName = nil
+
 --- The previously selected element.
 --- @type tes3uiElement?
 local previousModConfigSelector = nil
@@ -43,27 +49,21 @@ local previousModConfigSelector = nil
 --- @type tes3uiElement?
 local modConfigContainer = nil
 
---- @type table
-local config = mwse.loadConfig("MWSE.MCM", { favorites = {}, })
 
-do -- sanitize config
-	-- Try to migrate over existing favorites.
-	if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
-		-- Migrate over the contents of the old file, and overwrite 
-		config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
+local config = mwse.loadConfig("MWSE.MCM", { favorites = {}, }) --[[@as {favorites: table<string, boolean>}]]
 
-		-- Delete old file (and directory if it is empty).
-		os.remove("config\\core\\MCM Favorite Mods.json")
-		lfs.rmdir("config\\core", false)
-	end
+-- Try to migrate over existing favorites.
+if table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json") then
+	-- Migrate over the contents of the old file, and overwrite.
+	local oldFavorites = json.loadfile("config\\core\\MCM Favorite Mods")
+
+	-- Delete old file (and directory if it is empty).
+	os.remove("config\\core\\MCM Favorite Mods.json")
+	lfs.rmdir("config\\core", false)
 
 	-- Convert array-style favorites list to the newer dictionary format.
-	if (#config.favorites > 0) then
-		local newFavorites = {}
-		for _, favorite in ipairs(config.favorites) do
-			newFavorites[favorite] = true
-		end
-		config.favorites = newFavorites
+	for _, favorite in ipairs(oldFavorites or {}) do
+		config.favorites[favorite] = true
 	end
 end
 
@@ -113,7 +113,20 @@ local function toggleFavorited(uiModName)
 	config.favorites[name] = not config.favorites[name] or nil
 end
 
-
+--- sort the given packages
+--- @param a mwseModConfig
+--- @param b mwseModConfig
+--- @return boolean -- true if `a < b`
+local function sortPackages(a, b)
+	-- check if `a` and `b` have different "favorite" statuses
+	-- `not a.favorite ~= not b.favorite` handles the case when `a.favorite == nil` and `b.favorite == false`
+	if not isFavorite(a.name) ~= not isFavorite(b.name) then
+		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
+		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
+		return isFavorite(a.name)
+	end
+	return a.name:lower() < b.name:lower()
+end
 
 -- update the image icons for the various states of the favorite button
 ---@param imageButton tes3uiElement
@@ -244,9 +257,17 @@ local function setActiveModMenu(modName, pageIndex)
 	end
 end
 
+local keyBinderPopupId = tes3ui.registerID("KeyMouseBinderPopup")
+
 --- Callback for when the close button has been clicked.
 --- @param e keyDownEventData|tes3uiEventData
 local function onClickCloseButton(e)
+	-- Disallow closing MCM menu while KeyBinder popup is active
+	local keyBinderPopup = tes3ui.findMenu(keyBinderPopupId)
+	if keyBinderPopup then
+		return
+	end
+
 	event.unregister("keyDown", onClickCloseButton, { filter = tes3.scanCode.escape })
 
 	-- save the list of favorites

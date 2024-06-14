@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool PlayAnimationGroupEvent::m_EventEnabled = false;
 }

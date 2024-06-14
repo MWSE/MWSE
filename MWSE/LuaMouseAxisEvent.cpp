@@ -29,6 +29,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MouseAxisEvent::m_EventEnabled = false;
 }

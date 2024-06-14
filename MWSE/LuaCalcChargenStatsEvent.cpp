@@ -15,6 +15,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalcChargenStatsEvent::m_EventEnabled = false;
 }

@@ -24,6 +24,7 @@
     <ClInclude Include="LuaObjectCreatedEvent.h" />
     <ClInclude Include="LuaShieldBlockedEvent.h" />
     <ClInclude Include="LuaSimulatedEvent.h" />
+    <ClInclude Include="LuaStartGlobalScriptEvent.h" />
     <ClInclude Include="LuaUiSkillTooltipEvent.h" />
     <ClInclude Include="NIAccumulator.h" />
     <ClInclude Include="NIAnimationData.h" />
@@ -692,6 +693,7 @@
     <ClCompile Include="LuaSpellResistEvent.cpp" />
     <ClCompile Include="LuaSpellTickEvent.cpp" />
     <ClCompile Include="LuaAddTempSound.cpp" />
+    <ClCompile Include="LuaStartGlobalScriptEvent.cpp" />
     <ClCompile Include="LuaTimer.cpp" />
     <ClCompile Include="LuaUiObjectTooltipEvent.cpp" />
     <ClCompile Include="LuaUiRefreshedEvent.cpp" />

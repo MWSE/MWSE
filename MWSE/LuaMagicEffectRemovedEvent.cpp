@@ -39,6 +39,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MagicEffectRemovedEvent::m_EventEnabled = false;
 }

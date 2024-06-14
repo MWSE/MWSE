@@ -4,5 +4,5 @@ return {
 	arguments = {
 		{ name = "keyCombo", type = "mwseKeyMouseCombo" }
 	},
-	valuetype = "string"
+	returns = {{ name = "result", type = "string" }}
 }

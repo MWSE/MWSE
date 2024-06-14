@@ -392,12 +392,12 @@ local button = mwse.mcm.createKeyBinder(parent, { label = ..., description = ...
 * `data` (table): *Optional*.
 	* `label` (string): *Optional*. Text shown next to the button.
 	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
-	* `allowCombinations ` (boolean): *Default*: `true`. If true, the keybinder will let the user use modification keys: Shift, Ctrl, and Alt when rebinding.
-	* `allowMouse ` (boolean): *Default*: `false`. If true, the keybinder will let the user use mouse buttons and scroll wheel in this keybinder. In that case the variable will have [mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md) layout, [mwseKeyCombo](../types/mwseKeyCombo.md) otherwise.
+	* `allowCombinations ` (boolean): *Default*: `true`. If true, the KeyBinder will let the user use modification keys: Shift, Ctrl, and Alt when rebinding.
+	* `allowMouse ` (boolean): *Default*: `false`. If true, the KeyBinder will let the user use mouse buttons and scroll wheel in this keybinder. In that case the variable will have [mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md) layout, [mwseKeyCombo](../types/mwseKeyCombo.md) otherwise.
 	* `keybindName` (string): *Optional*. The keybind name. Shown in the popup menu header. This string is formatted into a localized version of "SET %s KEYBIND.". If none is provided the popup has "SET NEW KEYBIND." as header text.
 	* `leftSide ` (boolean): *Default*: `true`. If true, the button will be created on the left and label on the right.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this KeyBinder.
-	* `defaultSetting` ([mwseKeyCombo](../types/mwseKeyCombo.md)): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `defaultSetting` ([mwseKeyCombo](../types/mwseKeyCombo.md), [mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md)): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
 	* `callback` (fun(self: [mwseMCMKeyBinder](../types/mwseMCMKeyBinder.md))): *Optional*. The custom function called when the player interacts with this KeyBinder.
 	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
 	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
@@ -411,6 +411,54 @@ local button = mwse.mcm.createKeyBinder(parent, { label = ..., description = ...
 **Returns**:
 
 * `button` ([mwseMCMKeyBinder](../types/mwseMCMKeyBinder.md))
+
+***
+
+### `mwse.mcm.createMouseBinder`
+<div class="search_terms" style="display: none">createmousebinder, mousebinder</div>
+
+Creates a new MouseBinder inside given `parent` menu.
+
+The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, MouseBinder's UI element tree won't be created. To do so, use MouseBinder's `create` method:
+
+```lua
+local myMouseBinder = mwse.mcm.createMouseBinder({ ... })
+myMouseBinder:create(parent)
+```
+
+The same is done by this function if you pass both `parent` and `data` arguments.
+
+
+```lua
+local button = mwse.mcm.createMouseBinder(parent, { label = ..., description = ..., allowCombinations  = ..., allowButtons  = ..., allowWheel  = ..., keybindName = ..., leftSide  = ..., variable = ..., defaultSetting = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `parent` ([tes3uiElement](../types/tes3uiElement.md), mwse.mcm.createMouseBinder.data): The UI element inside which the new MouseBinder will be created.
+* `data` (table): *Optional*.
+	* `label` (string): *Optional*. Text shown next to the button.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover.
+	* `allowCombinations ` (boolean): *Default*: `true`. If true, the MouseBinder will let the user use modification keys: Shift, Ctrl, and Alt when rebinding.
+	* `allowButtons ` (boolean): *Default*: `true`. If true, the MouseBinder will let the user bind mouse buttons.
+	* `allowWheel ` (boolean): *Default*: `false`. If true, the MouseBinder will let the user bind mouse wheel scroll up or down.
+	* `keybindName` (string): *Optional*. The keybind name. Shown in the popup menu header. This string is formatted into a localized version of "SET %s KEYBIND.". If none is provided the popup has "SET NEW KEYBIND." as header text.
+	* `leftSide ` (boolean): *Default*: `true`. If true, the button will be created on the left and label on the right.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): A variable for this MouseBinder.
+	* `defaultSetting` ([mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md)): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `callback` (fun(self: [mwseMCMMouseBinder](../types/mwseMCMMouseBinder.md))): *Optional*. The custom function called when the player interacts with this MouseBinder.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `postCreate` (fun(self: [mwseMCMMouseBinder](../types/mwseMCMMouseBinder.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `button` ([mwseMCMMouseBinder](../types/mwseMCMMouseBinder.md))
 
 ***
 
@@ -919,6 +967,63 @@ local button = mwse.mcm.createYesNoButton(parent, { label = ..., description = .
 
 ***
 
+### `mwse.mcm.getKeyComboName`
+<div class="search_terms" style="display: none">getkeycomboname, keycomboname</div>
+
+This function returns a localized name for a key combination.
+
+```lua
+local result = mwse.mcm.getKeyComboName(keyCombo)
+```
+
+**Parameters**:
+
+* `keyCombo` ([mwseKeyCombo](../types/mwseKeyCombo.md), [mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md)): *Optional*.
+
+**Returns**:
+
+* `result` (string, nil)
+
+***
+
+### `mwse.mcm.getMouseButtonName`
+<div class="search_terms" style="display: none">getmousebuttonname, mousebuttonname</div>
+
+This function returns a localized name of the mouse button. You can pass [`mouseButton`](https://mwse.github.io/MWSE/types/mwseKeyMouseCombo/#mousebutton) field of `mwseKeyMouseCombo` or [`e.button`](https://mwse.github.io/MWSE/events/mouseButtonDown/#event-data) from `mouseButtonDown` event data.
+
+```lua
+local result = mwse.mcm.getMouseButtonName(buttonIndex)
+```
+
+**Parameters**:
+
+* `buttonIndex` (integer): *Optional*.
+
+**Returns**:
+
+* `result` (string, nil)
+
+***
+
+### `mwse.mcm.getMouseWheelName`
+<div class="search_terms" style="display: none">getmousewheelname, mousewheelname</div>
+
+This function returns a localized name for the mouse wheel direction. You can pass [`mouseWheel`](https://mwse.github.io/MWSE/types/mwseKeyMouseCombo/#mousewheel) field of `mwseKeyMouseCombo` or [`e.delta`](https://mwse.github.io/MWSE/events/mouseWheel/#event-data) from `mouseWheel` event data.
+
+```lua
+local result = mwse.mcm.getMouseWheelName(mouseWheel)
+```
+
+**Parameters**:
+
+* `mouseWheel` (integer): *Optional*.
+
+**Returns**:
+
+* `result` (string, nil)
+
+***
+
 ### `mwse.mcm.register`
 <div class="search_terms" style="display: none">register</div>
 
@@ -939,7 +1044,7 @@ mwse.mcm.register(template)
 ### `mwse.mcm.testKeyBind`
 <div class="search_terms" style="display: none">testkeybind, keybind</div>
 
-This function check whether a certain key combination is currently pressed. It will only check ctrl, shift and alt modifier keys, matching the KeyBinder. It doesn't check mouse.
+This function checks whether a certain key combination is currently pressed. It will only check ctrl, shift and alt modifier keys. It doesn't check mouse.
 
 ```lua
 local pressed = mwse.mcm.testKeyBind(keybind)

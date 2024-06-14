@@ -24,6 +24,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool WeaponReadiedEvent::m_EventEnabled = false;
 }

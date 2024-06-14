@@ -230,7 +230,7 @@ local vector = tes3vector4.new(x, y, z, w)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector4](../types/tes3vector4.md) | [tes3vector4](../types/tes3vector4.md) | [tes3vector4](../types/tes3vector4.md) | The per-element multiplication of two vectors. |
+| [tes3vector4](../types/tes3vector4.md) | [tes3vector4](../types/tes3vector4.md) | [tes3vector4](../types/tes3vector4.md) | The per-element multiplication of two vectors, also known as [Hadamard product](https://en.wikipedia.org/wiki/Hadamard_product_(matrices)). |
 | [tes3vector4](../types/tes3vector4.md) | number | [tes3vector4](../types/tes3vector4.md) | Multiplies the vector by a scalar. |
 
 ***

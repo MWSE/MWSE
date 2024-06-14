@@ -41,6 +41,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool PotionBrewedEvent::m_EventEnabled = false;
 }

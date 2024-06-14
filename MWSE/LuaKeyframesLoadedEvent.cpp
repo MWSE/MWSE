@@ -40,6 +40,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_Path;
 		return options;
 	}
-
-	bool KeyframesLoadedEvent::m_EventEnabled = false;
 }

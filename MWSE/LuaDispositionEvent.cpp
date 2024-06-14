@@ -34,6 +34,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DispositionEvent::m_EventEnabled = false;
 }

@@ -24,7 +24,5 @@ namespace mwse::lua::event {
 		eventData["context"] = ms_Context;
 		return eventData;
 	}
-
-	bool MusicChangeTrackEvent::m_EventEnabled = false;
 	const char* MusicChangeTrackEvent::ms_Context = nullptr;
 }

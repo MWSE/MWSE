@@ -30,6 +30,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool JournalEvent::m_EventEnabled = false;
 }

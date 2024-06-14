@@ -162,6 +162,9 @@ Direct access to the actor's attack bonus effect attribute.
 
 *Read-only*. Access to a table of 8 [`tes3statistic`](https://mwse.github.io/MWSE/types/tes3statistic/) objects for the actor's attributes. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
 
+!!! note
+	This array is 1-indexed. The array indices correspond to the [tes3.attribute](https://mwse.github.io/MWSE/references/attributes/) table plus 1 to account for Lua's 1-based array indexing. In other words `myMobile.attributes[tes3.attribute.strength + 1]` returns the `tes3statistic` object corresponding to strength.
+
 **Returns**:
 
 * `result` ([tes3statistic](../types/tes3statistic.md)[])
@@ -536,7 +539,7 @@ No description yet available.
 ### `hasVampirism`
 <div class="search_terms" style="display: none">hasvampirism, vampirism</div>
 
-*Read-only*. True if the actor has a vampirism effect.
+*Read-only*. True if the actor has a vampirism effect. Checks if the actor has an active vampirism magic effect. This is the same method used in the engine to determine if an NPC has a vampire head model, or can use a vampire dialogue response.
 
 **Returns**:
 

@@ -37,6 +37,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_Tile->element->getTopLevelParent()->name.cString;
 		return options;
 	}
-
-	bool ItemTileUpdatedEvent::m_EventEnabled = false;
 }

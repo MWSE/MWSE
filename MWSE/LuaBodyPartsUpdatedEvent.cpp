@@ -24,6 +24,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool BodyPartsUpdatedEvent::m_EventEnabled = false;
 }

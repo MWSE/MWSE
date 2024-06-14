@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SkillRaisedEvent::m_EventEnabled = false;
 }

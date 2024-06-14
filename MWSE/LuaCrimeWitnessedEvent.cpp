@@ -48,6 +48,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CrimeWitnessedEvent::m_EventEnabled = false;
 }

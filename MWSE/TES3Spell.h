@@ -97,6 +97,7 @@ namespace TES3 {
 
 		int calculateBasePuchaseCost() const;
 		float calculateCastChance_lua(sol::table params);
+		int getAutoCalcMagickaCost() const;
 
 		bool isActiveCast() const;
 

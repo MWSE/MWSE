@@ -40,6 +40,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SpellCastEvent::m_EventEnabled = false;
 }

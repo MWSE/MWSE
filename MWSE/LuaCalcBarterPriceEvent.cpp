@@ -40,6 +40,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalculateBarterPriceEvent::m_EventEnabled = false;
 }

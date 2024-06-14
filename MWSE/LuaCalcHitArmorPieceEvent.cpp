@@ -48,6 +48,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalcHitArmorPiece::m_EventEnabled = false;
 }

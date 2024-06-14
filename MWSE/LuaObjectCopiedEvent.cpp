@@ -24,8 +24,6 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ObjectCopiedEvent::m_EventEnabled = false;
 	TES3::Object* ObjectCopiedEvent::ms_LastCopied = nullptr;
 	TES3::Object* ObjectCopiedEvent::ms_LastCopiedFrom = nullptr;
 }

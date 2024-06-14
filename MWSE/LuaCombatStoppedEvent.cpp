@@ -23,6 +23,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CombatStoppedEvent::m_EventEnabled = false;
 }

@@ -89,6 +89,7 @@ namespace mwse::lua {
 		usertypeDefinition["create"] = &createSpell;
 		usertypeDefinition["createCopy"] = &TES3::Spell::createCopy_lua<TES3::Spell>;
 		usertypeDefinition["getActiveEffectCount"] = &TES3::Spell::getActiveEffectCount;
+		usertypeDefinition["getAutoCalcMagickaCost"] = &TES3::Spell::getAutoCalcMagickaCost;
 		usertypeDefinition["getFirstIndexOfEffect"] = &TES3::Spell::getFirstIndexOfEffect;
 		usertypeDefinition["getLeastProficientEffect"] = &TES3::Spell::getLeastProficientEffect_lua;
 		usertypeDefinition["getLeastProficientSchool"] = &TES3::Spell::getLeastProficientSchool_lua;

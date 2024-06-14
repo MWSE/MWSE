@@ -21,6 +21,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ShowRestWaitMenuEvent::m_EventEnabled = false;
 }

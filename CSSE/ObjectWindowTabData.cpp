@@ -615,6 +615,50 @@ namespace se::cs::dialog::object_window {
 	}
 
 	//
+	// Column: Chance None
+	//
+
+	TabColumnChanceNone::TabColumnChanceNone() : TabColumn("Chance for Nothing", LVCFMT_CENTER) {
+
+	}
+
+	bool TabColumnChanceNone::supportsObjectType(ObjectType::ObjectType objectType) const {
+		switch (objectType) {
+		case ObjectType::LeveledCreature:
+		case ObjectType::LeveledItem:
+			return true;
+		}
+		return false;
+	}
+
+	void TabColumnChanceNone::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
+		auto object = getObjectFromDisplayInfo(displayInfo);
+		switch (object->objectType) {
+		case ObjectType::LeveledCreature:
+			display(displayInfo, static_cast<const LeveledCreature*>(object)->chanceForNone);
+			break;
+		case ObjectType::LeveledItem:
+			display(displayInfo, static_cast<const LeveledItem*>(object)->chanceForNone);
+			break;
+		}
+	}
+
+	int TabColumnChanceNone::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
+		int chanceNone = 0;
+		switch (lParam1->objectType) {
+		case ObjectType::LeveledCreature:
+			return sort(static_cast<const LeveledCreature*>(lParam1)->chanceForNone, static_cast<const LeveledCreature*>(lParam2)->chanceForNone, sortOrderAsc);
+		case ObjectType::LeveledItem:
+			return sort(static_cast<const LeveledItem*>(lParam1)->chanceForNone, static_cast<const LeveledItem*>(lParam2)->chanceForNone, sortOrderAsc);
+		}
+		return 0;
+	}
+
+	TabColumn::ColumnSettings& TabColumnChanceNone::getSettings() const {
+		return settings.object_window.column_chance_for_none;
+	}
+
+	//
 	// Column: Creature Is Bipedal
 	//
 
@@ -2255,6 +2299,7 @@ namespace se::cs::dialog::object_window {
 	TabColumnBlocked TabController::tabColumnBlocked;
 	TabColumnBookIsScroll TabController::tabColumnBookIsScroll;
 	TabColumnBookTeaches TabController::tabColumnBookTeaches;
+	TabColumnChanceNone TabController::tabColumnChanceNone;
 	TabColumnCost TabController::tabColumnCost;
 	TabColumnCount TabController::tabColumnCount;
 	TabColumnCreatureIsBipedal TabController::tabColumnCreatureIsBipedal;
@@ -2524,6 +2569,7 @@ namespace se::cs::dialog::object_window {
 			break;
 		case ObjectType::LeveledCreature:
 			tabColumnAllLTEPC.addToController(this, hWnd);
+			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnCreatureList.addToController(this, hWnd);
 			break;
 		case ObjectType::Spell:
@@ -2552,6 +2598,7 @@ namespace se::cs::dialog::object_window {
 			break;
 		case ObjectType::LeveledItem:
 			tabColumnAllLTEPC.addToController(this, hWnd);
+			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnLeveledItemList.addToController(this, hWnd);
 			break;
 		}

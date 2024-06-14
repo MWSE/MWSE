@@ -288,7 +288,7 @@ local result = myObject:checkDisabled()
 ### `create`
 <div class="search_terms" style="display: none">create</div>
 
-This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createContentsContainer) method implemented.
+This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createcontentscontainer) method implemented.
 
 ```lua
 myObject:create(parentBlock)

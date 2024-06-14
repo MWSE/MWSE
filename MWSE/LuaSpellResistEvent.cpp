@@ -57,6 +57,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SpellResistEvent::m_EventEnabled = false;
 }

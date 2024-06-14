@@ -22,6 +22,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MouseButtonUpEvent::m_EventEnabled = false;
 }

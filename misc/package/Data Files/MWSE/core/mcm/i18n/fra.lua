@@ -24,7 +24,7 @@ return {
 	["Right mouse button"] = "Bouton droit de la souris",
 	["Middle mouse button"] = "Bouton central de la souris",
 	["Mouse %s"] = "Souris : %%s",
-	["SET %s KEYBIND."] = "DEFINIR RACCOURCI : %%s",
-	["SET NEW KEYBIND."] = "DEFINIR NOUVEAU RACCOURCI",
+	["SET %s KEYBIND"] = "DEFINIR RACCOURCI : %%s",
+	["SET NEW KEYBIND"] = "DEFINIR NOUVEAU RACCOURCI",
 	["Press any key to set the bind or ESC to cancel."] = "Appuyez sur n'importe quelle touche pour définir le raccourci ou Echap pour annuler.",
 }

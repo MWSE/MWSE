@@ -35,6 +35,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DamagedHandToHandEvent::m_EventEnabled = false;
 }

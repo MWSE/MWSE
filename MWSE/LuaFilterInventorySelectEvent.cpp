@@ -35,6 +35,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_Type;
 		return options;
 	}
-
-	bool FilterInventorySelectEvent::m_EventEnabled = false;
 }

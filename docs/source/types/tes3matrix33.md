@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A 3 by 3 matrix. You can perform following arithmetic with this type: `==`.
+A 3 by 3 matrix.
 
 ## Properties
 
@@ -89,23 +89,6 @@ myObject:fromEulerXYZ(x, y, z)
 * `x` (number)
 * `y` (number)
 * `z` (number)
-
-***
-
-### `fromEulerZYX`
-<div class="search_terms" style="display: none">fromeulerzyx</div>
-
-Fills the matrix with values from euler angles in radians.
-
-```lua
-myObject:fromEulerZYX(z, y, x)
-```
-
-**Parameters**:
-
-* `z` (number)
-* `y` (number)
-* `x` (number)
 
 ***
 
@@ -463,7 +446,7 @@ local matrix = tes3matrix33.new(x0, y0, z0, x1, y1, z1, x2, y2, z2)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3matrix33](../types/tes3matrix33.md) | [tes3matrix33](../types/tes3matrix33.md) | boolean | True if both matrices are equal. |
+| [tes3matrix33](../types/tes3matrix33.md) | [tes3matrix33](../types/tes3matrix33.md) | boolean | True if both matrices point to the same data. |
 
 ***
 

@@ -31,6 +31,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SkillExerciseEvent::m_EventEnabled = false;
 }

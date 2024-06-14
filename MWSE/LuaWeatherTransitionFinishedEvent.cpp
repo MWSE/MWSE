@@ -25,6 +25,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool WeatherTransitionFinishedEvent::m_EventEnabled = false;
 }

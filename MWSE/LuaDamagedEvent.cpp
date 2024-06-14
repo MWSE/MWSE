@@ -77,6 +77,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DamagedEvent::m_EventEnabled = false;
 }

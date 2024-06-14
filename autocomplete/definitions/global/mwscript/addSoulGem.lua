@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.]],
+	description = [[Use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.]],
 	arguments = {{
 		name = "params",
 		type = "table",

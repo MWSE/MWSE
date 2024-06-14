@@ -31,6 +31,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SaveGameEvent::m_EventEnabled = false;
 }

@@ -18,6 +18,4 @@ namespace mwse::lua::event {
 		eventData["topic"] = m_Topic;
 		return eventData;
 	}
-
-	bool InfoLinkResolveEvent::m_EventEnabled = false;
 }

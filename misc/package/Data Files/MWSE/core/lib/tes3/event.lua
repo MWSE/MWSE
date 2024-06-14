@@ -150,6 +150,7 @@ return {
 	["spellResist"] = "spellResist",
 	["spellResisted"] = "spellResisted",
 	["spellTick"] = "spellTick",
+	["startGlobalScript"] = "startGlobalScript",
 	["topicAdded"] = "topicAdded",
 	["trapDisarm"] = "trapDisarm",
 	["uiActivated"] = "uiActivated",

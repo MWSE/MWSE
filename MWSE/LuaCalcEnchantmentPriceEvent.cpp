@@ -104,6 +104,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalculateEnchantmentPriceEvent::m_EventEnabled = false;
 }

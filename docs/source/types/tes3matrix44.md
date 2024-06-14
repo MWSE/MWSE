@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A 4 by 4 matrix. You can perform following arithmetic with this type: `==`.
+A 4 by 4 matrix.
 
 ## Properties
 

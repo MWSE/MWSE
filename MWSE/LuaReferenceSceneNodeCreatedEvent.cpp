@@ -22,6 +22,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ReferenceSceneNodeCreatedEvent::m_EventEnabled = false;
 }

@@ -77,6 +77,6 @@ function tes3alchemy:getActiveEffectCount() end
 
 --- Returns the index of a first effect of a given effectId in the parent tes3alchemy object.
 --- @param effectId tes3.effect|integer The effectId to perform a check for. Maps to [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) constants.
---- @return number index No description yet available.
+--- @return integer index Returns 0-based index. Because Lua's arrays are 1-based, to index the potion's `effects` array with the return value add 1.
 function tes3alchemy:getFirstIndexOfEffect(effectId) end
 

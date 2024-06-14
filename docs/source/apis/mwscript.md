@@ -54,7 +54,7 @@ local executed = mwscript.addItem({ reference = ..., item = ..., count = ... })
 ### `mwscript.addSoulGem`
 <div class="search_terms" style="display: none">addsoulgem, soulgem</div>
 
-use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
+Use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
 
 ```lua
 local executed = mwscript.addSoulGem({ reference = ..., creature = ..., soulgem = ... })
@@ -643,7 +643,7 @@ local executed = mwscript.removeSpell({ reference = ..., spell = ... })
 ### `mwscript.scriptRunning`
 <div class="search_terms" style="display: none">scriptrunning</div>
 
-Wrapper for the `ScriptRunning` mwscript function. Only checks global scripts.
+Use [`tes3.getLegacyScriptRunning()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getlegacyscriptrunning) instead. Wrapper for the `ScriptRunning` mwscript function. Only checks global scripts.
 
 ```lua
 local result = mwscript.scriptRunning({ script = ... })
@@ -726,7 +726,7 @@ local executed = mwscript.startCombat({ reference = ..., target = ... })
 ### `mwscript.startScript`
 <div class="search_terms" style="display: none">startscript</div>
 
-Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/?h=script#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function. Starts the script as a global script.
+Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function. Starts the script as a global script.
 
 ```lua
 local executed = mwscript.startScript({ reference = ..., script = ... })
@@ -768,7 +768,7 @@ local executed = mwscript.stopCombat({ reference = ..., target = ... })
 ### `mwscript.stopScript`
 <div class="search_terms" style="display: none">stopscript</div>
 
-Wrapper for the `StopScript` mwscript function. It can only stop global scripts.
+Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3stoplegacyscript) instead. Wrapper for the `StopScript` mwscript function. It can only stop global scripts.
 
 ```lua
 local executed = mwscript.stopScript({ reference = ..., script = ... })

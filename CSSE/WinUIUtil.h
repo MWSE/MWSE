@@ -49,6 +49,9 @@ namespace se::cs::winui {
 	// ComboBox
 	//
 
+	// Determines if the exact string exists in the combo box.
+	bool ComboBox_HasStringExact(HWND hWnd, const char* string);
+
 	// Sets the current selection index as ComboBox_SetCurSel, with additional messaging.
 	void ComboBox_SetCurSelEx(HWND hWnd, int index);
 

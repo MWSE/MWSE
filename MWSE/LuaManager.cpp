@@ -2047,28 +2047,8 @@ namespace mwse::lua {
 	// Event: Music, new track
 	//
 
-	bool __fastcall OnSelectMusicTrack(TES3::WorldController* controller, DWORD _UNUSED_, int situation) {
-		// Fire off the event.
-		if (event::MusicSelectTrackEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table eventData = stateHandle.triggerEvent(new event::MusicSelectTrackEvent(situation));
-			if (eventData.valid()) {
-				sol::optional<std::string> musicPath = eventData["music"];
-				if (musicPath) {
-					char* buffer = mwse::tes3::getThreadSafeStringBuffer();
-					snprintf(buffer, 512, "Data Files/music/%s", musicPath.value().c_str());
-					return true;
-				}
-
-				// Only allow blocking if a music path was not provided.
-				if (eventData.get_or("block", false)) {
-					return false;
-				}
-			}
-		}
-
-		// Call original function.
-		return reinterpret_cast<bool(__thiscall*)(TES3::WorldController*, int)>(0x410EA0)(controller, situation);
+	bool __fastcall OnSelectMusicTrack(TES3::WorldController* controller, DWORD _UNUSED_, TES3::MusicSituation situation) {
+		return controller->selectNextMusicTrack(situation);
 	}
 
 	//
@@ -6037,6 +6017,8 @@ namespace mwse::lua {
 		genCallEnforced(0x4DC9AF, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x4DC9BD, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x4DC9CB, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
+		genCallEnforced(0x5071B5, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // Non-MCP
+		genCallEnforced(0x507213, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // Non-MCP
 		genCallEnforced(0x524BC8, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x524BD6, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x524BE4, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
@@ -6044,9 +6026,9 @@ namespace mwse::lua {
 		genCallEnforced(0x540B09, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x540B1E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
 		genCallEnforced(0x540EF9, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x745B89, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x745B9E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x745BB3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
+		genCallEnforced(0x745B89, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
+		genCallEnforced(0x745B9E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
+		genCallEnforced(0x745BB3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
 
 		// Modify actor animation controller to allow blocking animation changes.
 		writePatchCodeUnprotected(0x53DAB5, (BYTE*)&patchActorAnimInit, patchActorAnimInit_size);
@@ -6269,6 +6251,22 @@ namespace mwse::lua {
 		genCallEnforced(0x4C24D0, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
 		genCallEnforced(0x4C259A, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
 		genCallEnforced(0x4C2664, 0x481D80, reinterpret_cast<DWORD>(&AddObjectToHashMapById));
+
+		// Event: startGlobalScript
+		auto startGlobalScript = &TES3::WorldController::startGlobalScript;
+		genCallEnforced(0x419AE7, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x419B2B, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x4C4E11, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x4C4E54, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x4C5425, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x4C5468, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x5073F7, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x5FB1A9, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x5FB1EB, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x5FE94D, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		genCallEnforced(0x5FE991, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScript));
+		auto startGlobalScriptBySourceID = &TES3::WorldController::startGlobalScriptBySourceID;
+		genCallEnforced(0x4FF826, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScriptBySourceID));
 
 		// UI framework hooks
 		TES3::UI::hook();

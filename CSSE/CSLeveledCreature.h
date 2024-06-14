@@ -9,9 +9,10 @@ namespace se::cs {
 		int unknown_0x48;
 		NI::IteratedList<Node*>* list; // 0x4C
 		size_t listSize; // 0x50
-		BYTE leveledFlags; // 0x54
+		unsigned int leveledFlags; // 0x54
+		BYTE chanceForNone; // 0x58
 
 		bool getCalculateFromAllLevelsLessThanEqualToPCLevel() const;
 	};
-	static_assert(sizeof(LeveledCreature) == 0x58, "LeveledCreature failed size validation");
+	static_assert(sizeof(LeveledCreature) == 0x5C, "LeveledCreature failed size validation");
 }

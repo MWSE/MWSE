@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CameraControlEvent::m_EventEnabled = false;
 }

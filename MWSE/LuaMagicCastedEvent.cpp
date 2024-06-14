@@ -35,6 +35,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
 		return options;
 	}
-
-	bool MagicCastedEvent::m_EventEnabled = false;
 }
