@@ -33,6 +33,9 @@ namespace se::cs {
 		AIConfig aiConfig; // 0xF8
 
 		const char* getFactionRankName() const;
+		std::string getTraining() const;
+		int getFight() const;
+		const char* getSkillName(int skillIndex) const;
 	};
 	static_assert(sizeof(NPC) == 0x108, "NPC failed size validation");
 }

@@ -85,6 +85,7 @@ namespace se::cs {
 			bool filter_by_script_id = true;
 			bool filter_by_book_text = true;
 			bool filter_by_faction = true;
+			bool filter_by_training_skills = true;
 			bool highlight_modified_items = true;
 			bool use_regex = false;
 			bool case_sensitive = false;

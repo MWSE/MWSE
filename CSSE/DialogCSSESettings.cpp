@@ -46,6 +46,7 @@ BOOL DialogCSSESettings::OnInitDialog() {
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Model Path", &se::cs::settings.object_window.filter_by_model_path, "If true, the object's model path will be searched when filtering."));
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Book Text", &se::cs::settings.object_window.filter_by_book_text, "If true, book text will be searched when filtering."));
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Faction", &se::cs::settings.object_window.filter_by_faction, "If true, faction IDs and rank names will be searched when filtering NPCs."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Training Skills", &se::cs::settings.object_window.filter_by_training_skills, "If true, NPC's training skills will be searched when filtering NPCs."));
 		groupObjectsWindow->AddSubItem(filterByGroup);
 	}
 	m_PropertyGrid.AddProperty(groupObjectsWindow);
