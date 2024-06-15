@@ -56,7 +56,7 @@ end
 mwse.mcm = require("mcm.mcm")
 mwse.mcm.i18n = mwse.loadTranslations("mcm")
 
--- credit to Pherim for the default icons
+-- credit to Pherim and MelchiorDahrk for the default icons
 local favoriteIcons = {
 	id = "UnFavoriteButton",
 	idle = "textures/mwse/menu_modconfig_favorite.tga",
