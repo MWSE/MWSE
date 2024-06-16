@@ -220,11 +220,6 @@ function mwseMCMComponent:new(data) end
 --- @field componentType string? *Optional*. No description yet available.
 --- @field parentComponent mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
---- Prepares the provided parameters table and sets the `parentComponent` field to `mwseMCMComponent`.
---- @param data string|mwseMCMComponent.new.data|nil *Optional*. No description yet available.
---- @return mwseMCMComponent.new.data data No description yet available.
-function mwseMCMComponent:prepareData(data) end
-
 --- Prints the component table to the `mwse.log`. If a component is passed, it will be printed. If called without arguments, the component it was called on will be printed.
 --- @param component table? *Default*: `self`. No description yet available.
 function mwseMCMComponent:printComponent(component) end

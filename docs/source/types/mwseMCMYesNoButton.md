@@ -611,25 +611,6 @@ local button = myObject:new({ label = ..., description = ..., leftSide  = ..., v
 
 ***
 
-### `prepareData`
-<div class="search_terms" style="display: none">preparedata</div>
-
-Prepares the provided parameters table and sets the `parentComponent` field to `mwseMCMComponent`.
-
-```lua
-local data = myObject:prepareData(data)
-```
-
-**Parameters**:
-
-* `data` (string, mwseMCMComponent.new.data): *Optional*.
-
-**Returns**:
-
-* `data` (mwseMCMComponent.new.data)
-
-***
-
 ### `press`
 <div class="search_terms" style="display: none">press</div>
 

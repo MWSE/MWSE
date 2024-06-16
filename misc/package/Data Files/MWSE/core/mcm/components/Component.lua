@@ -13,6 +13,8 @@ if not tes3.isInitialized() then
 	))
 end
 
+local fileUtils = require("mcm.fileUtils")
+
 --- @class mwseMCMComponent
 local Component = {}
 Component.componentType = "Component"
@@ -43,10 +45,6 @@ function Component:new(data)
 	return t
 end
 
-function Component:__index(key)
-	return self[key]
-end
-
 -- Prints the component table to the log
 --- @param component table?
 function Component:printComponent(component)
@@ -61,16 +59,6 @@ function Component:printComponent(component)
 	mwse.log("}")
 end
 
---- @param data string|mwseMCMComponent.new.data|nil
---- @return mwseMCMComponent.new.data data
-function Component:prepareData(data)
-	data = data or {}
-	if type(data) == "string" then
-		data = { label = data }
-	end
-	data.parentComponent = self
-	return data
-end
 
 --- @alias mwseMCMComponentClass
 ---| "Category" # Categories
@@ -112,22 +100,10 @@ function Component:getComponent(componentData)
 		mwse.log("ERROR: No class found for component:")
 		self:printComponent(componentData)
 	end
-	local component
-	local classPaths = require("mcm.classPaths")
-	for _, path in pairs(classPaths.components) do
-		local classPath = (path .. componentData.class)
-		local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-		local fileExists = lfs.fileexists(fullPath)
-
-		if fileExists then
-			component = require(classPath)
-			break
-		end
-	end
-	if component then
-		--- @cast component mwseMCMComponent
-		self:prepareData(componentData)
-		return component:new(componentData)
+	local componentClass = fileUtils.getComponentClass(componentData.class)
+	if componentClass then
+		componentData.parentComponent = self
+		return componentClass:new(componentData)
 	else
 		mwse.log("Error: class %s not found", componentData.class)
 	end

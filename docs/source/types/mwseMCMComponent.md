@@ -466,25 +466,6 @@ local component = myObject:new({ label = ..., description = ..., indent = ..., c
 
 ***
 
-### `prepareData`
-<div class="search_terms" style="display: none">preparedata</div>
-
-Prepares the provided parameters table and sets the `parentComponent` field to `mwseMCMComponent`.
-
-```lua
-local data = myObject:prepareData(data)
-```
-
-**Parameters**:
-
-* `data` (string, mwseMCMComponent.new.data): *Optional*.
-
-**Returns**:
-
-* `data` (mwseMCMComponent.new.data)
-
-***
-
 ### `printComponent`
 <div class="search_terms" style="display: none">printcomponent</div>
 

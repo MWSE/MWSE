@@ -1,13 +1,7 @@
 local mcm = {}
+---@deprecated
 mcm.noParent = true
 mcm.version = 1.5
-
-function mcm:new()
-	local t = {}
-	setmetatable(t, self)
-	t.__index = mcm.__index
-	return t
-end
 
 --- @param template mwseMCMTemplate
 function mcm.register(template)
@@ -133,61 +127,67 @@ end
 
 ]]--
 
+local fileUtils = require("mcm.fileUtils")
 local strLengthCreate = string.len("create")
 
-function mcm.__index(tbl, key)
+--[[Add the `create<Component|Variable>` functions.
+This will be done via the `__index` metamethod as follows:
+1. The first time a `create` function is called, it will try to fetch the relevant class.
+	- This is done by calling `fileUtils.getComponentClass` and `fileUtils.getVariableClass`
+2. If a class was returned in Step 1:
+	- Create a new function sanitizes the input data and returns a new instance of the relevant class.
+	- Store this new function in the `mcm` table (so this whole process only happens one time per call to `create<Componen|Variablet>`).
+	- Return this new function (as the return-value of the `__index` metamethod).
+3. If a class WAS NOT returned in Step 1, then do nothing.
+]]
+---@param key string
+setmetatable(mcm, {__index = function(_, key)
+	if key:sub(1, strLengthCreate) ~= "create" then return end
 
-	local meta = getmetatable(tbl)
-	if string.sub(key, 1, strLengthCreate) == "create" then
+	local className = key:sub(strLengthCreate + 1)
+	
+	-- First check if it's a component.
+	local componentClass = fileUtils.getComponentClass(className)
+	if componentClass then
 
-		local class = string.sub(key, strLengthCreate + 1)
-		local component
-
-		local classPaths = require("mcm.classPaths")
-		for _, path in pairs(classPaths.all) do
-
-			local classPath = path .. class
-			local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-			local fileExists = lfs.fileexists(fullPath)
-			if fileExists then
-				component = require(classPath)
-			end
-
-			if component then
-				--- @cast component mwseMCMComponent
-				return function(param1, param2)
-					local parent = nil
-					local data = nil
-					if param2 then
-						parent = param1
-						data = param2
-					else
-						data = param1
-					end
-					if not data then
-						data = "---"
-					end
-					if type(data) == "string" then
-						if component.componentType == "Template" then
-							data = { name = data }
-						else
-							data = { label = data }
-						end
-					end
-					data.class = class
-
-					component = component:new(data)
-					-- Add check for mcm field to deal with using `:` instead of `.`
-					if parent and parent.noParent ~= true then
-						component:create(parent)
-					end
-					return component
+		-- Store the function so we don't have to recreate it every time.
+		mcm[key] = function(param1, param2)
+			local data, parent = param1, nil
+			if param2 then
+				data = param2
+				-- Add check for mcm field to deal with using `:` instead of `.`
+				if param1 ~= mcm then
+					parent = param1
 				end
 			end
+
+			-- Sanitize data
+			if not data then
+				data = { label = "---"}
+			elseif type(data) == "string" then
+				data = { label = data}
+			end
+
+			local component = componentClass:new(data)
+			if parent then
+				component:create(parent)
+			end
+			return component
 		end
+		return mcm[key]
 	end
 
-	return meta[key]
-end
+	-- Now check if it's a variable.
+	local variableClass = fileUtils.getVariableClass(className)
+	if variableClass then
+		
+		-- Store the function so we don't have to recreate it every time.
+		mcm[key] = function(param1, param2)
+			return variableClass:new(param2 or param1)
+		end
+		return mcm[key]
+	end
+end})
 
-return mcm:new()
+
+return mcm
