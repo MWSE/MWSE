@@ -1,165 +1,68 @@
-local function saveConfig()
-	local values = {}
-	for k, _ in pairs(mwseConfig.getDefaults()) do
-		values[k] = mwseConfig[k]
+event.register("modConfigReady", function()
+	local i18n = mwse.loadTranslations("mwse.config")
+
+	local template = mwse.mcm.createTemplate{ 
+		name = "Morrowind Script Extender",
+		onClose = function(_)
+			local values = {}
+			for k, _ in pairs(mwseConfig.getDefaults()) do
+				values[k] = mwseConfig[k]
+			end
+			mwse.saveConfig("MWSE", values)
+		end
+	}
+
+	local page = template:createSideBarPage()
+
+	local function createButton(configKey)
+		page:createYesNoButton{
+            label = i18n(configKey .. ".label"),             -- i.e., `i18n("logWarningsWithLuaStack.label")
+			description = i18n(configKey .. ".description"), -- i.e., `i18n("logWarningsWithLuaStack.description")
+			variable = mwse.mcm.createTableVariable{id = configKey, table = mwseConfig}
+		}
 	end
-	mwse.saveConfig("MWSE", values)
-end
 
-local i18n = mwse.loadTranslations("mwse.config")
+	createButton("logWarningsWithLuaStack")
+	createButton("runInBackground")
+	createButton("letterboxMovies")
+	createButton("replaceDialogueFiltering")
+	createButton("patchNiFlipController")
+	createButton("keepAllNetImmerseObjectsAlive")
+	createButton("enableLegacyLuaMods")
+	createButton("enableLogColors")
+	createButton("enableDependencyChecks")
+	createButton("enableLuaErrorNotifications")
+	createButton("useSkinnedAccurateActivationRaytests")
 
-local config = {
-	name = "Morrowind Script Extender",
-	template = "Template",
-	pages = {
-		{
-			label = "SideBar Page",
-			class = "SideBarPage",
-			components = {
-				{
-					class = "OnOffButton",
-					label = i18n("logWarningsWithLuaStack.label"),
-					description = i18n("logWarningsWithLuaStack.description"),
-					variable = {
-						id = "LogWarningsWithLuaStack",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("runInBackground.label"),
-					description = i18n("runInBackground.description"),
-					variable = {
-						id = "RunInBackground",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("letterboxMovies.label"),
-					description = i18n("letterboxMovies.description"),
-					variable = {
-						id = "LetterboxMovies",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("replaceDialogueFiltering.label"),
-					description = i18n("replaceDialogueFiltering.description"),
-					variable = {
-						id = "ReplaceDialogueFiltering",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("patchNiFlipController.label"),
-					description = i18n("patchNiFlipController.description"),
-					variable = {
-						id = "PatchNiFlipController",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("keepAllNetImmerseObjectsAlive.label"),
-					description = i18n("keepAllNetImmerseObjectsAlive.description"),
-					variable = {
-						id = "KeepAllNetImmerseObjectsAlive",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("enableLegacyLuaMods.label"),
-					description = i18n("enableLegacyLuaMods.description"),
-					variable = {
-						id = "EnableLegacyLuaMods",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("enableLogColors.label"),
-					description = i18n("enableLogColors.description"),
-					variable = {
-						id = "EnableLogColors",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("enableDependencyChecks.label"),
-					description = i18n("enableDependencyChecks.description"),
-					variable = {
-						id = "EnableDependencyChecks",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("enableLuaErrorNotifications.label"),
-					description = i18n("enableLuaErrorNotifications.description"),
-					variable = {
-						id = "EnableLuaErrorNotifications",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
-					label = i18n("useSkinnedAccurateActivationRaytests.label"),
-					description = i18n("useSkinnedAccurateActivationRaytests.description"),
-					variable = {
-						id = "UseSkinnedAccurateActivationRaytests",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-			},
-			sidebarComponents = {
-				{
-					class = "Info",
-					label = i18n("notice.label"),
-					text = i18n("notice.text"),
-				},
-				{
-					class = "Info",
-					label = i18n("credits.label"),
-					text = [[Anthony Garcia
-Charles Cooley (cdcooley)
-Cody Erekson (Fliggerty)
-FreshFish
-Grant McDorman
-Greatness7
-Hrnchamd
-Merlord
-Merzasphor
-Michael Wallar (NullCascade)
-OperatorJack
-Pete Goodfellow (Petethegoat)
-Pierre Steeg
-Sebastien Levy (MetaBarj0)
-Tim Peters
-Timeslip]],
-				},
-			},
-		},
-	},
-	onClose = saveConfig,
-}
+	page.sidebar:createInfo{
+		label = i18n("notice.label"),
+		text = i18n("notice.text"),
+	}
 
-local function registerModConfig()
-	mwse.mcm.registerMCM(config)
-end
-event.register("modConfigReady", registerModConfig)
+	page.sidebar:createInfo{
+		label = i18n("credits.label"),
+		text = table.concat(
+			{
+				"Anthony Garcia",
+				"Charles Cooley (cdcooley)",
+				"Cody Erekson (Fliggerty)",
+				"FreshFish",
+				"Grant McDorman",
+				"Greatness7",
+				"Hrnchamd",
+				"Merlord",
+				"Merzasphor",
+				"Michael Wallar (NullCascade)",
+				"OperatorJack",
+				"Pete Goodfellow (Petethegoat)",
+				"Pierre Steeg",
+				"Sebastien Levy (MetaBarj0)",
+				"Tim Peters",
+				"Timeslip",
+			}, 
+			"\n"
+		)
+	}
+	
+	template:register()
+end)
