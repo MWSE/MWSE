@@ -48,7 +48,7 @@ end
 
 function handleMetatable.__index(handle, key)
 	-- Try to look things up in the `SafeHandle` class.
-	local val = rawget(SafeHandle, key)
+	local val = SafeHandle[key]
 	if val ~= nil then return val end
 
 	-- Try to look things up in the stored object, if it still exists.
