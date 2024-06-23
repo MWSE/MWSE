@@ -42,7 +42,7 @@ local executed = mwscript.addItem({ reference = ..., item = ..., count = ... })
 
 * `params` (table)
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): *Optional*. The target reference for this command to be executed on. Defaults to the normal script execution reference.
-	* `item` ([tes3item](../types/tes3item.md), string): The item to be added.
+	* `item` ([tes3item](../types/tes3item.md), [tes3leveledItem](../types/tes3leveledItem.md), string): The item to be added.
 	* `count` (number): *Default*: `1`. The number of items to be added.
 
 **Returns**:
