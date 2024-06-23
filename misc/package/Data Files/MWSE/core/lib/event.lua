@@ -34,6 +34,8 @@ local remapObjectTypeDenyList = {
 	[tes3.objectType.dialogueInfo] = true,
 }
 
+-- Ensures that `options.filter` uses base object ids
+-- This function will modify `options` in-place.
 local function remapFilter(options, showWarnings)
 	-- We only care if we have a filter.
 	local filter = options.filter
@@ -81,18 +83,21 @@ local doOnceCallbacks = {} ---@type table<fun(...):..., fun(...):...>
 
 
 function this.register(eventType, callback, options)
-	-- Validate event type.
-	if (type(eventType) ~= "string" or eventType == "") then
-		return error("event.register: Event type must be a valid string.")
-	end
 
-	-- Validate callback.
-	if (type(callback) ~= "function") then
-		return error("event.register: Event callback must be a function.")
-	end
+	-- Initialize the options now, so that `remapFilters` will properly update these options when called from
+	-- inside `this.isRegistered`
+	options = options or {}
 
-	-- Make sure options is an empty table if nothing else.
-	local options = options or {}
+	-- Make sure this event has not already been registered.
+	-- This check plays nicely with `doOnce`
+	-- It also handles all the error checking for us, and tidies up `options`
+	local alreadyRegistered = this.isRegistered(eventType, callback, options)
+
+	if alreadyRegistered then
+		print("event.register: Attempted to register same '" .. eventType .. "' event callback twice.")
+		print(debug.traceback())
+		return
+	end
 
 	-- If 'doOnce' was set, wrap with a call to unregister.
 	if options.doOnce then
@@ -107,22 +112,13 @@ function this.register(eventType, callback, options)
 		callback = newCallback
 	end
 
-	-- Fix up any filters to use base object ids.
-	remapFilter(options, true)
-
 	-- Store this callback's priority.
 	eventPriorities[callback] = options.priority or 0
 
 	-- Make sure that the event isn't already registered.
 	local callbacks = getEventTable(eventType, options.filter)
-	local found = table.find(callbacks, callback)
-	if (found == nil) then
-		table.insert(callbacks, callback)
-		table.sort(callbacks, eventSorter)
-	else
-		print("event.register: Attempted to register same '" .. eventType .. "' event callback twice.")
-		print(debug.traceback())
-	end
+	table.insert(callbacks, callback)
+	table.sort(callbacks, eventSorter)
 
 	-- If this is a disableable event, enable it.
 	if (disableableEvents[eventType] == false) then
