@@ -440,9 +440,18 @@ end
 ---@field valuetype string
 ---@field link string
 
+
+-- Basic function argument. These are things that can be inside `tableParams`.
+---@class packageFunctionArgument.Simple : package
+
+-- Basic function argument. Includes the possibility of having `tableParams
+---@class packageFunctionArgument.Complex : package
+---@field tableParams packageFunctionArgument.Simple[]
+
 -- Parameter or return value for a `packageFunction` or `packageMethod`.
----@class packageFunctionArgument : package
----@field tableParams packageFunctionArgument[]|nil
+-- This comes in two flavors: `Simple` and `Complex`.
+---@alias packageFunctionArgument packageFunctionArgument.Simple|packageFunctionArgument.Complex
+
 
 -- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
