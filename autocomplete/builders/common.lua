@@ -422,7 +422,6 @@ end
 
 --- @class package
 --- @field name string
---- @field useDefault boolean
 --- @field readOnly boolean
 --- @field optional boolean? Is this parameter optional?
 --- @field default string|integer|nil
@@ -436,44 +435,48 @@ end
 --- @field deprecated boolean Allows marking definitions as deprecated. Those definitions aren't written to the web documentation.
 --- @field examples table<string, exampleTable>|nil A table containing the examples. Keys are the example's name/path to the example file.
 
+-- This corresponds to a documentation file with the [`"value"` type](https://github.com/MWSE/MWSE/blob/master/docs/type-definitions-guide.md#value-definitions).
 ---@class packageValue : package
 ---@field valuetype string
 ---@field link string
 
+-- Parameter or return value for a `packageFunction` or `packageMethod`.
 ---@class packageFunctionArgument : package
----@field tableParams packageFunctionArgument[]
+---@field tableParams packageFunctionArgument[]|nil
 
+-- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
 --- @field arguments packageFunctionArgument[]
 --- @field returns packageFunctionArgument[]|nil
 
+-- This corresponds to a documentation file with the [`"method"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageMethod : packageFunction
 
+-- This corresponds to a documentation file with the [`"lib"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#library-definitions).
 --- @class packageLib : package
 --- @field children table<string, package>|nil
 --- @field functions packageFunction[]|nil
 --- @field values packageValue[]|nil
-
 
 ---@class packageOverload
 ---@field rightType string
 ---@field resultType string
 ---@field description string
 
+-- This corresponds to a documentation file with the [`"operator"` type](https://github.com/MWSE/MWSE/blob/master/docs/operator-definitions-guide.md).
 ---@class packageOperator : package
 ---@field overloads packageOverload[]
 
 --- @class packageClass : packageLib
 --- @field inherits string The class that this class descends from.
---- @field operators packageOperator[]
+--- @field operators packageOperator[]|nil
 --- @field isAbstract boolean
 --- @field methods packageMethod[]|nil
 --- @field allDescendents table<string, packageClass>
 --- @field directDescendents table<string, packageClass>
 --- @field allDescendentKeys string
 
-
-
+-- This corresponds to a documentation file with the [`"event"` type](https://github.com/MWSE/MWSE/blob/master/docs/event-definitions-guide.md).
 ---@class packageEvent : package
 ---@field filter string
 ---@field blockable boolean
