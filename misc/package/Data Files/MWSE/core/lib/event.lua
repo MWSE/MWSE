@@ -76,6 +76,10 @@ local function remapFilter(options, showWarnings)
 	options.filter = filter.id:lower()
 end
 
+
+local doOnceCallbacks = {} ---@type table<fun(...):..., fun(...):...>
+
+
 function this.register(eventType, callback, options)
 	-- Validate event type.
 	if (type(eventType) ~= "string" or eventType == "") then
@@ -93,10 +97,15 @@ function this.register(eventType, callback, options)
 	-- If 'doOnce' was set, wrap with a call to unregister.
 	if options.doOnce then
 		local originalCallback = callback
-		callback = function(e)
-			this.unregister(eventType, callback, options)
+		local function newCallback(e)
+			-- Remove it from the table of `doOnceCallbacks`, unregister the event, 
+			-- and call the original callback.
+			doOnceCallbacks[originalCallback] = nil
+			event.unregister(eventType, newCallback, options)
 			originalCallback(e)
 		end
+		callback = newCallback
+		doOnceCallbacks[originalCallback] = newCallback
 	end
 
 	-- Fix up any filters to use base object ids.
@@ -133,6 +142,13 @@ function this.unregister(eventType, callback, options)
 		return error("event.unregister: Event callback must be a valid function.")
 	end
 
+	-- Handle the special case where `doOnce` was used.
+	local newCallback = doOnceCallbacks[callback]
+	if newCallback then
+		callback = newCallback 
+		doOnceCallbacks[callback] = nil -- Won't be needing this anymore.
+	end
+
 	-- Make sure options is an empty table if nothing else.
 	local options = options or {}
 
@@ -165,6 +181,13 @@ function this.isRegistered(eventType, callback, options)
 
 	-- Make sure options is an empty table if nothing else.
 	local options = options or {}
+
+
+	-- Handle the special case where `doOnce` was used.
+	local newCallback = doOnceCallbacks[callback]
+	if newCallback then
+		callback = newCallback 
+	end
 
 	-- Fix up any filters to use base object ids.
 	remapFilter(options, true)
