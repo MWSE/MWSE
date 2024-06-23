@@ -447,7 +447,7 @@ end
 -- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
 --- @field arguments packageFunctionArgument[]
---- @field returns packageFunctionArgument[]|nil
+--- @field returns packageFunctionArgument|packageFunctionArgument[]|nil
 
 -- This corresponds to a documentation file with the [`"method"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageMethod : packageFunction
@@ -500,7 +500,6 @@ function common.getConsistentReturnValues(package)
 
 	if type(package.returns) ~= "table" then return end
 
-	---@diagnostic disable-next-line: undefined-field
 	if (package.returns.name or package.returns.type) then
 		return { package.returns }
 	elseif (#package.returns > 0) then
