@@ -37,4 +37,5 @@ return {
 	["Press any key, mouse button or scroll with the mouse wheel to set as new binding."] = "Press any key, mouse button or scroll with the mouse wheel to set as new binding.",
 	["Help text"] = "Clicking Cancel will exit this popup without changing the current binding. Clicking Clear will unbind the key. Once done click the OK button. Currently bound to:",
 	["Clear"] = "Clear",
+	["Default"] = "Default",
 }
