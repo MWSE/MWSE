@@ -99,7 +99,7 @@ function this.register(eventType, callback, options)
 		local originalCallback = callback
 		local function newCallback(e)
 			-- `event.unregister` will handle the conversion for us.
-			event.unregister(eventType, originalCallback, options)
+			this.unregister(eventType, originalCallback, options)
 			originalCallback(e)
 		end
 
