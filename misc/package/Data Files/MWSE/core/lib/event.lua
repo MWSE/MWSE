@@ -98,14 +98,13 @@ function this.register(eventType, callback, options)
 	if options.doOnce then
 		local originalCallback = callback
 		local function newCallback(e)
-			-- Remove it from the table of `doOnceCallbacks`, unregister the event, 
-			-- and call the original callback.
-			doOnceCallbacks[originalCallback] = nil
-			event.unregister(eventType, newCallback, options)
+			-- `event.unregister` will handle the conversion for us.
+			event.unregister(eventType, originalCallback, options)
 			originalCallback(e)
 		end
-		callback = newCallback
+
 		doOnceCallbacks[originalCallback] = newCallback
+		callback = newCallback
 	end
 
 	-- Fix up any filters to use base object ids.
