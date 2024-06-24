@@ -355,11 +355,10 @@ function Template.__index(tbl, key)
 end
 
 --- This will recursively go through your MCM and append the text "Default = ___" to the description of each setting.
----@param defaultConfig table? the default config of your mod. if not provided, it will try to be retrieved, 
--- using the path "config.default"
-function Template:addDefaultsToDescriptions(defaultConfig)
+-- The default value will be pulled from `self.variable.defaultSetting`
+function Template:addDefaultsToDescriptions()
 	for _, subComp in ipairs(self.pages) do
-		subComp:addDefaultsToDescriptions(defaultConfig)
+		subComp:addDefaultsToDescriptions()
 	end
 end
 
