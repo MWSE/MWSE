@@ -239,9 +239,4 @@ function Component:create(parentBlock)
 	end
 end
 
---- This dummy method was added so that `Category` and `Template` can call `addDefaultsToDescriptions`
--- indiscriminantly on child elements. Also it makes the documentation a little cleaner.
-function Component:addDefaultsToDescriptions(defaultConfig)
-end
-
 return Component

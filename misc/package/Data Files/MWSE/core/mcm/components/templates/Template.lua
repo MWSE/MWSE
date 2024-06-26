@@ -330,6 +330,17 @@ function Template:register()
 	mwse.log("%s mod config registered", self.name)
 end
 
+--- @param parentBlock tes3uiElement
+function Template:create(parentBlock)
+	if self.addDefaultsToDescriptions and not self.defaultDescriptionAdded then
+		self.defaultDescriptionAdded = true
+		for _, page in ipairs(self.pages) do
+			page:addDefaultsToDescriptions()
+		end
+	end
+	Parent.create(self, parentBlock)
+end
+
 function Template.__index(tbl, key)
 	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
 	-- Make a new `Template.create<Component>` method.
@@ -346,20 +357,12 @@ function Template.__index(tbl, key)
 			data = { label = data }
 		end
 		data.parentComponent = self
-		local component = mwse.mcm[key](data)
+		local component = mwse.mcm[key](data) --[[@as mwseMCMPage]]
 		table.insert(self.pages, component)
 		return component
 	end
 
 	return Template[key]
-end
-
---- This will recursively go through your MCM and append the text "Default = ___" to the description of each setting.
--- The default value will be pulled from `self.variable.defaultSetting`
-function Template:addDefaultsToDescriptions()
-	for _, subComp in ipairs(self.pages) do
-		subComp:addDefaultsToDescriptions()
-	end
 end
 
 return Template
