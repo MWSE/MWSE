@@ -137,7 +137,7 @@ local function closeCurrentModConfig()
 	-- Fire the event after `onClose` gets called.
 	local payload = {
 		modName = currentModConfig.name, 
-		isFavorite = currentModConfig.favorite,
+		isFavorite = isFavorite(currentModConfig.name),
 	}
 	event.trigger("modConfigClosed", payload, {filter = currentModConfig.name})
 end
