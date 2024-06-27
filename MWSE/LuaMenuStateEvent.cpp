@@ -46,6 +46,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool MenuStateEvent::m_EventEnabled = false;
 }

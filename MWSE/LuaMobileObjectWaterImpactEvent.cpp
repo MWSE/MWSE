@@ -28,6 +28,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MobileObjectWaterImpactEvent::m_EventEnabled = false;
 }

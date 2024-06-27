@@ -117,8 +117,10 @@ namespace se::cs::window::main {
 			CloseHandle(pi.hThread);
 		}
 		else {
+			const auto error = GetLastError();
 			log::stream << "[ERROR] Failed to run Morrowind with command line: " << commandLine << std::endl;
 			log::stream << "  Process path: " << (std::filesystem::current_path() / "Morrowind.exe").string() << std::endl;
+			log::stream << "  Error code: 0x" << std::hex << error << std::dec << ": " << std::system_category().message(error) << std::endl;
 		}
 	}
 
@@ -243,8 +245,10 @@ namespace se::cs::window::main {
 			CloseHandle(pi.hThread);
 		}
 		else {
+			const auto error = GetLastError();
 			log::stream << "[ERROR] Failed to run OpenMW with command line: " << commandLine << std::endl;
 			log::stream << "  Process path: " << path << std::endl;
+			log::stream << "  Error code: 0x" << std::hex << error << std::dec << ": " << std::system_category().message(error) << std::endl;
 		}
 	}
 

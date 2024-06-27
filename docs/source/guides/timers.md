@@ -2,6 +2,8 @@
 
 Timers are a way to keep track with the passage of time. They are volatile, meaning that they do not persist between saved games.
 
+!!! warning "Timers get canceled when loading saves."
+	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
 
 ## Creating a Basic Timer
 

@@ -24,6 +24,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool DeterminedActionEvent::m_EventEnabled = false;
 }

@@ -141,7 +141,7 @@ function tes3ui.getInventorySelectType() end
 --- @return tes3uiElement result No description yet available.
 function tes3ui.getMenuOnTop() end
 
---- Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0].
+--- Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0]. The palette colors are loaded from morrowind.ini settings, so you should only access them after Morrowind is initialized.
 --- 
 --- ![Palette colors](https://raw.githubusercontent.com/MWSE/MWSE/master/docs/source/assets/images/ui%20palletes.png)
 --- 

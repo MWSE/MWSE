@@ -86,11 +86,17 @@ function mwseMCMTemplate:createExclusionsPage(data) end
 --- 
 --- `noScroll`: boolean? — *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
 --- 
+--- `config`: table? — *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `defaultConfig`: table? — *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `configKey`: string|number|nil — *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- 
 --- `description`: string? — *Optional*. Default sidebar text shown when the mouse isn't hovering over a component inside this Sidebar Page. It will be added to right column as a mwseMCMInfo.
 --- 
 --- `placeholderSearchText`: string? — *Default*: `Search...`. The text shown in the search bar when no text is entered.
 --- 
---- `components`: mwseMCMComponent.getComponent.componentData[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMFilterPage.md#getcomponent).
+--- `components`: mwseMCMComponent.new.data[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- 
 --- `indent`: integer? — *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- 
@@ -111,9 +117,12 @@ function mwseMCMTemplate:createFilterPage(data) end
 --- @field showHeader boolean? *Default*: `false`. The page's label will only be created if set to true.
 --- @field label string? *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 --- @field noScroll boolean? *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
+--- @field config table? *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field defaultConfig table? *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field configKey string|number|nil *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
 --- @field description string? *Optional*. Default sidebar text shown when the mouse isn't hovering over a component inside this Sidebar Page. It will be added to right column as a mwseMCMInfo.
 --- @field placeholderSearchText string? *Default*: `Search...`. The text shown in the search bar when no text is entered.
---- @field components mwseMCMComponent.getComponent.componentData[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMFilterPage.md#getcomponent).
+--- @field components mwseMCMComponent.new.data[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- @field indent integer? *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
@@ -134,7 +143,13 @@ function mwseMCMTemplate:createLabel(parentBlock) end
 --- 
 --- `noScroll`: boolean? — *Default*: `true`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
 --- 
---- `components`: mwseMCMComponent.getComponent.componentData[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMPage.md#getcomponent).
+--- `config`: table? — *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `defaultConfig`: table? — *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `configKey`: string|number|nil — *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- 
+--- `components`: mwseMCMComponent.new.data[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- 
 --- `indent`: integer? — *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- 
@@ -155,7 +170,10 @@ function mwseMCMTemplate:createMouseOverPage(data) end
 --- @field showHeader boolean? *Default*: `false`. The page's label will only be created if set to true.
 --- @field label string? *Optional*. The page label.
 --- @field noScroll boolean? *Default*: `true`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
---- @field components mwseMCMComponent.getComponent.componentData[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMPage.md#getcomponent).
+--- @field config table? *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field defaultConfig table? *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field configKey string|number|nil *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- @field components mwseMCMComponent.new.data[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- @field indent integer? *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
@@ -172,7 +190,13 @@ function mwseMCMTemplate:createMouseOverPage(data) end
 --- 
 --- `noScroll`: boolean? — *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
 --- 
---- `components`: mwseMCMComponent.getComponent.componentData[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMPage.md#getcomponent).
+--- `config`: table? — *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `defaultConfig`: table? — *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `configKey`: string|number|nil — *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- 
+--- `components`: mwseMCMComponent.new.data[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- 
 --- `indent`: integer? — *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- 
@@ -193,7 +217,10 @@ function mwseMCMTemplate:createPage(data) end
 --- @field showHeader boolean? *Default*: `false`. The page's label will only be created if set to true.
 --- @field label string? *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 --- @field noScroll boolean? *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
---- @field components mwseMCMComponent.getComponent.componentData[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMPage.md#getcomponent).
+--- @field config table? *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field defaultConfig table? *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field configKey string|number|nil *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- @field components mwseMCMComponent.new.data[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- @field indent integer? *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
@@ -210,9 +237,15 @@ function mwseMCMTemplate:createPage(data) end
 --- 
 --- `noScroll`: boolean? — *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
 --- 
+--- `config`: table? — *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `defaultConfig`: table? — *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- 
+--- `configKey`: string|number|nil — *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+--- 
 --- `description`: string? — *Optional*. Default sidebar text shown when the mouse isn't hovering over a component inside this Sidebar Page. It will be added to right column as a mwseMCMInfo.
 --- 
---- `components`: mwseMCMComponent.getComponent.componentData[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMSideBarPage.md#getcomponent).
+--- `components`: mwseMCMComponent.new.data[]? — *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- 
 --- `indent`: integer? — *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- 
@@ -233,8 +266,11 @@ function mwseMCMTemplate:createSideBarPage(data) end
 --- @field showHeader boolean? *Default*: `false`. The page's label will only be created if set to true.
 --- @field label string? *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 --- @field noScroll boolean? *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
+--- @field config table? *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field defaultConfig table? *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
+--- @field configKey string|number|nil *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
 --- @field description string? *Optional*. Default sidebar text shown when the mouse isn't hovering over a component inside this Sidebar Page. It will be added to right column as a mwseMCMInfo.
---- @field components mwseMCMComponent.getComponent.componentData[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at [getComponent](./mwseMCMSideBarPage.md#getcomponent).
+--- @field components mwseMCMComponent.new.data[]? *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 --- @field indent integer? *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 --- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
@@ -260,6 +296,10 @@ function mwseMCMTemplate:createTabsBlock(parentBlock) end
 --- `name`: string? — *Optional*. The name field is the mod name, used to register the MCM, and is displayed in the mod list on the lefthand pane.
 --- 
 --- `label`: string? — *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
+--- 
+--- `config`: table? — *Optional*. Stores a config that should be used by this mods `Setting`s. Sub-configs can be accessed by passing a `configKey` to any `Page`s nested inside this template. If provided, this config will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for the  any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this template.
+--- 
+--- `defaultConfig`: table? — *Optional*. Stores a default config that should be used by this mods `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod.
 --- 
 --- `headerImagePath`: string? — *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 --- 
@@ -287,7 +327,7 @@ function mwseMCMTemplate:createTabsBlock(parentBlock) end
 --- 
 --- `class`: string? — *Optional*. No description yet available.
 --- 
---- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
+--- `parentComponent`: mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
 --- @return mwseMCMTemplate template No description yet available.
 function mwseMCMTemplate:new(data) end
 
@@ -295,6 +335,8 @@ function mwseMCMTemplate:new(data) end
 --- @class mwseMCMTemplate.new.data
 --- @field name string? *Optional*. The name field is the mod name, used to register the MCM, and is displayed in the mod list on the lefthand pane.
 --- @field label string? *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
+--- @field config table? *Optional*. Stores a config that should be used by this mods `Setting`s. Sub-configs can be accessed by passing a `configKey` to any `Page`s nested inside this template. If provided, this config will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for the  any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this template.
+--- @field defaultConfig table? *Optional*. Stores a default config that should be used by this mods `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod.
 --- @field headerImagePath string? *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 --- @field onClose nil|fun(modConfigContainer: tes3uiElement) *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
 --- @field searchChildLabels boolean? *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
@@ -308,7 +350,7 @@ function mwseMCMTemplate:new(data) end
 --- @field inGameOnly boolean? *Default*: `false`. No description yet available.
 --- @field postCreate nil|fun(self: mwseMCMTemplate) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
---- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
+--- @field parentComponent mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
 --- Performs searching routine for given `searchText`.
 --- @param searchText string No description yet available.

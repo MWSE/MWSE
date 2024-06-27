@@ -9,6 +9,10 @@
 
 local Parent = require("mcm.components.pages.Page")
 
+local Info = require("mcm.components.infos.Info")
+local MouseOverInfo = require("mcm.components.infos.MouseOverInfo")
+local MouseOverPage = require("mcm.components.pages.MouseOverPage")
+
 --- @class mwseMCMSideBarPage
 --- @field sidebarComponents mwseMCMComponent[] *Deprecated*
 local SideBarPage = Parent:new()
@@ -19,7 +23,7 @@ SideBarPage.triggerOff = "MCM:MouseLeave"
 --- @return mwseMCMSideBarPage page
 function SideBarPage:new(data)
 	local t = Parent:new(data) --[[@as mwseMCMSideBarPage]]
-	t.sidebar = self:getComponent({ class = "MouseOverPage" }) --[[@as mwseMCMMouseOverPage]]
+	t.sidebar = MouseOverPage:new({ parentComponent = self})
 
 	setmetatable(t, self)
 	self.__index = self
@@ -56,20 +60,19 @@ function SideBarPage:createRightColumn(parentBlock)
 		-- or description
 	elseif self.description then
 		-- By default, sidebar is a mouseOver description pane
-		local sidebarInfo = self:getComponent({
+		local sidebarInfo = Info:new({
 			-- label = self.label,
 			text = self.description,
-			class = "Info",
-		}) --[[@as mwseMCMInfo]]
+			parentComponent = self
+		})
 		sidebarInfo:create(defaultView)
 	end
 
-	-- mouseover shows descriptions of settings
-	local mouseOver = self:getComponent({
-		-- label = self.label,
+	-- MouseOverInfo shows descriptions of settings.
+	local mouseOver = MouseOverInfo:new({
 		text = self.description or "",
-		class = "MouseOverInfo",
-	}) --[[@as mwseMCMMouseOverInfo]]
+		parentComponent = self
+	})
 	mouseOver:create(mouseoverView)
 	mouseOver.elements.outerContainer.visible = false
 	self.elements.mouseOver = mouseOver

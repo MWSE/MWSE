@@ -23,6 +23,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool FrameEvent::m_EventEnabled = false;
 }

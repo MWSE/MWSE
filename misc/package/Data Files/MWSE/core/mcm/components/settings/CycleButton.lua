@@ -18,7 +18,6 @@ local CycleButton = Parent:new()
 --- @param parentBlock tes3uiElement
 function CycleButton:makeComponent(parentBlock)
 	local button = parentBlock:createCycleButton({
-		id = tes3ui.registerID("CycleButton"),
 		options = self.options
 	})
 	button.borderAllSides = 0
@@ -28,7 +27,7 @@ function CycleButton:makeComponent(parentBlock)
 	local widget = button.widget --[[@as tes3uiCycleButton]]
 	if self:checkDisabled() then
 		local textElement = widget:getTextElement()
-		textElement.text = "---"
+		textElement.text = self.disabledText
 	else
 		widget.value = self.variable.value
 	end

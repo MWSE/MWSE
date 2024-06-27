@@ -13,6 +13,12 @@
 --- @field pressedColor number[] The color used when the dropdown is being pressed. By default set to `tes3ui.getPalette(tes3.palette.normalPressedColor)`.
 mwseMCMDropdown = {}
 
+--- This function specifies how values stored in the `variable` field should correspond to values displayed by this setting.
+--- The default behavior is to return the `label` of the [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) with a given `variableValue`.
+--- @param variableValue unknown The value of a [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) stored in `self.options`.
+--- @return string labelValue The label of the corresponding [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md).
+function mwseMCMDropdown:convertToLabelValue(variableValue) end
+
 --- Creates the expanded dropdown UI element parent dropdownParent and the text select entries inside for each option of the dropdown. If the dropdown is expanded, then calling this method will close the dropdown.
 function mwseMCMDropdown:createDropdown() end
 
@@ -61,7 +67,7 @@ function mwseMCMDropdown:makeComponent(parentBlock) end
 --- 
 --- `componentType`: string? — *Optional*. No description yet available.
 --- 
---- `parentComponent`: mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
+--- `parentComponent`: mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
 --- @return mwseMCMDropdown dropdown No description yet available.
 function mwseMCMDropdown:new(data) end
 
@@ -86,7 +92,7 @@ function mwseMCMDropdown:new(data) end
 --- @field postCreate nil|fun(self: mwseMCMDropdown) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
 --- @field componentType string? *Optional*. No description yet available.
---- @field parentComponent mwseMCMActiveInfo|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
+--- @field parentComponent mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
 --- Changes the currently selected option. Update's the Dropdown variable value and closes the dropdown.
 --- @param option mwseMCMDropdownOption No description yet available.

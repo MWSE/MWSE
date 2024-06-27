@@ -2,7 +2,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- This event is triggered when the game is about to play a sound when an item gets added or removed from an inventory. Can be blocked to play custom sound instead.
+--- This event is triggered when the game is about to play a sound when an item gets added or removed from an inventory, or when eaten or consumed. Can be blocked to play custom sound instead.
 --- @class playItemSoundEventData
 --- @field block boolean If set to `true`, vanilla logic will be suppressed. Returning `false` will set this to `true`.
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.

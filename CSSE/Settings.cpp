@@ -173,6 +173,7 @@ namespace se::cs {
 		column_blocked = toml::find_or(v, "column_blocked", column_blocked);
 		column_book_is_scroll = toml::find_or(v, "column_book_is_scroll", column_book_is_scroll);
 		column_book_teaches = toml::find_or(v, "column_book_teaches", column_book_teaches);
+		column_chance_for_none = toml::find_or(v, "column_chance_for_none", column_chance_for_none);
 		column_charge = toml::find_or(v, "column_charge", column_charge);
 		column_cost = toml::find_or(v, "column_cost", column_cost);
 		column_count = toml::find_or(v, "column_count", column_count);
@@ -258,6 +259,7 @@ namespace se::cs {
 				{ "column_blocked", column_blocked },
 				{ "column_book_is_scroll", column_book_is_scroll },
 				{ "column_book_teaches", column_book_teaches },
+				{ "column_chance_for_none", column_chance_for_none },
 				{ "column_charge", column_charge },
 				{ "column_cost", column_cost },
 				{ "column_count", column_count },

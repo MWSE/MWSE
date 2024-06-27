@@ -17,6 +17,9 @@
 --- 
 --- Elements may not respond to `heightProportional` sizing after this property is set. If you need to use both you should consider testing if it works first.
 --- @field alpha number The element's alpha color. Valid values range from `0.0` to `1.0`. Used to composite elements. If you wish to hide an element completely, use `disable` instead.
+--- 
+--- !!! tip
+--- 	Set your menu's alpha value to the [`tes3.worldController.menuAlpha`](https://mwse.github.io/MWSE/types/tes3worldController/#menualpha) to match the User's "Menu transparency" setting.
 --- @field autoHeight boolean If `true`, automatically expands element dimensions to fit child elements. Ignores child elements that have `ignoreLayoutY` set to `true`. Dimensions are restricted by `minWidth`, `minHeight`, `maxWidth` and `maxHeight` properties.
 --- @field autoWidth boolean If `true`, automatically expands element dimensions to fit child elements. Ignores child elements that have `ignoreLayoutX` set to `true`. Dimensions are restricted by `minWidth`, `minHeight`, `maxWidth` and `maxHeight` properties.
 --- @field borderAllSides integer The border size in pixels. Border is the extra empty space around an element. Individual border sizes default to using the borderAllSides setting.

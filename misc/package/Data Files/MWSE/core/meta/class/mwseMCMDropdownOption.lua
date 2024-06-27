@@ -4,5 +4,6 @@
 --- @meta
 --- The option table in [mwseMCMDropdown](./mwseMCMDropdown.md#options).
 --- @class mwseMCMDropdownOption
+--- @field callback function|nil The function called once this option was selected in the dropdown menu.
 --- @field label string The text to show on the Dropdown while this option is active.
 --- @field value unknown The value to store in the Dropdown's variable while this option is selected.

@@ -31,6 +31,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool AttackEvent::m_EventEnabled = false;
 }

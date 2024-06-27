@@ -26,6 +26,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalculateSoulValueEvent::m_EventEnabled = false;
 }

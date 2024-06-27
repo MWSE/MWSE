@@ -11,6 +11,12 @@
 			"args": [
 				".\\builders\\emmy.lua"
 			],
+			"options": {
+				"env": {
+					"LUA_PATH": ".\\?.lua;.\\?\\init.lua;.\\lua\\?.lua;.\\lua\\?\\init.lua",
+					"LUA_CPATH": ".\\?.dll;.\\lua\\?.dll"
+				}
+			},
 			"problemMatcher": []
 		},
 		{
@@ -20,6 +26,12 @@
 			"args": [
 				".\\builders\\mkdocs.lua"
 			],
+			"options": {
+				"env": {
+					"LUA_PATH": ".\\?.lua;.\\?\\init.lua;.\\lua\\?.lua;.\\lua\\?\\init.lua",
+					"LUA_CPATH": ".\\?.dll;.\\lua\\?.dll"
+				}
+			},
 			"group": "build",
 			"problemMatcher": []
 		},
@@ -30,6 +42,12 @@
 			"args": [
 				".\\builders\\readthedocs.lua"
 			],
+			"options": {
+				"env": {
+					"LUA_PATH": ".\\?.lua;.\\?\\init.lua;.\\lua\\?.lua;.\\lua\\?\\init.lua",
+					"LUA_CPATH": ".\\?.dll;.\\lua\\?.dll"
+				}
+			},
 			"group": "build",
 			"problemMatcher": []
 		},
@@ -40,6 +58,12 @@
 			"args": [
 				".\\builders\\youforgotsomething.lua"
 			],
+			"options": {
+				"env": {
+					"LUA_PATH": ".\\?.lua;.\\?\\init.lua;.\\lua\\?.lua;.\\lua\\?\\init.lua",
+					"LUA_CPATH": ".\\?.dll;.\\lua\\?.dll"
+				}
+			},
 			"problemMatcher": []
 		},
 		{

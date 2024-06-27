@@ -27,6 +27,7 @@
 #include "TES3Sound.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
+#include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3WorldController.h"
 
@@ -984,6 +985,40 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
+	// 
+
+	__declspec(naked) void PatchPathGridLoader() {
+		__asm {
+			pop esi
+			pop ebx
+			mov ecx, ebp
+			nop			// Replace with call
+			nop
+			nop
+			nop
+			nop
+			jmp $ + 0x15
+		}
+	}
+	const size_t PatchPathGridLoader_size = 0xE;
+
+	void __fastcall PatchPathGridLoaderCheckNodeData(TES3::PathGrid* pathGrid) {
+		// Check node count from record matches node data. Reset node count on mismatch.
+		if (pathGrid->nodeCount != pathGrid->nodes.count) {
+			log::getLog() << "[MWSE] Warning: Pathgrid in cell '" << pathGrid->parentCell->getEditorName() <<
+				"' has mismatching path node count. nodeCount=" << pathGrid->nodeCount << ", node data count=" << pathGrid->nodes.count << std::endl;
+
+			pathGrid->nodeCount = pathGrid->nodes.count;
+		}
+
+		// Perform overwritten code.
+		if (TES3::WorldController::get()->menuController->gameplayFlags & 0x800000) {
+			pathGrid->show();
+		}
+	}
+	
+	//
 	// Install all the patches.
 	//
 
@@ -1413,6 +1448,10 @@ namespace mwse::patch {
 		// Patch: Guard against invalid light flicker/pulse updates.
 		genCallEnforced(0x49B75E, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 		genCallEnforced(0x4D33BF, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
+
+		// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
+		writePatchCodeUnprotected(0x4F444E, (BYTE*)&PatchPathGridLoader, PatchPathGridLoader_size);
+		genCallUnprotected(0x4F444E + 4, reinterpret_cast<DWORD>(PatchPathGridLoaderCheckNodeData));
 	}
 
 	void installPostLuaPatches() {

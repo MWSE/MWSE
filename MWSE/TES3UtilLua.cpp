@@ -349,7 +349,7 @@ namespace mwse::lua {
 		if (mobilePlayer) {
 			if (soundPath) {
 				bool isVoiceover = getOptionalParam<bool>(params, "isVoiceover", false);
-				TES3::DataHandler::get()->addTemporySound(soundPath, reference, loop ? TES3::SoundPlayFlags::Loop : 0, int(volume), pitch, isVoiceover, sound);
+				TES3::DataHandler::get()->addTemporarySound(soundPath, reference, loop ? TES3::SoundPlayFlags::Loop : 0, int(volume), pitch, isVoiceover, sound);
 				return true;
 			}
 			else if (sound) {
@@ -427,6 +427,42 @@ namespace mwse::lua {
 			worldController->musicSituation = TES3::MusicSituation(situation);
 			worldController->audioController->changeMusicTrack(path, int(1000.0f * crossfade), volume);
 		}
+	}
+
+	bool skipToNextMusicTrack(sol::optional<sol::table> params) {
+		const auto worldController = TES3::WorldController::get();
+		if (worldController == nullptr) {
+			return false;
+		}
+
+		const auto audioController = worldController->audioController;
+		if (audioController == nullptr) {
+			return false;
+		}
+
+		const auto breakUninterruptibleMusic = getOptionalParam<bool>(params, "force", false);
+		if (worldController->musicSituation == TES3::MusicSituation::Uninterruptible && !breakUninterruptibleMusic) {
+			return false;
+		}
+
+		const auto mobilePlayer = worldController->getMobilePlayer();
+		const auto defaultSituation = mobilePlayer && mobilePlayer->getFlagInCombat() ? TES3::MusicSituation::Combat : TES3::MusicSituation::Explore;
+		const auto situation = (TES3::MusicSituation)getOptionalParam<int>(params, "situation", (int)defaultSituation);
+
+		if (!worldController->selectNextMusicTrack(situation)) {
+			return false;
+		}
+
+		const auto nextTrack = tes3::getThreadSafeStringBuffer();
+		const auto crossfade = getOptionalParam<double>(params, "crossfade", 1.0);
+		const auto volume = getOptionalParam<float>(params, "volume", audioController->getMusicVolume());
+
+		audioController->setNextMusicFilePath(nextTrack);
+		audioController->volumeNextTrack = volume;
+		audioController->timestampBeginFade = worldController->systemTimeMillis;
+		audioController->timestampNextTrackStart = worldController->systemTimeMillis + int(1000.0 * crossfade);
+
+		return true;
 	}
 
 	TES3::UI::Element* messageBox(sol::object param, sol::optional<sol::variadic_args> va) {
@@ -2155,6 +2191,15 @@ namespace mwse::lua {
 		}
 	}
 
+	bool getLegacyScriptRunning(sol::table params) {
+		auto script = getOptionalParamScript(params, "script");
+		if (script == nullptr) {
+			return false;
+		}
+
+		return TES3::WorldController::get()->isGlobalScriptRunning(script);
+	}
+
 	bool runLegacyScript(sol::table params) {
 		TES3::Script* script = getOptionalParamScript(params, "script");
 		if (script == nullptr) {
@@ -2195,6 +2240,15 @@ namespace mwse::lua {
 		TES3::DataHandler::suppressThreadLoad = false;
 
 		return true;
+	}
+
+	void stopLegacyScript(sol::table params) {
+		const auto script = getOptionalParamScript(params, "script");
+		if (script == nullptr) {
+			throw std::runtime_error("Invalid 'script' parameter provided.");
+		}
+
+		TES3::WorldController::get()->stopGlobalScript(script);
 	}
 
 	bool force1stPerson() {
@@ -3673,7 +3727,7 @@ namespace mwse::lua {
 					fromActor->inventory.removeItemWithData(fromMobile, item, nullptr, amountToTransfer, false);
 
 					// Check for ammunition and thrown weapons, as unlike other equipment, they do not generate itemData when equipped.
-					if (!fromIsContainer && (item->objectType == TES3::ObjectType::Ammo || item->objectType == TES3::ObjectType::Weapon)) {
+					if (!fromIsContainer && item->isWeaponOrAmmo() && static_cast<TES3::Weapon*>(item)->isProjectile()) {
 						fromActor->unequipItem(item, true, fromMobile, false, nullptr);
 					}
 
@@ -4149,7 +4203,7 @@ namespace mwse::lua {
 		}
 
 		// Play the related sound.
-		dataHandler->addTemporySound(path, reference, 0, int(volume), pitch, true);
+		dataHandler->addTemporarySound(path, reference, 0, int(volume), pitch, true);
 	}
 
 	bool hasOwnershipAccess(sol::table params) {
@@ -6100,6 +6154,7 @@ namespace mwse::lua {
 		tes3["getLanguage"] = getLanguage;
 		tes3["getLanguageCode"] = getLanguageCode;
 		tes3["getLastExteriorPosition"] = getLastExteriorPosition;
+		tes3["getLegacyScriptRunning"] = getLegacyScriptRunning;
 		tes3["getLocked"] = getLocked;
 		tes3["getLockLevel"] = getLockLevel;
 		tes3["getMagicEffect"] = getMagicEffect;
@@ -6199,6 +6254,8 @@ namespace mwse::lua {
 		tes3["showRestMenu"] = showRestMenu;
 		tes3["showSpellmakingMenu"] = showSpellmakingMenu;
 		tes3["skipAnimationFrame"] = skipAnimationFrame;
+		tes3["stopLegacyScript"] = stopLegacyScript;
+		tes3["skipToNextMusicTrack"] = skipToNextMusicTrack;
 		tes3["streamMusic"] = streamMusic;
 		tes3["tapKey"] = tapKey;
 		tes3["testLineOfSight"] = testLineOfSight;

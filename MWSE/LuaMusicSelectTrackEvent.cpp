@@ -17,6 +17,4 @@ namespace mwse::lua::event {
 		eventData["situation"] = m_Situation;
 		return eventData;
 	}
-
-	bool MusicSelectTrackEvent::m_EventEnabled = false;
 }

@@ -36,6 +36,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool PreLevelUpEvent::m_EventEnabled = false;
 }

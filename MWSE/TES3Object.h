@@ -289,7 +289,7 @@ namespace TES3 {
 	static_assert(sizeof(BaseObject) == 0x10, "TES3::BaseObject failed size validation");
 
 	struct Object : BaseObject {
-		NI::Node * sceneNode; // 0x10
+		NI::Pointer<NI::Node> sceneNode; // 0x10
 		union {
 			LinkedObjectList<Spell> * asSpellList;
 			ReferenceList * asReferenceList;

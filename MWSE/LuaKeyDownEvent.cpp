@@ -6,6 +6,4 @@ namespace mwse::lua::event {
 	{
 		m_EventName = "keyDown";
 	}
-
-	bool KeyDownEvent::m_EventEnabled = false;
 }

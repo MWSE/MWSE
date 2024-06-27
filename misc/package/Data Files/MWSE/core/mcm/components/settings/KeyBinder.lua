@@ -1,12 +1,12 @@
 --[[
 	Button Setting for binding a key/mouse combination. Variable returned in the form:
 		{
-			keyCode = tes3.scanCode/nil,
-			isAltDown = true/false,
-			isShiftDown = true/false,
-			isControlDown = true/false,
-			mouseWheel = integer/nil,
-			mouseButton = number/nil,
+			keyCode = tes3.scanCode|nil,
+			mouseButton = integer|nil,
+			mouseWheel = integer|nil,
+			isAltDown = boolean|nil,
+			isShiftDown = boolean|nil,
+			isControlDown = boolean|nil,
 		}
 ]]--
 
@@ -14,211 +14,32 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
-local Parent = require("mcm.components.settings.Button")
+local Parent = require("mcm.components.settings.Binder")
 
 --- @class mwseMCMKeyBinder
 local KeyBinder = Parent:new()
-KeyBinder.allowCombinations = true
 KeyBinder.allowMouse = false
 
+-- TODO: Implement flags for enabling the binding of mouse wheel or mouse buttons separately
 
+--- @param data mwseMCMKeyBinder.new.data|nil
+--- @return mwseMCMKeyBinder
+function KeyBinder:new(data)
+	local t = Parent:new(data)
 
---- @param keyCode integer|nil
---- @return string|nil letter
-function KeyBinder:getLetter(keyCode)
-	local letter = table.find(tes3.scanCode, keyCode)
-	local returnString = tes3.scanCodeToNumber[keyCode] or letter
-	if returnString then
-		return string.upper(returnString)
+	setmetatable(t, self)
+	self.__index = self
+	--- @cast t mwseMCMKeyBinder
+
+	-- All KeyBinders observe keyboard input.
+	t.observeEvents = { [tes3.event.keyDown] = true }
+
+	-- Check if we also observe input from mouse.
+	if t.allowMouse then
+		t.observeEvents[tes3.event.mouseButtonDown] = true
+		t.observeEvents[tes3.event.mouseWheel] = true
 	end
-end
-
-local mouseWheelDirectionName = {
-	[1] = "Mouse wheel up",
-	[-1] = "Mouse wheel down",
-}
-
---- @param wheel integer|nil
---- @return string|nil result
-function KeyBinder:getMouseWheelText(wheel)
-	local name = mouseWheelDirectionName[wheel]
-	if name then
-		return mwse.mcm.i18n(name)
-	end
-end
-
-local mouseButtonName = {
-	[0] = "Left mouse button",
-	[1] = "Right mouse button",
-	[2] = "Middle mouse button",
-}
-
---- @param buttonIndex number|nil
---- @return string|nil result
-function KeyBinder:getMouseButtonText(buttonIndex)
-	-- Only work with button indices supporte by the inputController
-	if not buttonIndex or buttonIndex > 7 or buttonIndex < 0 then
-		return
-	end
-	local name = mouseButtonName[buttonIndex]
-	if name then
-		return mwse.mcm.i18n(name)
-	end
-
-	return string.format(mwse.mcm.i18n("Mouse %s"), buttonIndex)
-end
-
---- @param keyCombo mwseKeyMouseCombo
---- @return string result
-function KeyBinder:getComboString(keyCombo)
-	-- Returns "SHIFT-X" if shift is held down but the active key is not Shift,
-	-- otherwise just "X" (X being the key being pressed)
-	-- And so on for Alt and Ctrl
-
-	local keyCode = keyCombo.keyCode
-	local comboText = self:getLetter(keyCode)
-
-	if self.allowMouse then
-		comboText = comboText or
-		            self:getMouseWheelText(keyCombo.mouseWheel) or
-		            self:getMouseButtonText(keyCombo.mouseButton)
-	end
-
-	-- Add failsafe for malformed keyCombos
-	if not comboText then
-		local inspect = require("inspect")
-		mwse.log("[KeyBinder]: couldn't resolve any text for the given combo:\n%s", inspect(keyCombo))
-		comboText = string.format("{%s}", mwse.mcm.i18n("unknown key"))
-	end
-
-	-- if you set allowCombinations to false, nothing functionally changes
-	-- but the player doesn't see the prefix
-	if not self.allowCombinations then
-		return comboText
-	end
-
-	local hasAlt = (keyCombo.isAltDown and keyCode ~= tes3.scanCode.lAlt
-	                                   and keyCode ~= tes3.scanCode.rAlt)
-	local hasShift = (keyCombo.isShiftDown and keyCode ~= tes3.scanCode.lShift
-	                                       and keyCode ~= tes3.scanCode.rShift)
-	local hasCtrl = (keyCombo.isControlDown and keyCode ~= tes3.scanCode.lCtrl
-	                                        and keyCode ~= tes3.scanCode.rCtrl)
-	local prefixes = {}
-	if hasShift then table.insert(prefixes, "Shift") end
-	if hasAlt then table.insert(prefixes, "Alt") end
-	if hasCtrl then table.insert(prefixes, "Ctrl") end
-	table.insert(prefixes, comboText)
-	return table.concat(prefixes, " - ")
-end
-
-KeyBinder.convertToLabelValue = KeyBinder.getComboString
-
---- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
-function KeyBinder:keySelected(e)
-	local variable = self.variable.value
-	variable.keyCode = e.keyCode or false
-
-	if self.allowMouse then
-		local wheel = e.delta and math.clamp(e.delta, -1, 1)
-		variable.mouseWheel = wheel or false
-		variable.mouseButton = e.button or false
-	end
-
-	if self.allowCombinations then
-		variable.isAltDown = e.isAltDown
-		variable.isShiftDown = e.isShiftDown
-		variable.isControlDown = e.isControlDown
-	end
-
-	self:update()
-	self.elements.outerContainer:updateLayout()
-end
-
-local popupId = tes3ui.registerID("KeyBinderPopup")
-
---- @return tes3uiElement menu
-function KeyBinder:createPopupMenu()
-	local menu = tes3ui.findHelpLayerMenu(popupId)
-
-	if not menu then
-		menu = tes3ui.createMenu({ id = popupId, fixedFrame = true })
-		menu.absolutePosAlignX = 0.5
-		menu.absolutePosAlignY = 0.5
-		menu.autoWidth = true
-		menu.autoHeight = true
-		menu.alpha = tes3.worldController.menuAlpha
-
-		local block = menu:createBlock()
-		block.autoWidth = true
-		block.autoHeight = true
-		block.paddingAllSides = 8
-		block.flowDirection = tes3.flowDirection.topToBottom
-
-		local headerText = mwse.mcm.i18n("SET NEW KEYBIND.")
-		if self.keybindName then
-			headerText = string.format(mwse.mcm.i18n("SET %s KEYBIND."), self.keybindName)
-		end
-		local header = block:createLabel({
-			text = headerText
-		})
-		header.color = tes3ui.getPalette(tes3.palette.headerColor)
-
-		block:createLabel({
-			text = mwse.mcm.i18n("Press any key to set the bind or ESC to cancel.")
-		})
-
-		tes3ui.enterMenuMode(popupId)
-	end
-	menu:getTopLevelMenu():updateLayout()
-	return menu
-end
-
-
-function KeyBinder:showKeyBindMessage()
-	self:createPopupMenu()
-
-	--- @param e keyUpEventData|mouseButtonDownEventData|mouseWheelEventData
-	local function waitInput(e)
-		-- Unregister this function once we got some input
-		event.unregister(tes3.event.keyUp, waitInput)
-		if self.allowMouse then
-			event.unregister(tes3.event.mouseButtonDown, waitInput)
-			event.unregister(tes3.event.mouseWheel, waitInput)
-		end
-
-		local popup = tes3ui.findMenu(popupId)
-		if popup then
-			popup:destroy()
-		end
-
-		-- Allow closing the menu using escape, wihout binding anything
-		if e.keyCode == tes3.scanCode.esc then
-			return
-		end
-
-		self:keySelected(e)
-	end
-
-	event.register(tes3.event.keyUp, waitInput)
-	if self.allowMouse then
-		event.register(tes3.event.mouseButtonDown, waitInput)
-		event.register(tes3.event.mouseWheel, waitInput)
-	end
-end
-
-function KeyBinder:press()
-	-- Display message to change keybinding
-	self:showKeyBindMessage()
-end
-
--- UI methods
-
-
---- @param parentBlock tes3uiElement
-function KeyBinder:createOuterContainer(parentBlock)
-	Parent.createOuterContainer(self, parentBlock)
-	self.elements.outerContainer.autoWidth = false
-	-- self.elements.outerContainer.borderRight = self.indent
+	return t
 end
 
 return KeyBinder

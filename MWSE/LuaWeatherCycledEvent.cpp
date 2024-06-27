@@ -6,6 +6,4 @@ namespace mwse::lua::event {
 	{
 
 	}
-
-	bool WeatherCycledEvent::m_EventEnabled = false;
 }

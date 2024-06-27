@@ -28,6 +28,7 @@ namespace TES3 {
 		Up = 0,
 		Down = 1,
 		Direct = 2,
+		Consume = 3
 	};
 
 	struct WorldControllerRenderCamera {
@@ -427,7 +428,8 @@ namespace TES3 {
 		_declspec(dllexport) void playItemUpDownSound(BaseObject* item, ItemSoundState state = ItemSoundState::Up, Reference* reference = nullptr);
 		_declspec(dllexport) float getSimulationTimestamp();
 		_declspec(dllexport) void processGlobalScripts();
-		_declspec(dllexport) void startGlobalScript(Script* script, const Reference* reference = nullptr);
+		_declspec(dllexport) void startGlobalScript(Script* script, Reference* reference = nullptr);
+		void startGlobalScriptBySourceID(Script* script, unsigned int sourceID);
 		_declspec(dllexport) void stopGlobalScript(Script* script);
 		_declspec(dllexport) bool isGlobalScriptRunning(const Script* script) const;
 
@@ -449,6 +451,9 @@ namespace TES3 {
 		void rechargerAddItem(Object* item, ItemData* itemData, Enchantment* enchantment);
 		bool getLevitationDisabled() const;
 		void setLevitationDisabled(bool disable);
+
+		// This puts the next music track into the game's thread-safe string buffer.
+		bool selectNextMusicTrack(MusicSituation situation) const;
 
 		//
 		// Custom functions.

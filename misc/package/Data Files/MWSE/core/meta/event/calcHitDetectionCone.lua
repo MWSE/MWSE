@@ -2,7 +2,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- This event is raised before a hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach.
+--- This event is raised before a melee hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach. See `calcTouchSpellCone` for the touch spell equivalent.
 --- @class calcHitDetectionConeEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field angleXY number The maximum allowable angle offset (in degrees) in the horizontal direction that will hit. This is related to game setting fCombatAngleXY but using different units. May be adjusted. The highest effective angle is 90 degrees, and larger angles will behave like 90 degrees.

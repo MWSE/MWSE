@@ -4,10 +4,17 @@ local UnitWind = require("unitwind")
 local configFile = "mwse_test_mwseLoadConfig"
 local configPath = string.format("Data Files\\MWSE\\config\\%s.json", configFile)
 
+-- We use single config file for multiple tests. Clear it before new test.
+local function deleteConfigFile()
+	os.remove(configPath)
+end
+
 local testSuite = UnitWind.new({
 	enabled = true,
 	highlight = true,
 	exitAfter = true,
+	beforeAll = deleteConfigFile,
+	afterEach = deleteConfigFile,
 })
 
 local function tablesEqual(t1, t2)
@@ -34,14 +41,7 @@ local function tablesEqual(t1, t2)
 	return true
 end
 
--- We use single config file for multiple tests. Clear it before new test.
-local function deleteConfigFile()
-	os.remove(configPath)
-end
-
 testSuite:start("Testing mwse.loadConfig recovery of integer keys in stored config files.")
-testSuite.beforeAll = deleteConfigFile
-testSuite.afterEach = deleteConfigFile
 
 -- A simple config file
 testSuite:test("Hash table config", function()

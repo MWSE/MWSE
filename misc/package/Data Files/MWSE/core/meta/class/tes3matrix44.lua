@@ -2,7 +2,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- A 4 by 4 matrix. You can perform following arithmetic with this type: `==`.
+--- A 4 by 4 matrix.
 --- @class tes3matrix44
 --- @operator add(tes3matrix44): tes3matrix44
 --- @operator mul(tes3matrix44): tes3matrix44

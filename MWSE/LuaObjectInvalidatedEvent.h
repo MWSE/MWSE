@@ -8,7 +8,6 @@ namespace mwse::lua::event {
 	public:
 		ObjectInvalidatedEvent(sol::object object);
 		sol::table createEventTable();
-		sol::object getEventOptions();
 
 	protected:
 		sol::object m_Object;

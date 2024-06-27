@@ -22,6 +22,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CellDeactivatedEvent::m_EventEnabled = false;
 }

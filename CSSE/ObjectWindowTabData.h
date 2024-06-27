@@ -99,6 +99,7 @@ namespace se::cs::dialog::object_window {
 	DEFINE_COLUMN(Blocked);
 	DEFINE_COLUMN(BookIsScroll);
 	DEFINE_COLUMN(BookTeaches);
+	DEFINE_COLUMN(ChanceNone);
 	DEFINE_COLUMN(Cost);
 	DEFINE_COLUMN(Count);
 	DEFINE_COLUMN(CreatureIsBipedal);
@@ -187,6 +188,7 @@ namespace se::cs::dialog::object_window {
 		static TabColumnArmorRating tabColumnArmorRating;
 		static TabColumnAutoCalc tabColumnAutoCalc;
 		static TabColumnBlocked tabColumnBlocked;
+		static TabColumnChanceNone tabColumnChanceNone;
 		static TabColumnBookIsScroll tabColumnBookIsScroll;
 		static TabColumnBookTeaches tabColumnBookTeaches;
 		static TabColumnCost tabColumnCost;

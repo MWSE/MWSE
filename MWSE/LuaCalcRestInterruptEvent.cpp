@@ -30,6 +30,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalcRestInterruptEvent::m_EventEnabled = false;
 }

@@ -42,6 +42,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool GenericUiPostEvent::m_EventEnabled = false;
 }

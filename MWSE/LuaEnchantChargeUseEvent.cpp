@@ -47,6 +47,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool EnchantChargeUseEvent::m_EventEnabled = false;
 }

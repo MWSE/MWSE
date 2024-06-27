@@ -4,5 +4,7 @@ return {
 	arguments = {
 		{ name = "effectId", type = "tes3.effect|integer", optional = false, description = "A value from [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table." },
 	},
-	valuetype = "integer",
+	returns = {
+		{ name = "index", type = "integer", description = "Returns 0-based index. Because Lua's arrays are 1-based, to index the spell's `effects` array with the return value add 1." }
+	},
 }

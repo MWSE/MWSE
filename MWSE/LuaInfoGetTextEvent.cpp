@@ -37,6 +37,4 @@ namespace mwse::lua::event {
 		setEventEnabled(true);
 		return text;
 	}
-
-	bool InfoGetTextEvent::m_EventEnabled = false;
 }

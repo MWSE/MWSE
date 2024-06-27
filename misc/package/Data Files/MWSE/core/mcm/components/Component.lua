@@ -43,10 +43,6 @@ function Component:new(data)
 	return t
 end
 
-function Component:__index(key)
-	return self[key]
-end
-
 -- Prints the component table to the log
 --- @param component table?
 function Component:printComponent(component)
@@ -61,16 +57,6 @@ function Component:printComponent(component)
 	mwse.log("}")
 end
 
---- @param data string|mwseMCMComponent.new.data|nil
---- @return mwseMCMComponent.new.data data
-function Component:prepareData(data)
-	data = data or {}
-	if type(data) == "string" then
-		data = { label = data }
-	end
-	data.parentComponent = self
-	return data
-end
 
 --- @alias mwseMCMComponentClass
 ---| "Category" # Categories
@@ -96,42 +82,6 @@ end
 ---| "YesNoButton"
 ---| "Template" # Templates
 
---- @class mwseMCMComponent.getComponent.componentData
---- @field class mwseMCMComponentClass
-
---- @param componentData mwseMCMComponent|mwseMCMComponent.getComponent.componentData
---- @return mwseMCMComponent|mwseMCMTemplate|nil component
-function Component:getComponent(componentData)
-
-	-- if componentType field is set then we've already built it
-	if componentData.componentType then
-		return componentData --[[@as mwseMCMComponent]]
-	end
-
-	if not componentData.class then
-		mwse.log("ERROR: No class found for component:")
-		self:printComponent(componentData)
-	end
-	local component
-	local classPaths = require("mcm.classPaths")
-	for _, path in pairs(classPaths.components) do
-		local classPath = (path .. componentData.class)
-		local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-		local fileExists = lfs.fileexists(fullPath)
-
-		if fileExists then
-			component = require(classPath)
-			break
-		end
-	end
-	if component then
-		--- @cast component mwseMCMComponent
-		self:prepareData(componentData)
-		return component:new(componentData)
-	else
-		mwse.log("Error: class %s not found", componentData.class)
-	end
-end
 
 --- @param mouseOverList tes3uiElement[]?
 function Component:registerMouseOverElements(mouseOverList)

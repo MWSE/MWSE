@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-set-field
 local common = {}
 
 --- A wrapper around `print` that allows format strings.
@@ -14,7 +15,7 @@ end
 
 --- @param str string
 --- @param sep string
---- @return table
+--- @return string[] parts
 function string.split(str, sep)
 	if sep == nil then
 		sep = "%s"
@@ -28,7 +29,7 @@ end
 getmetatable("").split = string.split
 
 --- @param s string
---- @return string
+--- @return string trimmed
 function string.trim(s)
 	return string.match(s, '^()%s*$') and '' or string.match(s, '^%s*(.*%S)')
 end
@@ -66,9 +67,10 @@ function table.empty(t)
 	return true
 end
 
---- @param t table
---- @param value any
---- @return any
+---@generic K, V
+--- @param t {[K]: V}
+--- @param value V
+--- @return K?
 function table.find(t, value)
 	for i, v in pairs(t) do
 		if (v == value) then
@@ -77,9 +79,10 @@ function table.find(t, value)
 	end
 end
 
---- @param t table
---- @param sort boolean|function|nil
---- @return table
+---@generic K, V, T
+--- @param t {[K]: V}|T
+--- @param sort boolean|nil|(fun(a: V, b: V): boolean)
+--- @return K[]
 function table.keys(t, sort)
 	local keys = {}
 	for k, _ in pairs(t) do
@@ -96,9 +99,10 @@ function table.keys(t, sort)
 	return keys
 end
 
---- @param t table
---- @param sort boolean|function|nil
---- @return table
+---@generic K, V, T
+--- @param t {[K]: V}|T
+--- @param sort boolean|nil|(fun(a: V, b: V): boolean)
+--- @return V[]
 function table.values(t, sort)
 	local values = {}
 	for _, v in pairs(t) do
@@ -115,9 +119,10 @@ function table.values(t, sort)
 	return values
 end
 
---- @param t table
---- @param d table|nil
---- @return table
+---@generic K, V, T
+---@param t {[K]: V}|T
+---@param d {[K]: V}|T|nil
+---@return {[K]: V}|T
 function table.copy(t, d)
 	if (d == nil) then
 		d = {}
@@ -132,8 +137,9 @@ function table.copy(t, d)
 	return d
 end
 
---- @param t table
---- @return table
+---@generic K, V, T
+---@param t {[K]: V}|T
+---@return {[K]: V}|T
 function table.deepcopy(t)
 	local copy = nil
 	if type(t) == "table" then
@@ -148,9 +154,10 @@ function table.deepcopy(t)
 	return copy
 end
 
---- @param t table
---- @param value any
---- @return boolean
+---@generic V, T
+---@param t V[]|T
+--- @param value V
+--- @return boolean successful
 function table.removevalue(t, value)
 	local i = table.find(t, value)
 	if (i ~= nil) then
@@ -179,7 +186,7 @@ function json.loadfile(path)
 	f:close()
 
 	-- Return decoded json.
-	return json.decode(fileContents)
+	return json.decode(fileContents) --[[@as table?]]
 end
 
 --- @param path string
@@ -187,7 +194,7 @@ end
 --- @param config table
 function json.savefile(path, object, config)
 	local f = assert(io.open(path, "w"))
-	f:write(json.encode(object, config))
+	f:write(json.encode(object, config) --[[@as string?]])
 	f:close()
 end
 
@@ -211,10 +218,11 @@ end
 -- lfs library extensions
 --
 
+---@class common.lfs : lfslib
 local lfs = require("lfs")
 
---- @param ... string
---- @return string
+--- @param ... string Parts of a file path.
+--- @return string path The result of joining each `part` with a `\\`.
 function lfs.join(...)
 	return table.concat({ ... }, "\\")
 end
@@ -231,9 +239,14 @@ function lfs.isfile(path)
 	return lfs.attributes(path, "mode") == "directory"
 end
 
+---@param from string File to copy from.
+---@param to string File to copy to.
 function lfs.copyfile(from, to)
 	local source = io.open(from, "r")
+	if not source then return end
+
 	local destination = io.open(to, "w")
+	if not destination then return end
 
 	destination:write(source:read("*a"))
 
@@ -245,11 +258,10 @@ end
 lfs.rmdir_old = lfs.rmdir
 
 --- @param dir string
---- @param recursive boolean
+--- @param recursive boolean? Default: `false`
 --- @return boolean
 function lfs.rmdir(dir, recursive)
 	-- Default to not being recursive.
-	local recursive = recursive or false
 	if (recursive) then
 		for file in lfs.dir(dir) do
 			local path = dir .. "\\" .. file
@@ -279,8 +291,7 @@ end
 --
 
 --- The path to the autocomplete folder. `MWSE/autocomplete`
---- @type string
-common.pathAutocomplete = lfs.currentdir()
+common.pathAutocomplete = lfs.currentdir() --[[@as string]]
 
 --- The path to the definitions folder. `MWSE/autocomplete/definitions`
 --- @type string
@@ -308,9 +319,9 @@ common.defaultExperimentalAPIWarning = [[
 
 ]]
 
---- @param package table
---- @param useDefault boolean|nil
---- @return string|nil
+--- @param package package
+--- @param useDefault boolean|nil Use default descriptions?
+--- @return string description This will be `nil` if there were no `parts`.
 function common.getDescriptionString(package, useDefault)
 	if (useDefault == nil) then
 		useDefault = true
@@ -341,6 +352,8 @@ function common.getDescriptionString(package, useDefault)
 	if (#descriptionBits > 0) then
 		return table.concat(descriptionBits, " ")
 	end
+
+	-- According to the annotations induced by `emmy.lua`, something should be returned here.
 end
 
 --
@@ -352,7 +365,6 @@ end
 --- @field type string The underlying type.
 --- @field isArray boolean If true, the type is a boolean.
 --- @field isOptional boolean If true, the type is optional.
-
 local complexType = {}
 
 function complexType:toTypeString()
@@ -360,7 +372,7 @@ function complexType:toTypeString()
 end
 
 
---- comment
+--- Parse a string, return a `complexType`
 --- @param input string
 --- @return complexType
 function common.makeComplexType(input)
@@ -384,6 +396,9 @@ function common.makeComplexType(input)
 	return complex
 end
 
+---@param type string
+---@param isOptional boolean?
+---@param isArray boolean?
 function common.makeTypeString(type, isOptional, isArray)
 	return string.format("%s%s%s", type, isOptional and "?" or "", isArray and "[]" or "")
 end
@@ -393,54 +408,113 @@ end
 -- Package compilation
 --
 
+---@alias packageType
+---|"class"
+---|"function"
+---|"method"
+---|"value"
+---|"lib"
+---|"event"
+
 --- @class exampleTable
 --- @field title string|nil The example title.
 --- @field description string|nil The description of the example.
 
 --- @class package
+--- @field name string
+--- @field readOnly boolean
+--- @field optional boolean? Is this parameter optional?
+--- @field default string|integer|nil
+--- @field experimental boolean
+--- @field description string?
 --- @field key string The name of the file that generated this package.
---- @field type string The type definition for the package.
+--- @field type packageType The type definition for the package.
 --- @field folder string The folder that the package was created from.
 --- @field parent package The package this package is a child of.
 --- @field namespace string The full namespace of the package.
 --- @field deprecated boolean Allows marking definitions as deprecated. Those definitions aren't written to the web documentation.
 --- @field examples table<string, exampleTable>|nil A table containing the examples. Keys are the example's name/path to the example file.
 
+-- This corresponds to a documentation file with the [`"value"` type](https://github.com/MWSE/MWSE/blob/master/docs/type-definitions-guide.md#value-definitions).
+---@class packageValue : package
+---@field valuetype string
+---@field link string
+
+
+-- Basic function argument. These are things that can be inside `tableParams`.
+---@class packageFunctionArgument.Simple : package
+
+-- Basic function argument. Includes the possibility of having `tableParams
+---@class packageFunctionArgument.Complex : package
+---@field tableParams packageFunctionArgument.Simple[]
+
+-- Parameter or return value for a `packageFunction` or `packageMethod`.
+-- This comes in two flavors: `Simple` and `Complex`.
+---@alias packageFunctionArgument packageFunctionArgument.Simple|packageFunctionArgument.Complex
+
+
+-- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
+--- @class packageFunction : packageValue
+--- @field arguments packageFunctionArgument[]
+--- @field returns packageFunctionArgument|packageFunctionArgument[]|nil
+
+-- This corresponds to a documentation file with the [`"method"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
+--- @class packageMethod : packageFunction
+
+-- This corresponds to a documentation file with the [`"lib"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#library-definitions).
 --- @class packageLib : package
 --- @field children table<string, package>|nil
---- @field functions package[]|nil
---- @field values package[]|nil
+--- @field functions packageFunction[]|nil
+--- @field values packageValue[]|nil
+
+---@class packageOverload
+---@field rightType string
+---@field resultType string
+---@field description string
+
+-- This corresponds to a documentation file with the [`"operator"` type](https://github.com/MWSE/MWSE/blob/master/docs/operator-definitions-guide.md).
+---@class packageOperator : package
+---@field overloads packageOverload[]
 
 --- @class packageClass : packageLib
 --- @field inherits string The class that this class descends from.
+--- @field operators packageOperator[]|nil
 --- @field isAbstract boolean
---- @field methods package[]|nil
+--- @field methods packageMethod[]|nil
 --- @field allDescendents table<string, packageClass>
 --- @field directDescendents table<string, packageClass>
+--- @field allDescendentKeys string
 
---- @class packageFunction : package
-
---- @class packageMethod : packageFunction
---- @field returns table
+-- This corresponds to a documentation file with the [`"event"` type](https://github.com/MWSE/MWSE/blob/master/docs/event-definitions-guide.md).
+---@class packageEvent : package
+---@field filter string
+---@field blockable boolean
+---@field related string[]
+---@field eventData table<string, packageFunctionArgument>
 
 --- comment
 --- @param package packageFunction
---- @return table
+--- @return packageFunctionArgument[]|nil
 function common.getConsistentReturnValues(package)
-	if (type(package.returns) == "string" and package.valuetype == nil) then
-		return { { name = "result", type = package.returns } }
-	elseif (type(package.returns) == "string" and package.valuetype ~= nil) then
-		return { { name = package.returns, type = package.valuetype } }
-	elseif (package.valuetype) then
-		return { { name = "result", type = package.valuetype } }
-	elseif (type(package.returns) == "table") then
-		if (package.returns.name or package.returns.type) then
-			return { package.returns }
-		elseif (#package.returns > 0) then
-			return package.returns
+	if type(package.returns) == "string" then
+		if package.valuetype == nil then
+			return { { name = "result", type = package.returns } }
 		end
-		error("Invalid parameters table.")
+		return { { name = package.returns, type = package.valuetype } }
 	end
+	
+	if (package.valuetype) then
+		return { { name = "result", type = package.valuetype } }
+	end
+
+	if type(package.returns) ~= "table" then return end
+
+	if (package.returns.name or package.returns.type) then
+		return { package.returns }
+	elseif (#package.returns > 0) then
+		return package.returns
+	end
+	error("Invalid parameters table.")
 end
 
 --- comment
@@ -473,6 +547,7 @@ function common.compileEntry(folder, key, parent)
 	package.namespace = getFullPackageNamespace(package)
 
 	-- Setup children access on parents.
+	-- NOTE: the `children` field does not appear to ever be used (except in `readthedocs.lua`).
 	parent.children = parent.children or {}
 	parent.children[key] = package
 
@@ -486,7 +561,11 @@ function common.compileEntry(folder, key, parent)
 		for entry in lfs.dir(lfs.join(folder, key)) do
 			local extension = entry:match("[^.]+$")
 			if (extension == "lua") then
-				common.compileEntry(lfs.join(folder, key), entry:match("[^/]+$"):sub(1, -1 * (#extension + 2)), package)
+				common.compileEntry(
+					lfs.join(folder, key), 
+					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)), 
+					package
+				)
 			end
 		end
 	end
@@ -496,7 +575,7 @@ end
 --- @param folder string
 --- @param key string
 --- @param owningCollection table<string, package>
---- @param acceptedType string
+--- @param acceptedType string?
 function common.compile(folder, key, owningCollection, acceptedType)
 	-- Load our base package.
 	local path = lfs.join(folder, key .. ".lua")
@@ -516,7 +595,11 @@ function common.compile(folder, key, owningCollection, acceptedType)
 		for entry in lfs.dir(lfs.join(folder, key)) do
 			local extension = entry:match("[^.]+$")
 			if (extension == "lua") then
-				common.compileEntry(lfs.join(folder, key), entry:match("[^/]+$"):sub(1, -1 * (#extension + 2)), package)
+				common.compileEntry(
+					lfs.join(folder, key), 
+					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)), 
+					package
+				)
 			end
 		end
 	end
@@ -533,11 +616,16 @@ function common.compilePath(path, owningCollection, acceptedType)
 	for entry in lfs.dir(path) do
 		local extension = entry:match("[^.]+$")
 		if (extension == "lua") then
-			common.compile(path, entry:match("[^/]+$"):sub(1, -1 * (#extension + 2)), owningCollection, acceptedType)
+			common.compile(
+				path, 
+				entry:match("[^/]+$") :sub(1, -1 * (extension:len() + 2)), 
+				owningCollection, 
+				acceptedType
+			)
 		end
 	end
 
-	if (acceptedType == "class") then
+	if (acceptedType == "class") then ---@cast owningCollection packageClass
 		common.compileInheritances(owningCollection)
 	end
 end
@@ -615,7 +703,7 @@ function common.getEnumerationsMap(namespace)
 	for entry in lfs.dir(directory) do
 		local extension = entry:match("[^.]+$")
 		if (extension == "lua") then
-			local filename = entry:match("[^/]+$"):sub(1, -1 * (#extension + 2))
+			local filename = entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2))
 			if (not fileBlacklist[filename]) then
 				enums = enums or {}
 				enums[filename] = lfs.join(directory, entry)

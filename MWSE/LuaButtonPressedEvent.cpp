@@ -19,6 +19,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ButtonPressedEvent::m_EventEnabled = false;
 }

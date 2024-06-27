@@ -10,4 +10,4 @@ local function onCollision(e)
 	end
 end
 
-event.register(tes3.event.collision, onCollision, { filter = tes3.player })
+event.register(tes3.event.collision, onCollision, { filter = ("PlayerSaveGame"):lower() })

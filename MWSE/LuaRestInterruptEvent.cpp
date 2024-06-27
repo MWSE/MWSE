@@ -29,6 +29,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool RestInterruptEvent::m_EventEnabled = false;
 }

@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event is triggered when the game is about to play a sound when an item gets added or removed from an inventory. Can be blocked to play custom sound instead.
+This event is triggered when the game is about to play a sound when an item gets added or removed from an inventory, or when eaten or consumed. Can be blocked to play custom sound instead.
 
 ```lua
 --- @param e playItemSoundEventData

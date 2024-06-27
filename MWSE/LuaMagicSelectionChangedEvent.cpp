@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 		}
 		return eventData;
 	}
-
-	bool MagicSelectionChangedEvent::m_EventEnabled = false;
 }

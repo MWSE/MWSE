@@ -27,6 +27,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ObjectCreatedEvent::m_EventEnabled = false;
 }

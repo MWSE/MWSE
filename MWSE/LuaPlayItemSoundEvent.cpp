@@ -27,6 +27,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool PlayItemSoundEvent::m_EventEnabled = false;
 }

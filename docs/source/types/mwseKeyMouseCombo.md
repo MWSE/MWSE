@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A table with the data about mouse and keyboard key combination.
+A table with the data about mouse and keyboard key combination. Unbound key combinations will have all the fields set to `nil`.
 
 This type inherits the following: [mwseKeyCombo](../types/mwseKeyCombo.md)
 ## Properties
@@ -73,7 +73,7 @@ The index of the currently pressed mouse button.
 
 **Returns**:
 
-* `result` (number, nil)
+* `result` (integer, nil)
 
 ***
 

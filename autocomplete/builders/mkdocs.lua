@@ -14,9 +14,13 @@ lfs.remakedir(lfs.join(docsSourceFolder, "types"))
 lfs.remakedir(lfs.join(docsSourceFolder, "events"))
 
 -- Base containers to hold our compiled data.
+---@type table<string, package>
 local globals = {}
+---@type table<string, packageClass>
 local classes = {}
+---@type table<string, package>
 local events = {}
+---@type table<string, string>
 local typeLinks = {
 	-- The automatic link resolving doesn't work for these enumerations.
 	-- These came as warnings in the output of the mkdocs - Start Server task defined at: "docs/.vscode/tasks.json"
@@ -75,6 +79,8 @@ local function removeDeprecated(packages)
 	return table.values(packages)
 end
 
+---@param className string
+---@return string
 local function buildParentChain(className)
 	local package = assert(classes[className])
 	local ret = ""
@@ -90,15 +96,17 @@ local function buildParentChain(className)
 end
 
 --- @param enum string
+--- @return string
 local function splitCamelCase(enum)
 	-- Make the first letter uppercase
 	enum = enum:gsub("^%l", string.upper)
 	-- Insert dash between lowercase and uppercase character
-	enum = enum:gsub( "(%l)(%u)", "%1-%2" )
+	enum = enum:gsub("(%l)(%u)", "%1-%2")
 	return enum:lower()
 end
 
 --- @param type string Supports array annotation. For example: "tes3weather[]".
+--- @return string
 local function getTypeLink(type)
 	if typeLinks[type] then
 		return typeLinks[type]
@@ -256,7 +264,7 @@ local function relatedButtons(related)
 end
 
 --- comment
---- @param package table
+--- @param package package|packageClass
 --- @param field any
 --- @param results any
 --- @return table
@@ -272,6 +280,7 @@ local function getPackageComponentsArray(package, field, results)
 		end
 	end
 
+	-- Check if it's a `packageClass`
 	if (package.inherits and classes[package.inherits]) then
 		return getPackageComponentsArray(classes[package.inherits], field, results)
 	end
@@ -279,10 +288,16 @@ local function getPackageComponentsArray(package, field, results)
 	return results
 end
 
+---@param A package
+---@param B package
+---@return boolean
 local function sortPackagesByKey(A, B)
 	return A.key:lower() < B.key:lower()
 end
 
+---@param file file* the IO file
+---@param argument packageFunctionArgument
+---@param indent string?
 local function writeArgument(file, argument, indent)
 	indent = indent or ""
 
@@ -306,6 +321,7 @@ local function writeArgument(file, argument, indent)
 	end
 end
 
+---@param argument packageFunctionArgument
 local function getArgumentCode(argument)
 	if (argument.tableParams) then
 		local tableArgs = {}
@@ -317,7 +333,11 @@ local function getArgumentCode(argument)
 	return argument.name or "unknown"
 end
 
-local writeSubPackage = nil
+
+---@param file file*
+---@param package package
+---@param from package
+local function writeSubPackage(file, package, from) end
 
 local operatorToTitle = {
 	unm = "Unary minus (`-`)",
@@ -333,6 +353,9 @@ local operatorToTitle = {
 	eq = "Equality (`==`)",
 }
 
+---@param file file*
+---@param operator packageOperator
+---@param package package
 local function writeOperatorPackage(file, operator, package)
 	file:write(string.format("### %s\n\n", operatorToTitle[operator.key]))
 
@@ -424,7 +447,7 @@ local function writeFields(file, package, field, fieldName, writeFunction, write
 end
 
 --- @param file file*
---- @param package any
+--- @param package package|packageEvent|packageClass|packageFunction
 local function writePackageDetails(file, package)
 	-- Write description.
 	file:write(string.format("%s\n\n", common.getDescriptionString(package)))
@@ -474,8 +497,10 @@ local function writePackageDetails(file, package)
 		or needsHorizontalRule
 	)
 
+	---@diagnostic disable-next-line: param-type-mismatch
 	local returns = common.getConsistentReturnValues(package)
 	if (package.type == "method" or package.type == "function") then
+		---@cast package packageFunction|packageMethod
 		file:write(string.format("```lua\n", package.namespace))
 		if (returns) then
 			local returnNames = {}
@@ -544,6 +569,7 @@ local function writePackageDetails(file, package)
 	end
 end
 
+---@type {functions: string[], classes: string[]}
 local identifierStems = {
 	functions = {
 		"get", "set", "mod",
@@ -560,7 +586,9 @@ local identifierStems = {
 		"ni", "tes3ui", "tes3",
 	}
 }
-
+---@param file file*
+---@param key string
+---@param stems string[]
 local function writeSearchTerms(file, key, stems)
 	-- Hidden search terms, to work around deficiencies in lunr.
 	-- Include lower-cased variants of the identifier.
@@ -583,7 +611,10 @@ local function writeSearchTerms(file, key, stems)
 	file:write("</div>\n\n")
 end
 
-writeSubPackage = function(file, package, from)
+---@param file file*
+---@param package package
+---@param from package
+function writeSubPackage(file, package, from)
 	-- Don't document deprecated APIs on the website.
 	if (package.deprecated) then
 		return
@@ -601,6 +632,8 @@ writeSubPackage = function(file, package, from)
 	writePackageDetails(file, package)
 end
 
+---@param package package
+---@param outDir string
 local function build(package, outDir)
 	-- Load our base package.
 	common.log("Building " .. package.type .. ": " .. package.namespace .. " ...")
@@ -630,6 +663,7 @@ local function build(package, outDir)
 	writePackageDetails(file, package)
 
 	-- Ensure that sub-globals are built.
+	-- NOTE: This does not appear to be used anywhere.
 	if (package.libs) then
 		for _, lib in ipairs(package.libs) do
 			build(lib, outDir)

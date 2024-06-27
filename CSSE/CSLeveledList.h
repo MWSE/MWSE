@@ -8,7 +8,6 @@ namespace se::cs {
 			Object* object;
 			short levelRequirement;
 		};
-
 	};
 	static_assert(sizeof(LeveledList) == sizeof(PhysicalObject), "LeveledList failed size validation");
 	static_assert(sizeof(LeveledList::Node) == 0x8, "LeveledList::Node failed size validation");

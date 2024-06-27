@@ -52,6 +52,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SpellTickEvent::m_EventEnabled = false;
 }

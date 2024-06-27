@@ -6,7 +6,6 @@ This event is used to register the settings configuration menu. That can be achi
 
 - [template:register()](../types/mwseMCMTemplate.md#register)
 - [mwse.mcm.register()](../apis/mwse.mcm.md#mwsemcmregister)
-- [mwse.registerModConfig()](../apis/mwse.md#registermodconfig)
 ]],
 	examples = {
 		["mcmExample"] = {

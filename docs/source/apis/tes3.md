@@ -2205,6 +2205,27 @@ local index = tes3.getJournalIndex({ id = ... })
 
 ***
 
+### `tes3.getKeyName`
+<div class="search_terms" style="display: none">getkeyname, keyname</div>
+
+Gets the name of a corresponding `tes3.scanCode`, using the appropriate GMSTs. The `keyName` returned by this function is the same `keyName` that would be used in the in-game Controls menu.
+
+For example, `tes3.getKeyName(tes3.scanCode.b)` will return `"B"`, and `tes3.getKeyName(tes3.scanCode.rshift)` will return `"Right Shift"`.
+
+```lua
+local keyName = tes3.getKeyName(keyCode)
+```
+
+**Parameters**:
+
+* `keyCode` ([tes3.scanCode](../references/scan-codes.md))
+
+**Returns**:
+
+* `keyName` (string, nil): A string representation of the given `keyCode`.
+
+***
+
 ### `tes3.getKillCount`
 <div class="search_terms" style="display: none">getkillcount, killcount</div>
 
@@ -2282,6 +2303,26 @@ local vector3 = tes3.getLastExteriorPosition()
 **Returns**:
 
 * `vector3` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `tes3.getLegacyScriptRunning`
+<div class="search_terms" style="display: none">getlegacyscriptrunning, legacyscriptrunning</div>
+
+This function returns true if a mwscript is currently running. Only checks global scripts.
+
+```lua
+local isRunning = tes3.getLegacyScriptRunning({ script = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `script` ([tes3script](../types/tes3script.md), string): The script to check for.
+
+**Returns**:
+
+* `isRunning` (boolean)
 
 ***
 
@@ -4143,9 +4184,9 @@ local executed = tes3.runLegacyScript({ script = ..., source = ..., command = ..
 * `params` (table)
 	* `script` ([tes3script](../types/tes3script.md), string): *Default*: `tes3.worldController.scriptCompileAndRun`. The base script to base the execution from.
 	* `source` ([tes3.compilerSource](../references/compiler-sources.md)): *Default*: `tes3.compilerSource.default`. The compilation source to use.
-	* `command` (string): The script text to compile and run.
+	* `command` (string): *Optional*. The script text to compile and run.
 	* `variables` (tes3scriptVariables): *Optional*. If a reference is provided, the reference's variables will be used.
-	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): The reference to target for execution.
+	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): *Optional*. The reference to target for execution.
 	* `dialogue` ([tes3dialogue](../types/tes3dialogue.md), string): *Optional*. If compiling for dialogue context, the dialogue associated with the script.
 	* `info` ([tes3dialogueInfo](../types/tes3dialogueInfo.md)): *Optional*. The info associated with the dialogue.
 
@@ -4827,13 +4868,52 @@ tes3.skipAnimationFrame({ reference = ... })
 
 ***
 
+### `tes3.skipToNextMusicTrack`
+<div class="search_terms" style="display: none">skiptonextmusictrack</div>
+
+This function interrupts the current music to play a random new combat or explore track, as appropriate. The selected music track can be read from the audio controller's `.nextMusicFilePath` field.
+
+```lua
+local musicTrackQueued = tes3.skipToNextMusicTrack({ situation = ..., crossfade = ..., volume = ..., force = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `situation` ([tes3.musicSituation](../references/music-situations.md)): *Optional*. Determines what kind of gameplay situation the music should activate for. By default, the function will determine the right solution based on the player's combat state. This value maps to [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
+	* `crossfade` (number): *Default*: `1.0`. The duration in seconds of the crossfade from the old to the new track. The default is 1.0.
+	* `volume` (number): *Optional*. The volume at which the music will play. If no volume is provided, the user's volume setting will be used.
+	* `force` (boolean): *Default*: `false`. If true, normally uninterruptible music will be overwritten to instead play the new track.
+
+**Returns**:
+
+* `musicTrackQueued` (boolean)
+
+***
+
+### `tes3.stopLegacyScript`
+<div class="search_terms" style="display: none">stoplegacyscript</div>
+
+This function stops a global mwscript.
+
+```lua
+tes3.stopLegacyScript({ script = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `script` ([tes3script](../types/tes3script.md), string): The script to stop.
+
+***
+
 ### `tes3.streamMusic`
 <div class="search_terms" style="display: none">streammusic</div>
 
 This function interrupts the current music to play the specified music track.
 
 ```lua
-local executed = tes3.streamMusic({ path = ..., situation = ..., crossfade = ... })
+local executed = tes3.streamMusic({ path = ..., situation = ..., crossfade = ..., volume = ... })
 ```
 
 **Parameters**:
@@ -4842,6 +4922,7 @@ local executed = tes3.streamMusic({ path = ..., situation = ..., crossfade = ...
 	* `path` (string): Path to the music file, relative to Data Files/music/.
 	* `situation` ([tes3.musicSituation](../references/music-situations.md)): *Default*: `tes3.musicSituation.uninterruptible`. Determines what kind of gameplay situation the music should stay active for. Explore music plays during non-combat, and ends when combat starts. Combat music starts during combat, and ends when combat ends. Uninterruptible music always plays, ending only when the track does. This value maps to [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
 	* `crossfade` (number): *Default*: `1.0`. The duration in seconds of the crossfade from the old to the new track. The default is 1.0.
+	* `volume` (number): *Optional*. The volume at which the music will play. If no volume is provided, the user's volume setting will be used.
 
 **Returns**:
 

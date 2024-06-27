@@ -177,6 +177,10 @@ namespace se::cs::winui {
 	// ComboBox
 	//
 
+	bool ComboBox_HasStringExact(HWND hWnd, const char* string) {
+		return ComboBox_FindStringExact(hWnd, -1, string) != CB_ERR;
+	}
+
 	void ComboBox_SetCurSelEx(HWND hWnd, int index) {
 		ComboBox_SetCurSel(hWnd, index);
 		SendMessageA(GetAncestor(hWnd, GA_PARENT), WM_COMMAND, MAKEWPARAM(GetWindowLongPtr(hWnd, GWLP_ID), CBN_SELCHANGE), (LPARAM)hWnd);

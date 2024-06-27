@@ -3,6 +3,10 @@
 
 --- @meta
 --- The timer library provides helper functions for creating delayed executors.
+--- 
+--- !!! warning "Timers get canceled when loading saves."
+--- 	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+--- 
 --- @class timerlib
 --- @field active any Constant to represent a timer that is actively running.
 --- @field expired any Constant to represent a timer that has completed.
@@ -32,7 +36,9 @@ function timer.delayOneFrame(callback, type) end
 function timer.register(name, fn) end
 
 --- Creates a timer.
---- 
+--- !!! warning "Timers get canceled when loading saves."
+--- 	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+--- 	
 --- !!! tip
 --- 	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.
 ---

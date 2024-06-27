@@ -27,6 +27,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool FilterContentsMenuEvent::m_EventEnabled = false;
 }

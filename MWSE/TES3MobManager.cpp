@@ -122,9 +122,8 @@ namespace TES3 {
 	bool MobManager::hasMobileCollision(const MobileActor* mobile) {
 		bool result = false;
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			result = mobCollisionGroup->containsCollider(node);
+			result = mobCollisionGroup->containsCollider(mobile->reference->sceneNode);
 			criticalSection_Mobs.leave();
 		}
 		return result;
@@ -132,10 +131,9 @@ namespace TES3 {
 
 	void MobManager::enableMobileCollision(MobileActor* mobile) {
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			if (!mobCollisionGroup->containsCollider(node)) {
-				mobCollisionGroup->addCollider(node);
+			if (!mobCollisionGroup->containsCollider(mobile->reference->sceneNode)) {
+				mobCollisionGroup->addCollider(mobile->reference->sceneNode);
 			}
 			criticalSection_Mobs.leave();
 		}
@@ -143,9 +141,8 @@ namespace TES3 {
 
 	void MobManager::disableMobileCollision(MobileActor* mobile) {
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			mobCollisionGroup->removeCollider(node);
+			mobCollisionGroup->removeCollider(mobile->reference->sceneNode);
 			criticalSection_Mobs.leave();
 		}
 	}

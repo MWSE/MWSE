@@ -8,5 +8,4 @@ return {
 			description = "The object being invalidated. Can be a tes3reference.",
 		},
 	},
-	filter = "object",
 }

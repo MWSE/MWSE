@@ -325,6 +325,11 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFirstCloneOfActor(this, baseId);
 	}
 
+	const auto TES3_NonDynamicData_resolveReferenceBySourceID = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, unsigned int)>(0x4B9180);
+	Reference* NonDynamicData::resolveReferenceBySourceID(unsigned int id) {
+		return TES3_NonDynamicData_resolveReferenceBySourceID(this, id);
+	}
+
 	Spell* NonDynamicData::getSpellById(const char* id) {
 		for (const auto spell : *spellsList) {
 			if (_stricmp(id, spell->objectID) == 0) {
@@ -528,8 +533,8 @@ namespace TES3 {
 		return TES3_DataHandler_addSoundById(this, soundId, reference, playbackFlags, volume, pitch, unknown);
 	}
 
-	const auto TES3_DataHandler_addTemporySound = reinterpret_cast<void(__thiscall*)(DataHandler*, const char*, Reference*, int, int, float, bool, Sound*)>(0x48C2B0);
-	void DataHandler::addTemporySound(const char* path, Reference* reference, int playbackFlags, int volume, float pitch, bool isVoiceover, Sound* sound) {
+	const auto TES3_DataHandler_addTemporarySound = reinterpret_cast<void(__thiscall*)(DataHandler*, const char*, Reference*, int, int, float, bool, Sound*)>(0x48C2B0);
+	void DataHandler::addTemporarySound(const char* path, Reference* reference, int playbackFlags, int volume, float pitch, bool isVoiceover, Sound* sound) {
 		if (mwse::lua::event::AddTempSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			auto stateHandle = luaManager.getThreadSafeStateHandle();
@@ -549,7 +554,7 @@ namespace TES3 {
 			}
 		}
 
-		TES3_DataHandler_addTemporySound(this, path, reference, playbackFlags, volume, pitch, isVoiceover, sound);
+		TES3_DataHandler_addTemporarySound(this, path, reference, playbackFlags, volume, pitch, isVoiceover, sound);
 	}
 
 	const auto TES3_DataHandler_getSoundPlaying = reinterpret_cast<SoundEvent * (__thiscall*)(DataHandler*, Sound*, Reference*)>(0x48BBD0);
