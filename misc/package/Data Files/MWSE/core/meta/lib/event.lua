@@ -39,6 +39,7 @@
 --- @field register fun(eventId: '"calcSunDamageScalar"', callback: (fun(e: calcSunDamageScalarEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcSwimRunSpeed"', callback: (fun(e: calcSwimRunSpeedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcSwimSpeed"', callback: (fun(e: calcSwimSpeedEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"calcTouchSpellCone"', callback: (fun(e: calcTouchSpellConeEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcTrainingPrice"', callback: (fun(e: calcTrainingPriceEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcTravelPrice"', callback: (fun(e: calcTravelPriceEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcWalkSpeed"', callback: (fun(e: calcWalkSpeedEventData): boolean?), options: table?)

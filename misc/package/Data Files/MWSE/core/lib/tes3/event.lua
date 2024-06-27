@@ -33,6 +33,7 @@ return {
 	["calcSunDamageScalar"] = "calcSunDamageScalar",
 	["calcSwimRunSpeed"] = "calcSwimRunSpeed",
 	["calcSwimSpeed"] = "calcSwimSpeed",
+	["calcTouchSpellCone"] = "calcTouchSpellCone",
 	["calcTrainingPrice"] = "calcTrainingPrice",
 	["calcTravelPrice"] = "calcTravelPrice",
 	["calcWalkSpeed"] = "calcWalkSpeed",

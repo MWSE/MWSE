@@ -13,8 +13,6 @@ if not tes3.isInitialized() then
 	))
 end
 
-local fileUtils = require("mcm.fileUtils")
-
 --- @class mwseMCMComponent
 local Component = {}
 Component.componentType = "Component"
@@ -84,30 +82,6 @@ end
 ---| "YesNoButton"
 ---| "Template" # Templates
 
---- @class mwseMCMComponent.getComponent.componentData
---- @field class mwseMCMComponentClass
-
---- @param componentData mwseMCMComponent|mwseMCMComponent.getComponent.componentData
---- @return mwseMCMComponent|mwseMCMTemplate|nil component
-function Component:getComponent(componentData)
-
-	-- if componentType field is set then we've already built it
-	if componentData.componentType then
-		return componentData --[[@as mwseMCMComponent]]
-	end
-
-	if not componentData.class then
-		mwse.log("ERROR: No class found for component:")
-		self:printComponent(componentData)
-	end
-	local componentClass = fileUtils.getComponentClass(componentData.class)
-	if componentClass then
-		componentData.parentComponent = self
-		return componentClass:new(componentData)
-	else
-		mwse.log("Error: class %s not found", componentData.class)
-	end
-end
 
 --- @param mouseOverList tes3uiElement[]?
 function Component:registerMouseOverElements(mouseOverList)

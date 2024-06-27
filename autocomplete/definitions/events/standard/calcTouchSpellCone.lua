@@ -1,7 +1,7 @@
 return {
 	type = "event",
-	description = "This event is raised before a melee hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach. See `calcTouchSpellCone` for the touch spell equivalent.",
-	related = { "calcTouchSpellCone" },
+	description = "This event is raised just before a touch spell completes casting, to set up the hit detection cone for spell targets. See `calcHitDetectionCone` for the melee equivalent.",
+	related = { "calcHitDetectionCone" },
 	eventData = {
 		["attacker"] = {
 			type = "tes3reference",
@@ -13,19 +13,9 @@ return {
 			readOnly = true,
 			description = "The mobile which is making the attack.",
 		},
-		["target"] = {
-			type = "tes3reference",
-			readOnly = true,
-			description = "The reference of the target. Only available at the second stage (weapon strike).",
-		},
-		["targetMobile"] = {
-			type = "tes3mobileActor",
-			readOnly = true,
-			description = "The mobile which is targetted. Only available at the second stage (weapon strike).",
-		},
 		["reach"] = {
 			type = "number",
-			description = "The weapon's reach multiplier, typically in the range 0.5 - 2.0. May be adjusted.",
+			description = "The touch spell search range in world units.",
 		},
 		["angleXY"] = {
 			type = "number",

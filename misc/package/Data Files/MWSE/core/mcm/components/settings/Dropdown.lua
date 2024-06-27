@@ -131,4 +131,13 @@ function Dropdown:createOuterContainer(parentBlock)
 	self.elements.outerContainer.paddingRight = self.indent -- * 2
 end
 
+function Dropdown:convertToLabelValue(variableValue)
+	-- Find the matching option and return its label.
+	for _, option in ipairs(self.options) do
+		if variableValue == option.value then
+			return option.label
+		end
+	end
+end
+
 return Dropdown

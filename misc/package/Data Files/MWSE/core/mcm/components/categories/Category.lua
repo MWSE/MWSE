@@ -20,7 +20,11 @@
 --- These types have annotations in the core\meta\ folder. Let's stop the warning spam here in the implementation.
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
+
+local fileUtils = require("mcm.fileUtils")
+
 local Parent = require("mcm.components.Component")
+
 --- @class mwseMCMCategory
 local Category = Parent:new()
 Category.componentType = "Category"
@@ -37,6 +41,18 @@ function Category:new(data)
 	setmetatable(t, self)
 	t.__index = self.__index
 	--- @cast t mwseMCMCategory
+
+	local parent = t.parentComponent
+	if not parent then return t end
+
+	local configKey = t.configKey
+	if not t.config and parent.config then
+		t.config = parent.config[configKey] or parent.config
+	end
+	
+	if not t.defaultConfig and parent.defaultConfig then
+		t.defaultConfig = parent.defaultConfig[configKey] or parent.defaultConfig
+	end
 
 	return t
 end
@@ -66,7 +82,7 @@ end
 
 function Category:checkDisabled()
 	-- allow the user to override the behavior
-	if self.inGameOnly then 
+	if self.inGameOnly then
 		return not tes3.player
 	end
 
@@ -97,13 +113,22 @@ function Category:createSubcomponentsContainer(parentBlock)
 end
 
 --- @param parentBlock tes3uiElement
---- @param components mwseMCMComponent.getComponent.componentData[]
+--- @param components mwseMCMComponent.new.data[]
 function Category:createSubcomponents(parentBlock, components)
 	for _, component in pairs(components or {}) do
-		component.parentComponent = self
-		local newComponent = self:getComponent(component)
 
-		newComponent:create(parentBlock)
+		-- Make sure it's actually a `Component`.
+		if not component.componentType then
+			local componentClass = fileUtils.getComponentClass(component.class)
+			if not componentClass then
+				error(string.format("Could not intialize component %q", component.label))
+			end
+			component.parentComponent = self
+			componentClass:new(component) -- Modifies in-place, which is why it's okay to use in this loop.
+		end
+
+		--- @cast component mwseMCMComponent
+		component:create(parentBlock)
 	end
 end
 
@@ -117,10 +142,10 @@ function Category:createContentsContainer(parentBlock)
 end
 
 function Category.__index(tbl, key)
-	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method,
 	-- Make a new `Category.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
-	
+
 	if not key:startswith("create") or mwse.mcm[key] == nil then
 		return getmetatable(tbl)[key]
 	end

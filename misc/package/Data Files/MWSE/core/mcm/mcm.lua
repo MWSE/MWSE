@@ -187,12 +187,6 @@ setmetatable(mcm, {__index = function(_, key)
 
 		-- Store the function so we don't have to recreate it every time.
 		mcm[key] = function(param1, param2)
-			-- Some mods call this function as if it were a method using colon.
-			-- Log a warning, but provide backwards compatibility.
-			if param2 then
-				mwse.log("[mwse.mcm Warning]: Calling mwse.mcm API function with a colon (:) instead of a dot (.).\n%s",
-					debug.traceback())
-			end
 			return variableClass:new(param2 or param1)
 		end
 		return mcm[key]

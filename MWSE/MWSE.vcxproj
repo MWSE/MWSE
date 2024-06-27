@@ -16,6 +16,7 @@
     <ClInclude Include="BSAnimationManager.h" />
     <ClInclude Include="LuaCalcChargenStatsEvent.h" />
     <ClInclude Include="LuaCalcHitDetectionConeEvent.h" />
+    <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
     <ClInclude Include="LuaMagicSelectionChangedEvent.h" />
@@ -568,6 +569,7 @@
     <ClCompile Include="LuaCalcSpellmakingSpellPointCostEvent.cpp" />
     <ClCompile Include="LuaCalcSpellPriceEvent.cpp" />
     <ClCompile Include="LuaCalcSunDamageScalarEvent.cpp" />
+    <ClCompile Include="LuaCalcTouchSpellConeEvent.cpp" />
     <ClCompile Include="LuaCalcTrainingPriceEvent.cpp" />
     <ClCompile Include="LuaCalcTravelPriceEvent.cpp" />
     <ClCompile Include="LuaCameraControlEvent.cpp" />

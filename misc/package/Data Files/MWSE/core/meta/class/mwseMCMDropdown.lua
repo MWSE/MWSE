@@ -13,6 +13,12 @@
 --- @field pressedColor number[] The color used when the dropdown is being pressed. By default set to `tes3ui.getPalette(tes3.palette.normalPressedColor)`.
 mwseMCMDropdown = {}
 
+--- This function specifies how values stored in the `variable` field should correspond to values displayed by this setting.
+--- The default behavior is to return the `label` of the [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) with a given `variableValue`.
+--- @param variableValue unknown The value of a [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) stored in `self.options`.
+--- @return string labelValue The label of the corresponding [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md).
+function mwseMCMDropdown:convertToLabelValue(variableValue) end
+
 --- Creates the expanded dropdown UI element parent dropdownParent and the text select entries inside for each option of the dropdown. If the dropdown is expanded, then calling this method will close the dropdown.
 function mwseMCMDropdown:createDropdown() end
 

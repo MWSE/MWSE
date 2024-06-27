@@ -3865,6 +3865,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.calcSunDamageScalar`
 ---| `tes3.event.calcSwimRunSpeed`
 ---| `tes3.event.calcSwimSpeed`
+---| `tes3.event.calcTouchSpellCone`
 ---| `tes3.event.calcTrainingPrice`
 ---| `tes3.event.calcTravelPrice`
 ---| `tes3.event.calcWalkSpeed`
