@@ -134,11 +134,12 @@ local function closeCurrentModConfig()
 			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
 		end
 	end
-	-- do it after `onClose` gets called
-	event.trigger("modConfigClosed", {
+	-- Fire the event after `onClose` gets called.
+	local payload = {
 		modName = currentModConfig.name, 
 		isFavorite = currentModConfig.favorite,
-	}, {filter = currentModConfig.name})
+	}
+	event.trigger("modConfigClosed", payload, {filter = currentModConfig.name})
 end
 
 --- Callback for when a mod name has been clicked in the left pane.
@@ -148,7 +149,7 @@ local function onClickModName(e)
 	closeCurrentModConfig()
 	
 	local modName = e.source.text
-	
+
 	-- Update the current mod package.
 	currentModConfig = configMods[modName]
 	if (not currentModConfig) then
