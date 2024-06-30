@@ -275,6 +275,17 @@ Set to the value of `sCancel` GMST.
 
 ***
 
+### `selectedOption`
+<div class="search_terms" style="display: none">selectedoption</div>
+
+The currently selected [`mwseMCMDropdownOption](./mwseMCMDropdownOption.md).
+
+**Returns**:
+
+* `result` ([mwseMCMDropdownOption](../types/mwseMCMDropdownOption.md), nil)
+
+***
+
 ### `sNo`
 <div class="search_terms" style="display: none">sno</div>
 
@@ -509,6 +520,25 @@ Enables the component's UI elements. That includes: changing the color of the UI
 ```lua
 myObject:enable()
 ```
+
+***
+
+### `getOption`
+<div class="search_terms" style="display: none">getoption, option</div>
+
+Given an `optionValue`, this method will retrieve the first [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) with a matching `value`, if such an option exists.
+
+```lua
+local option = myObject:getOption(optionValue)
+```
+
+**Parameters**:
+
+* `optionValue` (unknown): *Default*: `self.variable.value`.
+
+**Returns**:
+
+* `option` ([mwseMCMDropdownOption](../types/mwseMCMDropdownOption.md)): The corresponding [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md).
 
 ***
 

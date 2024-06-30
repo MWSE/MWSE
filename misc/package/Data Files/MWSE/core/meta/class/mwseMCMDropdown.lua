@@ -11,6 +11,7 @@
 --- @field options mwseMCMDropdownOption[] This table holds the text and variable value for each of the dropdown's options.
 --- @field overColor number[] The color used when the mouse if hovering over the dropdown. By default set to `tes3ui.getPalette(tes3.palette.normalOverColor)`.
 --- @field pressedColor number[] The color used when the dropdown is being pressed. By default set to `tes3ui.getPalette(tes3.palette.normalPressedColor)`.
+--- @field selectedOption mwseMCMDropdownOption|nil The currently selected [`mwseMCMDropdownOption](./mwseMCMDropdownOption.md).
 mwseMCMDropdown = {}
 
 --- This function specifies how values stored in the `variable` field should correspond to values displayed by this setting.
@@ -21,6 +22,11 @@ function mwseMCMDropdown:convertToLabelValue(variableValue) end
 
 --- Creates the expanded dropdown UI element parent dropdownParent and the text select entries inside for each option of the dropdown. If the dropdown is expanded, then calling this method will close the dropdown.
 function mwseMCMDropdown:createDropdown() end
+
+--- Given an `optionValue`, this method will retrieve the first [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md) with a matching `value`, if such an option exists.
+--- @param optionValue unknown? *Default*: `self.variable.value`. No description yet available.
+--- @return mwseMCMDropdownOption, nil option The corresponding [`mwseMCMDropdownOption`](./mwseMCMDropdownOption.md).
+function mwseMCMDropdown:getOption(optionValue) end
 
 --- This method creates the border, textBox and dropdownParent UI elements of the Dropdown.
 --- @param parentBlock tes3uiElement No description yet available.
