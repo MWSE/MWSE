@@ -9,7 +9,9 @@
 --- @field enchantCapacity number The object's enchantment capacity.
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
+--- @field isClosedHelmet boolean *Read-only*. This property is `true` for closed helmets, which are unequippable for beast races. Closed helmets cover the head body part, while open helmets cover hair. Always `false` for armor other than helmets.
 --- @field isLeftPart boolean Determines if the armor is the left part of a pair.
+--- @field isWearableByBeasts boolean *Read-only*. This property is false for closed helmets and boots. True otherwise.
 --- @field maxCondition number The object's maximum condition.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.

@@ -121,6 +121,17 @@ True if this object is an editor marker for a gameplay location. These include t
 
 ***
 
+### `isWearableByBeasts`
+<div class="search_terms" style="display: none">iswearablebybeasts, wearablebybeasts</div>
+
+*Read-only*. This property is false for shoes. True otherwise.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 

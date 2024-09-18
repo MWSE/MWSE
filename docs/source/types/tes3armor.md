@@ -121,6 +121,17 @@ The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 ***
 
+### `isClosedHelmet`
+<div class="search_terms" style="display: none">isclosedhelmet, closedhelmet</div>
+
+*Read-only*. This property is `true` for closed helmets, which are unequippable for beast races. Closed helmets cover the head body part, while open helmets cover hair. Always `false` for armor other than helmets.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isLeftPart`
 <div class="search_terms" style="display: none">isleftpart, leftpart</div>
 
@@ -136,6 +147,17 @@ Determines if the armor is the left part of a pair.
 <div class="search_terms" style="display: none">islocationmarker, locationmarker</div>
 
 True if this object is an editor marker for a gameplay location. These include travel, intervention, prison, door, and interior north markers. Markers are invisible in-game.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isWearableByBeasts`
+<div class="search_terms" style="display: none">iswearablebybeasts, wearablebybeasts</div>
+
+*Read-only*. This property is false for closed helmets and boots. True otherwise.
 
 **Returns**:
 

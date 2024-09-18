@@ -38,6 +38,13 @@ namespace TES3 {
 	std::reference_wrapper<WearablePart[7]> Clothing::getParts() {
 		return std::ref(parts);
 	}
+
+	bool Clothing::isWearableByBeasts() const {
+		if (slot == TES3::ClothingSlot::Shoes) {
+			return false;
+		}
+		return true;
+	}
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Clothing)
