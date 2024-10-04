@@ -7,7 +7,6 @@
 --- @field enchantCapacity number The object's enchantment capacity.
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field script tes3script The script that runs on the object.

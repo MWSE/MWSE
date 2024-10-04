@@ -8,7 +8,6 @@
 --- @field effects tes3.effect[]|integer[] *Read-only*. An array-style table access to the four ingredient effects. Unlike alchemy or enchanting objects, these are simple numbers representing the effect ID (the values map to [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table).
 --- @field effectSkillIds number[] *Read-only*. An array-style table access the skills associated with the effects.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field script tes3script The script that runs on the object.

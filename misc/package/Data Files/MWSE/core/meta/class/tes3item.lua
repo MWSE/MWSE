@@ -4,3 +4,4 @@
 --- @meta
 --- An item object.
 --- @class tes3item : tes3physicalObject, tes3object, tes3baseObject
+--- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.

@@ -5,7 +5,6 @@
 --- A core lockpick object.
 --- @class tes3probe : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field maxCondition number The maximum condition/health of the object.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.

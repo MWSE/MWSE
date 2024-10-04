@@ -5,7 +5,6 @@
 --- An apparatus game object.
 --- @class tes3apparatus : tes3item, tes3physicalObject, tes3object, tes3baseObject
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field quality number The quality of the apparatus.
