@@ -1,7 +1,7 @@
 #include "TES3LockpickLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 
 #include "TES3Lockpick.h"
 #include "TES3Script.h"
@@ -18,7 +18,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserDataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["maxCondition"] = &TES3::Lockpick::maxCondition;
@@ -29,7 +29,6 @@ namespace mwse::lua {
 
 		// Functions exposed as properties.
 		usertypeDefinition["icon"] = sol::property(&TES3::Lockpick::getIconPath, &TES3::Lockpick::setIconPath);
-		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Lockpick::isUsableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::Lockpick::getModelPath, &TES3::Lockpick::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::Lockpick::getName, &TES3::Lockpick::setName);
 

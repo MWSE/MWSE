@@ -450,6 +450,9 @@
     <ClInclude Include="TES3InventoryLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
+    <ClCompile Include="TES3ItemLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClCompile>
     <ClInclude Include="TES3ContainerLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>

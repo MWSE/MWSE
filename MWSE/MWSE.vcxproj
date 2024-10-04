@@ -797,6 +797,7 @@
     <ClCompile Include="TES3DialogueFilterContext.cpp" />
     <ClCompile Include="TES3Door.cpp" />
     <ClCompile Include="TES3GlobalVariable.cpp" />
+    <ClCompile Include="TES3ItemLua.h" />
     <ClCompile Include="TES3Land.cpp" />
     <ClCompile Include="TES3LandLua.cpp" />
     <ClCompile Include="TES3LandTextureLua.cpp" />

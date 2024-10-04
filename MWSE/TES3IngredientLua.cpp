@@ -1,7 +1,7 @@
 #include "TES3IngredientLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 
 #include "TES3Ingredient.h"
 #include "TES3Script.h"
@@ -18,7 +18,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserDataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["value"] = &TES3::Ingredient::value;
@@ -31,7 +31,6 @@ namespace mwse::lua {
 
 		// Functions exposed as properties.
 		usertypeDefinition["icon"] = sol::property(&TES3::Ingredient::getIconPath, &TES3::Ingredient::setIconPath);
-		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Ingredient::isUsableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::Ingredient::getModelPath, &TES3::Ingredient::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::Ingredient::getName, &TES3::Ingredient::setName);
 		usertypeDefinition["script"] = &TES3::Ingredient::script;
