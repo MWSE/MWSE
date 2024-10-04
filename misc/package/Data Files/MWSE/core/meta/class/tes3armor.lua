@@ -10,8 +10,12 @@
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
 --- @field isClosedHelmet boolean *Read-only*. This property is `true` for closed helmets, which are unequippable for beast races. Closed helmets cover the head body part, while open helmets cover hair. Always `false` for armor other than helmets.
+--- 
+--- See also [isWearableByBeasts](https://mwse.github.io/MWSE/types/tes3armor/#iswearablebybeasts).
 --- @field isLeftPart boolean Determines if the armor is the left part of a pair.
---- @field isWearableByBeasts boolean *Read-only*. This property is false for closed helmets and boots. True otherwise.
+--- @field isWearableByBeasts boolean *Read-only*. If this property is `true`, beast races can wear this piece of armor. This property is `false` for closed helmets and armor that covers feet.
+--- 
+--- See also [isClosedHelmet](https://mwse.github.io/MWSE/types/tes3armor/#isclosedhelmet).
 --- @field maxCondition number The object's maximum condition.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.

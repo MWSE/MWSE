@@ -124,7 +124,7 @@ True if this object is an editor marker for a gameplay location. These include t
 ### `isWearableByBeasts`
 <div class="search_terms" style="display: none">iswearablebybeasts, wearablebybeasts</div>
 
-*Read-only*. This property is false for shoes. True otherwise.
+*Read-only*. If this property is `true`, beast races can wear this clothing item. This property is `false` for any kind of clothing that covers feet.
 
 **Returns**:
 

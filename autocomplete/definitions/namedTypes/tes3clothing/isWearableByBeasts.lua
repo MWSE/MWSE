@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[This property is false for shoes. True otherwise.]],
+	description = [[If this property is `true`, beast races can wear this clothing item. This property is `false` for any kind of clothing that covers feet.]],
 	readOnly = true,
 	valuetype = "boolean",
 }

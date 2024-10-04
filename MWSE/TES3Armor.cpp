@@ -228,8 +228,12 @@ namespace TES3 {
 		if (slot == TES3::ArmorSlot::Helmet && isClosedHelmet()) {
 			return false;
 		}
-		if (slot == TES3::ArmorSlot::Boots) {
-			return false;
+		auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
+		auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
+		for (auto& part : parts) {
+			if (part.bodypartID == leftFootID || part.bodypartID == rightFootID) {
+				return false;
+			}
 		}
 		return true;
 	}

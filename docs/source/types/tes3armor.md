@@ -126,6 +126,8 @@ The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 *Read-only*. This property is `true` for closed helmets, which are unequippable for beast races. Closed helmets cover the head body part, while open helmets cover hair. Always `false` for armor other than helmets.
 
+See also [isWearableByBeasts](https://mwse.github.io/MWSE/types/tes3armor/#iswearablebybeasts).
+
 **Returns**:
 
 * `result` (boolean)
@@ -157,7 +159,9 @@ True if this object is an editor marker for a gameplay location. These include t
 ### `isWearableByBeasts`
 <div class="search_terms" style="display: none">iswearablebybeasts, wearablebybeasts</div>
 
-*Read-only*. This property is false for closed helmets and boots. True otherwise.
+*Read-only*. If this property is `true`, beast races can wear this piece of armor. This property is `false` for closed helmets and armor that covers feet.
+
+See also [isClosedHelmet](https://mwse.github.io/MWSE/types/tes3armor/#isclosedhelmet).
 
 **Returns**:
 
