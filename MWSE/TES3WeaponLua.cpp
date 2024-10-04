@@ -61,6 +61,9 @@ namespace mwse::lua {
 		usertypeDefinition["getMaterialFlag"] = &TES3::Weapon::getMaterialFlag;
 		usertypeDefinition["setMaterialFlag"] = &TES3::Weapon::setMaterialFlag;
 
+		// Functions exposed as properties.
+		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Weapon::isUsableByBeasts);
+
 		// TODO: Deprecated. Remove before 2.1-stable.
 		usertypeDefinition["health"] = sol::readonly_property(&TES3::Weapon::getDurability);
 		usertypeDefinition["model"] = sol::readonly_property(&TES3::Weapon::getModelPath);

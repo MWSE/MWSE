@@ -13,6 +13,7 @@
 --- @field isFire boolean Access to the light's flags, determining if the light represents flame.
 --- @field isNegative boolean Access to the light's flags, determining if the object creates darkness.
 --- @field isOffByDefault boolean If true the light won't be active initially, and will only be lit when held by an actor.
+--- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field pulses boolean Access to the light's flags, determining if the light attenuation pulses.

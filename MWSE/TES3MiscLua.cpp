@@ -64,6 +64,7 @@ namespace mwse::lua {
 			usertypeDefinition["isGold"] = sol::readonly_property(&TES3::Misc::isGold);
 			usertypeDefinition["isKey"] = sol::property(&TES3::Misc::getIsKey, &TES3::Misc::setIsKey);
 			usertypeDefinition["isSoulGem"] = sol::readonly_property(&TES3::Misc::isSoulGem);
+			usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Misc::isUsableByBeasts);
 			usertypeDefinition["soulGemData"] = sol::readonly_property(&TES3::Misc::getSoulGemData);
 
 			usertypeDefinition["mesh"] = sol::property(&TES3::Misc::getModelPath, &TES3::Misc::setModelPath);

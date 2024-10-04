@@ -19,6 +19,7 @@
 --- @field isRanged boolean *Read-only*. If true, the weapon is a ranged weapon.
 --- @field isSilver boolean If true, the weapon has a silver material flag. Silver weapons deal double damage to the Undead and Werewolf creatures.
 --- @field isTwoHanded boolean *Read-only*. If true, the weapon is a two-handed melee weapon.
+--- @field isUsableByBeasts boolean *Read-only*. If `true` beast races can use this item.
 --- @field maxCondition number The object's maximum condition.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.

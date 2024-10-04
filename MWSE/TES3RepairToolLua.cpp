@@ -29,6 +29,7 @@ namespace mwse::lua {
 
 		// Functions exposed as properties.
 		usertypeDefinition["icon"] = sol::property(&TES3::RepairTool::getIconPath, &TES3::RepairTool::setIconPath);
+		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::RepairTool::isUsableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::RepairTool::getModelPath, &TES3::RepairTool::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::RepairTool::getName, &TES3::RepairTool::setName);
 

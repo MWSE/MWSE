@@ -242,6 +242,17 @@ If true, the weapon has a silver material flag. Silver weapons deal double damag
 
 ***
 
+### `isUsableByBeasts`
+<div class="search_terms" style="display: none">isusablebybeasts, usablebybeasts</div>
+
+*Read-only*. If `true` beast races can use this item.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `maxCondition`
 <div class="search_terms" style="display: none">maxcondition</div>
 

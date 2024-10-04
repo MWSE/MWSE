@@ -18,6 +18,8 @@ namespace TES3 {
 
 		sol::table getStolenList_lua(sol::this_state ts);
 
+		bool isUsableByBeasts() const;
+
 	};
 	static_assert(sizeof(Item) == 0x30, "TES3::Item failed size validation");
 }
