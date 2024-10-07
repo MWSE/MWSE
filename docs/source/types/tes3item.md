@@ -77,17 +77,6 @@ True if this object is an editor marker for a gameplay location. These include t
 
 ***
 
-### `isUsableByBeasts`
-<div class="search_terms" style="display: none">isusablebybeasts, usablebybeasts</div>
-
-*Read-only*. If `true` beast races can use this item.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `modified`
 <div class="search_terms" style="display: none">modified, ified</div>
 

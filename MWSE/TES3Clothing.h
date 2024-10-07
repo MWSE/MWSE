@@ -54,7 +54,7 @@ namespace TES3 {
 
 		std::reference_wrapper<WearablePart[7]> getParts();
 
-		bool isUsableByBeasts() const;
+		bool isWearableByBeasts() const;
 	};
 	static_assert(sizeof(Clothing) == 0xB8, "TES3::Clothing failed size validation");
 

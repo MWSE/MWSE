@@ -72,10 +72,6 @@ namespace TES3 {
 
 		return list;
 	}
-
-	bool Item::isUsableByBeasts() const {
-		return true;
-	}
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_TES3(TES3::Item)

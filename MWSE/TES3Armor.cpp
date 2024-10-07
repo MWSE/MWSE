@@ -224,12 +224,12 @@ namespace TES3 {
 		return false;
 	}
 
-	bool Armor::isUsableByBeasts() const {
-		if (isClosedHelmet()) {
+	bool Armor::isWearableByBeasts() const {
+		if (slot == TES3::ArmorSlot::Helmet && isClosedHelmet()) {
 			return false;
 		}
-		constexpr auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
-		constexpr auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
+		auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
+		auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
 		for (auto& part : parts) {
 			if (part.bodypartID == leftFootID || part.bodypartID == rightFootID) {
 				return false;

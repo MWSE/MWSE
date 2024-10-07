@@ -8,7 +8,7 @@
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
 --- @field isLeftPart boolean Determines if the armor is the left part of a pair.
---- @field isUsableByBeasts boolean *Read-only*. If this property is `true`, beast races can wear this clothing item. This property is `false` for any kind of clothing that covers feet.
+--- @field isWearableByBeasts boolean *Read-only*. If this property is `true`, beast races can wear this clothing item. This property is `false` for any kind of clothing that covers feet.
 --- @field mesh string The path to the object's mesh.
 --- @field name string The player-facing name for the object.
 --- @field parts tes3wearablePart[] An array-style table of the [`tes3wearablePart`](https://mwse.github.io/MWSE/types/tes3wearablePart/) data on the object.

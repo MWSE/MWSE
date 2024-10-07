@@ -1,7 +1,7 @@
 #include "TES3BookLua.h"
 
 #include "LuaManager.h"
-#include "TES3ItemLua.h"
+#include "TES3ObjectLua.h"
 
 #include "TES3Book.h"
 #include "TES3Enchantment.h"
@@ -19,7 +19,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserDataForTES3Item(usertypeDefinition);
+		setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["enchantCapacity"] = &TES3::Book::enchantCapacity;

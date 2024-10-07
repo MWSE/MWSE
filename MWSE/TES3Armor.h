@@ -89,7 +89,7 @@ namespace TES3 {
 		float calculateArmorRating_lua(sol::object actor);
 
 		bool isClosedHelmet() const;
-		bool isUsableByBeasts() const;
+		bool isWearableByBeasts() const;
 	};
 	static_assert(sizeof(Armor) == 0xC4, "TES3::Armor failed size validation");
 

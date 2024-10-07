@@ -156,8 +156,8 @@ True if this object is an editor marker for a gameplay location. These include t
 
 ***
 
-### `isUsableByBeasts`
-<div class="search_terms" style="display: none">isusablebybeasts, usablebybeasts</div>
+### `isWearableByBeasts`
+<div class="search_terms" style="display: none">iswearablebybeasts, wearablebybeasts</div>
 
 *Read-only*. If this property is `true`, beast races can wear this piece of armor. This property is `false` for closed helmets and armor that covers feet.
 

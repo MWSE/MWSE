@@ -13,7 +13,7 @@
 --- 
 --- See also [isWearableByBeasts](https://mwse.github.io/MWSE/types/tes3armor/#iswearablebybeasts).
 --- @field isLeftPart boolean Determines if the armor is the left part of a pair.
---- @field isUsableByBeasts boolean *Read-only*. If this property is `true`, beast races can wear this piece of armor. This property is `false` for closed helmets and armor that covers feet.
+--- @field isWearableByBeasts boolean *Read-only*. If this property is `true`, beast races can wear this piece of armor. This property is `false` for closed helmets and armor that covers feet.
 --- 
 --- See also [isClosedHelmet](https://mwse.github.io/MWSE/types/tes3armor/#isclosedhelmet).
 --- @field maxCondition number The object's maximum condition.

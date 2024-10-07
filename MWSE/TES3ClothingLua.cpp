@@ -1,7 +1,7 @@
 #include "TES3ClothingLua.h"
 
 #include "LuaManager.h"
-#include "TES3ItemLua.h"
+#include "TES3ObjectLua.h"
 
 #include "TES3BodyPart.h"
 #include "TES3Clothing.h"
@@ -21,7 +21,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserDataForTES3Item(usertypeDefinition);
+		setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["enchantCapacity"] = &TES3::Clothing::enchantCapacity;
@@ -37,6 +37,7 @@ namespace mwse::lua {
 		usertypeDefinition["enchantment"] = sol::property(&TES3::Clothing::getEnchantment, &TES3::Clothing::setEnchantment);
 		usertypeDefinition["icon"] = sol::property(&TES3::Clothing::getIconPath, &TES3::Clothing::setIconPath);
 		usertypeDefinition["isLeftPart"] = sol::property(&TES3::Clothing::isLeftPartOfPair);
+		usertypeDefinition["isWearableByBeasts"] = sol::readonly_property(&TES3::Clothing::isWearableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::Clothing::getModelPath, &TES3::Clothing::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::Clothing::getName, &TES3::Clothing::setName);
 		usertypeDefinition["script"] = &TES3::Clothing::script;

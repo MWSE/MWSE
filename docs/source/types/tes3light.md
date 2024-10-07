@@ -194,17 +194,6 @@ If true the light won't be active initially, and will only be lit when held by a
 
 ***
 
-### `isUsableByBeasts`
-<div class="search_terms" style="display: none">isusablebybeasts, usablebybeasts</div>
-
-*Read-only*. If `true` beast races can use this item.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 
