@@ -40,7 +40,7 @@ namespace mwse::lua {
 		usertypeDefinition["icon"] = sol::property(&TES3::Armor::getIconPath, &TES3::Armor::setIconPath);
 		usertypeDefinition["isClosedHelmet"] = sol::readonly_property(&TES3::Armor::isClosedHelmet);
 		usertypeDefinition["isLeftPart"] = sol::property(&TES3::Armor::isLeftPartOfPair);
-		usertypeDefinition["isWearableByBeasts"] = sol::readonly_property(&TES3::Armor::isWearableByBeasts);
+		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Armor::isUsableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::Armor::getModelPath, &TES3::Armor::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::Armor::getName, &TES3::Armor::setName);
 		usertypeDefinition["script"] = &TES3::Armor::script;
