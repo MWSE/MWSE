@@ -3032,7 +3032,12 @@ namespace mwse::lua {
 
 			// Trigger spells to progress from pre-cast to targetting state. This state is automatically reset by active AI.
 			if (casterMobile) {
+				// Force animation state to cause the magic instance to directly proceed to casting.
+				// This interrupts other attack actions.
 				casterMobile->actionData.animStateAttack = TES3::AttackAnimationState::CastingFollow;
+				// Process the magic to avoid a sequencing issue where the mobile's animation controller may cancel the casting
+				// if this function is called after the magic controller runs, but before the animation controller runs.
+				spellInstance->process(0.0f);
 			}
 
 			return true;

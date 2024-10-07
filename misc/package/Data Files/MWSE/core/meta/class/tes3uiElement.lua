@@ -765,6 +765,10 @@ function tes3uiElement:registerAfter(eventID, callback, priority) end
 --- @param priority integer? *Default*: `0`. The priority of the event, relative to other register-befored events.
 function tes3uiElement:registerBefore(eventID, callback, priority) end
 
+--- Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
+--- @param property number|string The property to set.
+function tes3uiElement:removeProperty(property) end
+
 --- Moves the layout order of the children of this element. `count` elements are taken from starting child `Element` or index (0-based) `moveFrom`, and moved before the child `Element` or index (0-based) `insertBefore`. If `count` is -1, all children after `moveFrom` are moved. If any index is a negative number, then the index represents a distance from the end of the child list.
 --- 
 --- Returns `true` if the operation succeeded, or `false` if at least one argument was invalid.

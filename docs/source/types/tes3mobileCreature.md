@@ -585,7 +585,7 @@ No description yet available.
 ### `height`
 <div class="search_terms" style="display: none">height</div>
 
-The height of the mobile above the ground.
+The height of the mobile's bounding box.
 
 **Returns**:
 

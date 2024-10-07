@@ -1996,16 +1996,21 @@ namespace TES3 {
 	}
 
 	bool MobileActor::isSpeaking() const {
+		TES3::AnimationData* animData = nullptr;
+
 		if (!animationController.asActor) {
 			return false;
 		}
 
-		auto animData = animationController.asActor->animationData;
-		if (!animData) {
-			return false;
+		if (actorType == TES3::MobileActorType::Player) {
+			// Always inspect third-person animation data for the player.
+			animData = reference->getAttachedAnimationData();
+		}
+		else {
+			animData = animationController.asActor->animationData;
 		}
 
-		if (animData->lipsyncLevel != -1) {
+		if (animData && animData->lipsyncLevel != -1) {
 			return true;
 		}
 

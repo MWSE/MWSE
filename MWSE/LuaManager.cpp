@@ -245,6 +245,7 @@
 #include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
 #include "LuaLevelUpEvent.h"
+#include "LuaLoadGameEvent.h"
 #include "LuaLoadedGameEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
@@ -942,7 +943,22 @@ namespace mwse::lua {
 		tes3::startNewGame();
 	}
 
-	void __fastcall OnNewGameViaStartingCell(TES3::MobManager* mobManager) {
+	const auto TES3_Game_initPlayerAndStartScripts = reinterpret_cast<void(__thiscall*)(TES3::Game*)>(0x419A90);
+
+	void __fastcall OnNewGameViaStartingCell1(TES3::Game* game) {
+		// Call overwritten code.
+		// It must run before the event, so that the player and scripts are resolved before being exposed to lua.
+		TES3_Game_initPlayerAndStartScripts(game);
+
+		// Fire off the load event.
+		LuaManager& luaManager = LuaManager::getInstance();
+		auto stateHandle = luaManager.getThreadSafeStateHandle();
+		if (event::LoadGameEvent::getEventEnabled()) {
+			stateHandle.triggerEvent(new event::LoadGameEvent(nullptr, false, true));
+		}
+	}
+
+	void __fastcall OnNewGameViaStartingCell2(TES3::MobManager* mobManager) {
 		// Call overwritten code.
 		mobManager->checkPlayerDistance();
 
@@ -4940,7 +4956,8 @@ namespace mwse::lua {
 		// Additional load/loaded events for new game.
 		genCallEnforced(0x5FCCF4, 0x5FAEA0, reinterpret_cast<DWORD>(OnNewGame));
 		genCallEnforced(0x5FCDAA, 0x5FAEA0, reinterpret_cast<DWORD>(OnNewGame));
-		genCallEnforced(0x41A6E4, 0x563CE0, reinterpret_cast<DWORD>(OnNewGameViaStartingCell));
+		genCallEnforced(0x41A44D, 0x419A90, reinterpret_cast<DWORD>(OnNewGameViaStartingCell1));
+		genCallEnforced(0x41A6E4, 0x563CE0, reinterpret_cast<DWORD>(OnNewGameViaStartingCell2));
 
 		// Event: Start Combat
 		genCallEnforced(0x5073BC, 0x530470, reinterpret_cast<DWORD>(OnStartCombat));

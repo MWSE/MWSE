@@ -68,6 +68,7 @@
 --- @field hasFreeAction boolean *Read-only*. If true, the actor isn't knocked down or knocked out.
 --- @field hasVampirism boolean *Read-only*. True if the actor has a vampirism effect. Checks if the actor has an active vampirism magic effect. This is the same method used in the engine to determine if an NPC has a vampire head model, or can use a vampire dialogue response.
 --- @field health tes3statistic|tes3statisticSkill *Read-only*. Access to the actor's health statistic. When modifying this value, prefer to use `tes3.modStatistic` or `tes3.setStatistic` to also update the UI immediately.
+--- @field height number The height of the mobile's bounding box.
 --- @field hello number The actor's hello AI value.
 --- @field holdBreathTime number This is the time the actor can stay underwater without taking drowning damage, measured in seconds. It's starting value is `fHoldBreathTime`(GMST) seconds by default. Once the actor is underwater, this value is decreasing based on the time passed while underwater. The actor will start taking drowning damage once this time is below 0. During drowning this time will have more and more negative values based on the duration of the drowning. Changing this allows manipulating for how long the actor can stay underwater without drowning. Note that player's Breath HUD element won't show values larger than `fHoldBreathTime`.
 --- @field hostileActors tes3mobileCreature[]|tes3mobileNPC[]|tes3mobilePlayer[] *Read-only*. A collection of other `tes3mobileActor`s that this actor considers hostile.

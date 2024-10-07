@@ -7,7 +7,7 @@
 --- @field enchantCapacity number The object's enchantment capacity.
 --- @field enchantment tes3enchantment The enchantment used by the object.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field mesh string The path to the object's mesh.
+--- @field mesh string The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 --- @field name string The player-facing name for the object.
 --- @field script tes3script The script that runs on the object.
 --- @field skill tes3.skill The skill learned from the book (from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) table), or `-1` if the book doesn't have one, or has already been read.

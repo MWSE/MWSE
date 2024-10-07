@@ -20,7 +20,7 @@
 --- @field isSilver boolean If true, the weapon has a silver material flag. Silver weapons deal double damage to the Undead and Werewolf creatures.
 --- @field isTwoHanded boolean *Read-only*. If true, the weapon is a two-handed melee weapon.
 --- @field maxCondition number The object's maximum condition.
---- @field mesh string The path to the object's mesh.
+--- @field mesh string The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 --- @field name string The player-facing name for the object.
 --- @field reach number The weapon's relative reach. A value of `1.0` is the standard reach. It is multiplied by the GMST `fCombatDistance` to find the attack reach in world units.
 --- @field script tes3script *Read-only*. The script that runs on the object.

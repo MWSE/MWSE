@@ -1652,6 +1652,21 @@ myObject:registerBefore(eventID, callback, priority)
 
 ***
 
+### `removeProperty`
+<div class="search_terms" style="display: none">removeproperty, property</div>
+
+Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
+
+```lua
+myObject:removeProperty(property)
+```
+
+**Parameters**:
+
+* `property` (number, string): The property to set.
+
+***
+
 ### `reorderChildren`
 <div class="search_terms" style="display: none">reorderchildren</div>
 

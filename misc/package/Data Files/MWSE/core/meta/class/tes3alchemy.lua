@@ -8,7 +8,7 @@
 --- @field effects tes3effect[] *Read-only*. An array-style table of the [`tes3effect`](https://mwse.github.io/MWSE/types/tes3effect/) data on the object.
 --- @field flags number The alchemy item's flags.
 --- @field icon string The path to the object's icon. Relative to `Data Files\\icons\\`.
---- @field mesh string The path to the object's mesh.
+--- @field mesh string The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 --- @field name string The player-facing name for the object.
 --- @field script tes3script The script that runs on the object.
 --- @field value integer The value of the object. For this object type, its maximum value is 65535. Larger numbers will overflow.
