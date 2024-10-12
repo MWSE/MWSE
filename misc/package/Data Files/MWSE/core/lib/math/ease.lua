@@ -199,19 +199,19 @@ local function springOutGeneric(x, lambda, w)
 	return 1 - math.exp(-lambda * x) * math.cos(w * x)
 end
 
-function math.ease.springOutWeak(x)
+function ease.springOutWeak(x)
 	return springOutGeneric(x, 4, 4.71)
 end
 
-function math.ease.springOutMed(x)
+function ease.springOutMed(x)
 	return springOutGeneric(x, 3, 4.71)
 end
 
-function math.ease.springOutStrong(x)
+function ease.springOutStrong(x)
 	return springOutGeneric(x, 2, 4.71)
 end
 
-function math.ease.springOutTooMuch(x)
+function ease.springOutTooMuch(x)
 	return springOutGeneric(x, 1, 4.71)
 end
 
