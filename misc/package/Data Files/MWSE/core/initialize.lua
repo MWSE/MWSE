@@ -234,13 +234,6 @@ function mwse.loadTranslations(mod)
 	return setmetatable({ mod = mod }, i18nWrapper)
 end
 
-
--------------------------------------------------
--- Extend base API: math
--------------------------------------------------
-
-require("math")
-
 -------------------------------------------------
 -- Extend base API: table
 -------------------------------------------------
@@ -1012,6 +1005,12 @@ local safeObjectHandle = require("mwse_safeObjectHandle")
 function tes3.makeSafeObjectHandle(object)
 	return safeObjectHandle.new(object)
 end
+
+-------------------------------------------------
+-- Extend base API: math
+-------------------------------------------------
+
+dofile("math")
 
 
 -------------------------------------------------
