@@ -54,3 +54,44 @@ function math.remap(value, lowIn, highIn, lowOut, highOut) end
 --- @return number result No description yet available.
 function math.round(value, digits) end
 
+math.ease = require("math.ease")
+
+--- @alias math.ease
+---| `math.ease.backIn`
+---| `math.ease.backInOut`
+---| `math.ease.backOut`
+---| `math.ease.bounceIn`
+---| `math.ease.bounceInOut`
+---| `math.ease.bounceOut`
+---| `math.ease.circIn`
+---| `math.ease.circInOut`
+---| `math.ease.circOut`
+---| `math.ease.cubicIn`
+---| `math.ease.cubicInOut`
+---| `math.ease.cubicOut`
+---| `math.ease.elasticIn`
+---| `math.ease.elasticInOut`
+---| `math.ease.elasticOut`
+---| `math.ease.expoIn`
+---| `math.ease.expoInOut`
+---| `math.ease.expoOut`
+---| `math.ease.linear`
+---| `math.ease.quadIn`
+---| `math.ease.quadInOut`
+---| `math.ease.quadOut`
+---| `math.ease.quartIn`
+---| `math.ease.quartInOut`
+---| `math.ease.quartOut`
+---| `math.ease.quintIn`
+---| `math.ease.quintInOut`
+---| `math.ease.quintOut`
+---| `math.ease.sineIn`
+---| `math.ease.sineInOut`
+---| `math.ease.sineOut`
+---| `math.ease.smoothstep`
+---| `math.ease.smoothstepInverse`
+---| `math.ease.springOutMed`
+---| `math.ease.springOutStrong`
+---| `math.ease.springOutTooMuch`
+---| `math.ease.springOutWeak`
+

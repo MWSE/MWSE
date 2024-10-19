@@ -2,16 +2,14 @@ local ease = {}
 
 --[[
 References:
-- G7's Animation Blending
+- G7's Animation Blending: https://github.com/Greatness7/animationBlending/blob/main/Data%20Files/MWSE/mods/animationBlending/easing.lua
 - https://wiki.facepunch.com/gmod/math.ease
 - https://github.com/Facepunch/garrysmod/blob/master/garrysmod/lua/includes/extensions/math/ease.lua
-- https://easings.net/
-- https://github.com/ai/easings.net
+- https://github.com/ai/easings.net / https://easings.net/
 
 - https://github.com/EmmanuelOga/easing
 - https://github.com/coronalabs/framework-easing/blob/f44f1c1f5736f8892ab1cb610560bf5e130cea13/easing.lua
 - https://github.com/kikito/tween.lua
-- Also include smoothstep (by Ken Perlin)
 - https://stackoverflow.com/questions/41195063/general-smoothstep-equation
 ]]
 
