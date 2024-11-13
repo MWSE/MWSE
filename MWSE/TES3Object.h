@@ -249,10 +249,13 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		bool canActivate() const;
+
 		BaseObject* getBaseObject() const;
 
 		bool isActor() const;
 		bool isItem() const;
+		bool isItem_lua() const;
 		bool isWeaponOrAmmo() const;
 		const char* getSourceFilename() const;
 
