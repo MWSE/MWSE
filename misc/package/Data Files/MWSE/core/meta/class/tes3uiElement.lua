@@ -27,10 +27,12 @@
 --- @field borderLeft integer The left border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
 --- @field borderRight integer The left border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
 --- @field borderTop integer The top border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
---- @field childAlignX number Sets alignment of child elements inside its parent, though it only works in specific conditions. 0.0 = left/top edge touches left/top edge of parent, 0.5 = centred, 1.0 = right/bottom edge touches right/bottom edge of parent. For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
+--- @field childAlignX number Sets alignment of child elements inside its parent, as a fraction of interior space. Either childAlignX or childAlignY is used depending on the flow direction. childAlignX (horizontal alignment) is used for top-to-bottom flow direction, and childAlignY (vertical alignment) is used for left-to-right flow direction. Previous limitations on using this layout have been resolved.
 --- 
---- !!! success
---- 	Child alignment only works if the element has proportional sizing (using widthProportional/heightProportional) and all children use non-proportional sizing (widthProportional and heightProportional are nil).
+--- 0.0 = Left/top edge touches left/top edge of parent.
+--- 0.5 = Centered.
+--- 1.0 = Right/bottom edge touches right/bottom edge of parent.
+--- For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
 --- @field childAlignY number See childAlignX.
 --- @field childOffsetX integer The view offset in pixels, applied to the position of child nodes. Used in scroll panes.
 --- @field childOffsetY number See childOffsetX.
@@ -83,7 +85,7 @@
 --- @field rawText string The raw value of the element's text. This, unlike the normal text property, will not directly read widget information or handle the removal of the positional cursor.
 --- @field repeatKeys boolean Controls if there is repeating text input when keys are held down. `true` by default.
 --- @field scaleMode boolean When set to `true` on image and NIF elements, the image or NIF is scaled to fit the element `width` and `height`.
---- @field sceneNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Underlying access to the scene graph responsible for this element.
+--- @field sceneNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Underlying access to the scene graph responsible for this element.
 --- @field text string The element's text. Text input can be read by accessing this property.
 --- 
 --- !!! tip
@@ -483,6 +485,8 @@ function tes3uiElement:createSliderVertical(params) end
 --- Creates a single line text input element. To receive input the keyboard must be captured with `tes3ui.acquireTextInput(element)`. Read the input with the `text` property. Write an initial value to display by setting the `text` property; that value will be cleared on the first keypress.
 --- 
 --- Text input specific properties can be accessed through the `widget` property. The widget type for text inputs is [`tes3uiTextInput`](https://mwse.github.io/MWSE/types/tes3uiTextInput/).
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3uiElement/#createtextinput).
 --- @param params tes3uiElement.createTextInput.params? This table accepts the following values:
 --- 
 --- `id`: string|number|nil — *Optional*. An identifier to help find this element later.

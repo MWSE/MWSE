@@ -11,6 +11,7 @@
 #include "NIAnimationData.h"
 #include "NIAVObject.h"
 #include "NIBillboardNode.h"
+#include "NIBSAnimationNode.h"
 #include "NICamera.h"
 #include "NICollisionSwitch.h"
 #include "NIDirectionalLight.h"
@@ -156,11 +157,20 @@ namespace NI {
 			case RTTIStaticPtr::NiAmbientLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AmbientLight*>(this)));
 				break;
+			case RTTIStaticPtr::NiAutoNormalParticles:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<AutoNormalParticles*>(this)));
+				break;
 			case RTTIStaticPtr::NiAVObject:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AVObject*>(this)));
 				break;
 			case RTTIStaticPtr::NiBillboardNode:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<BillboardNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSAnimationNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSAnimationNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSParticleNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSParticleNode*>(this)));
 				break;
 			case RTTIStaticPtr::NiCamera:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<Camera*>(this)));

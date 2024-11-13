@@ -81,14 +81,14 @@ namespace mwse {
 		}
 
 		// Results.
-		char* id = NULL;
+		const char* id = NULL;
 		long count = 0;
 		long type = 0;
 		long subtype = -1;
 		long value = 0;
 		float weight = 0;
-		char* name = NULL;
-		char* enchantId = NULL;
+		const char* name = NULL;
+		const char* enchantId = NULL;
 		TES3::IteratedList<TES3::EquipmentStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.

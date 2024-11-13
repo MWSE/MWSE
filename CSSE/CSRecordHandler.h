@@ -44,7 +44,7 @@ namespace se::cs {
 		NI::IteratedList<Script*>* scripts; // 0x28
 		int unknown_0x2C;
 		int unknown_0x30;
-		int unknown_0x34;
+		NI::IteratedList<GlobalVariable*>* globals; // 0x34
 		NI::IteratedList<Dialogue*>* dialogues; // 0x38
 		NI::IteratedList<Region*>* regions; // 0x3C
 		NI::IteratedList<Birthsign*>* birthsigns; // 0x40

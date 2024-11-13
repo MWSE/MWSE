@@ -16,4 +16,10 @@ Text input specific properties can be accessed through the `widget` property. Th
 		},
 	} },
 	valuetype = "tes3uiElement",
+	examples = {
+		["SearchBox"] = {
+			title = "Search box",
+			description = "Text input is just made of text, it doesn't have a border. It's often desirable, to make it clearer to the user, to put the text input inside a thin border.",
+		}
+	}
 }

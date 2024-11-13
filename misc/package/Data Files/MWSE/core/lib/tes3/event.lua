@@ -120,6 +120,7 @@ return {
 	["objectCopied"] = "objectCopied",
 	["objectCreated"] = "objectCreated",
 	["objectInvalidated"] = "objectInvalidated",
+	["pickpocket"] = "pickpocket",
 	["playGroup"] = "playGroup",
 	["playItemSound"] = "playItemSound",
 	["postInfoResponse"] = "postInfoResponse",

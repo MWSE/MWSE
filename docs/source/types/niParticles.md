@@ -764,3 +764,26 @@ Update all attached properties.
 myObject:updateProperties()
 ```
 
+***
+
+## Functions
+
+### `new`
+<div class="search_terms" style="display: none">new</div>
+
+Creates a new niParticles.
+
+```lua
+local particles = niParticles.new(vertexCount, hasNormals, hasColors)
+```
+
+**Parameters**:
+
+* `vertexCount` (number): The number of particles.
+* `hasNormals` (boolean): If `true`, normals will be allocated.
+* `hasColors` (boolean): If `true`, colors will be allocated.
+
+**Returns**:
+
+* `particles` ([niParticles](../types/niParticles.md))
+

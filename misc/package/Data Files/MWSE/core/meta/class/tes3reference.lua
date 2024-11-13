@@ -43,7 +43,7 @@
 --- 
 --- @field previousNode tes3reference *Read-only*. The previous reference in the parent reference list.
 --- @field rightDirection tes3vector3 *Read-only*. The normalized right or X direction vector of the reference.
---- @field sceneNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil *Read-only*. The scene graph node that the reference uses for rendering.
+--- @field sceneNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil *Read-only*. The scene graph node that the reference uses for rendering.
 --- @field sourceFormId number No description yet available.
 --- @field sourceModId number No description yet available.
 --- @field stackSize number Access to the size of a stack, if the reference represents one or more items.

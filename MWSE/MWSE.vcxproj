@@ -25,6 +25,7 @@
     <ClInclude Include="LuaMusicChangeTrackEvent.h" />
     <ClInclude Include="LuaObjectCopiedEvent.h" />
     <ClInclude Include="LuaObjectCreatedEvent.h" />
+    <ClInclude Include="LuaPickpocketEvent.h" />
     <ClInclude Include="LuaShieldBlockedEvent.h" />
     <ClInclude Include="LuaSimulatedEvent.h" />
     <ClInclude Include="LuaStartGlobalScriptEvent.h" />
@@ -32,6 +33,8 @@
     <ClInclude Include="NIAccumulator.h" />
     <ClInclude Include="NIAnimationData.h" />
     <ClInclude Include="NIAnimationKey.h" />
+    <ClInclude Include="NIBoundingVolumeLua.h" />
+    <ClInclude Include="NIBSAnimationNodeLua.h" />
     <ClInclude Include="NIPathController.h" />
     <ClInclude Include="NISortAdjustNode.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
@@ -666,6 +669,7 @@
     <ClCompile Include="LuaObjectFilteredEvent.cpp" />
     <ClCompile Include="LuaObjectInvalidatedEvent.cpp" />
     <ClCompile Include="LuaPickLockEvent.cpp" />
+    <ClCompile Include="LuaPickpocketEvent.cpp" />
     <ClCompile Include="LuaPlayAnimationGroupEvent.cpp" />
     <ClCompile Include="LuaPlayItemSoundEvent.cpp" />
     <ClCompile Include="LuaPostInfoResponseEvent.cpp" />
@@ -725,6 +729,9 @@
     <ClCompile Include="NIAnimationKey.cpp" />
     <ClCompile Include="NIBillboardNode.cpp" />
     <ClCompile Include="NIBinaryStream.cpp" />
+    <ClCompile Include="NIBoundingVolumeLua.cpp" />
+    <ClCompile Include="NIBSAnimationNode.cpp" />
+    <ClCompile Include="NIBSAnimationNodeLua.cpp" />
     <ClCompile Include="NICamera.cpp" />
     <ClCompile Include="NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />

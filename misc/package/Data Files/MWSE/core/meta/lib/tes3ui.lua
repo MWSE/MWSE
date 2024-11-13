@@ -277,7 +277,7 @@ function tes3ui.showDialogueMessage(params) end
 --- 
 --- `leaveMenuMode`: boolean? — *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
 --- 
---- `noResultsText`: string? — *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
+--- `noResultsText`: string? — *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulGemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 --- 
 --- `noResultsCallback`: function? — *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 --- 
@@ -292,7 +292,7 @@ function tes3ui.showDialogueMessage(params) end
 --- --- 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 --- --- 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 --- --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
---- --- 		- `soulgemFilled`: Only filled soulgems will be shown.
+--- --- 		- `soulGemFilled`: Only filled soulgems will be shown.
 --- --- 
 --- --- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 --- 
@@ -304,7 +304,7 @@ function tes3ui.showInventorySelectMenu(params) end
 --- @field reference tes3reference? *Default*: `tes3player`. The reference of a `tes3actor` whose inventory will be used.
 --- @field title string The text used for the title of the inventory select menu.
 --- @field leaveMenuMode boolean? *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
---- @field noResultsText string? *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
+--- @field noResultsText string? *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulGemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 --- @field noResultsCallback function? *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 --- @field filter string|nil|fun(params: tes3ui.showInventorySelectMenu.filterParams): boolean *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 --- 
@@ -317,7 +317,7 @@ function tes3ui.showInventorySelectMenu(params) end
 --- 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 --- 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
---- 		- `soulgemFilled`: Only filled soulgems will be shown.
+--- 		- `soulGemFilled`: Only filled soulgems will be shown.
 --- 
 --- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 --- @field callback nil|fun(params: tes3ui.showInventorySelectMenu.callbackParams) *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.

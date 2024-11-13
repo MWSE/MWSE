@@ -17,7 +17,7 @@
 --- @field returnNormal boolean If true, a unit-length normal is returned for the point of intersection of triangles intersected during the picking.
 --- @field returnSmoothNormal boolean If true and if vertex normals exist, then a unit-length normal vector is interpolated from the vertex normals and returned during the picking operation.
 --- @field returnTexture boolean If true, texture coordinates are returned for the point of intersection of triangles during the picking operation.
---- @field root niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The root of the scene graph on which the next picking operation will be performed.
+--- @field root niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The root of the scene graph on which the next picking operation will be performed.
 --- @field sortType ni.pickSortType The sort type for the object. Maps to values in [`ni.pickSortType`](https://mwse.github.io/MWSE/references/ni/pick-sort-types/) table.
 niPick = {}
 

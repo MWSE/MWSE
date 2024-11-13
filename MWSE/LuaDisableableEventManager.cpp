@@ -120,6 +120,7 @@
 #include "LuaObjectCreatedEvent.h"
 #include "LuaObjectInvalidatedEvent.h"
 #include "LuaPickLockEvent.h"
+#include "LuaPickpocketEvent.h"
 #include "LuaPlayAnimationGroupEvent.h"
 #include "LuaPlayItemSoundEvent.h"
 #include "LuaPostInfoResponseEvent.h"
@@ -292,6 +293,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["objectCopied"] = sol::property(&ObjectCopiedEvent::getEventEnabled, &ObjectCopiedEvent::setEventEnabled);
 		usertypeDefinition["objectCreated"] = sol::property(&ObjectCreatedEvent::getEventEnabled, &ObjectCreatedEvent::setEventEnabled);
 		usertypeDefinition["objectInvalidated"] = sol::property(&ObjectInvalidatedEvent::getEventEnabled, &ObjectInvalidatedEvent::setEventEnabled);
+		usertypeDefinition["pickpocket"] = sol::property(&PickpocketEvent::getEventEnabled, &PickpocketEvent::setEventEnabled);
 		usertypeDefinition["playGroup"] = sol::property(&PlayAnimationGroupEvent::getEventEnabled, &PlayAnimationGroupEvent::setEventEnabled);
 		usertypeDefinition["playItemSound"] = sol::property(&PlayItemSoundEvent::getEventEnabled, &PlayItemSoundEvent::setEventEnabled);
 		usertypeDefinition["postInfoResponse"] = sol::property(&PostInfoResponseEvent::getEventEnabled, &PostInfoResponseEvent::setEventEnabled);

@@ -986,17 +986,34 @@ namespace TES3 {
 	}
 
 	const auto TES3_MobileActor_isAffectedByAlchemy = reinterpret_cast<bool(__thiscall*)(const MobileActor*, Alchemy*)>(0x52D1A0);
-	bool MobileActor::isAffectedByAlchemy(Alchemy * alchemy) const {
+	bool MobileActor::isAffectedByAlchemy(Alchemy* alchemy) const {
 		return TES3_MobileActor_isAffectedByAlchemy(this, alchemy);
 	}
 
+	bool MobileActor::isAffectedBySimilarAlchemy(Alchemy* alchemy) const {
+		for (auto& ame : activeMagicEffects) {
+			auto sourceInstance = ame.getInstance();
+
+			if (sourceInstance && sourceInstance->sourceCombo.sourceType == TES3::MagicSourceType::Alchemy) {
+				auto activeAlch = sourceInstance->sourceCombo.source.asAlchemy;
+
+				if (alchemy->effectsMatchWith(activeAlch)
+					&& _strnicmp(alchemy->name, activeAlch->name, 32) == 0) {
+
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	const auto TES3_MobileActor_isAffectedByEnchantment = reinterpret_cast<bool(__thiscall*)(const MobileActor*, Enchantment*)>(0x52D140);
-	bool MobileActor::isAffectedByEnchantment(Enchantment * enchantment) const {
+	bool MobileActor::isAffectedByEnchantment(Enchantment* enchantment) const {
 		return TES3_MobileActor_isAffectedByEnchantment(this, enchantment);
 	}
 
 	const auto TES3_MobileActor_isAffectedBySpell = reinterpret_cast<bool(__thiscall*)(const MobileActor*, Spell*)>(0x52D0E0);
-	bool MobileActor::isAffectedBySpell(Spell * spell) const {
+	bool MobileActor::isAffectedBySpell(Spell* spell) const {
 		return TES3_MobileActor_isAffectedBySpell(this, spell);
 	}
 

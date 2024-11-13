@@ -6,6 +6,8 @@
 --- @class tes3uiMenuInputController
 --- @field lastInputTime number The amount of seconds that have passed since the last time the input was updated.
 --- @field menuController tes3uiMenuController A handle back to the main menu controller.
+--- @field pointerMoveEventSource tes3uiElement *Read-only*. No description yet available.
+--- @field pointerMovePreviousEventSource tes3uiElement *Read-only*. No description yet available.
 --- @field textInputFocus tes3uiElement|nil The element that is currently focused for text input.
 tes3uiMenuInputController = {}
 

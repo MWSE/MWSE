@@ -241,10 +241,43 @@ The z component of the rain or snow fall particle velocity (not including blizza
 
 ***
 
+### `sceneAtmosphere`
+<div class="search_terms" style="display: none">sceneatmosphere</div>
+
+*Read-only*. Provides access to the scene atmosphere skydome NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneClouds`
+<div class="search_terms" style="display: none">sceneclouds</div>
+
+*Read-only*. Provides access to the scene clouds root NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneNightSky`
+<div class="search_terms" style="display: none">scenenightsky</div>
+
+*Read-only*. Provides access to the scene night sky (stars and nebula) NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
 ### `sceneRainRoot`
 <div class="search_terms" style="display: none">scenerainroot</div>
 
-*Read-only*. Provides read-only access to the scene rain root NiNode.
+*Read-only*. Provides access to the scene rain root NiNode.
 
 **Returns**:
 
@@ -255,7 +288,7 @@ The z component of the rain or snow fall particle velocity (not including blizza
 ### `sceneSkyLight`
 <div class="search_terms" style="display: none">sceneskylight</div>
 
-*Read-only*. Provides read-only access to the scene sky light directional light.
+*Read-only*. Provides access to the scene sky light directional light.
 
 **Returns**:
 
@@ -266,7 +299,7 @@ The z component of the rain or snow fall particle velocity (not including blizza
 ### `sceneSkyRoot`
 <div class="search_terms" style="display: none">sceneskyroot</div>
 
-*Read-only*. Provides read-only access to the scene sky root NiNode.
+*Read-only*. Provides access to the scene sky root NiNode.
 
 **Returns**:
 
@@ -277,7 +310,7 @@ The z component of the rain or snow fall particle velocity (not including blizza
 ### `sceneSnowRoot`
 <div class="search_terms" style="display: none">scenesnowroot</div>
 
-*Read-only*. Provides read-only access to the scene snow root NiNode.
+*Read-only*. Provides access to the scene snow root NiNode.
 
 **Returns**:
 
@@ -288,7 +321,7 @@ The z component of the rain or snow fall particle velocity (not including blizza
 ### `sceneStormRoot`
 <div class="search_terms" style="display: none">scenestormroot</div>
 
-*Read-only*. Provides read-only access to the scene storm root NiNode.
+*Read-only*. Provides access to the scene storm root NiNode.
 
 **Returns**:
 

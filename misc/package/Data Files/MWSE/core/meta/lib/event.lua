@@ -127,6 +127,7 @@
 --- @field register fun(eventId: '"objectCopied"', callback: (fun(e: objectCopiedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"objectCreated"', callback: (fun(e: objectCreatedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"objectInvalidated"', callback: (fun(e: objectInvalidatedEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"pickpocket"', callback: (fun(e: pickpocketEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"playGroup"', callback: (fun(e: playGroupEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"playItemSound"', callback: (fun(e: playItemSoundEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"postInfoResponse"', callback: (fun(e: postInfoResponseEventData): boolean?), options: table?)

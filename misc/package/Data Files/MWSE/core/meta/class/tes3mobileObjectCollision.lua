@@ -5,7 +5,7 @@
 --- The base object holding the information of a collision.
 --- @class tes3mobileObjectCollision
 --- @field colliderRef tes3reference *Read-only*. Access to the reference of the colliding object.
---- @field colliderRoot niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The collider's root scene graph node.
+--- @field colliderRoot niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The collider's root scene graph node.
 --- @field collisionType integer *Read-only*. The collision type.
 --- 
 --- Value | Collsion type

@@ -4,5 +4,5 @@
 --- @meta
 --- A linked list of scene graph nodes.
 --- @class niNodeLinkedList
---- @field data niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The current scene graph node in the linked list.
+--- @field data niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The current scene graph node in the linked list.
 --- @field next niNodeLinkedList *Read-only*. The next scene graph node in the linked list.

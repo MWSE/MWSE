@@ -1446,7 +1446,8 @@ namespace mwse::patch {
 		// Patch: Set ActiveMagicEffect.isIllegalSummon correctly on loading a savegame.
 		writePatchCodeUnprotected(0x454826, (BYTE*)&PatchLoadActiveMagicEffect, PatchLoadActiveMagicEffect_size);
 
-		// Patch: Fix crash in NPC flee logic when trying to pick a random node from a pathgrid with 0 nodes.
+		// Patch: Fix crash in NPC wander and flee logic when trying to pick a random node from a pathgrid with 0 nodes.
+		genCallEnforced(0x5339D8, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 		genCallEnforced(0x549E76, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 
 		// Patch: UI element image mirroring on negative image scale.

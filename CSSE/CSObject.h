@@ -79,7 +79,7 @@ namespace se::cs {
 
 	struct Object : BaseObject {
 		NI::Node* sceneNode; // 0x10
-		int unknown_0x14;
+		BaseObject* unknown_0x14;
 		void* referenceToThis; // 0x18
 		Object* previousInCollection; // 0x1C
 		Object* nextInCollection; // 0x20
@@ -113,8 +113,8 @@ namespace se::cs {
 			return vtbl.object->getScale(this);
 		}
 
-		inline void setScale(float scale, bool something = true) {
-			vtbl.object->setScale(this, scale, something);
+		inline void setScale(float scale, bool clamp = true) {
+			vtbl.object->setScale(this, scale, clamp);
 		}
 
 		inline int getCount() const {

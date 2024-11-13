@@ -174,6 +174,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogEditObjectWindow.cpp" />
     <ClCompile Include="DialogEditSpellObjectWindow.cpp" />
     <ClCompile Include="DialogLandscapeEditSettingsWindow.cpp" />
+    <ClCompile Include="DialogPathGridWindow.cpp" />
     <ClCompile Include="DialogPreviewWindow.cpp" />
     <ClCompile Include="DialogProcContext.cpp" />
     <ClCompile Include="DialogReferenceData.cpp" />
@@ -227,12 +228,14 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="CSBirthsign.h" />
     <ClInclude Include="CSClass.h" />
     <ClInclude Include="CSDoor.h" />
+    <ClInclude Include="CSGlobalVariable.h" />
     <ClInclude Include="CSRace.h" />
     <ClInclude Include="CSRegion.h" />
     <ClInclude Include="CSSE.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
+    <ClInclude Include="DialogPathGridWindow.h" />
     <ClInclude Include="DialogProcContext.h" />
     <ClInclude Include="DialogUseReportWindow.h" />
     <ClInclude Include="framework.h" />

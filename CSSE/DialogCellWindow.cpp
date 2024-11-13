@@ -176,6 +176,7 @@ namespace se::cs::dialog::cell_window {
 		const auto hDlg = context.getWindowHandle();
 
 		auto cellListView = GetDlgItem(hDlg, CONTROL_ID_CELL_LIST_VIEW);
+		auto refsListLabel = GetDlgItem(hDlg, CONTROL_ID_REFS_LABEL);
 		auto refsListView = GetDlgItem(hDlg, CONTROL_ID_REFS_LIST_VIEW);
 		auto showModifiedButton = GetDlgItem(hDlg, CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON);
 		auto searchLabel = GetDlgItem(hDlg, CONTROL_ID_FILTER_LABEL);
@@ -189,16 +190,16 @@ namespace se::cs::dialog::cell_window {
 		const auto mainHeight = HIWORD(lParam);
 
 		constexpr auto BASIC_PADDING = 2;
+		constexpr auto REFERENCE_LIST_TITLE_PADDING = BASIC_PADDING * 4;
 		constexpr auto STATIC_HEIGHT = 13;
 		constexpr auto EDIT_HEIGHT = 21;
 		constexpr auto STATIC_COMBO_OFFSET = (EDIT_HEIGHT - STATIC_HEIGHT) / 2;
 
-		// Update list view area.
-		RECT listViewRect = {};
-		GetWindowRelativeRect(cellListView, &listViewRect);
-		MoveWindow(cellListView, listViewRect.left, listViewRect.top, GetRectWidth(&listViewRect), GetRectHeight(&listViewRect) - 3, FALSE);
-		GetWindowRelativeRect(refsListView, &listViewRect);
-		MoveWindow(refsListView, listViewRect.left, listViewRect.top, GetRectWidth(&listViewRect), GetRectHeight(&listViewRect) - 3, FALSE);
+		// Make room for our new search bar.
+		const auto viewWidth = (mainWidth - BASIC_PADDING * 3) / 2;
+		MoveWindow(cellListView, BASIC_PADDING, BASIC_PADDING, viewWidth, mainHeight - EDIT_HEIGHT - BASIC_PADDING * 3, TRUE);
+		MoveWindow(refsListLabel, BASIC_PADDING * 2 + viewWidth, REFERENCE_LIST_TITLE_PADDING, viewWidth, STATIC_HEIGHT, TRUE);
+		MoveWindow(refsListView, BASIC_PADDING * 2 + viewWidth, REFERENCE_LIST_TITLE_PADDING * 2 + STATIC_HEIGHT, viewWidth, mainHeight - EDIT_HEIGHT - BASIC_PADDING * 2 - REFERENCE_LIST_TITLE_PADDING * 2 - STATIC_HEIGHT, TRUE);
 
 		// Update the search bar placement.
 		int currentY = mainHeight - EDIT_HEIGHT - BASIC_PADDING;

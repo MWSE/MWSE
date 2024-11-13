@@ -168,6 +168,8 @@
 #include "TES3WeatherLua.h"
 #include "TES3WorldControllerLua.h"
 
+#include "NIBoundingVolumeLua.h"
+#include "NIBSAnimationNodeLua.h"
 #include "NICameraLua.h"
 #include "NICollisionGroupLua.h"
 #include "NICollisionSwitchLua.h"
@@ -263,6 +265,7 @@
 #include "LuaObjectCopiedEvent.h"
 #include "LuaObjectCreatedEvent.h"
 #include "LuaObjectInvalidatedEvent.h"
+#include "LuaPickpocketEvent.h"
 #include "LuaPlayItemSoundEvent.h"
 #include "LuaPostInfoResponseEvent.h"
 #include "LuaPotionBrewedEvent.h"
@@ -565,6 +568,8 @@ namespace mwse::lua {
 		bindTES3UIWidgets();
 
 		// Bind NI data types.
+		bindNIBoundingVolume();
+		bindNIBSAnimationNode();
 		bindNICamera();
 		bindNICollisionGroup();
 		bindNICollisionSwitch();
@@ -4704,6 +4709,63 @@ namespace mwse::lua {
 	const size_t patchMagicReflect_size = 0x23;
 
 	//
+	// Patch: Pickpocket event.
+	//
+
+	const auto TES3_MobileActor_Pickpocket = reinterpret_cast<int (__thiscall*)(TES3::MobileActor*, int, TES3::MobilePlayer*)>(0x52AFD0);
+
+	bool __fastcall OnPickpocket2(TES3::MobileActor* mobile, DWORD _EDX_, TES3::UI::InventoryTile* tile, int count, int difficulty) {
+		auto macp = TES3::WorldController::get()->getMobilePlayer();
+
+		// The vanilla pickpocket function is patched to return the % chance instead of a boolean success.
+		int chance = TES3_MobileActor_Pickpocket(mobile, difficulty, macp);
+
+		if (mwse::lua::event::PickpocketEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::object response;
+			
+			if (tile) {
+				// On pickpocketing an item.
+				response = stateHandle.triggerEvent(new event::PickpocketEvent(mobile, tile->item, tile->itemData, count, chance));
+			}
+			else {
+				// On closing the window.
+				response = stateHandle.triggerEvent(new event::PickpocketEvent(mobile, nullptr, nullptr, 0, chance));
+			}
+
+			if (response.get_type() == sol::type::table) {
+				sol::table eventData = response;
+				chance = eventData["chance"];
+			}
+		}
+
+		int roll = tes3::rand() % 100;
+		bool success = roll < chance;
+		return success;
+	}
+
+	__declspec(naked) bool OnPickpocket(int difficulty, TES3::MobilePlayer* macp) {
+		__asm {
+			mov eax, [esp + 0xA4]		// mov eax, [esp + count]
+			push [esp + 0x4]			// push [difficulty]
+			push eax					// push count
+			push ebp					// push tile
+			call OnPickpocket2
+			ret 0x8
+		}
+	}
+
+	__declspec(naked) bool OnPickpocketOnExit(int difficulty, TES3::MobilePlayer* macp) {
+		__asm {
+			push [esp + 0x4]			// push [difficulty]
+			push 0						// push count
+			push 0						// push tile
+			call OnPickpocket2
+			ret 0x8
+		}
+	}
+
+	//
 	//
 	//
 
@@ -5957,6 +6019,13 @@ namespace mwse::lua {
 		// Events: disarmTrap/pickLock
 		auto referenceAttemptUnlockDisarm = &TES3::Reference::attemptUnlockDisarm;
 		genCallEnforced(0x569A62, 0x4EB160, *reinterpret_cast<DWORD*>(&referenceAttemptUnlockDisarm));
+
+		// Event: Pickpocket.
+		genNOPUnprotected(0x52B1C2, 0x3); // Non-MCP, unreachable in MCP patch #77
+		genNOPUnprotected(0x52B215, 0x3);
+		genCallEnforced(0x5B56BE, 0x52AFD0, reinterpret_cast<DWORD>(OnPickpocket));
+		genCallEnforced(0x5B74B9, 0x52AFD0, reinterpret_cast<DWORD>(OnPickpocketOnExit)); // Non-MCP
+		genCallEnforced(0x745976, 0x52AFD0, reinterpret_cast<DWORD>(OnPickpocketOnExit)); // MCP patch #77
 
 		// Event: containerClosed.
 		auto actorOnCloseInventory = &TES3::Actor::onCloseInventory;

@@ -298,9 +298,10 @@ namespace TES3 {
 		void playVoiceover(int);
 		void startDialogue();
 
-		bool isAffectedByAlchemy(Alchemy * alchemy) const;
-		bool isAffectedByEnchantment(Enchantment * enchantment) const;
-		bool isAffectedBySpell(Spell * spell) const;
+		bool isAffectedByAlchemy(Alchemy* alchemy) const;
+		bool isAffectedBySimilarAlchemy(Alchemy* alchemy) const;
+		bool isAffectedByEnchantment(Enchantment* enchantment) const;
+		bool isAffectedBySpell(Spell* spell) const;
 
 		bool isDiseased() const;
 		bool hasCommonDisease() const;

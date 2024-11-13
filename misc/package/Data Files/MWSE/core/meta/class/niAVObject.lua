@@ -9,7 +9,7 @@
 --- @field flags number Flags, dependent on the specific object type.
 --- @field fogProperty niFogProperty|nil Convenient access to this object's fog property. Setting this value to be nil will erase the property, while setting it to a valid fog property will set (or replace) it.
 --- @field materialProperty niMaterialProperty|nil Convenient access to this object's material property. Setting this value to be nil will erase the property, while setting it to a valid material property will set (or replace) it.
---- @field parent niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The object's parent. It may not have one if it is not attached to the scene.
+--- @field parent niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. The object's parent. It may not have one if it is not attached to the scene.
 --- @field properties niPropertyLinkedList *Read-only*. The list of properties attached to this `niAVObject`.
 --- @field rotation tes3matrix33 The object's local rotation matrix.
 --- @field scale number The object's local uniform scaling factor.
@@ -32,7 +32,7 @@ function niAVObject:attachProperty(property) end
 function niAVObject:clearTransforms() end
 
 --- Update object's local transform by copying from another source.
---- @param source niAmbientLight|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape|tes3transform No description yet available.
+--- @param source niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape|tes3transform No description yet available.
 function niAVObject:copyTransforms(source) end
 
 --- Detaches all the properties on the object and returns them in the table.
@@ -46,7 +46,7 @@ function niAVObject:detachProperty(type) end
 
 --- Searches this node and all child nodes recursively for a node with a name that matches the argument.
 --- @param name string No description yet available.
---- @return niAmbientLight|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape result No description yet available.
+--- @return niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape result No description yet available.
 function niAVObject:getObjectByName(name) end
 
 --- Gets an attached property by property type.

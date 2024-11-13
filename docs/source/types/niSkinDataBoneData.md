@@ -17,7 +17,7 @@ This bounding volume is used internally by the skinning system to calculate boun
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 

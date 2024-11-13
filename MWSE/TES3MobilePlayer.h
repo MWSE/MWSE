@@ -10,7 +10,7 @@ namespace TES3 {
 	struct MarkData {
 		Vector3 position; // 0x0
 		float rotation; // 0xC
-		Cell * cell; // 0x10
+		Cell* cell; // 0x10
 	};
 
 	struct BountyData {
@@ -30,18 +30,18 @@ namespace TES3 {
 	};
 
 	struct PlayerBounty {
-		BountyData * data;
+		BountyData* data;
 	};
 
 	struct MobilePlayer : MobileNPC {
 		int levelupPerAttributeCount[8]; // 0x56C
 		int levelupPerSpecialization[3]; // 0x58C
-		PlayerBounty * bounty; // 0x598
-		Apparatus * lastUsedMortar; // 0x59C
-		Apparatus * lastUsedAlembic; // 0x5A0
-		Apparatus * lastUsedCalcinator; // 0x5A4
-		Apparatus * lastUsedRetort; // 0x5A8
-		GlobalVariable * clawMultiplier; // 0x5AC
+		PlayerBounty* bounty; // 0x598
+		Apparatus* lastUsedMortar; // 0x59C
+		Apparatus* lastUsedAlembic; // 0x5A0
+		Apparatus* lastUsedCalcinator; // 0x5A4
+		Apparatus* lastUsedRetort; // 0x5A8
+		GlobalVariable* clawMultiplier; // 0x5AC
 		bool controlsDisabled; // 0x5B0
 		bool jumpingDisabled; // 0x5B1
 		bool mouseLookDisabled; // 0x5B2
@@ -64,31 +64,29 @@ namespace TES3 {
 		char unknown_0x5C3; // Undefined.
 		int telekinesis; // 0x5C4
 		float visionBonus; // 0x5C8
-		int unknown_0x5CC;
-		int unknown_0x5D0;
-		int unknown_0x5D4;
-		int unknown_0x5D8;
-		int unknown_0x5DC;
-		int unknown_0x5E0;
-		int unknown_0x5E4; // Casting? Float?
+		int detectLockRange; // 0x5CC
+		int detectEnchantmentRange; // 0x5D0
+		int detectCreatureRange; // 0x5D4
+		Vector3 restWaitPosition; // 0x5D8
+		int postAttackHandRecoilTimer; // 0x5E4
 		int levelUpProgress; // 0x5E8
 		int restHoursRemaining; // 0x5EC
 		int lastUsedAmmoCount; // 0x5F0
 		float skillProgress[27]; // 0x5F4
-		Reference * firstPersonReference; // 0x660
-		NPC * firstPerson; // 0x664
-		char unknown_0x668; // Bounty related.
+		Reference* firstPersonReference; // 0x660
+		NPC* firstPerson; // 0x664
+		bool bountySuspendedFlag; // 0x668
 		char unknown_0x669;
 		char unknown_0x66A; // Undefined.
 		char unknown_0x66B; // Undefined.
-		int unknown_0x66C;
-		Birthsign * birthsign; // 0x670
-		IteratedList<Dialogue*> * dialogueList; // 0x674
-		MarkData * markLocation; // 0x678
-		Vector3 field_67C;
+		void* unknown_0x66C;
+		Birthsign* birthsign; // 0x670
+		IteratedList<Dialogue*>* dialogueList; // 0x674
+		MarkData* markLocation; // 0x678
+		Vector3 lastPositionOfFogOfWarUpdate; // 0x67C
 		float inactivityTime; // 0x684
-		int humanStatsBackup; // 0x688
-		GlobalVariable * knownWerewolf; // 0x690
+		float* humanStatsBackup; // 0x688
+		GlobalVariable* knownWerewolf; // 0x690
 
 		MobilePlayer() = delete;
 		~MobilePlayer() = delete;

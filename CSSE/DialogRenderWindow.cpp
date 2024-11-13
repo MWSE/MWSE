@@ -1087,6 +1087,25 @@ namespace se::cs::dialog::render_window {
 	}
 
 	//
+	// Patch: Extend reference status data
+	//
+
+	void __cdecl Patch_ExtendReferenceStatusData(WPARAM wParam, const char* lParam) {
+		const auto cell = gCurrentCell::get();
+		const auto reference = SelectionData::get()->firstTarget->reference;
+
+		std::stringstream ss;
+		ss << std::dec << std::fixed << std::setprecision(0)
+			<< reference->position.x << ", " << reference->position.y << ", " << reference->position.z
+			<< " [" << math::radiansToDegrees(reference->orientationNonAttached.x) << ", " << math::radiansToDegrees(reference->orientationNonAttached.y) << ", " << math::radiansToDegrees(reference->orientationNonAttached.z) << "]"
+			<< " " << std::setprecision(2) << reference->getScale()
+			<< " " << cell->getEditorId();
+		
+		const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, const char*)>(0x46E680);
+		TES3CS_UpdateStatusMessage(wParam, ss.str().c_str());
+	}
+
+	//
 	// Patch: Extend Render Window message handling.
 	//
 
@@ -2531,6 +2550,9 @@ namespace se::cs::dialog::render_window {
 		writeDoubleWordEnforced(0x45F719 + 0x2, 0x12C, 0x134);
 		genCallEnforced(0x45F4ED, 0x4015A0, reinterpret_cast<DWORD>(PatchFixMaterialPropertyColors));
 		genCallEnforced(0x45F626, 0x4015A0, reinterpret_cast<DWORD>(PatchAddBlankTexturingProperty));
+
+		// Patch: Add scale information to status window.
+		genCallEnforced(0x45C962, 0x404881, reinterpret_cast<DWORD>(Patch_ExtendReferenceStatusData));
 
 		// Patch: Extend Render Window message handling.
 		genJumpEnforced(0x4020EF, 0x45A3F0, reinterpret_cast<DWORD>(PatchDialogProc));

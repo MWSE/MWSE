@@ -60,6 +60,9 @@ namespace mwse::lua {
 			usertypeDefinition["particlesActive"] = sol::readonly_property(&TES3::WeatherController::listActiveParticles);
 			usertypeDefinition["particlesInactive"] = sol::readonly_property(&TES3::WeatherController::listInactiveParticles);
 			usertypeDefinition["precipitationFallSpeed"] = &TES3::WeatherController::precipitationFallSpeed;
+			usertypeDefinition["sceneAtmosphere"] = sol::readonly_property(&TES3::WeatherController::sgSkyAtmosphere);
+			usertypeDefinition["sceneClouds"] = sol::readonly_property(&TES3::WeatherController::sgSkyClouds);
+			usertypeDefinition["sceneNightSky"] = sol::readonly_property(&TES3::WeatherController::sgSkyNight);
 			usertypeDefinition["sceneRainRoot"] = sol::readonly_property(&TES3::WeatherController::sgRainRoot);
 			usertypeDefinition["sceneSkyLight"] = sol::readonly_property(&TES3::WeatherController::sgSkyLight);
 			usertypeDefinition["sceneSkyRoot"] = sol::readonly_property(&TES3::WeatherController::sgSkyRoot);

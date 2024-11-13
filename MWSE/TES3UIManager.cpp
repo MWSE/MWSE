@@ -7,6 +7,7 @@
 #include "LuaUtil.h"
 
 #include "TES3UIElement.h"
+#include "TES3UIInventoryTile.h"
 #include "TES3UILuaData.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
@@ -307,6 +308,27 @@ namespace TES3::UI {
 		return true;
 	}
 
+	bool __cdecl onInventoryTileTooltip(Element* owningWidget, Property eventID, int data0, int data1, Element* source) {
+		const auto p_propMenuInventory_Object = reinterpret_cast<Property*>(0x7D39C8);
+		const auto p_propMenuInventory_extra = reinterpret_cast<Property*>(0x7D396C);
+		const auto p_propMenuInventory_Thing = reinterpret_cast<Property*>(0x7D3A70);
+
+		// This call is required because owningWidget is resolved differently for tooltips compared to regular events.
+		const auto TES3_ui_findPartRootOrComponent = reinterpret_cast<Element* (__thiscall*)(Element*, Property)>(0x582B80);
+		auto tileElement = TES3_ui_findPartRootOrComponent(source, Property::null);
+
+		auto item = reinterpret_cast<Item*>(tileElement->getProperty(PropertyType::Pointer, *p_propMenuInventory_Object).ptrValue);
+		auto itemData = reinterpret_cast<ItemData*>(tileElement->getProperty(PropertyType::Pointer, *p_propMenuInventory_extra).ptrValue);
+
+		if (item && !findHelpLayerMenu(static_cast<UI_ID>(Property::CursorIcon))) {
+			// The original code provided an incorrect count for tiles that were both from a split stack and had no item data.
+			auto tile = reinterpret_cast<InventoryTile*>(tileElement->getProperty(PropertyType::Pointer, *p_propMenuInventory_Thing).ptrValue);
+			TES3::WorldController::get()->menuController->menuInputController->displayObjectTooltip(item, itemData, tile->count);
+		}
+
+		return true;
+	}
+	
 	MobileActor* getServiceActor() {
 		return TES3_ui_getServiceActor();
 	}
@@ -503,7 +525,7 @@ namespace TES3::UI {
 		}
 
 		TES3_UI_ShowJournal();
-		TES3::WorldController::get()->menuController->unknown_0x2C = 1;
+		TES3::WorldController::get()->menuController->flagClearHelpMenu = 1;
 
 		return findMenu("MenuJournal") != nullptr;
 	}
@@ -868,6 +890,9 @@ namespace TES3::UI {
 		{ "mortar", reinterpret_cast<EventCallback*>(0x59A190) },
 		{ "quickUse", reinterpret_cast<EventCallback*>(0x608A90) },
 		{ "retort", reinterpret_cast<EventCallback*>(0x59A1C0) },
+		{ "soulGemFilled", reinterpret_cast<EventCallback*>(0x5C6B00) },
+
+		// Deprecated
 		{ "soulgemFilled", reinterpret_cast<EventCallback*>(0x5C6B00) },
 	};
 
@@ -1240,6 +1265,10 @@ namespace TES3::UI {
 		mwse::genCallEnforced(0x621CBB, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
 		mwse::genCallEnforced(0x622DAA, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
 		mwse::writeValueEnforced<BYTE>(0x62295A, 0x75, 0x7D);
+		
+		// Patch inventory item tooltip to get accurate item count from the tile, which was failing on split item stacks.
+		mwse::writeValueEnforced<DWORD>(0x5CC0A9+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
+		mwse::writeValueEnforced<DWORD>(0x5CCC6F+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
 
 		// Provide some UI IDs for elements that don't have them:
 		// Tooltips (HelpMenu)
