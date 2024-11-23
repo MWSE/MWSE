@@ -167,13 +167,6 @@ function Template:createLabel(parentBlock)
 
 end
 
---- @param button tes3uiElement
---- @param enabled boolean
-local function toggleButtonState(button, enabled)
-	button.disabled = not enabled
-	button.widget.state = enabled and 1 or 2
-end
-
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
@@ -192,15 +185,6 @@ function Template:clickTab(thisPage)
 	tabsBlock:findChild(thisPage.tabUID).widget.state = 4
 	-- update view
 	pageBlock:getTopLevelMenu():updateLayout()
-
-	-- Enable Prev button if first tab is not active
-	local tab1 = tabsBlock:findChild(self.pages[1].tabUID)
-	local prevButton = self.elements.previousTabButton
-	if tab1.widget.state ~= 4 then
-		toggleButtonState(prevButton, true)
-	else
-		toggleButtonState(prevButton, false)
-	end
 end
 
 --- @param button tes3uiElement
@@ -236,7 +220,6 @@ function Template:createTabsBlock(parentBlock)
 	-- Previous Button
 	local prevButton = outerTabsBlock:createButton{ id = tes3ui.registerID("MCM_PreviousButton"), text = "<--" }
 	formatTabButton(prevButton)
-	toggleButtonState(prevButton, false)
 	self.elements.previousTabButton = prevButton
 
 	-- Create page tab buttons
@@ -257,48 +240,30 @@ function Template:createTabsBlock(parentBlock)
 
 	-- Pagination
 
-	local hiddenTabCount = 0
 	nextButton:register("mouseClick", function()
-		-- Hide next tab
-		local tabToHide = parentBlock:findChild(self.pages[hiddenTabCount + 1].tabUID)
-		tabToHide.visible = false
-		-- Move active tab forward 1
+		-- Move active tab forward by 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			if tab.widget.state == 4 and self.pages[i + 1] then
-				self:clickTab(self.pages[i + 1])
+			local activeTab = tab.widget.state == 4
+			if activeTab then
+				local nextPage = self.pages[table.wrapindex(self.pages, i + 1)]
+				self:clickTab(nextPage)
 				break
 			end
 		end
-		-- increment hiddenTabCount
-		hiddenTabCount = math.min(hiddenTabCount + 1, #self.pages)
-		-- If only last tab is visible, disable Next button
-		if hiddenTabCount >= #self.pages - 1 then
-			toggleButtonState(nextButton, false)
-		end
-		toggleButtonState(prevButton, true)
 	end)
 
 	prevButton:register("mouseClick", function()
-		-- Move active tab back 1
+		-- Move active tab back by 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			if tab.widget.state == 4 and self.pages[i - 1] then
-				local prevTab = parentBlock:findChild(self.pages[i - 1].tabUID)
-				if prevTab.visible == false then
-					-- decrement hiddenTabCount
-					hiddenTabCount = math.max(hiddenTabCount - 1, 0)
-					prevTab.visible = true
-				end
-				self:clickTab(self.pages[i - 1])
+			local activeTab = tab.widget.state == 4
+			if activeTab then
+				local prevPage = self.pages[table.wrapindex(self.pages, i - 1)]
+				self:clickTab(prevPage)
 				break
 			end
 		end
-		-- If first tab is active, disable Prev button
-		if tabsBlock:findChild(self.pages[1].tabUID).widget.state == 4 then
-			toggleButtonState(prevButton, false)
-		end
-		toggleButtonState(nextButton, true)
 	end)
 end
 
@@ -340,10 +305,10 @@ function Template:register()
 end
 
 function Template.__index(tbl, key)
-	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method,
 	-- Make a new `Template.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
-	
+
 	if not key:startswith("create") or mwse.mcm[key] == nil then
 		return getmetatable(tbl)[key]
 	end
