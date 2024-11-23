@@ -162,7 +162,7 @@ function Template:createLabel(parentBlock)
 	elseif self.label then
 		headerBlock.borderAllSides = 10
 		local title = headerBlock:createLabel({ text = self.label })
-		title.color = tes3ui.getPalette("header_color")
+		title.color = tes3ui.getPalette(tes3.palette.headerColor)
 	end
 
 end
@@ -178,11 +178,11 @@ function Template:clickTab(thisPage)
 	-- Set new page to current
 	self.currentPage = thisPage
 	-- Disable tabs
-	for id, page in pairs(self.pages) do
-		tabsBlock:findChild(page.tabUID).widget.state = 1
+	for id, page in ipairs(self.pages) do
+		tabsBlock:findChild(page.tabUID).widget.state = tes3.uiState.normal
 	end
 	-- Enable tab for this page
-	tabsBlock:findChild(thisPage.tabUID).widget.state = 4
+	tabsBlock:findChild(thisPage.tabUID).widget.state = tes3.uiState.active
 	-- update view
 	pageBlock:getTopLevelMenu():updateLayout()
 end
@@ -200,7 +200,7 @@ end
 function Template:createTab(page)
 	local button = self.elements.tabsBlock:createButton({ id = page.tabUID, text = page.label })
 	formatTabButton(button)
-	button:register("mouseClick", function()
+	button:register(tes3.uiEvent.mouseClick, function()
 		self:clickTab(page)
 	end)
 end
@@ -231,7 +231,7 @@ function Template:createTabsBlock(parentBlock)
 		self:createTab(page)
 	end
 	local firstTab = parentBlock:findChild(self.pages[1].tabUID)
-	firstTab.widget.state = 4
+	firstTab.widget.state = tes3.uiState.active
 
 	-- Next Button
 	local nextButton = outerTabsBlock:createButton{ id = tes3ui.registerID("MCM_NextButton"), text = "-->" }
@@ -240,11 +240,11 @@ function Template:createTabsBlock(parentBlock)
 
 	-- Pagination
 
-	nextButton:register("mouseClick", function()
+	nextButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab forward by 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			local activeTab = tab.widget.state == 4
+			local activeTab = tab.widget.state == tes3.uiState.active
 			if activeTab then
 				local nextPage = self.pages[table.wrapindex(self.pages, i + 1)]
 				self:clickTab(nextPage)
@@ -253,11 +253,11 @@ function Template:createTabsBlock(parentBlock)
 		end
 	end)
 
-	prevButton:register("mouseClick", function()
+	prevButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab back by 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			local activeTab = tab.widget.state == 4
+			local activeTab = tab.widget.state == tes3.uiState.active
 			if activeTab then
 				local prevPage = self.pages[table.wrapindex(self.pages, i - 1)]
 				self:clickTab(prevPage)
