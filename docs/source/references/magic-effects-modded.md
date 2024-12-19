@@ -217,6 +217,8 @@ These effects build off of the [standard magic effects](./magic-effects.md). If 
 | forbidSleep                  | 1201      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDouble        | 1202      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDoublePotion  | 1203      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
+| strongerFeather              | 1812      | [STRONGER - A Simple MWSE Encumbrance Overhaul](https://www.nexusmods.com/morrowind/mods/55600)    |
+| strongerBurden               | 1813      | [STRONGER - A Simple MWSE Encumbrance Overhaul](https://www.nexusmods.com/morrowind/mods/55600)    |
 | T_summon_Devourer            | 2090      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | T_summon_DremArch            | 2091      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | T_summon_DremCast            | 2092      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
