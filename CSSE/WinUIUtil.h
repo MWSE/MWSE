@@ -34,6 +34,8 @@ namespace se::cs::winui {
 	void ResizeAndCenterWindow(HWND hWnd, int width, int height);
 	bool MoveWindow(HWND hWnd, int x, int y, bool repaint = false);
 
+	void SetDialogFocus(HWND hWnd, int controlId);
+
 	LONG GetStyle(HWND hWnd);
 	void SetStyle(HWND hWnd, LONG lStyle);
 	void AddStyles(HWND hWnd, LONG lStyle);
@@ -49,8 +51,14 @@ namespace se::cs::winui {
 	// ComboBox
 	//
 
+	// Determines if the exact string exists in the combo box.
+	bool ComboBox_HasStringExact(HWND hWnd, const char* string);
+
 	// Sets the current selection index as ComboBox_SetCurSel, with additional messaging.
 	void ComboBox_SetCurSelEx(HWND hWnd, int index);
+
+	// Selects the entry with the given exact text. Returns CB_ERR if no selection change was made.
+	int ComboBox_SelectStringExact(HWND hWnd, const char* string);
 
 	//
 	// ListView

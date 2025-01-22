@@ -117,8 +117,23 @@ namespace se::cs::window::main {
 			CloseHandle(pi.hThread);
 		}
 		else {
+			const auto error = GetLastError();
 			log::stream << "[ERROR] Failed to run Morrowind with command line: " << commandLine << std::endl;
 			log::stream << "  Process path: " << (std::filesystem::current_path() / "Morrowind.exe").string() << std::endl;
+			log::stream << "  Error code: 0x" << std::hex << error << std::dec << ": " << std::system_category().message(error) << std::endl;
+		}
+	}
+
+	void SetupOpenMWUserFolder() {
+		const auto realUserPath = path::openmw::getConfigPath();
+
+		// Ensure user folder is created.
+		const auto csseUserPath = path::openmw::getTemporaryConfigPath();
+		std::filesystem::create_directories(csseUserPath);
+
+		// Copy the settings.cfg file if it doesn't already exist.
+		if (!std::filesystem::exists(csseUserPath / "settings.cfg") && std::filesystem::exists(realUserPath / "settings.cfg")) {
+			std::filesystem::copy_file(realUserPath / "settings.cfg", csseUserPath / "settings.cfg");
 		}
 	}
 
@@ -211,7 +226,7 @@ namespace se::cs::window::main {
 
 		// Update the script to have OpenMW run based on the environment.
 		const auto tempPath = path::openmw::getTemporaryConfigPath();
-		std::filesystem::create_directories(tempPath);
+		SetupOpenMWUserFolder();
 		UpdateOpenMWConfig();
 		UpdateOpenMWScriptFile();
 
@@ -243,8 +258,10 @@ namespace se::cs::window::main {
 			CloseHandle(pi.hThread);
 		}
 		else {
+			const auto error = GetLastError();
 			log::stream << "[ERROR] Failed to run OpenMW with command line: " << commandLine << std::endl;
 			log::stream << "  Process path: " << path << std::endl;
+			log::stream << "  Error code: 0x" << std::hex << error << std::dec << ": " << std::system_category().message(error) << std::endl;
 		}
 	}
 
@@ -592,7 +609,7 @@ namespace se::cs::window::main {
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFilter = _T("Elder Scroll Saves (*.ess)\0*.ess\0");
 		ofn.nFilterIndex = 1;
-		ofn.lpstrFileTitle = _T("Select save file");
+		ofn.lpstrFileTitle = LPSTR("Select save file");
 		ofn.nMaxFileTitle = 0;
 		ofn.lpstrInitialDir = NULL;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
@@ -695,7 +712,7 @@ namespace se::cs::window::main {
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFilter = _T("OpenMW saves (*.omwsave)\0*.omwsave\0");
 		ofn.nFilterIndex = 1;
-		ofn.lpstrFileTitle = _T("Select save file");
+		ofn.lpstrFileTitle = LPSTR("Select save file");
 		ofn.nMaxFileTitle = 0;
 		ofn.lpstrInitialDir = NULL;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;

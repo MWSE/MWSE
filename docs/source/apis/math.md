@@ -77,6 +77,709 @@ local result = math.clamp(value, min, max)
 
 ***
 
+### `math.ease.backIn`
+<div class="search_terms" style="display: none">ease.backin</div>
+
+See [backIn](https://easings.net/#easeInBack).
+
+```lua
+local result = math.ease.backIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.backInOut`
+<div class="search_terms" style="display: none">ease.backinout</div>
+
+See [backInOut](https://easings.net/#easeInOutBack).
+
+```lua
+local result = math.ease.backInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.backOut`
+<div class="search_terms" style="display: none">ease.backout</div>
+
+See [backOut](https://easings.net/#easeOutBack).
+
+```lua
+local result = math.ease.backOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.bounceIn`
+<div class="search_terms" style="display: none">ease.bouncein</div>
+
+See [bounceIn](https://easings.net/#easeInBounce).
+
+```lua
+local result = math.ease.bounceIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.bounceInOut`
+<div class="search_terms" style="display: none">ease.bounceinout</div>
+
+See [bounceInOut](https://easings.net/#easeInOutBounce).
+
+```lua
+local result = math.ease.bounceInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.bounceOut`
+<div class="search_terms" style="display: none">ease.bounceout</div>
+
+See [bounceOut](https://easings.net/#easeOutBounce).
+
+```lua
+local result = math.ease.bounceOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.circIn`
+<div class="search_terms" style="display: none">ease.circin</div>
+
+See [circIn](https://easings.net/#easeInCirc).
+
+```lua
+local result = math.ease.circIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.circInOut`
+<div class="search_terms" style="display: none">ease.circinout</div>
+
+See [circInOut](https://easings.net/#easeInOutCirc).
+
+```lua
+local result = math.ease.circInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.circOut`
+<div class="search_terms" style="display: none">ease.circout</div>
+
+See [circOut](https://easings.net/#easeOutCirc).
+
+```lua
+local result = math.ease.circOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.cubicIn`
+<div class="search_terms" style="display: none">ease.cubicin</div>
+
+See [cubicIn](https://easings.net/#easeInCubic).
+
+```lua
+local result = math.ease.cubicIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.cubicInOut`
+<div class="search_terms" style="display: none">ease.cubicinout</div>
+
+See [cubicInOut](https://easings.net/#easeInOutCubic).
+
+```lua
+local result = math.ease.cubicInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.cubicOut`
+<div class="search_terms" style="display: none">ease.cubicout</div>
+
+See [cubicOut](https://easings.net/#easeOutCubic).
+
+```lua
+local result = math.ease.cubicOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.elasticIn`
+<div class="search_terms" style="display: none">ease.elasticin</div>
+
+See [elasticIn](https://easings.net/#easeInElastic).
+
+```lua
+local result = math.ease.elasticIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.elasticInOut`
+<div class="search_terms" style="display: none">ease.elasticinout</div>
+
+See [elasticInOut](https://easings.net/#easeInOutElastic).
+
+```lua
+local result = math.ease.elasticInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.elasticOut`
+<div class="search_terms" style="display: none">ease.elasticout</div>
+
+See [elasticOut](https://easings.net/#easeOutElastic).
+
+```lua
+local result = math.ease.elasticOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.expoIn`
+<div class="search_terms" style="display: none">ease.expoin</div>
+
+See [expoIn](https://easings.net/#easeInExpo).
+
+```lua
+local result = math.ease.expoIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.expoInOut`
+<div class="search_terms" style="display: none">ease.expoinout</div>
+
+See [expoInOut](https://easings.net/#easeInOutExpo).
+
+```lua
+local result = math.ease.expoInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.expoOut`
+<div class="search_terms" style="display: none">ease.expoout</div>
+
+See [expoOut](https://easings.net/#easeOutExpo).
+
+```lua
+local result = math.ease.expoOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.linear`
+<div class="search_terms" style="display: none">ease.linear</div>
+
+Linear interpolation that assumes input and output range of [0, 1].
+
+```lua
+local result = math.ease.linear(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quadIn`
+<div class="search_terms" style="display: none">ease.quadin</div>
+
+See [quadIn](https://easings.net/#easeInQuad).
+
+```lua
+local result = math.ease.quadIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quadInOut`
+<div class="search_terms" style="display: none">ease.quadinout</div>
+
+See [quadInOut](https://easings.net/#easeInOutQuad).
+
+```lua
+local result = math.ease.quadInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quadOut`
+<div class="search_terms" style="display: none">ease.quadout</div>
+
+See [quadOut](https://easings.net/#easeOutQuad).
+
+```lua
+local result = math.ease.quadOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quartIn`
+<div class="search_terms" style="display: none">ease.quartin</div>
+
+See [quartIn](https://easings.net/#easeInQuart).
+
+```lua
+local result = math.ease.quartIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quartInOut`
+<div class="search_terms" style="display: none">ease.quartinout</div>
+
+See [quartInOut](https://easings.net/#easeInOutQuart).
+
+```lua
+local result = math.ease.quartInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quartOut`
+<div class="search_terms" style="display: none">ease.quartout</div>
+
+See [quartOut](https://easings.net/#easeOutQuart).
+
+```lua
+local result = math.ease.quartOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quintIn`
+<div class="search_terms" style="display: none">ease.quintin</div>
+
+See [quintIn](https://easings.net/#easeInQuint).
+
+```lua
+local result = math.ease.quintIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quintInOut`
+<div class="search_terms" style="display: none">ease.quintinout</div>
+
+See [quintInOut](https://easings.net/#easeInOutQuint).
+
+```lua
+local result = math.ease.quintInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.quintOut`
+<div class="search_terms" style="display: none">ease.quintout</div>
+
+See [quintOut](https://easings.net/#easeOutQuint).
+
+```lua
+local result = math.ease.quintOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.sineIn`
+<div class="search_terms" style="display: none">ease.sinein</div>
+
+See [sineIn](https://easings.net/#easeInSine).
+
+```lua
+local result = math.ease.sineIn(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.sineInOut`
+<div class="search_terms" style="display: none">ease.sineinout</div>
+
+See [sineInOut](https://easings.net/#easeInOutSine).
+
+```lua
+local result = math.ease.sineInOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.sineOut`
+<div class="search_terms" style="display: none">ease.sineout</div>
+
+See [sineOut](https://easings.net/#easeOutSine).
+
+```lua
+local result = math.ease.sineOut(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.smoothstep`
+<div class="search_terms" style="display: none">ease.smoothstep</div>
+
+See [smoothstep](https://en.wikipedia.org/wiki/Smoothstep).
+
+```lua
+local result = math.ease.smoothstep(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.smoothstepInverse`
+<div class="search_terms" style="display: none">ease.smoothstepinverse</div>
+
+See [smoothstepInverse](https://en.wikipedia.org/wiki/Smoothstep#Inverse_Smoothstep).
+
+```lua
+local result = math.ease.smoothstepInverse(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.springOutMed`
+<div class="search_terms" style="display: none">ease.springoutmed</div>
+
+A custom easing function with some overshoot. See the graph of the function [here](https://www.desmos.com/calculator/nhglkiqn5m).
+
+```lua
+local result = math.ease.springOutMed(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.springOutStrong`
+<div class="search_terms" style="display: none">ease.springoutstrong</div>
+
+A custom easing function with some overshoot. See the graph of the function [here](https://www.desmos.com/calculator/btojr6z6d2).
+
+```lua
+local result = math.ease.springOutStrong(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.springOutTooMuch`
+<div class="search_terms" style="display: none">ease.springouttoomuch</div>
+
+A custom easing function with some overshoot. See the graph of the function [here](https://www.desmos.com/calculator/fjrts4x3oo).
+
+```lua
+local result = math.ease.springOutTooMuch(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.ease.springOutWeak`
+<div class="search_terms" style="display: none">ease.springoutweak</div>
+
+A custom easing function with some overshoot. See the graph of the function [here](https://www.desmos.com/calculator/i7qajxi9ow).
+
+```lua
+local result = math.ease.springOutWeak(x)
+```
+
+**Parameters**:
+
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `math.isclose`
 <div class="search_terms" style="display: none">isclose, close</div>
 
@@ -117,6 +820,25 @@ local result = math.lerp(v0, v1, t)
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `math.nextPowerOfTwo`
+<div class="search_terms" style="display: none">nextpoweroftwo</div>
+
+Returns the next power of 2 that is equal to, or greater than, value.
+
+```lua
+local result = math.nextPowerOfTwo(value)
+```
+
+**Parameters**:
+
+* `value` (number)
+
+**Returns**:
+
+* `result` (integer)
 
 ***
 

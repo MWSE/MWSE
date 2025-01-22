@@ -54,7 +54,7 @@ local executed = mwscript.addItem({ reference = ..., item = ..., count = ... })
 ### `mwscript.addSoulGem`
 <div class="search_terms" style="display: none">addsoulgem, soulgem</div>
 
-use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
+Use [`tes3.addItem()`](https://mwse.github.io/MWSE/apis/tes3/#tes3additem) with the `soul` parameter instead. Wrapper for the `AddSoulGem` mwscript function.
 
 ```lua
 local executed = mwscript.addSoulGem({ reference = ..., creature = ..., soulgem = ... })
@@ -463,7 +463,7 @@ local result = mwscript.getScript()
 ### `mwscript.getSpellEffects`
 <div class="search_terms" style="display: none">getspelleffects, spelleffects</div>
 
-Use  [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.
+Use [`tes3.isAffectedBy()`](https://mwse.github.io/MWSE/apis/tes3/#tes3isaffectedby) or [`tes3mobileActor:isAffectedByObject()`](https://mwse.github.io/MWSE/types/tes3mobileActor/#isaffectedbyobject) instead. Wrapper for the `GetSpellEffects` mwscript function.
 
 ```lua
 local result = mwscript.getSpellEffects({ reference = ..., spell = ... })
@@ -643,7 +643,7 @@ local executed = mwscript.removeSpell({ reference = ..., spell = ... })
 ### `mwscript.scriptRunning`
 <div class="search_terms" style="display: none">scriptrunning</div>
 
-Wrapper for the `ScriptRunning` mwscript function.
+Use [`tes3.getLegacyScriptRunning()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getlegacyscriptrunning) instead. Wrapper for the `ScriptRunning` mwscript function. Only checks global scripts.
 
 ```lua
 local result = mwscript.scriptRunning({ script = ... })
@@ -663,7 +663,7 @@ local result = mwscript.scriptRunning({ script = ... })
 ### `mwscript.setDelete`
 <div class="search_terms" style="display: none">setdelete, delete</div>
 
-Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.
+Use [`tes3reference:delete()`](https://mwse.github.io/MWSE/types/tes3reference/#delete) instead. Marks the `reference` as deleted, and modified. Deleted reference isn't rendered nor is its local mwscript run.
 
 ```lua
 local executed = mwscript.setDelete({ reference = ..., delete = ... })
@@ -684,7 +684,7 @@ local executed = mwscript.setDelete({ reference = ..., delete = ... })
 ### `mwscript.setLevel`
 <div class="search_terms" style="display: none">setlevel, level</div>
 
-Use [`tes3npc.level`](https://mwse.github.io/MWSE/types/tes3npc/#level) instead. Wrapper for the `SetLevel` mwscript function.
+Wrapper for the `SetLevel` mwscript function.
 
 ```lua
 local executed = mwscript.setLevel({ reference = ..., level = ... })
@@ -726,7 +726,7 @@ local executed = mwscript.startCombat({ reference = ..., target = ... })
 ### `mwscript.startScript`
 <div class="search_terms" style="display: none">startscript</div>
 
-Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/?h=script#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function.
+Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function. Starts the script as a global script.
 
 ```lua
 local executed = mwscript.startScript({ reference = ..., script = ... })
@@ -768,7 +768,7 @@ local executed = mwscript.stopCombat({ reference = ..., target = ... })
 ### `mwscript.stopScript`
 <div class="search_terms" style="display: none">stopscript</div>
 
-Wrapper for the `StopScript` mwscript function.
+Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3stoplegacyscript) instead. Wrapper for the `StopScript` mwscript function. It can only stop global scripts.
 
 ```lua
 local executed = mwscript.stopScript({ reference = ..., script = ... })

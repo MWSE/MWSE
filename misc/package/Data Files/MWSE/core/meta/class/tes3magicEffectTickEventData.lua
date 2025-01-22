@@ -42,9 +42,9 @@ function tes3magicEffectTickEventData:trigger(params) end
 --- 
 --- For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired.
 
---- Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s). To summon gauntlets, provide two IDs.
+--- Performs vanilla armor summoning logic, but also allows bracers and pauldrons. It can summon one or two armor objects with provided ID(s). When summoning gauntlets, bracers or pauldrons, you can provide two IDs.
 --- @param id string The ID of the armor object to summon.
---- @param id2 string? *Optional*. The ID of the additional gauntlet object to summon. The second item ID can only be a gauntlet object.
+--- @param id2 string? *Optional*. The ID of the additional gauntlet, bracer or pauldron object to summon.
 function tes3magicEffectTickEventData:triggerBoundArmor(id, id2) end
 
 --- Performs vanilla weapon summoning logic. It will create a summoned version of the weapon with provided ID.

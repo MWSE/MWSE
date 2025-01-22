@@ -416,6 +416,10 @@ namespace TES3 {
 	}
 
 	bool Reference::enable() {
+		if (getDeleted()) {
+			return false;
+		}
+
 		// Make sure we're not already enabled.
 		if (!getDisabled()) {
 			return false;
@@ -688,6 +692,12 @@ namespace TES3 {
 		return (*reference->getPosition() - *getPosition()).angle(&forward);
 	}
 
+	bool Reference::isInSameWorldspace(const Reference* other) const {
+		const auto cell1 = getCell();
+		const auto cell2 = other->getCell();
+		return cell1->getIsInterior() ? (cell1 == cell2) : (!cell2->getIsInterior());
+	}
+
 	const auto TES3_Reference_setTravelDestination = reinterpret_cast<TravelDestination*(__thiscall*)(Reference*, const Vector3 *, const Vector3*)>(0x4E7B80);
 	TravelDestination * Reference::setTravelDestination(const Vector3 * position, const Vector3 * orientation, Cell * cell) {
 		auto destination = TES3_Reference_setTravelDestination(this, position, orientation);
@@ -844,7 +854,12 @@ namespace TES3 {
 	}
 
 	void Reference::setStackSize(int count) {
-		getOrCreateAttachedItemData()->count = count;
+		const auto itemData = getOrCreateAttachedItemData();
+		if (itemData == nullptr) {
+			throw std::runtime_error("This item does not support tes3itemData creation.");
+		}
+
+		itemData->count = count;
 	}
 
 	bool Reference::hasValidBaseObject() const {

@@ -31,8 +31,8 @@ namespace TES3 {
 		// Handle soul- and MCP-dependent value.
 		if (objectType == TES3::ObjectType::Misc && useSoulValue) {
 			auto asMisc = static_cast<const TES3::Misc*>(this);
-			if (asMisc->isSoulGem() && itemData->soul) {
-				auto soulValue = itemData->soul->getSoulValue().value_or(0);
+			if (asMisc->isSoulGem() && itemData->getSoul()) {
+				auto soulValue = itemData->getSoul()->getSoulValue().value_or(0);
 				if (mwse::mcp::getFeatureEnabled(mwse::mcp::feature::SoulgemValueRebalance)) {
 					return (soulValue * soulValue * soulValue) / 10000 + soulValue * 2;
 				}

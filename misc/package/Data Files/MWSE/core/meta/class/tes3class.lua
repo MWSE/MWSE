@@ -23,6 +23,7 @@
 --- @field majorSkills tes3.skill[] *Read-only*. An array-style table of the 5 skills IDs associated with the class' major skills. Maps to values in [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) namespace.
 --- @field minorSkills tes3.skill[] *Read-only*. An array-style table of the 5 skills IDs associated with the class' minor skills. Maps to values in [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) namespace.
 --- @field name string The player-facing name for the object.
+--- @field offersBartering boolean *Read-only*. If true, the class will barter in at least one type of item.
 --- @field offersEnchanting boolean If true, the class will offer repair services.
 --- @field offersRepairs boolean If true, the class will offer enchanting services.
 --- @field offersSpellmaking boolean If true, the class will offer spellmaking services.

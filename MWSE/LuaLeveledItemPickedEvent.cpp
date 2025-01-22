@@ -32,7 +32,5 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool LeveledItemPickedEvent::m_EventEnabled = false;
 	TES3::Reference* LeveledItemPickedEvent::m_Reference = nullptr;
 }

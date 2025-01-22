@@ -105,15 +105,15 @@ The spell's cast type. Maps to [`tes3.spellType`](https://mwse.github.io/MWSE/re
 	
 	--- @param magicSource tes3spell|tes3enchantment|tes3alchemy
 	local function isSpellHostile(magicSource)
-	    for _, effect in ipairs(magicSource.effects) do
-	        if (effect.object.isHarmful) then
+		for _, effect in ipairs(magicSource.effects) do
+			if (effect.object.isHarmful) then
 				-- If one of the spell's effects is harmful, then
 				-- `true` is returned and function ends here.
-	            return true
-	        end
-	    end
+				return true
+			end
+		end
 		-- If no harmful effect was found then return `false`.
-	    return false
+		return false
 	end
 
 	```
@@ -167,7 +167,7 @@ True if this object is an editor marker for a gameplay location. These include t
 ### `magickaCost`
 <div class="search_terms" style="display: none">magickacost</div>
 
-No description yet available.
+The magicka used when attempting to cast this spell. For an auto-calculated spell, it is updated when the spell is created or loaded.
 
 **Returns**:
 
@@ -310,7 +310,7 @@ The scene graph node for this object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -426,13 +426,28 @@ local result = myObject:getActiveEffectCount()
 
 ***
 
+### `getAutoCalcMagickaCost`
+<div class="search_terms" style="display: none">getautocalcmagickacost, autocalcmagickacost</div>
+
+Calculates and returns the magicka cost as if this spell was an autoCalc spell. It only returns the magicka value and does not update the spell's magickaCost.
+
+```lua
+local result = myObject:getAutoCalcMagickaCost()
+```
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `getFirstIndexOfEffect`
 <div class="search_terms" style="display: none">getfirstindexofeffect, firstindexofeffect</div>
 
 Gets the first index of an effect ID in the spell effect table. Returns `-1` if provided effect doesn't exist in the spell
 
 ```lua
-local result = myObject:getFirstIndexOfEffect(effectId)
+local index = myObject:getFirstIndexOfEffect(effectId)
 ```
 
 **Parameters**:
@@ -441,7 +456,7 @@ local result = myObject:getFirstIndexOfEffect(effectId)
 
 **Returns**:
 
-* `result` (integer)
+* `index` (integer): Returns 0-based index. Because Lua's arrays are 1-based, to index the spell's `effects` array with the return value add 1.
 
 ***
 

@@ -47,6 +47,9 @@ Elements may not respond to `heightProportional` sizing after this property is s
 
 The element's alpha color. Valid values range from `0.0` to `1.0`. Used to composite elements. If you wish to hide an element completely, use `disable` instead.
 
+!!! tip
+	Set your menu's alpha value to the [`tes3.worldController.menuAlpha`](https://mwse.github.io/MWSE/types/tes3worldController/#menualpha) to match the User's "Menu transparency" setting.
+
 **Returns**:
 
 * `result` (number)
@@ -133,10 +136,12 @@ The top border size in pixels. When this is set to `-1`, the `borderAllSides` se
 ### `childAlignX`
 <div class="search_terms" style="display: none">childalignx</div>
 
-Sets alignment of child elements inside its parent, though it only works in specific conditions. 0.0 = left/top edge touches left/top edge of parent, 0.5 = centred, 1.0 = right/bottom edge touches right/bottom edge of parent. For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
+Sets alignment of child elements inside its parent, as a fraction of interior space. Either childAlignX or childAlignY is used depending on the flow direction. childAlignX (horizontal alignment) is used for top-to-bottom flow direction, and childAlignY (vertical alignment) is used for left-to-right flow direction. Previous limitations on using this layout have been resolved.
 
-!!! success
-	Child alignment only works if the element has proportional sizing (using widthProportional/heightProportional) and all children use non-proportional sizing (widthProportional and heightProportional are nil).
+0.0 = Left/top edge touches left/top edge of parent.
+0.5 = Centered.
+1.0 = Right/bottom edge touches right/bottom edge of parent.
+For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
 
 **Returns**:
 
@@ -257,14 +262,18 @@ Indicates which direction child elements are laid out. These values are availabl
 ### `font`
 <div class="search_terms" style="display: none">font</div>
 
-Index of font to use for text.
-		0 - Magic Cards (default)
-		1 - Century Sans
-		2 - Daedric
+Index of font to use for text. These indices are mapped to actual font files in the `Morrowind.ini` file under the [Fonts] section. The table below lists the default fonts mapping.
+
+Index | description
+----- | -----------
+0     | `magic_cards_regular` (Magic Cards, default)
+1     | `century_gothic_font_regular` (Century Sans)
+2     | `daedric_font`
+
 
 **Returns**:
 
-* `result` (number)
+* `result` (integer)
 
 ***
 
@@ -325,6 +334,17 @@ Elements that bypass parent layout will be ignored when automatically determing 
 If `true`, the element's [`positionY`](https://mwse.github.io/MWSE/types/tes3uiElement/#positiony) can be modified and will not be affected by any layout restrictions imposed by the parent element. Incompatible with and will change the value of [`absolutePosAlignY`](https://mwse.github.io/MWSE/types/tes3uiElement/#absoluteposaligny).
 	
 Elements that bypass parent layout will be ignored when automatically determing the parent's height. See [`autoHeight`](https://mwse.github.io/MWSE/types/tes3uiElement/#autoheight) for more information.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `imageFilter`
+<div class="search_terms" style="display: none">imagefilter</div>
+
+If true image filtering for `texture` is set to bilinear. It's set to linear otherwise.
 
 **Returns**:
 
@@ -569,7 +589,7 @@ The element's text. Text input can be read by accessing this property.
 ### `texture`
 <div class="search_terms" style="display: none">texture</div>
 
-The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type.
+The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
 
 **Returns**:
 
@@ -708,6 +728,73 @@ local result = myObject:createButton({ id = ..., text = ... })
 * `params` (table): *Optional*.
 	* `id` (string, number): *Optional*. An identifier to help find this element later.
 	* `text` (string): *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `createColorPicker`
+<div class="search_terms" style="display: none">createcolorpicker, colorpicker</div>
+
+Creates a color picker widget.
+
+Color picker specific properties can be accessed through the `widget` property. The widget type for color pickers is [`tes3uiColorPicker`](https://mwse.github.io/MWSE/types/tes3uiColorPicker/).
+
+```lua
+local result = myObject:createColorPicker({ id = ..., initialColor = ..., alpha = ..., initialAlpha = ..., vertical = ..., showDataRow = ..., showSaturationSlider = ..., showSaturationPicker = ..., height = ..., mainWidth = ..., hueWidth = ..., showPreviews = ..., showOriginal = ..., previewHeight = ..., previewWidth = ... })
+```
+
+**Parameters**:
+
+* `params` (table): *Optional*.
+	* `id` (string, integer): *Optional*. An identifier to help find this element later.
+	* `initialColor` ([mwseColorTable](../types/mwseColorTable.md)): *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
+	* `alpha` (boolean): *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+	* `initialAlpha` (number): *Default*: `1`. The initial alpha value.
+	* `vertical` (boolean): *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
+	* `showDataRow` (boolean): *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
+	* `showSaturationSlider` (boolean): *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
+	* `showSaturationPicker` (boolean): *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
+	* `height` (integer): *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
+	* `mainWidth` (integer): *Default*: `256`. The width of the main picker.
+	* `hueWidth` (integer): *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
+	* `showPreviews` (boolean): *Default*: `true`. If `false` the picker won't have any color preview widgets.
+	* `showOriginal` (boolean): *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
+	* `previewHeight` (integer): *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
+	* `previewWidth` (integer): *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `createColorPreview`
+<div class="search_terms" style="display: none">createcolorpreview, colorpreview</div>
+
+Creates a color preview widget. It's made of a rect element of provided color and an image. The image shows current RGBA color over the checkered background.
+
+Color preview specific properties can be accessed through the `widget` property. The widget type for color previews is [`tes3uiColorPreview`](https://mwse.github.io/MWSE/types/tes3uiColorPreview/).
+
+```lua
+local result = myObject:createColorPreview({ id = ..., color = ..., hasAlphaPreview = ..., alpha = ..., width = ..., height = ..., flowDirection = ..., checkerSize = ..., lightGray = ..., darkGray = ... })
+```
+
+**Parameters**:
+
+* `params` (table): *Optional*.
+	* `id` (string, integer): *Optional*. An identifier to help find this element later.
+	* `color` ([mwseColorTable](../types/mwseColorTable.md), ffiImagePixel): *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
+	* `hasAlphaPreview` (boolean): *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
+	* `alpha` (number): *Default*: `1`. The alpha value of the preview.
+	* `width` (integer): *Default*: `64`. The width of the individual preview element.
+	* `height` (integer): *Default*: `64`. The height of the individual preview element.
+	* `flowDirection` ([tes3.flowDirection](../references/flow-directions.md)): *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
+	* `checkerSize` (integer): *Default*: `16`. The size of individual square in the color preview image in pixels.
+	* `lightGray` ([mwseColorTable](../types/mwseColorTable.md)): *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
+	* `darkGray` ([mwseColorTable](../types/mwseColorTable.md)): *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
 
 **Returns**:
 
@@ -1057,6 +1144,37 @@ local result = myObject:createTextInput({ id = ..., text = ..., placeholderText 
 **Returns**:
 
 * `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+??? example "Example: Search box"
+
+	Text input is just made of text, it doesn't have a border. It's often desirable, to make it clearer to the user, to put the text input inside a thin border.
+
+	```lua
+	--- @param parent tes3uiElement
+	--- @return tes3uiElement input
+	local function createSeachBox(parent)
+		local searchBox = parent:createThinBorder()
+		searchBox.autoHeight = true
+		searchBox.autoWidth = true
+		searchBox.widthProportional = 1.0
+		searchBox.paddingAllSides = 8
+		searchBox.borderBottom = 8
+		searchBox.borderTop = 8
+	
+		local input = searchBox:createTextInput({
+			autoFocus = true,
+			placeholderText = "Search...",
+		})
+		input.autoWidth = true
+	
+		searchBox:registerAfter(tes3.uiEvent.mouseClick, function(e)
+			tes3ui.acquireTextInput(input)
+		end)
+	
+		return input
+	end
+
+	```
 
 ***
 
@@ -1459,7 +1577,17 @@ Widget-specific events:
 * Slider:
 	* **PartScrollBar_changed**
 		Triggers on value change; moving the slider is not enough if the value is the same.
-
+* Cycle Button:
+	* **valueChanged**
+		Triggers after the selected `index` has been changed.
+* Text Input:
+	* **textCleared**
+		Triggers after the text has been cleared by the user in text input widgets that have `placeholderText` set.
+	* **textUpdated**
+		Triggers after the text of the text input has changed.
+* Color Picker:
+	* **colorChanged**
+		Triggers after new color was chosen in the color picker.
 ***
 
 #### Event forwarding
@@ -1508,6 +1636,9 @@ EventData:
 	See *relativeX* description.
 
 
+!!! Note
+	When a UI element is destroyed, you don't have to manually unregister your custom event handlers. The engine does it automatically.
+
 
 ```lua
 myObject:register(eventID, callback)
@@ -1551,6 +1682,21 @@ myObject:registerBefore(eventID, callback, priority)
 * `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/).
 * `callback` (integer, fun(e: [tes3uiEventData](../types/tes3uiEventData.md)): boolean?): The callback function.
 * `priority` (integer): *Default*: `0`. The priority of the event, relative to other register-befored events.
+
+***
+
+### `removeProperty`
+<div class="search_terms" style="display: none">removeproperty, property</div>
+
+Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
+
+```lua
+myObject:removeProperty(property)
+```
+
+**Parameters**:
+
+* `property` (number, string): The property to set.
 
 ***
 
@@ -1755,7 +1901,7 @@ local wasUnregistered = myObject:unregister(eventID)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
 
 **Returns**:
 
@@ -1774,8 +1920,8 @@ local wasUnregistered = myObject:unregisterAfter(eventID, callback)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
-* `callback` (function): The callback function.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
+* `callback` (integer, fun(e: [tes3uiEventData](../types/tes3uiEventData.md)): boolean?): The callback function.
 
 **Returns**:
 
@@ -1794,8 +1940,8 @@ local wasUnregistered = myObject:unregisterBefore(eventID, callback)
 
 **Parameters**:
 
-* `eventID` (string): The event id.
-* `callback` (function): The callback function.
+* `eventID` ([tes3.uiEvent](../references/ui-events.md)): The event id.
+* `callback` (integer, fun(e: [tes3uiEventData](../types/tes3uiEventData.md)): boolean?): The callback function.
 
 **Returns**:
 

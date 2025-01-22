@@ -1,25 +1,20 @@
 return {
 	type = "function",
-	description = [[Performs a binary search for a given `value` inside a specified `table` `t`.
+	description = [[Performs a binary search for a given `value` inside a specified array-style `table` `tbl`.
 
-If the `value` is found in `t`, then a `table` providing the range of all matching indices is returned. (e.g. `{ startindice, endindice }`.) 
-If only one matching index was found, then `startindice` will be the same as `endindice`.
+If the `value` is in `tbl`, then its corresponding `index` will be returned. Otherwise, this function will return `nil`.
+If `findAll == true`, then this `binsearch` will return the lowest and highest indices that store `value`. (These indices will be equal if there is only one copy of `value` in `tbl`.)
 
-If `value` is not found in `t`, then `nil` is returned.
-
-If `compval` is given, then it must be a function that takes in an element of `t` and returns a value to use for comparisons.
-For example, to compare arrays based on their first entry, you can write `compvalue = function(value) return value[1] end`.
-
-Note that `compval` is different from the `comp` that is specified in the `bininsert` function.
-
-If `reversed == true`, then the search assumes that `t` is sorted in reverse order (i.e., largest value at position 1).
-Note that specifying `reversed` requires specifying `compval`. 
-You can circumvent this by passing `nil` for `compval`. e.g., `binsearch(tbl, value, nil, true)`.]],
+You can optionally provide a `comp` function. If provided, `binsearch` will treat `tbl` as if it had been sorted by `table.sort(tbl, comp)`.
+]],
 	arguments = {
-		{ name = "t", type = "table" },
+		{ name = "tbl", type = "table" },
 		{ name = "value", type = "unknown", description = "The value to search for." },
-		{ name = "compval", type = "function", optional = true, description = "A function that returns the value to use in comparisons." },
-		{ name = "reversed", type = "boolean", optional = true, description = "If true, then `binsearch` will assume `t` is sorted in reverse order." },
+		{ name = "comp", type = "fun(a, b):boolean", optional = true, description = "The function used to sort `tbl`. If not provided, then the standard `<` operator will be used." },
+		{ name = "findAll", type = "boolean", optional = true, default = false, description = "If true," },
 	},
-	valuetype = "table",
+	returns = {
+		{ name = "index", type = "integer|nil", description = "An `index` such that `tbl[index] == value`, if such an index exists. `nil` otherwise. If `findAll == true`, this will be the smallest index such that `tbl[index] == value`." },
+		{ name = "highestMatch", type = "integer|nil", description = "If a match was found, and if `findAll == true`, then this will be the largest `index` such that `tbl[index] == vale`. `nil` otherwise." },
+	},
 }

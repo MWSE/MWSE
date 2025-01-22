@@ -130,6 +130,7 @@ namespace mwse::lua {
 		usertypeDefinition["setPropertyInt"] = &Element::setPropertyInt_lua;
 		usertypeDefinition["setPropertyObject"] = &Element::setPropertyObject_lua;
 		usertypeDefinition["setPropertyProperty"] = &Element::setPropertyProperty_lua;
+		usertypeDefinition["removeProperty"] = &Element::removeProperty_lua;
 
 		// Custom lua property accessor functions.
 		usertypeDefinition["getLuaData"] = &Element::getLuaData;

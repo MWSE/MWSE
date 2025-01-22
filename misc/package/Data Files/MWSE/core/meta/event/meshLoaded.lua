@@ -5,5 +5,5 @@
 --- This event is triggered when a mesh is loaded.
 --- @class meshLoadedEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
---- @field node niAmbientLight|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape The niAVObject-derived object of the loaded mesh.
+--- @field node niAVObject|niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape The niAVObject-derived object of the loaded mesh.
 --- @field path string The path to the mesh, relative to Data Files\Meshes

@@ -21,6 +21,7 @@
 #include "TES3Cell.h"
 #include "TES3DialogueInfo.h"
 #include "TES3GlobalVariable.h"
+#include "TES3GameSetting.h"
 #include "TES3MagicEffectController.h"
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
@@ -325,6 +326,11 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFirstCloneOfActor(this, baseId);
 	}
 
+	const auto TES3_NonDynamicData_resolveReferenceBySourceID = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, unsigned int)>(0x4B9180);
+	Reference* NonDynamicData::resolveReferenceBySourceID(unsigned int id) {
+		return TES3_NonDynamicData_resolveReferenceBySourceID(this, id);
+	}
+
 	Spell* NonDynamicData::getSpellById(const char* id) {
 		for (const auto spell : *spellsList) {
 			if (_stricmp(id, spell->objectID) == 0) {
@@ -528,8 +534,8 @@ namespace TES3 {
 		return TES3_DataHandler_addSoundById(this, soundId, reference, playbackFlags, volume, pitch, unknown);
 	}
 
-	const auto TES3_DataHandler_addTemporySound = reinterpret_cast<void(__thiscall*)(DataHandler*, const char*, Reference*, int, int, float, bool, Sound*)>(0x48C2B0);
-	void DataHandler::addTemporySound(const char* path, Reference* reference, int playbackFlags, int volume, float pitch, bool isVoiceover, Sound* sound) {
+	const auto TES3_DataHandler_addTemporarySound = reinterpret_cast<void(__thiscall*)(DataHandler*, const char*, Reference*, int, int, float, bool, Sound*)>(0x48C2B0);
+	void DataHandler::addTemporarySound(const char* path, Reference* reference, int playbackFlags, int volume, float pitch, bool isVoiceover, Sound* sound) {
 		if (mwse::lua::event::AddTempSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			auto stateHandle = luaManager.getThreadSafeStateHandle();
@@ -549,7 +555,7 @@ namespace TES3 {
 			}
 		}
 
-		TES3_DataHandler_addTemporySound(this, path, reference, playbackFlags, volume, pitch, isVoiceover, sound);
+		TES3_DataHandler_addTemporarySound(this, path, reference, playbackFlags, volume, pitch, isVoiceover, sound);
 	}
 
 	const auto TES3_DataHandler_getSoundPlaying = reinterpret_cast<SoundEvent * (__thiscall*)(DataHandler*, Sound*, Reference*)>(0x48BBD0);
@@ -615,6 +621,11 @@ namespace TES3 {
 		TES3_DataHandler_updateCollisionGroupsForActiveCells(this, force);
 	}
 
+	const auto TES3_DataHandler_getClosestPrisonReferences = reinterpret_cast<void(__thiscall*)(DataHandler*, Reference**, Reference**)>(0x48EE30);
+	void DataHandler::getClosestPrisonReferences(Reference** prisonMarker, Reference** stolenGoods) {
+		TES3_DataHandler_getClosestPrisonReferences(this, prisonMarker, stolenGoods);
+	}
+
 	const auto TES3_DataHandler_isCellInMemory  = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Cell*, bool)>(0x484AF0);
 	bool DataHandler::isCellInMemory(const Cell* cell, bool unknown) const {
 		return TES3_DataHandler_isCellInMemory(this, cell, unknown);
@@ -622,6 +633,18 @@ namespace TES3 {
 
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {
 		return std::ref(exteriorCellData);
+	}
+
+	long DataHandler::getGameSettingLong(int id) const {
+		return nonDynamicData->GMSTs[id]->value.asLong;
+	}
+
+	float DataHandler::getGameSettingFloat(int id) const {
+		return nonDynamicData->GMSTs[id]->value.asFloat;
+	}
+
+	const char* DataHandler::getGameSettingString(int id) const {
+		return nonDynamicData->GMSTs[id]->value.asString;
 	}
 
 }

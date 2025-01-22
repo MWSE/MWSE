@@ -35,7 +35,10 @@
 --- @field runSpeed number *Read-only*. The calculated run movement speed.
 --- @field security tes3statisticSkill *Read-only*. Direct access to the NPC's security skill statistic.
 --- @field shortBlade tes3statisticSkill *Read-only*. Direct access to the NPC's short blade skill statistic.
---- @field skills tes3statisticSkill[] *Read-only*. An array-style table with access to the twenty seven NPC skill statistics ([tes3statisticSkill](https://mwse.github.io/MWSE/types/tes3statisticSkill/)).
+--- @field skills tes3statisticSkill[] *Read-only*. An array-style table with access to the twenty seven NPC skill statistics.
+--- 
+--- !!! note
+--- 	This array is 1-indexed. The array indices correspond to the [tes3.skill](https://mwse.github.io/MWSE/references/skills/) table plus 1 to account for Lua's 1-based array indexing. In other words `myMobile.skills[tes3.skill.alchemy + 1]` returns the `tes3statisticSkill` object corresponding to alchemy skill.
 --- @field sneak tes3statisticSkill *Read-only*. Direct access to the NPC's sneak skill statistic.
 --- @field spear tes3statisticSkill *Read-only*. Direct access to the NPC's spear skill statistic.
 --- @field speechcraft tes3statisticSkill *Read-only*. Direct access to the NPC's speechcraft skill statistic.

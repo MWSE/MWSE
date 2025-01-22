@@ -7,7 +7,7 @@
 --- @field name string The region's name. It must be a string less than 32 characters long.
 --- @field sleepCreature tes3leveledCreature *Read-only*. The region's leveled creature that can be spawned while the player is sleeping.
 --- @field sounds tes3regionSound[] *Read-only*. Array-style table for the different region sounds. Each object in the table is a [`tes3regionSound`](https://mwse.github.io/MWSE/types/tes3regionSound/).
---- @field weather tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder The region's current weather.
+--- @field weather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder The region's current weather.
 --- @field weatherChanceAsh integer The chance the Ash weather-type will be used. Must be an integer between `0` and `100`.
 --- @field weatherChanceBlight integer The chance the Blight weather-type will be used. Must be an integer between `0` and `100`.
 --- @field weatherChanceBlizzard integer The chance the Blizzard weather-type will be used. Must be an integer between `0` and `100`.

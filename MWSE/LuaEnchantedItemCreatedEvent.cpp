@@ -45,6 +45,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool EnchantedItemCreatedEvent::m_EventEnabled = false;
 }

@@ -6,7 +6,7 @@
 --- @class tes3splashController
 --- @field activeSplashes tes3splashControllerActiveSplash[] *Read-only*. A list of tes3splashControllerActiveSplash objects.
 --- @field bloodMeshCount number *Read-only*. The number of loaded blood meshes.
---- @field bloodMeshes niBillboardNode[]|niCollisionSwitch[]|niNode[]|niSortAdjustNode[]|niSwitchNode[] *Read-only*. A list of loaded blood meshes.
+--- @field bloodMeshes niBSAnimationNode[]|niBSParticleNode[]|niBillboardNode[]|niCollisionSwitch[]|niNode[]|niSortAdjustNode[]|niSwitchNode[] *Read-only*. A list of loaded blood meshes.
 --- @field bloodSplashDurations number[] *Read-only*. A list of blood splash durations, measured in seconds.
 --- @field bloodTextureCount number *Read-only*. The number of loaded blood textures.
 --- @field bloodTextureProperties niTexturingProperty[] *Read-only*. A list of loaded blood texturing properties.

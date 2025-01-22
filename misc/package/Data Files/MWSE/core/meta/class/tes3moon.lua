@@ -35,6 +35,9 @@
 --- 
 --- 
 --- 	
+--- @field sceneMoonFace niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Provides access to the moon face NiNode, containing the lit face of the moon.
+--- @field sceneMoonRoot niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Provides access to the moon root NiNode.
+--- @field sceneMoonShadow niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Provides access to the moon shadow NiNode, containing the background-blocking shadow mask of the moon.
 --- @field shadowEarlyFadeAngle number No description yet available.
 --- @field speed number Controls the speed of the moons across the sky. This corresponds to the setting of the same name in [Moons] section of the Morrowind.ini file.
 --- @field texture string *Read-only*. The texture to use for the moon. These look like "Textures\tx_masser". The actual texture that is used is determined by the current moon phase.

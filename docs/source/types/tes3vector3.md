@@ -244,8 +244,10 @@ local result = myObject:distanceXY(vec)
 ??? example "Example: Items on bookshelves."
 
 	Let's say you want to make a function that checks if two ingredients are close together. This will involve looking at the distance between two `tes3reference`s.
-One way to do this would be to use the normal `tes3vector3:distance` method, but this has a drawback: it doesn't work consistently with ingredients on bookshelves. If two ingredients are on the same shelf, their `z`-coordinates contribute very little to the distance between them, while the situation is reversed for ingredients on different shelves.
-This problem is remedied by using `tes3vector3:distanceXY` as follows:
+
+	One way to do this would be to use the normal `tes3vector3:distance` method, but this has a drawback: it doesn't work consistently with ingredients on bookshelves. If two ingredients are on the same shelf, their `z`-coordinates contribute very little to the distance between them, while the situation is reversed for ingredients on different shelves.
+
+	This problem is remedied by using `tes3vector3:distanceXY` as follows:
 
 	```lua
 	-- Check if two items are on the same bookshelf
@@ -547,7 +549,7 @@ local vector = tes3vector3.new(x, y, z)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector3](../types/tes3vector3.md) | number | [tes3vector3](../types/tes3vector3.md) | Standard vector addition. |
+| [tes3vector3](../types/tes3vector3.md) | number | [tes3vector3](../types/tes3vector3.md) | Add the given number to each of the vector's components. |
 | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | Standard vector addition. |
 
 ***
@@ -572,7 +574,7 @@ local vector = tes3vector3.new(x, y, z)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | The per-element multiplication of two vectors. |
+| [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | The per-element multiplication of two vectors, also known as [Hadamard product](https://en.wikipedia.org/wiki/Hadamard_product_(matrices)). |
 | [tes3vector3](../types/tes3vector3.md) | number | [tes3vector3](../types/tes3vector3.md) | Multiplies the vector by a scalar. |
 
 ***
@@ -581,7 +583,7 @@ local vector = tes3vector3.new(x, y, z)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector3](../types/tes3vector3.md) | number | [tes3vector3](../types/tes3vector3.md) | Standard vector subtraction. |
+| [tes3vector3](../types/tes3vector3.md) | number | [tes3vector3](../types/tes3vector3.md) | Subtracts given number from each of the vector's components. |
 | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | [tes3vector3](../types/tes3vector3.md) | Standard vector subtraction. |
 
 ***

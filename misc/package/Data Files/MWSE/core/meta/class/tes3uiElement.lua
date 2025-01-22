@@ -17,6 +17,9 @@
 --- 
 --- Elements may not respond to `heightProportional` sizing after this property is set. If you need to use both you should consider testing if it works first.
 --- @field alpha number The element's alpha color. Valid values range from `0.0` to `1.0`. Used to composite elements. If you wish to hide an element completely, use `disable` instead.
+--- 
+--- !!! tip
+--- 	Set your menu's alpha value to the [`tes3.worldController.menuAlpha`](https://mwse.github.io/MWSE/types/tes3worldController/#menualpha) to match the User's "Menu transparency" setting.
 --- @field autoHeight boolean If `true`, automatically expands element dimensions to fit child elements. Ignores child elements that have `ignoreLayoutY` set to `true`. Dimensions are restricted by `minWidth`, `minHeight`, `maxWidth` and `maxHeight` properties.
 --- @field autoWidth boolean If `true`, automatically expands element dimensions to fit child elements. Ignores child elements that have `ignoreLayoutX` set to `true`. Dimensions are restricted by `minWidth`, `minHeight`, `maxWidth` and `maxHeight` properties.
 --- @field borderAllSides integer The border size in pixels. Border is the extra empty space around an element. Individual border sizes default to using the borderAllSides setting.
@@ -24,10 +27,12 @@
 --- @field borderLeft integer The left border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
 --- @field borderRight integer The left border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
 --- @field borderTop integer The top border size in pixels. When this is set to `-1`, the `borderAllSides` setting is used for this side instead.
---- @field childAlignX number Sets alignment of child elements inside its parent, though it only works in specific conditions. 0.0 = left/top edge touches left/top edge of parent, 0.5 = centred, 1.0 = right/bottom edge touches right/bottom edge of parent. For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
+--- @field childAlignX number Sets alignment of child elements inside its parent, as a fraction of interior space. Either childAlignX or childAlignY is used depending on the flow direction. childAlignX (horizontal alignment) is used for top-to-bottom flow direction, and childAlignY (vertical alignment) is used for left-to-right flow direction. Previous limitations on using this layout have been resolved.
 --- 
---- !!! success
---- 	Child alignment only works if the element has proportional sizing (using widthProportional/heightProportional) and all children use non-proportional sizing (widthProportional and heightProportional are nil).
+--- 0.0 = Left/top edge touches left/top edge of parent.
+--- 0.5 = Centered.
+--- 1.0 = Right/bottom edge touches right/bottom edge of parent.
+--- For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
 --- @field childAlignY number See childAlignX.
 --- @field childOffsetX integer The view offset in pixels, applied to the position of child nodes. Used in scroll panes.
 --- @field childOffsetY number See childOffsetX.
@@ -38,10 +43,14 @@
 --- @field contentType tes3.contentType *Read-only*. The type of content this `tes3uiElement` represents. Maps to values in the [`tes3.contentType`](https://mwse.github.io/MWSE/references/content-types/) table.
 --- @field disabled boolean Disables user actions on this element. Widgets may stop accepting mouse and keyboard input while disabled.
 --- @field flowDirection tes3.flowDirection Indicates which direction child elements are laid out. These values are available as [`tes3.flowDirection`](https://mwse.github.io/MWSE/references/flow-directions/) enumeration.
---- @field font number Index of font to use for text.
---- 		0 - Magic Cards (default)
---- 		1 - Century Sans
---- 		2 - Daedric
+--- @field font integer Index of font to use for text. These indices are mapped to actual font files in the `Morrowind.ini` file under the [Fonts] section. The table below lists the default fonts mapping.
+--- 
+--- Index | description
+--- ----- | -----------
+--- 0     | `magic_cards_regular` (Magic Cards, default)
+--- 1     | `century_gothic_font_regular` (Century Sans)
+--- 2     | `daedric_font`
+--- 
 --- @field height integer The element's height in pixels.
 --- @field heightProportional number Sets element dimensions using a proportional sizer. The sizer starts with the parent dimension in the flow direction, subtracts any fixed dimension children leaving the proportional sizer space. Each proportionally sized element then gets an equal division of the space, multiplied by this member. Values above 1.0 are permissible.
 --- 
@@ -56,6 +65,7 @@
 --- @field ignoreLayoutY boolean If `true`, the element's [`positionY`](https://mwse.github.io/MWSE/types/tes3uiElement/#positiony) can be modified and will not be affected by any layout restrictions imposed by the parent element. Incompatible with and will change the value of [`absolutePosAlignY`](https://mwse.github.io/MWSE/types/tes3uiElement/#absoluteposaligny).
 --- 	
 --- Elements that bypass parent layout will be ignored when automatically determing the parent's height. See [`autoHeight`](https://mwse.github.io/MWSE/types/tes3uiElement/#autoheight) for more information.
+--- @field imageFilter boolean If true image filtering for `texture` is set to bilinear. It's set to linear otherwise.
 --- @field imageScaleX number Image scaling multipliers. Only applies to image elements. `0` disables scaling and displays the original image. Negative numbers will mirror and scale along this axis.
 --- @field imageScaleY number Image scaling multipliers. Only applies to image elements. `0` disables scaling and displays the original image. Negative numbers will mirror and scale along this axis.
 --- @field justifyText tes3.justifyText Controls text justification. To work correctly for center/right justification, `wrapText` must be `true`. Maps to values in the [`tes3.justifyText`](https://mwse.github.io/MWSE/references/justify-text/) table.
@@ -75,15 +85,15 @@
 --- @field rawText string The raw value of the element's text. This, unlike the normal text property, will not directly read widget information or handle the removal of the positional cursor.
 --- @field repeatKeys boolean Controls if there is repeating text input when keys are held down. `true` by default.
 --- @field scaleMode boolean When set to `true` on image and NIF elements, the image or NIF is scaled to fit the element `width` and `height`.
---- @field sceneNode niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Underlying access to the scene graph responsible for this element.
+--- @field sceneNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Underlying access to the scene graph responsible for this element.
 --- @field text string The element's text. Text input can be read by accessing this property.
 --- 
 --- !!! tip
 --- 	If your element's text is a number, you need to manually convert it to string using `tostring()`.
---- @field texture niSourceTexture The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type.
+--- @field texture niSourceTexture The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
 --- @field type tes3.uiElementType *Read-only*. The type of content this `tes3uiElement` represents. This is an expanded set of the options available from the `contentType` property. Maps to values in [`tes3.uiElementType`](https://mwse.github.io/MWSE/references/tes3uiElement-types/).
 --- @field visible boolean Controls if the element is visible.
---- @field widget tes3uiButton|tes3uiCycleButton|tes3uiFillBar|tes3uiHyperlink|tes3uiParagraphInput|tes3uiScrollPane|tes3uiSlider|tes3uiTextInput|tes3uiTextSelect|nil Access to element specific properties. This will be `nil` if there are no element specific properties. See the return types and the create* functions for more details.
+--- @field widget tes3uiButton|tes3uiColorPicker|tes3uiColorPreview|tes3uiCycleButton|tes3uiFillBar|tes3uiHyperlink|tes3uiParagraphInput|tes3uiScrollPane|tes3uiSlider|tes3uiTextInput|tes3uiTextSelect|tes3uiWidget|nil Access to element specific properties. This will be `nil` if there are no element specific properties. See the return types and the create* functions for more details.
 --- @field width integer The element's width in pixels.
 --- @field widthProportional number Sets element dimensions using a proportional sizer. The sizer starts with the parent dimension in the flow direction, subtracts any fixed dimension children leaving the proportional sizer space. Each proportionally sized element then gets an equal division of the space, multiplied by this member. Values above 1.0 are permissible.
 --- 
@@ -137,6 +147,101 @@ function tes3uiElement:createButton(params) end
 --- @class tes3uiElement.createButton.params
 --- @field id string|number|nil *Optional*. An identifier to help find this element later.
 --- @field text string? *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
+
+--- Creates a color picker widget.
+--- 
+--- Color picker specific properties can be accessed through the `widget` property. The widget type for color pickers is [`tes3uiColorPicker`](https://mwse.github.io/MWSE/types/tes3uiColorPicker/).
+--- @param params tes3uiElement.createColorPicker.params? This table accepts the following values:
+--- 
+--- `id`: string|integer|nil — *Optional*. An identifier to help find this element later.
+--- 
+--- `initialColor`: mwseColorTable? — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
+--- 
+--- `alpha`: boolean? — *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- 
+--- `initialAlpha`: number? — *Default*: `1`. The initial alpha value.
+--- 
+--- `vertical`: boolean? — *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
+--- 
+--- `showDataRow`: boolean? — *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
+--- 
+--- `showSaturationSlider`: boolean? — *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
+--- 
+--- `showSaturationPicker`: boolean? — *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
+--- 
+--- `height`: integer? — *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
+--- 
+--- `mainWidth`: integer? — *Default*: `256`. The width of the main picker.
+--- 
+--- `hueWidth`: integer? — *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
+--- 
+--- `showPreviews`: boolean? — *Default*: `true`. If `false` the picker won't have any color preview widgets.
+--- 
+--- `showOriginal`: boolean? — *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
+--- 
+--- `previewHeight`: integer? — *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
+--- 
+--- `previewWidth`: integer? — *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
+--- @return tes3uiElement result No description yet available.
+function tes3uiElement:createColorPicker(params) end
+
+---Table parameter definitions for `tes3uiElement.createColorPicker`.
+--- @class tes3uiElement.createColorPicker.params
+--- @field id string|integer|nil *Optional*. An identifier to help find this element later.
+--- @field initialColor mwseColorTable? *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
+--- @field alpha boolean? *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- @field initialAlpha number? *Default*: `1`. The initial alpha value.
+--- @field vertical boolean? *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
+--- @field showDataRow boolean? *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
+--- @field showSaturationSlider boolean? *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
+--- @field showSaturationPicker boolean? *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
+--- @field height integer? *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
+--- @field mainWidth integer? *Default*: `256`. The width of the main picker.
+--- @field hueWidth integer? *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
+--- @field showPreviews boolean? *Default*: `true`. If `false` the picker won't have any color preview widgets.
+--- @field showOriginal boolean? *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
+--- @field previewHeight integer? *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
+--- @field previewWidth integer? *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
+
+--- Creates a color preview widget. It's made of a rect element of provided color and an image. The image shows current RGBA color over the checkered background.
+--- 
+--- Color preview specific properties can be accessed through the `widget` property. The widget type for color previews is [`tes3uiColorPreview`](https://mwse.github.io/MWSE/types/tes3uiColorPreview/).
+--- @param params tes3uiElement.createColorPreview.params? This table accepts the following values:
+--- 
+--- `id`: string|integer|nil — *Optional*. An identifier to help find this element later.
+--- 
+--- `color`: mwseColorTable|ffiImagePixel|nil — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
+--- 
+--- `hasAlphaPreview`: boolean? — *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
+--- 
+--- `alpha`: number? — *Default*: `1`. The alpha value of the preview.
+--- 
+--- `width`: integer? — *Default*: `64`. The width of the individual preview element.
+--- 
+--- `height`: integer? — *Default*: `64`. The height of the individual preview element.
+--- 
+--- `flowDirection`: tes3.flowDirection? — *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
+--- 
+--- `checkerSize`: integer? — *Default*: `16`. The size of individual square in the color preview image in pixels.
+--- 
+--- `lightGray`: mwseColorTable? — *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
+--- 
+--- `darkGray`: mwseColorTable? — *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
+--- @return tes3uiElement result No description yet available.
+function tes3uiElement:createColorPreview(params) end
+
+---Table parameter definitions for `tes3uiElement.createColorPreview`.
+--- @class tes3uiElement.createColorPreview.params
+--- @field id string|integer|nil *Optional*. An identifier to help find this element later.
+--- @field color mwseColorTable|ffiImagePixel|nil *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
+--- @field hasAlphaPreview boolean? *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
+--- @field alpha number? *Default*: `1`. The alpha value of the preview.
+--- @field width integer? *Default*: `64`. The width of the individual preview element.
+--- @field height integer? *Default*: `64`. The height of the individual preview element.
+--- @field flowDirection tes3.flowDirection? *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
+--- @field checkerSize integer? *Default*: `16`. The size of individual square in the color preview image in pixels.
+--- @field lightGray mwseColorTable? *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
+--- @field darkGray mwseColorTable? *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
 
 --- Creates a clickable button, whose text changes linearly through options as it is clicked. Register the `valueChanged` event for when the option is cycled or changed via script.
 --- 
@@ -380,6 +485,8 @@ function tes3uiElement:createSliderVertical(params) end
 --- Creates a single line text input element. To receive input the keyboard must be captured with `tes3ui.acquireTextInput(element)`. Read the input with the `text` property. Write an initial value to display by setting the `text` property; that value will be cleared on the first keypress.
 --- 
 --- Text input specific properties can be accessed through the `widget` property. The widget type for text inputs is [`tes3uiTextInput`](https://mwse.github.io/MWSE/types/tes3uiTextInput/).
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3uiElement/#createtextinput).
 --- @param params tes3uiElement.createTextInput.params? This table accepts the following values:
 --- 
 --- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
@@ -584,7 +691,17 @@ function tes3uiElement:move(params) end
 --- * Slider:
 --- 	* **PartScrollBar_changed**
 --- 		Triggers on value change; moving the slider is not enough if the value is the same.
---- 
+--- * Cycle Button:
+--- 	* **valueChanged**
+--- 		Triggers after the selected `index` has been changed.
+--- * Text Input:
+--- 	* **textCleared**
+--- 		Triggers after the text has been cleared by the user in text input widgets that have `placeholderText` set.
+--- 	* **textUpdated**
+--- 		Triggers after the text of the text input has changed.
+--- * Color Picker:
+--- 	* **colorChanged**
+--- 		Triggers after new color was chosen in the color picker.
 --- ***
 --- 
 --- #### Event forwarding
@@ -633,6 +750,9 @@ function tes3uiElement:move(params) end
 --- 	See *relativeX* description.
 --- 
 --- 
+--- !!! Note
+--- 	When a UI element is destroyed, you don't have to manually unregister your custom event handlers. The engine does it automatically.
+--- 
 --- @param eventID tes3.uiEvent The UI event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/).
 --- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function. Returning `false` from this function may cancel an interaction for certain events, such as unfocus.
 function tes3uiElement:register(eventID, callback) end
@@ -648,6 +768,10 @@ function tes3uiElement:registerAfter(eventID, callback, priority) end
 --- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
 --- @param priority integer? *Default*: `0`. The priority of the event, relative to other register-befored events.
 function tes3uiElement:registerBefore(eventID, callback, priority) end
+
+--- Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
+--- @param property number|string The property to set.
+function tes3uiElement:removeProperty(property) end
 
 --- Moves the layout order of the children of this element. `count` elements are taken from starting child `Element` or index (0-based) `moveFrom`, and moved before the child `Element` or index (0-based) `insertBefore`. If `count` is -1, all children after `moveFrom` are moved. If any index is a negative number, then the index represents a distance from the end of the child list.
 --- 
@@ -707,19 +831,19 @@ function tes3uiElement:sortChildren(sortFunction) end
 function tes3uiElement:triggerEvent(eventID) end
 
 --- Unregisters an `event` handler.
---- @param eventID string The event id.
+--- @param eventID tes3.uiEvent The event id.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregister(eventID) end
 
 --- Unregisters a function previously registered using `:registerAfter`.
---- @param eventID string The event id.
---- @param callback function The callback function.
+--- @param eventID tes3.uiEvent The event id.
+--- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregisterAfter(eventID, callback) end
 
 --- Unregisters a function previously registered using `:registerBefore`.
---- @param eventID string The event id.
---- @param callback function The callback function.
+--- @param eventID tes3.uiEvent The event id.
+--- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
 --- @return boolean wasUnregistered No description yet available.
 function tes3uiElement:unregisterBefore(eventID, callback) end
 

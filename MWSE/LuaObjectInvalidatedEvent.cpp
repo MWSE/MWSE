@@ -19,16 +19,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	sol::object ObjectInvalidatedEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
-		auto eventData = state.create_table();
-
-		eventData["filter"] = m_Object;
-
-		return eventData;
-	}
-
-	bool ObjectInvalidatedEvent::m_EventEnabled = false;
 }

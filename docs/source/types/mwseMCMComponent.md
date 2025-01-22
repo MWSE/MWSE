@@ -30,12 +30,14 @@ The base class for all MCM components, such as categories and settings. The basi
 	- [Yes no button](./mwseMCMYesNoButton.md)
 	- [Cycle button](./mwseMCMCycleButton.md)
 	- [Key binder](./mwseMCMKeyBinder.md)
+	- [Mouse binder](./mwseMCMMouseBinder.md)
 	- [Dropdown](./mwseMCMDropdown.md)
 	- [Text field](./mwseMCMTextField.md)
 	- [Paragraph field](./mwseMCMParagraphField.md)
 	- [Slider](./mwseMCMSlider.md)
-	- [Decimal slider](./mwseMCMDecimalSlider.md)
 	- [Percentage slider](./mwseMCMPercentageSlider.md)
+	- [Color picker](./mwseMCMColorPicker.md)
+	- [Color picker button](./mwseMCMColorPickerButton.md)
 
 
 ## Properties
@@ -289,7 +291,7 @@ local result = myObject:checkDisabled()
 ### `create`
 <div class="search_terms" style="display: none">create</div>
 
-This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createContentsContainer) method implemented.
+This method creates the UI elements that comprise a component. To call this method, the mwseMCMComponent-derived type needs to have [`createContentsContainer`](./mwseMCMComponent.md#createcontentscontainer) method implemented.
 
 ```lua
 myObject:create(parentBlock)
@@ -385,55 +387,20 @@ myObject:enable()
 
 ***
 
-### `getComponent`
-<div class="search_terms" style="display: none">getcomponent, component</div>
+### `getMouseOverText`
+<div class="search_terms" style="display: none">getmouseovertext, mouseovertext</div>
 
-Creates a new Component of given class or returns the given Component.
+Retrieves the text that this component should display in any related [`mouseOverInfo`s](./mwseMCMMouseOverInfo.md). This method currently utilized to display this component's description whenever the component is in a [`SideBarPage`](./mwseMCMSideBarPage.md).
+
+Primarily intended for internal use.
 
 ```lua
-local component = myObject:getComponent({ class = ..., label = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., parentComponent = ... })
+local text = myObject:getMouseOverText()
 ```
-
-**Parameters**:
-
-* `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
-	* `class` (string): The component type to get. On of the following:
-		- `"Template"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Category"`
-		- `"SideBySideBlock"`
-		- `"ActiveInfo"`
-		- `"Hyperlink"`
-		- `"Info"`
-		- `"MouseOverInfo"`
-		- `"Setting"`
-		- `"Button"`
-		- `"OnOffButton"`
-		- `"YesNoButton"`
-		- `"CycleButton"`
-		- `"KeyBinder"`
-		- `"Dropdown"`
-		- `"TextField"`
-		- `"ParagraphField"`
-		- `"Slider"`
-		- `"DecimalSlider"`
-		- `"PercentageSlider"`
-	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
-	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
-	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
-	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
-	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
-	* `inGameOnly` (boolean): *Default*: `false`.
-	* `postCreate` (fun(self: [mwseMCMComponent](../types/mwseMCMComponent.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
-	* `parentComponent` ([mwseMCMComponent](../types/mwseMCMComponent.md)): *Optional*.
 
 **Returns**:
 
-* `component` ([mwseMCMComponent](../types/mwseMCMComponent.md))
+* `text` (string, nil): The text to display. Returning `nil` means that the `mouseOverInfo` should display text from a different source. e.g. from the `description` of the relevant [`SideBarPage`](./mwseMCMSideBarPage.md).
 
 ***
 
@@ -464,25 +431,6 @@ local component = myObject:new({ label = ..., description = ..., indent = ..., c
 **Returns**:
 
 * `component` ([mwseMCMComponent](../types/mwseMCMComponent.md))
-
-***
-
-### `prepareData`
-<div class="search_terms" style="display: none">preparedata</div>
-
-Prepares the provided parameters table and sets the `parentComponent` field to `mwseMCMComponent`.
-
-```lua
-local data = myObject:prepareData(data)
-```
-
-**Parameters**:
-
-* `data` (string, mwseMCMComponent.new.data): *Optional*.
-
-**Returns**:
-
-* `data` (mwseMCMComponent.new.data)
 
 ***
 

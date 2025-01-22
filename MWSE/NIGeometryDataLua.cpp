@@ -47,6 +47,9 @@ namespace mwse::lua {
 			// Base class binding.
 			setUserdataForNIGeometryData(usertypeDefinition);
 
+			// Basic property binding.
+			usertypeDefinition["renderFlags"] = &NI::TriBasedGeometryData::patchRenderFlags;
+
 			// Functions exposed as properties.
 			usertypeDefinition["activeTriangleCount"] = sol::property(&NI::TriBasedGeometryData::getActiveTriangleCount, &NI::TriBasedGeometryData::setActiveTriangleCount);
 			usertypeDefinition["triangleCount"] = sol::readonly_property(&NI::TriBasedGeometryData::triangleCount);
@@ -61,6 +64,9 @@ namespace mwse::lua {
 
 			// Base class binding.
 			setUserdataForNIGeometryData(usertypeDefinition);
+
+			// Basic property binding.
+			usertypeDefinition["renderFlags"] = &NI::TriShapeData::patchRenderFlags;
 
 			// Functions exposed as properties.
 			usertypeDefinition["activeTriangleCount"] = sol::property(&NI::TriShapeData::getActiveTriangleCount, &NI::TriShapeData::setActiveTriangleCount);

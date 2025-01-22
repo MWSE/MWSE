@@ -24,6 +24,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MobileObjectActivatedEvent::m_EventEnabled = false;
 }

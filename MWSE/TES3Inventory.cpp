@@ -113,8 +113,13 @@ namespace TES3 {
 	}
 
 	const auto TES3_EquipmentStack_CalculateBarterItemValue = reinterpret_cast<int(__cdecl*)(const TES3::EquipmentStack*)>(0x5A46E0);
-	int EquipmentStack::getAdjustedValue() {
+	int EquipmentStack::getAdjustedValue() const {
 		return TES3_EquipmentStack_CalculateBarterItemValue(this);
+	}
+
+	const auto TES3_EquipmentStack_CanonicalCopy = reinterpret_cast<TES3::EquipmentStack * (__cdecl*)(const TES3::EquipmentStack*)>(0x465420);
+	EquipmentStack* EquipmentStack::canonicalCopy() const {
+		return TES3_EquipmentStack_CanonicalCopy(this);
 	}
 
 	//

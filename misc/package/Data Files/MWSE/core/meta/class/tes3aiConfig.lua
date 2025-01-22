@@ -22,6 +22,7 @@
 --- @field flee number Friendly access to actor's flee value.
 --- @field hello number Friendly access to actor's hello value.
 --- @field merchantFlags number Numeric access to all merchant flags. Shouldn't be used directly.
+--- @field offersBartering boolean *Read-only*. If true, the actor will barter in at least one type of item.
 --- @field offersEnchanting boolean Friendly access to a flag that controls whether the actor offers enchanting services.
 --- @field offersRepairs boolean Friendly access to a flag that controls whether the actor offers item repairs service.
 --- @field offersSpellmaking boolean Friendly access to a flag that controls whether the actor offers spellmaking service.

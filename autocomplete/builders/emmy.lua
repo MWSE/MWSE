@@ -15,9 +15,9 @@ lfs.remakedir(lfs.join(metaFolder, "class"))
 lfs.remakedir(lfs.join(metaFolder, "event"))
 
 -- Base containers to hold our compiled data.
-local globals = {}
-local classes = {}
-local events = {}
+local globals = {}	---@type packageLib[]
+local classes = {}	---@type packageClass[]
+local events = {}	---@type packageEvent[]
 
 
 --
@@ -26,6 +26,8 @@ local events = {}
 
 common.log("Definitions folder: %s", common.pathDefinitions)
 
+---@param package package
+---@return string
 local function getPackageLink(package)
 	local tokens = { common.urlBase, package.key }
 
@@ -54,7 +56,7 @@ end
 --- have one or more methods or functions. This the avoids creation of tables
 --- in the global namespace for virtual types - types that only exist
 --- in the annotations.
---- @param package packageClass
+--- @param package packageClass|packageLib|package
 --- @return boolean
 local function shouldCreateTable(package)
 	return (
@@ -67,16 +69,23 @@ local function shouldCreateTable(package)
 	)
 end
 
+---@param package package
+---@param file file*
 local function writeExamples(package, file)
 	if (package.examples) then
 		file:write(string.format("---\n--- [Examples available in online documentation](%s).\n", getPackageLink(package)))
 	end
 end
 
+---@param str string
+---@return string
 local function formatLineBreaks(str)
-	return string.gsub(str, "\n", "\n--- ")
+	-- Wrapping it in parentheses to ensure only one value gets returned
+	return (string.gsub(str, "\n", "\n--- "))
 end
 
+---@param description string
+---@return string
 local function formatDescription(description)
 	return "--- " .. formatLineBreaks(description)
 end
@@ -100,6 +109,9 @@ local function insertNil(types)
 	table.insert(types, "nil")
 end
 
+---@param type string?
+---@param package package
+---@return string?
 local function getAllPossibleVariationsOfType(type, package)
 	if (not type) then
 		return nil
@@ -148,6 +160,8 @@ local function getAllPossibleVariationsOfType(type, package)
 	return table.concat(types, "|")
 end
 
+---@param package packageFunction
+---@return string[]
 local function getParamNames(package)
 	local params = {}
 	for _, param in ipairs(package.arguments or {}) do
@@ -156,6 +170,9 @@ local function getParamNames(package)
 	return params
 end
 
+---@param package packageFunction
+---@param file file*
+---@param namespaceOverride string?
 local function writeFunction(package, file, namespaceOverride)
 	file:write(formatDescription(common.getDescriptionString(package)) .. "\n")
 	writeExamples(package, file)
@@ -181,9 +198,9 @@ local function writeFunction(package, file, namespaceOverride)
 				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
 			end
 		end
-		file:write(string.format("--- @param %s %s %s\n", 
-			argument.name or "unknown", 
-			getAllPossibleVariationsOfType(type, argument) or "any", 
+		file:write(string.format("--- @param %s %s %s\n",
+			argument.name or "unknown",
+			getAllPossibleVariationsOfType(type, argument) or "any",
 			formatLineBreaks(description))
 		)
 	end
@@ -223,6 +240,8 @@ common.compilePath(lfs.join(common.pathDefinitions, "events", "standard"), event
 -- Building
 --
 
+---@param className string
+---@return string
 local function buildParentChain(className)
 	local package = assert(classes[className])
 	if (package.inherits) then
@@ -254,10 +273,15 @@ local function buildAlias(namespace, keys, file)
 	file:write("\n")
 end
 
+---@param A libraryEnumerations
+---@param B libraryEnumerations
+---@return boolean
 local function sortEnumsByFilename(A, B)
 	return A.filename:lower() < B.filename:lower()
 end
 
+---@param package package
+---@param file file*
 local function buildExternalRequires(package, file)
 	local enumMap = common.getEnumerationsMap(package.key)
 	-- Not every "lib" has enumeration tables (e.g. debuglib)
@@ -294,6 +318,7 @@ local function buildExternalRequires(package, file)
 	end
 end
 
+---@param package package|packageEvent|packageFunction|packageClass|packageLib|packageFunction
 local function build(package)
 	-- Load our base package.
 	common.log("Building " .. package.type .. ": " .. package.key .. " ...")
@@ -316,21 +341,42 @@ local function build(package)
 	file:write("--- @meta\n")
 
 	-- Write description.
-	if (package.type == "lib") then
-		file:write(formatDescription(common.getDescriptionString(package)) .. "\n")
-		writeExamples(package, file)
-		file:write(string.format("--- @class %slib\n", package.namespace))
-	elseif (package.type == "class") then
-		file:write(formatDescription(common.getDescriptionString(package)) .. "\n")
-		writeExamples(package, file)
-		file:write(string.format("--- @class %s%s\n", package.key, package.inherits and (" : " .. buildParentChain(package.inherits)) or ""))
-	elseif (package.type == "event") then
-		file:write(formatDescription(common.getDescriptionString(package)) .. "\n")
-		writeExamples(package, file)
-		file:write(string.format("--- @class %sEventData\n", package.key))
-	elseif (package.type == "function") then
+	if package.type == "function" then
+		---@cast package packageFunction
 		writeFunction(package, file)
+	else
+		file:write(formatDescription(common.getDescriptionString(package)) .. "\n")
+		writeExamples(package, file)
+		if package.type == "lib" then
+			file:write(string.format("--- @class %slib\n", package.namespace))
+		elseif (package.type == "class") then
+			file:write(string.format(
+				"--- @class %s%s\n",
+				package.key,
+				package.inherits and (" : " .. buildParentChain(package.inherits)) or ""
+			))
+		elseif (package.type == "event") then
+			file:write(string.format("--- @class %sEventData\n", package.key))
+		end
 	end
+	-- A map of operator metamethods supported by Lua Language Server (LLS).
+	-- We document __eq operator currently not supported by LLS. This issue
+	-- is tracked upstream at:
+	-- https://github.com/LuaLS/lua-language-server/issues/1882
+	local supportedOperators = {
+		unm = true,
+		add = true,
+		sub = true,
+		mul = true,
+		div = true,
+		idiv = true,
+		mod = true,
+		pow = true,
+		concat = true,
+		len = true,
+		-- TODO: enable once it's supported by LLS, or we could just remove this map altogether.
+		-- eq = true,
+	}
 
 	-- Write out operator overloads
 	if (package.operators) then
@@ -338,6 +384,9 @@ local function build(package)
 			return a.key:lower() < b.key:lower()
 		end)
 		for _, operator in ipairs(package.operators) do
+			if not supportedOperators[operator.key] then
+				goto continue
+			end
 			for _, overload in ipairs(operator.overloads) do
 				-- Handle unary operators
 				local rightSideType = ""
@@ -347,6 +396,7 @@ local function build(package)
 
 				file:write(string.format("--- @operator %s%s: %s\n", operator.key, rightSideType, overload.resultType))
 			end
+			::continue::
 		end
 	end
 
@@ -418,7 +468,6 @@ local function build(package)
 	-- Bring in external packages and build sub-libraries.
 	if (package.type == "lib") then
 		buildExternalRequires(package, file)
-
 		if (package.libs) then
 			lfs.mkdir(lfs.join(outDir, package.key))
 			for _, lib in pairs(package.libs) do

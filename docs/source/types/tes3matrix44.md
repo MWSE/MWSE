@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A 4 by 4 matrix. You can perform following arithmetic with this type: `==`.
+A 4 by 4 matrix.
 
 ## Properties
 
@@ -140,6 +140,14 @@ local matrix = tes3matrix44.new(w0, x0, y0, z0, w1, x1, y1, z1, w2, x2, y2, z2, 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
 | [tes3matrix44](../types/tes3matrix44.md) | [tes3matrix44](../types/tes3matrix44.md) | [tes3matrix44](../types/tes3matrix44.md) | The matrix addition. |
+
+***
+
+### Equality (`==`)
+
+| Left operand type | Right operand type | Result type | Description |
+| ----------------- | ------------------ | ----------- | ----------- |
+| [tes3matrix44](../types/tes3matrix44.md) | [tes3matrix33](../types/tes3matrix33.md) | boolean | True if both matrices are equal. |
 
 ***
 

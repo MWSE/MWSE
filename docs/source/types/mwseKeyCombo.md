@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A table with the data about a key or key combination on the keyboard.
+A table with the data about a key or key combination on the keyboard. Unbound key combinations will have all the fields set to `nil`.
 
 ## Properties
 
@@ -61,5 +61,5 @@ Maps to values in [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-
 
 **Returns**:
 
-* `result` ([tes3.scanCode](../references/scan-codes.md), nil)
+* `result` ([tes3.scanCode](../references/scan-codes.md), integer, false, nil)
 

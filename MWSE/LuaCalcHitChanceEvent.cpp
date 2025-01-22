@@ -37,8 +37,6 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalcHitChanceEvent::m_EventEnabled = false;
 	TES3::MobileActor* CalcHitChanceEvent::m_Attacker = nullptr;
 	TES3::MobileProjectile* CalcHitChanceEvent::m_Projectile = nullptr;
 }

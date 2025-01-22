@@ -297,6 +297,17 @@ The player-facing name for the object.
 
 ***
 
+### `offersBartering`
+<div class="search_terms" style="display: none">offersbartering</div>
+
+*Read-only*. If true, the class will barter in at least one type of item.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `offersEnchanting`
 <div class="search_terms" style="display: none">offersenchanting</div>
 
@@ -399,7 +410,7 @@ The services offered by the class. This is a bit field, and its values should ty
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 

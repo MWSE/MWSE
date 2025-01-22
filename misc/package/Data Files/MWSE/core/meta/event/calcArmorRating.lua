@@ -8,6 +8,6 @@
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field armor tes3armor *Read-only*. The armor piece whose AR is being calculated.
 --- @field armorRating number If set, the given armor rating will be used instead of the one calculated.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile whose AR is being calculated. May not always be available.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile whose AR is being calculated. May not always be available.
 --- @field npc tes3npc *Read-only*. The NPC object whose AR is being calculated. May not always be available.
 --- @field reference tes3reference *Read-only*. A shortcut to the mobile's reference. May not always be available.

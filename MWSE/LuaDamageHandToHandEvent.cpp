@@ -30,11 +30,15 @@ namespace mwse::lua::event {
 			eventData["attackerReference"] = m_Attacker->reference;
 		}
 
+		if (m_Source) {
+			eventData["source"] = m_Source;
+		}
+
 		eventData["fatigueDamage"] = m_FatigueDamage;
 
 		return eventData;
 	}
 
-	bool DamageHandToHandEvent::m_EventEnabled = false;
 	TES3::MobileActor* DamageHandToHandEvent::m_Attacker = nullptr;
+	const char* DamageHandToHandEvent::m_Source = nullptr;
 }

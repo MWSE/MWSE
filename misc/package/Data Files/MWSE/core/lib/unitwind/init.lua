@@ -56,7 +56,6 @@ function UnitWind.new(data)
     unitwind.completedTests = {}
     unitwind.logger = mwseLogger.new{
         name = "UnitWind",
-        ---@diagnostic disable-next-line: undefined-global
         logLevel = "INFO",
     }
     --Validate and set defaults
@@ -581,14 +580,17 @@ end
 -- Private functions
 ------------------------------------------
 
+---@private
 function UnitWind:_hasSpy(object, key)
     return (self.spies and self.spies[object] and self.spies[object][key]) ~= nil
 end
 
+---@private
 function UnitWind:_hasMock(object)
     return (self.mocks and self.mocks[object]) ~= nil
 end
 
+---@private
 function UnitWind:_color(message, color)
     if self.highlight then
         message = ansicolors('%' .. string.format('{%s}%s', color, message))
@@ -596,6 +598,7 @@ function UnitWind:_color(message, color)
     return message
 end
 
+---@private
 function UnitWind:_rawLog(message, ...)
     if not self.enabled then return end
     local prefix = self:_color("[UnitWind] ", 'bright magenta')
@@ -610,35 +613,43 @@ function UnitWind:_rawLog(message, ...)
     end
 end
 
+---@private
 function UnitWind:_log(message, ...)
     self:_rawLog(message, ...)
 end
 
+---@private
 function UnitWind:_logSuccess(message, ...)
     self:_rawLog(self:_color(message, 'greenbg black'), ...)
 end
 
+---@private
 function UnitWind:_logFailure(message, ...)
     self:_rawLog(self:_color(message, 'redbg bright white'), ...)
 end
 
+---@private
 function UnitWind:_logWhite(message, ...)
     self:_rawLog(self:_color(message, 'white'), ...)
 end
 
+---@private
 function UnitWind:error(message, ...)
     self:_rawLog(self:_color(message, 'red'), ...)
 end
 
+---@private
 function UnitWind:_logHeader(message, ...)
     self:_rawLog(self:_color(message, 'bright magenta'), ...)
 end
 
+---@private
 function UnitWind:_passLog(message, ...)
     local pass = self:_color('✔️', 'green')
     self:_rawLog(pass .. " " .. message, ...)
 end
 
+---@private
 function UnitWind:_failLog(message, ...)
     local fail = self:_color('❌', 'red')
     self:_rawLog(fail .. " " .. message, ...)

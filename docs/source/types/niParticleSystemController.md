@@ -163,11 +163,11 @@ Determines the dimensions of the volume from which new particles are generated.
 ### `emitterModifiers`
 <div class="search_terms" style="display: none">emittermodifiers</div>
 
-Modifiers that will influence the particle system by modifying the emmiting object.
+Modifiers that will influence the particle system by modifying the emitting object.
 
 **Returns**:
 
-* `result` ([niObject](../types/niObject.md)[])
+* `result` ([niTimeController](../types/niTimeController.md)[])
 
 ***
 
@@ -284,7 +284,7 @@ No description.
 ### `lifespan`
 <div class="search_terms" style="display: none">lifespan</div>
 
-The life spane for each particle.
+The life span for each particle, in seconds.
 
 **Returns**:
 
@@ -333,6 +333,17 @@ Collider modifiers that will influence the individual particles.
 **Returns**:
 
 * `result` ([niParticleCollider](../types/niParticleCollider.md)[])
+
+***
+
+### `particleData`
+<div class="search_terms" style="display: none">particledata</div>
+
+An array containing the particle simulation data for all particles.
+
+**Returns**:
+
+* `result` ([niPerParticleData](../types/niPerParticleData.md)[])
 
 ***
 

@@ -8,7 +8,7 @@
 --- @field caster tes3reference *Read-only*. The caster of the enchantment.
 --- @field charge number The charge required to cast the enchantment. May be modified.
 --- @field isCast boolean True if the calculation is for a on-strike or on-use action, false if for UI enchant charge display. The type of action is found at `e.source.castType`.
---- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon *Read-only*. Only available when isCast is true. The item used to cast the enchantment.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon *Read-only*. Only available when isCast is true. The item used to cast the enchantment.
 --- @field itemData tes3itemData *Read-only*. Only available when isCast is true. The item data of the item used to cast the enchantment.
 --- @field source tes3enchantment *Read-only*. The enchantment being used or examined by the UI.
 --- @field sourceInstance tes3magicSourceInstance|nil *Read-only*. Only available when isCast is true. The instance object of the magic being cast.

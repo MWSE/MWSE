@@ -59,7 +59,8 @@ namespace TES3 {
 		// Other related helper functions.
 		//
 
-		int getAdjustedValue();
+		int getAdjustedValue() const;
+		EquipmentStack* canonicalCopy() const;
 	};
 	static_assert(sizeof(EquipmentStack) == 0x8, "TES3::EquipmentStack failed size validation");
 

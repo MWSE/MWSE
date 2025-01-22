@@ -32,6 +32,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalcBlockChanceEvent::m_EventEnabled = false;
 }

@@ -40,6 +40,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool RepairEvent::m_EventEnabled = false;
 }

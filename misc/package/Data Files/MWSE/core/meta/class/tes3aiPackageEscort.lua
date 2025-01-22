@@ -5,4 +5,4 @@
 --- An AI Escort package game object. The actor with this package will escort the target actor to a certain destination.
 --- @class tes3aiPackageEscort : tes3aiPackage
 --- @field destination tes3vector3 The destination coordinates of this escort AI package.
---- @field targetActor tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The actor to be escorted to the destination.
+--- @field targetActor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The actor to be escorted to the destination.

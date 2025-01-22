@@ -35,6 +35,15 @@ event.register(tes3.event.key, myOnKeyCallback, { filter = tes3.scanCode.z } )
 
 Different filters can be applied to different events. Please refer to the documentation for the event that you want to filter for more information.
 
+### Object-Based Filtering
+
+Whenever an event is triggered or filtered with a tes3object, the filter is converted to a lowercase-string copy of the base object's ID. This can be used to create an event with a filter prior to that object existing. When using this feature, ensure that all object IDs are lowercased.
+
+```lua  linenums="1"
+event.register(tes3.event.referenceActivated, doSomethingWithAjira, { filter = ("Ajira"):lower() })
+event.register(tes3.event.startGlobalScript, knowWhenDBFixScriptFires, { filter = ("dbFixScript"):lower() })
+```
+
 ## Priority
 The order in which functions registered for the same event are executed can be controlled by providing 'priority' argument.
 

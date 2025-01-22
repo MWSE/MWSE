@@ -1,6 +1,6 @@
 return {
 	type = "class",
-	description = [[Item stack represents all copies of an item with the same id inside an inventory. This complex container holds a relationship between an item, and zero or more associated item datas. The `itemStack.variables` is a list of different itemData for each item in the stack, not a single itemData. Not every item in the stack needs to have associated itemData.
+	description = [[Item stack represents all copies of an item with the same id inside an inventory. This complex container holds a relationship between an item, and zero or more associated item datas. The `itemStack.variables` is a list of different itemData for each item in the stack, not a single itemData. Not every item in the stack needs to have associated itemData. The game adds itemData to items on equipping with the exception of thrown weapons and ammo.
 
 For example, you might have five journeyman lockpicks:
 

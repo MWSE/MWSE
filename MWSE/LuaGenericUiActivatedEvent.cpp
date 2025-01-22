@@ -44,8 +44,6 @@ namespace mwse::lua::event {
 		return options;
 	}
 
-	bool GenericUiActivatedEvent::m_EventEnabled = false;
-
 	GenericUiCreatedEvent::GenericUiCreatedEvent(TES3::UI::Element* element) :
 		GenericUiActivatedEvent(element)
 	{

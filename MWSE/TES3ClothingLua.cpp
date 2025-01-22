@@ -37,6 +37,7 @@ namespace mwse::lua {
 		usertypeDefinition["enchantment"] = sol::property(&TES3::Clothing::getEnchantment, &TES3::Clothing::setEnchantment);
 		usertypeDefinition["icon"] = sol::property(&TES3::Clothing::getIconPath, &TES3::Clothing::setIconPath);
 		usertypeDefinition["isLeftPart"] = sol::property(&TES3::Clothing::isLeftPartOfPair);
+		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Clothing::isUsableByBeasts);
 		usertypeDefinition["mesh"] = sol::property(&TES3::Clothing::getModelPath, &TES3::Clothing::setModelPath);
 		usertypeDefinition["name"] = sol::property(&TES3::Clothing::getName, &TES3::Clothing::setName);
 		usertypeDefinition["script"] = &TES3::Clothing::script;

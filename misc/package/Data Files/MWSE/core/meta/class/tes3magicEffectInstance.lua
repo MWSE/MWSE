@@ -9,11 +9,11 @@
 --- @field effectiveMagnitude number The effective magnitude of the effect, after all resistances are applied.
 --- @field isBoundItem boolean *Read-only*. If this effect has summoned a bound item.
 --- @field isSummon boolean *Read-only*. If this effect has summoned a creature.
---- @field lastUsedArmor tes3equipmentStack *Read-only*. No description yet available.
+--- @field lastUsedArmor tes3equipmentStack *Read-only*. For bound armor effects, this property stores the last used armor in the slot that this effect replaced.
 --- @field lastUsedEnchItem tes3equipmentStack *Read-only*. No description yet available.
 --- @field lastUsedLight tes3equipmentStack *Read-only*. No description yet available.
---- @field lastUsedShield tes3equipmentStack *Read-only*. No description yet available.
---- @field lastUsedWeapon tes3equipmentStack *Read-only*. No description yet available.
+--- @field lastUsedShield tes3equipmentStack *Read-only*. For the bound shield effect, this property stores the last used shield that this effect replaced.
+--- @field lastUsedWeapon tes3equipmentStack *Read-only*. For bound weapon effects, this property stores the last used weapon that this effect replaced. For bound armor effects that summon two pieces of armor (gauntlets, bracers, pauldrons), this property stores the last equipped armor on the right hand that this effect replaced.
 --- @field magnitude number The magnitude of the effect, before any resistances are applied.
 --- @field resistedPercent number The percentage of the magic effect that has been resisted. A value of `100` indicates that the magic effect has been completely resisted, whereas a value of `0` indicates it has not been resisted and is applied with its full magnitude. Values over `100` cause the magic effect to heal the actor instead of harming it, if it is a damaging magic effect.
 --- @field state tes3.spellState The state of this magic effect instance. Maps to [`tes3.spellState`](https://mwse.github.io/MWSE/references/spell-states/) constants.

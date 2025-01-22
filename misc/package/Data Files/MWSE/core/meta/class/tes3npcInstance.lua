@@ -25,7 +25,7 @@
 --- @field level number *Read-only*. Quick access to the base NPC's level.
 --- @field magicka number *Read-only*. Quick access to the base NPC's magicka.
 --- @field mesh string The path to the object's mesh.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile that the object is represented by.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile that the object is represented by.
 --- @field name string Quick access to the base NPC's name.
 --- @field race tes3race *Read-only*. Quick access to the base NPC's race.
 --- @field reference tes3reference *Read-only*. The reference that the object is represented by.

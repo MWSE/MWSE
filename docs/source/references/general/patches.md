@@ -14,6 +14,7 @@ The following patches are included by MWSE.
 - Allows NiFlipController to specify its affected map correctly.
 - Allows NiLinesData to be loaded from meshes.
 - Allows NiUVController to specify its texture correctly.
+- Allows NiTriShapes to optionally utilize software skinning, which can use more than 4 bones per drawable, by setting flags 0x200 in the NIF.
 - Creates crash dump files and logging information to help diagnose mod issues.
 - `Disable` mwscript function updates collision information so the player won't collide with invisible references.
 - Improved support for NiSortAdjustNode, with additional alpha subtree rendering.

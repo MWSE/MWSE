@@ -27,6 +27,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool FilterInventoryEvent::m_EventEnabled = false;
 }

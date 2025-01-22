@@ -124,7 +124,7 @@ Access to the weapon flag bitfield. Known flags can be accessed via other weapon
 ### `icon`
 <div class="search_terms" style="display: none">icon</div>
 
-The path to the object's icon.
+The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 **Returns**:
 
@@ -256,7 +256,7 @@ The object's maximum condition.
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 
-The path to the object's mesh.
+The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 
 **Returns**:
 
@@ -432,12 +432,11 @@ Gets the skill ID for the attack skill used by the weapon. Maps to values in [`t
 	```lua
 	
 	local function showMessage(e)
-		if e.mobile.readiedWeapon then
-			local id = e.mobile.readiedWeapon.object.skillId
-			local name = tes3.getSkillName(id)
+		if not e.mobile.readiedWeapon then return end
+		local id = e.mobile.readiedWeapon.object.skillId
+		local name = tes3.getSkillName(id)
 	
-			tes3.messageBox(name)
-		end
+		tes3.messageBox(name)
 	end
 	
 	event.register(tes3.event.attackStart, showMessage)
@@ -471,7 +470,7 @@ Slash damage inflicted at minimum weapon swing.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 

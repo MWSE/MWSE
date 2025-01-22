@@ -2,6 +2,8 @@
 
 #include "TES3Util.h"
 
+#include "TES3BodyPartManager.h"
+
 namespace TES3 {
 	const auto TES3_Clothing_ctor = reinterpret_cast<void(__thiscall*)(Clothing*)>(0x4A2C70);
 	Clothing::Clothing() {
@@ -37,6 +39,17 @@ namespace TES3 {
 
 	std::reference_wrapper<WearablePart[7]> Clothing::getParts() {
 		return std::ref(parts);
+	}
+
+	bool Clothing::isUsableByBeasts() const {
+		constexpr auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
+		constexpr auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
+		for (auto& part : parts) {
+			if (part.bodypartID == leftFootID || part.bodypartID == rightFootID) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

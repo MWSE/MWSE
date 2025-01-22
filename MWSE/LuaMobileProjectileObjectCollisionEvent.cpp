@@ -44,6 +44,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MobileProjectileObjectCollisionEvent::m_EventEnabled = false;
 }

@@ -454,23 +454,23 @@ namespace TES3 {
 		baseObjectCache.clear();
 	}
 
-	void Object::copy(const Object* from, int unknown) {
-		vTable.object->copy(this, from, unknown);
+	void Object::copy(const Object* from, bool shareAIPackageConfig) {
+		vTable.object->copy(this, from, shareAIPackageConfig);
 	}
 
 	void Object::setID(const char* id) {
 		vTable.object->setID(this, id);
 	}
 
-	char* Object::getName() const {
+	const char* Object::getName() const {
 		return vTable.object->getName(this);
 	}
 
-	char* Object::getIconPath() const {
+	const char* Object::getIconPath() const {
 		return vTable.object->getIconPath(this);
 	}
 
-	char* Object::getModelPath() const {
+	const char* Object::getModelPath() const {
 		return vTable.object->getModelPath(this);
 	}
 
@@ -482,15 +482,15 @@ namespace TES3 {
 		return vTable.object->getSound(this);
 	}
 
-	char* Object::getRaceID() const {
+	const char* Object::getRaceID() const {
 		return vTable.object->getRaceID(this);
 	}
 
-	char* Object::getClassID() const {
+	const char* Object::getClassID() const {
 		return vTable.object->getClassID(this);
 	}
 
-	char* Object::getFactionID() const {
+	const char* Object::getFactionID() const {
 		return vTable.object->getFactionID(this);
 	}
 
@@ -518,11 +518,11 @@ namespace TES3 {
 		return vTable.object->getLevel(this);
 	}
 
-	void Object::setDispositionRaw(signed char value) {
+	void Object::setDispositionRaw(int value) {
 		return vTable.object->setDispositionRaw(this, value);
 	}
 
-	int Object::modDisposition(signed int value) {
+	int Object::modDisposition(int value) {
 		return vTable.object->modDisposition(this, value);
 	}
 
@@ -530,7 +530,7 @@ namespace TES3 {
 		return vTable.object->getReputation(this);
 	}
 
-	int Object::setReputation(int reputation) {
+	void Object::setReputation(int reputation) {
 		return vTable.object->setReputation(this, reputation);
 	}
 
@@ -538,7 +538,7 @@ namespace TES3 {
 		return vTable.object->getDispositionRaw(this);
 	}
 
-	int Object::modReputation(int value) {
+	void Object::modReputation(int value) {
 		return vTable.object->modReputation(this, value);
 	}
 
@@ -546,7 +546,7 @@ namespace TES3 {
 		return vTable.object->getType(this);
 	}
 
-	char* Object::getTypeName() const {
+	const char* Object::getTypeName() const {
 		return vTable.object->getTypeName(this);
 	}
 

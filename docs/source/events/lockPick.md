@@ -23,7 +23,7 @@ event.register(tes3.event.lockPick, lockPickCallback)
 
 ## Event Data
 
-* `chance` (number): *Read-only*. The chance the lockpick will be successful.
+* `chance` (number): The chance the lockpick attempt will be successful. May be modified. If set to a value `<= 0`, the attempt will fail and the "Lock too complex" message will be displayed.
 * `lockData` ([tes3lockNode](../types/tes3lockNode.md)): *Read-only*. The lock data of the reference.
 * `lockPresent` (boolean): *Read-only*. Indicates if a lock is present on the reference.
 * `picker` ([tes3mobileNPC](../types/tes3mobileNPC.md)): *Read-only*. The Mobile NPC doing the disarming.

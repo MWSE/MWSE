@@ -116,6 +116,12 @@ function Slider:updateWidgetValue()
 	end
 end
 
+function Slider:setVariableValue(newValue)
+	self.variable.value = newValue
+	self:updateValueLabel()
+	self:updateWidgetValue()
+	Parent.update(self)
+end
 
 
 function Slider:update()

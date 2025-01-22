@@ -41,6 +41,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_Sound;
 		return options;
 	}
-
-	bool AddTempSoundEvent::m_EventEnabled = false;
 }

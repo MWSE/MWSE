@@ -12,6 +12,7 @@
 #include "CSFaction.h"
 #include "CSGameSetting.h"
 #include "CSIngredient.h"
+#include "CSEffect.h"
 #include "CSLeveledCreature.h"
 #include "CSLeveledItem.h"
 #include "CSLight.h"
@@ -612,6 +613,50 @@ namespace se::cs::dialog::object_window {
 
 	TabColumn::ColumnSettings& TabColumnAutoCalc::getSettings() const {
 		return settings.object_window.column_autocalc;
+	}
+
+	//
+	// Column: Chance None
+	//
+
+	TabColumnChanceNone::TabColumnChanceNone() : TabColumn("Chance for Nothing", LVCFMT_CENTER) {
+
+	}
+
+	bool TabColumnChanceNone::supportsObjectType(ObjectType::ObjectType objectType) const {
+		switch (objectType) {
+		case ObjectType::LeveledCreature:
+		case ObjectType::LeveledItem:
+			return true;
+		}
+		return false;
+	}
+
+	void TabColumnChanceNone::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
+		auto object = getObjectFromDisplayInfo(displayInfo);
+		switch (object->objectType) {
+		case ObjectType::LeveledCreature:
+			display(displayInfo, static_cast<const LeveledCreature*>(object)->chanceForNone);
+			break;
+		case ObjectType::LeveledItem:
+			display(displayInfo, static_cast<const LeveledItem*>(object)->chanceForNone);
+			break;
+		}
+	}
+
+	int TabColumnChanceNone::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
+		int chanceNone = 0;
+		switch (lParam1->objectType) {
+		case ObjectType::LeveledCreature:
+			return sort(static_cast<const LeveledCreature*>(lParam1)->chanceForNone, static_cast<const LeveledCreature*>(lParam2)->chanceForNone, sortOrderAsc);
+		case ObjectType::LeveledItem:
+			return sort(static_cast<const LeveledItem*>(lParam1)->chanceForNone, static_cast<const LeveledItem*>(lParam2)->chanceForNone, sortOrderAsc);
+		}
+		return 0;
+	}
+
+	TabColumn::ColumnSettings& TabColumnChanceNone::getSettings() const {
+		return settings.object_window.column_chance_for_none;
 	}
 
 	//
@@ -2255,6 +2300,7 @@ namespace se::cs::dialog::object_window {
 	TabColumnBlocked TabController::tabColumnBlocked;
 	TabColumnBookIsScroll TabController::tabColumnBookIsScroll;
 	TabColumnBookTeaches TabController::tabColumnBookTeaches;
+	TabColumnChanceNone TabController::tabColumnChanceNone;
 	TabColumnCost TabController::tabColumnCost;
 	TabColumnCount TabController::tabColumnCount;
 	TabColumnCreatureIsBipedal TabController::tabColumnCreatureIsBipedal;
@@ -2524,6 +2570,7 @@ namespace se::cs::dialog::object_window {
 			break;
 		case ObjectType::LeveledCreature:
 			tabColumnAllLTEPC.addToController(this, hWnd);
+			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnCreatureList.addToController(this, hWnd);
 			break;
 		case ObjectType::Spell:
@@ -2552,6 +2599,7 @@ namespace se::cs::dialog::object_window {
 			break;
 		case ObjectType::LeveledItem:
 			tabColumnAllLTEPC.addToController(this, hWnd);
+			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnLeveledItemList.addToController(this, hWnd);
 			break;
 		}
@@ -2560,7 +2608,7 @@ namespace se::cs::dialog::object_window {
 		tabColumnModified.addToController(this, hWnd);
 	}
 
-	int TabController::getColumnIndexByTitle(const char* title) {
+	int TabController::getColumnIndexByTitle(const char* title) const {
 		for (auto i = 0u; i < columns.size(); ++i) {
 			if (string::equal(columns.at(i)->m_Title, title)) {
 				return i;
@@ -2569,7 +2617,7 @@ namespace se::cs::dialog::object_window {
 		return -1;
 	}
 
-	TabColumn* TabController::getColumnByTitle(const char* title) {
+	TabColumn* TabController::getColumnByTitle(const char* title) const {
 		auto index = getColumnIndexByTitle(title);
 		if (index == -1) {
 			return nullptr;

@@ -24,6 +24,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool PreventRestEvent::m_EventEnabled = false;
 }

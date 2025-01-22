@@ -8,6 +8,6 @@
 --- 	
 --- @class uiSkillTooltipEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
---- @field skill tes3skill *Read-only*. The skill being examined.
+--- @field skill tes3.skill *Read-only*. The id of the skill being examined.
 --- @field tooltip tes3uiElement *Read-only*. The newly created tooltip element. Due to timeouts and target changes, it may be destroyed at any time.
 --- @field type integer *Read-only*. 1 where the tooltip is being created by MenuStat, and includes progress to the next skill level up, and 0 for every other instance including tes3ui.createTooltipMenu().

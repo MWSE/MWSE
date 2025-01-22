@@ -8,6 +8,6 @@
 --- @class filterSoulGemTargetEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field filter boolean Setting this to `false` or `nil` will prevent the `mobile`'s soul to end up in the `soulGem`. Setting this to `true` will make the opposite.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor whose soul is to be soultrapped.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor whose soul is to be soultrapped.
 --- @field reference tes3reference *Read-only*. The reference.
 --- @field soulGem tes3misc *Read-only*. The soul gem object.

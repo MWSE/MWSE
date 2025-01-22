@@ -11,6 +11,7 @@ namespace mwse::lua {
 
 		// Basic property binding.
 		usertypeDefinition["ambientDayColor"] = sol::readonly_property(&TES3::Weather::ambientDayCol);
+		usertypeDefinition["ambientLoopSound"] = sol::readonly_property(&TES3::Weather::soundAmbientLoop);
 		usertypeDefinition["ambientNightColor"] = sol::readonly_property(&TES3::Weather::ambientNightCol);
 		usertypeDefinition["ambientPlaying"] = sol::readonly_property(&TES3::Weather::ambientPlaying);
 		usertypeDefinition["ambientSunriseColor"] = sol::readonly_property(&TES3::Weather::ambientSunriseCol);
@@ -43,9 +44,6 @@ namespace mwse::lua {
 		// Binding for IDs and paths.
 		usertypeDefinition["ambientLoopSoundId"] = sol::property(&TES3::Weather::getAmbientLoopSoundID, &TES3::Weather::setAmbientLoopSoundID);
 		usertypeDefinition["cloudTexture"] = sol::property(&TES3::Weather::getCloudTexturePath, &TES3::Weather::setCloudTexturePath);
-
-		// Access to other objects that need to be packaged.
-		usertypeDefinition["ambientLoopSound"] = &TES3::Weather::soundAmbientLoop;
 	}
 
 	void bindTES3Weather();

@@ -34,10 +34,12 @@ namespace mwse::lua {
 		usertypeDefinition["aiBehaviorState"] = &TES3::ActionData::aiBehaviorState;
 		usertypeDefinition["animationAttackState"] = &TES3::ActionData::animStateAttack;
 		usertypeDefinition["attackSwing"] = &TES3::ActionData::attackSwing;
+		usertypeDefinition["attackWasBlocked"] = &TES3::ActionData::attackWasBlocked;
 		usertypeDefinition["blockingState"] = &TES3::ActionData::blockingState;
-		usertypeDefinition["currentAnimationGroup"] = &TES3::ActionData::currentAnimGroup;
+		usertypeDefinition["currentAnimationGroup"] = &TES3::ActionData::animGroupCurrentAction;
 		usertypeDefinition["hitTarget"] = &TES3::ActionData::hitTarget;
 		usertypeDefinition["lastBarterHoursPassed"] = &TES3::ActionData::lastBarterHoursPassed;
+		usertypeDefinition["lastPositionBeforeCombat"] = &TES3::ActionData::lastPositionBeforeCombat;
 		usertypeDefinition["nockedProjectile"] = sol::property(getNockedProjectile, setNockedProjectile);
 		usertypeDefinition["physicalAttackType"] = &TES3::ActionData::physicalAttackType;
 		usertypeDefinition["physicalDamage"] = &TES3::ActionData::physicalDamage;

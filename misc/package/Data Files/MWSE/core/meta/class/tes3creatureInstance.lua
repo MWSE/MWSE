@@ -20,7 +20,7 @@
 --- @field level number *Read-only*. The base level of the creature.
 --- @field magicka number *Read-only*. The creature's current magicka.
 --- @field mesh string The path to the object's mesh.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile that the object is represented by.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile that the object is represented by.
 --- @field name string The player-facing name for the object.
 --- @field reference tes3reference *Read-only*. The reference that the object is represented by.
 --- @field respawns boolean Access to the creature's respawns flag.

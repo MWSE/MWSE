@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/?h=script#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function.]],
+	description = [[Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3runlegacyscript) instead. Wrapper for the `StartCombat` mwscript function. Starts the script as a global script.]],
 	arguments = {{
 		name = "params",
 		type = "table",

@@ -24,12 +24,14 @@ return {
 	- [Yes no button](./mwseMCMYesNoButton.md)
 	- [Cycle button](./mwseMCMCycleButton.md)
 	- [Key binder](./mwseMCMKeyBinder.md)
+	- [Mouse binder](./mwseMCMMouseBinder.md)
 	- [Dropdown](./mwseMCMDropdown.md)
 	- [Text field](./mwseMCMTextField.md)
 	- [Paragraph field](./mwseMCMParagraphField.md)
 	- [Slider](./mwseMCMSlider.md)
-	- [Decimal slider](./mwseMCMDecimalSlider.md)
 	- [Percentage slider](./mwseMCMPercentageSlider.md)
+	- [Color picker](./mwseMCMColorPicker.md)
+	- [Color picker button](./mwseMCMColorPickerButton.md)
 ]],
 	--isAbstract = true,
 }

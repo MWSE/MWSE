@@ -324,11 +324,11 @@ The modification state of the object since the last save.
 ### `name`
 <div class="search_terms" style="display: none">name</div>
 
-The name and id of the cell. See also `displayName` and `editorName`.
+The name and id of the cell. Only available on interior cells. See also `displayName` and `editorName`.
 
 **Returns**:
 
-* `result` (string)
+* `result` (string, nil)
 
 ***
 
@@ -412,7 +412,7 @@ If true, the player may not rest in the cell.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -527,6 +527,10 @@ local inCell = myObject:isPointInCell(x, y)
 <div class="search_terms" style="display: none">iteratereferences</div>
 
 Used in a for loop, iterates over objects in the cell.
+
+!!! note
+	This iterator will also yield disabled and deleted references.
+
 
 ```lua
 local iterator = myObject:iterateReferences(filter)

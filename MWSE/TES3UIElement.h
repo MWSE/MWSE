@@ -156,6 +156,7 @@ namespace TES3::UI {
 		PropertyValue getProperty(PropertyType propType, Property prop) const;
 		PropertyType getPropertyType(Property prop) const;
 		bool hasProperty(Property prop) const;
+		void removeProperty(Property prop);
 		const char* getText() const;
 
 		template <typename T>
@@ -300,6 +301,7 @@ namespace TES3::UI {
 		void setWrapText(bool value);
 
 		bool hasProperty_lua(sol::object key) const;
+		void removeProperty_lua(sol::object key);
 		PropertyType getPropertyType_lua(sol::object key) const;
 		bool getPropertyBool_lua(sol::object key) const;
 		void setPropertyBool_lua(sol::object key, bool value);

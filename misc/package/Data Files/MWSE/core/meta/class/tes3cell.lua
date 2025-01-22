@@ -20,12 +20,12 @@
 --- @field isInterior boolean If true, the cell is an interior.
 --- @field isOrBehavesAsExterior boolean *Read-only*. `true` if the cell is not an interior or if it behaves as an exterior.
 --- @field landscape tes3land *Read-only*. Access to the cell's landscape object. It's only available on exterior cells.
---- @field name string The name and id of the cell. See also `displayName` and `editorName`.
+--- @field name string|nil The name and id of the cell. Only available on interior cells. See also `displayName` and `editorName`.
 --- @field pathGrid tes3pathGrid|nil *Read-only*. Access to the cell's pathgrid. Not all cells have a pathgrid. The property is unaccessible on unloaded cells.
---- @field pickObjectsRoot niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The scenegraph node containing player-interactable objects from this cell.
+--- @field pickObjectsRoot niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The scenegraph node containing player-interactable objects from this cell.
 --- @field region tes3region|nil The region associated with the cell. Only available on exterior cells, or interior cells that behave as exterior cells.
 --- @field restingIsIllegal boolean If true, the player may not rest in the cell.
---- @field staticObjectsRoot niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The scenegraph node containing static non-player-interactable objects from this cell.
+--- @field staticObjectsRoot niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The scenegraph node containing static non-player-interactable objects from this cell.
 --- @field statics tes3referenceList *Read-only*. One of the three reference collections for a cell.
 --- @field sunColor niPackedColor The cell's sun color. Only available on interior cells.
 --- @field waterLevel number|nil The water level in the cell. In extirior cells, water level is 0, while the interior cells can have custom water, usually set in the Construction Set, or don't have water at all. In that case, this property will be `nil`.
@@ -38,6 +38,10 @@ tes3cell = {}
 function tes3cell:isPointInCell(x, y) end
 
 --- Used in a for loop, iterates over objects in the cell.
+--- 
+--- !!! note
+--- 	This iterator will also yield disabled and deleted references.
+--- 
 --- @param filter integer|integer[]|nil *Optional*. The TES3 object type to filter results by. If you need multiple filters, just pass them as a table, e.g. `{ tes3.objectType.npc, tes3.objectType.creature }`. Those are stored in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/) namespace.
 --- @return fun(): tes3reference iterator No description yet available.
 function tes3cell:iterateReferences(filter) end

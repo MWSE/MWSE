@@ -9,7 +9,33 @@ return {
 			{ name = "label", type = "string", optional = true, description = "The Setting's label." },
 			{ name = "text", type = "string", optional = true, description = "The Setting's text." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "A variable for this setting." },
-			{ name = "defaultSetting", type = "unknown", optional = true, description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value." },
+			{ name = "config", type = "table", optional = true, default = "`parentComponent.config`",
+				description = "The config to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. \z
+						If provided, it will override the config stored in `parentComponent`. \z
+						Otherwise, the value in `parentComponent` will be used."
+			},
+			{ name = "defaultConfig", type = "table", optional = true, default = "`parentComponent.defaultConfig`",
+				description = "The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. \z
+					If provided, it will override the `defaultConfig` stored in `parentComponent`. \z
+					Otherwise, the value in `parentComponent` will be used."
+			},
+			{ name = "configKey", type = "string|number", optional = true,
+				description = "The `configKey` used to create a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md). \z
+					If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new \z
+						[`mwseMCMTableVariable`](./mwseMCMTableVariable.md) variable will be created for this setting."
+			},
+			{ name = "converter", type = "fun(newValue: unknown): unknown", optional = true,
+				description = "A converter to use for this component's `variable`."
+			},
+			{ name = "defaultSetting", type = "unknown", optional = true,
+				description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. \z
+					The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible."
+			},
+			{ name = "showDefaultSetting", type = "boolean", optional = true, default = "`parentComponent.showDefaultSetting`",
+				description = "If `true`, and in a [Sidebar Page](../types/mwseMCMSideBarPage.md), then the `defaultSetting` of this setting's `variable` will be shown below its `description`. \z
+					The `defaultSetting` will be formatted in accordance with the `convertToLabelValue` function. \z
+					**Note:** This parameter does not update the `description` field.",
+			},
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
 			{ name = "callback", type = "fun(self: mwseMCMSetting)", optional = true, description = "The custom function called when the player interacts with this Setting." },
 			{ name = "inGameOnly", type = "boolean", optional = true, default = false, description = "If true, the setting is disabled while the game is on main menu." },

@@ -16,6 +16,7 @@ Page.indent = 6
 --- @param data mwseMCMPage.new.data|nil
 --- @return mwseMCMPage page
 function Page:new(data)
+	--- @diagnostic disable-next-line: param-type-mismatch
 	local t = Parent:new(data)
 
 	if data then
@@ -46,13 +47,73 @@ function Page:disable()
 	-- Update and grey out page label
 	if self.elements.label then
 		self.elements.label.text = string.format("%s (%s)", self.elements.label.text, mwse.mcm.i18n("In-Game Only"))
-		self.elements.label.color = tes3ui.getPalette("disabled_color")
+		self.elements.label.color = tes3ui.getPalette(tes3.palette.disabledColor)
 	end
 	-- Grey out all child elements
 	for _, element in ipairs(self.elements.subcomponentsContainer.children) do
 		if element.color then
-			element.color = tes3ui.getPalette("disabled_color")
+			element.color = tes3ui.getPalette(tes3.palette.disabledColor)
 		end
+	end
+end
+
+--- @param parentBlock tes3uiElement
+function Page:createResetButtonContainer(parentBlock)
+	local outerContainer = parentBlock:createBlock({ id = tes3ui.registerID("Reset_OuterContainer") })
+	outerContainer.autoHeight = true
+	outerContainer.autoWidth = true
+	outerContainer.flowDirection = tes3.flowDirection.topToBottom
+	outerContainer.widthProportional = 1.0
+	outerContainer.heightProportional = 1.0
+	outerContainer.childAlignY = 1.0
+
+	local grow = outerContainer:createBlock({ id = tes3ui.registerID("Reset_LeftGrow") })
+	grow.autoWidth = true
+	grow.autoHeight = true
+	grow.heightProportional = 1.0
+
+	local resetContainer = outerContainer:createBlock({ id = tes3ui.registerID("Reset_InnerContainer") })
+	resetContainer.flowDirection = tes3.flowDirection.leftToRight
+	resetContainer.autoWidth = true
+	resetContainer.autoHeight = true
+	resetContainer.widthProportional = 1.0
+	resetContainer.childAlignX = 1.0
+	self.elements.resetContainer = resetContainer
+end
+
+--- @param parentBlock tes3uiElement
+function Page:createResetButton(parentBlock)
+	local reset = parentBlock:createButton({
+		id = tes3ui.registerID("Reset_" .. self.componentType),
+		text = mwse.mcm.i18n("Reset")
+	})
+	reset:registerAfter(tes3.uiEvent.mouseClick, function(e)
+		tes3ui.showMessageMenu({
+			message = mwse.mcm.i18n(
+				"Are you sure you want to reset all the settings on this page to their default values? \z
+				This action cannot be undone."
+			),
+			cancels = true,
+			leaveMenuMode = false,
+			buttons = {{
+				text = mwse.mcm.i18n("Reset"),
+				callback = function()
+					self:resetToDefault()
+				end
+			}}
+		})
+	end)
+
+	self.elements.resetButton = reset
+	parentBlock:getTopLevelMenu():updateLayout()
+end
+
+--- @param parentBlock tes3uiElement
+function Page:createContentsContainer(parentBlock)
+	Parent.createContentsContainer(self, parentBlock)
+	if self.showReset then
+		self:createResetButtonContainer(parentBlock)
+		self:createResetButton(self.elements.resetContainer)
 	end
 end
 
@@ -65,7 +126,7 @@ function Page:createOuterContainer(parentBlock)
 		border.heightProportional = 1.0
 		border.widthProportional = 1.0
 		border.autoHeight = true
-		border.flowDirection = "top_to_bottom"
+		border.flowDirection = tes3.flowDirection.topToBottom
 		border.paddingTop = 4
 		border.paddingLeft = 4
 	else
@@ -75,7 +136,7 @@ function Page:createOuterContainer(parentBlock)
 	end
 
 	local outerContainer = border:createBlock({ id = tes3ui.registerID("Page_OuterContainer") })
-	outerContainer.flowDirection = "top_to_bottom"
+	outerContainer.flowDirection = tes3.flowDirection.topToBottom
 	outerContainer.autoHeight = true
 	outerContainer.heightProportional = 1.0
 	outerContainer.widthProportional = 1.0

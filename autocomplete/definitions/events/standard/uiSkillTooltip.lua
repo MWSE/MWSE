@@ -12,9 +12,9 @@ Note that tooltips may have different width depending on which menu they were cr
 			description = "The newly created tooltip element. Due to timeouts and target changes, it may be destroyed at any time.",
 		},
 		["skill"] = {
-			type = "tes3skill",
+			type = "tes3.skill",
 			readOnly = true,
-			description = "The skill being examined.",
+			description = "The id of the skill being examined.",
 		},
 		["type"] = {
 			type = "integer",

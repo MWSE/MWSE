@@ -8,7 +8,7 @@
 --- @class absorbedMagicEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field absorb number The amount of magicka to restore to the actor.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that absorbed the spell.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that absorbed the spell.
 --- @field source tes3alchemy|tes3enchantment|tes3spell *Read-only*. The magic source.
 --- @field sourceInstance tes3magicSourceInstance *Read-only*. The unique instance of the magic source.
 --- @field target tes3reference *Read-only*. The actor that absorbed the spell.

@@ -4,10 +4,10 @@ namespace mwse::lua::event {
 	template <typename T>
 	class DisableableEvent {
 	public:
-		static bool getEventEnabled() { return m_EventEnabled; }
-		static void setEventEnabled(bool enabled) { m_EventEnabled = enabled; }
+		inline static bool getEventEnabled() { return m_EventEnabled; }
+		inline static void setEventEnabled(bool enabled) { m_EventEnabled = enabled; }
 
 	protected:
-		static bool m_EventEnabled;
+		inline static bool m_EventEnabled = false;
 	};
 }

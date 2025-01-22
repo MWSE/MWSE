@@ -17,7 +17,7 @@
 --- @field maxAttackTiming number This it the time of the actor's attack animation in their `.kf` file, when the attack animation is fully charged. It's updated for the attacks from different directions.
 --- @field minAttackTiming number This it the time of the actor's attack animation in their `.kf` file, at the earliest point the attack animation can end (when the attack button is just clicked and released). It's updated for the attacks from different directions.
 --- @field minHitTiming number This it the time of the actor's attack animation in their `.kf`, played during the hit phase for the minimally charged attack. It's updated for the attacks from different directions.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that this controller is responsible for.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that this controller is responsible for.
 --- @field patchedOverrideState integer 
 --- @field remainingBlockTime number 
 --- @field shouldJump integer 

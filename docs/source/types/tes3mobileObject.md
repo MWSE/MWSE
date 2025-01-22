@@ -109,6 +109,19 @@ If `true`, the mobile is affected by gravity. Does not have any effect on spell 
 
 ***
 
+### `mobToMobCollision`
+<div class="search_terms" style="display: none">mobtomobcollision</div>
+
+Allows modifying if this mobile will collide with other mobiles (actors and projectiles). When `true` (default), the actor cannot move through other actors, and projectiles will collide with actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it. Projectiles will pass through actors and other projectiles.
+
+May be useful when free movement is required in crowded situations, or to temporarily let the player move past an actor.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `movementCollision`
 <div class="search_terms" style="display: none">movementcollision</div>
 
@@ -190,6 +203,10 @@ Access to the root mobile object movement flags from the previous frame, represe
 <div class="search_terms" style="display: none">velocity</div>
 
 A vector that represents the 3D velocity of the object.
+
+!!! tip
+	To change the velocity of an actor change this property during the [calcMoveSpeed](https://mwse.github.io/MWSE/events/calcMoveSpeed/) event.
+
 
 **Returns**:
 

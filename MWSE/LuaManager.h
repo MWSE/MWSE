@@ -63,7 +63,7 @@ namespace mwse::lua {
 
 		// Helper functions to execute main.lua scripts recursively in a directory.
 		void gatherModMetadata();
-		void gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& filename = "main.lua");
+		void gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& scriptFilename = "main.lua");
 		void executeMainModScripts();
 
 		// Management functions for timers.

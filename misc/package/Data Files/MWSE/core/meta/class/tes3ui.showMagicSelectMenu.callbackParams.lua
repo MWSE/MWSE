@@ -4,6 +4,6 @@
 --- @meta
 --- The table passed to `tes3ui.showMagicSelectMenu` function's callback.
 --- @class tes3ui.showMagicSelectMenu.callbackParams
---- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|nil The enchanted item that has been selected. The actual magic will be `item.enchantment`.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|nil The enchanted item that has been selected. The actual magic will be `item.enchantment`.
 --- @field itemData tes3itemData|nil The item data of the enchanted item that has been selected. Fully recharged items may not have itemData.
 --- @field spell tes3spell|nil The spell or power that has been selected.

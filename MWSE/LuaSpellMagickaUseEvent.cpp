@@ -37,6 +37,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SpellMagickaUseEvent::m_EventEnabled = false;
 }

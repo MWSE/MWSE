@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Sets the index of a given journal in a way similar to the mwscript function SetJournalIndex.]],
+	description = [[Sets the index of a given quest. Doesn't alter journal entries. Similar to the mwscript function SetJournalIndex.]],
 	arguments = {{
 		name = "params",
 		type = "table",

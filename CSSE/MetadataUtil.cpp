@@ -74,8 +74,9 @@ namespace se::cs::metadata {
 		for (const auto& metadata : activeMetadata) {
 			try {
 				const auto& data = metadata->toml();
-				const auto& deprecated = toml::find<std::vector<std::string>>(data, "tools", "csse", "deprecated");
-				for (const auto& id : deprecated) {
+				auto deprecated = toml::find<std::vector<std::string>>(data, "tools", "csse", "deprecated");
+				for (auto& id : deprecated) {
+					string::to_lower(id);
 					deprecatedIds.insert(id);
 				}
 			}
@@ -103,11 +104,11 @@ namespace se::cs::metadata {
 	}
 
 	bool isDeprecated(const BaseObject* object) {
-		const auto id = object->getObjectID();
-		if (id == nullptr) {
+		std::string id = object->getObjectID();
+		if (id.empty()) {
 			return false;
 		}
-
+		string::to_lower(id);
 		return deprecatedIds.find(id) != deprecatedIds.end();
 	}
 }

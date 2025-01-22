@@ -146,7 +146,7 @@ namespace TES3 {
 
 	struct MobileActor_vTable : MobileObject_vTable {
 		void (__thiscall* initializeStats)(MobileActor*, void*); // 0x98
-		void (__thiscall* getDispositionRaw)(MobileActor*); // 0x9C
+		int (__thiscall* getDispositionRaw)(MobileActor*); // 0x9C
 		void (__thiscall* calculateNPCWidth)(MobileActor*); // 0xA0
 		void (__thiscall* calculateNPCHeight)(MobileActor*); // 0xA4
 		void (__thiscall* decideActionAI)(MobileActor*); // 0xA8
@@ -310,6 +310,9 @@ namespace TES3 {
 		bool getMovementCollisionFlag() const;
 		void setMovementCollisionFlag(bool value);
 		sol::table getCollisions_lua(sol::this_state ts) const;
+
+		bool getMobToMobCollision() const;
+		void setMobToMobCollision(bool collide);
 
 		// Storage for cached userdata.
 		sol::object getOrCreateLuaObject(lua_State* L) const;

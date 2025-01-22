@@ -110,6 +110,11 @@ namespace se::cs::winui {
 		return MoveWindow(hWnd, x, y, GetRectWidth(windowRect), GetRectHeight(windowRect), repaint ? TRUE : FALSE);
 	}
 
+	void SetDialogFocus(HWND hWnd, int controlId) {
+		const auto hDlgControl = GetDlgItem(hWnd, controlId);
+		SendMessageA(hWnd, WM_NEXTDLGCTL, (WPARAM)hDlgControl, TRUE);
+	}
+
 	LONG GetStyle(HWND hWnd) {
 		return GetWindowLongA(hWnd, GWL_STYLE);
 	}
@@ -177,9 +182,22 @@ namespace se::cs::winui {
 	// ComboBox
 	//
 
+	bool ComboBox_HasStringExact(HWND hWnd, const char* string) {
+		return ComboBox_FindStringExact(hWnd, -1, string) != CB_ERR;
+	}
+
 	void ComboBox_SetCurSelEx(HWND hWnd, int index) {
 		ComboBox_SetCurSel(hWnd, index);
 		SendMessageA(GetAncestor(hWnd, GA_PARENT), WM_COMMAND, MAKEWPARAM(GetWindowLongPtr(hWnd, GWLP_ID), CBN_SELCHANGE), (LPARAM)hWnd);
+	}
+
+	int ComboBox_SelectStringExact(HWND hWnd, const char* string) {
+		const auto index = ComboBox_FindStringExact(hWnd, 0, string);
+		if (index == CB_ERR) {
+			return CB_ERR;
+		}
+
+		return ComboBox_SetCurSel(hWnd, index);
 	}
 
 	//

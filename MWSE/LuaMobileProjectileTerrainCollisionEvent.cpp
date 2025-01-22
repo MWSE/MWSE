@@ -42,6 +42,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MobileProjectileTerrainCollisionEvent::m_EventEnabled = false;
 }

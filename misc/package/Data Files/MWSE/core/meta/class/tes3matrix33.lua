@@ -2,7 +2,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- A 3 by 3 matrix. You can perform following arithmetic with this type: `==`.
+--- A 3 by 3 matrix.
 --- @class tes3matrix33
 --- @operator add(tes3matrix33): tes3matrix33
 --- @operator mul(tes3matrix33): tes3matrix33
@@ -40,12 +40,6 @@ function tes3matrix33:copy() end
 --- @param y number No description yet available.
 --- @param z number No description yet available.
 function tes3matrix33:fromEulerXYZ(x, y, z) end
-
---- Fills the matrix with values from euler angles in radians.
---- @param z number No description yet available.
---- @param y number No description yet available.
---- @param x number No description yet available.
-function tes3matrix33:fromEulerZYX(z, y, x) end
 
 --- Fill the matrix by converting a quaternion.
 --- @param quaternion niQuaternion No description yet available.

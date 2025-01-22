@@ -28,7 +28,7 @@ event.register(tes3.event.keybindTested, keybindTestedCallback)
 
 * `keybind` ([tes3.keybind](../references/keybinds.md)): *Read-only*. The keybind that was tested. This maps to the `tes3.keybind.*` constants.
 * `result` (boolean): The read state of the keybind. If true, the key was pressed/released/toggled as determined by the `transition` event data.
-* `transition` ([tes3.keyTransition](../references/key-transitions.md)): *Read-only*. The transition for the keybind that was tested. This is typically `tes3.keyTransition.isDown` but not guaranteed to be. Always be sure to check what transition is being used.
+* `transition` ([tes3.keyTransition](../references/key-transitions.md)): *Read-only*. The transition type specified for the test. Each game mechanic may choose to trigger on a specific transition type. This is typically `tes3.keyTransition.downThisFrame` (key pressed), but not guaranteed to be. Always be sure to check what transition is being used.
 
 ## Examples
 
@@ -39,20 +39,30 @@ event.register(tes3.event.keybindTested, keybindTestedCallback)
 	```lua
 	--- @param e keybindTestedEventData
 	local function noJournalMenu(e)
-	    -- We only care about checks to see if the key was pressed.
-	    if (e.transition ~= tes3.keyTransition.isDown) then
-	        return
-	    end
+		--[[ A keybind can have different transition types.
 	
-	    -- If the result was false, we also don't care.
-	    if (not e.result) then
-	        return
-	    end
+		tes3.keyTransition.downThisFrame     - If keybind changed from up to down ("pressed")
+		tes3.keyTransition.upThisFrame       - If keybind changed from down to up ("unpressed")
+		tes3.keyTransition.changedThisFrame  - If keybind changed state ("toggled")
+		tes3.keyTransition.isDown			 - If keybind is currently pressed ("while held")
 	
-	    -- Set the result to false to make the game think the key wasn't pressed.
-	    -- We could also block this event by using `return false`.
-	    tes3.messageBox("You aren't allowed to open your journal.")
-	    e.result = false
+		The transition type is specific per test, as there are different use cases for each transition, and there may be multiple tests per keybind. You may need to log this event to see how the game utilizes a keybind.
+		]]--
+	
+		-- We only care about keybind tests that check if the key was pressed this frame.
+		if (e.transition ~= tes3.keyTransition.downThisFrame) then
+			return
+		end
+	
+		-- If the result was false, we also don't care.
+		if (not e.result) then
+			return
+		end
+	
+		-- Set the result to false to make the game think the key wasn't pressed.
+		-- We could also block this event by using `return false`.
+		tes3.messageBox("You aren't allowed to open your journal.")
+		e.result = false
 	end
 	event.register(tes3.event.keybindTested, noJournalMenu, { filter = tes3.keybind.journal })
 

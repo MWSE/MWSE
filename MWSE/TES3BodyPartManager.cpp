@@ -95,4 +95,8 @@ namespace TES3 {
 	BodyPartManager::ActiveBodyPart* BodyPartManager::getActiveBodyPart(ActiveBodyPart::Layer layer, ActiveBodyPart::Index index) {
 		return &activeBodyParts[int(layer)][int(index)];
 	}
+
+	std::reference_wrapper<decltype(BodyPartManager::attachNodes)> BodyPartManager::getAttachNodes() {
+		return std::ref(attachNodes);
+	}
 }

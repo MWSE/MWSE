@@ -1,7 +1,9 @@
 return {
 	type = "function",
 	description = [[Creates a timer.
-
+!!! warning "Timers get canceled when loading saves."
+	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+	
 !!! tip
 	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.]],
 	arguments = {{

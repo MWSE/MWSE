@@ -7,13 +7,13 @@
 --- @field clampMode ni.texturingPropertyClampMode The clamp mode for the Map. Maps to values in [`ni.texturingPropertyClampMode`](https://mwse.github.io/MWSE/references/ni/texturing-property-clamp-modes/) table.
 --- @field filterMode ni.texturingPropertyFilterMode The filter mode for the Map. Maps to values in [`ni.texturingPropertyFilterMode`](https://mwse.github.io/MWSE/references/ni/texturing-property-filter-modes/) table.
 --- @field texCoordSet integer The texture coordinate set for the Map.
---- @field texture niRenderedTexture|niSourceTexture The texture for the Map.
+--- @field texture niRenderedTexture|niSourceTexture|niTexture The texture for the Map.
 niTexturingPropertyMap = {}
 
 --- Creates a new basic or bump map.
 --- @param params niTexturingPropertyMap.new.params? This table accepts the following values:
 --- 
---- `texture`: niRenderedTexture|niSourceTexture|nil — *Optional*. If provided, sets the map texture to the given value.
+--- `texture`: niRenderedTexture|niSourceTexture|niTexture|nil — *Optional*. If provided, sets the map texture to the given value.
 --- 
 --- `clampMode`: ni.texturingPropertyClampMode? — *Default*: `ni.texturingPropertyClampMode.wrapSwrapT`. The clamp mode to set the map to use.
 --- 
@@ -27,7 +27,7 @@ function niTexturingPropertyMap.new(params) end
 
 ---Table parameter definitions for `niTexturingPropertyMap.new`.
 --- @class niTexturingPropertyMap.new.params
---- @field texture niRenderedTexture|niSourceTexture|nil *Optional*. If provided, sets the map texture to the given value.
+--- @field texture niRenderedTexture|niSourceTexture|niTexture|nil *Optional*. If provided, sets the map texture to the given value.
 --- @field clampMode ni.texturingPropertyClampMode? *Default*: `ni.texturingPropertyClampMode.wrapSwrapT`. The clamp mode to set the map to use.
 --- @field filterMode ni.texturingPropertyFilterMode? *Default*: `ni.texturingPropertyFilterMode.trilerp`. The filter mode to set the map to use.
 --- @field textCoords integer? *Default*: `0`. The texture coordinates to set the map to use.

@@ -75,13 +75,13 @@ namespace TES3 {
 		NI::TriShape* sgTriSunGlare; // 0x8C
 		Vector3 currentSkyColor; // 0x90
 		Vector3 currentFogColor; // 0x9C
-		NI::Pick * unknown_0xA8;
+		NI::Pick* pickSunglare; // 0xA8
 		NI::DirectionalLight* sgSkyLight; // 0xAC
 		int unknown_0xB0;
 		int unknown_0xB4;
 		Vector3 windVelocityCurrWeather; // 0xB8
 		Vector3 windVelocityNextWeather; // 0xC4
-		float unknown_0xD0;
+		float smoothedSunglareVis; // 0xD0
 		float sunglareFaderMax; // 0xD4
 		float sunglareFaderAngleMax; // 0xD8
 		float sunriseHour; // 0xDC
@@ -115,9 +115,9 @@ namespace TES3 {
 		float hoursBetweenWeatherChanges; // 0x16C
 		float transitionScalar; // 0x170
 		float hoursRemaining; // 0x174
-		float unknown_0x178;
-		float particleGravity; // 0x17C
-		float snowGravityScale; // 0x180
+		float activeThunderFlashIntensity; // 0x178
+		float precipitationFallSpeed; // 0x17C
+		float snowFallSpeedScale; // 0x180
 		float snowHighKill; // 0x184
 		float snowLowKill; // 0x188
 		Vector3 sunTransitConstants; // 0x18C
@@ -137,9 +137,9 @@ namespace TES3 {
 		Region* lastActiveRegion; // 0x1D0
 		DataHandler* dataHandler; // 0x1D4
 		Sound* soundUnderwater; // 0x1D8
-		Vector3 unknown_0x1DC;
-		int unknown_0x1E8;
-		int unknown_0x1EC;
+		Vector3 skyDomePosition; // 0x1DC
+		int sunGlareRayTestLoadBalancer; // 0x1E8
+		bool isSunOccluded; // 0x1EC
 
 		WeatherController() = delete;
 		~WeatherController() = delete;

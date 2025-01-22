@@ -1,3 +1,4 @@
+---@deprecated Replaced by `utils.getComponentClass` and `utils.getVariableClass`
 local this = {}
 
 this.basePath = "/Data Files/MWSE/core/"

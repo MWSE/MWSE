@@ -34,6 +34,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool SpellCreatedEvent::m_EventEnabled = false;
 }

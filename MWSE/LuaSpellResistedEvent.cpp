@@ -38,6 +38,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool SpellResistedEvent::m_EventEnabled = false;
 }

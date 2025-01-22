@@ -7,7 +7,7 @@
 --- @field block boolean If set to `true`, vanilla logic will be suppressed. Returning `false` will set this to `true`.
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field buying tes3inventoryTile[] *Read-only*. The objects being bought. These items will be transfered to player's inventory on a successful bartering event.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor of the merchant the player is interacting with.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor of the merchant the player is interacting with.
 --- @field offer number *Read-only*. Offered gold amount.
 --- @field selling tes3inventoryTile[] *Read-only*. The objects being sold. These items will be transfered to bartender's inventory on a successful bartering event.
 --- @field success boolean Whether the trade was accepted or not.

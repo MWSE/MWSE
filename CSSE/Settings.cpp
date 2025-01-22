@@ -147,17 +147,18 @@ namespace se::cs {
 
 		// Search settings
 		clear_filter_on_tab_switch = toml::find_or(v, "clear_filter_on_tab_switch", clear_filter_on_tab_switch);
-		filter_by_id = toml::find_or(v, "filter_by_id", filter_by_id);
-		filter_by_name = toml::find_or(v, "filter_by_name", filter_by_name);
-		filter_by_icon_path = toml::find_or(v, "filter_by_icon_path", filter_by_icon_path);
-		filter_by_model_path = toml::find_or(v, "filter_by_model_path", filter_by_model_path);
-		filter_by_enchantment_id = toml::find_or(v, "filter_by_enchantment_id", filter_by_enchantment_id);
-		filter_by_script_id = toml::find_or(v, "filter_by_script_id", filter_by_script_id);
-		filter_by_book_text = toml::find_or(v, "filter_by_book_text", filter_by_book_text);
-		filter_by_faction = toml::find_or(v, "filter_by_faction", filter_by_faction);
+		search_settings.id = toml::find_or(v, "filter_by_id", search_settings.id);
+		search_settings.name = toml::find_or(v, "filter_by_name", search_settings.name);
+		search_settings.icon_path = toml::find_or(v, "filter_by_icon_path", search_settings.icon_path);
+		search_settings.model_path = toml::find_or(v, "filter_by_model_path", search_settings.model_path);
+		search_settings.enchantment_id = toml::find_or(v, "filter_by_enchantment_id", search_settings.enchantment_id);
+		search_settings.script_id = toml::find_or(v, "filter_by_script_id", search_settings.script_id);
+		search_settings.book_text = toml::find_or(v, "filter_by_book_text", search_settings.book_text);
+		search_settings.faction = toml::find_or(v, "filter_by_faction", search_settings.faction);
+		search_settings.effect = toml::find_or(v, "filter_by_effect", search_settings.effect);
 		highlight_modified_items = toml::find_or(v, "highlight_modified_items", highlight_modified_items);
-		case_sensitive = toml::find_or(v, "case_sensitive", case_sensitive);
-		use_regex = toml::find_or(v, "use_regex", use_regex);
+		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
+		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
 
 		// Column settings
 		column_actor_class = toml::find_or(v, "column_actor_class", column_actor_class);
@@ -173,6 +174,7 @@ namespace se::cs {
 		column_blocked = toml::find_or(v, "column_blocked", column_blocked);
 		column_book_is_scroll = toml::find_or(v, "column_book_is_scroll", column_book_is_scroll);
 		column_book_teaches = toml::find_or(v, "column_book_teaches", column_book_teaches);
+		column_chance_for_none = toml::find_or(v, "column_chance_for_none", column_chance_for_none);
 		column_charge = toml::find_or(v, "column_charge", column_charge);
 		column_cost = toml::find_or(v, "column_cost", column_cost);
 		column_count = toml::find_or(v, "column_count", column_count);
@@ -232,17 +234,18 @@ namespace se::cs {
 
 				// Search settings
 				{ "clear_filter_on_tab_switch", clear_filter_on_tab_switch },
-				{ "filter_by_id", filter_by_id },
-				{ "filter_by_name", filter_by_name },
-				{ "filter_by_icon_path", filter_by_icon_path },
-				{ "filter_by_model_path", filter_by_model_path },
-				{ "filter_by_enchantment_id", filter_by_enchantment_id },
-				{ "filter_by_script_id", filter_by_script_id },
-				{ "filter_by_book_text", filter_by_book_text },
-				{ "filter_by_faction", filter_by_faction },
+				{ "filter_by_id", search_settings.id },
+				{ "filter_by_name", search_settings.name },
+				{ "filter_by_icon_path", search_settings.icon_path },
+				{ "filter_by_model_path", search_settings.model_path },
+				{ "filter_by_enchantment_id", search_settings.enchantment_id },
+				{ "filter_by_script_id", search_settings.script_id },
+				{ "filter_by_book_text", search_settings.book_text },
+				{ "filter_by_faction", search_settings.faction },
+				{ "filter_by_effect", search_settings.effect },
 				{ "highlight_modified_items", highlight_modified_items },
-				{ "case_sensitive", case_sensitive },
-				{ "use_regex", use_regex },
+				{ "case_sensitive", search_settings.case_sensitive },
+				{ "use_regex", search_settings.use_regex },
 
 				// Column settings
 				{ "column_actor_class", column_actor_class },
@@ -258,6 +261,7 @@ namespace se::cs {
 				{ "column_blocked", column_blocked },
 				{ "column_book_is_scroll", column_book_is_scroll },
 				{ "column_book_teaches", column_book_teaches },
+				{ "column_chance_for_none", column_chance_for_none },
 				{ "column_charge", column_charge },
 				{ "column_cost", column_cost },
 				{ "column_count", column_count },
@@ -430,15 +434,15 @@ namespace se::cs {
 	//
 
 	void Settings_t::TextSearch::from_toml(const toml::value& v) {
-		use_regex = toml::find_or(v, "use_regex", use_regex);
-		case_sensitive = toml::find_or(v, "case_sensitive", case_sensitive);
+		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
+		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
 	}
 
 	toml::value Settings_t::TextSearch::into_toml() const {
 		return toml::value(
 			{
-				{ "use_regex", use_regex },
-				{ "case_sensitive", case_sensitive },
+				{ "use_regex", search_settings.use_regex },
+				{ "case_sensitive", search_settings.case_sensitive },
 			}
 		);
 	}

@@ -25,7 +25,7 @@ This type inherits the following: [tes3weather](../types/tes3weather.md)
 ### `ambientLoopSound`
 <div class="search_terms" style="display: none">ambientloopsound</div>
 
-*Read-only*. The weather's ambient looping sound.
+*Read-only*. The weather's ambient looping sound. The current ambient sound should be changed by setting `ambientLoopSoundId`.
 
 **Returns**:
 
@@ -36,7 +36,7 @@ This type inherits the following: [tes3weather](../types/tes3weather.md)
 ### `ambientLoopSoundId`
 <div class="search_terms" style="display: none">ambientloopsoundid</div>
 
-The weather's ambient looping sound ID.
+The weather's ambient looping sound ID. This can be changed, and the sound will switch over when the weather is active.
 
 **Returns**:
 
@@ -272,6 +272,17 @@ The weather's land fog night depth value.
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `stormOrigin`
+<div class="search_terms" style="display: none">stormorigin</div>
+
+The origin point of weather particles. The storm will appear to blow outwards from this point.
+
+**Returns**:
+
+* `result` ([tes3vector2](../types/tes3vector2.md))
 
 ***
 

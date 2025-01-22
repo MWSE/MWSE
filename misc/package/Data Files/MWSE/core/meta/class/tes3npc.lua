@@ -30,5 +30,5 @@
 --- @field script tes3script The script that runs on the object.
 --- @field skills number[] A table of twenty seven numbers, representing the base values for the NPC's skills.
 --- @field soul number|nil The soul value for this NPC. This is typically `nil`, unless the `calcSouLValue` event provides one for this actor.
---- @field spells tes3spellList|tes3spell[] *Read-only*. A list of spells that the actor has access to. It is a `tes3spellList`, which is a list wrapper with helper functions. The actual list is iterated over using `pairs`. E.g. `for _, spell in pairs(npc.spells) do print(spell.name) end`
+--- @field spells tes3spellList|tes3spell[] *Read-only*. A list of spells that the actor has access to. It is a `tes3spellList`, which is a list wrapper with helper functions. The actual list is iterated over using `pairs`. E.g. `for _, spell in pairs(npc.spells) do print(spell.name) end`. It is not recommended to directly modify this list; instead use tes3.addSpell and tes3.removeSpell.
 --- @field weight number *Read-only*. Convenience access to the NPCs (race) weight.

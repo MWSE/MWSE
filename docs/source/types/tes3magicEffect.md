@@ -371,7 +371,7 @@ Access to the base flag that determines if this effect can be refreshed by recas
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (string)
 
 ***
 

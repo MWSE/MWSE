@@ -5,3 +5,12 @@
 --- An object that represent collections of large numbers of small point-like objects, designed for dynamic effects like fountains, waterfalls, snow, explosions, etc.
 --- @class niParticles : niTriBasedGeometry, niGeometry, niAVObject, niObjectNET, niObject
 --- @field data niParticlesData|niRotatingParticlesData The niParticlesData of the object. Manipulation should not be done directly. Instead, consider copying the data and assigning it to this shape.
+niParticles = {}
+
+--- Creates a new niParticles.
+--- @param vertexCount number The number of particles.
+--- @param hasNormals boolean If `true`, normals will be allocated.
+--- @param hasColors boolean If `true`, colors will be allocated.
+--- @return niAutoNormalParticles|niParticles|niRotatingParticles particles No description yet available.
+function niParticles.new(vertexCount, hasNormals, hasColors) end
+

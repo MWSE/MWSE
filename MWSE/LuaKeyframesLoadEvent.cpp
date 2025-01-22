@@ -32,6 +32,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool KeyframesLoadEvent::m_EventEnabled = false;
 }

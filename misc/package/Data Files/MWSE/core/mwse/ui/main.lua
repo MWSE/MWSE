@@ -51,9 +51,12 @@ end
 --
 
 -- tes3ui extensions.
+dofile("mwse.ui.api.showColorPickerMenu")
 dofile("mwse.ui.api.showMessageMenu")
 
 -- tes3uiElement extensions.
+dofile("mwse.ui.tes3uiElement.createColorPicker")
+dofile("mwse.ui.tes3uiElement.createColorPreview")
 dofile("mwse.ui.tes3uiElement.copy")
 dofile("mwse.ui.tes3uiElement.createCycleButton")
 dofile("mwse.ui.tes3uiElement.createHyperlink")

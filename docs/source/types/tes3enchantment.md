@@ -83,15 +83,15 @@ The cost of using the enchantment.
 	
 	--- @param magicSource tes3spell|tes3enchantment|tes3alchemy
 	local function isSpellHostile(magicSource)
-	    for _, effect in ipairs(magicSource.effects) do
-	        if (effect.object.isHarmful) then
+		for _, effect in ipairs(magicSource.effects) do
+			if (effect.object.isHarmful) then
 				-- If one of the spell's effects is harmful, then
 				-- `true` is returned and function ends here.
-	            return true
-	        end
-	    end
+				return true
+			end
+		end
 		-- If no harmful effect was found then return `false`.
-	    return false
+		return false
 	end
 
 	```
@@ -255,7 +255,7 @@ The scene graph node for this object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -354,5 +354,5 @@ local index = myObject:getFirstIndexOfEffect(effectId)
 
 **Returns**:
 
-* `index` (number)
+* `index` (integer): Returns 0-based index. Because Lua's arrays are 1-based, to index the enchantment's `effects` array with the return value add 1.
 

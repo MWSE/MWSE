@@ -22,6 +22,7 @@
 #include "DialogEditObjectWindow.h"
 #include "DialogLandscapeEditSettingsWindow.h"
 #include "DialogObjectWindow.h"
+#include "DialogPathGridWindow.h"
 #include "DialogPreviewWindow.h"
 #include "DialogReferenceData.h"
 #include "DialogRenderWindow.h"
@@ -219,6 +220,9 @@ namespace se::cs {
 				openData->lpstrInitialDir = lastModelDirectory.value().c_str();
 			}
 
+			// Don't dereference symlinks.
+			openData->Flags |= OFN_NODEREFERENCELINKS;
+
 			if (!GetOpenFileNameA(openData)) {
 				return FALSE;
 			}
@@ -240,6 +244,9 @@ namespace se::cs {
 				openData->lpstrInitialDir = lastIconDirectory.value().c_str();
 			}
 
+			// Don't dereference symlinks.
+			openData->Flags |= OFN_NODEREFERENCELINKS;
+
 			if (!GetOpenFileNameA(openData)) {
 				return FALSE;
 			}
@@ -247,6 +254,20 @@ namespace se::cs {
 			lastIconDirectory = std::filesystem::path(openData->lpstrFile).remove_filename().string();
 
 			return TRUE;
+		}
+
+		//
+		// Patch: Add default option for showing all icon types.
+		//
+
+		static const auto iconTypes = "Morrowind Icons (*.TGA, *.DDS)\0*.tga;*.dds\0Morrowind TGA Icons (*.TGA)\0*.tga\0Morrowind DDS Icons (*.DDS)\0*.dds\0\0";
+
+		const auto CS_RequestIconFilename = reinterpret_cast<int(__cdecl*)(HWND, const char*, const char*, const char*)>(0x414E10);
+		int __cdecl RequestIconFilename(HWND hWnd, const char* currentFilename, const char* successMessage, const char* filter) {
+			if (filter == nullptr) {
+				filter = iconTypes;
+			}
+			return CS_RequestIconFilename(hWnd, currentFilename, successMessage, filter);
 		}
 
 		//
@@ -487,6 +508,40 @@ namespace se::cs {
 			CS_RecordHandler_LoadFiles(recordHandler);
 			metadata::reloadModMetadata();
 		}
+
+		//
+		// Patch: Redirect from help file to a conversion website
+		//
+
+		BOOL __stdcall OverrideWinHelpA(HWND hWndMain, LPCSTR lpszHelp, UINT uCommand, ULONG_PTR dwData) {
+			if (!string::equal(lpszHelp, "TES Construction Set.HLP")) {
+				return WinHelpA(hWndMain, lpszHelp, uCommand, dwData);
+			}
+
+			// The CS only ever calls with two commands: FINDER and CONTEXT. The FINDER isn't even aware to the window it is on.
+			switch (uCommand) {
+			case HELP_FINDER:
+				// Displays the Help Topics dialog box.
+				ShellExecuteA(0, 0, "https://tes3cs.pages.dev/", 0, 0, SW_SHOW);
+				return TRUE;
+			case HELP_CONTEXT:
+				// Displays the topic identified by the specified context identifier defined in the [MAP] section of the .hpj file.
+				// Only two of these are ever called: 0x5DC and 0x3E8
+				switch (dwData) {
+				case 0x5DCu: // Functions
+					ShellExecuteA(0, 0, "https://tes3cs.pages.dev/gameplay/scripting/functions/", 0, 0, SW_SHOW);
+					return TRUE;
+				case 0x3E8u: // Commands
+					ShellExecuteA(0, 0, "https://tes3cs.pages.dev/gameplay/scripting/commands/", 0, 0, SW_SHOW);
+					return TRUE;
+				}
+				break;
+			}
+
+			// Fall back to default behavior.
+			return WinHelpA(hWndMain, lpszHelp, uCommand, dwData);
+		}
+
 	}
 
 	CSSE application;
@@ -619,6 +674,9 @@ namespace se::cs {
 		genCallEnforced(0x414EB4, 0x573290, reinterpret_cast<DWORD>(patch::GetOpenFileNameForIcon));
 		genCallEnforced(0x414C5E, 0x573290, reinterpret_cast<DWORD>(patch::GetOpenFileNameForModel));
 
+		// Patch: Allow selecting both tga and dds icon files.
+		genJumpEnforced(0x402FF4, 0x414E10, reinterpret_cast<DWORD>(patch::RequestIconFilename));
+
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x6D99E8, reinterpret_cast<DWORD>(&patch::sizeForSymbolicLinks::findFirstFileA));
 		writeDoubleWordUnprotected(0x6D99EC, reinterpret_cast<DWORD>(&patch::sizeForSymbolicLinks::findNextFileA));
@@ -626,6 +684,9 @@ namespace se::cs {
 
 		// Patch: Load mod metadata with mod data.
 		genJumpEnforced(0x40178A, 0x501500, reinterpret_cast<DWORD>(patch::PatchOnLoadFiles));
+
+		// Patch: Redirect away from the help file, which is no longer supported by Windows.
+		writeDoubleWordUnprotected(0x6D9ECC, reinterpret_cast<DWORD>(&patch::OverrideWinHelpA));
 
 		// Install all our sectioned patches.
 		window::main::installPatches();
@@ -635,6 +696,7 @@ namespace se::cs {
 		dialog::edit_object_window::installPatches();
 		dialog::landscape_edit_settings_window::installPatches();
 		dialog::object_window::installPatches();
+		dialog::path_grid_window::installPatches();
 		dialog::preview_window::installPatches();
 		dialog::reference_data::installPatches();
 		dialog::render_window::installPatches();

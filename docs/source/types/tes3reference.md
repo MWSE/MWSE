@@ -27,7 +27,25 @@ The current reference, if any, that this reference will activate.
 ### `attachments`
 <div class="search_terms" style="display: none">attachments</div>
 
-*Read-only*. A table with friendly named access to all supported attachments.
+*Read-only*. A table with friendly named access to all supported attachments. See the table below for available keys in this table.
+
+Key               | Attachment type | Description
+----------------- | --------------- | -----------
+actor             | [tes3mobileActor](https://mwse.github.io/MWSE/types/tes3mobileActor/) | The associated mobile object, if applicable.
+animation         | [tes3animationData](https://mwse.github.io/MWSE/types/tes3animationData/) |
+bodyPartManager   | [tes3bodyPartManager](https://mwse.github.io/MWSE/types/tes3bodyPartManager/) |
+leveledBase       | [tes3reference](https://mwse.github.io/MWSE/types/tes3reference/) |
+light             | [tes3lightNode](https://mwse.github.io/MWSE/types/tes3lightNode/) | The dynamic light attachment.
+lock              | [tes3lockNode](https://mwse.github.io/MWSE/types/tes3lockNode/) | Only present on locked containers or doors.
+travelDestination | [tes3travelDestinationNode](https://mwse.github.io/MWSE/types/tes3travelDestinationNode/) | Only present on teleport doors.
+variables         | [tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/) | Only present on items when needed e.g. the item is fully repaired.
+
+
+```lua
+-- Accessing the attached tes3animationData
+local animData = myRef.attachments.animation
+```
+
 
 **Returns**:
 
@@ -126,6 +144,14 @@ The blocked state of the object.
 	In this example we provide a way to check if a certain actor is currently player's follower. This function can also be useful besides the one from previous example, since not all of the followers have companion share enabled.
 
 	```lua
+	local followPackage = {
+		[tes3.aiPackage.follow] = true,
+		-- Depending on your needs, you can also include player's escortees.
+		-- In the base game, AiEscort package is quite rare. Only White Guar
+		-- has that package and with player as the targetActor.
+		[tes3.aiPackage.escort] = true,
+	}
+	
 	--- This function returns `true` if a given mobile has
 	--- follow ai package with player as its target
 	---@param mobile tes3mobileNPC|tes3mobileCreature
@@ -140,11 +166,8 @@ The blocked state of the object.
 		if not package then
 			return false
 		end
-		if package.type == tes3.aiPackage.follow
-		-- Depending on your needs, you can also include the actor's escorter.
-		-- In the base game, AiEscort package is quite rare. Only White Guar
-		-- has that package and targetActor is the player.
-		or package.type == tes3.aiPackage.escort then
+	
+		if followPackage[package.type] then
 			local target = package.targetActor
 	
 			if target.objectType == tes3.objectType.mobilePlayer then
@@ -159,13 +182,11 @@ The blocked state of the object.
 	---@return tes3reference[] followerList
 	local function getFollowers()
 		local followers = {}
-		local i = 1
 	
 		for _, mobile in pairs(tes3.mobilePlayer.friendlyActors) do
 			---@cast mobile tes3mobileNPC|tes3mobileCreature
 			if isFollower(mobile) then
-				followers[i] = mobile.reference
-				i = i + 1
+				table.insert(followers, mobile.reference)
 			end
 		end
 	
@@ -595,7 +616,7 @@ No description yet available.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -780,7 +801,7 @@ local cloned = myObject:clone()
 ### `delete`
 <div class="search_terms" style="display: none">delete</div>
 
-Disables the reference, removes all its attachments, resets its scale, and sets the reference to be deleted.
+Disables the reference, removes all its attachments, resets its scale, marks it as modified, and sets the reference to be deleted, trigerring `referenceDeactivated` event.
 
 ```lua
 myObject:delete()

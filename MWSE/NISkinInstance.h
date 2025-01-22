@@ -43,9 +43,7 @@ namespace NI {
 				unsigned short index; // 0x0
 				float weight; // 0x4
 			};
-			TES3::Matrix33 rotation; // 0x0
-			TES3::Vector3 translation; // 0x24
-			float scale; // 0x30
+			TES3::Transform transform; // 0x0
 			Bound bounds; // 0x34
 			VertexWeight* weights; // 0x48
 			unsigned short weightCount; // 0x48
@@ -53,9 +51,7 @@ namespace NI {
 			nonstd::span<VertexWeight> getWeights();
 		};
 		Pointer<SkinPartition> partition; // 0x8
-		TES3::Matrix33 rotation; // 0xC
-		TES3::Vector3 translation; // 0x30
-		float scale; // 0x3C
+		TES3::Transform transform; // 0xC
 		unsigned int numBones; // 0x40
 		BoneData* boneData; // 0x44
 

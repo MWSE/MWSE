@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool KeybindTestedEvent::m_EventEnabled = false;
 }

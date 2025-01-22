@@ -66,6 +66,39 @@ The type of this component.
 
 ***
 
+### `config`
+<div class="search_terms" style="display: none">config</div>
+
+The config to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+
+**Returns**:
+
+* `result` (table, nil)
+
+***
+
+### `configKey`
+<div class="search_terms" style="display: none">configkey</div>
+
+The `configKey` used to create a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) variable will be created for this setting.
+
+**Returns**:
+
+* `result` (string, number, nil)
+
+***
+
+### `converter`
+<div class="search_terms" style="display: none">converter</div>
+
+A converter to use for this component's `variable`.
+
+**Returns**:
+
+* `result` ((fun(newValue: unknown): unknown), nil)
+
+***
+
 ### `createContentsContainer`
 <div class="search_terms" style="display: none">createcontentscontainer, contentscontainer</div>
 
@@ -85,6 +118,28 @@ The number of decimal places of precision. Must be a nonnegative integer. Defaul
 **Returns**:
 
 * `result` (integer)
+
+***
+
+### `defaultConfig`
+<div class="search_terms" style="display: none">defaultconfig</div>
+
+The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+
+**Returns**:
+
+* `result` (table, nil)
+
+***
+
+### `defaultSetting`
+<div class="search_terms" style="display: none">defaultsetting</div>
+
+If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
+
+**Returns**:
+
+* `result` (unknown, nil)
 
 ***
 
@@ -261,6 +316,17 @@ Set to the value of `sCancel` GMST.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `showDefaultSetting`
+<div class="search_terms" style="display: none">showdefaultsetting, defaultsetting</div>
+
+If true, then the `defaultSetting` of this setting's `variable` will be shown below its description.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -602,55 +668,20 @@ myObject:enable()
 
 ***
 
-### `getComponent`
-<div class="search_terms" style="display: none">getcomponent, component</div>
+### `getMouseOverText`
+<div class="search_terms" style="display: none">getmouseovertext, mouseovertext</div>
 
-Creates a new Component of given class or returns the given Component.
+Retrieves the text that this setting should display in any related [`mouseOverInfo`s](./mwseMCMMouseOverInfo.md). This method currently utilized to display this component's description whenever the component is in a [`SideBarPage`](./mwseMCMSideBarPage.md). If this `Setting` has `showDefaultSetting == true`, then this method will also include the current `defaultSetting`.
+
+Primarily intended for internal use.
 
 ```lua
-local component = myObject:getComponent({ class = ..., label = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., parentComponent = ... })
+local text = myObject:getMouseOverText()
 ```
-
-**Parameters**:
-
-* `componentData` ([mwseMCMComponent](../types/mwseMCMComponent.md), table)
-	* `class` (string): The component type to get. On of the following:
-		- `"Template"`
-		- `"ExclusionsPage"`
-		- `"FilterPage"`
-		- `"MouseOverPage"`
-		- `"Page"`
-		- `"SideBarPage"`
-		- `"Category"`
-		- `"SideBySideBlock"`
-		- `"ActiveInfo"`
-		- `"Hyperlink"`
-		- `"Info"`
-		- `"MouseOverInfo"`
-		- `"Setting"`
-		- `"Button"`
-		- `"OnOffButton"`
-		- `"YesNoButton"`
-		- `"CycleButton"`
-		- `"KeyBinder"`
-		- `"Dropdown"`
-		- `"TextField"`
-		- `"ParagraphField"`
-		- `"Slider"`
-		- `"DecimalSlider"`
-		- `"PercentageSlider"`
-	* `label` (string): *Optional*. The label text to set for the new component. Not all component types have a label.
-	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
-	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
-	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
-	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
-	* `inGameOnly` (boolean): *Default*: `false`.
-	* `postCreate` (fun(self: [mwseMCMComponent](../types/mwseMCMComponent.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
-	* `parentComponent` ([mwseMCMComponent](../types/mwseMCMComponent.md)): *Optional*.
 
 **Returns**:
 
-* `component` ([mwseMCMComponent](../types/mwseMCMComponent.md))
+* `text` (string, nil): The text to display. Returning `nil` means that the `mouseOverInfo` should display text from a different source. e.g. from the `description` of the relevant [`SideBarPage`](./mwseMCMSideBarPage.md).
 
 ***
 
@@ -690,7 +721,7 @@ myObject:makeComponent(parentBlock)
 Creates a new Slider.
 
 ```lua
-local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ..., class = ..., componentType = ..., parentComponent = ... })
+local slider = myObject:new({ label = ..., variable = ..., config = ..., defaultConfig = ..., configKey = ..., converter = ..., defaultSetting = ..., min = ..., max = ..., step = ..., jump = ..., decimalPlaces = ..., description = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., convertToLabelValue = ..., postCreate = ..., class = ..., componentType = ..., parentComponent = ... })
 ```
 
 **Parameters**:
@@ -698,7 +729,11 @@ local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ...,
 * `data` (table): *Optional*.
 	* `label` (string): *Optional*. Text shown above the slider. If left as a normal string, it will be shown in the form: [`label`]: [`self.variable.value`]. If the string contains a '%s' format operator, the value will be formatted into it.
 	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): *Optional*. A variable for this setting.
-	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value.
+	* `config` (table): *Default*: ``parentComponent.config``. The config to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `defaultConfig` (table): *Default*: ``parentComponent.defaultConfig``. The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `configKey` (string, number): *Optional*. The `configKey` used to create a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) variable will be created for this setting.
+	* `converter` (fun(newValue: unknown): unknown): *Optional*. A converter to use for this component's `variable`.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
 	* `min` (number): *Default*: `0`. Minimum value of slider.
 	* `max` (number): *Default*: `100`. Maximum value of slider.
 	* `step` (number): *Default*: `1`. How far the slider moves when you press the arrows.
@@ -722,25 +757,6 @@ local slider = myObject:new({ label = ..., variable = ..., defaultSetting = ...,
 **Returns**:
 
 * `slider` ([mwseMCMSlider](../types/mwseMCMSlider.md))
-
-***
-
-### `prepareData`
-<div class="search_terms" style="display: none">preparedata</div>
-
-Prepares the provided parameters table and sets the `parentComponent` field to `mwseMCMComponent`.
-
-```lua
-local data = myObject:prepareData(data)
-```
-
-**Parameters**:
-
-* `data` (string, mwseMCMComponent.new.data): *Optional*.
-
-**Returns**:
-
-* `data` (mwseMCMComponent.new.data)
 
 ***
 
@@ -786,6 +802,32 @@ myObject:registerSliderElement(element)
 **Parameters**:
 
 * `element` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `resetToDefault`
+<div class="search_terms" style="display: none">resettodefault</div>
+
+This method will reset the `variable.value` to the default value.
+
+```lua
+myObject:resetToDefault()
+```
+
+***
+
+### `setVariableValue`
+<div class="search_terms" style="display: none">setvariablevalue, variablevalue</div>
+
+Changes the Slider's `variable.value` to the given value, updates the Slider's label and widget, and calls `self:update`.
+
+```lua
+myObject:setVariableValue(newValue)
+```
+
+**Parameters**:
+
+* `newValue` (number)
 
 ***
 

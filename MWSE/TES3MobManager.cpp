@@ -5,6 +5,7 @@
 
 #include "LuaDetectSneakEvent.h"
 
+#include "TES3AIData.h"
 #include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
@@ -14,6 +15,10 @@
 #include "MathUtil.h"
 
 namespace TES3 {
+	//
+	// ProcessManager
+	//
+
 	const auto TES3_ProcessManager_detectAttack = reinterpret_cast<bool(__thiscall*)(ProcessManager*, MobileActor*)>(0x570C60);
 	bool ProcessManager::detectAttack(MobileActor* actor) {
 		return TES3_ProcessManager_detectAttack(this, actor);
@@ -75,6 +80,38 @@ namespace TES3 {
 		aiDistance = 1000.0f + 6000.0f * scalar;
 	}
 
+	sol::table ProcessManager::getAllMobileActors(sol::this_state ts) {
+		sol::state_view state = ts.lua_state();
+		auto t = state.create_table();
+		int n = 1;
+
+		criticalSection.enter();
+		for (auto planner : aiPlanners) {
+			t[n++] = planner->mobileActor;
+		}
+		criticalSection.leave();
+
+		return t;
+	}
+
+	sol::table ProcessManager::getAllPlanners(sol::this_state ts) {
+		sol::state_view state = ts.lua_state();
+		auto t = state.create_table();
+		int n = 1;
+
+		criticalSection.enter();
+		for (auto planner : aiPlanners) {
+			t[n++] = planner;
+		}
+		criticalSection.leave();
+
+		return t;
+	}
+
+	//
+	// ProjectileManager
+	//
+
 	const auto TES3_ProjectileManager_resolveCollisions = reinterpret_cast<void(__thiscall*)(ProjectileManager*, float)>(0x5753A0);
 	void ProjectileManager::resolveCollisions(float deltaTime) {
 		// Explode flagged spell projectiles.
@@ -119,33 +156,30 @@ namespace TES3 {
 		TES3_MobManager_addPlayerAsCollider(this);
 	}
 
-	bool MobManager::hasMobileCollision(const MobileActor* mobile) {
+	bool MobManager::hasMobileCollision(const MobileObject* mobile) {
 		bool result = false;
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			result = mobCollisionGroup->containsCollider(node);
+			result = mobCollisionGroup->containsCollider(mobile->reference->sceneNode);
 			criticalSection_Mobs.leave();
 		}
 		return result;
 	}
 
-	void MobManager::enableMobileCollision(MobileActor* mobile) {
+	void MobManager::enableMobileCollision(MobileObject* mobile) {
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			if (!mobCollisionGroup->containsCollider(node)) {
-				mobCollisionGroup->addCollider(node);
+			if (!mobCollisionGroup->containsCollider(mobile->reference->sceneNode)) {
+				mobCollisionGroup->addCollider(mobile->reference->sceneNode);
 			}
 			criticalSection_Mobs.leave();
 		}
 	}
 
-	void MobManager::disableMobileCollision(MobileActor* mobile) {
+	void MobManager::disableMobileCollision(MobileObject* mobile) {
 		if (mobile && (mobile->actorFlags & TES3::MobileActorFlag::ActiveInSimulation)) {
-			auto node = mobile->reference->sceneNode;
 			criticalSection_Mobs.enter();
-			mobCollisionGroup->removeCollider(node);
+			mobCollisionGroup->removeCollider(mobile->reference->sceneNode);
 			criticalSection_Mobs.leave();
 		}
 	}

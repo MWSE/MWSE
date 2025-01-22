@@ -10,4 +10,4 @@
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field keybind tes3.keybind *Read-only*. The keybind that was tested. This maps to the `tes3.keybind.*` constants.
 --- @field result boolean The read state of the keybind. If true, the key was pressed/released/toggled as determined by the `transition` event data.
---- @field transition tes3.keyTransition *Read-only*. The transition for the keybind that was tested. This is typically `tes3.keyTransition.isDown` but not guaranteed to be. Always be sure to check what transition is being used.
+--- @field transition tes3.keyTransition *Read-only*. The transition type specified for the test. Each game mechanic may choose to trigger on a specific transition type. This is typically `tes3.keyTransition.downThisFrame` (key pressed), but not guaranteed to be. Always be sure to check what transition is being used.

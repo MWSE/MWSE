@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSDefines.h"
+
 namespace se::cs::dialog::reference_data {
 
 	constexpr UINT DIALOG_ID = 141;
@@ -40,20 +42,31 @@ namespace se::cs::dialog::reference_data {
 	constexpr UINT CONTROL_ID_TRAP_COMBO = 1065;
 
 	struct UserData {
-		int unknown_0x0;
-		int unknown_0x4;
-		int unknown_0x8;
-		int unknown_0xC;
-		int unknown_0x10;
+		struct LParam {
+			DWORD objectType; // 0x0
+			Object* object; // 0x4
+			Reference* reference; // 0x8
+			void* referenceData; // 0xC
+		};
+
+		LParam* lParam; // 0x0
+		ItemData* itemData; // 0x4
+		float scale; // 0x8
+		TravelDestination* loadDoorAttachment;
+		SecurityAttachmentNode* securityAttachment;
 		int unknown_0x14;
 		int unknown_0x18;
 		int unknown_0x1C;
 		int unknown_0x20;
 		int unknown_0x24;
 		int unknown_0x28;
-		int unknown_0x2C;
+		BYTE unknown_0x2C;
+		BYTE unknown_0x2D;
+		BYTE unknown_0x2E;
+		BYTE unknown_0x2F;
 	};
 	static_assert(sizeof(UserData) == 0x30, "ReferenceData dialog UserData failed size validation");
+	static_assert(sizeof(UserData::LParam) == 0x10, "ReferenceData dialog UserData failed size validation");
 
 	void installPatches();
 }

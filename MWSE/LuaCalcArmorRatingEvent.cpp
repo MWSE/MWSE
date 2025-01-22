@@ -47,6 +47,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalculateArmorRatingEvent::m_EventEnabled = false;
 }

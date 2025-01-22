@@ -80,7 +80,7 @@ The enchantment used by the object.
 ### `icon`
 <div class="search_terms" style="display: none">icon</div>
 
-The path to the object's icon.
+The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 **Returns**:
 
@@ -121,10 +121,21 @@ True if this object is an editor marker for a gameplay location. These include t
 
 ***
 
+### `isUsableByBeasts`
+<div class="search_terms" style="display: none">isusablebybeasts, usablebybeasts</div>
+
+*Read-only*. If this property is `true`, beast races can wear this clothing item. This property is `false` for any kind of clothing that covers feet.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 
-The path to the object's mesh.
+The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 
 **Returns**:
 
@@ -300,7 +311,7 @@ The name of the slot used by the clothing object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 

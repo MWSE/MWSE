@@ -30,6 +30,8 @@ namespace mwse::lua {
 			usertypeDefinition["checkPlayerDistance"] = &TES3::ProcessManager::checkPlayerDistance;
 
 			// Functions exposed as properties.
+			usertypeDefinition["allMobileActors"] = sol::readonly_property(&TES3::ProcessManager::getAllMobileActors);
+			usertypeDefinition["allPlanners"] = sol::readonly_property(&TES3::ProcessManager::getAllPlanners);
 			usertypeDefinition["aiDistanceScale"] = sol::property(&TES3::ProcessManager::getAIDistanceScale, &TES3::ProcessManager::setAIDistanceScale);
 		}
 

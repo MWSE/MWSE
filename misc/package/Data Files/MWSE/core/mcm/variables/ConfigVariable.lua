@@ -6,7 +6,6 @@ local Parent = require("mcm.variables.Variable")
 
 --- @class mwseMCMConfigVariable
 local ConfigVariable = Parent:new()
-ConfigVariable.inGameOnly = false
 
 --- @return unknown value
 function ConfigVariable:get()

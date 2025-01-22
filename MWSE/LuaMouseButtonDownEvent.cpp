@@ -22,6 +22,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool MouseButtonDownEvent::m_EventEnabled = false;
 }

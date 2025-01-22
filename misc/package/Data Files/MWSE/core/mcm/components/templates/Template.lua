@@ -2,6 +2,8 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
+local utils = require("mcm.utils")
+
 local Parent = require("mcm.components.Component")
 
 --- Class object
@@ -21,9 +23,16 @@ function Template:new(data)
 	local pages = {}
 	t.pages = t.pages or {}
 	for _, page in ipairs(t.pages) do
-		page.class = page.class or "Page"
-		local newPage = self:getComponent(page)
-		table.insert(pages, newPage)
+		-- Make sure it's actually a `Page`.
+		if not page.componentType then
+			local componentClass = utils.getComponentClass(page.class or "Page")
+			if not componentClass then
+				error(string.format("Could not intialize page %q", page.label))
+			end
+			page.parentComponent = self
+			page = componentClass:new(page)
+		end
+		table.insert(pages, page)
 	end
 	t.pages = pages
 
@@ -331,34 +340,27 @@ function Template:register()
 end
 
 function Template.__index(tbl, key)
-	local meta = getmetatable(tbl)
-	local prefixLen = string.len("create")
-	if string.sub(key, 1, prefixLen) == "create" then
-		local component
-
-		local class = string.sub(key, prefixLen + 1)
-		local classPaths = require("mcm.classPaths")
-		local classPath = classPaths.all.pages .. class
-		local fullPath = lfs.currentdir() .. classPaths.basePath .. classPath .. ".lua"
-		local fileExists = lfs.fileexists(fullPath)
-		if fileExists then
-			component = require(classPath)
-		end
-
-		if component then
-			--- @cast component mwseMCMPage
-			--- @param self mwseMCMTemplate
-			return function(self, data)
-				data = self:prepareData(data) --[[@as mwseMCMPage.new.data]]
-				data.class = class
-				component = component:new(data)
-				table.insert(self.pages, component)
-				return component
-			end
-		end
-
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- Make a new `Template.create<Component>` method.
+	-- Otherwise, look the value up in the `metatable`.
+	
+	if not key:startswith("create") or mwse.mcm[key] == nil then
+		return getmetatable(tbl)[key]
 	end
-	return meta[key]
+
+	Template[key] = function(self, data)
+		if not data then
+			data = {}
+		elseif type(data) == "string" then
+			data = { label = data }
+		end
+		data.parentComponent = self
+		local component = mwse.mcm[key](data)
+		table.insert(self.pages, component)
+		return component
+	end
+
+	return Template[key]
 end
 
 return Template

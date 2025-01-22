@@ -17,7 +17,7 @@ function TextField:enable()
 
 	--- @param e tes3uiElement
 	local function registerAcquireTextInput(e)
-		e:register("mouseClick", function()
+		e:register(tes3.uiEvent.mouseClick, function()
 			tes3ui.acquireTextInput(self.elements.inputField)
 		end)
 		for _, element in ipairs(e.children or {}) do
@@ -26,15 +26,20 @@ function TextField:enable()
 	end
 	registerAcquireTextInput(self.elements.border)
 
-	self.elements.submitButton:register("mouseClick", function(e)
+	self.elements.submitButton:register(tes3.uiEvent.mouseClick, function(e)
 		self:press()
 	end)
-	self.elements.submitButton.widget.state = 1
+	self.elements.submitButton.widget.state = tes3.uiState.normal
 end
 
 function TextField:disable()
 	Parent.disable(self)
-	self.elements.inputField.color = tes3ui.getPalette("disabled_color")
+	self.elements.inputField.color = tes3ui.getPalette(tes3.palette.disabledColor)
+end
+
+function TextField:setVariableValue(newValue)
+	self.elements.inputField.text = newValue
+	Parent.update(self)
 end
 
 function TextField:update()
@@ -53,6 +58,32 @@ end
 function TextField:callback()
 	-- default messageBox on update
 	tes3.messageBox(self.sNewValue, self:convertToLabelValue(self.variable.value))
+end
+
+-- Returns the string that should be shown in the MouseOverInfo
+--- @return string?
+function TextField:getMouseOverText()
+	local var = self.variable
+	local shouldAddDefaults = (self.showDefaultSetting and var and var.defaultSetting ~= nil)
+
+	if not shouldAddDefaults then
+		return self.description -- This has type `string|nil`
+	end
+
+	-- Now we add defaults to the description.
+	local defaultStr = self:convertToLabelValue(var.defaultSetting)
+
+	-- No description exists yet? Then we'll only write the default value.
+	if not self.description then
+		return string.format("%s: \"%s\".", mwse.mcm.i18n("Default"), defaultStr)
+	end
+
+	return string.format(
+		"%s\n\n\z
+		 %s: \"%s\".",
+		self.description,
+		mwse.mcm.i18n("Default"), defaultStr
+	)
 end
 
 --- @param parentBlock tes3uiElement
@@ -74,7 +105,7 @@ end
 --- @param parentBlock tes3uiElement
 function TextField:createInnerContainer(parentBlock)
 	Parent.createInnerContainer(self, parentBlock)
-	self.elements.innerContainer.flowDirection = "left_to_right"
+	self.elements.innerContainer.flowDirection = tes3.flowDirection.leftToRight
 
 end
 
@@ -83,7 +114,7 @@ function TextField:makeComponent(parentBlock)
 	local border = parentBlock:createThinBorder()
 	border.widthProportional = 1.0
 	border.autoHeight = true
-	border.flowDirection = "left_to_right"
+	border.flowDirection = tes3.flowDirection.leftToRight
 	if self.minHeight then
 		border.minHeight = self.minHeight
 	end
@@ -112,7 +143,7 @@ function TextField:makeComponent(parentBlock)
 
 	self:createSubmitButton(parentBlock)
 
-	inputField:register("keyEnter", function()
+	inputField:register(tes3.uiEvent.keyEnter, function()
 		self:update()
 	end)
 

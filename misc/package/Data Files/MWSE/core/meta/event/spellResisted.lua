@@ -10,7 +10,7 @@
 --- @field caster tes3reference *Read-only*. The caster of the magic source that contained the magic effect. Can be `nil`.
 --- @field effect tes3effect *Read-only*. The specific effect that triggered the event. This is equal to `e.source.effects[e.effectIndex]`.
 --- @field effectIndex number *Read-only*. The index of the effect in the magic source's effects list.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that resisted the magic effect.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that resisted the magic effect.
 --- @field reference tes3reference *Read-only*. The reference of the mobile actor that resisted the magic effect.
 --- @field source tes3alchemy|tes3enchantment|tes3spell *Read-only*. The magic source that contains the effect.
 --- @field sourceInstance tes3magicSourceInstance *Read-only*. The unique instance of the magic source that contains the effect.

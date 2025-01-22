@@ -22,6 +22,17 @@ The blocked state of the object.
 
 ***
 
+### `byteCode`
+<div class="search_terms" style="display: none">bytecode</div>
+
+*Read-only*. A byte representation of instructions that the script will run.
+
+**Returns**:
+
+* `result` (number[])
+
+***
+
 ### `context`
 <div class="search_terms" style="display: none">context</div>
 
@@ -146,7 +157,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -173,6 +184,17 @@ If true, references of this object can store temporary or persistent lua data.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `text`
+<div class="search_terms" style="display: none">text</div>
+
+*Read-only*. The plain text of the script. Note that line endings do not match the default lua line endings. This requires file IO, and is slow. If `recompile` is used to change the script at runtime, this will not be accurate.
+
+**Returns**:
+
+* `result` (string)
 
 ***
 
@@ -209,4 +231,23 @@ local results = myObject:getVariableData(useLocals)
 **Returns**:
 
 * `results` (table&lt;string, [tes3scriptVariableData](../types/tes3scriptVariableData.md)&gt;, nil): A table with all of the script's variable names as keys.
+
+***
+
+### `recompile`
+<div class="search_terms" style="display: none">recompile</div>
+
+Replaces the bytecode of a script with the code compiled with the given mwscript. This should only be done during the initialized event, prior to a game being loaded.
+
+```lua
+local success = myObject:recompile(text)
+```
+
+**Parameters**:
+
+* `text` (string): The script text to compile. The line endings must be provided using CRLF.
+
+**Returns**:
+
+* `success` (boolean): If true, the script was recompiled successfully.
 

@@ -116,6 +116,10 @@ namespace TES3::UI {
 	int textLayoutWrapTextInPlace(TES3::Font* font, char* textBuffer, unsigned int maxWidth, bool ignoreLinkDelimiters, char newlineReplacement);
 	std::tuple<std::string, int> textLayoutWrapText_lua(sol::table params);
 
+	void showLoadingMenu(const char* title, float progress);
+	void updateLoadingMenu(float progress);
+	void destroyLoadingMenu();
+
 	//
 	// Helper functions.
 	//

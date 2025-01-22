@@ -8,10 +8,11 @@ namespace se::cs {
 	struct LeveledItem : LeveledList {
 		NI::IteratedList<Node*>* list; // 0x48
 		size_t listSize; // 0x4C
-		BYTE leveledFlags; // 0x50
+		unsigned int leveledFlags; // 0x50
+		BYTE chanceForNone; // 0x54
 
 		bool getCalculateFromEachItem() const;
 		bool getCalculateFromAllLevelsLessThanEqualToPCLevel() const;
 	};
-	static_assert(sizeof(LeveledItem) == 0x54, "LeveledItem failed size validation");
+	static_assert(sizeof(LeveledItem) == 0x58, "LeveledItem failed size validation");
 }

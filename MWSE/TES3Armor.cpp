@@ -6,6 +6,7 @@
 
 #include "TES3Util.h"
 
+#include "TES3BodyPartManager.h"
 #include "TES3DataHandler.h"
 #include "TES3GameSetting.h"
 #include "TES3MobileActor.h"
@@ -211,6 +212,30 @@ namespace TES3 {
 		else {
 			throw std::exception("Invalid function call. Requires mobile actor or reference as a parameter.");
 		}
+	}
+
+	bool Armor::isClosedHelmet() const {
+		for (auto &part : parts) {
+			// Does the helmet cover head? If so, it's a closed helmet.
+			if (part.bodypartID == static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::Head)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Armor::isUsableByBeasts() const {
+		if (isClosedHelmet()) {
+			return false;
+		}
+		constexpr auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
+		constexpr auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
+		for (auto& part : parts) {
+			if (part.bodypartID == leftFootID || part.bodypartID == rightFootID) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

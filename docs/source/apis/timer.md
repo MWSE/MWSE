@@ -8,6 +8,10 @@
 
 The timer library provides helper functions for creating delayed executors.
 
+!!! warning "Timers get canceled when loading saves."
+	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+
+
 ## Properties
 
 ### `timer.active`
@@ -70,6 +74,28 @@ local timer = timer.delayOneFrame(callback, type)
 
 * `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md))): The callback function that will execute when the timer expires.
 * `type` (integer): *Default*: ``timer.simulate``. Type of the timer. This value can be `timer.simulate`, `timer.game` or `timer.real`.
+
+**Returns**:
+
+* `timer` ([mwseTimer](../types/mwseTimer.md))
+
+***
+
+### `timer.frame.delayOneFrame`
+<div class="search_terms" style="display: none">frame.delayoneframe</div>
+
+Creates a timer that will finish the next frame.
+
+!!! tip
+	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.
+
+```lua
+local timer = timer.frame.delayOneFrame(callback)
+```
+
+**Parameters**:
+
+* `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md))): The callback function that will execute when the timer expires.
 
 **Returns**:
 
@@ -149,7 +175,9 @@ timer.register(name, fn)
 <div class="search_terms" style="display: none">start</div>
 
 Creates a timer.
-
+!!! warning "Timers get canceled when loading saves."
+	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+	
 !!! tip
 	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.
 

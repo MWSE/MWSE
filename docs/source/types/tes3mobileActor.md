@@ -162,6 +162,9 @@ Direct access to the actor's attack bonus effect attribute.
 
 *Read-only*. Access to a table of 8 [`tes3statistic`](https://mwse.github.io/MWSE/types/tes3statistic/) objects for the actor's attributes. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
 
+!!! note
+	This array is 1-indexed. The array indices correspond to the [tes3.attribute](https://mwse.github.io/MWSE/references/attributes/) table plus 1 to account for Lua's 1-based array indexing. In other words `myMobile.attributes[tes3.attribute.strength + 1]` returns the `tes3statistic` object corresponding to strength.
+
 **Returns**:
 
 * `result` ([tes3statistic](../types/tes3statistic.md)[])
@@ -393,7 +396,9 @@ This is the time measured in hours from the beginning of the game when the actor
 ### `facing`
 <div class="search_terms" style="display: none">facing</div>
 
-*Read-only*. The facing of the actor, in radians. It corresponds to the `mobile.reference.orientation.z`. Facing of 0 corresponds to the in game North, facing of PI corresponds to the game South. It's in clockwise direction.
+*Read-only*. The facing of the actor, in radians. Facing is defined like a compass heading, positive values are clockwise and North (+Y axis) is zero, while facing of PI corresponds to South (-Y axis).
+
+It's the same as `mobile.reference.orientation.z`.
 
 **Returns**:
 
@@ -536,7 +541,7 @@ No description yet available.
 ### `hasVampirism`
 <div class="search_terms" style="display: none">hasvampirism, vampirism</div>
 
-*Read-only*. True if the actor has a vampirism effect.
+*Read-only*. True if the actor has a vampirism effect. Checks if the actor has an active vampirism magic effect. This is the same method used in the engine to determine if an NPC has a vampire head model, or can use a vampire dialogue response.
 
 **Returns**:
 
@@ -558,7 +563,7 @@ No description yet available.
 ### `height`
 <div class="search_terms" style="display: none">height</div>
 
-The height of the mobile above the ground.
+The height of the mobile's bounding box.
 
 **Returns**:
 
@@ -922,6 +927,17 @@ Direct access to the actor's current movement flags, showing if the actor is sne
 
 ***
 
+### `isSpeaking`
+<div class="search_terms" style="display: none">isspeaking, speaking</div>
+
+*Read-only*. This property is `true` when the actor is speaking a dialogue line. This includes: hit grunts, combat reactions, and the usual dialogue.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isSwimming`
 <div class="search_terms" style="display: none">isswimming, swimming</div>
 
@@ -1035,7 +1051,7 @@ Direct access to the actor's levitate effect attribute.
 ### `mobToMobCollision`
 <div class="search_terms" style="display: none">mobtomobcollision</div>
 
-Allows modifying if this actor will collide with other actors. When `true` (default), the actor cannot move through other actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it.
+Allows modifying if this mobile will collide with other mobiles (actors and projectiles). When `true` (default), the actor cannot move through other actors, and projectiles will collide with actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it. Projectiles will pass through actors and other projectiles.
 
 May be useful when free movement is required in crowded situations, or to temporarily let the player move past an actor.
 
@@ -1457,6 +1473,10 @@ The currently equipped light.
 
 A vector that represents the 3D velocity of the object.
 
+!!! tip
+	To change the velocity of an actor change this property during the [calcMoveSpeed](https://mwse.github.io/MWSE/events/calcMoveSpeed/) event.
+
+
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
@@ -1674,7 +1694,7 @@ Equip may fail for the following reasons:
 - When a weapon is being used to attack, it cannot be replaced.
 
 ```lua
-local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ... })
+local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ..., playSound = ... })
 ```
 
 **Parameters**:
@@ -1685,6 +1705,7 @@ local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ...,
 	* `addItem` (boolean): *Default*: `false`. If `true`, the item will be added to the actor's inventory if needed.
 	* `selectBestCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the best condition and best charge will be selected.
 	* `selectWorstCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the worst condition and worst charge will be selected. Can be useful for selecting tools.
+	* `playSound` (boolean): *Default*: `true`. If `true`, the default item sound will be played for the item.
 
 **Returns**:
 
@@ -2019,6 +2040,25 @@ Kills the actor by setting its health to 0.
 ```lua
 myObject:kill()
 ```
+
+***
+
+### `overrideHeadTrackingThisFrame`
+<div class="search_terms" style="display: none">overrideheadtrackingthisframe</div>
+
+
+!!! warning
+	This part of the API isn't fully understood yet and thus is considered experimental. That means that there can be breaking changes requiring the code using this part of the API to be rewritten. The MWSE team will not make any effort to keep backward compatibility with the mods using experimental APIs.
+
+ Causes the actor to look towards this reference, while obey the usual head turning constraints. This must be called every frame in the `simulate` event to work. It will override regular head look behaviour and the target may be at any distance in the same worldspace.
+
+```lua
+myObject:overrideHeadTrackingThisFrame(target)
+```
+
+**Parameters**:
+
+* `target` ([tes3reference](../types/tes3reference.md))
 
 ***
 

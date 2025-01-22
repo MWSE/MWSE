@@ -9,6 +9,7 @@ end
 if (table.empty(tests)) then
 	tests = {
 		"dialogueReplacement",
+		"mwseLoadConfig",
 	}
 end
 

@@ -144,7 +144,7 @@ local result = tes3ui.createHelpLayerMenu({ id = ... })
 ### `tes3ui.createMenu`
 <div class="search_terms" style="display: none">createmenu, menu</div>
 
-Creates a top-level menu.
+Creates a top-level menu. It will be styled like a regular menu, with the configurable background alpha and a frame. There are two types of menu: `dragFrame` (movable and resizeable with titlebar) or `fixedFrame` (fixed with simple border). A type must be specified to create a menu.
 
 ```lua
 local result = tes3ui.createMenu({ id = ..., dragFrame = ..., fixedFrame = ..., modal = ..., loadable = ... })
@@ -157,7 +157,7 @@ local result = tes3ui.createMenu({ id = ..., dragFrame = ..., fixedFrame = ..., 
 	* `dragFrame` (boolean): *Default*: `false`. Constructs a draggable and resizeable frame and background for the menu. It is similar to the stats, inventory, magic and map menus in the standard UI. Its title bar text can be set with the .text property. After construction, position and minimum dimensions should be set.
 	* `fixedFrame` (boolean): *Default*: `false`. Constructs a fixed (non-draggable) frame and background for the menu. The layout system should automatically centre and size it to fit whatever is added to the menu. This type of menu is modal by default, preventing interaction with other menus while the menu is active.
 	* `modal` (boolean): *Default*: `true`. Only applies to fixedFrame menus. Modal menus prevent interaction with other menus while the menu is active. This behavior can be disabled with this flag.
-	* `loadable` (boolean): *Default*: `true`. If set to false, calls to loadMenuPosition will fail.
+	* `loadable` (boolean): *Default*: `true`. Only applies to dragFrame menus. Remembers the position and size of the menu (by id) when the user moves it. Calling loadMenuPosition after menu creation will restore it to the last set size and position. If set to false, calls to loadMenuPosition will fail.
 
 **Returns**:
 
@@ -340,7 +340,7 @@ local result = tes3ui.getMenuOnTop()
 ### `tes3ui.getPalette`
 <div class="search_terms" style="display: none">getpalette, palette</div>
 
-Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0].
+Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0]. The palette colors are loaded from morrowind.ini settings, so you should only access them after Morrowind is initialized.
 
 ![Palette colors](https://raw.githubusercontent.com/MWSE/MWSE/master/docs/source/assets/images/ui%20palletes.png)
 
@@ -476,7 +476,7 @@ local width, height = tes3ui.getViewportSize()
 ### `tes3ui.leaveMenuMode`
 <div class="search_terms" style="display: none">leavemenumode</div>
 
-Requests menu mode be deactivated on a menu with a given id.
+Requests menu mode be deactivated. Menu mode can't be deactivated if a modal menu is open.
 
 ```lua
 local result = tes3ui.leaveMenuMode()
@@ -554,7 +554,7 @@ tes3ui.logToConsole(text, isCommand)
 		tes3ui.logToConsole("player->ModStrength 10", false)
 	
 		-- This will make "player->ModWillpower 10" appear in the console coloured blue.
-		-- It CAN be selected by using up arrow key, and when the enter is pressed,
+		-- It can be selected by using up arrow key, and when the enter is pressed,
 		-- it will call that function.
 		tes3ui.logToConsole("player->ModWillpower 10", true)
 	
@@ -699,6 +699,28 @@ tes3ui.showBookMenu(text)
 
 ***
 
+### `tes3ui.showColorPickerMenu`
+<div class="search_terms" style="display: none">showcolorpickermenu, colorpickermenu</div>
+
+Creates a menu with a color picker. To read the color the user picked, pass a `closeCallback`.
+
+```lua
+tes3ui.showColorPickerMenu({ id = ..., closeCallback = ..., initialColor = ..., alpha = ..., initialAlpha = ..., leaveMenuMode = ..., heading = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `id` (string, integer): *Default*: `MenuColorPicker`. The menu ID of the color picker menu.
+	* `closeCallback` (fun(selectedColor: [mwseColorTable](../types/mwseColorTable.md), selectedAlpha: number|nil)): *Optional*. Called when the menu was closed. It gets passed the selected color and alpha values.
+	* `initialColor` ([mwseColorTable](../types/mwseColorTable.md)): The initial color for the picker.
+	* `alpha` (boolean): *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+	* `initialAlpha` (number): *Default*: `1`. The initial alpha value.
+	* `leaveMenuMode` (boolean): *Default*: `false`. Determines if menu mode should be exited after a choice is made.
+	* `heading` (string): *Default*: `Color Picker Menu`. The title of the opened menu. The default message is localized to the current locale.
+
+***
+
 ### `tes3ui.showDialogueMessage`
 <div class="search_terms" style="display: none">showdialoguemessage, dialoguemessage</div>
 
@@ -732,7 +754,7 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 	* `reference` ([tes3reference](../types/tes3reference.md)): *Default*: `tes3player`. The reference of a `tes3actor` whose inventory will be used.
 	* `title` (string): The text used for the title of the inventory select menu.
 	* `leaveMenuMode` (boolean): *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
-	* `noResultsText` (string): *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
+	* `noResultsText` (string): *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulGemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 	* `noResultsCallback` (function): *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 	* `filter` (string, fun(params: [tes3ui.showInventorySelectMenu.filterParams](../types/tes3ui.showInventorySelectMenu.filterParams.md)): boolean): *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 
@@ -745,7 +767,7 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
-		- `soulgemFilled`: Only filled soulgems will be shown.
+		- `soulGemFilled`: Only filled soulgems will be shown.
 
 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 	* `callback` (fun(params: [tes3ui.showInventorySelectMenu.callbackParams](../types/tes3ui.showInventorySelectMenu.callbackParams.md))): *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.
@@ -771,27 +793,27 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 			-- .. is Lua operator of concatenation. It joins 2 strings together.
 			title = "Bribe " .. actorReference.object.name,
 			callback = function(e)
-				if e.item then
-					-- If e.item exist, that means that the player picked an
-					-- item in the  menu. It up to us to do something with it.
-					tes3.transferItem({
-						from = tes3.player,
-						to = actorReference,
-						item = e.item,
-						itemData = e.itemData,
-						count = e.count,
-					})
-					-- Here we calculate the total gold value of the transfered item(s), since that
-					-- can be a stack of items. e.count holds the amount of the items selected.
-					local itemWorth = e.item.value * e.count
+				if not e.item then return end
 	
-					-- At last! Now the actual persuasion part. We use `modifier` argument.
-					-- The higher the value we pass there the higher the disposition change.
-					tes3.persuade({
-						actor = actorReference,
-						modifier = math.log10(itemWorth)
-					})
-				end
+				-- If e.item exist, that means that the player picked an
+				-- item in the menu. It up to us to do something with it.
+				tes3.transferItem({
+					from = tes3.player,
+					to = actorReference,
+					item = e.item,
+					itemData = e.itemData,
+					count = e.count,
+				})
+				-- Here we calculate the total gold value of the transfered item(s), since that
+				-- can be a stack of items. e.count holds the amount of the items selected.
+				local itemWorth = e.item.value * e.count
+	
+				-- At last! Now the actual persuasion part. We use `modifier` argument.
+				-- The higher the value we pass there the higher the disposition change.
+				tes3.persuade({
+					actor = actorReference,
+					modifier = math.log10(itemWorth)
+				})
 			end,
 			-- At first it's counter intuitive that this filter selects all the non-enchanted items
 			-- This illusion disappears soon as we relize that the game uses this filter in the
@@ -816,14 +838,15 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 	-- can be passed to `filter` argument of tes3.showInventorySelectMenu().
 	
 	-- This function will filter only weapon items.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function weaponFilter(e)
 		if e.item.objectType == tes3.objectType.weapon then
 			-- The filter function needs to return `true`
 			-- for a certain item to appear in the menu.
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 	
 	-- This is a dictinary of items that can be damaged (have a condition)
@@ -832,6 +855,7 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		[tes3.objectType.armor] = true,
 	}
 	-- This function will filter only items that aren't at full condition.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function damagedItemsFilter(e)
 		-- The first check is whether the item is in our
 		-- dictionary of items with condition
@@ -841,19 +865,20 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		e.itemData and
 		(e.itemData.condition < e.item.maxCondition) then
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 	
 	local myFilterValue = 256
-	-- This function will filter only items that have a value less than `myFilterValue`
+	-- This function will filter only items that have a value less than `myFilterValue`.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function valueFilter(e)
 		if (e.item.value < myFilterValue) then
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 
 	```

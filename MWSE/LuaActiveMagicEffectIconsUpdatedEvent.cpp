@@ -16,6 +16,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool ActiveMagicEffectIconsUpdatedEvent::m_EventEnabled = false;
 }

@@ -30,6 +30,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool AbsorbedMagicEvent::m_EventEnabled = false;
 }

@@ -31,6 +31,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool UiRefreshedEvent::m_EventEnabled = false;
 }

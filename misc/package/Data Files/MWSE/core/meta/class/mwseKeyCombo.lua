@@ -2,10 +2,10 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- @meta
---- A table with the data about a key or key combination on the keyboard.
+--- A table with the data about a key or key combination on the keyboard. Unbound key combinations will have all the fields set to `nil`.
 --- @class mwseKeyCombo
 --- @field isAltDown boolean|nil If true, alt key is pressed in the key combination.
 --- @field isControlDown boolean|nil If true, control key is pressed in the key combination.
 --- @field isShiftDown boolean|nil If true, shift key is pressed in the key combination.
 --- @field isSuperDown boolean|nil If true, super (Windows or Command) key is pressed in the key combination.
---- @field keyCode tes3.scanCode|nil Maps to values in [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-codes/) enumeration.
+--- @field keyCode tes3.scanCode|integer|false|nil Maps to values in [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-codes/) enumeration.

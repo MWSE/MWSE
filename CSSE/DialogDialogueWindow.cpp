@@ -35,12 +35,12 @@ namespace se::cs::dialog::dialogue_window {
 	}
 
 	void clearFilters(HWND hWnd) {
-		auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		const auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
 		if (userData == nullptr) {
 			return;
 		}
 
-		userData->cellFilterMode = DialogueWindowData::CellFilterMode::UseCellReference;
+		userData->cellFilterMode = UserData::CellFilterMode::UseCellReference;
 		userData->modeShowModifiedOnly = false;
 
 		Button_SetCheck(GetDlgItem(hWnd, CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON), BST_UNCHECKED);
@@ -104,7 +104,7 @@ namespace se::cs::dialog::dialogue_window {
 			return false;
 		}
 
-		const auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		const auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
 
 		// If the dialog isn't modified and we're filtered to it, make sure it still shows.
 		if (!dialogue->getModified() && userData->modeShowModifiedOnly) {
@@ -432,7 +432,7 @@ namespace se::cs::dialog::dialogue_window {
 		}
 
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
-			auto windowData = (DialogueWindowData*)GetWindowLongA(hWnd, GWL_USERDATA);
+			auto windowData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
 			auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
 			log::stream << "Displaying INFO " << windowData->currentDialogue->id << "/" << info->loadLinkNodes->name << " took " << timeToInitialize.count() << "ms" << std::endl;
 		}
@@ -454,7 +454,7 @@ namespace se::cs::dialog::dialogue_window {
 	//
 
 	bool PatchFilterTopicList(HWND hWnd, const Dialogue* topic) {
-		auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
 		if (userData->modeShowModifiedOnly && !topic->getModified()) {
 			return false;
 		}
@@ -478,11 +478,12 @@ namespace se::cs::dialog::dialogue_window {
 	void __cdecl PatchFillConditionCombos(HWND hWnd, int controlIdOffset, int conditionType) {
 		const auto CS_FillConditionCombos = reinterpret_cast<void(__cdecl*)(HWND, int, int)>(0x4E7C00);
 
-		const auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		const auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
 		const auto filterScript = (userData && userData->currentFilterObject) ? userData->currentFilterObject->getScript() : nullptr;
 
 		// We only care if we are filtering for local variables, and have a script.
-		if (filterScript == nullptr || (conditionType != DialogueInfo::Condition::TypeLocal && conditionType != DialogueInfo::Condition::TypeNotLocal)) {
+		// Not Local conditions should not be filtered.
+		if (filterScript == nullptr || conditionType != DialogueInfo::Condition::TypeLocal) {
 			CS_FillConditionCombos(hWnd, controlIdOffset, conditionType);
 			return;
 		}
@@ -491,15 +492,15 @@ namespace se::cs::dialog::dialogue_window {
 		const auto hConditionCombo = GetDlgItem(hWnd, controlIdOffset + CONTROL_ID_CONDITION_FUNCTION1_VARIABLE_COMBO);
 		ComboBox_ResetContent(hConditionCombo);
 		for (auto i = 0; i < filterScript->header.numShorts; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getShortVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getShortVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 's');
 		}
 		for (auto i = 0; i < filterScript->header.numLongs; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getLongVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getLongVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 'l');
 		}
 		for (auto i = 0; i < filterScript->header.numFloats; ++i) {
-			auto index = ComboBox_AddString(hConditionCombo, filterScript->getFloatVarName(i));
+			const auto index = ComboBox_AddString(hConditionCombo, filterScript->getFloatVarName(i));
 			ComboBox_SetItemData(hConditionCombo, index, 'f');
 		}
 	}
@@ -559,15 +560,15 @@ namespace se::cs::dialog::dialogue_window {
 
 	bool __fastcall PatchFilterCellBehavior(DialogueInfo* info, Actor* filterActor) {
 		const auto hWnd = getActiveDialogueWindow();
-		const auto userData = reinterpret_cast<DialogueWindowData*>(GetWindowLongA(hWnd, GWL_USERDATA));
-		const auto filterMode = userData ? userData->cellFilterMode : DialogueWindowData::CellFilterMode::UseCellReference;
+		const auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
+		const auto filterMode = userData ? userData->cellFilterMode : UserData::CellFilterMode::UseCellReference;
 
 		switch (filterMode) {
-		case DialogueWindowData::CellFilterMode::UseCellReference:
+		case UserData::CellFilterMode::UseCellReference:
 			return FilterWithReferenceCell(info, filterActor);
-		case DialogueWindowData::CellFilterMode::UseRenderWindowCell:
+		case UserData::CellFilterMode::UseRenderWindowCell:
 			return FilterWithRenderWindowCell(info, filterActor);
-		case DialogueWindowData::CellFilterMode::IgnoreCellFilter:
+		case UserData::CellFilterMode::IgnoreCellFilter:
 			return true;
 		}
 
@@ -578,8 +579,8 @@ namespace se::cs::dialog::dialogue_window {
 	// Patch: Extend structure of the dialogue window user data.
 	//
 
-	LONG __stdcall SetExtendedUserData(HWND hWnd, int nIndex, DialogueWindowData* userData) {
-		userData->cellFilterMode = DialogueWindowData::CellFilterMode::UseCellReference;
+	LONG __stdcall SetExtendedUserData(HWND hWnd, int nIndex, UserData* userData) {
+		userData->cellFilterMode = UserData::CellFilterMode::UseCellReference;
 		userData->modeShowModifiedOnly = false;
 		return SetWindowLongA(hWnd, nIndex, (LONG)userData);
 	}
@@ -774,7 +775,7 @@ namespace se::cs::dialog::dialogue_window {
 
 	void PatchDialogProc_AfterNotify_TabControl_SelectionChanged(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
-		auto userData = (DialogueWindowData*)GetWindowLongA(hWnd, GWL_USERDATA);
+		auto userData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
 
 		auto hDlgConditionSexStatic = GetDlgItem(hWnd, CONTROL_ID_CONDITION_SEX_STATIC);
 		auto hDlgConditionSexCombo = GetDlgItem(hWnd, CONTROL_ID_CONDITION_SEX_COMBO);
@@ -1123,14 +1124,14 @@ namespace se::cs::dialog::dialogue_window {
 	}
 
 	void OnCellFilterChanged(HWND hWnd, HWND comboBox) {
-		const auto userData = (DialogueWindowData*)GetWindowLongA(hWnd, GWL_USERDATA);
-		userData->cellFilterMode = (DialogueWindowData::CellFilterMode)ComboBox_GetCurSel(comboBox);
+		const auto userData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
+		userData->cellFilterMode = (UserData::CellFilterMode)ComboBox_GetCurSel(comboBox);
 		redisplayAllData(hWnd);
 	}
 
 	void PatchDialogProc_BeforeCommand(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
-		auto userData = (DialogueWindowData*)GetWindowLongA(hWnd, GWL_USERDATA);
+		auto userData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
 		const auto wParam = context.getWParam();
 		const auto command = HIWORD(wParam);
 		const auto id = LOWORD(wParam);
@@ -1365,7 +1366,7 @@ namespace se::cs::dialog::dialogue_window {
 		// Patch: Ensure variable combo box lists can always fit content.
 		genCallUnprotected(0x4E7C14, reinterpret_cast<DWORD>(PatchEnsureVariableComboBoxListWidth_GetCachedHDC), 0x6);
 		writeDoubleWordEnforced(0x4E7C28 + 0x2, 0x6D9DB0, reinterpret_cast<DWORD>(&PatchEnsureVariableComboBoxListWidth_SendDlgItemMessageAWrapper_ExternPointer));
-		
+
 		// Patch: Optimize displaying of INFO info.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
 			// Optimize populating local lists.
@@ -1398,10 +1399,10 @@ namespace se::cs::dialog::dialogue_window {
 		genCallUnprotected(0x4F1D25 + 0x4, reinterpret_cast<DWORD>(PatchFilterCellBehavior));
 
 		// Patch: Extend structure of the dialogue window user data.
-		writeValueEnforced<BYTE>(0x4EBFF4 + 0x1, sizeof(DialogueWindowData_Vanilla), sizeof(DialogueWindowData));
+		writeValueEnforced<BYTE>(0x4EBFF4 + 0x1, sizeof(UserData_Vanilla), sizeof(UserData));
 		genCallUnprotected(0x4EC018, reinterpret_cast<DWORD>(SetExtendedUserData), 0x6);
 
-		// Patch: Extend Render Window message handling.
+		// Patch: Extend window message handling.
 		genJumpEnforced(0x401334, 0x4EAEA0, reinterpret_cast<DWORD>(PatchDialogProc));
 	}
 }

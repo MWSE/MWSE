@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Wrapper for the `ScriptRunning` mwscript function.]],
+	description = [[Use [`tes3.getLegacyScriptRunning()`](https://mwse.github.io/MWSE/apis/tes3/#tes3getlegacyscriptrunning) instead. Wrapper for the `ScriptRunning` mwscript function. Only checks global scripts.]],
 	arguments = {{
 		name = "params",
 		type = "table",

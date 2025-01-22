@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = [[Wrapper for the `StopScript` mwscript function.]],
+	description = [[Use [`tes3.runLegacyScript()`](https://mwse.github.io/MWSE/apis/tes3/#tes3stoplegacyscript) instead. Wrapper for the `StopScript` mwscript function. It can only stop global scripts.]],
 	arguments = {{
 		name = "params",
 		type = "table",

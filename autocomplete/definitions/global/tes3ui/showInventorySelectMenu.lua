@@ -27,7 +27,7 @@ return {
 				name = "noResultsText",
 				type = "string",
 				optional = true,
-				description = "The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `\"ingredients\"` or `\"soulgemFilled\"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively."
+				description = "The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `\"ingredients\"` or `\"soulGemFilled\"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively."
 			},
 			{
 				name = "noResultsCallback",
@@ -50,7 +50,7 @@ return {
 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
-		- `soulgemFilled`: Only filled soulgems will be shown.
+		- `soulGemFilled`: Only filled soulgems will be shown.
 
 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.]],
 			},

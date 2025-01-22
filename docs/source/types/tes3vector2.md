@@ -225,7 +225,7 @@ local vector = tes3vector2.new(x, y)
 
 | Left operand type | Right operand type | Result type | Description |
 | ----------------- | ------------------ | ----------- | ----------- |
-| [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | The per-element multiplication of two vectors. |
+| [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | [tes3vector2](../types/tes3vector2.md) | The per-element multiplication of two vectors, also known as [Hadamard product](https://en.wikipedia.org/wiki/Hadamard_product_(matrices)). |
 | [tes3vector2](../types/tes3vector2.md) | number | [tes3vector2](../types/tes3vector2.md) | Multiplies the vector by a scalar. |
 
 ***

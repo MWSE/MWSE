@@ -29,7 +29,7 @@ The model-space bounding sphere of the object.
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 

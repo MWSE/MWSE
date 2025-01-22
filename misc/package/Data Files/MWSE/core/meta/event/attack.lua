@@ -11,7 +11,7 @@
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/events/attack).
 --- @class attackEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
---- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor making the attack.
+--- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor making the attack.
 --- @field reference tes3reference *Read-only*. A shortcut to the reference that is attacking.
---- @field targetMobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor being attacked. May be nil, e.g. if nothing was targeted.
+--- @field targetMobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor being attacked. May be nil, e.g. if nothing was targeted.
 --- @field targetReference tes3reference *Read-only*. A shortcut to the reference being attacked. May be nil, e.g. if nothing was targeted.

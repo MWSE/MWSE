@@ -35,6 +35,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool CalculateSpellPriceEvent::m_EventEnabled = false;
 }

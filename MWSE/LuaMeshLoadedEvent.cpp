@@ -30,6 +30,4 @@ namespace mwse::lua::event {
 		options["filter"] = m_Path;
 		return options;
 	}
-
-	bool MeshLoadedEvent::m_EventEnabled = false;
 }

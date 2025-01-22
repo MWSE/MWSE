@@ -18,7 +18,6 @@ local CycleButton = Parent:new()
 --- @param parentBlock tes3uiElement
 function CycleButton:makeComponent(parentBlock)
 	local button = parentBlock:createCycleButton({
-		id = tes3ui.registerID("CycleButton"),
 		options = self.options
 	})
 	button.borderAllSides = 0
@@ -28,7 +27,7 @@ function CycleButton:makeComponent(parentBlock)
 	local widget = button.widget --[[@as tes3uiCycleButton]]
 	if self:checkDisabled() then
 		local textElement = widget:getTextElement()
-		textElement.text = "---"
+		textElement.text = self.disabledText
 	else
 		widget.value = self.variable.value
 	end
@@ -49,12 +48,26 @@ function CycleButton:makeComponent(parentBlock)
 	table.insert(self.mouseOvers, button)
 end
 
+function CycleButton:setVariableValue(newValue)
+	self.elements.button.widget.value = newValue
+	self.elements.button:updateLayout()
+	Parent.setVariableValue(self, newValue)
+end
+
 function CycleButton:enable()
-	self.elements.label.color = tes3ui.getPalette("normal_color")
+	self.elements.label.color = tes3ui.getPalette(tes3.palette.normalColor)
 end
 
 function CycleButton:disable()
-	self.elements.label.color = tes3ui.getPalette("disabled_color")
+	self.elements.label.color = tes3ui.getPalette(tes3.palette.disabledColor)
+end
+
+function CycleButton:convertToLabelValue(variableValue)
+	for _, option in ipairs(self.options) do
+		if option.value == variableValue then
+			return option.text
+		end
+	end
 end
 
 function CycleButton:getText() end

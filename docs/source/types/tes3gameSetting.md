@@ -135,7 +135,7 @@ The base value of the game setting, as stored in memory. Prefer to use `.value` 
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 

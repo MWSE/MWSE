@@ -32,6 +32,11 @@ function math.isclose(a, b, absoluteTolerance, relativeTolerance) end
 --- @return number result No description yet available.
 function math.lerp(v0, v1, t) end
 
+--- Returns the next power of 2 that is equal to, or greater than, value.
+--- @param value number No description yet available.
+--- @return integer result No description yet available.
+function math.nextPowerOfTwo(value) end
+
 --- Returns a value, scaled from expected values [lowIn, highIn] to [lowOut, highOut].
 --- 
 --- For example, a value of 7 remapped from [0,10] to [0,100] would be 70.
@@ -48,4 +53,45 @@ function math.remap(value, lowIn, highIn, lowOut, highOut) end
 --- @param digits number? *Default*: `0`. No description yet available.
 --- @return number result No description yet available.
 function math.round(value, digits) end
+
+math.ease = require("math.ease")
+
+--- @alias math.ease
+---| `math.ease.backIn`
+---| `math.ease.backInOut`
+---| `math.ease.backOut`
+---| `math.ease.bounceIn`
+---| `math.ease.bounceInOut`
+---| `math.ease.bounceOut`
+---| `math.ease.circIn`
+---| `math.ease.circInOut`
+---| `math.ease.circOut`
+---| `math.ease.cubicIn`
+---| `math.ease.cubicInOut`
+---| `math.ease.cubicOut`
+---| `math.ease.elasticIn`
+---| `math.ease.elasticInOut`
+---| `math.ease.elasticOut`
+---| `math.ease.expoIn`
+---| `math.ease.expoInOut`
+---| `math.ease.expoOut`
+---| `math.ease.linear`
+---| `math.ease.quadIn`
+---| `math.ease.quadInOut`
+---| `math.ease.quadOut`
+---| `math.ease.quartIn`
+---| `math.ease.quartInOut`
+---| `math.ease.quartOut`
+---| `math.ease.quintIn`
+---| `math.ease.quintInOut`
+---| `math.ease.quintOut`
+---| `math.ease.sineIn`
+---| `math.ease.sineInOut`
+---| `math.ease.sineOut`
+---| `math.ease.smoothstep`
+---| `math.ease.smoothstepInverse`
+---| `math.ease.springOutMed`
+---| `math.ease.springOutStrong`
+---| `math.ease.springOutTooMuch`
+---| `math.ease.springOutWeak`
 

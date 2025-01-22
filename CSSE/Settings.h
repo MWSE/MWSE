@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSBaseObject.h"
+
 namespace se::cs {
 	struct Settings_t {
 		//
@@ -77,17 +79,8 @@ namespace se::cs {
 		struct ObjectWindowSettings {
 			bool use_button_style_tabs = true;
 			bool clear_filter_on_tab_switch = true;
-			bool filter_by_id = true;
-			bool filter_by_name = true;
-			bool filter_by_icon_path = true;
-			bool filter_by_model_path = true;
-			bool filter_by_enchantment_id = true;
-			bool filter_by_script_id = true;
-			bool filter_by_book_text = true;
-			bool filter_by_faction = true;
+			BaseObject::SearchSettings search_settings = {};
 			bool highlight_modified_items = true;
-			bool use_regex = false;
-			bool case_sensitive = false;
 
 			ColumnSettings column_actor_class = { ColumnSettings::DEFAULT_SIZE_ID };
 			ColumnSettings column_actor_essential = { ColumnSettings::DEFAULT_SIZE_BOOL };
@@ -102,6 +95,7 @@ namespace se::cs {
 			ColumnSettings column_blocked = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_book_is_scroll = { ColumnSettings::DEFAULT_SIZE_BOOL };
 			ColumnSettings column_book_teaches = { ColumnSettings::DEFAULT_SIZE_ID };
+			ColumnSettings column_chance_for_none = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_charge = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_cost = { ColumnSettings::DEFAULT_SIZE_SHORT };
 			ColumnSettings column_count = { ColumnSettings::DEFAULT_SIZE_SHORT };
@@ -213,8 +207,7 @@ namespace se::cs {
 		} script_editor;
 
 		struct TextSearch {
-			bool use_regex = false;
-			bool case_sensitive = false;
+			BaseObject::SearchSettings search_settings = {};
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;

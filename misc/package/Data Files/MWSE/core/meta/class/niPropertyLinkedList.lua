@@ -4,5 +4,5 @@
 --- @meta
 --- A linked list of properties.
 --- @class niPropertyLinkedList
---- @field data niAlphaProperty|niFogProperty|niMaterialProperty|niStencilProperty|niTexturingProperty|niVertexColorProperty|niZBufferProperty *Read-only*. The current property in the linked list.
+--- @field data niAlphaProperty|niFogProperty|niMaterialProperty|niProperty|niStencilProperty|niTexturingProperty|niVertexColorProperty|niZBufferProperty *Read-only*. The current property in the linked list.
 --- @field next niPropertyLinkedList *Read-only*. The next property in the linked list.

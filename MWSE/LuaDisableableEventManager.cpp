@@ -33,6 +33,7 @@
 #include "LuaCalcSpellmakingSpellPointCostEvent.h"
 #include "LuaCalcSpellPriceEvent.h"
 #include "LuaCalcSunDamageScalarEvent.h"
+#include "LuaCalcTouchSpellConeEvent.h"
 #include "LuaCalcTrainingPriceEvent.h"
 #include "LuaCalcTravelPriceEvent.h"
 #include "LuaCameraControlEvent.h"
@@ -96,6 +97,8 @@
 #include "LuaLoadGameEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
+#include "LuaMagicReflectEvent.h"
+#include "LuaMagicReflectedEvent.h"
 #include "LuaMagicSelectionChangedEvent.h"
 #include "LuaMenuStateEvent.h"
 #include "LuaMeshLoadedEvent.h"
@@ -117,6 +120,7 @@
 #include "LuaObjectCreatedEvent.h"
 #include "LuaObjectInvalidatedEvent.h"
 #include "LuaPickLockEvent.h"
+#include "LuaPickpocketEvent.h"
 #include "LuaPlayAnimationGroupEvent.h"
 #include "LuaPlayItemSoundEvent.h"
 #include "LuaPostInfoResponseEvent.h"
@@ -148,6 +152,7 @@
 #include "LuaSpellResistedEvent.h"
 #include "LuaSpellResistEvent.h"
 #include "LuaSpellTickEvent.h"
+#include "LuaStartGlobalScriptEvent.h"
 #include "LuaUiObjectTooltipEvent.h"
 #include "LuaUiRefreshedEvent.h"
 #include "LuaUiSkillTooltipEvent.h"
@@ -206,6 +211,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["calcSunDamageScalar"] = sol::property(&CalcSunDamageScalarEvent::getEventEnabled, &CalcSunDamageScalarEvent::setEventEnabled);
 		usertypeDefinition["calcSwimRunSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
 		usertypeDefinition["calcSwimSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
+		usertypeDefinition["calcTouchSpellCone"] = sol::property(&CalcTouchSpellConeEvent::getEventEnabled, &CalcTouchSpellConeEvent::setEventEnabled);
 		usertypeDefinition["calcTrainingPrice"] = sol::property(&CalculateTrainingPriceEvent::getEventEnabled, &CalculateTrainingPriceEvent::setEventEnabled);
 		usertypeDefinition["calcTravelPrice"] = sol::property(&CalculateTravelPriceEvent::getEventEnabled, &CalculateTravelPriceEvent::setEventEnabled);
 		usertypeDefinition["calcWalkSpeed"] = sol::property(&CalculateMovementSpeed::getEventEnabled, &CalculateMovementSpeed::setEventEnabled);
@@ -269,6 +275,8 @@ namespace mwse::lua::event {
 		usertypeDefinition["lockPick"] = sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled);
 		usertypeDefinition["magicCasted"] = sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled);
 		usertypeDefinition["magicEffectRemoved"] = sol::property(&MagicEffectRemovedEvent::getEventEnabled, &MagicEffectRemovedEvent::setEventEnabled);
+		usertypeDefinition["magicReflect"] = sol::property(&MagicReflectEvent::getEventEnabled, &MagicReflectEvent::setEventEnabled);
+		usertypeDefinition["magicReflected"] = sol::property(&MagicReflectedEvent::getEventEnabled, &MagicReflectedEvent::setEventEnabled);
 		usertypeDefinition["magicSelectionChanged"] = sol::property(&MagicSelectionChangedEvent::getEventEnabled, &MagicSelectionChangedEvent::setEventEnabled);
 		usertypeDefinition["menuEnter"] = sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled);
 		usertypeDefinition["menuExit"] = sol::property(&MenuStateEvent::getEventEnabled, &MenuStateEvent::setEventEnabled);
@@ -285,6 +293,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["objectCopied"] = sol::property(&ObjectCopiedEvent::getEventEnabled, &ObjectCopiedEvent::setEventEnabled);
 		usertypeDefinition["objectCreated"] = sol::property(&ObjectCreatedEvent::getEventEnabled, &ObjectCreatedEvent::setEventEnabled);
 		usertypeDefinition["objectInvalidated"] = sol::property(&ObjectInvalidatedEvent::getEventEnabled, &ObjectInvalidatedEvent::setEventEnabled);
+		usertypeDefinition["pickpocket"] = sol::property(&PickpocketEvent::getEventEnabled, &PickpocketEvent::setEventEnabled);
 		usertypeDefinition["playGroup"] = sol::property(&PlayAnimationGroupEvent::getEventEnabled, &PlayAnimationGroupEvent::setEventEnabled);
 		usertypeDefinition["playItemSound"] = sol::property(&PlayItemSoundEvent::getEventEnabled, &PlayItemSoundEvent::setEventEnabled);
 		usertypeDefinition["postInfoResponse"] = sol::property(&PostInfoResponseEvent::getEventEnabled, &PostInfoResponseEvent::setEventEnabled);
@@ -318,6 +327,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["spellResist"] = sol::property(&SpellResistEvent::getEventEnabled, &SpellResistEvent::setEventEnabled);
 		usertypeDefinition["spellResisted"] = sol::property(&SpellResistedEvent::getEventEnabled, &SpellResistedEvent::setEventEnabled);
 		usertypeDefinition["spellTick"] = sol::property(&SpellTickEvent::getEventEnabled, &SpellTickEvent::setEventEnabled);
+		usertypeDefinition["startGlobalScript"] = sol::property(&StartGlobalScriptEvent::getEventEnabled, &StartGlobalScriptEvent::setEventEnabled);
 		usertypeDefinition["topicAdded"] = sol::property(&AddTopicEvent::getEventEnabled, &AddTopicEvent::setEventEnabled);
 		usertypeDefinition["trapDisarm"] = sol::property(&DisarmTrapEvent::getEventEnabled, &DisarmTrapEvent::setEventEnabled);
 		usertypeDefinition["uiActivated"] = sol::property(&GenericUiActivatedEvent::getEventEnabled, &GenericUiActivatedEvent::setEventEnabled);

@@ -21,7 +21,7 @@ namespace mwse {
 		// Get our parameter.
 		long param = Stack::getInstance().popLong();
 
-		char* model = NULL;
+		const char* model = NULL;
 
 		// If we were given a value, it's supposed to be a string, and we'll get a record by this ID.
 		if (param) {

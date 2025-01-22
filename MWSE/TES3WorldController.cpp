@@ -19,7 +19,9 @@
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
+#include "LuaMusicSelectTrackEvent.h"
 #include "LuaSimulatedEvent.h"
+#include "LuaStartGlobalScriptEvent.h"
 
 #include "LuaManager.h"
 
@@ -446,6 +448,7 @@ namespace TES3 {
 
 	float WorldController::realDeltaTime = 0.0f;
 	float WorldController::simulationTimeScalar = 1.0f;
+	bool WorldController::blockItemUpDownSound = false;
 
 	WorldController * WorldController::get() {
 		return *reinterpret_cast<TES3::WorldController**>(0x7C67DC);
@@ -463,6 +466,10 @@ namespace TES3 {
 
 	const auto TES3_WorldController_playItemUpDownSound = reinterpret_cast<void(__thiscall*)(WorldController*, BaseObject*, ItemSoundState, Reference*)>(0x411050);
 	void WorldController::playItemUpDownSound(BaseObject* item, ItemSoundState state, Reference* reference) {
+		if (blockItemUpDownSound) {
+			return;
+		}
+
 		// Allow event overrides.
 		if (mwse::lua::event::PlayItemSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
@@ -486,9 +493,49 @@ namespace TES3 {
 		TES3_WorldController_processGlobalScripts(this);
 	}
 
-	const auto TES3_WorldController_addGlobalScript = reinterpret_cast<void(__thiscall*)(WorldController*, Script*, const Reference*)>(0x40FA80);
-	void WorldController::startGlobalScript(Script* script, const Reference* reference) {
+	const auto TES3_WorldController_addGlobalScript = reinterpret_cast<void(__thiscall*)(WorldController*, Script*, Reference*)>(0x40FA80);
+	void WorldController::startGlobalScript(Script* script, Reference* reference) {
+		if (isGlobalScriptRunning(script)) {
+			return;
+		}
+
+		// Allow event overrides.
+		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
+			if (result.valid() && result.get_or("block", false)) {
+				return;
+			}
+		}
+
 		TES3_WorldController_addGlobalScript(this, script, reference);
+	}
+
+	const auto TES3_WorldController_addGlobalScriptBySourceID = reinterpret_cast<void(__thiscall*)(WorldController*, Script*, unsigned int)>(0x40FA80);
+	void WorldController::startGlobalScriptBySourceID(Script* script, unsigned int sourceID) {
+		if (isGlobalScriptRunning(script)) {
+			return;
+		}
+
+		// Convert the source ID to a reference.
+		Reference* reference = nullptr;
+		constexpr auto invalid_id = std::numeric_limits<unsigned int>::max();
+		if (sourceID != invalid_id) {
+			reference = DataHandler::get()->nonDynamicData->resolveReferenceBySourceID(sourceID);
+		}
+
+		// Allow event overrides.
+		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
+			if (result.valid() && result.get_or("block", false)) {
+				return;
+			}
+		}
+
+		TES3_WorldController_addGlobalScriptBySourceID(this, script, sourceID);
 	}
 
 	const auto TES3_WorldController_removeGlobalScript = reinterpret_cast<void(__thiscall*)(WorldController*, Script*)>(0x40FB00);
@@ -591,6 +638,30 @@ namespace TES3 {
 		}
 
 		flagLevitationDisabled = disable;
+	}
+
+	const auto TES3_WorldController_selectNextMusicTrack = reinterpret_cast<bool(__thiscall*)(const WorldController*, MusicSituation)>(0x410EA0);
+	bool WorldController::selectNextMusicTrack(MusicSituation situation) const {
+		// Fire off the event.
+		if (mwse::lua::event::MusicSelectTrackEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::MusicSelectTrackEvent((int)situation));
+			if (eventData.valid()) {
+				sol::optional<std::string> musicPath = eventData["music"];
+				if (musicPath) {
+					char* buffer = mwse::tes3::getThreadSafeStringBuffer();
+					snprintf(buffer, 512, "Data Files/music/%s", musicPath.value().c_str());
+					return true;
+				}
+
+				// Only allow blocking if a music path was not provided.
+				if (eventData.get_or("block", false)) {
+					return false;
+				}
+			}
+		}
+
+		return TES3_WorldController_selectNextMusicTrack(this, situation);
 	}
 
 	int WorldController::getShadowLevel() const {

@@ -30,6 +30,7 @@ namespace mwse::lua {
 
 		// Custom property bindings.
 		usertypeDefinition["isAffectedByGravity"] = sol::property(&TES3::MobileObject::getAffectedByGravityFlag, &TES3::MobileObject::setAffectedByGravityFlag);
+		usertypeDefinition["mobToMobCollision"] = sol::property(&TES3::MobileObject::getMobToMobCollision, &TES3::MobileObject::setMobToMobCollision);
 		usertypeDefinition["movementCollision"] = sol::property(&TES3::MobileObject::getMovementCollisionFlag, &TES3::MobileObject::setMovementCollisionFlag);
 	}
 }

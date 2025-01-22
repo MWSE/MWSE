@@ -67,6 +67,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool BarterOfferEvent::m_EventEnabled = false;
 }

@@ -100,6 +100,7 @@ namespace TES3 {
 		void setFacing(float facing);
 
 		float getAngleToReference(Reference* reference);
+		bool isInSameWorldspace(const Reference* other) const;
 
 		Matrix33 getRotationMatrix();
 		Vector3 getForwardDirectionVector();

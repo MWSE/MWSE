@@ -150,6 +150,7 @@ namespace TES3 {
 
 		BaseObject* resolveObject(const char*);
 		Reference* findFirstCloneOfActor(const char*);
+		Reference* resolveReferenceBySourceID(unsigned int);
 		Spell* getSpellById(const char*);
 		Script* findScriptByName(const char*);
 		GlobalVariable* findGlobalVariable(const char*);
@@ -374,7 +375,7 @@ namespace TES3 {
 
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
 		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);
-		void addTemporySound(const char* path, Reference * reference = nullptr, int playbackFlags = 0, int volume = 250, float pitch = 1.0f, bool isVoiceover = false, Sound * sound = nullptr);
+		void addTemporarySound(const char* path, Reference * reference = nullptr, int playbackFlags = 0, int volume = 250, float pitch = 1.0f, bool isVoiceover = false, Sound * sound = nullptr);
 		SoundEvent* getSoundPlaying(Sound*, Reference*);
 		void adjustSoundVolume(Sound*, Reference*, unsigned char volume);
 		void removeSound(Sound*, Reference*);
@@ -391,6 +392,8 @@ namespace TES3 {
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
 		void updateCollisionGroupsForActiveCells_raw(bool force = true);
 
+		void getClosestPrisonReferences(Reference** prisonMarker, Reference** stolenGoods);
+
 		bool isCellInMemory(const Cell* cell, bool unknown) const;
 
 		//
@@ -398,6 +401,10 @@ namespace TES3 {
 		//
 
 		std::reference_wrapper<ExteriorCellData* [9]> getExteriorCellData_lua();
+
+		long getGameSettingLong(int id) const;
+		float getGameSettingFloat(int id) const;
+		const char* getGameSettingString(int id) const;
 
 		//
 		// Debug values.

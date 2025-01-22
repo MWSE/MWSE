@@ -33,6 +33,4 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
-
-	bool InfoResponseEvent::m_EventEnabled = false;
 }

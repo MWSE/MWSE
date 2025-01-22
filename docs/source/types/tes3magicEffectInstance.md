@@ -68,7 +68,7 @@ The effective magnitude of the effect, after all resistances are applied.
 ### `lastUsedArmor`
 <div class="search_terms" style="display: none">lastusedarmor</div>
 
-*Read-only*. No description yet available.
+*Read-only*. For bound armor effects, this property stores the last used armor in the slot that this effect replaced.
 
 **Returns**:
 
@@ -101,7 +101,7 @@ The effective magnitude of the effect, after all resistances are applied.
 ### `lastUsedShield`
 <div class="search_terms" style="display: none">lastusedshield</div>
 
-*Read-only*. No description yet available.
+*Read-only*. For the bound shield effect, this property stores the last used shield that this effect replaced.
 
 **Returns**:
 
@@ -112,7 +112,7 @@ The effective magnitude of the effect, after all resistances are applied.
 ### `lastUsedWeapon`
 <div class="search_terms" style="display: none">lastusedweapon</div>
 
-*Read-only*. No description yet available.
+*Read-only*. For bound weapon effects, this property stores the last used weapon that this effect replaced. For bound armor effects that summon two pieces of armor (gauntlets, bracers, pauldrons), this property stores the last equipped armor on the right hand that this effect replaced.
 
 **Returns**:
 

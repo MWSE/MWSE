@@ -50,7 +50,7 @@ function tes3ui.createHelpLayerMenu(params) end
 --- @class tes3ui.createHelpLayerMenu.params
 --- @field id string|number The menu’s ID. The menu can be later accessed by tes3ui.findHelpLayerMenu(id).
 
---- Creates a top-level menu.
+--- Creates a top-level menu. It will be styled like a regular menu, with the configurable background alpha and a frame. There are two types of menu: `dragFrame` (movable and resizeable with titlebar) or `fixedFrame` (fixed with simple border). A type must be specified to create a menu.
 --- @param params tes3ui.createMenu.params This table accepts the following values:
 --- 
 --- `id`: string|number — The menu’s ID. The menu can be later accessed by tes3ui.findMenu(id).
@@ -61,7 +61,7 @@ function tes3ui.createHelpLayerMenu(params) end
 --- 
 --- `modal`: boolean? — *Default*: `true`. Only applies to fixedFrame menus. Modal menus prevent interaction with other menus while the menu is active. This behavior can be disabled with this flag.
 --- 
---- `loadable`: boolean? — *Default*: `true`. If set to false, calls to loadMenuPosition will fail.
+--- `loadable`: boolean? — *Default*: `true`. Only applies to dragFrame menus. Remembers the position and size of the menu (by id) when the user moves it. Calling loadMenuPosition after menu creation will restore it to the last set size and position. If set to false, calls to loadMenuPosition will fail.
 --- @return tes3uiElement result No description yet available.
 function tes3ui.createMenu(params) end
 
@@ -71,7 +71,7 @@ function tes3ui.createMenu(params) end
 --- @field dragFrame boolean? *Default*: `false`. Constructs a draggable and resizeable frame and background for the menu. It is similar to the stats, inventory, magic and map menus in the standard UI. Its title bar text can be set with the .text property. After construction, position and minimum dimensions should be set.
 --- @field fixedFrame boolean? *Default*: `false`. Constructs a fixed (non-draggable) frame and background for the menu. The layout system should automatically centre and size it to fit whatever is added to the menu. This type of menu is modal by default, preventing interaction with other menus while the menu is active.
 --- @field modal boolean? *Default*: `true`. Only applies to fixedFrame menus. Modal menus prevent interaction with other menus while the menu is active. This behavior can be disabled with this flag.
---- @field loadable boolean? *Default*: `true`. If set to false, calls to loadMenuPosition will fail.
+--- @field loadable boolean? *Default*: `true`. Only applies to dragFrame menus. Remembers the position and size of the menu (by id) when the user moves it. Calling loadMenuPosition after menu creation will restore it to the last set size and position. If set to false, calls to loadMenuPosition will fail.
 
 --- Creates a respond text. This function is used for the mwscript `Choice` function.
 --- @param params tes3ui.createResponseText.params This table accepts the following values:
@@ -94,7 +94,7 @@ function tes3ui.createResponseText(params) end
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3ui/#tes3uicreatetooltipmenu).
 --- @param params tes3ui.createTooltipMenu.params? This table accepts the following values:
 --- 
---- `item`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string|nil — *Optional*. The item to create a tooltip for. If not specified, the tooltip will be empty.
+--- `item`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string|nil — *Optional*. The item to create a tooltip for. If not specified, the tooltip will be empty.
 --- 
 --- `itemData`: tes3itemData? — *Optional*. The item data for the item.
 --- 
@@ -106,7 +106,7 @@ function tes3ui.createTooltipMenu(params) end
 
 ---Table parameter definitions for `tes3ui.createTooltipMenu`.
 --- @class tes3ui.createTooltipMenu.params
---- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string|nil *Optional*. The item to create a tooltip for. If not specified, the tooltip will be empty.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string|nil *Optional*. The item to create a tooltip for. If not specified, the tooltip will be empty.
 --- @field itemData tes3itemData? *Optional*. The item data for the item.
 --- @field spell tes3spell? *Optional*. The spell to create a tooltip for.
 --- @field skill tes3skill? *Optional*. The skill to create a tooltip for.
@@ -141,7 +141,7 @@ function tes3ui.getInventorySelectType() end
 --- @return tes3uiElement result No description yet available.
 function tes3ui.getMenuOnTop() end
 
---- Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0].
+--- Gets a standard palette color. Returns an array containing the RGB color values, in the range [0.0, 1.0]. The palette colors are loaded from morrowind.ini settings, so you should only access them after Morrowind is initialized.
 --- 
 --- ![Palette colors](https://raw.githubusercontent.com/MWSE/MWSE/master/docs/source/assets/images/ui%20palletes.png)
 --- 
@@ -154,7 +154,7 @@ function tes3ui.getMenuOnTop() end
 function tes3ui.getPalette(name) end
 
 --- Returns the mobile actor currently providing services, or the actor the player is talking to.
---- @return tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer result No description yet available.
+--- @return tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer result No description yet available.
 function tes3ui.getServiceActor() end
 
 --- Returns the UI scale, set in MGE.
@@ -166,7 +166,7 @@ function tes3ui.getViewportScale() end
 --- @return number height The scaled height of the viewport.
 function tes3ui.getViewportSize() end
 
---- Requests menu mode be deactivated on a menu with a given id.
+--- Requests menu mode be deactivated. Menu mode can't be deactivated if a modal menu is open.
 --- @return boolean result No description yet available.
 function tes3ui.leaveMenuMode() end
 
@@ -222,6 +222,34 @@ function tes3ui.setConsoleReference(reference) end
 --- @param text string No description yet available.
 function tes3ui.showBookMenu(text) end
 
+--- Creates a menu with a color picker. To read the color the user picked, pass a `closeCallback`.
+--- @param params tes3ui.showColorPickerMenu.params This table accepts the following values:
+--- 
+--- `id`: string|integer|nil — *Default*: `MenuColorPicker`. The menu ID of the color picker menu.
+--- 
+--- `closeCallback`: nil|fun(selectedColor: mwseColorTable, selectedAlpha: number|nil) — *Optional*. Called when the menu was closed. It gets passed the selected color and alpha values.
+--- 
+--- `initialColor`: mwseColorTable — The initial color for the picker.
+--- 
+--- `alpha`: boolean? — *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- 
+--- `initialAlpha`: number? — *Default*: `1`. The initial alpha value.
+--- 
+--- `leaveMenuMode`: boolean? — *Default*: `false`. Determines if menu mode should be exited after a choice is made.
+--- 
+--- `heading`: string? — *Default*: `Color Picker Menu`. The title of the opened menu. The default message is localized to the current locale.
+function tes3ui.showColorPickerMenu(params) end
+
+---Table parameter definitions for `tes3ui.showColorPickerMenu`.
+--- @class tes3ui.showColorPickerMenu.params
+--- @field id string|integer|nil *Default*: `MenuColorPicker`. The menu ID of the color picker menu.
+--- @field closeCallback nil|fun(selectedColor: mwseColorTable, selectedAlpha: number|nil) *Optional*. Called when the menu was closed. It gets passed the selected color and alpha values.
+--- @field initialColor mwseColorTable The initial color for the picker.
+--- @field alpha boolean? *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- @field initialAlpha number? *Default*: `1`. The initial alpha value.
+--- @field leaveMenuMode boolean? *Default*: `false`. Determines if menu mode should be exited after a choice is made.
+--- @field heading string? *Default*: `Color Picker Menu`. The title of the opened menu. The default message is localized to the current locale.
+
 --- This function creates a dialogue message. The message can have three styles. The style `2` makes a selectable text. That way by calling this function multiple time you can create a selection of responses.
 --- @param params tes3ui.showDialogueMessage.params This table accepts the following values:
 --- 
@@ -249,7 +277,7 @@ function tes3ui.showDialogueMessage(params) end
 --- 
 --- `leaveMenuMode`: boolean? — *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
 --- 
---- `noResultsText`: string? — *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
+--- `noResultsText`: string? — *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulGemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 --- 
 --- `noResultsCallback`: function? — *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 --- 
@@ -264,7 +292,7 @@ function tes3ui.showDialogueMessage(params) end
 --- --- 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 --- --- 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 --- --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
---- --- 		- `soulgemFilled`: Only filled soulgems will be shown.
+--- --- 		- `soulGemFilled`: Only filled soulgems will be shown.
 --- --- 
 --- --- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 --- 
@@ -276,7 +304,7 @@ function tes3ui.showInventorySelectMenu(params) end
 --- @field reference tes3reference? *Default*: `tes3player`. The reference of a `tes3actor` whose inventory will be used.
 --- @field title string The text used for the title of the inventory select menu.
 --- @field leaveMenuMode boolean? *Optional*. Determines if menu mode should be exited after closing the inventory select menu. By default, it will be in the state it was in before this function was called.
---- @field noResultsText string? *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulgemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
+--- @field noResultsText string? *Optional*. The text used for the message that gets shown to the player if no items have been found in the inventory. The default text is equivalent to the `sInventorySelectNoItems` GMST value, unless `"ingredients"` or `"soulGemFilled"` has been assigned to `filter`, in which case the default text is equivalent to either the `sInventorySelectNoIngredients` or `sInventorySelectNoSoul` GMST value respectively.
 --- @field noResultsCallback function? *Optional*. A function which is called when no items have been found in the inventory, right before the message containing `noResultsText` is shown.
 --- @field filter string|nil|fun(params: tes3ui.showInventorySelectMenu.filterParams): boolean *Optional*. This determines which items should be shown in the inventory select menu. Accepts either a string or a function.
 --- 
@@ -289,7 +317,7 @@ function tes3ui.showInventorySelectMenu(params) end
 --- 		- `mortar`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.mortarAndPestle` will be shown.
 --- 		- `quickUse`: Only items that can be assigned as quick keys will be shown.
 --- 		- `retort`: Only [tes3apparatus](https://mwse.github.io/MWSE/types/tes3apparatus/) items of type `tes3.apparatusType.retort` will be shown.
---- 		- `soulgemFilled`: Only filled soulgems will be shown.
+--- 		- `soulGemFilled`: Only filled soulgems will be shown.
 --- 
 --- 		If assigning a custom function it will be called when determining if an item should be added to the inventory select menu. Returning `true` from this function will add the item to the inventory select menu, whereas returning `false` will prevent it from being added.
 --- @field callback nil|fun(params: tes3ui.showInventorySelectMenu.callbackParams) *Optional*. A function which will be called once the inventory select menu has been closed, including when no item has been selected.
@@ -389,58 +417,6 @@ function tes3ui.stealHelpMenu() end
 --- Controls hiding of world object tooltips.
 --- @param suppress boolean Turns on suppression if true, immediately hiding any active tooltip and further world object tooltips. Turns off suppression if false.
 function tes3ui.suppressTooltip(suppress) end
-
---- Gets font height metrics for a font.
---- @param params tes3ui.textLayout.getFontHeight.params This table accepts the following values:
---- 
---- `font`: number? — *Default*: `0`. The index of the font.
---- @return number maxGlyphHeight Maximum pixel height of a single line of text.
---- @return number lineHeight Pixel spacing between lines in a paragraph.
-function tes3ui.textLayout.getFontHeight(params) end
-
----Table parameter definitions for `tes3ui.textLayout.getFontHeight`.
---- @class tes3ui.textLayout.getFontHeight.params
---- @field font number? *Default*: `0`. The index of the font.
-
---- Calculates expected size information for text content.
---- @param params tes3ui.textLayout.getTextExtent.params This table accepts the following values:
---- 
---- `text`: string — The text to use.
---- 
---- `font`: number? — *Default*: `0`. The index of the font.
---- 
---- `firstLineOnly`: boolean? — *Default*: `false`. Only process the first line of the text.
---- @return number width Pixel width of the widest line of the text.
---- @return number height Pixel height of a label containing this text. Includes the extra space and rounding added by the label layout.
---- @return number verticalAdvance The vertical displacement that a following text element would use. It is zero for text without newlines, and increases with each newline.
-function tes3ui.textLayout.getTextExtent(params) end
-
----Table parameter definitions for `tes3ui.textLayout.getTextExtent`.
---- @class tes3ui.textLayout.getTextExtent.params
---- @field text string The text to use.
---- @field font number? *Default*: `0`. The index of the font.
---- @field firstLineOnly boolean? *Default*: `false`. Only process the first line of the text.
-
---- Performs word wrapping of text.
---- @param params tes3ui.textLayout.wrapText.params This table accepts the following values:
---- 
---- `text`: string — The text to wrap.
---- 
---- `font`: number? — *Default*: `0`. The index of the font.
---- 
---- `maxWidth`: number? — *Default*: `-1`. The wrapping width in pixels.
---- 
---- `ignoreLinkDelimiters`: boolean? — *Default*: `false`. No description yet available.
---- @return string wrappedText The wrapped text, with `\n` as line breaks.
---- @return number lineCount The number of lines in the output wrapped text.
-function tes3ui.textLayout.wrapText(params) end
-
----Table parameter definitions for `tes3ui.textLayout.wrapText`.
---- @class tes3ui.textLayout.wrapText.params
---- @field text string The text to wrap.
---- @field font number? *Default*: `0`. The index of the font.
---- @field maxWidth number? *Default*: `-1`. The wrapping width in pixels.
---- @field ignoreLinkDelimiters boolean? *Default*: `false`. No description yet available.
 
 --- Forces the game to update the barter menu's tile GUI elements.
 function tes3ui.updateBarterMenuTiles() end

@@ -529,7 +529,7 @@ Simplified access to the base creature's sound generator. A creature to use inst
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 

@@ -43,6 +43,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool LoadGameEvent::m_EventEnabled = false;
 }

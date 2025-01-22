@@ -87,9 +87,8 @@ namespace mwse::lua {
 			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
-			usertypeDefinition["activeBodyParts"] = sol::readonly_property(&TES3::BodyPartManager::activeBodyParts);
 			usertypeDefinition["animationPhase"] = sol::readonly_property(&TES3::BodyPartManager::animationPhase);
-			usertypeDefinition["attachNodes"] = sol::readonly_property(&TES3::BodyPartManager::attachNodes);
+			usertypeDefinition["attachNodes"] = sol::readonly_property(&TES3::BodyPartManager::getAttachNodes);
 			usertypeDefinition["reference"] = sol::readonly_property(&TES3::BodyPartManager::reference);
 
 			// Basic function bindings.

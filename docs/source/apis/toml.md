@@ -59,7 +59,7 @@ local data, error = toml.loadFile(path)
 
 **Parameters**:
 
-* `path` (string): The file to write to, relative to the current working directory (typically the Morrowind installation folder).
+* `path` (string): The file to read from, relative to the current working directory (typically the Morrowind installation folder).
 
 **Returns**:
 

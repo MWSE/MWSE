@@ -11,8 +11,7 @@ This event fires once MWSE's internal mod configuration menu code has been initi
 This event is used to register the settings configuration menu. That can be achieved by using any of the following:
 
 - [template:register()](../types/mwseMCMTemplate.md#register)
-- [mwse.mcm.register()](../apis/mwse.mcm.md#mwsemcmregister)
-- [mwse.registerModConfig()](../apis/mwse.md#registermodconfig)
+- [mwse.mcm.register()](../apis/mwse.md#mwsemcmregister)
 
 
 ```lua

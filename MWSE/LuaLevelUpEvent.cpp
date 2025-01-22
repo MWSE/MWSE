@@ -36,6 +36,4 @@ namespace mwse::lua::event {
 
 		return options;
 	}
-
-	bool LevelUpEvent::m_EventEnabled = false;
 }

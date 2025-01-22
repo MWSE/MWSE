@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event is raised before a hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach.
+This event is raised before a melee hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach. See `calcTouchSpellCone` for the touch spell equivalent.
 
 ```lua
 --- @param e calcHitDetectionConeEventData
@@ -30,4 +30,9 @@ event.register(tes3.event.calcHitDetectionCone, calcHitDetectionConeCallback)
 * `reach` (number): The weapon's reach multiplier, typically in the range 0.5 - 2.0. May be adjusted.
 * `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference of the target. Only available at the second stage (weapon strike).
 * `targetMobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile which is targetted. Only available at the second stage (weapon strike).
+
+
+## Related events
+
+[calcTouchSpellCone](./calcTouchSpellCone.md){ .md-button }
 
