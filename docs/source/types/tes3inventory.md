@@ -99,7 +99,7 @@ myObject:addItem({ mobile = ..., item = ..., itemData = ..., count = ... })
 
 * `params` (table)
 	* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string): *Optional*. The mobile actor whose stats will be updated.
-	* `item` ([tes3item](../types/tes3item.md)): The item to add.
+	* `item` ([tes3item](../types/tes3item.md), [tes3leveledItem](../types/tes3leveledItem.md)): The item or leveled item to add. If adding a leveled item to an inventory of a cloned object (such as [tes3containerInstance](../types/tes3containerInstance.md)), the leveled list will be resolved. Otherwise the leveled item record is added to the inventory directly.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. Any associated item data to add.
 	* `count` (number): *Default*: `1`. The number of items to add.
 
