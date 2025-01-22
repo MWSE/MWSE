@@ -17,7 +17,7 @@ tes3inventory = {}
 --- 
 --- `mobile`: tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string|nil — *Optional*. The mobile actor whose stats will be updated.
 --- 
---- `item`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|tes3leveledItem|string — The item to add. Leveled items will only work properly when added to inventories of non-instanced objects.
+--- `item`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon — The item to add.
 --- 
 --- `itemData`: tes3itemData? — *Optional*. Any associated item data to add.
 --- 
@@ -27,7 +27,7 @@ function tes3inventory:addItem(params) end
 ---Table parameter definitions for `tes3inventory.addItem`.
 --- @class tes3inventory.addItem.params
 --- @field mobile tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string|nil *Optional*. The mobile actor whose stats will be updated.
---- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|tes3leveledItem|string The item to add. Leveled items will only work properly when added to inventories of non-instanced objects.
+--- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon The item to add.
 --- @field itemData tes3itemData? *Optional*. Any associated item data to add.
 --- @field count number? *Default*: `1`. The number of items to add.
 
