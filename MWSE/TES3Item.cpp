@@ -58,6 +58,10 @@ namespace TES3 {
 		return value;
 	}
 
+	bool Item::getCanCarry() const {
+		return true;
+	}
+
 	sol::table Item::getStolenList_lua(sol::this_state ts) {
 		auto stolenList = getStolenList();
 		if (!stolenList) {

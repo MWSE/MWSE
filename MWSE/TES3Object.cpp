@@ -109,12 +109,18 @@ namespace TES3 {
 		// Make sure we aren't dealing with references.
 		BaseObject* object = getBaseObject();
 
-		if (object->isItem_lua()) {
-			return true;
+		if (object->isItem()) {
+			return static_cast<const TES3::Item*>(this)->getCanCarry();
 		}
 
-		if (object->isActor()) {
-			return !TES3::WorldController::get()->getMobilePlayer()->getFlagInCombat();
+		if (object->objectType == ObjectType::NPC || object->objectType == ObjectType::Creature) {
+			const auto macp = WorldController::get() ? WorldController::get()->getMobilePlayer() : nullptr;
+			if (macp) {
+				return macp->getFlagInCombat();
+			}
+			else {
+				return true;
+			}
 		}
 
 		switch (object->objectType) {
@@ -173,22 +179,6 @@ namespace TES3 {
 		default:
 			return false;
 		}
-	}
-
-	// In addition to object type checks in isItem, this method also checks canCarry flag on lights.
-	bool BaseObject::isItem_lua() const {
-		if (!isItem()) {
-			return false;
-		}
-
-		if (objectType == TES3::ObjectType::Light) {
-			if (static_cast<const TES3::Light*>(this)->getCanCarry()) {
-				return true;
-			}
-			return false;
-		}
-
-		return true;
 	}
 
 	bool BaseObject::isWeaponOrAmmo() const {
