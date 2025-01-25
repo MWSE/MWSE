@@ -99,17 +99,6 @@ The actor that the player first heard the info from.
 
 ***
 
-### `isItem`
-<div class="search_terms" style="display: none">isitem, item</div>
-
-If true, the object is an item. This property is false for non-carriable lights.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `isQuestFinished`
 <div class="search_terms" style="display: none">isquestfinished, questfinished</div>
 

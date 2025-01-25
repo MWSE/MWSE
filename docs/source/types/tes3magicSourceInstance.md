@@ -88,17 +88,6 @@ The number of hours passed since the player's corprus state last worsened.
 
 ***
 
-### `isItem`
-<div class="search_terms" style="display: none">isitem, item</div>
-
-If true, the object is an item. This property is false for non-carriable lights.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `item`
 <div class="search_terms" style="display: none">item</div>
 

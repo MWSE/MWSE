@@ -66,17 +66,6 @@ The bounding box for the object.
 
 ***
 
-### `isItem`
-<div class="search_terms" style="display: none">isitem, item</div>
-
-If true, the object is an item. This property is false for non-carriable lights.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `isLocationMarker`
 <div class="search_terms" style="display: none">islocationmarker, locationmarker</div>
 

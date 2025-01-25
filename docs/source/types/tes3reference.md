@@ -291,17 +291,6 @@ Friendly access onto the reference's empty inventory flag.
 
 ***
 
-### `isItem`
-<div class="search_terms" style="display: none">isitem, item</div>
-
-If true, the object is an item. This property is false for non-carriable lights.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `isLeveledSpawn`
 <div class="search_terms" style="display: none">isleveledspawn, leveledspawn</div>
 

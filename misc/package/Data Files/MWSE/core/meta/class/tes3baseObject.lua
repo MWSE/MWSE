@@ -8,7 +8,6 @@
 --- @field deleted boolean *Read-only*. The deleted state of the object.
 --- @field disabled boolean *Read-only*. The disabled state of the object.
 --- @field id string *Read-only*. The unique identifier for the object.
---- @field isItem boolean If true, the object is an item. This property is false for non-carriable lights.
 --- @field modified boolean The modification state of the object since the last save.
 --- @field objectFlags number *Read-only*. The raw flags of the object.
 --- @field objectType tes3.objectType *Read-only*. The type of object. Maps to values in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/).
