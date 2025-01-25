@@ -249,7 +249,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		bool canActivate() const;
+		bool supportsActivate() const;
 
 		BaseObject* getBaseObject() const;
 

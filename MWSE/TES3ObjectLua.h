@@ -21,7 +21,6 @@ namespace mwse::lua {
 		usertypeDefinition["__tojson"] = &TES3::BaseObject::toJson;
 
 		// Functions exposed as properties.
-		usertypeDefinition["canActivate"] = sol::readonly_property(&TES3::BaseObject::canActivate);
 		usertypeDefinition["id"] = sol::readonly_property(&TES3::BaseObject::getObjectID);
 		usertypeDefinition["isItem"] = sol::readonly_property(&TES3::BaseObject::isItem_lua);
 		usertypeDefinition["sourceMod"] = sol::readonly_property(&TES3::BaseObject::getSourceFilename);
@@ -31,6 +30,7 @@ namespace mwse::lua {
 		usertypeDefinition["persistent"] = sol::property(&TES3::BaseObject::getPersistent, &TES3::BaseObject::setPersistent);
 		usertypeDefinition["blocked"] = sol::property(&TES3::BaseObject::getBlocked, &TES3::BaseObject::setBlocked);
 		usertypeDefinition["sourceless"] = sol::property(&TES3::BaseObject::getSourceless, &TES3::BaseObject::setSourceless);
+		usertypeDefinition["supportsActivate"] = sol::readonly_property(&TES3::BaseObject::supportsActivate);
 		usertypeDefinition["supportsLuaData"] = sol::property(&TES3::BaseObject::getSupportsLuaData);
 	}
 

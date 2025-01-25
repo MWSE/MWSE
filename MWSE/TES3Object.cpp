@@ -105,7 +105,7 @@ namespace TES3 {
 		return BaseObject_writeFileHeader(this, file);
 	}
 
-	bool BaseObject::canActivate() const {
+	bool BaseObject::supportsActivate() const {
 		// Make sure we aren't dealing with references.
 		BaseObject* object = getBaseObject();
 
@@ -177,16 +177,18 @@ namespace TES3 {
 
 	// In addition to object type checks in isItem, this method also checks canCarry flag on lights.
 	bool BaseObject::isItem_lua() const {
-		if (isItem()) {
-			if (objectType == TES3::ObjectType::Light) {
-				if (static_cast<const TES3::Light*>(this)->getCanCarry()) {
-					return true;
-				}
-				return false;
-			}
-			return true;
+		if (!isItem()) {
+			return false;
 		}
-		return false;
+
+		if (objectType == TES3::ObjectType::Light) {
+			if (static_cast<const TES3::Light*>(this)->getCanCarry()) {
+				return true;
+			}
+			return false;
+		}
+
+		return true;
 	}
 
 	bool BaseObject::isWeaponOrAmmo() const {
