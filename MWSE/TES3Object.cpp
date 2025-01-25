@@ -106,14 +106,19 @@ namespace TES3 {
 	}
 
 	bool BaseObject::supportsActivate() const {
-		// Make sure we aren't dealing with references.
-		BaseObject* object = getBaseObject();
-
-		if (object->isItem()) {
-			return static_cast<const TES3::Item*>(this)->getCanCarry();
+		auto asObject = static_cast<const Object*>(this);
+		if (asObject && asObject->getIsLocationMarker()) {
+			return false;
 		}
 
-		if (object->objectType == ObjectType::NPC || object->objectType == ObjectType::Creature) {
+		// Make sure we aren't dealing with references.
+		BaseObject* asBase = getBaseObject();
+
+		if (asBase->isItem()) {
+			return static_cast<const Item*>(this)->getCanCarry();
+		}
+
+		if (asBase->objectType == ObjectType::NPC || asBase->objectType == ObjectType::Creature) {
 			const auto macp = WorldController::get() ? WorldController::get()->getMobilePlayer() : nullptr;
 			if (macp) {
 				return macp->getFlagInCombat();
@@ -123,7 +128,7 @@ namespace TES3 {
 			}
 		}
 
-		switch (object->objectType) {
+		switch (asBase->objectType) {
 		case TES3::ObjectType::Activator:
 		case TES3::ObjectType::Container:
 		case TES3::ObjectType::Door:
@@ -131,8 +136,6 @@ namespace TES3 {
 		default:
 			return false;
 		}
-
-		return false;
 	}
 
 	BaseObject* BaseObject::getBaseObject() const {
