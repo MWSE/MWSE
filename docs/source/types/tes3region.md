@@ -55,6 +55,17 @@ The blocked state of the object.
 
 ***
 
+### `isItem`
+<div class="search_terms" style="display: none">isitem, item</div>
+
+If true, the object is an item. This property is false for non-carriable lights.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `modified`
 <div class="search_terms" style="display: none">modified, ified</div>
 
@@ -151,6 +162,19 @@ The soruceless flag of the object.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

@@ -99,6 +99,17 @@ Loads from disk and returns the description of the skill.
 
 ***
 
+### `isItem`
+<div class="search_terms" style="display: none">isitem, item</div>
+
+If true, the object is an item. This property is false for non-carriable lights.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `modified`
 <div class="search_terms" style="display: none">modified, ified</div>
 
@@ -184,6 +195,19 @@ The specialization in which the skill belongs. Maps to values in the [`tes3.spec
 **Returns**:
 
 * `result` ([tes3.specialization](../references/specializations.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

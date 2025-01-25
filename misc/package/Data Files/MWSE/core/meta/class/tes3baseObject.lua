@@ -8,12 +8,16 @@
 --- @field deleted boolean *Read-only*. The deleted state of the object.
 --- @field disabled boolean *Read-only*. The disabled state of the object.
 --- @field id string *Read-only*. The unique identifier for the object.
+--- @field isItem boolean If true, the object is an item. This property is false for non-carriable lights.
 --- @field modified boolean The modification state of the object since the last save.
 --- @field objectFlags number *Read-only*. The raw flags of the object.
 --- @field objectType tes3.objectType *Read-only*. The type of object. Maps to values in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/).
 --- @field persistent boolean The persistent flag of the object.
 --- @field sourceless boolean The soruceless flag of the object.
 --- @field sourceMod string *Read-only*. The filename (including the extension) of the mod that owns this object. It has `nil` value if the object was anything other than loaded from an ESP or ESM file.
+--- @field supportsActivate boolean If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+--- 
+--- However, the activation of such an object may still be blocked via mwscript or a Lua script.
 --- @field supportsLuaData boolean If true, references of this object can store temporary or persistent lua data.
 tes3baseObject = {}
 

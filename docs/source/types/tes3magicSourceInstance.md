@@ -88,6 +88,17 @@ The number of hours passed since the player's corprus state last worsened.
 
 ***
 
+### `isItem`
+<div class="search_terms" style="display: none">isitem, item</div>
+
+If true, the object is an item. This property is false for non-carriable lights.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `item`
 <div class="search_terms" style="display: none">item</div>
 
@@ -261,6 +272,19 @@ Shows if the state is pre-cast, cast, beginning, working, ending, retired, etc. 
 **Returns**:
 
 * `result` ([tes3.spellState](../references/spell-states.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

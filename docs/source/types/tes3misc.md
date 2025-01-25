@@ -88,6 +88,17 @@ True if the misc item is a valid form of gold.
 
 ***
 
+### `isItem`
+<div class="search_terms" style="display: none">isitem, item</div>
+
+If true, the object is an item. This property is false for non-carriable lights.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isKey`
 <div class="search_terms" style="display: none">iskey, key</div>
 
@@ -316,6 +327,19 @@ A list of actors that the object has been stolen from.
 **Returns**:
 
 * `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
