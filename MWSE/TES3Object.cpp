@@ -110,6 +110,9 @@ namespace TES3 {
 		BaseObject* object = getBaseObject();
 
 		if (object->isItem()) {
+			if (object->objectType == TES3::ObjectType::Light) {
+				return static_cast<const TES3::Light*>(this)->getCanCarry();
+			}
 			return static_cast<const TES3::Item*>(this)->getCanCarry();
 		}
 
