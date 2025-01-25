@@ -2,6 +2,7 @@
 
 #include "TES3Actor.h"
 #include "TES3ItemData.h"
+#include "TES3Light.h"
 #include "TES3Misc.h"
 
 #include "CodePatchUtil.h"
@@ -59,6 +60,9 @@ namespace TES3 {
 	}
 
 	bool Item::getCanCarry() const {
+		if (objectType == TES3::ObjectType::Light) {
+			return static_cast<const TES3::Light*>(this)->getCanCarry();
+		}
 		return true;
 	}
 
