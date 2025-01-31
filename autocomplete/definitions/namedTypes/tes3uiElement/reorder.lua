@@ -5,8 +5,8 @@ return {
 		name = "params",
 		type = "table",
 		tableParams = {
-			{ name = "before", type = "tes3uiElement", description = "The calling element will be moved to before this element." },
-			{ name = "after", type = "tes3uiElement", description = "The calling element will be moved to after this element." },
+			{ name = "before", type = "tes3uiElement", optional = true, description = "The calling element will be moved to before this element." },
+			{ name = "after", type = "tes3uiElement", optional = true, description = "The calling element will be moved to after this element." },
 		},
 	}},
 	valuetype = "boolean",

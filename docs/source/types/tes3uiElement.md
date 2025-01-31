@@ -1735,8 +1735,8 @@ local result = myObject:reorder({ before = ..., after = ... })
 **Parameters**:
 
 * `params` (table)
-	* `before` ([tes3uiElement](../types/tes3uiElement.md)): The calling element will be moved to before this element.
-	* `after` ([tes3uiElement](../types/tes3uiElement.md)): The calling element will be moved to after this element.
+	* `before` ([tes3uiElement](../types/tes3uiElement.md)): *Optional*. The calling element will be moved to before this element.
+	* `after` ([tes3uiElement](../types/tes3uiElement.md)): *Optional*. The calling element will be moved to after this element.
 
 **Returns**:
 

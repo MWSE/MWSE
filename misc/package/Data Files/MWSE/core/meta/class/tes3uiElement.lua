@@ -792,16 +792,16 @@ function tes3uiElement:removeProperty(property) end
 --- Re-orders an element to before or after a sibling element. Provide either a `before` or `after` parameter.
 --- @param params tes3uiElement.reorder.params This table accepts the following values:
 --- 
---- `before`: tes3uiElement — The calling element will be moved to before this element.
+--- `before`: tes3uiElement? — *Optional*. The calling element will be moved to before this element.
 --- 
---- `after`: tes3uiElement — The calling element will be moved to after this element.
+--- `after`: tes3uiElement? — *Optional*. The calling element will be moved to after this element.
 --- @return boolean result No description yet available.
 function tes3uiElement:reorder(params) end
 
 ---Table parameter definitions for `tes3uiElement.reorder`.
 --- @class tes3uiElement.reorder.params
---- @field before tes3uiElement The calling element will be moved to before this element.
---- @field after tes3uiElement The calling element will be moved to after this element.
+--- @field before tes3uiElement? *Optional*. The calling element will be moved to before this element.
+--- @field after tes3uiElement? *Optional*. The calling element will be moved to after this element.
 
 --- This method is deprecated. Prefer to use `tes3uiElement.reorder` when moving single children.
 --- 
