@@ -114,7 +114,7 @@ function tes3ui.createTooltipMenu(params) end
 
 --- Requests menu mode be activated on a menu with a given id.
 --- @param id string|number No description yet available.
---- @return boolean result No description yet available.
+--- @return boolean result True if the menu was switched, or false if it was already active.
 function tes3ui.enterMenuMode(id) end
 
 --- Locates a help layer menu through its id. Help layer menus include notifications and tooltips that are always above the rest of the interface. The game realizes this using a separate menu root and set of functions.
@@ -199,7 +199,7 @@ function tes3ui.logToConsole(text, isCommand) end
 function tes3ui.lookupID(id) end
 
 --- Checks if the game is in menu mode.
---- @return boolean result No description yet available.
+--- @return boolean result `true` if in menu mode.
 function tes3ui.menuMode() end
 
 --- Brings a menu forward to be the top-most menu, firing any associated front-related events. The desired element must be a top-level menu.

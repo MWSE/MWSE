@@ -239,7 +239,7 @@ local result = tes3ui.enterMenuMode(id)
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (boolean): True if the menu was switched, or false if it was already active.
 
 ***
 
@@ -627,7 +627,7 @@ local result = tes3ui.menuMode()
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (boolean): `true` if in menu mode.
 
 ***
 

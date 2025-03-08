@@ -23,6 +23,7 @@ function mwseTimer:cancel() end
 function mwseTimer:pause() end
 
 --- Resets the timer completion time and iterations count.
+--- @return boolean result No description yet available.
 function mwseTimer:reset() end
 
 --- Resumes a paused timer.

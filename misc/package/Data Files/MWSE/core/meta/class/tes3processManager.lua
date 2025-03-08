@@ -26,6 +26,7 @@ function tes3processManager:checkPlayerDistance() end
 --- This function performs a check for presence of a given mobile actor.
 --- @param actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The actor to perform a check for.
 --- @param ignoreCreatures boolean? *Default*: `true`. No description yet available.
+--- @return boolean result No description yet available.
 function tes3processManager:detectPresence(actor, ignoreCreatures) end
 
 --- This function performs a check whether a detector can detect another actor sneaking.

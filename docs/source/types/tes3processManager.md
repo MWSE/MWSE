@@ -104,13 +104,17 @@ myObject:checkPlayerDistance()
 This function performs a check for presence of a given mobile actor.
 
 ```lua
-myObject:detectPresence(actor, ignoreCreatures)
+local result = myObject:detectPresence(actor, ignoreCreatures)
 ```
 
 **Parameters**:
 
 * `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
 * `ignoreCreatures` (boolean): *Default*: `true`.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

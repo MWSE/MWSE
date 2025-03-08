@@ -156,5 +156,5 @@ mgeCameraConfig.zoomOut({ amount = ... })
 **Parameters**:
 
 * `params` (table): *Optional*.
-	* `amount` (number)
+	* `amount` (number): *Default*: `0.0625`.
 

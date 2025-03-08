@@ -1671,7 +1671,7 @@ function tes3.isInitialized() end
 --- `actual`: table|mwseKeyCombo|mwseKeyMouseCombo|mwseKeyMouseCombo|keyDownEventData|keyUpEventData|keyEventData|mouseButtonDownEventData|mouseButtonUpEventData|mouseWheelEventData — The key object that is being compared.
 --- 
 --- `expected`: table|mwseKeyCombo|mwseKeyMouseCombo|mwseKeyMouseCombo|keyDownEventData|keyUpEventData|keyEventData|mouseButtonDownEventData|mouseButtonUpEventData|mouseWheelEventData — The key object that is being compared against.
---- @return any equal No description yet available.
+--- @return boolean equal No description yet available.
 function tes3.isKeyEqual(params) end
 
 ---Table parameter definitions for `tes3.isKeyEqual`.

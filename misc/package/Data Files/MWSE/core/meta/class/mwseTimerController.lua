@@ -9,7 +9,7 @@
 mwseTimerController = {}
 
 --- Creates a new Timer Controller. Its initial clock is zero, unless a start time is provided.
---- @param startTime number? *Optional*. No description yet available.
+--- @param startTime number? *Default*: `0`. No description yet available.
 --- @return mwseTimerController result No description yet available.
 function mwseTimerController.new(startTime) end
 

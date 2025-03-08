@@ -5,5 +5,5 @@ return {
 		{ name = "actor", type = "tes3mobileActor", description = "The actor to perform a check for." },
 		{ name = "ignoreCreatures", type = "boolean", optional = true, default = true },
 	},
-	valueType = "boolean"
+	valuetype = "boolean"
 }

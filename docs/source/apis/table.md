@@ -198,7 +198,7 @@ local result = table.filter(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): boolean)
+* `f` (fun(k: unknown, v: unknown, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -223,7 +223,7 @@ local result = table.filterarray(arr, f, ...)
 **Parameters**:
 
 * `arr` (table)
-* `f` (fun(i: integer, v: unknown, ...): boolean)
+* `f` (fun(i: integer, v: unknown, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -346,7 +346,7 @@ local result = table.map(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): unknown)
+* `f` (fun(k: unknown, v: unknown, ...): unknown): The function to apply to each element of `t`.
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:

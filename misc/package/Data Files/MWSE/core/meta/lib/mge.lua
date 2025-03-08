@@ -104,14 +104,14 @@ function mge.saveConfig() end
 --- Saves a screenshot.
 --- @param params mge.saveScreenshot.params This table accepts the following values:
 --- 
---- `path`: string — No description yet available.
+--- `path`: string — The location of the folder to save the screenshot to. Relative to the Morrowind directory. *Needs* to include the file format extension. The supported file formats are `bmp`, `jpeg`, `dds`, `png`, and `tga`.
 --- 
 --- `captureWithUI`: boolean? — *Default*: `false`. If set to `true`, the screenshot will include the user interface.
 function mge.saveScreenshot(params) end
 
 ---Table parameter definitions for `mge.saveScreenshot`.
 --- @class mge.saveScreenshot.params
---- @field path string No description yet available.
+--- @field path string The location of the folder to save the screenshot to. Relative to the Morrowind directory. *Needs* to include the file format extension. The supported file formats are `bmp`, `jpeg`, `dds`, `png`, and `tga`.
 --- @field captureWithUI boolean? *Default*: `false`. If set to `true`, the screenshot will include the user interface.
 
 --- Sets the lighting mode used by MGE XE. The values passed can be used from the [`mge.lightingMode`](https://mwse.github.io/MWSE/references/mge/lighting-modes/) constants.

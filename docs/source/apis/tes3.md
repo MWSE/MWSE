@@ -3316,7 +3316,7 @@ local equal = tes3.isKeyEqual({ actual = ..., expected = ... })
 
 **Returns**:
 
-* `equal`
+* `equal` (boolean)
 
 ??? example "Example: Filtering out key presses that aren't equal to the bound key combination"
 
