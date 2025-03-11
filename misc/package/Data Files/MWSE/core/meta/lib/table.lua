@@ -82,9 +82,9 @@ function table.empty(t, deepCheck) end
 --- Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
 --- For example, all of the following assertions pass:
 --- ```lua
---- assert(table.equals({1, 2}, {1, 2})
+--- assert(table.equals({1, 2}, {1, 2}))
 --- assert({1,2} ~= {1,2})
---- assert(table.equals({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}})
+--- assert(table.equals({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
 --- ```
 --- 
 --- @param left table No description yet available.
