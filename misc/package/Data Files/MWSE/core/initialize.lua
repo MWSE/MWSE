@@ -316,6 +316,48 @@ function table.find(t, value)
 	end
 end
 
+function table.contains(t, value) 
+	return table.find(t, value) ~= nil
+end
+
+function table.equals(t1, t2)
+	-- Do a cheap equality test first.
+	if t1 == t2 then
+		return true
+	end
+
+	-- Make sure `t1` is contained in `t2`.
+	for k1, v1 in pairs(t1) do	
+		if v1 ~= t2[k1] then
+			-- Make sure this inequality wasn't caused by two tables with equal entries.
+			if type(v1) == "table" 
+			and type(t2[k1]) == "table" 
+			and table.equals(v1, t2[k1]) 
+			then	
+				-- Do nothing.
+			else
+				return false
+			end
+		end
+	end
+	-- Make sure `t2` is contained in `t1`
+	for k2, v2 in pairs(t2) do	
+		if t1[k2] ~= v2 then
+			-- Make sure this inequality wasn't caused by two tables with equal entries.
+			if type(t1[k2]) == "table" 
+			and type(v2) == "table" 
+			and table.equals(t1[k2], v2) 
+			then	
+				-- Do nothing.
+			else
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
 function table.removevalue(t, value)
 	local i = table.find(t, value)
 	if (i ~= nil) then

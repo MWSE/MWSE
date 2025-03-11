@@ -104,6 +104,26 @@ table.clear(table)
 
 ***
 
+### `table.contains`
+<div class="search_terms" style="display: none">contains</div>
+
+Returns `true` if a `value` is contained in a table `t`, and `false` otherwise.
+
+```lua
+local result = table.contains(t, value)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `value` (unknown)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `table.copy`
 <div class="search_terms" style="display: none">copy</div>
 
@@ -178,6 +198,34 @@ local result = table.empty(t, deepCheck)
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `table.equals`
+<div class="search_terms" style="display: none">equals</div>
+
+Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
+Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
+For example, all of the following assertions pass:
+```lua
+assert(table.equals({1, 2}, {1, 2})
+assert({1,2} ~= {1,2})
+assert(table.equals({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}})
+```
+
+
+```lua
+local result = table.equals(left, right)
+```
+
+**Parameters**:
+
+* `left` (table)
+* `right` (table)
+
+**Returns**:
+
+* `result` (boolean): True if the contents of `left` are equal to the contents of `right`. False otherwise.
 
 ***
 
