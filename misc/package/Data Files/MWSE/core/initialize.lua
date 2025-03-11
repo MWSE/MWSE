@@ -320,7 +320,7 @@ function table.contains(t, value)
 	return table.find(t, value) ~= nil
 end
 
-function table.equals(t1, t2)
+function table.equal(t1, t2)
 	-- Do a cheap equality test first.
 	if t1 == t2 then
 		return true
@@ -332,7 +332,7 @@ function table.equals(t1, t2)
 			-- Make sure this inequality wasn't caused by two tables with equal entries.
 			if type(v1) == "table" 
 			and type(t2[k1]) == "table" 
-			and table.equals(v1, t2[k1]) 
+			and table.equal(v1, t2[k1]) 
 			then	
 				-- Do nothing.
 			else
@@ -346,7 +346,7 @@ function table.equals(t1, t2)
 			-- Make sure this inequality wasn't caused by two tables with equal entries.
 			if type(t1[k2]) == "table" 
 			and type(v2) == "table" 
-			and table.equals(t1[k2], v2) 
+			and table.equal(t1[k2], v2) 
 			then	
 				-- Do nothing.
 			else

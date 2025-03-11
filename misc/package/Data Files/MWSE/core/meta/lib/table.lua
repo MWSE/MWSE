@@ -82,15 +82,15 @@ function table.empty(t, deepCheck) end
 --- Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
 --- For example, all of the following assertions pass:
 --- ```lua
---- assert(table.equals({1, 2}, {1, 2}))
---- assert({1,2} ~= {1,2})
---- assert(table.equals({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
+--- assert(table.equal({1, 2}, {1, 2}))
+--- assert({1, 2} ~= {1, 2})
+--- assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
 --- ```
 --- 
 --- @param left table No description yet available.
 --- @param right table No description yet available.
 --- @return boolean result True if the contents of `left` are equal to the contents of `right`. False otherwise.
-function table.equals(left, right) end
+function table.equal(left, right) end
 
 --- Creates a new table that results from using `f` to filter out elements of `t`. i.e., `table.filter(t,f)` will consist of only the pairs `k, v` of `t` for which `f(k, v)` was not `false` or `nil`.
 --- Any additional arguments will be passed to `f`. For example, `table.filter(t, f, 10)` would call `f(k, v, 10)` on each pair `k, v` of `t`.

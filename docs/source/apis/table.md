@@ -201,21 +201,21 @@ local result = table.empty(t, deepCheck)
 
 ***
 
-### `table.equals`
-<div class="search_terms" style="display: none">equals</div>
+### `table.equal`
+<div class="search_terms" style="display: none">equal</div>
 
 Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
 Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
 For example, all of the following assertions pass:
 ```lua
-assert(table.equals({1, 2}, {1, 2}))
-assert({1,2} ~= {1,2})
-assert(table.equals({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
+assert(table.equal({1, 2}, {1, 2}))
+assert({1, 2} ~= {1, 2})
+assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
 ```
 
 
 ```lua
-local result = table.equals(left, right)
+local result = table.equal(left, right)
 ```
 
 **Parameters**:
