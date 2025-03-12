@@ -320,39 +320,42 @@ function table.contains(t, value)
 	return table.find(t, value) ~= nil
 end
 
+
 function table.equal(t1, t2)
+
 	-- Try a quick basic equality check.
 	if (t1 == t2) then
 		return true
 	end
 
+	-- Make sure both inputs are tables.
+	if (type(t1) ~= "table" or type(t2) ~= "table") then
+		return false
+	end
+
 	-- Loop through pairs and see if all values match from t1 -> t2.
 	local size1 = 0
+	-- Store the function locally for faster function calls.
 	local eq = table.equal
 	for k, v1 in pairs(t1) do
+		-- Note: If `v1 ~= v2`, then the recursive call to `table.equal` will
+		-- result in a redundant comparison of `v1` and `v2`.
+		-- But, testing shows that for highly similar tables, this approach is faster
+		-- than only checking `not table.equal(v1, v2)`.
+		-- This is likely due to the overhead from function calls.
+
 		local v2 = t2[k]
-		if v1 ~= v2 then
-			-- Make sure this inequality wasn't caused by two tables with equal entries.
-			if type(v1) == "table" 
-			and type(v2) == "table" 
-			and eq(v1, v2) 
-			then
-				-- Do nothing
-			else
-				return false
-			end
+		if (v1 ~= v2 and not eq(v1, v2)) then
+			return false
 		end
 
 		size1 = size1 + 1
 	end
 
-	-- We can assume t2 == t1 if all values match for t1 -> t2 and there are no unaccounted for keys.
-	if (table.size(t2) ~= size1) then
-		return false
-	end
-
-	return true
+	-- We can assume t1 == t2 if all values match for t1 -> t2 and both tables have the same size.
+	return size1 == table.size(t2)
 end
+
 
 function table.removevalue(t, value)
 	local i = table.find(t, value)
