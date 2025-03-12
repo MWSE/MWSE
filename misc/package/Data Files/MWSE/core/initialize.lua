@@ -321,38 +321,34 @@ function table.contains(t, value)
 end
 
 function table.equal(t1, t2)
-	-- Do a cheap equality test first.
-	if t1 == t2 then
+	-- Try a quick basic equality check.
+	if (t1 == t2) then
 		return true
 	end
 
-	-- Make sure `t1` is contained in `t2`.
-	for k1, v1 in pairs(t1) do	
-		if v1 ~= t2[k1] then
+	-- Loop through pairs and see if all values match from t1 -> t2.
+	local size1 = 0
+	local eq = table.equal
+	for k, v1 in pairs(t1) do
+		local v2 = t2[k]
+		if v1 ~= v2 then
 			-- Make sure this inequality wasn't caused by two tables with equal entries.
 			if type(v1) == "table" 
-			and type(t2[k1]) == "table" 
-			and table.equal(v1, t2[k1]) 
-			then	
-				-- Do nothing.
-			else
-				return false
-			end
-		end
-	end
-	-- Make sure `t2` is contained in `t1`
-	for k2, v2 in pairs(t2) do	
-		if t1[k2] ~= v2 then
-			-- Make sure this inequality wasn't caused by two tables with equal entries.
-			if type(t1[k2]) == "table" 
 			and type(v2) == "table" 
-			and table.equal(t1[k2], v2) 
-			then	
-				-- Do nothing.
+			and eq(v1, v2) 
+			then
+				-- Do nothing
 			else
 				return false
 			end
 		end
+
+		size1 = size1 + 1
+	end
+
+	-- We can assume t2 == t1 if all values match for t1 -> t2 and there are no unaccounted for keys.
+	if (table.size(t2) ~= size1) then
+		return false
 	end
 
 	return true
