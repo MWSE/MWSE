@@ -4,7 +4,7 @@ common.log = require("logging.logger").new({
     name = "MWSE Core Tests",
     logLevel = "TRACE",
     logToConsole = false,
-    includeTimestamp = true,
+    -- includeTimestamp = true,
 })
 
 --- Gets the parameters after a "--"-prefixed command line argument.
