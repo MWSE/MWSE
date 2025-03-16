@@ -6,9 +6,9 @@
 
 namespace TES3 {
 	struct Quest : BaseObject {
-		char * name; // 0x10
-		IteratedList<Dialogue*> dialogue; // 0x14
-		IteratedList<DialogueInfo*> activeInfo; // 0x28
+		char* name; // 0x10
+		IteratedList<Dialogue*> dialogues; // 0x14
+		IteratedList<DialogueInfo*> activeInfos; // 0x28
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Quest;
 
@@ -26,6 +26,10 @@ namespace TES3 {
 		//
 
 		std::string toJson() const;
+
+		bool isActive() const;
+		bool isFinished() const;
+		bool isStarted() const;
 
 	};
 	static_assert(sizeof(Quest) == 0x3C, "TES3::Quest failed size validation");

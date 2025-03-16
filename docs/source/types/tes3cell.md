@@ -8,7 +8,7 @@
 
 An exterior or interior game area.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `activators`
@@ -324,11 +324,11 @@ The modification state of the object since the last save.
 ### `name`
 <div class="search_terms" style="display: none">name</div>
 
-The name and id of the cell. See also `displayName` and `editorName`.
+The name and id of the cell. Only available on interior cells. See also `displayName` and `editorName`.
 
 **Returns**:
 
-* `result` (string)
+* `result` (string, nil)
 
 ***
 
@@ -412,7 +412,7 @@ If true, the player may not rest in the cell.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -461,6 +461,19 @@ The cell's sun color. Only available on interior cells.
 **Returns**:
 
 * `result` ([niPackedColor](../types/niPackedColor.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -528,13 +541,18 @@ local inCell = myObject:isPointInCell(x, y)
 
 Used in a for loop, iterates over objects in the cell.
 
+!!! note
+	This iterator will also yield disabled references by default.
+
+
 ```lua
-local iterator = myObject:iterateReferences(filter)
+local iterator = myObject:iterateReferences(filter, yieldDisabled)
 ```
 
 **Parameters**:
 
 * `filter` (integer, integer[]): *Optional*. The TES3 object type to filter results by. If you need multiple filters, just pass them as a table, e.g. `{ tes3.objectType.npc, tes3.objectType.creature }`. Those are stored in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/) namespace.
+* `yieldDisabled` (boolean): *Default*: `true`. If true, disabled references will be yielded.
 
 **Returns**:
 

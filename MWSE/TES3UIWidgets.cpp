@@ -123,10 +123,13 @@ namespace TES3::UI {
 
 	
 	const char* WidgetButton::getText() const {
-		return findChild(uiidButtonText)->getText();
+		return getTextElement()->getText();
 	}
 	void WidgetButton::setText(const char* text) {
-		findChild(uiidButtonText)->setText(text);
+		getTextElement()->setText(text);
+	}
+	Element* WidgetButton::getTextElement() const {
+		return findChild(uiidButtonText);
 	}
 
 	//

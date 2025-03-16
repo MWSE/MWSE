@@ -5,7 +5,7 @@ return {
 	eventData = {
 		["to"] = {
 			type = "tes3weather",
-			description = "The weather object that is the new current weather. Can be modified to change behavior.",
+			description = "The weather object that is the new current weather.",
 		},
 	},
 }

@@ -15,6 +15,7 @@ Equip may fail for the following reasons:
 			{ name = "addItem", type = "boolean", optional = true, default = false, description = "If `true`, the item will be added to the actor's inventory if needed." },
 			{ name = "selectBestCondition", type = "boolean", optional = true, default = false, description = "If `true`, the item in the inventory with the best condition and best charge will be selected." },
 			{ name = "selectWorstCondition", type = "boolean", optional = true, default = false, description = "If `true`, the item in the inventory with the worst condition and worst charge will be selected. Can be useful for selecting tools." },
+			{ name = "playSound", type = "boolean", optional = true, default = true, description = "If `true`, the default item sound will be played for the item." },
 		}
 	}},
 	returns = "itemEquipped",

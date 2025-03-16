@@ -8,7 +8,7 @@
 
 The typical base type for most NetImmerse scene graph objects.
 
-This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `alphaProperty`

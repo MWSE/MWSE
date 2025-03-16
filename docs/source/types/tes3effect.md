@@ -24,7 +24,7 @@ The attribute associated with this effect, or `nil` if no attribute is used. Map
 ### `cost`
 <div class="search_terms" style="display: none">cost</div>
 
-The base magicka cost of this effect.
+The final magicka cost of this effect after all the calculations of magnitude, duration, radius and range have taken place.
 
 **Returns**:
 

@@ -9,6 +9,7 @@
 
 #include "NIIteratedList.h"
 
+#include "CSEnchantment.h"
 #include "CSBook.h"
 #include "CSFaction.h"
 #include "CSNPC.h"
@@ -163,18 +164,6 @@ namespace se::cs::dialog::object_window {
 	static std::optional<std::regex> currentSearchRegex;
 	static bool modeShowModifiedOnly = false;
 
-	bool matchDispatcher(const std::string_view& haystack) {
-		if (currentSearchRegex) {
-			return std::regex_search(haystack.data(), currentSearchRegex.value());
-		}
-		else if (settings.object_window.case_sensitive) {
-			return string::contains(haystack, currentSearchText);
-		}
-		else {
-			return string::cicontains(haystack, currentSearchText);
-		}
-	}
-
 	// TODO: Make use of the new object-class search features.
 	bool PatchFilterObjectWindow_ObjectMatchesSearchText(const Object* object) {
 		// Hide deprecated objects.
@@ -191,73 +180,9 @@ namespace se::cs::dialog::object_window {
 			return true;
 		}
 
-		// Allow filtering by object ID.
-		if (settings.object_window.filter_by_id) {
-			if (matchDispatcher(object->getObjectID())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by object name.
-		if (settings.object_window.filter_by_name) {
-			if (matchDispatcher(object->getName())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by model path.
-		if (settings.object_window.filter_by_model_path) {
-			if (matchDispatcher(object->getModel())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by icon path.
-		if (settings.object_window.filter_by_icon_path) {
-			if (matchDispatcher(object->getIcon())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by enchantment id.
-		if (settings.object_window.filter_by_enchantment_id) {
-			auto enchantment = object->getEnchantment();
-			if (enchantment && matchDispatcher(enchantment->getObjectID())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by script id.
-		if (settings.object_window.filter_by_script_id) {
-			auto script = object->getScript();
-			if (script && matchDispatcher(script->getObjectID())) {
-				return true;
-			}
-		}
-
-		// Allow filtering by book text.
-		if (settings.object_window.filter_by_book_text && object->objectType == ObjectType::Book) {
-			auto asBook = static_cast<const Book*>(object);
-			if (asBook->text && matchDispatcher(asBook->text)) {
-				return true;
-			}
-		}
-
-		// Allow filtering by faction.
-		if (settings.object_window.filter_by_faction && object->objectType == ObjectType::NPC) {
-			const auto asNPC = static_cast<const NPC*>(object);
-			auto faction = asNPC->getFaction();
-			if (faction) {
-				// Basic ID check.
-				if (matchDispatcher(faction->getObjectID())) {
-					return true;
-				}
-
-				// Also check rank.
-				if (matchDispatcher(asNPC->getFactionRankName())) {
-					return true;
-				}
-			}
+		const auto regex = currentSearchRegex.has_value() ? &currentSearchRegex.value() : nullptr;
+		if (object->searchWithInheritance(currentSearchText, settings.object_window.search_settings, regex)) {
+			return true;
 		}
 
 		return false;
@@ -478,9 +403,9 @@ namespace se::cs::dialog::object_window {
 			currentSearchText = std::move(newText);
 
 			// Regex crunching can be slow, so only do it once.
-			if (settings.object_window.use_regex) {
+			if (settings.object_window.search_settings.use_regex) {
 				auto flags = std::regex_constants::extended | std::regex_constants::optimize | std::regex_constants::nosubs;
-				if (!settings.object_window.case_sensitive) {
+				if (!settings.object_window.search_settings.case_sensitive) {
 					flags |= std::regex_constants::icase;
 				}
 

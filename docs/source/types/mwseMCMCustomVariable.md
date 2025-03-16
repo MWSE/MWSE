@@ -8,7 +8,7 @@
 
 This Variable class allows the user to provide custom `getter` and `setter` methods.
 
-This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md)
+This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md).
 ## Properties
 
 ### `class`

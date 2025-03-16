@@ -151,6 +151,39 @@ Moon's phase | Used texture's suffix
 
 ***
 
+### `sceneMoonFace`
+<div class="search_terms" style="display: none">scenemoonface</div>
+
+*Read-only*. Provides access to the moon face NiNode, containing the lit face of the moon.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneMoonRoot`
+<div class="search_terms" style="display: none">scenemoonroot</div>
+
+*Read-only*. Provides access to the moon root NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneMoonShadow`
+<div class="search_terms" style="display: none">scenemoonshadow</div>
+
+*Read-only*. Provides access to the moon shadow NiNode, containing the background-blocking shadow mask of the moon.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
 ### `shadowEarlyFadeAngle`
 <div class="search_terms" style="display: none">shadowearlyfadeangle</div>
 

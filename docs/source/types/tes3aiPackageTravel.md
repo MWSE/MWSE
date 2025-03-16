@@ -8,7 +8,7 @@
 
 An AI Travel package game object. Sets an actor to travel to a certain destination.
 
-This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md)
+This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md).
 ## Properties
 
 ### `destination`

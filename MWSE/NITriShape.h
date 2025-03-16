@@ -4,6 +4,14 @@
 #include "NITriBasedGeometry.h"
 
 namespace NI {
+	namespace TriShapeFlags {
+		typedef unsigned short value_type;
+
+		enum TriShapeFlags {
+			SoftwareSkinningFlag = 0x200	// Added by MWSE.
+		};
+	}
+
 	struct TriShape_vTable : TriBasedGeometry_vTable {
 		void* unknown_0x9C;
 		void* unknown_0xA0;
@@ -21,6 +29,7 @@ namespace NI {
 		//
 
 		TriShapeData* getModelData() const;
+		void linkObject(NI::Stream* stream);
 
 		//
 		// Custom functions.

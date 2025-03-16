@@ -8,13 +8,13 @@
 
 niRotatingParticlesData objects contain the geometry data necessary to render a niRotatingParticles object. When a niRotatingParticles-based object is created, the actual geometry data is stored in an attached niRotatingParticlesData object.
 
-This type inherits the following: [niParticlesData](../types/niParticlesData.md), [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticlesData](../types/niParticlesData.md), [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `activeCount`
 <div class="search_terms" style="display: none">activecount</div>
 
-*Read-only*. The number of active particles.
+The number of active particles. Must be no larger than `vertexCount`.
 
 **Returns**:
 
@@ -40,7 +40,7 @@ The model-space bounding sphere of the object.
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 
@@ -69,7 +69,7 @@ The model-space bounding sphere of the object.
 ### `radius`
 <div class="search_terms" style="display: none">radius</div>
 
-*Read-only*. The radius of the particles.
+The radius (particle size) of the particles.
 
 **Returns**:
 
@@ -124,7 +124,7 @@ The model-space bounding sphere of the object.
 ### `sizes`
 <div class="search_terms" style="display: none">sizes</div>
 
-*Read-only*. The particle sizes. The length of the array is equal to `vertexCount`.
+*Read-only*. An array controlling individual particle sizes. Values should be in the range 0 to 1. The length of the array is equal to `vertexCount`.
 
 **Returns**:
 

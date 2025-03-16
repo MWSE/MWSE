@@ -319,7 +319,11 @@ namespace TES3 {
 	}
 
 	float Vector3::angle(const Vector3* v) const {
-		return acosf(dotProduct(v) / (length() * v->length()));
+		// Numerically stable version, from Kahan.
+		// Avoids an issue where the dot product is marginally out of domain for acos.
+		auto a_unit = normalized();
+		auto b_unit = v->normalized();
+		return 2.0f * atan2f((a_unit - b_unit).length(), (a_unit + b_unit).length());
 	}
 
 	float Vector3::length() const {

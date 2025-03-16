@@ -8,7 +8,7 @@
 
 This node adjusts its render-time orientation so that the local z axis will face the camera. It supports multiple modes: camera parallel, or rotation around the local Y axis.
 
-This type inherits the following: [niNode](../types/niNode.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niNode](../types/niNode.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `alphaProperty`

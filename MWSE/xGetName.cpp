@@ -26,7 +26,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		char* name = NULL;
+		const char* name = NULL;
 
 		// Get the base record.
 		TES3::BaseObject* record = reference->baseObject;

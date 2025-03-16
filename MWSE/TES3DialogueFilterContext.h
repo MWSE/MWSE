@@ -31,7 +31,7 @@ namespace TES3 {
 		Cell* filterCell = nullptr;
 		Faction* filterPlayerFaction = nullptr;
 		const char* filterResultScript = nullptr;
-		ConditionalContext conditionalContexts[6];
+		ConditionalContext conditionalContexts[DialogueInfoConditionalCount];
 
 		DialogueFilterContext(Object* speaker, Reference* reference, DialogueInfo::FilterSource source, Dialogue* dialogue, const DialogueInfo* info);
 		void setConditional(size_t index, DialogueConditional* conditional);

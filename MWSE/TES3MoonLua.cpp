@@ -27,6 +27,9 @@ namespace mwse::lua {
 		usertypeDefinition["index"] = sol::readonly_property(&TES3::Moon::index);
 		usertypeDefinition["isRed"] = &TES3::Moon::moonIsRed;
 		usertypeDefinition["phase"] = &TES3::Moon::phase;
+		usertypeDefinition["sceneMoonFace"] = sol::readonly_property(&TES3::Moon::sgMoonNode);
+		usertypeDefinition["sceneMoonRoot"] = sol::readonly_property(&TES3::Moon::sgNode);
+		usertypeDefinition["sceneMoonShadow"] = sol::readonly_property(&TES3::Moon::sgShadowNode);
 		usertypeDefinition["shadowEarlyFadeAngle"] = &TES3::Moon::shadowEarlyFadeAngle;
 		usertypeDefinition["speed"] = &TES3::Moon::speed;
 		usertypeDefinition["weatherController"] = sol::readonly_property(&TES3::Moon::weatherController);

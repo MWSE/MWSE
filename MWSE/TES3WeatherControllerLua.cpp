@@ -59,6 +59,10 @@ namespace mwse::lua {
 			usertypeDefinition["nextWeather"] = sol::readonly_property(&TES3::WeatherController::nextWeather);
 			usertypeDefinition["particlesActive"] = sol::readonly_property(&TES3::WeatherController::listActiveParticles);
 			usertypeDefinition["particlesInactive"] = sol::readonly_property(&TES3::WeatherController::listInactiveParticles);
+			usertypeDefinition["precipitationFallSpeed"] = &TES3::WeatherController::precipitationFallSpeed;
+			usertypeDefinition["sceneAtmosphere"] = sol::readonly_property(&TES3::WeatherController::sgSkyAtmosphere);
+			usertypeDefinition["sceneClouds"] = sol::readonly_property(&TES3::WeatherController::sgSkyClouds);
+			usertypeDefinition["sceneNightSky"] = sol::readonly_property(&TES3::WeatherController::sgSkyNight);
 			usertypeDefinition["sceneRainRoot"] = sol::readonly_property(&TES3::WeatherController::sgRainRoot);
 			usertypeDefinition["sceneSkyLight"] = sol::readonly_property(&TES3::WeatherController::sgSkyLight);
 			usertypeDefinition["sceneSkyRoot"] = sol::readonly_property(&TES3::WeatherController::sgSkyRoot);
@@ -72,6 +76,7 @@ namespace mwse::lua {
 			usertypeDefinition["skyPostSunsetTime"] = &TES3::WeatherController::skyPostSunsetTime;
 			usertypeDefinition["skyPreSunriseTime"] = &TES3::WeatherController::skyPreSunriseTime;
 			usertypeDefinition["skyPreSunsetTime"] = &TES3::WeatherController::skyPreSunsetTime;
+			usertypeDefinition["snowFallSpeedScale"] = &TES3::WeatherController::snowFallSpeedScale;
 			usertypeDefinition["starsFadingDuration"] = &TES3::WeatherController::starsFadingDuration;
 			usertypeDefinition["starsPostSunsetStart"] = &TES3::WeatherController::starsPostSunsetStart;
 			usertypeDefinition["starsPreSunriseFinish"] = &TES3::WeatherController::starsPreSunriseFinish;
@@ -86,7 +91,7 @@ namespace mwse::lua {
 			usertypeDefinition["sunriseHour"] = &TES3::WeatherController::sunriseHour;
 			usertypeDefinition["sunsetDuration"] = &TES3::WeatherController::sunsetDuration;
 			usertypeDefinition["sunsetHour"] = &TES3::WeatherController::sunsetHour;
-			usertypeDefinition["timescaleClouds"] = &TES3::WeatherController::bTimescaleClouds;
+			usertypeDefinition["timescaleClouds"] = &TES3::WeatherController::timescaleClouds;
 			usertypeDefinition["transitionScalar"] = &TES3::WeatherController::transitionScalar;
 			usertypeDefinition["underwaterColor"] = &TES3::WeatherController::underwaterCol;
 			usertypeDefinition["underwaterColorWeight"] = &TES3::WeatherController::underwaterColWeight;

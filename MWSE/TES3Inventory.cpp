@@ -5,6 +5,7 @@
 
 #include "TES3Actor.h"
 #include "TES3Enchantment.h"
+#include "TES3LeveledList.h"
 #include "TES3Item.h"
 #include "TES3MobileActor.h"
 #include "TES3Spell.h"
@@ -113,8 +114,13 @@ namespace TES3 {
 	}
 
 	const auto TES3_EquipmentStack_CalculateBarterItemValue = reinterpret_cast<int(__cdecl*)(const TES3::EquipmentStack*)>(0x5A46E0);
-	int EquipmentStack::getAdjustedValue() {
+	int EquipmentStack::getAdjustedValue() const {
 		return TES3_EquipmentStack_CalculateBarterItemValue(this);
+	}
+
+	const auto TES3_EquipmentStack_CanonicalCopy = reinterpret_cast<TES3::EquipmentStack * (__cdecl*)(const TES3::EquipmentStack*)>(0x465420);
+	EquipmentStack* EquipmentStack::canonicalCopy() const {
+		return TES3_EquipmentStack_CanonicalCopy(this);
 	}
 
 	//
@@ -137,13 +143,13 @@ namespace TES3 {
 		return stack;
 	}
 
-	const auto TES3_Inventory_AddItem = reinterpret_cast<int(__thiscall*)(Inventory*, MobileActor *, Item *, int, bool, ItemData **)>(0x498530);
-	int Inventory::addItem(MobileActor * mobile, Item * item, int count, bool overwriteCount, ItemData ** itemDataRef) {
+	const auto TES3_Inventory_AddItem = reinterpret_cast<int(__thiscall*)(Inventory*, MobileActor *, PhysicalObject *, int, bool, ItemData **)>(0x498530);
+	int Inventory::addItem(MobileActor * mobile, PhysicalObject * item, int count, bool overwriteCount, ItemData ** itemDataRef) {
 		return TES3_Inventory_AddItem(this, mobile, item, count, overwriteCount, itemDataRef);
 	}
 
-	const auto TES3_Inventory_AddItemWithoutData = reinterpret_cast<int(__thiscall*)(Inventory*, MobileActor *, Item *, int, bool)>(0x497CD0);
-	int Inventory::addItemWithoutData(MobileActor * mobile, Item * item, int count, bool something) {
+	const auto TES3_Inventory_AddItemWithoutData = reinterpret_cast<int(__thiscall*)(Inventory*, MobileActor *, PhysicalObject *, int, bool)>(0x497CD0);
+	int Inventory::addItemWithoutData(MobileActor * mobile, PhysicalObject * item, int count, bool something) {
 		return TES3_Inventory_AddItemWithoutData(this, mobile, item, count, something);
 	}
 
@@ -234,10 +240,23 @@ namespace TES3 {
 
 	int Inventory::addItem_lua(sol::table params) {
 		TES3::MobileActor* mact = mwse::lua::getOptionalParamMobileActor(params, "mobile");
-		TES3::Item* item = mwse::lua::getOptionalParamObject<TES3::Item>(params, "item");
+		TES3::PhysicalObject* item = mwse::lua::getOptionalParamObject<TES3::PhysicalObject>(params, "item");
 		if (item == nullptr) {
 			throw std::invalid_argument("tes3inventory:addItem: Invalid 'item' parameter provided.");
 		}
+		else if (item->objectType == TES3::ObjectType::LeveledItem) {
+			if (mact || getActor()->isClone()) {
+				// Actor has already had leveled items resolved. Resolve the leveled item and add the real item if one was rolled.
+				item = static_cast<TES3::LeveledItem*>(item)->resolve();
+				if (item == nullptr) {
+					return 0;
+				}
+			}
+		}
+		else if (!item->isItem()) {
+			throw std::invalid_argument("tes3inventory:addItem: Invalid 'item' parameter provided.");
+		}
+
 		int count = mwse::lua::getOptionalParam<int>(params, "count", 1);
 		TES3::ItemData* itemData = mwse::lua::getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
 		return addItem(mact, item, count, false, itemData ? &itemData : nullptr);

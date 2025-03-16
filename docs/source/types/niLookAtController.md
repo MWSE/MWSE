@@ -10,7 +10,7 @@ Orients an axis of the controlled object towards a lookAt target. The axis is se
 
 Warning: The lookAt property is not reference counted, so this controller must be removed, or lookAt set to nil before the lookAt object is deleted.
 
-This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `active`

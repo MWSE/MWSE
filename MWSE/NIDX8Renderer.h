@@ -7,23 +7,23 @@
 
 namespace NI {
 	struct DX8Renderer : Renderer {
-		int unknown_0x1C;
-		int unknown_0x20;
-		IDirect3DDevice8* d3dDevice;
-		HWND deviceWindowHandle;
-		char driverDesc[512];
-		int cuurentAdapterIndex;
-		int unknown_0x230;
-		int unknown_0x234;
-		int unknown_0x238;
-		D3DPRESENT_PARAMETERS d3dPresentParameters;
-		int unknown_0x270;
+		Pointer<void> propertyStatePtr; // 0x1C
+		Pointer<void> effectStatePtr; // 0x20
+		IDirect3DDevice8* d3dDevice; // 0x24
+		HWND deviceWindowHandle; // 0x28
+		char driverDesc[512]; // 0x2C
+		DWORD cuurentAdapterIndex; // 0x22C
+		DWORD d3dDeviceType; // 0x230
+		HWND focusWindow; // 0x234
+		DWORD d3dBehaviorFlags; // 0x238
+		D3DPRESENT_PARAMETERS d3dPresentParameters; // 0x23C
+		DWORD systemDesc; // 0x270
 		int unknown_0x274;
 		int unknown_0x278;
-		int unknown_0x27C;
-		int unknown_0x280;
-		int unknown_0x284;
-		int unknown_0x288;
+		PackedColor backgroundColor; // 0x27C
+		float depthClearValue; // 0x280
+		DWORD stencilClearValue; // 0x284
+		DWORD capabilityFlags; // 0x288
 		int unknown_0x28C;
 		int unknown_0x290;
 		int unknown_0x294;
@@ -32,18 +32,10 @@ namespace NI {
 		int unknown_0x2A0;
 		int unknown_0x2A4;
 		int unknown_0x2A8;
-		int unknown_0x2AC;
-		int unknown_0x2B0;
-		int unknown_0x2B4;
-		int unknown_0x2B8;
-		int unknown_0x2BC;
-		int unknown_0x2C0;
-		int unknown_0x2C4;
-		int unknown_0x2C8;
-		int unknown_0x2CC;
-		int unknown_0x2D0;
-		int unknown_0x2D4;
-		int unknown_0x2D8;
+		TES3::Vector3 cameraRight; // 0x2AC
+		TES3::Vector3 cameraUp; // 0x2B8
+		TES3::Vector3 modelCameraRight; // 0x2C4
+		TES3::Vector3 modelCameraUp; // 0x2D0
 		int unknown_0x2DC;
 		int unknown_0x2E0;
 		int unknown_0x2E4;
@@ -52,8 +44,8 @@ namespace NI {
 		int unknown_0x2F0;
 		int unknown_0x2F4;
 		int unknown_0x2F8;
-		int unknown_0x2FC;
-		int unknown_0x300;
+		float frustumNear;
+		float frustumDistance;
 		int unknown_0x304;
 		int unknown_0x308;
 		int unknown_0x30C;

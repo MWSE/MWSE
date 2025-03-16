@@ -448,6 +448,7 @@ namespace TES3 {
 
 	float WorldController::realDeltaTime = 0.0f;
 	float WorldController::simulationTimeScalar = 1.0f;
+	bool WorldController::blockItemUpDownSound = false;
 
 	WorldController * WorldController::get() {
 		return *reinterpret_cast<TES3::WorldController**>(0x7C67DC);
@@ -465,6 +466,10 @@ namespace TES3 {
 
 	const auto TES3_WorldController_playItemUpDownSound = reinterpret_cast<void(__thiscall*)(WorldController*, BaseObject*, ItemSoundState, Reference*)>(0x411050);
 	void WorldController::playItemUpDownSound(BaseObject* item, ItemSoundState state, Reference* reference) {
+		if (blockItemUpDownSound) {
+			return;
+		}
+
 		// Allow event overrides.
 		if (mwse::lua::event::PlayItemSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();

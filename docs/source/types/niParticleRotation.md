@@ -8,7 +8,7 @@
 
 This modifier rotates particles a constant rate.
 
-This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

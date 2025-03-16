@@ -8,7 +8,7 @@
 
 An object that has a name, extra data, and controllers.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

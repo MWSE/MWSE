@@ -8,7 +8,7 @@ If the caster is the player, the target parameter is optional; without a target,
 		type = "table",
 		tableParams = {
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string", description = "The caster reference." },
-			{ name = "target", type = "tes3reference|tes3mobileActor|string", description = "The target reference. Optional only if the caster is the player." },
+			{ name = "target", type = "tes3reference|tes3mobileActor|string", optional = true, description = "The target reference. Optional only if the caster is the player." },
 			{ name = "spell", type = "tes3spell|string", description = "The spell the caster uses." },
 			{ name = "instant", type = "boolean", optional = true, default = false, description = "If `true`, the spell is cast instantly. No animation is performed." },
 			{ name = "alwaysSucceeds", type = "boolean", optional = true, default = true, description = "If `true`, the spell cannot fail and does not consume magicka. If `false`, it is cast using the actor's spell skill, and requires and takes enough magicka to cast. For NPCs, this only applies if `instant` is `true`." },

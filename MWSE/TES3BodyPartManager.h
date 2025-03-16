@@ -124,7 +124,7 @@ namespace TES3 {
 		//
 
 		ActiveBodyPart* getActiveBodyPart(ActiveBodyPart::Layer layer, ActiveBodyPart::Index index);
-
+		std::reference_wrapper<decltype(attachNodes)> getAttachNodes();
 	};
 	static_assert(sizeof(BodyPartManager) == 0xA94, "TES3::BodyPartManager failed size validation");
 	static_assert(sizeof(BodyPartManager::AttachNode) == 0x38, "TES3::BodyPartManager::AttachNode failed size validation");

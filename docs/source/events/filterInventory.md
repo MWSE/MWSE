@@ -20,6 +20,7 @@ event.register(tes3.event.filterInventory, filterInventoryCallback)
 
 ## Event Data
 
+* `filter` (boolean, nil): If `true`, the item will be displayed in the menu. If `false`, the item will not be displayed. If left `nil`, the default behavior is used.
 * `item` ([tes3item](../types/tes3item.md)): *Read-only*. The item being filtered.
 * `itemData` ([tes3itemData](../types/tes3itemData.md)): *Read-only*. The item data for the item being filtered.
 * `tile` ([tes3inventoryTile](../types/tes3inventoryTile.md)): *Read-only*. The inventory tile being filtered.

@@ -8,7 +8,7 @@
 
 An attachment to NiObjectNETs that allows the storing of arbitrary data onto the given object.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `genericData`

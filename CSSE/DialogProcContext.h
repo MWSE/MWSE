@@ -25,6 +25,14 @@ namespace se::cs {
 		WORD getLOLParam() const;
 		WORD getHILParam() const;
 
+		template <typename T>
+		T* getUserData() const {
+			return (T*)GetWindowLongA(m_WindowHandle, GWL_USERDATA);
+		}
+
+		// WM_INITDIALOG
+		HWND getDefaultFocus() const;
+
 		// WM_NOTIFY
 		WPARAM getNotificationControlIdentifier() const;
 		NMHDR* getNotificationData() const;

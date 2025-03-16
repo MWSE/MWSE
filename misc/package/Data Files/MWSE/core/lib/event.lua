@@ -110,7 +110,20 @@ function this.register(eventType, callback, options)
 
 		doOnceCallbacks[originalCallback] = newCallback
 		callback = newCallback
+	
 	end
+	
+	-- If 'unregisterOnLoad' was set, unregister the callback on next load event.
+	if options.unregisterOnLoad then
+		this.register(tes3.event.load, function()
+			if this.isRegistered(eventType, callback, options) then
+				this.unregister(eventType, callback, options)
+			end
+		end, { doOnce = true } )
+	end
+
+	-- Fix up any filters to use base object ids.
+	remapFilter(options, true)
 
 	-- Store this callback's priority.
 	eventPriorities[callback] = options.priority or 0

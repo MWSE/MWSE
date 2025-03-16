@@ -7,5 +7,5 @@ Value | Description
 -1    | Mouse wheel down
  1    | Mouse wheel up
 ]],
-	valuetype = [[integer|nil]],
+	valuetype = [[integer|false|nil]],
 }

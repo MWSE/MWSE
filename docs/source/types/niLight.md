@@ -8,7 +8,7 @@
 
 Base class that represents light sources in a scene graph. This includes the ambient, diffuse, and specular colors of a light, as well as its intensity.
 
-This type inherits the following: [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`

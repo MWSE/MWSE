@@ -82,6 +82,7 @@ namespace TES3 {
 
 		void setDeleted(bool deleted);
 		void setDeletedWithSafety();
+		void cleanupAssociatedData();
 
 		bool getNoCollision() const;
 		void setNoCollision(bool set, bool updateCells = true);
@@ -100,6 +101,7 @@ namespace TES3 {
 		void setFacing(float facing);
 
 		float getAngleToReference(Reference* reference);
+		bool isInSameWorldspace(const Reference* other) const;
 
 		Matrix33 getRotationMatrix();
 		Vector3 getForwardDirectionVector();

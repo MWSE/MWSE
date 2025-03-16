@@ -2,6 +2,7 @@
 
 #include "TES3Actor.h"
 #include "TES3ItemData.h"
+#include "TES3Light.h"
 #include "TES3Misc.h"
 
 #include "CodePatchUtil.h"
@@ -31,8 +32,8 @@ namespace TES3 {
 		// Handle soul- and MCP-dependent value.
 		if (objectType == TES3::ObjectType::Misc && useSoulValue) {
 			auto asMisc = static_cast<const TES3::Misc*>(this);
-			if (asMisc->isSoulGem() && itemData->soul) {
-				auto soulValue = itemData->soul->getSoulValue().value_or(0);
+			if (asMisc->isSoulGem() && itemData->getSoul()) {
+				auto soulValue = itemData->getSoul()->getSoulValue().value_or(0);
 				if (mwse::mcp::getFeatureEnabled(mwse::mcp::feature::SoulgemValueRebalance)) {
 					return (soulValue * soulValue * soulValue) / 10000 + soulValue * 2;
 				}
@@ -56,6 +57,13 @@ namespace TES3 {
 		}
 
 		return value;
+	}
+
+	bool Item::getIsCarriable() const {
+		if (objectType == TES3::ObjectType::Light) {
+			return static_cast<const TES3::Light*>(this)->getCanCarry();
+		}
+		return true;
 	}
 
 	sol::table Item::getStolenList_lua(sol::this_state ts) {

@@ -21,6 +21,7 @@ event.register(tes3.event.uiObjectTooltip, uiObjectTooltipCallback)
 ## Event Data
 
 * `count` (number): *Read-only*. The number of items in the stack.
+* `creator` ([tes3uiElement](../types/tes3uiElement.md)): *Read-only*. The UI element, if applicable, that created this tooltip.
 * `itemData` ([tes3itemData](../types/tes3itemData.md)): *Read-only*. The item data of object, if any.
 * `object` ([tes3physicalObject](../types/tes3physicalObject.md)): *Read-only*. The object being examined.
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference being examined. Only valid for in-world objects. For inventory tiles it will always be nil.

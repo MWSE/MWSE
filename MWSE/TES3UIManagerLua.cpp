@@ -8,8 +8,10 @@
 #include "TES3NPC.h"
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
+#include "TES3InputController.h"
 
 #include "TES3UIElement.h"
+#include "TES3UIInventoryTile.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 
@@ -34,6 +36,54 @@ namespace mwse::lua {
 	static std::unordered_map<Element*, std::unordered_map<Property, std::vector<EventLuaCallback>>> eventCallbacksAfter;
 	static std::unordered_map<Element*, std::unordered_map<Property, EventCallback>> originalCallbackMap;
 	static std::unordered_map<Element*, void(__cdecl*)(Element*)> destroyMap;
+
+	static sol::table createKeyData(sol::state& state, int keyCode) {
+		const auto inputController = TES3::WorldController::get()->inputController;
+		auto keyData = state.create_table();
+		keyData["keyCode"] = keyCode;
+		keyData["isShiftDown"] = inputController->isShiftDown();
+		keyData["isControlDown"] = inputController->isControlDown();
+		keyData["isAltDown"] = inputController->isAltDown();
+		keyData["isSuperDown"] = inputController->isSuperDown();
+		return keyData;
+	}
+
+	static sol::table createEventTable(sol::state& state, Element* owningWidget, Property eventID, int data0, int data1, Element* source, Element* target) {
+		auto eventData = state.create_table();
+		eventData["forwardSource"] = source;
+		eventData["source"] = target;
+		eventData["widget"] = owningWidget;
+		eventData["id"] = eventID;
+		eventData["data0"] = data0;
+		eventData["data1"] = data1;
+
+		switch (eventID) {
+		case Property::event_mouse_leave:
+		case Property::event_mouse_over:
+		case Property::event_mouse_down:
+		case Property::event_mouse_click:
+		case Property::event_mouse_scroll_up:
+		case Property::event_mouse_scroll_down:
+		case Property::event_mouse_double_click:
+		case Property::event_mouse_still_idle:
+		case Property::event_mouse_still_over:
+		case Property::event_mouse_still_pressed_outside:
+		case Property::event_mouse_still_pressed:
+		case Property::event_mouse_release:
+			// For mouse events, convert screen coordinates to element relative coordinates.
+			eventData["relativeX"] = data0 - target->cached_screenX;
+			eventData["relativeY"] = target->cached_screenY - data1;
+			break;
+		case Property::event_key_press:
+			// Note that this is a DirectInput key code, not a scan code.
+			const auto charMasked = data0 & 0x7FFFFFFF;
+			eventData["character"] = charMasked > 0 ? state["string"]["char"](charMasked) : sol::object(sol::nil);
+			eventData["keyData"] = createKeyData(state, TES3::UI::MenuInputController::lastKeyPressDIK);
+			break;
+		}
+
+		return eventData;
+	}
 
 	bool __cdecl eventDispatcher(Element* owningWidget, Property eventID, int data0, int data1, Element* source) {
 		LuaManager& luaManager = LuaManager::getInstance();
@@ -66,19 +116,7 @@ namespace mwse::lua {
 		if (iterBeforeElements != eventCallbacksBefore.end()) {
 			auto iterCallback = iterBeforeElements->second.find(eventID);
 			if (iterCallback != iterBeforeElements->second.end()) {
-				auto eventData = state.create_table();
-				eventData["forwardSource"] = source;
-				eventData["source"] = target;
-				eventData["widget"] = owningWidget;
-				eventData["id"] = eventID;
-				eventData["data0"] = data0;
-				eventData["data1"] = data1;
-
-				// For mouse events, convert screen coordinates to element relative coordinates.
-				if (eventID >= Property::event_mouse_leave && eventID <= Property::event_mouse_release) {
-					eventData["relativeX"] = data0 - target->cached_screenX;
-					eventData["relativeY"] = target->cached_screenY - data1;
-				}
+				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
 
 				auto& callbacks = iterCallback->second;
 				for (const auto& eventLua : callbacks) {
@@ -112,19 +150,7 @@ namespace mwse::lua {
 			if (iterCallback != iterElements->second.end()) {
 				legacyUsed = true;
 
-				auto eventData = state.create_table();
-				eventData["forwardSource"] = source;
-				eventData["source"] = target;
-				eventData["widget"] = owningWidget;
-				eventData["id"] = eventID;
-				eventData["data0"] = data0;
-				eventData["data1"] = data1;
-
-				// For mouse events, convert screen coordinates to element relative coordinates.
-				if (eventID >= Property::event_mouse_leave && eventID <= Property::event_mouse_release) {
-					eventData["relativeX"] = data0 - target->cached_screenX;
-					eventData["relativeY"] = target->cached_screenY - data1;
-				}
+				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
 
 				// Note: sol::protected_function needs to be a local, as Lua functions can destroy it when modifying events.
 				sol::protected_function callback = iterCallback->second;
@@ -168,19 +194,7 @@ namespace mwse::lua {
 		if (iterAfterElements != eventCallbacksAfter.end()) {
 			auto iterCallback = iterAfterElements->second.find(eventID);
 			if (iterCallback != iterAfterElements->second.end()) {
-				auto eventData = state.create_table();
-				eventData["forwardSource"] = source;
-				eventData["source"] = target;
-				eventData["widget"] = owningWidget;
-				eventData["id"] = eventID;
-				eventData["data0"] = data0;
-				eventData["data1"] = data1;
-
-				// For mouse events, convert screen coordinates to element relative coordinates.
-				if (eventID >= Property::event_mouse_leave && eventID <= Property::event_mouse_release) {
-					eventData["relativeX"] = data0 - target->cached_screenX;
-					eventData["relativeY"] = target->cached_screenY - data1;
-				}
+				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
 
 				auto& callbacks = iterCallback->second;
 				for (const auto& eventLua : callbacks) {
@@ -370,6 +384,7 @@ namespace mwse::lua {
 		eventCallbacksAfter.erase(element);
 		eventCallbacksLegacy.erase(element);
 		originalCallbackMap.erase(element);
+		destroyMap.erase(element);
 	}
 
 	void copyLuaCallbacks(TES3::UI::Element* from, TES3::UI::Element* to) {
@@ -410,6 +425,8 @@ namespace mwse::lua {
 		tes3ui["findMenu"] = TES3::UI::findMenu_lua;
 		tes3ui["forcePlayerInventoryUpdate"] = TES3::UI::forcePlayerInventoryUpdate;
 		tes3ui["getConsoleReference"] = TES3::UI::getConsoleReference;
+		tes3ui["getCursor"] = TES3::UI::getCursor;
+		tes3ui["getCursorTile"] = TES3::UI::getCursorTile;
 		tes3ui["getInventorySelectType"] = TES3::UI::getInventorySelectType;
 		tes3ui["getMenuOnTop"] = TES3::UI::getMenuOnTop;
 		tes3ui["getPalette"] = TES3::UI::getPalette_lua;
@@ -427,9 +444,9 @@ namespace mwse::lua {
 		tes3ui["setConsoleReference"] = TES3::UI::setConsoleReference;
 		tes3ui["showBookMenu"] = TES3::UI::showBookMenu;
 		tes3ui["showDialogueMessage"] = TES3::UI::showDialogueMessage_lua;
-		tes3ui["showMagicSelectMenu"] = TES3::UI::showMagicSelectMenu_lua;
 		tes3ui["showInventorySelectMenu"] = TES3::UI::showInventorySelectMenu_lua;
 		tes3ui["showJournal"] = TES3::UI::showJournal;
+		tes3ui["showMagicSelectMenu"] = TES3::UI::showMagicSelectMenu_lua;
 		tes3ui["showScrollMenu"] = TES3::UI::showScrollMenu;
 		tes3ui["stealHelpMenu"] = TES3::UI::stealHelpMenu;
 		tes3ui["suppressTooltip"] = TES3::UI::setSuppressingHelpMenu;

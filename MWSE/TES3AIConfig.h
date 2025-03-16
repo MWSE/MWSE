@@ -64,6 +64,8 @@ namespace TES3 {
 		bool getBartersWeapons() const;
 		void setBartersWeapons(bool set);
 
+		bool getOffersBartering() const;
+
 		bool getOffersEnchanting() const;
 		void setOffersEnchanting(bool set);
 

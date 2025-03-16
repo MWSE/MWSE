@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The soruceless flag of the object.]],
+	description = [[The sourceless flag of the object.]],
 	valuetype = "boolean",
 }

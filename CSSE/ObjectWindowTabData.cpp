@@ -12,6 +12,7 @@
 #include "CSFaction.h"
 #include "CSGameSetting.h"
 #include "CSIngredient.h"
+#include "CSEffect.h"
 #include "CSLeveledCreature.h"
 #include "CSLeveledItem.h"
 #include "CSLight.h"
@@ -2607,7 +2608,7 @@ namespace se::cs::dialog::object_window {
 		tabColumnModified.addToController(this, hWnd);
 	}
 
-	int TabController::getColumnIndexByTitle(const char* title) {
+	int TabController::getColumnIndexByTitle(const char* title) const {
 		for (auto i = 0u; i < columns.size(); ++i) {
 			if (string::equal(columns.at(i)->m_Title, title)) {
 				return i;
@@ -2616,7 +2617,7 @@ namespace se::cs::dialog::object_window {
 		return -1;
 	}
 
-	TabColumn* TabController::getColumnByTitle(const char* title) {
+	TabColumn* TabController::getColumnByTitle(const char* title) const {
 		auto index = getColumnIndexByTitle(title);
 		if (index == -1) {
 			return nullptr;

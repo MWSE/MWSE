@@ -230,10 +230,54 @@ The hours remaining.
 
 ***
 
+### `precipitationFallSpeed`
+<div class="search_terms" style="display: none">precipitationfallspeed</div>
+
+The z component of the rain or snow fall particle velocity (not including blizzards). Snow fall velocity is also multiplied by `snowFallSpeedScale`. This value is initialized by the "Precipitation Gravity" entry in morrowind.ini.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `sceneAtmosphere`
+<div class="search_terms" style="display: none">sceneatmosphere</div>
+
+*Read-only*. Provides access to the scene atmosphere skydome NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneClouds`
+<div class="search_terms" style="display: none">sceneclouds</div>
+
+*Read-only*. Provides access to the scene clouds root NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
+### `sceneNightSky`
+<div class="search_terms" style="display: none">scenenightsky</div>
+
+*Read-only*. Provides access to the scene night sky (stars and nebula) NiNode.
+
+**Returns**:
+
+* `result` ([niNode](../types/niNode.md))
+
+***
+
 ### `sceneRainRoot`
 <div class="search_terms" style="display: none">scenerainroot</div>
 
-*Read-only*. Provides read-only access to the scene rain root NiNode.
+*Read-only*. Provides access to the scene rain root NiNode.
 
 **Returns**:
 
@@ -244,7 +288,7 @@ The hours remaining.
 ### `sceneSkyLight`
 <div class="search_terms" style="display: none">sceneskylight</div>
 
-*Read-only*. Provides read-only access to the scene sky light directional light.
+*Read-only*. Provides access to the scene sky light directional light.
 
 **Returns**:
 
@@ -255,7 +299,7 @@ The hours remaining.
 ### `sceneSkyRoot`
 <div class="search_terms" style="display: none">sceneskyroot</div>
 
-*Read-only*. Provides read-only access to the scene sky root NiNode.
+*Read-only*. Provides access to the scene sky root NiNode.
 
 **Returns**:
 
@@ -266,7 +310,7 @@ The hours remaining.
 ### `sceneSnowRoot`
 <div class="search_terms" style="display: none">scenesnowroot</div>
 
-*Read-only*. Provides read-only access to the scene snow root NiNode.
+*Read-only*. Provides access to the scene snow root NiNode.
 
 **Returns**:
 
@@ -277,7 +321,7 @@ The hours remaining.
 ### `sceneStormRoot`
 <div class="search_terms" style="display: none">scenestormroot</div>
 
-*Read-only*. Provides read-only access to the scene storm root NiNode.
+*Read-only*. Provides access to the scene storm root NiNode.
 
 **Returns**:
 
@@ -366,6 +410,17 @@ The sky has one color for day and night states each. The night color will be use
 <div class="search_terms" style="display: none">skypresunsettime</div>
 
 The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `snowFallSpeedScale`
+<div class="search_terms" style="display: none">snowfallspeedscale</div>
+
+A multipler for the z component of snow fall particle velocity (not including blizzards). The z component is set by `precipitationFallSpeed * snowFallSpeedScale`. This value is initialized by the "Snow Gravity Scale" entry in morrowind.ini.
 
 **Returns**:
 

@@ -127,13 +127,13 @@ end
 
 ]]--
 
-local fileUtils = require("mcm.fileUtils")
+local utils = require("mcm.utils")
 local strLengthCreate = string.len("create")
 
 --[[Add the `create<Component|Variable>` functions.
 This will be done via the `__index` metamethod as follows:
 1. The first time a `create` function is called, it will try to fetch the relevant class.
-	- This is done by calling `fileUtils.getComponentClass` and `fileUtils.getVariableClass`
+	- This is done by calling `utils.getComponentClass` and `utils.getVariableClass`
 2. If a class was returned in Step 1:
 	- Create a new function sanitizes the input data and returns a new instance of the relevant class.
 	- Store this new function in the `mcm` table (so this whole process only happens one time per call to `create<Componen|Variablet>`).
@@ -147,7 +147,7 @@ setmetatable(mcm, {__index = function(_, key)
 	local className = key:sub(strLengthCreate + 1)
 
 	-- First check if it's a component.
-	local componentClass = fileUtils.getComponentClass(className)
+	local componentClass = utils.getComponentClass(className)
 	if componentClass then
 
 		-- Store the function so we don't have to recreate it every time.
@@ -182,17 +182,11 @@ setmetatable(mcm, {__index = function(_, key)
 	end
 
 	-- Now check if it's a variable.
-	local variableClass = fileUtils.getVariableClass(className)
+	local variableClass = utils.getVariableClass(className)
 	if variableClass then
 
 		-- Store the function so we don't have to recreate it every time.
 		mcm[key] = function(param1, param2)
-			-- Some mods call this function as if it were a method using colon.
-			-- Log a warning, but provide backwards compatibility.
-			if param2 then
-				mwse.log("[mwse.mcm Warning]: Calling mwse.mcm API function with a colon (:) instead of a dot (.).\n%s",
-					debug.traceback())
-			end
 			return variableClass:new(param2 or param1)
 		end
 		return mcm[key]

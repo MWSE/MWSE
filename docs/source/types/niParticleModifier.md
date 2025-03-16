@@ -8,7 +8,7 @@
 
 Abstract base class for particle system modifiers. It affects every particle in a particle system.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

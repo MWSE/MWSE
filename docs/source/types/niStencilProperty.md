@@ -19,7 +19,7 @@ Value | Mode             | Description
 4     | ACTION_DECREMENT | Decrement the value in the stencil buffer.
 5     | ACTION_INVERT    | Bitwise invert the value in the stencil buffer.
 
-This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

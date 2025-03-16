@@ -8,7 +8,7 @@
 
 An object that represents an ambient light. This object is fairly simple, and has no location, direction, or attenuation.
 
-This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`

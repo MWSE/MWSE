@@ -10,7 +10,7 @@ Represents an effect that uses projected textures such as projected lights (gobo
 
 For Morrowind: the bump map can be used to bump the environment map (note that the bump map is ignored if no niTextureEffect object is present).
 
-This type inherits the following: [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`

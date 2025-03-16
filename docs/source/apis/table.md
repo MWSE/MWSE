@@ -104,6 +104,26 @@ table.clear(table)
 
 ***
 
+### `table.contains`
+<div class="search_terms" style="display: none">contains</div>
+
+Returns `true` if a `value` is contained in a table `t`, and `false` otherwise.
+
+```lua
+local result = table.contains(t, value)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `value` (unknown)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `table.copy`
 <div class="search_terms" style="display: none">copy</div>
 
@@ -181,6 +201,34 @@ local result = table.empty(t, deepCheck)
 
 ***
 
+### `table.equal`
+<div class="search_terms" style="display: none">equal</div>
+
+Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
+Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
+For example, all of the following assertions pass:
+```lua
+assert(table.equal({1, 2}, {1, 2}))
+assert({1, 2} ~= {1, 2})
+assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
+```
+
+
+```lua
+local result = table.equal(left, right)
+```
+
+**Parameters**:
+
+* `left` (table)
+* `right` (table)
+
+**Returns**:
+
+* `result` (boolean): True if the contents of `left` are equal to the contents of `right`. False otherwise.
+
+***
+
 ### `table.filter`
 <div class="search_terms" style="display: none">filter</div>
 
@@ -198,7 +246,7 @@ local result = table.filter(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): boolean)
+* `f` (fun(k: unknown, v: unknown, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -223,7 +271,7 @@ local result = table.filterarray(arr, f, ...)
 **Parameters**:
 
 * `arr` (table)
-* `f` (fun(i: integer, v: unknown, ...): boolean)
+* `f` (fun(i: integer, v: unknown, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -346,7 +394,7 @@ local result = table.map(t, f, ...)
 **Parameters**:
 
 * `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): unknown)
+* `f` (fun(k: unknown, v: unknown, ...): unknown): The function to apply to each element of `t`.
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
@@ -378,20 +426,36 @@ local newTable = table.new(narray, nhash)
 ### `table.removevalue`
 <div class="search_terms" style="display: none">removevalue, value</div>
 
-Removes a value from a given table. Returns true if the value was successfully removed.
+Removes a `value` from a given `list`. Returns `true` if the value was successfully removed.
 
 ```lua
-local result = table.removevalue(t, value)
+local result = table.removevalue(list, value)
 ```
 
 **Parameters**:
 
-* `t` (table)
+* `list` (table)
 * `value` (unknown)
 
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `table.shuffle`
+<div class="search_terms" style="display: none">shuffle</div>
+
+Shuffles the table in place using the Fisher-Yates algorithm. Passing in table size as the second argument saves the function from having to get it itself.
+
+```lua
+table.shuffle(t, n)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `n` (integer): *Default*: `#t`. The length of the array.
 
 ***
 
@@ -443,7 +507,7 @@ local iterator = table.traverse(t, k)
 	```lua
 	local function onLoaded()
 		mwse.log("Player's scene graph:")
-		for node in table.traverse({tes3.player.sceneNode}) do
+		for node in table.traverse({ tes3.player.sceneNode }) do
 			mwse.log("%s : %s", node.RTTI.name, node.name)
 		end
 	end

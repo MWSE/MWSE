@@ -5,6 +5,7 @@
 
 #include "TES3Spell.h"
 #include "TES3UIElement.h"
+#include "TES3UIMenuController.h"
 
 namespace mwse::lua::event {
 	UiSpellTooltipEvent::UiSpellTooltipEvent(TES3::UI::Element* tooltip, TES3::Spell* spell) :
@@ -22,6 +23,7 @@ namespace mwse::lua::event {
 
 		eventData["tooltip"] = m_Tooltip;
 		eventData["spell"] = m_Spell;
+		eventData["creator"] = TES3::UI::MenuInputController::lastTooltipSource;
 
 		return eventData;
 	}

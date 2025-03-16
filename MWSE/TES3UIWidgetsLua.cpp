@@ -40,6 +40,7 @@ namespace mwse::lua {
 			usertypeDefinition["overActive"] = sol::property(&WidgetButton::getColourActiveOver_lua, &WidgetButton::setColourActiveOver_lua);
 			usertypeDefinition["pressedActive"] = sol::property(&WidgetButton::getColourActivePressed_lua, &WidgetButton::setColourActivePressed_lua);
 			usertypeDefinition["element"] = sol::readonly_property(&WidgetButton::getElement);
+			usertypeDefinition["textElement"] = sol::readonly_property(&WidgetButton::getTextElement);
 		}
 
 		//

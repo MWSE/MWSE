@@ -132,6 +132,24 @@
     <ClCompile Include="DialogUseReportWindow.cpp">
       <Filter>Source Files\UI\Dialog</Filter>
     </ClCompile>
+    <ClCompile Include="DialogPathGridWindow.cpp">
+      <Filter>Source Files\UI\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="CSEffect.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="CSMagicEffect.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="CSEnchantment.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="CSAlchemy.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
+    <ClCompile Include="CSGlobalVariable.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CSSE.def">
@@ -435,6 +453,24 @@
     </ClInclude>
     <ClInclude Include="DialogUseReportWindow.h">
       <Filter>Header Files\UI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="CSGlobalVariable.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogPathGridWindow.h">
+      <Filter>Header Files\UI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="CSMagicEffect.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="CSAlchemy.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="CSLand.h">
+      <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="CSFile.h">
+      <Filter>Header Files\CS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

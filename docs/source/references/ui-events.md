@@ -28,6 +28,12 @@ mouseStillOver           | `"mouseStillOver"`
 mouseStillPressed        | `"mouseStillPressed"`
 mouseStillPressedOutside | `"mouseStillPressedOutside"`
 partScrollBarChanged     | `"PartScrollBar_changed"`
+colorChanged             | `"colorChanged"`
+valueChanged             | `"valueChanged"`
+tabFocus                 | `"tabFocus"`
+tabUnfocus               | `"tabUnfocus"`
+textCleared              | `"textCleared"`
+textUpdated              | `"textUpdated"`
 preUpdate                | `"preUpdate"`
 unfocus                  | `"unfocus"`
 update                   | `"update"`

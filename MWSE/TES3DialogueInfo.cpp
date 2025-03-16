@@ -137,7 +137,7 @@ namespace TES3 {
 		}
 
 		// Check for conditionals.
-		for (auto i = 0; i < 6; ++i) {
+		for (auto i = 0; i < DialogueInfoConditionalCount; ++i) {
 			auto& conditionalContext = context.conditionalContexts[i];
 			if (conditionalContext.conditional == nullptr) {
 				continue;

@@ -18,6 +18,18 @@ return {
 				description = "Name of the effect."
 			},
 			{
+				name = "magnitudeType",
+				type = "string",
+				optional = true,
+				description = "The suffix describing the magnitude, when its value is 1. By default, this resolves to the sPoint GMST."
+			},
+			{
+				name = "magnitudeTypePlural",
+				type = "string",
+				optional = true,
+				description = "The suffix describing the magnitude, when its value is not 1. By default, this resolves to the sPoints GMST."
+			},
+			{
 				name = "baseCost",
 				type = "number",
 				optional = true,

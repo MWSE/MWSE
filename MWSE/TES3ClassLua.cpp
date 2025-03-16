@@ -45,6 +45,7 @@ namespace mwse::lua {
 		usertypeDefinition["bartersProbes"] = sol::property(&TES3::Class::getBartersProbes, &TES3::Class::setBartersProbes);
 		usertypeDefinition["bartersRepairTools"] = sol::property(&TES3::Class::getBartersRepairTools, &TES3::Class::setBartersRepairTools);
 		usertypeDefinition["bartersWeapons"] = sol::property(&TES3::Class::getBartersWeapons, &TES3::Class::setBartersWeapons);
+		usertypeDefinition["offersBartering"] = sol::readonly_property(&TES3::Class::getOffersBartering);
 		usertypeDefinition["offersEnchanting"] = sol::property(&TES3::Class::getOffersEnchanting, &TES3::Class::setOffersEnchanting);
 		usertypeDefinition["offersRepairs"] = sol::property(&TES3::Class::getOffersRepairs, &TES3::Class::setOffersRepairs);
 		usertypeDefinition["offersSpellmaking"] = sol::property(&TES3::Class::getOffersSpellmaking, &TES3::Class::setOffersSpellmaking);

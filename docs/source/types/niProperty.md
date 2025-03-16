@@ -8,7 +8,7 @@
 
 A base class representing all rendering properties.
 
-This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

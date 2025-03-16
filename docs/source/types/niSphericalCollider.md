@@ -8,7 +8,7 @@
 
 This modifier makes particles bounce off of a sphere.
 
-This type inherits the following: [niParticleCollider](../types/niParticleCollider.md), [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleCollider](../types/niParticleCollider.md), [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `collisionPoint`

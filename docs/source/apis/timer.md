@@ -81,6 +81,28 @@ local timer = timer.delayOneFrame(callback, type)
 
 ***
 
+### `timer.frame.delayOneFrame`
+<div class="search_terms" style="display: none">frame.delayoneframe</div>
+
+Creates a timer that will finish the next frame.
+
+!!! tip
+	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.
+
+```lua
+local timer = timer.frame.delayOneFrame(callback)
+```
+
+**Parameters**:
+
+* `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md))): The callback function that will execute when the timer expires.
+
+**Returns**:
+
+* `timer` ([mwseTimer](../types/mwseTimer.md))
+
+***
+
 ### `timer.register`
 <div class="search_terms" style="display: none">register</div>
 

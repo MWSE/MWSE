@@ -16,23 +16,34 @@
     <ClInclude Include="BSAnimationManager.h" />
     <ClInclude Include="LuaCalcChargenStatsEvent.h" />
     <ClInclude Include="LuaCalcHitDetectionConeEvent.h" />
+    <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
+    <ClInclude Include="LuaMagicReflectedEvent.h" />
+    <ClInclude Include="LuaMagicReflectEvent.h" />
     <ClInclude Include="LuaMagicSelectionChangedEvent.h" />
     <ClInclude Include="LuaMusicChangeTrackEvent.h" />
     <ClInclude Include="LuaObjectCopiedEvent.h" />
     <ClInclude Include="LuaObjectCreatedEvent.h" />
+    <ClInclude Include="LuaPickpocketEvent.h" />
+    <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h" />
     <ClInclude Include="LuaShieldBlockedEvent.h" />
     <ClInclude Include="LuaSimulatedEvent.h" />
     <ClInclude Include="LuaStartGlobalScriptEvent.h" />
     <ClInclude Include="LuaUiSkillTooltipEvent.h" />
+    <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h" />
     <ClInclude Include="NIAccumulator.h" />
     <ClInclude Include="NIAnimationData.h" />
     <ClInclude Include="NIAnimationKey.h" />
+    <ClInclude Include="NIBoundingVolumeLua.h" />
+    <ClInclude Include="NIBSAnimationNodeLua.h" />
     <ClInclude Include="NIPathController.h" />
     <ClInclude Include="NISortAdjustNode.h" />
+    <ClInclude Include="NITriShapeDynamicData.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
+    <ClInclude Include="TES3CrimeLua.h" />
     <ClInclude Include="TES3DialogueFilterContext.h" />
+    <ClInclude Include="TES3ItemLua.h" />
     <ClInclude Include="TES3LandLua.h" />
     <ClInclude Include="LuaActiveMagicEffectIconsUpdatedEvent.h" />
     <ClInclude Include="LuaAttackHitEvent.h" />
@@ -301,9 +312,7 @@
     <ClInclude Include="TES3BodyPartLua.h" />
     <ClInclude Include="TES3CollisionLua.h" />
     <ClInclude Include="TES3CombatSessionLua.h" />
-    <ClInclude Include="TES3CrimeController.h" />
     <ClInclude Include="TES3CrimeEvent.h" />
-    <ClInclude Include="TES3CrimeEventList.h" />
     <ClInclude Include="DynamicLuaObject.h" />
     <ClInclude Include="TES3Fader.h" />
     <ClInclude Include="TES3FaderLua.h" />
@@ -533,6 +542,7 @@
     <ClInclude Include="VMExecuteInterface.h" />
     <ClInclude Include="VMHookInterface.h" />
     <ClInclude Include="WindowsUtil.h" />
+    <ClInclude Include="yamlloader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArrayUtil.cpp" />
@@ -568,6 +578,7 @@
     <ClCompile Include="LuaCalcSpellmakingSpellPointCostEvent.cpp" />
     <ClCompile Include="LuaCalcSpellPriceEvent.cpp" />
     <ClCompile Include="LuaCalcSunDamageScalarEvent.cpp" />
+    <ClCompile Include="LuaCalcTouchSpellConeEvent.cpp" />
     <ClCompile Include="LuaCalcTrainingPriceEvent.cpp" />
     <ClCompile Include="LuaCalcTravelPriceEvent.cpp" />
     <ClCompile Include="LuaCameraControlEvent.cpp" />
@@ -635,6 +646,8 @@
     <ClCompile Include="LuaLoadGameEvent.cpp" />
     <ClCompile Include="LuaMagicCastedEvent.cpp" />
     <ClCompile Include="LuaMagicEffectRemovedEvent.cpp" />
+    <ClCompile Include="LuaMagicReflectedEvent.cpp" />
+    <ClCompile Include="LuaMagicReflectEvent.cpp" />
     <ClCompile Include="LuaMagicSelectionChangedEvent.cpp" />
     <ClCompile Include="LuaMenuStateEvent.cpp" />
     <ClCompile Include="LuaMeshLoadedEvent.cpp" />
@@ -659,9 +672,11 @@
     <ClCompile Include="LuaObjectFilteredEvent.cpp" />
     <ClCompile Include="LuaObjectInvalidatedEvent.cpp" />
     <ClCompile Include="LuaPickLockEvent.cpp" />
+    <ClCompile Include="LuaPickpocketEvent.cpp" />
     <ClCompile Include="LuaPlayAnimationGroupEvent.cpp" />
     <ClCompile Include="LuaPlayItemSoundEvent.cpp" />
     <ClCompile Include="LuaPostInfoResponseEvent.cpp" />
+    <ClCompile Include="LuaRemovedEquipmentBodyPartsEvent.cpp" />
     <ClCompile Include="LuaShieldBlockedEvent.cpp" />
     <ClCompile Include="LuaSimulatedEvent.cpp" />
     <ClCompile Include="LuaPotionBrewedEvent.cpp" />
@@ -700,6 +715,7 @@
     <ClCompile Include="LuaUiSkillTooltipEvent.cpp" />
     <ClCompile Include="LuaUiSpellTooltipEvent.cpp" />
     <ClCompile Include="LuaUnequippedEvent.cpp" />
+    <ClCompile Include="LuaUpdateBodyPartsForItemEvent.cpp" />
     <ClCompile Include="LuaUtil.cpp" />
     <ClCompile Include="LuaVFXCreatedEvent.cpp" />
     <ClCompile Include="LuaWeaponReadiedEvent.cpp" />
@@ -708,6 +724,7 @@
     <ClCompile Include="LuaWeatherCycledEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionFinishedEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionStartedEvent.cpp" />
+    <ClCompile Include="MGEApi.cpp" />
     <ClCompile Include="MGEApiLua.cpp" />
     <ClCompile Include="MGEPostShaders.cpp" />
     <ClCompile Include="MGEPostShadersLua.cpp" />
@@ -718,6 +735,9 @@
     <ClCompile Include="NIAnimationKey.cpp" />
     <ClCompile Include="NIBillboardNode.cpp" />
     <ClCompile Include="NIBinaryStream.cpp" />
+    <ClCompile Include="NIBoundingVolumeLua.cpp" />
+    <ClCompile Include="NIBSAnimationNode.cpp" />
+    <ClCompile Include="NIBSAnimationNodeLua.cpp" />
     <ClCompile Include="NICamera.cpp" />
     <ClCompile Include="NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />
@@ -785,6 +805,7 @@
     <ClCompile Include="TES3BodyPartManager.cpp" />
     <ClCompile Include="TES3Clothing.cpp" />
     <ClCompile Include="TES3Creature.cpp" />
+    <ClCompile Include="TES3CrimeLua.cpp" />
     <ClCompile Include="TES3CriticalSection.cpp" />
     <ClCompile Include="TES3DialogueConditional.cpp" />
     <ClCompile Include="TES3DialogueFilterContext.cpp" />
@@ -844,8 +865,6 @@
     <ClCompile Include="TES3CollisionLua.cpp" />
     <ClCompile Include="TES3CombatSession.cpp" />
     <ClCompile Include="TES3CombatSessionLua.cpp" />
-    <ClCompile Include="TES3CrimeController.cpp" />
-    <ClCompile Include="TES3CrimeEventList.cpp" />
     <ClCompile Include="TES3DialogueInfo.cpp" />
     <ClCompile Include="TES3Enchantment.cpp" />
     <ClCompile Include="TES3Fader.cpp" />
@@ -1224,6 +1243,7 @@
     <ClCompile Include="xTextInput.cpp" />
     <ClCompile Include="xTextInputAlt.cpp" />
     <ClCompile Include="xXor.cpp" />
+    <ClCompile Include="yamlloader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MWSE.rc" />
@@ -1269,15 +1289,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -1295,7 +1315,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -1307,10 +1327,10 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
     <PreBuildEvent>
       <Command>set buildTime=
 for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
+echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
+echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
+echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
+if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -1333,7 +1353,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -1345,10 +1365,10 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
     <PreBuildEvent>
       <Command>set buildTime=
 for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
+echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
+echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
+echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
+if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -64,9 +64,7 @@ namespace mwse::lua {
 			// Basic bindings.
 			usertypeDefinition["boneData"] = sol::readonly_property(&NI::SkinData::getBones);
 			usertypeDefinition["partition"] = &NI::SkinData::partition;
-			usertypeDefinition["rotation"] = &NI::SkinData::rotation;
-			usertypeDefinition["scale"] = &NI::SkinData::scale;
-			usertypeDefinition["translation"] = &NI::SkinData::translation;
+			usertypeDefinition["transform"] = &NI::SkinData::transform;
 		}
 
 		// Binding for NI::SkinData::BoneData.
@@ -77,9 +75,7 @@ namespace mwse::lua {
 
 			// Basic bindings.
 			usertypeDefinition["bounds"] = &NI::SkinData::BoneData::bounds;
-			usertypeDefinition["rotation"] = &NI::SkinData::BoneData::rotation;
-			usertypeDefinition["scale"] = &NI::SkinData::BoneData::scale;
-			usertypeDefinition["translation"] = &NI::SkinData::BoneData::translation;
+			usertypeDefinition["transform"] = &NI::SkinData::BoneData::transform;
 			usertypeDefinition["weights"] = sol::readonly_property(&NI::SkinData::BoneData::getWeights);
 		}
 

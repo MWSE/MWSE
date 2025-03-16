@@ -8,7 +8,7 @@
 
 The Morrowind's renderer class.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `refCount`

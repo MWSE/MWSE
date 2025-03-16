@@ -5,7 +5,7 @@ return {
 Each "node" is an object with a children table of other "nodes", each of which might have their own children. For example, a sceneNode is made up of niNodes, and each niNodes can have a list of niNode children. This is best used for recursive data structures like UI elements and sceneNodes etc.]],
 	arguments = {
 		{ name = "t", type = "table", description = "A table to transverse." },
-		{ name = "k", type = "string", optional = "true", default = "children", description = "The subtable key." },
+		{ name = "k", type = "string", optional = true, default = "children", description = "The subtable key." },
 	},
 	returns = {
 		name = "iterator",

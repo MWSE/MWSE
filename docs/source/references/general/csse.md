@@ -16,6 +16,8 @@ CSSE requires [MGE XE](https://www.nexusmods.com/morrowind/mods/41102?) v0.14.3 
 
 If using OpenMW, you will still need to install MGE XE into your Morrowind installation directory (the same directory that you launch the Construction Set).
 
+If you are on Linux, you also need additional setup in winecfg so that WINE will use the included dlls. Read [Hristos' guide](https://hristos.co/blog/enjoying-morrowind-on-linux-part-one-original-engine/) for a full walkthrough. Specifically, in winecfg, the dlls d3d8, mwse, csse need to be set to native and builtin.
+
 ## Installation
 
 You can obtain the CSSE using one of the following methods:
@@ -55,6 +57,8 @@ Prefer to learn from videos? Danae has made [a non-exhaustive summary video of t
 * Opening the Construction Set through Mod Organizer 2 is no longer slowed by the number of active MO2 mod folders.
 * The NetImmerse NiLinesData structure loads correctly.
 * Symbolically linked files now list and load correctly.
+* By default both dds and tga texture files are selectable in texture selection dialogs.
+* Attempts to open the CS .hlp file now instead redirect to the [Morrowind Modding Wiki mirror](https://tes3cs.pages.dev/) of the document.
 
 #### Testing from the Construction Set
 
@@ -73,7 +77,7 @@ The OpenMW icon will only display if a valid OpenMW installation directory has b
 location = "D:\\Games\\OpenMW"
 ```
 
-Because of the implementation of the OpenMW support, a custom config directory is used. This means user settings such as resolution must be reconfigured the first time the game is run from this environment.
+Because of the implementation of the OpenMW support, a custom config directory is used at "Data Files\MWSE\tmp\csse\openmw". CSSE will make a copy of your settings.cfg file in this folder, but will not keep it synced to any future changes in the OpenMW install.
 
 ##### Test Environment
 
@@ -104,6 +108,7 @@ chargenstate = -1.0
 ### Main Window
 
 * The status bars at the bottom of the construction set have been widened. They should always have enough room to show the relevent information.
+* The status bars now also show the scale of the selected object.
 
 ### Actor Editing Windows
 
@@ -113,6 +118,7 @@ chargenstate = -1.0
 ### Cell View
 
 * Significantly improved UI responsiveness.
+* Fixed issue where the cell and object lists would gradually shrink when data files are reloaded.
 
 ### Dialogue Window
 
@@ -148,7 +154,16 @@ chargenstate = -1.0
 * Deleted objects are highlighted with a light red background.
 * The spell list lists the range of the spell.
 * The creature list now shows the soul value of creatures.
-* Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under `tools.csse.deprecated`. Objects matching these IDs will not be displayed in the Object Window.
+* The leveled item/leveled creature lists now show the chance of no spawn.
+* Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under `tools.csse.deprecated`. Objects matching these IDs (case insensitive) will not be displayed in the Object Window.
+
+### Path Grid Window
+
+* The default focused control is now the save button, instead of the Generate Default Grid button.
+
+### Reference Edit Window
+
+* Opening the window now no longer dirties the reference, until a value has been actually changed.
 
 ### Render Window
 
@@ -181,6 +196,7 @@ The following changes to the rendering window apply when landscape editing:
 * The `F` and `S` keys can now be used to enter flatten and smooth vertices modes.
 * The `[` and `]` keys can be used to decrement/increment the terrain editing radius.
 * The terrain editing disc is no longer hidden when hiding objects (Shift+C).
+* The terrain editing disc is colored based on the current editing mode. These colors are configurable.
 * You can use control+right mouse button to sample the texture at the cursor's position. This will select the matching texture under the cursor automatically in the landscape editing menu.
 
 ### Search & Replace Window

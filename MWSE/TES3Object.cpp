@@ -105,6 +105,39 @@ namespace TES3 {
 		return BaseObject_writeFileHeader(this, file);
 	}
 
+	bool BaseObject::supportsActivate() const {
+		auto asObject = static_cast<const Object*>(this);
+		if (asObject && asObject->getIsLocationMarker()) {
+			return false;
+		}
+
+		// Make sure we aren't dealing with references.
+		BaseObject* asBase = getBaseObject();
+
+		if (asBase->isItem()) {
+			return static_cast<const Item*>(this)->getIsCarriable();
+		}
+
+		if (asBase->objectType == ObjectType::NPC || asBase->objectType == ObjectType::Creature) {
+			const auto macp = WorldController::get() ? WorldController::get()->getMobilePlayer() : nullptr;
+			if (macp) {
+				return macp->getFlagInCombat();
+			}
+			else {
+				return true;
+			}
+		}
+
+		switch (asBase->objectType) {
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Door:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	BaseObject* BaseObject::getBaseObject() const {
 		BaseObject* object = const_cast<BaseObject*>(this);
 
@@ -454,23 +487,23 @@ namespace TES3 {
 		baseObjectCache.clear();
 	}
 
-	void Object::copy(const Object* from, int unknown) {
-		vTable.object->copy(this, from, unknown);
+	void Object::copy(const Object* from, bool shareAIPackageConfig) {
+		vTable.object->copy(this, from, shareAIPackageConfig);
 	}
 
 	void Object::setID(const char* id) {
 		vTable.object->setID(this, id);
 	}
 
-	char* Object::getName() const {
+	const char* Object::getName() const {
 		return vTable.object->getName(this);
 	}
 
-	char* Object::getIconPath() const {
+	const char* Object::getIconPath() const {
 		return vTable.object->getIconPath(this);
 	}
 
-	char* Object::getModelPath() const {
+	const char* Object::getModelPath() const {
 		return vTable.object->getModelPath(this);
 	}
 
@@ -482,15 +515,15 @@ namespace TES3 {
 		return vTable.object->getSound(this);
 	}
 
-	char* Object::getRaceID() const {
+	const char* Object::getRaceID() const {
 		return vTable.object->getRaceID(this);
 	}
 
-	char* Object::getClassID() const {
+	const char* Object::getClassID() const {
 		return vTable.object->getClassID(this);
 	}
 
-	char* Object::getFactionID() const {
+	const char* Object::getFactionID() const {
 		return vTable.object->getFactionID(this);
 	}
 
@@ -518,11 +551,11 @@ namespace TES3 {
 		return vTable.object->getLevel(this);
 	}
 
-	void Object::setDispositionRaw(signed char value) {
+	void Object::setDispositionRaw(int value) {
 		return vTable.object->setDispositionRaw(this, value);
 	}
 
-	int Object::modDisposition(signed int value) {
+	int Object::modDisposition(int value) {
 		return vTable.object->modDisposition(this, value);
 	}
 
@@ -530,7 +563,7 @@ namespace TES3 {
 		return vTable.object->getReputation(this);
 	}
 
-	int Object::setReputation(int reputation) {
+	void Object::setReputation(int reputation) {
 		return vTable.object->setReputation(this, reputation);
 	}
 
@@ -538,7 +571,7 @@ namespace TES3 {
 		return vTable.object->getDispositionRaw(this);
 	}
 
-	int Object::modReputation(int value) {
+	void Object::modReputation(int value) {
 		return vTable.object->modReputation(this, value);
 	}
 
@@ -546,7 +579,7 @@ namespace TES3 {
 		return vTable.object->getType(this);
 	}
 
-	char* Object::getTypeName() const {
+	const char* Object::getTypeName() const {
 		return vTable.object->getTypeName(this);
 	}
 
@@ -758,16 +791,18 @@ namespace TES3 {
 	}
 
 	Reference* PhysicalObject::getReference() const {
-		if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
-			return thisRef;
-		}
-		else {
-			auto mobile = getMobile();
-			if (mobile) {
-				return mobile->reference;
+		__try {
+			if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
+				return thisRef;
+			}
+			else {
+				auto mobile = getMobile();
+				if (mobile) {
+					return mobile->reference;
+				}
 			}
 		}
-
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
 	}
 }

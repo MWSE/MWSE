@@ -13,7 +13,7 @@ A structure that contains base weather information shared by inheriting weather 
 ### `ambientDayColor`
 <div class="search_terms" style="display: none">ambientdaycolor</div>
 
-*Read-only*. The weather's ambient day color. The values can range from 0 to 1.
+The weather's ambient day color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -24,7 +24,7 @@ A structure that contains base weather information shared by inheriting weather 
 ### `ambientLoopSound`
 <div class="search_terms" style="display: none">ambientloopsound</div>
 
-*Read-only*. The weather's ambient looping sound.
+The weather's ambient looping sound. The current ambient sound should be changed by setting `ambientLoopSoundId`.
 
 **Returns**:
 
@@ -35,7 +35,7 @@ A structure that contains base weather information shared by inheriting weather 
 ### `ambientLoopSoundId`
 <div class="search_terms" style="display: none">ambientloopsoundid</div>
 
-The weather's ambient looping sound ID.
+The weather's ambient looping sound ID. This can be changed, and the sound will switch over when the weather is active.
 
 **Returns**:
 
@@ -46,7 +46,7 @@ The weather's ambient looping sound ID.
 ### `ambientNightColor`
 <div class="search_terms" style="display: none">ambientnightcolor</div>
 
-*Read-only*. The weather's ambient night color. The values can range from 0 to 1.
+The weather's ambient night color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -57,7 +57,7 @@ The weather's ambient looping sound ID.
 ### `ambientPlaying`
 <div class="search_terms" style="display: none">ambientplaying</div>
 
-*Read-only*. The weather's ambient playing flag.
+The weather's ambient playing flag.
 
 **Returns**:
 
@@ -68,7 +68,7 @@ The weather's ambient looping sound ID.
 ### `ambientSunriseColor`
 <div class="search_terms" style="display: none">ambientsunrisecolor</div>
 
-*Read-only*. The weather's ambient sunrise color. The values can range from 0 to 1.
+The weather's ambient sunrise color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -79,7 +79,7 @@ The weather's ambient looping sound ID.
 ### `ambientSunsetColor`
 <div class="search_terms" style="display: none">ambientsunsetcolor</div>
 
-*Read-only*. The weather's ambient sunset color. The values can range from 0 to 1.
+The weather's ambient sunset color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -134,7 +134,7 @@ The weather's cloud texture path.
 ### `fogDayColor`
 <div class="search_terms" style="display: none">fogdaycolor</div>
 
-*Read-only*. The weather's fog day color. The values can range from 0 to 1.
+The weather's fog day color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -145,7 +145,7 @@ The weather's cloud texture path.
 ### `fogNightColor`
 <div class="search_terms" style="display: none">fognightcolor</div>
 
-*Read-only*. The weather's fog night color. The values can range from 0 to 1.
+The weather's fog night color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -156,7 +156,7 @@ The weather's cloud texture path.
 ### `fogSunriseColor`
 <div class="search_terms" style="display: none">fogsunrisecolor</div>
 
-*Read-only*. The weather's fog sunrise color. The values can range from 0 to 1.
+The weather's fog sunrise color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -167,7 +167,7 @@ The weather's cloud texture path.
 ### `fogSunsetColor`
 <div class="search_terms" style="display: none">fogsunsetcolor</div>
 
-*Read-only*. The weather's fog sunset color. The values can range from 0 to 1.
+The weather's fog sunset color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -233,7 +233,7 @@ The weather's land fog night depth value.
 ### `skyDayColor`
 <div class="search_terms" style="display: none">skydaycolor</div>
 
-*Read-only*. The weather's sky day color. The values can range from 0 to 1.
+The weather's sky day color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -244,7 +244,7 @@ The weather's land fog night depth value.
 ### `skyNightColor`
 <div class="search_terms" style="display: none">skynightcolor</div>
 
-*Read-only*. The weather's sky night color. The values can range from 0 to 1.
+The weather's sky night color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -255,7 +255,7 @@ The weather's land fog night depth value.
 ### `skySunriseColor`
 <div class="search_terms" style="display: none">skysunrisecolor</div>
 
-*Read-only*. The weather's sky sunrise color. The values can range from 0 to 1.
+The weather's sky sunrise color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -266,7 +266,7 @@ The weather's land fog night depth value.
 ### `skySunsetColor`
 <div class="search_terms" style="display: none">skysunsetcolor</div>
 
-*Read-only*. The weather's sky sunset color. The values can range from 0 to 1.
+The weather's sky sunset color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -277,7 +277,7 @@ The weather's land fog night depth value.
 ### `sunDayColor`
 <div class="search_terms" style="display: none">sundaycolor</div>
 
-*Read-only*. The weather's sun day color. The values can range from 0 to 1.
+The weather's sun day color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -288,7 +288,7 @@ The weather's land fog night depth value.
 ### `sundiscSunsetColor`
 <div class="search_terms" style="display: none">sundiscsunsetcolor</div>
 
-*Read-only*. The weather's sundisc sunset color. The values can range from 0 to 1.
+The weather's sundisc sunset color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -299,7 +299,7 @@ The weather's land fog night depth value.
 ### `sunNightColor`
 <div class="search_terms" style="display: none">sunnightcolor</div>
 
-*Read-only*. The weather's sun night color. The values can range from 0 to 1.
+The weather's sun night color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -310,7 +310,7 @@ The weather's land fog night depth value.
 ### `sunSunriseColor`
 <div class="search_terms" style="display: none">sunsunrisecolor</div>
 
-*Read-only*. The weather's sun sunrise color. The values can range from 0 to 1.
+The weather's sun sunrise color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -321,7 +321,7 @@ The weather's land fog night depth value.
 ### `sunSunsetColor`
 <div class="search_terms" style="display: none">sunsunsetcolor</div>
 
-*Read-only*. The weather's sun sunset color. The values can range from 0 to 1.
+The weather's sun sunset color. The values can range from 0 to 1.
 
 **Returns**:
 
@@ -343,7 +343,7 @@ The weather's transition delta.
 ### `underwaterSoundState`
 <div class="search_terms" style="display: none">underwatersoundstate</div>
 
-*Read-only*. The weather's underwater sound state flag. This value will be `true`, while the player is underwater.
+The weather's underwater sound state flag. This value will be `true`, while the player is underwater.
 
 **Returns**:
 

@@ -8,7 +8,7 @@
 
 A collection of position, rotation, and scale keys used on NiKeyframeControllers.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `positionKeyCount`

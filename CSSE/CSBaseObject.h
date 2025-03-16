@@ -36,8 +36,22 @@ namespace se::cs {
 
 		void setFlag80(bool set);
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
-		bool searchWithInheritance(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		struct SearchSettings {
+			bool use_regex = false;
+			bool case_sensitive = false;
+			bool id = true;
+			bool name = true;
+			bool icon_path = true;
+			bool model_path = true;
+			bool enchantment_id = true;
+			bool script_id = true;
+			bool book_text = true;
+			bool faction = true;
+			bool effect = true;
+		};
+
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(BaseObject) == 0x10, "TES3::BaseObject failed size validation");
 	static_assert(sizeof(BaseObject_VirtualTable) == 0x24, "TES3::BaseObject_VirtualTable failed size validation");

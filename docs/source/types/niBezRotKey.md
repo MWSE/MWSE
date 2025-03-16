@@ -8,7 +8,7 @@
 
 An animation key for bezier curved rotation.
 
-This type inherits the following: [niRotKey](../types/niRotKey.md), [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niRotKey](../types/niRotKey.md), [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `timing`

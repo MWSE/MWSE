@@ -8,7 +8,7 @@
 
 This dictionary-style table holds all of the UI elements that comprise a mwseMCMFilterPage.
 
-This type inherits the following: [mwseMCMSideBarPageElements](../types/mwseMCMSideBarPageElements.md), [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md)
+This type inherits the following: [mwseMCMSideBarPageElements](../types/mwseMCMSideBarPageElements.md), [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md).
 ## Properties
 
 ### `description`

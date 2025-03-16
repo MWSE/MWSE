@@ -11,6 +11,10 @@ namespace TES3 {
 		// Related this-call functions.
 		//
 
+		StdString();
+		StdString(const char* c_str);
+		~StdString();
+
 		void operator=(const char* c_str);
 
 	};

@@ -178,7 +178,7 @@ long VirtualMachine::getLongVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setLongVariable(int index, long value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->longCount) {
+	if (index >= script->header.longCount) {
 		return;
 	}
 	localVariables->longVarValues[index] = value;
@@ -208,7 +208,7 @@ void VirtualMachine::setLongVariable(int index, long value, TES3::Reference& ref
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->longCount) {
+	if (index >= script->header.longCount) {
 		return;
 	}
 	localVariables->longVarValues[index] = value;
@@ -245,7 +245,7 @@ short VirtualMachine::getShortVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setShortVariable(int index, short value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->shortCount) {
+	if (index >= script->header.shortCount) {
 		return;
 	}
 	localVariables->shortVarValues[index] = value;
@@ -275,7 +275,7 @@ void VirtualMachine::setShortVariable(int index, short value, TES3::Reference& r
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->shortCount) {
+	if (index >= script->header.shortCount) {
 		return;
 	}
 	localVariables->shortVarValues[index] = value;
@@ -312,7 +312,7 @@ float VirtualMachine::getFloatVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setFloatVariable(int index, float value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->floatCount) {
+	if (index >= script->header.floatCount) {
 		return;
 	}
 	localVariables->floatVarValues[index] = value;
@@ -342,7 +342,7 @@ void VirtualMachine::setFloatVariable(int index, float value, TES3::Reference& r
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->floatCount) {
+	if (index >= script->header.floatCount) {
 		return;
 	}
 	localVariables->floatVarValues[index] = value;
@@ -580,20 +580,20 @@ void VirtualMachine::dumpScriptVariables()
 		return;
 	}
 
-	mwse::log::getLog() << __FUNCTION__ << " - Variable dump for '" << script->name << "'" << std::endl;
+	mwse::log::getLog() << __FUNCTION__ << " - Variable dump for '" << script->header.name << "'" << std::endl;
 
-	mwse::log::getLog() << "  Longs (" << script->longCount << "):" << std::endl;
-	for (int i = 0; i < script->longCount; ++i) {
+	mwse::log::getLog() << "  Longs (" << script->header.longCount << "):" << std::endl;
+	for (int i = 0; i < script->header.longCount; ++i) {
 		mwse::log::getLog() << "    " << script->longVarNamePointers[i] << " = " << std::dec << script->varValues.longVarValues[i] << std::endl;
 	}
 
-	mwse::log::getLog() << "  Floats (" << script->floatCount << "):" << std::endl;
-	for (int i = 0; i < script->floatCount; ++i) {
+	mwse::log::getLog() << "  Floats (" << script->header.floatCount << "):" << std::endl;
+	for (int i = 0; i < script->header.floatCount; ++i) {
 		mwse::log::getLog() << "    " << script->floatVarNamePointers[i] << " = " << std::dec << script->varValues.floatVarValues[i] << std::endl;
 	}
 
-	mwse::log::getLog() << "  Shorts (" << script->shortCount << "):" << std::endl;
-	for (int i = 0; i < script->shortCount; ++i) {
+	mwse::log::getLog() << "  Shorts (" << script->header.shortCount << "):" << std::endl;
+	for (int i = 0; i < script->header.shortCount; ++i) {
 		mwse::log::getLog() << "    " << script->shortVarNamePointers[i] << " = " << std::dec << script->varValues.shortVarValues[i] << std::endl;
 	}
 }

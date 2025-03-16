@@ -11,6 +11,7 @@
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
 #include "TES3MobileSpellProjectile.h"
+#include "TES3MobManager.h"
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
 
@@ -190,7 +191,7 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(impulseVelocity, value);
 	}
 
-	Vector3* MobileObject::getPosition() {
+	Vector3* MobileObject::getPosition() const {
 		// Delegate to reference.
 		return &reference->position;
 	}
@@ -250,6 +251,26 @@ namespace TES3 {
 		}
 
 		return results;
+	}
+
+	bool MobileObject::getMobToMobCollision() const {
+		if (actorFlags & TES3::MobileActorFlag::ActiveInSimulation) {
+			auto mobManager = TES3::WorldController::get()->mobManager;
+			return mobManager->hasMobileCollision(this);
+		}
+		return false;
+	}
+
+	void MobileObject::setMobToMobCollision(bool collide) {
+		if (actorFlags & TES3::MobileActorFlag::ActiveInSimulation) {
+			auto mobManager = TES3::WorldController::get()->mobManager;
+			if (collide) {
+				mobManager->enableMobileCollision(this);
+			}
+			else {
+				mobManager->disableMobileCollision(this);
+			}
+		}
 	}
 
 	static std::unordered_map<const MobileObject*, sol::object> mobileObjectCache;

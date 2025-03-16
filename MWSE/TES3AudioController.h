@@ -12,6 +12,38 @@ namespace TES3 {
 		Music
 	};
 
+	namespace AudioFlag {
+		typedef unsigned int value_type;
+
+		enum Flag : value_type {
+			HasStaticBuffers = 0x1,
+			DirectSoundInitFailed = 0x2,
+			HasStreamingBuffers = 0x4,
+		};
+
+		enum FlagBit {
+			HasStaticBuffersBit = 0,
+			DirectSoundInitFailedBit = 1,
+			HasStreamingBuffersBit = 2,
+		};
+	}
+
+	namespace MusicFlag {
+		typedef unsigned int value_type;
+
+		enum Flag : value_type {
+			FilterGraphValid = 0x1,
+			Playing = 0x2,
+			Paused = 0x4,
+		};
+
+		enum FlagBit {
+			FilterGraphValidBit = 0,
+			PlayingBit = 1,
+			PausedBit = 2,
+		};
+	}
+
 	//
 	// Flag notes:
 	//	unknown_0x4:
@@ -24,10 +56,10 @@ namespace TES3 {
 	//
 
 	struct AudioController {
-		char unknown_0x0;
-		char unknown_0x1;
-		int unknown_0x4; // Flags.
-		int unknown_0x8; // Flags.
+		bool dsound3DChanged; // 0x0
+		bool dsound3DCommitted; // 0x1
+		unsigned int audioFlags; // 0x4 Flags.
+		unsigned int musicFlags; // 0x8 Flags.
 		IDirectSound * directSound; // 0xC
 		IDirectSoundBuffer * primaryBuffer; // 0x10
 		IDirectSound3DListener * primary3DListener; // 0x14
@@ -54,30 +86,53 @@ namespace TES3 {
 		float pitchAxisApproximated; // 0x2D4 // In radians.
 
 		//
-		// Thiscall functions.
+		// This-call functions.
 		//
 
 		void changeMusicTrack(const char* filename, int crossfadeMillis, float volume);
 
 		void setMusicVolume(float volume);
 
+		void pauseMusic();
+		void unpauseMusic();
+
 		//
 		// Custom functions.
 		//
 
-		const char* getCurrentMusicFilePath();
+		bool getAudioFlag(AudioFlag::Flag flag) const;
+		void setAudioFlag(AudioFlag::Flag flag, bool set);
+		bool getHasStaticBuffers() const;
+		void setHasStaticBuffers(bool set);
+		bool getDirectSoundInitFailed() const;
+		void setDirectSoundInitFailed(bool set);
+		bool getHasStreamingBuffers() const;
+		void setHasStreamingBuffers(bool set);
+
+		bool getMusicFlag(MusicFlag::Flag flag) const;
+		void setMusicFlag(MusicFlag::Flag flag, bool set);
+		bool getIsFilterGraphValid() const;
+		void setIsFilterGraphValid(bool set);
+		bool getIsMusicPlaying() const;
+		void setIsMusicPlaying(bool set);
+		bool getIsMusicPaused() const;
+		void setIsMusicPaused(bool set);
+
+		const char* getCurrentMusicFilePath() const;
 		void setCurrentMusicFilePath(const char* path);
 
-		const char* getNextMusicFilePath();
+		const char* getNextMusicFilePath() const;
 		void setNextMusicFilePath(const char* path);
 
-		float getMixVolume(AudioMixType mixType);
+		float getMixVolume(AudioMixType mixType) const;
 
-		float getMusicVolume();
+		float getMusicVolume() const;
 
-		double getMusicDuration();
-		double getMusicPosition();
+		double getMusicDuration() const;
+		double getMusicPosition() const;
 		void setMusicPosition(double position);
+
+		double getMusicFileDuration(std::string_view& path);
 
 		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
 
@@ -88,16 +143,16 @@ namespace TES3 {
 		// Wrapper functions to expose volumes in a consistent format.
 		//
 
-		float getNormalizedMasterVolume();
+		float getNormalizedMasterVolume() const;
 		void setNormalizedMasterVolume(float value);
 
-		float getNormalizedEffectsVolume();
+		float getNormalizedEffectsVolume() const;
 		void setNormalizedEffectsVolume(float value);
 
-		float getNormalizedVoiceVolume();
+		float getNormalizedVoiceVolume() const;
 		void setNormalizedVoiceVolume(float value);
 
-		float getNormalizedFootstepsVolume();
+		float getNormalizedFootstepsVolume() const;
 		void setNormalizedFootstepsVolume(float value);
 
 	};

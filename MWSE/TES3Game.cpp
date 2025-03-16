@@ -1,5 +1,9 @@
 #include "TES3Game.h"
 
+#include "LuaActivationTargetChangedEvent.h"
+
+#include "LuaManager.h"
+
 namespace TES3 {
 	void Game::setGamma(float value) {
 		vTable->SetGamma(this, value);
@@ -18,6 +22,17 @@ namespace TES3 {
 	const auto TES3_Game_savePlayerOptions = reinterpret_cast<void(__thiscall*)(Game*)>(0x4293A0);
 	void Game::savePlayerOptions() {
 		TES3_Game_savePlayerOptions(this);
+	}
+
+	void Game::setPlayerTarget(Reference* reference) {
+		if (reference != playerTarget) {
+			const auto previous = playerTarget;
+			playerTarget = reference;
+			if (mwse::lua::event::ActivationTargetChangedEvent::getEventEnabled()) {
+				auto& stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+				stateHandle.triggerEvent(new mwse::lua::event::ActivationTargetChangedEvent(reference));
+			}
+		}
 	}
 
 	Game* Game::get() {

@@ -8,7 +8,7 @@ return {
 		tableParams = {
 			{ name = "label", type = "string", optional = true, description = "The block label." },
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
-			{ name = "components", type = "mwseMCMComponent.getComponent.componentData[]", optional = true, description = "Use this if you want to directly create all the nested components in this Category. This table is described at [getComponent](./mwseMCMSideBySideBlock.md#getcomponent)." },
+			{ name = "components", type = "mwseMCMComponent.new.data[]", optional = true, description = "Use this if you want to directly create all the nested components in this Category. This table is described at each Component's `new` method." },
 			{ name = "indent", type = "integer", optional = true, default = 12, description = "The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component." },
 			{ name = "childIndent", type = "integer", optional = true, description = "The left padding size in pixels. Used on all the child components." },
 			{ name = "paddingBottom", type = "integer", optional = true, default = 4, description = "The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component." },

@@ -8,7 +8,7 @@
 
 Base class that represents the nodes of a scene graph. A node can have any number of child nodes.
 
-This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ??? example "Example: Attaching a mesh directly to the actor's scene graph"
 
 	```lua

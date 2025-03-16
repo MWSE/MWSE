@@ -8,7 +8,7 @@
 
 This modifer alters the color of each particle as it ages.
 
-This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `colorData`

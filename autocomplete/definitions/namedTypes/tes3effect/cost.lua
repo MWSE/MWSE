@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The base magicka cost of this effect.]],
+	description = [[The final magicka cost of this effect after all the calculations of magnitude, duration, radius and range have taken place.]],
 	valuetype = "number",
 }

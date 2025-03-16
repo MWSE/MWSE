@@ -8,7 +8,7 @@
 
 A rendering property that controls the methods used to filter texture pixels, and blend texture colors and vertex colors.
 
-This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `applyMode`

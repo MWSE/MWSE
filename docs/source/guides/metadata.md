@@ -55,7 +55,7 @@ The following fields are available:
     The following fields are available:
 
     * `lua-mod` - The path to the main.lua associated with this mod. For example, if your main.lua file is located in `"Data Files\MWSE\mods\g7\myMod\main.lua"`, then this field should be set to `"g7.myMod"`.
-    * `load-priority` - The priority for when this mod is loaded. Lower numbers are loaded first.
+    * `load-priority` - The priority for when this mod is loaded. Higher numbers are loaded first.
     * `wait-until-initialize` - Whether to wait until the game has initialized before loading this mod.
 
     Example:
@@ -65,6 +65,21 @@ The following fields are available:
         load-priority = 100
         wait-until-initialize = true
     ```
+
+* `csse`
+
+    Here you can specify a list of deprecated object IDs. Deprecated objects aren't listed in the Object Window in the Construction Set, but are still present in the master/plugin file. These are mainly useful to resource mods. The ID list is case-insensitive.
+
+    Examples:
+    ```toml
+        [tools.csse]
+        deprecated = [
+            "bm nordic silver longsword_cft",
+            "BM nordic silver longsword_ber",
+            "BM ice longsword_FG_Unique"
+        ]
+    ```
+
 
 
 ## Dependencies Section
@@ -220,7 +235,7 @@ When specifying a version for a mod or mge-xe dependency, use a comparison opera
 
 Available dependency operators are: `^`, `=`, `>=`, `<=`, `>`, `<`.
 
-The  `=`, `>=`, `<=`, `>`, and `<` operators all function as expected. The pessemistic operator (`^`) works by using `=` on major versions and `<=` on minor and patch versions. For example, if your target version is `^1.2.3`, then `1.2.3`, `1.3.3`, and `1.2.4` will be compatible, but `2.0.0`, `1.1.3`, and `1.2.2` will not. The idea behind the `^` operator is that changes in major versions signify breaking changes, which can introduce incompatibilities. 
+The  `=`, `>=`, `<=`, `>`, and `<` operators all function as expected. The pessemistic operator (`^`) works by using `=` on major versions and `<=` on minor and patch versions. For example, if your target version is `^1.2.3`, then `1.2.3`, `1.3.3`, and `1.2.4` will be compatible, but `2.0.0`, `1.1.3`, and `1.2.2` will not. The idea behind the `^` operator is that changes in major versions signify breaking changes, which can introduce incompatibilities.
 
 ## Full Example
 

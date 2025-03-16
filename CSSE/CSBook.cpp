@@ -16,12 +16,12 @@ namespace se::cs {
 		return gmst->value.asString;
 	}
 
-	bool Book::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		if (Object::search(needle, caseSensitive, regex)) {
+	bool Book::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (Object::search(needle, settings, regex)) {
 			return true;
 		}
 
-		if (text && string::complex_contains(text, needle, caseSensitive, regex)) {
+		if (text && settings.book_text && string::complex_contains(text, needle, settings, regex)) {
 			return true;
 		}
 

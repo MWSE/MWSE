@@ -3,9 +3,13 @@
 #include "LuaManager.h"
 
 #include "LuaCalcArmorRatingEvent.h"
+#include "LuaUpdateBodyPartsForItemEvent.h"
 
 #include "TES3Util.h"
+#include "LuaUtil.h"
 
+#include "TES3BodyPart.h"
+#include "TES3BodyPartManager.h"
 #include "TES3DataHandler.h"
 #include "TES3GameSetting.h"
 #include "TES3MobileActor.h"
@@ -144,6 +148,52 @@ namespace TES3 {
 		return TES3_Armor_getWeightClass(this);
 	}
 
+	const auto TES3_Armor_setupBodyParts = reinterpret_cast<void(__thiscall*)(const Armor*, BodyPartManager*, bool, bool)>(0x4A1280);
+	void Armor::setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson) {
+		auto item = this;
+
+		// Add event replacing/adding body parts for an item.
+		if (mwse::lua::event::UpdateBodyPartsForItemEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::UpdateBodyPartsForItemEvent(this, bodyPartManager, isFemale, isFirstPerson));
+			if (eventResult.valid()) {
+				sol::table eventData = eventResult;
+				if (eventData.get_or("block", false)) {
+					return;
+				}
+
+				isFemale = mwse::lua::getOptionalParam(eventData, "isFemale", isFemale);
+				const auto maybeItem = mwse::lua::getOptionalParamObject<Item>(eventData, "item");
+				if (maybeItem && maybeItem->objectType == OBJECT_TYPE) {
+					item = static_cast<Armor*>(maybeItem);
+				}
+			}
+		}
+
+		item->removeBodyPartsUnder(bodyPartManager);
+		item->addActiveBodyParts(bodyPartManager, isFemale, isFirstPerson);
+	}
+
+	void Armor::addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson) {
+		for (const auto& wearable : parts) {
+			if (!wearable.isValid()) continue;
+
+			const auto index = BodyPartManager::ActiveBodyPart::Index(wearable.bodypartID);
+			bodyPartManager->setBodyPartForObject(this, index, wearable.getPart(isFemale), isFirstperson);
+		}
+	}
+
+	void Armor::removeBodyPartsUnder(BodyPartManager* bodyPartManager) const {
+		for (auto& wearable : parts) {
+			if (!wearable.isValid()) continue;
+
+			const auto index = BodyPartManager::ActiveBodyPart::Index(wearable.bodypartID);
+			if (index == BodyPartManager::ActiveBodyPart::Index::Head) {
+				bodyPartManager->removeActiveBodyPart(BodyPartManager::ActiveBodyPart::Layer::Base, BodyPartManager::ActiveBodyPart::Index::Hair, 1, 0);
+			}
+		}
+	}
+
 	float Armor::getArmorScalar() const {
 		// Handle custom slots.
 		if (slot < ArmorSlot::First || slot > ArmorSlot::Last) {
@@ -211,6 +261,30 @@ namespace TES3 {
 		else {
 			throw std::exception("Invalid function call. Requires mobile actor or reference as a parameter.");
 		}
+	}
+
+	bool Armor::isClosedHelmet() const {
+		for (auto &part : parts) {
+			// Does the helmet cover head? If so, it's a closed helmet.
+			if (part.bodypartID == static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::Head)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Armor::isUsableByBeasts() const {
+		if (isClosedHelmet()) {
+			return false;
+		}
+		constexpr auto leftFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::LeftFoot);
+		constexpr auto rightFootID = static_cast<int>(TES3::BodyPartManager::ActiveBodyPart::Index::RightFoot);
+		for (auto& part : parts) {
+			if (part.bodypartID == leftFootID || part.bodypartID == rightFootID) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

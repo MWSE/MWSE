@@ -82,11 +82,14 @@ namespace TES3 {
 		bool hasNextSubrecord();
 		unsigned int getNextSubrecord();
 		bool hasMoreRecords();
+		bool nextRecord(int flag = 1);
 
 		bool collectActiveMods(bool showMasterErrors = false);
 		bool load(int unknown1 = 0, bool unknown2 = false);
 		bool loadByPath(const char* path, const char* filename, int unknown1 = 0, bool unknown2 = false);
 		bool setFilePointer(unsigned int offset);
+		bool reopen(int mode = 0, bool writable = false);
+		bool close();
 
 		bool getToLoad() const;
 		void setToLoad(bool set);

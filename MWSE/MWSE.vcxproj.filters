@@ -1197,12 +1197,6 @@
     <ClInclude Include="LuaMeshLoadedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="TES3CrimeEventList.h">
-      <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
-    </ClInclude>
-    <ClInclude Include="TES3CrimeController.h">
-      <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
-    </ClInclude>
     <ClInclude Include="LuaCrimeWitnessedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1750,6 +1744,42 @@
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
     <ClInclude Include="LuaStartGlobalScriptEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaCalcTouchSpellConeEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="yamlloader.hpp">
+      <Filter>Header Files\Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicReflectEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicReflectedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaPickpocketEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="NIBSAnimationNodeLua.h">
+      <Filter>Header Files\Lua\Bindings\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="NIBoundingVolumeLua.h">
+      <Filter>Header Files\Lua\Bindings\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3ItemLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3CrimeLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="NITriShapeDynamicData.h">
+      <Filter>Header Files\DataAdapters\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3206,12 +3236,6 @@
     <ClCompile Include="LuaMeshLoadedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="TES3CrimeEventList.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
-    <ClCompile Include="TES3CrimeController.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
     <ClCompile Include="LuaCrimeWitnessedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3581,12 +3605,6 @@
     <ClCompile Include="LuaEnchantChargeUseEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticleSystemController.cpp">
-      <Filter>Source Files\Lua\Bindings\NI</Filter>
-    </ClCompile>
-    <ClCompile Include="NIParticleModifier.cpp">
-      <Filter>Source Files\Lua\Bindings\NI</Filter>
-    </ClCompile>
     <ClCompile Include="NIParticlesLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
@@ -3707,9 +3725,6 @@
     <ClCompile Include="LuaDispositionEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NICopyTransformController.cpp">
-      <Filter>Source Files\Lua\Bindings\NI</Filter>
-    </ClCompile>
     <ClCompile Include="NICollisionGroupLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
@@ -3767,9 +3782,6 @@
     <ClCompile Include="TES3WaterController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="TES3WaterControllerLua.cpp">
-      <Filter>Source Files\Lua\Bindings</Filter>
-    </ClCompile>
     <ClCompile Include="NIAnimationData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
@@ -3814,6 +3826,54 @@
     </ClCompile>
     <ClCompile Include="LuaStartGlobalScriptEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCalcTouchSpellConeEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="yamlloader.cpp">
+      <Filter>Source Files\Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicReflectEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicReflectedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaPickpocketEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="NIBSAnimationNodeLua.cpp">
+      <Filter>Source Files\Lua\Bindings\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NIBSAnimationNode.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NIBoundingVolumeLua.cpp">
+      <Filter>Source Files\Lua\Bindings\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NIParticleModifier.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NIParticleSystemController.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NICopyTransformController.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WaterControllerLua.cpp">
+      <Filter>Source Files\Lua\Bindings\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3CrimeLua.cpp">
+      <Filter>Source Files\Lua\Bindings\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaRemovedEquipmentBodyPartsEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaUpdateBodyPartsForItemEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="MGEApi.cpp">
+      <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

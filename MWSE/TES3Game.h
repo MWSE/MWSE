@@ -137,6 +137,8 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		void setPlayerTarget(Reference* reference);
+
 		// Get singleton.
 		_declspec (dllexport) static Game* get();
 

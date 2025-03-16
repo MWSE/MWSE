@@ -8,7 +8,7 @@
 
 An ingredient game object.
 
-This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -91,7 +91,7 @@ The bounding box for the object.
 ### `icon`
 <div class="search_terms" style="display: none">icon</div>
 
-The path to the object's icon.
+The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 **Returns**:
 
@@ -110,6 +110,17 @@ The path to the object's icon.
 
 ***
 
+### `isCarriable`
+<div class="search_terms" style="display: none">iscarriable, carriable</div>
+
+*Read-only*. If true, the item can be carried and interacted with normally in an inventory. While this is false for certain lights, they can still sometimes appear in an inventory, but cannot be interacted with.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isLocationMarker`
 <div class="search_terms" style="display: none">islocationmarker, locationmarker</div>
 
@@ -124,7 +135,7 @@ True if this object is an editor marker for a gameplay location. These include t
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 
-The path to the object's mesh.
+The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 
 **Returns**:
 
@@ -220,6 +231,17 @@ The previous object in parent collection's list.
 
 ***
 
+### `promptsEquipmentReevaluation`
+<div class="search_terms" style="display: none">promptsequipmentreevaluation</div>
+
+*Read-only*. If true, the item should prompt equipment reevaluated when added to the actor's inventory. Thus is true for armor, clothing, and weapons.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `scale`
 <div class="search_terms" style="display: none">scale</div>
 
@@ -267,7 +289,7 @@ The script that runs on the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -289,11 +311,24 @@ The soruceless flag of the object.
 ### `stolenList`
 <div class="search_terms" style="display: none">stolenlist</div>
 
-A list of actors that the object has been stolen from.
+*Read-only*. A non-mutable list of all actors that the item has been stolen from.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` ([tes3npc](../types/tes3npc.md)[], [tes3faction](../types/tes3faction.md)[])
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -344,4 +379,42 @@ local string = myObject:__tojson()
 **Returns**:
 
 * `string` (string)
+
+***
+
+### `getFirstIndexOfEffect`
+<div class="search_terms" style="display: none">getfirstindexofeffect, firstindexofeffect</div>
+
+Gets the first index of an effect ID in the ingredient's effect table. Returns `-1` if provided effect doesn't exist in the ingredient.
+
+```lua
+local index = myObject:getFirstIndexOfEffect(effectId)
+```
+
+**Parameters**:
+
+* `effectId` ([tes3.effect](../references/magic-effects.md), integer): A value from [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table.
+
+**Returns**:
+
+* `index` (integer): Returns 0-based index. Because Lua's arrays are 1-based, to index the ingredient's `effects` array with the return value add 1.
+
+***
+
+### `hasEffect`
+<div class="search_terms" style="display: none">haseffect, effect</div>
+
+Determines if the ingredient contains an effect with the given id.
+
+```lua
+local hasEffect = myObject:hasEffect(effectId)
+```
+
+**Parameters**:
+
+* `effectId` ([tes3.effect](../references/magic-effects.md), integer): A value from [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table.
+
+**Returns**:
+
+* `hasEffect` (boolean): Returns `true` if the ingredient contains the given effect id, otherwise `false`.
 

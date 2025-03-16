@@ -181,7 +181,7 @@ namespace TES3 {
 		for (const auto& stack : equipment) {
 			const auto item = static_cast<Item*>(stack->object);
 			if (item->objectType == ObjectType::Armor || item->objectType == ObjectType::Clothing) {
-				value += item->getBaseBarterValue(false, useDurability);
+				value += item->getBaseBarterValue(nullptr, useDurability);
 			}
 		}
 		return value;

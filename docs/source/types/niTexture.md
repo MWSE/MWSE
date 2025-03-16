@@ -8,7 +8,7 @@
 
 Represents all texture objects that are created from a file or a block of in-memory pixel data.
 
-This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`
