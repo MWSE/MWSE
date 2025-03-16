@@ -9,7 +9,7 @@ function this.inUnitRange(n)
 	return true
 end
 
---- @param pixel mwseColorTable|ffiImagePixel
+--- @param pixel mwseColorTable|mwseColorATable|niColor|niColorA|ffiImagePixel
 function this.pixel(pixel)
 	if not pixel.r
 	or not this.inUnitRange(pixel.r)
