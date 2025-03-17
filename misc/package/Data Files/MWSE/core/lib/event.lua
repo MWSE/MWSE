@@ -5,6 +5,7 @@ local generalEvents = {}
 local filteredEvents = {}
 
 --- Translation table used to recover `doOnce` functions.
+--- The keys are the original callbacks, and the values are the new callbacks.
 ---@type table<fun(e): boolean, fun(e): boolean>
 local doOnceCallbacks = {}
 
@@ -99,7 +100,7 @@ function this.register(eventType, callback, options)
 		local originalCallback = callback
 
 		local function newCallback(e)
-			-- `event.unregister` will handle the conversion for us.
+			-- `isRegistered` and `unregister` will also convert the callback.
 			if this.isRegistered(eventType, originalCallback, options) then
 				this.unregister(eventType, originalCallback, options)
 			end
