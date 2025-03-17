@@ -4,7 +4,6 @@
 
 local UnitWind = require("unitwind")
 
-local inspect = require("inspect")
 
 
 
@@ -76,9 +75,7 @@ local testSuite = UnitWind.new({
 		for _, k in ipairs(table.keys(innerCallbacks)) do
 			-- reset the number of mock calls
 			-- this is done because i can't get `unspy` to work
-			mwse.log("%s = %s", k, inspect(innerCallbacks[k]))
 			table.clear(innerCallbacks[k]._mockCalls)
-			mwse.log("%s = %s", k, inspect(innerCallbacks[k]))
 		end
 	end
 })
@@ -111,7 +108,7 @@ end)
 
 
 
-
+-- Make sure `doOnce` results in a callback being executed exactly once.
 testSuite:test("doOnce: basic functionality", function()
 
 	--- This bit of indirection is necessary because `unitwind:spy` 
@@ -123,28 +120,33 @@ testSuite:test("doOnce: basic functionality", function()
 
 	register(callback)
 
+	-- Make sure the function got registers properly
 	testSuite:expect(generalEvents[TEST_EVENT_ID]).toBeType("table")
+	-- There should only be one thing registered
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(1)
-
+	
+	-- The callback itself should not be registered, but instead a thin wrapper should be registered.
 	testSuite:expect(generalEvents[TEST_EVENT_ID][1]).NOT.toBe(callback)
 
 	trigger()
 	
 	testSuite:expect(innerCallbacks.callback1).toBeCalled()
+	testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(1)
 	
 	trigger()
-	
-	testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(1)
+
+
+	-- The event should have been unregistered by now
+	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(0)
 	testSuite:expect(innerCallbacks.callback1).NOT.toBeCalledTimes(2)
 	
 	testSuite:expect(isRegistered(callback)).toBe(false)
 end)
 
+-- Make sure that `isRegistered` properly detects when a `doOnce` function is registered
 testSuite:test("doOnce: compatibility with isRegistered", function()
 
-	--- This bit of indirection is necessary because `unitwind:spy` 
-	--- results in the stuff stored in `innerCallbacks` no longer being functions
-	--- and the event API needs the callbacks to be functions
+	-- make sure the event table got cleared since the last test
 	testSuite:expect(generalEvents[TEST_EVENT_ID]).toBeType("nil")
 
 	local callback = function()
@@ -153,8 +155,10 @@ testSuite:test("doOnce: compatibility with isRegistered", function()
 
 	register(callback)
 
+
 	testSuite:expect(isRegistered(callback)).toBe(true)
 	trigger()
+	-- Function should be unregistered after the event triggers
 	testSuite:expect(isRegistered(callback)).toBe(false)
 	
 end)
@@ -162,9 +166,6 @@ end)
 
 testSuite:test("doOnce: priority works", function()
 
-	--- This bit of indirection is necessary because `unitwind:spy` 
-	--- results in the stuff stored in `innerCallbacks` no longer being functions
-	--- and the event API needs the callbacks to be functions
 	testSuite:expect(generalEvents[TEST_EVENT_ID]).toBeType("nil")
 
 	local callback1 = function(e)
@@ -184,18 +185,24 @@ testSuite:test("doOnce: priority works", function()
 	
 	trigger()
 	
+	-- The first event should be deregistered since the event fired.
 	testSuite:expect(isRegistered(callback1)).toBe(false)
-	testSuite:expect(isRegistered(callback2)).toBe(true)
-	
 	testSuite:expect(innerCallbacks.callback1).toBeCalled()
-	testSuite:expect(innerCallbacks.callback2).NOT.toBeCalled()
 
+	-- The second event should still be registered because a higher priority callback
+	-- claimed the event.
+	testSuite:expect(isRegistered(callback2)).toBe(true)
+	testSuite:expect(innerCallbacks.callback2).NOT.toBeCalled()
+	
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(1)
 	
+
 	trigger()
+
+	testSuite:expect(isRegistered(callback2)).toBe(false)
+	testSuite:expect(innerCallbacks.callback2).toBeCalled()
 	
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(0)
-	testSuite:expect(innerCallbacks.callback2).toBeCalled()
 	
 end)
 
@@ -226,31 +233,53 @@ testSuite:test("doOnce: priority works with regular callbacks", function()
 	event.register(TEST_EVENT_ID, callback2, {priority = 20, doOnce = true})
 	event.register(TEST_EVENT_ID, callback3, {priority = 10, doOnce = true})
 	
-
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(3)
-	
-	trigger()
 
-	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(3)
+	do -- make sure the higher priority event blocks the others from firing
+		
+		trigger()
+
+		testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(3)
+		
+		testSuite:expect(isRegistered(callback1)).toBe(true)
+		testSuite:expect(isRegistered(callback2)).toBe(true)
+		testSuite:expect(isRegistered(callback3)).toBe(true)
+
+		testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(1)
+
+	end
+
+	do -- Make sure it happens again, since `callback1` was not registered with `doOnce`
 	
-	testSuite:expect(isRegistered(callback1)).toBe(true)
-	testSuite:expect(isRegistered(callback2)).toBe(true)
-	testSuite:expect(isRegistered(callback3)).toBe(true)
+		trigger()
+
+		testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(3)
+		
+		testSuite:expect(isRegistered(callback1)).toBe(true)
+		testSuite:expect(isRegistered(callback2)).toBe(true)
+		testSuite:expect(isRegistered(callback3)).toBe(true)
+
+		testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(2)
+
+	end
 	
+	-- unregister the first callback and see if the others behave normally.
 	unregister(callback1)
 	
 	testSuite:expect(isRegistered(callback1)).toBe(false)
 	testSuite:expect(isRegistered(callback2)).toBe(true)
 	testSuite:expect(isRegistered(callback3)).toBe(true)
 	
-	local inspect = require('inspect')
-	mwse.log("registerd = %s", inspect.inspect(generalEvents[TEST_EVENT_ID]))
+	-- this should result in callback2 firing, but not callback 3
 	trigger()
-	mwse.log("registerd = %s", inspect.inspect(generalEvents[TEST_EVENT_ID]))
+
 	
 	testSuite:expect(isRegistered(callback1)).toBe(false)
 	testSuite:expect(isRegistered(callback2)).toBe(false)
 	testSuite:expect(isRegistered(callback3)).toBe(true)
+
+	testSuite:expect(innerCallbacks.callback2).toBeCalledTimes(1)
+
 
 	trigger()
 	
@@ -259,9 +288,6 @@ testSuite:test("doOnce: priority works with regular callbacks", function()
 	testSuite:expect(isRegistered(callback3)).toBe(false)
 
 	
-
-	testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(1)
-	testSuite:expect(innerCallbacks.callback2).toBeCalledTimes(1)
 	testSuite:expect(innerCallbacks.callback3).toBeCalledTimes(1)
 end)
 
@@ -271,20 +297,17 @@ testSuite:test("doOnce: unregister", function()
 	testSuite:expect(innerCallbacks.callback1).toBeCalledTimes(0)
 
 
-
 	local callback1 = function(e)
 		innerCallbacks.callback1()
-		return false
 	end
 
 	event.register(TEST_EVENT_ID, callback1, {priority = 30, doOnce = true})
 	
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(1)
 	
-	event.unregister(TEST_EVENT_ID, callback1, {priority = 30, doOnce = true})
+	event.unregister(TEST_EVENT_ID, callback1, {priority = 30})
 
 	testSuite:expect(#generalEvents[TEST_EVENT_ID]).toBe(0)
-	
 	
 	trigger()
 
