@@ -4,6 +4,10 @@ local generalEvents = {}
 
 local filteredEvents = {}
 
+--- Translation table used to recover `doOnce` functions.
+---@type table<fun(e): boolean, fun(e): boolean>
+local doOnceCallbacks = {}
+
 -- Temporary hack for event priorities.
 local eventPriorities = {}
 
@@ -34,8 +38,6 @@ local remapObjectTypeDenyList = {
 	[tes3.objectType.dialogueInfo] = true,
 }
 
--- Ensures that `options.filter` uses base object ids
--- This function will modify `options` in-place.
 local function remapFilter(options, showWarnings)
 	-- We only care if we have a filter.
 	local filter = options.filter
@@ -78,41 +80,36 @@ local function remapFilter(options, showWarnings)
 	options.filter = filter.id:lower()
 end
 
-
-local doOnceCallbacks = {} ---@type table<fun(...):..., fun(...):...>
-
-
 function this.register(eventType, callback, options)
-
-	-- Initialize the options now, so that `remapFilters` will properly update these options when called from
-	-- inside `this.isRegistered`
-	options = options or {}
-
-	-- Make sure this event has not already been registered.
-	-- This check plays nicely with `doOnce`
-	-- It also handles all the error checking for us, and tidies up `options`
-	local alreadyRegistered = this.isRegistered(eventType, callback, options)
-
-	if alreadyRegistered then
-		print("event.register: Attempted to register same '" .. eventType .. "' event callback twice.")
-		print(debug.traceback())
-		return
+	-- Validate event type.
+	if (type(eventType) ~= "string" or eventType == "") then
+		return error("event.register: Event type must be a valid string.")
 	end
+
+	-- Validate callback.
+	if (type(callback) ~= "function") then
+		return error("event.register: Event callback must be a function.")
+	end
+
+	-- Make sure options is an empty table if nothing else.
+	local options = options or {}
 
 	-- If 'doOnce' was set, wrap with a call to unregister.
 	if options.doOnce then
 		local originalCallback = callback
+
 		local function newCallback(e)
 			-- `event.unregister` will handle the conversion for us.
-			this.unregister(eventType, originalCallback, options)
+			if this.isRegistered(eventType, originalCallback, options) then
+				this.unregister(eventType, originalCallback, options)
+			end
 			originalCallback(e)
 		end
 
 		doOnceCallbacks[originalCallback] = newCallback
 		callback = newCallback
-	
 	end
-	
+
 	-- If 'unregisterOnLoad' was set, unregister the callback on next load event.
 	if options.unregisterOnLoad then
 		this.register(tes3.event.load, function()
@@ -130,8 +127,14 @@ function this.register(eventType, callback, options)
 
 	-- Make sure that the event isn't already registered.
 	local callbacks = getEventTable(eventType, options.filter)
-	table.insert(callbacks, callback)
-	table.sort(callbacks, eventSorter)
+	local found = table.find(callbacks, callback)
+	if (found == nil) then
+		table.insert(callbacks, callback)
+		table.sort(callbacks, eventSorter)
+	else
+		print("event.register: Attempted to register same '" .. eventType .. "' event callback twice.")
+		print(debug.traceback())
+	end
 
 	-- If this is a disableable event, enable it.
 	if (disableableEvents[eventType] == false) then
@@ -151,9 +154,8 @@ function this.unregister(eventType, callback, options)
 	end
 
 	-- Handle the special case where `doOnce` was used.
-	local newCallback = doOnceCallbacks[callback]
-	if newCallback then
-		callback = newCallback 
+	if doOnceCallbacks[callback] then
+		callback = doOnceCallbacks[callback] 
 		doOnceCallbacks[callback] = nil -- Won't be needing this anymore.
 	end
 
@@ -187,15 +189,13 @@ function this.isRegistered(eventType, callback, options)
 		return error("event.isRegistered: Event callback must be a valid function.")
 	end
 
+	-- Handle the special case where `doOnce` was used.
+	if doOnceCallbacks[callback] then
+		callback = doOnceCallbacks[callback] 
+	end
+
 	-- Make sure options is an empty table if nothing else.
 	local options = options or {}
-
-
-	-- Handle the special case where `doOnce` was used.
-	local newCallback = doOnceCallbacks[callback]
-	if newCallback then
-		callback = newCallback 
-	end
 
 	-- Fix up any filters to use base object ids.
 	remapFilter(options, true)
