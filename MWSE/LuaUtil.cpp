@@ -332,14 +332,13 @@ namespace mwse::lua {
 				}
 
 				// Were we given a table?
-				else if (maybeValue.get_type() == sol::type::table) {
-					sol::table value = maybeValue.as<sol::table>();
-					return TES3::Vector3(value[1], value[2], value[3]);
+				if (maybeValue.get_type() == sol::type::table && TES3::Vector3::canConvertFrom(maybeValue.as<sol::table>())) {
+					return maybeValue.as<sol::table>();
 				}
 			}
 		}
 
-		return sol::optional<TES3::Vector3>();
+		return {};
 	}
 
 	TES3::Cell* getOptionalParamCell(sol::optional<sol::table> maybeParams, const char* key) {

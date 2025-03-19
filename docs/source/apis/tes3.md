@@ -266,10 +266,7 @@ local effect = tes3.addMagicEffect({ id = ..., name = ..., magnitudeType = ..., 
 	* `sizeCap` (number): *Default*: `1`. The maximum possible size of the projectile.
 	* `speed` (number): *Default*: `1`.
 	* `description` (string): *Default*: `No description available.`. Description for the effect.
-	* `lighting` (table): *Optional*.
-		* `x` (number): *Default*: `1`. Value of red color channel. In range of 0 - 1.
-		* `y` (number): *Default*: `1`. Value of green color channel. In range of 0 - 1.
-		* `z` (number): *Default*: `1`. Value of blue color channel. In range of 0 - 1.
+	* `lighting` ([tes3vector3](../types/tes3vector3.md), table, nil): *Optional*. Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].
 	* `icon` (string): Path to the effect icon. Must be a string no longer than 31 characters long. Use double \ as path separator.
 	* `particleTexture` (string): Path to the particle texture to use for the effect. Must be a string no longer than 31 characters long.
 	* `castSound` (string): The sound ID which will be played on casting a spell with this effect. Must be a string no longer than 31 characters long. If not specified, the default sound for the spell school will be used.

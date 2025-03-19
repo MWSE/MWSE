@@ -516,7 +516,6 @@ namespace TES3 {
 		seAttributeID(id.value_or(-1));
 	}
 
-
 	sol::optional<std::string> Effect::toString() const {
 		if (effectID == EffectID::None) {
 			return {};
@@ -605,7 +604,7 @@ namespace TES3 {
 					break;
 				default:
 					if (extendedData) {
-						ss << " " << extendedData->getMagnitudeType(magnitudeMax != 1);
+						ss << extendedData->getMagnitudeType(magnitudeMax != 1);
 					}
 					else if (magnitudeMax == 1) {
 						ss << " " << ndd->GMSTs[GMST::spoint]->value.asString;

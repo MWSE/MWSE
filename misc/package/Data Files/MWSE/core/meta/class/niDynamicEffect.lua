@@ -18,3 +18,8 @@ function niDynamicEffect:attachAffectedNode(node) end
 --- @param node niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The node to remove from the affected nodes list.
 function niDynamicEffect:detachAffectedNode(node) end
 
+--- Sets a given dynamic effect flag. The specifics use of the flag is dependent on the real underlying type.
+--- @param state boolean No description yet available.
+--- @param index number No description yet available.
+function niDynamicEffect:setFlag(state, index) end
+

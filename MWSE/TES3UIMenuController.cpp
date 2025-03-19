@@ -153,6 +153,14 @@ namespace TES3::UI {
 		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::GodModeEnabled, state);
 	}
 
+	bool MenuController::getLightingUpdatesDisabled() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::LightingUpdateDisabled);
+	}
+
+	void MenuController::setLightingUpdatesDisabled(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::LightingUpdateDisabled, state);
+	}
+
 	bool MenuController::getAIDisabled() const {
 		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::AIDisabled);
 	}

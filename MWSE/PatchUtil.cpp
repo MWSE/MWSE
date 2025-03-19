@@ -41,6 +41,7 @@
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
+#include "NIPointLight.h"
 #include "NISortAdjustNode.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
@@ -1493,6 +1494,28 @@ namespace mwse::patch {
 	constexpr size_t PatchUnequipIndexedProjectileSetup_size = 0x2;
 
 	//
+	// Patch: Improve lights
+	//
+
+	const auto TES3_DynamicLightingTest = reinterpret_cast<void(__cdecl*)(NI::PointLight * light, NI::Node * node, int radius, int lightFlags, bool isLand, bool highPriority)>(0x4D2F40);
+	static void __cdecl PatchDynamicLightingTest(NI::PointLight* light, NI::Node* node, int radius, int lightFlags, bool isLand, bool highPriority) {
+		if (!Configuration::ReplaceLightSorting) {
+			TES3_DynamicLightingTest(light, node, radius, lightFlags, isLand, highPriority);
+			return;
+		}
+
+		if (light == nullptr || node == nullptr) {
+			return;
+		}
+
+		// Store information about the light into the light itself. Because that's what Morrowind does.
+		light->setFlag(highPriority, 3u);
+		light->specular = { float(radius), float(radius), float(radius) };
+
+		node->updatePointLight(light, isLand);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -1984,6 +2007,14 @@ namespace mwse::patch {
 		genNOPUnprotected(0x4968E1, 0x4968FB - 0x4968E1);
 		writePatchCodeUnprotected(0x4968E1, (BYTE*)&PatchUnequipIndexedProjectileSetup, PatchUnequipIndexedProjectileSetup_size);
 		genCallUnprotected(0x4968E1 + 0x2, reinterpret_cast<DWORD>(PatchUnequipIndexedProjectile));
+
+		// Patch: Update dynamic lights to implement custom light sorting.
+		genCallEnforced(0x485B60, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2C9C, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2D04, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2D9F, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2F10, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 	}
 
 	void installPostLuaPatches() {

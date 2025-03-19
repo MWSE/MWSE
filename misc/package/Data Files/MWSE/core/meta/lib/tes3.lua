@@ -161,7 +161,7 @@ function tes3.addJournalEntry(params) end
 --- 
 --- `description`: string? — *Default*: `No description available.`. Description for the effect.
 --- 
---- `lighting`: table? — *Optional*. No description yet available.
+--- `lighting`: tes3vector3|table|nil — *Optional*. Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].
 --- 
 --- `icon`: string — Path to the effect icon. Must be a string no longer than 31 characters long. Use double \ as path separator.
 --- 
@@ -235,7 +235,7 @@ function tes3.addMagicEffect(params) end
 --- @field sizeCap number? *Default*: `1`. The maximum possible size of the projectile.
 --- @field speed number? *Default*: `1`. No description yet available.
 --- @field description string? *Default*: `No description available.`. Description for the effect.
---- @field lighting table? *Optional*. No description yet available.
+--- @field lighting tes3vector3|table|nil *Optional*. Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].
 --- @field icon string Path to the effect icon. Must be a string no longer than 31 characters long. Use double \ as path separator.
 --- @field particleTexture string Path to the particle texture to use for the effect. Must be a string no longer than 31 characters long.
 --- @field castSound string The sound ID which will be played on casting a spell with this effect. Must be a string no longer than 31 characters long. If not specified, the default sound for the spell school will be used.

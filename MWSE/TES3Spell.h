@@ -92,6 +92,7 @@ namespace TES3 {
 
 		bool isAbility() const;
 		bool isBlightDisease() const;
+		bool isCorprusDisease() const;
 		bool isCommonDisease() const;
 		bool isCurse() const;
 		bool isDisease() const;

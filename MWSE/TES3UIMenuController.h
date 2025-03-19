@@ -225,6 +225,8 @@ namespace TES3::UI {
 
 		bool getGodModeEnabled() const;
 		void setGodModeEnabled(bool state);
+		bool getLightingUpdatesDisabled() const;
+		void setLightingUpdatesDisabled(bool state);
 		bool getAIDisabled() const;
 		void setAIDisabled(bool state);
 		bool getBordersEnabled() const;

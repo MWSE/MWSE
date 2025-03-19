@@ -95,14 +95,14 @@ namespace TES3 {
 		float distanceManhattan(const Vector3*) const;
 		float distanceXY(const Vector3*) const;
 
-
-
 		float angle(const Vector3*) const;
 		float length() const;
 		void negate();
 		bool normalize();
 		Vector3 normalized() const;
 		Vector3 interpolate(const Vector3&, const float) const;
+
+		static bool canConvertFrom(sol::table& table);
 
 		const static Vector3 UNIT_X;
 		const static Vector3 UNIT_NEG_X;
@@ -204,7 +204,7 @@ namespace TES3 {
 		std::tuple<Vector3, bool> toEulerZYX_lua() const;
 
 		void fromQuaternion(const NI::Quaternion* q);
-		NI::Quaternion toQuaternion();
+		NI::Quaternion toQuaternion() const;
 
 		Vector3 getForwardVector();
 		Vector3 getRightVector();

@@ -74,27 +74,8 @@ return {
 			{
 				name = "lighting",
 				optional = true,
-				type = "table",
-				tableParams = {
-					{
-						name = "x",
-						type = "number",
-						default = 1.0,
-						description = "Value of red color channel. In range of 0 - 1."
-					},
-					{
-						name = "y",
-						type = "number",
-						default = 1.0,
-						description = "Value of green color channel. In range of 0 - 1."
-					},
-					{
-						name = "z",
-						type = "number",
-						default = 1.0,
-						description = "Value of blue color channel. In range of 0 - 1."
-					},
-				},
+				type = "tes3vector3|table|nil",
+				description = "Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].",
 			},
 			{
 				name = "icon",

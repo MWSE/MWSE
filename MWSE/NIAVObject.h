@@ -62,6 +62,8 @@ namespace NI {
 		// vTable wrappers.
 		//
 
+		Bound* getWorldBound();
+
 		TES3::Vector3 getLocalVelocity() const;
 		void setLocalVelocity(TES3::Vector3*);
 
@@ -81,6 +83,9 @@ namespace NI {
 		//
 		// Other related this-call functions.
 		//
+
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
 
 		void update(float fTime = 0.0f, bool bUpdateControllers = false, bool bUpdateChildren = true);
 		void updateEffects();

@@ -186,6 +186,17 @@ A bit field for the spell's flags.
 
 ***
 
+### `isCorprusDisease`
+<div class="search_terms" style="display: none">iscorprusdisease, corprusdisease</div>
+
+*Read-only*. `true` if the spell is a blight disease with a corprus effect. This is equivalent to checking the `.castType` property against the constant, combined with using `:hasEffect` to check for corprus.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isCurse`
 <div class="search_terms" style="display: none">iscurse, curse</div>
 

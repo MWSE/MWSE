@@ -8,6 +8,18 @@ end
 
 local i18n = mwse.loadTranslations("mwse.config")
 
+local function resetLighting()
+	if not tes3.player then return end
+
+	if (tes3.dataHandler.currentInteriorCell) then
+		for reference in tes3.dataHandler.currentInteriorCell:iterateReferences() do
+			reference:updateLighting()
+		end
+	else
+		tes3.dataHandler:updateLightingForExteriorCells()
+	end
+end
+
 local config = {
 	name = "Morrowind Script Extender",
 	template = "Template",
@@ -145,6 +157,17 @@ local config = {
 						class = "TableVariable",
 						table = mwseConfig,
 					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("replaceLightSorting.label"),
+					description = i18n("replaceLightSorting.description"),
+					variable = {
+						id = "ReplaceLightSorting",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+					callback = resetLighting,
 				},
 			},
 			sidebarComponents = {

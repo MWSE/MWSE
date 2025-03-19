@@ -57,8 +57,3 @@ function niObjectNET:removeController(controller) end
 --- @param extraData niExtraData|niStringExtraData|niTES3ExtraData|niTextKeyExtraData No description yet available.
 function niObjectNET:removeExtraData(extraData) end
 
---- Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
---- @param state boolean No description yet available.
---- @param index number No description yet available.
-function niObjectNET:setFlag(state, index) end
-

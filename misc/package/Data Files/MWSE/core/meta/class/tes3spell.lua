@@ -15,6 +15,7 @@
 --- @field isActiveCast boolean *Read-only*. True if the spell is actively cast. If false, the spell's effects are always passively affecting the owner.
 --- @field isBlightDisease boolean *Read-only*. `true` if the spell is a blight disease. This is equivalent to checking the `.castType` property against the constant.
 --- @field isCommonDisease boolean *Read-only*. `true` if the spell is a common disease. This is equivalent to checking the `.castType` property against the constant.
+--- @field isCorprusDisease boolean *Read-only*. `true` if the spell is a blight disease with a corprus effect. This is equivalent to checking the `.castType` property against the constant, combined with using `:hasEffect` to check for corprus.
 --- @field isCurse boolean *Read-only*. `true` if the spell is a curse. This is equivalent to checking the `.castType` property against the constant.
 --- @field isDisease boolean *Read-only*. `true` if the spell is a common or blight disease. This is equivalent to checking the `.castType` property against the constants.
 --- @field isPower boolean *Read-only*. `true` if the spell is a power. This is equivalent to checking the `.castType` property against the constant.

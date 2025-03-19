@@ -15,7 +15,10 @@ namespace NI {
 		static Pointer<PointLight> create();
 
 		void setAttenuationForRadius(unsigned int radius);
+		unsigned int getRadius() const;
 		void setRadius(unsigned int radius);
+
+		unsigned int getSortWeight() const;
 
 	};
 	static_assert(sizeof(PointLight) == 0xDC, "NI::PointLight failed size validation");

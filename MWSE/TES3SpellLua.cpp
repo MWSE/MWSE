@@ -103,6 +103,7 @@ namespace mwse::lua {
 		// Named cast type access.
 		usertypeDefinition["isAbility"] = sol::readonly_property(&TES3::Spell::isAbility);
 		usertypeDefinition["isBlightDisease"] = sol::readonly_property(&TES3::Spell::isBlightDisease);
+		usertypeDefinition["isCorprusDisease"] = sol::readonly_property(&TES3::Spell::isCorprusDisease);
 		usertypeDefinition["isCommonDisease"] = sol::readonly_property(&TES3::Spell::isCommonDisease);
 		usertypeDefinition["isCurse"] = sol::readonly_property(&TES3::Spell::isCurse);
 		usertypeDefinition["isDisease"] = sol::readonly_property(&TES3::Spell::isDisease);

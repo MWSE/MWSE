@@ -366,6 +366,16 @@ namespace TES3 {
 		return Vector3();
 	}
 
+	bool Vector3::canConvertFrom(sol::table& table) {
+		sol::optional<float> x = table["x"];
+		if (!x) x = table[1];
+		sol::optional<float> y = table["y"];
+		if (!y) y = table[2];
+		sol::optional<float> z = table["z"];
+		if (!z) z = table[3];
+		return x && y && z;
+	}
+
 	//
 	// Vector4
 	//
@@ -705,7 +715,7 @@ namespace TES3 {
 		NI_Quaternion_FromRotation(q, this);
 	}
 
-	NI::Quaternion Matrix33::toQuaternion() {
+	NI::Quaternion Matrix33::toQuaternion() const {
 		NI::Quaternion result;
 		result.fromRotation(this);
 		return result;

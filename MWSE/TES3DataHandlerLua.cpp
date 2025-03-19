@@ -127,6 +127,7 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["updateCollisionGroupsForActiveCells"] = &TES3::DataHandler::updateCollisionGroupsForActiveCells;
+			usertypeDefinition["updateLightingForExteriorCells"] = &TES3::DataHandler::updateLightingForExteriorCells;
 
 			// Static variable binding.
 			usertypeDefinition["dontThreadLoad"] = sol::var(std::ref(TES3::DataHandler::dontThreadLoad));

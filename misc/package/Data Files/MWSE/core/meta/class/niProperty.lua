@@ -7,3 +7,10 @@
 --- @class niProperty : niObjectNET, niObject
 --- @field propertyFlags integer 
 --- @field type ni.propertyType *Read-only*. The unique class identifier number of the given rendering property. The types are available in [`ni.propertyType`](https://mwse.github.io/MWSE/references/ni/property-types/) table.
+niProperty = {}
+
+--- Sets a given property flag. The specifics use of the flag is dependent on the real underlying type.
+--- @param state boolean No description yet available.
+--- @param index number No description yet available.
+function niProperty:setFlag(state, index) end
+

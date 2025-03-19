@@ -19,6 +19,7 @@ namespace mwse {
 	bool Configuration::UseSkinnedAccurateActivationRaytests = true;
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
+	bool Configuration::ReplaceLightSorting = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -65,6 +66,7 @@ namespace mwse {
 		DECLARE_CONFIG(UseSkinnedAccurateActivationRaytests)
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
+		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

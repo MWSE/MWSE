@@ -203,6 +203,10 @@ namespace TES3 {
 		return castType == SpellCastType::Blight;
 	}
 
+	bool Spell::isCorprusDisease() const {
+		return isBlightDisease() && hasEffect(EffectID::Corprus);
+	}
+
 	bool Spell::isCommonDisease() const {
 		return castType == SpellCastType::Disease;
 	}

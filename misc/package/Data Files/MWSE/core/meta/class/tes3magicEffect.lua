@@ -34,9 +34,9 @@
 --- @field id tes3.effect|integer *Read-only*. The unique identifier for the magic effect. Maps to values in [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/). Values not defined in `tes3.effect` are also possible for magic effects added by mods that don't use [`tes3.claimSpellEffectId()`](https://mwse.github.io/MWSE/apis/tes3/#tes3claimspelleffectid) to register their id.
 --- @field illegalDaedra boolean Access to the base flag that determines if this effect summons an illegal daedra. This flag isn't used.
 --- @field isHarmful boolean Access to the base flag that determines if this effect is counted as a hostile action.
---- @field lightingBlue number The amount of blue lighting to use when lighting projectiles.
---- @field lightingGreen number The amount of green lighting to use when lighting projectiles.
---- @field lightingRed number The amount of red lighting to use when lighting projectiles.
+--- @field lightingBlue number The amount of blue lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
+--- @field lightingGreen number The amount of green lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
+--- @field lightingRed number The amount of red lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
 --- @field name string *Read-only*. Player-facing name of the effect.
 --- @field nonRecastable boolean Access to the base flag that determines if this effect can be refreshed by recasting.
 --- @field particleTexture string *Read-only*. The path to use for the particle effect texture.

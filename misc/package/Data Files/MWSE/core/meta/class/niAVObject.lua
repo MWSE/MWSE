@@ -84,6 +84,11 @@ function niAVObject:propagatePositionChange(args) end
 --- @field controllers boolean? *Default*: `false`. Update object's controllers?
 --- @field bounds boolean? *Default*: `true`. Update object's bounds?
 
+--- Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
+--- @param state boolean No description yet available.
+--- @param index number No description yet available.
+function niAVObject:setFlag(state, index) end
+
 --- Updates the world transforms of this node and its children, which makes changes visible for rendering. Use after changing any local rotation, translation, scale, bounds or after attaching and detaching nodes.
 --- 
 --- !!! tip	"Update Efficiency"

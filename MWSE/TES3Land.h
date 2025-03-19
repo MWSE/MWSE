@@ -6,7 +6,7 @@
 
 namespace TES3 {
 	struct Land : BaseObject {
-		NI::Pointer<NI::Object> sceneNode; // 0x10
+		NI::Pointer<NI::Node> sceneNode; // 0x10
 		unsigned int flags; // 0x14 // Data chunk. Masked with & 0xFFFFFC07
 		unsigned int fileOffset; // 0x18
 		NI::Node** landNodes; // 0x1C // Not owned by the Land.

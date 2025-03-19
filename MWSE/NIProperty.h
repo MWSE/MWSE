@@ -63,6 +63,9 @@ namespace NI {
 		// Other function addresses.
 		//
 
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
+
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);

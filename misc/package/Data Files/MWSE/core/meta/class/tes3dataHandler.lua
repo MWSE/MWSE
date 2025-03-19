@@ -47,3 +47,6 @@ function tes3dataHandler:updateCollisionGroupsForActiveCells(params) end
 --- @field isResettingData boolean? *Default*: `false`. No description yet available.
 --- @field resetCollisionGroups boolean? *Default*: `true`. No description yet available.
 
+--- Updates dynamic lights that affect exterior terrain and reference in exterior cells.
+function tes3dataHandler:updateLightingForExteriorCells() end
+
