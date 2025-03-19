@@ -27,9 +27,6 @@ local function isRegistered(callback, filter, priority)
 	return event.isRegistered(TEST_EVENT_ID, callback, {doOnce = true, priority = priority, filter = filter})
 end
 
-local function unregister(callback, filter, priority)
-	return event.unregister(TEST_EVENT_ID, callback, {doOnce = true, priority = priority, filter = filter})
-end
 
 
 
@@ -55,7 +52,9 @@ local testSuite = UnitWind.new({
 	enabled = true,
 	highlight = true,
 	exitAfter = true,
-	beforeAll =function (self)
+	beforeAll = function()
+		-- Use the debug library to gain access to the internal variables
+		-- used by the event API
 		for i = 1, 5000 do
 			local name, value = debug.getupvalue(event.clear, i)
 			if not name then break end
@@ -69,12 +68,11 @@ local testSuite = UnitWind.new({
 	end,
 	-- To be able to mock print, we need to reroute UnitWind's output file.
 	outputFile = "events test.log",
-	afterEach = function (self)
+	afterEach = function()
 		event.clear(TEST_EVENT_ID)
-		-- self:clearSpies()
 		for _, k in ipairs(table.keys(innerCallbacks)) do
 			-- reset the number of mock calls
-			-- this is done because i can't get `unspy` to work
+			-- this is done because I can't get `unspy` to work
 			table.clear(innerCallbacks[k]._mockCalls)
 		end
 	end
@@ -86,22 +84,7 @@ end
 
 testSuite:start("Testing event API")
 
--- print(string.format("got event = %s", event))
-
-
-
--- for i = 1, 5000 do
--- 	local name, value = debug.getupvalue(event.clear, i)
--- 	if not name then break end
--- 	if name == "generalEvents" then
--- 		generalEvents = value
--- 	elseif name == "filteredEvents" then
--- 		filteredEvents = value
--- 	end
--- end
-
 testSuite:test("Load generalEvents and filteredEvents", function ()
-	-- testSuite.logger:debug("checking if generalEvents was loaded")
 	testSuite:expect(generalEvents).toBeType("table")
 	testSuite:expect(filteredEvents).toBeType("table")
 end)
@@ -264,7 +247,7 @@ testSuite:test("doOnce: priority works with regular callbacks", function()
 	end
 	
 	-- unregister the first callback and see if the others behave normally.
-	unregister(callback1)
+	event.unregister(TEST_EVENT_ID, callback1)
 	
 	testSuite:expect(isRegistered(callback1)).toBe(false)
 	testSuite:expect(isRegistered(callback2)).toBe(true)
