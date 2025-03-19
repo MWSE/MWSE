@@ -217,38 +217,6 @@ local function onClickModName(e)
 	lastModName = modName
 end
 
--- Used to reopen the MCM to the most recently viewed menu, and ideally the most recently viewed tab of that menu.
----@param modName string Name of the mod to open.
----@param pageIndex integer? The index of the mods MCM to set as active. Only works if `modName` corresponds to a `mwseTemplate`.
-local function setActiveModMenu(modName, pageIndex)
-	if not modName then return end
-	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
-	if not menu then return end
-	local modList = menu:findChild("ModList")
-	local modListContents = modList and modList:getContentElement()
-	if not modListContents then return end
-	
-	-- Iterate through each mod button and check if the text matches `modName`.
-	-- If there's a match:
-	--	 1. Click on that mod button. 
-	--	 2. Check if `modName` corresponds to a `modTemplate`. If it does, update the active tab.
-	for _, child in ipairs(modListContents.children) do
-		local modNameButton = child.children[1]
-
-		if modNameButton.text == modName then
-			modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
-
-			-- Open the previously selected page if possible.
-			local template = modTemplates[modNameButton.text]
-			if template and pageIndex and template.pages[pageIndex] then
-				template:clickTab(template.pages[pageIndex])
-			end
-
-			-- We found the mod, so stop iterating.
-			return 
-		end
-	end
-end
 
 local keyBinderPopupId = tes3ui.registerID("KeyMouseBinderPopup")
 
@@ -536,7 +504,28 @@ local function onClickModConfigButton()
 		menu:updateLayout()
 
 		-- Reopen the most recently viewed config menu (if there was one)
-		setActiveModMenu(lastModName, lastPageIndex)
+		if lastModName then
+			-- Iterate through each mod button and check if the text matches `modName`.
+			-- If there's a match:
+			--	 1. Click on that mod button. 
+			--	 2. Check if `modName` corresponds to a `modTemplate`. If it does, update the active tab.
+			for _, child in ipairs(modListContents.children) do
+				local modNameButton = child.children[1]
+	
+				if modNameButton.text == lastModName then
+					modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
+	
+					-- Open the previously selected page if possible.
+					local template = modTemplates[modNameButton.text]
+					if template and lastPageIndex and template.pages[lastPageIndex] then
+						template:clickTab(template.pages[lastPageIndex])
+					end
+	
+					-- We found the mod, so stop iterating.
+					break 
+				end
+			end
+		end
 	else
 		menu.visible = true
 	end
