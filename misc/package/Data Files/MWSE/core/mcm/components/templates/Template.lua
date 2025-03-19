@@ -331,21 +331,8 @@ function Template:createContentsContainer(parentBlock)
 end
 
 function Template:register()
-	local mcm = {}
 
-	--- @param container tes3uiElement
-	mcm.onCreate = function(container)
-		self:create(container)
-		mcm.onClose = self.onClose
-	end
-
-	--- @param searchText string
-	--- @return boolean
-	mcm.onSearch = function(searchText)
-		return self:onSearchInternal(searchText)
-	end
-
-	mwse.registerModConfig(self.name, mcm)
+	mwse.registerModConfig(self.name, self)
 	mwse.log("%s mod config registered", self.name)
 end
 

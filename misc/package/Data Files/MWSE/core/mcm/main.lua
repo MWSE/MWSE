@@ -130,9 +130,9 @@ end
 
 -- Update the image icons for the various states of the favorite button.
 ---@param imageButton tes3uiElement
----@param modName string
-local function updateFavoriteImageButton(imageButton, modName)
-	local iconTable = isFavorite(modName) and favoriteIcons or nonFavoriteIcons
+---@param favorite boolean Is the mod favorited?
+local function updateFavoriteImageButton(imageButton, favorite)
+	local iconTable = favorite and favoriteIcons or nonFavoriteIcons
 	imageButton.children[1].contentPath = iconTable.idle
 	imageButton.children[2].contentPath = iconTable.over
 	imageButton.children[3].contentPath = iconTable.pressed
@@ -142,20 +142,23 @@ local function saveConfig()
 	mwse.saveConfig("MWSE.MCM", config)
 end
 
--- Closes the currently opened mod config menu, if it exists.
--- This is called when the user closes the MCM, or when the user clicks on a different mod name.
+--- Closes the currently opened mod config menu, if it exists.
+--- This will also update the `lastPageIndex` if a mod template is currently selected.
+--- This is called when the user closes the MCM, or when the user clicks on a different mod name.
 local function closeCurrentModConfig()
-	-- if not currentTemplate then return end
-	if not currentModName then return end
+	if not currentModName then 
+		return
+	end
 	
 	local onClose
-	local template = modTemplates[currentModName]
-	-- was it made using a template or the legacy structure?
-	if template then
+
+	if modTemplates[currentModName] then
+		local template = modTemplates[currentModName]
 		lastPageIndex = table.find(template.pages, template.currentPage)
 		onClose = template.onClose
 	else -- it's a legacy mod
-		onClose = table.get(legacyMods[currentModName], "onClose")
+		local legacyMod = legacyMods[currentModName]
+		onClose = legacyMod and legacyMod.onClose
 	end
 
 	if not onClose then return end
@@ -168,25 +171,22 @@ end
  
 
 --- Callback for when a mod name has been clicked in the left pane.
---- @param e tes3uiEventData
+--- @param e tes3uiEventData The event data that triggers when a mod name is clicked, so that `e.source`
+--- corresponds to a button on the left pane that stores a `modName`.
 local function onClickModName(e)
-	local modNameButton = e.source
 	local modName = e.source.text
-
-	if not modConfigContainer then
-		error(string.format('mod config container not found for "%s"!', e.source and e.source.text))
-	end
 
 	-- If we have a current mod, fire its close event.
 	closeCurrentModConfig()
 	currentModName = modName
 
 	local onCreate
-	local template = modTemplates[modName]
 
-	if template then
+	if modTemplates[modName] then
 		-- templates are created using methods, but we are expecting a regular function
-		onCreate = function(container) template:create(container) end
+		onCreate = function(container) 
+			modTemplates[modName]:create(container)
+		end
 	elseif legacyMods[modName] then
 		onCreate = legacyMods[modName].onCreate
 	else
@@ -198,7 +198,7 @@ local function onClickModName(e)
 		previousModConfigSelector.widget.state = tes3.uiState.normal
 	end
 	e.source.widget.state = tes3.uiState.active
-	previousModConfigSelector = modNameButton
+	previousModConfigSelector = e.source
 
 	-- Destroy and recreate the parent container.
 	modConfigContainer:destroyChildren()
@@ -238,15 +238,14 @@ local function setActiveModMenu(modName, pageIndex)
 		if modNameButton.text == modName then
 			modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
 
+			-- Open the previously selected page if possible.
 			local template = modTemplates[modNameButton.text]
-			-- bail out early if it's a legacy mod
-			if not template then return end
-			-- try to reopen the right tab
-			local lastPage = pageIndex and template.pages[pageIndex]
-			if lastPage then
-				template:clickTab(lastPage)
+			if template and pageIndex and template.pages[pageIndex] then
+				template:clickTab(template.pages[pageIndex])
 			end
-			return -- Found the mod, so stop iterating.
+
+			-- We found the mod, so stop iterating.
+			return 
 		end
 	end
 end
@@ -289,7 +288,7 @@ local function onClickFavoriteButton(e)
 	-- `source` is the button, which is right of the mod name, so we need to up and then down-left
 	local modName = e.source.parent.children[1].text
 	toggleFavorited(modName)
-	updateFavoriteImageButton(e.source, modName)
+	updateFavoriteImageButton(e.source, isFavorite(modName))
 
 	local menu = tes3ui.findMenu("MWSE:ModConfigMenu")
 	if not menu then return end
@@ -328,9 +327,8 @@ local function filterModByName(modName, searchText)
 	end
 
 	-- If the mod has a template, use the template's search logic.
-	local template = modTemplates[modName]
-	if template then
-		return template:onSearchInternal(searchText)
+	if  modTemplates[modName] then
+		return  modTemplates[modName]:onSearchInternal(searchText)
 	end
 
 	-- Do we have a custom filter package?
@@ -467,13 +465,14 @@ local function onClickModConfigButton()
 			modNameButton.heightProportional = 1
 
 			-- Icons will be updated by `updateFavoriteImageButton`.
+			local favorite = isFavorite(modName)
 			local imageButton = entryBlock:createImageButton(nonFavoriteIcons)
-			updateFavoriteImageButton(imageButton, modName)
+			updateFavoriteImageButton(imageButton,favorite)
 			imageButton.childAlignY = 0.5
 			imageButton.absolutePosAlignX = .97
 			imageButton.absolutePosAlignY = 0.5
 			imageButton.consumeMouseEvents = true
-			imageButton.visible = isFavorite(package.name)
+			imageButton.visible = favorite
 
 			imageButton:register(tes3.uiEvent.mouseClick, onClickFavoriteButton)
 			---@param image tes3uiElement
@@ -485,7 +484,7 @@ local function onClickModConfigButton()
 			end
 
 			local onHover = function() imageButton.visible = true end
-			local onLeave = function() imageButton.visible = isFavorite(package.name) end
+			local onLeave = function() imageButton.visible = isFavorite(modName) end
 			entryBlock:registerAfter(tes3.uiEvent.mouseOver, onHover)
 			entryBlock:registerAfter(tes3.uiEvent.mouseLeave, onLeave)
 			modNameButton:registerAfter(tes3.uiEvent.mouseOver, onHover)
@@ -522,7 +521,6 @@ local function onClickModConfigButton()
 		bottomBlock.autoHeight = true
 		bottomBlock.childAlignX = 1.0
 
-		
 		-- Add a close button to the bottom block.
 		local closeButton = bottomBlock:createButton({
 			id = "MWSE:ModConfigMenu_Close",
@@ -596,13 +594,6 @@ end
 event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 
 
---- checks if a given mod name was taken
----@param modName string
----@return boolean isTaken
-local function isModNameTaken(modName)
-	return (modTemplates[modName] or legacyMods[modName]) ~= nil
-end
-
 
 --- Define a new function in the mwse namespace that lets mods register for mod config.
 --- @deprecated
@@ -610,42 +601,21 @@ end
 --- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
 
-	if isModNameTaken(name) then
-		-- Awkward backwards compatibility fix to account for `mcm.registerModData` not returning anything anymore.
-		-- According to the lua code dump, only 4 mods used the `mcm.registerModData` function, and they all called
-		-- `registerModConfig` immediately afterwards.
-		if package ~= nil then
-			error(string.format('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
-		end
-		return
+	if (modTemplates[name] ~= nil or legacyMods[name] ~= nil) then
+		error(string.format('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
 	end
 	-- Check if it's a `mwseMCMTemplate`, and call the new registration function if possible.
 	if package.componentType == "Template" and package.class == "Template" then
-		mwse.registerModTemplate(package)
-		return
+		-- Actually register the package.
+		modTemplates[name] = package
+		mwse.log("[MCM] Registered mod config: %s", name)
+	else
+		-- Actually register the package.
+		--- @cast package mwseLegacyMod
+		package.name = name
+		legacyMods[name] = package
+		mwse.log("[MCM] Registered legacy mod config: %s", name)
 	end
-	-- Actually register the package.
-	--- @cast package mwseLegacyMod
-	package.name = name
-	legacyMods[name] = package
-	mwse.log("[MCM] Registered legacy mod config: %s", name)
-end
-
--- New registration function.
----@param template mwseMCMTemplate
-function mwse.registerModTemplate(template)
-	assert(template, "mwse.registerModTemplate: No template provided")
-	assert(type(template) == "table" and template.componentType == "Template", 
-		"mwse.registerModTemplate: Invalid template provided"
-	)
-
-	local name = template.name
-	assert(not isModNameTaken(name), 
-		string.format("mwse.registerModTemplate: A mod with the name %s has already been registered!", name)
-	)
-	-- Actually register the package.
-	modTemplates[name] = template
-	mwse.log("[MCM] Registered mod config: %s", name)
 end
 
 --- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.
