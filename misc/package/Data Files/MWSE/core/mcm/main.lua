@@ -180,19 +180,6 @@ local function onClickModName(e)
 	closeCurrentModConfig()
 	currentModName = modName
 
-	local onCreate
-
-	if modTemplates[modName] then
-		-- templates are created using methods, but we are expecting a regular function
-		onCreate = function(container) 
-			modTemplates[modName]:create(container)
-		end
-	elseif legacyMods[modName] then
-		onCreate = legacyMods[modName].onCreate
-	else
-		error(string.format("No mod config could be found for key '%s'.", modName))
-		return
-	end
 
 	if (previousModConfigSelector) then
 		previousModConfigSelector.widget.state = tes3.uiState.normal
@@ -202,11 +189,28 @@ local function onClickModName(e)
 
 	-- Destroy and recreate the parent container.
 	modConfigContainer:destroyChildren()
+	
+	--- The result of creating the template/legacy mod package, and an error message if there was a problem.
+	---@type boolean, string?
+	local status, errorMsg
+	
+
+	if modTemplates[modName] then
+		local template = modTemplates[modName]
+		-- Call `create` as a method.
+		status, errorMsg = pcall(template.create, template, modConfigContainer)
+	elseif legacyMods[modName] then
+		status, errorMsg = pcall(legacyMods[modName].onCreate, modConfigContainer)
+	else
+		-- We couldn't find the mod config.
+		-- I'm not even sure how this could ever happen.
+		error(string.format("No mod config could be found for '%s'.", modName))
+		return
+	end
 
 	-- Fire the mod's creation event if it has one.
-	local status, error = pcall(onCreate, modConfigContainer)
 	if (status == false) then
-		mwse.log("Error in mod config create callback: %s\n%s", error, debug.traceback())
+		mwse.log("Error in mod config create callback: %s\n%s", errorMsg, debug.traceback())
 	end
 
 	-- Change the mod config title bar to include the mod's name.
