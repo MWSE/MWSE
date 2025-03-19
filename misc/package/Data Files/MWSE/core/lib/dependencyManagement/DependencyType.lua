@@ -1,7 +1,10 @@
 local logging = require("logging.logger")
 local logger = logging.new{
     name = "DependencyType",
-    level = "INFO"
+    logLevel = "INFO",
+    modDir = "DependencyManager",
+    filePath = "DependencyType.lua",
+    moduleName = "DependencyType"
 }
 ---@class MWSE.DependencyType.ResolveButton
 ---@field text string The text to display on the button.
@@ -33,7 +36,10 @@ function DependencyType.registerDependencyType(e)
 
     local dependencyType = e
     dependencyType.logger = logging.new{
-        name = "DependencyType: " .. e.id,
+        modName = "DependencyType",
+        moduleName = e.id,
+        modDir = "dependencyManagment",
+        filePath = "DependencyType.lua",
         logLevel = e.logLevel or "INFO"
     }
     DependencyType.registeredDependencyTypes[e.id:lower()] = dependencyType
