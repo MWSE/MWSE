@@ -59,7 +59,8 @@ namespace TES3 {
 		// Other related helper functions.
 		//
 
-		int getAdjustedValue();
+		int getAdjustedValue() const;
+		EquipmentStack* canonicalCopy() const;
 	};
 	static_assert(sizeof(EquipmentStack) == 0x8, "TES3::EquipmentStack failed size validation");
 
@@ -74,8 +75,8 @@ namespace TES3 {
 
 		ItemStack* findItemStack(Object* item, ItemData* itemData = nullptr);
 
-		int addItem(MobileActor * mobile, Item * item, int count, bool overwriteCount, ItemData ** itemDataRef);
-		int addItemWithoutData(MobileActor * mobile, Item * item, int count, bool something);
+		int addItem(MobileActor * mobile, PhysicalObject * item, int count, bool overwriteCount, ItemData ** itemDataRef);
+		int addItemWithoutData(MobileActor * mobile, PhysicalObject * item, int count, bool something);
 		ItemData* addItemByReference(MobileActor * mobile, Reference * reference, int * out_count);
 		void removeItemData(Item* item, ItemData* itemData);
 		void removeItemWithData(MobileActor * mobile, Item * item, ItemData * itemData, int count, bool deleteStackData);
@@ -110,29 +111,28 @@ namespace TES3 {
 		// This allows lua and C++ to interface with this container as if it were the wrapped object.
 		//
 
-		using T = ItemStack*;
-		using value_type = T;
-		using size_type = size_t;
-		using difference_type = int;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
-		using iterator = IteratedList<ItemStack*>::iterator;
-		using const_iterator = const iterator;
-		using reverse_iterator = std::reverse_iterator<iterator>;
-		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+		using value_type = decltype(itemStacks)::value_type;
+		using size_type = decltype(itemStacks)::size_type;
+		using difference_type = decltype(itemStacks)::difference_type;
+		using pointer = decltype(itemStacks)::pointer;
+		using const_pointer = decltype(itemStacks)::const_pointer;
+		using reference = decltype(itemStacks)::const_reference;
+		using const_reference = decltype(itemStacks)::const_reference;
+		using iterator = decltype(itemStacks)::iterator;
+		using const_iterator = decltype(itemStacks)::const_iterator;
+		using reverse_iterator = decltype(itemStacks)::reverse_iterator;
+		using const_reverse_iterator = decltype(itemStacks)::const_reverse_iterator;
 
 		iterator begin() const { return itemStacks.begin(); }
 		iterator end() const { return itemStacks.end(); }
-		reverse_iterator rbegin() const { return std::make_reverse_iterator(end()); }
-		reverse_iterator rend() const { return std::make_reverse_iterator(begin()); }
-		const_iterator cbegin() const { return begin(); }
-		const_iterator cend() const { return end(); }
-		const_reverse_iterator crbegin() const { return rbegin(); }
-		const_reverse_iterator crend() const { return rend(); }
-		size_type size() const noexcept { return itemStacks.count; }
-		bool empty() const noexcept { return itemStacks.count == 0; }
+		reverse_iterator rbegin() const { return itemStacks.rbegin(); }
+		reverse_iterator rend() const { return itemStacks.rend(); }
+		const_iterator cbegin() const { return itemStacks.cbegin(); }
+		const_iterator cend() const { return itemStacks.cend(); }
+		const_reverse_iterator crbegin() const { return itemStacks.crbegin(); }
+		const_reverse_iterator crend() const { return itemStacks.crend(); }
+		size_type size() const noexcept { return itemStacks.size(); }
+		bool empty() const noexcept { return itemStacks.empty(); }
 
 	};
 	static_assert(sizeof(Inventory) == 0x1C, "TES3::Inventory failed size validation");

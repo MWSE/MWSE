@@ -33,19 +33,20 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	auto groupObjectsWindow = new CMFCPropertyGridProperty("Objects Window");
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Change Tab Style", &se::cs::settings.object_window.use_button_style_tabs, "If true, the tab control will use a more button-like style. This will prevent tab rows from jumping to the bottom of the stack when selected."));
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Highlight Modified", &se::cs::settings.object_window.highlight_modified_items, "If true, modified objects will have a background color."));
-	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Case Sensitive", &se::cs::settings.object_window.case_sensitive, "If true, searching will be case sensitive."));
-	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Use Regex", &se::cs::settings.object_window.use_regex, "If true, searching will be performed with regex. The case sensitive option is still used."));
+	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Case Sensitive", &se::cs::settings.object_window.search_settings.case_sensitive, "If true, searching will be case sensitive."));
+	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Use Regex", &se::cs::settings.object_window.search_settings.use_regex, "If true, searching will be performed with regex. The case sensitive option is still used."));
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Clear Filter on Tab Switch", &se::cs::settings.object_window.clear_filter_on_tab_switch, "If true, the search bar will be cleared when changing tabs."));
 	{
 		auto filterByGroup = new CMFCPropertyGridProperty("Filter By");
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("ID", &se::cs::settings.object_window.filter_by_id, "If true, the object's ID will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Name", &se::cs::settings.object_window.filter_by_name, "If true, the object's name will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Script ID", &se::cs::settings.object_window.filter_by_script_id, "If true, the script's ID will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Enchantment ID", &se::cs::settings.object_window.filter_by_enchantment_id, "If true, the enchantment's ID will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Icon Path", &se::cs::settings.object_window.filter_by_icon_path, "If true, the object's icon path will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Model Path", &se::cs::settings.object_window.filter_by_model_path, "If true, the object's model path will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Book Text", &se::cs::settings.object_window.filter_by_book_text, "If true, book text will be searched when filtering."));
-		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Faction", &se::cs::settings.object_window.filter_by_faction, "If true, faction IDs and rank names will be searched when filtering NPCs."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("ID", &se::cs::settings.object_window.search_settings.id, "If true, the object's ID will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Name", &se::cs::settings.object_window.search_settings.name, "If true, the object's name will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Script ID", &se::cs::settings.object_window.search_settings.script_id, "If true, the script's ID will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Enchantment ID", &se::cs::settings.object_window.search_settings.enchantment_id, "If true, the enchantment's ID will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Icon Path", &se::cs::settings.object_window.search_settings.icon_path, "If true, the object's icon path will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Model Path", &se::cs::settings.object_window.search_settings.model_path, "If true, the object's model path will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Book Text", &se::cs::settings.object_window.search_settings.book_text, "If true, book text will be searched when filtering."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Faction", &se::cs::settings.object_window.search_settings.faction, "If true, faction IDs and rank names will be searched when filtering NPCs."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Effect", &se::cs::settings.object_window.search_settings.effect, "If true, effects will be searched when filtering alchemy, spell, enchantment, or ingredients."));
 		groupObjectsWindow->AddSubItem(filterByGroup);
 	}
 	m_PropertyGrid.AddProperty(groupObjectsWindow);
@@ -73,8 +74,8 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	*/
 
 	auto groupTextSearch = new CMFCPropertyGridProperty("TextSearch");
-	groupTextSearch->AddSubItem(new CDataBoundPropertyGridProperty("Case Sensitive", &se::cs::settings.text_search.case_sensitive, "If true, searching will be case sensitive."));
-	groupTextSearch->AddSubItem(new CDataBoundPropertyGridProperty("Use Regex", &se::cs::settings.text_search.use_regex, "If true, searching will be performed with regex. The case sensitive option is still used."));
+	groupTextSearch->AddSubItem(new CDataBoundPropertyGridProperty("Case Sensitive", &se::cs::settings.text_search.search_settings.case_sensitive, "If true, searching will be case sensitive."));
+	groupTextSearch->AddSubItem(new CDataBoundPropertyGridProperty("Use Regex", &se::cs::settings.text_search.search_settings.use_regex, "If true, searching will be performed with regex. The case sensitive option is still used."));
 	m_PropertyGrid.AddProperty(groupTextSearch);
 
 	auto groupQuickStart = new CMFCPropertyGridProperty("QuickStart");

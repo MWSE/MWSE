@@ -6,7 +6,7 @@
 #include "TES3AIBehavior.h"
 #include "TES3Armor.h"
 #include "TES3Clothing.h"
-#include "TES3CrimeController.h"
+#include "TES3CrimeEvent.h"
 #include "TES3Deque.h"
 #include "TES3HashMap.h"
 #include "TES3Inventory.h"
@@ -147,7 +147,7 @@ namespace TES3 {
 		AIPlanner * aiPlanner; // 0xC8
 		ActionData actionData; // 0xCC
 		ActionData actionBeforeCombat; // 0x13C
-		CrimeController committedCrimes; // 0x1AC
+		Deque<CrimeEvent> committedCrimes; // 0x1AC
 		int unknown_0x1B8;
 		int unknown_0x1BC;
 		CombatSession * combatSession; // 0x1C0
@@ -172,7 +172,7 @@ namespace TES3 {
 			ActorAnimationController * asActor;
 			PlayerAnimationController * asPlayer;
 		} animationController; // 0x244
-		CrimeController witnessedCrimes; // 0x248
+		Deque<CrimeEvent> witnessedCrimes; // 0x248
 		Statistic attributes[8]; // 0x254
 		Statistic health; // 0x2B4
 		Statistic magicka; // 0x2C0
@@ -185,8 +185,8 @@ namespace TES3 {
 		int hello; // 0x358
 		int alarm; // 0x35C
 		int barterGold; // 0x360
-		short widthInUnits; // 0x364
-		short heightInUnits; // 0x366
+		unsigned short widthRescaled; // 0x364 // 11.5 fixed point
+		unsigned short heightRescaled; // 0x366 // 11.5 fixed point
 		short readiedAmmoCount; // 0x368
 		short corpseHourstamp; // 0x36A
 		short greetDuration; // 0x36C
@@ -248,6 +248,7 @@ namespace TES3 {
 		float getBootsWeight() const;
 		float getWeaponSpeed() const;
 		float getAttackReach() const;
+		float getEffectiveAttackDistance(const TES3::MobileActor* mobile) const;
 
 		void startCombat(MobileActor*);
 		void startCombat_lua(sol::object target);
@@ -261,6 +262,7 @@ namespace TES3 {
 		float applyFatigueDamage(float damage, float swing, bool alwaysPlayHitVoice = false);
 		void applyJumpFatigueCost() const;
 		float applyDamage_lua(sol::table params);
+		float applyFatigueDamage_lua(float damage, float swing, bool alwaysPlayHitVoice = false);
 		float calcEffectiveDamage_lua(sol::table params);
 		bool doJump(Vector3 velocity, bool applyFatigueCost = true, bool isDefaultJump = false);
 		bool doJump_lua(sol::optional<sol::table> params);
@@ -297,9 +299,10 @@ namespace TES3 {
 		void playVoiceover(int);
 		void startDialogue();
 
-		bool isAffectedByAlchemy(Alchemy * alchemy) const;
-		bool isAffectedByEnchantment(Enchantment * enchantment) const;
-		bool isAffectedBySpell(Spell * spell) const;
+		bool isAffectedByAlchemy(Alchemy* alchemy) const;
+		bool isAffectedBySimilarAlchemy(Alchemy* alchemy) const;
+		bool isAffectedByEnchantment(Enchantment* enchantment) const;
+		bool isAffectedBySpell(Spell* spell) const;
 
 		bool isDiseased() const;
 		bool hasCommonDisease() const;
@@ -310,7 +313,7 @@ namespace TES3 {
 		SpellList* getSpellList();
 		IteratedList<Spell*> * getCombatSpellList();
 
-		bool isActive();
+		bool isActive() const;
 		void forceSpellCast(MobileActor * target);
 
 		void dropItem(Object * item, ItemData * itemData = nullptr, int count = 1, bool ignoreItemData = true);
@@ -318,7 +321,7 @@ namespace TES3 {
 		// Always returns false for non-MACH.
 		bool persuade(int random, int persuasionIndex);
 
-		bool getIsWerewolf();
+		bool getIsWerewolf() const;
 		void setIsWerewolf(bool set);
 		void changeWerewolfState(bool isWerewolf);
 
@@ -334,7 +337,11 @@ namespace TES3 {
 		bool getMobileActorMovementFlag(ActorMovement::Flag) const;
 		void setMobileActorMovementFlag(ActorMovement::Flag, bool);
 
-		bool equipItem(Object* item, ItemData * itemData = nullptr, bool addItem = false, bool selectBestCondition = false, bool selectWorstCondition = false);
+		float getWidth() const;
+		float getHeight() const;
+
+		bool wearItem(Object* item, ItemData* itemData, bool addItem, bool unknown, bool useEvents);
+		bool equipItem(Object* item, ItemData* itemData = nullptr, bool addItem = false, bool selectBestCondition = false, bool selectWorstCondition = false, bool useEvents = false);
 		bool equip_lua(sol::object arg);
 		bool unequip_lua(sol::table args);
 		bool equipMagic(Object* source, ItemData* itemData = nullptr, bool equipItem = false, bool updateGUI = true);
@@ -353,6 +360,7 @@ namespace TES3 {
 		void removeFiredProjectiles(bool includeSpellProjectiles);
 		void resurrect(bool resetState, bool moveToStartingLocation);
 		void resurrect_lua(sol::table params);
+		void overrideHeadTrackingThisFrame(Reference* target);
 
 		ActorAnimationController* getAnimationController() const;
 		BaseObject* getCurrentSpell() const;
@@ -471,6 +479,8 @@ namespace TES3 {
 		void setMovementFlagTurnRight(bool value);
 		bool getMovementFlagWalking() const;
 		void setMovementFlagWalking(bool value);
+
+		bool isSpeaking() const;
 
 		bool isAffectedByObject_lua(sol::object object) const;
 

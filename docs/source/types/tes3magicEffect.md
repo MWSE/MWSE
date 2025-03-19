@@ -312,7 +312,7 @@ Access to the base flag that determines if this effect is counted as a hostile a
 ### `lightingBlue`
 <div class="search_terms" style="display: none">lightingblue</div>
 
-The amount of blue lighting to use when lighting projectiles.
+The amount of blue lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
 
 **Returns**:
 
@@ -323,7 +323,7 @@ The amount of blue lighting to use when lighting projectiles.
 ### `lightingGreen`
 <div class="search_terms" style="display: none">lightinggreen</div>
 
-The amount of green lighting to use when lighting projectiles.
+The amount of green lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
 
 **Returns**:
 
@@ -334,7 +334,7 @@ The amount of green lighting to use when lighting projectiles.
 ### `lightingRed`
 <div class="search_terms" style="display: none">lightingred</div>
 
-The amount of red lighting to use when lighting projectiles.
+The amount of red lighting to use when lighting projectiles. This is also used for coloring the enchanted item effect.
 
 **Returns**:
 
@@ -371,7 +371,7 @@ Access to the base flag that determines if this effect can be refreshed by recas
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (string)
 
 ***
 

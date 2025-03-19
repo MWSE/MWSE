@@ -1,6 +1,7 @@
 return {
 	type = "event",
-	description = "This event is raised before a hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach.",
+	description = "This event is raised before a melee hit attempt, to set up the hit detection cone of a attack swing. It is also raised a second time when the attack animation reaches its hit point, to check if the target is still within reach. See `calcTouchSpellCone` for the touch spell equivalent.",
+	related = { "calcTouchSpellCone" },
 	eventData = {
 		["attacker"] = {
 			type = "tes3reference",

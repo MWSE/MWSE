@@ -62,6 +62,8 @@ namespace se::cs {
 		bool getMaterialFlag(WeaponMaterialFlag::Flag flag) const;
 		bool getIsSilver() const;
 		bool getIgnoresResistance() const;
+
+		bool isProjectile() const;
 	};
 	static_assert(sizeof(Weapon) == 0x7C, "Weapon failed size validation");
 }

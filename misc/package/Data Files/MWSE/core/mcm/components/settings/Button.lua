@@ -13,7 +13,7 @@ Button.buttonText = "---"
 --- Determines what text is displayed on the button
 --- @return string buttonText
 function Button:getText()
-	if self.variable then 
+	if self.variable then
 		return tostring(self:convertToLabelValue(self.variable.value))
 	end
 	return self.buttonText
@@ -26,7 +26,7 @@ end
 
 function Button:disable()
 	Parent.disable(self)
-	self.elements.button.widget.state = 2
+	self.elements.button.widget.state = tes3.uiState.disabled
 end
 
 function Button:update()
@@ -41,7 +41,7 @@ end
 function Button:enable()
 	Parent.enable(self)
 	self:setText(self:getText())
-	self.elements.button:register("mouseClick", function(e)
+	self.elements.button:register(tes3.uiEvent.mouseClick, function(e)
 		self:press()
 	end)
 end
@@ -63,7 +63,7 @@ function Button:createOuterContainer(parentBlock)
 	-- A bit weird but it seems to line buttons up better with other settings
 	self.elements.outerContainer.borderTop = self.paddingBottom
 	self.elements.outerContainer.borderBottom = 0
-	self.elements.outerContainer.flowDirection = "left_to_right"
+	self.elements.outerContainer.flowDirection = tes3.flowDirection.leftToRight
 end
 
 --- @param parentBlock tes3uiElement

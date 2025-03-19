@@ -8,7 +8,7 @@
 
 An object that represents an ambient light. This object is fairly simple, and has no location, direction, or attenuation.
 
-This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`
@@ -807,7 +807,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given dynamic effect flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

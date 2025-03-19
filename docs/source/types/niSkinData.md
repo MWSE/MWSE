@@ -8,7 +8,7 @@
 
 Contains skinning data that may be shared by multiple `NiSkinInstance` objects.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `boneData`
@@ -44,17 +44,6 @@ Access to the container with the skinning data optimized for hardware skinning. 
 
 ***
 
-### `rotation`
-<div class="search_terms" style="display: none">rotation</div>
-
-Defines the rotation of the root bone in the bind pose from the parent node of the root bone to the coordinate system of the skinned object.
-
-**Returns**:
-
-* `result` ([tes3matrix33](../types/tes3matrix33.md))
-
-***
-
 ### `RTTI`
 <div class="search_terms" style="display: none">rtti</div>
 
@@ -77,25 +66,14 @@ Defines the rotation of the root bone in the bind pose from the parent node of t
 
 ***
 
-### `scale`
-<div class="search_terms" style="display: none">scale</div>
+### `transform`
+<div class="search_terms" style="display: none">transform</div>
 
-Defines the scale of the root bone in the bind pose from the parent node of the root bone to the coordinate system of the skinned object.
-
-**Returns**:
-
-* `result` (number)
-
-***
-
-### `translation`
-<div class="search_terms" style="display: none">translation</div>
-
-Defines the translation of the root bone in the bind pose from the parent node of the root bone to the coordinate system of the skinned object.
+Defines the transform of the root bone in the bind pose from the parent node of the root bone to the coordinate system of the skinned object.
 
 **Returns**:
 
-* `result` ([tes3vector3](../types/tes3vector3.md))
+* `result` ([tes3transform](../types/tes3transform.md))
 
 ***
 

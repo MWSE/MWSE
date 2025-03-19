@@ -1,7 +1,7 @@
 #include "TES3LightLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 
 #include "TES3Inventory.h"
 #include "TES3ItemData.h"
@@ -22,7 +22,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserdataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["value"] = &TES3::Light::value;
@@ -47,16 +47,8 @@ namespace mwse::lua {
 		// Indirect bindings to unions and arrays.
 		usertypeDefinition["color"] = sol::readonly_property(&TES3::Light::getColor);
 
-		// Functions exposed as properties.
-		usertypeDefinition["icon"] = sol::property(&TES3::Light::getIconPath, &TES3::Light::setIconPath);
-		usertypeDefinition["mesh"] = sol::property(&TES3::Light::getModelPath, &TES3::Light::setModelPath);
-		usertypeDefinition["name"] = sol::property(&TES3::Light::getName, &TES3::Light::setName);
-
 		// Methods.
 		usertypeDefinition["createCopy"] = &TES3::Light::createCopy_lua<TES3::Light>;
 		usertypeDefinition["getTimeLeft"] = &TES3::Light::getTimeLeft_lua;
-
-		// TODO: Deprecated. Remove before 2.1-stable.
-		usertypeDefinition["model"] = sol::property(&TES3::Light::getModelPath, &TES3::Light::setModelPath);
 	}
 }

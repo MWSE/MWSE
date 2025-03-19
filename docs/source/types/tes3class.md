@@ -8,7 +8,7 @@
 
 A core object representing a character class.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `attributes`
@@ -297,6 +297,17 @@ The player-facing name for the object.
 
 ***
 
+### `offersBartering`
+<div class="search_terms" style="display: none">offersbartering</div>
+
+*Read-only*. If true, the class will barter in at least one type of item.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `offersEnchanting`
 <div class="search_terms" style="display: none">offersenchanting</div>
 
@@ -399,7 +410,7 @@ The services offered by the class. This is a bit field, and its values should ty
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -426,6 +437,19 @@ The specialization for the class. Maps to values in the [`tes3.specialization`](
 **Returns**:
 
 * `result` ([tes3.specialization](../references/specializations.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

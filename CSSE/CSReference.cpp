@@ -3,6 +3,17 @@
 #include "NINode.h"
 
 namespace se::cs {
+	Attachment* Reference::getAttachment(Attachment::Type type) const {
+		auto attachment = firstAttachment;
+		while (attachment) {
+			if (attachment->type == type) {
+				return attachment;
+			}
+			attachment = attachment->next;
+		}
+		return nullptr;
+	}
+
 	LightAttachmentNode* Reference::getLightAttachment() const {
 		const auto Reference_getLightAttachment = reinterpret_cast<LightAttachmentNode*(__thiscall*)(const Reference*)>(0x4043EA);
 		return Reference_getLightAttachment(this);

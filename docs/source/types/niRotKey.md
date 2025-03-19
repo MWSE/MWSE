@@ -8,7 +8,7 @@
 
 An animation key that holds a rotation value.
 
-This type inherits the following: [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `timing`

@@ -247,7 +247,7 @@ namespace se::cs::dialog::object_window {
 
 		void setupColumns(HWND hWnd);
 
-		int getColumnIndexByTitle(const char* title);
-		TabColumn* getColumnByTitle(const char* title);
+		int getColumnIndexByTitle(const char* title) const;
+		TabColumn* getColumnByTitle(const char* title) const;
 	};
 }

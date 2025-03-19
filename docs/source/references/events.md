@@ -43,6 +43,7 @@ calcSpellPrice                | `"calcSpellPrice"`                | [`calcSpellP
 calcSunDamageScalar           | `"calcSunDamageScalar"`           | [`calcSunDamageScalar`](https://mwse.github.io/MWSE/events/calcSunDamageScalar)
 calcSwimRunSpeed              | `"calcSwimRunSpeed"`              | [`calcSwimRunSpeed`](https://mwse.github.io/MWSE/events/calcSwimRunSpeed)
 calcSwimSpeed                 | `"calcSwimSpeed"`                 | [`calcSwimSpeed`](https://mwse.github.io/MWSE/events/calcSwimSpeed)
+calcTouchSpellCone            | `"calcTouchSpellCone"`            | [`calcTouchSpellCone`](https://mwse.github.io/MWSE/events/calcTouchSpellCone/)
 calcTrainingPrice             | `"calcTrainingPrice"`             | [`calcTrainingPrice`](https://mwse.github.io/MWSE/events/calcTrainingPrice)
 calcTravelPrice               | `"calcTravelPrice"`               | [`calcTravelPrice`](https://mwse.github.io/MWSE/events/calcTravelPrice)
 calcWalkSpeed                 | `"calcWalkSpeed"`                 | [`calcWalkSpeed`](https://mwse.github.io/MWSE/events/calcWalkSpeed)

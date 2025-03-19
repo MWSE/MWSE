@@ -14,6 +14,7 @@
 #include "NINode.h"
 #include "NIPick.h"
 #include "NILines.h"
+#include "NITriShape.h"
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
@@ -23,6 +24,7 @@
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 #include "CSStatic.h"
+#include "CSLand.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowSelectionData.h"
@@ -1087,10 +1089,65 @@ namespace se::cs::dialog::render_window {
 	}
 
 	//
+	// Patch: Extend reference status data
+	//
+
+	const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, const char*)>(0x404881);
+
+	void __cdecl Patch_ExtendReferenceStatusData(WPARAM wParam, const char* lParam) {
+		const auto cell = gCurrentCell::get();
+		const auto firstTarget = SelectionData::get()->firstTarget;
+		if (firstTarget == nullptr || cell == nullptr) {
+			TES3CS_UpdateStatusMessage(wParam, lParam);
+			return;
+		}
+
+		const auto reference = firstTarget->reference;
+
+		std::stringstream ss;
+		ss << std::dec << std::fixed << std::setprecision(0)
+			<< reference->position.x << ", " << reference->position.y << ", " << reference->position.z
+			<< " [" << math::radiansToDegrees(reference->orientationNonAttached.x) << ", " << math::radiansToDegrees(reference->orientationNonAttached.y) << ", " << math::radiansToDegrees(reference->orientationNonAttached.z) << "]"
+			<< " " << std::setprecision(2) << reference->getScale()
+			<< " " << cell->getEditorId();
+		
+		TES3CS_UpdateStatusMessage(wParam, ss.str().c_str());
+	}
+
+	//
 	// Patch: Extend Render Window message handling.
 	//
 
-	NI::Texture* getLandscapeTextureUnderCursor() {
+	Land* getActiveExteriorLandForMesh(NI::Node* node) {
+		const auto dataHandler = DataHandler::get();
+		for (auto x = 0; x < 5; ++x) {
+			for (auto y = 0; y < 5; ++y) {
+				const auto exteriorData = dataHandler->exteriorCellData[x][y];
+				if (exteriorData == nullptr) {
+					continue;
+				}
+
+				auto land = exteriorData->cell->getLand();
+				if (land == nullptr) {
+					continue;
+				}
+
+				for (auto b = 0; b < 16; ++b) {
+					if (!land->blockCreated[b]) {
+						continue;
+					}
+
+					if (land->blockTextures[b] == node) {
+						return land;
+					}
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+	LandTexture* getLandscapeTextureUnderCursor() {
 		auto rendererController = RenderController::get();
 		auto sceneGraphController = SceneGraphController::get();
 
@@ -1100,27 +1157,48 @@ namespace se::cs::dialog::render_window {
 			return nullptr;
 		}
 
-		auto pick = sceneGraphController->landscapePick;
+		const auto pick = sceneGraphController->landscapePick;
 		if (!pick->pickObjects(&origin, &direction)) {
 			return nullptr;
 		}
 
-		auto firstResult = pick->results.at(0);
+		const auto firstResult = pick->results.at(0);
 		if (firstResult == nullptr || firstResult->object == nullptr) {
 			return nullptr;
 		}
 
-		auto texturingProperty = firstResult->object->getTexturingProperty();
+		const auto texturingProperty = firstResult->object->getTexturingProperty();
 		if (texturingProperty == nullptr) {
 			return nullptr;
 		}
 
-		auto baseMap = texturingProperty->getBaseMap();
+		const auto baseMap = texturingProperty->getBaseMap();
 		if (baseMap == nullptr) {
 			return nullptr;
 		}
 
-		return baseMap->texture;
+		const auto land = getActiveExteriorLandForMesh(firstResult->object->parentNode);
+		if (land == nullptr) {
+			return nullptr;
+		}
+
+		const auto landTextures = DataHandler::get()->recordHandler->landTextures;
+		const auto& texture = baseMap->texture;
+		for (auto x = 0; x < 16; ++x) {
+			for (auto y = 0; y < 16; ++y) {
+				const auto index = land->textureIndices[x][y];
+				auto landTexture = landTextures->at(index);
+				if (landTexture == nullptr) {
+					continue;
+				}
+
+				if (landTexture->texture == texture) {
+					return landTexture;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	bool PickLandscapeTexture(HWND hWnd) {
@@ -2531,6 +2609,9 @@ namespace se::cs::dialog::render_window {
 		writeDoubleWordEnforced(0x45F719 + 0x2, 0x12C, 0x134);
 		genCallEnforced(0x45F4ED, 0x4015A0, reinterpret_cast<DWORD>(PatchFixMaterialPropertyColors));
 		genCallEnforced(0x45F626, 0x4015A0, reinterpret_cast<DWORD>(PatchAddBlankTexturingProperty));
+
+		// Patch: Add scale information to status window.
+		genCallEnforced(0x45C962, 0x404881, reinterpret_cast<DWORD>(Patch_ExtendReferenceStatusData));
 
 		// Patch: Extend Render Window message handling.
 		genJumpEnforced(0x4020EF, 0x45A3F0, reinterpret_cast<DWORD>(PatchDialogProc));

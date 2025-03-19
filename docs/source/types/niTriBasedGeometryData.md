@@ -8,7 +8,7 @@
 
 Contains the actual geometry data for a `NiTriBasedGeometry` object.
 
-This type inherits the following: [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `activeTriangleCount`
@@ -29,7 +29,7 @@ The model-space bounding sphere of the object.
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 

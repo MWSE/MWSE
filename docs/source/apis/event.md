@@ -54,7 +54,7 @@ local result = event.isRegistered(eventId, callback, { filter = ... })
 Registers a function to be called when an event is raised.
 
 ```lua
-event.register(eventId, callback, { doOnce = ..., filter = ..., priority = ... })
+event.register(eventId, callback, { doOnce = ..., filter = ..., priority = ..., unregisterOnLoad = ... })
 ```
 
 **Parameters**:
@@ -65,6 +65,7 @@ event.register(eventId, callback, { doOnce = ..., filter = ..., priority = ... }
 	* `doOnce` (boolean): *Default*: `false`. If this option is set to `true`, the function registered will be executed only once, and automatically unregistered thereafter.
 	* `filter` (userdata, string, number, [tes3baseObject](../types/tes3baseObject.md)): *Optional*. This parameter allows selectively executing the callback function only when a specific condition is met. The exact behavior depends on each event.
 	* `priority` (number): *Optional*. Event callback with higher priority is executed before callback with lower priority. Typically used to make certain mods compatible.
+	* `unregisterOnLoad` (boolean): *Default*: `false`. If this option is set to `true`, the registered function will be unregistered when the next `load` event triggers.
 
 ***
 

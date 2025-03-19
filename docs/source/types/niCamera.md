@@ -8,7 +8,7 @@
 
 Object that represent a camera. Position and orientation is determined by parent properties. This enables the cameras to be attached to scene graph objects and follow them automatically, as they move.
 
-This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `alphaProperty`
@@ -223,7 +223,7 @@ The object's local uniform scaling factor.
 ### `scene`
 <div class="search_terms" style="display: none">scene</div>
 
-*Read-only*. The scene of the camera.
+The scene of the camera.
 
 **Returns**:
 
@@ -858,7 +858,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

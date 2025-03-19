@@ -10,7 +10,7 @@ return {
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
 			{ name = "allowCombinations ", type = "boolean", optional = true, default = true, description = "If true, the Binder will let the user use modification keys: Shift, Ctrl, and Alt when rebinding." },
 			{ name = "keybindName", type = "string", optional = true, description = "The keybind name. Shown in the popup menu header. This string is formatted into a localized version of \"SET %s KEYBIND\". If none is provided the popup has \"SET NEW KEYBIND\" as header text." },
-			{ name = "leftSide ", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
+			{ name = "leftSide", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "A variable for this Binder." },
 			{ name = "defaultSetting", type = "mwseKeyCombo|mwseKeyMouseCombo", optional = true, description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value." },
 			{ name = "callback", type = "fun(self: mwseMCMBinder)", optional = true, description = "The custom function called when the player interacts with this Binder." },

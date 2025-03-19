@@ -73,6 +73,11 @@ namespace TES3 {
 		return TES3_TES3File_hasMoreRecords(this);
 	}
 
+	bool GameFile::nextRecord(int flag) {
+		const auto TES3_TES3File_nextRecord = reinterpret_cast<bool(__thiscall*)(GameFile*, int)>(0x4B6380);
+		return TES3_TES3File_nextRecord(this, flag);
+	}
+
 	bool GameFile::collectActiveMods(bool showMasterErrors) {
 		return TES3_TES3File_collectActiveMods2(this, TES3::DataHandler::get()->nonDynamicData->gameFiles, showMasterErrors);
 	}
@@ -87,6 +92,16 @@ namespace TES3 {
 
 	bool GameFile::setFilePointer(unsigned int offset) {
 		return TES3_TES3File_setFilePointer(this, offset);
+	}
+
+	bool GameFile::reopen(int mode, bool writable) {
+		const auto TES3_TES3File_reopen = reinterpret_cast<bool(__thiscall*)(GameFile*, int, bool)>(0x4B4510);
+		return TES3_TES3File_reopen(this, mode, writable);
+	}
+
+	bool GameFile::close() {
+		const auto TES3_TES3File_close = reinterpret_cast<bool(__thiscall*)(GameFile*)>(0x4B47C0);
+		return TES3_TES3File_close(this);
 	}
 
 	const auto TES3_TES3File_getToLoad = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x4B6250);

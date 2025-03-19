@@ -10,7 +10,7 @@ A ConfigVariable fetches a json file from a given path and stores the variable i
 
 The ConfigVariable saves to the config file every time the setting is updated. It is generally recommended you use TableVariable and save the config using `template.saveOnClose()` instead, especially if you are using a setting where updates happen frequently such as with sliders.
 
-This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md)
+This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md).
 ## Properties
 
 ### `class`

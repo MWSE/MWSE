@@ -2,6 +2,8 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
+local utils = require("mcm.utils")
+
 local Parent = require("mcm.components.Component")
 
 --- Class object
@@ -21,9 +23,16 @@ function Template:new(data)
 	local pages = {}
 	t.pages = t.pages or {}
 	for _, page in ipairs(t.pages) do
-		page.class = page.class or "Page"
-		local newPage = self:getComponent(page)
-		table.insert(pages, newPage)
+		-- Make sure it's actually a `Page`.
+		if not page.componentType then
+			local componentClass = utils.getComponentClass(page.class or "Page")
+			if not componentClass then
+				error(string.format("Could not intialize page %q", page.label))
+			end
+			page.parentComponent = self
+			page = componentClass:new(page)
+		end
+		table.insert(pages, page)
 	end
 	t.pages = pages
 
@@ -153,16 +162,9 @@ function Template:createLabel(parentBlock)
 	elseif self.label then
 		headerBlock.borderAllSides = 10
 		local title = headerBlock:createLabel({ text = self.label })
-		title.color = tes3ui.getPalette("header_color")
+		title.color = tes3ui.getPalette(tes3.palette.headerColor)
 	end
 
-end
-
---- @param button tes3uiElement
---- @param enabled boolean
-local function toggleButtonState(button, enabled)
-	button.disabled = not enabled
-	button.widget.state = enabled and 1 or 2
 end
 
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
@@ -175,23 +177,27 @@ function Template:clickTab(thisPage)
 	thisPage:create(pageBlock)
 	-- Set new page to current
 	self.currentPage = thisPage
-	-- Disable tabs
+
+	-- Disable tabs and tally width
+	local totalWidth = 0
 	for id, page in pairs(self.pages) do
-		tabsBlock:findChild(page.tabUID).widget.state = 1
+		local tab = tabsBlock:findChild(page.tabUID)
+		tab.widget.state =  tes3.uiState.normal
+		totalWidth = totalWidth + tab.width
 	end
 	-- Enable tab for this page
-	tabsBlock:findChild(thisPage.tabUID).widget.state = 4
+	local tab = tabsBlock:findChild(thisPage.tabUID)
+	tab.widget.state = tes3.uiState.active
+
+	-- Ensure tabs are visible.
+	tabsBlock.childOffsetX = 0
+	tabsBlock:updateLayout()
+	tabsBlock.childOffsetX = math.clamp(-tab.positionX, -totalWidth + tabsBlock.width, 0)
+
+	self:padTabBlock()
+
 	-- update view
 	pageBlock:getTopLevelMenu():updateLayout()
-
-	-- Enable Prev button if first tab is not active
-	local tab1 = tabsBlock:findChild(self.pages[1].tabUID)
-	local prevButton = self.elements.previousTabButton
-	if tab1.widget.state ~= 4 then
-		toggleButtonState(prevButton, true)
-	else
-		toggleButtonState(prevButton, false)
-	end
 end
 
 --- @param button tes3uiElement
@@ -203,13 +209,46 @@ local function formatTabButton(button)
 	button.paddingBottom = 6
 end
 
+local arrowPrevious = {
+	id = "MCM_PreviousButton",
+	idle = "textures/mwse/menu_arrow_prev.tga",
+	over = "textures/mwse/menu_arrow_prev.tga",
+	pressed = "textures/mwse/menu_arrow_prev_pressed.tga",
+}
+
+local arrowNext = {
+	id = "MCM_NextButton",
+	idle = "textures/mwse/menu_arrow_next.tga",
+	over = "textures/mwse/menu_arrow_next.tga",
+	pressed = "textures/mwse/menu_arrow_next_pressed.tga",
+}
+
+--- @param element tes3uiElement
+local function createArrow(element, imageParams)
+	local arrow = element:createImageButton(imageParams)
+	arrow.height = 32
+	arrow.childOffsetY = 2
+	return arrow
+end
+
 --- @param page mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:createTab(page)
 	local button = self.elements.tabsBlock:createButton({ id = page.tabUID, text = page.label })
 	formatTabButton(button)
-	button:register("mouseClick", function()
+	button:register(tes3.uiEvent.mouseClick, function()
 		self:clickTab(page)
 	end)
+end
+
+function Template:padTabBlock()
+	local totalWidth = 0
+	for _, page in pairs(self.pages) do
+		local tab = self.elements.tabsBlock:findChild(page.tabUID)
+		totalWidth = totalWidth + tab.width
+	end
+
+	self.elements.tabsBlock.borderRight = self.elements.tabsBlock.parent.width - totalWidth
+	self.elements.tabsBlock.parent:updateLayout()
 end
 
 --- @param parentBlock tes3uiElement
@@ -225,72 +264,52 @@ function Template:createTabsBlock(parentBlock)
 	end
 
 	-- Previous Button
-	local prevButton = outerTabsBlock:createButton{ id = tes3ui.registerID("MCM_PreviousButton"), text = "<--" }
-	formatTabButton(prevButton)
-	toggleButtonState(prevButton, false)
-	self.elements.previousTabButton = prevButton
+	self.elements.previousTabButton = createArrow(outerTabsBlock, arrowPrevious)
 
+	local subBlock = outerTabsBlock:createBlock()
+	subBlock.autoHeight = true
+	subBlock.widthProportional = 1
 	-- Create page tab buttons
-	local tabsBlock = outerTabsBlock:createBlock()
+	local tabsBlock = subBlock:createThinBorder()
 	self.elements.tabsBlock = tabsBlock
 	tabsBlock.autoHeight = true
-	tabsBlock.widthProportional = 1.0
+	tabsBlock.widthProportional = 1
+	tabsBlock.childOffsetX = 0
 	for _, page in ipairs(self.pages) do
 		self:createTab(page)
 	end
 	local firstTab = parentBlock:findChild(self.pages[1].tabUID)
-	firstTab.widget.state = 4
+	firstTab.widget.state = tes3.uiState.active
 
 	-- Next Button
-	local nextButton = outerTabsBlock:createButton{ id = tes3ui.registerID("MCM_NextButton"), text = "-->" }
-	formatTabButton(nextButton)
-	self.elements.nextTabButton = nextButton
+	self.elements.nextTabButton = createArrow(outerTabsBlock, arrowNext)
 
 	-- Pagination
-
-	local hiddenTabCount = 0
-	nextButton:register("mouseClick", function()
-		-- Hide next tab
-		local tabToHide = parentBlock:findChild(self.pages[hiddenTabCount + 1].tabUID)
-		tabToHide.visible = false
+	self.elements.nextTabButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab forward 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			if tab.widget.state == 4 and self.pages[i + 1] then
-				self:clickTab(self.pages[i + 1])
+			if tab.widget.state == tes3.uiState.active then
+				self:clickTab(self.pages[table.wrapindex(self.pages, i + 1)])
 				break
 			end
 		end
-		-- increment hiddenTabCount
-		hiddenTabCount = math.min(hiddenTabCount + 1, #self.pages)
-		-- If only last tab is visible, disable Next button
-		if hiddenTabCount >= #self.pages - 1 then
-			toggleButtonState(nextButton, false)
-		end
-		toggleButtonState(prevButton, true)
 	end)
 
-	prevButton:register("mouseClick", function()
+	self.elements.previousTabButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab back 1
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			if tab.widget.state == 4 and self.pages[i - 1] then
-				local prevTab = parentBlock:findChild(self.pages[i - 1].tabUID)
-				if prevTab.visible == false then
-					-- decrement hiddenTabCount
-					hiddenTabCount = math.max(hiddenTabCount - 1, 0)
-					prevTab.visible = true
-				end
-				self:clickTab(self.pages[i - 1])
+			if tab.widget.state == tes3.uiState.active then
+				self:clickTab(self.pages[table.wrapindex(self.pages, i - 1)])
 				break
 			end
 		end
-		-- If first tab is active, disable Prev button
-		if tabsBlock:findChild(self.pages[1].tabUID).widget.state == 4 then
-			toggleButtonState(prevButton, false)
-		end
-		toggleButtonState(nextButton, true)
 	end)
+
+	parentBlock:registerAfter(tes3.uiEvent.update, function() self:padTabBlock() end)
+	outerTabsBlock:updateLayout()
+	self:padTabBlock()
 end
 
 --- @param parentBlock tes3uiElement

@@ -18,7 +18,7 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getModified() const {
-		return (flags & 0x2);
+		return (flags & 0x2) != 0;
 	}
 
 	void BaseObject::setModified(bool modified) {
@@ -42,25 +42,29 @@ namespace se::cs {
 		BaseObject_setFlag80(this, set);
 	}
 
-	bool BaseObject::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		return string::complex_contains(getObjectID(), needle, caseSensitive, regex);
+	bool BaseObject::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (settings.id && string::complex_contains(getObjectID(), needle, settings, regex)) {
+			return true;
+		}
+
+		return false;
 	}
 
-	bool BaseObject::searchWithInheritance(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
+	bool BaseObject::searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
 		case ObjectType::Birthsign:
-			return static_cast<const Birthsign*>(this)->search(needle, caseSensitive, regex);
+			return static_cast<const Birthsign*>(this)->search(needle, settings, regex);
 		case ObjectType::Class:
-			return static_cast<const Class*>(this)->search(needle, caseSensitive, regex);
+			return static_cast<const Class*>(this)->search(needle, settings, regex);
 		case ObjectType::Faction:
-			return static_cast<const Faction*>(this)->search(needle, caseSensitive, regex);
+			return static_cast<const Faction*>(this)->search(needle, settings, regex);
 		case ObjectType::Script:
-			return static_cast<const Script*>(this)->search(needle, caseSensitive, regex);
+			return static_cast<const Script*>(this)->search(needle, settings, regex);
 		case ObjectType::Race:
-			return static_cast<const Race*>(this)->search(needle, caseSensitive, regex);
+			return static_cast<const Race*>(this)->search(needle, settings, regex);
 		}
 
 		// Fall back to just an ID search.
-		return search(needle, caseSensitive, regex);
+		return search(needle, settings, regex);
 	}
 }

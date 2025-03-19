@@ -32,6 +32,11 @@ return {
 			readOnly = true,
 			description = "True if super (Windows key) is held.",
 		},
+		["element"] = {
+			type = "tes3uiElement?",
+			readOnly = true,
+			description = "The UI element that the key is going to be dispatched to, or `nil` if one is not in focus.",
+		},
 	},
 	filter = "keyCode",
 	examples = {

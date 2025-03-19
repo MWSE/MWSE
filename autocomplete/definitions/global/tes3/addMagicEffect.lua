@@ -18,6 +18,18 @@ return {
 				description = "Name of the effect."
 			},
 			{
+				name = "magnitudeType",
+				type = "string",
+				optional = true,
+				description = "The suffix describing the magnitude, when its value is 1. By default, this resolves to the sPoint GMST."
+			},
+			{
+				name = "magnitudeTypePlural",
+				type = "string",
+				optional = true,
+				description = "The suffix describing the magnitude, when its value is not 1. By default, this resolves to the sPoints GMST."
+			},
+			{
 				name = "baseCost",
 				type = "number",
 				optional = true,
@@ -62,27 +74,8 @@ return {
 			{
 				name = "lighting",
 				optional = true,
-				type = "table",
-				tableParams = {
-					{
-						name = "x",
-						type = "number",
-						default = 1.0,
-						description = "Value of red color channel. In range of 0 - 1."
-					},
-					{
-						name = "y",
-						type = "number",
-						default = 1.0,
-						description = "Value of green color channel. In range of 0 - 1."
-					},
-					{
-						name = "z",
-						type = "number",
-						default = 1.0,
-						description = "Value of blue color channel. In range of 0 - 1."
-					},
-				},
+				type = "tes3vector3|table|nil",
+				description = "Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].",
 			},
 			{
 				name = "icon",

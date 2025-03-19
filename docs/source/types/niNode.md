@@ -8,7 +8,7 @@
 
 Base class that represents the nodes of a scene graph. A node can have any number of child nodes.
 
-This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ??? example "Example: Attaching a mesh directly to the actor's scene graph"
 
 	```lua
@@ -1054,7 +1054,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

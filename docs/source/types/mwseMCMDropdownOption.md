@@ -10,6 +10,17 @@ The option table in [mwseMCMDropdown](./mwseMCMDropdown.md#options).
 
 ## Properties
 
+### `callback`
+<div class="search_terms" style="display: none">callback</div>
+
+The function called once this option was selected in the dropdown menu. The [`mwseMCMDropdown`](./mwseMCMDropdown.md) that selected this `option` will be passed as the first parameter to this function.
+
+**Returns**:
+
+* `result` (nil, fun(self: [mwseMCMDropdown](../types/mwseMCMDropdown.md)))
+
+***
+
 ### `label`
 <div class="search_terms" style="display: none">label</div>
 

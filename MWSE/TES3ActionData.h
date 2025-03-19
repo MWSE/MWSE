@@ -40,8 +40,8 @@ namespace TES3 {
 	};
 
 	struct ActionData {
-		short unknown_0x0;
-		short unknown_0x2;
+		short fightAttrCombatChange; // 0x0
+		short dispositionCombatChange; // 0x2
 		float attackSwing; // 0x4
 		float swingTimer; // 0x8
 		float physicalDamage; // 0xC
@@ -50,17 +50,17 @@ namespace TES3 {
 		unsigned char blockingState; // 0x12
 		unsigned char animGroupStunEffect; // 0x13
 		PhysicalAttackType physicalAttackType; // 0x14
-		unsigned char currentAnimLayer; // 0x15
-		unsigned char currentAnimGroup; // 0x16
-		unsigned char animGroupShieldArm; // 0x17
-		short unknown_0x18;
-		short unknown_0x1A;
-		short unknown_0x1C;
-		short unknown_0x1E;
+		unsigned char animSectionCurrentAction; // 0x15
+		unsigned char animGroupCurrentAction; // 0x16
+		unsigned char animGroupBlocking; // 0x17
+		short quantizedHitAngleX; // 0x18
+		short quantizedHitAngleY; // 0x1A
+		short quantizedHitAngleZ; // 0x1C
+		short rescaledFacingBeforeCombat; // 0x1E
 		MobileActor * target; // 0x20
 		MobileActor * hitTarget; // 0x24
 		unsigned short lastBarterHoursPassed; // 0x28
-		short unknown_0x2A;
+		short padding_0x2A;
 		BaseObject * stolenFromFactionOrNPC; // 0x2C
 		bool attackWasBlocked; // 0x30
 		char padding_0x31[3];
@@ -68,9 +68,9 @@ namespace TES3 {
 		short countAIPackages; // 0x38
 		Vector3 unknown_0x3C;
 		Vector3 unknown_0x48;
-		Vector3 unknown_0x54;
-		Vector3 walkDestination; // 0x58
-		int unknown_0x6C;
+		Vector3 lastPositionBeforeCombat; // 0x54
+		Vector3 walkDestination; // 0x60
+		float lastWitnessedCrimeTimestamp; // 0x6C
 
 		ActionData() = delete;
 		~ActionData() = delete;

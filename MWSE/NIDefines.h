@@ -46,6 +46,7 @@ namespace NI {
 	struct PointLight;
 	struct PosData;
 	struct Property;
+	struct PropertyState;
 	struct Quaternion;
 	struct RenderedTexture;
 	struct Renderer;
@@ -73,6 +74,7 @@ namespace NI {
 	struct TriShape;
 	struct TriShapeData;
 	struct VertexColorProperty;
+	struct WireframeProperty;
 	struct ZBufferProperty;
 
 	struct AVObject_vTable;

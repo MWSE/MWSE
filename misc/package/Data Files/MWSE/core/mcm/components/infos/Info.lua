@@ -23,7 +23,7 @@ Info.text = ""
 
 function Info:disable()
 	Parent.disable(self)
-	self.elements.info.color = tes3ui.getPalette("disabled_color")
+	self.elements.info.color = tes3ui.getPalette(tes3.palette.disabledColor)
 end
 
 function Info:update()

@@ -73,7 +73,7 @@ end
 
 -- Expose the mcm API.
 mwse.mcm = require("mcm.mcm")
-mwse.mcm.i18n = mwse.loadTranslations("mcm")
+mwse.mcm.i18n = mwse.loadTranslations("..")
 
 -- credit to Pherim and MelchiorDahrk for the default icons
 local favoriteIcons = {
@@ -534,6 +534,8 @@ local function onClickModConfigButton()
 		-- Cause the menu to refresh itself.
 		menu:updateLayout()
 		modList.widget:contentsChanged()
+		-- Mods with a certain title length can add an unnecessary newline, which goes away when the layout is refreshed.
+		menu:updateLayout()
 
 		-- Reopen the most recently viewed config menu (if there was one)
 		setActiveModMenu(lastModName, lastPageIndex)

@@ -15,7 +15,22 @@ namespace se::cs {
 	}
 
 	struct ItemData {
-
+		int count; // 0x0
+		BaseObject* owner; // 0x4
+		union {
+			long requiredRank;
+			GlobalVariable* requiredVariable;
+		}; // 0x8
+		union {
+			int condition;
+			float timeLeft;
+		}; // 0xC
+		union {
+			float charge;
+			Actor* soul;
+		}; // 0x10
+		Script* script; // 0x14
+		void* scriptData; // 0x18
 	};
 
 	struct ItemStack {

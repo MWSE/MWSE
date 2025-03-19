@@ -46,14 +46,24 @@ namespace TES3 {
 		~Clothing();
 
 		//
+		// Other related this-call functions.
+		//
+
+		void setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson);
+
+		//
 		// Custom functions.
 		//
+
+		void addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson);
+		void removeBodyPartsUnder(BodyPartManager* bodyPartManager) const;
 
 		void setIconPath(const char* path);
 		const char* getSlotName();
 
 		std::reference_wrapper<WearablePart[7]> getParts();
 
+		bool isUsableByBeasts() const;
 	};
 	static_assert(sizeof(Clothing) == 0xB8, "TES3::Clothing failed size validation");
 

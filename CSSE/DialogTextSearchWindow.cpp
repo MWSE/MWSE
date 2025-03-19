@@ -22,6 +22,7 @@
 #include "WindowMain.h"
 
 #include "DialogDialogueWindow.h"
+#include "DialogUseReportWindow.h"
 
 #include "Settings.h"
 
@@ -53,54 +54,54 @@ namespace se::cs::dialog::text_search_window {
 
 	static std::regex TextSearchRegex;
 
-	bool TextSearchGatherObjectResults(const std::string_view& needle, NI::IteratedList<BaseObject*>* results, bool caseSensitive, std::regex* regex) {
+	bool TextSearchGatherObjectResults(const std::string_view& needle, NI::IteratedList<BaseObject*>* results, const BaseObject::SearchSettings& settings, std::regex* regex) {
 		const auto recordHandler = DataHandler::get()->recordHandler;
 
 		// Search game settings.
 		for (const auto& setting : recordHandler->gameSettingsHandler->gameSettings) {
-			if (setting->search(needle, caseSensitive, regex)) {
+			if (setting->search(needle, settings, regex)) {
 				results->push_back(setting);
 			}
 		}
 
 		// Search classes.
 		for (const auto& _class : *recordHandler->classes) {
-			if (_class->search(needle, caseSensitive, regex)) {
+			if (_class->search(needle, settings, regex)) {
 				results->push_back(_class);
 			}
 		}
 
 		// Search races.
 		for (const auto& race : *recordHandler->races) {
-			if (race->search(needle, caseSensitive, regex)) {
+			if (race->search(needle, settings, regex)) {
 				results->push_back(race);
 			}
 		}
 
 		// Search factions.
 		for (const auto& faction : *recordHandler->factions) {
-			if (faction->search(needle, caseSensitive, regex)) {
+			if (faction->search(needle, settings, regex)) {
 				results->push_back(faction);
 			}
 		}
 
 		// Search birthsigns.
 		for (const auto& birthsign : *recordHandler->birthsigns) {
-			if (birthsign->search(needle, caseSensitive, regex)) {
+			if (birthsign->search(needle, settings, regex)) {
 				results->push_back(birthsign);
 			}
 		}
 
 		// Search spells.
 		for (const auto& spell : *recordHandler->allSpells) {
-			if (spell->search(needle, caseSensitive, regex)) {
+			if (spell->search(needle, settings, regex)) {
 				results->push_back(spell);
 			}
 		}
 
 		// Search all other general objects.
 		for (const auto& object : *recordHandler->allObjects) {
-			if (object->searchWithInheritance(needle, caseSensitive, regex)) {
+			if (object->searchWithInheritance(needle, settings, regex)) {
 				results->push_back(object);
 			}
 		}
@@ -120,9 +121,9 @@ namespace se::cs::dialog::text_search_window {
 			}
 
 			const std::string_view needle = searchString;
-			const auto caseSensitive = settings.text_search.case_sensitive;
+			const auto caseSensitive = settings.text_search.search_settings.case_sensitive;
 			std::regex* regex = nullptr;
-			if (settings.text_search.use_regex) {
+			if (settings.text_search.search_settings.use_regex) {
 				auto flags = std::regex_constants::extended | std::regex_constants::optimize | std::regex_constants::nosubs;
 				if (!caseSensitive) {
 					flags |= std::regex_constants::icase;
@@ -141,7 +142,7 @@ namespace se::cs::dialog::text_search_window {
 			// Search scripts.
 			const auto recordHandler = DataHandler::get()->recordHandler;
 			for (const auto& script : *recordHandler->scripts) {
-				if (script->search(needle, caseSensitive, regex)) {
+				if (script->search(needle, settings.text_search.search_settings, regex)) {
 					scriptResults->push_back(script);
 				}
 			}
@@ -150,7 +151,7 @@ namespace se::cs::dialog::text_search_window {
 			for (const auto& dialogue : *recordHandler->dialogues) {
 				DialogueResult* result = nullptr;
 
-				if (dialogue->search(needle, caseSensitive, regex)) {
+				if (dialogue->search(needle, settings.text_search.search_settings, regex)) {
 					if (result == nullptr) {
 						result = new DialogueResult();
 						result->dialogue = dialogue;
@@ -158,7 +159,7 @@ namespace se::cs::dialog::text_search_window {
 				}
 
 				for (const auto& info : dialogue->infos) {
-					if (info->search(needle, caseSensitive, regex)) {
+					if (info->search(needle, settings.text_search.search_settings, regex)) {
 						if (result == nullptr) {
 							result = new DialogueResult();
 							result->dialogue = dialogue;
@@ -173,7 +174,7 @@ namespace se::cs::dialog::text_search_window {
 			}
 
 			// Search objects.
-			TextSearchGatherObjectResults(needle, objectResults, caseSensitive, regex);
+			TextSearchGatherObjectResults(needle, objectResults, settings.text_search.search_settings, regex);
 
 		}
 		else {
@@ -238,11 +239,43 @@ namespace se::cs::dialog::text_search_window {
 		}
 	}
 
+	void PatchDialogProc_BeforeNotify_FromObjectsList_KeyDown_F1(DialogProcContext& context) {
+		using winui::ListView_GetItemData;
+
+		const auto hWnd = context.getWindowHandle();
+		const auto keyDownData = (LPNMLVKEYDOWN)context.getLParam();
+		const auto hList = keyDownData->hdr.hwndFrom;
+
+		const auto selected = ListView_GetNextItem(hList, -1, LVNI_SELECTED);
+		if (selected == -1) {
+			return;
+		}
+
+		const auto itemData = reinterpret_cast<BaseObject*>(ListView_GetItemData(hList, selected, 0));
+		if (itemData == nullptr) {
+			return;
+		}
+
+		use_report_window::showUseReport(itemData);
+	}
+
+	void PatchDialogProc_BeforeNotify_KeyDown(DialogProcContext& context) {
+		auto itemActivate = context.getNotificationItemActivateData();
+		switch (itemActivate->hdr.idFrom) {
+		case CONTROL_ID_OBJECT_RESULTS_LIST:
+			PatchDialogProc_BeforeNotify_FromObjectsList_KeyDown_F1(context);
+			break;
+		}
+	}
+
 	void PatchDialogProc_OnNotify(DialogProcContext& context) {
 		const auto hdr = context.getNotificationData();
 		switch (hdr->code) {
 		case NM_DBLCLK:
 			PatchDialogProc_OnNotify_DoubleClick(context);
+			break;
+		case LVN_KEYDOWN:
+			PatchDialogProc_BeforeNotify_KeyDown(context);
 			break;
 		}
 	}

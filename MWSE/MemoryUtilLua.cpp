@@ -480,6 +480,17 @@ namespace mwse::lua {
 		strncpy_s(buffer, 512u, string, strlen(string));
 	}
 
+	DWORD addressOf(void* object) {
+		if (object == nullptr) {
+			return NULL;
+		}
+		return *reinterpret_cast<DWORD*>(object);
+	}
+
+	void dump(void* data, unsigned int length) {
+		log::prettyDump(data, length);
+	}
+
 	void bindMWSEMemoryUtil() {
 		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.state;
@@ -492,6 +503,8 @@ namespace mwse::lua {
 		//
 
 		memory["reinterpret"] = reinterpret;
+		memory["addressOf"] = addressOf;
+		memory["dump"] = dump;
 
 		//
 		// Read operations.
@@ -544,6 +557,7 @@ namespace mwse::lua {
 		convertTo["tes3uiElement"] = convertArgTo<TES3::UI::Element*>;
 		convertTo["tes3worldController"] = convertArgTo<TES3::WorldController*>;
 		convertTo["uint"] = convertArgTo<DWORD>;
+		convertTo["void*"] = convertArgTo<void*>;
 
 		convertFrom = memory.create_named("convertFrom");
 		convertFrom["bool"] = convertArgFrom<bool>;

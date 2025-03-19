@@ -38,7 +38,7 @@ namespace se::cs {
 			};
 			struct {
 				NI::PackedColor regionMapColor;
-				BaseObject* landscape;
+				Land* landscape;
 				int gridX;
 				int gridY;
 			};
@@ -60,6 +60,7 @@ namespace se::cs {
 		int getGridX() const;
 		int getGridY() const;
 
+		Land* getLand() const;
 		Region* getRegion() const;
 
 		const char* getDisplayName() const;

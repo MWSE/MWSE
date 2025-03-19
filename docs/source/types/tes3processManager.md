@@ -32,6 +32,28 @@ A value which controls how far the game AI is processed. Corresponds to AI Dista
 
 ***
 
+### `allMobileActors`
+<div class="search_terms" style="display: none">allmobileactors</div>
+
+*Read-only*. A copy of the list of mobiles with currently running AI. This does not include the player. The available objects are only valid at a point in time, and maybe be deleted or re-used any time a mobile is moved or disabled, so this data should only be used in the same moment that it is read. This is not a lightweight accessor, so it should be used carefully.
+
+**Returns**:
+
+* `result` ([tes3mobileActor](../types/tes3mobileActor.md)[])
+
+***
+
+### `allPlanners`
+<div class="search_terms" style="display: none">allplanners</div>
+
+*Read-only*. A copy of the list of currently running AI planners. This does not include the player. The available objects are only valid at a point in time, and maybe be deleted or re-used any time a mobile is moved or disabled, so this data should only be used in the same moment that it is read. This is not a lightweight accessor, so it should be used carefully.
+
+**Returns**:
+
+* `result` ([tes3aiPlanner](../types/tes3aiPlanner.md)[])
+
+***
+
 ## Methods
 
 ### `checkAlarmRadius`
@@ -40,14 +62,13 @@ A value which controls how far the game AI is processed. Corresponds to AI Dista
 
 
 ```lua
-myObject:checkAlarmRadius({ actor = ..., container = ... })
+myObject:checkAlarmRadius(actor, container)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
-	* `container` ([tes3iterator](../types/tes3iterator.md)): Container is a actor's AI planner e.g. `mobile.aiPlanner`.
+* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
+* `container` ([tes3aiPlanner](../types/tes3aiPlanner.md)): Container is a actor's AI planner e.g. `mobile.aiPlanner`.
 
 ***
 
@@ -83,14 +104,17 @@ myObject:checkPlayerDistance()
 This function performs a check for presence of a given mobile actor.
 
 ```lua
-myObject:detectPresence({ actor = ..., unknown = ... })
+local result = myObject:detectPresence(actor, ignoreCreatures)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
-	* `unknown` (boolean)
+* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
+* `ignoreCreatures` (boolean): *Default*: `true`.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -100,15 +124,14 @@ myObject:detectPresence({ actor = ..., unknown = ... })
 This function performs a check whether a detector can detect another actor sneaking.
 
 ```lua
-local isDetected = myObject:detectSneak({ detector = ..., target = ..., unknown = ... })
+local isDetected = myObject:detectSneak(detector, target, unknown)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `detector` ([tes3mobileActor](../types/tes3mobileActor.md)): The detector actor to perform a check for.
-	* `target` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor to perform a check for.
-	* `unknown` (boolean)
+* `detector` ([tes3mobileActor](../types/tes3mobileActor.md)): The detector actor to perform a check for.
+* `target` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor to perform a check for.
+* `unknown` (boolean): *Default*: `true`.
 
 **Returns**:
 

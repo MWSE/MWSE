@@ -11,7 +11,7 @@ namespace se::cs {
 		char* description; // 0x38
 		SpellList spellList; // 0x3C
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Birthsign) == 0x54, "Birthsign failed size validation");
 }

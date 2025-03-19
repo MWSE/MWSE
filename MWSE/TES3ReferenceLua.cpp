@@ -88,6 +88,7 @@ namespace mwse::lua {
 		usertypeDefinition["updateSceneGraph"] = &TES3::Reference::updateSceneGraph_lua;
 
 		// Quick access to attachment data.
+		usertypeDefinition["animationData"] = sol::property(&TES3::Reference::getAttachedAnimationData);
 		usertypeDefinition["bodyPartManager"] = sol::property(&TES3::Reference::getAttachedBodyPartManager);
 		usertypeDefinition["itemData"] = sol::property(&TES3::Reference::getAttachedItemData, &TES3::Reference::setAttachedItemData);
 		usertypeDefinition["lockNode"] = sol::readonly_property(&TES3::Reference::getAttachedLockNode);

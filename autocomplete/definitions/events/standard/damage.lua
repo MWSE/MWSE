@@ -60,7 +60,7 @@ return {
 		source = {
 			type ="tes3.damageSource",
 			readOnly = true,
-			description = "The origin of damage. These damage sources are present as [`tes3.damageSource`](https://mwse.github.io/MWSE/references/damage-sources/) constants. See the example. Damage with `tes3.damageSource.shield` source comes from magic shields. Other sources are self-explanatory.",
+			description = "The origin of the damage. These damage sources are present as [`tes3.damageSource`](https://mwse.github.io/MWSE/references/damage-sources/) constants. See the example. Damage with `tes3.damageSource.shield` source comes from magic shields. Other sources are self-explanatory.",
 		},
 	},
 	blockable = true,

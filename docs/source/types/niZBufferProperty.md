@@ -8,7 +8,7 @@
 
 A rendering property that allows the application to set the test and write modes of the renderer's Z-buffer and to set the comparison function used for the Z-buffer test.
 
-This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niProperty](../types/niProperty.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`
@@ -364,7 +364,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given property flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

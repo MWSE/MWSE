@@ -5,5 +5,5 @@ return {
 		{ name = "id", type = "string", description = "ID of the class to search for." },
 	},
 	returns = "class",
-	valuetype = "tes3class",
+	valuetype = "tes3class?",
 }

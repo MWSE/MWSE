@@ -8,7 +8,7 @@
 
 A faction game object.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `attributes`
@@ -124,7 +124,7 @@ The persistent flag of the object.
 ### `playerExpelled`
 <div class="search_terms" style="display: none">playerexpelled</div>
 
-The player's expelled state in the faction.
+The player's expelled state in the faction. You should prefer to use the `expel` or `clearExpel` functions to modify this, to ensure the changes are visible to all systems.
 
 **Returns**:
 
@@ -135,7 +135,7 @@ The player's expelled state in the faction.
 ### `playerJoined`
 <div class="search_terms" style="display: none">playerjoined</div>
 
-The player's join state for the faction.
+The player's join state for the faction. You should prefer to use the `join` or `leave` functions to modify this, to ensure the changes are visible to all systems.
 
 **Returns**:
 
@@ -201,7 +201,7 @@ The player's current reputation in the faction.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -217,6 +217,19 @@ The soruceless flag of the object.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -245,6 +258,51 @@ local string = myObject:__tojson()
 **Returns**:
 
 * `string` (string)
+
+***
+
+### `clearExpel`
+<div class="search_terms" style="display: none">clearexpel</div>
+
+Clears the expulsion of the player from this faction. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:clearExpel()
+```
+
+**Returns**:
+
+* `success` (boolean)
+
+***
+
+### `demote`
+<div class="search_terms" style="display: none">demote</div>
+
+Demotes the player to the previous rank of this faction, if they are a member. It does not automatically make the player leave the faction if demoted too far. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:demote()
+```
+
+**Returns**:
+
+* `success` (boolean)
+
+***
+
+### `expel`
+<div class="search_terms" style="display: none">expel</div>
+
+Expels the player from this faction. It displays a message box notifying the player that they are expelled. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:expel()
+```
+
+**Returns**:
+
+* `success` (boolean)
 
 ***
 
@@ -315,6 +373,51 @@ local reaction = myObject:getReactionWithFaction(faction)
 **Returns**:
 
 * `reaction` (number, nil): The reaction, if any, with the other faction.
+
+***
+
+### `join`
+<div class="search_terms" style="display: none">join</div>
+
+Makes the player join this faction. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:join()
+```
+
+**Returns**:
+
+* `success` (boolean)
+
+***
+
+### `leave`
+<div class="search_terms" style="display: none">leave</div>
+
+Makes the player leave this faction. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:leave()
+```
+
+**Returns**:
+
+* `success` (boolean)
+
+***
+
+### `promote`
+<div class="search_terms" style="display: none">promote</div>
+
+Promotes the player to the next rank of this faction, if they are a member. It does not automatically make the player join the faction. It also ensures the character sheet UI is updated.
+
+```lua
+local success = myObject:promote()
+```
+
+**Returns**:
+
+* `success` (boolean)
 
 ***
 

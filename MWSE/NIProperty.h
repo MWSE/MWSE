@@ -24,6 +24,22 @@ namespace NI {
 		LastPropertyType = RendererSpecific,
 	};
 
+	struct PropertyState : Object {
+		AlphaProperty* alpha; // 0x8
+		FogProperty* fog; // 0xC
+		MaterialProperty* material; // 0x10
+		StencilProperty* stencil; // 0x14
+		TexturingProperty* texture; // 0x18
+		VertexColorProperty* vertexColor; // 0x1C
+		WireframeProperty* wireframe; // 0x20
+		ZBufferProperty* zBuffer; // 0x24
+		int unknown_0x28;
+		int unknown_0x2C;
+		int unknown_0x30;
+		void* rendererSpecific; // 0x34
+	};
+	static_assert(sizeof(PropertyState) == 0x38, "NI::PropertyState failed size validation");
+
 	struct Property_vTable : Object_vTable {
 		PropertyType (__thiscall * getType)(const Property*); // 0x2C
 		void (__thiscall * update)(Property*, float); // 0x30
@@ -46,6 +62,9 @@ namespace NI {
 		//
 		// Other function addresses.
 		//
+
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
 
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 

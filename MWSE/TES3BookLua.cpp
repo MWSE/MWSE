@@ -1,7 +1,7 @@
 #include "TES3BookLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 
 #include "TES3Book.h"
 #include "TES3Enchantment.h"
@@ -19,7 +19,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserdataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["enchantCapacity"] = &TES3::Book::enchantCapacity;
@@ -30,13 +30,7 @@ namespace mwse::lua {
 
 		// Functions exposed as properties.
 		usertypeDefinition["enchantment"] = sol::property(&TES3::Book::getEnchantment, &TES3::Book::setEnchantment);
-		usertypeDefinition["icon"] = sol::property(&TES3::Book::getIconPath, &TES3::Book::setIconPath);
-		usertypeDefinition["mesh"] = sol::property(&TES3::Book::getModelPath, &TES3::Book::setModelPath);
-		usertypeDefinition["name"] = sol::property(&TES3::Book::getName, &TES3::Book::setName);
 		usertypeDefinition["script"] = &TES3::Book::script;
 		usertypeDefinition["text"] = sol::property(&TES3::Book::getBookText);
-
-		// TODO: Deprecated. Remove before 2.1-stable.
-		usertypeDefinition["model"] = sol::property(&TES3::Book::getModelPath, &TES3::Book::setModelPath);
 	}
 }

@@ -8,7 +8,7 @@
 
 A mobile object for a spell projectile.
 
-This type inherits the following: [tes3mobileProjectile](../types/tes3mobileProjectile.md), [tes3mobileObject](../types/tes3mobileObject.md)
+This type inherits the following: [tes3mobileProjectile](../types/tes3mobileProjectile.md), [tes3mobileObject](../types/tes3mobileObject.md).
 ## Properties
 
 ### `animTime`
@@ -102,7 +102,7 @@ A flag that causes the projectile to expire when set to `1`.
 ### `firingMobile`
 <div class="search_terms" style="display: none">firingmobile</div>
 
-*Read-only*. The mobile that fired this projectile.
+The mobile that fired this projectile.
 
 **Returns**:
 
@@ -180,6 +180,19 @@ A vector that represents the 3D acceleration of the object.
 <div class="search_terms" style="display: none">isaffectedbygravity, affectedbygravity</div>
 
 If `true`, the mobile is affected by gravity. Does not have any effect on spell projectiles.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `mobToMobCollision`
+<div class="search_terms" style="display: none">mobtomobcollision</div>
+
+Allows modifying if this mobile will collide with other mobiles (actors and projectiles). When `true` (default), the actor cannot move through other actors, and projectiles will collide with actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it. Projectiles will pass through actors and other projectiles.
+
+May be useful when free movement is required in crowded situations, or to temporarily let the player move past an actor.
 
 **Returns**:
 

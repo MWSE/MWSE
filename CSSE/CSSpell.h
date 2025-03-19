@@ -60,7 +60,7 @@ namespace se::cs {
 		bool getSpellFlag(SpellFlag::Flag flag) const;
 		bool getPlayerStart() const;
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Spell) == 0xFC, "Spell failed size validation");
 }

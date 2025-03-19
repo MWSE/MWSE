@@ -8,7 +8,7 @@ return {
 			{ name = "label", type = "string", optional = true, description = "Text shown next to the button." },
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
 			{ name = "options", type = "tes3uiCycleButtonOption[]", description = "This table holds the text and variable value for each of the cycle button's options." },
-			{ name = "leftSide ", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
+			{ name = "leftSide", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "A variable for this cycle button." },
 			{ name = "defaultSetting", type = "unknown", optional = true, description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value." },
 			{ name = "callback", type = "fun(self: mwseMCMCycleButton)", optional = true, description = "The custom function called when the player interacts with this cycle button." },

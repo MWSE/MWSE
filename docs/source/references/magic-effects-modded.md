@@ -217,6 +217,47 @@ These effects build off of the [standard magic effects](./magic-effects.md). If 
 | forbidSleep                  | 1201      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDouble        | 1202      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
 | summonCorruptedDoublePotion  | 1203      | [Vaermina's Quest - Dreams of the Escaped](https://www.nexusmods.com/morrowind/mods/49172)         |
+| strongerFeather              | 1812      | [STRONGER - A Simple MWSE Encumbrance Overhaul](https://www.nexusmods.com/morrowind/mods/55600)    |
+| strongerBurden               | 1813      | [STRONGER - A Simple MWSE Encumbrance Overhaul](https://www.nexusmods.com/morrowind/mods/55600)    |
+| T_summon_Devourer            | 2090      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_DremArch            | 2091      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_DremCast            | 2092      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Guardian            | 2093      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_LesserClfr          | 2094      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Ogrim               | 2095      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Seducer             | 2096      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SeducerDark         | 2097      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Vermai              | 2098      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_AtroStormMon        | 2099      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonIceWraith     | 2100      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonDweSpectre    | 2101      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonSteamCent     | 2102      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonSpiderCent    | 2103      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonWelkyndSpirit | 2104      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SummonAuroran       | 2105      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_alteration_Passwall        | 2106      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Herne               | 2107      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Morphoid            | 2108      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Draugr              | 2109      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Spriggan            | 2110      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_Greaves              | 2111      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_Waraxe               | 2112      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_Warhammer            | 2113      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_HammerResdayn        | 2114      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_RazorResdayn         | 2115      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_bound_Pauldron             | 2116      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_BoneldGr            | 2117      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_BanishDae        | 2119      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_ReflectDmg       | 2120      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_intervention_Kyne          | 2122      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_alteration_RadShield       | 2123      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_alteration_Wabbajack       | 2124      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_Insight          | 2125      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Ghost               | 2126      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Wraith              | 2127      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_Barrowguard         | 2128      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_MinoBarrowguard     | 2129      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_SkeletonChampion    | 2130      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | storeSoul                    | 3300      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |
 | summonSoul1                  | 3301      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |
 | summonSoul2                  | 3302      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |

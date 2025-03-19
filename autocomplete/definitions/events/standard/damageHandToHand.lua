@@ -27,6 +27,11 @@ return {
 			readOnly = true,
 			description = "The attacker mobile's associated reference. Can be nil.",
 		},
+		source = {
+			type ="tes3.damageSource",
+			readOnly = true,
+			description = "The origin of the damage. May be `tes3.damageSource.attack` or `tes3.damageSource.script`.",
+		},
 	},
 	blockable = true,
 }

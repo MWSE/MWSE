@@ -28,18 +28,27 @@ namespace TES3 {
 	unsigned int MagicEffectController::effectNameGMSTs[MAX_EFFECT_COUNT] = {};
 	unsigned int MagicEffectController::effectFlags[MAX_EFFECT_COUNT] = {};
 	unsigned int MagicEffectController::effectCounters[MAX_EFFECT_COUNT][5] = {};
+
 	MagicSourceInstance* MagicEffectController::cachedSpellEffectEventSourceInstance = {};
 	MagicEffectInstance* MagicEffectController::cachedSpellEffectEventEffectInstance = {};
 	int MagicEffectController::cachedSpellEffectEventEffectIndex = {};
 	unsigned int MagicEffectController::cachedSpellEffectEventResistAttribute = {};
 
-	MagicEffectController::MagicEffectController() {
+	MagicEffectController::MagicEffectController() :
+		effectObjects(),
+		effectExtendedData()
+	{
 
 	}
 
 	MagicEffectController::~MagicEffectController() {
-		for (auto& itt : effectObjects) {
-			delete itt.second;
+		for (auto& effect : effectObjects) {
+			if (effect == nullptr) {
+				continue;
+			}
+
+			delete effect;
+			effect = nullptr;
 		}
 	}
 
@@ -51,8 +60,8 @@ namespace TES3 {
 			return nullptr;
 		}
 
-		auto itt = effectObjects.find(id);
-		if (itt == effectObjects.end()) {
+		const auto effect = effectObjects[id];
+		if (effect == nullptr) {
 			// Warn only once per effect ID.
 			if (warnedMagicEffectIds.find(id) == warnedMagicEffectIds.end()) {
 				mwse::log::getLog() << "Invalid effect ID " << id << " encountered. Spoofing substitute. Uninstalling mods that add custom effects can lead to unexpected behavior and crashes." << std::endl;
@@ -61,7 +70,7 @@ namespace TES3 {
 			return InvalidMagicEffect;
 		}
 
-		return itt->second;
+		return effect;
 	}
 
 	void MagicEffectController::addEffectObject(MagicEffect* effect) {
@@ -69,7 +78,7 @@ namespace TES3 {
 	}
 
 	bool MagicEffectController::getEffectExists(int id) {
-		return effectObjects.find(id) != effectObjects.end();
+		return effectObjects[id] != nullptr;
 	}
 
 	const char * MagicEffectController::getEffectName(int id) {
@@ -77,12 +86,12 @@ namespace TES3 {
 			return DataHandler::get()->nonDynamicData->GMSTs[effectNameGMSTs[id]]->value.asString;
 		}
 
-		auto itt = effectCustomNames.find(id);
-		if (itt == effectCustomNames.end()) {
+		const auto extendedData = effectExtendedData[id];
+		if (extendedData == nullptr) {
 			return nullptr;
 		}
 
-		return itt->second.c_str();
+		return extendedData->name.c_str();
 	}
 
 	unsigned int MagicEffectController::getEffectFlags(int id) {
@@ -122,8 +131,9 @@ namespace TES3 {
 		// Add an invalid effect for catching crashes.
 		InvalidMagicEffect = new MagicEffect(EFFECT_ID_INVALID);
 		InvalidMagicEffect->setDescription("This effect is invalid. This typically happens when uninstalling mods.");
-		magicEffectController->effectCustomNames[EFFECT_ID_INVALID] = "Invalid Effect";
-		magicEffectController->effectNameGMSTs[EFFECT_ID_INVALID] = -EFFECT_ID_INVALID;
+		magicEffectController->effectExtendedData[EFFECT_ID_INVALID] = new MagicEffectExtendedData();
+		magicEffectController->effectExtendedData[EFFECT_ID_INVALID]->name = "Invalid Effect";
+		magicEffectController->effectNameGMSTs[EFFECT_ID_INVALID] = EFFECT_ID_INVALID;
 		magicEffectController->setEffectFlags(EFFECT_ID_INVALID, 0U);
 		InvalidMagicEffect->flags = 0;
 		strcpy_s(InvalidMagicEffect->particleTexture, "vfx_default.tga");
@@ -147,8 +157,10 @@ namespace TES3 {
 	void __stdcall ResolveAllLinks() {
 		auto nonDynamicData = DataHandler::get()->nonDynamicData;
 		auto controller = nonDynamicData->magicEffects;
-		for (auto& itt : controller->effectObjects) {
-			itt.second->resolveLinks(nonDynamicData);
+		for (auto& effect : controller->effectObjects) {
+			if (effect) {
+				effect->resolveLinks(nonDynamicData);
+			}
 		}
 
 		// Finish up the invalid effect.
@@ -427,10 +439,10 @@ namespace TES3 {
 		}
 		else {
 			auto magicEffectController = DataHandler::get()->nonDynamicData->magicEffects;
-			auto itt = magicEffectController->effectLuaTickFunctions.find(effectId);
+			const auto extendedData = magicEffectController->effectExtendedData[effectId];
 
 			// No result? Do some basic things.
-			if (itt == magicEffectController->effectLuaTickFunctions.end()) {
+			if (extendedData == nullptr || !extendedData->tickFunction.valid()) {
 				int flags = (DataHandler::get()->nonDynamicData->magicEffects->getEffectFlags(effectId) >> 12) & 0xFFFFFF01;
 				int value = 0;
 				MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, flags, &value, 0x7886F0, 0x1C, nullptr);
@@ -438,7 +450,7 @@ namespace TES3 {
 			}
 
 			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::protected_function_result result = itt->second(packageSpellTickTable(stateHandle.state, effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
+			sol::protected_function_result result = extendedData->tickFunction(packageSpellTickTable(stateHandle.state, effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
 			if (!result.valid()) {
 				sol::error error = result;
 				mwse::log::getLog() << "Lua error encountered in magic effect dispatch function:" << std::endl << error.what() << std::endl;
@@ -467,8 +479,11 @@ namespace TES3 {
 		auto macp = WorldController::get()->getMobilePlayer();
 		auto spellList = macp->getCombatSpellList();
 
-		for (auto& effectItt : magicEffectController->effectObjects) {
-			auto effect = effectItt.second;
+		for (auto& effect : magicEffectController->effectObjects) {
+			if (effect == nullptr) {
+				continue;
+			}
+
 			bool hasEffect = false;
 			if (effect->flags & EffectFlag::AllowEnchanting) {
 				for (auto& spell : *spellList) {
@@ -521,8 +536,11 @@ namespace TES3 {
 		auto macp = WorldController::get()->getMobilePlayer();
 		auto spellList = macp->getCombatSpellList();
 
-		for (auto& effectItt : magicEffectController->effectObjects) {
-			auto effect = effectItt.second;
+		for (auto& effect : magicEffectController->effectObjects) {
+			if (effect == nullptr) {
+				continue;
+			}
+
 			bool hasEffect = false;
 			if (effect->flags & EffectFlag::AllowSpellmaking) {
 				for (auto& spell : *spellList) {
@@ -566,7 +584,7 @@ namespace TES3 {
 
 	GameSetting * __fastcall getSpellNameGMST(DataHandler * dataHandler, DWORD EDX, int gmstId) {
 		if (gmstId < 0) {
-			temporaryNameGMST.value.asString = (char*)dataHandler->nonDynamicData->magicEffects->effectCustomNames[gmstId * -1].c_str();
+			temporaryNameGMST.value.asString = (char*)dataHandler->nonDynamicData->magicEffects->effectExtendedData[gmstId * -1]->name.c_str();
 			return &temporaryNameGMST;
 		}
 		else {
@@ -592,8 +610,13 @@ namespace TES3 {
 				break;
 			}
 
-			auto itt = effectLuaCollisionFunctions.find(effectId);
-			if (itt != effectLuaCollisionFunctions.end()) {
+			const auto effectData = effects[i].getEffectData();
+			if (effectData == nullptr) {
+				continue;
+			}
+
+			const auto extendedData = effectData->getExtendedData();
+			if (extendedData && extendedData->collisionFunction.valid()) {
 				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 				sol::table params = stateHandle.state.create_table();
@@ -602,7 +625,7 @@ namespace TES3 {
 				params["sourceInstance"] = instance;
 				params["collision"] = collision;
 
-				sol::protected_function_result result = itt->second(params);
+				sol::protected_function_result result = extendedData->collisionFunction(params);
 				if (!result.valid()) {
 					sol::error error = result;
 					mwse::log::getLog() << "Lua error encountered in magic effect collision function:" << std::endl << error.what() << std::endl;

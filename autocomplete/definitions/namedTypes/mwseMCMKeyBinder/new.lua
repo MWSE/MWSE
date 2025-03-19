@@ -11,7 +11,7 @@ return {
 			{ name = "allowCombinations ", type = "boolean", optional = true, default = true, description = "If true, the KeyBinder will let the user use modification keys: Shift, Ctrl, and Alt when rebinding." },
 			{ name = "allowMouse ", type = "boolean", optional = true, default = false, description = "If true, the KeyBinder will let the user use mouse buttons and scroll wheel in this keybinder. In that case the variable will have [mwseKeyMouseCombo](../types/mwseKeyMouseCombo.md) layout, [mwseKeyCombo](../types/mwseKeyCombo.md) otherwise." },
 			{ name = "keybindName", type = "string", optional = true, description = "The keybind name. Shown in the popup menu header. This string is formatted into a localized version of \"SET %s KEYBIND.\". If none is provided the popup has \"SET NEW KEYBIND.\" as header text." },
-			{ name = "leftSide ", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
+			{ name = "leftSide", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "A variable for this KeyBinder." },
 			{ name = "defaultSetting", type = "mwseKeyCombo|mwseKeyMouseCombo", optional = true, description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value." },
 			{ name = "callback", type = "fun(self: mwseMCMKeyBinder)", optional = true, description = "The custom function called when the player interacts with this KeyBinder." },

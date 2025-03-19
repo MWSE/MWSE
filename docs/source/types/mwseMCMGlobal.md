@@ -8,7 +8,7 @@
 
 A variable connected to a Morrowind Global.
 
-This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md)
+This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md).
 ## Properties
 
 ### `class`

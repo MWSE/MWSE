@@ -8,7 +8,7 @@
 
 An object that represent collections of large numbers of small point-like objects, designed for dynamic effects like fountains, waterfalls, snow, explosions, etc.
 
-This type inherits the following: [niTriBasedGeometry](../types/niTriBasedGeometry.md), [niGeometry](../types/niGeometry.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTriBasedGeometry](../types/niTriBasedGeometry.md), [niGeometry](../types/niGeometry.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `alphaProperty`
@@ -709,7 +709,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)
@@ -763,4 +763,27 @@ Update all attached properties.
 ```lua
 myObject:updateProperties()
 ```
+
+***
+
+## Functions
+
+### `new`
+<div class="search_terms" style="display: none">new</div>
+
+Creates a new niParticles.
+
+```lua
+local particles = niParticles.new(vertexCount, hasNormals, hasColors)
+```
+
+**Parameters**:
+
+* `vertexCount` (number): The number of particles.
+* `hasNormals` (boolean): If `true`, normals will be allocated.
+* `hasColors` (boolean): If `true`, colors will be allocated.
+
+**Returns**:
+
+* `particles` ([niParticles](../types/niParticles.md))
 

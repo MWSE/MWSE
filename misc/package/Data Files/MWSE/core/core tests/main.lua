@@ -9,6 +9,8 @@ end
 if (table.empty(tests)) then
 	tests = {
 		"dialogueReplacement",
+		"events",
+		"logging",
 		"mwseLoadConfig",
 	}
 end

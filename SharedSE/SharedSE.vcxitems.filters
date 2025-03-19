@@ -192,6 +192,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NISortAdjustNode.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIVector3.cpp">

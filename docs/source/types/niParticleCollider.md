@@ -8,7 +8,7 @@
 
 This modifier provides framework for collision testing. The classes derived from this one: niSphericalCollider, and niPlanarCollider, test for collisions. Each frame a niParticleSystemController traverses its list of niParticlesColliders to determine if any collisions happened.
 
-This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `collisionPoint`

@@ -7,6 +7,8 @@ return {
 	["logWarningsWithLuaStack.description"] = "Si cette option est activée, tout avertissement déclenché en cours de jeu qui génère une ligne dans Warnings.txt générera également des lignes dans mwse.log. De plus, une trace d'appels sera fournie pour contextualiser quel mod a pu être responsable de l'avertissement généré.\n\nCette fonction peut entraîner la génération d'entrées superflues dans les fichiers log si vous utilisez certains mods (par exemple Better Bodies).",
 	["runInBackground.label"] = "Faire tourner Morrowind en arrière-plan ?",
 	["runInBackground.description"] = "Par défaut, Morrowind suspend l'exécution d'une grande part de son code lorsqu'il n'est pas au premier plan. Lorsque vous utilisez le mode fenêtré (y compris le mode plein écran sans bordures), cette option permet à Morrowind de continuer à tourner. L'activation de cette option peut également améliorer la stabilité du jeu en raison de la façon dont Morrowind gère certains fils d'exécution audio.",
+	["playAudioInBackground.label"] = "Jouer l'audio en arrière-plan ?",
+	["playAudioInBackground.description"] = "Par défaut, Morrowind n'utilise pas le playback audio global, ce qui signifie que l'audio cesse de jouer quand la fenêtre du jeu n'est pas active. Activer cette option permet à l'audio du jeu de fonctionner en arrière-plan.",
 	["letterboxMovies.label"] = "Cinématiques au format letterbox ?",
 	["letterboxMovies.description"] = "Par défaut, Morrowind étire les cinématiques pour remplir tout l'écran. Avec cette option, les cinématiques seront affichées avec des barres noires sur les côtés pour centrer leur affichage.",
 	["patchNiFlipController.label"] = "Corriger le clonage des NiFlipController ?",
@@ -25,4 +27,6 @@ return {
 	["enableLuaErrorNotifications.description"] = "Si cette option est activée, des notifications apparaîtront lorsqu'une erreur lua est détectée. Elles contiennent le nom du mod et une brève description de l'erreur. De nombreux mods publiés causent des erreurs fréquentes, mais non critiques, aussi, cette option est principalement destinée au développement et à la correction de bugs.",
 	["useSkinnedAccurateActivationRaytests.label"] = "Activer les raytests d'activation précis pour les acteurs skinnés  Enable skinned-accurate activation raytests",
 	["useSkinnedAccurateActivationRaytests.description"] = "Si cette option est activée, le raytest de cible d'activation du joueur sera plu sprécis autour des acteurs skinnés. Ceci peut avoir un impact sur les performances dans des situations complexes.",
+	["suppressUselessWarnings.label"] = "Supprimer les avertissements inutiles ?",
+	["suppressUselessWarnings.description"] = "Si cette option est activée, le message d'avertissement au lancement du jeu concernant des fichiers maîtres ne correspondant pas pour certains plugins sera désactivé. Cet avertissement était presque systématiquement présent sur une installation moddée et invite à cliquer sur le bouton Yes to All, ce qui cache des avertissements importants.",
 }

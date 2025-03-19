@@ -1,8 +1,8 @@
 return {
 	type = "function",
-	description = [[Removes a value from a given table. Returns true if the value was successfully removed.]],
+	description = [[Removes a `value` from a given `list`. Returns `true` if the value was successfully removed.]],
 	arguments = {
-		{ name = "t", type = "table" },
+		{ name = "list", type = "table" },
 		{ name = "value", type = "unknown" },
 	},
 	valuetype = "boolean",

@@ -2,6 +2,11 @@
 
 #include "LuaManager.h"
 
+#include "TES3UIElement.h"
+#include "TES3UIMenuController.h"
+#include "TES3WorldController.h"
+#include "TES3InputController.h"
+
 namespace mwse::lua::event {
 	KeyEvent::KeyEvent(int keyCode, bool pressed, bool controlDown, bool shiftDown, bool altDown, bool superDown) :
 		GenericEvent("key"),
@@ -26,6 +31,11 @@ namespace mwse::lua::event {
 		eventData["isShiftDown"] = m_ShiftDown;
 		eventData["isAltDown"] = m_AltDown;
 		eventData["isSuperDown"] = m_SuperDown;
+
+		const auto worldController = TES3::WorldController::get();
+		if (worldController) {
+			eventData["element"] = worldController->menuController->menuInputController->getTextInputElement();
+		}
 
 		return eventData;
 	}

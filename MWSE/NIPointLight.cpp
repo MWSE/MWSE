@@ -38,12 +38,17 @@ namespace NI {
 		return light;
 	}
 
+	unsigned int PointLight::getRadius() const {
+		// Morrowind keeps this in the specular for some reason.
+		return specular.r;
+	}
+
 	void PointLight::setRadius(unsigned int radius) {
 		// Set light attenuation.
 		setAttenuationForRadius(radius);
 
 		// Set dynamic culling radius, misplaced by Morrowind into specular.
-		auto r = float(radius);
+		const auto r = float(radius);
 		specular.r = r;
 		specular.g = r;
 		specular.b = r;
@@ -98,6 +103,17 @@ namespace NI {
 		}
 
 		revisionId++;
+	}
+
+	unsigned int PointLight::getSortWeight() const {
+		auto weight = 0u;
+		for (auto node = &affectedNodes; node && node->data; node = node->next) {
+			const auto count = node->data->getLightCount();
+			if (count > Node::LIGHT_LIMIT) {
+				weight += count;
+			}
+		}
+		return weight;
 	}
 }
 

@@ -21,19 +21,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout Master
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Mkdocs Revision Date plugin only needs info for docs
+          sparse-checkout: |
+            docs
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs-material mkdocs-awesome-pages-plugin mkdocs-mermaid2-plugin mkdocs-git-revision-date-localized-plugin
+          pip install mkdocs-material mkdocs-awesome-pages-plugin mkdocs-mermaid2-plugin mkdocs-git-revision-date-localized-plugin pygments==2.18.0
 
       - name: Deploy
         run: |

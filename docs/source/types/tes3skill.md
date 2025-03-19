@@ -8,7 +8,7 @@
 
 A skill object.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `actions`
@@ -157,7 +157,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -184,6 +184,19 @@ The specialization in which the skill belongs. Maps to values in the [`tes3.spec
 **Returns**:
 
 * `result` ([tes3.specialization](../references/specializations.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

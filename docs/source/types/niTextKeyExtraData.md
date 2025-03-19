@@ -8,7 +8,7 @@
 
 A class used to store an array of niTextKey objects. These objects are a list of textual notes and at which time they take effect. These keys are used for designating the start and stop of animations and the triggering of sounds.
 
-This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `genericData`

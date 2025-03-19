@@ -8,7 +8,7 @@
 
 An animation key for bezier curved values.
 
-This type inherits the following: [niFloatKey](../types/niFloatKey.md), [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niFloatKey](../types/niFloatKey.md), [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `inTangent`

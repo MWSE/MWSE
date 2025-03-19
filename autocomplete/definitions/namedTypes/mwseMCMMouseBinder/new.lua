@@ -12,7 +12,7 @@ return {
 			{ name = "allowButtons ", type = "boolean", optional = true, default = true, description = "If true, the MouseBinder will let the user bind mouse buttons." },
 			{ name = "allowWheel ", type = "boolean", optional = true, default = false, description = "If true, the MouseBinder will let the user bind mouse wheel scroll up or down." },
 			{ name = "keybindName", type = "string", optional = true, description = "The keybind name. Shown in the popup menu header. This string is formatted into a localized version of \"SET %s KEYBIND.\". If none is provided the popup has \"SET NEW KEYBIND.\" as header text." },
-			{ name = "leftSide ", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
+			{ name = "leftSide", type = "boolean", optional = true, default = true, description = "If true, the button will be created on the left and label on the right." },
 			{ name = "variable", type = "mwseMCMVariable|mwseMCMSettingNewVariable", optional = true, description = "A variable for this MouseBinder." },
 			{ name = "defaultSetting", type = "mwseKeyMouseCombo", optional = true, description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value." },
 			{ name = "callback", type = "fun(self: mwseMCMMouseBinder)", optional = true, description = "The custom function called when the player interacts with this MouseBinder." },

@@ -319,7 +319,11 @@ namespace TES3 {
 	}
 
 	float Vector3::angle(const Vector3* v) const {
-		return acosf(dotProduct(v) / (length() * v->length()));
+		// Numerically stable version, from Kahan.
+		// Avoids an issue where the dot product is marginally out of domain for acos.
+		auto a_unit = normalized();
+		auto b_unit = v->normalized();
+		return 2.0f * atan2f((a_unit - b_unit).length(), (a_unit + b_unit).length());
 	}
 
 	float Vector3::length() const {
@@ -360,6 +364,16 @@ namespace TES3 {
 			return *this + (line * distance);
 		}
 		return Vector3();
+	}
+
+	bool Vector3::canConvertFrom(sol::table& table) {
+		sol::optional<float> x = table["x"];
+		if (!x) x = table[1];
+		sol::optional<float> y = table["y"];
+		if (!y) y = table[2];
+		sol::optional<float> z = table["z"];
+		if (!z) z = table[3];
+		return x && y && z;
 	}
 
 	//
@@ -701,7 +715,7 @@ namespace TES3 {
 		NI_Quaternion_FromRotation(q, this);
 	}
 
-	NI::Quaternion Matrix33::toQuaternion() {
+	NI::Quaternion Matrix33::toQuaternion() const {
 		NI::Quaternion result;
 		result.fromRotation(this);
 		return result;

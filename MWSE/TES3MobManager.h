@@ -40,6 +40,12 @@ namespace TES3 {
 		float getAIDistanceScale() const;
 		void setAIDistanceScale(float scalar);
 
+		//
+		// Custom functions.
+		//
+
+		sol::table getAllMobileActors(sol::this_state ts);
+		sol::table getAllPlanners(sol::this_state ts);
 	};
 	static_assert(sizeof(ProcessManager) == 0x830, "TES3::ProcessManager failed size validation");
 
@@ -96,9 +102,9 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		bool hasMobileCollision(const MobileActor* mobile);
-		void enableMobileCollision(MobileActor* mobile);
-		void disableMobileCollision(MobileActor* mobile);
+		bool hasMobileCollision(const MobileObject* mobile);
+		void enableMobileCollision(MobileObject* mobile);
+		void disableMobileCollision(MobileObject* mobile);
 		void resetConstantVelocities();
 		void clampAllActors();
 

@@ -8,7 +8,7 @@
 
 The NiColorData class provides a shareable wrapper for color animation data. Usually found in niParticleColorModifiers.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `keyCount`

@@ -25,7 +25,7 @@ local uiids = {
 --- @param e tes3uiEventData
 --- @return tes3ui.showMessageMenu.params
 local function callbackGetMenuData(e)
-	return e.source:getTopLevelMenu():getLuaData("messageData")
+	return e.source:getTopLevelMenu():getLuaData("mwse:messageData")
 end
 
 --- @param e tes3uiEventData
@@ -43,7 +43,7 @@ end
 --- @param e tes3uiEventData
 local function callbackWithParamCallback(e)
 	-- Fire off our callback.
-	local buttonData = e.source:getLuaData("buttonData") --- @type tes3ui.showMessageMenu.params.button
+	local buttonData = e.source:getLuaData("mwse:buttonData") --- @type tes3ui.showMessageMenu.params.button
 	if (buttonData.callback) then
 		local menuData = callbackGetMenuData(e)
 
@@ -62,7 +62,7 @@ end
 --- @param e tes3uiEventData
 local function callbackButtonHelp(e)
 	local menuData = callbackGetMenuData(e)
-	local buttonData = e.source:getLuaData("buttonData") --- @type tes3ui.showMessageMenu.params.button
+	local buttonData = e.source:getLuaData("mwse:buttonData") --- @type tes3ui.showMessageMenu.params.button
 
 	-- Get our tooltip creator.
 	local tooltipCreator = buttonData.tooltip
@@ -163,7 +163,7 @@ local function addButton(parent, buttonData, messageData)
 	})
 
 	-- Store associated button data.
-	button:setLuaData("buttonData", buttonData)
+	button:setLuaData("mwse:buttonData", buttonData)
 
 	-- Set disabled if there are requirements.
 	if (buttonData.enableRequirements and not buttonData.enableRequirements(messageData.callbackParams)) then
@@ -185,7 +185,7 @@ end
 --- @param menu tes3uiElement
 recreateMenu = function(menu)
 	-- Get our data.
-	local messageData = menu:getLuaData("messageData") --- @type tes3ui.showMessageMenu.params
+	local messageData = menu:getLuaData("mwse:messageData") --- @type tes3ui.showMessageMenu.params
 
 	-- Purge all children.
 	local contentElement = menu:getContentElement()
@@ -338,12 +338,12 @@ function tes3ui.showMessageMenu(params)
 	-- Create menu.
 	local menu = tes3ui.createMenu({ id = copiedParams.id or uiids.menu, fixedFrame = true })
 	local contentElement = menu:getContentElement()
-	contentElement.maxWidth = 400
+	contentElement.maxWidth = params.maxWidth or 400
 	contentElement.childAlignX = 0.5
 	tes3ui.enterMenuMode(menu.id)
 
 	-- Store our params as lua data.
-	menu:setLuaData("messageData", copiedParams)
+	menu:setLuaData("mwse:messageData", copiedParams)
 
 	-- Initialize some default values.
 	copiedParams.page = copiedParams.page or 1
@@ -355,4 +355,6 @@ function tes3ui.showMessageMenu(params)
 
 	-- Create our menu.
 	recreateMenu(menu)
+
+	return menu
 end

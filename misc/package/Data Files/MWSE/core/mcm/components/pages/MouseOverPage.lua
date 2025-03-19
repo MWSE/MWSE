@@ -11,7 +11,7 @@ MouseOverPage.noScroll = true
 --- @param parentBlock tes3uiElement
 function MouseOverPage:createMouseOverBlock(parentBlock)
 	local mouseOverBlock = parentBlock:createBlock({ id = tes3ui.registerID("MouseOver_MouseoverBlock") })
-	mouseOverBlock.flowDirection = "top_to_bottom"
+	mouseOverBlock.flowDirection = tes3.flowDirection.topToBottom
 	mouseOverBlock.autoHeight = true
 	mouseOverBlock.widthProportional = 1.0
 	self.elements.mouseOverBlock = mouseOverBlock

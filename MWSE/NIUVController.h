@@ -12,8 +12,8 @@ namespace NI {
 		unsigned short textureSet; // 0x44
 		Pointer<UVData> uvData; // 0x48
 		float currentUOffset; // 0x4C
-		float currentUTiling; // 0x50
-		float currentVOffset; // 0x54
+		float currentVOffset; // 0x50
+		float currentUTiling; // 0x54
 		float currentVTiling; // 0x58
 
 		//

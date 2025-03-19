@@ -8,7 +8,7 @@
 
 A core object representing a character race.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `abilities`
@@ -223,7 +223,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -239,6 +239,19 @@ The soruceless flag of the object.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

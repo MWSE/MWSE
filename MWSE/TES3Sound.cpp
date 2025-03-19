@@ -82,6 +82,16 @@ namespace TES3 {
 		TES3_Sound_stop(this);
 	}
 
+	const auto TES3_Sound_loadBuffer = reinterpret_cast<void(__thiscall*)(Sound*, bool)>(0x5107E0);
+	void Sound::loadBuffer(bool isPointSound) {
+		TES3_Sound_loadBuffer(this, isPointSound);
+	}
+
+	const auto TES3_Sound_release = reinterpret_cast<void(__thiscall*)(Sound*, int)>(0x5109F0);
+	void Sound::release() {
+		TES3_Sound_release(this, 0);
+	}
+
 	const auto TES3_Sound_setVolumeRaw = reinterpret_cast<void(__thiscall*)(Sound*, unsigned char)>(0x510C30);
 	void Sound::setVolumeRaw(unsigned char volume) {
 		TES3_Sound_setVolumeRaw(this, volume);

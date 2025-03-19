@@ -28,6 +28,7 @@ namespace TES3 {
 		Up = 0,
 		Down = 1,
 		Direct = 2,
+		Consume = 3
 	};
 
 	struct WorldControllerRenderCamera {
@@ -470,8 +471,24 @@ namespace TES3 {
 		// Helpful static variables.
 		//
 
+		class ItemUpDownSoundBlocker {
+		public:
+			ItemUpDownSoundBlocker() {
+				previousValue = blockItemUpDownSound;
+			}
+			ItemUpDownSoundBlocker(bool playSound) : ItemUpDownSoundBlocker() {
+				blockItemUpDownSound = playSound;
+			}
+			~ItemUpDownSoundBlocker() {
+				blockItemUpDownSound = previousValue;
+			}
+		private:
+			bool previousValue;
+		};
+
 		static float realDeltaTime;
 		static float simulationTimeScalar;
+		static bool blockItemUpDownSound;
 	};
 	static_assert(sizeof(WorldController) == 0x374, "TES3::WorldController failed size validation");
 	static_assert(offsetof(WorldController, inputController) == 0x4C, "TES3::WorldController failed offset validation");

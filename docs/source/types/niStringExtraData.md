@@ -8,7 +8,7 @@
 
 A simple extra data that contains a string.
 
-This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `genericData`

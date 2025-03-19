@@ -18,7 +18,11 @@ return {
 				{ name = "customBlock", type = "fun(parent: tes3uiElement)", optional = true, description = "A custom element to be displayed below the header. This function is passed a parent tes3uiElement, which it can modify to add a custom block according to your needs." },
 				{ name = "page", type = "integer", optional = true, default = 1 },
 				{ name = "pageSize", type = "integer", optional = true, default = 30 },
+				{ name = "maxWidth", type = "integer", default = 400 },
 			},
 		},
-	}
+	},
+	returns = {
+		{ name = "menu", type = "tes3uiElement" }
+	},
 }

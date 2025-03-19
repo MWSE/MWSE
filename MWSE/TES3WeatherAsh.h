@@ -4,8 +4,7 @@
 
 namespace TES3 {
 	struct WeatherAsh : Weather {
-		int unknown_0x318;
-		int unknown_0x31C;
+		Vector2 stormOrigin; // 0x318
 		float stormThreshold; // 0x320
 
 		WeatherAsh() = delete;

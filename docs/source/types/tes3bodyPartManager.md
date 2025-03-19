@@ -10,17 +10,6 @@ A game object which holds information about body parts.
 
 ## Properties
 
-### `activeBodyParts`
-<div class="search_terms" style="display: none">activebodyparts</div>
-
-*Read-only*. Access to the reference's [`tes3bodyPartManagerActiveBodyPart`](https://mwse.github.io/MWSE/types/tes3bodyPartManagerActiveBodyPart/) objects. It's a 2-dimensional table, with first dimension index values from [`tes3.activeBodyPartLayer`](https://mwse.github.io/MWSE/references/active-body-part-layers/) namespace, while its second dimension indexes are values from [`tes3.activeBodyPart`](https://mwse.github.io/MWSE/references/active-body-parts/) namespace.
-
-**Returns**:
-
-* `result` (table&lt;[tes3.activeBodyPartLayer](../references/active-body-part-layers.md), table&lt;[tes3.activeBodyPart](../references/active-body-parts.md), [tes3bodyPartManagerActiveBodyPart](../types/tes3bodyPartManagerActiveBodyPart.md)&gt;&gt;)
-
-***
-
 ### `animationPhase`
 <div class="search_terms" style="display: none">animationphase</div>
 
@@ -35,11 +24,14 @@ A game object which holds information about body parts.
 ### `attachNodes`
 <div class="search_terms" style="display: none">attachnodes</div>
 
-*Read-only*. The access to the reference's attach node objects. Indexes of that table are values from [`tes3.bodyPartAttachment`](https://mwse.github.io/MWSE/references/body-part-attachments/) namespace.
+*Read-only*. An array-style table with access to the reference's attach node objects.
+
+!!! note
+	This array is 1-indexed. The array indices correspond to the [`tes3.bodyPartAttachment`](https://mwse.github.io/MWSE/references/body-part-attachments/) table plus 1 to account for Lua's 1-based array indexing. In other words `bodyPartManager.attachNodes[tes3.bodyPartAttachment.leftHand + 1]` returns the `tes3bodyPartManagerAttachNode` object corresponding to the left hand.
 
 **Returns**:
 
-* `result` (table&lt;[tes3.bodyPartAttachment](../references/body-part-attachments.md), [tes3bodyPartManagerAttachNode](../types/tes3bodyPartManagerAttachNode.md)&gt;)
+* `result` ([tes3bodyPartManagerAttachNode](../types/tes3bodyPartManagerAttachNode.md)[])
 
 ***
 

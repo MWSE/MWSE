@@ -55,7 +55,7 @@ namespace mwse {
 			}
 			else {
 				sol::error error = result;
-				log::getLog() << "Lua error encountered for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->name << "':" << std::endl << error.what() << std::endl;
+				log::getLog() << "Lua error encountered for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->header.name << "':" << std::endl << error.what() << std::endl;
 
 				manager.setCurrentReference(nullptr);
 				manager.setCurrentScript(nullptr);
@@ -73,14 +73,14 @@ namespace mwse {
 				sol::protected_function_result result = execute.value().call();
 				if (!result.valid()) {
 					sol::error error = result;
-					log::getLog() << "Lua error encountered for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->name << "':" << std::endl << error.what() << std::endl;
+					log::getLog() << "Lua error encountered for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->header.name << "':" << std::endl << error.what() << std::endl;
 
 					// Clear the stack, since we can't trust what the script did or did not do.
 					mwse::Stack::getInstance().clear();
 				}
 			}
 			else {
-				log::getLog() << "No execute function found for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->name << "'." << std::endl;
+				log::getLog() << "No execute function found for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->header.name << "'." << std::endl;
 
 				// Clear the stack, since we can't trust what the script did or did not do.
 				mwse::Stack::getInstance().clear();

@@ -32,6 +32,13 @@ namespace se::cs {
 		return gridY;
 	}
 
+	Land* Cell::getLand() const {
+		if (getIsInterior()) {
+			return nullptr;
+		}
+		return landscape;
+	}
+
 	Region* Cell::getRegion() const {
 		if (getIsOrBehavesAsExterior()) {
 			return region;

@@ -142,6 +142,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CDataBoundPropertyGridProperty.cpp" />
+    <ClCompile Include="CSAlchemy.cpp" />
     <ClCompile Include="CSArmor.cpp" />
     <ClCompile Include="CSBirthsign.cpp" />
     <ClCompile Include="CSBodyPart.cpp" />
@@ -152,11 +153,15 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="CSCreature.cpp" />
     <ClCompile Include="CSDialogue.cpp" />
     <ClCompile Include="CSDialogueInfo.cpp" />
+    <ClCompile Include="CSEffect.cpp" />
+    <ClCompile Include="CSEnchantment.cpp" />
     <ClCompile Include="CSFaction.cpp" />
     <ClCompile Include="CSGameSetting.cpp" />
+    <ClCompile Include="CSGlobalVariable.cpp" />
     <ClCompile Include="CSIngredient.cpp" />
     <ClCompile Include="CSLeveledCreature.cpp" />
     <ClCompile Include="CSLeveledItem.cpp" />
+    <ClCompile Include="CSMagicEffect.cpp" />
     <ClCompile Include="CSNPC.cpp" />
     <ClCompile Include="CSObject.cpp" />
     <ClCompile Include="CSRace.cpp" />
@@ -174,6 +179,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogEditObjectWindow.cpp" />
     <ClCompile Include="DialogEditSpellObjectWindow.cpp" />
     <ClCompile Include="DialogLandscapeEditSettingsWindow.cpp" />
+    <ClCompile Include="DialogPathGridWindow.cpp" />
     <ClCompile Include="DialogPreviewWindow.cpp" />
     <ClCompile Include="DialogProcContext.cpp" />
     <ClCompile Include="DialogReferenceData.cpp" />
@@ -223,18 +229,24 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDataBoundPropertyGridProperty.h" />
+    <ClInclude Include="CSAlchemy.h" />
     <ClInclude Include="CSArchive.h" />
     <ClInclude Include="CSBirthsign.h" />
     <ClInclude Include="CSClass.h" />
     <ClInclude Include="CSDoor.h" />
+    <ClInclude Include="CSGlobalVariable.h" />
+    <ClInclude Include="CSLand.h" />
+    <ClInclude Include="CSMagicEffect.h" />
     <ClInclude Include="CSRace.h" />
     <ClInclude Include="CSRegion.h" />
     <ClInclude Include="CSSE.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
+    <ClInclude Include="DialogPathGridWindow.h" />
     <ClInclude Include="DialogProcContext.h" />
     <ClInclude Include="DialogUseReportWindow.h" />
+    <ClInclude Include="CSFile.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MetadataUtil.h" />
     <ClInclude Include="ModMetadata.h" />
