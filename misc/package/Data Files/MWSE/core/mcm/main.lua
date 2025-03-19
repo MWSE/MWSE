@@ -503,12 +503,9 @@ local function onClickModConfigButton()
 		-- Mods with a certain title length can add an unnecessary newline, which goes away when the layout is refreshed.
 		menu:updateLayout()
 
-		-- Reopen the most recently viewed config menu (if there was one)
-		if lastModName then
-			-- Iterate through each mod button and check if the text matches `modName`.
-			-- If there's a match:
-			--	 1. Click on that mod button. 
-			--	 2. Check if `modName` corresponds to a `modTemplate`. If it does, update the active tab.
+		-- Reopen the most recently viewed config menu (if there was one).
+		-- If the most recently viewed mod config was a template, we should also reopen it to the previously viewed tab.
+		if lastModName ~= nil then
 			for _, child in ipairs(modListContents.children) do
 				local modNameButton = child.children[1]
 	
