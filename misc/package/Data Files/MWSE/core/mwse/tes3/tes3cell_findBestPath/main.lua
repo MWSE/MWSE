@@ -40,6 +40,9 @@ function tes3.tes3cell_findBestPath(self, params)
 	predicate = params.closestExterior and function(cell) return cell.isOrBehavesAsExterior end
 										or function(cell) return cell.id == params.targetCell.id end
 
+	-- mwse.log("searching for path from %s to %s", self.editorName, 
+	-- 	params.targetCell and params.targetCell.editorName or params.closestExterior and "Closest Exterior"
+	-- )
 	local i = 1
 	while i <= #paths and i <= 500 do
 		local path = paths[i]
@@ -69,26 +72,28 @@ function tes3.tes3cell_findBestPath(self, params)
 					end
 				end
 
-				if toExplore[dest.id] then
-					local doorCounts = toExplore[dest.id].doorCounts
+				if toExplore[dest.editorName] then
+					local doorCounts = toExplore[dest.editorName].doorCounts
 					doorCounts[#doorCounts] = doorCounts[#doorCounts] + 1
 				else
 					local newPath = {cells = table.copy(path.cells), doorCounts = table.copy(path.doorCounts)}
 					table.insert(newPath.cells, dest)
 					table.insert(newPath.doorCounts, 1)
-					toExplore[dest.id] = newPath
+					toExplore[dest.editorName] = newPath
 				end
 				::nextDoor::
 			end
+			
 			if path.cells[#path.cells].isOrBehavesAsExterior then
 				local cellX = path.cells[#path.cells].gridX
 				local cellY = path.cells[#path.cells].gridY
 				for xDelta = -1, 1 do
 					for yDelta = -1, 1 do
+						local dest = tes3.getCell{x = cellX + xDelta, y = cellY + yDelta}
+						
 						-- I copypasted all code from the doors thing without changes.
 						-- If you understood that code, you'll understand this code.
 
-						local dest = tes3.getCell{x = cellX + xDelta, y = cellY + yDelta}
 						if dest == nil then
 							goto nextDoor
 						end
@@ -104,14 +109,14 @@ function tes3.tes3cell_findBestPath(self, params)
 							end
 						end
 		
-						if toExplore[dest.id] then
-							local doorCounts = toExplore[dest.id].doorCounts
+						if toExplore[dest.editorName] then
+							local doorCounts = toExplore[dest.editorName].doorCounts
 							doorCounts[#doorCounts] = doorCounts[#doorCounts] + 1
 						else
 							local newPath = {cells = table.copy(path.cells), doorCounts = table.copy(path.doorCounts)}
 							table.insert(newPath.cells, dest)
 							table.insert(newPath.doorCounts, 1)
-							toExplore[dest.id] = newPath
+							toExplore[dest.editorName] = newPath
 						end
 						::nextDoor::
 					end
@@ -124,14 +129,12 @@ function tes3.tes3cell_findBestPath(self, params)
 		end
 		i = i + 1
 	end
-	mwse.log("paths before filtering.... %s. num cells = %s", #paths, paths[1] and #paths[1].cells)
 	
 	-- filter out all the paths that didn't reach their destination.
 	---@param path cellPath
 	paths = table.filterarray(paths, function(_, path)
 		return predicate(path.cells[#path.cells])
 	end)
-	mwse.log("paths after filtering.... %s. num cells = %s", #paths, paths[1] and #paths[1].cells)
 
 
 	--- Heuristic function that's used to sort paths.
