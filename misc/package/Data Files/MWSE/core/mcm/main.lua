@@ -5,9 +5,10 @@
 	extend to provide a single place for users to configure their mods.
 ]]
 
-
+--- Stores information about an entry in the MCM menu. 
+--- This corresponds to either an `mwseMCMTemplate` or a legacy mod package.
 --- @class mwseModConfig
---- @field name string
+--- @field name string Name of the mod.
 --- @field hidden boolean Hide the mod from the MCM?
 --- @field ["package"] mwse.registerModConfig.package? A legacy mod package. This is mutually exclusive with `template`.
 --- @field template mwseMCMTemplate? The template for this mod. This is mutually exclusive with `package`.
@@ -18,9 +19,9 @@
 local configMods = {}
 
 
--- Stores the name of the currently active mod. 
--- Could correspond to a `mwseMCMTemplate` or a legacy mod.
-local currentModConfig = nil ---@type mwseModConfig?
+-- Stores information about the currently active mod config
+---@type mwseModConfig?
+local currentModConfig
 
 
 --- Name of the last mod selected in the MCM.
@@ -147,7 +148,7 @@ local function closeCurrentModConfig()
 	if template then
 		currentModConfig.lastSelectedPageIndex = table.find(template.pages, template.currentPage)
 		onClose = template.onClose
-	else -- it's a legacy mod
+	else
 		onClose = currentModConfig.package and currentModConfig.package.onClose
 	end
 
