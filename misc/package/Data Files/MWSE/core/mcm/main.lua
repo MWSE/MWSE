@@ -6,32 +6,22 @@
 ]]
 
 
---- @class mwseLegacyMod : mwse.registerModConfig.package
+--- @class mwseModConfig
 --- @field name string
+--- @field hidden boolean Hide the mod from the MCM?
+--- @field ["package"] mwse.registerModConfig.package? A legacy mod package. This is mutually exclusive with `template`.
+--- @field template mwseMCMTemplate? The template for this mod. This is mutually exclusive with `package`.
+--- @field lastSelectedPageIndex integer? If this mod is a template, stores information about which page was previously accessed.
 
---- Storage for mod config packages.
 
--- Stores all mod templates, indexed by display string
--- Most mods make their MCMs using `mwseMCMTemplate`, and storing the template allows for
--- direct access to the mods menu structure.
-local modTemplates = {} ---@type table<string, mwseMCMTemplate>
+--- @type table<string, mwseModConfig>
+local configMods = {}
 
--- This will store legacy config menus that were made without using `mwseMCMTemplate`.
--- These mods were registered using `mwse.registerModConfig(...)` instead of `template:register()`.
--- The lua code dump says this accounts for roughly 80 Lua mods in total (and a few of those hits are false positives).
-local legacyMods = {} ---@type table<string, mwseLegacyMod>
 
 -- Stores the name of the currently active mod. 
 -- Could correspond to a `mwseMCMTemplate` or a legacy mod.
-local currentModName = nil ---@type string?
+local currentModConfig = nil ---@type mwseModConfig?
 
-
--- Stores the index of the most recently looked at tab. 
--- This is used to reopen the menu to the last seen tab.
--- This will only work for mods made using a `mwseMCMTemplate`,
--- as there are no guarantees as to how the pages of legacy mods are organized.
--- As such, it's only updated when a `mwseMCMTemplate` mod is interacted with.
-local lastPageIndex = nil ---@type integer?
 
 --- Name of the last mod selected in the MCM.
 --- Used to reopen the most recently closed mod config menu when the MCM is reopened during a play session.
@@ -146,22 +136,24 @@ end
 --- This will also update the `lastPageIndex` if a mod template is currently selected.
 --- This is called when the user closes the MCM, or when the user clicks on a different mod name.
 local function closeCurrentModConfig()
-	if not currentModName then 
+
+	if not currentModConfig then
 		return
 	end
-	
+
 	local onClose
 
-	if modTemplates[currentModName] then
-		local template = modTemplates[currentModName]
-		lastPageIndex = table.find(template.pages, template.currentPage)
+	local template = currentModConfig.template
+	if template then
+		currentModConfig.lastSelectedPageIndex = table.find(template.pages, template.currentPage)
 		onClose = template.onClose
 	else -- it's a legacy mod
-		local legacyMod = legacyMods[currentModName]
-		onClose = legacyMod and legacyMod.onClose
+		onClose = currentModConfig.package and currentModConfig.package.onClose
 	end
 
-	if not onClose then return end
+	if not onClose then 
+		return 
+	end
 
 	local status, error = pcall(onClose, modConfigContainer)
 	if (status == false) then
@@ -178,7 +170,7 @@ local function onClickModName(e)
 
 	-- If we have a current mod, fire its close event.
 	closeCurrentModConfig()
-	currentModName = modName
+	currentModConfig = configMods[modName]
 
 
 	if (previousModConfigSelector) then
@@ -195,12 +187,13 @@ local function onClickModName(e)
 	local status, errorMsg
 	
 
-	if modTemplates[modName] then
-		local template = modTemplates[modName]
+	local modConfig = configMods[modName]
+	local template = modConfig.template
+	if template then
 		-- Call `create` as a method.
 		status, errorMsg = pcall(template.create, template, modConfigContainer)
-	elseif legacyMods[modName] then
-		status, errorMsg = pcall(legacyMods[modName].onCreate, modConfigContainer)
+	elseif modConfig.package then
+		status, errorMsg = pcall(modConfig.package.onCreate, modConfigContainer)
 	else
 		-- We couldn't find the mod config.
 		-- I'm not even sure how this could ever happen.
@@ -298,15 +291,13 @@ local function filterModByName(modName, searchText)
 		return true
 	end
 
-	-- If the mod has a template, use the template's search logic.
-	if  modTemplates[modName] then
-		return  modTemplates[modName]:onSearchInternal(searchText)
-	end
+	local modConfig = configMods[modName]
 
-	-- Do we have a custom filter package?
-	local package = legacyMods[modName]
-	if (package.onSearch and package.onSearch(searchText)) then
-		return true
+	-- If the mod has a template, use the template's search logic.
+	if modConfig.template then
+		return modConfig.template:onSearchInternal(searchText)
+	elseif modConfig.package and modConfig.package.onSearch then
+		return modConfig.package.onSearch(searchText)
 	end
 
 	return false
@@ -339,7 +330,7 @@ end
 
 
 local function cleanupMCM(e)
-	currentModName = nil
+	currentModConfig = nil
 	modConfigContainer = nil
 	previousModConfigSelector = nil
 end
@@ -408,14 +399,13 @@ local function onClickModConfigButton()
 		modList.heightProportional = 1.0
 		modList:setPropertyBool("PartScrollPane_hide_if_unneeded", true)
 
-		-- List of all mod names (both legacy mods and mods made using a `mwseMCMTemplate`).
-		local sortedModNames = table.keys(modTemplates) ---@type string[]
-
-		-- Add in the legacy mods.
-		for legacyModName in pairs(legacyMods) do
-			table.insert(sortedModNames, legacyModName)
+		---@type string[]
+		local sortedModNames = {}
+		for modName, modConfig in pairs(configMods) do
+			if not modConfig.hidden then
+				table.insert(sortedModNames, modName)
+			end
 		end
-
 		table.sort(sortedModNames, compareModNames)
 
 		-- Fill in the mod list UI.
@@ -515,13 +505,14 @@ local function onClickModConfigButton()
 	
 				if modNameButton.text == lastModName then
 					modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
-	
+					
 					-- Open the previously selected page if possible.
-					local template = modTemplates[modNameButton.text]
-					if template and lastPageIndex and template.pages[lastPageIndex] then
-						template:clickTab(template.pages[lastPageIndex])
+					local modConfig = configMods[modNameButton.text]
+					if modConfig and modConfig.template and modConfig.lastSelectedPageIndex then
+						local page = modConfig.template.pages[modConfig.lastSelectedPageIndex]
+						modConfig.template:clickTab(page)
 					end
-	
+
 					-- We found the mod, so stop iterating.
 					break 
 				end
@@ -548,11 +539,6 @@ end
 local function onCreatedMenuOptions(e)
 	-- Only interested in menu creation, not updates
 	if (not e.newlyCreated) then
-		return
-	end
-
-	-- Don't show the UI if we don't have any mod configs to show.
-	if (table.empty(modTemplates) and table.empty(legacyMods)) then
 		return
 	end
 
@@ -591,19 +577,16 @@ event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 --- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
 
-	if (modTemplates[name] ~= nil or legacyMods[name] ~= nil) then
+	if (configMods[name] ~= nil) then
 		error(string.format('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
 	end
-	-- Check if it's a `mwseMCMTemplate`, and call the new registration function if possible.
+	-- Check if it's a `mwseMCMTemplate` and register it accordingly.
 	if package.componentType == "Template" and package.class == "Template" then
 		-- Actually register the package.
-		modTemplates[name] = package
+		configMods[name] = {name = name, template = package, hidden = false}
 		mwse.log("[MCM] Registered mod config: %s", name)
 	else
-		-- Actually register the package.
-		--- @cast package mwseLegacyMod
-		package.name = name
-		legacyMods[name] = package
+		configMods[name] = {name = name, package = package, hidden = false}
 		mwse.log("[MCM] Registered legacy mod config: %s", name)
 	end
 end
