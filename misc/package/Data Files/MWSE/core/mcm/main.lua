@@ -38,20 +38,23 @@ local previousModConfigSelector = nil
 --- @type tes3uiElement?
 local modConfigContainer = nil
 
+--- Store the config used by the MCM itself.
+---@type {favorites: {[string]: boolean}}
 local config = mwse.loadConfig("MWSE.MCM", {
 	favorites = {},
 })
 
----@cast config {favorites: table<string, boolean>}
 
 -- Try to migrate over existing favorites.
 if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
 	-- Migrate over the contents of the old file, and overwrite.
-	config.favorites = json.loadfile("config\\core\\MCM Favorite Mods") --[[@as table<string, boolean>]]
+	config.favorites = json.loadfile("config\\core\\MCM Favorite Mods")
 	-- Delete old file (and directory if it is empty).
 	os.remove("config\\core\\MCM Favorite Mods.json")
 	lfs.rmdir("config\\core", false)
 end
+
+
 
 -- Convert array-style favorites list to the newer dictionary format.
 if (#config.favorites > 0) then
@@ -105,18 +108,18 @@ local function toggleFavorited(mod)
 	setFavorite(mod, not isFavorite(mod))
 end
 
---- Compares two mod names, based on their favorite status and their names.
----@param a string Name of the first mod to compare.
----@param b string Name of the second mod to compare.
----@return boolean -- true if `a < b`
-local function compareModNames(a, b)
-	-- Check if `a` and `b` have different "favorite" statuses.
-	if isFavorite(a) ~= isFavorite(b) then
-		-- `true` if `a` is favorited and `b` isn't (so `a < b`).
-		-- `false` if `b` is favorited and `a` isn't (so `b < a`).
-		return isFavorite(a)
+--- @param a mwseModConfig
+--- @param b mwseModConfig
+--- @return boolean -- true if `a < b`
+local function sortPackages(a, b)
+	-- check if `a` and `b` have different "favorite" statuses
+	-- `not a.favorite ~= not b.favorite` handles the case when `a.favorite == nil` and `b.favorite == false`
+	if not isFavorite(a.name) ~= not isFavorite(b.name) then
+		-- `true` if `a` is favorited and `b` isn't (so `a < b`)
+		-- `false` if `b` is favorited and `a` isn't (so `b < a`)
+		return isFavorite(a.name)
 	end
-	return a:lower() < b:lower()
+	return a.name:lower() < b.name:lower()
 end
 
 -- Update the image icons for the various states of the favorite button.
@@ -269,7 +272,7 @@ local function onClickFavoriteButton(e)
 	-- Favorites have been updated, resort the list of mods to take the new configuration into account.
 	-- Sorting is done by comparing the `modName`s in each `entryBlock`.
 	modListContents:sortChildren(function(a, b)
-		return compareModNames(a.children[1].text, b.children[1].text)
+		return sortPackages(configMods[a.children[1].text], configMods[b.children[1].text])
 	end)
 
 	modList:getTopLevelMenu():updateLayout()
@@ -407,7 +410,9 @@ local function onClickModConfigButton()
 				table.insert(sortedModNames, modName)
 			end
 		end
-		table.sort(sortedModNames, compareModNames)
+		table.sort(sortedModNames, function (a, b)
+			return sortPackages(configMods[a], configMods[b])
+		end)
 
 		-- Fill in the mod list UI.
 		local modListContents = modList:getContentElement()
@@ -509,9 +514,14 @@ local function onClickModConfigButton()
 					
 					-- Open the previously selected page if possible.
 					local modConfig = configMods[modNameButton.text]
-					if modConfig and modConfig.template and modConfig.lastSelectedPageIndex then
-						local page = modConfig.template.pages[modConfig.lastSelectedPageIndex]
-						modConfig.template:clickTab(page)
+					
+					local template = modConfig.template
+					local lastPageIndex = modConfig.lastSelectedPageIndex
+
+					-- Try to open the last page by clicking the appropriate tab.
+					-- The `lastPageIndex > 1` check is to make sure we don't end up clicking the first tab twice.
+					if template and lastPageIndex and lastPageIndex > 1 then
+						template:clickTab(template.pages[lastPageIndex])
 					end
 
 					-- We found the mod, so stop iterating.
