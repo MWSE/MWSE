@@ -331,9 +331,7 @@ function Template:createContentsContainer(parentBlock)
 end
 
 function Template:register()
-
 	mwse.registerModConfig(self.name, self)
-	mwse.log("%s mod config registered", self.name)
 end
 
 function Template.__index(tbl, key)
