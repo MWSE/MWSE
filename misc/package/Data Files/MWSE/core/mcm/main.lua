@@ -13,16 +13,14 @@
 --- @field ["package"] mwse.registerModConfig.package? A legacy mod package. This is mutually exclusive with `template`.
 --- @field template mwseMCMTemplate? The template for this mod. This is mutually exclusive with `package`.
 
-
+--- Storage for mod config packages.
 --- @type table<string, mwseModConfig>
 local configMods = {}
-
 
 --- The current package that we are configuring.
 --- Used to properly deselect mod config menus when clicking on different mod names.
 --- @type mwseModConfig?
 local currentModConfig = nil
-
 
 --- Name of the last mod selected in the MCM.
 --- Used to reopen the most recently closed mod config menu when the MCM is reopened during a play session.
@@ -43,7 +41,6 @@ local modConfigContainer = nil
 local config = mwse.loadConfig("MWSE.MCM", {
 	favorites = {},
 })
-
 
 -- Try to migrate over existing favorites.
 if (table.empty(config.favorites) and lfs.fileexists("config\\core\\MCM Favorite Mods.json")) then
@@ -213,7 +210,6 @@ local function onClickModName(e)
 	-- Record that this was the most recently opened mod config menu.
 	lastModName = modName
 end
-
 
 local keyBinderPopupId = tes3ui.registerID("KeyMouseBinderPopup")
 
@@ -493,17 +489,11 @@ local function onClickModConfigButton()
 		-- Mods with a certain title length can add an unnecessary newline, which goes away when the layout is refreshed.
 		menu:updateLayout()
 
-		-- Reopen the most recently viewed config menu (if there was one).
-		-- If the most recently viewed mod config was a template, we should also reopen it to the previously viewed tab.
 		if lastModName ~= nil then
 			for _, child in ipairs(modListContents.children) do
-				local modNameButton = child.children[1]
-	
-				if modNameButton.text == lastModName then
-					modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
-					
-					-- We found the mod, so stop iterating.
-					break 
+				if child.children[1].text == lastModName then
+					child.children[1]:triggerEvent(tes3.uiEvent.mouseClick)
+					break
 				end
 			end
 		end
@@ -561,7 +551,6 @@ event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 
 
 --- Define a new function in the mwse namespace that lets mods register for mod config.
---- @deprecated
 --- @param name string
 --- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
