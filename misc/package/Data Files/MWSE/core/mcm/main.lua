@@ -12,7 +12,6 @@
 --- @field hidden boolean Hide the mod from the MCM?
 --- @field ["package"] mwse.registerModConfig.package? A legacy mod package. This is mutually exclusive with `template`.
 --- @field template mwseMCMTemplate? The template for this mod. This is mutually exclusive with `package`.
---- @field lastSelectedPageIndex integer? If this mod is a template, stores information about which page was previously accessed.
 
 
 --- @type table<string, mwseModConfig>
@@ -137,7 +136,6 @@ local function saveConfig()
 end
 
 --- Closes the currently opened mod config menu, if it exists.
---- This will also update the `lastPageIndex` if a mod template is currently selected.
 --- This is called when the user closes the MCM, or when the user clicks on a different mod name.
 local function closeCurrentModConfig()
 
@@ -147,12 +145,10 @@ local function closeCurrentModConfig()
 
 	local onClose
 
-	local template = currentModConfig.template
-	if template then
-		currentModConfig.lastSelectedPageIndex = table.find(template.pages, template.currentPage)
-		onClose = template.onClose
-	else
-		onClose = currentModConfig.package and currentModConfig.package.onClose
+	if currentModConfig.template then
+		onClose = currentModConfig.template.onClose
+	elseif currentModConfig.package then
+		onClose = currentModConfig.package.onClose
 	end
 
 	if not onClose then 
@@ -512,18 +508,6 @@ local function onClickModConfigButton()
 				if modNameButton.text == lastModName then
 					modNameButton:triggerEvent(tes3.uiEvent.mouseClick)
 					
-					-- Open the previously selected page if possible.
-					local modConfig = configMods[modNameButton.text]
-					
-					local template = modConfig.template
-					local lastPageIndex = modConfig.lastSelectedPageIndex
-
-					-- Try to open the last page by clicking the appropriate tab.
-					-- The `lastPageIndex > 1` check is to make sure we don't end up clicking the first tab twice.
-					if template and lastPageIndex and lastPageIndex > 1 then
-						template:clickTab(template.pages[lastPageIndex])
-					end
-
 					-- We found the mod, so stop iterating.
 					break 
 				end
