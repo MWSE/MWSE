@@ -13,7 +13,7 @@ local function execLuaMod(runtime)
 		-- Setup our dependencies.
 		local dependencyManager = dependencyManagerModule.new({
 			metadata = runtime.metadata,
-			logger = logger.new({ name = name, logLevel = "INFO" }),
+			logger = logger.new{ modName = name, modDir = runtime.key },
 			showFailureMessage = false,
 		})
 
