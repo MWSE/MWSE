@@ -482,6 +482,11 @@ local function writePackageDetails(file, package)
 		or needsHorizontalRule
 	)
 
+	needsHorizontalRule = (
+		writeFields(file, package, "typeValues", "Type Properties", writeSubPackage, needsHorizontalRule)
+		or needsHorizontalRule
+	)
+
 	-- Write out methods.
 	needsHorizontalRule = (
 		writeFields(file, package, "methods", "Methods", writeSubPackage, needsHorizontalRule)

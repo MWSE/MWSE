@@ -53,7 +53,30 @@ return {
 	type = "value",
 	description = [[Array-style table for the different weather types. Each object in the table is a [tes3weather](https://mwse.github.io/MWSE/types/tes3weather/). The indexes in the table correspond to the [`tes3.weather`](https://mwse.github.io/MWSE/references/weather-types/) enumeration.]],
 	readOnly = true,
-	valuetype = "table<number, tes3weather>",
+	valuetype = "table<tes3.weather, tes3weather>",
+}
+```
+
+### Type Property Definitions
+
+This kind of definitions is meant for documenting constants available on types not instances. For example some math classes such as `tes3vector3` could have a `forward` property documented this way. Type property definition schema:
+| Field       | Type      | Description |
+| ----------- | --------- | ----------- |
+| type        | `string`  | The type of the definition. This flag is used when generating syntax highlighting files. This should always be `"typeValue"` for type property defintions. |
+| description | `string`  | The description for the property. |
+| readOnly    | `boolean` | If the property is writable, this field is unnecessary. |
+| valuetype   | `string`  | This allows to specify the property type. You can put string names for basic
+Lua types: `number`, `boolean` and `string`, or objects exposed by MWSE, such as `tes3reference`. If the value can be of two or more types, then you should pass all the types joined by the vertical bar character, thereby passing a union of all the possible types. If the type is `table`, consider adding the key and value types like this: `table<indexType, keyType>`. This will allow autocomplete to automatically deduce the types when the table is indexed. See more in the example below. |
+| examples    | `table`   | A table with entries that are the names of the files included as examples. Each entry is a table itself with one available field, `title`. The title will be shown as the title of the example on the documentation page. It works the same as examples for [event](https://github.com/MWSE/MWSE/blob/master/docs/event-definitions-guide.md) or [function](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md) definitions. |
+
+An example of a hypothetical type property definition:
+
+```lua
+-- autocomplete\definitions\namedTypes\tes3vector3\forward.lua
+return {
+	type = "typeValue",
+	description = [[A vector pointing along the positive X axis.]],
+	valuetype = "tes3vector3",
 }
 ```
 
@@ -86,7 +109,7 @@ For a more elaborate description of the argument and return tables, please refer
 
 ## Notes
 
-Some types may have fields that are not values or methods. In that case, you can pass different types to the `type` value of the definition. For example, some types also expose functions. In that case, you can pass `type = "function."`. Here is an example of such a definition:
+Some types may have fields that are not values or methods. In that case, you can pass different types to the `type` value of the definition. For example, some types also expose functions. In that case, you can pass `type = "function"`. Here is an example of such a definition:
 
 ```lua
 -- autocomplete\definitions\namedTypes\tes3vector3\new.lua

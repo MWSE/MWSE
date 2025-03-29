@@ -62,7 +62,7 @@ local function shouldCreateTable(package)
 	return (
 		package.type == "lib" or
 		package.type == "class" and (
-			package.methods and	#package.methods > 0 or
+			package.methods and #package.methods > 0 or
 			package.functions and #package.functions > 0
 		)
 		or false
@@ -402,13 +402,16 @@ local function build(package)
 
 
 	-- Write out fields.
-	if (package.values) then
-		table.sort(package.values, function(a, b)
-			return a.key:lower() < b.key:lower()
-		end)
-		for _, value in ipairs(package.values) do
-			if (not value.deprecated) then
-				file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+	local fieldKeys = { "values", "typeValues" }
+	for _, valueKey in ipairs(fieldKeys) do
+		if (package[valueKey]) then
+			table.sort(package[valueKey], function(a, b)
+				return a.key:lower() < b.key:lower()
+			end)
+			for _, value in ipairs(package[valueKey]) do
+				if (not value.deprecated) then
+					file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+				end
 			end
 		end
 	end
