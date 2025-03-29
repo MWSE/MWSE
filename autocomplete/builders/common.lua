@@ -467,6 +467,7 @@ end
 --- @field children table<string, package>|nil
 --- @field functions packageFunction[]|nil
 --- @field values packageValue[]|nil
+--- @field typeValues packageValue[]|nil
 
 ---@class packageOverload
 ---@field rightType string
