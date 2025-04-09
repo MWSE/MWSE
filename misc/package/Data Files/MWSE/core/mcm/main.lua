@@ -5,6 +5,14 @@
 	extend to provide a single place for users to configure their mods.
 ]]
 
+--- Stores information about an entry in the MCM menu. 
+--- This corresponds to either an `mwseMCMTemplate` or a legacy mod package.
+--- @class mwseModConfig
+--- @field name string Name of the mod.
+--- @field hidden boolean Hide the mod from the MCM?
+--- @field ["package"] mwse.registerModConfig.package? A legacy mod package. This is mutually exclusive with `template`.
+--- @field template mwseMCMTemplate? The template for this mod. This is mutually exclusive with `package`.
+
 --- Storage for mod config packages.
 --- @type table<string, mwseModConfig>
 local configMods = {}
@@ -28,6 +36,7 @@ local previousModConfigSelector = nil
 --- @type tes3uiElement?
 local modConfigContainer = nil
 
+--- Store the config used by the MCM itself.
 --- @type table
 local config = mwse.loadConfig("MWSE.MCM", {
 	favorites = {},
@@ -123,24 +132,43 @@ local function saveConfig()
 	mwse.saveConfig("MWSE.MCM", config)
 end
 
---- Callback for when a mod name has been clicked in the left pane.
---- @param e tes3uiEventData
-local function onClickModName(e)
-	local modName = e.source.text
-	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
-		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
-		end
-	end
+--- Closes the currently opened mod config menu, if it exists.
+--- This is called when the user closes the MCM, or when the user clicks on a different mod name.
+local function closeCurrentModConfig()
 
-	-- Update the current mod package.
-	currentModConfig = configMods[modName]
-	if (not currentModConfig) then
-		error(string.format("No mod config could be found for key '%s'.", modName))
+	if not currentModConfig then
 		return
 	end
+
+	local onClose
+
+	if currentModConfig.template then
+		onClose = currentModConfig.template.onClose
+	elseif currentModConfig.package then
+		onClose = currentModConfig.package.onClose
+	end
+
+	if not onClose then 
+		return 
+	end
+
+	local status, error = pcall(onClose, modConfigContainer)
+	if (status == false) then
+		mwse.log("Error in mod config create callback: %s\n%s", error, debug.traceback())
+	end
+end
+ 
+
+--- Callback for when a mod name has been clicked in the left pane.
+--- @param e tes3uiEventData The event data that triggers when a mod name is clicked, so that `e.source`
+--- corresponds to a button on the left pane that stores a `modName`.
+local function onClickModName(e)
+	local modName = e.source.text
+
+	-- If we have a current mod, fire its close event.
+	closeCurrentModConfig()
+	currentModConfig = configMods[modName]
+
 
 	if (previousModConfigSelector) then
 		previousModConfigSelector.widget.state = tes3.uiState.normal
@@ -150,13 +178,29 @@ local function onClickModName(e)
 
 	-- Destroy and recreate the parent container.
 	modConfigContainer:destroyChildren()
+	
+	--- The result of creating the template/legacy mod package, and an error message if there was a problem.
+	---@type boolean, string?
+	local status, errorMsg
+	
+
+	local modConfig = configMods[modName]
+	local template = modConfig.template
+	if template then
+		-- Call `create` as a method.
+		status, errorMsg = pcall(template.create, template, modConfigContainer)
+	elseif modConfig.package then
+		status, errorMsg = pcall(modConfig.package.onCreate, modConfigContainer)
+	else
+		-- We couldn't find the mod config.
+		-- I'm not even sure how this could ever happen.
+		error(string.format("No mod config could be found for '%s'.", modName))
+		return
+	end
 
 	-- Fire the mod's creation event if it has one.
-	if (currentModConfig.onCreate) then
-		local status, error = pcall(currentModConfig.onCreate, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config create callback: %s\n%s", error, debug.traceback())
-		end
+	if (status == false) then
+		mwse.log("Error in mod config create callback: %s\n%s", errorMsg, debug.traceback())
 	end
 
 	-- Change the mod config title bar to include the mod's name.
@@ -182,14 +226,8 @@ local function onClickCloseButton(e)
 
 	-- save the list of favorites
 	saveConfig()
-
 	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
-		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
-		end
-	end
+	closeCurrentModConfig()
 
 	-- Destroy the mod config menu.
 	local modConfigMenu = tes3ui.findMenu("MWSE:ModConfigMenu")
@@ -247,12 +285,13 @@ local function filterModByName(modName, searchText)
 		return true
 	end
 
-	-- Get the mod package.
-	local package = configMods[modName]
+	local modConfig = configMods[modName]
 
-	-- Do we have a custom filter package?
-	if (package.onSearch and package.onSearch(searchText)) then
-		return true
+	-- If the mod has a template, use the template's search logic.
+	if modConfig.template then
+		return modConfig.template:onSearchInternal(searchText)
+	elseif modConfig.package and modConfig.package.onSearch then
+		return modConfig.package.onSearch(searchText)
 	end
 
 	return false
@@ -359,7 +398,6 @@ local function onClickModConfigButton()
 				table.insert(configModsList, package)
 			end
 		end
-
 		table.sort(configModsList, sortPackages)
 
 		-- Fill in the mod list.
@@ -380,13 +418,11 @@ local function onClickModConfigButton()
 			modNameButton.borderRight = 16
 			modNameButton.heightProportional = 1
 
-			local iconTable = isFavorite(package.name) and favoriteIcons or nonFavoriteIcons
-
-			local imageButton = entryBlock:createImageButton(iconTable)
+			-- Icons will be updated by `updateFavoriteImageButton`.
+			local imageButton = entryBlock:createImageButton(nonFavoriteIcons)
 			updateFavoriteImageButton(imageButton, isFavorite(package.name))
 			imageButton.childAlignY = 0.5
 			imageButton.absolutePosAlignX = .97
-			-- imageButton.absolutePosAlignY = 1.0
 			imageButton.absolutePosAlignY = 0.5
 			imageButton.consumeMouseEvents = true
 			imageButton.visible = isFavorite(package.name)
@@ -476,28 +512,12 @@ local function onClickModConfigButton()
 	tes3ui.enterMenuMode(menu.id)
 end
 
--- Get the number of mods that aren't hidden.
-local function getActiveModConfigCount()
-	local count = 0
-	for _, package in pairs(configMods) do
-		-- Allow package.hidden to be set to prevent it from showing up in the list.
-		if (not package.hidden) then
-			count = count + 1
-		end
-	end
-	return count
-end
 
 --- Callback for when the MenuOptions element is created. We'll extend it with our new button.
 --- @param e uiActivatedEventData
 local function onCreatedMenuOptions(e)
 	-- Only interested in menu creation, not updates
 	if (not e.newlyCreated) then
-		return
-	end
-
-	-- Don't show the UI if we don't have any mod configs to show.
-	if (getActiveModConfigCount() == 0) then
 		return
 	end
 
@@ -528,24 +548,25 @@ local function onCreatedMenuOptions(e)
 end
 event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 
---- @class mwseModConfig : mwse.registerModConfig.package
---- @field name string
---- @field hidden boolean hide it?
---- @field favorite boolean is this mod a favorite
+
 
 --- Define a new function in the mwse namespace that lets mods register for mod config.
 --- @param name string
---- @param package mwse.registerModConfig.package
+--- @param package mwse.registerModConfig.package|mwseMCMTemplate
 function mwse.registerModConfig(name, package)
 	-- Prevent duplicate registration.
 	if (configMods[name] ~= nil) then
-		error(string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
+		error(string.format('mwse.registerModConfig: A mod with the name "%s" has already been registered!', name))
 	end
-	--- @cast package mwseModConfig
-
-	-- Add the package to the list.
-	package.name = name
-	configMods[name] = package
+	-- Check if it's a `mwseMCMTemplate` and register it accordingly.
+	if package.componentType == "Template" and package.class == "Template" then
+		-- Actually register the package.
+		configMods[name] = {name = name, template = package, hidden = false}
+		mwse.log("[MCM] Registered mod config: %s", name)
+	else
+		configMods[name] = {name = name, package = package, hidden = false}
+		mwse.log("[MCM] Registered legacy mod config: %s", name)
+	end
 end
 
 --- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.
