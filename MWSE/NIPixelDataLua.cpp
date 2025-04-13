@@ -35,6 +35,7 @@ namespace mwse::lua {
 			usertypeDefinition["createSourceTexture"] = &NI::PixelData::createSourceTexture;
 			usertypeDefinition["getWidth"] = &NI::PixelData::getWidth_lua;
 			usertypeDefinition["getHeight"] = &NI::PixelData::getHeight_lua;
+			usertypeDefinition["exportTGA"] = &NI::PixelData::exportTGA;
 			usertypeDefinition["setPixelsByte"] = &NI::PixelData::setPixelsByte_lua;
 			usertypeDefinition["setPixelsFloat"] = &NI::PixelData::setPixelsFloat_lua;
 			usertypeDefinition["fill"] = &NI::PixelData::fill_lua;

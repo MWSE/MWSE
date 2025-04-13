@@ -28,5 +28,6 @@ namespace mwse::lua {
 
 		// Basic function binding.
 		usertypeDefinition["getActiveChild"] = &NI::SwitchNode::getActiveChild;
+		usertypeDefinition["getChildIndexByName"] = &NI::SwitchNode::getChildIndexByName;
 	}
 }
