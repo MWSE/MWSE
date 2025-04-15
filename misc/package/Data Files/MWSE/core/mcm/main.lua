@@ -385,8 +385,7 @@ local function onClickModConfigButton()
 			local imageButton = entryBlock:createImageButton(iconTable)
 			updateFavoriteImageButton(imageButton, isFavorite(package.name))
 			imageButton.childAlignY = 0.5
-			imageButton.absolutePosAlignX = .97
-			-- imageButton.absolutePosAlignY = 1.0
+			imageButton.absolutePosAlignX = 0.97
 			imageButton.absolutePosAlignY = 0.5
 			imageButton.consumeMouseEvents = true
 			imageButton.visible = isFavorite(package.name)
@@ -541,11 +540,14 @@ function mwse.registerModConfig(name, package)
 	if (configMods[name] ~= nil) then
 		error(string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
 	end
+
+	package = table.copy(package)
 	--- @cast package mwseModConfig
 
 	-- Add the package to the list.
 	package.name = name
 	configMods[name] = package
+	mwse.log("%s mod config registered", name)
 end
 
 --- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.

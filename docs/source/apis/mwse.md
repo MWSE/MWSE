@@ -1536,7 +1536,7 @@ local success = mwse.overrideScript(scriptId, callback)
 This is the main function to register a mod's configuration. Only registered configurations appear in the Mod Config menu.
 
 ```lua
-mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ... })
+mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ..., template = ... })
 ```
 
 **Parameters**:
@@ -1546,6 +1546,7 @@ mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ... })
 	* `onCreate` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): The function that creates the mod's configuration menu inside given `modConfigContainer`.
 	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod should show up in search results for given `searchText`.
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. This function is called when the mod's configuration menu is closed. Typically, it's used to save the current config table.
+	* `template` ([mwseMCMTemplate](../types/mwseMCMTemplate.md)): *Optional*. Used internally by `Template:register()`.
 
 ***
 
