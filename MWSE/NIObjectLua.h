@@ -86,6 +86,7 @@ namespace mwse::lua {
 
 		// Functions that need their results wrapped.
 		usertypeDefinition["getObjectByName"] = &NI::AVObject::getObjectByName;
+		usertypeDefinition["getParentByName"] = &NI::AVObject::getParentByName;
 		usertypeDefinition["getProperty"] = &NI::AVObject::getProperty;
 		usertypeDefinition["parent"] = sol::readonly_property(&NI::AVObject::parentNode);
 

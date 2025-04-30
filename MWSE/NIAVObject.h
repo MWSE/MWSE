@@ -111,6 +111,8 @@ namespace NI {
 		void copyTransforms_lua(const sol::stack_object from);
 		TES3::Transform getTransforms() const;
 
+		AVObject* getParentByName(const char*) const;
+
 		Pointer<Property> getProperty(PropertyType type) const;
 		Pointer<AlphaProperty> getAlphaProperty() const;
 		void setAlphaProperty(sol::optional<AlphaProperty*> prop);
