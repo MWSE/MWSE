@@ -170,7 +170,7 @@ end
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
-	
+
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
@@ -185,12 +185,12 @@ function Template:clickTab(thisPage)
 		-- Disable tabs and tally width
 		local totalWidth = 0
 		for _id, page in pairs(self.pages) do
-			local tab = tabsBlock:findChild(page.tabUID)
+			local tab = tabsBlock:findChild(page.tabUID) --[[@as tes3uiElement]]
 			tab.widget.state =  tes3.uiState.normal
 			totalWidth = totalWidth + tab.width
 		end
 		-- Enable tab for this page
-		local tab = tabsBlock:findChild(thisPage.tabUID)
+		local tab = tabsBlock:findChild(thisPage.tabUID) --[[@as tes3uiElement]]
 		tab.widget.state = tes3.uiState.active
 
 		-- Ensure tabs are visible.
@@ -248,7 +248,7 @@ end
 function Template:padTabBlock()
 	local totalWidth = 0
 	for _, page in pairs(self.pages) do
-		local tab = self.elements.tabsBlock:findChild(page.tabUID)
+		local tab = self.elements.tabsBlock:findChild(page.tabUID) --[[@as tes3uiElement]]
 		totalWidth = totalWidth + tab.width
 	end
 
@@ -283,7 +283,7 @@ function Template:createTabsBlock(parentBlock)
 	for _, page in ipairs(self.pages) do
 		self:createTab(page)
 	end
-	local firstTab = parentBlock:findChild(self.pages[1].tabUID)
+	local firstTab = parentBlock:findChild(self.pages[1].tabUID) --[[@as tes3uiElement]]
 	firstTab.widget.state = tes3.uiState.active
 
 	-- Next Button
@@ -293,7 +293,7 @@ function Template:createTabsBlock(parentBlock)
 	self.elements.nextTabButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab forward 1
 		for i, page in ipairs(self.pages) do
-			local tab = tabsBlock:findChild(page.tabUID)
+			local tab = tabsBlock:findChild(page.tabUID) --[[@as tes3uiElement]]
 			if tab.widget.state == tes3.uiState.active then
 				self:clickTab(self.pages[table.wrapindex(self.pages, i + 1)])
 				break
@@ -304,7 +304,7 @@ function Template:createTabsBlock(parentBlock)
 	self.elements.previousTabButton:register(tes3.uiEvent.mouseClick, function()
 		-- Move active tab back 1
 		for i, page in ipairs(self.pages) do
-			local tab = tabsBlock:findChild(page.tabUID)
+			local tab = tabsBlock:findChild(page.tabUID) --[[@as tes3uiElement]]
 			if tab.widget.state == tes3.uiState.active then
 				self:clickTab(self.pages[table.wrapindex(self.pages, i - 1)])
 				break
@@ -335,7 +335,9 @@ function Template:createContentsContainer(parentBlock)
 end
 
 function Template:register()
-	local mcm = {}
+	local mcm = {
+		template = self
+	}
 
 	--- @param container tes3uiElement
 	mcm.onCreate = function(container)
@@ -350,14 +352,13 @@ function Template:register()
 	end
 
 	mwse.registerModConfig(self.name, mcm)
-	mwse.log("%s mod config registered", self.name)
 end
 
 function Template.__index(tbl, key)
-	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method,
 	-- Make a new `Template.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
-	
+
 	if not key:startswith("create") or mwse.mcm[key] == nil then
 		return getmetatable(tbl)[key]
 	end

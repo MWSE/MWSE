@@ -93,6 +93,8 @@ function mwse.overrideScript(scriptId, callback) end
 --- `onSearch`: nil|fun(searchText: string): boolean — *Optional*. A custom search handler function. This function should return true if this mod should show up in search results for given `searchText`.
 --- 
 --- `onClose`: nil|fun(modConfigContainer: tes3uiElement) — *Optional*. This function is called when the mod's configuration menu is closed. Typically, it's used to save the current config table.
+--- 
+--- `template`: mwseMCMTemplate? — *Optional*. Used internally by `Template:register()`.
 function mwse.registerModConfig(name, package) end
 
 ---Table parameter definitions for `mwse.registerModConfig`.
@@ -100,6 +102,7 @@ function mwse.registerModConfig(name, package) end
 --- @field onCreate fun(modConfigContainer: tes3uiElement) The function that creates the mod's configuration menu inside given `modConfigContainer`.
 --- @field onSearch nil|fun(searchText: string): boolean *Optional*. A custom search handler function. This function should return true if this mod should show up in search results for given `searchText`.
 --- @field onClose nil|fun(modConfigContainer: tes3uiElement) *Optional*. This function is called when the mod's configuration menu is closed. Typically, it's used to save the current config table.
+--- @field template mwseMCMTemplate? *Optional*. Used internally by `Template:register()`.
 
 --- Saves a config table to Data Files\\MWSE\\config\\{fileName}.json. The config is converted to JSON during saving.
 --- @param fileName string Usually named after your mod.
