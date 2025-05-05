@@ -125,6 +125,44 @@ local success = mwse.clearScriptOverride(scriptId)
 
 ***
 
+### `mwse.color.hexToRgb`
+<div class="search_terms" style="display: none">color.hextorgb</div>
+
+Converts given hex code in (AA)RRGGBB format to RGB(A).
+
+```lua
+local rgb = mwse.color.hexToRgb(rgb)
+```
+
+**Parameters**:
+
+* `rgb` (string)
+
+**Returns**:
+
+* `rgb` ([mwseColorTable](../types/mwseColorTable.md), [mwseColorATable](../types/mwseColorATable.md))
+
+***
+
+### `mwse.color.rgbToHex`
+<div class="search_terms" style="display: none">color.rgbtohex</div>
+
+Converts given RGB(A) color to an HTML hex code in (AA)RRGGBB format. Given color channels must be in [0, 1] range.
+
+```lua
+local hex = mwse.color.rgbToHex(rgb)
+```
+
+**Parameters**:
+
+* `rgb` ([mwseColorTable](../types/mwseColorTable.md), [mwseColorATable](../types/mwseColorATable.md), [niColor](../types/niColor.md), [niColorA](../types/niColorA.md), ffiImagePixel)
+
+**Returns**:
+
+* `hex` (string)
+
+***
+
 ### `mwse.getCurrentMorrowindScriptState`
 <div class="search_terms" style="display: none">getcurrentmorrowindscriptstate, currentmorrowindscriptstate</div>
 
