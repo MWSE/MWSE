@@ -1,6 +1,6 @@
 # Logging
 
-The MWSE Logger library allows you to create a logger for your mod. It can be a helpful tool when debugging mods, and is designed to be simple to use. 
+The MWSE Logger library allows you to create a logger for your mod. It can be a helpful tool when debugging mods, and is designed to be simple to use.
 
 
 ## Quickstart
@@ -65,6 +65,17 @@ Meanwhile, if the same code was run in `mods/My Awesome Mod/someOtherFile.lua`, 
 ```
 To make things simpler, all loggers created for a mod will synchronize their settings. For example, if you update `log.level` in `mods/My Awesome Mod/main.lua`, then the logging level will also be updated in `mods/My Awesome Mod/someOtherFile.lua`.
 
+### Creating an MCM to Control Log Level
+
+To configure your logging level use the `LogLevelOptions` MCM setting. It allows the user to change the logging level inside a dropdown:
+
+```lua
+settings:createLogLevelOptions{
+	config = mcmConfig,
+	configKey = "logLevel",
+}
+```
+
 ## In more Detail
 
 ### Log Levels
@@ -72,9 +83,9 @@ To make things simpler, all loggers created for a mod will synchronize their set
 There are 5 logging levels:
 
 1. `ERROR`: Something bad happened.
-2. `WARN`: Something something potentially bad happened, or something bad _almost_ happened.
-3. `INFO`: Something normal and expected has happened. (i.e., the mod was loaded.) 
-4. `DEBUG`: Used to record the inner workings of a mod. Useful for troubleshooting. 
+2. `WARN`: Something potentially bad happened, or something bad _almost_ happened.
+3. `INFO`: Something normal and expected has happened. (i.e., the mod was loaded.)
+4. `DEBUG`: Used to record the inner workings of a mod. Useful for troubleshooting.
 5. `TRACE`: Basically like `DEBUG`, but more extreme. Also useful for debugging code that gets run very frequently.
 
 Log messages may be written as follows:
@@ -95,7 +106,7 @@ Only logs at or below the current log level will be printed to the log file. For
 
 
 ### Loggers Synchronize their Settings
- 
+
 Each file of your mod gets its own unique logger, corresponding to that filepath. This helps to make it easy to track down the exact origin of a logging statement.  But this also introduces a potential problem: how do you make sure all the loggers synchronize their settings properly?
 
 The answer is that you don't have to! The logging framework ensures that all loggers synchronize their data automatically. Whenever you update the logging level of one logger, all the other loggers have their logging levels updated as well. The same goes for changing the `modName`, whether or not to include timestamps, and various other formatting parameters.
@@ -117,7 +128,7 @@ log("The keys of my table are: %s.", json.encode(table.keys(myTable)))
 ```
 The key difference is that, in the first case, `json.encode(table.keys(myTable))` is computed _after_ ensuring that the logging level is high enough.
 
-In general, 
+In general,
 ```lua
 log(formatString, func, ...)
 ```
@@ -133,9 +144,9 @@ log("The keys of my table are: %s.", table.keys, myTable)
 ```
 It's also possible for `func` to return multiple formatting parameters.
 
-One other form of lazy evaluation is supported as well: 
+One other form of lazy evaluation is supported as well:
 ```lua
-log(func, ...) 
+log(func, ...)
 -- expands to
 log(func(...))
 ```
@@ -203,7 +214,7 @@ Note that enabling line numbers does incur a performance penalty, which is why i
 The simplest way to create a new logger is to simply call `mwse.Logger.new()` and have all the relevant information be retrieved automatically. But it's also possible to pass additional parameters to the `new` function, all of which are optional:
 ```lua
 local log = mwse.Logger.new{
-	-- Manually specify the name of your mod. 
+	-- Manually specify the name of your mod.
 	-- This can be done if aren't happy with the way that the logger automatically retrieves the name of your mod.
 	modName = "My Mod",
 	-- A way to differentiate loggers that are part of the same file.
@@ -213,7 +224,7 @@ local log = mwse.Logger.new{
 	level = "ERROR",
 	-- Print the log messages in a separate file.
 	-- Can be either true, false, or a string specifying the name of the file.
-	outputFile = true, 
+	outputFile = true,
 	-- Include a timestamp in log messages.
 	includeTimestamp = true,
 	-- Shorten the header portion of the logging messages.
@@ -226,32 +237,6 @@ local log = mwse.Logger.new{
 All of the above settings only need to be specified (at most) once, because loggers synchronize their settings. This means that, for example, it's enough to specify the `modName` parameter in a single file.
 
 In your main.lua, place the logger creation before other source files are included or required. This is to ensure the logger is created and accessible to these other source files.
-
-
-## Creating an MCM to control Log Level
-
-
-
-In your MCM config, create a dropdown with the following options:
-```lua
-settings:createDropdown{
-	label = "Logging Level",
-	description = "Set the log level.",
-	config = mcmConfig,
-	configKey = "logLevel",
-	options = {
-		{ label = "TRACE", value = "TRACE"},
-		{ label = "DEBUG", value = "DEBUG"},
-		{ label = "INFO", value = "INFO"},
-		{ label = "WARN", value = "WARN"},
-		{ label = "ERROR", value = "ERROR"},
-		{ label = "NONE", value = "NONE"},
-	},
-	callback = function(self)
-		log.level = self.variable.value
-	end
-}
-```
 
 ## Advanced: Customizing the formatter
 

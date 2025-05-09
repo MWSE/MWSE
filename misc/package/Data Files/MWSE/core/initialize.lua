@@ -316,7 +316,7 @@ function table.find(t, value)
 	end
 end
 
-function table.contains(t, value) 
+function table.contains(t, value)
 	return table.find(t, value) ~= nil
 end
 
@@ -990,6 +990,8 @@ end
 function mwse.encodeForSave(object)
 	return json.encode(object, { exception = exceptionWhenSaving })
 end
+
+mwse.Logger = require("logger")
 
 
 -------------------------------------------------
