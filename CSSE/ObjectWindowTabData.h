@@ -89,6 +89,8 @@ namespace se::cs::dialog::object_window {
 	DEFINE_COLUMN(ActorEssential);
 	DEFINE_COLUMN(ActorFaction);
 	DEFINE_COLUMN(ActorFactionRank);
+	DEFINE_COLUMN(Training);
+	DEFINE_COLUMN(Fight);
 	DEFINE_COLUMN(ActorInventory);
 	DEFINE_COLUMN(ActorLevel);
 	DEFINE_COLUMN(ActorRespawns);
@@ -180,6 +182,8 @@ namespace se::cs::dialog::object_window {
 		static TabColumnActorEssential tabColumnActorEssential;
 		static TabColumnActorFaction tabColumnActorFaction;
 		static TabColumnActorFactionRank tabColumnActorFactionRank;
+		static TabColumnTraining tabColumnTraining;
+		static TabColumnFight tabColumnFight;
 		static TabColumnActorInventory tabColumnActorInventory;
 		static TabColumnActorLevel tabColumnActorLevel;
 		static TabColumnActorRespawns tabColumnActorRespawns;
