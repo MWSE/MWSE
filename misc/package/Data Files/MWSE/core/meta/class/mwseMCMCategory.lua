@@ -5,7 +5,7 @@
 
 --- A Category has a header and a list of components. Components within a category are indented. The Categories can be nested indefinitely. A Category is a good way to organize settings within a page.
 --- @class mwseMCMCategory : mwseMCMComponent
---- @field components mwseMCMCategory[]|mwseMCMExclusionsPage[]|mwseMCMFilterPage[]|mwseMCMMouseOverPage[]|mwseMCMPage[]|mwseMCMSideBarPage[]|mwseMCMSideBySideBlock[]|mwseMCMActiveInfo[]|mwseMCMBinder[]|mwseMCMButton[]|mwseMCMColorPicker[]|mwseMCMColorPickerButton[]|mwseMCMCycleButton[]|mwseMCMDropdown[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMKeyBinder[]|mwseMCMMouseBinder[]|mwseMCMMouseOverInfo[]|mwseMCMOnOffButton[]|mwseMCMParagraphField[]|mwseMCMPercentageSlider[]|mwseMCMSetting[]|mwseMCMSlider[]|mwseMCMTextField[]|mwseMCMYesNoButton[]|mwseMCMActiveInfo[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMMouseOverInfo[] An array of all the components in this Category.
+--- @field components mwseMCMCategory[]|mwseMCMExclusionsPage[]|mwseMCMFilterPage[]|mwseMCMMouseOverPage[]|mwseMCMPage[]|mwseMCMSideBarPage[]|mwseMCMSideBySideBlock[]|mwseMCMActiveInfo[]|mwseMCMBinder[]|mwseMCMButton[]|mwseMCMColorPicker[]|mwseMCMColorPickerButton[]|mwseMCMCycleButton[]|mwseMCMDropdown[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMKeyBinder[]|mwseMCMLogLevelOptions[]|mwseMCMMouseBinder[]|mwseMCMMouseOverInfo[]|mwseMCMOnOffButton[]|mwseMCMParagraphField[]|mwseMCMPercentageSlider[]|mwseMCMSetting[]|mwseMCMSlider[]|mwseMCMTextField[]|mwseMCMYesNoButton[]|mwseMCMActiveInfo[]|mwseMCMHyperlink[]|mwseMCMInfo[]|mwseMCMMouseOverInfo[] An array of all the components in this Category.
 --- @field componentType "Category" The type of this component.
 --- @field config table|nil If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 --- @field configKey string|number|nil This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
@@ -506,7 +506,7 @@ function mwseMCMCategory:createDecimalSlider(data) end
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMDropdown) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMDropdown dropdown No description yet available.
+--- @return mwseMCMDropdown|mwseMCMLogLevelOptions dropdown No description yet available.
 function mwseMCMCategory:createDropdown(data) end
 
 ---Table parameter definitions for `mwseMCMCategory.createDropdown`.
@@ -1325,7 +1325,7 @@ function mwseMCMCategory:createYesNoButton(data) end
 --- 
 --- `componentType`: string? — *Optional*. No description yet available.
 --- 
---- `parentComponent`: mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMColorPicker|mwseMCMColorPickerButton|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
+--- `parentComponent`: mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMColorPicker|mwseMCMColorPickerButton|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMLogLevelOptions|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil — *Optional*. No description yet available.
 --- @return mwseMCMCategory|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage|mwseMCMSideBySideBlock category No description yet available.
 function mwseMCMCategory:new(data) end
 
@@ -1346,7 +1346,7 @@ function mwseMCMCategory:new(data) end
 --- @field postCreate nil|fun(self: mwseMCMComponent) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 --- @field class string? *Optional*. No description yet available.
 --- @field componentType string? *Optional*. No description yet available.
---- @field parentComponent mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMColorPicker|mwseMCMColorPickerButton|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
+--- @field parentComponent mwseMCMActiveInfo|mwseMCMBinder|mwseMCMButton|mwseMCMCategory|mwseMCMColorPicker|mwseMCMColorPickerButton|mwseMCMComponent|mwseMCMCycleButton|mwseMCMDropdown|mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMHyperlink|mwseMCMInfo|mwseMCMKeyBinder|mwseMCMLogLevelOptions|mwseMCMMouseBinder|mwseMCMMouseOverInfo|mwseMCMMouseOverPage|mwseMCMOnOffButton|mwseMCMPage|mwseMCMParagraphField|mwseMCMPercentageSlider|mwseMCMSetting|mwseMCMSideBarPage|mwseMCMSideBySideBlock|mwseMCMSlider|mwseMCMTemplate|mwseMCMTextField|mwseMCMYesNoButton|nil *Optional*. No description yet available.
 
 --- This method will reset the settings to the default value for all the nested components in this Category.
 function mwseMCMCategory:resetToDefault() end
