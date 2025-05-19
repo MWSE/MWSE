@@ -157,6 +157,7 @@ namespace se::cs {
 		search_settings.book_text = toml::find_or(v, "filter_by_book_text", search_settings.book_text);
 		search_settings.faction = toml::find_or(v, "filter_by_faction", search_settings.faction);
 		search_settings.effect = toml::find_or(v, "filter_by_effect", search_settings.effect);
+		search_settings.training = toml::find_or(v, "filter_by_training_skills", search_settings.training);
 		highlight_modified_items = toml::find_or(v, "highlight_modified_items", highlight_modified_items);
 		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
 		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
@@ -244,6 +245,7 @@ namespace se::cs {
 				{ "filter_by_book_text", search_settings.book_text },
 				{ "filter_by_faction", search_settings.faction },
 				{ "filter_by_effect", search_settings.effect },
+				{ "filter_by_training_skills", search_settings.training },
 				{ "highlight_modified_items", highlight_modified_items },
 				{ "case_sensitive", search_settings.case_sensitive },
 				{ "use_regex", search_settings.use_regex },

@@ -48,6 +48,7 @@ namespace se::cs {
 			bool book_text = true;
 			bool faction = true;
 			bool effect = true;
+			bool training = true;
 		};
 
 		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
