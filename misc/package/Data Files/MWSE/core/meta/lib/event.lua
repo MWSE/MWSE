@@ -118,6 +118,7 @@
 --- @field register fun(eventId: '"meshLoaded"', callback: (fun(e: meshLoadedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"mobileActivated"', callback: (fun(e: mobileActivatedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"mobileDeactivated"', callback: (fun(e: mobileDeactivatedEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"modConfigEntryClosed"', callback: (fun(e: modConfigEntryClosedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"modConfigReady"', callback: (fun(e: modConfigReadyEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"mouseAxis"', callback: (fun(e: mouseAxisEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"mouseButtonDown"', callback: (fun(e: mouseButtonDownEventData): boolean?), options: table?)

@@ -4080,6 +4080,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.meshLoaded`
 ---| `tes3.event.mobileActivated`
 ---| `tes3.event.mobileDeactivated`
+---| `tes3.event.modConfigEntryClosed`
 ---| `tes3.event.modConfigReady`
 ---| `tes3.event.mouseAxis`
 ---| `tes3.event.mouseButtonDown`

@@ -123,17 +123,32 @@ local function saveConfig()
 	mwse.saveConfig("MWSE.MCM", config)
 end
 
---- Callback for when a mod name has been clicked in the left pane.
---- @param e tes3uiEventData
-local function onClickModName(e)
-	local modName = e.source.text
-	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
+-- Closes the currently opened mod config (if it exists)
+-- called when the MCM itself is closed, or when a different mod is selected
+local function closeCurrentModConfig()
+	if not currentModConfig then return end
+	
+	if currentModConfig.onClose then
 		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
 		if (status == false) then
 			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
 		end
 	end
+	-- Fire the event after `onClose` gets called.
+	local payload = {
+		modName = currentModConfig.name, 
+		isFavorite = isFavorite(currentModConfig.name),
+	}
+	event.trigger(tes3.event.modConfigEntryClosed, payload, {filter = currentModConfig.name})
+end
+
+--- Callback for when a mod name has been clicked in the left pane.
+--- @param e tes3uiEventData
+local function onClickModName(e)
+	-- If we have a current mod, fire its close event.
+	closeCurrentModConfig()
+	
+	local modName = e.source.text
 
 	-- Update the current mod package.
 	currentModConfig = configMods[modName]
@@ -184,12 +199,7 @@ local function onClickCloseButton(e)
 	saveConfig()
 
 	-- If we have a current mod, fire its close event.
-	if (currentModConfig and currentModConfig.onClose) then
-		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
-		if (status == false) then
-			mwse.log("Error in mod config close callback: %s\n%s", error, debug.traceback())
-		end
-	end
+	closeCurrentModConfig()
 
 	-- Destroy the mod config menu.
 	local modConfigMenu = tes3ui.findMenu("MWSE:ModConfigMenu")
