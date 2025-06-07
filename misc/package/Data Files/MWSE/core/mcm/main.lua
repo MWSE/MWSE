@@ -139,7 +139,7 @@ local function closeCurrentModConfig()
 		modName = currentModConfig.name, 
 		isFavorite = isFavorite(currentModConfig.name),
 	}
-	event.trigger("modConfigClosed", payload, {filter = currentModConfig.name})
+	event.trigger(tes3.event.modConfigEntryClosed, payload, {filter = currentModConfig.name})
 end
 
 --- Callback for when a mod name has been clicked in the left pane.

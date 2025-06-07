@@ -111,6 +111,7 @@ return {
 	["mobileActivated"] = "mobileActivated",
 	["mobileDeactivated"] = "mobileDeactivated",
 	["modConfigReady"] = "modConfigReady",
+	["modConfigEntryClosed"] = "modConfigEntryClosed",
 	["mouseAxis"] = "mouseAxis",
 	["mouseButtonDown"] = "mouseButtonDown",
 	["mouseButtonUp"] = "mouseButtonUp",
