@@ -45,7 +45,7 @@ namespace NI {
 
 	void PixelData::exportTGA(const char* fileName) const {
 		if (pixelFormat.format != PixelFormat::Format::RGBA) {
-			std::exception("Unsupported pixel format for export to TGA.");
+			throw std::runtime_error("Unsupported pixel format for export to TGA.");
 		}
 		HANDLE hFile = CreateFileA(
 			fileName,
@@ -57,7 +57,7 @@ namespace NI {
 			NULL
 		);
 		if (hFile == INVALID_HANDLE_VALUE) {
-			std::exception("Couldn't open the file for export.");
+			throw std::invalid_argument(fmt::format("Couldn't open file: {}", fileName));
 		}
 		auto width = getWidth();
 		auto height = getHeight();
@@ -78,13 +78,10 @@ namespace NI {
 
 		// Write the TGA header
 		DWORD bytesWritten = 0;
-		WriteFile(
-			hFile,
-			&header,
-			sizeof(header),
-			&bytesWritten,
-			NULL
-		);
+		if (!WriteFile(hFile, &header, sizeof(header), &bytesWritten, NULL) || bytesWritten != sizeof(header)) {
+			CloseHandle(hFile);
+			throw std::runtime_error("Couldn't write the file header.");
+		}
 
 		// Write the pixel data
 		size_t bytesToWrite = width * height * bytesPerPixel;
@@ -103,13 +100,10 @@ namespace NI {
 			}
 		}
 
-		WriteFile(
-			hFile,
-			imageData.data(),
-			bytesToWrite,
-			&bytesWritten,
-			NULL
-		);
+		if (!WriteFile(hFile, imageData.data(), bytesToWrite, &bytesWritten, NULL) || bytesWritten != bytesToWrite) {
+			CloseHandle(hFile);
+			throw std::runtime_error("Couldn't write pixel data.");
+		}
 		SetEndOfFile(hFile);
 		CloseHandle(hFile);
 	}
