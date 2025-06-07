@@ -80,6 +80,7 @@ namespace NI {
 		DWORD bytesWritten = 0;
 		if (!WriteFile(hFile, &header, sizeof(header), &bytesWritten, NULL) || bytesWritten != sizeof(header)) {
 			CloseHandle(hFile);
+			std::filesystem::remove(fileName);
 			throw std::runtime_error("Couldn't write the file header.");
 		}
 
@@ -102,6 +103,7 @@ namespace NI {
 
 		if (!WriteFile(hFile, imageData.data(), bytesToWrite, &bytesWritten, NULL) || bytesWritten != bytesToWrite) {
 			CloseHandle(hFile);
+			std::filesystem::remove(fileName);
 			throw std::runtime_error("Couldn't write pixel data.");
 		}
 		SetEndOfFile(hFile);
