@@ -6,6 +6,7 @@
 
 #include "BitUtil.h"
 #include "MemoryUtil.h"
+#include "StringUtil.h"
 
 constexpr auto NI_AVObject_updateEffects = 0x6EB380;
 constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
@@ -34,8 +35,19 @@ namespace NI {
 		}
 	}
 
-	AVObject * AVObject::getObjectByName(const char* name) {
+	AVObject* AVObject::getObjectByName(const char* name) {
 		return vTable.asAVObject->getObjectByName(this, name);
+	}
+
+	AVObject* AVObject::getParentByName(const char* name) const {
+		Node* result = parentNode;
+		while (result != nullptr) {
+			if (mwse::string::equal(name, result->name)) {
+				return result;
+			}
+			result = result->parentNode;
+		}
+		return nullptr;
 	}
 
 	bool AVObject::getAppCulled() const {

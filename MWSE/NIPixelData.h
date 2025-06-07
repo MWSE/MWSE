@@ -8,6 +8,34 @@
 
 namespace NI {
 	struct PixelData : Object {
+#pragma pack(push, 1)
+		struct HeaderTGA {
+			enum struct DataType : unsigned char {
+				NO_IMAGE_DATA = 0,
+				UNCOMPRESSED_PALLETIZED = 1,
+				UNCOMPRESSED_RGB = 2,
+				UNCOMPRESSED_BLACK_WHITE = 3,
+				RLE_PALLETIZED = 9,
+				RLE_RGB = 10,
+				COMPRESSED_BLACK_WHITE = 11,
+				COMPRESSED_1 = 32,
+				COMPRESSED_2 = 33
+			};
+			unsigned char idLength;
+			unsigned char colormapType;
+			DataType datatypeCode;
+			short colormapOrigin;
+			short colormapLength;
+			unsigned char colormapDepth;
+			short xOrigin;
+			short yOrigin;
+			short width;
+			short height;
+			unsigned char bitsPerPixel;
+			unsigned char imageDescriptor;
+		};
+#pragma pack(pop)
+
 		PixelFormat pixelFormat;
 		void * palette; // 0x28
 		unsigned char * pixels; // 0x2C // The raw pixel data, in the given format.
@@ -29,6 +57,7 @@ namespace NI {
 
 		unsigned int getHeight(unsigned int mipMapLevel = 0) const;
 		unsigned int getWidth(unsigned int mipMapLevel = 0) const;
+		void exportTGA(const char* fileName) const;
 
 		unsigned int getHeight_lua(sol::optional<unsigned int> mipMapLevel) const;
 		unsigned int getWidth_lua(sol::optional<unsigned int> mipMapLevel) const;
