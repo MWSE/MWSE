@@ -27,9 +27,9 @@ local util = require("dependencyManagement.util")
 ---@field dependencies MWSE.Metadata.Dependency[]
 
 ---@class DependencyManager.new.params
+---@field logLevel mwseLogger.logLevel?
 ---@field metadata MWSE.Metadata The metadata of the mod using this dependency manager
 ---@field logger mwseLogger? The logger to use for this dependency manager
----@field logLevel string? The log level to use for this dependency manager if no logger is supplied
 ---@field showFailureMessage boolean? Whether to show a message box if a dependency fails to load. Defaults to true.
 
 --[[
@@ -37,11 +37,8 @@ local util = require("dependencyManagement.util")
     It will check if all dependencies are met, and if not
     it will display a message box to the user.
 ]]
----@class DependencyManager
+---@class DependencyManager : DependencyManager.new.params
 ---@field name string The name of the dependency manager
----@field metadata MWSE.Metadata The metadata of the mod using this dependency manager
----@field logger mwseLogger? The logger to use for this dependency manager
----@field showFailureMessage boolean? Whether to show a message box if a dependency fails to load. Defaults to true.
 ---@field failedDependencies MWSE.DependencyType.Failure[]? The list of failed dependencies
 local DependencyManager = {
     ---@type DependencyManager A list of all registered dependency managers
@@ -57,18 +54,14 @@ function DependencyManager.new(e)
     self.logger = e.logger
     self.metadata = e.metadata
     self.showFailureMessage = table.get(e, "showFailureMessage", true)
-    self.name = e.metadata
-        and e.metadata.package
-        and e.metadata.package.name
-        and e.metadata.package.name .. ".DependencyManager"
-        or "DependencyManager"
-    if not self.logger then
-        local MWSELogger = require("logging.logger")
-        self.logger = MWSELogger.new {
-            name = self.name,
-            logLevel = e.logLevel or "INFO",
-        }
-    end
+    local packageName = e.metadata and e.metadata.package and e.metadata.package.name
+    self.name = packageName and packageName .. ".DependencyManager"
+                or "DependencyManager"
+    self.logger = self.logger or require("logger").new {
+        modName = "DependencyManager",
+        moduleName = packageName,
+        level = e.logLevel,
+    }
     self.logger:assert(type(self.metadata) == "table",
         "DependencyManager.new: metadata must be a table")
     self.logger:assert(type(self.metadata.package) == "table",

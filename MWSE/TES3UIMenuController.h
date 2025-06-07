@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TES3UIDefines.h"
+#include "TES3UIVector.h"
 #include "NINode.h"
 #include "NIPick.h"
 
@@ -22,21 +23,18 @@ namespace TES3::UI {
 		Element* pointerMovePreviousEventSource; // 0x40
 		Element* buttonPressEventSource; // 0x44
 		Element* buttonPressPreviousEventSource; // 0x48
-		int unknown_0x4C;
-		int unknown_0x50;
-		int unknown_0x54;
-		char unknown_0x58;
-		char unknown_0x59;
-		char unknown_0x5A;
+		Element* unknown_0x4C;
+		int lastMouseX; // 0x50
+		int lastMouseY; // 0x54
+		bool flagUpdateOnMouseReleased; // 0x58
+		bool isMouseButtonHeldDown; // 0x59
+		bool transitionToMenuMode; // 0x5A
 		int repeatKeyCode; // 0x5C
 		float repeatKeyTimer; // 0x60
 		Event events[2]; // 0x64
 		bool shiftKeyDown; // 0x84
 		Element* textInputFocus; // 0x88
-		char unknown_0x8C;
-		int unknown_0x90;
-		int unknown_0x94;
-		int unknown_0x98;
+		Vector<void*> repeatingEvents; // 0x8C
 		unsigned int modifierKeyFlags; // 0x9C 
 		bool chargenNameDone; // 0xA0
 		bool unknown_0xA1;
@@ -48,11 +46,13 @@ namespace TES3::UI {
 		static Object* lastTooltipObject;
 		static ItemData* lastTooltipItemData;
 		static int lastTooltipCount;
+		static Element* lastTooltipSource;
+		static int lastKeyPressDIK;
 
 		MenuInputController() = delete;
 		~MenuInputController() = delete;
 
-		Element* getTextInputElement();
+		Element* getTextInputElement() const;
 		void acquireTextInput(Element* element);
 		void displayObjectTooltip(TES3::Object* object, TES3::ItemData* itemData, int count = 0);
 
@@ -65,6 +65,8 @@ namespace TES3::UI {
 		//
 		// Custom functions.
 		//
+
+		static Element* previousTextInputFocus;
 
 		void updateObjectTooltip();
 	};
@@ -180,8 +182,8 @@ namespace TES3::UI {
 		ScriptCompiler* scriptCompiler; // 0x20
 		unsigned int gameplayFlags; // 0x24
 		int helpDelay; // 0x28
-		char unknown_0x2C;
-		TES3::UI::Element* unknown_0x30;
+		bool flagClearHelpMenu; // 0x2C
+		TES3::UI::Element* menuAtFront; // 0x30
 		bool inventoryMenuEnabled; // 0x34
 		bool statsMenuEnabled; // 0x35
 		bool magicMenuEnabled; // 0x36
@@ -216,13 +218,15 @@ namespace TES3::UI {
 		// Custom functions.
 		//
 
-		bool getInventoryMenuEnabled();
-		bool getMagicMenuEnabled();
-		bool getMapMenuEnabled();
-		bool getStatsMenuEnabled();
+		bool getInventoryMenuEnabled() const;
+		bool getMagicMenuEnabled() const;
+		bool getMapMenuEnabled() const;
+		bool getStatsMenuEnabled() const;
 
 		bool getGodModeEnabled() const;
 		void setGodModeEnabled(bool state);
+		bool getLightingUpdatesDisabled() const;
+		void setLightingUpdatesDisabled(bool state);
 		bool getAIDisabled() const;
 		void setAIDisabled(bool state);
 		bool getBordersEnabled() const;

@@ -43,28 +43,27 @@ namespace TES3 {
 		// This allows lua and C++ to interface with this container as if it were the wrapped object.
 		//
 
-		using T = Spell*;
-		using value_type = T;
-		using size_type = size_t;
-		using difference_type = int;
-		using pointer = T*;
-		using const_pointer = const T*;
-		using reference = T&;
-		using const_reference = const T&;
-		using iterator = IteratedList<Spell*>::iterator;
-		using const_iterator = const iterator;
-		using reverse_iterator = std::reverse_iterator<iterator>;
-		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+		using value_type = decltype(list)::value_type;
+		using size_type = decltype(list)::size_type;
+		using difference_type = decltype(list)::difference_type;
+		using pointer = decltype(list)::pointer;
+		using const_pointer = decltype(list)::const_pointer;
+		using reference = decltype(list)::const_reference;
+		using const_reference = decltype(list)::const_reference;
+		using iterator = decltype(list)::iterator;
+		using const_iterator = decltype(list)::const_iterator;
+		using reverse_iterator = decltype(list)::reverse_iterator;
+		using const_reverse_iterator = decltype(list)::const_reverse_iterator;
 
 		iterator begin() const { return list.begin(); }
 		iterator end() const { return list.end(); }
-		reverse_iterator rbegin() const { return std::make_reverse_iterator(end()); }
-		reverse_iterator rend() const { return std::make_reverse_iterator(begin()); }
-		const_iterator cbegin() const { return begin(); }
-		const_iterator cend() const { return end(); }
-		const_reverse_iterator crbegin() const { return rbegin(); }
-		const_reverse_iterator crend() const { return rend(); }
-		size_type size() const noexcept { return list.count; }
-		bool empty() const noexcept { return list.count == 0; }
+		reverse_iterator rbegin() const { return list.rbegin(); }
+		reverse_iterator rend() const { return list.rend(); }
+		const_iterator cbegin() const { return list.cbegin(); }
+		const_iterator cend() const { return list.cend(); }
+		const_reverse_iterator crbegin() const { return list.crbegin(); }
+		const_reverse_iterator crend() const { return list.crend(); }
+		size_type size() const noexcept { return list.size(); }
+		bool empty() const noexcept { return list.empty(); }
 	};
 }

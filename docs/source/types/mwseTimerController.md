@@ -63,7 +63,7 @@ local result = mwseTimerController.new(startTime)
 
 **Parameters**:
 
-* `startTime` (number): *Optional*.
+* `startTime` (number): *Default*: `0`.
 
 **Returns**:
 

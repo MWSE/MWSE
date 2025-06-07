@@ -12,4 +12,8 @@ namespace se::cs {
 	bool Weapon::getIgnoresResistance() const {
 		return getMaterialFlag(WeaponMaterialFlag::IgnoresNormalWeaponResistance);
 	}
+
+	bool Weapon::isProjectile() const {
+		return weaponType >= WeaponType::Thrown;
+	}
 }

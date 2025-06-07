@@ -332,14 +332,13 @@ namespace mwse::lua {
 				}
 
 				// Were we given a table?
-				else if (maybeValue.get_type() == sol::type::table) {
-					sol::table value = maybeValue.as<sol::table>();
-					return TES3::Vector3(value[1], value[2], value[3]);
+				if (maybeValue.get_type() == sol::type::table && TES3::Vector3::canConvertFrom(maybeValue.as<sol::table>())) {
+					return maybeValue.as<sol::table>();
 				}
 			}
 		}
 
-		return sol::optional<TES3::Vector3>();
+		return {};
 	}
 
 	TES3::Cell* getOptionalParamCell(sol::optional<sol::table> maybeParams, const char* key) {
@@ -487,21 +486,35 @@ namespace mwse::lua {
 	}
 
 	void logStackTrace(const char* message) {
+		std::string stackTrace = getStackTrace(true);
+
 		if (message != nullptr) {
 			log::getLog() << message << std::endl;
 		}
 
+		log::getLog() << stackTrace << std::endl;
+	}
+
+	std::string getStackTrace(bool removePrefix) {
 		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.state;
 		static sol::protected_function luaDebugTraceback = state["debug"]["traceback"];
 
 		sol::protected_function_result result = luaDebugTraceback();
-		if (result.valid()) {
-			sol::optional<std::string> asString = result;
-			if (asString) {
-				log::getLog() << asString.value() << std::endl;
-			}
+		if (!result.valid()) {
+			return "";
 		}
+
+		if (result.get_type() != sol::type::string) {
+			return "";
+		}
+
+		std::string stackTrace = result;
+		if (removePrefix) {
+			stackTrace.erase(0, sizeof("stack traceback:"));
+		}
+
+		return stackTrace;
 	}
 
 	void reportErrorInGame(const char* sourceName, const sol::error& error) {

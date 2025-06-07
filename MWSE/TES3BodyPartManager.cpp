@@ -3,6 +3,7 @@
 #include "LuaManager.h"
 
 #include "LuaBodyPartAssignedEvent.h"
+#include "LuaRemovedEquipmentBodyPartsEvent.h"
 
 #include "TES3ActorAnimationController.h"
 #include "TES3MobileActor.h"
@@ -73,6 +74,11 @@ namespace TES3 {
 
 	const auto TES3_BodyPartManager_removeEquippedLayers = reinterpret_cast<void(__thiscall*)(BodyPartManager*)>(0x472D70);
 	void BodyPartManager::removeEquippedLayers() {
+		if (mwse::lua::event::RemovedEquipmentBodyPartsEvent::getEventEnabled()) {
+			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			stateHandle.triggerEvent(new mwse::lua::event::RemovedEquipmentBodyPartsEvent(this));
+		}
+
 		TES3_BodyPartManager_removeEquippedLayers(this);
 	}
 
@@ -94,5 +100,13 @@ namespace TES3 {
 
 	BodyPartManager::ActiveBodyPart* BodyPartManager::getActiveBodyPart(ActiveBodyPart::Layer layer, ActiveBodyPart::Index index) {
 		return &activeBodyParts[int(layer)][int(index)];
+	}
+
+	std::reference_wrapper<decltype(BodyPartManager::attachNodes)> BodyPartManager::getAttachNodes() {
+		return std::ref(attachNodes);
+	}
+
+	BodyPartManager::AttachNode* BodyPartManager::getAttachNode(AttachNode::Index index) {
+		return &attachNodes[int(index)];
 	}
 }

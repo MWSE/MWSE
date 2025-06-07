@@ -8,7 +8,7 @@
 
 A Template is the top level component in MCM. It determines the overall layout of the menu. Can be created with a table or a string (name).
 
-This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `childIndent`
@@ -55,6 +55,17 @@ The type of this component.
 
 ***
 
+### `config`
+<div class="search_terms" style="display: none">config</div>
+
+Stores a config that should be used by this mod's `Setting`s. Sub-configs can be accessed by passing a `configKey` to any `Page`s nested inside this template. If provided, this config will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this template.
+
+**Returns**:
+
+* `result` (table, nil)
+
+***
+
 ### `createContentsContainer`
 <div class="search_terms" style="display: none">createcontentscontainer, contentscontainer</div>
 
@@ -74,6 +85,17 @@ The currently displayed page in this Template.
 **Returns**:
 
 * `result` ([mwseMCMPage](../types/mwseMCMPage.md))
+
+***
+
+### `defaultConfig`
+<div class="search_terms" style="display: none">defaultconfig</div>
+
+Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod.
+
+**Returns**:
+
+* `result` (table, nil)
 
 ***
 
@@ -182,7 +204,7 @@ Use `template:saveOnClose(configFilename, configTable)` to assign a simple save 
 ### `onSearch`
 <div class="search_terms" style="display: none">onsearch</div>
 
-A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
+A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText` (it's in lowercase).
 
 **Returns**:
 
@@ -260,6 +282,18 @@ If true, when the user searches the MCM list, all the pages and settings in this
 <div class="search_terms" style="display: none">searchchildlabels</div>
 
 If true, when the user searches the MCM list, all the pages and settings in this MCM template will be searched over. The matching will be performed on setting `label` and `text` fields.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `showDefaultSetting`
+<div class="search_terms" style="display: none">showdefaultsetting, defaultsetting</div>
+
+If `true`, then each `Page` created inside this `Template` will have `showDefaultSetting = true`. \z
+This is equivalent to manually writing `showDefaultSetting = true` in the constructor of each `Page` created in this `Template`.
 
 **Returns**:
 
@@ -399,15 +433,20 @@ myObject:createContentsContainer(parentBlock)
 Creates a new Exclusions Page in this Template.
 
 ```lua
-local page = myObject:createExclusionsPage({ showHeader = ..., label = ..., variable = ..., filters = ..., description = ..., toggleText = ..., leftListLabel  = ..., rightListLabel  = ..., showAllBlocked  = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ... })
+local page = myObject:createExclusionsPage({ showHeader = ..., showReset = ..., label = ..., variable = ..., config = ..., defaultConfig = ..., configKey = ..., defaultSetting = ..., filters = ..., description = ..., toggleText = ..., leftListLabel  = ..., rightListLabel  = ..., showAllBlocked  = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ... })
 ```
 
 **Parameters**:
 
 * `data` (table)
 	* `showHeader` (boolean): *Default*: `false`. The page's label will only be created if set to true.
+	* `showReset` (boolean): *Default*: `false`. When set to true, the ExclusionsPage will have a Reset button. Clicking on it will set the `variable.value` to the `variable.defaultSetting` value.
 	* `label` (string): The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
-	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): The Variable used to store blocked list entries.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): *Optional*. The Variable used to store blocked list entries.
+	* `config` (table): *Default*: ``parentComponent.config``. The config to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `ExclusionsPage`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `defaultConfig` (table): *Default*: ``parentComponent.defaultConfig``. The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `ExclusionsPage`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `configKey` (string, number): *Optional*. The `configKey` used to create a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) variable will be created for this `ExclusionsPage`.
+	* `defaultSetting` (table&lt;string, boolean&gt;): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
 	* `filters` ([mwseMCMExclusionsPageFilter](../types/mwseMCMExclusionsPageFilter.md)[]): A list of filters. Filters control which items will appear in the lists of the Exclusions Page. At least one filter is required. See the [filter page](./mwseMCMExclusionsPageFilter.md) for description.
 	* `description` (string): *Optional*. Displayed at the top of the page above the lists.
 	* `toggleText` (string): *Optional*. The text for the button that toggles filtered items from one list to another. The default is a localised version of "Toggle Filtered".
@@ -432,7 +471,7 @@ local page = myObject:createExclusionsPage({ showHeader = ..., label = ..., vari
 Creates a new Filter Page in this Template.
 
 ```lua
-local page = myObject:createFilterPage({ showHeader = ..., label = ..., noScroll = ..., config = ..., defaultConfig = ..., configKey = ..., description = ..., placeholderSearchText = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
+local page = myObject:createFilterPage({ showHeader = ..., label = ..., noScroll = ..., showReset = ..., config = ..., defaultConfig = ..., configKey = ..., description = ..., placeholderSearchText = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -441,6 +480,7 @@ local page = myObject:createFilterPage({ showHeader = ..., label = ..., noScroll
 	* `showHeader` (boolean): *Default*: `false`. The page's label will only be created if set to true.
 	* `label` (string): *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 	* `noScroll` (boolean): *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
+	* `showReset` (boolean): *Default*: `false`. When set to true, the Page will have a Reset button. Clicking on it will set the `variable.value` of all the setting on the page to their respective `defaultSetting` values.
 	* `config` (table): *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `defaultConfig` (table): *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `configKey` (string, number): *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
@@ -558,7 +598,7 @@ myObject:createOuterContainer(parentBlock)
 Creates a new Page in this Template.
 
 ```lua
-local page = myObject:createPage({ showHeader = ..., label = ..., noScroll = ..., config = ..., defaultConfig = ..., configKey = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
+local page = myObject:createPage({ showHeader = ..., label = ..., noScroll = ..., showReset = ..., config = ..., defaultConfig = ..., configKey = ..., showDefaultSetting = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -567,9 +607,11 @@ local page = myObject:createPage({ showHeader = ..., label = ..., noScroll = ...
 	* `showHeader` (boolean): *Default*: `false`. The page's label will only be created if set to true.
 	* `label` (string): *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 	* `noScroll` (boolean): *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
+	* `showReset` (boolean): *Default*: `false`. When set to true, the Page will have a Reset button. Clicking on it will set the `variable.value` of all the setting on the page to their respective `defaultSetting` values.
 	* `config` (table): *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `defaultConfig` (table): *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `configKey` (string, number): *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+	* `showDefaultSetting` (boolean): *Default*: ``parentComponent.showDefaultSetting``. If `true`, then each `Setting` created inside this `Page`/`Category` will have `showDefaultSetting = true`. This is equivalent to manually writing `showDefaultSetting = true` in the constructor of each `Setting` created in this `Page`/`Category`.
 	* `components` (mwseMCMComponent.new.data[]): *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 	* `indent` (integer): *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -590,7 +632,7 @@ local page = myObject:createPage({ showHeader = ..., label = ..., noScroll = ...
 Creates a new Sidebar Page in this Template.
 
 ```lua
-local page = myObject:createSideBarPage({ showHeader = ..., label = ..., noScroll = ..., config = ..., defaultConfig = ..., configKey = ..., description = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
+local page = myObject:createSideBarPage({ showHeader = ..., label = ..., noScroll = ..., showReset = ..., config = ..., defaultConfig = ..., configKey = ..., showDefaultSetting = ..., description = ..., components = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ... })
 ```
 
 **Parameters**:
@@ -599,9 +641,11 @@ local page = myObject:createSideBarPage({ showHeader = ..., label = ..., noScrol
 	* `showHeader` (boolean): *Default*: `false`. The page's label will only be created if set to true.
 	* `label` (string): *Optional*. The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 	* `noScroll` (boolean): *Default*: `false`. When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
+	* `showReset` (boolean): *Default*: `false`. When set to true, the Page will have a Reset button. Clicking on it will set the `variable.value` of all the setting on the page to their respective `defaultSetting` values.
 	* `config` (table): *Optional*. If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. i.e., this parameter provides an alternative to explicitly constructing new variables. Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `defaultConfig` (table): *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one.
 	* `configKey` (string, number): *Optional*. This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. This ensures that the `config` and `defaultConfig` stay synchronized.
+	* `showDefaultSetting` (boolean): *Default*: ``parentComponent.showDefaultSetting``. If `true`, then each `Setting` created inside this `Page`/`Category` will have `showDefaultSetting = true`. This is equivalent to manually writing `showDefaultSetting = true` in the constructor of each `Setting` created in this `Page`/`Category`.
 	* `description` (string): *Optional*. Default sidebar text shown when the mouse isn't hovering over a component inside this Sidebar Page. It will be added to right column as a mwseMCMInfo.
 	* `components` (mwseMCMComponent.new.data[]): *Optional*. Use this if you want to directly create all the nested components in this Page. This table is described at each Component's `new` method.
 	* `indent` (integer): *Default*: `6`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
@@ -684,13 +728,30 @@ myObject:enable()
 
 ***
 
+### `getMouseOverText`
+<div class="search_terms" style="display: none">getmouseovertext, mouseovertext</div>
+
+Retrieves the text that this component should display in any related [`mouseOverInfo`s](./mwseMCMMouseOverInfo.md). This method currently utilized to display this component's description whenever the component is in a [`SideBarPage`](./mwseMCMSideBarPage.md).
+
+Primarily intended for internal use.
+
+```lua
+local text = myObject:getMouseOverText()
+```
+
+**Returns**:
+
+* `text` (string, nil): The text to display. Returning `nil` means that the `mouseOverInfo` should display text from a different source. e.g. from the `description` of the relevant [`SideBarPage`](./mwseMCMSideBarPage.md).
+
+***
+
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 
 Creates a new Template.
 
 ```lua
-local template = myObject:new({ name = ..., label = ..., config = ..., defaultConfig = ..., headerImagePath = ..., onClose = ..., searchChildLabels = ..., searchChildDescriptions = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., class = ..., parentComponent = ... })
+local template = myObject:new({ name = ..., label = ..., config = ..., defaultConfig = ..., showDefaultSetting = ..., headerImagePath = ..., onClose = ..., searchChildLabels = ..., searchChildDescriptions = ..., onSearch = ..., pages = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., inGameOnly = ..., postCreate = ..., class = ..., parentComponent = ... })
 ```
 
 **Parameters**:
@@ -698,13 +759,14 @@ local template = myObject:new({ name = ..., label = ..., config = ..., defaultCo
 * `data` (table)
 	* `name` (string): *Optional*. The name field is the mod name, used to register the MCM, and is displayed in the mod list on the lefthand pane.
 	* `label` (string): *Optional*. Used in place of `name` if that argument isn't passed. You need to pass at least one of the `name` and `label` arguments. If `headerImagePath` is not passed, a UI element will be created with `label` as text.
-	* `config` (table): *Optional*. Stores a config that should be used by this mods `Setting`s. Sub-configs can be accessed by passing a `configKey` to any `Page`s nested inside this template. If provided, this config will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for the  any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this template.
-	* `defaultConfig` (table): *Optional*. Stores a default config that should be used by this mods `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod.
+	* `config` (table): *Optional*. Stores a config that should be used by this mod's `Setting`s. Sub-configs can be accessed by passing a `configKey` to any `Page`s nested inside this template. If provided, this config will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any [`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this template.
+	* `defaultConfig` (table): *Optional*. Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod.
+	* `showDefaultSetting` (boolean): *Default*: ``parentComponent.showDefaultSetting``. If `true`, then each `Page` created inside this `Template` will have `showDefaultSetting = true`. This is equivalent to manually writing `showDefaultSetting = true` in the constructor of each `Page` created in this `Template`.
 	* `headerImagePath` (string): *Optional*. Set it to display an image at the top of your menu. Path is relative to `Data Files/`. The image must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024, etc.).
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
 	* `searchChildLabels` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
 	* `searchChildDescriptions` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
-	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
+	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText` (it's in lowercase).
 	* `pages` (mwseMCMPage.new.data[]): *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -802,7 +864,7 @@ myObject:saveOnClose(fileName, config)
 ### `setCustomSearchHandler`
 <div class="search_terms" style="display: none">setcustomsearchhandler, customsearchhandler</div>
 
-This method assigns a custom search handler for the Template. This function should return true if this mod should show up in search results for given `searchText`.
+This method assigns a custom search handler for the Template. This function should return true if this mod should show up in search results for given `searchText` (it's in lowercase).
 
 ```lua
 myObject:setCustomSearchHandler(callback)

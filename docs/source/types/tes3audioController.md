@@ -10,6 +10,17 @@ A controller for audio. It holds data on the status of the current and next musi
 
 ## Properties
 
+### `audioFlags`
+<div class="search_terms" style="display: none">audioflags</div>
+
+A bit set for audio flags.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `currentMusicFilePath`
 <div class="search_terms" style="display: none">currentmusicfilepath</div>
 
@@ -21,10 +32,98 @@ File path of the currently playing music track. The path can not be longer than 
 
 ***
 
+### `directSoundInitFailed`
+<div class="search_terms" style="display: none">directsoundinitfailed</div>
+
+A flag marking if the DirectSound initialization failed. Part of the audio flags.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `disableAudio`
 <div class="search_terms" style="display: none">disableaudio, audio</div>
 
 A flag which controls whether the audio is disabled or not.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `dsound3DChanged`
+<div class="search_terms" style="display: none">dsound3dchanged</div>
+
+A flag marking if the direct 3D sound has changed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `dsound3DCommitted`
+<div class="search_terms" style="display: none">dsound3dcommitted</div>
+
+A flag marking if the direct 3D sound has been committed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `hasStaticBuffers`
+<div class="search_terms" style="display: none">hasstaticbuffers, staticbuffers</div>
+
+A flag marking if there are static audio buffers. Part of the audio flags.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `hasStreamingBuffers`
+<div class="search_terms" style="display: none">hasstreamingbuffers, streamingbuffers</div>
+
+A flag marking if there are streaming audio buffers. Part of the audio flags.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isFilterGraphValid`
+<div class="search_terms" style="display: none">isfiltergraphvalid, filtergraphvalid</div>
+
+A flag marking if the music filter graph is valid. Part of the music flags.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isMusicPaused`
+<div class="search_terms" style="display: none">ismusicpaused, musicpaused</div>
+
+A flag marking if music is paused. Part of the music flags.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isMusicPlaying`
+<div class="search_terms" style="display: none">ismusicplaying, musicplaying</div>
+
+A flag marking if music is playing. Part of the music flags.
 
 **Returns**:
 
@@ -58,6 +157,17 @@ The sound listener position.
 <div class="search_terms" style="display: none">musicfadebegintimestamp</div>
 
 The timestamp at which currently playing music track started fading in. So, it's a timestamp at which currently playing music track started.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `musicFlags`
+<div class="search_terms" style="display: none">musicflags</div>
+
+A bit set for music flags.
 
 **Returns**:
 
@@ -194,15 +304,14 @@ Approximated yaw axis in radians.
 Changes currently playing music track according to provided parameters.
 
 ```lua
-myObject:changeMusicTrack({ filename = ..., crossfade = ..., volume = ... })
+myObject:changeMusicTrack(filename, crossfade, volume)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `filename` (string): File name of the new music track.
-	* `crossfade` (number): *Default*: `1000`. Duration of the crossfading between music tracks. Measured in miliseconds.
-	* `volume` (number): *Default*: `1`. Allows changing the volume of the music track.
+* `filename` (string): File name of the new music track.
+* `crossfade` (number): *Default*: `1000`. Duration of the crossfading between music tracks. Measured in miliseconds.
+* `volume` (number): *Default*: `1`. Allows changing the volume of the music track.
 
 ***
 
@@ -222,4 +331,45 @@ local volume = myObject:getMixVolume(mix)
 **Returns**:
 
 * `volume` (number)
+
+***
+
+### `getMusicFileDuration`
+<div class="search_terms" style="display: none">getmusicfileduration, musicfileduration</div>
+
+Loads a music file and determines its duration, in seconds.
+
+```lua
+local duration = myObject:getMusicFileDuration(path)
+```
+
+**Parameters**:
+
+* `path` (string): The path to the music track, relative to the game installation directory.
+
+**Returns**:
+
+* `duration` (number): The number of seconds of the track, in seconds.
+
+***
+
+### `pauseMusic`
+<div class="search_terms" style="display: none">pausemusic</div>
+
+Pauses the game's music.
+
+```lua
+myObject:pauseMusic()
+```
+
+***
+
+### `unpauseMusic`
+<div class="search_terms" style="display: none">unpausemusic</div>
+
+Unpauses the game's music.
+
+```lua
+myObject:unpauseMusic()
+```
 

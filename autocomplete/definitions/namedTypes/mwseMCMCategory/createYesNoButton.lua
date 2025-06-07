@@ -33,6 +33,11 @@ return {
 				description = "If `defaultSetting` wasn't passed in the `variable` table, can be passed here. \z
 					The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible." 
 			},
+			{ name = "showDefaultSetting", type = "boolean", optional = true, default = "`parentComponent.showDefaultSetting`",
+				description = "If `true`, and in a [Sidebar Page](../types/mwseMCMSideBarPage.md), then the `defaultSetting` of this setting's `variable` will be shown below its `description`. \z
+					The `defaultSetting` will be formatted in accordance with the `convertToLabelValue` function. \z
+					**Note:** This parameter does not update the `description` field.",
+			},
 			{ name = "callback", type = "fun(self: mwseMCMYesNoButton)", optional = true, description = "The custom function called when the player interacts with this Button." },
 			{ name = "inGameOnly", type = "boolean", optional = true, default = false, description = "If true, the setting is disabled while the game is on main menu." },
 			{ name = "restartRequired", type = "boolean", optional = true, default = false, description = "If true, updating this Setting will notify the player to restart the game." },

@@ -8,7 +8,7 @@
 
 
 
-This type inherits the following: [tes3worldControllerRenderCamera](../types/tes3worldControllerRenderCamera.md)
+This type inherits the following: [tes3worldControllerRenderCamera](../types/tes3worldControllerRenderCamera.md).
 ## Properties
 
 ### `cameraData`

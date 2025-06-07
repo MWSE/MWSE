@@ -37,7 +37,91 @@ namespace TES3 {
 		TES3_AudioController_setMusicVolume(this, volume);
 	}
 
-	float AudioController::getMixVolume(AudioMixType mix) {
+	const auto TES3_AudioController_pauseMusic = reinterpret_cast<void(__thiscall*)(AudioController*)>(0x403570);
+	void AudioController::pauseMusic() {
+		TES3_AudioController_pauseMusic(this);
+	}
+
+	const auto TES3_AudioController_unpauseMusic = reinterpret_cast<void(__thiscall*)(AudioController*)>(0x4035E0);
+	void AudioController::unpauseMusic() {
+		TES3_AudioController_unpauseMusic(this);
+	}
+
+	bool AudioController::getAudioFlag(AudioFlag::Flag flag) const {
+		return (audioFlags & flag) != 0;
+	}
+
+	void AudioController::setAudioFlag(AudioFlag::Flag flag, bool set) {
+		if (set) {
+			audioFlags |= flag;
+		}
+		else {
+			audioFlags &= ~flag;
+		}
+	}
+
+	bool AudioController::getHasStaticBuffers() const {
+		return getAudioFlag(AudioFlag::HasStaticBuffers);
+	}
+
+	void AudioController::setHasStaticBuffers(bool set) {
+		setAudioFlag(AudioFlag::HasStaticBuffers, set);
+	}
+
+	bool AudioController::getDirectSoundInitFailed() const {
+		return getAudioFlag(AudioFlag::DirectSoundInitFailed);
+	}
+
+	void AudioController::setDirectSoundInitFailed(bool set) {
+		setAudioFlag(AudioFlag::DirectSoundInitFailed, set);
+	}
+
+	bool AudioController::getHasStreamingBuffers() const {
+		return getAudioFlag(AudioFlag::HasStreamingBuffers);
+	}
+
+	void AudioController::setHasStreamingBuffers(bool set) {
+		setAudioFlag(AudioFlag::HasStreamingBuffers, set);
+	}
+
+	bool AudioController::getMusicFlag(MusicFlag::Flag flag) const {
+		return (musicFlags & flag) != 0;
+	}
+
+	void AudioController::setMusicFlag(MusicFlag::Flag flag, bool set) {
+		if (set) {
+			musicFlags |= flag;
+		}
+		else {
+			musicFlags &= ~flag;
+		}
+	}
+
+	bool AudioController::getIsFilterGraphValid() const {
+		return getMusicFlag(MusicFlag::FilterGraphValid);
+	}
+
+	void AudioController::setIsFilterGraphValid(bool set) {
+		setMusicFlag(MusicFlag::FilterGraphValid, set);
+	}
+
+	bool AudioController::getIsMusicPlaying() const {
+		return getMusicFlag(MusicFlag::Playing);
+	}
+
+	void AudioController::setIsMusicPlaying(bool set) {
+		setMusicFlag(MusicFlag::Playing, set);
+	}
+
+	bool AudioController::getIsMusicPaused() const {
+		return getMusicFlag(MusicFlag::Paused);
+	}
+
+	void AudioController::setIsMusicPaused(bool set) {
+		setMusicFlag(MusicFlag::Paused, set);
+	}
+
+	float AudioController::getMixVolume(AudioMixType mix) const {
 		float volume = 0.004f * volumeMaster;
 		switch (mix) {
 		case AudioMixType::Master:
@@ -59,7 +143,7 @@ namespace TES3 {
 		return volume;
 	}
 
-	float AudioController::getNormalizedMasterVolume() {
+	float AudioController::getNormalizedMasterVolume() const {
 		return 0.004f * volumeMaster;
 	}
 
@@ -68,7 +152,7 @@ namespace TES3 {
 		adjustLoopingSoundsVolume();
 	}
 
-	float AudioController::getNormalizedEffectsVolume() {
+	float AudioController::getNormalizedEffectsVolume() const {
 		return 0.004f * volumeEffects;
 	}
 
@@ -77,7 +161,7 @@ namespace TES3 {
 		adjustLoopingSoundsVolume();
 	}
 
-	float AudioController::getNormalizedVoiceVolume() {
+	float AudioController::getNormalizedVoiceVolume() const {
 		return 0.004f * volumeVoice;
 	}
 
@@ -85,7 +169,7 @@ namespace TES3 {
 		volumeVoice = uint8_t(std::clamp(value, 0.0f, 1.0f) * 250);
 	}
 
-	float AudioController::getNormalizedFootstepsVolume() {
+	float AudioController::getNormalizedFootstepsVolume() const {
 		return 0.004f * volumeFootsteps;
 	}
 
@@ -93,11 +177,11 @@ namespace TES3 {
 		volumeFootsteps = uint8_t(std::clamp(value, 0.0f, 1.0f) * 250);
 	}
 
-	float AudioController::getMusicVolume() {
+	float AudioController::getMusicVolume() const {
 		return volumeMusic;
 	}
 
-	const char* AudioController::getCurrentMusicFilePath() {
+	const char* AudioController::getCurrentMusicFilePath() const {
 		return currentMusicFilePath;
 	}
 
@@ -110,7 +194,7 @@ namespace TES3 {
 		strncpy_s(currentMusicFilePath, path, newLength);
 	}
 
-	const char* AudioController::getNextMusicFilePath() {
+	const char* AudioController::getNextMusicFilePath() const {
 		return nextMusicFilePath;
 	}
 
@@ -123,7 +207,11 @@ namespace TES3 {
 		strncpy_s(nextMusicFilePath, path, newLength);
 	}
 
-	double AudioController::getMusicDuration() {
+	double AudioController::getMusicDuration() const {
+		if (musicGraph == nullptr) {
+			throw std::runtime_error("Music Error: No music graph exists.");
+		}
+
 		IMediaPosition * positioning;
 		if (musicGraph->QueryInterface(IID_IMediaPosition, (LPVOID*)&positioning) < 0) {
 			throw std::runtime_error("Music Error: Could not query IMediaPosition interface.");
@@ -139,7 +227,11 @@ namespace TES3 {
 		return duration;
 	}
 
-	double AudioController::getMusicPosition() {
+	double AudioController::getMusicPosition() const {
+		if (musicGraph == nullptr) {
+			throw std::runtime_error("Music Error: No music graph exists.");
+		}
+
 		IMediaPosition * positioning;
 		if (musicGraph->QueryInterface(IID_IMediaPosition, (LPVOID*)&positioning) < 0) {
 			throw std::runtime_error("Music Error: Could not query IMediaPosition interface.");
@@ -158,6 +250,10 @@ namespace TES3 {
 	void AudioController::setMusicPosition(double position) {
 		if (position < 0.0) {
 			position = 0.0;
+		}
+
+		if (musicGraph == nullptr) {
+			throw std::runtime_error("Music Error: No music graph exists.");
 		}
 
 		IMediaPosition * positioning;
@@ -182,6 +278,43 @@ namespace TES3 {
 		}
 
 		positioning->Release();
+	}
+
+	double AudioController::getMusicFileDuration(std::string_view& path) {
+		if (!std::filesystem::exists(path)) {
+			throw std::invalid_argument("No music file exists at path.");
+		}
+
+		const auto& CLSID_FilgraphManager = *reinterpret_cast<GUID*>(0x74B930);
+		const auto& IID_IGraphBuilder = *reinterpret_cast<GUID*>(0x74B8E0);
+		IGraphBuilder* graph = nullptr;
+		if (CoCreateInstance(CLSID_FilgraphManager, 0, 1u, IID_IGraphBuilder, (LPVOID*)&graph) < 0) {
+			throw std::runtime_error("Could not create graph builder.");
+		}
+
+		wchar_t buffer[MAX_PATH] = {};
+		MultiByteToWideChar(0, 0, path.data(), -1, buffer, MAX_PATH);
+		if (graph->RenderFile(buffer, 0) < 0) {
+			graph->Release();
+			throw std::runtime_error("Could not play file.");
+		}
+
+		IMediaPosition* positioning = nullptr;
+		if (graph->QueryInterface(IID_IMediaPosition, (LPVOID*)&positioning) < 0) {
+			graph->Release();
+			throw std::runtime_error("Could not query IMediaPosition interface.");
+		}
+
+		REFTIME duration;
+		if (positioning->get_Duration(&duration) < 0) {
+			positioning->Release();
+			graph->Release();
+			throw std::runtime_error("Could not fetch media position.");
+		}
+
+		positioning->Release();
+		graph->Release();
+		return duration;
 	}
 
 	void AudioController::changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume) {

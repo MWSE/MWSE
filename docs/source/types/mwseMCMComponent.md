@@ -30,11 +30,14 @@ The base class for all MCM components, such as categories and settings. The basi
 	- [Yes no button](./mwseMCMYesNoButton.md)
 	- [Cycle button](./mwseMCMCycleButton.md)
 	- [Key binder](./mwseMCMKeyBinder.md)
+	- [Mouse binder](./mwseMCMMouseBinder.md)
 	- [Dropdown](./mwseMCMDropdown.md)
 	- [Text field](./mwseMCMTextField.md)
 	- [Paragraph field](./mwseMCMParagraphField.md)
 	- [Slider](./mwseMCMSlider.md)
 	- [Percentage slider](./mwseMCMPercentageSlider.md)
+	- [Color picker](./mwseMCMColorPicker.md)
+	- [Color picker button](./mwseMCMColorPickerButton.md)
 
 
 ## Properties
@@ -381,6 +384,23 @@ Enables the component's UI elements. That includes: changing the color of the UI
 ```lua
 myObject:enable()
 ```
+
+***
+
+### `getMouseOverText`
+<div class="search_terms" style="display: none">getmouseovertext, mouseovertext</div>
+
+Retrieves the text that this component should display in any related [`mouseOverInfo`s](./mwseMCMMouseOverInfo.md). This method currently utilized to display this component's description whenever the component is in a [`SideBarPage`](./mwseMCMSideBarPage.md).
+
+Primarily intended for internal use.
+
+```lua
+local text = myObject:getMouseOverText()
+```
+
+**Returns**:
+
+* `text` (string, nil): The text to display. Returning `nil` means that the `mouseOverInfo` should display text from a different source. e.g. from the `description` of the relevant [`SideBarPage`](./mwseMCMSideBarPage.md).
 
 ***
 

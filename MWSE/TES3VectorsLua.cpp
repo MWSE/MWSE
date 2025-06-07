@@ -1,6 +1,7 @@
 #include "TES3Vectors.h"
 
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
 #include "TES3Vectors.h"
 
@@ -56,6 +57,14 @@ namespace mwse::lua {
 			usertypeDefinition["length"] = &TES3::Vector2::length;
 			usertypeDefinition["normalize"] = &TES3::Vector2::normalize;
 			usertypeDefinition["normalized"] = &TES3::Vector2::normalized;
+			usertypeDefinition["min"] = &TES3::Vector2::min;
+			usertypeDefinition["max"] = &TES3::Vector2::max;
+
+			// Alternate constructors.
+			usertypeDefinition["unitX"] = sol_copy_wrapper(TES3::Vector2::UNIT_X);
+			usertypeDefinition["unitY"] = sol_copy_wrapper(TES3::Vector2::UNIT_Y);
+			usertypeDefinition["ones"] = sol_copy_wrapper(TES3::Vector2::ONES);
+			usertypeDefinition["zeroes"] = sol_copy_wrapper(TES3::Vector2::ZEROES);
 		}
 
 		// Binding for TES3::Vector3.
@@ -112,9 +121,18 @@ namespace mwse::lua {
 			usertypeDefinition["normalize"] = &TES3::Vector3::normalize;
 			usertypeDefinition["normalized"] = &TES3::Vector3::normalized;
 			usertypeDefinition["interpolate"] = &TES3::Vector3::interpolate;
+			usertypeDefinition["min"] = &TES3::Vector3::min;
+			usertypeDefinition["max"] = &TES3::Vector3::max;
 
 			// Conversion to NI::Color.
 			usertypeDefinition["toColor"] = &TES3::Vector3::toNiColor;
+
+			// Alternate constructors.
+			usertypeDefinition["unitX"] = sol_copy_wrapper(TES3::Vector3::UNIT_X);
+			usertypeDefinition["unitY"] = sol_copy_wrapper(TES3::Vector3::UNIT_Y);
+			usertypeDefinition["unitZ"] = sol_copy_wrapper(TES3::Vector3::UNIT_Z);
+			usertypeDefinition["ones"] = sol_copy_wrapper(TES3::Vector3::ONES);
+			usertypeDefinition["zeroes"] = sol_copy_wrapper(TES3::Vector3::ZEROES);
 		}
 
 		// Binding for TES3::Vector4.
@@ -147,6 +165,8 @@ namespace mwse::lua {
 			usertypeDefinition["distanceChebyshev"] = &TES3::Vector4::distanceChebyshev;
 			usertypeDefinition["distanceManhattan"] = &TES3::Vector4::distanceManhattan;
 			usertypeDefinition["length"] = &TES3::Vector4::length;
+			usertypeDefinition["min"] = &TES3::Vector4::min;
+			usertypeDefinition["max"] = &TES3::Vector4::max;
 		}
 
 		// Binding for TES3::BoundingBox.
@@ -221,6 +241,9 @@ namespace mwse::lua {
 			usertypeDefinition["getForwardVector"] = &TES3::Matrix33::getForwardVector;
 			usertypeDefinition["getRightVector"] = &TES3::Matrix33::getRightVector;
 			usertypeDefinition["getUpVector"] = &TES3::Matrix33::getUpVector;
+
+			// Alternate constructors.
+			usertypeDefinition["identity"] = sol_copy_wrapper(TES3::Matrix33::IDENTITY);
 		}
 
 		// Binding for TES3::Matrix44.
@@ -255,6 +278,9 @@ namespace mwse::lua {
 			// Basic function binding.
 			usertypeDefinition["copy"] = &TES3::Matrix44::copy;
 			usertypeDefinition["toZero"] = &TES3::Matrix44::toZero;
+
+			// Alternate constructors.
+			usertypeDefinition["identity"] = sol_copy_wrapper(TES3::Matrix44::IDENTITY);
 		}
 
 		// Binding for TES3::Transform.

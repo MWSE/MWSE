@@ -50,7 +50,7 @@ function FilterPage:createSearchBar(parentBlock)
 
 	-- Create the search input
 	local input = searchBar:createTextInput({ id = tes3ui.registerID("PageSearchInput") })
-	input.color = tes3ui.getPalette("disabled_color")
+	input.color = tes3ui.getPalette(tes3.palette.disabledColor)
 	input.text = self.placeholderSearchText
 	input.borderLeft = 5
 	input.borderRight = 5
@@ -64,7 +64,7 @@ function FilterPage:createSearchBar(parentBlock)
 	-- and also on mouseClick
 	--- @param element tes3uiElement
 	local function registerInput(element)
-		element:register("mouseClick", function()
+		element:register(tes3.uiEvent.mouseClick, function()
 			tes3ui.acquireTextInput(input)
 		end)
 	end
@@ -72,7 +72,7 @@ function FilterPage:createSearchBar(parentBlock)
 	registerInput(searchBar)
 
 	-- Register keypress event to filter list each time
-	input:register("keyPress", function(e)
+	input:register(tes3.uiEvent.keyPress, function(e)
 		-- Prevent tabs/backspacing into nothing
 		local inputController = tes3.worldController.inputController
 		local pressedTab = (inputController:isKeyDown(tes3.scanCode.tab))
@@ -93,10 +93,10 @@ function FilterPage:createSearchBar(parentBlock)
 		input:updateLayout()
 
 		-- Reset to placeholder if nothing there
-		input.color = tes3ui.getPalette("normal_color")
+		input.color = tes3ui.getPalette(tes3.palette.normalColor)
 		if input.text == "" then
 			input.text = self.placeholderSearchText
-			input.color = tes3ui.getPalette("disabled_color")
+			input.color = tes3ui.getPalette(tes3.palette.disabledColor)
 		end
 
 		self.elements.scrollPane.widget:contentsChanged()
@@ -109,7 +109,7 @@ end
 --- @param parentBlock tes3uiElement
 function FilterPage:createLeftColumn(parentBlock)
 	local outerContainer = parentBlock:createThinBorder()
-	outerContainer.flowDirection = "top_to_bottom"
+	outerContainer.flowDirection = tes3.flowDirection.topToBottom
 	outerContainer.heightProportional = 1.0
 	outerContainer.widthProportional = 1.0
 	outerContainer.paddingAllSides = self.indent + 4
@@ -133,7 +133,7 @@ function FilterPage:createSubcomponentsContainer(parentBlock)
 	local subcomponentsContainer = contentsScrollPane:createBlock()
 	subcomponentsContainer.paddingLeft = self.indent
 	subcomponentsContainer.paddingTop = self.paddingBottom
-	subcomponentsContainer.flowDirection = "top_to_bottom"
+	subcomponentsContainer.flowDirection = tes3.flowDirection.topToBottom
 	subcomponentsContainer.widthProportional = 1.0
 	subcomponentsContainer.heightProportional = 1.0
 	subcomponentsContainer.autoHeight = true

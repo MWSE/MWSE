@@ -6,24 +6,17 @@ local DependencyNotifier = {
     packageName = nil
 }
 
-function DependencyNotifier:new(e)
-    local o = {}
-    setmetatable(o, self)
-    self.__index = self
-    o.logger = e.logger
-    if not self.logger then
-        local name = e.packageName
-        and e.packageName .. ".DependencyNotifier"
-            or "DependencyNotifier"
-        local MWSELogger = require("logging.logger")
-        self.logger = MWSELogger.new {
-            name = name,
-            logLevel = "INFO"
+function DependencyNotifier.new(cls, e)
+    cls.__index = cls
+    local obj = {
+        packageName = e.packageName,
+        failedDependencies = e.failedDependencies,
+        logger = e.logger or require("logger").new {
+            modName = "DependencyNotifier",
+            moduleName = e.packageName
         }
-    end
-    o.failedDependencies = e.failedDependencies
-    self.packageName = e.packageName
-    return o
+    }
+    return setmetatable(obj, cls)
 end
 
 ---Display the list of failed dependencies to the player

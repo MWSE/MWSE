@@ -32,6 +32,28 @@ A handle back to the main menu controller.
 
 ***
 
+### `pointerMoveEventSource`
+<div class="search_terms" style="display: none">pointermoveeventsource</div>
+
+*Read-only*. No description yet available.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `pointerMovePreviousEventSource`
+<div class="search_terms" style="display: none">pointermovepreviouseventsource</div>
+
+*Read-only*. No description yet available.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `textInputFocus`
 <div class="search_terms" style="display: none">textinputfocus</div>
 

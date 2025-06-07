@@ -1,5 +1,9 @@
 #include "TES3Faction.h"
 
+#include "TES3DataHandler.h"
+#include "TES3GameSetting.h"
+#include "TES3UIManager.h"
+
 namespace TES3 {
 	std::reference_wrapper<int[2]> Faction::Rank::getRequiredAttributeValues() {
 		return std::ref(reqAttributes);
@@ -26,23 +30,26 @@ namespace TES3 {
 	}
 
 	void Faction::setName(const char* value) {
-		if (value != NULL && strlen(value) < 32) {
+		if (value != nullptr && strlen(value) < 32) {
 			strcpy(name, value);
 		}
 	}
 
-	const char* Faction::getRankName(size_t rank) const {
-		return rankNames[std::clamp(rank, 0U, 10U)];
+	const char* Faction::getRankName(int rank) const {
+		// Clamp rank instead of throwing an exception, as there are mods that do rank arithmetic without checking.
+		// The rank parameter accepts negative numbers so they can be clamped instead of wrapping.
+		rank = std::clamp(rank, 0, 9);
+		return rankNames[rank];
 	}
 
-	void Faction::setRankName(size_t rank, const char* name) {
+	void Faction::setRankName(int rank, const char* name) {
 		if (rank < 0 || rank > 9) {
 			throw std::invalid_argument("Rank must be between inclusive values 0 and 9.");
 		}
 		else if (strnlen_s(name, 32) > 31) {
 			throw std::invalid_argument("Name must not be more than 31 characters.");
 		}
-		strncpy_s(rankNames[rank], name, 32);
+		strncpy_s(rankNames[rank], name, sizeof(rankNames[rank]));
 	}
 
 	bool Faction::getMembershipFlag(unsigned int flag) const {
@@ -146,6 +153,78 @@ namespace TES3 {
 
 	std::reference_wrapper<Faction::Rank[10]> Faction::getRanks() {
 		return std::ref(ranks);
+	}
+
+	bool Faction::playerJoin_lua() {
+		if (getPlayerJoined()) {
+			return false;
+		}
+
+		setPlayerJoined(true);
+		TES3::UI::updateStatsPane();
+		return true;
+	}
+
+	bool Faction::playerLeave_lua() {
+		if (!getPlayerJoined()) {
+			return false;
+		}
+
+		setPlayerJoined(false);
+		TES3::UI::updateStatsPane();
+		return true;
+	}
+
+	bool Faction::playerExpel_lua() {
+		if (!getPlayerJoined() || getPlayerExpelled()) {
+			return false;
+		}
+
+		setPlayerExpelled(true);
+		TES3::UI::updateStatsPane();
+
+		char message[256];
+		auto sExpelledMessage = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::sExpelledMessage]->value.asString;
+		std::snprintf(message, sizeof(message), "%s%s", sExpelledMessage, name);
+		TES3::UI::showMessageBox(message);
+		return true;
+	}
+
+	bool Faction::playerClearExpel_lua() {
+		if (!getPlayerJoined() || !getPlayerExpelled()) {
+			return false;
+		}
+
+		setPlayerExpelled(false);
+		TES3::UI::updateStatsPane();
+		return true;
+	}
+
+	bool Faction::playerPromote_lua() {
+		if (!getPlayerJoined() || getPlayerExpelled()) {
+			return false;
+		}
+		auto nextRank = playerRank + 1;
+		if (playerRank == 9 || strlen(getRankName(nextRank)) == 0) {
+			return false;
+		}
+
+		playerRank = nextRank;
+		TES3::UI::updateStatsPane();
+		return true;
+	}
+
+	bool Faction::playerDemote_lua() {
+		if (!getPlayerJoined() || getPlayerExpelled()) {
+			return false;
+		}
+		if (playerRank == 0) {
+			return false;
+		}
+
+		playerRank--;
+		TES3::UI::updateStatsPane();
+		return true;
 	}
 }
 

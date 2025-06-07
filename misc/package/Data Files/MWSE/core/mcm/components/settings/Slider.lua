@@ -34,6 +34,18 @@ Slider.step = 1
 Slider.jump = 5
 
 
+--- Prints a warning message letting the user know some slider parameters are invalid.
+--- This function is only used inside the `Slider` constructor.
+---@param sliderLabel string Label of the slider that triggered an error.
+---@param msg string The error message. 
+---@param ... string|number Parameters to pass to `string.format(msg, ...)`
+local function printSliderWarning(sliderLabel, msg, ...)
+	mwse.log(
+		'[createSlider WARNING] A slider labeled "%s" was created with invalid parameters:\n\t%s',
+		-- Start the traceback at level `2` to avoid including `printSliderWarning` in the traceback.
+		sliderLabel, debug.traceback(msg:format(...), 2)
+	)
+end
 function Slider:new(data)
 	-- initialize metatable, make variable, etc
 	local t = Parent.new(self, data)
@@ -44,28 +56,50 @@ function Slider:new(data)
 	if rawget(t, "jump") == nil then
 		t.jump = math.min(dist, 5 * t.step)
 	end
+	do -- Check parameters and print error messages if necessary.
+		if dist <= 0 then
+			printSliderWarning(t.label, "Slider.max (=%s) should be greater than Slider.min (=%s)", t.max, t.min)
+		end
+		if t.step <= 0 then
+			printSliderWarning(t.label, "Slider.step (=%s) should be a positive number.", t.step)
+		end
+		if t.jump <= 0 then
+			printSliderWarning(t.label, "Slider.jump (=%s) should be a positive number.", t.jump)
+		end
+		if t.decimalPlaces % 1 ~= 0 or t.decimalPlaces < 0 then
+			error(string.format(
+				'A slider labeled "%s" was created with invalid parameters:\n\t\z
+					Slider.decimalPlaces (=%s) should be a positive whole number.',
+				t.label, t.decimalPlaces
+			))
+		end
 
-	assert(dist > 0, "mcm.Slider: Invalid 'max' and 'min' parameters provided. 'max' must be greater than 'min'.")
-	assert(t.step > 0, "mcm.Slider: Invalid 'step' parameter provided. It must be greater than 0.")
-	assert(t.jump > 0, "mcm.Slider: Invalid 'jump' parameter provided. It must be greater than 0.")
-
-	assert(
-		t.decimalPlaces % 1 == 0 and t.decimalPlaces >= 0,
-		"mcm.Slider: Invalid 'decimalPlaces' parameter provided. It must be a nonnegative whole number."
-	)
-
-	-- Avoid breaking existing mods that have variable min or max but a fixed step/jump.
-	-- Clamp instead of asserting.
-	if t.step > dist + math.epsilon then
-		mwse.log("mcm.Slider: 'step' parameter is greater than 'max' - 'min'")
-		mwse.log(debug.traceback())
-		t.step = dist
+		-- Avoid breaking existing mods that have variable min or max but a fixed step/jump.
+		-- Clamp instead of asserting.
+		if t.step > dist + math.epsilon then
+			-- Only print the error message when `slider.min` and `slider.max` are set properly.
+			-- Seeing something like "It should be less than -1 = Slider.max - Slider.min" is not very helpful.
+			if dist > 0 then
+				printSliderWarning(t.label, 
+					"Slider.step (= %s) is too big! It should be less than %s = Slider.max - Slider.min.",
+					t.step, dist
+				)
+			end
+			t.step = dist
+		end
+		if t.jump > dist + math.epsilon then
+			-- Only print the error message when `slider.min` and `slider.max` are set properly.
+			if dist > 0 then
+				printSliderWarning(t.label, 
+					"Slider.jump (= %s) is too big! It should be less than %s = Slider.max - Slider.min.",
+					t.jump, dist
+				)
+			end
+			t.jump = dist
+		end
 	end
-	if t.jump > dist + math.epsilon then
-		mwse.log("mcm.Slider: 'jump' parameter is greater than 'max' - 'min'")
-		mwse.log(debug.traceback())
-		t.jump = dist
-	end
+
+	
 
 	return t
 end
@@ -116,6 +150,12 @@ function Slider:updateWidgetValue()
 	end
 end
 
+function Slider:setVariableValue(newValue)
+	self.variable.value = newValue
+	self:updateValueLabel()
+	self:updateWidgetValue()
+	Parent.update(self)
+end
 
 
 function Slider:update()

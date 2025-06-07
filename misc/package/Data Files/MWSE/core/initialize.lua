@@ -151,6 +151,31 @@ function dofile(path)
 	error("dofile: Could not resolve path " .. path)
 end
 
+local function addUserFriendlyNameToSolType(friendlyName, metatable)
+	metatable.__type.friendlyName = friendlyName
+end
+
+for friendlyName, maybeUserdataType in pairs(_G) do
+	pcall(addUserFriendlyNameToSolType, friendlyName, maybeUserdataType)
+end
+
+local function getUserdataTypeName(variable)
+    return variable.__type.friendlyName
+end
+
+local originalType = type
+function type(variable)
+	local baseType = originalType(variable)
+	if (baseType == "userdata") then
+		local success, typeName = pcall(getUserdataTypeName, variable)
+		if (success) then
+			return baseType, typeName
+		end
+	end
+	return baseType
+end
+
+
 -------------------------------------------------
 -- Global includes
 -------------------------------------------------
@@ -234,41 +259,6 @@ function mwse.loadTranslations(mod)
 	return setmetatable({ mod = mod }, i18nWrapper)
 end
 
-
--------------------------------------------------
--- Extend base API: math
--------------------------------------------------
-
--- Seed random number generator.
-math.randomseed(os.time())
-
-function math.lerp(v0, v1, t)
-	return (1 - t) * v0 + t * v1;
-end
-
-function math.clamp(value, low, high)
-	if (low > high) then
-		low, high = high, low
-	end
-	return math.max(low, math.min(high, value))
-end
-
-function math.remap(value, lowIn, highIn, lowOut, highOut)
-	return lowOut + (value - lowIn) * (highOut - lowOut) / (highIn - lowIn)
-end
-
-function math.round(value, digits)
-	local mult = 10 ^ (digits or 0)
-	return math.floor(value * mult + 0.5) / mult
-end
-
-function math.isclose(a, b, absoluteTolerance, relativeTolerance)
-	absoluteTolerance = absoluteTolerance or math.epsilon
-	relativeTolerance = relativeTolerance or 1e-9
-	return math.abs(a-b) <= math.max(relativeTolerance * math.max(math.abs(a), math.abs(b)), absoluteTolerance)
-end
-
-
 -------------------------------------------------
 -- Extend base API: table
 -------------------------------------------------
@@ -326,6 +316,47 @@ function table.find(t, value)
 	end
 end
 
+function table.contains(t, value)
+	return table.find(t, value) ~= nil
+end
+
+
+function table.equal(t1, t2)
+
+	-- Try a quick basic equality check.
+	if (t1 == t2) then
+		return true
+	end
+
+	-- Make sure both inputs are tables.
+	if (type(t1) ~= "table" or type(t2) ~= "table") then
+		return false
+	end
+
+	-- Loop through pairs and see if all values match from t1 -> t2.
+	local size1 = 0
+	-- Store the function locally for faster function calls.
+	local eq = table.equal
+	for k, v1 in pairs(t1) do
+		-- Note: If `v1 ~= v2`, then the recursive call to `table.equal` will
+		-- result in a redundant comparison of `v1` and `v2`.
+		-- But, testing shows that for highly similar tables, this approach is faster
+		-- than only checking `not table.equal(v1, v2)`.
+		-- This is likely due to the overhead from function calls.
+
+		local v2 = t2[k]
+		if (v1 ~= v2 and not eq(v1, v2)) then
+			return false
+		end
+
+		size1 = size1 + 1
+	end
+
+	-- We can assume t1 == t2 if all values match for t1 -> t2 and both tables have the same size.
+	return size1 == table.size(t2)
+end
+
+
 function table.removevalue(t, value)
 	local i = table.find(t, value)
 	if (i ~= nil) then
@@ -338,8 +369,6 @@ end
 function table.copy(from, to)
 	if (to == nil) then
 		to = {}
-	elseif (type(from) ~= "table" or type(to) ~= "table") then
-		error("Arguments for table.copy must be tables.")
 	end
 
 	for k, v in pairs(from) do
@@ -364,10 +393,6 @@ function table.deepcopy(t)
 end
 
 function table.copymissing(to, from)
-	if (type(to) ~= "table" or type(from) ~= "table") then
-		error("Arguments for table.copymissing must be tables.")
-	end
-
 	for k, v in pairs(from) do
 		if (type(to[k]) == "table" and type(v) == "table") then
 			table.copymissing(to[k], v)
@@ -465,6 +490,14 @@ function table.wrapindex(t, index)
 		newIndex = size
 	end
 	return newIndex
+end
+
+function table.shuffle(t, n)
+	n = n or #t
+	for i = n, 2, -1 do
+		local j = math.random(i)
+		t[i], t[j] = t[j], t[i]
+	end
 end
 
 
@@ -854,6 +887,30 @@ end
 
 
 -------------------------------------------------
+-- Extend our base API: yaml
+-------------------------------------------------
+
+function yaml.loadFile(fileName)
+	-- Load the contents of the file.
+	local f = io.open(fileName, "r")
+	if (f == nil) then
+		return nil, { reason = "Could not open file." }
+	end
+
+	local fileContents = f:read("*all")
+	f:close()
+
+	-- Return decoded yaml.
+	local status, resultOrError = pcall(yaml.decode, fileContents)
+	if (status) then
+		return resultOrError
+	else
+		return nil, resultOrError
+	end
+end
+
+
+-------------------------------------------------
 -- Extend our base API: mwse
 -------------------------------------------------
 
@@ -861,7 +918,7 @@ function mwse.log(str, ...)
 	print(tostring(str):format(...))
 end
 
--- helper function for `mwse.loadConfig`. 
+-- helper function for `mwse.loadConfig`.
 -- this function is responsible for:
 -- 1) restoring numeric keys (i.e. keys that should be numbers, but were turned into strings by `json.savefile`)
 -- 2) adding missing values to `config` that are present in `defaultConfig`
@@ -903,7 +960,7 @@ end
 
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
-	
+
 	if not result and not defaults then return end
 
 	result = result or {} -- make sure the user gets something
@@ -933,6 +990,8 @@ end
 function mwse.encodeForSave(object)
 	return json.encode(object, { exception = exceptionWhenSaving })
 end
+
+mwse.Logger = require("logger")
 
 
 -------------------------------------------------
@@ -996,6 +1055,13 @@ mwse.saveConfig("MWSE", userConfig)
 -------------------------------------------------
 
 function tes3.claimSpellEffectId(name, id)
+	-- Ignore duplicate claims.
+	if (name and tes3.effect[name] == id) then
+		return
+	end
+
+	assert(type(name) == "string", "Name must be a string.")
+	assert(type(id) == "number", "ID must be a number.")
 	assert(table.find(tes3.effect, id) == nil, "Effect ID is not unique.")
 	assert(tes3.effect[name] == nil, "Effect name is not unique.")
 	tes3.effect[name] = id
@@ -1005,9 +1071,16 @@ end
 tes3.installDirectory = lfs.currentdir()
 
 local safeObjectHandle = require("mwse_safeObjectHandle")
+--- @return mwseSafeObjectHandle
 function tes3.makeSafeObjectHandle(object)
 	return safeObjectHandle.new(object)
 end
+
+-------------------------------------------------
+-- Extend base API: math
+-------------------------------------------------
+
+dofile("math")
 
 
 -------------------------------------------------

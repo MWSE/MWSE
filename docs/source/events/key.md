@@ -23,6 +23,7 @@ event.register(tes3.event.key, keyCallback)
 
 ## Event Data
 
+* `element` ([tes3uiElement](../types/tes3uiElement.md)): *Read-only*. The UI element that the key is going to be dispatched to, or `nil` if one is not in focus.
 * `isAltDown` (boolean): *Read-only*. True if either alt key is held.
 * `isControlDown` (boolean): *Read-only*. True if either control key is held.
 * `isShiftDown` (boolean): *Read-only*. True if either shift key is held.

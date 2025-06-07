@@ -15,14 +15,14 @@ local function example(e)
 
 	local underwater = headPosition < waterLevel
 
-	if underwater then
-		-- There is a 50 % chance that any Water Breathing effect will be removed from the player
-		tes3.removeEffects({
-			reference = tes3.player,
-			chance = 50,
-			effect = tes3.effect.waterBreathing,
-		})
-	end
+	if not underwater then return end
+
+	-- There is a 50 % chance that any Water Breathing effect will be removed from the player
+	tes3.removeEffects({
+		reference = tes3.player,
+		chance = 50,
+		effect = tes3.effect.waterBreathing,
+	})
 end
 
 event.register(tes3.event.initialized, function ()

@@ -56,7 +56,6 @@ function UnitWind.new(data)
     unitwind.completedTests = {}
     unitwind.logger = mwseLogger.new{
         name = "UnitWind",
-        ---@diagnostic disable-next-line: undefined-global
         logLevel = "INFO",
     }
     --Validate and set defaults
@@ -364,14 +363,14 @@ end
 ---
 --- - The number of calls and the arguments passed to the spied function will be recorded
 --- - Unlike mock(), the original function will still be called
---- - To test a spy, use `expects.toBeCalledWith`
+--- - To test a spy, use `expect.toBeCalledWith`
 ---
 --- Example:
 ---
 ---     local myModule = include("myModule")
 ---     UnitWind:spy(myModule, "myFunction")
 ---     myModule.myFunction("hello", "world")
----     UnitWind:expects(myModule.myFunction).toBeCalledWith({"hello", "world"})
+---     UnitWind:expect(myModule.myFunction).toBeCalledWith({"hello", "world"})
 ---     UnitWind:unspy(myModule, "myFunction")
 ---
 ---@param object table|string The table or module which contains the key to spy on

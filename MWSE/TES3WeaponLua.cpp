@@ -1,7 +1,7 @@
 #include "TES3WeaponLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 #include "LuaUtil.h"
 
 #include "TES3Enchantment.h"
@@ -21,7 +21,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserdataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["chopMax"] = &TES3::Weapon::chopMax;
@@ -30,7 +30,6 @@ namespace mwse::lua {
 		usertypeDefinition["enchantment"] = sol::property(&TES3::Weapon::getEnchantment, &TES3::Weapon::setEnchantment);
 		usertypeDefinition["flags"] = &TES3::Weapon::materialFlags;
 		usertypeDefinition["hasDurability"] = sol::readonly_property(&TES3::Weapon::hasDurability);
-		usertypeDefinition["icon"] = sol::property(&TES3::Weapon::getIconPath, &TES3::Weapon::setIconPath);
 		usertypeDefinition["ignoresNormalWeaponResistance"] = sol::property(&TES3::Weapon::getIgnoresNormalWeaponResistance, &TES3::Weapon::setIgnoresNormalWeaponResistance);
 		usertypeDefinition["isAmmo"] = sol::readonly_property(&TES3::Weapon::isAmmo);
 		usertypeDefinition["isMelee"] = sol::readonly_property(&TES3::Weapon::isMelee);
@@ -40,8 +39,6 @@ namespace mwse::lua {
 		usertypeDefinition["isSilver"] = sol::property(&TES3::Weapon::getIsSilver, &TES3::Weapon::setIsSilver);
 		usertypeDefinition["isTwoHanded"] = sol::readonly_property(&TES3::Weapon::isTwoHanded);
 		usertypeDefinition["maxCondition"] = sol::property(&TES3::Weapon::getDurability, &TES3::Weapon::setDurability);
-		usertypeDefinition["mesh"] = sol::property(&TES3::Weapon::getModelPath, &TES3::Weapon::setModelPath);
-		usertypeDefinition["name"] = sol::property(&TES3::Weapon::getName, &TES3::Weapon::setName);
 		usertypeDefinition["reach"] = &TES3::Weapon::reach;
 		usertypeDefinition["script"] = &TES3::Weapon::script;
 		usertypeDefinition["skill"] = sol::property(&TES3::Weapon::getSkill);
@@ -63,6 +60,5 @@ namespace mwse::lua {
 
 		// TODO: Deprecated. Remove before 2.1-stable.
 		usertypeDefinition["health"] = sol::readonly_property(&TES3::Weapon::getDurability);
-		usertypeDefinition["model"] = sol::readonly_property(&TES3::Weapon::getModelPath);
 	}
 }

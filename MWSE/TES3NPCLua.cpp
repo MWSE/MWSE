@@ -40,7 +40,7 @@ namespace mwse::lua {
 			usertypeDefinition["reputation"] = &TES3::NPC::initialReputation;
 			usertypeDefinition["class"] = &TES3::NPC::class_;
 			usertypeDefinition["faction"] = &TES3::NPC::faction;
-			usertypeDefinition["race"] = &TES3::NPC::race;
+			usertypeDefinition["race"] = sol::property(&TES3::NPC::getRace, &TES3::NPC::setRace);
 			usertypeDefinition["script"] = &TES3::NPC::script;
 			usertypeDefinition["soul"] = sol::readonly_property(&TES3::NPC::getSoulValue);
 

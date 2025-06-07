@@ -8,7 +8,7 @@
 
 A structure containing properties specific to text inputs.
 
-This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md)
+This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md).
 ## Properties
 
 ### `element`
@@ -41,4 +41,107 @@ The character limit. Inputting additional characters will not be possible if thi
 **Returns**:
 
 * `result` (number)
+
+***
+
+## Methods
+
+### `clear`
+<div class="search_terms" style="display: none">clear</div>
+
+Clears the text currently in the input. If placeholder text is specified, the text will be reset to use it.
+
+```lua
+myObject:clear()
+```
+
+***
+
+### `getIsNumeric`
+<div class="search_terms" style="display: none">getisnumeric, isnumeric</div>
+
+Returns `true` if the element is supposed to only contain numbers.
+
+```lua
+local result = myObject:getIsNumeric()
+```
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `getIsPlaceholding`
+<div class="search_terms" style="display: none">getisplaceholding, isplaceholding</div>
+
+Returns `true` if the element is currently in placeholding mode.
+
+```lua
+local result = myObject:getIsPlaceholding()
+```
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `getPlaceholdingText`
+<div class="search_terms" style="display: none">getplaceholdingtext, placeholdingtext</div>
+
+Returns the text used when placeholding.
+
+```lua
+local result = myObject:getPlaceholdingText()
+```
+
+**Returns**:
+
+* `result` (string?)
+
+***
+
+### `setIsNumeric`
+<div class="search_terms" style="display: none">setisnumeric, isnumeric</div>
+
+Sets or unsets the element's numeric-only status.
+
+```lua
+myObject:setIsNumeric(numeric)
+```
+
+**Parameters**:
+
+* `numeric` (boolean)
+
+***
+
+### `setIsPlaceholding`
+<div class="search_terms" style="display: none">setisplaceholding, isplaceholding</div>
+
+Sets or unsets the element's placeholding status. Calling this will set or clear the placeholding text if appropriate.
+
+```lua
+myObject:setIsPlaceholding(placeholding)
+```
+
+**Parameters**:
+
+* `placeholding` (boolean)
+
+***
+
+### `setPlaceholdingText`
+<div class="search_terms" style="display: none">setplaceholdingtext, placeholdingtext</div>
+
+Sets the element's placeholding text. If the input is currently placeholding, the element will be updated to the new text.
+
+```lua
+myObject:setPlaceholdingText(text)
+```
+
+**Parameters**:
+
+* `text` (string)
 

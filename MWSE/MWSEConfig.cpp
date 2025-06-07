@@ -13,10 +13,14 @@ namespace mwse {
 	bool Configuration::PatchNiFlipController = true;
 	bool Configuration::LetterboxMovies = false;
 	bool Configuration::EnableLogColors = false;
+	bool Configuration::EnableLogLineNumbers = false;
 	bool Configuration::EnableDependencyChecks = true;
 	bool Configuration::ReplaceDialogueFiltering = true;
 	bool Configuration::EnableLuaErrorNotifications = false;
 	bool Configuration::UseSkinnedAccurateActivationRaytests = true;
+	bool Configuration::SuppressUselessWarnings = true;
+	bool Configuration::UseGlobalAudio = false;
+	bool Configuration::ReplaceLightSorting = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -57,10 +61,14 @@ namespace mwse {
 		DECLARE_CONFIG(PatchNiFlipController)
 		DECLARE_CONFIG(LetterboxMovies)
 		DECLARE_CONFIG(EnableLogColors)
+		DECLARE_CONFIG(EnableLogLineNumbers)
 		DECLARE_CONFIG(EnableDependencyChecks)
 		DECLARE_CONFIG(ReplaceDialogueFiltering)
 		DECLARE_CONFIG(EnableLuaErrorNotifications)
 		DECLARE_CONFIG(UseSkinnedAccurateActivationRaytests)
+		DECLARE_CONFIG(SuppressUselessWarnings)
+		DECLARE_CONFIG(UseGlobalAudio)
+		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

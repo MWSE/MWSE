@@ -7,11 +7,11 @@ namespace TES3 {
 	struct AIPlanner {
 		AIPackageConfig * currentPackageConfig; // 0x0
 		MobileActor * mobileActor; // 0x4
-		int counter_0x8;
+		int refCount; // 0x8
 		AIPackage * packages[32]; // 0xC
 		int nextOpenPackageIndex; // 0x8C
 		int currentPackageIndex; // 0x90
-		float unknown_0x94;
+		float deltaTime; // 0x94
 
 		AIPlanner() = delete;
 		~AIPlanner() = delete;

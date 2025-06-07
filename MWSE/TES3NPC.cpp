@@ -4,9 +4,11 @@
 
 #include "TES3UIManager.h"
 
-#include "TES3MobileNPC.h"
-#include "TES3UIElement.h"
+#include "TES3MobilePlayer.h"
 #include "TES3Race.h"
+#include "TES3Reference.h"
+#include "TES3UIElement.h"
+#include "TES3WorldController.h"
 
 #include "LuaManager.h"
 
@@ -87,6 +89,23 @@ namespace TES3 {
 	//
 	// NPC
 	//
+
+	Race* NPC::getRace() const {
+		return race;
+	}
+
+	void NPC::setRace(Race* newRace) {
+		race = newRace;
+		if (race) {
+			setModelPath("");
+		}
+
+		const auto worldController = WorldController::get();
+		const auto macp = worldController ? worldController->getMobilePlayer() : nullptr;
+		if (macp && macp->npcInstance->baseNPC == this) {
+			macp->firstPerson->setRace(race);
+		}
+	}
 
 	std::reference_wrapper<unsigned char[8]> NPC::getAttributes() {
 		return std::ref(attributes);

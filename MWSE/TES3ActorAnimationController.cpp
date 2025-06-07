@@ -67,8 +67,8 @@ namespace TES3 {
 		return std::clamp(mobileActor->actionData.swingTimer / (maxAttackTiming - startTime), 0.0f, 1.0f);
 	}
 
-	const auto TES3_ActorAnimationController_getOpacity = reinterpret_cast<float(__thiscall*)(ActorAnimationController*)>(0x542130);
-	float ActorAnimationController::getOpacity() {
+	const auto TES3_ActorAnimationController_getOpacity = reinterpret_cast<float(__thiscall*)(const ActorAnimationController*)>(0x542130);
+	float ActorAnimationController::getOpacity() const {
 		return TES3_ActorAnimationController_getOpacity(this);
 	}
 

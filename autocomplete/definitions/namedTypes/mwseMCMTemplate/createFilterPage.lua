@@ -10,18 +10,19 @@ return {
 			{ name = "showHeader", type = "boolean", optional = true, default = false, description = "The page's label will only be created if set to true." },
 			{ name = "label", type = "string", optional = true, description = "The label field is displayed in the tab for that page at the top of the menu. Defaults to: \"Page {number}\"." },
 			{ name = "noScroll", type = "boolean", optional = true, default = false, description = "When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes." },
-			{ name = "config", type = "table", optional = true, 
+			{ name = "showReset", type = "boolean", optional = true, default = false, description = "When set to true, the Page will have a Reset button. Clicking on it will set the `variable.value` of all the setting on the page to their respective `defaultSetting` values." },
+			{ name = "config", type = "table", optional = true,
 				description = "If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any \z
 					[`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. \z
 					i.e., this parameter provides an alternative to explicitly constructing new variables. \z
 					Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one."
 			},
-			{ name = "defaultConfig", type = "table", optional = true, 
+			{ name = "defaultConfig", type = "table", optional = true,
 				description = "Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` \z
 					field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. \z
 					Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one."
 			},
-			{ name = "configKey", type = "string|number", optional = true, 
+			{ name = "configKey", type = "string|number", optional = true,
 				description = "This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. \z
 					This ensures that the `config` and `defaultConfig` stay synchronized."
 			},

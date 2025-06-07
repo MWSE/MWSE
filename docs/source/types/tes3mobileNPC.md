@@ -8,7 +8,7 @@
 
 A mobile object for an NPC.
 
-This type inherits the following: [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md)
+This type inherits the following: [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md).
 ## Properties
 
 ### `acrobatics`
@@ -517,7 +517,9 @@ This is the time measured in hours from the beginning of the game when the actor
 ### `facing`
 <div class="search_terms" style="display: none">facing</div>
 
-*Read-only*. The facing of the actor, in radians. It corresponds to the `mobile.reference.orientation.z`. Facing of 0 corresponds to the in game North, facing of PI corresponds to the game South. It's in clockwise direction.
+*Read-only*. The facing of the actor, in radians. Facing is defined like a compass heading, positive values are clockwise and North (+Y axis) is zero, while facing of PI corresponds to South (-Y axis).
+
+It's the same as `mobile.reference.orientation.z`.
 
 **Returns**:
 
@@ -759,7 +761,7 @@ No description yet available.
 ### `height`
 <div class="search_terms" style="display: none">height</div>
 
-The height of the mobile above the ground.
+The height of the mobile's bounding box.
 
 **Returns**:
 
@@ -1134,6 +1136,17 @@ Direct access to the actor's current movement flags, showing if the actor is sne
 
 ***
 
+### `isSpeaking`
+<div class="search_terms" style="display: none">isspeaking, speaking</div>
+
+*Read-only*. This property is `true` when the actor is speaking a dialogue line. This includes: hit grunts, combat reactions, and the usual dialogue.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isSwimming`
 <div class="search_terms" style="display: none">isswimming, swimming</div>
 
@@ -1302,7 +1315,7 @@ Direct access to the actor's levitate effect attribute.
 ### `mobToMobCollision`
 <div class="search_terms" style="display: none">mobtomobcollision</div>
 
-Allows modifying if this actor will collide with other actors. When `true` (default), the actor cannot move through other actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it.
+Allows modifying if this mobile will collide with other mobiles (actors and projectiles). When `true` (default), the actor cannot move through other actors, and projectiles will collide with actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it. Projectiles will pass through actors and other projectiles.
 
 May be useful when free movement is required in crowded situations, or to temporarily let the player move past an actor.
 
@@ -1780,7 +1793,7 @@ Direct access to the actor's sound effect attribute.
 ### `spellReadied`
 <div class="search_terms" style="display: none">spellreadied</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor has a spell readied.
+Friendly access to the actor's flag that controls if the actor has a spell readied.
 
 **Returns**:
 
@@ -1880,6 +1893,10 @@ The currently equipped light.
 <div class="search_terms" style="display: none">velocity</div>
 
 A vector that represents the 3D velocity of the object.
+
+!!! tip
+	To change the velocity of an actor change this property during the [calcMoveSpeed](https://mwse.github.io/MWSE/events/calcMoveSpeed/) event.
+
 
 **Returns**:
 
@@ -2109,7 +2126,7 @@ Equip may fail for the following reasons:
 - When a weapon is being used to attack, it cannot be replaced.
 
 ```lua
-local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ... })
+local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ..., playSound = ... })
 ```
 
 **Parameters**:
@@ -2120,6 +2137,7 @@ local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ...,
 	* `addItem` (boolean): *Default*: `false`. If `true`, the item will be added to the actor's inventory if needed.
 	* `selectBestCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the best condition and best charge will be selected.
 	* `selectWorstCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the worst condition and worst charge will be selected. Can be useful for selecting tools.
+	* `playSound` (boolean): *Default*: `true`. If `true`, the default item sound will be played for the item.
 
 **Returns**:
 
@@ -2211,6 +2229,25 @@ local result = myObject:getBootsWeight()
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `getEffectiveAttackDistance`
+<div class="search_terms" style="display: none">geteffectiveattackdistance, effectiveattackdistance</div>
+
+Returns the distance used for checking attack range. This is measured by the distance between the actors' bounding boxes edges, as if the actors were exactly facing each other. The number may be negative if the bounding boxes overlap.
+
+```lua
+local distance = myObject:getEffectiveAttackDistance(mobile)
+```
+
+**Parameters**:
+
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor.
+
+**Returns**:
+
+* `distance` (number)
 
 ***
 
@@ -2454,6 +2491,25 @@ Kills the actor by setting its health to 0.
 ```lua
 myObject:kill()
 ```
+
+***
+
+### `overrideHeadTrackingThisFrame`
+<div class="search_terms" style="display: none">overrideheadtrackingthisframe</div>
+
+
+!!! warning
+	This part of the API isn't fully understood yet and thus is considered experimental. That means that there can be breaking changes requiring the code using this part of the API to be rewritten. The MWSE team will not make any effort to keep backward compatibility with the mods using experimental APIs.
+
+ Causes the actor to look towards this reference, while obey the usual head turning constraints. This must be called every frame in the `simulate` event to work. It will override regular head look behaviour and the target may be at any distance in the same worldspace.
+
+```lua
+myObject:overrideHeadTrackingThisFrame(target)
+```
+
+**Parameters**:
+
+* `target` ([tes3reference](../types/tes3reference.md))
 
 ***
 

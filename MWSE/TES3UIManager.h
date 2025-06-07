@@ -20,6 +20,7 @@ namespace TES3::UI {
 	Element* findMenu(const char* id);
 	Element* findMenu_lua(sol::object id);
 	Element* findHelpLayerMenu(UI_ID id);
+	Element* findHelpLayerMenu(const char* id);
 	Element* findHelpLayerMenu_lua(sol::object id);
 	Element* getMenuOnTop();
 	bool enterMenuMode(UI_ID id);
@@ -39,6 +40,9 @@ namespace TES3::UI {
 	Reference* getConsoleReference();
 	void __cdecl setConsoleReference(Reference* reference);
 
+	Element* getCursor();
+	InventoryTile* getCursorTile();
+
 	std::tuple<unsigned int, unsigned int> getViewportSize_lua();
 	float getViewportScale();
 
@@ -50,6 +54,7 @@ namespace TES3::UI {
 
 	void showDialogueMessage(const char* message, int style, int answerIndex);
 	void showDialogueMessage_lua(sol::table params);
+	void __cdecl updateTopicsList();
 
 	Element* showMessageBox(const char* message, const char* image = nullptr, bool showInDialog = true);
 
@@ -85,6 +90,7 @@ namespace TES3::UI {
 	void updateMagicMenuSelection();
 	void updateSpellmakingMenu();
 	void updateEnchantingMenu();
+	void flagSkillUpdated(int unknown);
 
 	void updateInventoryMenuTiles();
 	void updateContentsMenuTiles();
@@ -115,6 +121,10 @@ namespace TES3::UI {
 	std::tuple<int, int, int> textLayoutGetTextExtent_lua(sol::table params);
 	int textLayoutWrapTextInPlace(TES3::Font* font, char* textBuffer, unsigned int maxWidth, bool ignoreLinkDelimiters, char newlineReplacement);
 	std::tuple<std::string, int> textLayoutWrapText_lua(sol::table params);
+
+	void showLoadingMenu(const char* title, float progress);
+	void updateLoadingMenu(float progress);
+	void destroyLoadingMenu();
 
 	//
 	// Helper functions.

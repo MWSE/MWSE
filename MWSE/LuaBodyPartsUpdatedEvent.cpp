@@ -21,6 +21,7 @@ namespace mwse::lua::event {
 
 		eventData["reference"] = m_Reference;
 		eventData["mobile"] = m_MobileActor;
+		eventData["updated"] = false;
 
 		return eventData;
 	}

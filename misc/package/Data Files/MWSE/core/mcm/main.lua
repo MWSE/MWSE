@@ -54,7 +54,7 @@ end
 
 -- Expose the mcm API.
 mwse.mcm = require("mcm.mcm")
-mwse.mcm.i18n = mwse.loadTranslations("mcm")
+mwse.mcm.i18n = mwse.loadTranslations("..")
 
 -- credit to Pherim and MelchiorDahrk for the default icons
 local favoriteIcons = {
@@ -395,8 +395,7 @@ local function onClickModConfigButton()
 			local imageButton = entryBlock:createImageButton(iconTable)
 			updateFavoriteImageButton(imageButton, isFavorite(package.name))
 			imageButton.childAlignY = 0.5
-			imageButton.absolutePosAlignX = .97
-			-- imageButton.absolutePosAlignY = 1.0
+			imageButton.absolutePosAlignX = 0.97
 			imageButton.absolutePosAlignY = 0.5
 			imageButton.consumeMouseEvents = true
 			imageButton.visible = isFavorite(package.name)
@@ -460,6 +459,8 @@ local function onClickModConfigButton()
 		-- Cause the menu to refresh itself.
 		menu:updateLayout()
 		modList.widget:contentsChanged()
+		-- Mods with a certain title length can add an unnecessary newline, which goes away when the layout is refreshed.
+		menu:updateLayout()
 
 		if lastModName ~= nil then
 			for _, child in ipairs(modListContents.children) do
@@ -549,11 +550,14 @@ function mwse.registerModConfig(name, package)
 	if (configMods[name] ~= nil) then
 		error(string.format("mwse.registerModConfig: A mod with the name %s has already been registered!", name))
 	end
+
+	package = table.copy(package)
 	--- @cast package mwseModConfig
 
 	-- Add the package to the list.
 	package.name = name
 	configMods[name] = package
+	mwse.log("%s mod config registered", name)
 end
 
 --- When we've initialized, set up our UI IDs and let other mods know that we are ready to boogie.

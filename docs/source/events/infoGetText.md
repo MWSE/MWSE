@@ -39,15 +39,17 @@ event.register(tes3.event.infoGetText, infoGetTextCallback)
 			return
 		end
 	
-		if e.info.type == tes3.dialogueType.greeting then
-			-- e.text is empty by default.
-			e.text = e:loadOriginalText() .. "\n\nSweet sugar! Have some."
-			tes3.addItem({
-				reference = tes3.player,
-				item = "ingred_moon_sugar_01",
-				count = 2,
-			})
+		if e.info.type ~= tes3.dialogueType.greeting then
+			return
 		end
+	
+		-- e.text is empty by default.
+		e.text = e:loadOriginalText() .. "\n\nSweet sugar! Have some."
+		tes3.addItem({
+			reference = tes3.player,
+			item = "ingred_moon_sugar_01",
+			count = 2,
+		})
 	end
 	
 	event.register(tes3.event.infoGetText, onInfoGetText)

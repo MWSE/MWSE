@@ -52,6 +52,10 @@ namespace mwse::lua {
 			usertypeDefinition["type"] = &TES3::WearablePart::bodypartID;
 			usertypeDefinition["male"] = &TES3::WearablePart::male;
 			usertypeDefinition["female"] = &TES3::WearablePart::female;
+			usertypeDefinition["valid"] = sol::readonly_property(&TES3::WearablePart::isValid);
+
+			// Basic function binding.
+			usertypeDefinition["getPart"] = &TES3::WearablePart::getPart;
 		}
 
 		// Binding for TES3::BodyPartManager::AttachNode
@@ -87,9 +91,8 @@ namespace mwse::lua {
 			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
-			usertypeDefinition["activeBodyParts"] = sol::readonly_property(&TES3::BodyPartManager::activeBodyParts);
 			usertypeDefinition["animationPhase"] = sol::readonly_property(&TES3::BodyPartManager::animationPhase);
-			usertypeDefinition["attachNodes"] = sol::readonly_property(&TES3::BodyPartManager::attachNodes);
+			usertypeDefinition["attachNodes"] = sol::readonly_property(&TES3::BodyPartManager::getAttachNodes);
 			usertypeDefinition["reference"] = sol::readonly_property(&TES3::BodyPartManager::reference);
 
 			// Basic function bindings.
@@ -100,6 +103,7 @@ namespace mwse::lua {
 			usertypeDefinition["setBodyPartByIdForObject"] = &TES3::BodyPartManager::setBodyPartByIdForObject;
 			usertypeDefinition["setBodyPartForObject"] = &TES3::BodyPartManager::setBodyPartForObject;
 			usertypeDefinition["updateForReference"] = &TES3::BodyPartManager::updateForReference;
+			usertypeDefinition["getAttachNode"] = &TES3::BodyPartManager::getAttachNode;
 		}
 	}
 }

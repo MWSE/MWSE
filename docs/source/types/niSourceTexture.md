@@ -8,7 +8,7 @@
 
 A texture that represent both static and dynamic content, as NiSourceTexture data objects can have their pixel data modified on the fly to implement dynamic texture behavior.
 
-This type inherits the following: [niTexture](../types/niTexture.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTexture](../types/niTexture.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`
@@ -460,22 +460,6 @@ local success = myObject:saveBinary(path)
 **Returns**:
 
 * `success` (boolean): If true the object was successfully serialized.
-
-***
-
-### `setFlag`
-<div class="search_terms" style="display: none">setflag, flag</div>
-
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
-
-```lua
-myObject:setFlag(state, index)
-```
-
-**Parameters**:
-
-* `state` (boolean)
-* `index` (number)
 
 ***
 

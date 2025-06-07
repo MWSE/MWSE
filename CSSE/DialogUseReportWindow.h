@@ -17,5 +17,7 @@ namespace se::cs::dialog::use_report_window {
 	};
 	static_assert(sizeof(UserData) == 0x10, "UserData for the use report window failed size validation");
 
+	void showUseReport(const BaseObject* object);
+
 	void installPatches();
 }

@@ -1,7 +1,7 @@
 #include "TES3AlchemyLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 
 #include "TES3Alchemy.h"
 #include "TES3DataHandler.h"
@@ -108,7 +108,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserdataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["flags"] = &TES3::Alchemy::flags;
@@ -123,15 +123,10 @@ namespace mwse::lua {
 		usertypeDefinition["createCopy"] = &TES3::Alchemy::createCopy_lua<TES3::Alchemy>;
 		usertypeDefinition["getActiveEffectCount"] = &TES3::Alchemy::getActiveEffectCount;
 		usertypeDefinition["getFirstIndexOfEffect"] = &TES3::Alchemy::getFirstIndexOfEffect;
+		usertypeDefinition["hasEffect"] = &TES3::Alchemy::hasEffect;
 
 		// Functions exposed as properties.
 		usertypeDefinition["autoCalc"] = sol::property(&TES3::Alchemy::getAutoCalc, &TES3::Alchemy::setAutoCalc);
-		usertypeDefinition["icon"] = sol::property(&TES3::Alchemy::getIconPath, &TES3::Alchemy::setIconPath);
-		usertypeDefinition["mesh"] = sol::property(&TES3::Alchemy::getModelPath, &TES3::Alchemy::setModelPath);
-		usertypeDefinition["name"] = sol::property(&TES3::Alchemy::getName, &TES3::Alchemy::setName);
 		usertypeDefinition["script"] = &TES3::Alchemy::script;
-
-		// TODO: Deprecated. Remove before 2.1-stable.
-		usertypeDefinition["model"] = sol::property(&TES3::Alchemy::getModelPath, &TES3::Alchemy::setModelPath);
 	}
 }

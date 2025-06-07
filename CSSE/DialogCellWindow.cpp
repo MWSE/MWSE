@@ -16,10 +16,11 @@
 #include "DialogProcContext.h"
 
 namespace se::cs::dialog::cell_window {
+	using gCellViewWindowHandle = memory::ExternalGlobal<HWND, 0x6CE954>;
 	using gActiveEditCell = memory::ExternalGlobal<Cell*, 0x6CDFF4>;
 
-	const auto CS_addAllToRefsListView = reinterpret_cast<void(__cdecl*)(HWND, const ReferenceList*)>(0x40E5B0);
-	const auto CS_refreshCellListView = reinterpret_cast<void(__cdecl*)(HWND)>(0x40E250);
+	const auto CS_AddAllToRefsListView = reinterpret_cast<void(__cdecl*)(HWND, const ReferenceList*)>(0x401442);
+	const auto CS_RefreshCellListView = reinterpret_cast<void(__cdecl*)(HWND)>(0x4037C4);
 
 	static HWND cellWindowSearchControl = NULL;
 
@@ -27,9 +28,16 @@ namespace se::cs::dialog::cell_window {
 	static std::optional<std::regex> currentSearchRegex;
 	static bool modeShowModifiedOnly = false;
 
+	using gSuppressItemChangePropagation = memory::ExternalGlobal<bool, 0x6CDFF8>;
+	static int lastCellTopIndex = -1;
+
 	void __cdecl PatchSpeedUpCellViewDialog(HWND hWnd) {
 		SendMessageA(hWnd, WM_SETREDRAW, FALSE, NULL);
 
+		lastCellTopIndex = ListView_GetTopIndex(hWnd);
+
+		// Call the original function.
+		const auto CS_refreshCellListView = reinterpret_cast<void(__cdecl*)(HWND)>(0x40E250);
 		CS_refreshCellListView(hWnd);
 
 		SendMessageA(hWnd, WM_SETREDRAW, TRUE, NULL);
@@ -40,6 +48,7 @@ namespace se::cs::dialog::cell_window {
 			SendMessageA(hWnd, WM_SETREDRAW, FALSE, NULL);
 		}
 
+		const auto CS_addAllToRefsListView = reinterpret_cast<void(__cdecl*)(HWND, const ReferenceList*)>(0x40E5B0);
 		CS_addAllToRefsListView(hWnd, references);
 
 		if (references == &gActiveEditCell::get()->unknown_0x30) {
@@ -51,7 +60,7 @@ namespace se::cs::dialog::cell_window {
 		if (currentSearchRegex) {
 			return std::regex_search(haystack.data(), currentSearchRegex.value());
 		}
-		else if (settings.object_window.case_sensitive) {
+		else if (settings.object_window.search_settings.case_sensitive) {
 			return string::contains(haystack, currentSearchText);
 		}
 		else {
@@ -97,37 +106,51 @@ namespace se::cs::dialog::cell_window {
 
 		SendMessageA(refsListView, LVM_DELETEALLITEMS, 0, 0);
 		if (cell) {
-			CS_addAllToRefsListView(refsListView, &cell->unknown_0x40);
-			CS_addAllToRefsListView(refsListView, &cell->unknown_0x30);
+			CS_AddAllToRefsListView(refsListView, &cell->unknown_0x40);
+			CS_AddAllToRefsListView(refsListView, &cell->unknown_0x30);
 		}
 
 		SendMessageA(refsListView, WM_SETREDRAW, TRUE, NULL);
 		RedrawWindow(refsListView, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
 	}
 
-	void RefreshCellListView(HWND hWnd) {
-		auto cellListView = GetDlgItem(hWnd, CONTROL_ID_CELL_LIST_VIEW);
-		auto cell = gActiveEditCell::get();
-
-		SendMessageA(cellListView, WM_SETREDRAW, FALSE, NULL);
-
-		CS_refreshCellListView(cellListView);
-
-		// Select active cell.
-		if (cell) {
-			LVFINDINFOA findInfo = { LVFI_PARAM, NULL, (LPARAM)cell, {}, {} };
-			int index = SendDlgItemMessageA(hWnd, CONTROL_ID_CELL_LIST_VIEW, LVM_FINDITEM, -1, (LPARAM)&findInfo);
-			if (index != -1) {
-				LVITEMA listItem = {};
-				listItem.state = LVIS_SELECTED;
-				listItem.stateMask = LVIS_SELECTED;
-				SendDlgItemMessageA(hWnd, CONTROL_ID_CELL_LIST_VIEW, LVM_SETITEMSTATE, index, (LPARAM)&listItem);
-				SendDlgItemMessageA(hWnd, CONTROL_ID_CELL_LIST_VIEW, LVM_ENSUREVISIBLE, index, TRUE);
-			}
+	void __cdecl SelectCell(Cell* cell) {
+		if (cell == nullptr) {
+			lastCellTopIndex = -1;
+			return;
 		}
 
-		SendMessageA(cellListView, WM_SETREDRAW, TRUE, NULL);
-		RedrawWindow(cellListView, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
+		gSuppressItemChangePropagation::set(true);
+
+		const auto hWnd = gCellViewWindowHandle::get();
+		const auto cellListView = GetDlgItem(hWnd, CONTROL_ID_CELL_LIST_VIEW);
+
+		// Always force it to sort.
+		SendMessageA(cellListView, LVM_SORTITEMS, memory::ExternalGlobal<WPARAM, 0x6CDF50>::get(), 0x4023CE);
+
+		// Hacky way to restore view... ensure the last item is visible, then the old top index.
+		if (lastCellTopIndex != -1) {
+			const auto lastIndex = ListView_GetItemCount(cellListView);
+			ListView_EnsureVisible(cellListView, lastIndex - 1, TRUE);
+			ListView_EnsureVisible(cellListView, lastCellTopIndex, TRUE);
+			lastCellTopIndex = -1;
+		}
+
+		// Also make sure the selected cell is preserved and visible.
+		const auto activeCell = gActiveEditCell::get();
+		LVFINDINFOA findInfo = { LVFI_PARAM, NULL, (LPARAM)cell, {}, {} };
+		const auto index = ListView_FindItem(cellListView, 0, &findInfo);
+		if (index > 0) {
+			ListView_SetItemState(cellListView, index, LVIS_SELECTED, LVIS_SELECTED);
+			ListView_EnsureVisible(cellListView, index, TRUE);
+		}
+
+		gSuppressItemChangePropagation::set(false);
+	}
+
+	void RefreshCellListView(HWND hWnd) {
+		auto cellListView = GetDlgItem(hWnd, CONTROL_ID_CELL_LIST_VIEW);
+		CS_RefreshCellListView(cellListView);
 	}
 
 	void OnFilterEditChanged(HWND hWnd) {
@@ -143,9 +166,9 @@ namespace se::cs::dialog::cell_window {
 			currentSearchText = std::move(newText);
 
 			// Regex crunching can be slow, so only do it once.
-			if (settings.object_window.use_regex) {
+			if (settings.object_window.search_settings.use_regex) {
 				auto flags = std::regex_constants::extended | std::regex_constants::optimize | std::regex_constants::nosubs;
-				if (!settings.object_window.case_sensitive) {
+				if (!settings.object_window.search_settings.case_sensitive) {
 					flags |= std::regex_constants::icase;
 				}
 
@@ -165,6 +188,7 @@ namespace se::cs::dialog::cell_window {
 
 			// Search affects cell list.
 			RefreshCellListView(hWnd);
+			SelectCell(gActiveEditCell::get());
 		}
 	}
 
@@ -176,6 +200,7 @@ namespace se::cs::dialog::cell_window {
 		const auto hDlg = context.getWindowHandle();
 
 		auto cellListView = GetDlgItem(hDlg, CONTROL_ID_CELL_LIST_VIEW);
+		auto refsListLabel = GetDlgItem(hDlg, CONTROL_ID_REFS_LABEL);
 		auto refsListView = GetDlgItem(hDlg, CONTROL_ID_REFS_LIST_VIEW);
 		auto showModifiedButton = GetDlgItem(hDlg, CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON);
 		auto searchLabel = GetDlgItem(hDlg, CONTROL_ID_FILTER_LABEL);
@@ -189,16 +214,16 @@ namespace se::cs::dialog::cell_window {
 		const auto mainHeight = HIWORD(lParam);
 
 		constexpr auto BASIC_PADDING = 2;
+		constexpr auto REFERENCE_LIST_TITLE_PADDING = BASIC_PADDING * 4;
 		constexpr auto STATIC_HEIGHT = 13;
 		constexpr auto EDIT_HEIGHT = 21;
 		constexpr auto STATIC_COMBO_OFFSET = (EDIT_HEIGHT - STATIC_HEIGHT) / 2;
 
-		// Update list view area.
-		RECT listViewRect = {};
-		GetWindowRelativeRect(cellListView, &listViewRect);
-		MoveWindow(cellListView, listViewRect.left, listViewRect.top, GetRectWidth(&listViewRect), GetRectHeight(&listViewRect) - 3, FALSE);
-		GetWindowRelativeRect(refsListView, &listViewRect);
-		MoveWindow(refsListView, listViewRect.left, listViewRect.top, GetRectWidth(&listViewRect), GetRectHeight(&listViewRect) - 3, FALSE);
+		// Make room for our new search bar.
+		const auto viewWidth = (mainWidth - BASIC_PADDING * 3) / 2;
+		MoveWindow(cellListView, BASIC_PADDING, BASIC_PADDING, viewWidth, mainHeight - EDIT_HEIGHT - BASIC_PADDING * 3, TRUE);
+		MoveWindow(refsListLabel, BASIC_PADDING * 2 + viewWidth, REFERENCE_LIST_TITLE_PADDING, viewWidth, STATIC_HEIGHT, TRUE);
+		MoveWindow(refsListView, BASIC_PADDING * 2 + viewWidth, REFERENCE_LIST_TITLE_PADDING * 2 + STATIC_HEIGHT, viewWidth, mainHeight - EDIT_HEIGHT - BASIC_PADDING * 2 - REFERENCE_LIST_TITLE_PADDING * 2 - STATIC_HEIGHT, TRUE);
 
 		// Update the search bar placement.
 		int currentY = mainHeight - EDIT_HEIGHT - BASIC_PADDING;
@@ -213,6 +238,10 @@ namespace se::cs::dialog::cell_window {
 	void CALLBACK PatchDialogProc_AfterCreate(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
 		auto hInstance = (HINSTANCE)GetWindowLongA(hWnd, GWLP_HINSTANCE);
+
+		// Make it so only one row in the cell list can be selected at a time.
+		const auto hCellList = GetDlgItem(hWnd, CONTROL_ID_CELL_LIST_VIEW);
+		winui::AddStyles(hCellList, LVS_SINGLESEL);
 
 		// Ensure our custom filter box is added.
 		if (cellWindowSearchControl == NULL) {
@@ -246,6 +275,7 @@ namespace se::cs::dialog::cell_window {
 			case CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON:
 				modeShowModifiedOnly = SendDlgItemMessageA(hWnd, id, BM_GETCHECK, 0, 0);
 				RefreshCellListView(hWnd);
+				SelectCell(gActiveEditCell::get());
 				RefreshRefsListView(hWnd);
 				break;
 			}
@@ -338,6 +368,9 @@ namespace se::cs::dialog::cell_window {
 
 		// Patch: Optimize displaying of cell view window.
 		genJumpEnforced(0x4037C4, 0x40E250, reinterpret_cast<DWORD>(PatchSpeedUpCellViewDialog));
+
+		// Patch: Preserve position when selecting new cells.
+		genJumpEnforced(0x404953, 0x4105D0, reinterpret_cast<DWORD>(SelectCell));
 
 		// Patch: Optimize displaying of cell objects view window.
 		genJumpEnforced(0x401442, 0x40E5B0, reinterpret_cast<DWORD>(PatchSpeedUpCellObjectViewDialog));

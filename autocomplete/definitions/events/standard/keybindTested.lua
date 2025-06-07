@@ -10,7 +10,7 @@ return {
 		["transition"] = {
 			type = "tes3.keyTransition",
 			readOnly = true,
-			description = "The transition for the keybind that was tested. This is typically `tes3.keyTransition.isDown` but not guaranteed to be. Always be sure to check what transition is being used.",
+			description = "The transition type specified for the test. Each game mechanic may choose to trigger on a specific transition type. This is typically `tes3.keyTransition.downThisFrame` (key pressed), but not guaranteed to be. Always be sure to check what transition is being used.",
 		},
 		["result"] = {
 			type = "boolean",

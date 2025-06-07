@@ -8,7 +8,7 @@
 
 An abstract base class from which all the animation controllers inherit. It has all the functionality needed to control the timing and update animations.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `active`

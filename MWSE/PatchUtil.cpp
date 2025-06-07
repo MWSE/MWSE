@@ -10,6 +10,7 @@
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
 #include "TES3Class.h"
+#include "TES3Creature.h"
 #include "TES3CutscenePlayer.h"
 #include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
@@ -17,10 +18,13 @@
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
+#include "TES3ItemData.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
+#include "TES3MagicEffectInstance.h"
 #include "TES3Misc.h"
 #include "TES3MobilePlayer.h"
+#include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
 #include "TES3Reference.h"
 #include "TES3Script.h"
@@ -35,13 +39,16 @@
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
+#include "NIPointLight.h"
 #include "NISortAdjustNode.h"
-#include "NiTriBasedGeometry.h"
+#include "NiTriShape.h"
+#include "NiTriShapeData.h"
 #include "NIUVController.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
 #include "TES3Util.h"
+#include "WindowsUtil.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
@@ -50,6 +57,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
+#include "CrashLogExceptionHandler.hpp"
 
 namespace mwse::patch {
 
@@ -274,7 +282,9 @@ namespace mwse::patch {
 			return 0;
 		}
 
-		return inputController->readButtonPressed(key);
+		auto result = inputController->readButtonPressed(key);
+		TES3::UI::MenuInputController::lastKeyPressDIK = result ? *key : 0xFF;
+		return result;
 	}
 
 	//
@@ -604,8 +614,10 @@ namespace mwse::patch {
 
 	//
 	// Patch: Fix crash when releasing a clone of a light with no reference.
+	//        Also fix crash when the attachment scenegraph light pointer has been cleared.
 	//
-	// This is mostly useful for creating VFXs using a light object as a base.
+	// The first fix is mostly useful for creating VFXs using a light object as a base.
+	// The second fix is to prevent a crash and try to identify the cause of the cleared pointer.
 	//
 
 	TES3::Attachment* __fastcall PatchReleaseLightEntityForReference(const TES3::Reference* reference) {
@@ -613,7 +625,16 @@ namespace mwse::patch {
 			return nullptr;
 		}
 
-		return reference->getAttachment(TES3::AttachmentType::Light);
+		auto attachment = static_cast<TES3::LightAttachment*>(reference->getAttachment(TES3::AttachmentType::Light));
+
+		if (attachment && attachment->data->light == nullptr) {
+			log::getLog() << "[MWSE] Crash prevented while cleaning up light reference to object '" <<
+				reference->baseObject->objectID << "' in cell '" << reference->getCell()->getEditorName() << "'. " <<
+				"Please report this to the #mwse channel in the Morrowind Modding Community discord." << std::endl;
+			return nullptr;
+		}
+
+		return attachment;
 	}
 
 	//
@@ -761,8 +782,10 @@ namespace mwse::patch {
 	//
 	
 	void __fastcall PatchSetLoopingSoundBufferVolume(TES3::AudioController* audio, DWORD unused, TES3::SoundEvent* soundEvent, unsigned char volume) {
-		unsigned char adjustedVolume = (unsigned char)(float(volume) * float(soundEvent->sound->volume) / 255.0f);
-		audio->setSoundBufferVolume(soundEvent->soundBuffer, adjustedVolume);
+		if (soundEvent->sound) {
+			volume = (unsigned char)(float(volume) * float(soundEvent->sound->volume) / 255.0f);
+		}
+		audio->setSoundBufferVolume(soundEvent->soundBuffer, volume);
 	}
 
 	//
@@ -866,7 +889,7 @@ namespace mwse::patch {
 
 		// Try to get more information about this crash.
 		if (mobile->reference->getSceneGraphNode() == nullptr) {
-			log::getLog() << "No scene graph found when attempting to add animation controller to reference. Doing what we can with the reference. Please report this to the #mwse channel in the Morrowind Modding Community discord." << std::endl;
+			log::getLog() << "[MWSE] No scene graph found when attempting to add animation controller to reference. Doing what we can with the reference. Please report this to the #mwse channel in the Morrowind Modding Community discord." << std::endl;
 			safePrintObjectToLog("Reference", mobile->reference);
 		}
 
@@ -969,6 +992,24 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Fix crash when updating lights for a reference that has had a light unassigned.
+	//
+
+	static TES3::LightAttachmentNode* __fastcall PatchGetLightAttachmentIfItHasALight(TES3::Reference* reference) {
+		const auto result = reference->getAttachedDynamicLight();
+		if (result == nullptr) {
+			return nullptr;
+		}
+
+		if (result->light == nullptr) {
+			reference->deleteDynamicLightAttachment();
+			return nullptr;
+		}
+
+		return result;
+	}
+
+	//
 	// Patch: Guard against invalid light flicker/pulse updates.
 	//
 
@@ -1017,7 +1058,383 @@ namespace mwse::patch {
 			pathGrid->show();
 		}
 	}
-	
+
+	//
+	// Patch: Allow bound armour function to also summon bracers and pauldrons.
+	//
+
+	const auto TES3_SwapBoundArmor = reinterpret_cast<bool (__cdecl*)(TES3::MagicEffectInstance*, const char*, const char*)>(0x465DE0);
+	const auto TES3_UI_PostAddAndEquipBoundItem = reinterpret_cast<void(__cdecl*)(TES3::Item*, TES3::ItemData*, int)>(0x5D1F00);
+
+	TES3::EquipmentStack* createEquipBoundItem(TES3::Item* item, TES3::Actor* actor, TES3::MobileActor* mobile) {
+		// Create and equip bound item. Excerpted from bound gauntlet code.
+		TES3::EquipmentStack* equipped = nullptr;
+		auto itemData = TES3::ItemData::createForBoundItem(item);
+
+		actor->inventory.addItem(mobile, item, 1, false, &itemData);
+		actor->equipItem(item, itemData, &equipped, mobile);
+		if (mobile->actorType == TES3::MobileActorType::Player) {
+			TES3_UI_PostAddAndEquipBoundItem(item, itemData, 1);
+		}
+		mobile->wearItem(item, itemData, false, false, true);
+		return equipped->canonicalCopy();
+	}
+
+	bool __cdecl PatchSwapBoundArmor(TES3::MagicEffectInstance* effectInstance, const char* armorId1, const char* armorId2) {
+		auto records = TES3::DataHandler::get()->nonDynamicData;
+
+		auto armor1 = static_cast<TES3::Armor*>(records->resolveObject(armorId1));
+		auto armor2 = armorId2 ? static_cast<TES3::Armor*>(records->resolveObject(armorId2)) : nullptr;
+
+		if (armor1 == nullptr || armor1->objectType != TES3::ObjectType::Armor) {
+			return false;
+		}
+
+		if (armor1->slot == TES3::ArmorSlot::LeftBracer) {
+			auto mobile = effectInstance->target->getAttachedMobileActor();
+			auto actor = static_cast<TES3::Actor*>(effectInstance->target->baseObject);
+			auto mcpGlovesWithBracers = mcp::getFeatureEnabled(mcp::feature::AllowGlovesWithBracers);
+
+			// Left hand.
+			// Un-equip and memorize any item in the same location.
+			auto equipLeftHand = actor->getEquippedArmorBySlot(TES3::ArmorSlot::LeftGauntlet);
+			if (!equipLeftHand) {
+				equipLeftHand = actor->getEquippedArmorBySlot(TES3::ArmorSlot::LeftBracer);
+			}
+			if (!equipLeftHand && !mcpGlovesWithBracers) {
+				equipLeftHand = actor->getEquippedClothingBySlot(TES3::ClothingSlot::LeftGlove);
+			}
+
+			if (equipLeftHand) {
+				// The original left hand item is memorized in the lastUsedArmor member.
+				effectInstance->lastUsedArmor = equipLeftHand->canonicalCopy();
+				if (equipLeftHand->object == mobile->currentEnchantedItem.object) {
+					effectInstance->lastUsedEnchItem = mobile->currentEnchantedItem.canonicalCopy();
+				}
+			}
+
+			// Create bound item and record created stack.
+			effectInstance->createdData.equipmentOrSummon = createEquipBoundItem(armor1, actor, mobile);
+
+			// Right hand.
+			if (armor2) {
+				// Un-equip and memorize any item in the same location.
+				auto equipRightHand = actor->getEquippedArmorBySlot(TES3::ArmorSlot::RightGauntlet);
+				if (!equipRightHand) {
+					equipRightHand = actor->getEquippedArmorBySlot(TES3::ArmorSlot::RightBracer);
+				}
+				if (!equipRightHand && !mcpGlovesWithBracers) {
+					equipRightHand = actor->getEquippedClothingBySlot(TES3::ClothingSlot::RightGlove);
+				}
+
+				if (equipRightHand) {
+					// The original right hand item is memorized in the lastUsedWeapon member.
+					effectInstance->lastUsedWeapon = equipRightHand->canonicalCopy();
+					if (equipRightHand->object == mobile->currentEnchantedItem.object) {
+						effectInstance->lastUsedEnchItem = mobile->currentEnchantedItem.canonicalCopy();
+					}
+				}
+
+				// Create bound item and record created stack.
+				effectInstance->createdData2 = createEquipBoundItem(armor2, actor, mobile);
+			}
+
+			return true;
+		}
+		else if (armor1->slot == TES3::ArmorSlot::LeftPauldron) {
+			auto mobile = effectInstance->target->getAttachedMobileActor();
+			auto actor = static_cast<TES3::Actor*>(effectInstance->target->baseObject);
+
+			// Left shoulder.
+			// Un-equip and memorize any item in the same location.
+			auto equipLeftPauldron = actor->getEquippedArmorBySlot(TES3::ArmorSlot::LeftPauldron);
+			if (equipLeftPauldron) {
+				// The original left side item is memorized in the lastUsedArmor member.
+				effectInstance->lastUsedArmor = equipLeftPauldron->canonicalCopy();
+				if (equipLeftPauldron->object == mobile->currentEnchantedItem.object) {
+					effectInstance->lastUsedEnchItem = mobile->currentEnchantedItem.canonicalCopy();
+				}
+			}
+
+			// Create bound item and record created stack.
+			effectInstance->createdData.equipmentOrSummon = createEquipBoundItem(armor1, actor, mobile);
+
+			// Right shoulder.
+			if (armor2) {
+				// Un-equip and memorize any item in the same location.
+				auto equipRightPauldron = actor->getEquippedArmorBySlot(TES3::ArmorSlot::RightPauldron);
+				if (equipRightPauldron) {
+					// The original right side item is memorized in the lastUsedWeapon member.
+					effectInstance->lastUsedWeapon = equipRightPauldron->canonicalCopy();
+					if (equipRightPauldron->object == mobile->currentEnchantedItem.object) {
+						effectInstance->lastUsedEnchItem = mobile->currentEnchantedItem.canonicalCopy();
+					}
+				}
+
+				// Create bound item and record created stack.
+				effectInstance->createdData2 = createEquipBoundItem(armor2, actor, mobile);
+			}
+
+			return true;
+		}
+		else {
+			// Use original code for all other slots.
+			return TES3_SwapBoundArmor(effectInstance, armorId1, armorId2);
+		}
+	}
+
+	//
+	// Patch: Modify proximity movement speed matching of AI followers to limit the speed match from going to zero on immobilized follow targets.
+	//
+
+	float __stdcall PatchGetAnimDataMovementSpeedCapped(TES3::AnimationData* animData) {
+		// Restrict speed matching to be at least 60% of base animation speed.
+		return std::max(0.6f, animData->movementSpeed);
+	}
+
+	__declspec(naked) void PatchMovementAnimSpeedMatching() {
+		__asm {
+			push eax
+			call $					// Replace with call PatchGetAnimDataMovementSpeedCapped
+			fstp [esp + 0x14]		// fst [targetMoveSpeed]
+			fld [esp + 0x10]		// fld [finalMovementSpeed]
+		}
+	}
+	const size_t PatchMovementAnimSpeedMatching_size = 0xE;
+
+	//
+	// Patch: Allow per-shape control of whether software or hardware skinning is used.
+	//
+
+	// Define a constant usable in inline asm.
+	#define Const_SoftwareSkinningFlag 0x200
+	static_assert(Const_SoftwareSkinningFlag == NI::TriShapeFlags::SoftwareSkinningFlag);
+
+	__declspec(naked) void PatchNITriBasedGeom_Ctor1() {
+		__asm {
+			movzx eax, word ptr [esp + 0x1C]	// eax = zero extended triangleCount
+			mov dword ptr [esi], 0x751268		// Set NiTriBasedGeom vtable
+			mov [esi + 0x34], eax				// Initialize triangleCount and patchRenderFlags together
+			nop
+		}
+	}
+	const size_t PatchNITriBasedGeom_Ctor1_size = 0xF;
+
+	__declspec(naked) void PatchNITriBasedGeom_Ctor2() {
+		__asm {
+			xor edx, edx
+			mov [esi + 0x34], edx				// Initialize triangleCount and patchRenderFlags together
+			nop
+		}
+	}
+	const size_t PatchNITriBasedGeom_Ctor2_size = 0x6;
+
+	const auto NI_TriBasedGeometry_CopyMembers = reinterpret_cast<void(__thiscall*)(NI::TriBasedGeometry*, NI::TriBasedGeometry*)>(0x6F15B0);
+	void __fastcall PatchNITriShapeCopyMembers(NI::TriShape* _this, DWORD _EDX_, NI::TriShape* to) {
+		NI_TriBasedGeometry_CopyMembers(_this, to);
+
+		// Ensure that if the geometry data has been deep cloned, that the render flags are copied too.
+		if (to->modelData != _this->modelData) {
+			to->getModelData()->patchRenderFlags = _this->getModelData()->patchRenderFlags;
+		}
+	}
+
+	__declspec(naked) void PatchNIDX8Renderer_RenderShape() {
+		__asm {
+			nop
+			test word ptr [esi + 0x36], Const_SoftwareSkinningFlag	// Skip hardware skinning if patchRenderFlags matches SoftwareSkinningFlag
+			__asm _emit 0x75 __asm _emit 0x19						// jnz short $ + 0x1B (assembler can't output short offsets correctly)
+		}
+	}
+	const size_t PatchNIDX8Renderer_RenderShape_size = 0x8;
+
+	//
+	// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
+	//
+
+	__declspec(naked) void PatchRemoveMagicsByEffect() {
+		__asm {
+			cmp byte ptr [esp + 0x4C], 5		// if (magicEffectInstance.state == MagicEffectState_Working)
+			jnz done
+			mov byte ptr [esp + 0x4C], 6		// magicEffectInstance.state = MagicEffectState_Ending
+		done:
+			ret
+		}
+	}
+
+	//
+	// Patch: Fix loading crashes where there are links to missing objects from mods that were removed.
+	//
+
+	// Prevent crashes when a casting item is no longer present.
+	__declspec(naked) void PatchMagicSourceInstanceDtor() {
+		__asm {
+			test edi, edi						// if (!castingItem)
+			__asm _emit 0x74 __asm _emit 0x45	// jz short $ + 0x47 (assembler can't output short offsets correctly)
+			lea esi, [edi+4]					// esi = &castingItem.objectType
+			mov eax, [esi]						// eax = castingItem.objectType
+			nop
+		}
+	}
+	const size_t PatchMagicSourceInstanceDtor_size = 0xA;
+
+	// Prevent deleting itemData when a soul trapped creature is no longer present.
+	__declspec(naked) void PatchSoulTrappedCreatureNotFound1() {
+		__asm {
+			add esp, 0x8
+			__asm _emit 0xEB __asm _emit 0x0D	// jmp short $ + 0xF (assembler can't output short offsets correctly)
+		}
+	}
+	const size_t PatchSoulTrappedCreatureNotFound1_size = 0x5;
+
+	__declspec(naked) void PatchSoulTrappedCreatureNotFound2() {
+		__asm {
+			add esp, 0x8
+			__asm _emit 0xEB __asm _emit 0x09	// jmp short $ + 0xB (assembler can't output short offsets correctly)
+		}
+	}
+	const size_t PatchSoulTrappedCreatureNotFound2_size = 0x5;
+
+	__declspec(naked) void PatchSoulTrappedCreatureNotFound3() {
+		__asm {
+			add esp, 0x8
+			__asm _emit 0xEB __asm _emit 0x17	// jmp short $ + 0x19 (assembler can't output short offsets correctly)
+		}
+	}
+	const size_t PatchSoulTrappedCreatureNotFound3_size = 0x5;
+
+	//
+	// Patch: Prevent crash with magic effects on invalid targets.
+	//
+
+	void __cdecl PatchMagicEffectFortifySkill(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
+		auto mobile = effectInstance->target->getAttachedMobileActor();
+		if (mobile == nullptr) {
+			return;
+		}
+
+		const auto MagicEffectFortifySkill = reinterpret_cast<void(__cdecl*)(TES3::MagicSourceInstance*, float, TES3::MagicEffectInstance*, int)>(0x4625F0);
+		MagicEffectFortifySkill(sourceInstance, deltaTime, effectInstance, effectIndex);
+	}
+
+	//
+	// Patch: Suppress sGeneralMastPlugMismatchMsg message.
+	//
+
+	std::optional<UINT> AllowYesToAll = {};
+
+	static UINT __stdcall GetCachedYesToAll(LPCSTR lpAppName, LPCSTR lpKeyName, INT nDefault, LPCSTR lpFileName) {
+		if (!AllowYesToAll.has_value()) {
+			AllowYesToAll = GetPrivateProfileIntA(lpAppName, lpKeyName, nDefault, lpFileName);
+		}
+
+		return AllowYesToAll.value_or(FALSE);
+	}
+
+	static void __cdecl SuppressGeneralMastPlugMismatchMsg(const char* sGeneralMastPlugMismatchMsg) {
+		// Prevent the message from even showing.
+		if (Configuration::SuppressUselessWarnings) {
+			return;
+		}
+
+		// Display the message, but prevent yes to all from being used.
+		decltype(AllowYesToAll) cachedYesToAll = FALSE;
+		std::swap(cachedYesToAll, AllowYesToAll);
+		tes3::logAndShowError(sGeneralMastPlugMismatchMsg);
+		std::swap(cachedYesToAll, AllowYesToAll);
+	}
+
+	//
+	// Patch: Make checking the object type of nullptr objects return an invalid type instead of crashing.
+	//
+
+	TES3::ObjectType::ObjectType __fastcall PatchSafeGetObjectType(TES3::ObjectType::ObjectType* objectType) {
+		if (objectType == nullptr || size_t(objectType) == offsetof(TES3::BaseObject, objectType)) {
+			return TES3::ObjectType::Invalid;
+		}
+		return *objectType;
+	}
+
+	void DoPatchSafeGetObjectType() {
+		constexpr DWORD patchAddresses[] = { 0x41106E, 0x41CB71, 0x41CBA8, 0x41CBBA, 0x41CC93, 0x41CD68, 0x41CD80, 0x41D7A3, 0x41F59F, 0x42103B, 0x421373, 0x455165, 0x45517A, 0x4551B9, 0x45FA0E, 0x45FA22, 0x45FA3A, 0x45FAA9, 0x45FBC9, 0x45FBDD, 0x45FBF5, 0x45FC62, 0x45FC99, 0x45FD79, 0x45FE80, 0x4607A0, 0x4607B4, 0x4608E1, 0x4608F5, 0x460941, 0x463416, 0x464D25, 0x464D67, 0x464DC0, 0x464E4D, 0x464EB4, 0x4657D6, 0x465802, 0x465907, 0x465E2D, 0x465E45, 0x465FA2, 0x465FAF, 0x4666E7, 0x4667EB, 0x46F59C, 0x46FBA1, 0x46FBD4, 0x472F15, 0x47319A, 0x473263, 0x473334, 0x47367C, 0x47369B, 0x473787, 0x47393F, 0x4739A0, 0x473CCE, 0x473D84, 0x473DC5, 0x473E21, 0x473F7B, 0x474021, 0x474174, 0x474238, 0x484C62, 0x484DC2, 0x484ED0, 0x485FFD, 0x486365, 0x486433, 0x488B2F, 0x48B16E, 0x48B20C, 0x48B233, 0x48B253, 0x48B2E8, 0x48B4B1, 0x48B548, 0x48B712, 0x48B73A, 0x48B764, 0x48B86B, 0x48BA9C, 0x48BCBF, 0x48BD64, 0x48BFB3, 0x48C089, 0x48C2D4, 0x48C3D2, 0x48C463, 0x4951E5, 0x49526F, 0x495335, 0x495380, 0x4954BE, 0x4954F5, 0x495561, 0x4955A6, 0x4956AE, 0x495811, 0x495854, 0x4958F1, 0x49595C, 0x4959B7, 0x495A50, 0x495AF0, 0x495B6D, 0x495BC9, 0x495C0B, 0x495C67, 0x495CB6, 0x495D22, 0x495DE2, 0x495E9C, 0x495F20, 0x495F97, 0x495FCE, 0x496096, 0x4960FB, 0x496123, 0x49617B, 0x4961D7, 0x496219, 0x4962C8, 0x496314, 0x4964ED, 0x496515, 0x49655B, 0x49672A, 0x4968C1, 0x496E1D, 0x496E7D, 0x496EC8, 0x496F18, 0x496F58, 0x497030, 0x497BEB, 0x497D37, 0x497E72, 0x49817A, 0x498598, 0x498764, 0x499182, 0x49938C, 0x4999CE, 0x499ABF, 0x499AD1, 0x499AE3, 0x499CB3, 0x499D7D, 0x49A1BD, 0x49A5A2, 0x49A5F9, 0x49A758, 0x49A7D8, 0x49A7EA, 0x49A8AD, 0x49A8BA, 0x49AA36, 0x49AA48, 0x49ABE8, 0x49ABFA, 0x49ACAF, 0x49ACC1, 0x49B51C, 0x49B595, 0x49B640, 0x49B6BD, 0x49B793, 0x49D1BB, 0x49DC83, 0x49E8BE, 0x49E8CC, 0x49EA7E, 0x49EB4E, 0x49EC91, 0x49EFA8, 0x49FD2B, 0x4A01EB, 0x4A0BFE, 0x4A171B, 0x4A24EB, 0x4A359E, 0x4A407B, 0x4A4A8B, 0x4A525E, 0x4A526C, 0x4A56BB, 0x4A5C7B, 0x4A61BB, 0x4A67AB, 0x4A6C7B, 0x4A716B, 0x4A74DB, 0x4AB36B, 0x4AC78E, 0x4AC79C, 0x4AC88B, 0x4ACAD6, 0x4B01BD, 0x4B01DC, 0x4B02FE, 0x4B0851, 0x4B0C16, 0x4B0C5D, 0x4B0CA4, 0x4B0CE9, 0x4B0ED0, 0x4B1076, 0x4B119F, 0x4B15D0, 0x4B1636, 0x4B166B, 0x4B172E, 0x4B1E68, 0x4B5B44, 0x4B5BD4, 0x4B5CF9, 0x4B5D50, 0x4B5DC6, 0x4B5DEF, 0x4B5E22, 0x4B5E49, 0x4B606D, 0x4B6076, 0x4B8880, 0x4B8ADD, 0x4B9007, 0x4B92E2, 0x4B9520, 0x4B9A9D, 0x4B9D79, 0x4B9D98, 0x4B9E0A, 0x4B9FEC, 0x4BA03C, 0x4BA0B8, 0x4BA108, 0x4BA183, 0x4BA1A6, 0x4BA489, 0x4BA946, 0x4BA95A, 0x4BAEAB, 0x4BAF53, 0x4BB7E8, 0x4BB9F1, 0x4BBDFE, 0x4BBE1E, 0x4BBE2B, 0x4BBE3B, 0x4C0BE7, 0x4C0BF1, 0x4C0C49, 0x4C0C70, 0x4C1188, 0x4C18FB, 0x4C1A4A, 0x4C1E6F, 0x4C2096, 0x4C21A5, 0x4C37ED, 0x4C3B28, 0x4C3BEB, 0x4C3CCF, 0x4C3D29, 0x4C55CE, 0x4C5744, 0x4C5960, 0x4C5B68, 0x4C604C, 0x4C6408, 0x4C6817, 0x4C6C0C, 0x4C71E1, 0x4C722B, 0x4C73DD, 0x4C74F3, 0x4C79E7, 0x4C7E83, 0x4C848B, 0x4C84A6, 0x4CF9A0, 0x4D0DC3, 0x4D212B, 0x4D280E, 0x4D2847, 0x4D2C7D, 0x4D2CE5, 0x4D2D80, 0x4D332E, 0x4D734B, 0x4D8A27, 0x4D987E, 0x4D988C, 0x4D9AE4, 0x4D9CF2, 0x4D9DA5, 0x4D9DDE, 0x4DA00F, 0x4DA0A2, 0x4DBBE6, 0x4DBD77, 0x4DBF2C, 0x4DBF82, 0x4DBFE7, 0x4DC046, 0x4DC1B2, 0x4DC2E9, 0x4DC81B, 0x4DDD7B, 0x4DDE1C, 0x4DDEAA, 0x4DDEF2, 0x4DE077, 0x4DE081, 0x4DE08B, 0x4DE944, 0x4DEB23, 0x4DEC21, 0x4DF596, 0x4DF84F, 0x4E0D48, 0x4E12FC, 0x4E1646, 0x4E1683, 0x4E173A, 0x4E17E4, 0x4E19C1, 0x4E1A46, 0x4E2B0F, 0x4E491A, 0x4E4928, 0x4E4936, 0x4E497F, 0x4E4AD9, 0x4E4DCC, 0x4E5687, 0x4E5786, 0x4E633D, 0x4E6E83, 0x4E7136, 0x4E7199, 0x4E77A3, 0x4E79CF, 0x4E7E0F, 0x4E7E21, 0x4E7E33, 0x4E7E9F, 0x4E7EFC, 0x4E7F60, 0x4E813B, 0x4E839A, 0x4E8503, 0x4E85C5, 0x4E85DB, 0x4E86CA, 0x4E8BC6, 0x4E8C94, 0x4E8D62, 0x4E8F9C, 0x4E90B9, 0x4E91D2, 0x4E9452, 0x4E9710, 0x4E9754, 0x4E994A, 0x4E9981, 0x4E9A8A, 0x4EAF5E, 0x4EB0ED, 0x4EB16D, 0x4EB183, 0x4EB199, 0x4EB1CD, 0x4EB62D, 0x4EB816, 0x4EBB16, 0x4EBB28, 0x4EBE4F, 0x4EBEA5, 0x4F260B, 0x4F27BF, 0x4F7229, 0x4F7468, 0x4F9FF1, 0x4FA0A6, 0x4FA0B4, 0x4FA0C2, 0x4FA22C, 0x4FA2DF, 0x4FE0BE, 0x4FE0CC, 0x4FE0E8, 0x4FE0F6, 0x4FE110, 0x4FE252, 0x4FE2AD, 0x4FE2BB, 0x4FE2C9, 0x4FE346, 0x4FE39B, 0x4FECD6, 0x4FECE4, 0x4FED04, 0x4FED12, 0x4FED30, 0x5057F2, 0x506753, 0x507303, 0x507323, 0x50733F, 0x507764, 0x5077BA, 0x508054, 0x5080B0, 0x50856E, 0x5085D5, 0x5086B6, 0x508741, 0x50893D, 0x50899D, 0x508A1A, 0x508A75, 0x508ACB, 0x508B23, 0x508CB5, 0x508CC8, 0x508D5A, 0x50904B, 0x509627, 0x509664, 0x509707, 0x5098EF, 0x509A52, 0x50A4CF, 0x50A5FD, 0x50A722, 0x50A858, 0x50A910, 0x50A9C8, 0x50AA32, 0x50AAD3, 0x50ABD0, 0x50BA30, 0x50BC8B, 0x50BE1C, 0x50BE88, 0x50BF8C, 0x50C196, 0x50C233, 0x50C248, 0x50C256, 0x50C643, 0x50EC97, 0x50ECC4, 0x50ED38, 0x50EFC6, 0x50F03E, 0x5116C0, 0x51248A, 0x512498, 0x51385A, 0x51415C, 0x514A22, 0x514D7B, 0x514FD1, 0x515052, 0x51522F, 0x5155D0, 0x51572B, 0x515DDB, 0x5165F7, 0x516E41, 0x517890, 0x51793C, 0x5179A9, 0x517C13, 0x518ADE, 0x518B6B, 0x518BC1, 0x5206EA, 0x520744, 0x520896, 0x5208F0, 0x5234C9, 0x525092, 0x527F5F, 0x528082, 0x52B241, 0x52B333, 0x52C078, 0x52C0AF, 0x52C1A5, 0x52C1B9, 0x52C844, 0x52CCD7, 0x52CDB4, 0x52CDC2, 0x52CDD0, 0x52CDDE, 0x52CDEC, 0x52CEE8, 0x533691, 0x533F61, 0x53753A, 0x53767E, 0x537ACF, 0x53836F, 0x53843E, 0x53AFF7, 0x53DEEA, 0x54C9D7, 0x54CB05, 0x54D342, 0x54FF4C, 0x550EB6, 0x551B06, 0x55A52B, 0x55F120, 0x55F219, 0x55F4E3, 0x55F5D8, 0x5634FD, 0x563755, 0x563819, 0x565FC4, 0x5677C9, 0x5699DF, 0x569A96, 0x569ACD, 0x569B9F, 0x56B1C2, 0x56B1D0, 0x56B1DE, 0x56B1EC, 0x56B233, 0x56B241, 0x56B2B6, 0x56B2C8, 0x56B2D6, 0x56B2E4, 0x56B32F, 0x56B33D, 0x56B3FF, 0x56B40D, 0x56B41B, 0x56B429, 0x56B470, 0x56B47E, 0x56B4F1, 0x56B503, 0x56B511, 0x56B51F, 0x56B56A, 0x56B578, 0x56C149, 0x56C208, 0x56C375, 0x56C42C, 0x56F05D, 0x573435, 0x5738F1, 0x5743B7, 0x574C92, 0x58FD49, 0x58FEA7, 0x590449, 0x590DFB, 0x590E5E, 0x590E73, 0x590E85, 0x590E97, 0x590EA9, 0x590EBB, 0x590EC9, 0x590ED7, 0x590EE5, 0x590EF3, 0x590F01, 0x590F0F, 0x590F1D, 0x590F2B, 0x590F3D, 0x590FE0, 0x5910B6, 0x591637, 0x5916C9, 0x5917FE, 0x591EB1, 0x592B54, 0x595749, 0x59575A, 0x59A16F, 0x59A19F, 0x59A1CF, 0x59A1FF, 0x59A22F, 0x59ACA8, 0x59D1A9, 0x5A3C98, 0x5A3CBF, 0x5A3CE6, 0x5A4704, 0x5A5492, 0x5A5F10, 0x5A63FF, 0x5A6414, 0x5B447B, 0x5B4489, 0x5B44DA, 0x5B4719, 0x5B5002, 0x5B502C, 0x5B5067, 0x5B51DD, 0x5B5409, 0x5B54CD, 0x5B56E8, 0x5B59DF, 0x5B5C6D, 0x5B5E06, 0x5B6012, 0x5B6028, 0x5B7224, 0x5B76C5, 0x5B7A8E, 0x5B7CA5, 0x5B7CD6, 0x5B7DCE, 0x5B7DE7, 0x5BF3CC, 0x5C47FD, 0x5C497A, 0x5C4A1E, 0x5C4AC5, 0x5C55DA, 0x5C615A, 0x5C6171, 0x5C61B2, 0x5C6B4E, 0x5CA998, 0x5CA9BF, 0x5CA9E6, 0x5CB836, 0x5CC782, 0x5CD901, 0x5CE309, 0x5D095E, 0x5D098F, 0x5D142B, 0x5D36B9, 0x5D36C7, 0x5D36D5, 0x5D3790, 0x5D3865, 0x5D3A5E, 0x5D3C61, 0x5D4069, 0x5D4505, 0x5D450F, 0x5D461F, 0x5D4628, 0x5D463B, 0x5D4644, 0x5E0090, 0x5E00D5, 0x5E0738, 0x5E212A, 0x5E2198, 0x5E31AA, 0x5E31EF, 0x5E38BE, 0x5E4355, 0x5ED061, 0x5ED073, 0x5ED0A0, 0x5ED0E4, 0x5ED0F6, 0x5ED123, 0x5ED157, 0x5F72E9, 0x5F72FA, 0x5FE2DE, 0x608759, 0x608AA7, 0x60AFF8, 0x60D7A7, 0x60D8F8, 0x60E365, 0x61527E, 0x615290, 0x631A50, 0x631A5C, 0x631B70, 0x631B7A, 0x631B91, 0x631B9B, 0x631CB8, 0x631CC4, 0x631DF8, 0x631E02, 0x631E1B, 0x631E25, 0x63261D, 0x633413, 0x6335FA, 0x63365D, 0x633740, 0x63384E, 0x633888, 0x633914, 0x6339A5, 0x633C98, 0x633CC1, 0x633D53, 0x633DB6, 0x635373, 0x6EA072, 0x6EA08C, 0x6EA097, 0x6EA0BA, 0x6EA1B3, 0x6EA721, 0x6EA794, 0x6EA7A0, 0x6EA7AB, 0x6EA7B7, 0x6EA7CB, 0x6EA7D7, 0x6EA7DF, 0x6EA8D8 };
+		for (auto address : patchAddresses) {
+			genCallEnforced(address, 0x4EE8B0, reinterpret_cast<DWORD>(PatchSafeGetObjectType));
+		}
+	}
+
+	//
+	// Patch: Expand keyboard key translations
+	//
+
+	inline static void WritePatchKeyCharacter(unsigned int key, char character) {
+		writeValueEnforced<char>(0x775148 + key, 0, character); // US, Unshifted
+		writeValueEnforced<char>(0x775248 + key, 0, character); // US, Shifted
+		writeValueEnforced<char>(0x775348 + key, 0, character); // DE, Unshifted
+		writeValueEnforced<char>(0x775448 + key, 0, character); // DE, Shifted
+		writeValueEnforced<char>(0x775548 + key, 0, character); // FR, Unshifted
+		writeValueEnforced<char>(0x775648 + key, 0, character); // FR, Shifted
+	}
+
+	static void PatchExpandKeyboardCharacterTranslations() {
+		WritePatchKeyCharacter(DIK_NUMPAD0, '0');
+		WritePatchKeyCharacter(DIK_NUMPAD1, '1');
+		WritePatchKeyCharacter(DIK_NUMPAD2, '2');
+		WritePatchKeyCharacter(DIK_NUMPAD3, '3');
+		WritePatchKeyCharacter(DIK_NUMPAD4, '4');
+		WritePatchKeyCharacter(DIK_NUMPAD5, '5');
+		WritePatchKeyCharacter(DIK_NUMPAD6, '6');
+		WritePatchKeyCharacter(DIK_NUMPAD7, '7');
+		WritePatchKeyCharacter(DIK_NUMPAD8, '8');
+		WritePatchKeyCharacter(DIK_NUMPAD9, '9');
+	}
+
+	//
+	// Patch: Fix crash when trying to unequip a nocked projectile item while still using an item index for its position.
+	// 
+	// Before serializing, the nocked projectile is converted into an item index. Some mods may try to unequip the index
+	// before it is resolved back into an actual projectile. This will prevent the crash.
+	//
+
+	static void __fastcall PatchUnequipIndexedProjectile(TES3::MobileActor* mobile) {
+		auto& actionData = mobile->actionData;
+
+		// Only call the destructor if the value can reasonably be a pointer.
+		if (size_t(actionData.nockedProjectile) > 0x70000u) {
+			actionData.nockedProjectile->vTable.mobileObject->destructor(actionData.nockedProjectile, true);
+		}
+
+		actionData.nockedProjectile = nullptr;
+	}
+
+	__declspec(naked) void PatchUnequipIndexedProjectileSetup() {
+		__asm {
+			mov ecx, ebx // Size: 0x2
+		}
+	}
+	constexpr size_t PatchUnequipIndexedProjectileSetup_size = 0x2;
+
+	//
+	// Patch: Improve lights
+	//
+
+	const auto TES3_DynamicLightingTest = reinterpret_cast<void(__cdecl*)(NI::PointLight * light, NI::Node * node, int radius, int lightFlags, bool isLand, bool highPriority)>(0x4D2F40);
+	static void __cdecl PatchDynamicLightingTest(NI::PointLight* light, NI::Node* node, int radius, int lightFlags, bool isLand, bool highPriority) {
+		if (!Configuration::ReplaceLightSorting) {
+			TES3_DynamicLightingTest(light, node, radius, lightFlags, isLand, highPriority);
+			return;
+		}
+
+		if (light == nullptr || node == nullptr) {
+			return;
+		}
+
+		// Store information about the light into the light itself. Because that's what Morrowind does.
+		light->setFlag(highPriority, 3u);
+		light->specular = { float(radius), float(radius), float(radius) };
+
+		node->updatePointLight(light, isLand);
+	}
+
 	//
 	// Install all the patches.
 	//
@@ -1271,7 +1688,7 @@ namespace mwse::patch {
 		// Patch: Don't save VFX manager if there are no valid visual effects.
 		genCallEnforced(0x4BD149, 0x469CC0, reinterpret_cast<DWORD>(PatchSaveVisualEffects));
 
-		// Patch: Fix crash when releasing a clone of a light with no reference.
+		// Patch: Fix crash when releasing a clone of a light with no reference. Also fix crash when the attachment scenegraph light pointer has been cleared.
 		genCallEnforced(0x4D260C, 0x4E5170, reinterpret_cast<DWORD>(PatchReleaseLightEntityForReference));
 
 		// Patch: Cache values between dialogue filters. The actual override that makes use of this cache is in LuaManager for its hooks.
@@ -1289,7 +1706,8 @@ namespace mwse::patch {
 		// Patch: Set ActiveMagicEffect.isIllegalSummon correctly on loading a savegame.
 		writePatchCodeUnprotected(0x454826, (BYTE*)&PatchLoadActiveMagicEffect, PatchLoadActiveMagicEffect_size);
 
-		// Patch: Fix crash in NPC flee logic when trying to pick a random node from a pathgrid with 0 nodes.
+		// Patch: Fix crash in NPC wander and flee logic when trying to pick a random node from a pathgrid with 0 nodes.
+		genCallEnforced(0x5339D8, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 		genCallEnforced(0x549E76, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 
 		// Patch: UI element image mirroring on negative image scale.
@@ -1445,6 +1863,12 @@ namespace mwse::patch {
 		writeDoubleWordUnprotected(0x746118, reinterpret_cast<DWORD>(&PatchFindNextFileA));
 		writeDoubleWordUnprotected(0x74611C, reinterpret_cast<DWORD>(&PatchFindClose));
 
+		// Patch: Guard against updating dynamic light attachments that have no actual light.
+		genCallEnforced(0x485DA4, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
+		genCallEnforced(0x485E87, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
+		genCallEnforced(0x4D260C, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
+		genCallEnforced(0x5243D6, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
+
 		// Patch: Guard against invalid light flicker/pulse updates.
 		genCallEnforced(0x49B75E, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 		genCallEnforced(0x4D33BF, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
@@ -1452,6 +1876,61 @@ namespace mwse::patch {
 		// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
 		writePatchCodeUnprotected(0x4F444E, (BYTE*)&PatchPathGridLoader, PatchPathGridLoader_size);
 		genCallUnprotected(0x4F444E + 4, reinterpret_cast<DWORD>(PatchPathGridLoaderCheckNodeData));
+
+		// Patch: Allow bound armour function to also summon bracers and pauldrons.
+		genCallEnforced(0x466457, 0x465DE0, reinterpret_cast<DWORD>(PatchSwapBoundArmor));
+
+		// Patch: Modify proximity movement speed matching of AI followers to limit the speed match from going to zero on immobilized follow targets.
+		writePatchCodeUnprotected(0x540DBA, (BYTE*)&PatchMovementAnimSpeedMatching, PatchMovementAnimSpeedMatching_size);
+		genCallUnprotected(0x540DBA + 1, reinterpret_cast<DWORD>(PatchGetAnimDataMovementSpeedCapped));
+
+		// Patch: Allow control of whether software or hardware skinning is used through TriShape flags.
+		auto TriShape_linkObject = &NI::TriShape::linkObject;
+		writePatchCodeUnprotected(0x6FF0A8, (BYTE*)&PatchNITriBasedGeom_Ctor1, PatchNITriBasedGeom_Ctor1_size);
+		writePatchCodeUnprotected(0x6FF0F0, (BYTE*)&PatchNITriBasedGeom_Ctor2, PatchNITriBasedGeom_Ctor2_size);
+		genCallEnforced(0x6E54C5, 0x6F15B0, reinterpret_cast<DWORD>(PatchNITriShapeCopyMembers));
+		writePatchCodeUnprotected(0x6ACF1F, (BYTE*)&PatchNIDX8Renderer_RenderShape, PatchNIDX8Renderer_RenderShape_size);
+		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriShape_vTable, NI::TriShape_vTable::linkObject), 0x6E56D0, *reinterpret_cast<DWORD*>(&TriShape_linkObject));
+
+		// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
+		genCallUnprotected(0x4559B2, reinterpret_cast<DWORD>(PatchRemoveMagicsByEffect), 0x8);
+
+		// Patch: Fix loading crashes where there are links to missing objects from mods that were removed.
+		writePatchCodeUnprotected(0x512485, (BYTE*)&PatchMagicSourceInstanceDtor, PatchMagicSourceInstanceDtor_size);
+		writePatchCodeUnprotected(0x49DEE1, (BYTE*)&PatchSoulTrappedCreatureNotFound1, PatchSoulTrappedCreatureNotFound1_size);
+		writePatchCodeUnprotected(0x4A4BEC, (BYTE*)&PatchSoulTrappedCreatureNotFound2, PatchSoulTrappedCreatureNotFound2_size);
+		writePatchCodeUnprotected(0x4D8DD7, (BYTE*)&PatchSoulTrappedCreatureNotFound3, PatchSoulTrappedCreatureNotFound3_size);
+
+		// Patch: Prevent crash with magic effects on invalid targets.
+		writeDoubleWordEnforced(0x7884B0 + (TES3::EffectID::FortifySkill * 4), 0x4625F0, reinterpret_cast<DWORD>(PatchMagicEffectFortifySkill));
+
+		// Patch: Suppress sGeneralMastPlugMismatchMsg message.
+		genCallUnprotected(0x477512, reinterpret_cast<DWORD>(GetCachedYesToAll), 0x477518 - 0x477512);
+		genCallEnforced(0x4BB55D, 0x477400, reinterpret_cast<DWORD>(SuppressGeneralMastPlugMismatchMsg));
+
+		// Patch: Clean up mobile collision data when a mobile is destroyed. Fixes probably a Todd-typo.
+		genNOPUnprotected(0x55E55B, 0x55E55F - 0x55E55B);
+
+		// Patch: Fix missing nullptr check when determining object types.
+		DoPatchSafeGetObjectType();
+
+		// Patch: Expand keyboard key translations
+		PatchExpandKeyboardCharacterTranslations();
+
+		// Patch: Fix crash when trying to unequip a nocked projectile item while still using an item index for its position.
+		genNOPUnprotected(0x4968E1, 0x4968FB - 0x4968E1);
+		writePatchCodeUnprotected(0x4968E1, (BYTE*)&PatchUnequipIndexedProjectileSetup, PatchUnequipIndexedProjectileSetup_size);
+		genCallUnprotected(0x4968E1 + 0x2, reinterpret_cast<DWORD>(PatchUnequipIndexedProjectile));
+
+#if false
+		// Patch: Update dynamic lights to implement custom light sorting.
+		genCallEnforced(0x485B60, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2C9C, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2D04, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2D9F, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D2F10, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+#endif
 	}
 
 	void installPostLuaPatches() {
@@ -1474,10 +1953,26 @@ namespace mwse::patch {
 			auto NiFlipController_clone = &NI::FlipController::copy;
 			genCallEnforced(0x715D26, DWORD(NI::FlipController::_copy), *reinterpret_cast<DWORD*>(&NiFlipController_clone));
 		}
+
+		// Patch: Allow global audio.
+		if (Configuration::UseGlobalAudio) {
+			constexpr auto DS_FLAGS_DEFAULT = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
+			constexpr auto DS_FLAGS_3D = DS_FLAGS_DEFAULT | DSBCAPS_CTRL3D | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_MUTE3DATMAXDISTANCE;
+			writeAddFlagEnforced(0x401FEA + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
+			writeAddFlagEnforced(0x401FE1 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
+			writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
+			writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
+			writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
+		}
 	}
 
 	void installPostInitializationPatches() {
-
+		// Patch: Give threads descriptions.
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler) {
+			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
+			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
+		}
 	}
 
 	//
@@ -1580,25 +2075,6 @@ namespace mwse::patch {
 		log::getLog() << std::dec << std::endl;
 		log::getLog() << "Morrowind has crashed! To help improve game stability, send MWSE_Minidump.dmp and mwse.log to the #mwse channel at the Morrowind Modding Community Discord: https://discord.me/mwmods" << std::endl;
 
-#ifdef APPVEYOR_BUILD_NUMBER
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << "-" << APPVEYOR_BUILD_NUMBER << std::endl;
-#else
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << std::endl;
-#endif
-		log::getLog() << "Build date: " << MWSE_BUILD_DATE << std::endl;
-
-		// Display the memory usage in the log.
-		PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-		log::getLog() << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-		if (memCounter.PrivateUsage > 3650722201) {
-			log::getLog() << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
-		}
-
-		// Try to print the lua stack trace.
-		log::getLog() << "Lua traceback at time of crash:" << std::endl;
-		lua::logStackTrace();
-
 		// Try to print any relevant mwscript information.
 		if (TES3::Script::currentlyExecutingScript) {
 			log::getLog() << "Currently executing mwscript context:" << std::endl;
@@ -1655,6 +2131,11 @@ namespace mwse::patch {
 		else {
 			log::getLog() << "MiniDump creation failed. Could not get file handle. Error: " << GetLastError() << std::endl;
 		}
+
+		if constexpr (CrashLogger::DEBUG_LOGGER) {
+			log::getLog() << "Attempting To Log Crash \n";
+		}
+		CrashLogger::AttemptLog(pep);
 	}
 
 	int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
@@ -1675,6 +2156,7 @@ namespace mwse::patch {
 
 	bool installMiniDumpHook() {
 		if constexpr (INSTALL_MINIDUMP_HOOK) {
+			CrashLogger::Playtime::Init();
 			return genCallEnforced(0x7279AD, 0x416E10, reinterpret_cast<DWORD>(onWinMain));
 		}
 		else {

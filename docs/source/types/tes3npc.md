@@ -8,7 +8,7 @@
 
 An NPC object that has not been cloned. Typically represents the raw information edited in the construction set.
 
-This type inherits the following: [tes3actor](../types/tes3actor.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3actor](../types/tes3actor.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `actorFlags`
@@ -55,6 +55,9 @@ This type inherits the following: [tes3actor](../types/tes3actor.md), [tes3physi
 <div class="search_terms" style="display: none">attributes</div>
 
 A table of eight numbers, representing the base values for the actor's attributes.
+
+!!! note
+	This array is 1-indexed. The array indices correspond to the [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/) table plus 1 to account for Lua's 1-based array indexing. In other words `npc.attributes[tes3.attribute.speed + 1]` returns the attribute value corresponding to Speed.
 
 **Returns**:
 
@@ -144,7 +147,7 @@ The bounding box for the object.
 ### `cloneCount`
 <div class="search_terms" style="display: none">clonecount</div>
 
-*Read-only*. The number of clones that exist of this actor.
+*Read-only*. For base objects this is the number of clones that exist of this actor. For instances this is the ordinal number of the instance.
 
 **Returns**:
 
@@ -542,6 +545,9 @@ The script that runs on the object.
 
 A table of twenty seven numbers, representing the base values for the NPC's skills.
 
+!!! note
+	This array is 1-indexed. The array indices correspond to the [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/) table plus 1 to account for Lua's 1-based array indexing. In other words `npc.skills[tes3.skill.armorer + 1]` returns the skill value corresponding to the Armorer skill.
+
 **Returns**:
 
 * `result` (number[])
@@ -562,7 +568,7 @@ The soul value for this NPC. This is typically `nil`, unless the `calcSouLValue`
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -584,7 +590,7 @@ The soruceless flag of the object.
 ### `spells`
 <div class="search_terms" style="display: none">spells</div>
 
-*Read-only*. A list of spells that the actor has access to. It is a `tes3spellList`, which is a list wrapper with helper functions. The actual list is iterated over using `pairs`. E.g. `for _, spell in pairs(npc.spells) do print(spell.name) end`
+*Read-only*. A list of spells that the actor has access to. It is a `tes3spellList`, which is a list wrapper with helper functions. The actual list is iterated over using `pairs`. E.g. `for _, spell in pairs(npc.spells) do print(spell.name) end`. It is not recommended to directly modify this list; instead use tes3.addSpell and tes3.removeSpell.
 
 **Returns**:
 
@@ -592,14 +598,16 @@ The soruceless flag of the object.
 
 ***
 
-### `stolenList`
-<div class="search_terms" style="display: none">stolenlist</div>
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
 
-A list of actors that the object has been stolen from.
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` (boolean)
 
 ***
 

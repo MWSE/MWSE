@@ -8,7 +8,7 @@
 
 This modifer applies acceleration to particles in the parent niParticleSystemController.
 
-This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`

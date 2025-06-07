@@ -10,17 +10,38 @@ Dropdown.idleColor = tes3ui.getPalette(tes3.palette.normalColor)
 Dropdown.overColor = tes3ui.getPalette(tes3.palette.normalOverColor)
 Dropdown.pressedColor = tes3ui.getPalette(tes3.palette.normalPressedColor)
 
-function Dropdown:enable()
-	Parent.enable(self)
-	local currentValue = self.variable.value
-	local label
+
+function Dropdown.new(class, data)
+	local obj = Parent.new(class, data) --[[@as mwseMCMDropdown]]
+	obj.selectedOption = obj:getOption()
+	return obj
+end
+
+function Dropdown:getOption(optionValue)
+	optionValue = optionValue or self.variable and self.variable.value
+
+	if not optionValue then
+		return
+	end
+
 	for _, option in ipairs(self.options) do
-		if option.value == currentValue then
-			label = option.label
-			break
+		if option.value == optionValue then
+			return option
 		end
 	end
-	self.elements.textBox.text = label
+end
+
+function Dropdown:setVariableValue(newValue)
+	local option = self:getOption(newValue)
+	self:selectOption(option)
+end
+
+function Dropdown:enable()
+	Parent.enable(self)
+
+	self.selectedOption = self.selectedOption or self:getOption()
+
+	self.elements.textBox.text = self.selectedOption and self.selectedOption.label
 	self.elements.textBox.color = self.idleColor
 	self.elements.textBox:register(tes3.uiEvent.mouseClick, function()
 		self:createDropdown()
@@ -31,15 +52,16 @@ end
 function Dropdown:selectOption(option)
 	self.elements.dropdownParent:destroyChildren()
 	self.dropdownActive = false
-
 	-- No new option selected? Don't execute the callback.
-	if self.variable.value == option.value then
+	if self.selectedOption == option then
 		return
 	end
+	self.selectedOption = option
 	self.variable.value = option.value
 	self.elements.textBox.text = option.label
+
 	if option.callback then
-		option.callback()
+		option.callback(self)
 	end
 	self:update()
 end
@@ -67,10 +89,15 @@ function Dropdown:createDropdown()
 
 			listItem:register(tes3.uiEvent.mouseClick, function()
 				self:selectOption(option)
+				dropdown:getTopLevelMenu():updateLayout()
 			end)
 		end
 		self.elements.dropdown = dropdown
 		dropdown:getTopLevelMenu():updateLayout()
+
+		-- Show the setting description when picking an option
+		self:registerMouseOverElements(dropdown.children)
+		self:registerMouseOverElements({dropdown})
 
 		-- Destroy dropdown
 	else
@@ -85,8 +112,10 @@ function Dropdown:createDropdown()
 			return
 		end
 
-		if element.widget and element.widget.contentsChanged then
-			element.widget:contentsChanged()
+		local widget = element.widget
+		if widget and widget.contentsChanged then
+			--- @cast widget tes3uiScrollPane
+			widget:contentsChanged()
 		end
 		recursiveContentsChanged(element.parent)
 	end
@@ -109,6 +138,8 @@ function Dropdown:makeComponent(parentBlock)
 
 	local textBox = border:createTextSelect({ text = "---" })
 	self.elements.textBox = textBox
+	-- Show the setting description when hovering over the text box.
+	table.insert(self.mouseOvers, textBox)
 
 	textBox.color = tes3ui.getPalette(tes3.palette.disabledColor)
 	textBox.widget.idle = self.idleColor
@@ -133,11 +164,9 @@ end
 
 function Dropdown:convertToLabelValue(variableValue)
 	-- Find the matching option and return its label.
-	for _, option in ipairs(self.options) do
-		if variableValue == option.value then
-			return option.label
-		end
-	end
+	local option = self:getOption(variableValue)
+	return option and option.label
 end
+
 
 return Dropdown

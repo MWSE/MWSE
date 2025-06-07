@@ -87,7 +87,7 @@ end
 function Component:registerMouseOverElements(mouseOverList)
 	for _, element in ipairs(mouseOverList or {}) do
 		element:register("mouseOver", function(e)
-			event.trigger("MCM:MouseOver", self)
+			event.trigger("MCM:MouseOver", {component = self})
 			e.source:forwardEvent(e)
 		end)
 		element:register("mouseLeave", function(e)
@@ -211,6 +211,12 @@ function Component:create(parentBlock)
 	if self.postCreate then
 		self:postCreate()
 	end
+end
+
+-- Returns the string that should be shown in the MouseOverInfo
+---@return string?
+function Component:getMouseOverText()
+	return self.description
 end
 
 return Component

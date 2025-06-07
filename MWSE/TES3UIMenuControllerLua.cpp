@@ -25,6 +25,8 @@ namespace mwse::lua {
 			// Basic property binding.
 			usertypeDefinition["lastInputTime"] = &TES3::UI::MenuInputController::repeatKeyTimer;
 			usertypeDefinition["menuController"] = sol::readonly_property(&TES3::UI::MenuInputController::menuController);
+			usertypeDefinition["pointerMoveEventSource"] = sol::readonly_property(&TES3::UI::MenuInputController::pointerMoveEventSource);
+			usertypeDefinition["pointerMovePreviousEventSource"] = sol::readonly_property(&TES3::UI::MenuInputController::pointerMovePreviousEventSource);
 			usertypeDefinition["textInputFocus"] = sol::property(&TES3::UI::MenuInputController::getTextInputElement, &TES3::UI::MenuInputController::acquireTextInput);
 
 			// Basic function binding.

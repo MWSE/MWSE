@@ -71,6 +71,7 @@ namespace TES3 {
 
 		void playAnimationGroupForIndex(int animationGroup, int triIndex, int startFlag = 0, int loopCount = -1);
 		void setHeadNode(NI::Node* head);
+		void headTracking(Reference* actorRefr, Reference* targetRefr);
 		void updateMovementDelta(float timing, Vector3* inout_startingPosition, bool dontUpdatePositionDelta);
 
 		//

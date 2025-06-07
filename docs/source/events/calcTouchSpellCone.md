@@ -25,9 +25,11 @@ event.register(tes3.event.calcTouchSpellCone, calcTouchSpellConeCallback)
 
 * `angleXY` (number): The maximum allowable angle offset (in degrees) in the horizontal direction that will hit. This is related to game setting fCombatAngleXY but using different units. May be adjusted. The highest effective angle is 90 degrees, and larger angles will behave like 90 degrees.
 * `angleZ` (number): The maximum allowable angle offset (in degrees) in the vertical direction that will hit. This is related to game setting fCombatAngleZ but using different units. May be adjusted. The highest effective angle is 90 degrees, and larger angles will behave like 90 degrees.
-* `attacker` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference of the attacker.
-* `attackerMobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile which is making the attack.
-* `reach` (number): The touch spell search range in world units.
+* `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference of the caster.
+* `casterMobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile which is casting the magic.
+* `reach` (number): The touch spell search range in world units. Currently, changes to this value do not have an effect without further engine modifications.
+* `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source.
+* `sourceInstance` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)): *Read-only*. The unique instance of the magic source.
 
 
 ## Related events

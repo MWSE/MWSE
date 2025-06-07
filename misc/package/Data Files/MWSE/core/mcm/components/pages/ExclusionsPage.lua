@@ -8,6 +8,7 @@
 --- The warnings arise because each field set here is also 'set' in the annotations in the core\meta\ folder.
 --- @diagnostic disable: duplicate-set-field
 
+local utils = require("mcm.utils")
 local Parent = require("mcm.components.pages.Page")
 
 --- @class mwseMCMExclusionsPage
@@ -31,14 +32,7 @@ function ExclusionsPage:new(data)
 		t = data --[[@as mwseMCMExclusionsPage]]
 		local tabUID = ("Page_" .. t.label)
 		t.tabUID = tes3ui.registerID(tabUID)
-		-- create variable
-		local typePath = ("mcm.variables." .. t.variable.class)
-		if not t.variable.__index then
-			t.variable = require(typePath):new(t.variable)
-			if t.variable.value == nil then
-				t.variable.value = {}
-			end
-		end
+		utils.getOrInheritVariableData(t)
 	end
 	setmetatable(t, self)
 	self.__index = self
@@ -72,7 +66,7 @@ local function getSortedObjectList(params)
 				doAdd = false
 			end
 		end
-		
+
 		if params.noScripted and obj--[[@as tes3activator]].script ~= nil then
 			doAdd = false
 		end
@@ -85,11 +79,21 @@ local function getSortedObjectList(params)
 	return list
 end
 
+function ExclusionsPage:resetToDefault()
+	if self.variable.defaultSetting == nil then
+		return
+	end
+	-- Make sure we copy defaultSetting so that self.variable.value doesn't become the reference to this table.
+	self.variable.value = table.copy(self.variable.defaultSetting)
+	self.elements.outerContainer.parent:destroyChildren()
+	self:create(self.elements.outerContainer.parent)
+end
+
 function ExclusionsPage:resetSearchBars()
 	self.elements.searchBarInput.rightList.text = ""
 	self.elements.searchBarInput.leftList.text = ""
-	self.elements.searchBarInput.rightList:triggerEvent("keyPress")
-	self.elements.searchBarInput.leftList:triggerEvent("keyPress")
+	self.elements.searchBarInput.rightList:triggerEvent(tes3.uiEvent.keyPress)
+	self.elements.searchBarInput.leftList:triggerEvent(tes3.uiEvent.keyPress)
 end
 
 --- @param e tes3uiEventData
@@ -116,7 +120,7 @@ function ExclusionsPage:toggle(e)
 	--- @cast list tes3uiElement
 
 	-- create element
-	list:createTextSelect{ id = itemID, text = text }:register("mouseClick", function(e)
+	list:createTextSelect{ id = itemID, text = text }:register(tes3.uiEvent.mouseClick, function(e)
 		self:toggle(e)
 	end)
 
@@ -162,7 +166,7 @@ function ExclusionsPage:distributeLeft(items)
 		-- show all items
 		for name, blocked in pairs(self.variable.value) do
 			if blocked then
-				self.elements.leftList:createTextSelect{ id = itemID, text = name }:register("mouseClick", function(e)
+				self.elements.leftList:createTextSelect{ id = itemID, text = name }:register(tes3.uiEvent.mouseClick, function(e)
 					self:toggle(e)
 				end)
 			end
@@ -170,7 +174,7 @@ function ExclusionsPage:distributeLeft(items)
 	else
 		for i, name in pairs(items) do
 			if self.variable.value[name] then
-				self.elements.leftList:createTextSelect{ id = itemID, text = name }:register("mouseClick", function(e)
+				self.elements.leftList:createTextSelect{ id = itemID, text = name }:register(tes3.uiEvent.mouseClick, function(e)
 					self:toggle(e)
 				end)
 			end
@@ -185,7 +189,7 @@ function ExclusionsPage:distributeRight(items)
 	self.elements.rightList:getContentElement():destroyChildren()
 	for i, name in pairs(items) do
 		if not self.variable.value[name] then
-			self.elements.rightList:createTextSelect{ id = itemID, text = name }:register("mouseClick", function(e)
+			self.elements.rightList:createTextSelect{ id = itemID, text = name }:register(tes3.uiEvent.mouseClick, function(e)
 				self:toggle(e)
 			end)
 		end
@@ -228,11 +232,10 @@ function ExclusionsPage:clickFilter(filter)
 
 	-- Turn all filters off
 	for id, button in pairs(self.elements.filterList.children) do
-		button.widget.state = 1
+		button.widget.state = tes3.uiState.normal
 	end
 	-- turn this filter back on
-	filter.widget.state = 4
-
+	filter.widget.state = tes3.uiState.active
 end
 
 -- UI creation functions
@@ -242,7 +245,7 @@ end
 function ExclusionsPage:createSearchBar(parentBlock, listName)
 
 	local searchBlock = parentBlock:createBlock()
-	searchBlock.flowDirection = "left_to_right"
+	searchBlock.flowDirection = tes3.flowDirection.leftToRight
 	searchBlock.autoHeight = true
 	searchBlock.widthProportional = 1.0
 	searchBlock.borderBottom = self.indent
@@ -253,7 +256,7 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 
 	-- Create the search input itself.
 	local input = searchBar:createTextInput({ id = tes3ui.registerID("ExclusionsSearchInput") })
-	input.color = tes3ui.getPalette("disabled_color")
+	input.color = tes3ui.getPalette(tes3.palette.disabledColor)
 	input.text = placeholderText
 	input.borderLeft = 5
 	input.borderRight = 5
@@ -263,7 +266,7 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 	input.consumeMouseEvents = false
 
 	-- Set up the events to control text input control.
-	input:register("keyPress", function(e)
+	input:register(tes3.uiEvent.keyPress, function(e)
 		local inputController = tes3.worldController.inputController
 		local pressedTab = (inputController:isKeyDown(tes3.scanCode.tab))
 		local pressedDelete = (inputController:isKeyDown(tes3.scanCode.delete)) or (inputController:isKeyDown(tes3.scanCode.backspace))
@@ -278,21 +281,21 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 
 		input:forwardEvent(e)
 
-		input.color = tes3ui.getPalette("normal_color")
+		input.color = tes3ui.getPalette(tes3.palette.normalColor)
 		self:updateSearch(listName)
 		input:updateLayout()
 		if input.text == "" then
 			input.text = placeholderText
-			input.color = tes3ui.getPalette("disabled_color")
+			input.color = tes3ui.getPalette(tes3.palette.disabledColor)
 		end
 	end)
 
 	-- Pressing enter applies toggle to all items currenty filtered
-	input:register("keyEnter", function(e)
+	input:register(tes3.uiEvent.keyEnter, function()
 		self:toggleFiltered(listName)
 	end)
 
-	searchBar:register("mouseClick", function()
+	searchBar:register(tes3.uiEvent.mouseClick, function()
 		tes3ui.acquireTextInput(input)
 	end)
 
@@ -302,7 +305,7 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 	-- toggleButton.alignY = 0.0
 	toggleButton.borderAllSides = 0
 	toggleButton.paddingAllSides = 2
-	toggleButton:register("mouseClick", function()
+	toggleButton:register(tes3.uiEvent.mouseClick, function()
 		self:toggleFiltered(listName)
 	end)
 
@@ -315,10 +318,25 @@ function ExclusionsPage:createSearchBar(parentBlock, listName)
 end
 
 --- @param parentBlock tes3uiElement
+function ExclusionsPage:createResetButtonContainer(parentBlock)
+	local grow = parentBlock:createBlock({ id = tes3ui.registerID("Reset_LeftGrow") })
+	grow.autoWidth = true
+	grow.autoHeight = true
+
+	local resetContainer = parentBlock:createBlock({ id = tes3ui.registerID("Reset_InnerContainer") })
+	resetContainer.flowDirection = tes3.flowDirection.leftToRight
+	resetContainer.autoWidth = true
+	resetContainer.autoHeight = true
+	resetContainer.widthProportional = 1.0
+	resetContainer.childAlignX = 1.0
+	self.elements.resetContainer = resetContainer
+end
+
+--- @param parentBlock tes3uiElement
 function ExclusionsPage:createFiltersSection(parentBlock)
 
 	local block = parentBlock:createBlock{}
-	block.flowDirection = "top_to_bottom"
+	block.flowDirection = tes3.flowDirection.topToBottom
 	block.autoWidth = true
 	block.heightProportional = 1.0
 	block.borderTop = 13
@@ -326,7 +344,7 @@ function ExclusionsPage:createFiltersSection(parentBlock)
 	block.borderRight = self.indent
 
 	local filterList = block:createBlock{ id = tes3ui.registerID("FilterList") }
-	filterList.flowDirection = "top_to_bottom"
+	filterList.flowDirection = tes3.flowDirection.topToBottom
 	filterList.autoWidth = true
 	filterList.heightProportional = 1.0
 
@@ -358,7 +376,7 @@ function ExclusionsPage:createFiltersSection(parentBlock)
 		end
 
 		-- Register clicking filter button
-		button:register("mouseClick", function(e)
+		button:register(tes3.uiEvent.mouseClick, function(e)
 			local items = getItemsCallback()
 			self:clickFilter(button)
 			self:distributeLeft(items)
@@ -390,14 +408,14 @@ function ExclusionsPage:createList(parentBlock, listId)
 	local labelId = (listId .. "Label") --[[@as "leftListLabel"|"rightListLabel"]]
 
 	local block = parentBlock:createBlock{}
-	block.flowDirection = "top_to_bottom"
+	block.flowDirection = tes3.flowDirection.topToBottom
 	block.widthProportional = 1.0
 	block.heightProportional = 1.0
 
 	local labelText = (self[labelId] .. ":")
 	local label = block:createLabel{ text = labelText }
 	label.borderBottom = 2
-	label.color = tes3ui.getPalette("header_color")
+	label.color = tes3ui.getPalette(tes3.palette.headerColor)
 
 	self:createSearchBar(block, listId)
 
@@ -408,12 +426,17 @@ function ExclusionsPage:createList(parentBlock, listId)
 	list.paddingLeft = 8
 	self.elements[listId] = list
 
+	if self.showReset and listId == "leftList" then
+		self:createResetButtonContainer(block)
+		self:createResetButton(self.elements.resetContainer)
+	end
+
 end
 
 --- @param parentBlock tes3uiElement
 function ExclusionsPage:createOuterContainer(parentBlock)
 	local outerContainer = parentBlock:createThinBorder({ id = tes3ui.registerID("Category_OuterContainer") })
-	outerContainer.flowDirection = "top_to_bottom"
+	outerContainer.flowDirection = tes3.flowDirection.topToBottom
 	outerContainer.widthProportional = 1.0
 	outerContainer.heightProportional = 1.0
 
@@ -430,7 +453,7 @@ end
 function ExclusionsPage:createLabel(parentBlock)
 	Parent.createLabel(self, parentBlock)
 	if self.elements.label then
-		self.elements.label.color = tes3ui.getPalette("header_color")
+		self.elements.label.color = tes3ui.getPalette(tes3.palette.headerColor)
 	end
 end
 
@@ -453,7 +476,7 @@ end
 --- @param parentBlock tes3uiElement
 function ExclusionsPage:createSections(parentBlock)
 	local sections = parentBlock:createBlock{}
-	sections.flowDirection = "left_to_right"
+	sections.flowDirection = tes3.flowDirection.leftToRight
 	sections.widthProportional = 1.0
 	sections.heightProportional = 1.0
 	sections.paddingAllSides = self.indent
@@ -474,7 +497,7 @@ function ExclusionsPage:create(parentBlock)
 	self:createList(self.elements.sections, "rightList")
 
 	-- default to first filter
-	self.elements.filterList.children[1]:triggerEvent("mouseClick")
+	self.elements.filterList.children[1]:triggerEvent(tes3.uiEvent.mouseClick)
 end
 
 return ExclusionsPage

@@ -45,7 +45,7 @@ namespace mwse {
 		__except (EXCEPTION_EXECUTE_HANDLER) {
 			TES3::Script* script = virtualMachine.getScript();
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xNextRef: Invalid object given in script " << script->sourceMod->filename << "/" << script->name << ". Fix script to not save variables across saves!" << std::endl;
+				mwse::log::getLog() << "xNextRef: Invalid object given in script " << script->sourceMod->filename << "/" << script->header.name << ". Fix script to not save variables across saves!" << std::endl;
 			}
 			next = NULL;
 		}

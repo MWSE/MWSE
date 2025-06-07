@@ -208,6 +208,17 @@ Numeric access to all merchant flags. Shouldn't be used directly.
 
 ***
 
+### `offersBartering`
+<div class="search_terms" style="display: none">offersbartering</div>
+
+*Read-only*. If true, the actor will barter in at least one type of item.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `offersEnchanting`
 <div class="search_terms" style="display: none">offersenchanting</div>
 

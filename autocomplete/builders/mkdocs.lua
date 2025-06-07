@@ -427,23 +427,26 @@ local function writeFields(file, package, field, fieldName, writeFunction, write
 	local fields = table.values(getPackageComponentsArray(package, field), sortPackagesByKey)
 	fields = removeDeprecated(fields)
 	local count = #fields
+	-- No field that aren't deprecated? Nothing to do here.
+	if (count == 0) then
+		return false
+	end
 
-	if (count > 0) then
-		if (writeRule) then
-			file:write("***\n\n")
-		end
-		file:write(string.format("## %s\n\n", fieldName))
-		for i, field in ipairs(fields) do
-			if (not field.deprecated) then
-				writeFunction(file, field, package)
-				if (i < count) then
-					file:write("***\n\n")
-				end
+	if (writeRule) then
+		file:write("***\n\n")
+	end
+
+	file:write(string.format("## %s\n\n", fieldName))
+
+	for i, field in ipairs(fields) do
+		if (not field.deprecated) then
+			writeFunction(file, field, package)
+			if (i < count) then
+				file:write("***\n\n")
 			end
 		end
-		return true
 	end
-	return false
+	return true
 end
 
 --- @param file file*
@@ -453,7 +456,7 @@ local function writePackageDetails(file, package)
 	file:write(string.format("%s\n\n", common.getDescriptionString(package)))
 	if (package.type == "class") then
 		if (package.inherits) then
-			file:write(string.format("This type inherits the following: %s\n", buildParentChain(package.inherits)))
+			file:write(string.format("This type inherits the following: %s.\n", buildParentChain(package.inherits)))
 		end
 
 		-- Write class examples before the methods and properties
@@ -476,6 +479,11 @@ local function writePackageDetails(file, package)
 	-- Write out fields.
 	needsHorizontalRule = (
 		writeFields(file, package, "values", "Properties", writeSubPackage, needsHorizontalRule)
+		or needsHorizontalRule
+	)
+
+	needsHorizontalRule = (
+		writeFields(file, package, "typeValues", "Type Properties", writeSubPackage, needsHorizontalRule)
 		or needsHorizontalRule
 	)
 
@@ -513,7 +521,7 @@ local function writePackageDetails(file, package)
 			if (package.type == "method") then
 				file:write(string.format("%s:%s(", "myObject", package.key))
 			else
-				file:write(string.format("%s.%s(", package.parent.namespace, package.key))
+				file:write(string.format("%s(", package.namespace))
 			end
 		else
 			file:write(string.format("%s(", package.key))
@@ -660,15 +668,16 @@ local function build(package, outDir)
 		file:write("!!! warning\n\tThis API is deprecated. See below for more information about what to use instead.\n\n")
 	end
 
-	writePackageDetails(file, package)
+	-- Let's inline nested sub-libs to ensure that sub-globals are built.
+	for _, lib in ipairs(package.libs or {}) do
 
-	-- Ensure that sub-globals are built.
-	-- NOTE: This does not appear to be used anywhere.
-	if (package.libs) then
-		for _, lib in ipairs(package.libs) do
-			build(lib, outDir)
+		for _, child in ipairs(lib.functions or {}) do
+			child.key = string.format("%s.%s", lib.key, child.key)
+			table.insert(package.functions, child)
 		end
 	end
+
+	writePackageDetails(file, package)
 
 	-- Close up shop.
 	file:close()

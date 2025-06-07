@@ -272,3 +272,14 @@ myObject:updateCollisionGroupsForActiveCells({ force = ..., isResettingData = ..
 	* `isResettingData` (boolean): *Default*: `false`.
 	* `resetCollisionGroups` (boolean): *Default*: `true`.
 
+***
+
+### `updateLightingForExteriorCells`
+<div class="search_terms" style="display: none">updatelightingforexteriorcells, lightingforexteriorcells</div>
+
+Updates dynamic lights that affect exterior terrain and reference in exterior cells.
+
+```lua
+myObject:updateLightingForExteriorCells()
+```
+

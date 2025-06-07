@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event fires when an actor has determined an action in a combat session.
+This event fires when an actor has determined an action in a combat session. The action chosen is `session.selectedAction`, which can be changed to affect the actor AI. Note that other data in `e.session` like `selectedWeapon` or `selectedMagic` is only indicative of the AI's choice. The weapon or magic that the actor uses must be set on the mobile.
 
 ```lua
 --- @param e determinedActionEventData

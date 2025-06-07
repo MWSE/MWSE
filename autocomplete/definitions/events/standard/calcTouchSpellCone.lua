@@ -3,19 +3,29 @@ return {
 	description = "This event is raised just before a touch spell completes casting, to set up the hit detection cone for spell targets. See `calcHitDetectionCone` for the melee equivalent.",
 	related = { "calcHitDetectionCone" },
 	eventData = {
-		["attacker"] = {
+		["caster"] = {
 			type = "tes3reference",
 			readOnly = true,
-			description = "The reference of the attacker.",
+			description = "The reference of the caster.",
 		},
-		["attackerMobile"] = {
+		["casterMobile"] = {
 			type = "tes3mobileActor",
 			readOnly = true,
-			description = "The mobile which is making the attack.",
+			description = "The mobile which is casting the magic.",
+		},
+		["source"] = {
+			type = "tes3alchemy|tes3enchantment|tes3spell",
+			readOnly = true,
+			description = "The magic source.",
+		},
+		["sourceInstance"] = {
+			type = "tes3magicSourceInstance",
+			readOnly = true,
+			description = "The unique instance of the magic source.",
 		},
 		["reach"] = {
 			type = "number",
-			description = "The touch spell search range in world units.",
+			description = "The touch spell search range in world units. Currently, changes to this value do not have an effect without further engine modifications.",
 		},
 		["angleXY"] = {
 			type = "number",

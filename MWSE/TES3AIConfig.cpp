@@ -169,6 +169,10 @@ namespace TES3 {
 		setServiceFlag(TES3::ServiceFlag::BartersWeapons, set);
 	}
 
+	bool AIConfig::getOffersBartering() const {
+		return merchantFlags & ServiceFlag::OffersBarteringMask;
+	}
+
 	bool AIConfig::getOffersEnchanting() const {
 		return getServiceFlag(TES3::ServiceFlag::OffersEnchanting);
 	}

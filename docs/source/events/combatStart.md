@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-The combatStart event occurs when combat is about to begin between two actors. This event allows scripts to prevent combat from starting.
+The combatStart event occurs when combat is about to begin between two actors. This event allows scripts to prevent combat from starting. An actor A can start combat with actor B, which will fire the event. Then the actor B may also start combat with actor A which will trigger the event again.
 
 ```lua
 --- @param e combatStartEventData

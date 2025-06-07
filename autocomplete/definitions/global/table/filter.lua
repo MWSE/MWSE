@@ -8,7 +8,7 @@ Any additional arguments will be passed to `f`. For example, `table.filter(t, f,
 ]],
 	arguments = {
 		{ name = "t", type = "table" },
-		{ name = "f", type = "fun(k: unknown, v: unknown, ...): boolean", "The function to use when filtering values of `t`. (This is sometimes called a predicate function.)" },
+		{ name = "f", type = "fun(k: unknown, v: unknown, ...): boolean", description = "The function to use when filtering values of `t`. (This is sometimes called a predicate function.)" },
 		{ name = "...", type = "any", description = "Additional parameters to pass to `f`." },
 	},
 	returns = {

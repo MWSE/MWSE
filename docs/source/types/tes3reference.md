@@ -10,7 +10,7 @@ A reference is a sort of container structure for objects. It holds a base object
 
 For example, many doors may share the same base object. However, each door reference might have a different owner, different lock/trap statuses, etc. that make the object unique.
 
-This type inherits the following: [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `activationReference`
@@ -24,10 +24,39 @@ The current reference, if any, that this reference will activate.
 
 ***
 
+### `animationData`
+<div class="search_terms" style="display: none">animationdata</div>
+
+*Read-only*. Access to the reference's animation data, if available. Typically this is only available on NPC or creature references.
+
+**Returns**:
+
+* `result` ([tes3animationData](../types/tes3animationData.md), nil)
+
+***
+
 ### `attachments`
 <div class="search_terms" style="display: none">attachments</div>
 
-*Read-only*. A table with friendly named access to all supported attachments.
+*Read-only*. A table with friendly named access to all supported attachments. See the table below for available keys in this table.
+
+Key               | Attachment type | Description
+----------------- | --------------- | -----------
+actor             | [tes3mobileActor](https://mwse.github.io/MWSE/types/tes3mobileActor/) | The associated mobile object, if applicable.
+animation         | [tes3animationData](https://mwse.github.io/MWSE/types/tes3animationData/) |
+bodyPartManager   | [tes3bodyPartManager](https://mwse.github.io/MWSE/types/tes3bodyPartManager/) |
+leveledBase       | [tes3reference](https://mwse.github.io/MWSE/types/tes3reference/) |
+light             | [tes3lightNode](https://mwse.github.io/MWSE/types/tes3lightNode/) | The dynamic light attachment.
+lock              | [tes3lockNode](https://mwse.github.io/MWSE/types/tes3lockNode/) | Only present on locked containers or doors.
+travelDestination | [tes3travelDestinationNode](https://mwse.github.io/MWSE/types/tes3travelDestinationNode/) | Only present on teleport doors.
+variables         | [tes3itemData](https://mwse.github.io/MWSE/types/tes3itemData/) | Only present on items when needed e.g. the item is fully repaired.
+
+
+```lua
+-- Accessing the attached tes3animationData
+local animData = myRef.attachments.animation
+```
+
 
 **Returns**:
 
@@ -126,6 +155,14 @@ The blocked state of the object.
 	In this example we provide a way to check if a certain actor is currently player's follower. This function can also be useful besides the one from previous example, since not all of the followers have companion share enabled.
 
 	```lua
+	local followPackage = {
+		[tes3.aiPackage.follow] = true,
+		-- Depending on your needs, you can also include player's escortees.
+		-- In the base game, AiEscort package is quite rare. Only White Guar
+		-- has that package and with player as the targetActor.
+		[tes3.aiPackage.escort] = true,
+	}
+	
 	--- This function returns `true` if a given mobile has
 	--- follow ai package with player as its target
 	---@param mobile tes3mobileNPC|tes3mobileCreature
@@ -140,11 +177,8 @@ The blocked state of the object.
 		if not package then
 			return false
 		end
-		if package.type == tes3.aiPackage.follow
-		-- Depending on your needs, you can also include the actor's escorter.
-		-- In the base game, AiEscort package is quite rare. Only White Guar
-		-- has that package and targetActor is the player.
-		or package.type == tes3.aiPackage.escort then
+	
+		if followPackage[package.type] then
 			local target = package.targetActor
 	
 			if target.objectType == tes3.objectType.mobilePlayer then
@@ -159,13 +193,11 @@ The blocked state of the object.
 	---@return tes3reference[] followerList
 	local function getFollowers()
 		local followers = {}
-		local i = 1
 	
 		for _, mobile in pairs(tes3.mobilePlayer.friendlyActors) do
 			---@cast mobile tes3mobileNPC|tes3mobileCreature
 			if isFollower(mobile) then
-				followers[i] = mobile.reference
-				i = i + 1
+				table.insert(followers, mobile.reference)
 			end
 		end
 	
@@ -595,7 +627,7 @@ No description yet available.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -655,6 +687,19 @@ Access to the size of a stack, if the reference represents one or more items.
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

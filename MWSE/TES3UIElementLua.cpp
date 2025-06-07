@@ -130,8 +130,10 @@ namespace mwse::lua {
 		usertypeDefinition["setPropertyInt"] = &Element::setPropertyInt_lua;
 		usertypeDefinition["setPropertyObject"] = &Element::setPropertyObject_lua;
 		usertypeDefinition["setPropertyProperty"] = &Element::setPropertyProperty_lua;
+		usertypeDefinition["removeProperty"] = &Element::removeProperty_lua;
 
 		// Custom lua property accessor functions.
+		usertypeDefinition["getAllLuaData"] = &Element::getAllLuaData;
 		usertypeDefinition["getLuaData"] = &Element::getLuaData;
 		usertypeDefinition["setLuaData"] = &Element::setLuaData;
 
@@ -154,6 +156,7 @@ namespace mwse::lua {
 		usertypeDefinition["getTopLevelMenu"] = &Element::getTopLevelParent;
 		usertypeDefinition["getTopLevelParent"] = &Element::getTopLevelParent;
 		usertypeDefinition["loadMenuPosition"] = &Element::loadMenuPosition;
+		usertypeDefinition["reorder"] = &Element::reorder_lua;
 		usertypeDefinition["reorderChildren"] = &Element::reorderChildren_lua;
 		usertypeDefinition["saveMenuPosition"] = &Element::saveMenuPosition;
 		usertypeDefinition["updateLayout"] = &Element::updateLayout_lua;

@@ -216,6 +216,10 @@ namespace TES3 {
 		setServiceFlag(ServiceFlag::BartersWeapons, value);
 	}
 
+	bool Class::getOffersBartering() const {
+		return services & ServiceFlag::OffersBarteringMask;
+	}
+
 	bool Class::getOffersEnchanting() const {
 		return getServiceFlag(ServiceFlag::OffersEnchanting);
 	}

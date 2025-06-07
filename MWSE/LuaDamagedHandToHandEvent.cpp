@@ -31,6 +31,10 @@ namespace mwse::lua::event {
 			eventData["attackerReference"] = DamageHandToHandEvent::m_Attacker->reference;
 		}
 
+		if (DamageHandToHandEvent::m_Source) {
+			eventData["source"] = DamageHandToHandEvent::m_Source;
+		}
+
 		eventData["fatigueDamage"] = m_FatigueDamage;
 
 		return eventData;

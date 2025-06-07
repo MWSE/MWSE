@@ -50,6 +50,11 @@ namespace TES3 {
 		TES3_AnimationData_setHeadNode(this, head);
 	}
 
+	const auto TES3_AnimationData_headTracking = reinterpret_cast<void(__thiscall*)(AnimationData*, Reference*, Reference*)>(0x46F910);
+	void AnimationData::headTracking(Reference* actorRefr, Reference* targetRefr) {
+		TES3_AnimationData_headTracking(this, actorRefr, targetRefr);
+	}
+
 	const auto TES3_AnimationData_updateMovementDelta = reinterpret_cast<bool(__thiscall*)(AnimationData*, float, Vector3*, bool)>(0x470320);
 	void AnimationData::updateMovementDelta(float timing, Vector3 *inout_startingPosition, bool dontUpdatePositionDelta) {
 		TES3_AnimationData_updateMovementDelta(this, timing, inout_startingPosition, dontUpdatePositionDelta);

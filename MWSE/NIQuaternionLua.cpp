@@ -43,5 +43,8 @@ void mwse::lua::bindNIQuaternion() {
 		usertypeDefinition["slerpKeyframe"] = &NI::Quaternion::slerpKeyframe;
 		usertypeDefinition["toAngleAxis"] = &NI::Quaternion::toAngleAxis;
 		usertypeDefinition["toRotation"] = &NI::Quaternion::toRotation;
+
+		// Alternate Constructors
+		usertypeDefinition["identity"] = sol_copy_wrapper(NI::Quaternion::IDENTITY);
 	}
 }

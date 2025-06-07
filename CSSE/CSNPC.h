@@ -6,13 +6,19 @@
 
 namespace se::cs {
 	struct NPC : Actor {
+		struct substruct_0x90 {
+			const char* raceId; // 0x0
+			const char* classId; // 0x4
+			const char* factionId; // 0x8
+			const char* headBodyPartId; // 0xC
+			const char* hairBodyPartId; // 0x10
+		};
 		int unknown_0x7C;
 		int unknown_0x80;
 		char* model; // 0x84
 		char* name; // 0x88
 		Script* script; // 0x8C
-		short unknown_0x90;
-		short unknown_0x92;
+		substruct_0x90* unknown_0x90;
 		short level; // 0x94
 		byte attributes[8]; // 0x96
 		byte skills[27]; // 0x9E
@@ -33,6 +39,9 @@ namespace se::cs {
 		AIConfig aiConfig; // 0xF8
 
 		const char* getFactionRankName() const;
+		void getTraining(char* buffer, size_t bufferSize) const;
+		int getFight() const;
+		bool search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(NPC) == 0x108, "NPC failed size validation");
 }

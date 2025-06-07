@@ -12,7 +12,7 @@ function ParagraphField:enable()
 
 	--- @param element tes3uiElement
 	local function registerAcquireText(element)
-		element:register("mouseClick", function()
+		element:register(tes3.uiEvent.mouseClick, function()
 			tes3ui.acquireTextInput(self.elements.inputField)
 		end)
 	end
@@ -23,7 +23,7 @@ end
 
 --- @param element tes3uiElement
 function ParagraphField:registerEnterKey(element)
-	element:register("keyEnter", function()
+	element:register(tes3.uiEvent.keyEnter, function()
 		local inputController = tes3.worldController.inputController
 		local holdingShift = (
 			inputController:isKeyDown(tes3.scanCode.lShift) or
@@ -44,7 +44,7 @@ function ParagraphField:makeComponent(parentBlock)
 	border.autoHeight = true
 
 	local inputField = border:createParagraphInput()
-	inputField.color = tes3ui.getPalette("disabled_color")
+	inputField.color = tes3ui.getPalette(tes3.palette.disabledColor)
 	inputField.text = string.format("(%s)", mwse.mcm.i18n("In-Game Only"))
 	inputField.widthProportional = 1.0
 	inputField.widget.lengthLimit = nil

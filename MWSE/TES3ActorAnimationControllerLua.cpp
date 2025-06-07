@@ -41,6 +41,7 @@ namespace mwse::lua {
 		usertypeDefinition["vertexColorProperty"] = &TES3::ActorAnimationController::vertexColorProperty;
 
 		// Custom properties.
+		usertypeDefinition["opacity"] = sol::property(&TES3::ActorAnimationController::getOpacity, &TES3::ActorAnimationController::setOpacity);
 		usertypeDefinition["weaponSpeed"] = sol::property(&TES3::ActorAnimationController::getWeaponAnimSpeed, &TES3::ActorAnimationController::setWeaponAnimSpeed);
 
 		// Basic function binding.

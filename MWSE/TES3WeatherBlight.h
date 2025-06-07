@@ -5,11 +5,10 @@
 
 namespace TES3 {
 	struct WeatherBlight : Weather {
-		int unknown_0x318;
-		int unknown_0x31C;
+		Vector2 stormOrigin; // 0x318
 		IteratedList<Spell*> blightDiseases; // 0x320
 		float diseaseChance; // 0x334
-		int unknown_0x338;
+		float diseaseTransitionThreshold; // 0x338
 		float stormThreshold; // 0x33C
 
 		WeatherBlight() = delete;

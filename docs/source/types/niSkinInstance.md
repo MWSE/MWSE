@@ -8,7 +8,7 @@
 
 Contains instance-dependent skinning data for a `NiTriShape` object.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `bones`

@@ -22,7 +22,7 @@ namespace NI {
 		void (__thiscall* updateWorldNormals)(AVObject*); // 0x48
 		void (__thiscall* destroyWorldNormals)(AVObject*); // 0x4C
 		void (__thiscall* setAppCulled)(AVObject*, bool); // 0x50
-		bool (__thiscall* getAppCulled)(AVObject*); // 0x54
+		bool (__thiscall* getAppCulled)(const AVObject*); // 0x54
 		void (__thiscall* setPropagationMode)(AVObject*, int); // 0x58
 		AVObject* (__thiscall* getObjectByName)(AVObject*, const char*); // 0x5C
 		void (__thiscall* updateDownwardPass)(AVObject*, float, bool, bool); // 0x60
@@ -62,6 +62,8 @@ namespace NI {
 		// vTable wrappers.
 		//
 
+		Bound* getWorldBound();
+
 		TES3::Vector3 getLocalVelocity() const;
 		void setLocalVelocity(TES3::Vector3*);
 
@@ -72,15 +74,18 @@ namespace NI {
 			return static_cast<T*>(vTable.asAVObject->getObjectByName(this, name));
 		}
 
-		bool getAppCulled();
+		bool getAppCulled() const;
 		void setAppCulled(bool culled);
 
-		bool isAppCulled();
-		bool isFrustumCulled(Camera*);
+		bool isAppCulled() const;
+		bool isFrustumCulled(Camera*) const;
 
 		//
 		// Other related this-call functions.
 		//
+
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
 
 		void update(float fTime = 0.0f, bool bUpdateControllers = false, bool bUpdateChildren = true);
 		void updateEffects();

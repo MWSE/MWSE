@@ -10,7 +10,7 @@
 #include "NIColor.h"
 
 namespace mwse::lua {
-	auto iterateReferencesFiltered(const TES3::Cell* cell, const std::unordered_set<unsigned int> desiredTypes) {
+	auto iterateReferencesFiltered(const TES3::Cell* cell, const std::unordered_set<unsigned int> desiredTypes, bool iterateDisabled) {
 		// Prepare the lists we care about.
 		std::queue<const TES3::ReferenceList*> referenceListQueue;
 		if (!cell->actors.empty()) {
@@ -30,8 +30,9 @@ namespace mwse::lua {
 			referenceListQueue.pop();
 		}
 
-		return [cell, reference, referenceListQueue, desiredTypes]() mutable -> TES3::Reference* {
-			while (reference && !desiredTypes.empty() && !desiredTypes.count(reference->baseObject->objectType)) {
+		return [cell, reference, referenceListQueue, desiredTypes, iterateDisabled]() mutable -> TES3::Reference* {
+			// Skip filtered out references.
+			while (reference && (reference->getDeleted() || (!desiredTypes.empty() && !desiredTypes.count(reference->baseObject->objectType)) || (!iterateDisabled && reference->getDisabled()))) {
 				reference = reinterpret_cast<TES3::Reference*>(reference->nextInCollection);
 
 				// If we hit the end of the list, check for the next list.
@@ -59,7 +60,7 @@ namespace mwse::lua {
 		};
 	}
 
-	auto iterateReferences(const TES3::Cell* self, sol::optional<sol::object> param) {
+	auto iterateReferences(const TES3::Cell* self, sol::optional<sol::object> param, sol::optional<bool> iterateDisabled) {
 		std::unordered_set<unsigned int> filters;
 
 		if (param) {
@@ -79,7 +80,7 @@ namespace mwse::lua {
 			}
 		}
 
-		return iterateReferencesFiltered(self, std::move(filters));
+		return iterateReferencesFiltered(self, std::move(filters), iterateDisabled.value_or(true));
 	}
 
 	void bindTES3Cell() {

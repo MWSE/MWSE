@@ -8,7 +8,7 @@
 
 A texture that is also a render target. This object can be used with niRenderer:setRenderTarget and rendered into. It can be directly used in a texturing property, or read back into system memory (at a performance cost). After using it as a render target, make sure you reset the renderer with niRenderer:setRenderTarget(nil) so that it's not bound as a source texture and a target at the same time.
 
-This type inherits the following: [niTexture](../types/niTexture.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTexture](../types/niTexture.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `controller`
@@ -375,22 +375,6 @@ local success = myObject:saveBinary(path)
 **Returns**:
 
 * `success` (boolean): If true the object was successfully serialized.
-
-***
-
-### `setFlag`
-<div class="search_terms" style="display: none">setflag, flag</div>
-
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
-
-```lua
-myObject:setFlag(state, index)
-```
-
-**Parameters**:
-
-* `state` (boolean)
-* `index` (number)
 
 ***
 

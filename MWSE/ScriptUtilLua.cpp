@@ -19,6 +19,8 @@
 
 #include "BitUtil.h"
 #include "InstructionStore.h"
+#include "MGEApi.h"
+#include "MGEApiLua.h"
 
 namespace mwse::lua {
 	void bindScriptUtil() {
@@ -510,15 +512,28 @@ namespace mwse::lua {
 		lua_mge["enabled"] = []() {
 			return InstructionStore::getInstance().isOpcode(OpCode::xGetGS);
 		};
-		lua_mge["getVersion"] = [](sol::this_state ts) {
-			mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetVersion);
+		lua_mge["getVersion"] = [](sol::this_state ts) -> sol::object {
+			mge::VersionStruct version = {};
 
-			// Convert packed version to semver table. MGE XE major version is offset for legacy reasons.
-			int ver = Stack::getInstance().popLong() - 0x40000;
-			int major = (ver >> 16) & 0xFF, minor = (ver >> 8) & 0xFF, patch = ver & 0xFF;
+			// Try to run the script opcode.
+			if (InstructionStore::getInstance().isOpcode(OpCode::MGEGetVersion)) {
+				mwscript::RunOriginalOpCode(nullptr, nullptr, OpCode::MGEGetVersion);
 
-			sol::state_view state = ts;
-			return state.create_table_with("major", major, "minor", minor, "patch", patch);
+				// Convert packed version to semver table. MGE XE major version is offset for legacy reasons.
+				int ver = Stack::getInstance().popLong() - 0x40000;
+				int major = (ver >> 16) & 0xFF, minor = (ver >> 8) & 0xFF, patch = ver & 0xFF;
+			}
+			// Next try the interface.
+			else if (mge::lua::CoreInterface::enabled()) {
+				return mge::lua::CoreInterface::getVersion(ts);
+			}
+			// Fall back to the MGE GUI version.
+			else if (mge::guiVersion.valid()) {
+				sol::state_view state = ts;
+				return state.create_table_with("major", mge::guiVersion.major, "minor", mge::guiVersion.minor, "patch", mge::guiVersion.patch);
+			}
+
+			return sol::nil;
 		};
 		lua_mge["log"] = [](std::string string) {
 			Stack::getInstance().pushString(string);

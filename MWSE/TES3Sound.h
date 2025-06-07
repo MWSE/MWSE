@@ -62,6 +62,8 @@ namespace TES3 {
 		bool play(int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isNot3D = true);
 		bool playRaw(int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isNot3D = true);
 		void stop();
+		void loadBuffer(bool isPointSound);
+		void release();
 		void setVolumeRaw(unsigned char volume);
 
 		bool isPlaying() const;

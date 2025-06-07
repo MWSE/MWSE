@@ -8,7 +8,7 @@
 
 A key with timing, and color in niColorData, which are found in niParticleColorModifiers.
 
-This type inherits the following: [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `color`

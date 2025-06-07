@@ -156,6 +156,7 @@ namespace TES3::UI {
 		PropertyValue getProperty(PropertyType propType, Property prop) const;
 		PropertyType getPropertyType(Property prop) const;
 		bool hasProperty(Property prop) const;
+		void removeProperty(Property prop);
 		const char* getText() const;
 
 		template <typename T>
@@ -300,6 +301,7 @@ namespace TES3::UI {
 		void setWrapText(bool value);
 
 		bool hasProperty_lua(sol::object key) const;
+		void removeProperty_lua(sol::object key);
 		PropertyType getPropertyType_lua(sol::object key) const;
 		bool getPropertyBool_lua(sol::object key) const;
 		void setPropertyBool_lua(sol::object key, bool value);
@@ -315,6 +317,7 @@ namespace TES3::UI {
 		void setPropertyProperty_lua(sol::object key, sol::object value);
 
 		LuaData* getLuaDataContainer() const;
+		sol::object getAllLuaData() const;
 		sol::object getLuaData(const std::string_view& key) const;
 		void setLuaData(sol::this_state ts, const std::string_view& key, sol::object value);
 
@@ -330,6 +333,7 @@ namespace TES3::UI {
 		void saveMenuPosition();
 		bool loadMenuPosition();
 
+		bool reorder_lua(sol::table params);
 		bool reorderChildren_lua(sol::object insertBefore, sol::object moveFrom, int count);
 		void updateLayout_lua(sol::optional<bool> updateTimestamp = true);
 

@@ -16,6 +16,8 @@ namespace NI {
 
 	const auto NI_Quaternion_Slerp = reinterpret_cast<Quaternion * (__cdecl*)(Quaternion*, float, const Quaternion*, const Quaternion*)>(0x6FB7F0);
 
+	const Quaternion Quaternion::IDENTITY = { 1.0f, 0.0f, 0.0f, 0.0f };
+
 	Quaternion::Quaternion() :
 		w(0),
 		x(0),

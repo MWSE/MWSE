@@ -63,8 +63,8 @@ namespace TES3 {
 		char * getName();
 		void setName(const char*);
 
-		const char* getRankName(size_t rank) const;
-		void setRankName(size_t rank, const char* name);
+		const char* getRankName(int rank) const;
+		void setRankName(int rank, const char* name);
 
 		bool getMembershipFlag(unsigned int) const;
 		void setMembershipFlag(unsigned int, bool);
@@ -100,6 +100,12 @@ namespace TES3 {
 		std::reference_wrapper<int[7]> getSkills();
 		std::reference_wrapper<Rank[10]> getRanks();
 
+		bool playerJoin_lua();
+		bool playerLeave_lua();
+		bool playerExpel_lua();
+		bool playerClearExpel_lua();
+		bool playerPromote_lua();
+		bool playerDemote_lua();
 	};
 	static_assert(sizeof(Faction::Rank) == 0x14, "TES3::Faction::Rank failed size validation");
 	static_assert(sizeof(Faction::ReactionNode) == 0x8, "TES3::Faction::ReactionNode failed size validation");

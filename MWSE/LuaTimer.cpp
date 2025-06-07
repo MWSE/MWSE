@@ -195,7 +195,7 @@ namespace mwse::lua {
 				callback = getNamedTimer(callbackName);
 				if (callback == sol::nil) {
 					log::getLog() << "Lua error encountered in timer callback: Named callback \"" << callbackName << "\" is not registered." << std::endl;
-					logStackTrace();
+					logStackTrace(nullptr);
 					cancelTimer(timer);
 					continue;
 				}

@@ -8,7 +8,7 @@
 
 An AI Escort package game object. The actor with this package will escort the target actor to a certain destination.
 
-This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md)
+This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md).
 ## Properties
 
 ### `destination`

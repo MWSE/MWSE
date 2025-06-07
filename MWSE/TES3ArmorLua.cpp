@@ -1,7 +1,7 @@
 #include "TES3ArmorLua.h"
 
 #include "LuaManager.h"
-#include "TES3ObjectLua.h"
+#include "TES3ItemLua.h"
 #include "LuaUtil.h"
 
 #include "TES3Armor.h"
@@ -23,7 +23,7 @@ namespace mwse::lua {
 
 		// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 		usertypeDefinition[sol::base_classes] = sol::bases<TES3::Item, TES3::PhysicalObject, TES3::Object, TES3::BaseObject>();
-		setUserdataForTES3PhysicalObject(usertypeDefinition);
+		setUserdataForTES3Item(usertypeDefinition);
 
 		// Basic property binding.
 		usertypeDefinition["armorRating"] = &TES3::Armor::armorRating;
@@ -37,10 +37,9 @@ namespace mwse::lua {
 		// Functions exposed as properties.
 		usertypeDefinition["enchantment"] = sol::property(&TES3::Armor::getEnchantment, &TES3::Armor::setEnchantment);
 		usertypeDefinition["maxCondition"] = sol::property(&TES3::Armor::getDurability, &TES3::Armor::setDurability);
-		usertypeDefinition["icon"] = sol::property(&TES3::Armor::getIconPath, &TES3::Armor::setIconPath);
+		usertypeDefinition["isClosedHelmet"] = sol::readonly_property(&TES3::Armor::isClosedHelmet);
 		usertypeDefinition["isLeftPart"] = sol::property(&TES3::Armor::isLeftPartOfPair);
-		usertypeDefinition["mesh"] = sol::property(&TES3::Armor::getModelPath, &TES3::Armor::setModelPath);
-		usertypeDefinition["name"] = sol::property(&TES3::Armor::getName, &TES3::Armor::setName);
+		usertypeDefinition["isUsableByBeasts"] = sol::readonly_property(&TES3::Armor::isUsableByBeasts);
 		usertypeDefinition["script"] = &TES3::Armor::script;
 		usertypeDefinition["slotName"] = sol::property(&TES3::Armor::getTypeName);
 		usertypeDefinition["weightClass"] = sol::property(&TES3::Armor::getWeightClass);
@@ -48,9 +47,9 @@ namespace mwse::lua {
 		// Basic function binding.
 		usertypeDefinition["calculateArmorRating"] = &TES3::Armor::calculateArmorRating_lua;
 		usertypeDefinition["createCopy"] = &TES3::Armor::createCopy_lua<TES3::Armor>;
+		usertypeDefinition["setupBodyParts"] = &TES3::Armor::setupBodyParts;
 
 		// TODO: Deprecated. Remove before 2.1-stable.
 		usertypeDefinition["health"] = sol::property(&TES3::Armor::getDurability, &TES3::Armor::setDurability);
-		usertypeDefinition["model"] = sol::property(&TES3::Armor::getModelPath, &TES3::Armor::setModelPath);
 	}
 }

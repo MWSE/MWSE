@@ -37,6 +37,8 @@ namespace NI {
 
 		void fromRotation(const TES3::Matrix33* rotation);
 		TES3::Matrix33 toRotation() const;
+
+		const static Quaternion IDENTITY;
 	};
 	static_assert(sizeof(Quaternion) == 0x10, "NI::Quaternion failed size validation");
 }

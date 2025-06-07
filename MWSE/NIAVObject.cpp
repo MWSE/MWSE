@@ -4,6 +4,7 @@
 #include "NIProperty.h"
 #include "NICamera.h"
 
+#include "BitUtil.h"
 #include "MemoryUtil.h"
 
 constexpr auto NI_AVObject_updateEffects = 0x6EB380;
@@ -11,6 +12,10 @@ constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
 constexpr auto NI_AVObject_update = 0x6EB000;
 
 namespace NI {
+	Bound* AVObject::getWorldBound() {
+		return vTable.asAVObject->getWorldBound(this);
+	}
+
 	TES3::Vector3 AVObject::getLocalVelocity() const {
 		if (velocities) {
 			return velocities->localVelocity;
@@ -33,7 +38,7 @@ namespace NI {
 		return vTable.asAVObject->getObjectByName(this, name);
 	}
 
-	bool AVObject::getAppCulled() {
+	bool AVObject::getAppCulled() const {
 		return vTable.asAVObject->getAppCulled(this);
 	}
 
@@ -41,14 +46,14 @@ namespace NI {
 		vTable.asAVObject->setAppCulled(this, culled);
 	}
 
-	bool AVObject::isAppCulled() {
+	bool AVObject::isAppCulled() const {
 		if (getAppCulled()) {
 			return true;
 		}
 		return parentNode ? parentNode->isAppCulled() : false;
 	}
 
-	bool AVObject::isFrustumCulled(Camera* camera) {
+	bool AVObject::isFrustumCulled(Camera* camera) const {
 		for (auto i = 0u; i < 6; i++) {
 			auto plane = camera->cullingPlanes[i];
 			auto distance = (
@@ -61,6 +66,15 @@ namespace NI {
 			}
 		}
 		return false;
+	}
+
+	bool AVObject::getFlag(unsigned char index) const {
+		return BIT_TEST(flags, index);
+	}
+
+	const auto NI_AVObject_setFlag = reinterpret_cast<void(__thiscall*)(AVObject*, bool, unsigned char)>(0x405960);
+	void AVObject::setFlag(bool state, unsigned char index) {
+		NI_AVObject_setFlag(this, state, index);
 	}
 
 	void AVObject::update(float fTime, bool bUpdateControllers, bool bUpdateChildren) {

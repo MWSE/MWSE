@@ -11,6 +11,8 @@
 
 #include "Log.h"
 
+#include "TES3AIData.h"
+#include "TES3AIPackage.h"
 #include "TES3NPC.h"
 #include "TES3PlayerAnimationController.h"
 #include "TES3Race.h"
@@ -19,14 +21,42 @@
 #include "TES3WorldController.h"
 
 namespace TES3 {
-	const auto TES3_BountyData_getValue = reinterpret_cast<int(__thiscall*)(BountyData*, StdString*)>(0x55D220);
-	int BountyData::getValue(StdString* crimeType) {
+	const auto TES3_BountyData_getValue = reinterpret_cast<int(__thiscall*)(const BountyData*, const StdString*)>(0x55D220);
+	int BountyData::getValue(const StdString* crimeType) const {
 		return TES3_BountyData_getValue(this, crimeType);
 	}
 
-	const auto TES3_BountyData_setValue = reinterpret_cast<int(__thiscall*)(BountyData*, StdString*, int)>(0x55D300);
-	void BountyData::setValue(StdString* crimeType, int value) {
+	const auto TES3_BountyData_setValue = reinterpret_cast<int(__thiscall*)(BountyData*, const StdString*, int)>(0x55D300);
+	void BountyData::setValue(const StdString* crimeType, int value) {
 		TES3_BountyData_setValue(this, crimeType, value);
+	}
+
+	sol::table BountyData::getKeys_lua(sol::this_state ts) const {
+		sol::state_view state = ts;
+		auto results = state.create_table();
+
+		for (auto i = 0; i < storageSize; ++i) {
+			results[i+1] = keys[i].c_str;
+		}
+
+		return results;
+	}
+
+	int BountyData::getValue_lua(const char* type) const {
+		StdString indirect = type;
+		return getValue(&indirect);
+	}
+
+	void BountyData::setValue_lua(const char* type, int value) {
+		StdString indirect = type;
+		setValue(&indirect, value);
+	}
+
+	int BountyData::modValue_lua(const char* type, int delta) {
+		StdString indirect = type;
+		const auto newValue = getValue(&indirect) + delta;
+		setValue(&indirect, newValue);
+		return newValue;
 	}
 
 	const auto TES3_MobilePlayer_exerciseSkill = reinterpret_cast<void(__thiscall*)(MobilePlayer*, int, float)>(0x56A5D0);
@@ -88,6 +118,13 @@ namespace TES3 {
 		TES3_MobilePlayer_wakeUp(this);
 	}
 
+	BountyData* MobilePlayer::getBountyData() const {
+		if (bounty) {
+			return bounty->data;
+		}
+		return nullptr;
+	}
+
 	const auto TES3_MobilePlayer_getBounty = reinterpret_cast<int(__thiscall*)(MobilePlayer*)>(0x5688B0);
 	int MobilePlayer::getBounty() {
 		return TES3_MobilePlayer_getBounty(this);
@@ -134,6 +171,86 @@ namespace TES3 {
 	const auto TES3_MobilePlayer_setVanityState = reinterpret_cast<void(__thiscall*)(MobilePlayer*, int)>(0x567960);
 	void MobilePlayer::setVanityState(int state) {
 		TES3_MobilePlayer_setVanityState(this, state);
+	}
+
+	int MobilePlayer::getCompanionCount() const {
+		int count = 0;
+		const auto maxDistance = getCompanionMaxDistance();
+
+		for (const auto& mobile : listFriendlyActors) {
+			if (mobile == this) {
+				continue;
+			}
+
+			if (!mobile->getFlagActiveAI()) {
+				continue;
+			}
+
+			if (mobile->reference == nullptr || mobile->reference->getDisabled() || mobile->reference->getDeleted()) {
+				continue;
+			}
+
+			const auto activePackage = mobile->aiPlanner->getActivePackage();
+			if (activePackage == nullptr) {
+				continue;
+			}
+
+			if (activePackage->packageType != AIPackageType::Escort) {
+				continue;
+			}
+
+			const auto distanceToPlayer = getPosition()->distance(mobile->getPosition());
+			if (distanceToPlayer > maxDistance) {
+				continue;
+			}
+
+			count++;
+		}
+
+		return count;
+	}
+
+	std::vector<TES3::MobileActor*> MobilePlayer::getCompanionList() const {
+		std::vector<TES3::MobileActor*> results = {};
+		const auto maxDistance = getCompanionMaxDistance();
+
+		for (const auto& mobile : listFriendlyActors) {
+			if (mobile == this) {
+				continue;
+			}
+
+			if (!mobile->getFlagActiveAI()) {
+				continue;
+			}
+
+			if (mobile->reference == nullptr || mobile->reference->getDisabled() || mobile->reference->getDeleted()) {
+				continue;
+			}
+
+			const auto activePackage = mobile->aiPlanner->getActivePackage();
+			if (activePackage == nullptr) {
+				continue;
+			}
+
+			if (activePackage->packageType != AIPackageType::Escort) {
+				continue;
+			}
+
+			const auto distanceToPlayer = getPosition()->distance(mobile->getPosition());
+			if (distanceToPlayer > maxDistance) {
+				continue;
+			}
+
+			results.push_back(mobile);
+		}
+
+		return std::move(results);
+	}
+
+	float MobilePlayer::getCompanionMaxDistance() const {
+		constexpr auto BASE_DISTANCE = 512.0f;
+		constexpr auto EXTENSION_PER_FRIENDLY = 128.0f;
+		return BASE_DISTANCE + listFriendlyActors.size() * EXTENSION_PER_FRIENDLY;
 	}
 
 	static Vector3 lastPlayerPosition;

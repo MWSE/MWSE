@@ -57,7 +57,7 @@ namespace mwse::lua {
 	}
 
 	size_t ScriptContext::length() {
-		return (script->shortCount + script->longCount + script->floatCount);
+		return (script->header.shortCount + script->header.longCount + script->header.floatCount);
 	}
 
 	sol::table ScriptContext::getVariableData(sol::this_state ts) {
@@ -71,19 +71,19 @@ namespace mwse::lua {
 		sol::table results = state.create_table();
 
 		// Append any short variables.
-		for (int i = 0; i < script->shortCount; ++i) {
+		for (int i = 0; i < script->header.shortCount; ++i) {
 			const char* varName = script->shortVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 's', "index", i, "value", vars->shortVarValues[i]);
 		}
 
 		// Append any long variables.
-		for (int i = 0; i < script->longCount; ++i) {
+		for (int i = 0; i < script->header.longCount; ++i) {
 			const char* varName = script->longVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 'l', "index", i, "value", vars->longVarValues[i]);
 		}
 
 		// Append any float variables.
-		for (int i = 0; i < script->floatCount; ++i) {
+		for (int i = 0; i < script->header.floatCount; ++i) {
 			const char* varName = script->floatVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 'f', "index", i, "value", vars->floatVarValues[i]);
 		}
@@ -171,12 +171,16 @@ namespace mwse::lua {
 			setUserdataForTES3BaseObject(usertypeDefinition);
 
 			// Basic property binding.
-			usertypeDefinition["shortVariableCount"] = sol::readonly_property(&TES3::Script::shortCount);
-			usertypeDefinition["longVariableCount"] = sol::readonly_property(&TES3::Script::longCount);
-			usertypeDefinition["floatVariableCount"] = sol::readonly_property(&TES3::Script::floatCount);
+			usertypeDefinition["shortVariableCount"] = sol::readonly_property(&TES3::Script::getShortVariableCount);
+			usertypeDefinition["longVariableCount"] = sol::readonly_property(&TES3::Script::getLongVariableCount);
+			usertypeDefinition["floatVariableCount"] = sol::readonly_property(&TES3::Script::getFloatVariableCount);
 
 			// Basic function binding.
 			usertypeDefinition["getVariableData"] = &TES3::Script::getLocalVars_lua;
+			usertypeDefinition["byteCode"] = sol::readonly_property(&TES3::Script::getByteCode);
+			usertypeDefinition["text"] = sol::readonly_property(&TES3::Script::getScriptText);
+
+			usertypeDefinition["recompile"] = &TES3::Script::recompile;
 
 			// Allow a special context to be exposed for reading variables.
 			usertypeDefinition["context"] = sol::readonly_property(&TES3::Script::createContext);

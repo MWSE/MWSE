@@ -15,7 +15,7 @@ local SideBySideBlock = Parent:new()
 --- @param parentBlock tes3uiElement
 function SideBySideBlock:createSubcomponentsContainer(parentBlock)
 	Parent.createSubcomponentsContainer(self, parentBlock)
-	self.elements.subcomponentsContainer.flowDirection = "left_to_right"
+	self.elements.subcomponentsContainer.flowDirection = tes3.flowDirection.leftToRight
 end
 
 return SideBySideBlock

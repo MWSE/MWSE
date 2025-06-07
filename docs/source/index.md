@@ -67,6 +67,7 @@ The following individuals have contributed to the Morrowind Script Extender.
 - Cody Erekson (Fliggerty)
 - FreshFish
 - [Galrom](https://github.com/Galrom-p)
+- [GOOGLEPOX](https://github.com/googlepox)
 - Grant McDorman
 - [Greatness7](https://github.com/Greatness7)
 - [Hrnchamd](https://github.com/Hrnchamd)

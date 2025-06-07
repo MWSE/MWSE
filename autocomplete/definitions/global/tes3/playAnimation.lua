@@ -16,7 +16,7 @@ As a special case, `tes3.playAnimation{reference = ..., group = 0}` returns cont
 			{ name = "shield", type = "tes3.animationGroup", optional = true, description = "Sets the animation group id for the shield arm. This is used to combine different animations for each body section. Maps to [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) constants." },
 			{ name = "startFlag", type = "tes3.animationStartFlag", optional = true, default = "tes3.animationStartFlag.immediate", description = "A flag for starting the group with, using [`tes3.animationStartFlag`](https://mwse.github.io/MWSE/references/animation-start-flags/) constants." },
 			{ name = "loopCount", type = "number", optional = true, default = -1, description = "If provided, the animation will repeat its loop section a given number of times. To make an animation play through once, set loopCount = 0. Defaults to infinite looping." },
-			{ name = "mesh", type = "string", optional = true, description = "Deprecated. Please use [`tes3.loadAnimation`](https://mwse.github.io/MWSE/apis/tes3/#tes3loadanimation) (check its documentation) before calling `playAnimation`. You can also use `loadAnimation` to reset loaded animations to default." },
+			{ name = "mesh", type = "string", optional = true, description = "You can also use [`tes3.loadAnimation`](https://mwse.github.io/MWSE/apis/tes3/#tes3loadanimation) to reset loaded animations to default." },
 		},
 	}},
 }

@@ -1,6 +1,6 @@
 return {
 	type = "event",
-	description = "This event is triggered when an animation is about to be played.",
+	description = "This event is triggered when an animation is about to be played. This happens after the `simulated` event.",
 	eventData = {
 		["animationData"] = {
 			type = "tes3animationData",

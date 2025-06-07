@@ -1,5 +1,9 @@
 #pragma once
 
+#include "CSDefines.h"
+
+#include "CSBaseObject.h"
+
 namespace se::cs {
 	struct Effect {
 		enum class Range : unsigned char {
@@ -17,6 +21,11 @@ namespace se::cs {
 		int duration; // 0xC
 		int magnitudeMin; // 0x10
 		int magnitudeMax; // 0x14
+
+		MagicEffect* getEffectData() const;
+		std::optional<std::string> toString() const;
+
+		bool search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Effect) == 0x18, "Effect failed size validation");
 }
