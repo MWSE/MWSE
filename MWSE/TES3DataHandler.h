@@ -315,8 +315,8 @@ namespace TES3 {
 		char unknown_0xB4FB;
 		int backgroundThreadID; // 0xB4FC
 		int mainThreadID; // 0xB500
-		int backgroundThread; // 0xB504
-		int mainThread; // 0xB508
+		HANDLE backgroundThread; // 0xB504
+		HANDLE mainThread; // 0xB508
 		char unknown_0xB50C;
 		char unknown_0xB50D;
 		char unknown_0xB50E;

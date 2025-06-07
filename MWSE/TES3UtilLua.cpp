@@ -4587,7 +4587,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid actor parameter provided.");
 		}
 
-		auto rng = rand() % 100;
+		auto rng = tes3::rand() % 100;
 
 		auto index = getOptionalParam<int>(params, "index", -1);
 

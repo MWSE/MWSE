@@ -184,6 +184,12 @@
     <Filter Include="Header Files\Lua\Bindings\MGE">
       <UniqueIdentifier>{53266735-ada8-4f49-af56-f52a1d2dbf99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utility\CrashLogger">
+      <UniqueIdentifier>{d8d55f54-2435-4d3a-ae0d-6eb5a691b2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility\CrashLogger">
+      <UniqueIdentifier>{6accd156-f13f-4975-bb12-9d571a8e0c48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flags.h">
@@ -1781,6 +1787,18 @@
     </ClInclude>
     <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogExceptionHandler.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogFormatter.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogger.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogUtilities.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3876,6 +3894,24 @@
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
     <ClCompile Include="NIBound.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogCallTrace.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogDevice.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogLabelsMWSE.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogMemory.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogRegistryStack.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="NIDX8Renderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>

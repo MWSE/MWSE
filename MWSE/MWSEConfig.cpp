@@ -13,6 +13,7 @@ namespace mwse {
 	bool Configuration::PatchNiFlipController = true;
 	bool Configuration::LetterboxMovies = false;
 	bool Configuration::EnableLogColors = false;
+	bool Configuration::EnableLogLineNumbers = false;
 	bool Configuration::EnableDependencyChecks = true;
 	bool Configuration::ReplaceDialogueFiltering = true;
 	bool Configuration::EnableLuaErrorNotifications = false;
@@ -60,6 +61,7 @@ namespace mwse {
 		DECLARE_CONFIG(PatchNiFlipController)
 		DECLARE_CONFIG(LetterboxMovies)
 		DECLARE_CONFIG(EnableLogColors)
+		DECLARE_CONFIG(EnableLogLineNumbers)
 		DECLARE_CONFIG(EnableDependencyChecks)
 		DECLARE_CONFIG(ReplaceDialogueFiltering)
 		DECLARE_CONFIG(EnableLuaErrorNotifications)

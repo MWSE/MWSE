@@ -113,6 +113,7 @@ namespace se::cs {
 			Spell = 'LEPS',
 			Static = 'TATS',
 			TES3 = '3SET',
+			Training = 'IART',
 			Weapon = 'PAEW',
 		};
 	}

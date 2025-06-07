@@ -78,6 +78,7 @@ namespace TES3 {
 	}
 
 	bool MagicEffectController::getEffectExists(int id) {
+		if (id < 0 || id >= MAX_EFFECT_COUNT) return false;
 		return effectObjects[id] != nullptr;
 	}
 

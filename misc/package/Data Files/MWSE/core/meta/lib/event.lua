@@ -226,6 +226,8 @@ function event.register(eventId, callback, options) end
 --- @field unregisterOnLoad boolean? *Default*: `false`. If this option is set to `true`, the registered function will be unregistered when the next `load` event triggers.
 
 --- Triggers an event. This can be used to trigger custom events with specific data.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/event/#eventtrigger).
 --- @param eventId string|tes3.event No description yet available.
 --- @param payload table? *Optional*. No description yet available.
 --- @param options event.trigger.options? This table accepts the following values:

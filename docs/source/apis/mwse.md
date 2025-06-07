@@ -56,6 +56,17 @@ The mwseTimerController responsible for game-type timers.
 
 ***
 
+### `mwse.Logger`
+<div class="search_terms" style="display: none">logger</div>
+
+Provides access to the [`mwseLogger`](../types/mwseLogger.md) API 
+
+**Returns**:
+
+* `result` ([mwseLogger](../types/mwseLogger.md))
+
+***
+
 ### `mwse.realTimers`
 <div class="search_terms" style="display: none">realtimers</div>
 
@@ -111,6 +122,44 @@ local success = mwse.clearScriptOverride(scriptId)
 **Returns**:
 
 * `success` (boolean)
+
+***
+
+### `mwse.color.hexToRgb`
+<div class="search_terms" style="display: none">color.hextorgb</div>
+
+Converts given hex code in (AA)RRGGBB format to RGB(A).
+
+```lua
+local rgb = mwse.color.hexToRgb(rgb)
+```
+
+**Parameters**:
+
+* `rgb` (string)
+
+**Returns**:
+
+* `rgb` ([mwseColorTable](../types/mwseColorTable.md), [mwseColorATable](../types/mwseColorATable.md))
+
+***
+
+### `mwse.color.rgbToHex`
+<div class="search_terms" style="display: none">color.rgbtohex</div>
+
+Converts given RGB(A) color to an HTML hex code in (AA)RRGGBB format. Given color channels must be in [0, 1] range.
+
+```lua
+local hex = mwse.color.rgbToHex(rgb)
+```
+
+**Parameters**:
+
+* `rgb` ([mwseColorTable](../types/mwseColorTable.md), [mwseColorATable](../types/mwseColorATable.md), [niColor](../types/niColor.md), [niColorA](../types/niColorA.md), ffiImagePixel)
+
+**Returns**:
+
+* `hex` (string)
 
 ***
 
@@ -781,6 +830,59 @@ local button = mwse.mcm.createKeyBinder(parent, { label = ..., description = ...
 **Returns**:
 
 * `button` ([mwseMCMKeyBinder](../types/mwseMCMKeyBinder.md))
+
+***
+
+### `mwse.mcm.createLogLevelOptions`
+<div class="search_terms" style="display: none">mcm.createlogleveloptions</div>
+
+Creates a new LogLevelOptions setting inside given `parent` menu. This is a specialized dropdown with a default label and description text provided for convenience when using MWSE's logger.
+
+The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, LogLevelOptions's UI element tree won't be created. To do so, use LogLevelOptions's `create` method:
+
+```lua
+local myLogOptions = mwse.mcm.createLogLevelOptions({ ... })
+myLogOptions:create(parent)
+```
+
+The same is done by this function if you pass both `parent` and `data` arguments.
+
+
+```lua
+local dropdown = mwse.mcm.createLogLevelOptions(parent, { label = ..., description = ..., logger = ..., options = ..., variable = ..., config = ..., defaultConfig = ..., configKey = ..., converter = ..., defaultSetting = ..., showDefaultSetting = ..., idleColor = ..., overColor = ..., pressedColor = ..., callback = ..., inGameOnly = ..., restartRequired = ..., restartRequiredMessage = ..., indent = ..., childIndent = ..., paddingBottom = ..., childSpacing = ..., postCreate = ... })
+```
+
+**Parameters**:
+
+* `parent` ([tes3uiElement](../types/tes3uiElement.md), mwse.mcm.createLogLevelOptions.data): The UI element inside which the new LogLevelOptions will be created.
+* `data` (table): *Optional*.
+	* `label` (string): *Optional*. The text shown above the dropdown. If not provided, the default label text will be used.
+	* `description` (string): *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover. If not provided, the default description will be used.
+	* `logger` ([mwseLogger](../types/mwseLogger.md), string): *Optional*. A logger whose logging level will be changed. The setting will try to automatically resolve your mod's logger using the same mechanism as `mwse.Logger.new`. If this isn't possible, an error message will be printed to the `MWSE.log`. In such a case, you can pass your mod's logger or mod name.
+	* `options` ([mwseMCMDropdownOption](../types/mwseMCMDropdownOption.md)[]): *Optional*. This table holds the text and variable value for each of the dropdown's options.
+	* `variable` ([mwseMCMVariable](../types/mwseMCMVariable.md), [mwseMCMSettingNewVariable](../types/mwseMCMSettingNewVariable.md)): *Optional*. A variable for this setting. If not provided, this setting will try to create a variable using the `config` and `configKey` parameters, if possible.
+	* `config` (table): *Default*: ``parentComponent.config``. The config to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `defaultConfig` (table): *Default*: ``parentComponent.defaultConfig``. The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+	* `configKey` (string, number): *Optional*. The `configKey` used to create a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md) variable will be created for this setting.
+	* `converter` (fun(newValue: unknown): unknown): *Optional*. A converter to use for this component's `variable`.
+	* `defaultSetting` (unknown): *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
+	* `showDefaultSetting` (boolean): *Default*: ``parentComponent.showDefaultSetting``. If `true`, and in a [Sidebar Page](../types/mwseMCMSideBarPage.md), then the `defaultSetting` of this setting's `variable` will be shown below its `description`. The `defaultSetting` will be formatted in accordance with the `convertToLabelValue` function. **Note:** This parameter does not update the `description` field.
+	* `idleColor` (number[]): *Default*: `tes3ui.getPalette(tes3.palette.normalColor)`. The idle color for dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+	* `overColor` (number[]): *Default*: `tes3ui.getPalette(tes3.palette.normalOverColor)`. The color used when the mouse if hovering over the dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+	* `pressedColor` (number[]): *Default*: `tes3ui.getPalette(tes3.palette.normalPressedColor)`. The color used when the dropdown is being pressed. Needs to be an RGB trio in the range [0.0, 1.0].
+	* `callback` (fun(self: [mwseMCMLogLevelOptions](../types/mwseMCMLogLevelOptions.md))): *Optional*. The custom function called when the player interacts with this Setting.
+	* `inGameOnly` (boolean): *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+	* `restartRequired` (boolean): *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+	* `restartRequiredMessage` (string): *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
+	* `paddingBottom` (integer): *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+	* `childSpacing` (integer): *Optional*. The bottom border size in pixels. Used on all the child components.
+	* `postCreate` (fun(self: [mwseMCMLogLevelOptions](../types/mwseMCMLogLevelOptions.md))): *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+**Returns**:
+
+* `dropdown` ([mwseMCMLogLevelOptions](../types/mwseMCMLogLevelOptions.md))
 
 ***
 
@@ -1536,7 +1638,7 @@ local success = mwse.overrideScript(scriptId, callback)
 This is the main function to register a mod's configuration. Only registered configurations appear in the Mod Config menu.
 
 ```lua
-mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ... })
+mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ..., template = ... })
 ```
 
 **Parameters**:
@@ -1546,6 +1648,7 @@ mwse.registerModConfig(name, { onCreate = ..., onSearch = ..., onClose = ... })
 	* `onCreate` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): The function that creates the mod's configuration menu inside given `modConfigContainer`.
 	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod should show up in search results for given `searchText`.
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. This function is called when the mod's configuration menu is closed. Typically, it's used to save the current config table.
+	* `template` ([mwseMCMTemplate](../types/mwseMCMTemplate.md)): *Optional*. Used internally by `Template:register()`.
 
 ***
 

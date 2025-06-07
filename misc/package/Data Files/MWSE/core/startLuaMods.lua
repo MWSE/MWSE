@@ -13,7 +13,7 @@ local function execLuaMod(runtime)
 		-- Setup our dependencies.
 		local dependencyManager = dependencyManagerModule.new({
 			metadata = runtime.metadata,
-			logger = logger.new({ name = name, logLevel = "INFO" }),
+			logger = logger.new{ modName = name, modDir = runtime.key },
 			showFailureMessage = false,
 		})
 
@@ -78,6 +78,7 @@ end
 
 -- Gather a list of mods to execute.
 local runtimes = table.values(mwse.activeLuaMods) --- @diagnostic disable-line
+mwse.runtimes = runtimes
 
 -- Figure out some common data from the metadata.
 for _, runtime in ipairs(runtimes) do

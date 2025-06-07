@@ -48,6 +48,7 @@
 #include "BitUtil.h"
 #include "ScriptUtil.h"
 #include "TES3Util.h"
+#include "WindowsUtil.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
@@ -56,6 +57,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
+#include "CrashLogExceptionHandler.hpp"
 
 namespace mwse::patch {
 
@@ -1965,7 +1967,12 @@ namespace mwse::patch {
 	}
 
 	void installPostInitializationPatches() {
-
+		// Patch: Give threads descriptions.
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler) {
+			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
+			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
+		}
 	}
 
 	//
@@ -2068,25 +2075,6 @@ namespace mwse::patch {
 		log::getLog() << std::dec << std::endl;
 		log::getLog() << "Morrowind has crashed! To help improve game stability, send MWSE_Minidump.dmp and mwse.log to the #mwse channel at the Morrowind Modding Community Discord: https://discord.me/mwmods" << std::endl;
 
-#ifdef APPVEYOR_BUILD_NUMBER
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << "-" << APPVEYOR_BUILD_NUMBER << std::endl;
-#else
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << std::endl;
-#endif
-		log::getLog() << "Build date: " << MWSE_BUILD_DATE << std::endl;
-
-		// Display the memory usage in the log.
-		PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-		log::getLog() << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-		if (memCounter.PrivateUsage > 3650722201) {
-			log::getLog() << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
-		}
-
-		// Try to print the lua stack trace.
-		log::getLog() << "Lua traceback at time of crash:" << std::endl;
-		lua::logStackTrace();
-
 		// Try to print any relevant mwscript information.
 		if (TES3::Script::currentlyExecutingScript) {
 			log::getLog() << "Currently executing mwscript context:" << std::endl;
@@ -2143,6 +2131,11 @@ namespace mwse::patch {
 		else {
 			log::getLog() << "MiniDump creation failed. Could not get file handle. Error: " << GetLastError() << std::endl;
 		}
+
+		if constexpr (CrashLogger::DEBUG_LOGGER) {
+			log::getLog() << "Attempting To Log Crash \n";
+		}
+		CrashLogger::AttemptLog(pep);
 	}
 
 	int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
@@ -2163,6 +2156,7 @@ namespace mwse::patch {
 
 	bool installMiniDumpHook() {
 		if constexpr (INSTALL_MINIDUMP_HOOK) {
+			CrashLogger::Playtime::Init();
 			return genCallEnforced(0x7279AD, 0x416E10, reinterpret_cast<DWORD>(onWinMain));
 		}
 		else {

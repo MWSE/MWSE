@@ -6,9 +6,66 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A logging class. Needs to be required before use. See [this guide](https://mwse.github.io/MWSE/guides/logging/).
+A class to facilitate printing log messages.
+A new one can be constructed by simply calling `mwse.Logger.new()`.
+See the [Quickstart Guide](../guides/logging.md#quickstart)
+for more information.
+
 
 ## Properties
+
+### `abbreviateHeader`
+<div class="search_terms" style="display: none">abbreviateheader</div>
+
+If set to `true`, the header portion of all logging messages will be shortened. 
+For example, suppose the following log message is written on line `20` of the file `My Mod/Skills/Player/Combat/swords.lua`.
+```lua
+log("My message")
+```
+Then the resulting output to MWSE.log would be:
+```
+-- abbreviateHeader == true:
+[My Mod | s/p/c/swords:20  | D] My message
+-- abbreviateHeader == false:
+[My Mod | skills/player/combat/swords.lua:20  | DEBUG] My message
+```
+This does not affect how the "body" of log messages are displayed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `filepath`
+<div class="search_terms" style="display: none">filepath</div>
+
+The path to the file this `mwseLogger` was created in. This will be relative to the `modDir`.
+
+For example, if this `mwseLogger` was constructed in `mods/My Mod/main.lua`, then the `filepath` will be `main.lua`.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `formatter`
+<div class="search_terms" style="display: none">formatter</div>
+
+This is an advanced option and should be used with care.
+It allows specifying a custom formatter, allowing for more fine-tuned control over how log messages are printed.
+If supplying a formatter, you are responsible for also including the "header" portion of the log.
+These can be created by calling the `protected` `makeHeader` method.
+
+Some examples can be found in the `logger/formatters.lua` folder of the core library.
+
+
+**Returns**:
+
+* `result` (fun(self: [mwseLogger](../types/mwseLogger.md), record: [mwseLoggerRecord](../types/mwseLoggerRecord.md), ...: string|any|fun(...)): string)
+
+***
 
 ### `includeTimestamp`
 <div class="search_terms" style="display: none">includetimestamp</div>
@@ -21,10 +78,21 @@ If set to `true`, all the logged messages will include a timestamp.
 
 ***
 
+### `level`
+<div class="search_terms" style="display: none">level</div>
+
+The current logging level.
+
+**Returns**:
+
+* `result` (mwseLogger.logLevel)
+
+***
+
 ### `logToConsole`
 <div class="search_terms" style="display: none">logtoconsole</div>
 
-If `true`, all the logged messages will also be logged to console.
+If `true`, all the logged messages will also be logged to the in-game console.
 
 **Returns**:
 
@@ -32,14 +100,51 @@ If `true`, all the logged messages will also be logged to console.
 
 ***
 
-### `name`
-<div class="search_terms" style="display: none">name</div>
+### `modDir`
+<div class="search_terms" style="display: none">moddir, dir</div>
+
+The directory that your mod lives in. This is relative to `Data Files/MWSE/mods`.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `modName`
+<div class="search_terms" style="display: none">modname, name</div>
 
 Name of the mod, also counts as unique id of the logger.
 
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `moduleName`
+<div class="search_terms" style="display: none">modulename, ulename</div>
+
+Associates a logger with a particular "module". 
+The `moduleName` will be printed in logging messages next to the `modName`.
+What does and does not constitute a "module" is entirely subjective. Use this field as you please. 
+This can be useful if the `filepath` alone is not enough to distinguish what code is reponsible for issuing a log message.
+For example, the MWSE dependency management system uses a `moduleName` to alert the user about which mod had a dependency problem.
+	
+
+***
+
+### `outputFile`
+<div class="search_terms" style="display: none">outputfile</div>
+
+Determines where logging messages are printed. If `false`, log messages are printed to `MWSE.log`. 
+If it's a `string`, then logging messages will be printed to `Data Files/MWSE/logs/<log.outputFile>.log`.
+
+Setting this to `true` is the same as writing `log.outputFile = log.modDir`.
+
+**Returns**:
+
+* `result` (string, boolean)
 
 ***
 
@@ -65,7 +170,20 @@ myObject:assert(condition, message, ...)
 ### `debug`
 <div class="search_terms" style="display: none">debug</div>
 
-Log debug message.
+Log a `DEBUG` message. This will only be printed if the current logging level is `DEBUG` or higher.
+If multiple arguments are passed, then they will be passed to `string.format`.
+	
+All `table` or `userdata` arguments will be prettyprinted.
+You can also pass a function as the first or second parameter to lazily evaluate log statements.
+See the [Writing More Useful Log Messages](../guides/logging.md#writing-more-useful-log-messages) 
+and [Passing Functions to Logging Methods](../guides/logging.md#passing-functions-to-the-logging-methods) 
+sections of the [Logging Guide](../guides/logging.md) 
+for more information.
+
+!!! note "Shorthand Syntax"
+	This method can also be called by writing `log(message, ...)` instead of `log:debug(message, ...)`.
+
+
 
 ```lua
 myObject:debug(message, ...)
@@ -73,34 +191,24 @@ myObject:debug(message, ...)
 
 **Parameters**:
 
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
-
-***
-
-### `doLog`
-<div class="search_terms" style="display: none">dolog</div>
-
-Returns true if the messages of the given log level will be logged.
-
-```lua
-local doLog = myObject:doLog(logLevel)
-```
-
-**Parameters**:
-
-* `logLevel` (mwseLoggerLogLevel): Options are: "TRACE", "DEBUG", "INFO", "WARN", "ERROR" and "NONE".
-
-**Returns**:
-
-* `doLog` (boolean)
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
 
 ***
 
 ### `error`
 <div class="search_terms" style="display: none">error</div>
 
-Log error message.
+Log an `ERROR` message. This will only be printed if the current logging level is `ERROR` or higher.
+If multiple arguments are passed, then they will be passed to `string.format`.
+	
+All `table` or `userdata` arguments will be prettyprinted.
+You can also pass a function as the first or second parameter to lazily evaluate log statements.
+See the [Writing More Useful Log Messages](../guides/logging.md#writing-more-useful-log-messages) 
+and [Passing Functions to Logging Methods](../guides/logging.md#passing-functions-to-the-logging-methods) 
+sections of the [Logging Guide](../guides/logging.md) 
+for more information.
+
 
 ```lua
 myObject:error(message, ...)
@@ -108,15 +216,43 @@ myObject:error(message, ...)
 
 **Parameters**:
 
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
+
+***
+
+### `getLevelString`
+<div class="search_terms" style="display: none">getlevelstring, levelstring</div>
+
+Gets a `string` representation of the current logging level.
+
+```lua
+local levelString = myObject:getLevelString(level)
+```
+
+**Parameters**:
+
+* `level` (mwseLogger.logLevel): *Optional*. If provided, a string representation of this logging level will be returned. If `nil`, then a string representation of the current logging level will be returned.
+
+**Returns**:
+
+* `levelString` (string)
 
 ***
 
 ### `info`
 <div class="search_terms" style="display: none">info</div>
 
-Log info message.
+Log an `INFO` message. This will only be printed if the current logging level is `INFO` or higher.
+If multiple arguments are passed, then they will be passed to `string.format`.
+	
+All `table` or `userdata` arguments will be prettyprinted.
+You can also pass a function as the first or second parameter to lazily evaluate log statements.
+See the [Writing More Useful Log Messages](../guides/logging.md#writing-more-useful-log-messages) 
+and [Passing Functions to Logging Methods](../guides/logging.md#passing-functions-to-the-logging-methods) 
+sections of the [Logging Guide](../guides/logging.md) 
+for more information.
+
 
 ```lua
 myObject:info(message, ...)
@@ -124,23 +260,124 @@ myObject:info(message, ...)
 
 **Parameters**:
 
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
 
 ***
 
-### `setLogLevel`
-<div class="search_terms" style="display: none">setloglevel, loglevel</div>
+### `setAbbreviateHeader`
+<div class="search_terms" style="display: none">setabbreviateheader, abbreviateheader</div>
 
-Set the log level. Options are: "TRACE", "DEBUG", "INFO", "WARN", "ERROR" and "NONE".
+Changes the `abbreviateHeader` field of this logger.
+	
+This function does exactly the same thing as `log.abbreviateHeader = newAbbreviateHeader`. 
+Use whichever one you prefer.
+
 
 ```lua
-myObject:setLogLevel(newLogLevel)
+myObject:setAbbreviateHeader(newAbbreviateHeader)
 ```
 
 **Parameters**:
 
-* `newLogLevel` (mwseLoggerLogLevel)
+* `newAbbreviateHeader` (boolean)
+
+***
+
+### `setFormatter`
+<div class="search_terms" style="display: none">setformatter, formatter</div>
+
+Changes the `formatter` field of this logger.
+
+This function does exactly the same thing as writing `log.formatter = newFormatter`.
+Use whichever one you prefer.
+
+
+```lua
+myObject:setFormatter(newFormatter)
+```
+
+**Parameters**:
+
+* `newFormatter` (fun(self: [mwseLogger](../types/mwseLogger.md), record: [mwseLoggerRecord](../types/mwseLoggerRecord.md), ...: string|any|fun(...)): string)
+
+***
+
+### `setIncludeTimestamp`
+<div class="search_terms" style="display: none">setincludetimestamp, includetimestamp</div>
+
+Changes the `includeTimestamp` field of this logger.
+	
+This function does exactly the same thing as `log.includeTimestamp = newIncludeTimestamp`. 
+Use whichever one you prefer.
+
+
+```lua
+myObject:setIncludeTimestamp(newIncludeTimestamp)
+```
+
+**Parameters**:
+
+* `newIncludeTimestamp` (boolean)
+
+***
+
+### `setLevel`
+<div class="search_terms" style="display: none">setlevel, level</div>
+
+Set the log level. 
+You can pass in either a string representation of a logging level, or the corresponding numerical constant found in the `mwse.logLevel` table.
+The options are: `"TRACE"`, `"DEBUG"`, `"INFO"`, `"WARN"`, `"ERROR"` and `"NONE"`.
+
+This function does exactly the same thing as writing `log.level = newLogLevel`. 
+Use whichever one you prefer.
+
+
+```lua
+myObject:setLevel(newLogLevel)
+```
+
+**Parameters**:
+
+* `newLogLevel` (mwseLogger.logLevel, mwseLogger.logLevelString)
+
+***
+
+### `setModName`
+<div class="search_terms" style="display: none">setmodname, modname</div>
+
+Changes the `modName` field of this logger.
+	
+This function does exactly the same thing as writing `log.modName = newModName`. 
+Use whichever one you prefer.
+
+
+```lua
+myObject:setModName(newModName)
+```
+
+**Parameters**:
+
+* `newModName` (string)
+
+***
+
+### `setModuleName`
+<div class="search_terms" style="display: none">setmodulename, modulename</div>
+
+Changes the `moduleName` field of this logger.
+	
+This function does exactly the same thing as writing `log.moduleName = newModuleName`. 
+Use whichever one you prefer.
+
+
+```lua
+myObject:setModuleName(newModName)
+```
+
+**Parameters**:
+
+* `newModName` (string)
 
 ***
 
@@ -149,20 +386,33 @@ myObject:setLogLevel(newLogLevel)
 
 Set the output file. If set, logs will be sent to a file of this name.
 
+This function does exactly the same thing as `log.outputFile = newOutputFile`. 
+Use whichever one you prefer.
+
+
 ```lua
 myObject:setOutputFile(outputFile)
 ```
 
 **Parameters**:
 
-* `outputFile` (string)
+* `outputFile` (string, boolean): If `true`, then the `modName` field will be used as the filepath. If `false`, no custom output file will be used.
 
 ***
 
 ### `trace`
 <div class="search_terms" style="display: none">trace</div>
 
-Log trace message.
+Log a `TRACE` message. This will only be printed if the current logging level is `TRACE`.
+If multiple arguments are passed, then they will be passed to `string.format`.
+	
+All `table` or `userdata` arguments will be prettyprinted.
+You can also pass a function as the first or second parameter to lazily evaluate log statements.
+See the [Writing More Useful Log Messages](../guides/logging.md#writing-more-useful-log-messages) 
+and [Passing Functions to Logging Methods](../guides/logging.md#passing-functions-to-the-logging-methods) 
+sections of the [Logging Guide](../guides/logging.md) 
+for more information.
+
 
 ```lua
 myObject:trace(message, ...)
@@ -170,15 +420,24 @@ myObject:trace(message, ...)
 
 **Parameters**:
 
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
 
 ***
 
 ### `warn`
 <div class="search_terms" style="display: none">warn</div>
 
-Log warn message.
+Log a `WARN` message. This will only be printed if the current logging level is `WARN` or higher.
+If multiple arguments are passed, then they will be passed to `string.format`.
+	
+All `table` or `userdata` arguments will be prettyprinted.
+You can also pass a function as the first or second parameter to lazily evaluate log statements.
+See the [Writing More Useful Log Messages](../guides/logging.md#writing-more-useful-log-messages) 
+and [Passing Functions to Logging Methods](../guides/logging.md#passing-functions-to-the-logging-methods) 
+sections of the [Logging Guide](../guides/logging.md) 
+for more information.
+
 
 ```lua
 myObject:warn(message, ...)
@@ -186,6 +445,92 @@ myObject:warn(message, ...)
 
 **Parameters**:
 
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
+
+***
+
+### `writeInitMessage`
+<div class="search_terms" style="display: none">writeinitmessage</div>
+
+Writes an `INFO` message saying this mod has been initialized. 
+If your mod has [metadata file](../guides/metadata.md#package-section) that specifies its current version,
+then that will also be included in the initialization message. 
+You may also supply a version number directly as an argument to this method.
+
+```lua
+myObject:writeInitMessage(version)
+```
+
+**Parameters**:
+
+* `version` (string): *Optional*. The current version of your mod. If not provided, the logger will attempt to retrieve it from your mod's metadata file.
+
+***
+
+## Functions
+
+### `get`
+<div class="search_terms" style="display: none">get</div>
+
+Gets a logger associated with a particular `modDir`. You can also filter by `filepath` as well.
+
+```lua
+local logger = mwseLogger.get(modDir, filepath)
+```
+
+**Parameters**:
+
+* `modDir` (string): The directory of mod to retrieve the loggers for. This argument corresponds to the `lua-mod` field of the mod's metadata file.
+* `filepath` (string): *Optional*. The filepath to retrieve the logger for. This is relative to `modDir` and corresponds to the `filepath` field of the logger to retrieve.
+
+**Returns**:
+
+* `logger` ([mwseLogger](../types/mwseLogger.md), nil): The logger, if it exists.
+
+***
+
+### `getLoggers`
+<div class="search_terms" style="display: none">getloggers, loggers</div>
+
+Gets all the loggers registered to a particular `modDir`.
+
+```lua
+local loggers = mwseLogger.getLoggers(modDir)
+```
+
+**Parameters**:
+
+* `modDir` (string): The directory of mod to retrieve the loggers for. This argument corresponds to the `lua-mod` field of the mods metadata file.
+
+**Returns**:
+
+* `loggers` ([mwseLogger](../types/mwseLogger.md)[], nil): The loggers, if they exist.
+
+***
+
+### `new`
+<div class="search_terms" style="display: none">new</div>
+
+Creates a new logger based on the input parameters.
+
+```lua
+local log = mwseLogger.new({ modName = ..., moduleName = ..., level = ..., logToConsole = ..., outputFile = ..., includeTimestamp = ..., abbreviateHeader = ..., formatter = ... })
+```
+
+**Parameters**:
+
+* `params` (table): *Optional*.
+	* `modName` (string): *Optional*. The name of MWSE mod associated to this Logger. This will be retrieved automatically if not provided.
+	* `moduleName` (string): *Optional*. The module this Logger is associated with. This can be useful for distinguishes which parts of your mod produce certain log messages. This will be displayed next to the name of the mod, in parentheses.
+	* `level` (mwseLogger.logLevel, mwseLogger.logLevelString): *Default*: `mwse.logLevel.info`. The logging level for all loggers associated to this mod.
+	* `logToConsole` (boolean): *Default*: `false`. Should the output also be written to the in-game console?
+	* `outputFile` (boolean, string): *Default*: `false`. The path of the output file to write log messages in. This path is taken relative to `Data Files/MWSE/logs/`. If not provided, log messages will be written to `MWSE.log`. If `true`, then the `modDir` will be used as the output path.
+	* `includeTimestamp` (boolean): *Default*: `true`. Should timestamps be included in logging messages? The timestamps are relative to the time that the game was launched.
+	* `abbreviateHeader` (boolean): *Default*: `false`. Should the headers be abbreviated?
+	* `formatter` (fun(self: Logger, record: [mwseLoggerRecord](../types/mwseLoggerRecord.md), ...: string|any|fun(...)): string): *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
+
+**Returns**:
+
+* `log` ([mwseLogger](../types/mwseLogger.md)): The newly created logger.
 

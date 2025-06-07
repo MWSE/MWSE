@@ -199,6 +199,9 @@ namespace se::cs::dialog::text_search_window {
 
 		const auto lParam = context.getNotificationItemActivateData();
 		const auto object = (BaseObject*)ListView_GetItemData(lParam->hdr.hwndFrom, lParam->iItem, lParam->iSubItem);
+		if (object == nullptr) {
+			return;
+		}
 
 		window::main::showObjectEditWindow(object);
 	}

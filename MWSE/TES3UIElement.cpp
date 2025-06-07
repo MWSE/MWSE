@@ -1386,7 +1386,7 @@ namespace TES3::UI {
 
 			// Make sure the file exists.
 			if (mwse::tes3::resolveAssetPath(path.c_str()) == 0) {
-				throw std::invalid_argument("Provided file does not exist.");
+				throw std::invalid_argument(fmt::format("Provided file does not exist: {}", path));
 			}
 		}
 

@@ -587,7 +587,7 @@ function mwse.mcm.createDecimalSlider(parent, data) end
 --- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
 --- 
 --- `postCreate`: nil|fun(self: mwseMCMDropdown) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
---- @return mwseMCMDropdown dropdown No description yet available.
+--- @return mwseMCMDropdown|mwseMCMLogLevelOptions dropdown No description yet available.
 function mwse.mcm.createDropdown(parent, data) end
 
 ---Table parameter definitions for `mwse.mcm.createDropdown`.
@@ -828,6 +828,94 @@ function mwse.mcm.createKeyBinder(parent, data) end
 --- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
 --- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
 --- @field postCreate nil|fun(self: mwseMCMKeyBinder) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+
+--- Creates a new LogLevelOptions setting inside given `parent` menu. This is a specialized dropdown with a default label and description text provided for convenience when using MWSE's logger.
+--- 
+--- The canonical way to use this function is to pass a `parent` and `data` arguments. If passing only `data` table, LogLevelOptions's UI element tree won't be created. To do so, use LogLevelOptions's `create` method:
+--- 
+--- ```lua
+--- local myLogOptions = mwse.mcm.createLogLevelOptions({ ... })
+--- myLogOptions:create(parent)
+--- ```
+--- 
+--- The same is done by this function if you pass both `parent` and `data` arguments.
+--- 
+--- @param parent tes3uiElement|mwse.mcm.createLogLevelOptions.data The UI element inside which the new LogLevelOptions will be created.
+--- @param data mwse.mcm.createLogLevelOptions.data? This table accepts the following values:
+--- 
+--- `label`: string? — *Optional*. The text shown above the dropdown. If not provided, the default label text will be used.
+--- 
+--- `description`: string? — *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover. If not provided, the default description will be used.
+--- 
+--- `logger`: mwseLogger|string|nil — *Optional*. A logger whose logging level will be changed. The setting will try to automatically resolve your mod's logger using the same mechanism as `mwse.Logger.new`. If this isn't possible, an error message will be printed to the `MWSE.log`. In such a case, you can pass your mod's logger or mod name.
+--- 
+--- `options`: mwseMCMDropdownOption[]? — *Optional*. This table holds the text and variable value for each of the dropdown's options.
+--- 
+--- `variable`: mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil — *Optional*. A variable for this setting. If not provided, this setting will try to create a variable using the `config` and `configKey` parameters, if possible.
+--- 
+--- `config`: table? — *Default*: ``parentComponent.config``. The config to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+--- 
+--- `defaultConfig`: table? — *Default*: ``parentComponent.defaultConfig``. The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+--- 
+--- `configKey`: string|number|nil — *Optional*. The `configKey` used to create a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md) variable will be created for this setting.
+--- 
+--- `converter`: nil|fun(newValue: unknown): unknown — *Optional*. A converter to use for this component's `variable`.
+--- 
+--- `defaultSetting`: unknown? — *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
+--- 
+--- `showDefaultSetting`: boolean? — *Default*: ``parentComponent.showDefaultSetting``. If `true`, and in a [Sidebar Page](../types/mwseMCMSideBarPage.md), then the `defaultSetting` of this setting's `variable` will be shown below its `description`. The `defaultSetting` will be formatted in accordance with the `convertToLabelValue` function. **Note:** This parameter does not update the `description` field.
+--- 
+--- `idleColor`: number[]? — *Default*: `tes3ui.getPalette(tes3.palette.normalColor)`. The idle color for dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+--- 
+--- `overColor`: number[]? — *Default*: `tes3ui.getPalette(tes3.palette.normalOverColor)`. The color used when the mouse if hovering over the dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+--- 
+--- `pressedColor`: number[]? — *Default*: `tes3ui.getPalette(tes3.palette.normalPressedColor)`. The color used when the dropdown is being pressed. Needs to be an RGB trio in the range [0.0, 1.0].
+--- 
+--- `callback`: nil|fun(self: mwseMCMLogLevelOptions) — *Optional*. The custom function called when the player interacts with this Setting.
+--- 
+--- `inGameOnly`: boolean? — *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+--- 
+--- `restartRequired`: boolean? — *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+--- 
+--- `restartRequiredMessage`: string? — *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+--- 
+--- `indent`: integer? — *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+--- 
+--- `childIndent`: integer? — *Optional*. The left padding size in pixels. Used on all the child components.
+--- 
+--- `paddingBottom`: integer? — *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+--- 
+--- `childSpacing`: integer? — *Optional*. The bottom border size in pixels. Used on all the child components.
+--- 
+--- `postCreate`: nil|fun(self: mwseMCMLogLevelOptions) — *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
+--- @return mwseMCMLogLevelOptions dropdown No description yet available.
+function mwse.mcm.createLogLevelOptions(parent, data) end
+
+---Table parameter definitions for `mwse.mcm.createLogLevelOptions`.
+--- @class mwse.mcm.createLogLevelOptions.data
+--- @field label string? *Optional*. The text shown above the dropdown. If not provided, the default label text will be used.
+--- @field description string? *Optional*. If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover. If not provided, the default description will be used.
+--- @field logger mwseLogger|string|nil *Optional*. A logger whose logging level will be changed. The setting will try to automatically resolve your mod's logger using the same mechanism as `mwse.Logger.new`. If this isn't possible, an error message will be printed to the `MWSE.log`. In such a case, you can pass your mod's logger or mod name.
+--- @field options mwseMCMDropdownOption[]? *Optional*. This table holds the text and variable value for each of the dropdown's options.
+--- @field variable mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable|mwseMCMSettingNewVariable|nil *Optional*. A variable for this setting. If not provided, this setting will try to create a variable using the `config` and `configKey` parameters, if possible.
+--- @field config table? *Default*: ``parentComponent.config``. The config to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the config stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+--- @field defaultConfig table? *Default*: ``parentComponent.defaultConfig``. The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. If provided, it will override the `defaultConfig` stored in `parentComponent`. Otherwise, the value in `parentComponent` will be used.
+--- @field configKey string|number|nil *Optional*. The `configKey` used to create a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md). If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new [`mwseMCMTableVariable`s](../types/mwseMCMTableVariable.md) variable will be created for this setting.
+--- @field converter nil|fun(newValue: unknown): unknown *Optional*. A converter to use for this component's `variable`.
+--- @field defaultSetting unknown? *Optional*. If `defaultSetting` wasn't passed in the `variable` table, can be passed here. The new variable will be initialized to this value. If not provided, then the value in `defaultConfig` will be used, if possible.
+--- @field showDefaultSetting boolean? *Default*: ``parentComponent.showDefaultSetting``. If `true`, and in a [Sidebar Page](../types/mwseMCMSideBarPage.md), then the `defaultSetting` of this setting's `variable` will be shown below its `description`. The `defaultSetting` will be formatted in accordance with the `convertToLabelValue` function. **Note:** This parameter does not update the `description` field.
+--- @field idleColor number[]? *Default*: `tes3ui.getPalette(tes3.palette.normalColor)`. The idle color for dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+--- @field overColor number[]? *Default*: `tes3ui.getPalette(tes3.palette.normalOverColor)`. The color used when the mouse if hovering over the dropdown. Needs to be an RGB trio in the range [0.0, 1.0].
+--- @field pressedColor number[]? *Default*: `tes3ui.getPalette(tes3.palette.normalPressedColor)`. The color used when the dropdown is being pressed. Needs to be an RGB trio in the range [0.0, 1.0].
+--- @field callback nil|fun(self: mwseMCMLogLevelOptions) *Optional*. The custom function called when the player interacts with this Setting.
+--- @field inGameOnly boolean? *Default*: `false`. If true, the setting is disabled while the game is on main menu.
+--- @field restartRequired boolean? *Default*: `false`. If true, updating this Setting will notify the player to restart the game.
+--- @field restartRequiredMessage string? *Optional*. The message shown if restartRequired is triggered. The default text is a localized version of: "The game must be restarted before this change will come into effect."
+--- @field indent integer? *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
+--- @field childIndent integer? *Optional*. The left padding size in pixels. Used on all the child components.
+--- @field paddingBottom integer? *Default*: `4`. The bottom border size in pixels. Only used if the `childSpacing` is unset on the parent component.
+--- @field childSpacing integer? *Optional*. The bottom border size in pixels. Used on all the child components.
+--- @field postCreate nil|fun(self: mwseMCMLogLevelOptions) *Optional*. Can define a custom formatting function to make adjustments to any element saved in `self.elements`.
 
 --- Creates a new MouseBinder inside given `parent` menu.
 --- 

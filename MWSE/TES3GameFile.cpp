@@ -120,19 +120,11 @@ namespace TES3 {
 	}
 
 	std::uint64_t GameFile::getFileSize() const {
-		auto x = reinterpret_cast<const WIN32_FIND_DATAA*>(findData);
-		uint64_t fileSize;
-
-		fileSize = (uint64_t(x->nFileSizeHigh) << 32) + uint64_t(x->nFileSizeLow);
-		return fileSize;
+		return (uint64_t(findData.nFileSizeHigh) << 32) + uint64_t(findData.nFileSizeLow);
 	}
 
 	std::uint64_t GameFile::getModifiedTime() const {
-		auto x = reinterpret_cast<const WIN32_FIND_DATAA*>(findData);
-		uint64_t time;
-
-		time = (uint64_t(x->ftLastWriteTime.dwHighDateTime) << 32) + uint64_t(x->ftLastWriteTime.dwLowDateTime);
-		return time;
+		return (uint64_t(findData.ftLastWriteTime.dwHighDateTime) << 32) + uint64_t(findData.ftLastWriteTime.dwLowDateTime);
 	}
 
 	const char* GameFile::getFilename() const {

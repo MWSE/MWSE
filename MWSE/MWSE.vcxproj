@@ -14,6 +14,10 @@
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BitUtil.h" />
     <ClInclude Include="BSAnimationManager.h" />
+    <ClInclude Include="CrashLogExceptionHandler.hpp" />
+    <ClInclude Include="CrashLogFormatter.hpp" />
+    <ClInclude Include="CrashLogger.hpp" />
+    <ClInclude Include="CrashLogUtilities.hpp" />
     <ClInclude Include="LuaCalcChargenStatsEvent.h" />
     <ClInclude Include="LuaCalcHitDetectionConeEvent.h" />
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
@@ -547,6 +551,11 @@
   <ItemGroup>
     <ClCompile Include="ArrayUtil.cpp" />
     <ClCompile Include="CodePatchUtil.cpp" />
+    <ClCompile Include="CrashLogCallTrace.cpp" />
+    <ClCompile Include="CrashLogDevice.cpp" />
+    <ClCompile Include="CrashLogLabelsMWSE.cpp" />
+    <ClCompile Include="CrashLogMemory.cpp" />
+    <ClCompile Include="CrashLogRegistryStack.cpp" />
     <ClCompile Include="DynamicLuaObject.cpp" />
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="LuaAbsorbedMagicEvent.cpp" />
@@ -745,6 +754,7 @@
     <ClCompile Include="NICollisionSwitch.cpp" />
     <ClCompile Include="NICopyTransformController.cpp" />
     <ClCompile Include="NIDirectionalLight.cpp" />
+    <ClCompile Include="NIDX8Renderer.cpp" />
     <ClCompile Include="NIDX8TextureData.cpp" />
     <ClCompile Include="NIDynamicEffectLua.cpp" />
     <ClCompile Include="NIExtraData.cpp" />
@@ -1290,13 +1300,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -1310,8 +1320,9 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1346,8 +1357,9 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

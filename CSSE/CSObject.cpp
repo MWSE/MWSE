@@ -10,6 +10,7 @@
 #include "CSRace.h"
 #include "CSScript.h"
 #include "CSSpell.h"
+#include "CSNPC.h"
 
 #include "StringUtil.h"
 
@@ -151,6 +152,8 @@ namespace se::cs {
 			return static_cast<const Ingredient*>(this)->search(needle, settings, regex);
 		case ObjectType::Spell:
 			return static_cast<const Spell*>(this)->search(needle, settings, regex);
+		case ObjectType::NPC:
+			return static_cast<const NPC*>(this)->search(needle, settings, regex);
 		}
 
 		// Do the usual object searches then pass off to BaseObject tests.

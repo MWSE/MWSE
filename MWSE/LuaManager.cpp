@@ -4854,7 +4854,7 @@ namespace mwse::lua {
 		if (Configuration::LogWarningsWithLuaStack && LuaManager::getInstance().getReadOnlyStateView().stack_top() != 0) {
 			auto trimmedWarning = std::move(string::trim_copy((const char*)lpBuffer));
 			log::getLog() << "Morrowind has raised a warning with a lua stack trace: " << trimmedWarning << std::endl;
-			logStackTrace();
+			logStackTrace(nullptr);
 		}
 
 		return result;
