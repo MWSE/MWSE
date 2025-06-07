@@ -1,8 +1,8 @@
 return {
 	type = "event",
 	description = 
-		"This event fires when a mod config menu has been closed. \z
-			This event fires whenever a different mod config menu is selected, or whenever the MCM itself is closed.\n\n\z
+		"This event fires when a particular mod's configuration menu has been closed. \z
+			This happens when the MCM is closed or when a different mod's configuration menu was opened.\n\n\z
 		\z
 		You can use this event to update your mod whenever its MCM is closed. \z
 			This event may also be useful if you're trying to make your mod compatible with another mod, \z
