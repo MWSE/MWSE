@@ -1,8 +1,12 @@
 return {
 	type = "function",
 	description = [[Returns a copy of `t` with the keys and values flipped.]],
-	arguments = {
-		{ name = "t", type = "table" },
+	generics = {
+		{ name = "keyType" },
+		{ name = "valueType" },
 	},
-	valuetype = "table",
+	arguments = {
+		{ name = "t", type = "{ [keyType]: valueType }" },
+	},
+	returns = "{ [valueType]: keyType }",
 }

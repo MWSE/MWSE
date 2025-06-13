@@ -52,9 +52,10 @@ function mwse.iconv(languageCode, utf8string) end
 ---  - If no file exists, the function will return the default table.
 ---  - In json, tables can be either arrays with integer keys or dictionaries with string keys. If your configuration table is mixed (has both string and integer indices), saving and loading from json will effectively convert all your integer indices to strings. This function will convert your configuration table's integer indices back if defaults table is given.
 --- 
+--- @generic configType : table
 --- @param fileName string The non-extensioned name of the config file.
---- @param defaults? table *Optional*. A table of default values.
---- @return table result No description yet available.
+--- @param defaults? configType *Optional*. A table of default values.
+--- @return configType result No description yet available.
 function mwse.loadConfig(fileName, defaults) end
 
 --- Loads translations from the i18n folder for a given mod. This is locale-aware, using the result from `tes3.getLanguage()`. See the [mod translations guide](https://mwse.github.io/MWSE/guides/mod-translations/) for more information.

@@ -248,11 +248,11 @@ local result = mwse.loadConfig(fileName, defaults)
 **Parameters**:
 
 * `fileName` (string): The non-extensioned name of the config file.
-* `defaults` (table): *Optional*. A table of default values.
+* `defaults` (configType): *Optional*. A table of default values.
 
 **Returns**:
 
-* `result` (table)
+* `result` (configType)
 
 ***
 

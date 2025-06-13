@@ -198,6 +198,14 @@ local function writeFunction(package, file, namespaceOverride)
 		file:write("--- @deprecated\n")
 	end
 
+	for _, generic in ipairs(package.generics or {}) do
+		file:write(string.format(
+			"--- @generic %s%s\n",
+			generic.name,
+			generic.inherits and (" : " .. generic.inherits) or ""
+		))
+	end
+
 	local functionHasTableArguments = false
 
 	for _, argument in ipairs(package.arguments or {}) do

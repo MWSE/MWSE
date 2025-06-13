@@ -674,13 +674,19 @@ Logger.none = nil
 -- This is so that the line numbers are pulled correctly when using the metamethod.
 LoggerMeta.__call = Logger.debug
 
-function Logger:assert(v, msg, ...)
+--- @generic T
+--- @param v? T
+--- @param message string|fun(...): ...
+--- @param ...? any
+--- @return T v
+--- @return any ...
+function Logger:assert(v, message, ...)
 	if v then
-		return v, msg, ...
+		return v, message, ...
 	end
 
 	-- cant call `Logger:error` because we need the call to `debug.getinfo` to produce the correct line number. super hacky :/
-	local str = self:formatter(self:makeRecord(logLevel.error), msg, ...)
+	local str = self:formatter(self:makeRecord(logLevel.error), message, ...)
 
 	if self.sharedData.level >= logLevel.error then
 		self:write(str)

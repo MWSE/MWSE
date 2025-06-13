@@ -153,17 +153,22 @@ Setting this to `true` is the same as writing `log.outputFile = log.modDir`.
 ### `assert`
 <div class="search_terms" style="display: none">assert</div>
 
-Assert a condition and log an error if it fails.
+Logs and raises an error if the value of its argument v is false (i.e., `nil` or `false`); otherwise, returns all its arguments.
 
 ```lua
-myObject:assert(condition, message, ...)
+local v, ... = myObject:assert(v, message, ...)
 ```
 
 **Parameters**:
 
-* `condition` (boolean)
-* `message` (string)
-* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`.
+* `v` (T): *Optional*.
+* `message` (string, fun(...): ...)
+* `...` (any): *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
+
+**Returns**:
+
+* `v` (T)
+* `...` (any)
 
 ***
 

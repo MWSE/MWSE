@@ -6,12 +6,16 @@ Any additional arguments will be passed to `f`. For example, `table.filter(t, f,
 !!! warning
  	Do not use this function on array-style tables, as it will not shift indices down after filtering out elements. Instead, you should use `table.filterarray` on array-style tables.
 ]],
+	generics = {
+		{ name = "keyType" },
+		{ name = "valueType" },
+	},
 	arguments = {
-		{ name = "t", type = "table" },
-		{ name = "f", type = "fun(k: unknown, v: unknown, ...): boolean", description = "The function to use when filtering values of `t`. (This is sometimes called a predicate function.)" },
+		{ name = "t", type = "{ [keyType]: valueType }" },
+		{ name = "f", type = "fun(k: keyType, v: valueType, ...):boolean", description = "The function to use when filtering values of `t`. (This is sometimes called a predicate function.)" },
 		{ name = "...", type = "any", description = "Additional parameters to pass to `f`." },
 	},
 	returns = {
-		{ name = "result", type = "table", description = "The result of using `f` to filter out elements of `t`." },
+		{ name = "result", type = "{ [keyType]: valueType }", description = "The result of using `f` to filter out elements of `t`." },
 	}
 }

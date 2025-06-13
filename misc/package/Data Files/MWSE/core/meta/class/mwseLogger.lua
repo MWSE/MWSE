@@ -98,11 +98,14 @@ function mwseLogger.new(params) end
 --- @field abbreviateHeader? boolean *Default*: `false`. Should the headers be abbreviated?
 --- @field formatter? fun(self: Logger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
 
---- Assert a condition and log an error if it fails.
---- @param condition boolean No description yet available.
---- @param message string No description yet available.
---- @param ...? any *Optional*. Formatting arguments. These are passed to `string.format`.
-function mwseLogger:assert(condition, message, ...) end
+--- Logs and raises an error if the value of its argument v is false (i.e., `nil` or `false`); otherwise, returns all its arguments.
+--- @generic T
+--- @param v? T *Optional*. No description yet available.
+--- @param message string|fun(...): ... No description yet available.
+--- @param ...? any *Optional*. Formatting arguments. These are passed to `string.format`. Tables and userdata values are pretty printed.
+--- @return T v No description yet available.
+--- @return any ... No description yet available.
+function mwseLogger:assert(v, message, ...) end
 
 --- Log a `DEBUG` message. This will only be printed if the current logging level is `DEBUG` or higher.
 --- If multiple arguments are passed, then they will be passed to `string.format`.

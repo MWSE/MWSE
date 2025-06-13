@@ -442,6 +442,9 @@ end
 ---@field link string
 
 
+---@class packageFunctionGeneric : package
+---@field inherits string|nil
+
 -- Basic function argument. These are things that can be inside `tableParams`.
 ---@class packageFunctionArgument.Simple : package
 
@@ -456,6 +459,7 @@ end
 
 -- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
+--- @field generics packageFunctionGeneric[]|nil
 --- @field arguments packageFunctionArgument[]
 --- @field returns packageFunctionArgument|packageFunctionArgument[]|nil
 
