@@ -13,11 +13,15 @@
 --- @field z number The Z component of the quaternion.
 niQuaternion = {}
 
+--- Creates a new identity quaternion.
+--- @return niQuaternion quaternion No description yet available.
+function niQuaternion.identity() end
+
 --- Creates a new niQuaternion object.
---- @param w number? *Default*: `0`. No description yet available.
---- @param x number? *Default*: `0`. No description yet available.
---- @param y number? *Default*: `0`. No description yet available.
---- @param z number? *Default*: `0`. No description yet available.
+--- @param w? number *Default*: `0`. No description yet available.
+--- @param x? number *Default*: `0`. No description yet available.
+--- @param y? number *Default*: `0`. No description yet available.
+--- @param z? number *Default*: `0`. No description yet available.
 --- @return niQuaternion quaternion No description yet available.
 function niQuaternion.new(w, x, y, z) end
 

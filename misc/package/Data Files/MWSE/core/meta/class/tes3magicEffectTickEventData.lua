@@ -13,19 +13,19 @@
 tes3magicEffectTickEventData = {}
 
 --- Allows the effect to run through the normal spell event system.
---- @param params tes3magicEffectTickEventData.trigger.params? This table accepts the following values:
+--- @param params? tes3magicEffectTickEventData.trigger.params This table accepts the following values:
 --- 
---- `negateOnExpiry`: boolean? — *Default*: `true`. If this flag is `true`, the effect will be negated on expiry.
+--- `negateOnExpiry?`: boolean — *Default*: `true`. If this flag is `true`, the effect will be negated on expiry.
 --- 
---- `isUncapped`: boolean? — *Optional*. No description yet available.
+--- `isUncapped?`: boolean — *Optional*. No description yet available.
 --- 
---- `attribute`: tes3.effectAttribute? — *Default*: `tes3.effectAttribute.nonResistable`. The attribute used in resistance calculations agains this effect. Maps to values in [`tes3.effectAttribute`](https://mwse.github.io/MWSE/references/effect-attributes/) table.
+--- `attribute?`: tes3.effectAttribute — *Default*: `tes3.effectAttribute.nonResistable`. The attribute used in resistance calculations agains this effect. Maps to values in [`tes3.effectAttribute`](https://mwse.github.io/MWSE/references/effect-attributes/) table.
 --- 
---- `type`: tes3.effectEventType? — *Default*: `tes3.effectEventType.boolean`. This flag controls how the effect behaves. For example, `tes3.effectEventType.modStatistic` will make the effect work as calling `tes3.modStatistic`. Maps to values in [`tes3.effectEventType`](https://mwse.github.io/MWSE/references/effect-event-types/) table.
+--- `type?`: tes3.effectEventType — *Default*: `tes3.effectEventType.boolean`. This flag controls how the effect behaves. For example, `tes3.effectEventType.modStatistic` will make the effect work as calling `tes3.modStatistic`. Maps to values in [`tes3.effectEventType`](https://mwse.github.io/MWSE/references/effect-event-types/) table.
 --- 
---- `value`: boolean|integer|number|tes3statistic|tes3statisticSkill|nil — *Default*: `0`. The variable this effect changes. This can be a local variable in a script or a tes3statistic property on a `tes3mobileActor`. The type of the passed variable must match the type of the `type` parameter.
+--- `value?`: boolean|integer|number|tes3statistic|tes3statisticSkill — *Default*: `0`. The variable this effect changes. This can be a local variable in a script or a tes3statistic property on a `tes3mobileActor`. The type of the passed variable must match the type of the `type` parameter.
 --- 
---- `resistanceCheck`: nil|fun(e: tes3magicEffectResistenceCheckEventData): boolean? — *Optional*. The function passed as `resistanceCheck` will be used on any of the game's spell resistance checks. Returning `true` from this function will set your effect to expired, and depending on your trigger code may stop processing.
+--- `resistanceCheck?`: fun(e: tes3magicEffectResistenceCheckEventData): boolean? — *Optional*. The function passed as `resistanceCheck` will be used on any of the game's spell resistance checks. Returning `true` from this function will set your effect to expired, and depending on your trigger code may stop processing.
 --- --- 
 --- --- For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired.
 --- @return boolean eventResult No description yet available.
@@ -34,18 +34,18 @@ function tes3magicEffectTickEventData:trigger(params) end
 
 ---Table parameter definitions for `tes3magicEffectTickEventData.trigger`.
 --- @class tes3magicEffectTickEventData.trigger.params
---- @field negateOnExpiry boolean? *Default*: `true`. If this flag is `true`, the effect will be negated on expiry.
---- @field isUncapped boolean? *Optional*. No description yet available.
---- @field attribute tes3.effectAttribute? *Default*: `tes3.effectAttribute.nonResistable`. The attribute used in resistance calculations agains this effect. Maps to values in [`tes3.effectAttribute`](https://mwse.github.io/MWSE/references/effect-attributes/) table.
---- @field type tes3.effectEventType? *Default*: `tes3.effectEventType.boolean`. This flag controls how the effect behaves. For example, `tes3.effectEventType.modStatistic` will make the effect work as calling `tes3.modStatistic`. Maps to values in [`tes3.effectEventType`](https://mwse.github.io/MWSE/references/effect-event-types/) table.
---- @field value boolean|integer|number|tes3statistic|tes3statisticSkill|nil *Default*: `0`. The variable this effect changes. This can be a local variable in a script or a tes3statistic property on a `tes3mobileActor`. The type of the passed variable must match the type of the `type` parameter.
---- @field resistanceCheck nil|fun(e: tes3magicEffectResistenceCheckEventData): boolean? *Optional*. The function passed as `resistanceCheck` will be used on any of the game's spell resistance checks. Returning `true` from this function will set your effect to expired, and depending on your trigger code may stop processing.
+--- @field negateOnExpiry? boolean *Default*: `true`. If this flag is `true`, the effect will be negated on expiry.
+--- @field isUncapped? boolean *Optional*. No description yet available.
+--- @field attribute? tes3.effectAttribute *Default*: `tes3.effectAttribute.nonResistable`. The attribute used in resistance calculations agains this effect. Maps to values in [`tes3.effectAttribute`](https://mwse.github.io/MWSE/references/effect-attributes/) table.
+--- @field type? tes3.effectEventType *Default*: `tes3.effectEventType.boolean`. This flag controls how the effect behaves. For example, `tes3.effectEventType.modStatistic` will make the effect work as calling `tes3.modStatistic`. Maps to values in [`tes3.effectEventType`](https://mwse.github.io/MWSE/references/effect-event-types/) table.
+--- @field value? boolean|integer|number|tes3statistic|tes3statisticSkill *Default*: `0`. The variable this effect changes. This can be a local variable in a script or a tes3statistic property on a `tes3mobileActor`. The type of the passed variable must match the type of the `type` parameter.
+--- @field resistanceCheck? fun(e: tes3magicEffectResistenceCheckEventData): boolean? *Optional*. The function passed as `resistanceCheck` will be used on any of the game's spell resistance checks. Returning `true` from this function will set your effect to expired, and depending on your trigger code may stop processing.
 --- 
 --- For example, the only effect in vanilla Morrowind that implements this function is Water Walking. It disallows using a spell with Water Walking when the player is deep underwater, by setting it as expired.
 
 --- Performs vanilla armor summoning logic, but also allows bracers and pauldrons. It can summon one or two armor objects with provided ID(s). When summoning gauntlets, bracers or pauldrons, you can provide two IDs.
 --- @param id string The ID of the armor object to summon.
---- @param id2 string? *Optional*. The ID of the additional gauntlet, bracer or pauldron object to summon.
+--- @param id2? string *Optional*. The ID of the additional gauntlet, bracer or pauldron object to summon.
 function tes3magicEffectTickEventData:triggerBoundArmor(id, id2) end
 
 --- Performs vanilla weapon summoning logic. It will create a summoned version of the weapon with provided ID.

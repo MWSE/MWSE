@@ -337,6 +337,9 @@ namespace TES3 {
 		bool getMobileActorMovementFlag(ActorMovement::Flag) const;
 		void setMobileActorMovementFlag(ActorMovement::Flag, bool);
 
+		bool isCreature() const;
+		bool isPlayer() const;
+
 		float getWidth() const;
 		float getHeight() const;
 
@@ -392,6 +395,8 @@ namespace TES3 {
 		void setFlagWeaponDrawn(bool value);
 		bool getFlagWerewolf() const;
 		void setFlagWerewolf(bool value);
+
+		bool hasStatistic(const Statistic* statistic) const;
 
 		Statistic* getAttributeAgility();
 		Statistic* getAttributeEndurance();

@@ -29,7 +29,7 @@ namespace TES3 {
 			const auto previous = playerTarget;
 			playerTarget = reference;
 			if (mwse::lua::event::ActivationTargetChangedEvent::getEventEnabled()) {
-				auto& stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+				const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 				stateHandle.triggerEvent(new mwse::lua::event::ActivationTargetChangedEvent(reference));
 			}
 		}

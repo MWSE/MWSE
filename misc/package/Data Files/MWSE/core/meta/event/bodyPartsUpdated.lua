@@ -10,4 +10,4 @@
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor whose body parts were updated.
 --- @field reference tes3reference *Read-only*. The reference for the actor whose body parts were updated.
---- @field updated boolean? *Default*: `false`. If set to true, the body part manager will be updated. This should be set if changing any of the active body parts during this event.
+--- @field updated? boolean *Default*: `false`. If set to true, the body part manager will be updated. This should be set if changing any of the active body parts during this event.

@@ -5,8 +5,8 @@
 
 namespace mwse::lua {
 	void bindStringUtil() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		//
 		// Extend mwse library with extra functions to replace %L in MWSE.

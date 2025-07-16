@@ -110,255 +110,255 @@ tes3uiElement = {}
 --- 
 --- `to`: tes3uiElement — The element to create the copy in. Will be the parent of the newly created element.
 --- 
---- `copyChildren`: boolean? — *Default*: `true`. If `true`, all children will also be copied to the newly created element.
+--- `copyChildren?`: boolean — *Default*: `true`. If `true`, all children will also be copied to the newly created element.
 --- 
---- `copyProperties`: boolean? — *Default*: `true`. If `true`, all properties will be copied to the newly created element.
+--- `copyProperties?`: boolean — *Default*: `true`. If `true`, all properties will be copied to the newly created element.
 --- @return tes3uiElement copy The created copy.
 function tes3uiElement:copy(params) end
 
 ---Table parameter definitions for `tes3uiElement.copy`.
 --- @class tes3uiElement.copy.params
 --- @field to tes3uiElement The element to create the copy in. Will be the parent of the newly created element.
---- @field copyChildren boolean? *Default*: `true`. If `true`, all children will also be copied to the newly created element.
---- @field copyProperties boolean? *Default*: `true`. If `true`, all properties will be copied to the newly created element.
+--- @field copyChildren? boolean *Default*: `true`. If `true`, all children will also be copied to the newly created element.
+--- @field copyProperties? boolean *Default*: `true`. If `true`, all properties will be copied to the newly created element.
 
 --- Creates an empty block container inside the element. Used to group and layout elements.
---- @param params tes3uiElement.createBlock.params? This table accepts the following values:
+--- @param params? tes3uiElement.createBlock.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createBlock(params) end
 
 ---Table parameter definitions for `tes3uiElement.createBlock`.
 --- @class tes3uiElement.createBlock.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a clickable button. Register the `mouseClick` event to capture a button press.
 --- 
 --- Button specific properties can be accessed through the `widget` property. The widget type for buttons is [`tes3uiButton`](https://mwse.github.io/MWSE/types/tes3uiButton/).
---- @param params tes3uiElement.createButton.params? This table accepts the following values:
+--- @param params? tes3uiElement.createButton.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `text`: string? — *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
+--- `text?`: string — *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createButton(params) end
 
 ---Table parameter definitions for `tes3uiElement.createButton`.
 --- @class tes3uiElement.createButton.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field text string? *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field text? string *Optional*. The text to add to the button. It will highlight on mouseover like a text select widget.
 
 --- Creates a color picker widget.
 --- 
 --- Color picker specific properties can be accessed through the `widget` property. The widget type for color pickers is [`tes3uiColorPicker`](https://mwse.github.io/MWSE/types/tes3uiColorPicker/).
---- @param params tes3uiElement.createColorPicker.params? This table accepts the following values:
+--- @param params? tes3uiElement.createColorPicker.params This table accepts the following values:
 --- 
---- `id`: string|integer|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|integer — *Optional*. An identifier to help find this element later.
 --- 
---- `initialColor`: mwseColorTable? — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
+--- `initialColor?`: mwseColorTable — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
 --- 
---- `alpha`: boolean? — *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- `alpha?`: boolean — *Default*: `false`. If `true` the picker will also allow picking an alpha value.
 --- 
---- `initialAlpha`: number? — *Default*: `1`. The initial alpha value.
+--- `initialAlpha?`: number — *Default*: `1`. The initial alpha value.
 --- 
---- `vertical`: boolean? — *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
+--- `vertical?`: boolean — *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
 --- 
---- `showDataRow`: boolean? — *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
+--- `showDataRow?`: boolean — *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
 --- 
---- `showSaturationSlider`: boolean? — *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
+--- `showSaturationSlider?`: boolean — *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
 --- 
---- `showSaturationPicker`: boolean? — *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
+--- `showSaturationPicker?`: boolean — *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
 --- 
---- `height`: integer? — *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
+--- `height?`: integer — *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
 --- 
---- `mainWidth`: integer? — *Default*: `256`. The width of the main picker.
+--- `mainWidth?`: integer — *Default*: `256`. The width of the main picker.
 --- 
---- `hueWidth`: integer? — *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
+--- `hueWidth?`: integer — *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
 --- 
---- `showPreviews`: boolean? — *Default*: `true`. If `false` the picker won't have any color preview widgets.
+--- `showPreviews?`: boolean — *Default*: `true`. If `false` the picker won't have any color preview widgets.
 --- 
---- `showOriginal`: boolean? — *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
+--- `showOriginal?`: boolean — *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
 --- 
---- `previewHeight`: integer? — *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
+--- `previewHeight?`: integer — *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
 --- 
---- `previewWidth`: integer? — *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
+--- `previewWidth?`: integer — *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createColorPicker(params) end
 
 ---Table parameter definitions for `tes3uiElement.createColorPicker`.
 --- @class tes3uiElement.createColorPicker.params
---- @field id string|integer|nil *Optional*. An identifier to help find this element later.
---- @field initialColor mwseColorTable? *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
---- @field alpha boolean? *Default*: `false`. If `true` the picker will also allow picking an alpha value.
---- @field initialAlpha number? *Default*: `1`. The initial alpha value.
---- @field vertical boolean? *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
---- @field showDataRow boolean? *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
---- @field showSaturationSlider boolean? *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
---- @field showSaturationPicker boolean? *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
---- @field height integer? *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
---- @field mainWidth integer? *Default*: `256`. The width of the main picker.
---- @field hueWidth integer? *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
---- @field showPreviews boolean? *Default*: `true`. If `false` the picker won't have any color preview widgets.
---- @field showOriginal boolean? *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
---- @field previewHeight integer? *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
---- @field previewWidth integer? *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
+--- @field id? string|integer *Optional*. An identifier to help find this element later.
+--- @field initialColor? mwseColorTable *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The initial color for the picker.
+--- @field alpha? boolean *Default*: `false`. If `true` the picker will also allow picking an alpha value.
+--- @field initialAlpha? number *Default*: `1`. The initial alpha value.
+--- @field vertical? boolean *Default*: `false`. If `true`, saturation, hue and alpha bars and color previews are created in the second row below the main picker. If `false` they are created in the same row as the main picker.
+--- @field showDataRow? boolean *Default*: `true`. If `true` the picker will have a text input below the main picker for changing the current hexadecimal RGB(A) value.
+--- @field showSaturationSlider? boolean *Default*: `true`. If `true` the picker will have a slider below the main picker that moves current selection horizontally (in the saturation axis).
+--- @field showSaturationPicker? boolean *Default*: `true`. If `true` the picker will have an additional bar for changing saturation of the currently selected color.
+--- @field height? integer *Default*: `256`. The height of the main, hue, and optionally alpha and saturation, pickers.
+--- @field mainWidth? integer *Default*: `256`. The width of the main picker.
+--- @field hueWidth? integer *Default*: `32`. The width of pickers for hue, and optionally alpha and saturation.
+--- @field showPreviews? boolean *Default*: `true`. If `false` the picker won't have any color preview widgets.
+--- @field showOriginal? boolean *Default*: `true`. If `true` the picker will have a preview widget that shows original color below the currently picked color. Clicking on the original color will reset current color to original color.
+--- @field previewHeight? integer *Default*: `64`. If color picker has color previews, this will be the height of individual preview image.
+--- @field previewWidth? integer *Default*: `64`. If color picker has color previews, this will be the width of individual preview image.
 
 --- Creates a color preview widget. It's made of a rect element of provided color and an image. The image shows current RGBA color over the checkered background.
 --- 
 --- Color preview specific properties can be accessed through the `widget` property. The widget type for color previews is [`tes3uiColorPreview`](https://mwse.github.io/MWSE/types/tes3uiColorPreview/).
---- @param params tes3uiElement.createColorPreview.params? This table accepts the following values:
+--- @param params? tes3uiElement.createColorPreview.params This table accepts the following values:
 --- 
---- `id`: string|integer|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|integer — *Optional*. An identifier to help find this element later.
 --- 
---- `color`: mwseColorTable|ffiImagePixel|nil — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
+--- `color?`: mwseColorTable|ffiImagePixel — *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
 --- 
---- `hasAlphaPreview`: boolean? — *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
+--- `hasAlphaPreview?`: boolean — *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
 --- 
---- `alpha`: number? — *Default*: `1`. The alpha value of the preview.
+--- `alpha?`: number — *Default*: `1`. The alpha value of the preview.
 --- 
---- `width`: integer? — *Default*: `64`. The width of the individual preview element.
+--- `width?`: integer — *Default*: `64`. The width of the individual preview element.
 --- 
---- `height`: integer? — *Default*: `64`. The height of the individual preview element.
+--- `height?`: integer — *Default*: `64`. The height of the individual preview element.
 --- 
---- `flowDirection`: tes3.flowDirection? — *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
+--- `flowDirection?`: tes3.flowDirection — *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
 --- 
---- `checkerSize`: integer? — *Default*: `16`. The size of individual square in the color preview image in pixels.
+--- `checkerSize?`: integer — *Default*: `16`. The size of individual square in the color preview image in pixels.
 --- 
---- `lightGray`: mwseColorTable? — *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
+--- `lightGray?`: mwseColorTable — *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
 --- 
---- `darkGray`: mwseColorTable? — *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
+--- `darkGray?`: mwseColorTable — *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createColorPreview(params) end
 
 ---Table parameter definitions for `tes3uiElement.createColorPreview`.
 --- @class tes3uiElement.createColorPreview.params
---- @field id string|integer|nil *Optional*. An identifier to help find this element later.
---- @field color mwseColorTable|ffiImagePixel|nil *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
---- @field hasAlphaPreview boolean? *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
---- @field alpha number? *Default*: `1`. The alpha value of the preview.
---- @field width integer? *Default*: `64`. The width of the individual preview element.
---- @field height integer? *Default*: `64`. The height of the individual preview element.
---- @field flowDirection tes3.flowDirection? *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
---- @field checkerSize integer? *Default*: `16`. The size of individual square in the color preview image in pixels.
---- @field lightGray mwseColorTable? *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
---- @field darkGray mwseColorTable? *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
+--- @field id? string|integer *Optional*. An identifier to help find this element later.
+--- @field color? mwseColorTable|ffiImagePixel *Default*: `{ r = 1.0, g = 1.0, b = 1.0 }`. The color of the preview.
+--- @field hasAlphaPreview? boolean *Default*: `true`. If `true`, the color preview in addition to colored rect also has an image that shows current color over a checkered background.
+--- @field alpha? number *Default*: `1`. The alpha value of the preview.
+--- @field width? integer *Default*: `64`. The width of the individual preview element.
+--- @field height? integer *Default*: `64`. The height of the individual preview element.
+--- @field flowDirection? tes3.flowDirection *Default*: `tes3.flowDirection.leftToRight`. Determines if the color preview is horizontal or vertical.
+--- @field checkerSize? integer *Default*: `16`. The size of individual square in the color preview image in pixels.
+--- @field lightGray? mwseColorTable *Default*: `{ r = 0.7, g = 0.7, b = 0.7 }`. The color of lighter squares in the color preview image.
+--- @field darkGray? mwseColorTable *Default*: `{ r = 0.5, g = 0.5, b = 0.5 }`. The color of darker squares in the color preview image.
 
 --- Creates a clickable button, whose text changes linearly through options as it is clicked. Register the `valueChanged` event for when the option is cycled or changed via script.
 --- 
 --- Button specific properties can be accessed through the `widget` property. The widget type for buttons is [`tes3uiCycleButton`](https://mwse.github.io/MWSE/types/tes3uiCycleButton/).
 --- @param params tes3uiElement.createCycleButton.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `options`: tes3uiCycleButtonOption[] — An array of options for the button to cycle through. At minimum the option must have a `text` property defined, to show on the button. If a `value` is provided, it can be accessed through the `.widget`'s `.value` property.
 --- 
---- `index`: number? — *Optional*. The index selected by default.
+--- `index?`: number — *Optional*. The index selected by default.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createCycleButton(params) end
 
 ---Table parameter definitions for `tes3uiElement.createCycleButton`.
 --- @class tes3uiElement.createCycleButton.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field options tes3uiCycleButtonOption[] An array of options for the button to cycle through. At minimum the option must have a `text` property defined, to show on the button. If a `value` is provided, it can be accessed through the `.widget`'s `.value` property.
---- @field index number? *Optional*. The index selected by default.
+--- @field index? number *Optional*. The index selected by default.
 
 --- Creates a textured horizontal divider line, as used in the magic and stat menus. Scales automatically to the container width.
---- @param params tes3uiElement.createDivider.params? This table accepts the following values:
+--- @param params? tes3uiElement.createDivider.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createDivider(params) end
 
 ---Table parameter definitions for `tes3uiElement.createDivider`.
 --- @class tes3uiElement.createDivider.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a horizontal quantity indicator bar.
 --- 
 --- Fillbar specific properties can be accessed through the `widget` property. The widget type for fillbars is [`tes3uiFillBar`](https://mwse.github.io/MWSE/types/tes3uiFillBar/).
---- @param params tes3uiElement.createFillBar.params? This table accepts the following values:
+--- @param params? tes3uiElement.createFillBar.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `current`: number? — *Optional*. The current value of the fillbar.
+--- `current?`: number — *Optional*. The current value of the fillbar.
 --- 
---- `max`: number? — *Optional*. The maximum value of the fillbar.
+--- `max?`: number — *Optional*. The maximum value of the fillbar.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createFillBar(params) end
 
 ---Table parameter definitions for `tes3uiElement.createFillBar`.
 --- @class tes3uiElement.createFillBar.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field current number? *Optional*. The current value of the fillbar.
---- @field max number? *Optional*. The maximum value of the fillbar.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field current? number *Optional*. The current value of the fillbar.
+--- @field max? number *Optional*. The maximum value of the fillbar.
 
 --- Creates a horizontally scrolling pane.
 --- 
 --- Scroll panes create a complex UI subtree, with a container for child elements. create* methods automatically place new elements in this container, not as a direct child of the scroll pane. The container element can be accessed with the `getContentElement()` method. It should be used when iterating or clearing the scroll pane contents.
 --- 
 --- Scroll pane specific properties can be accessed through the `widget` property. The widget type for scroll panes is [`tes3uiScrollPane`](https://mwse.github.io/MWSE/types/tes3uiScrollPane/).
---- @param params tes3uiElement.createHorizontalScrollPane.params? This table accepts the following values:
+--- @param params? tes3uiElement.createHorizontalScrollPane.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createHorizontalScrollPane(params) end
 
 ---Table parameter definitions for `tes3uiElement.createHorizontalScrollPane`.
 --- @class tes3uiElement.createHorizontalScrollPane.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a clickable text, colored as a link. When the link is clicked, a URL is opened in the player's browser. If the `confirm` property is set, a confirmation prompt is opened first.
 --- 
 --- Hyperlink-specific properties can be accessed through the `widget` property. The widget type for hyperlinks is [`tes3uiHyperlink`](https://mwse.github.io/MWSE/types/tes3uiHyperlink/).
---- @param params tes3uiElement.createHyperlink.params? This table accepts the following values:
+--- @param params? tes3uiElement.createHyperlink.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `text`: string — The text to add to the hyperlink.
 --- 
 --- `url`: string — The URL to open when the text is clicked.
 --- 
---- `confirm`: boolean? — *Default*: `true`. If true, a confirmation prompt will be shown before any URL is opened.
+--- `confirm?`: boolean — *Default*: `true`. If true, a confirmation prompt will be shown before any URL is opened.
 --- @return tes3uiElement element No description yet available.
 function tes3uiElement:createHyperlink(params) end
 
 ---Table parameter definitions for `tes3uiElement.createHyperlink`.
 --- @class tes3uiElement.createHyperlink.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field text string The text to add to the hyperlink.
 --- @field url string The URL to open when the text is clicked.
---- @field confirm boolean? *Default*: `true`. If true, a confirmation prompt will be shown before any URL is opened.
+--- @field confirm? boolean *Default*: `true`. If true, a confirmation prompt will be shown before any URL is opened.
 
 --- Creates a text area with clickable words as links. Usage is still under research.
---- @param params tes3uiElement.createHypertext.params? This table accepts the following values:
+--- @param params? tes3uiElement.createHypertext.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createHypertext(params) end
 
 ---Table parameter definitions for `tes3uiElement.createHypertext`.
 --- @class tes3uiElement.createHypertext.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates an image element from a texture file. The texture must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024); the final display size can be trimmed by setting width and height.
---- @param params tes3uiElement.createImage.params? This table accepts the following values:
+--- @param params? tes3uiElement.createImage.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `path`: string? — *Optional*. An image path. This path is relative to `Data Files`.
+--- `path?`: string — *Optional*. An image path. This path is relative to `Data Files`.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createImage(params) end
 
 ---Table parameter definitions for `tes3uiElement.createImage`.
 --- @class tes3uiElement.createImage.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field path string? *Optional*. An image path. This path is relative to `Data Files`.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field path? string *Optional*. An image path. This path is relative to `Data Files`.
 
 --- Creates an interactive button composed of images for the **idle**, **over**, and **pressed** states. The texture must have power-of-2 dimensions (i.e. 16, 32, 64, 128, 256, 512, 1024); the final display size can be trimmed by setting width and height.
---- @param params tes3uiElement.createImageButton.params? This table accepts the following values:
+--- @param params? tes3uiElement.createImageButton.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `idle`: string — The path to the idle image. This path is relative to `Data Files`.
 --- 
@@ -370,29 +370,29 @@ function tes3uiElement:createImageButton(params) end
 
 ---Table parameter definitions for `tes3uiElement.createImageButton`.
 --- @class tes3uiElement.createImageButton.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field idle string The path to the idle image. This path is relative to `Data Files`.
 --- @field over string The path to the mouse hover image. This path is relative to `Data Files`.
 --- @field pressed string The path to the mouse pressed image. This path is relative to `Data Files`.
 
 --- Creates a text label. It defaults to displaying all text on a single line. To get a multi-line label, set `wrapText` to `true`. The element is created with `autoWidth` and `autoHeight` turned on.
---- @param params tes3uiElement.createLabel.params? This table accepts the following values:
+--- @param params? tes3uiElement.createLabel.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `text`: string? — *Default*: `(nil)`. The text to display.
+--- `text?`: string — *Default*: `(nil)`. The text to display.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createLabel(params) end
 
 ---Table parameter definitions for `tes3uiElement.createLabel`.
 --- @class tes3uiElement.createLabel.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field text string? *Default*: `(nil)`. The text to display.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field text? string *Default*: `(nil)`. The text to display.
 
 --- Creates a NIF model from a file. Still under research.
---- @param params tes3uiElement.createNif.params? This table accepts the following values:
+--- @param params? tes3uiElement.createNif.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `path`: string — A model path. This path is relative to `Data Files`.
 --- @return tes3uiElement result No description yet available.
@@ -400,159 +400,159 @@ function tes3uiElement:createNif(params) end
 
 ---Table parameter definitions for `tes3uiElement.createNif`.
 --- @class tes3uiElement.createNif.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field path string A model path. This path is relative to `Data Files`.
 
 --- Creates a multi-line text input element, with line wrapping on. To receive input the keyboard must be captured with `tes3ui.acquireTextInput(element)`. Read the input with the `text` property. Write an initial value to edit by setting the `text` property.
 --- 
 --- Paragraph input specific properties can be accessed through the `widget` property. The widget type for paragraph inputs is [`tes3uiParagraphInput`](https://mwse.github.io/MWSE/types/tes3uiParagraphInput/).
---- @param params tes3uiElement.createParagraphInput.params? This table accepts the following values:
+--- @param params? tes3uiElement.createParagraphInput.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createParagraphInput(params) end
 
 ---Table parameter definitions for `tes3uiElement.createParagraphInput`.
 --- @class tes3uiElement.createParagraphInput.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a filled rectangle. The rectangle is displayed as filled with the element's color. It supports alpha compositing.
---- @param params tes3uiElement.createRect.params? This table accepts the following values:
+--- @param params? tes3uiElement.createRect.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `color`: tes3vector3|number[]|nil — *Optional*. The fill color for the element.
+--- `color?`: tes3vector3|number[] — *Optional*. The fill color for the element.
 --- 
---- `randomizeColor`: boolean? — *Default*: `false`. If true, the creation color will be randomized.
+--- `randomizeColor?`: boolean — *Default*: `false`. If true, the creation color will be randomized.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createRect(params) end
 
 ---Table parameter definitions for `tes3uiElement.createRect`.
 --- @class tes3uiElement.createRect.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field color tes3vector3|number[]|nil *Optional*. The fill color for the element.
---- @field randomizeColor boolean? *Default*: `false`. If true, the creation color will be randomized.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field color? tes3vector3|number[] *Optional*. The fill color for the element.
+--- @field randomizeColor? boolean *Default*: `false`. If true, the creation color will be randomized.
 
 --- Creates a horizontal slider.
 --- 
 --- Slider specific properties can be accessed through the `widget` property. The widget type for sliders is [`tes3uiSlider`](https://mwse.github.io/MWSE/types/tes3uiSlider/).
---- @param params tes3uiElement.createSlider.params? This table accepts the following values:
+--- @param params? tes3uiElement.createSlider.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `current`: number — The current value of the slider.
 --- 
 --- `max`: number — The maximum value of the slider.
 --- 
---- `step`: number? — *Default*: `1`. The change in value when clicking the left and right arrow buttons.
+--- `step?`: number — *Default*: `1`. The change in value when clicking the left and right arrow buttons.
 --- 
---- `jump`: number? — *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
+--- `jump?`: number — *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createSlider(params) end
 
 ---Table parameter definitions for `tes3uiElement.createSlider`.
 --- @class tes3uiElement.createSlider.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field current number The current value of the slider.
 --- @field max number The maximum value of the slider.
---- @field step number? *Default*: `1`. The change in value when clicking the left and right arrow buttons.
---- @field jump number? *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
+--- @field step? number *Default*: `1`. The change in value when clicking the left and right arrow buttons.
+--- @field jump? number *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
 
 --- Creates a vertical slider.
 --- 
 --- Slider specific properties can be accessed through the `widget` property. The widget type for sliders is [`tes3uiSlider`](https://mwse.github.io/MWSE/types/tes3uiSlider/).
---- @param params tes3uiElement.createSliderVertical.params? This table accepts the following values:
+--- @param params? tes3uiElement.createSliderVertical.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
 --- `current`: number — The current value of the slider.
 --- 
 --- `max`: number — The maximum value of the slider.
 --- 
---- `step`: number? — *Default*: `1`. The change in value when clicking the left and right arrow buttons.
+--- `step?`: number — *Default*: `1`. The change in value when clicking the left and right arrow buttons.
 --- 
---- `jump`: number? — *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
+--- `jump?`: number — *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createSliderVertical(params) end
 
 ---Table parameter definitions for `tes3uiElement.createSliderVertical`.
 --- @class tes3uiElement.createSliderVertical.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 --- @field current number The current value of the slider.
 --- @field max number The maximum value of the slider.
---- @field step number? *Default*: `1`. The change in value when clicking the left and right arrow buttons.
---- @field jump number? *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
+--- @field step? number *Default*: `1`. The change in value when clicking the left and right arrow buttons.
+--- @field jump? number *Default*: `5`. The change in value when clicking into the empty areas next to the slider handle.
 
 --- Creates a collection of elements meant to represent a tab-based interface. With the widget of this element, tabs can be added with `:addTab`, which will contain the content element of that tab. When the user clicks on each tab, other tab content panes will be hidden, in favor of the one associated with the clicked tab. See [`tes3uiTabContainer`](https://mwse.github.io/MWSE/types/tes3uiTabContainer/) for a what the widget provides.
 --- @param params tes3uiElement.createTabContainer.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createTabContainer(params) end
 
 ---Table parameter definitions for `tes3uiElement.createTabContainer`.
 --- @class tes3uiElement.createTabContainer.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a single line text input element. To receive input the keyboard must be captured with `tes3ui.acquireTextInput(element)`. Read the input with the `text` property. Write an initial value to display by setting the `text` property; that value will be cleared on the first keypress.
 --- 
 --- Text input specific properties can be accessed through the `widget` property. The widget type for text inputs is [`tes3uiTextInput`](https://mwse.github.io/MWSE/types/tes3uiTextInput/).
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3uiElement/#createtextinput).
---- @param params tes3uiElement.createTextInput.params? This table accepts the following values:
+--- @param params? tes3uiElement.createTextInput.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `text`: string? — *Optional*. The initial text to use for the input.
+--- `text?`: string — *Optional*. The initial text to use for the input.
 --- 
---- `placeholderText`: string? — *Optional*. Placeholder text for the input. If the element is ever made empty, this will be displayed instead in the disabled text color.
+--- `placeholderText?`: string — *Optional*. Placeholder text for the input. If the element is ever made empty, this will be displayed instead in the disabled text color.
 --- 
---- `numeric`: boolean? — *Default*: `false`. If true, only numbers can be put into the input. The text value of the element will still be a string, and need to be converted using `tonumber`.
+--- `numeric?`: boolean — *Default*: `false`. If true, only numbers can be put into the input. The text value of the element will still be a string, and need to be converted using `tonumber`.
 --- 
---- `autoFocus`: boolean? — *Default*: `false`. If true, the input will be automatically focused after creation.
+--- `autoFocus?`: boolean — *Default*: `false`. If true, the input will be automatically focused after creation.
 --- 
---- `createBorder`: boolean? — *Default*: `false`. If true, a thin border will be created around the input box. By default it will have standard padding, and will have `widthProportional` set to `1.0`. It can be accessed by the return value's `.parent`.
+--- `createBorder?`: boolean — *Default*: `false`. If true, a thin border will be created around the input box. By default it will have standard padding, and will have `widthProportional` set to `1.0`. It can be accessed by the return value's `.parent`.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createTextInput(params) end
 
 ---Table parameter definitions for `tes3uiElement.createTextInput`.
 --- @class tes3uiElement.createTextInput.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field text string? *Optional*. The initial text to use for the input.
---- @field placeholderText string? *Optional*. Placeholder text for the input. If the element is ever made empty, this will be displayed instead in the disabled text color.
---- @field numeric boolean? *Default*: `false`. If true, only numbers can be put into the input. The text value of the element will still be a string, and need to be converted using `tonumber`.
---- @field autoFocus boolean? *Default*: `false`. If true, the input will be automatically focused after creation.
---- @field createBorder boolean? *Default*: `false`. If true, a thin border will be created around the input box. By default it will have standard padding, and will have `widthProportional` set to `1.0`. It can be accessed by the return value's `.parent`.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field text? string *Optional*. The initial text to use for the input.
+--- @field placeholderText? string *Optional*. Placeholder text for the input. If the element is ever made empty, this will be displayed instead in the disabled text color.
+--- @field numeric? boolean *Default*: `false`. If true, only numbers can be put into the input. The text value of the element will still be a string, and need to be converted using `tonumber`.
+--- @field autoFocus? boolean *Default*: `false`. If true, the input will be automatically focused after creation.
+--- @field createBorder? boolean *Default*: `false`. If true, a thin border will be created around the input box. By default it will have standard padding, and will have `widthProportional` set to `1.0`. It can be accessed by the return value's `.parent`.
 
 --- Creates a selectable line of text, with configurable hover, click, and disabled colors. Can be used to create a list box by placing them in a ScrollPane.
 --- 
 --- Text select specific properties can be accessed through the `widget` property. The widget type for text selects is [`tes3uiTextSelect`](https://mwse.github.io/MWSE/types/tes3uiTextSelect/).
---- @param params tes3uiElement.createTextSelect.params? This table accepts the following values:
+--- @param params? tes3uiElement.createTextSelect.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- 
---- `text`: string? — *Optional*. The text to display.
+--- `text?`: string — *Optional*. The text to display.
 --- 
---- `state`: tes3.uiState? — *Default*: `tes3.uiState.normal`. The initial interaction state.
+--- `state?`: tes3.uiState — *Default*: `tes3.uiState.normal`. The initial interaction state.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createTextSelect(params) end
 
 ---Table parameter definitions for `tes3uiElement.createTextSelect`.
 --- @class tes3uiElement.createTextSelect.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
---- @field text string? *Optional*. The text to display.
---- @field state tes3.uiState? *Default*: `tes3.uiState.normal`. The initial interaction state.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field text? string *Optional*. The text to display.
+--- @field state? tes3.uiState *Default*: `tes3.uiState.normal`. The initial interaction state.
 
 --- Creates a styled thin border element. Any content should be created as children of this border.
---- @param params tes3uiElement.createThinBorder.params? This table accepts the following values:
+--- @param params? tes3uiElement.createThinBorder.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createThinBorder(params) end
 
 ---Table parameter definitions for `tes3uiElement.createThinBorder`.
 --- @class tes3uiElement.createThinBorder.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Creates a vertically scrolling pane. Useful as a list box.
 --- 
@@ -561,15 +561,15 @@ function tes3uiElement:createThinBorder(params) end
 --- Scroll pane specific properties can be accessed through the `widget` property. The widget type for scroll panes is [`tes3uiScrollPane`](https://mwse.github.io/MWSE/types/tes3uiScrollPane/).
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3uiElement/#createverticalscrollpane).
---- @param params tes3uiElement.createVerticalScrollPane.params? This table accepts the following values:
+--- @param params? tes3uiElement.createVerticalScrollPane.params This table accepts the following values:
 --- 
---- `id`: string|number|nil — *Optional*. An identifier to help find this element later.
+--- `id?`: string|number — *Optional*. An identifier to help find this element later.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createVerticalScrollPane(params) end
 
 ---Table parameter definitions for `tes3uiElement.createVerticalScrollPane`.
 --- @class tes3uiElement.createVerticalScrollPane.params
---- @field id string|number|nil *Optional*. An identifier to help find this element later.
+--- @field id? string|number *Optional*. An identifier to help find this element later.
 
 --- Deletes an element and all its child elements. If any element is bound to text input by `tes3ui.acquireTextInput`, the input is automatically released.
 function tes3uiElement:destroy() end
@@ -625,7 +625,7 @@ function tes3uiElement:getPropertyInt(property) end
 
 --- Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function gets a property as an object value, defaulting to `nil` if the property was not set. This function can be dangerous to use, and can lead to crashes if not properly understood.
 --- @param property number|string The property to get.
---- @param typeCast string|nil *Default*: `"tes3baseObject"`. The casting of the property to get.
+--- @param typeCast? string *Default*: `"tes3baseObject"`. The casting of the property to get.
 --- @return any object The value of the property, defaulting to `nil` if the property was not set.
 function tes3uiElement:getPropertyObject(property, typeCast) end
 
@@ -783,13 +783,13 @@ function tes3uiElement:register(eventID, callback) end
 --- Sets an `event` handler to run after any existing event handler on the element. Can be any event usable with `register`. The callback receives an argument with the event data. See `register` for details.
 --- @param eventID tes3.uiEvent The event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/).
 --- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
---- @param priority integer? *Default*: `0`. The priority of the event, relative to other register-aftered events.
+--- @param priority? integer *Default*: `0`. The priority of the event, relative to other register-aftered events.
 function tes3uiElement:registerAfter(eventID, callback, priority) end
 
 --- Sets an `event` handler to run before any existing event handler on the element. Can be any event usable with `register`. The callback receives an argument with the event data. See `register` for details.
 --- @param eventID tes3.uiEvent The event id. Maps to values in [`tes3.uiEvent`](https://mwse.github.io/MWSE/references/ui-events/).
 --- @param callback integer|fun(e: tes3uiEventData): boolean? The callback function.
---- @param priority integer? *Default*: `0`. The priority of the event, relative to other register-befored events.
+--- @param priority? integer *Default*: `0`. The priority of the event, relative to other register-befored events.
 function tes3uiElement:registerBefore(eventID, callback, priority) end
 
 --- Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
@@ -799,16 +799,16 @@ function tes3uiElement:removeProperty(property) end
 --- Re-orders an element to before or after a sibling element. Provide either a `before` or `after` parameter.
 --- @param params tes3uiElement.reorder.params This table accepts the following values:
 --- 
---- `before`: tes3uiElement? — *Optional*. The calling element will be moved to before this element.
+--- `before?`: tes3uiElement — *Optional*. The calling element will be moved to before this element.
 --- 
---- `after`: tes3uiElement? — *Optional*. The calling element will be moved to after this element.
+--- `after?`: tes3uiElement — *Optional*. The calling element will be moved to after this element.
 --- @return boolean result No description yet available.
 function tes3uiElement:reorder(params) end
 
 ---Table parameter definitions for `tes3uiElement.reorder`.
 --- @class tes3uiElement.reorder.params
---- @field before tes3uiElement? *Optional*. The calling element will be moved to before this element.
---- @field after tes3uiElement? *Optional*. The calling element will be moved to after this element.
+--- @field before? tes3uiElement *Optional*. The calling element will be moved to before this element.
+--- @field after? tes3uiElement *Optional*. The calling element will be moved to after this element.
 
 --- This method is deprecated. Prefer to use `tes3uiElement.reorder` when moving single children.
 --- 

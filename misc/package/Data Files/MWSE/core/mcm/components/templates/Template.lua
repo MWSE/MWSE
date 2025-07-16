@@ -170,7 +170,7 @@ end
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
-	local tabsBlock = self.elements.tabsBlock
+	
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
@@ -178,23 +178,28 @@ function Template:clickTab(thisPage)
 	-- Set new page to current
 	self.currentPage = thisPage
 
-	-- Disable tabs and tally width
-	local totalWidth = 0
-	for id, page in pairs(self.pages) do
-		local tab = tabsBlock:findChild(page.tabUID)
-		tab.widget.state =  tes3.uiState.normal
-		totalWidth = totalWidth + tab.width
+	local tabsBlock = self.elements.tabsBlock
+
+	-- Update the tabs (if there are any)
+	if tabsBlock then
+		-- Disable tabs and tally width
+		local totalWidth = 0
+		for _id, page in pairs(self.pages) do
+			local tab = tabsBlock:findChild(page.tabUID)
+			tab.widget.state =  tes3.uiState.normal
+			totalWidth = totalWidth + tab.width
+		end
+		-- Enable tab for this page
+		local tab = tabsBlock:findChild(thisPage.tabUID)
+		tab.widget.state = tes3.uiState.active
+
+		-- Ensure tabs are visible.
+		tabsBlock.childOffsetX = 0
+		tabsBlock:updateLayout()
+		tabsBlock.childOffsetX = math.clamp(-tab.positionX, -totalWidth + tabsBlock.width, 0)
+
+		self:padTabBlock()
 	end
-	-- Enable tab for this page
-	local tab = tabsBlock:findChild(thisPage.tabUID)
-	tab.widget.state = tes3.uiState.active
-
-	-- Ensure tabs are visible.
-	tabsBlock.childOffsetX = 0
-	tabsBlock:updateLayout()
-	tabsBlock.childOffsetX = math.clamp(-tab.positionX, -totalWidth + tabsBlock.width, 0)
-
-	self:padTabBlock()
 
 	-- update view
 	pageBlock:getTopLevelMenu():updateLayout()
@@ -317,10 +322,9 @@ function Template:createSubcomponentsContainer(parentBlock)
 	local pageBlock = parentBlock:createBlock()
 	pageBlock.heightProportional = 1.0
 	pageBlock.widthProportional = 1.0
-	self.currentPage = self.pages[1]
-	self.currentPage:create(pageBlock)
-	self.elements.pageBlock = pageBlock
 	pageBlock.flowDirection = tes3.flowDirection.leftToRight
+	self.elements.pageBlock = pageBlock
+	self:clickTab(self.currentPage or self.pages[1])
 end
 
 --- @param parentBlock tes3uiElement

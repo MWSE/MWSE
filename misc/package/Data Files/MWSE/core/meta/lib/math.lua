@@ -21,9 +21,9 @@ function math.clamp(value, min, max) end
 --- This function compares `a` and `b` and returns true if they are close together. This can be useful when comparing floating-point numbers with some degree of tolerance.
 --- @param a number First value.
 --- @param b number Second value.
---- @param absoluteTolerance number? *Default*: `math.epsilon`. The absolute difference allowed between the two numbers. A value of 0.01 will only allow the values to differ by 0.01.
---- @param relativeTolerance number? *Default*: `1e-09`. The relative difference allowed between the two numbers. A value of 0.01 will only allow the values to differ by 1%.
---- @return number result No description yet available.
+--- @param absoluteTolerance? number *Default*: `math.epsilon`. The absolute difference allowed between the two numbers. A value of 0.01 will only allow the values to differ by 0.01.
+--- @param relativeTolerance? number *Default*: `1e-09`. The relative difference allowed between the two numbers. A value of 0.01 will only allow the values to differ by 1%.
+--- @return boolean result No description yet available.
 function math.isclose(a, b, absoluteTolerance, relativeTolerance) end
 
 --- Performs linear interpolation between values v0 and v1. Returns a value that is t percent between them.
@@ -51,7 +51,7 @@ function math.remap(value, lowIn, highIn, lowOut, highOut) end
 
 --- Rounds a number to a given count of digits.
 --- @param value number No description yet available.
---- @param digits number? *Default*: `0`. No description yet available.
+--- @param digits? number *Default*: `0`. No description yet available.
 --- @return number result No description yet available.
 function math.round(value, digits) end
 

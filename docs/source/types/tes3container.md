@@ -82,7 +82,7 @@ The amount of weight that the container can hold.
 ### `cloneCount`
 <div class="search_terms" style="display: none">clonecount</div>
 
-*Read-only*. The number of clones that exist of this actor.
+*Read-only*. For base objects this is the number of clones that exist of this actor. For instances this is the ordinal number of the instance.
 
 **Returns**:
 

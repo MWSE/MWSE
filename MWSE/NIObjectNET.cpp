@@ -90,21 +90,21 @@ namespace NI {
 		return getStringDataStartingWithValue(value) != nullptr;
 	}
 
-	TES3::Reference* ObjectNET::getTes3Reference(bool searchParents) {
+	TES3::Reference* ObjectNET::getTes3Reference(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {
 			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
 				return static_cast<Tes3ExtraData*>(ed)->reference;
 			}
 		}
 
-		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<AVObject*>(this)->parentNode) {
-			return static_cast<AVObject*>(this)->parentNode->getTes3Reference(true);
+		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<const AVObject*>(this)->parentNode) {
+			return static_cast<const AVObject*>(this)->parentNode->getTes3Reference(true);
 		}
 
 		return nullptr;
 	}
 
-	TES3::Reference* ObjectNET::getTes3Reference_lua(sol::optional<bool> searchParents) {
+	TES3::Reference* ObjectNET::getTes3Reference_lua(sol::optional<bool> searchParents) const {
 		return getTes3Reference(searchParents.value_or(false));
 	}
 }

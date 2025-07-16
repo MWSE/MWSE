@@ -167,7 +167,7 @@ namespace se::cs::dialog::object_window {
 	// TODO: Make use of the new object-class search features.
 	bool PatchFilterObjectWindow_ObjectMatchesSearchText(const Object* object) {
 		// Hide deprecated objects.
-		if (metadata::isDeprecated(object)) {
+		if (settings.object_window.hide_deprecated && metadata::isDeprecated(object)) {
 			return false;
 		}
 
@@ -318,6 +318,10 @@ namespace se::cs::dialog::object_window {
 					else if (object->getModified()) {
 						// Modified color highlighting. Different colors for modified-master or mod-added object.
 						lplvcd->clrTextBk = object->isFromMaster() ? settings.color_theme.highlight_modified_from_master_packed_color : settings.color_theme.highlight_modified_new_object_packed_color;
+						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
+					}
+					else if (metadata::isDeprecated(object)) {
+						lplvcd->clrTextBk = settings.color_theme.highlight_deprecated_object_packed_color;
 						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
 					}
 				}

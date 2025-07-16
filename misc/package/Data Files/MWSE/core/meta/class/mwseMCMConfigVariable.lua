@@ -19,17 +19,17 @@ mwseMCMConfigVariable = {}
 --- 
 --- `path`: string — Location of the config file relative to Data `Files/MWSE/config/`.
 --- 
---- `defaultSetting`: unknown? — *Optional*. If there is no value stored by the `id` key in the config file, it will be initialized to this value.
+--- `defaultSetting?`: unknown — *Optional*. If there is no value stored by the `id` key in the config file, it will be initialized to this value.
 --- 
---- `inGameOnly`: boolean? — *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
+--- `inGameOnly?`: boolean — *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
 --- 
---- `numbersOnly`: boolean? — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- `numbersOnly?`: boolean — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 --- 
---- `restartRequired`: boolean? — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- `restartRequired?`: boolean — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 --- 
---- `restartRequiredMessage`: string? — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- `restartRequiredMessage?`: string — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
 --- 
---- `converter`: nil|fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- `converter?`: fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 --- @return mwseMCMConfigVariable variable No description yet available.
 function mwseMCMConfigVariable:new(variable) end
 
@@ -37,10 +37,10 @@ function mwseMCMConfigVariable:new(variable) end
 --- @class mwseMCMConfigVariable.new.variable
 --- @field id string Key in the config file used to store the variable.
 --- @field path string Location of the config file relative to Data `Files/MWSE/config/`.
---- @field defaultSetting unknown? *Optional*. If there is no value stored by the `id` key in the config file, it will be initialized to this value.
---- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
---- @field numbersOnly boolean? *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
---- @field restartRequired boolean? *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
---- @field restartRequiredMessage string? *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
---- @field converter nil|fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- @field defaultSetting? unknown *Optional*. If there is no value stored by the `id` key in the config file, it will be initialized to this value.
+--- @field inGameOnly? boolean *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
+--- @field numbersOnly? boolean *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- @field restartRequired? boolean *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- @field restartRequiredMessage? string *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- @field converter? fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 

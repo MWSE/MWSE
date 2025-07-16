@@ -584,7 +584,7 @@ namespace TES3::UI {
 		// Execute event. If the event blocked the call, bail.
 		if (mwse::lua::event::ShowRestWaitMenuEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::ShowRestWaitMenuEvent(resting, scripted));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -680,7 +680,7 @@ namespace TES3::UI {
 
 		// Fire event. Deselects when spell is nullptr.
 		if (mwse::lua::event::MagicSelectionChangedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::MagicSelectionChangedEvent(spell));
 		}
 	}
@@ -695,7 +695,7 @@ namespace TES3::UI {
 			auto enchantment = equipmentStack->object->getEnchantment();
 
 			if (enchantment && mwse::lua::event::MagicSelectionChangedEvent::getEventEnabled()) {
-				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+				const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 				sol::object response = stateHandle.triggerEvent(new mwse::lua::event::MagicSelectionChangedEvent(enchantment, equipmentStack->object));
 			}
 		}
@@ -845,9 +845,9 @@ namespace TES3::UI {
 	static bool inventorySelectLuaCallbackCloseAfter = true;
 	static sol::protected_function inventorySelectLuaCallback = sol::nil;
 	bool __cdecl luaDispatchedSelectCallback(Element* element, Property property, int data0, int data1, Element* elementAgain) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (inventorySelectLuaCallback.valid()) {
-			sol::table params = stateHandle.state.create_table();
+			sol::table params = stateHandle.getState().create_table();
 
 			auto MenuInventorySelect_object = reinterpret_cast<TES3::BaseObject*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3B7A)).ptrValue);
 			auto MenuInventorySelect_extra = reinterpret_cast<TES3::ItemData*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C48)).ptrValue);
@@ -883,9 +883,9 @@ namespace TES3::UI {
 
 	static sol::protected_function inventorySelectLuaFilter = sol::nil;
 	bool __cdecl luaDispatchedSelectFilter(Element* element, Property property, int data0, int data1, Element* elementAgain) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (inventorySelectLuaFilter.valid()) {
-			sol::table params = stateHandle.state.create_table();
+			sol::table params = stateHandle.getState().create_table();
 
 			auto MenuInventorySelect_filter_object = reinterpret_cast<TES3::BaseObject*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C88)).ptrValue);
 			auto MenuInventorySelect_filter_extra = reinterpret_cast<TES3::ItemData*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C16)).ptrValue);
@@ -1013,8 +1013,8 @@ namespace TES3::UI {
 
 		if (magicSelectLuaCallback.valid()) {
 			// The menu was opened from a lua script. Run the callback.
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table params = stateHandle.state.create_table();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table params = stateHandle.getState().create_table();
 			params["item"] = item;
 			params["itemData"] = itemData;
 			params["spell"] = spell;
@@ -1041,8 +1041,8 @@ namespace TES3::UI {
 
 		if (magicSelectLuaCallback.valid()) {
 			// The menu was opened from a lua script. Run the callback.
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table params = stateHandle.state.create_table();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table params = stateHandle.getState().create_table();
 
 			sol::protected_function_result result = magicSelectLuaCallback(params);
 			if (!result.valid()) {
@@ -1277,6 +1277,12 @@ namespace TES3::UI {
 		mwse::lua::cleanupEventRegistrations(self);
 
 		// Clean up stale pointers.
+		const auto worldController = TES3::WorldController::get();
+		const auto menuController = worldController ? worldController->menuController : nullptr;
+		const auto menuInputController = menuController ? menuController->menuInputController : nullptr;
+		if (menuInputController && menuInputController->textInputFocus == self) {
+			menuInputController->textInputFocus = nullptr;
+		}
 		if (MenuInputController::previousTextInputFocus == self) {
 			MenuInputController::previousTextInputFocus = nullptr;
 		}

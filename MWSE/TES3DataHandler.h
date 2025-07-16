@@ -315,8 +315,8 @@ namespace TES3 {
 		char unknown_0xB4FB;
 		int backgroundThreadID; // 0xB4FC
 		int mainThreadID; // 0xB500
-		int backgroundThread; // 0xB504
-		int mainThread; // 0xB508
+		HANDLE backgroundThread; // 0xB504
+		HANDLE mainThread; // 0xB508
 		char unknown_0xB50C;
 		char unknown_0xB50D;
 		char unknown_0xB50E;
@@ -399,6 +399,8 @@ namespace TES3 {
 
 		bool isCellInMemory(const Cell* cell, bool unknown) const;
 
+		std::tuple<int, int> getCellBufferSize() const;
+
 		//
 		// Custom functions.
 		//
@@ -408,13 +410,6 @@ namespace TES3 {
 		long getGameSettingLong(int id) const;
 		float getGameSettingFloat(int id) const;
 		const char* getGameSettingString(int id) const;
-
-		//
-		// Debug values.
-		//
-
-		static std::unordered_map<DWORD, std::string_view> currentlyLoadingMeshes;
-		static std::recursive_mutex currentlyLoadingMeshesMutex;
 
 	};
 	static_assert(sizeof(DataHandler) == 0xB558, "TES3::DataHandler failed size validation");

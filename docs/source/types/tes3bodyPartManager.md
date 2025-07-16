@@ -29,6 +29,9 @@ A game object which holds information about body parts.
 !!! note
 	This array is 1-indexed. The array indices correspond to the [`tes3.bodyPartAttachment`](https://mwse.github.io/MWSE/references/body-part-attachments/) table plus 1 to account for Lua's 1-based array indexing. In other words `bodyPartManager.attachNodes[tes3.bodyPartAttachment.leftHand + 1]` returns the `tes3bodyPartManagerAttachNode` object corresponding to the left hand.
 
+	Prefer using [`getAttachNode`](https://mwse.github.io/MWSE/types/tes3bodyPartManager/#getattachnode) instead to avoid confusion with the 1-based indexing.
+
+
 **Returns**:
 
 * `result` ([tes3bodyPartManagerAttachNode](../types/tes3bodyPartManagerAttachNode.md)[])
@@ -84,6 +87,25 @@ local result = myObject:getActiveBodyPartForItem(item)
 **Returns**:
 
 * `result` ([tes3bodyPartManagerActiveBodyPart](../types/tes3bodyPartManagerActiveBodyPart.md))
+
+***
+
+### `getAttachNode`
+<div class="search_terms" style="display: none">getattachnode, attachnode</div>
+
+Fetches the requested attach node.
+
+```lua
+local result = myObject:getAttachNode(index)
+```
+
+**Parameters**:
+
+* `index` ([tes3.bodyPartAttachment](../references/body-part-attachments.md)): A value from [`tes3.bodyPartAttachment`](https://mwse.github.io/MWSE/references/body-part-attachments/) namespace.
+
+**Returns**:
+
+* `result` ([tes3bodyPartManagerAttachNode](../types/tes3bodyPartManagerAttachNode.md))
 
 ***
 

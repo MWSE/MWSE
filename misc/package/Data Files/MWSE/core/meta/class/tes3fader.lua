@@ -11,8 +11,8 @@ tes3fader = {}
 --- Creates a new fader, and adds it to the fader system.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3fader/#new).
---- @param distance number? *Optional*. If no distance is provided, a distance will be calculated based on current amount of faders, `tes3.worldController.projectionDistance` and crosshair node's `translation.y`.
---- @param unknownBool boolean? *Default*: `true`. No description yet available.
+--- @param distance? number *Optional*. If no distance is provided, a distance will be calculated based on current amount of faders, `tes3.worldController.projectionDistance` and crosshair node's `translation.y`.
+--- @param unknownBool? boolean *Default*: `true`. No description yet available.
 --- @return tes3fader fader No description yet available.
 function tes3fader.new(distance, unknownBool) end
 
@@ -25,49 +25,49 @@ function tes3fader:deactivate() end
 --- Transitions the fader to a value of `1` over a given duration.
 --- @param params tes3fader.fadeIn.params This table accepts the following values:
 --- 
---- `duration`: number? — *Default*: `1`. The time it takes to fade, in seconds.
+--- `duration?`: number — *Default*: `1`. The time it takes to fade, in seconds.
 function tes3fader:fadeIn(params) end
 
 ---Table parameter definitions for `tes3fader.fadeIn`.
 --- @class tes3fader.fadeIn.params
---- @field duration number? *Default*: `1`. The time it takes to fade, in seconds.
+--- @field duration? number *Default*: `1`. The time it takes to fade, in seconds.
 
 --- Transitions the fader to a value of `0` over a given duration.
 --- @param params tes3fader.fadeOut.params This table accepts the following values:
 --- 
---- `duration`: number? — *Default*: `1`. The time it takes to fade, in seconds.
+--- `duration?`: number — *Default*: `1`. The time it takes to fade, in seconds.
 function tes3fader:fadeOut(params) end
 
 ---Table parameter definitions for `tes3fader.fadeOut`.
 --- @class tes3fader.fadeOut.params
---- @field duration number? *Default*: `1`. The time it takes to fade, in seconds.
+--- @field duration? number *Default*: `1`. The time it takes to fade, in seconds.
 
 --- Transitions the fader to a value over a given duration.
 --- @param params tes3fader.fadeTo.params This table accepts the following values:
 --- 
---- `value`: number? — *Default*: `1`. The value to fade to.
+--- `value?`: number — *Default*: `1`. The value to fade to.
 --- 
---- `duration`: number? — *Default*: `1`. The time it takes to fade, in seconds.
+--- `duration?`: number — *Default*: `1`. The time it takes to fade, in seconds.
 function tes3fader:fadeTo(params) end
 
 ---Table parameter definitions for `tes3fader.fadeTo`.
 --- @class tes3fader.fadeTo.params
---- @field value number? *Default*: `1`. The value to fade to.
---- @field duration number? *Default*: `1`. The time it takes to fade, in seconds.
+--- @field value? number *Default*: `1`. The value to fade to.
+--- @field duration? number *Default*: `1`. The time it takes to fade, in seconds.
 
 --- Applies a coloring effect to the fader. A fader without a texture will apply a colouring effect over the screen. The colour set here can completely change the color of the fader's texture.
 --- @param params tes3fader.setColor.params This table accepts the following values:
 --- 
 --- `color`: tes3vector3|number[] — The RGB values to set in [0.0, 1.0] range. If passing an array, pass 3 numbers.
 --- 
---- `flag`: boolean? — *Default*: `false`. No description yet available.
+--- `flag?`: boolean — *Default*: `false`. No description yet available.
 --- @return boolean result No description yet available.
 function tes3fader:setColor(params) end
 
 ---Table parameter definitions for `tes3fader.setColor`.
 --- @class tes3fader.setColor.params
 --- @field color tes3vector3|number[] The RGB values to set in [0.0, 1.0] range. If passing an array, pass 3 numbers.
---- @field flag boolean? *Default*: `false`. No description yet available.
+--- @field flag? boolean *Default*: `false`. No description yet available.
 
 --- This method allows changing the texture of the fader.
 --- @param path string A path for the texture that will be displayed on screen. Starting in `"Data Files\"`.

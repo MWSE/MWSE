@@ -6,6 +6,7 @@
 
 #include "BitUtil.h"
 #include "MemoryUtil.h"
+#include "StringUtil.h"
 
 constexpr auto NI_AVObject_updateEffects = 0x6EB380;
 constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
@@ -34,11 +35,22 @@ namespace NI {
 		}
 	}
 
-	AVObject * AVObject::getObjectByName(const char* name) {
+	AVObject* AVObject::getObjectByName(const char* name) {
 		return vTable.asAVObject->getObjectByName(this, name);
 	}
 
-	bool AVObject::getAppCulled() {
+	AVObject* AVObject::getParentByName(const char* name) const {
+		Node* result = parentNode;
+		while (result != nullptr) {
+			if (mwse::string::equal(name, result->name)) {
+				return result;
+			}
+			result = result->parentNode;
+		}
+		return nullptr;
+	}
+
+	bool AVObject::getAppCulled() const {
 		return vTable.asAVObject->getAppCulled(this);
 	}
 
@@ -46,14 +58,14 @@ namespace NI {
 		vTable.asAVObject->setAppCulled(this, culled);
 	}
 
-	bool AVObject::isAppCulled() {
+	bool AVObject::isAppCulled() const {
 		if (getAppCulled()) {
 			return true;
 		}
 		return parentNode ? parentNode->isAppCulled() : false;
 	}
 
-	bool AVObject::isFrustumCulled(Camera* camera) {
+	bool AVObject::isFrustumCulled(Camera* camera) const {
 		for (auto i = 0u; i < 6; i++) {
 			auto plane = camera->cullingPlanes[i];
 			auto distance = (

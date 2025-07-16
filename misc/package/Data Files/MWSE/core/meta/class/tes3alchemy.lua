@@ -19,21 +19,21 @@ tes3alchemy = {}
 --- 
 --- `id`: string — The new object's ID. Must be unique.
 --- 
---- `name`: string? — *Default*: `"Potion"`. The new item's name.
+--- `name?`: string — *Default*: `"Potion"`. The new item's name.
 --- 
---- `script`: tes3script|string|nil — *Optional*. A script to attach to the object.
+--- `script?`: tes3script|string — *Optional*. A script to attach to the object.
 --- 
---- `mesh`: string? — *Default*: `"m\Misc_Potion_Bargain_01.nif"`. The mesh to use for the object.
+--- `mesh?`: string — *Default*: `"m\Misc_Potion_Bargain_01.nif"`. The mesh to use for the object.
 --- 
---- `icon`: string? — *Default*: `"m\Tx_potion_bargain_01.nif"`. The icon to use for the object.
+--- `icon?`: string — *Default*: `"m\Tx_potion_bargain_01.nif"`. The icon to use for the object.
 --- 
---- `objectFlags`: number? — *Default*: `8`. The object flags initially set. Force set as modified.
+--- `objectFlags?`: number — *Default*: `8`. The object flags initially set. Force set as modified.
 --- 
---- `weight`: number? — *Default*: `0`. The new item's weight.
+--- `weight?`: number — *Default*: `0`. The new item's weight.
 --- 
---- `value`: number? — *Default*: `0`. The new item's value.
+--- `value?`: number — *Default*: `0`. The new item's value.
 --- 
---- `flags`: number? — *Default*: `0`. The new alchemy item's flags.
+--- `flags?`: number — *Default*: `0`. The new alchemy item's flags.
 --- 
 --- `effects`: table — A table of effects described, providing values for id, skill, attribute, range, radius, duration, min, and/or max.
 --- @return tes3alchemy newObject No description yet available.
@@ -42,32 +42,32 @@ function tes3alchemy.create(params) end
 ---Table parameter definitions for `tes3alchemy.create`.
 --- @class tes3alchemy.create.params
 --- @field id string The new object's ID. Must be unique.
---- @field name string? *Default*: `"Potion"`. The new item's name.
---- @field script tes3script|string|nil *Optional*. A script to attach to the object.
---- @field mesh string? *Default*: `"m\Misc_Potion_Bargain_01.nif"`. The mesh to use for the object.
---- @field icon string? *Default*: `"m\Tx_potion_bargain_01.nif"`. The icon to use for the object.
---- @field objectFlags number? *Default*: `8`. The object flags initially set. Force set as modified.
---- @field weight number? *Default*: `0`. The new item's weight.
---- @field value number? *Default*: `0`. The new item's value.
---- @field flags number? *Default*: `0`. The new alchemy item's flags.
+--- @field name? string *Default*: `"Potion"`. The new item's name.
+--- @field script? tes3script|string *Optional*. A script to attach to the object.
+--- @field mesh? string *Default*: `"m\Misc_Potion_Bargain_01.nif"`. The mesh to use for the object.
+--- @field icon? string *Default*: `"m\Tx_potion_bargain_01.nif"`. The icon to use for the object.
+--- @field objectFlags? number *Default*: `8`. The object flags initially set. Force set as modified.
+--- @field weight? number *Default*: `0`. The new item's weight.
+--- @field value? number *Default*: `0`. The new item's value.
+--- @field flags? number *Default*: `0`. The new alchemy item's flags.
 --- @field effects table A table of effects described, providing values for id, skill, attribute, range, radius, duration, min, and/or max.
 
 --- Creates a copy of this object.
 --- @param params tes3alchemy.createCopy.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- `id?`: string — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
 --- 
---- `addToObjectList`: boolean? — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- `addToObjectList?`: boolean — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
 --- 
---- `sourceless`: boolean? — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- `sourceless?`: boolean — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 --- @return tes3alchemy newObject No description yet available.
 function tes3alchemy:createCopy(params) end
 
 ---Table parameter definitions for `tes3alchemy.createCopy`.
 --- @class tes3alchemy.createCopy.params
---- @field id string? *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
---- @field addToObjectList boolean? *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
---- @field sourceless boolean? *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- @field id? string *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- @field addToObjectList? boolean *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- @field sourceless? boolean *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 
 --- Returns the amount of effects the tes3alchemy object has.
 --- @return number count No description yet available.

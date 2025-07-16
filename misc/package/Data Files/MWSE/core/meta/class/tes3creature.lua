@@ -35,17 +35,17 @@ tes3creature = {}
 --- Creates a copy of this object.
 --- @param params tes3creature.createCopy.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- `id?`: string — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
 --- 
---- `addToObjectList`: boolean? — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- `addToObjectList?`: boolean — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
 --- 
---- `sourceless`: boolean? — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- `sourceless?`: boolean — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 --- @return tes3creature newObject No description yet available.
 function tes3creature:createCopy(params) end
 
 ---Table parameter definitions for `tes3creature.createCopy`.
 --- @class tes3creature.createCopy.params
---- @field id string? *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
---- @field addToObjectList boolean? *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
---- @field sourceless boolean? *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- @field id? string *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- @field addToObjectList? boolean *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- @field sourceless? boolean *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 

@@ -16,10 +16,10 @@
 niColorA = {}
 
 --- Creates a new niColorA.
---- @param r number? *Default*: `0`. The red value for the color.
---- @param g number? *Default*: `0`. The green value for the color.
---- @param b number? *Default*: `0`. The blue value for the color.
---- @param a number? *Default*: `0`. The alpha value for the color.
+--- @param r? number *Default*: `0`. The red value for the color.
+--- @param g? number *Default*: `0`. The green value for the color.
+--- @param b? number *Default*: `0`. The blue value for the color.
+--- @param a? number *Default*: `0`. The alpha value for the color.
 --- @return niColorA color No description yet available.
 function niColorA.new(r, g, b, a) end
 

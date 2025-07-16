@@ -113,7 +113,8 @@ namespace NI {
 	size_t Node::getLightCount() const {
 		size_t count = 0;
 		for (auto node = &effectList; node && node->data; node = node->next) {
-			if (node->data->isLight()) {
+			const auto effect = node->data;
+			if (effect->isLight() && !effect->isAppCulled()) {
 				count++;
 			}
 		}

@@ -15,7 +15,7 @@ mwse.string = {}
 function mwse.string.create(value) end
 
 --- Returns the numerical key for a given string in storage, or nil if the string isn't in storage.
---- @param id number? *Optional*. No description yet available.
+--- @param id? number *Optional*. No description yet available.
 --- @return string result No description yet available.
 function mwse.string.get(id) end
 

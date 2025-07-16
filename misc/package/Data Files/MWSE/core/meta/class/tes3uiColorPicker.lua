@@ -22,7 +22,7 @@ tes3uiColorPicker = {}
 
 --- Changes the currently selected color. Updates current preview color, text input, saturation bar image and indicator positions.
 --- @param newColor mwseColorTable|ffiImagePixel The new color to set.
---- @param alpha number? *Default*: `1`. Alpha value to set.
+--- @param alpha? number *Default*: `1`. Alpha value to set.
 function tes3uiColorPicker:colorSelected(newColor, alpha) end
 
 --- Gets the current alpha value.
@@ -48,6 +48,6 @@ function tes3uiColorPicker:getRGBA() end
 
 --- Changes the currently selected color. It calls `self:colorSelected` and then updates the main picker image. Because of that, it's more expensive.
 --- @param newColor mwseColorTable|ffiImagePixel The new color to set.
---- @param alpha number? *Default*: `1`. Alpha value to set.
+--- @param alpha? number *Default*: `1`. Alpha value to set.
 function tes3uiColorPicker:hueChanged(newColor, alpha) end
 

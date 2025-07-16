@@ -16,7 +16,7 @@ namespace NI {
 	}
 
 	bool DynamicEffect::isLight() const {
-		return getType() <= 3;
+		return getType() <= TYPE_SPOT_LIGHT;
 	}
 
 	const auto NI_DynamicEffect_attachAffectedNode = reinterpret_cast<void(__thiscall*)(DynamicEffect*, Node*)>(0x6F3790);

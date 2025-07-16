@@ -164,6 +164,17 @@ This it the time of the actor's attack animation in their `.kf`, played during t
 
 ***
 
+### `opacity`
+<div class="search_terms" style="display: none">opacity</div>
+
+The opacity of the actor.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `patchedOverrideState`
 <div class="search_terms" style="display: none">patchedoverridestate</div>
 

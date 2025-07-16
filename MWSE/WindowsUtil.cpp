@@ -196,3 +196,58 @@ namespace mwse::lua {
 		return (GetAsyncKeyState(VK_key) & 0x8000) == 0x8000;
 	}
 }
+
+namespace mwse::windows {
+	using getThreadDescription_type = decltype(::GetThreadDescription);
+	static std::optional<getThreadDescription_type*> _GetThreadDescription;
+	using setThreadDescription_type = decltype(::SetThreadDescription);
+	static std::optional<setThreadDescription_type*> _SetThreadDescription;
+
+	std::optional<std::wstring> GetThreadDescription(HANDLE thread) {
+		// Initialize handle to function.
+		if (!_GetThreadDescription) {
+			const auto kernelBase = GetModuleHandleA("KernelBase.dll");
+			if (kernelBase) {
+				_GetThreadDescription = (getThreadDescription_type*)GetProcAddress(kernelBase, "GetThreadDescription");
+			}
+			else {
+				_GetThreadDescription = nullptr;
+			}
+		}
+
+		const auto getThreadDescription = _GetThreadDescription.value_or(nullptr);
+		if (getThreadDescription) {
+			wchar_t* pThreadName = nullptr;
+			if (!SUCCEEDED(getThreadDescription(GetCurrentThread(), &pThreadName))) {
+				return {};
+			}
+
+			std::wstring name = pThreadName;
+			LocalFree(pThreadName);
+
+			return name;
+		}
+
+		return {};
+	}
+
+	bool SetThreadDescription(HANDLE thread, const std::wstring_view& description) {
+		// Initialize handle to function.
+		if (!_SetThreadDescription) {
+			const auto kernelBase = GetModuleHandleA("KernelBase.dll");
+			if (kernelBase) {
+				_SetThreadDescription = (setThreadDescription_type*)GetProcAddress(kernelBase, "SetThreadDescription");
+			}
+			else {
+				_SetThreadDescription = nullptr;
+			}
+		}
+
+		const auto setThreadDescription = _SetThreadDescription.value_or(nullptr);
+		if (!setThreadDescription) {
+			return false;
+		}
+
+		return SUCCEEDED(setThreadDescription(thread, description.data()));
+	}
+}

@@ -1,10 +1,9 @@
 local common = {}
 
 common.log = require("logging.logger").new({
-    name = "MWSE Core Tests",
-    logLevel = "TRACE",
-    logToConsole = false,
-    includeTimestamp = true,
+	name = "MWSE Core Tests",
+	logLevel = "TRACE",
+	logToConsole = false,
 })
 
 --- Gets the parameters after a "--"-prefixed command line argument.

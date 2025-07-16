@@ -21,7 +21,7 @@
 --- @field emitterWidth number Determines the dimensions of the volume from which new particles are generated.
 --- @field firstTime integer 
 --- @field initialColor niPackedColor The initial color given to the newly created particles.
---- @field initialNormal tes3vector3? *Default*: `{1.0, 0.0, 0.0}`. The normal vector given to the newly created particles.
+--- @field initialNormal? tes3vector3 *Default*: `{1.0, 0.0, 0.0}`. The normal vector given to the newly created particles.
 --- @field initialSize number The initial size of the new particles.
 --- @field lastEmit number The timestamp at which the last emitted particles were created.
 --- @field lifespan number The life span for each particle, in seconds.

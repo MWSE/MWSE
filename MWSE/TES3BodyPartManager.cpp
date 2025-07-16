@@ -54,7 +54,7 @@ namespace TES3 {
 	const auto TES3_BodyPartManager_setBodyPartForItem = reinterpret_cast<void(__thiscall*)(BodyPartManager*, PhysicalObject*, BodyPartManager::ActiveBodyPart::Index, BodyPart*, int)>(0x473CB0);
 	void BodyPartManager::setBodyPartForObject(PhysicalObject* object, ActiveBodyPart::Index index, BodyPart* bodyPart, bool isFirstPerson) {
 		if (mwse::lua::event::BodyPartAssignedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::BodyPartAssignedEvent(this, reference, object, index, bodyPart, isFirstPerson));
 			if (eventData.valid()) {
 				bodyPart = eventData.get_or("bodyPart", bodyPart);
@@ -75,7 +75,7 @@ namespace TES3 {
 	const auto TES3_BodyPartManager_removeEquippedLayers = reinterpret_cast<void(__thiscall*)(BodyPartManager*)>(0x472D70);
 	void BodyPartManager::removeEquippedLayers() {
 		if (mwse::lua::event::RemovedEquipmentBodyPartsEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::RemovedEquipmentBodyPartsEvent(this));
 		}
 
@@ -104,5 +104,9 @@ namespace TES3 {
 
 	std::reference_wrapper<decltype(BodyPartManager::attachNodes)> BodyPartManager::getAttachNodes() {
 		return std::ref(attachNodes);
+	}
+
+	BodyPartManager::AttachNode* BodyPartManager::getAttachNode(AttachNode::Index index) {
+		return &attachNodes[int(index)];
 	}
 }

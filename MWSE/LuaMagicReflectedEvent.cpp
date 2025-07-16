@@ -18,8 +18,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table MagicReflectedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		auto mobile = m_Target->getAttachedMobileActor();

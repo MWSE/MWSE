@@ -486,21 +486,35 @@ namespace mwse::lua {
 	}
 
 	void logStackTrace(const char* message) {
+		std::string stackTrace = getStackTrace(true);
+
 		if (message != nullptr) {
 			log::getLog() << message << std::endl;
 		}
 
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		log::getLog() << stackTrace << std::endl;
+	}
+
+	std::string getStackTrace(bool removePrefix) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		static sol::protected_function luaDebugTraceback = state["debug"]["traceback"];
 
 		sol::protected_function_result result = luaDebugTraceback();
-		if (result.valid()) {
-			sol::optional<std::string> asString = result;
-			if (asString) {
-				log::getLog() << asString.value() << std::endl;
-			}
+		if (!result.valid()) {
+			return "";
 		}
+
+		if (result.get_type() != sol::type::string) {
+			return "";
+		}
+
+		std::string stackTrace = result;
+		if (removePrefix) {
+			stackTrace.erase(0, sizeof("stack traceback:"));
+		}
+
+		return stackTrace;
 	}
 
 	void reportErrorInGame(const char* sourceName, const sol::error& error) {
@@ -508,8 +522,8 @@ namespace mwse::lua {
 			return;
 		}
 
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		static sol::table errorNotifier = state["event"]["errorNotifier"];
 		static sol::protected_function reporter = errorNotifier["reportError"];
 

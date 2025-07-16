@@ -44,7 +44,7 @@ function tes3magicSourceInstance:getMagnitudeForIndex(index) end
 --- 
 --- `visual`: tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3physicalObject|tes3probe|tes3repairTool|tes3static|tes3weapon|string — The visual effect to be played.
 --- 
---- `scale`: number? — *Default*: `1`. The scale of the effect. Only applies to effects that are designed to be scaled.
+--- `scale?`: number — *Default*: `1`. The scale of the effect. Only applies to effects that are designed to be scaled.
 --- 
 --- `reference`: tes3reference|string — A reference on which the visual effect will be played.
 function tes3magicSourceInstance:playVisualEffect(params) end
@@ -54,6 +54,6 @@ function tes3magicSourceInstance:playVisualEffect(params) end
 --- @field effectIndex number The index in the effect whose visual will be played, a number in range [0, 7].
 --- @field position tes3vector3|number[] A table or a `tes3vector3` holding `x`, `y` and `z` coordinates at which the visual effect will be played.
 --- @field visual tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3physicalObject|tes3probe|tes3repairTool|tes3static|tes3weapon|string The visual effect to be played.
---- @field scale number? *Default*: `1`. The scale of the effect. Only applies to effects that are designed to be scaled.
+--- @field scale? number *Default*: `1`. The scale of the effect. Only applies to effects that are designed to be scaled.
 --- @field reference tes3reference|string A reference on which the visual effect will be played.
 

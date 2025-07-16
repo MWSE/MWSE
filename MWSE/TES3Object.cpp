@@ -106,13 +106,8 @@ namespace TES3 {
 	}
 
 	bool BaseObject::supportsActivate() const {
-		auto asObject = static_cast<const Object*>(this);
-		if (asObject && asObject->getIsLocationMarker()) {
-			return false;
-		}
-
 		// Make sure we aren't dealing with references.
-		BaseObject* asBase = getBaseObject();
+		auto asBase = getBaseObject();
 
 		if (asBase->isItem()) {
 			return static_cast<const Item*>(this)->getIsCarriable();
@@ -138,8 +133,8 @@ namespace TES3 {
 		}
 	}
 
-	BaseObject* BaseObject::getBaseObject() const {
-		BaseObject* object = const_cast<BaseObject*>(this);
+	BaseObject* BaseObject::getBaseObject() {
+		auto object = static_cast<BaseObject*>(this);
 
 		if (object->objectType == ObjectType::Reference) {
 			object = static_cast<Reference*>(object)->baseObject;
@@ -147,6 +142,20 @@ namespace TES3 {
 
 		if (object->isActor() && static_cast<Actor*>(object)->isClone()) {
 			object = static_cast<Actor*>(object)->getBaseActor();
+		}
+
+		return object;
+	}
+
+	BaseObject const* BaseObject::getBaseObject() const {
+		auto object = static_cast<const BaseObject*>(this);
+
+		if (object->objectType == ObjectType::Reference) {
+			object = static_cast<const Reference*>(object)->baseObject;
+		}
+
+		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
+			object = static_cast<const Actor*>(object)->getBaseActor();
 		}
 
 		return object;
@@ -286,7 +295,7 @@ namespace TES3 {
 	}
 
 	sol::object BaseObject::getCachedLuaObject() const {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
 			auto result = cacheHit->second;
@@ -300,7 +309,7 @@ namespace TES3 {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
@@ -309,7 +318,7 @@ namespace TES3 {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		sol::object ref = sol::nil;
 		switch ((uint32_t)vTable.object) {
@@ -465,7 +474,7 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
@@ -483,7 +492,7 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		baseObjectCache.clear();
 	}
 
@@ -723,6 +732,14 @@ namespace TES3 {
 
 	void Object::setScale_lua(float scale) {
 		setScale(scale);
+	}
+
+	bool Object::supportsActivate() const {
+		if (getIsLocationMarker()) {
+			return false;
+		}
+
+		return BaseObject::supportsActivate();
 	}
 
 	// This helper function exists to avoid invoking template instantiations from LuaUtil.h in TES3Object.h.

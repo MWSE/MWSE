@@ -20,8 +20,8 @@
 namespace mwse::lua {
 	void bindTES3Reference() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<TES3::Reference>("tes3reference");
@@ -32,7 +32,7 @@ namespace mwse::lua {
 		setUserdataForTES3Object(usertypeDefinition);
 
 		// Access to other objects that need to be packaged.
-		usertypeDefinition["baseObject"] = sol::readonly_property(&TES3::Reference::getBaseObject);
+		usertypeDefinition["baseObject"] = sol::readonly_property(sol::resolve<TES3::BaseObject*()>(&TES3::Reference::getBaseObject));
 		usertypeDefinition["cell"] = sol::readonly_property(&TES3::Reference::getCell);
 		usertypeDefinition["object"] = sol::readonly_property(&TES3::Reference::baseObject);
 		usertypeDefinition["sceneNode"] = sol::readonly_property(&TES3::Reference::sceneNode);

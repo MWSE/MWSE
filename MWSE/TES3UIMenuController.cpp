@@ -33,6 +33,10 @@ namespace TES3::UI {
 	}
 
 	void MenuInputController::acquireTextInput(Element* element) {
+		if (element && !element->isValid()) {
+			throw std::invalid_argument("Element passed is not valid.");
+		}
+
 		// Set target for buffered text input
 		textInputFocus = element;
 
@@ -143,6 +147,14 @@ namespace TES3::UI {
 
 	bool MenuController::getStatsMenuEnabled() const {
 		return statsMenuEnabled;
+	}
+
+	bool MenuController::getShowCombatStats() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::ShowCombatStats);
+	}
+
+	void MenuController::setShowCombatStats(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::ShowCombatStats, state);
 	}
 
 	bool MenuController::getGodModeEnabled() const {
@@ -268,6 +280,14 @@ namespace TES3::UI {
 			UI::hideCursor();
 			UI::closeDialogueMenu();
 		}
+	}
+
+	bool MenuController::getShowKillStats() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::KillStats);
+	}
+
+	void MenuController::setShowKillStats(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::KillStats, state);
 	}
 
 	bool MenuController::getScriptsDisabled() const {

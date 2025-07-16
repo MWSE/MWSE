@@ -14,7 +14,7 @@
 tes3script = {}
 
 --- This method fetches all of the script's variables as a table. Returns nil if the script has no variables.
---- @param useLocals boolean? *Optional*. 
+--- @param useLocals? boolean *Optional*. 
 --- @return table<string, tes3scriptVariableData>|nil results A table with all of the script's variable names as keys.
 function tes3script:getVariableData(useLocals) end
 

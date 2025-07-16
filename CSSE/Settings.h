@@ -81,6 +81,7 @@ namespace se::cs {
 			bool clear_filter_on_tab_switch = true;
 			BaseObject::SearchSettings search_settings = {};
 			bool highlight_modified_items = true;
+			bool hide_deprecated = true;
 
 			ColumnSettings column_actor_class = { ColumnSettings::DEFAULT_SIZE_ID };
 			ColumnSettings column_actor_essential = { ColumnSettings::DEFAULT_SIZE_BOOL };
@@ -175,10 +176,12 @@ namespace se::cs {
 			std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
 			std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
 			std::array<unsigned char, 3> highlight_modified_new_object_color = { 215, 240, 255 };
+			std::array<unsigned char, 3> highlight_deprecated_object_color = { 225, 225, 225 };
 
 			unsigned int highlight_deleted_object_packed_color = 0xFFFFFF;
 			unsigned int highlight_modified_from_master_packed_color = 0xFFFFFF;
 			unsigned int highlight_modified_new_object_packed_color = 0xFFFFFF;
+			unsigned int highlight_deprecated_object_packed_color = 0xFFFFFF;
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;

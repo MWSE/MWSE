@@ -35,8 +35,8 @@ tes3audioController = {}
 
 --- Changes currently playing music track according to provided parameters.
 --- @param filename string File name of the new music track.
---- @param crossfade number? *Default*: `1000`. Duration of the crossfading between music tracks. Measured in miliseconds.
---- @param volume number? *Default*: `1`. Allows changing the volume of the music track.
+--- @param crossfade? number *Default*: `1000`. Duration of the crossfading between music tracks. Measured in miliseconds.
+--- @param volume? number *Default*: `1`. Allows changing the volume of the music track.
 function tes3audioController:changeMusicTrack(filename, crossfade, volume) end
 
 --- Final volume of a provided type of audio, after master volume and its own volume adjustments. Music volume is an exception since it isn't affected by master volume.

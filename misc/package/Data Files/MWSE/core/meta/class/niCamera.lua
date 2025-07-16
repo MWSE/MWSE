@@ -18,11 +18,11 @@
 niCamera = {}
 
 --- This method clears the current render target of the camera's renderer. Uses flag values from [`ni.cameraClearFlags`](https://mwse.github.io/MWSE/references/ni/camera-clear-flags/).
---- @param flags ni.cameraClearFlags? *Default*: `ni.cameraClearFlags.all`. No description yet available.
+--- @param flags? ni.cameraClearFlags *Default*: `ni.cameraClearFlags.all`. No description yet available.
 function niCamera:clear(flags) end
 
 --- This method renders the currently-attached scene graph to the active renderer.
---- @param something boolean? *Default*: `false`. No description yet available.
+--- @param something? boolean *Default*: `false`. No description yet available.
 function niCamera:click(something) end
 
 --- Update the camera's local rotation so that it is looking at the given point, with an up vector as close as possible to the given up vector. Both parameters are assumed to be in world space.

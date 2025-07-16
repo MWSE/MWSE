@@ -49,7 +49,7 @@ namespace TES3 {
 		Header writeFormHeader; // 0x254
 		unsigned int fileOffsetCurrentForm; // 0x264
 		unsigned int bytesWritten; // 0x268
-		char findData[0x140]; // 0x26C // Real type: WIN32_FIND_DATAA
+		WIN32_FIND_DATAA findData; // 0x26C
 		float version; // 0x3AC
 		int flags_3B0;
 		char author[32]; // 0x3B4

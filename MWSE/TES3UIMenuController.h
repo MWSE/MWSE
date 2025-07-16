@@ -223,6 +223,8 @@ namespace TES3::UI {
 		bool getMapMenuEnabled() const;
 		bool getStatsMenuEnabled() const;
 
+		bool getShowCombatStats() const;
+		void setShowCombatStats(bool state);
 		bool getGodModeEnabled() const;
 		void setGodModeEnabled(bool state);
 		bool getLightingUpdatesDisabled() const;
@@ -245,6 +247,8 @@ namespace TES3::UI {
 		void setFogOfWarDisabled(bool state);
 		bool getMenusDisabled() const;
 		void setMenusDisabled(bool state);
+		bool getShowKillStats() const;
+		void setShowKillStats(bool state);
 		bool getScriptsDisabled() const;
 		void setScriptsDisabled(bool state);
 		bool getShowPathGrid() const;

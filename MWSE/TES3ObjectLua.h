@@ -50,6 +50,7 @@ namespace mwse::lua {
 		usertypeDefinition["isLocationMarker"] = sol::readonly_property(&TES3::Object::getIsLocationMarker);
 		usertypeDefinition["owningCollection"] = sol::readonly_property(&TES3::Object::getOwningCollection);
 		usertypeDefinition["scale"] = sol::property(&TES3::Object::getScale, &TES3::Object::setScale_lua);
+		usertypeDefinition["supportsActivate"] = sol::readonly_property(&TES3::Object::supportsActivate);
 		usertypeDefinition["supportsLuaData"] = sol::property(&TES3::Object::getSupportsLuaData);
 	}
 

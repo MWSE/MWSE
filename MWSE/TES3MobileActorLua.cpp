@@ -10,8 +10,8 @@
 namespace mwse::lua {
 	void bindTES3MobileActor() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::ActiveMagicEffect
 		{

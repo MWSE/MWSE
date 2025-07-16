@@ -16,3 +16,8 @@ namespace mwse::lua {
 
 	bool getIsVirtualKeyPressed(int VK_key);
 }
+
+namespace mwse::windows {
+	std::optional<std::wstring> GetThreadDescription(HANDLE thread);
+	bool SetThreadDescription(HANDLE thread, const std::wstring_view& description);
+}

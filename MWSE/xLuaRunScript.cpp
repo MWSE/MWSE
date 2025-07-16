@@ -22,8 +22,8 @@ namespace mwse {
 
 	float xLuaRunScript::execute(mwse::VMExecuteInterface& virtualMachine) {
 		lua::LuaManager& manager = lua::LuaManager::getInstance();
-		auto stateHandle = manager.getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = manager.getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Get parameters.
 		auto scriptNameKey = mwse::Stack::getInstance().popLong();

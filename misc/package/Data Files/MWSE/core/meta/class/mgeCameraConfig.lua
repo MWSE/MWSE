@@ -19,35 +19,35 @@ mgeCameraConfig = {}
 function mgeCameraConfig.stopZoom() end
 
 --- Sets up continuous camera zoom. The zoom speed starts at `rate`. The speed will approach `targetRate` over time, if provided.
---- @param params mgeCameraConfig.zoomContinuous.params? This table accepts the following values:
+--- @param params? mgeCameraConfig.zoomContinuous.params This table accepts the following values:
 --- 
---- `rate`: number? — *Default*: `1`. No description yet available.
+--- `rate?`: number — *Default*: `1`. No description yet available.
 --- 
---- `targetRate`: number? — *Default*: ``rate``. No description yet available.
+--- `targetRate?`: number — *Default*: ``rate``. No description yet available.
 function mgeCameraConfig.zoomContinuous(params) end
 
 ---Table parameter definitions for `mgeCameraConfig.zoomContinuous`.
 --- @class mgeCameraConfig.zoomContinuous.params
---- @field rate number? *Default*: `1`. No description yet available.
---- @field targetRate number? *Default*: ``rate``. No description yet available.
+--- @field rate? number *Default*: `1`. No description yet available.
+--- @field targetRate? number *Default*: ``rate``. No description yet available.
 
 --- Zooms in by the specified amount, or by a small amount if no amount is provided.
---- @param params mgeCameraConfig.zoomIn.params? This table accepts the following values:
+--- @param params? mgeCameraConfig.zoomIn.params This table accepts the following values:
 --- 
---- `amount`: number? — *Default*: `0.0625`. No description yet available.
+--- `amount?`: number — *Default*: `0.0625`. No description yet available.
 function mgeCameraConfig.zoomIn(params) end
 
 ---Table parameter definitions for `mgeCameraConfig.zoomIn`.
 --- @class mgeCameraConfig.zoomIn.params
---- @field amount number? *Default*: `0.0625`. No description yet available.
+--- @field amount? number *Default*: `0.0625`. No description yet available.
 
 --- Zooms out by the specified amount, or by a small amount if no amount is provided.
---- @param params mgeCameraConfig.zoomOut.params? This table accepts the following values:
+--- @param params? mgeCameraConfig.zoomOut.params This table accepts the following values:
 --- 
---- `amount`: number? — *Default*: `0.0625`. No description yet available.
+--- `amount?`: number — *Default*: `0.0625`. No description yet available.
 function mgeCameraConfig.zoomOut(params) end
 
 ---Table parameter definitions for `mgeCameraConfig.zoomOut`.
 --- @class mgeCameraConfig.zoomOut.params
---- @field amount number? *Default*: `0.0625`. No description yet available.
+--- @field amount? number *Default*: `0.0625`. No description yet available.
 

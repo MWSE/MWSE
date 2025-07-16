@@ -24,8 +24,8 @@
 
 namespace mwse::lua {
 	void bindScriptUtil() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		sol::table lua_mwscript = state["mwscript"];
 
 		//
@@ -185,7 +185,7 @@ namespace mwse::lua {
 			// Fire off the event, because script calls don't hit the same code as our hooks.
 			if (event::EquipEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::object response = stateHandle.triggerEvent(new event::EquipEvent(reference, item, nullptr));
 				if (response.get_type() == sol::type::table) {
 					sol::table eventData = response;
@@ -496,8 +496,8 @@ namespace mwse::lua {
 		//
 		// Pre MGE XE v0.14.x support.
 		//
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::state& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::state& state = stateHandle.getState();
 		sol::table lua_mge = state["mge"];
 
 		// General functions.
@@ -966,8 +966,8 @@ namespace mwse::lua {
 			return true;
 		};
 		lua_mge["getWeatherScattering"] = []() {
-			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-			auto& state = stateHandle.state;
+			const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+			auto& state = stateHandle.getState();
 			auto inscatter = state.create_table();
 			auto outscatter = state.create_table();
 

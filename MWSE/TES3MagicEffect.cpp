@@ -359,20 +359,16 @@ namespace TES3 {
 	}
 
 	bool MagicEffectExtendedData::hasMagnitudeType() const {
-		return !magnitudeType.empty();
+		return !magnitudeType.empty() && !magnitudeTypePlural.empty();
 	}
 
 	std::string_view MagicEffectExtendedData::getMagnitudeType(bool plural) const {
-		if (!hasMagnitudeType()) {
-			const auto gmst = plural ? GMST::spoints : GMST::spoint;
-			return DataHandler::get()->nonDynamicData->GMSTs[gmst]->value.asString;
-		}
-
-		if (plural && !magnitudeTypePlural.empty()) {
+		if (plural) {
 			return magnitudeTypePlural;
 		}
-
-		return magnitudeType;
+		else {
+			return magnitudeType;
+		}
 	}
 
 
@@ -549,6 +545,7 @@ namespace TES3 {
 		}
 		else {
 			if (!ndd->magicEffects->getEffectFlag(effectID, EffectFlag::NoMagnitudeBit)) {
+				const auto pluralMagnitude = (magnitudeMax != 1);
 				if (magnitudeMin != magnitudeMax) {
 					ss << " " << magnitudeMin << " " << ndd->GMSTs[GMST::sTo]->value.asString << " " << magnitudeMax;
 				}
@@ -586,31 +583,31 @@ namespace TES3 {
 				case EffectID::DetectAnimal:
 				case EffectID::DetectEnchantment:
 				case EffectID::DetectKey:
-					if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::sfootarea]->value.asString;
+					if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::sfeet]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::sfeet]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::sfootarea]->value.asString;
 					}
 					break;
 				case EffectID::CommandCreature:
 				case EffectID::CommandHumanoid:
-					if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::sLevel]->value.asString;
+					if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::sLevels]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::sLevels]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::sLevel]->value.asString;
 					}
 					break;
 				default:
-					if (extendedData) {
-						ss << extendedData->getMagnitudeType(magnitudeMax != 1);
+					if (extendedData && extendedData->hasMagnitudeType()) {
+						ss << extendedData->getMagnitudeType(pluralMagnitude);
 					}
-					else if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::spoint]->value.asString;
+					else if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::spoints]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::spoints]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::spoint]->value.asString;
 					}
 				}
 			}

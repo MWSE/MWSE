@@ -36,6 +36,6 @@ function tes3uiColorPreview:getRGBA() end
 
 --- Changes the color of this widget to given color.
 --- @param newColor mwseColorTable|ffiImagePixel The new color to set.
---- @param alpha number? *Default*: `1`. Alpha value to set.
+--- @param alpha? number *Default*: `1`. Alpha value to set.
 function tes3uiColorPreview:setColor(newColor, alpha) end
 

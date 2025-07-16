@@ -13,14 +13,14 @@ tes3uiTabContainer = {}
 --- 
 --- `id`: string — The unique identifier for the tab.
 --- 
---- `name`: string? — *Optional*. The text used for the tab's selector button. If not provided, the ID will be used.
+--- `name?`: string — *Optional*. The text used for the tab's selector button. If not provided, the ID will be used.
 --- @return tes3uiElement result No description yet available.
 function tes3uiTabContainer:addTab(params) end
 
 ---Table parameter definitions for `tes3uiTabContainer.addTab`.
 --- @class tes3uiTabContainer.addTab.params
 --- @field id string The unique identifier for the tab.
---- @field name string? *Optional*. The text used for the tab's selector button. If not provided, the ID will be used.
+--- @field name? string *Optional*. The text used for the tab's selector button. If not provided, the ID will be used.
 
 --- Gets the block that contains the tab contents used for this container. Should be used with care.
 --- @return tes3uiElement result No description yet available.

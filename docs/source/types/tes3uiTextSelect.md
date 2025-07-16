@@ -25,99 +25,99 @@ Access back to the element this widget interface is for.
 ### `idle`
 <div class="search_terms" style="display: none">idle</div>
 
-The RGB color of the text when `state` is set to `normal`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when `state` is set to `normal`. An array of 4 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `idleActive`
 <div class="search_terms" style="display: none">idleactive</div>
 
-The RGB color of the text when `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `idleDisabled`
 <div class="search_terms" style="display: none">idledisabled</div>
 
-The RGB color of the text when `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `over`
 <div class="search_terms" style="display: none">over</div>
 
-The RGB color of the text when the text select is selected and `state` is set to `normal`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is selected and `state` is set to `normal`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `overActive`
 <div class="search_terms" style="display: none">overactive</div>
 
-The RGB color of the text when the text select is selected and `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is selected and `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `overDisabled`
 <div class="search_terms" style="display: none">overdisabled</div>
 
-The RGB color of the text when the text select is selected and `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is selected and `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `pressed`
 <div class="search_terms" style="display: none">pressed</div>
 
-The RGB color of the text when the text select is pressed and `state` is set to `normal`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is pressed and `state` is set to `normal`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `pressedActive`
 <div class="search_terms" style="display: none">pressedactive</div>
 
-The RGB color of the text when the text select is pressed and `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is pressed and `state` is set to `active`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 
 ### `pressedDisabled`
 <div class="search_terms" style="display: none">presseddisabled</div>
 
-The RGB color of the text when the text select is pressed and `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
+The RGBA color of the text when the text select is pressed and `state` is set to `disabled`. An array of 3 floats with values ranging from `0.0` to `1.0`.
 
 **Returns**:
 
-* `result` ([niColor](../types/niColor.md))
+* `result` (number[])
 
 ***
 

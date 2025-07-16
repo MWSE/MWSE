@@ -16,8 +16,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table AttackEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["mobile"] = m_AnimationController->mobileActor;

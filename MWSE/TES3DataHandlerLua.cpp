@@ -34,8 +34,8 @@
 namespace mwse::lua {
 	void bindTES3DataHandler() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::NonDynamicData
 		{
@@ -126,6 +126,7 @@ namespace mwse::lua {
 			usertypeDefinition["worldPickObjectRoot"] = sol::readonly_property(&TES3::DataHandler::worldPickObjectRoot);
 
 			// Basic function binding.
+			usertypeDefinition["getCellBufferSizes"] = &TES3::DataHandler::getCellBufferSize;
 			usertypeDefinition["updateCollisionGroupsForActiveCells"] = &TES3::DataHandler::updateCollisionGroupsForActiveCells;
 			usertypeDefinition["updateLightingForExteriorCells"] = &TES3::DataHandler::updateLightingForExteriorCells;
 

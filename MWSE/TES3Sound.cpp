@@ -51,7 +51,7 @@ namespace TES3 {
 
 		if (mwse::lua::event::SoundObjectPlayEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SoundObjectPlayEvent(sound, playbackFlags, volume, pitch, isNot3D));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {

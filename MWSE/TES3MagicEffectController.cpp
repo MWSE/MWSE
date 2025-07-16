@@ -78,6 +78,7 @@ namespace TES3 {
 	}
 
 	bool MagicEffectController::getEffectExists(int id) {
+		if (id < 0 || id >= MAX_EFFECT_COUNT) return false;
 		return effectObjects[id] != nullptr;
 	}
 
@@ -301,8 +302,8 @@ namespace TES3 {
 	sol::protected_function genericLuaSpellResistCallback = sol::nil;
 	bool __cdecl genericLuaSpellResist(MagicSourceInstance * sourceInstance, MagicEffectInstance * effectInstance, int effectIndex) {
 		if (genericLuaSpellResistCallback != sol::nil) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::optional<bool> result = genericLuaSpellResistCallback(stateHandle.state.create_table_with(
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::optional<bool> result = genericLuaSpellResistCallback(stateHandle.getState().create_table_with(
 				"sourceInstance", sourceInstance,
 				"effectInstance", effectInstance,
 				"effectIndex", effectIndex
@@ -421,7 +422,7 @@ namespace TES3 {
 
 	void __cdecl MagicEffectDispatch(EffectID::EffectID effectId, MagicSourceInstance * sourceInstance, float deltaTime, MagicEffectInstance * effectInstance, int effectIndex) {
 		if (mwse::lua::event::SpellTickEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SpellTickEvent(effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -449,8 +450,8 @@ namespace TES3 {
 				return;
 			}
 
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::protected_function_result result = extendedData->tickFunction(packageSpellTickTable(stateHandle.state, effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::protected_function_result result = extendedData->tickFunction(packageSpellTickTable(stateHandle.getState(), effectId, sourceInstance, deltaTime, effectInstance, effectIndex));
 			if (!result.valid()) {
 				sol::error error = result;
 				mwse::log::getLog() << "Lua error encountered in magic effect dispatch function:" << std::endl << error.what() << std::endl;
@@ -617,9 +618,9 @@ namespace TES3 {
 
 			const auto extendedData = effectData->getExtendedData();
 			if (extendedData && extendedData->collisionFunction.valid()) {
-				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+				const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
-				sol::table params = stateHandle.state.create_table();
+				sol::table params = stateHandle.getState().create_table();
 				params["effectId"] = effectId;
 				params["effectIndex"] = i;
 				params["sourceInstance"] = instance;

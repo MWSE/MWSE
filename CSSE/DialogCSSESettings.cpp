@@ -36,6 +36,7 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Case Sensitive", &se::cs::settings.object_window.search_settings.case_sensitive, "If true, searching will be case sensitive."));
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Use Regex", &se::cs::settings.object_window.search_settings.use_regex, "If true, searching will be performed with regex. The case sensitive option is still used."));
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Clear Filter on Tab Switch", &se::cs::settings.object_window.clear_filter_on_tab_switch, "If true, the search bar will be cleared when changing tabs."));
+	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Hide Deprecated", &se::cs::settings.object_window.hide_deprecated, "If true, objects marked as deprecated will be hidden from the object window."));
 	{
 		auto filterByGroup = new CMFCPropertyGridProperty("Filter By");
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("ID", &se::cs::settings.object_window.search_settings.id, "If true, the object's ID will be searched when filtering."));
@@ -47,6 +48,8 @@ BOOL DialogCSSESettings::OnInitDialog() {
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Book Text", &se::cs::settings.object_window.search_settings.book_text, "If true, book text will be searched when filtering."));
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Faction", &se::cs::settings.object_window.search_settings.faction, "If true, faction IDs and rank names will be searched when filtering NPCs."));
 		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Effect", &se::cs::settings.object_window.search_settings.effect, "If true, effects will be searched when filtering alchemy, spell, enchantment, or ingredients."));
+		filterByGroup->AddSubItem(new CDataBoundPropertyGridProperty("Training Skills", &se::cs::settings.object_window.search_settings.training, "If true, NPC's training skills will be searched when filtering NPCs."));
+
 		groupObjectsWindow->AddSubItem(filterByGroup);
 	}
 	m_PropertyGrid.AddProperty(groupObjectsWindow);

@@ -1793,7 +1793,7 @@ Direct access to the actor's sound effect attribute.
 ### `spellReadied`
 <div class="search_terms" style="display: none">spellreadied</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor has a spell readied.
+Friendly access to the actor's flag that controls if the actor has a spell readied.
 
 **Returns**:
 

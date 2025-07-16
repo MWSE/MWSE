@@ -74,7 +74,7 @@ return {
 			{
 				name = "lighting",
 				optional = true,
-				type = "tes3vector3|table|nil",
+				type = "tes3vector3|table",
 				description = "Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].",
 			},
 			{

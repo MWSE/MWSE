@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindTES3BodyPart() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::BodyPart.
 		{
@@ -103,6 +103,7 @@ namespace mwse::lua {
 			usertypeDefinition["setBodyPartByIdForObject"] = &TES3::BodyPartManager::setBodyPartByIdForObject;
 			usertypeDefinition["setBodyPartForObject"] = &TES3::BodyPartManager::setBodyPartForObject;
 			usertypeDefinition["updateForReference"] = &TES3::BodyPartManager::updateForReference;
+			usertypeDefinition["getAttachNode"] = &TES3::BodyPartManager::getAttachNode;
 		}
 	}
 }

@@ -60,8 +60,8 @@ namespace mwse::lua {
 
 	void bindMWSEUtil() {
 		auto& manager = LuaManager::getInstance();
-		auto stateHandle = manager.getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = manager.getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Create our namespace.
 		sol::table lua_mwse = state["mwse"];

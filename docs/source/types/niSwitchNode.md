@@ -688,6 +688,25 @@ local result = myObject:getActiveChild()
 
 ***
 
+### `getChildIndexByName`
+<div class="search_terms" style="display: none">getchildindexbyname, childindexbyname</div>
+
+Searches the `children` array for a node with a name that matches the argument and returns the index of found node. If no node with given name is found returns `-1`.
+
+```lua
+local childIndex = myObject:getChildIndexByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `childIndex` (integer)
+
+***
+
 ### `getEffect`
 <div class="search_terms" style="display: none">geteffect, effect</div>
 
@@ -742,6 +761,25 @@ local result = myObject:getObjectByName(name)
 **Returns**:
 
 * `result` ([niAVObject](../types/niAVObject.md))
+
+***
+
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
 
 ***
 
@@ -1012,7 +1050,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

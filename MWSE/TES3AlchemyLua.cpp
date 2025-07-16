@@ -12,8 +12,8 @@
 
 namespace mwse::lua {
 	TES3::Alchemy* createAlchemy(sol::table params) {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Do we already have an object of this ID?
 		auto ndd = TES3::DataHandler::get()->nonDynamicData;
@@ -99,8 +99,8 @@ namespace mwse::lua {
 
 	void bindTES3Alchemy() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<TES3::Alchemy>("tes3alchemy");

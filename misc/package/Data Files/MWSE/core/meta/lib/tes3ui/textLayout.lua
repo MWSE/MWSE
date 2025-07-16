@@ -10,23 +10,23 @@ tes3ui.textLayout = {}
 --- Gets font height metrics for a font.
 --- @param params tes3ui.textLayout.getFontHeight.params This table accepts the following values:
 --- 
---- `font`: number? — *Default*: `0`. The index of the font.
+--- `font?`: number — *Default*: `0`. The index of the font.
 --- @return number maxGlyphHeight Maximum pixel height of a single line of text.
 --- @return number lineHeight Pixel spacing between lines in a paragraph.
 function tes3ui.textLayout.getFontHeight(params) end
 
 ---Table parameter definitions for `tes3ui.textLayout.getFontHeight`.
 --- @class tes3ui.textLayout.getFontHeight.params
---- @field font number? *Default*: `0`. The index of the font.
+--- @field font? number *Default*: `0`. The index of the font.
 
 --- Calculates expected size information for text content.
 --- @param params tes3ui.textLayout.getTextExtent.params This table accepts the following values:
 --- 
 --- `text`: string — The text to use.
 --- 
---- `font`: number? — *Default*: `0`. The index of the font.
+--- `font?`: number — *Default*: `0`. The index of the font.
 --- 
---- `firstLineOnly`: boolean? — *Default*: `false`. Only process the first line of the text.
+--- `firstLineOnly?`: boolean — *Default*: `false`. Only process the first line of the text.
 --- @return number width Pixel width of the widest line of the text.
 --- @return number height Pixel height of a label containing this text. Includes the extra space and rounding added by the label layout.
 --- @return number verticalAdvance The vertical displacement that a following text element would use. It is zero for text without newlines, and increases with each newline.
@@ -35,19 +35,19 @@ function tes3ui.textLayout.getTextExtent(params) end
 ---Table parameter definitions for `tes3ui.textLayout.getTextExtent`.
 --- @class tes3ui.textLayout.getTextExtent.params
 --- @field text string The text to use.
---- @field font number? *Default*: `0`. The index of the font.
---- @field firstLineOnly boolean? *Default*: `false`. Only process the first line of the text.
+--- @field font? number *Default*: `0`. The index of the font.
+--- @field firstLineOnly? boolean *Default*: `false`. Only process the first line of the text.
 
 --- Performs word wrapping of text.
 --- @param params tes3ui.textLayout.wrapText.params This table accepts the following values:
 --- 
 --- `text`: string — The text to wrap.
 --- 
---- `font`: number? — *Default*: `0`. The index of the font.
+--- `font?`: number — *Default*: `0`. The index of the font.
 --- 
---- `maxWidth`: number? — *Default*: `-1`. The wrapping width in pixels.
+--- `maxWidth?`: number — *Default*: `-1`. The wrapping width in pixels.
 --- 
---- `ignoreLinkDelimiters`: boolean? — *Default*: `false`. No description yet available.
+--- `ignoreLinkDelimiters?`: boolean — *Default*: `false`. No description yet available.
 --- @return string wrappedText The wrapped text, with `\n` as line breaks.
 --- @return number lineCount The number of lines in the output wrapped text.
 function tes3ui.textLayout.wrapText(params) end
@@ -55,7 +55,7 @@ function tes3ui.textLayout.wrapText(params) end
 ---Table parameter definitions for `tes3ui.textLayout.wrapText`.
 --- @class tes3ui.textLayout.wrapText.params
 --- @field text string The text to wrap.
---- @field font number? *Default*: `0`. The index of the font.
---- @field maxWidth number? *Default*: `-1`. The wrapping width in pixels.
---- @field ignoreLinkDelimiters boolean? *Default*: `false`. No description yet available.
+--- @field font? number *Default*: `0`. The index of the font.
+--- @field maxWidth? number *Default*: `-1`. The wrapping width in pixels.
+--- @field ignoreLinkDelimiters? boolean *Default*: `false`. No description yet available.
 

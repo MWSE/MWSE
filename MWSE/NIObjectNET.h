@@ -40,8 +40,8 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
-		TES3::Reference* getTes3Reference(bool searchParents = false);
-		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false);
+		TES3::Reference* getTes3Reference(bool searchParents = false) const;
+		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;
 
 		//
 		// Other function addresses.

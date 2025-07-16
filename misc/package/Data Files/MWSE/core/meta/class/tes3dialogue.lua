@@ -13,33 +13,33 @@ tes3dialogue = {}
 --- Adds the dialogue to the player's journal, if applicable, at a given index.
 --- @param params tes3dialogue.addToJournal.params This table accepts the following values:
 --- 
---- `index`: number? — *Default*: `0`. No description yet available.
+--- `index?`: number — *Default*: `0`. No description yet available.
 --- 
---- `actor`: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string|nil — *Default*: `tes3.player`. No description yet available.
+--- `actor?`: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — *Default*: `tes3.player`. No description yet available.
 --- @return boolean result No description yet available.
 function tes3dialogue:addToJournal(params) end
 
 ---Table parameter definitions for `tes3dialogue.addToJournal`.
 --- @class tes3dialogue.addToJournal.params
---- @field index number? *Default*: `0`. No description yet available.
---- @field actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string|nil *Default*: `tes3.player`. No description yet available.
+--- @field index? number *Default*: `0`. No description yet available.
+--- @field actor? tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string *Default*: `tes3.player`. No description yet available.
 
 --- Fetches the info that a given actor would produce for the dialogue.
 --- @param params tes3dialogue.getInfo.params This table accepts the following values:
 --- 
 --- `actor`: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string — No description yet available.
 --- 
---- `context`: tes3.dialogueFilterContext? — *Default*: `tes3.dialogueFilterContext.script`. An override for how this info request should be treated. Maps to values in the [`tes3.dialogueFilterContext`](https://mwse.github.io/MWSE/references/dialogue-filter-context/) table.
+--- `context?`: tes3.dialogueFilterContext — *Default*: `tes3.dialogueFilterContext.script`. An override for how this info request should be treated. Maps to values in the [`tes3.dialogueFilterContext`](https://mwse.github.io/MWSE/references/dialogue-filter-context/) table.
 --- @return tes3dialogueInfo result No description yet available.
 function tes3dialogue:getInfo(params) end
 
 ---Table parameter definitions for `tes3dialogue.getInfo`.
 --- @class tes3dialogue.getInfo.params
 --- @field actor tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
---- @field context tes3.dialogueFilterContext? *Default*: `tes3.dialogueFilterContext.script`. An override for how this info request should be treated. Maps to values in the [`tes3.dialogueFilterContext`](https://mwse.github.io/MWSE/references/dialogue-filter-context/) table.
+--- @field context? tes3.dialogueFilterContext *Default*: `tes3.dialogueFilterContext.script`. An override for how this info request should be treated. Maps to values in the [`tes3.dialogueFilterContext`](https://mwse.github.io/MWSE/references/dialogue-filter-context/) table.
 
 --- Retrieves the info object for a journal. By default this will return the info for the player's current journal index for this dialogue. An index can be provided to fetch a specific index's related info.
---- @param index number? *Optional*. The index of the journal to fetch the info for. If not provided, the current player's journal index is used.
+--- @param index? number *Optional*. The index of the journal to fetch the info for. If not provided, the current player's journal index is used.
 --- @return tes3dialogueInfo journalInfo No description yet available.
 function tes3dialogue:getJournalInfo(index) end
 

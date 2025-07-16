@@ -266,7 +266,7 @@ local effect = tes3.addMagicEffect({ id = ..., name = ..., magnitudeType = ..., 
 	* `sizeCap` (number): *Default*: `1`. The maximum possible size of the projectile.
 	* `speed` (number): *Default*: `1`.
 	* `description` (string): *Default*: `No description available.`. Description for the effect.
-	* `lighting` ([tes3vector3](../types/tes3vector3.md), table, nil): *Optional*. Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].
+	* `lighting` ([tes3vector3](../types/tes3vector3.md), table): *Optional*. Value of red, green, and blue values of the color for both particle lighting and enchantment wraps. In range of [0.0, 1.0].
 	* `icon` (string): Path to the effect icon. Must be a string no longer than 31 characters long. Use double \ as path separator.
 	* `particleTexture` (string): Path to the particle texture to use for the effect. Must be a string no longer than 31 characters long.
 	* `castSound` (string): The sound ID which will be played on casting a spell with this effect. Must be a string no longer than 31 characters long. If not specified, the default sound for the spell school will be used.
@@ -2312,7 +2312,7 @@ local isStolen, stolenFrom = tes3.getItemIsStolen({ item = ..., from = ... })
 
 * `params` (table)
 	* `item` ([tes3item](../types/tes3item.md)): The item to check.
-	* `from` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md), [tes3faction](../types/tes3faction.md), nil): *Optional*. Where the item was stolen from. If not provided, the function will return true if the item was stolen from anyone.
+	* `from` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md), [tes3faction](../types/tes3faction.md)): *Optional*. Where the item was stolen from. If not provided, the function will return true if the item was stolen from anyone.
 
 **Returns**:
 
@@ -3731,16 +3731,17 @@ tes3.modDisposition({ reference = ..., value = ..., temporary = ... })
 Modifies a statistic on a given actor. This should be used instead of manually setting values on the game structures, to ensure that events and GUI elements are properly handled. Either skill, attribute, or the statistic's property name must be provided.
 
 ```lua
-tes3.modStatistic({ reference = ..., attribute = ..., skill = ..., name = ..., base = ..., current = ..., value = ..., limit = ..., limitToBase = ... })
+tes3.modStatistic({ reference = ..., attribute = ..., skill = ..., statistic = ..., name = ..., base = ..., current = ..., value = ..., limit = ..., limitToBase = ... })
 ```
 
 **Parameters**:
 
 * `params` (table)
 	* `reference` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string)
-	* `attribute` ([tes3.attribute](../references/attributes.md)): *Optional*. The attribute to set. Uses a value from [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/)
-	* `skill` ([tes3.skill](../references/skills.md)): *Optional*. The skill to set. Uses a value from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/)
-	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka, fatigue or encumbrance.
+	* `attribute` ([tes3.attribute](../references/attributes.md)): *Optional*. The attribute to modify. Uses a value from [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/)
+	* `skill` ([tes3.skill](../references/skills.md)): *Optional*. The skill to modify. Uses a value from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/)
+	* `statistic` ([tes3statistic](../types/tes3statistic.md)): *Optional*. The direct statistic taken from the mobile actor. This is usually the most efficient parameter to pass.
+	* `name` (string): *Optional*. The property name of the statistic to modify. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Pass the direct statistic using the `statistic` parameter instead.
 	* `base` (number): *Optional*. If set, the base value will be modified.
 	* `current` (number): *Optional*. If set, the current value will be modified.
 	* `value` (number): *Optional*. If set, both the base and current value will be modified.
@@ -3960,7 +3961,7 @@ local executed = tes3.positionCell({ reference = ..., cell = ..., position = ...
 
 * `params` (table)
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): *Default*: `tes3.mobilePlayer`. The reference to reposition.
-	* `cell` ([tes3cell](../types/tes3cell.md), string, table, nil): *Optional*. The cell to move the reference to. Can be a tes3cell, cell name, or a table with two values that correspond to the exterior cell's grid coordinates. If not provided, the reference will be moved to a cell in the exterior worldspace at the position provided.
+	* `cell` ([tes3cell](../types/tes3cell.md), string, table): *Optional*. The cell to move the reference to. Can be a tes3cell, cell name, or a table with two values that correspond to the exterior cell's grid coordinates. If not provided, the reference will be moved to a cell in the exterior worldspace at the position provided.
 	* `position` ([tes3vector3](../types/tes3vector3.md), number[]): The position to move the reference to.
 	* `orientation` ([tes3vector3](../types/tes3vector3.md), number[]): *Optional*. The new orientation of the reference.
 	* `forceCellChange` (boolean): *Default*: `false`. When true, forces the game to update a reference that has moved within a single cell, as if it was moved into a new cell.
@@ -4770,7 +4771,7 @@ tes3.setSourceless(object, sourceless)
 Sets a statistic on a given actor. This should be used instead of manually setting values on the game structures, to ensure that events and GUI elements are properly handled. Either skill, attribute, or the statistic's property name must be provided.
 
 ```lua
-tes3.setStatistic({ reference = ..., attribute = ..., skill = ..., name = ..., base = ..., current = ..., value = ..., limit = ... })
+tes3.setStatistic({ reference = ..., attribute = ..., skill = ..., statistic = ..., name = ..., base = ..., current = ..., value = ..., limit = ... })
 ```
 
 **Parameters**:
@@ -4779,7 +4780,8 @@ tes3.setStatistic({ reference = ..., attribute = ..., skill = ..., name = ..., b
 	* `reference` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string)
 	* `attribute` ([tes3.attribute](../references/attributes.md), integer): *Optional*. The attribute to set. Uses a value from [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/)
 	* `skill` ([tes3.skill](../references/skills.md), integer): *Optional*. The skill to set. Uses a value from [`tes3.skill`](https://mwse.github.io/MWSE/references/skills/)
-	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Useful for specifying health, magicka, fatigue or encumbrance.
+	* `statistic` ([tes3statistic](../types/tes3statistic.md)): *Optional*. The direct statistic taken from the mobile actor. This is usually the most efficient parameter to pass.
+	* `name` (string): *Optional*. The property name of the statistic to set. The names can be taken from the properties of `tes3mobileNPC` or `tes3mobileCreature`. Pass the direct statistic using the `statistic` parameter instead.
 	* `base` (number): *Optional*. If set, the base value will be set.
 	* `current` (number): *Optional*. If set, the current value will be set.
 	* `value` (number): *Optional*. If set, both the base and current value will be set.

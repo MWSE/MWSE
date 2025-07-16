@@ -491,7 +491,7 @@ If true, references of this object can store temporary or persistent lua data.
 ### `waterLevel`
 <div class="search_terms" style="display: none">waterlevel</div>
 
-The water level in the cell. In extirior cells, water level is 0, while the interior cells can have custom water, usually set in the Construction Set, or don't have water at all. In that case, this property will be `nil`.
+The water level in the cell. In exterior cells, water level is 0, while the interior cells can have custom water, usually set in the Construction Set, or don't have water at all. In that case, this property will be `nil`.
 
 **Returns**:
 

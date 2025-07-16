@@ -25,7 +25,7 @@ function niObject:isInstanceOfType(type) end
 function niObject:isOfType(type) end
 
 --- Serializes the object, and writes it to the given file.
---- @param path string The path to write the file at, relative to the Morrowind installation folder.
+--- @param path string The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 --- @return boolean success If true the object was successfully serialized.
 function niObject:saveBinary(path) end
 

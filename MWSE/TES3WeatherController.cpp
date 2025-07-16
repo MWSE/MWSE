@@ -80,7 +80,7 @@ namespace TES3 {
 
 		// Trigger calcSunDamageScalar event.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-		auto stateHandle = luaManager.getThreadSafeStateHandle();
+		const auto stateHandle = luaManager.getThreadSafeStateHandle();
 		sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalcSunDamageScalarEvent(damage));
 		if (eventData.valid()) {
 			damage = eventData.get_or<float>("damage", damage);
@@ -379,7 +379,7 @@ namespace TES3 {
 		// Prevent recursive triggering of weather change events.
 		if (!weatherEventGuard && mwse::lua::event::WeatherChangedImmediateEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 
 			weatherEventGuard = true;
 			stateHandle.triggerEvent(new mwse::lua::event::WeatherChangedImmediateEvent());
@@ -397,7 +397,7 @@ namespace TES3 {
 		// Prevent recursive triggering of weather change events.
 		if (!weatherEventGuard && mwse::lua::event::WeatherTransitionStartedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 
 			weatherEventGuard = true;
 			stateHandle.triggerEvent(new mwse::lua::event::WeatherTransitionStartedEvent());

@@ -17,7 +17,7 @@ function niNode.new() end
 
 --- Attaches the child to the children list of the node. Doesn't check to see if the object is already in the child list.
 --- @param child niAVObject|niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape No description yet available.
---- @param useFirstAvailable boolean? *Default*: `false`. Use the first available space in the list. If `false` appends the child at the end of the list.
+--- @param useFirstAvailable? boolean *Default*: `false`. Use the first available space in the list. If `false` appends the child at the end of the list.
 function niNode:attachChild(child, useFirstAvailable) end
 
 --- Attaches a dynamic effect to the node. It will not attach the same effect twice.

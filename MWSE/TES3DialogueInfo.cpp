@@ -216,7 +216,7 @@ namespace TES3 {
 
 		if (mwse::lua::event::InfoFilterEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::InfoFilterEvent(this, speaker, reference, (int)source, dialogue, result));
 			sol::object passes = eventData["passes"];
 			if (passes.is<bool>()) {

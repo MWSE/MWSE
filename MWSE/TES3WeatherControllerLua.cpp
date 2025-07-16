@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindTES3WeatherController() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TES3::WeatherController::Particle
 		{

@@ -18,7 +18,7 @@ re = {}
 --- The given string may define either an expression or a grammar. The optional defs table provides 
 --- extra Lua values to be used by the pattern.
 --- @param s string The string to compile.
---- @param defs table? *Optional*. Extra lua values to be used by the pattern.
+--- @param defs? table *Optional*. Extra lua values to be used by the pattern.
 --- @return pattern result No description yet available.
 function re.compile(s, defs) end
 
@@ -33,7 +33,7 @@ function re.compile(s, defs) end
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/re/#refind).
 --- @param subject string The string to search.
 --- @param pattern string The pattern to search with.
---- @param init number? *Optional*. Start at this position in the subject string.
+--- @param init? number *Optional*. Start at this position in the subject string.
 --- @return number result No description yet available.
 function re.find(subject, pattern, init) end
 

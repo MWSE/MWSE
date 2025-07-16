@@ -258,6 +258,18 @@ These effects build off of the [standard magic effects](./magic-effects.md). If 
 | T_summon_Barrowguard         | 2128      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | T_summon_MinoBarrowguard     | 2129      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | T_summon_SkeletonChampion    | 2130      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_summon_AtroFrostMon        | 2131      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_restoration_ArmorResartus  | 2132      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_restoration_WeaponResartus | 2133      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_conjuration_Corruption     | 2134      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_conjuration_CorruptionSummon | 2135    | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_illusion_DistractCreature  | 2136      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_illusion_DistractHumanoid  | 2137      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_destruction_GazeOfVeloth   | 2138      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_DetEnemy         | 2139      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_alteration_WabbajackTrans  | 2140      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_DetInvisibility  | 2141      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
+| T_mysticism_Blink            | 2142      | [Tamriel_Data](https://www.nexusmods.com/morrowind/mods/44537)                                     |
 | storeSoul                    | 3300      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |
 | summonSoul1                  | 3301      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |
 | summonSoul2                  | 3302      | [Summon Souls](https://www.nexusmods.com/morrowind/mods/53418)                                     |

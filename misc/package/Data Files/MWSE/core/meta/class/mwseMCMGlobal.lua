@@ -18,15 +18,15 @@ function mwseMCMGlobal:get() end
 --- 
 --- `id`: string — The id of the Morrowind Global.
 --- 
---- `numbersOnly`: boolean? — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- `numbersOnly?`: boolean — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 --- 
---- `converter`: nil|fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- `converter?`: fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 --- @return mwseMCMGlobal|mwseMCMGlobalBoolean variable No description yet available.
 function mwseMCMGlobal:new(variable) end
 
 ---Table parameter definitions for `mwseMCMGlobal.new`.
 --- @class mwseMCMGlobal.new.variable
 --- @field id string The id of the Morrowind Global.
---- @field numbersOnly boolean? *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
---- @field converter nil|fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- @field numbersOnly? boolean *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- @field converter? fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 

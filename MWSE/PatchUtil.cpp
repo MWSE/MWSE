@@ -10,7 +10,6 @@
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
 #include "TES3Class.h"
-#include "TES3CombatSession.h"
 #include "TES3Creature.h"
 #include "TES3CutscenePlayer.h"
 #include "TES3DataHandler.h"
@@ -34,7 +33,6 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
-#include "TES3Weapon.h"
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
@@ -44,13 +42,14 @@
 #include "NIPick.h"
 #include "NIPointLight.h"
 #include "NISortAdjustNode.h"
-#include "NITriShape.h"
-#include "NITriShapeData.h"
+#include "NiTriShape.h"
+#include "NiTriShapeData.h"
 #include "NIUVController.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
 #include "TES3Util.h"
+#include "WindowsUtil.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
@@ -59,6 +58,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
+#include "CrashLogExceptionHandler.hpp"
 
 namespace mwse::patch {
 
@@ -90,16 +90,21 @@ namespace mwse::patch {
 
 	template <typename T>
 	void safePrintObjectToLog(const char* title, const T* object) {
+		safePrintObject(title, object, log::getLog());
+	}
+
+	template <typename T>
+	void safePrintObject(const char* title, const T* object, std::ostream& ss) {
 		if (object) {
 			auto id = SafeGetObjectId(object);
 			auto source = SafeGetSourceFile(object);
-			log::getLog() << "  " << title << ": " << (id ? id : "<memory corrupted>") << " (" << (source ? source : "<memory corrupted>") << ")" << std::endl;
+			ss << "  " << title << ": " << (id ? id : "<memory corrupted>") << " (" << (source ? source : "<memory corrupted>") << ")\n";
 			if (id) {
-				log::prettyDump(object);
+				log::prettyDump(object, ss);
 			}
 		}
 		else {
-			log::getLog() << "  " << title << ": nullptr" << std::endl;
+			ss << "  " << title << ": nullptr\n";
 		}
 	}
 
@@ -1346,86 +1351,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Make AI consider weapon condition when selecting the most damaging weapon for combat.
-	//
-
-	const auto TES3_getMinWaterLevel = reinterpret_cast<float(__cdecl*)()>(0x51D760);
-
-	float __stdcall PatchCalculateEffectiveWeaponMult(TES3::CombatSession* session, TES3::ItemStack* itemStack, float fAIMeleeWeaponMult, float fAIRangeMeleeWeaponMult) {
-		// Original code.
-		float weaponMult;
-		auto weapon = static_cast<TES3::Weapon*>(itemStack->object);
-
-		if (weapon->weaponType < TES3::WeaponType::Bow) {
-			// Melee.
-			weaponMult = fAIMeleeWeaponMult;
-			session->ammoDamage = 0;
-		}
-		else {
-			// Ranged.
-			const auto mobile = session->parentActor;
-			const auto& position = mobile->reference->position;
-			const auto waterLevel = TES3_getMinWaterLevel();
-
-			// Corrected test for head position calculation.
-			if (mobile->getMovementFlagSwimming() || position.z + 0.7 * mobile->height < waterLevel) {
-				weaponMult = 0.0f;
-			}
-			else {
-				weaponMult = fAIRangeMeleeWeaponMult;
-			}
-		}
-
-		// Find best condition weapon in the stack, and adjust weaponMult to include damage reduction from weapon condition.
-		auto variables = itemStack->variables;
-		if (variables && itemStack->count == variables->endIndex) {
-			int bestCondition = 0;
-			for (auto itemData : *variables) {
-				if (itemData->condition > bestCondition) {
-					bestCondition = itemData->condition;
-				}
-			}
-			weaponMult *= float(bestCondition) / float(weapon->maxCondition);
-		}
-
-		return weaponMult;
-	}
-
-	void* __stdcall PatchGetWeaponStackItemDataVariables(TES3::ItemStack* itemStack) {
-		auto variables = itemStack->variables;
-
-		// Prevent a bug that doesn't select fully repaired weapons if there are damaged weapons in the stack.
-		// Return nullptr if there are fully repaired weapons, so that the selected itemData is set to nullptr.
-		if (variables && itemStack->count > variables->endIndex) {
-			variables = nullptr;
-		}
-
-		return variables;
-	}
-
-	__declspec(naked) void PatchCombatSessionNextActionPhysicalWeighting1() {
-		__asm {
-			push [esp + 0x2C]		// push fAIRangeMeleeWeaponMult
-			push [esp + 0x34]		// push fAIMeleeWeaponMult
-			push ebp				// push itemStack
-			push edi				// push combatSession
-			call $					// Replace with call PatchCalculateEffectiveWeaponMult
-			jmp $ + 0x79
-		}
-	}
-	const size_t PatchCombatSessionNextActionPhysicalWeighting1_size = 0x14;
-
-	__declspec(naked) void PatchCombatSessionNextActionPhysicalWeighting2() {
-		__asm {
-			mov [eax + 4], ecx		// equipStack.itemData = ecx
-			push ebp				// push itemStack
-			call $					// Replace with call PatchGetWeaponStackItemDataVariables
-			test eax, eax			// if (itemDataArray)
-		}
-	}
-	const size_t PatchCombatSessionNextActionPhysicalWeighting2_size = 0xB;
-
-	//
 	// Patch: Make checking the object type of nullptr objects return an invalid type instead of crashing.
 	//
 
@@ -1514,6 +1439,20 @@ namespace mwse::patch {
 		light->specular = { float(radius), float(radius), float(radius) };
 
 		node->updatePointLight(light, isLand);
+	}
+
+	//
+	// Patch: Fix MenuEnchant menu pointer on failed enchant
+	//
+
+	static TES3::UI::Element* __cdecl PatchEnchantingMenuPointer(TES3::UI::UI_ID id) {
+		const auto menuInputController = TES3::WorldController::get()->menuController->menuInputController;
+		if (!menuInputController->textInputFocus->isValid()) {
+			menuInputController->textInputFocus = nullptr;
+		}
+
+		// Call original code.
+		return TES3::UI::findMenu(id);
 	}
 
 	//
@@ -1989,12 +1928,6 @@ namespace mwse::patch {
 		genCallUnprotected(0x477512, reinterpret_cast<DWORD>(GetCachedYesToAll), 0x477518 - 0x477512);
 		genCallEnforced(0x4BB55D, 0x477400, reinterpret_cast<DWORD>(SuppressGeneralMastPlugMismatchMsg));
 
-		// Patch: Make AI consider weapon condition when selecting the most damaging weapon for combat.
-		writePatchCodeUnprotected(0x5376BB, (BYTE*)&PatchCombatSessionNextActionPhysicalWeighting1, PatchCombatSessionNextActionPhysicalWeighting1_size);
-		genCallUnprotected(0x5376BB + 0xA, reinterpret_cast<DWORD>(PatchCalculateEffectiveWeaponMult));
-		writePatchCodeUnprotected(0x5378BE, (BYTE*)&PatchCombatSessionNextActionPhysicalWeighting2, PatchCombatSessionNextActionPhysicalWeighting2_size);
-		genCallUnprotected(0x5378BE + 4, reinterpret_cast<DWORD>(PatchGetWeaponStackItemDataVariables));
-
 		// Patch: Clean up mobile collision data when a mobile is destroyed. Fixes probably a Todd-typo.
 		genNOPUnprotected(0x55E55B, 0x55E55F - 0x55E55B);
 
@@ -2009,6 +1942,10 @@ namespace mwse::patch {
 		writePatchCodeUnprotected(0x4968E1, (BYTE*)&PatchUnequipIndexedProjectileSetup, PatchUnequipIndexedProjectileSetup_size);
 		genCallUnprotected(0x4968E1 + 0x2, reinterpret_cast<DWORD>(PatchUnequipIndexedProjectile));
 
+		// Patch: Fix invalid UI memory pointer.
+		genCallEnforced(0x5C48DB, 0x595370, reinterpret_cast<DWORD>(PatchEnchantingMenuPointer));
+
+#if false
 		// Patch: Update dynamic lights to implement custom light sorting.
 		genCallEnforced(0x485B60, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 		genCallEnforced(0x4D2C9C, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
@@ -2016,6 +1953,7 @@ namespace mwse::patch {
 		genCallEnforced(0x4D2D9F, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 		genCallEnforced(0x4D2F10, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
+#endif
 
 		// Pach: Extend weather system.
 		TES3::WeatherController::installPatches();
@@ -2055,7 +1993,12 @@ namespace mwse::patch {
 	}
 
 	void installPostInitializationPatches() {
-
+		// Patch: Give threads descriptions.
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler) {
+			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
+			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
+		}
 	}
 
 	//
@@ -2155,47 +2098,6 @@ namespace mwse::patch {
 	}
 
 	void CreateMiniDump(EXCEPTION_POINTERS* pep) {
-		log::getLog() << std::dec << std::endl;
-		log::getLog() << "Morrowind has crashed! To help improve game stability, send MWSE_Minidump.dmp and mwse.log to the #mwse channel at the Morrowind Modding Community Discord: https://discord.me/mwmods" << std::endl;
-
-#ifdef APPVEYOR_BUILD_NUMBER
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << "-" << APPVEYOR_BUILD_NUMBER << std::endl;
-#else
-		log::getLog() << "MWSE version: " << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << std::endl;
-#endif
-		log::getLog() << "Build date: " << MWSE_BUILD_DATE << std::endl;
-
-		// Display the memory usage in the log.
-		PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-		log::getLog() << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-		if (memCounter.PrivateUsage > 3650722201) {
-			log::getLog() << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
-		}
-
-		// Try to print the lua stack trace.
-		log::getLog() << "Lua traceback at time of crash:" << std::endl;
-		lua::logStackTrace();
-
-		// Try to print any relevant mwscript information.
-		if (TES3::Script::currentlyExecutingScript) {
-			log::getLog() << "Currently executing mwscript context:" << std::endl;
-			safePrintObjectToLog("Script", TES3::Script::currentlyExecutingScript);
-			safePrintObjectToLog("Reference", TES3::Script::currentlyExecutingScriptReference);
-			log::getLog() << "  OpCode: 0x" << std::hex << *reinterpret_cast<DWORD*>(0x7A91C4) << std::endl;
-			log::getLog() << "  Cursor Offset: 0x" << std::hex << *reinterpret_cast<DWORD*>(0x7CEBB0) << std::endl;
-		}
-
-		// Show if we failed to load a mesh.
-		if (!TES3::DataHandler::currentlyLoadingMeshes.empty()) {
-			TES3::DataHandler::currentlyLoadingMeshesMutex.lock();
-			const auto worldController = TES3::WorldController::get();
-			for (const auto& itt : TES3::DataHandler::currentlyLoadingMeshes) {
-				log::getLog() << "Currently loading mesh: " << itt.second << "; Thread: " << GetThreadName(itt.first) << std::endl;
-			}
-			TES3::DataHandler::currentlyLoadingMeshesMutex.unlock();
-		}
-
 		// Open the file.
 		auto hFile = CreateFile("MWSE_MiniDump.dmp", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -2235,28 +2137,35 @@ namespace mwse::patch {
 		}
 	}
 
-	int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+	static void ResetGamma() {
 		__try {
-			return reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x416E10)(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-		}
-		__except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
-			// Try to reset gamma.
 			auto game = TES3::Game::get();
 			if (game) {
 				game->setGamma(1.0f);
 			}
-
-			return 0;
 		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
+	}
 
+	LONG WINAPI MWSEUnhandledExceptionFilter(__in  struct _EXCEPTION_POINTERS* info) {
+		log::getLog() << std::dec << std::endl;
+		log::getLog() << "Morrowind has crashed! To help improve game stability, send mwse.log to the #mwse channel at the Morrowind Modding Community Discord: https://discord.me/mwmods" << std::endl;
+
+		ResetGamma();
+
+		CreateMiniDump(info);
+		
+		if constexpr (CrashLogger::DEBUG_LOGGER) {
+			log::getLog() << "Attempting To Log Crash \n";
+		}
+		return CrashLogger::Filter(info);
 	}
 
 	bool installMiniDumpHook() {
 		if constexpr (INSTALL_MINIDUMP_HOOK) {
-			return genCallEnforced(0x7279AD, 0x416E10, reinterpret_cast<DWORD>(onWinMain));
+			CrashLogger::Playtime::Init();
+			CrashLogger::s_originalFilter = SetUnhandledExceptionFilter(MWSEUnhandledExceptionFilter);
 		}
-		else {
-			return true;
-		}
+		return true;
 	}
 }

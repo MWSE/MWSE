@@ -40,7 +40,7 @@ function string.endswith(s, pattern) end
 --- `%p`	  | Pointer address.										| b8000000
 --- `%%`	  | The literal `%` character.							  | %
 --- @param format string The format string to use for the output.
---- @param ... any? *Optional*. Values to format into the specified `string`.
+--- @param ...? any *Optional*. Values to format into the specified `string`.
 --- @return string result No description yet available.
 function string.format(format, ...) end
 
@@ -60,8 +60,8 @@ function string.insert(s1, s2, position) end
 --- The `patterns` are checked in the order they are passed. i.e., this function will first try to match `patterns[1]`, then `patterns[2]`, and so on.
 --- @param s string The `string` to `find` `patterns` in.
 --- @param patterns table An array-style `table` that contains the patterns to match.
---- @param index integer? *Default*: `1`. Start index of the `find`. (Same meaning as in `string.find`.)
---- @param plain boolean? *Default*: `false`. If `true`, then a normal search will be performed instead of a pattern search. (Same meaning as in `string.find`.)
+--- @param index? integer *Default*: `1`. Start index of the `find`. (Same meaning as in `string.find`.)
+--- @param plain? boolean *Default*: `false`. If `true`, then a normal search will be performed instead of a pattern search. (Same meaning as in `string.find`.)
 --- @return string? pattern *Optional*. If a pattern was matched, then this will be the first pattern that was matched. If no patterns matched, this will be `nil`.
 --- @return integer? startindex *Optional*. If a `pattern` was matched, this is the index of `s` where the matching `pattern` begins.
 --- @return integer? endindex *Optional*. If a `pattern` was matched, this is the index of `s` where the matching `pattern` ends.
@@ -76,7 +76,7 @@ function string.multifind(s, patterns, index, plain) end
 --- 	For example, `string.split("1a2b3c4abc5", "abc")` will return `{"1", "2", "3", "4", "5"}` instead of `{"1a2b3c4", "5"}`.
 --- 
 --- @param str string The string to split.
---- @param sep string? *Default*: `"%s"`. The token to split the string by.
+--- @param sep? string *Default*: `"%s"`. The token to split the string by.
 --- @return string[] split No description yet available.
 function string.split(str, sep) end
 

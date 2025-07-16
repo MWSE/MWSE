@@ -94,7 +94,7 @@ function tes3reference:clone() end
 function tes3reference:delete() end
 
 --- Deletes the dynamic light attachment, if it exists. This will automatically detach the dynamic light from affected nodes.
---- @param removeLightFromParent boolean? *Default*: `false`. If `true`, the dynamic light is removed from its parent node as well.
+--- @param removeLightFromParent? boolean *Default*: `false`. If `true`, the dynamic light is removed from its parent node as well.
 function tes3reference:deleteDynamicLightAttachment(removeLightFromParent) end
 
 --- Removes the dynamic light from any affected scene graph nodes, but will not delete the associated attachment.
@@ -122,8 +122,8 @@ function tes3reference:getAttachedDynamicLight() end
 --- If no light is supplied as an argument, a point light of radius 512 will be automatically created.
 --- 
 --- If the light is not attached to any part of the scene graph yet, the point light will be placed as a child of the "attachLight" subnode of the model, or a child of the model if "attachLight" is not found.
---- @param light niPointLight|niSpotLight|nil *Optional*. No description yet available.
---- @param phase number? *Optional*. No description yet available.
+--- @param light? niPointLight|niSpotLight *Optional*. No description yet available.
+--- @param phase? number *Optional*. No description yet available.
 --- @return tes3lightNode result No description yet available.
 function tes3reference:getOrCreateAttachedDynamicLight(light, phase) end
 
@@ -140,7 +140,7 @@ function tes3reference:setDynamicLighting() end
 
 --- Sets if this reference has active collision. This is preferable to changing the `hasNoCollision` property, if you are manipulating multiple objects at once and do not want to constantly recalculate collision groups.
 --- @param hasNoCollision boolean If `true`, the reference no longer has collision.
---- @param updateCollisions boolean? *Default*: `true`. If `true`, collision groups for the active cells are recalculated.
+--- @param updateCollisions? boolean *Default*: `true`. If `true`, collision groups for the active cells are recalculated.
 function tes3reference:setNoCollisionFlag(hasNoCollision, updateCollisions) end
 
 --- Returns the flag's value in the reference's action data attachment.

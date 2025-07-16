@@ -65,7 +65,7 @@ function tes3inputController:isSuperDown() end
 
 --- Performs a test for a given keybind, and optionally a transition state.
 --- @param key tes3.keybind The keybind to test. Constants available through [`tes3.keybind`](https://mwse.github.io/MWSE/references/keybinds/).
---- @param transition tes3.keyTransition? *Optional*. Transition state, e.g. down, or up. Constants available through [`tes3.keyTransition`](https://mwse.github.io/MWSE/references/key-transitions/).
+--- @param transition? tes3.keyTransition *Optional*. Transition state, e.g. down, or up. Constants available through [`tes3.keyTransition`](https://mwse.github.io/MWSE/references/key-transitions/).
 --- @return boolean result No description yet available.
 function tes3inputController:keybindTest(key, transition) end
 

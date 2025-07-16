@@ -16,8 +16,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table BodyPartsUpdatedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::table eventData = stateHandle.state.create_table();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::table eventData = stateHandle.getState().create_table();
 
 		eventData["reference"] = m_Reference;
 		eventData["mobile"] = m_MobileActor;

@@ -157,7 +157,9 @@ namespace se::cs {
 		search_settings.book_text = toml::find_or(v, "filter_by_book_text", search_settings.book_text);
 		search_settings.faction = toml::find_or(v, "filter_by_faction", search_settings.faction);
 		search_settings.effect = toml::find_or(v, "filter_by_effect", search_settings.effect);
+		search_settings.training = toml::find_or(v, "filter_by_training_skills", search_settings.training);
 		highlight_modified_items = toml::find_or(v, "highlight_modified_items", highlight_modified_items);
+		hide_deprecated = toml::find_or(v, "hide_deprecated", hide_deprecated);
 		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
 		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
 
@@ -244,7 +246,9 @@ namespace se::cs {
 				{ "filter_by_book_text", search_settings.book_text },
 				{ "filter_by_faction", search_settings.faction },
 				{ "filter_by_effect", search_settings.effect },
+				{ "filter_by_training_skills", search_settings.training },
 				{ "highlight_modified_items", highlight_modified_items },
+				{ "hide_deprecated", hide_deprecated },
 				{ "case_sensitive", search_settings.case_sensitive },
 				{ "use_regex", search_settings.use_regex },
 
@@ -365,6 +369,7 @@ namespace se::cs {
 		highlight_deleted_object_color = toml::find_or(v, "highlight_deleted_object_color", highlight_deleted_object_color);
 		highlight_modified_from_master_color = toml::find_or(v, "highlight_modified_from_master_color", highlight_modified_from_master_color);
 		highlight_modified_new_object_color = toml::find_or(v, "highlight_modified_new_object_color", highlight_modified_new_object_color);
+		highlight_deprecated_object_color = toml::find_or(v, "highlight_deprecated_object_color", highlight_deprecated_object_color);
 	}
 
 	toml::value Settings_t::ColorTheme::into_toml() const {
@@ -374,6 +379,7 @@ namespace se::cs {
 				{ "highlight_deleted_object_color", highlight_deleted_object_color },
 				{ "highlight_modified_from_master_color", highlight_modified_from_master_color },
 				{ "highlight_modified_new_object_color", highlight_modified_new_object_color },
+				{ "highlight_deprecated_object_color", highlight_deprecated_object_color },
 			}
 		);
 	}
@@ -382,6 +388,7 @@ namespace se::cs {
 		highlight_deleted_object_packed_color = RGB(highlight_deleted_object_color[0], highlight_deleted_object_color[1], highlight_deleted_object_color[2]);
 		highlight_modified_from_master_packed_color = RGB(highlight_modified_from_master_color[0], highlight_modified_from_master_color[1], highlight_modified_from_master_color[2]);
 		highlight_modified_new_object_packed_color = RGB(highlight_modified_new_object_color[0], highlight_modified_new_object_color[1], highlight_modified_new_object_color[2]);
+		highlight_deprecated_object_packed_color = RGB(highlight_deprecated_object_color[0], highlight_deprecated_object_color[1], highlight_deprecated_object_color[2]);
 	}
 
 	//

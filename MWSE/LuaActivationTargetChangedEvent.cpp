@@ -16,8 +16,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table ActivationTargetChangedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["previous"] = ms_PreviousReference;

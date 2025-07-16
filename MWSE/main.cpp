@@ -13,7 +13,6 @@
 #include "NIStream.h"
 
 #include "LuaManager.h"
-#include "MGEApi.h"
 #include "TES3Game.h"
 
 TES3MACHINE* mge_virtual_machine = NULL;

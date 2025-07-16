@@ -31,6 +31,7 @@
 #include "TES3MagicEffectInstance.h"
 #include "TES3MagicInstanceController.h"
 #include "TES3MobManager.h"
+#include "TES3MobileCreature.h"
 #include "TES3MobilePlayer.h"
 #include "TES3ItemData.h"
 #include "TES3Race.h"
@@ -483,7 +484,7 @@ namespace TES3 {
 		// Invoke our first event and check if it is blocked.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::CombatStartEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CombatStartEvent(this, target));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return;
@@ -524,7 +525,7 @@ namespace TES3 {
 		// Invoke our combat stop event and check if it is blocked.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::CombatStopEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CombatStopEvent(this));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return;
@@ -577,7 +578,7 @@ namespace TES3 {
 		// Invoke our pre-damage event and check if it is blocked.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::DamageEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::DamageEvent(this, damage));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -593,7 +594,7 @@ namespace TES3 {
 
 		// Do our post-damage event.
 		if (mwse::lua::event::DamagedEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::DamagedEvent(this, damage, killingBlow));
 			if (eventData.valid()) {
 				killingBlow = eventData["killingBlow"];
@@ -610,7 +611,7 @@ namespace TES3 {
 		// Invoke our pre-damage event and check if it is blocked.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 		if (!miss && mwse::lua::event::DamageHandToHandEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::DamageHandToHandEvent(this, fatigueDamage));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -626,7 +627,7 @@ namespace TES3 {
 
 		// Do our post-damage event.
 		if (!miss && mwse::lua::event::DamagedHandToHandEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::DamagedHandToHandEvent(this, fatigueDamage));
 		}
 		return result;
@@ -715,7 +716,7 @@ namespace TES3 {
 	bool MobileActor::doJump(Vector3 velocity, bool applyFatigueCost, bool isDefaultJump) {
 		// Allow the event to override the velocity or block the jump.
 		if (mwse::lua::event::JumpEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::JumpEvent(this, velocity, applyFatigueCost, isDefaultJump));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
@@ -845,7 +846,7 @@ namespace TES3 {
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Run, this, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -863,7 +864,7 @@ namespace TES3 {
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Swim, this, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -884,7 +885,7 @@ namespace TES3 {
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::SwimRun, this, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -902,7 +903,7 @@ namespace TES3 {
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Fly, this, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -1035,7 +1036,7 @@ namespace TES3 {
 			}
 
 			const auto& combo = instance->sourceCombo;
-			if (combo.sourceType == MagicSourceType::Spell && combo.source.asSpell->castType == SpellCastType::Disease) {
+			if (combo.sourceType == MagicSourceType::Spell && combo.source.asSpell->isCommonDisease()) {
 				return true;
 			}
 		}
@@ -1051,7 +1052,7 @@ namespace TES3 {
 			}
 
 			const auto& combo = instance->sourceCombo;
-			if (combo.sourceType == MagicSourceType::Spell && combo.source.asSpell->castType == SpellCastType::Blight) {
+			if (combo.sourceType == MagicSourceType::Spell && combo.source.asSpell->isBlightDisease()) {
 				return true;
 			}
 		}
@@ -1152,6 +1153,14 @@ namespace TES3 {
 		}
 	}
 
+	bool MobileActor::isCreature() const {
+		return actorType == MobileActorType::Creature;
+	}
+
+	bool MobileActor::isPlayer() const {
+		return actorType == MobileActorType::Player;
+	}
+
 	float MobileActor::getWidth() const {
 		return reference->getScale() * float(widthRescaled) / 32.0f;
 	}
@@ -1163,7 +1172,7 @@ namespace TES3 {
 	const auto TES3_MobileActor_wearItem = reinterpret_cast<void(__thiscall*)(MobileActor*, Object*, ItemData*, bool, bool)>(0x52C770);
 	bool MobileActor::wearItem(Object * item, ItemData * itemData, bool addItem, bool unknown, bool useEvents) {
 		if (useEvents && mwse::lua::event::EquipEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::EquipEvent(reference, item, itemData));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return false;
@@ -1173,7 +1182,7 @@ namespace TES3 {
 		TES3_MobileActor_wearItem(this, item, itemData, addItem, unknown);
 
 		if (useEvents && mwse::lua::event::EquippedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::EquippedEvent(static_cast<TES3::Actor*>(reference->baseObject), this, item, itemData));
 		}
 
@@ -1694,6 +1703,40 @@ namespace TES3 {
 		setMobileActorFlag(MobileActorFlag::Werewolf, value);
 	}
 
+	bool MobileActor::hasStatistic(const Statistic* statistic) const {
+		// Check common statistics.
+		if (statistic == &health) return true;
+		if (statistic == &magicka) return true;
+		if (statistic == &magickaMultiplier) return true;
+		if (statistic == &fatigue) return true;
+		if (statistic == &encumbrance) return true;
+
+		// Check common attributes.
+		for (int i = Attribute::FirstAttribute; i <= Attribute::LastAttribute; ++i) {
+			if (statistic == &attributes[i]) return true;
+		}
+
+		// Check subtype statistics.
+		if (isCreature()) {
+			const auto asCreature = static_cast<const MobileCreature*>(this);
+
+			// Check skills.
+			for (int i = CreatureSkillID::FirstSkill; i <= CreatureSkillID::LastSkill; ++i) {
+				if (statistic == &asCreature->skills[i]) return true;
+			}
+		}
+		else {
+			const auto asNPC = static_cast<const MobileNPC*>(this);
+
+			// Check skills.
+			for (int i = SkillID::FirstSkill; i <= SkillID::LastSkill; ++i) {
+				if (statistic == &asNPC->skills[i]) return true;
+			}
+		}
+
+		return false;
+	}
+
 	Statistic* MobileActor::getAttributeAgility() {
 		return &attributes[TES3::Attribute::Agility];
 	}
@@ -2100,8 +2143,8 @@ namespace TES3 {
 		auto effectID = mwse::lua::getOptionalParam<int>(params, "effect");
 		auto serial = mwse::lua::getOptionalParam<unsigned int>(params, "serial");
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::table effectsList = stateHandle.state.create_table();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::table effectsList = stateHandle.getState().create_table();
 		int index = 1;
 
 		for (auto& activeEffect : activeMagicEffects) {

@@ -19,8 +19,8 @@ namespace mwse::lua {
 	using TES3::UI::registerProperty;
 
 	void bindTES3UIWidgets() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		//
 		// Button (PartButton)

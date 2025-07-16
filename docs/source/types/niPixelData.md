@@ -98,6 +98,21 @@ local result = myObject:createSourceTexture()
 
 ***
 
+### `exportTGA`
+<div class="search_terms" style="display: none">exporttga</div>
+
+Exports this pixel data as a Truevision TGA file. Only supports export of pixel data in RGBA32 format, which all `niPixelData` created using [`niPixelData.new`](https://mwse.github.io/MWSE/types/niPixelData/#new) are.
+
+```lua
+myObject:exportTGA(path)
+```
+
+**Parameters**:
+
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.tga` extension needs to be specified manually.
+
+***
+
 ### `fill`
 <div class="search_terms" style="display: none">fill</div>
 
@@ -201,7 +216,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

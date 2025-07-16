@@ -28,7 +28,7 @@ function niPick:clearResults() end
 --- Performs the picking operation by casting a ray.
 --- @param origin tes3vector3 The origin of the ray in world coordinates.
 --- @param direction tes3vector3 No description yet available.
---- @param append boolean? *Default*: `false`. This parameter indicates whether the new results are appended to the results array, or if a new array is formed clearing the results array.
---- @param maxDistance number? *Optional*. Default value: 0.0F
+--- @param append? boolean *Default*: `false`. This parameter indicates whether the new results are appended to the results array, or if a new array is formed clearing the results array.
+--- @param maxDistance? number *Optional*. Default value: 0.0F
 function niPick:pickObjects(origin, direction, append, maxDistance) end
 

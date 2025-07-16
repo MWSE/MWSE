@@ -189,6 +189,8 @@ namespace TES3::UI {
 		// Custom functions.
 		//
 
+		bool isValid() const;
+
 		const char* getName() const;
 
 		std::string toJson() const;

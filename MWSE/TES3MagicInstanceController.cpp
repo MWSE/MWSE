@@ -42,7 +42,7 @@ namespace TES3 {
 
 		if (mwse::lua::event::ActiveMagicEffectIconsUpdatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::ActiveMagicEffectIconsUpdatedEvent());
 		}
 	}

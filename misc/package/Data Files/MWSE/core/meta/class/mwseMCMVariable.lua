@@ -22,30 +22,30 @@ mwseMCMVariable = {}
 function mwseMCMVariable:get() end
 
 --- Creates a new variable of this type.
---- @param variable string|mwseMCMVariable.new.variable|nil This table accepts the following values:
+--- @param variable? string|mwseMCMVariable.new.variable This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The unique identifier for the variable.
+--- `id?`: string — *Optional*. The unique identifier for the variable.
 --- 
---- `inGameOnly`: boolean? — *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
+--- `inGameOnly?`: boolean — *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
 --- 
---- `numbersOnly`: boolean? — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- `numbersOnly?`: boolean — *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
 --- 
---- `restartRequired`: boolean? — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- `restartRequired?`: boolean — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 --- 
---- `restartRequiredMessage`: string? — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- `restartRequiredMessage?`: string — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
 --- 
---- `converter`: nil|fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- `converter?`: fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 --- @return mwseMCMConfigVariable|mwseMCMCustomVariable|mwseMCMGlobal|mwseMCMGlobalBoolean|mwseMCMPlayerData|mwseMCMTableVariable|mwseMCMVariable variable No description yet available.
 function mwseMCMVariable:new(variable) end
 
 ---Table parameter definitions for `mwseMCMVariable.new`.
 --- @class mwseMCMVariable.new.variable
---- @field id string? *Optional*. The unique identifier for the variable.
---- @field inGameOnly boolean? *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
---- @field numbersOnly boolean? *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
---- @field restartRequired boolean? *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
---- @field restartRequiredMessage string? *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
---- @field converter nil|fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- @field id? string *Optional*. The unique identifier for the variable.
+--- @field inGameOnly? boolean *Default*: `false`. If true, the setting containing this variable will be disabled if the game is on main menu.
+--- @field numbersOnly? boolean *Default*: `false`. If true, only numbers will be allowed for this variable in TextFields.
+--- @field restartRequired? boolean *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- @field restartRequiredMessage? string *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- @field converter? fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 
 --- Changes the value stored in the variable. Calls the `converter` function with the new value before saving.
 --- @param newValue unknown No description yet available.

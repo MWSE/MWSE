@@ -19,16 +19,18 @@ namespace mwse::lua {
 	class ThreadedStateHandle {
 	public:
 		ThreadedStateHandle(LuaManager*);
+		~ThreadedStateHandle();
+
+		sol::state& getState() const;
 
 		// Trigger a thread-safe event.
-		sol::object triggerEvent(event::BaseEvent*);
-
-		sol::state& state;
-
-		std::scoped_lock<std::recursive_mutex> mutexGuard;
+		sol::object triggerEvent(event::BaseEvent*) const;
 
 	private:
 		LuaManager* luaManager;
+
+
+		std::scoped_lock<std::recursive_mutex> mutexGuard;
 	};
 
 	class LuaManager {

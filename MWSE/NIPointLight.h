@@ -14,6 +14,8 @@ namespace NI {
 
 		static Pointer<PointLight> create();
 
+		float getAttenuationAtDistance(float distance) const;
+		float getAttenuationAtPoint(const TES3::Vector3* point) const;
 		void setAttenuationForRadius(unsigned int radius);
 		unsigned int getRadius() const;
 		void setRadius(unsigned int radius);

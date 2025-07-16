@@ -50,6 +50,11 @@ function niAVObject:detachProperty(type) end
 --- @return niAVObject|niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape result No description yet available.
 function niAVObject:getObjectByName(name) end
 
+--- Searches the parent node chain returning the node that matches the argument.
+--- @param name string No description yet available.
+--- @return niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode|nil parentNode No description yet available.
+function niAVObject:getParentByName(name) end
+
 --- Gets an attached property by property type.
 --- @param type ni.propertyType The types are available in [`ni.propertyType`](https://mwse.github.io/MWSE/references/ni/property-types/) table.
 --- @return niAlphaProperty|niFogProperty|niMaterialProperty|niProperty|niStencilProperty|niTexturingProperty|niVertexColorProperty|niZBufferProperty result No description yet available.
@@ -69,20 +74,20 @@ function niAVObject:isFrustumCulled(camera) end
 --- !!! tip
 --- 	It's best to "batch up" calls to this method. For example, when transform of an object its parent and grandparent are all changed during the same frame, it is much more efficient to call this method only on the grandparent object after all transforms have been changed. Also, consider calling this function as low as possible on a scene graph.
 --- 
---- @param args niAVObject.propagatePositionChange.args? This table accepts the following values:
+--- @param args? niAVObject.propagatePositionChange.args This table accepts the following values:
 --- 
---- `time`: number? — *Default*: `0`. This parameter is the time-slice for transformation and bounds updates
+--- `time?`: number — *Default*: `0`. This parameter is the time-slice for transformation and bounds updates
 --- 
---- `controllers`: boolean? — *Default*: `false`. Update object's controllers?
+--- `controllers?`: boolean — *Default*: `false`. Update object's controllers?
 --- 
---- `bounds`: boolean? — *Default*: `true`. Update object's bounds?
+--- `bounds?`: boolean — *Default*: `true`. Update object's bounds?
 function niAVObject:propagatePositionChange(args) end
 
 ---Table parameter definitions for `niAVObject.propagatePositionChange`.
 --- @class niAVObject.propagatePositionChange.args
---- @field time number? *Default*: `0`. This parameter is the time-slice for transformation and bounds updates
---- @field controllers boolean? *Default*: `false`. Update object's controllers?
---- @field bounds boolean? *Default*: `true`. Update object's bounds?
+--- @field time? number *Default*: `0`. This parameter is the time-slice for transformation and bounds updates
+--- @field controllers? boolean *Default*: `false`. Update object's controllers?
+--- @field bounds? boolean *Default*: `true`. Update object's bounds?
 
 --- Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 --- @param state boolean No description yet available.
@@ -94,20 +99,20 @@ function niAVObject:setFlag(state, index) end
 --- !!! tip	"Update Efficiency"
 --- 	It's best to "batch up" calls to this method. For example, when transform of an object its parent and grandparent are all changed during the same frame, it is much more efficient to call this method only on the grandparent object after all transforms have been changed. Also, consider calling this function as low as possible on a scene graph.
 --- 
---- @param args niAVObject.update.args? This table accepts the following values:
+--- @param args? niAVObject.update.args This table accepts the following values:
 --- 
---- `time`: number? — *Default*: `0`. This parameter is passed to controllers. Only needed if controllers are being updated.
+--- `time?`: number — *Default*: `0`. This parameter is passed to controllers. Only needed if controllers are being updated.
 --- 
---- `controllers`: boolean? — *Default*: `false`. Update controllers before updating transforms.
+--- `controllers?`: boolean — *Default*: `false`. Update controllers before updating transforms.
 --- 
---- `children`: boolean? — *Default*: `true`. Recursively updates the children of this node.
+--- `children?`: boolean — *Default*: `true`. Recursively updates the children of this node.
 function niAVObject:update(args) end
 
 ---Table parameter definitions for `niAVObject.update`.
 --- @class niAVObject.update.args
---- @field time number? *Default*: `0`. This parameter is passed to controllers. Only needed if controllers are being updated.
---- @field controllers boolean? *Default*: `false`. Update controllers before updating transforms.
---- @field children boolean? *Default*: `true`. Recursively updates the children of this node.
+--- @field time? number *Default*: `0`. This parameter is passed to controllers. Only needed if controllers are being updated.
+--- @field controllers? boolean *Default*: `false`. Update controllers before updating transforms.
+--- @field children? boolean *Default*: `true`. Recursively updates the children of this node.
 
 --- Update all attached effects. This method must be called at or above any object when dynamic effects are attached or detached from it
 function niAVObject:updateEffects() end

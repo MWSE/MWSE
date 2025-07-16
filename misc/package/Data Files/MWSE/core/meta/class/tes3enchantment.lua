@@ -17,7 +17,7 @@ tes3enchantment = {}
 --- @deprecated
 --- @param params tes3enchantment.create.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. Must be unique if provided.
+--- `id?`: string — *Optional*. The new object's ID. Must be unique if provided.
 --- 
 --- `castType`: tes3.enchantmentType — The enchantment castType. See [`tes3.enchantmentType`](https://mwse.github.io/MWSE/references/enchantment-types/) constants.
 --- 
@@ -25,37 +25,37 @@ tes3enchantment = {}
 --- 
 --- `maxCharge`: number — The new enchantment maximum charge. Must be greater than `0`
 --- 
---- `flags`: number? — *Optional*. The new enchantment flags.
+--- `flags?`: number — *Optional*. The new enchantment flags.
 --- 
---- `objectFlags`: number? — *Default*: `0`. The object flags initially set. Force set as modified.
+--- `objectFlags?`: number — *Default*: `0`. The object flags initially set. Force set as modified.
 --- @return tes3enchantment newObject No description yet available.
 function tes3enchantment.create(params) end
 
 ---Table parameter definitions for `tes3enchantment.create`.
 --- @class tes3enchantment.create.params
---- @field id string? *Optional*. The new object's ID. Must be unique if provided.
+--- @field id? string *Optional*. The new object's ID. Must be unique if provided.
 --- @field castType tes3.enchantmentType The enchantment castType. See [`tes3.enchantmentType`](https://mwse.github.io/MWSE/references/enchantment-types/) constants.
 --- @field chargeCost number The new enchantment charge cost. Must be greater than `0`.
 --- @field maxCharge number The new enchantment maximum charge. Must be greater than `0`
---- @field flags number? *Optional*. The new enchantment flags.
---- @field objectFlags number? *Default*: `0`. The object flags initially set. Force set as modified.
+--- @field flags? number *Optional*. The new enchantment flags.
+--- @field objectFlags? number *Default*: `0`. The object flags initially set. Force set as modified.
 
 --- Creates a copy of this object.
 --- @param params tes3enchantment.createCopy.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- `id?`: string — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
 --- 
---- `addToObjectList`: boolean? — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- `addToObjectList?`: boolean — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
 --- 
---- `sourceless`: boolean? — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- `sourceless?`: boolean — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 --- @return tes3enchantment newObject No description yet available.
 function tes3enchantment:createCopy(params) end
 
 ---Table parameter definitions for `tes3enchantment.createCopy`.
 --- @class tes3enchantment.createCopy.params
---- @field id string? *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
---- @field addToObjectList boolean? *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
---- @field sourceless boolean? *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- @field id? string *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- @field addToObjectList? boolean *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- @field sourceless? boolean *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 
 --- Returns the amount of effects the `tes3enchantment` object has.
 --- @return number count No description yet available.

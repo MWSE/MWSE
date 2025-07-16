@@ -74,7 +74,7 @@ namespace TES3 {
 	void Reference::activate(Reference* activator, int unknown) {
 		// If our event data says to block, don't let the object activate.
 		if (mwse::lua::event::ActivateEvent::getEventEnabled() && !isTemporaryInventoryScriptReference()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::ActivateEvent(activator, this));
 			if (response.get_type() == sol::type::table) {
 				sol::table eventData = response;
@@ -249,7 +249,7 @@ namespace TES3 {
 
 		auto actor = getAttachedMobileActor();
 		if (actor && mwse::lua::event::BodyPartsUpdatedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::BodyPartsUpdatedEvent(this, actor));
 			if (eventData.valid()) {
 				if (eventData.get_or("updated", false)) {
@@ -809,7 +809,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::DisarmTrapEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::DisarmTrapEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && lockData->trap));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -869,7 +869,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::PickLockEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::PickLockEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && (lockData->lockLevel > 0)));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -1008,9 +1008,9 @@ namespace TES3 {
 
 		switch (baseObject->objectType) {
 		case ObjectType::Creature:
-			return static_cast<Creature*>(getBaseObject())->health <= 1;
+			return static_cast<const Creature*>(getBaseObject())->health <= 1;
 		case ObjectType::NPC:
-			return static_cast<NPC*>(getBaseObject())->health <= 1;
+			return static_cast<const NPC*>(getBaseObject())->health <= 1;
 		}
 
 		return {};

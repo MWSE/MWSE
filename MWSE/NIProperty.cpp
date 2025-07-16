@@ -439,8 +439,8 @@ namespace NI {
 
 	VertexColorProperty::VertexColorProperty() {
 		vTable.asProperty = (Property_vTable*)0x7464F8;
-		source = 0;
-		lighting = 1;
+		source = SOURCE_IGNORE;
+		lighting = LIGHTING_E_A_D;
 	}
 
 	VertexColorProperty::~VertexColorProperty() {

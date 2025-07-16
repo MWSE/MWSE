@@ -11,8 +11,8 @@
 
 namespace mwse::lua {
 	sol::object ScriptContext::index(std::string key) {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		TES3::ScriptVariables* vars = getScriptVariables();
 
@@ -113,8 +113,8 @@ namespace mwse::lua {
 
 	void bindTES3Script() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for ScriptContext.
 		{

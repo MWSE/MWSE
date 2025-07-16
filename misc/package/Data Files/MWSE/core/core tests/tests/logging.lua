@@ -76,7 +76,7 @@ testSuite:test("Test logger:setOutputFile", function()
 	testSuite:expect(log.outputFile).toBe(nil)
 	testSuite:spy(io, "open")
 
-	local newOutputFile = "test.log"
+	local newOutputFile = "Data Files/MWSE/logs/test.log"
 	log:setOutputFile(newOutputFile)
 	testSuite:expect(type(log.outputFile)).toBe("userdata")
 	testSuite:expect(io.open).toBeCalled()
@@ -87,19 +87,62 @@ testSuite:test("Test logger:setOutputFile", function()
 	testSuite:expect(log.outputFile).toBe(nil)
 end)
 
+
 --- @param logLevel mwseLoggerLogLevel
 --- @param color string
---- @param message string
 --- @param ... any?
-local function defaultFormatter(logLevel, color, message, ...)
-	local output = string.format("[%s: %s] %s", log.name, logLevel, tostring(message):format(...))
+local function defaultFormatter(logLevel, color, ...)
+	local fmtArgs = {}
+	
+	local i, n = 1, select("#", ...)
+	--[[Format each of the arguments.
+		- Functions: will be called using the appropriate number of arguments.
+			- E.g., if `f` is defined to accept exactly two arguments, then
+			`log:debug(msg, f, a, b, c)` will reduce to `log:debug(msg, f(a,b), c)`,
+			with `f(a,b)` being computed ONLY if the logging level is appropriate.
+		- Tables: will be passed to `json.encode`, unless they have a `tostring` metamethod.
+		- Everything else: will be sent to `tostring`.
+	]]
+	while i <= n do
+		local a = select(i, ...)
+		local aType = type(a)
+		if aType == "function" then
+			local s = i + 1
+			local rets = (s <= n) and {a(select(s, ...))} or {a()}
+			--- NOTE: return values are NOT pretty printed
+			for _, v in ipairs(rets) do
+				table.insert(fmtArgs, v)
+			end
 
-	if mwse.getConfig("EnableLogColors") then
-		output = ansicolors(string.format("%%{%s}%s", color, output))
+			local info = debug.getinfo(a, "u")
+			if info.isvararg then break end
+			i = i + info.nparams
+		elseif type(a) == "table" or type(a) == "userdata" then
+			table.insert(fmtArgs, inspect(a, INSPECT_PARAMS))
+		else
+			table.insert(fmtArgs, tostring(a))
+		end
+		i = i + 1
+	end
+	-- Create the return string.
+	local str
+	-- Only call `string.format` if there's more than one argument.
+	-- This helps to avoid errors caused by users writing strings that they don't
+	-- expect will be formatted. 
+	-- e.g., `log:debug("progress: 50%")`
+	if #fmtArgs > 1 then
+		str = string.format(table.unpack(fmtArgs))
+	else
+		str = fmtArgs[1]
 	end
 
-	return output
+	local header
+	if  mwse.getConfig("EnableLogColors") then
+		logLevel = ansicolors(string.format("%%{%s}%s", color, logLevel))
+	end
+	return string.format("[%s | %s | %s] %s", log.name, log.filePath, logLevel, str)
 end
+
 
 testSuite:test("Test logging", function()
 	local buffer = ""
@@ -133,7 +176,7 @@ testSuite:test("Test logging", function()
 	end)
 
 	testSuite:test("Test logger.logToConsole", function()
-		testSuite:expect(log.logToConsole).toBe(nil)
+		testSuite:expect(log.logToConsole).toBe(false)
 		log.logToConsole = true
 		testSuite:expect(log.logToConsole).toBe(true)
 		args = { "INFO", "white", "Apples %s", "Oranges" }
@@ -148,7 +191,7 @@ testSuite:test("Test logging", function()
 	end)
 
 	testSuite:test("Test logger.includeTimestamp", function()
-		testSuite:expect(log.includeTimestamp).toBe(nil)
+		testSuite:expect(log.includeTimestamp).toBe(false)
 		log.includeTimestamp = true
 		testSuite:expect(log.includeTimestamp).toBe(true)
 
@@ -199,6 +242,6 @@ testSuite:failTest("Test logger:assert", function()
 	log:assert(false, "Assert failed.")
 	testSuite:expect(log.error).toBeCalled()
 	testSuite:unspy(log, "error")
-end, "Assert failed.")
+end, defaultFormatter("ERROR", "bright red", "Assert failed."))
 
 testSuite:finish()

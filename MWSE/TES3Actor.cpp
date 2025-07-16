@@ -25,7 +25,7 @@ namespace TES3 {
 	const auto TES3_Actor_getEquippedItemExact = reinterpret_cast<EquipmentStack* (__thiscall*)(Actor*, Object*, ItemData*)>(0x496D90);
 	const auto TES3_Actor_getEquippedWeapon = reinterpret_cast<EquipmentStack* (__thiscall*)(Actor*)>(0x496EB0);
 
-	Actor * Actor::getBaseActor() {
+	Actor * Actor::getBaseActor() const {
 		return vTable.actor->getBaseActor(this);
 	}
 

@@ -37,29 +37,6 @@ namespace TES3 {
 	Cell* DataHandler::previousVisitedCell = nullptr;
 	bool DataHandler::dontThreadLoad = false;
 	bool DataHandler::suppressThreadLoad = false;
-	std::unordered_map<DWORD, std::string_view> DataHandler::currentlyLoadingMeshes = {};
-	std::recursive_mutex DataHandler::currentlyLoadingMeshesMutex = {};
-
-	std::string_view pushLoadingMesh(const std::string_view path) {
-		const auto threadId = GetCurrentThreadId();
-
-		DataHandler::currentlyLoadingMeshesMutex.lock();
-
-		std::string_view previousMesh;
-		const auto existing = DataHandler::currentlyLoadingMeshes.find(threadId);
-		if (existing != DataHandler::currentlyLoadingMeshes.end()) {
-			previousMesh = existing->second;
-			DataHandler::currentlyLoadingMeshes.erase(existing);
-		}
-
-		if (!path.empty()) {
-			DataHandler::currentlyLoadingMeshes[threadId] = path;
-		}
-
-		DataHandler::currentlyLoadingMeshesMutex.unlock();
-
-		return previousMesh;
-	}
 
 	//
 	// MeshData
@@ -77,9 +54,6 @@ namespace TES3 {
 			}
 		}
 
-		// Store the loading path for debugging purposes.
-		auto previouslyLoadingMesh = pushLoadingMesh(meshPath);
-
 		// Check the loaded NIF count to see if anything new was loaded.
 		auto countBefore = NIFs->count;
 
@@ -90,9 +64,6 @@ namespace TES3 {
 		if (mesh && NIFs->count > countBefore && mwse::lua::event::MeshLoadedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MeshLoadedEvent(meshPath.c_str(), mesh));
 		}
-
-		// Clean up debug information.
-		pushLoadingMesh(previouslyLoadingMesh);
 
 		return mesh;
 	}
@@ -125,9 +96,6 @@ namespace TES3 {
 			}
 		}
 
-		// Store the loading path for debugging purposes.
-		auto previouslyLoadingMesh = pushLoadingMesh(meshPath);
-
 		// Actually load the mesh.
 		auto mesh = LoadTempMeshNode(meshPath.c_str()).mesh;
 
@@ -135,9 +103,6 @@ namespace TES3 {
 		if (mesh && mwse::lua::event::MeshLoadedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MeshLoadedEvent(meshPath.c_str(), mesh));
 		}
-
-		// Clean up debug information.
-		pushLoadingMesh(previouslyLoadingMesh);
 
 		return mesh;
 	}
@@ -205,7 +170,7 @@ namespace TES3 {
 		// Execute event. If the event blocked the call, bail.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::SaveGameEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SaveGameEvent(saveName, fileName));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return true;
@@ -237,7 +202,7 @@ namespace TES3 {
 		std::string eventFileName = fileName ? fileName : "";
 
 		if (mwse::lua::event::LoadGameEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::LoadGameEvent(fileName));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return LoadGameResult::Block;
@@ -293,7 +258,7 @@ namespace TES3 {
 		std::string eventFileName = fileName ? fileName : "";
 
 		if (mwse::lua::event::LoadGameEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::LoadGameEvent(fileName));
 			if (eventData.valid() && eventData.get_or("block", false)) {
 				return LoadGameResult::Block;
@@ -537,7 +502,7 @@ namespace TES3 {
 
 		if (mwse::lua::event::AddSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::AddSoundEvent(sound, reference, playbackFlags, volume, pitch, isVoiceover));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -565,7 +530,7 @@ namespace TES3 {
 	void DataHandler::addTemporarySound(const char* path, Reference* reference, int playbackFlags, int volume, float pitch, bool isVoiceover, Sound* sound) {
 		if (mwse::lua::event::AddTempSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::AddTempSoundEvent(path, reference, playbackFlags, volume, pitch, isVoiceover, sound));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -656,6 +621,12 @@ namespace TES3 {
 	const auto TES3_DataHandler_isCellInMemory  = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Cell*, bool)>(0x484AF0);
 	bool DataHandler::isCellInMemory(const Cell* cell, bool unknown) const {
 		return TES3_DataHandler_isCellInMemory(this, cell, unknown);
+	}
+
+	std::tuple<int, int> DataHandler::getCellBufferSize() const {
+		using gExteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B48>;
+		using gInteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B10>;
+		return { gInteriorCellBufferSize::get(), gExteriorCellBufferSize::get() };
 	}
 
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {

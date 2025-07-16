@@ -4,6 +4,11 @@ local generalEvents = {}
 
 local filteredEvents = {}
 
+--- Translation table used to recover `doOnce` functions.
+--- The keys are the original callbacks, and the values are the new callbacks.
+---@type table<fun(e): boolean, fun(e): boolean>
+local doOnceCallbacks = {}
+
 -- Temporary hack for event priorities.
 local eventPriorities = {}
 
@@ -93,12 +98,17 @@ function this.register(eventType, callback, options)
 	-- If 'doOnce' was set, wrap with a call to unregister.
 	if options.doOnce then
 		local originalCallback = callback
-		callback = function(e)
-			if this.isRegistered(eventType, callback, options) then
-				this.unregister(eventType, callback, options)
+
+		local function newCallback(e)
+			-- `isRegistered` and `unregister` will also convert the callback.
+			if this.isRegistered(eventType, originalCallback, options) then
+				this.unregister(eventType, originalCallback, options)
 			end
 			originalCallback(e)
 		end
+
+		doOnceCallbacks[originalCallback] = newCallback
+		callback = newCallback
 	end
 
 	-- If 'unregisterOnLoad' was set, unregister the callback on next load event.
@@ -144,6 +154,12 @@ function this.unregister(eventType, callback, options)
 		return error("event.unregister: Event callback must be a valid function.")
 	end
 
+	-- Handle the special case where `doOnce` was used.
+	if doOnceCallbacks[callback] then
+		callback = doOnceCallbacks[callback] 
+		doOnceCallbacks[callback] = nil -- Won't be needing this anymore.
+	end
+
 	-- Make sure options is an empty table if nothing else.
 	local options = options or {}
 
@@ -172,6 +188,11 @@ function this.isRegistered(eventType, callback, options)
 	-- Validate callback.
 	if (type(callback) ~= "function") then
 		return error("event.isRegistered: Event callback must be a valid function.")
+	end
+
+	-- Handle the special case where `doOnce` was used.
+	if doOnceCallbacks[callback] then
+		callback = doOnceCallbacks[callback] 
 	end
 
 	-- Make sure options is an empty table if nothing else.
@@ -268,9 +289,11 @@ function errorNotifier.clearMsg()
 	local menu = tes3ui.findMenu("MWSE:ErrorNotify")
 	if menu then
 		local list = menu:findChild("MWSE:ErrorNotify_Listing")
-		for i = 1, errorNotifier.visible_error_limit do
-			list.children[i].text = ""
-			list.children[i].visible = false
+		if (list) then
+			for i = 1, errorNotifier.visible_error_limit do
+				list.children[i].text = ""
+				list.children[i].visible = false
+			end
 		end
 
 		menu.visible = false
@@ -285,12 +308,14 @@ function errorNotifier.updateMenu()
 	end
 
 	local list = menu:findChild("MWSE:ErrorNotify_Listing")
-	for i, display in ipairs(errorNotifier.displayed) do
-		list.children[i].text = display.msg
-		list.children[i].visible = true
+	if (list) then
+		for i, display in ipairs(errorNotifier.displayed) do
+			list.children[i].text = display.msg
+			list.children[i].visible = true
 
-		if i >= errorNotifier.visible_error_limit then
-			break
+			if i >= errorNotifier.visible_error_limit then
+				break
+			end
 		end
 	end
 

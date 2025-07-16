@@ -21,8 +21,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table MagicSelectionChangedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto eventData = stateHandle.state.create_table();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto eventData = stateHandle.getState().create_table();
 
 		if (isSpell) {
 			eventData["source"] = m_Spell;

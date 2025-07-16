@@ -27,7 +27,7 @@ namespace TES3 {
 
 		// Add event replacing/adding body parts for an item.
 		if (mwse::lua::event::UpdateBodyPartsForItemEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::UpdateBodyPartsForItemEvent(this, bodyPartManager, isFemale, isFirstPerson));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;

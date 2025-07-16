@@ -120,6 +120,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("enableLogLineNumbers.label"),
+					description = i18n("enableLogLineNumbers.description"),
+					variable = {
+						id = "EnableLogLineNumbers",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("enableDependencyChecks.label"),
 					description = i18n("enableDependencyChecks.description"),
 					variable = {

@@ -39,7 +39,7 @@ namespace TES3 {
 	void CombatSession::determineNextAction() {
 		auto& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::DetermineActionEvent::getEventEnabled()) {
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::DetermineActionEvent(this));
 			if (result.valid() && result.get_or("block", false)) {
 				if (mwse::lua::event::DeterminedActionEvent::getEventEnabled()) {
@@ -74,7 +74,7 @@ namespace TES3 {
 		CombatSessionVanilla::dtor(self);
 
 		if (self->luaData) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			delete self->luaData;
 			self->luaData = nullptr;
 		}

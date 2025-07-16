@@ -19,49 +19,49 @@ tes3misc = {}
 --- @deprecated
 --- @param params tes3misc.create.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. Must be unique if provided.
+--- `id?`: string — *Optional*. The new object's ID. Must be unique if provided.
 --- 
---- `name`: string? — *Default*: `Miscellaneous item`. The new object's name.
+--- `name?`: string — *Default*: `Miscellaneous item`. The new object's name.
 --- 
---- `script`: tes3script? — *Optional*. A script to attach to the object.
+--- `script?`: tes3script — *Optional*. A script to attach to the object.
 --- 
---- `mesh`: string? — *Default*: ``. The mesh to use for the object.
+--- `mesh?`: string — *Default*: ``. The mesh to use for the object.
 --- 
---- `objectFlags`: number? — *Default*: `0`. The object flags initially set. Force set as modified.
+--- `objectFlags?`: number — *Default*: `0`. The object flags initially set. Force set as modified.
 --- 
---- `weight `: tes3script? — *Default*: `0`. The weight of the object.
+--- `weight ?`: tes3script — *Default*: `0`. The weight of the object.
 --- 
---- `value `: string? — *Default*: `0`. The value of the object.
+--- `value ?`: string — *Default*: `0`. The value of the object.
 --- 
---- `flags `: number? — *Default*: `0`. The object flags initially set.
+--- `flags ?`: number — *Default*: `0`. The object flags initially set.
 --- @return tes3misc newObject No description yet available.
 function tes3misc.create(params) end
 
 ---Table parameter definitions for `tes3misc.create`.
 --- @class tes3misc.create.params
---- @field id string? *Optional*. The new object's ID. Must be unique if provided.
---- @field name string? *Default*: `Miscellaneous item`. The new object's name.
---- @field script tes3script? *Optional*. A script to attach to the object.
---- @field mesh string? *Default*: ``. The mesh to use for the object.
---- @field objectFlags number? *Default*: `0`. The object flags initially set. Force set as modified.
---- @field weight  tes3script? *Default*: `0`. The weight of the object.
---- @field value  string? *Default*: `0`. The value of the object.
---- @field flags  number? *Default*: `0`. The object flags initially set.
+--- @field id? string *Optional*. The new object's ID. Must be unique if provided.
+--- @field name? string *Default*: `Miscellaneous item`. The new object's name.
+--- @field script? tes3script *Optional*. A script to attach to the object.
+--- @field mesh? string *Default*: ``. The mesh to use for the object.
+--- @field objectFlags? number *Default*: `0`. The object flags initially set. Force set as modified.
+--- @field weight ? tes3script *Default*: `0`. The weight of the object.
+--- @field value ? string *Default*: `0`. The value of the object.
+--- @field flags ? number *Default*: `0`. The object flags initially set.
 
 --- Creates a copy of this object.
 --- @param params tes3misc.createCopy.params This table accepts the following values:
 --- 
---- `id`: string? — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- `id?`: string — *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
 --- 
---- `addToObjectList`: boolean? — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- `addToObjectList?`: boolean — *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
 --- 
---- `sourceless`: boolean? — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- `sourceless?`: boolean — *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 --- @return tes3misc newObject No description yet available.
 function tes3misc:createCopy(params) end
 
 ---Table parameter definitions for `tes3misc.createCopy`.
 --- @class tes3misc.createCopy.params
---- @field id string? *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
---- @field addToObjectList boolean? *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
---- @field sourceless boolean? *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
+--- @field id? string *Optional*. The new object's ID. If one is not provided, a randomly generated one will be used.
+--- @field addToObjectList? boolean *Default*: `true`. If true, the object will be added to the data handler. If this is false, the new object may not have a randomly generated ID. Do not use this without knowing the implications.
+--- @field sourceless? boolean *Default*: `false`. If true, the object will be made sourceless, and will not be serialized to the save game. If the object is copied outside of a save game, the object will **always** be sourceless.
 

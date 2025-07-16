@@ -5,6 +5,6 @@
 
 --- Layout for the tooltip table passed to `tes3ui.showMessageMenu` function.
 --- @class tes3ui.showMessageMenu.params.tooltip
---- @field callback fun(params: tes3ui.showMessageMenu.params.tooltip.callbackData) A function to call when the tooltip has been created. Passes context information. Can be used to make further adjustments to the tooltip.
---- @field header string|fun(callbackParams: table): string|nil The header at the top of the tooltip. Can also be a function that returns a string.
---- @field text string|fun(callbackParams: table): string|nil The text in the body of the tooltip. Can also be a function that returns a string.
+--- @field callback nil|fun(params: tes3ui.showMessageMenu.params.tooltip.callbackData) A function to call when the tooltip has been created. Passes context information. Can be used to make further adjustments to the tooltip.
+--- @field header nil|string|fun(callbackParams: table): string|nil The header at the top of the tooltip. Can also be a function that returns a string.
+--- @field text nil|string|fun(callbackParams: table): string|nil The text in the body of the tooltip. Can also be a function that returns a string.

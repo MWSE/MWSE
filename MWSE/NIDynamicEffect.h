@@ -15,8 +15,8 @@ namespace NI {
 		};
 
 		bool enabled; // 0x90
-		int index; // 0x94
-		int unknown_0x98;
+		unsigned int index; // 0x94
+		unsigned int pushCount; // 0x98
 		unsigned int revisionId; // 0x9C
 		NodeLinkedList affectedNodes; // 0xA0
 

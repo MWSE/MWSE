@@ -9,7 +9,7 @@
 The timer library provides helper functions for creating delayed executors.
 
 !!! warning "Timers get canceled when loading saves."
-	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
+	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers. Consider using a [persistent timer](https://mwse.github.io/MWSE/apis/timer/#timerregister) if you need it to persist between game sessions.
 
 
 ## Properties
@@ -177,7 +177,7 @@ timer.register(name, fn)
 Creates a timer.
 !!! warning "Timers get canceled when loading saves."
 	All active timers will be canceled right before the [`loaded`](../events/loaded.md) event triggers.
-	
+
 !!! tip
 	It's recommended to study the [Object Lifetimes](../guides/object-lifetimes.md) guide. It describes how to safely use [tes3reference](../types/tes3reference.md) objects inside timer callbacks.
 
@@ -193,7 +193,7 @@ local timer = timer.start({ type = ..., duration = ..., callback = ..., iteratio
 	* `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md)), string): The callback function that will execute when the timer expires. If starting a registered timer, this needs to be the `name` string passed to `timer.register`.
 	* `iterations` (integer): *Default*: `1`. The number of iterations to run. Use `-1` for infinite looping.
 	* `persist` (boolean): *Default*: `true`. Registering a timer with persist flag set to `true` will serialize the callback string in the save to persist between sessions. Only a registered timer will persist between sessions. See `timer.register()`.
-	* `data` (table, nil): *Default*: `nil`. Data to be attached to the timer. If this is a persistent timer, the data must be json-serializable, matching the same limitations as data stored on references.
+	* `data` (table): *Optional*. Data to be attached to the timer. If this is a persistent timer, the data must be json-serializable, matching the same limitations as data stored on references.
 
 **Returns**:
 

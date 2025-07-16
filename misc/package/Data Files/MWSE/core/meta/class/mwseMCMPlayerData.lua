@@ -20,13 +20,13 @@ mwseMCMPlayerData = {}
 --- 
 --- `path`: string — Path to `id` relative to `tes3.player.data`. The subtable keys need to be split by dots. It's best to at least store all your mwseMCMPlayerData fields in a table named after your mod to avoid conflicts.
 --- 
---- `defaultSetting`: unknown? — *Optional*. If `id` does not exist in the `tes3.player.data` field, it will be initialized to this value. It's best to initialize this yourself though, as this will not create the value until you've entered the MCM.
+--- `defaultSetting?`: unknown — *Optional*. If `id` does not exist in the `tes3.player.data` field, it will be initialized to this value. It's best to initialize this yourself though, as this will not create the value until you've entered the MCM.
 --- 
---- `restartRequired`: boolean? — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- `restartRequired?`: boolean — *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
 --- 
---- `restartRequiredMessage`: string? — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- `restartRequiredMessage?`: string — *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
 --- 
---- `converter`: nil|fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- `converter?`: fun(newValue): unknown — *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 --- @return mwseMCMPlayerData variable No description yet available.
 function mwseMCMPlayerData:new(variable) end
 
@@ -34,8 +34,8 @@ function mwseMCMPlayerData:new(variable) end
 --- @class mwseMCMPlayerData.new.variable
 --- @field id string Key of entry used on the `tes3.player.data` table.
 --- @field path string Path to `id` relative to `tes3.player.data`. The subtable keys need to be split by dots. It's best to at least store all your mwseMCMPlayerData fields in a table named after your mod to avoid conflicts.
---- @field defaultSetting unknown? *Optional*. If `id` does not exist in the `tes3.player.data` field, it will be initialized to this value. It's best to initialize this yourself though, as this will not create the value until you've entered the MCM.
---- @field restartRequired boolean? *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
---- @field restartRequiredMessage string? *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
---- @field converter nil|fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
+--- @field defaultSetting? unknown *Optional*. If `id` does not exist in the `tes3.player.data` field, it will be initialized to this value. It's best to initialize this yourself though, as this will not create the value until you've entered the MCM.
+--- @field restartRequired? boolean *Default*: `false`. If true, updating the setting containing this variable will notify the player to restart the game.
+--- @field restartRequiredMessage? string *Optional*.  The default text is a localized version of: "The game must be restarted before this change will come into effect.".
+--- @field converter? fun(newValue): unknown *Optional*. This function is called when the value of the variable is changed. The function can modify the new value before it is saved.
 

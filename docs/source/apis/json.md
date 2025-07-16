@@ -51,7 +51,7 @@ local result = json.decode(s, position, nullValue)
 
 * `s` (string)
 * `position` (number): *Default*: `1`.
-* `nullValue` (string, nil): *Default*: `nil`.
+* `nullValue` (string): *Optional*.
 
 **Returns**:
 

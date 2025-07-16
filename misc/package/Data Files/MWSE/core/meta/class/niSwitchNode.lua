@@ -14,3 +14,8 @@ niSwitchNode = {}
 --- @return niAVObject|niAmbientLight|niAutoNormalParticles|niBSAnimationNode|niBSParticleNode|niBillboardNode|niCamera|niCollisionSwitch|niDirectionalLight|niNode|niParticles|niPointLight|niRotatingParticles|niSortAdjustNode|niSpotLight|niSwitchNode|niTextureEffect|niTriShape result No description yet available.
 function niSwitchNode:getActiveChild() end
 
+--- Searches the `children` array for a node with a name that matches the argument and returns the index of found node. If no node with given name is found returns `-1`.
+--- @param name string No description yet available.
+--- @return integer childIndex No description yet available.
+function niSwitchNode:getChildIndexByName(name) end
+

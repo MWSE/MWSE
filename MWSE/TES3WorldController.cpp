@@ -128,7 +128,7 @@ namespace TES3 {
 		}
 
 		// Log to console.
-		if (worldController->menuController->gameplayFlags & TES3::UI::MenuControllerGameplayFlags::KillStats) {
+		if (worldController->menuController->getShowKillStats()) {
 			std::stringstream ss;
 			ss << actor->getObjectID() << " killed, total kills " << totalKills << ", werewolf kills " << werewolfKills << ".";
 			UI::logToConsole(ss.str().c_str());
@@ -178,7 +178,7 @@ namespace TES3 {
 		}
 
 		// Log to console.
-		if (worldController->menuController->gameplayFlags & TES3::UI::MenuControllerGameplayFlags::KillStats) {
+		if (worldController->menuController->getShowKillStats()) {
 			std::stringstream ss;
 			ss << actor->getObjectID() << " killed, total kills " << totalKills << ", werewolf kills " << werewolfKills << ".";
 			UI::logToConsole(ss.str().c_str());
@@ -473,7 +473,7 @@ namespace TES3 {
 		// Allow event overrides.
 		if (mwse::lua::event::PlayItemSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::PlayItemSoundEvent(item, static_cast<int>(state), reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -502,7 +502,7 @@ namespace TES3 {
 		// Allow event overrides.
 		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -528,7 +528,7 @@ namespace TES3 {
 		// Allow event overrides.
 		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -644,7 +644,7 @@ namespace TES3 {
 	bool WorldController::selectNextMusicTrack(MusicSituation situation) const {
 		// Fire off the event.
 		if (mwse::lua::event::MusicSelectTrackEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::MusicSelectTrackEvent((int)situation));
 			if (eventData.valid()) {
 				sol::optional<std::string> musicPath = eventData["music"];
@@ -684,7 +684,7 @@ namespace TES3 {
 		// Run post-simulate event before updating game time.
 		if (mwse::lua::event::SimulatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::SimulatedEvent());
 		}
 

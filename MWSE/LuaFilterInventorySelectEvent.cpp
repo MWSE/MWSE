@@ -17,8 +17,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table FilterInventorySelectEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["item"] = m_Item;
@@ -29,8 +29,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object FilterInventorySelectEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 		options["filter"] = m_Type;
 		return options;

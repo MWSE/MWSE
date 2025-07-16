@@ -23,4 +23,9 @@ namespace mwse::math {
 	inline double lerp(double a, double b, double t) {
 		return a + t * (b - a);
 	}
+	
+	template <typename T>
+	inline bool near(T a, T b, T e = std::numeric_limits<T>::epsilon()) {
+		return std::abs(a - b) < e;
+	}
 }
