@@ -30,6 +30,9 @@ namespace TES3 {
 
 		SoundBuffer() = delete;
 		~SoundBuffer() = delete;
+
+		float getFrequency() const;
+		void setFrequency(float frequency);
 	};
 	static_assert(sizeof(SoundBuffer) == 0x58, "TES3::SoundBuffer failed size validation");
 	static_assert(sizeof(DSBUFFERDESC) == 0x24, "DSBUFFERDESC failed size validation");
@@ -88,7 +91,11 @@ namespace TES3 {
 
 		float getVolume();
 		void setVolume(float volume);
-		void adjustPlayingSoundVolume(unsigned char volume);
+		void adjustPlayingSoundVolume(unsigned char volume) const;
+
+		float getFrequency() const;
+		sol::optional<float> getFrequency_lua() const;
+		void setFrequency(float frequency) const;
 
 		std::string toJson() const;
 		bool play_lua(sol::optional<sol::table> params);

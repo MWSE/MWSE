@@ -10,6 +10,41 @@
 #include "LuaManager.h"
 
 namespace TES3 {
+	//
+	// TES3::SoundBuffer
+	//
+
+	float SoundBuffer::getFrequency() const {
+		DWORD frequency = 0;
+		if (lpSoundBuffer->GetFrequency(&frequency) != DS_OK) {
+			return -1.0f;
+		}
+
+		return double(frequency) / double(bufferDescription.lpwfxFormat->nSamplesPerSec);
+	}
+
+	void SoundBuffer::setFrequency(float frequency) {
+		if (frequency < 0.0f) {
+			return;
+		}
+
+		const auto samplesPerSecond = bufferDescription.lpwfxFormat->nSamplesPerSec;
+		if (samplesPerSecond < DSBFREQUENCY_MIN || samplesPerSecond > DSBFREQUENCY_MAX) {
+			return;
+		}
+
+		const unsigned int newFreq = samplesPerSecond * frequency;
+		if (newFreq < DSBFREQUENCY_MIN || newFreq > DSBFREQUENCY_MAX) {
+			return;
+		}
+
+		lpSoundBuffer->SetFrequency(newFreq);
+	}
+
+	//
+	// TES3::Sound
+	//
+
 	Sound::Sound() {
 		ctor();
 	}
@@ -158,7 +193,31 @@ namespace TES3 {
 		this->volume = vol;
 	}
 
-	void Sound::adjustPlayingSoundVolume(unsigned char volume) {
+	float Sound::getFrequency() const {
+		if (soundBuffer == nullptr) {
+			return 0.0f;
+		}
+
+		return soundBuffer->getFrequency();
+	}
+
+	sol::optional<float> Sound::getFrequency_lua() const {
+		if (soundBuffer == nullptr) {
+			return {};
+		}
+
+		return soundBuffer->getFrequency();
+	}
+
+	void Sound::setFrequency(float frequency) const {
+		if (soundBuffer == nullptr) {
+			return;
+		}
+
+		soundBuffer->setFrequency(frequency);
+	}
+
+	void Sound::adjustPlayingSoundVolume(unsigned char volume) const {
 		if (!(soundBuffer && soundBuffer->lpSoundBuffer)) {
 			return;
 		}
