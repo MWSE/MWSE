@@ -10,6 +10,7 @@ namespace mwse::lua::event {
 	public:
 		AnimationTriggerEvent(TES3::Reference* reference, const std::string& triggerName, const std::string& triggerParam);
 		sol::table createEventTable();
+		sol::object AnimationTriggerEvent::getEventOptions();
 
 	protected:
 		TES3::Reference* m_Reference;

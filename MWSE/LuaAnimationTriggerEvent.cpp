@@ -28,4 +28,12 @@ namespace mwse::lua::event {
 
 		return eventData;
 	}
+
+	sol::object AnimationTriggerEvent::getEventOptions() {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
+		auto options = state.create_table();
+		options["filter"] = m_TriggerName;
+		return options;
+	}
 }
