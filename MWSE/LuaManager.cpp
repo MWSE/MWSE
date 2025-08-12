@@ -2096,28 +2096,8 @@ namespace mwse::lua {
 	// Event: Music, new track
 	//
 
-	bool __fastcall OnSelectMusicTrack(TES3::WorldController* controller, DWORD _UNUSED_, int situation) {
-		// Fire off the event.
-		if (event::MusicSelectTrackEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table eventData = stateHandle.triggerEvent(new event::MusicSelectTrackEvent(situation));
-			if (eventData.valid()) {
-				sol::optional<std::string> musicPath = eventData["music"];
-				if (musicPath) {
-					char* buffer = mwse::tes3::getThreadSafeStringBuffer();
-					snprintf(buffer, 512, "Data Files/music/%s", musicPath.value().c_str());
-					return true;
-				}
-
-				// Only allow blocking if a music path was not provided.
-				if (eventData.get_or("block", false)) {
-					return false;
-				}
-			}
-		}
-
-		// Call original function.
-		return reinterpret_cast<bool(__thiscall*)(TES3::WorldController*, int)>(0x410EA0)(controller, situation);
+	bool __fastcall OnSelectMusicTrack(TES3::WorldController* controller, DWORD _UNUSED_, TES3::MusicSituation situation) {
+		return controller->selectNextMusicTrack(situation);
 	}
 
 	//
