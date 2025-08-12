@@ -1043,6 +1043,7 @@ namespace TES3 {
 		using mwse::genCallUnprotected;
 		using mwse::genNOPUnprotected;
 		using mwse::writeByteUnprotected;
+		using mwse::writeBytesUnprotected;
 		using mwse::writeDoubleWordUnprotected;
 		using mwse::writePatchCodeUnprotected;
 
@@ -1119,7 +1120,7 @@ namespace TES3 {
 		writePatchCodeUnprotected(0x46BAB8, reinterpret_cast<BYTE*>(patchSetSourceKeyFrames1), patchSetSourceKeyFrames1_size);
 		writePatchCodeUnprotected(0x46BAC1, reinterpret_cast<BYTE*>(patchSetSourceKeyFrames2), patchSetSourceKeyFrames2_size);
 
-		writePatchCodeUnprotected(0x46BCF2, patchLinkAnimSequences1, patchLinkAnimSequences1_size);
+		writeBytesUnprotected(0x46BCF2, patchLinkAnimSequences1, patchLinkAnimSequences1_size);
 		writePatchCodeUnprotected(0x46BCFC, reinterpret_cast<BYTE*>(patchLinkAnimSequences2), patchLinkAnimSequences2_size);
 
 		genCallUnprotected(0x46CA17, reinterpret_cast<DWORD>(update_getUpperSequence), 0xA);
