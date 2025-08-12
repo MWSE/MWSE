@@ -6,10 +6,6 @@
 
 #include "NIKeyframeManager.h"
 
-#include <string>
-#include <string_view>
-#include <unordered_map>
-
 #include "Log.h"
 
 namespace TES3 {

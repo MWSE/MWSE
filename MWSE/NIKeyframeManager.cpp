@@ -2,8 +2,6 @@
 
 #include "MemoryUtil.h"
 
-#include <algorithm>
-
 namespace NI {
 	const auto NI_Sequence_dtor = reinterpret_cast<void(__thiscall*)(Sequence*)>(0x70F720);
 	void Sequence::release() {
