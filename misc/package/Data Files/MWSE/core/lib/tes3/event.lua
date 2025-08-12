@@ -5,6 +5,7 @@ return {
 	["activeMagicEffectIconsUpdated"] = "activeMagicEffectIconsUpdated",
 	["addSound"] = "addSound",
 	["addTempSound"] = "addTempSound",
+	["animationTrigger"] = "animationTrigger",
 	["attack"] = "attack",
 	["attackHit"] = "attackHit",
 	["attackStart"] = "attackStart",
