@@ -164,13 +164,12 @@ function Template:createLabel(parentBlock)
 		local title = headerBlock:createLabel({ text = self.label })
 		title.color = tes3ui.getPalette(tes3.palette.headerColor)
 	end
-
 end
 
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
-	
+
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
@@ -186,7 +185,7 @@ function Template:clickTab(thisPage)
 		local totalWidth = 0
 		for _id, page in pairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
-			tab.widget.state =  tes3.uiState.normal
+			tab.widget.state = tes3.uiState.normal
 			totalWidth = totalWidth + tab.width
 		end
 		-- Enable tab for this page
@@ -335,7 +334,8 @@ function Template:createContentsContainer(parentBlock)
 end
 
 function Template:register()
-	local mcm = {}
+	---@type mwse.registerModConfig.package
+	local mcm = { template = self }
 
 	--- @param container tes3uiElement
 	mcm.onCreate = function(container)
@@ -354,10 +354,10 @@ function Template:register()
 end
 
 function Template.__index(tbl, key)
-	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method,
 	-- Make a new `Template.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
-	
+
 	if not key:startswith("create") or mwse.mcm[key] == nil then
 		return getmetatable(tbl)[key]
 	end

@@ -127,7 +127,7 @@ end
 -- called when the MCM itself is closed, or when a different mod is selected
 local function closeCurrentModConfig()
 	if not currentModConfig then return end
-	
+
 	if currentModConfig.onClose then
 		local status, error = pcall(currentModConfig.onClose, modConfigContainer)
 		if (status == false) then
@@ -136,10 +136,10 @@ local function closeCurrentModConfig()
 	end
 	-- Fire the event after `onClose` gets called.
 	local payload = {
-		modName = currentModConfig.name, 
+		modName = currentModConfig.name,
 		isFavorite = isFavorite(currentModConfig.name),
 	}
-	event.trigger(tes3.event.modConfigEntryClosed, payload, {filter = currentModConfig.name})
+	event.trigger(tes3.event.modConfigEntryClosed, payload, { filter = currentModConfig.name })
 end
 
 --- Callback for when a mod name has been clicked in the left pane.
@@ -147,7 +147,7 @@ end
 local function onClickModName(e)
 	-- If we have a current mod, fire its close event.
 	closeCurrentModConfig()
-	
+
 	local modName = e.source.text
 
 	-- Update the current mod package.
@@ -376,7 +376,7 @@ local function onClickModConfigButton()
 		local modListContents = modList:getContentElement()
 
 		for _, package in ipairs(configModsList) do
-			local entryBlock = modListContents:createBlock{id = "ModEntryBlock"}
+			local entryBlock = modListContents:createBlock { id = "ModEntryBlock" }
 			entryBlock.flowDirection = tes3.flowDirection.leftToRight
 			entryBlock.autoHeight = true
 			entryBlock.autoWidth = true
@@ -439,7 +439,11 @@ local function onClickModConfigButton()
 		splash.borderTop = 25
 
 		-- Create a link back to the website.
-		local site = containerPane:createHyperlink({ id = "MWSELink", text = "mwse.github.io/MWSE", url = "https://mwse.github.io/MWSE" })
+		local site = containerPane:createHyperlink({
+			id = "MWSELink",
+			text = "mwse.github.io/MWSE",
+			url = "https://mwse.github.io/MWSE"
+		})
 		site.absolutePosAlignX = 0.5
 
 		-- Create bottom button block.
@@ -542,6 +546,7 @@ event.register("uiActivated", onCreatedMenuOptions, { filter = "MenuOptions" })
 --- @field name string
 --- @field hidden boolean hide it?
 --- @field favorite boolean is this mod a favorite
+--- @field template mwseMCMTemplate? The template for this mod package, if it exists.
 
 --- Define a new function in the mwse namespace that lets mods register for mod config.
 --- @param name string
