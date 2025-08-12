@@ -92,6 +92,7 @@ return {
 	["keybindTested"] = "keybindTested",
 	["keyDown"] = "keyDown",
 	["keyframesLoad"] = "keyframesLoad",
+	["keyframesLoaded"] = "keyframesLoaded",
 	["keyUp"] = "keyUp",
 	["leveledCreaturePicked"] = "leveledCreaturePicked",
 	["leveledItemPicked"] = "leveledItemPicked",
