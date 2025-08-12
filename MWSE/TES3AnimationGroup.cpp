@@ -13,6 +13,8 @@
 #include "Log.h"
 
 namespace TES3 {
+	static constexpr auto DEBUG_ANIM_PARSER = true;
+
 	/// <summary>
 	/// AnimationGroup
 	/// </summary>
@@ -209,7 +211,9 @@ namespace TES3 {
 		// Currently active animations.
 		// Animation notes can overlap multiple anims, but only for action classes 0-2.
 		AnimationGroup* lastAnimGroup = nullptr;
-		mwse::log::getLog() << "[AnimParser] Parsing kf text keys for " << meshPath << std::endl;
+		if constexpr (DEBUG_ANIM_PARSER) {
+			mwse::log::getLog() << "[AnimParser] Parsing kf text keys for " << meshPath << std::endl;
+		}
 
 		for (auto& key : sequence->textKeys->getKeys()) {
 			if (!key.text) {
@@ -307,7 +311,9 @@ namespace TES3 {
 			// Non-vanilla, treat as named animation.
 			isNamedAnim = true;
 			auto itt = kfData->namedGroups.find(lowercaseName);
-			mwse::log::getLog() << "[AnimParser] Named animation: '" << noteKey << "'" << std::endl;
+			if constexpr (DEBUG_ANIM_PARSER) {
+				mwse::log::getLog() << "[AnimParser] Named animation: '" << noteKey << "'" << std::endl;
+			}
 
 			// A behave-as-group-id is required to get the correct action class.
 			if (itt != kfData->namedGroups.end()) {
@@ -318,7 +324,9 @@ namespace TES3 {
 				string asGroup = textAsLowercase(noteValue.substr(8));
 				iterAnimName = mapAnimationNames.find(asGroup);
 				matchedGroupId = (iterAnimName != mapAnimationNames.end()) ? iterAnimName->second : AnimGroupID::Idle9;
-				mwse::log::getLog() << "[AnimParser] '" << lowercaseName << "' AsGroup '" << asGroup << "' = " << int(matchedGroupId) << std::endl;
+				if constexpr (DEBUG_ANIM_PARSER) {
+					mwse::log::getLog() << "[AnimParser] '" << lowercaseName << "' AsGroup '" << asGroup << "' = " << int(matchedGroupId) << std::endl;
+				}
 				{
 					// Clear all active anims.
 					activeAnimGroups.clear();
@@ -519,7 +527,9 @@ namespace TES3 {
 
 		// Create new event data and place it in the soundgen array of active groups.
 		// TODO: This new object leaks a small amount of memory. This needs to be cleaned up, but it may be referenced in multiple anim groups.
-		mwse::log::getLog() << "[AnimParser] LuaEvent name=" << eventName << " param=" << eventParam << std::endl;
+		if constexpr (DEBUG_ANIM_PARSER) {
+			mwse::log::getLog() << "[AnimParser] LuaEvent name=" << eventName << " param=" << eventParam << std::endl;
+		}
 		auto newEvent = new AnimationGroup::LuaEvent();
 		newEvent->id.assign(eventName);
 		newEvent->param.assign(eventParam);
@@ -569,27 +579,35 @@ namespace TES3 {
 		// Compare total anim groups found.
 		int newParseCount = 0;
 		for (const AnimationGroup* agNew = kfData->animationGroups; agNew; agNew = agNew->nextGroup, ++newParseCount) {}
-		mwse::log::getLog() << "[AnimParser] Testing anim=" << meshPath << std::endl;
-		mwse::log::getLog() << "[AnimParser] Group count std=" << standardParseCount << " new=" << newParseCount << std::endl;
+		if constexpr (DEBUG_ANIM_PARSER) {
+			mwse::log::getLog() << "[AnimParser] Testing anim=" << meshPath << std::endl;
+			mwse::log::getLog() << "[AnimParser] Group count std=" << standardParseCount << " new=" << newParseCount << std::endl;
+		}
 
 		const AnimationGroup* agStd = standardParseGroups;
 		for (const AnimationGroup* agNew = kfData->animationGroups; agNew && agStd; agNew = agNew->nextGroup, agStd = agStd->nextGroup) {
-			mwse::log::getLog() << "[AnimParser] Checking group=" << TES3_animGroupNames[int(agNew->groupId)] << std::endl;
+			if constexpr (DEBUG_ANIM_PARSER) {
+				mwse::log::getLog() << "[AnimParser] Checking group=" << TES3_animGroupNames[int(agNew->groupId)] << std::endl;
 
-			// Compare group id.
-			if (agNew->groupId != agStd->groupId) {
-				mwse::log::getLog() << "[AnimParser] TEST FAIL groupId std=" << TES3_animGroupNames[int(agStd->groupId)] << " new=" << TES3_animGroupNames[int(agNew->groupId)] << std::endl;
+				// Compare group id.
+				if (agNew->groupId != agStd->groupId) {
+					mwse::log::getLog() << "[AnimParser] TEST FAIL groupId std=" << TES3_animGroupNames[int(agStd->groupId)] << " new=" << TES3_animGroupNames[int(agNew->groupId)] << std::endl;
+				}
 			}
 
 			// Compare if actions match, using frame numbers. Action timing is a deferred calculation in vanilla.
 			if (agNew->actionCount != agStd->actionCount) {
-				mwse::log::getLog() << "[AnimParser] TEST FAIL actionCount std=" << int(agStd->actionCount) << " new=" << int(agNew->actionCount) << std::endl;
+				if constexpr (DEBUG_ANIM_PARSER) {
+					mwse::log::getLog() << "[AnimParser] TEST FAIL actionCount std=" << int(agStd->actionCount) << " new=" << int(agNew->actionCount) << std::endl;
+				}
 			}
 			else {
 				if (memcmp(agNew->actionFrames, agStd->actionFrames, agStd->actionCount * sizeof(agStd->actionFrames[0])) != 0) {
-					mwse::log::getLog() << "[AnimParser] TEST FAIL actionFrames" << std::endl;
-					for (unsigned int i = 0; i < agStd->actionCount; ++i) {
-						mwse::log::getLog() << "[AnimParser]     act " << i << ": std=" << agStd->actionFrames[i] << " new=" << agNew->actionFrames[i] << std::endl;
+					if constexpr (DEBUG_ANIM_PARSER) {
+						mwse::log::getLog() << "[AnimParser] TEST FAIL actionFrames" << std::endl;
+						for (unsigned int i = 0; i < agStd->actionCount; ++i) {
+							mwse::log::getLog() << "[AnimParser]     act " << i << ": std=" << agStd->actionFrames[i] << " new=" << agNew->actionFrames[i] << std::endl;
+						}
 					}
 				}
 			}
@@ -611,26 +629,30 @@ namespace TES3 {
 					}
 				}
 			}
-			if (newSoundGenCount != stdSoundGenCount) {
-				mwse::log::getLog() << "[AnimParser] TEST FAIL soundGenCount std=" << int(stdSoundGenCount) << " new=" << int(newSoundGenCount) << std::endl;
-			}
-			else {
-				for (unsigned int i = 0; i < stdSoundGenCount; ++i) {
-					auto s1 = &agStd->soundGenKeys[i], s2 = &agNew->soundGenKeys[i];
-					// startTime is a deferred calculation in vanilla.
-					if (s1->startFrame != s2->startFrame
-						|| s1->volume != s2->volume
-						|| s1->pitch != s2->pitch
-						|| s1->sound != s2->sound) {
-						mwse::log::getLog() << "[AnimParser] TEST FAIL soundGenKeys" << std::endl;
-						mwse::log::getLog() << "    sound std " << i << ": frame=" << s1->startFrame << ", timing=" << s1->startTime << ", vol=" << int(s1->volume) << ", pitch=" << s1->pitch << ", sound=" << std::hex << (s1->sound ? s1->sound->id : "(null)") << std::dec << std::endl;
-						mwse::log::getLog() << "    sound new " << i << ": frame=" << s2->startFrame << ", timing=" << s2->startTime << ", vol=" << int(s2->volume) << ", pitch=" << s2->pitch << ", sound=" << std::hex << (s2->sound ? s2->sound->id : "(null)") << std::dec << std::endl;
+			if constexpr (DEBUG_ANIM_PARSER) {
+				if (newSoundGenCount != stdSoundGenCount) {
+					mwse::log::getLog() << "[AnimParser] TEST FAIL soundGenCount std=" << int(stdSoundGenCount) << " new=" << int(newSoundGenCount) << std::endl;
+				}
+				else {
+					for (unsigned int i = 0; i < stdSoundGenCount; ++i) {
+						auto s1 = &agStd->soundGenKeys[i], s2 = &agNew->soundGenKeys[i];
+						// startTime is a deferred calculation in vanilla.
+						if (s1->startFrame != s2->startFrame
+							|| s1->volume != s2->volume
+							|| s1->pitch != s2->pitch
+							|| s1->sound != s2->sound) {
+							mwse::log::getLog() << "[AnimParser] TEST FAIL soundGenKeys" << std::endl;
+							mwse::log::getLog() << "    sound std " << i << ": frame=" << s1->startFrame << ", timing=" << s1->startTime << ", vol=" << int(s1->volume) << ", pitch=" << s1->pitch << ", sound=" << std::hex << (s1->sound ? s1->sound->id : "(null)") << std::dec << std::endl;
+							mwse::log::getLog() << "    sound new " << i << ": frame=" << s2->startFrame << ", timing=" << s2->startTime << ", vol=" << int(s2->volume) << ", pitch=" << s2->pitch << ", sound=" << std::hex << (s2->sound ? s2->sound->id : "(null)") << std::dec << std::endl;
+						}
 					}
 				}
 			}
 		}
 
-		mwse::log::getLog() << "[AnimParser] Testing end anim=" << meshPath << std::endl;
+		if constexpr (DEBUG_ANIM_PARSER) {
+			mwse::log::getLog() << "[AnimParser] Testing end anim=" << meshPath << std::endl;
+		}
 	}
 
 	void TextKeyParser::preCacheMappings() {
