@@ -36,7 +36,7 @@ namespace mwse::lua {
 		usertypeDefinition["animationAttackState"] = &TES3::ActionData::animStateAttack;
 		usertypeDefinition["animGroupBlocking"] = &TES3::ActionData::animGroupBlocking;
 		usertypeDefinition["animGroupCurrentAction"] = &TES3::ActionData::animGroupCurrentAction;
-		usertypeDefinition["animGroupStunEffect"] = &TES3::ActionData::animGroupStunEffect;
+		usertypeDefinition["animGroupNextStun"] = &TES3::ActionData::animGroupNextStun;
 		usertypeDefinition["animSectionCurrentAction"] = &TES3::ActionData::animSectionCurrentAction;
 		usertypeDefinition["attackSwing"] = &TES3::ActionData::attackSwing;
 		usertypeDefinition["attackWasBlocked"] = &TES3::ActionData::attackWasBlocked;

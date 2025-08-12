@@ -17,7 +17,7 @@ namespace mwse::lua::event {
 
 	sol::table AnimationTriggerEvent::createEventTable() {
 		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["reference"] = m_Reference;
