@@ -20,8 +20,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table AddTempSoundEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["path"] = m_Path;
@@ -36,8 +36,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object AddTempSoundEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::table options = stateHandle.state.create_table();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::table options = stateHandle.getState().create_table();
 		options["filter"] = m_Sound;
 		return options;
 	}

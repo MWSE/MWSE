@@ -61,7 +61,7 @@ A core game object used for storing both active and non-dynamic gameplay data.
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (number)
 
 ***
 
@@ -72,7 +72,7 @@ A core game object used for storing both active and non-dynamic gameplay data.
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (number)
 
 ***
 
@@ -256,6 +256,22 @@ An engine flag that controls if there is a fade in/out between cells.
 
 ## Methods
 
+### `getCellBufferSizes`
+<div class="search_terms" style="display: none">getcellbuffersizes, cellbuffersizes</div>
+
+The current cell buffer sizes, as determined by Morrowind.ini.
+
+```lua
+local exteriorBufferSize, interiorBufferSize = myObject:getCellBufferSizes()
+```
+
+**Returns**:
+
+* `exteriorBufferSize` (number)
+* `interiorBufferSize` (number)
+
+***
+
 ### `updateCollisionGroupsForActiveCells`
 <div class="search_terms" style="display: none">updatecollisiongroupsforactivecells, collisiongroupsforactivecells</div>
 
@@ -271,4 +287,15 @@ myObject:updateCollisionGroupsForActiveCells({ force = ..., isResettingData = ..
 	* `force` (boolean): *Default*: `true`.
 	* `isResettingData` (boolean): *Default*: `false`.
 	* `resetCollisionGroups` (boolean): *Default*: `true`.
+
+***
+
+### `updateLightingForExteriorCells`
+<div class="search_terms" style="display: none">updatelightingforexteriorcells, lightingforexteriorcells</div>
+
+Updates dynamic lights that affect exterior terrain and reference in exterior cells.
+
+```lua
+myObject:updateLightingForExteriorCells()
+```
 

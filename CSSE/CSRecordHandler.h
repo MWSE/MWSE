@@ -5,15 +5,14 @@
 #include "NIIteratedList.h"
 #include "NIProperty.h"
 
+#include "CSMagicEffect.h"
+
 #include "StlList.h"
 #include "LinkedObjectsList.h"
 
 namespace se::cs {
 	struct Skill_dummy {
 		BYTE padding[0x30];
-	};
-	struct MagicEffect_dummy {
-		BYTE padding[0x10C];
 	};
 
 	struct RecordHandler {
@@ -50,7 +49,7 @@ namespace se::cs {
 		NI::IteratedList<Birthsign*>* birthsigns; // 0x40
 		NI::IteratedList<BaseObject*>* startScripts; // 0x44
 		Skill_dummy skills[27]; // 0x48
-		MagicEffect_dummy magicEffects[143]; // 0x558
+		MagicEffect magicEffects[143]; // 0x558
 		StlList<Light*>* lights; // 0x9B0C
 		Substructure_9B10 unknown_0x9B10;
 		int unknown_0xA470;
@@ -103,10 +102,13 @@ namespace se::cs {
 		const char* getBaseAnimation(int sex, bool firstPerson = false) const;
 		bool isBaseAnimation(const char* animation) const;
 
+		GameSetting* getGameSettingForAttribute(int id) const;
 		GameSetting* getGameSettingForSkill(int id) const;
 		GameSetting* getGameSettingForEffect(int id) const;
 
-		void getNameForEffect(char* buffer, size_t bufferSize, int effect, int attribute, int skill) const;
+		GlobalVariable* getGlobal(const char* id) const;
+
+		MagicEffect* getMagicEffect(int id);
 
 		GameFile* getAvailableGameFileByIndex(unsigned int index) const;
 	};

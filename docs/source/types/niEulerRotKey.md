@@ -8,7 +8,7 @@
 
 An animation key for euler rotations.
 
-This type inherits the following: [niRotKey](../types/niRotKey.md), [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niRotKey](../types/niRotKey.md), [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `keyOrder`

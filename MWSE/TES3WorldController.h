@@ -184,7 +184,9 @@ namespace TES3 {
 
 		_declspec(dllexport) void clearIcons(int type);
 		_declspec(dllexport) void addInventoryItems(Inventory* inventory, int type);
-		_declspec(dllexport) UI::InventoryTile* findTile(Item* item, ItemData* itemData, int type);
+		void refreshForReference(const Reference* reference, int type);
+		_declspec(dllexport) UI::InventoryTile* findTile(const Item* item) const;
+		_declspec(dllexport) UI::InventoryTile* findTile(Item* item, ItemData* itemData, int type) const;
 		_declspec(dllexport) void mergeTile(UI::InventoryTile* tile);
 
 	};
@@ -471,8 +473,24 @@ namespace TES3 {
 		// Helpful static variables.
 		//
 
+		class ItemUpDownSoundBlocker {
+		public:
+			ItemUpDownSoundBlocker() {
+				previousValue = blockItemUpDownSound;
+			}
+			ItemUpDownSoundBlocker(bool playSound) : ItemUpDownSoundBlocker() {
+				blockItemUpDownSound = playSound;
+			}
+			~ItemUpDownSoundBlocker() {
+				blockItemUpDownSound = previousValue;
+			}
+		private:
+			bool previousValue;
+		};
+
 		static float realDeltaTime;
 		static float simulationTimeScalar;
+		static bool blockItemUpDownSound;
 	};
 	static_assert(sizeof(WorldController) == 0x374, "TES3::WorldController failed size validation");
 	static_assert(offsetof(WorldController, inputController) == 0x4C, "TES3::WorldController failed offset validation");

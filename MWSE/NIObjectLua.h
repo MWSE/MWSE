@@ -50,7 +50,6 @@ namespace mwse::lua {
 		usertypeDefinition["removeAllExtraData"] = &NI::ObjectNET::removeAllExtraData;
 		usertypeDefinition["removeController"] = &NI::ObjectNET::removeController;
 		usertypeDefinition["removeExtraData"] = &NI::ObjectNET::removeExtraData;
-		usertypeDefinition["setFlag"] = &NI::ObjectNET::setFlag;
 	}
 
 	// Speed-optimized binding for NI::AVObject.
@@ -83,9 +82,11 @@ namespace mwse::lua {
 		usertypeDefinition["propagatePositionChange"] = &NI::AVObject::update_lua;
 		usertypeDefinition["updateEffects"] = &NI::AVObject::updateEffects;
 		usertypeDefinition["updateProperties"] = &NI::AVObject::updateProperties;
+		usertypeDefinition["setFlag"] = &NI::AVObject::setFlag;
 
 		// Functions that need their results wrapped.
 		usertypeDefinition["getObjectByName"] = &NI::AVObject::getObjectByName;
+		usertypeDefinition["getParentByName"] = &NI::AVObject::getParentByName;
 		usertypeDefinition["getProperty"] = &NI::AVObject::getProperty;
 		usertypeDefinition["parent"] = sol::readonly_property(&NI::AVObject::parentNode);
 

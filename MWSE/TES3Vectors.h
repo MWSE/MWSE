@@ -35,6 +35,8 @@ namespace TES3 {
 		std::string toJson() const;
 
 		Vector2 copy() const;
+		Vector2 min(const Vector2& other) const;
+		Vector2 max(const Vector2& other) const;
 
 		float length() const;
 		bool normalize();
@@ -42,8 +44,14 @@ namespace TES3 {
 		float distanceChebyshev(const Vector2*) const;
 		float distanceManhattan(const Vector2*) const;
 
-
 		Vector2 normalized() const;
+
+		const static Vector2 UNIT_X;
+		const static Vector2 UNIT_NEG_X;
+		const static Vector2 UNIT_Y;
+		const static Vector2 UNIT_NEG_Y;
+		const static Vector2 ONES;
+		const static Vector2 ZEROES;
 	};
 	static_assert(sizeof(Vector2) == 0x8, "TES3::Vector2 failed size validation");
 
@@ -82,6 +90,9 @@ namespace TES3 {
 		//
 
 		Vector3 copy() const;
+		Vector3 min(const Vector3& other) const;
+		Vector3 max(const Vector3& other) const;
+
 		NI::Color toNiColor() const;
 
 		Vector3 crossProduct(const Vector3*) const;
@@ -95,8 +106,6 @@ namespace TES3 {
 		float distanceManhattan(const Vector3*) const;
 		float distanceXY(const Vector3*) const;
 
-
-
 		float angle(const Vector3*) const;
 		float length() const;
 		void negate();
@@ -104,12 +113,16 @@ namespace TES3 {
 		Vector3 normalized() const;
 		Vector3 interpolate(const Vector3&, const float) const;
 
+		static bool canConvertFrom(sol::table& table);
+
 		const static Vector3 UNIT_X;
 		const static Vector3 UNIT_NEG_X;
 		const static Vector3 UNIT_Y;
 		const static Vector3 UNIT_NEG_Y;
 		const static Vector3 UNIT_Z;
 		const static Vector3 UNIT_NEG_Z;
+		const static Vector3 ONES;
+		const static Vector3 ZEROES;
 
 	};
 	static_assert(sizeof(Vector3) == 0xC, "TES3::Vector3 failed size validation");
@@ -136,6 +149,8 @@ namespace TES3 {
 		std::string toJson() const;
 
 		Vector4 copy() const;
+		Vector4 min(const Vector4& other) const;
+		Vector4 max(const Vector4& other) const;
 
 		float distance(const Vector4*) const;
 		float distanceChebyshev(const Vector4*) const;
@@ -204,7 +219,7 @@ namespace TES3 {
 		std::tuple<Vector3, bool> toEulerZYX_lua() const;
 
 		void fromQuaternion(const NI::Quaternion* q);
-		NI::Quaternion toQuaternion();
+		NI::Quaternion toQuaternion() const;
 
 		Vector3 getForwardVector();
 		Vector3 getRightVector();
@@ -214,6 +229,7 @@ namespace TES3 {
 
 		bool reorthogonalize();
 
+		const static Matrix33 IDENTITY;
 	};
 	static_assert(sizeof(Matrix33) == 0x24, "TES3::Matrix33 failed size validation");
 
@@ -250,6 +266,7 @@ namespace TES3 {
 
 		void toZero();
 
+		const static Matrix44 IDENTITY;
 	};
 	static_assert(sizeof(Matrix44) == 0x40, "TES3::Matrix44 failed size validation");
 
@@ -259,6 +276,7 @@ namespace TES3 {
 
 		BoundingBox();
 		BoundingBox(const Vector3& min, const Vector3& max);
+		BoundingBox(const BoundingBox& bbox);
 		BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
 		bool operator==(const BoundingBox& other) const;
@@ -270,6 +288,8 @@ namespace TES3 {
 
 		BoundingBox copy() const;
 		std::array<Vector3, 8> vertices() const;
+
+		void clampPoint(Vector3& point, const Vector3& origin) const;
 	};
 	static_assert(sizeof(BoundingBox) == 0x18, "TES3::BoundingBox failed size validation");
 

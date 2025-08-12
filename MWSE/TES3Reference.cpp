@@ -4,8 +4,11 @@
 #include "LuaUtil.h"
 
 #include "LuaActivateEvent.h"
+#include "LuaActivationTargetChangedEvent.h"
 #include "LuaBodyPartsUpdatedEvent.h"
 #include "LuaDisarmTrapEvent.h"
+#include "LuaLeveledCreaturePickedEvent.h"
+#include "LuaLeveledItemPickedEvent.h"
 #include "LuaPickLockEvent.h"
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
@@ -62,6 +65,8 @@ namespace TES3 {
 
 	const auto TES3_Reference_dtor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E45C0);
 	void Reference::dtor() {
+		cleanupAssociatedData();
+
 		TES3_Reference_dtor(this);
 	}
 
@@ -69,7 +74,7 @@ namespace TES3 {
 	void Reference::activate(Reference* activator, int unknown) {
 		// If our event data says to block, don't let the object activate.
 		if (mwse::lua::event::ActivateEvent::getEventEnabled() && !isTemporaryInventoryScriptReference()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::ActivateEvent(activator, this));
 			if (response.get_type() == sol::type::table) {
 				sol::table eventData = response;
@@ -244,7 +249,29 @@ namespace TES3 {
 
 		auto actor = getAttachedMobileActor();
 		if (actor && mwse::lua::event::BodyPartsUpdatedEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::BodyPartsUpdatedEvent(this, actor));
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::BodyPartsUpdatedEvent(this, actor));
+			if (eventData.valid()) {
+				if (eventData.get_or("updated", false)) {
+					const auto bodyPartManager = getAttachedBodyPartManager();
+					if (bodyPartManager == nullptr) {
+						return result;
+					}
+
+					bodyPartManager->updateForReference(this);
+					auto refNode = getSceneGraphNode();
+					refNode->updateProperties();
+					refNode->updateEffects();
+
+					const auto animationData = getAttachedAnimationData();
+					if (animationData) {
+						const auto headNode = bodyPartManager->getActiveBodyPartBaseNode(TES3::BodyPartManager::ActiveBodyPart::Layer::Base, TES3::BodyPartManager::ActiveBodyPart::Index::Head);
+						animationData->setHeadNode(headNode);
+					}
+
+					refNode->update();
+				}
+			}
 		}
 
 		return result;
@@ -390,6 +417,10 @@ namespace TES3 {
 	}
 
 	bool Reference::enable() {
+		if (getDeleted()) {
+			return false;
+		}
+
 		// Make sure we're not already enabled.
 		if (!getDisabled()) {
 			return false;
@@ -549,6 +580,40 @@ namespace TES3 {
 		setScale(1.0f);
 		setDeleted(true);
 		setObjectModified(true);
+	}
+
+	inline void clearIfThis(const Reference* self, Reference*& ptr) {
+		if (ptr == self) {
+			ptr = nullptr;
+		}
+	}
+
+	void Reference::cleanupAssociatedData() {
+		const auto tes3game = TES3::Game::get();
+		const auto worldController = TES3::WorldController::get();
+		const auto mobile = getAttachedMobileActor();
+
+		/*
+		* The game will, after this function returns, clean up the following on its own:
+		*	- Moved References
+		*	- Attachment data
+		*	- Scene node/loaded meshes
+		*	- For the mobile, it cleans up AI planners
+		*/
+
+		// Cleanup activation target.
+		if (tes3game) {
+			if (tes3game->playerTarget == this) {
+				// We use a function here to make sure the event triggers.
+				tes3game->setPlayerTarget(nullptr);
+			}
+			clearIfThis(this, tes3game->tooltipTarget);
+		}
+
+		// Clean up static event references.
+		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
+		clearIfThis(this, mwse::lua::event::LeveledItemPickedEvent::m_Reference);
+		clearIfThis(this, mwse::lua::event::ActivationTargetChangedEvent::ms_PreviousReference);
 	}
 
 	Vector3 * Reference::getPosition() {
@@ -718,7 +783,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::DisarmTrapEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::DisarmTrapEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && lockData->trap));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -778,7 +843,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::PickLockEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::PickLockEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && (lockData->lockLevel > 0)));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -917,9 +982,9 @@ namespace TES3 {
 
 		switch (baseObject->objectType) {
 		case ObjectType::Creature:
-			return static_cast<Creature*>(getBaseObject())->health <= 1;
+			return static_cast<const Creature*>(getBaseObject())->health <= 1;
 		case ObjectType::NPC:
-			return static_cast<NPC*>(getBaseObject())->health <= 1;
+			return static_cast<const NPC*>(getBaseObject())->health <= 1;
 		}
 
 		return {};
@@ -930,7 +995,7 @@ namespace TES3 {
 		return this == TES3_Inventory_temporaryReference;
 	}
 
-	Inventory * Reference::getInventory() {
+	Inventory* Reference::getInventory() const {
 		// Only actors have inventories.
 		if (!baseObject->isActor()) {
 			return nullptr;
@@ -1300,7 +1365,7 @@ namespace TES3 {
 		}
 
 		// Does the base object support it?
-		if (!baseObject->getSupportsLuaData()) {
+		if (baseObject == nullptr || !baseObject->getSupportsLuaData()) {
 			return false;
 		}
 

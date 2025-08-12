@@ -8,7 +8,7 @@
 
 A clickable hyperlink.
 
-This type inherits the following: [mwseMCMInfo](../types/mwseMCMInfo.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMInfo](../types/mwseMCMInfo.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `callback`

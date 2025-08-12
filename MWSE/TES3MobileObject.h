@@ -30,6 +30,7 @@ namespace TES3 {
 			TalkedTo = 0x1000,
 			WeaponDrawn = 0x2000,
 			SpellReadied = 0x4000,
+			Commanded = 0x8000,
 			InCombat = 0x10000,
 			Attacked = 0x20000,
 			StuntedMagicka = 0x40000,
@@ -51,6 +52,7 @@ namespace TES3 {
 			TalkedToBit = 12,
 			WeaponDrawnBit = 13,
 			SpellReadiedBit = 14,
+			CommandedBit = 15,
 			InCombatBit = 16,
 			AttackedBit = 17,
 			StuntedMagickaBit = 18,
@@ -219,7 +221,7 @@ namespace TES3 {
 		};
 
 		struct LightData {
-			NI::PointLight * light; // 0x0
+			NI::Pointer<NI::PointLight> light; // 0x0
 			float radius; // 0x4
 			float unknown_0x8;
 		};
@@ -298,7 +300,7 @@ namespace TES3 {
 		void setBoundSize(const Vector3&);
 		Vector3* getImpulseVelocity();
 		void setImpulseVelocityFromLua(sol::stack_object);
-		Vector3* getPosition();
+		Vector3* getPosition() const;
 		void setPositionFromLua(sol::stack_object);
 		Vector3* getVelocity();
 		void setVelocityFromLua(sol::stack_object);

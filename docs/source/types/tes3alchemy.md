@@ -8,7 +8,7 @@
 
 An alchemy game object.
 
-This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `autoCalc`
@@ -83,15 +83,15 @@ The bounding box for the object.
 	
 	--- @param magicSource tes3spell|tes3enchantment|tes3alchemy
 	local function isSpellHostile(magicSource)
-	    for _, effect in ipairs(magicSource.effects) do
-	        if (effect.object.isHarmful) then
+		for _, effect in ipairs(magicSource.effects) do
+			if (effect.object.isHarmful) then
 				-- If one of the spell's effects is harmful, then
 				-- `true` is returned and function ends here.
-	            return true
-	        end
-	    end
+				return true
+			end
+		end
 		-- If no harmful effect was found then return `false`.
-	    return false
+		return false
 	end
 
 	```
@@ -128,6 +128,17 @@ The path to the object's icon. Relative to `Data Files\\icons\\`.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `isCarriable`
+<div class="search_terms" style="display: none">iscarriable, carriable</div>
+
+*Read-only*. If true, the item can be carried and interacted with normally in an inventory. While this is false for certain lights, they can still sometimes appear in an inventory, but cannot be interacted with.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -241,6 +252,17 @@ The previous object in parent collection's list.
 
 ***
 
+### `promptsEquipmentReevaluation`
+<div class="search_terms" style="display: none">promptsequipmentreevaluation</div>
+
+*Read-only*. If true, the item should prompt equipment reevaluated when added to the actor's inventory. Thus is true for armor, clothing, and weapons.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `scale`
 <div class="search_terms" style="display: none">scale</div>
 
@@ -288,7 +310,7 @@ The script that runs on the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -310,11 +332,24 @@ The soruceless flag of the object.
 ### `stolenList`
 <div class="search_terms" style="display: none">stolenlist</div>
 
-A list of actors that the object has been stolen from.
+*Read-only*. A non-mutable list of all actors that the item has been stolen from.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` ([tes3npc](../types/tes3npc.md)[], [tes3faction](../types/tes3faction.md)[])
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -421,4 +456,23 @@ local index = myObject:getFirstIndexOfEffect(effectId)
 **Returns**:
 
 * `index` (integer): Returns 0-based index. Because Lua's arrays are 1-based, to index the potion's `effects` array with the return value add 1.
+
+***
+
+### `hasEffect`
+<div class="search_terms" style="display: none">haseffect, effect</div>
+
+Determines if the alchemy item contains an effect with the given id.
+
+```lua
+local hasEffect = myObject:hasEffect(effectId)
+```
+
+**Parameters**:
+
+* `effectId` ([tes3.effect](../references/magic-effects.md), integer): A value from [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) table.
+
+**Returns**:
+
+* `hasEffect` (boolean): Returns `true` if the alchemy item contains the given effect id, otherwise `false`.
 

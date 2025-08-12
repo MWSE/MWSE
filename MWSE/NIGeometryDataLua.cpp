@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindNIGeometryData() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind NI::GeometryData
 		{

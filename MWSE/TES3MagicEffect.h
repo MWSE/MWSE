@@ -222,6 +222,8 @@ namespace TES3 {
 		};
 	}
 
+	struct MagicEffectExtendedData;
+
 	struct MagicEffect : BaseObject {
 		int id; // 0x10
 		char * description; // 0x14
@@ -264,6 +266,7 @@ namespace TES3 {
 		//
 		// Custom functions
 		//
+
 		const char* getName() const;
 		std::string getComplexName(int attribute = -1, int skill = -1) const;
 		int getNameGMST() const;
@@ -327,8 +330,24 @@ namespace TES3 {
 
 		int getSkillForSchool() const;
 
+		MagicEffectExtendedData* getExtendedData() const;
+
 	};
 	static_assert(sizeof(MagicEffect) == 0x0110, "TES3::EffectID:: failed size validation");
+
+	struct MagicEffectExtendedData {
+		std::string name;
+		std::string magnitudeType;
+		std::string magnitudeTypePlural;
+		sol::protected_function tickFunction;
+		sol::protected_function collisionFunction;
+
+		MagicEffectExtendedData();
+
+		bool hasName() const;
+		bool hasMagnitudeType() const;
+		std::string_view getMagnitudeType(bool plural) const;
+	};
 
 	struct Effect {
 		short effectID; // 0x0

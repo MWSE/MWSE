@@ -4,7 +4,7 @@ namespace se::cs {
 	struct GameFile {
 		unsigned int unknown_0x0;
 		unsigned int unknown_0x4;
-		unsigned int unknown_0x8;
+		void* ioObject;
 		char fileName[260]; // 0xC
 		char filePath[260]; // 0x110
 		int unknown_0x214;

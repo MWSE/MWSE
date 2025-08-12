@@ -442,6 +442,9 @@ end
 ---@field link string
 
 
+---@class packageFunctionGeneric : package
+---@field inherits string|nil
+
 -- Basic function argument. These are things that can be inside `tableParams`.
 ---@class packageFunctionArgument.Simple : package
 
@@ -456,6 +459,7 @@ end
 
 -- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
+--- @field generics packageFunctionGeneric[]|nil
 --- @field arguments packageFunctionArgument[]
 --- @field returns packageFunctionArgument|packageFunctionArgument[]|nil
 
@@ -467,6 +471,7 @@ end
 --- @field children table<string, package>|nil
 --- @field functions packageFunction[]|nil
 --- @field values packageValue[]|nil
+--- @field typeValues packageValue[]|nil
 
 ---@class packageOverload
 ---@field rightType string
@@ -655,15 +660,13 @@ function common.compileInheritances(classes)
 	for _, class in pairs(classes) do
 		if (class.allDescendents) then
 			local allDescendentKeys = {}
-			if (not class.isAbstract) then
-				table.insert(allDescendentKeys, class.key)
-			end
 			for _, descendent in pairs(class.allDescendents) do
 				if (not descendent.isAbstract) then
 					table.insert(allDescendentKeys, descendent.key)
 				end
 			end
 			if (#allDescendentKeys > 0) then
+				table.insert(allDescendentKeys, class.key)
 				table.sort(allDescendentKeys)
 				class.allDescendentKeys = table.concat(allDescendentKeys, "|")
 			end

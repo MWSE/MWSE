@@ -8,7 +8,7 @@
 
 A mobile object for a spell projectile.
 
-This type inherits the following: [tes3mobileProjectile](../types/tes3mobileProjectile.md), [tes3mobileObject](../types/tes3mobileObject.md)
+This type inherits the following: [tes3mobileProjectile](../types/tes3mobileProjectile.md), [tes3mobileObject](../types/tes3mobileObject.md).
 ## Properties
 
 ### `animTime`
@@ -102,7 +102,7 @@ A flag that causes the projectile to expire when set to `1`.
 ### `firingMobile`
 <div class="search_terms" style="display: none">firingmobile</div>
 
-*Read-only*. The mobile that fired this projectile.
+The mobile that fired this projectile.
 
 **Returns**:
 
@@ -248,6 +248,9 @@ The distance to the player. Updated every frame when the mobile is in an active 
 <div class="search_terms" style="display: none">position</div>
 
 A vector that represents the 3D position of the object.
+
+!!! info
+	For actors, this is the point between the actor's feet.
 
 **Returns**:
 

@@ -15,8 +15,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table MagicCastedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["caster"] = m_MagicSourceInstance->caster;
@@ -28,8 +28,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object MagicCastedEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 
 		options["filter"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;

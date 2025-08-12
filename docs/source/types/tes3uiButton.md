@@ -8,7 +8,7 @@
 
 A structure containing properties specific to buttons.
 
-This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md)
+This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md).
 ## Properties
 
 ### `element`
@@ -129,4 +129,15 @@ The state of the button. Controls which color set to use for its text. Maps to v
 **Returns**:
 
 * `result` ([tes3.uiState](../references/ui-states.md))
+
+***
+
+### `textElement`
+<div class="search_terms" style="display: none">textelement</div>
+
+Access to the child label element of the widget.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
 

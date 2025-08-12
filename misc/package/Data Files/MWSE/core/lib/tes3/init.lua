@@ -42,6 +42,7 @@ tes3.inventoryTileType = require("tes3.inventoryTileType")
 tes3.itemSoundState = require("tes3.itemSoundState")
 tes3.justifyText = require("tes3.justifyText")
 tes3.keybind = require("tes3.keybind")
+tes3.keyboardCode = require("tes3.keyboardCode")
 tes3.keyTransition = require("tes3.keyTransition")
 tes3.language = require("tes3.language")
 tes3.languageCode = require("tes3.languageCode")
@@ -165,7 +166,7 @@ function tes3.isKeyEqual(params)
 	local actualMouseButton = actual.mouseButton or actual.button
 	local expectedMouseButton = expected.mouseButton or expected.button
 
-	if ((actual.keyCode or false)  ~= (expected.keyCode or false)
+	if ((actual.keyCode or false) ~= (expected.keyCode or false)
 		or (actual.isShiftDown or false) ~= (expected.isShiftDown or false)
 		or (actual.isControlDown or false) ~= (expected.isControlDown or false)
 		or (actual.isAltDown or false) ~= (expected.isAltDown or false)

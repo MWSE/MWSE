@@ -24,7 +24,7 @@ namespace TES3 {
 		auto result = TES3_InputController_keybindTest(this, keyBind, transition);
 
 		if (mwse::lua::event::KeybindTestedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::KeybindTestedEvent(keyBind, transition, bool(result)));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {

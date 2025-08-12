@@ -184,6 +184,12 @@
     <Filter Include="Header Files\Lua\Bindings\MGE">
       <UniqueIdentifier>{53266735-ada8-4f49-af56-f52a1d2dbf99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utility\CrashLogger">
+      <UniqueIdentifier>{d8d55f54-2435-4d3a-ae0d-6eb5a691b2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility\CrashLogger">
+      <UniqueIdentifier>{6accd156-f13f-4975-bb12-9d571a8e0c48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flags.h">
@@ -1197,12 +1203,6 @@
     <ClInclude Include="LuaMeshLoadedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="TES3CrimeEventList.h">
-      <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
-    </ClInclude>
-    <ClInclude Include="TES3CrimeController.h">
-      <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
-    </ClInclude>
     <ClInclude Include="LuaCrimeWitnessedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1775,6 +1775,33 @@
     </ClInclude>
     <ClInclude Include="NIBoundingVolumeLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3ItemLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3CrimeLua.h">
+      <Filter>Header Files\Lua\Bindings\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="NITriShapeDynamicData.h">
+      <Filter>Header Files\DataAdapters\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogExceptionHandler.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogFormatter.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogger.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashLogUtilities.hpp">
+      <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3230,12 +3257,6 @@
     <ClCompile Include="LuaMeshLoadedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="TES3CrimeEventList.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
-    <ClCompile Include="TES3CrimeController.cpp">
-      <Filter>Source Files\DataAdapters\TES3</Filter>
-    </ClCompile>
     <ClCompile Include="LuaCrimeWitnessedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3865,6 +3886,39 @@
     </ClCompile>
     <ClCompile Include="TES3WaterControllerLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3CrimeLua.cpp">
+      <Filter>Source Files\Lua\Bindings\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaRemovedEquipmentBodyPartsEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaUpdateBodyPartsForItemEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="MGEApi.cpp">
+      <Filter>Source Files\MGE Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="NIBound.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogCallTrace.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogDevice.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogLabelsMWSE.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogMemory.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashLogRegistryStack.cpp">
+      <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="NIDX8Renderer.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

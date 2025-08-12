@@ -51,7 +51,7 @@ namespace TES3 {
 
 		if (mwse::lua::event::SoundObjectPlayEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SoundObjectPlayEvent(sound, playbackFlags, volume, pitch, isNot3D));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -80,6 +80,16 @@ namespace TES3 {
 	const auto TES3_Sound_stop = reinterpret_cast<void(__thiscall *)(Sound*)>(0x510BC0);
 	void Sound::stop() {
 		TES3_Sound_stop(this);
+	}
+
+	const auto TES3_Sound_loadBuffer = reinterpret_cast<void(__thiscall*)(Sound*, bool)>(0x5107E0);
+	void Sound::loadBuffer(bool isPointSound) {
+		TES3_Sound_loadBuffer(this, isPointSound);
+	}
+
+	const auto TES3_Sound_release = reinterpret_cast<void(__thiscall*)(Sound*, int)>(0x5109F0);
+	void Sound::release() {
+		TES3_Sound_release(this, 0);
 	}
 
 	const auto TES3_Sound_setVolumeRaw = reinterpret_cast<void(__thiscall*)(Sound*, unsigned char)>(0x510C30);

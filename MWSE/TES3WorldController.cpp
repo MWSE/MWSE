@@ -128,7 +128,7 @@ namespace TES3 {
 		}
 
 		// Log to console.
-		if (worldController->menuController->gameplayFlags & TES3::UI::MenuControllerGameplayFlags::KillStats) {
+		if (worldController->menuController->getShowKillStats()) {
 			std::stringstream ss;
 			ss << actor->getObjectID() << " killed, total kills " << totalKills << ", werewolf kills " << werewolfKills << ".";
 			UI::logToConsole(ss.str().c_str());
@@ -178,7 +178,7 @@ namespace TES3 {
 		}
 
 		// Log to console.
-		if (worldController->menuController->gameplayFlags & TES3::UI::MenuControllerGameplayFlags::KillStats) {
+		if (worldController->menuController->getShowKillStats()) {
 			std::stringstream ss;
 			ss << actor->getObjectID() << " killed, total kills " << totalKills << ", werewolf kills " << werewolfKills << ".";
 			UI::logToConsole(ss.str().c_str());
@@ -332,9 +332,20 @@ namespace TES3 {
 		TES3_InventoryData_AddInventoryItems(this, inventory, type);
 	}
 
-	const auto TES3_InventoryData_findTile = reinterpret_cast<UI::InventoryTile * (__thiscall*)(InventoryData*, Item*, ItemData*, int)>(0x633E40);
-	UI::InventoryTile* InventoryData::findTile(Item* item, ItemData* itemData, int type) {
-		return TES3_InventoryData_findTile(this, item, itemData, type);
+	void InventoryData::refreshForReference(const Reference* reference, int type) {
+		clearIcons(2);
+		const auto inventory = reference->getInventory();
+		addInventoryItems(inventory, 2);
+	}
+
+	const auto TES3_InventoryData_findTile = reinterpret_cast<UI::InventoryTile * (__thiscall*)(const InventoryData*, const Item*)>(0x633E80);
+	UI::InventoryTile* InventoryData::findTile(const Item* item) const {
+		return TES3_InventoryData_findTile(this, item);
+	}
+
+	const auto TES3_InventoryData_findTileExact = reinterpret_cast<UI::InventoryTile * (__thiscall*)(const InventoryData*, Item*, ItemData*, int)>(0x633E40);
+	UI::InventoryTile* InventoryData::findTile(Item* item, ItemData* itemData, int type) const {
+		return TES3_InventoryData_findTileExact(this, item, itemData, type);
 	}
 
 	const auto TES3_InventoryData_mergeTile = reinterpret_cast<void(__thiscall*)(InventoryData*, UI::InventoryTile*)>(0x632FC0);
@@ -448,6 +459,7 @@ namespace TES3 {
 
 	float WorldController::realDeltaTime = 0.0f;
 	float WorldController::simulationTimeScalar = 1.0f;
+	bool WorldController::blockItemUpDownSound = false;
 
 	WorldController * WorldController::get() {
 		return *reinterpret_cast<TES3::WorldController**>(0x7C67DC);
@@ -465,10 +477,14 @@ namespace TES3 {
 
 	const auto TES3_WorldController_playItemUpDownSound = reinterpret_cast<void(__thiscall*)(WorldController*, BaseObject*, ItemSoundState, Reference*)>(0x411050);
 	void WorldController::playItemUpDownSound(BaseObject* item, ItemSoundState state, Reference* reference) {
+		if (blockItemUpDownSound) {
+			return;
+		}
+
 		// Allow event overrides.
 		if (mwse::lua::event::PlayItemSoundEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::PlayItemSoundEvent(item, static_cast<int>(state), reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -497,7 +513,7 @@ namespace TES3 {
 		// Allow event overrides.
 		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -523,7 +539,7 @@ namespace TES3 {
 		// Allow event overrides.
 		if (mwse::lua::event::StartGlobalScriptEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::StartGlobalScriptEvent(script, reference));
 			if (result.valid() && result.get_or("block", false)) {
 				return;
@@ -639,7 +655,7 @@ namespace TES3 {
 	bool WorldController::selectNextMusicTrack(MusicSituation situation) const {
 		// Fire off the event.
 		if (mwse::lua::event::MusicSelectTrackEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::MusicSelectTrackEvent((int)situation));
 			if (eventData.valid()) {
 				sol::optional<std::string> musicPath = eventData["music"];
@@ -679,7 +695,7 @@ namespace TES3 {
 		// Run post-simulate event before updating game time.
 		if (mwse::lua::event::SimulatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::SimulatedEvent());
 		}
 

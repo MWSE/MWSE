@@ -42,7 +42,7 @@ namespace TES3 {
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::DetectSneakEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::DetectSneakEvent(detector, target, isDetected));
 			if (eventData.valid()) {
 				isDetected = eventData["isDetected"];

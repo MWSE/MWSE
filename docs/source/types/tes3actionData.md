@@ -58,6 +58,17 @@ The behavior state. This maps to values in [`tes3.aiBehaviorState`](https://mwse
 
 ***
 
+### `aiPackageCount`
+<div class="search_terms" style="display: none">aipackagecount</div>
+
+The number of AI packages available.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `animationAttackState`
 <div class="search_terms" style="display: none">animationattackstate</div>
 
@@ -66,6 +77,50 @@ The actor's animation state. Maps to values in [`tes3.animationState`](https://m
 **Returns**:
 
 * `result` ([tes3.animationState](../references/animation-states.md))
+
+***
+
+### `animGroupBlocking`
+<div class="search_terms" style="display: none">animgroupblocking</div>
+
+The animation group when blocking.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `animGroupCurrentAction`
+<div class="search_terms" style="display: none">animgroupcurrentaction</div>
+
+The animation group for the current action.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `animGroupStunEffect`
+<div class="search_terms" style="display: none">animgroupstuneffect</div>
+
+The animation group for when stunned.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `animSectionCurrentAction`
+<div class="search_terms" style="display: none">animsectioncurrentaction</div>
+
+The animation section for the current action.
+
+**Returns**:
+
+* `result` (number)
 
 ***
 
@@ -113,6 +168,28 @@ Actor's current animation group. Maps to values in [`tes3.animationGroup`](https
 
 ***
 
+### `dispositionCombatChange`
+<div class="search_terms" style="display: none">dispositioncombatchange</div>
+
+The disposition modifier for combat.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `fightCombatChange`
+<div class="search_terms" style="display: none">fightcombatchange</div>
+
+The fight modifier for combat.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `hitTarget`
 <div class="search_terms" style="display: none">hittarget</div>
 
@@ -143,6 +220,17 @@ When an actor enters combat, the last position is stored here so that they can n
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `lastWitnessedCrimeTimestamp`
+<div class="search_terms" style="display: none">lastwitnessedcrimetimestamp</div>
+
+The game timestamp for when the mobile last witnessed a crime.
+
+**Returns**:
+
+* `result` (number)
 
 ***
 
@@ -199,6 +287,50 @@ Proper time to change the attack direction is the [attackStart](https://mwse.git
 <div class="search_terms" style="display: none">physicaldamage</div>
 
 When attacking, this is the value of the weapon damage that was rolled. This value takes into account the actor's strength, attack swing and weapon condition, but it doesn't include difficulty nor target's armor. This value is updated on an attack. After the attack this value will still contain the damage rolled. It will be refreshed on a new attack.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `quantizedHitAngleX`
+<div class="search_terms" style="display: none">quantizedhitanglex</div>
+
+The last hit angle.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `quantizedHitAngleY`
+<div class="search_terms" style="display: none">quantizedhitangley</div>
+
+The last hit angle.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `quantizedHitAngleZ`
+<div class="search_terms" style="display: none">quantizedhitanglez</div>
+
+The last hit angle.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `rescaledFacingBeforeCombat`
+<div class="search_terms" style="display: none">rescaledfacingbeforecombat</div>
+
+The last facing used before combat.
 
 **Returns**:
 

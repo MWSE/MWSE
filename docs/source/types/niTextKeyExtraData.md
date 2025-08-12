@@ -8,7 +8,7 @@
 
 A class used to store an array of niTextKey objects. These objects are a list of textual notes and at which time they take effect. These keys are used for designating the start and stop of animations and the triggering of sounds.
 
-This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niExtraData](../types/niExtraData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `genericData`
@@ -143,7 +143,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

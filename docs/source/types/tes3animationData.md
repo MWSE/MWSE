@@ -131,7 +131,23 @@ It functions slightly differently to the other animation speed multipliers. It i
 
 **Returns**:
 
-* `result` (number[])
+* `result` ([tes3.animationGroup](../references/animation-groups.md)[])
+
+??? example "Example: Usage"
+
+	```lua
+	local ref = tes3.getPlayerTarget()
+	if not ref then return end
+	local animationData = ref.animationData
+	if not animationData then return end
+	
+	tes3.messageBox("Current groups: lower = %s, upper = %s, leftArm = %s",
+		table.find(tes3.animationGroup, ref.animationData.currentAnimGroups[tes3.animationBodySection.lower + 1]),
+		table.find(tes3.animationGroup, ref.animationData.currentAnimGroups[tes3.animationBodySection.upper + 1]),
+		table.find(tes3.animationGroup, ref.animationData.currentAnimGroups[tes3.animationBodySection.leftArm + 1])
+	)
+
+	```
 
 ***
 

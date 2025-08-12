@@ -7,8 +7,8 @@
 namespace mwse::lua {
 	void bindMGEPostShaders() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::state& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		sol::state& state = stateHandle.getState();
 
 		// mge::ShaderHandle
 		{

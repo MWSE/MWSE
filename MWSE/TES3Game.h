@@ -74,7 +74,7 @@ namespace TES3 {
 		char unknown_0x5B;
 		HWND parentWindowHandle; // 0x5C
 		HWND windowHandle; // 0x60
-		NI::Renderer* renderer; // 0x64
+		NI::DX8Renderer* renderer; // 0x64
 		NI::Color unknown_0x68; // 0x68
 		char unknown_0x74;
 		char unknown_0x75;
@@ -136,6 +136,8 @@ namespace TES3 {
 		//
 		// Custom functions.
 		//
+
+		void setPlayerTarget(Reference* reference);
 
 		// Get singleton.
 		_declspec (dllexport) static Game* get();

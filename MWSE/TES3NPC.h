@@ -61,10 +61,17 @@ namespace TES3 {
 	};
 
 	struct NPC : NPCBase {
+		struct LinkedObjectIds {
+			const char* raceId; // 0x0
+			const char* classId; // 0x4
+			const char* birthsignId; // 0x8
+			const char* headId; // 0xC
+			const char* hairId; // 0x10
+		};
 		char * model; // 0x6C
 		char * name; // 0x70
 		Script * script; // 0x74
-		void * linkedObjectIDs; // 0x78
+		LinkedObjectIds* linkedObjectIDs; // 0x78
 		short level; // 0x7C
 		unsigned char attributes[8]; // 0x7E
 		unsigned char skills[27]; // 0x86
@@ -93,12 +100,16 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		Race* getRace() const;
+		void setRace(Race* race);
+
 		std::reference_wrapper<unsigned char[8]> getAttributes();
 		std::reference_wrapper<unsigned char[27]> getSkills();
 
 		sol::optional<int> getSoulValue();
 	};
 	static_assert(sizeof(NPC) == 0xF0, "TES3::NPC failed size validation");
+	static_assert(sizeof(NPC::LinkedObjectIds) == 0x14, "TES3::NPC linked object IDs failed size validation");
 
 	struct NPCInstance : NPCBase {
 		NPC * baseNPC; // 0x6C

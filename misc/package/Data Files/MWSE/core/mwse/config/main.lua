@@ -8,6 +8,18 @@ end
 
 local i18n = mwse.loadTranslations("mwse.config")
 
+local function resetLighting()
+	if not tes3.player then return end
+
+	if (tes3.dataHandler.currentInteriorCell) then
+		for reference in tes3.dataHandler.currentInteriorCell:iterateReferences() do
+			reference:updateLighting()
+		end
+	else
+		tes3.dataHandler:updateLightingForExteriorCells()
+	end
+end
+
 local config = {
 	name = "Morrowind Script Extender",
 	template = "Template",
@@ -32,6 +44,16 @@ local config = {
 					description = i18n("runInBackground.description"),
 					variable = {
 						id = "RunInBackground",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("playAudioInBackground.label"),
+					description = i18n("playAudioInBackground.description"),
+					variable = {
+						id = "UseGlobalAudio",
 						class = "TableVariable",
 						table = mwseConfig,
 					},
@@ -98,6 +120,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("enableLogLineNumbers.label"),
+					description = i18n("enableLogLineNumbers.description"),
+					variable = {
+						id = "EnableLogLineNumbers",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("enableDependencyChecks.label"),
 					description = i18n("enableDependencyChecks.description"),
 					variable = {
@@ -125,6 +157,27 @@ local config = {
 						class = "TableVariable",
 						table = mwseConfig,
 					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("suppressUselessWarnings.label"),
+					description = i18n("suppressUselessWarnings.description"),
+					variable = {
+						id = "SuppressUselessWarnings",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("replaceLightSorting.label"),
+					description = i18n("replaceLightSorting.description"),
+					variable = {
+						id = "ReplaceLightSorting",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+					callback = resetLighting,
 				},
 			},
 			sidebarComponents = {

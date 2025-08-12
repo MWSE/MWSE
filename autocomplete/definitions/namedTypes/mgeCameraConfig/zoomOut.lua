@@ -6,7 +6,7 @@ return {
 		type = "table",
 		optional = true,
 		tableParams = {
-			{ name = "amount", type = "number", amount = 0.0625 },
+			{ name = "amount", type = "number", default = 0.0625 },
 		},
 	}},
 }

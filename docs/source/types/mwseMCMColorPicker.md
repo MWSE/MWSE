@@ -8,7 +8,7 @@
 
 A setting that allows choosing a color with a color picker.
 
-This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `alpha`

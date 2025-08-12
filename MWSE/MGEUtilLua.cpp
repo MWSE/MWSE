@@ -21,8 +21,8 @@ namespace mwse::lua {
 	}
 
 	void bindMGEUtil() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		sol::state& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		sol::table lua_mge = state["mge"];
 

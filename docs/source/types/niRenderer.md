@@ -8,7 +8,7 @@
 
 The Morrowind's renderer class.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `refCount`
@@ -110,7 +110,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -129,7 +129,7 @@ local result = myObject:setRenderTarget(texture)
 
 **Parameters**:
 
-* `texture` ([niRenderedTexture](../types/niRenderedTexture.md)): *Default*: `nil`. Set to `nil` to reset to the default rendering target.
+* `texture` ([niRenderedTexture](../types/niRenderedTexture.md)): *Optional*. Set to `nil` to reset to the default rendering target.
 
 **Returns**:
 

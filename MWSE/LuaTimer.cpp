@@ -179,11 +179,11 @@ namespace mwse::lua {
 
 	void TimerController::update() {
 		// Keep looking at the front timer until it hasn't expired.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		std::shared_ptr<Timer> timer = nullptr;
 		while (!m_ActiveTimers.empty() && (timer = m_ActiveTimers.front()) && timer->timing <= m_Clock) {
 			// Build data to send to the callback.
-			auto& state = stateHandle.state;
+			auto& state = stateHandle.getState();
 			sol::table data = state.create_table();
 
 			data["timer"] = timer;
@@ -195,7 +195,7 @@ namespace mwse::lua {
 				callback = getNamedTimer(callbackName);
 				if (callback == sol::nil) {
 					log::getLog() << "Lua error encountered in timer callback: Named callback \"" << callbackName << "\" is not registered." << std::endl;
-					logStackTrace();
+					logStackTrace(nullptr);
 					cancelTimer(timer);
 					continue;
 				}
@@ -239,7 +239,7 @@ namespace mwse::lua {
 	}
 
 	void TimerController::repositionTimer(std::shared_ptr<Timer> timer) {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 
 		// Remove from current position.
 		auto position = std::find(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer);
@@ -474,8 +474,8 @@ namespace mwse::lua {
 
 	void bindLuaTimer() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TimerController.
 		{

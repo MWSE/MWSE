@@ -2,6 +2,11 @@
 
 #include "LuaManager.h"
 
+#include "TES3UIElement.h"
+#include "TES3UIMenuController.h"
+#include "TES3WorldController.h"
+#include "TES3InputController.h"
+
 namespace mwse::lua::event {
 	KeyEvent::KeyEvent(int keyCode, bool pressed, bool controlDown, bool shiftDown, bool altDown, bool superDown) :
 		GenericEvent("key"),
@@ -16,8 +21,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table KeyEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["keyCode"] = m_KeyCode;
@@ -27,12 +32,17 @@ namespace mwse::lua::event {
 		eventData["isAltDown"] = m_AltDown;
 		eventData["isSuperDown"] = m_SuperDown;
 
+		const auto worldController = TES3::WorldController::get();
+		if (worldController) {
+			eventData["element"] = worldController->menuController->menuInputController->getTextInputElement();
+		}
+
 		return eventData;
 	}
 
 	sol::object KeyEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 
 		options["filter"] = m_KeyCode;

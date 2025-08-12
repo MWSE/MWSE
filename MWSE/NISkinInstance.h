@@ -63,7 +63,7 @@ namespace NI {
 
 	struct SkinInstance : Object {
 		Pointer<SkinData> skinData; // 0x8
-		Pointer<Node> rootParent; // 0xC
+		AVObject* rootParent; // 0xC
 		AVObject** bones; // 0x10
 		int unknown_0x14;
 

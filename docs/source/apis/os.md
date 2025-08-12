@@ -121,7 +121,7 @@ local result = os.setClipboardText(text)
 
 **Parameters**:
 
-* `text` (string, nil): *Optional*. The text to put in the clipboard. If nil is provided instead, then the clipboard will be cleared.
+* `text` (string): *Optional*. The text to put in the clipboard. If nil is provided instead, then the clipboard will be cleared.
 
 **Returns**:
 

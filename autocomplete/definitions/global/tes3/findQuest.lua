@@ -9,5 +9,5 @@ return {
 			{ name = "name", type = "string", optional = true, description = "The quest name (as displayed in the journal) to look for." },
 		},
 	}},
-	returns = {{ name = "quest", type = "tes3quest" }},
+	returns = {{ name = "quest", type = "tes3quest?" }},
 }

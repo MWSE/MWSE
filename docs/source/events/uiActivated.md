@@ -87,5 +87,5 @@ event.register(tes3.event.uiActivated, uiActivatedCallback)
 ## Event Data
 
 * `element` ([tes3uiElement](../types/tes3uiElement.md)): *Read-only*. The menu element that was created. The event is filtered on element.name.
-* `newlyCreated` (boolean): *Read-only*. true if the menu was created for the first time or destroyed and re-created; false if it was made visible after being hidden. This can be used when adding custom elements to a menu, as elements previously added will still exist if the menu was hidden. If the menu was re-created, the elements will need to be added again.
+* `newlyCreated` (boolean): *Read-only*. `true` if the menu was created for the first time or destroyed and re-created; `false` if it was made visible after being hidden. This can be used when adding custom elements to a menu, as elements previously added will still exist if the menu was hidden. If the menu was re-created, the elements will need to be added again.
 

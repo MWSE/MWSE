@@ -6,11 +6,12 @@
 namespace mwse::lua::event {
 	class ActivationTargetChangedEvent : public ObjectFilteredEvent, public DisableableEvent<ActivationTargetChangedEvent> {
 	public:
-		ActivationTargetChangedEvent(TES3::Reference* previous, TES3::Reference* current);
+		ActivationTargetChangedEvent(TES3::Reference* current);
 		sol::table createEventTable();
 
+		static TES3::Reference* ms_PreviousReference;
+
 	protected:
-		TES3::Reference* m_PreviousReference;
 		TES3::Reference* m_CurrentReference;
 	};
 }

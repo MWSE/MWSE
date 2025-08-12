@@ -176,6 +176,44 @@ local result = myObject:length()
 
 ***
 
+### `max`
+<div class="search_terms" style="display: none">max</div>
+
+Returns a vector containing the maximum values for each component of the given vectors.
+
+```lua
+local result = myObject:max(other)
+```
+
+**Parameters**:
+
+* `other` ([tes3vector4](../types/tes3vector4.md))
+
+**Returns**:
+
+* `result` ([tes3vector4](../types/tes3vector4.md))
+
+***
+
+### `min`
+<div class="search_terms" style="display: none">min</div>
+
+Returns a vector containing the minimum values for each component of the given vectors.
+
+```lua
+local result = myObject:min(other)
+```
+
+**Parameters**:
+
+* `other` ([tes3vector4](../types/tes3vector4.md))
+
+**Returns**:
+
+* `result` ([tes3vector4](../types/tes3vector4.md))
+
+***
+
 ## Functions
 
 ### `new`

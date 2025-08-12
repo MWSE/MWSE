@@ -62,14 +62,13 @@ A value which controls how far the game AI is processed. Corresponds to AI Dista
 
 
 ```lua
-myObject:checkAlarmRadius({ actor = ..., container = ... })
+myObject:checkAlarmRadius(actor, container)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
-	* `container` ([tes3iterator](../types/tes3iterator.md)): Container is a actor's AI planner e.g. `mobile.aiPlanner`.
+* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
+* `container` ([tes3aiPlanner](../types/tes3aiPlanner.md)): Container is a actor's AI planner e.g. `mobile.aiPlanner`.
 
 ***
 
@@ -105,14 +104,17 @@ myObject:checkPlayerDistance()
 This function performs a check for presence of a given mobile actor.
 
 ```lua
-myObject:detectPresence({ actor = ..., unknown = ... })
+local result = myObject:detectPresence(actor, ignoreCreatures)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
-	* `unknown` (boolean)
+* `actor` ([tes3mobileActor](../types/tes3mobileActor.md)): The actor to perform a check for.
+* `ignoreCreatures` (boolean): *Default*: `true`.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -122,15 +124,14 @@ myObject:detectPresence({ actor = ..., unknown = ... })
 This function performs a check whether a detector can detect another actor sneaking.
 
 ```lua
-local isDetected = myObject:detectSneak({ detector = ..., target = ..., unknown = ... })
+local isDetected = myObject:detectSneak(detector, target, unknown)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `detector` ([tes3mobileActor](../types/tes3mobileActor.md)): The detector actor to perform a check for.
-	* `target` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor to perform a check for.
-	* `unknown` (boolean)
+* `detector` ([tes3mobileActor](../types/tes3mobileActor.md)): The detector actor to perform a check for.
+* `target` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor to perform a check for.
+* `unknown` (boolean): *Default*: `true`.
 
 **Returns**:
 

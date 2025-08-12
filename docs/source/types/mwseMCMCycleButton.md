@@ -8,7 +8,7 @@
 
 A button setting that cycles between given option states. Has similar uses to Dropdown setting.
 
-This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `buttonText`

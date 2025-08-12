@@ -90,10 +90,20 @@ namespace TES3 {
 		bool getAlwaysSucceeds() const;
 		void setAlwaysSucceeds(bool value);
 
+		bool isAbility() const;
+		bool isBlightDisease() const;
+		bool isCorprusDisease() const;
+		bool isCommonDisease() const;
+		bool isCurse() const;
+		bool isDisease() const;
+		bool isPower() const;
+		bool isSpell() const;
+
 		int getValue() const;
 
-		size_t getActiveEffectCount();
-		int getFirstIndexOfEffect(int effectId);
+		size_t getActiveEffectCount() const;
+		int getFirstIndexOfEffect(int effectId) const;
+		bool hasEffect(int effectId) const;
 
 		int calculateBasePuchaseCost() const;
 		float calculateCastChance_lua(sol::table params);

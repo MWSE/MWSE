@@ -3,9 +3,12 @@
 #include "LuaManager.h"
 
 #include "LuaCalcArmorRatingEvent.h"
+#include "LuaUpdateBodyPartsForItemEvent.h"
 
 #include "TES3Util.h"
+#include "LuaUtil.h"
 
+#include "TES3BodyPart.h"
 #include "TES3BodyPartManager.h"
 #include "TES3DataHandler.h"
 #include "TES3GameSetting.h"
@@ -29,7 +32,7 @@ namespace TES3 {
 	float Armor::calculateArmorRating(MobileActor * actor) {
 		// Allow the event to override the value.
 		if (mwse::lua::event::CalculateArmorRatingEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::CalculateArmorRatingEvent(this, actor));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
@@ -68,7 +71,7 @@ namespace TES3 {
 	float Armor::calculateArmorRatingForNPC(NPC * npc) {
 		// Allow the event to override the value.
 		if (mwse::lua::event::CalculateArmorRatingEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::CalculateArmorRatingEvent(this, npc));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
@@ -143,6 +146,52 @@ namespace TES3 {
 
 		// Finally, we fall back to the vanilla function.
 		return TES3_Armor_getWeightClass(this);
+	}
+
+	const auto TES3_Armor_setupBodyParts = reinterpret_cast<void(__thiscall*)(const Armor*, BodyPartManager*, bool, bool)>(0x4A1280);
+	void Armor::setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson) {
+		auto item = this;
+
+		// Add event replacing/adding body parts for an item.
+		if (mwse::lua::event::UpdateBodyPartsForItemEvent::getEventEnabled()) {
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::UpdateBodyPartsForItemEvent(this, bodyPartManager, isFemale, isFirstPerson));
+			if (eventResult.valid()) {
+				sol::table eventData = eventResult;
+				if (eventData.get_or("block", false)) {
+					return;
+				}
+
+				isFemale = mwse::lua::getOptionalParam(eventData, "isFemale", isFemale);
+				const auto maybeItem = mwse::lua::getOptionalParamObject<Item>(eventData, "item");
+				if (maybeItem && maybeItem->objectType == OBJECT_TYPE) {
+					item = static_cast<Armor*>(maybeItem);
+				}
+			}
+		}
+
+		item->removeBodyPartsUnder(bodyPartManager);
+		item->addActiveBodyParts(bodyPartManager, isFemale, isFirstPerson);
+	}
+
+	void Armor::addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson) {
+		for (const auto& wearable : parts) {
+			if (!wearable.isValid()) continue;
+
+			const auto index = BodyPartManager::ActiveBodyPart::Index(wearable.bodypartID);
+			bodyPartManager->setBodyPartForObject(this, index, wearable.getPart(isFemale), isFirstperson);
+		}
+	}
+
+	void Armor::removeBodyPartsUnder(BodyPartManager* bodyPartManager) const {
+		for (auto& wearable : parts) {
+			if (!wearable.isValid()) continue;
+
+			const auto index = BodyPartManager::ActiveBodyPart::Index(wearable.bodypartID);
+			if (index == BodyPartManager::ActiveBodyPart::Index::Head) {
+				bodyPartManager->removeActiveBodyPart(BodyPartManager::ActiveBodyPart::Layer::Base, BodyPartManager::ActiveBodyPart::Index::Hair, 1, 0);
+			}
+		}
 	}
 
 	float Armor::getArmorScalar() const {

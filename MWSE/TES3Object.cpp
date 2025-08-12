@@ -105,8 +105,36 @@ namespace TES3 {
 		return BaseObject_writeFileHeader(this, file);
 	}
 
-	BaseObject* BaseObject::getBaseObject() const {
-		BaseObject* object = const_cast<BaseObject*>(this);
+	bool BaseObject::supportsActivate() const {
+		// Make sure we aren't dealing with references.
+		auto asBase = getBaseObject();
+
+		if (asBase->isItem()) {
+			return static_cast<const Item*>(this)->getIsCarriable();
+		}
+
+		if (asBase->objectType == ObjectType::NPC || asBase->objectType == ObjectType::Creature) {
+			const auto macp = WorldController::get() ? WorldController::get()->getMobilePlayer() : nullptr;
+			if (macp) {
+				return macp->getFlagInCombat();
+			}
+			else {
+				return true;
+			}
+		}
+
+		switch (asBase->objectType) {
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Door:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	BaseObject* BaseObject::getBaseObject() {
+		auto object = static_cast<BaseObject*>(this);
 
 		if (object->objectType == ObjectType::Reference) {
 			object = static_cast<Reference*>(object)->baseObject;
@@ -114,6 +142,20 @@ namespace TES3 {
 
 		if (object->isActor() && static_cast<Actor*>(object)->isClone()) {
 			object = static_cast<Actor*>(object)->getBaseActor();
+		}
+
+		return object;
+	}
+
+	BaseObject const* BaseObject::getBaseObject() const {
+		auto object = static_cast<const BaseObject*>(this);
+
+		if (object->objectType == ObjectType::Reference) {
+			object = static_cast<const Reference*>(object)->baseObject;
+		}
+
+		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
+			object = static_cast<const Actor*>(object)->getBaseActor();
 		}
 
 		return object;
@@ -253,7 +295,7 @@ namespace TES3 {
 	}
 
 	sol::object BaseObject::getCachedLuaObject() const {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
 			auto result = cacheHit->second;
@@ -267,7 +309,7 @@ namespace TES3 {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
@@ -276,7 +318,7 @@ namespace TES3 {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		sol::object ref = sol::nil;
 		switch ((uint32_t)vTable.object) {
@@ -432,7 +474,7 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
@@ -450,7 +492,7 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		baseObjectCache.clear();
 	}
 
@@ -692,6 +734,14 @@ namespace TES3 {
 		setScale(scale);
 	}
 
+	bool Object::supportsActivate() const {
+		if (getIsLocationMarker()) {
+			return false;
+		}
+
+		return BaseObject::supportsActivate();
+	}
+
 	// This helper function exists to avoid invoking template instantiations from LuaUtil.h in TES3Object.h.
 	void Object::finishCreateCopy_lua(Object* created, sol::optional<sol::table> params) {
 		// Set provided or generated ID.
@@ -752,22 +802,28 @@ namespace TES3 {
 
 	BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
 		if (!boundingBox) {
+			if (sceneNode == nullptr && !loadMesh()) {
+				return nullptr;
+			}
+
 			createBoundingBox();
 		}
 		return boundingBox;
 	}
 
 	Reference* PhysicalObject::getReference() const {
-		if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
-			return thisRef;
-		}
-		else {
-			auto mobile = getMobile();
-			if (mobile) {
-				return mobile->reference;
+		__try {
+			if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
+				return thisRef;
+			}
+			else {
+				auto mobile = getMobile();
+				if (mobile) {
+					return mobile->reference;
+				}
 			}
 		}
-
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
 	}
 }

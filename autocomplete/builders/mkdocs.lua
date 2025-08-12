@@ -456,7 +456,7 @@ local function writePackageDetails(file, package)
 	file:write(string.format("%s\n\n", common.getDescriptionString(package)))
 	if (package.type == "class") then
 		if (package.inherits) then
-			file:write(string.format("This type inherits the following: %s\n", buildParentChain(package.inherits)))
+			file:write(string.format("This type inherits the following: %s.\n", buildParentChain(package.inherits)))
 		end
 
 		-- Write class examples before the methods and properties
@@ -479,6 +479,11 @@ local function writePackageDetails(file, package)
 	-- Write out fields.
 	needsHorizontalRule = (
 		writeFields(file, package, "values", "Properties", writeSubPackage, needsHorizontalRule)
+		or needsHorizontalRule
+	)
+
+	needsHorizontalRule = (
+		writeFields(file, package, "typeValues", "Type Properties", writeSubPackage, needsHorizontalRule)
 		or needsHorizontalRule
 	)
 

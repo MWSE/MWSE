@@ -33,7 +33,7 @@ namespace TES3 {
 		return success;
 	}
 
-	size_t Alchemy::getActiveEffectCount() {
+	size_t Alchemy::getActiveEffectCount() const {
 		size_t count = 0;
 		for (size_t i = 0; i < 8; ++i) {
 			if (effects[i].effectID != TES3::EffectID::None) {
@@ -43,13 +43,17 @@ namespace TES3 {
 		return count;
 	}
 
-	int Alchemy::getFirstIndexOfEffect(int effectId) {
+	int Alchemy::getFirstIndexOfEffect(int effectId) const {
 		for (size_t i = 0; i < 8; ++i) {
 			if (effects[i].effectID == effectId) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	bool Alchemy::hasEffect(int effectId) const {
+		return getFirstIndexOfEffect(effectId) != -1;
 	}
 
 	bool Alchemy::effectsMatchWith(const Alchemy * other) const {

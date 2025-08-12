@@ -8,7 +8,7 @@
 
 A collection of position, rotation, and scale keys used on NiKeyframeControllers.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `positionKeyCount`
@@ -266,7 +266,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

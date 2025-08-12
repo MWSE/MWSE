@@ -5,5 +5,5 @@ return {
 		{ name = "id", type = "string" }
 	},
 	returns = "globalVariable",
-	valuetype = "tes3globalVariable",
+	valuetype = "tes3globalVariable?",
 }

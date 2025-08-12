@@ -8,7 +8,7 @@
 
 An attachment to NiObjectNETs that allows the storing of arbitrary data onto the given object.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `genericData`
@@ -132,7 +132,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

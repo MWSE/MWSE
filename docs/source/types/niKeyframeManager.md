@@ -8,7 +8,7 @@
 
 A controller class responsible for controlling the animation sequences stored in the KF file. It controls the animations, and allows to smoothly transition between two animations by blend, morph, and sum transitions.
 
-This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `active`
@@ -290,7 +290,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

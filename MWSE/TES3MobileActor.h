@@ -6,7 +6,7 @@
 #include "TES3AIBehavior.h"
 #include "TES3Armor.h"
 #include "TES3Clothing.h"
-#include "TES3CrimeController.h"
+#include "TES3CrimeEvent.h"
 #include "TES3Deque.h"
 #include "TES3HashMap.h"
 #include "TES3Inventory.h"
@@ -147,7 +147,7 @@ namespace TES3 {
 		AIPlanner * aiPlanner; // 0xC8
 		ActionData actionData; // 0xCC
 		ActionData actionBeforeCombat; // 0x13C
-		CrimeController committedCrimes; // 0x1AC
+		Deque<CrimeEvent> committedCrimes; // 0x1AC
 		int unknown_0x1B8;
 		int unknown_0x1BC;
 		CombatSession * combatSession; // 0x1C0
@@ -172,7 +172,7 @@ namespace TES3 {
 			ActorAnimationController * asActor;
 			PlayerAnimationController * asPlayer;
 		} animationController; // 0x244
-		CrimeController witnessedCrimes; // 0x248
+		Deque<CrimeEvent> witnessedCrimes; // 0x248
 		Statistic attributes[8]; // 0x254
 		Statistic health; // 0x2B4
 		Statistic magicka; // 0x2C0
@@ -248,6 +248,7 @@ namespace TES3 {
 		float getBootsWeight() const;
 		float getWeaponSpeed() const;
 		float getAttackReach() const;
+		float getEffectiveAttackDistance(const TES3::MobileActor* mobile) const;
 
 		void startCombat(MobileActor*);
 		void startCombat_lua(sol::object target);
@@ -314,7 +315,7 @@ namespace TES3 {
 		SpellList* getSpellList();
 		IteratedList<Spell*> * getCombatSpellList();
 
-		bool isActive();
+		bool isActive() const;
 		void forceSpellCast(MobileActor * target);
 
 		void dropItem(Object * item, ItemData * itemData = nullptr, int count = 1, bool ignoreItemData = true);
@@ -322,7 +323,7 @@ namespace TES3 {
 		// Always returns false for non-MACH.
 		bool persuade(int random, int persuasionIndex);
 
-		bool getIsWerewolf();
+		bool getIsWerewolf() const;
 		void setIsWerewolf(bool set);
 		void changeWerewolfState(bool isWerewolf);
 
@@ -338,11 +339,14 @@ namespace TES3 {
 		bool getMobileActorMovementFlag(ActorMovement::Flag) const;
 		void setMobileActorMovementFlag(ActorMovement::Flag, bool);
 
+		bool isCreature() const;
+		bool isPlayer() const;
+
 		float getWidth() const;
 		float getHeight() const;
 
 		bool wearItem(Object* item, ItemData* itemData, bool addItem, bool unknown, bool useEvents);
-		bool equipItem(Object* item, ItemData* itemData = nullptr, bool addItem = false, bool selectBestCondition = false, bool selectWorstCondition = false, bool useEvents = true);
+		bool equipItem(Object* item, ItemData* itemData = nullptr, bool addItem = false, bool selectBestCondition = false, bool selectWorstCondition = false, bool useEvents = false);
 		bool equip_lua(sol::object arg);
 		bool unequip_lua(sol::table args);
 		bool equipMagic(Object* source, ItemData* itemData = nullptr, bool equipItem = false, bool updateGUI = true);
@@ -393,6 +397,8 @@ namespace TES3 {
 		void setFlagWeaponDrawn(bool value);
 		bool getFlagWerewolf() const;
 		void setFlagWerewolf(bool value);
+
+		bool hasStatistic(const Statistic* statistic) const;
 
 		Statistic* getAttributeAgility();
 		Statistic* getAttributeEndurance();

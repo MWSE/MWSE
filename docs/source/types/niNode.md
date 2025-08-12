@@ -8,7 +8,7 @@
 
 Base class that represents the nodes of a scene graph. A node can have any number of child nodes.
 
-This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ??? example "Example: Attaching a mesh directly to the actor's scene graph"
 
 	```lua
@@ -776,6 +776,25 @@ local result = myObject:getObjectByName(name)
 
 ***
 
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
+
+***
+
 ### `getProperty`
 <div class="search_terms" style="display: none">getproperty, property</div>
 
@@ -1043,7 +1062,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -1054,7 +1073,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

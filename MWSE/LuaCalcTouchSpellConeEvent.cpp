@@ -20,8 +20,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table CalcTouchSpellConeEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["casterMobile"] = m_Caster;

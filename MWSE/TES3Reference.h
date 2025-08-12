@@ -82,6 +82,7 @@ namespace TES3 {
 
 		void setDeleted(bool deleted);
 		void setDeletedWithSafety();
+		void cleanupAssociatedData();
 
 		bool getNoCollision() const;
 		void setNoCollision(bool set, bool updateCells = true);
@@ -111,7 +112,7 @@ namespace TES3 {
 
 		Matrix33* updateSceneMatrix(Matrix33* matrix, bool eulerXYZ = false);
 
-		Inventory * getInventory();
+		Inventory * getInventory() const;
 		IteratedList<EquipmentStack*> * getEquipment();
 
 		void relocate(Cell * cell, const Vector3 * position, float rotation);

@@ -25,8 +25,17 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		int getValue(StdString* crimeType);
-		void setValue(StdString* crimeType, int value);
+		int getValue(const StdString* crimeType) const;
+		void setValue(const StdString* crimeType, int value);
+
+		//
+		// Custom functions
+		//
+
+		sol::table getKeys_lua(sol::this_state ts) const;
+		int getValue_lua(const char* type) const;
+		void setValue_lua(const char* type, int value);
+		int modValue_lua(const char* type, int delta);
 	};
 
 	struct PlayerBounty {
@@ -103,6 +112,7 @@ namespace TES3 {
 		void modGold(int value);
 		void wakeUp();
 
+		BountyData* getBountyData() const;
 		int getBounty();
 		void setBounty(int value);
 		void modBounty(int delta);
@@ -118,6 +128,10 @@ namespace TES3 {
 		//
 		// Custom functions.
 		//
+
+		int getCompanionCount() const;
+		std::vector<TES3::MobileActor*> getCompanionList() const;
+		float getCompanionMaxDistance() const;
 
 		void updateSceneGraph();
 

@@ -161,12 +161,16 @@ namespace TES3::UI {
 			return menu;
 		}
 
-		auto item = getOptionalParamObject<TES3::Item>(params, "item");
-		if (item) {
+		auto object = getOptionalParamObject<TES3::Object>(params, "object");
+		if (object == nullptr) {
+			// Backwards compatibility with the old item parameter.
+			object = getOptionalParamObject<TES3::Object>(params, "item");
+		}
+		if (object) {
 			auto itemData = getOptionalParam<TES3::ItemData*>(params, "itemData", nullptr);
 			auto count = itemData ? itemData->count : 0;
 
-			WorldController::get()->menuController->menuInputController->displayObjectTooltip(item, itemData, count);
+			WorldController::get()->menuController->menuInputController->displayObjectTooltip(object, itemData, count);
 			return menu;
 		}
 
@@ -228,6 +232,10 @@ namespace TES3::UI {
 
 	Element* findHelpLayerMenu(UI_ID id) {
 		return TES3_ui_findHelpLayerMenu(id);
+	}
+
+	Element* findHelpLayerMenu(const char* id) {
+		return findHelpLayerMenu(registerID(id));
 	}
 
 	Element* findHelpLayerMenu_lua(sol::object id) {
@@ -362,6 +370,19 @@ namespace TES3::UI {
 		}
 	}
 
+	Element* getCursor() {
+		return TES3::UI::findHelpLayerMenu("CursorIcon");
+	}
+
+	InventoryTile* getCursorTile() {
+		const auto cursor = getCursor();
+		if (cursor == nullptr) {
+			return nullptr;
+		}
+
+		return cursor->getPropertyPointer<TES3::UI::InventoryTile>("MenuInventory_Thing");
+	}
+
 	std::tuple<unsigned int, unsigned int> getViewportSize_lua() {
 		auto& viewportCameraData = TES3::WorldController::get()->menuCamera.cameraData;
 		return { viewportCameraData.viewportWidth, viewportCameraData.viewportHeight };
@@ -442,6 +463,14 @@ namespace TES3::UI {
 		int answerIndex = mwse::lua::getOptionalParam<int>(params, "answerIndex", 0);
 
 		TES3_showDialogueMessage(text, style, answerIndex);
+	}
+
+	const auto TES3_UI_updateTopicsList = reinterpret_cast<void(__cdecl*)()>(0x5BE6C0);
+	void __cdecl updateTopicsList() {
+		TES3_UI_updateTopicsList();
+
+		// Fire off an event to let mods know the list was updated.
+		mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::GenericEvent("topicsListUpdated"));
 	}
 
 	const auto TES3_showMessageBox = reinterpret_cast<Element*(__cdecl*)(const char*, const char*, bool)>(0x5F90C0);
@@ -555,7 +584,7 @@ namespace TES3::UI {
 		// Execute event. If the event blocked the call, bail.
 		if (mwse::lua::event::ShowRestWaitMenuEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::ShowRestWaitMenuEvent(resting, scripted));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {
@@ -651,7 +680,7 @@ namespace TES3::UI {
 
 		// Fire event. Deselects when spell is nullptr.
 		if (mwse::lua::event::MagicSelectionChangedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::MagicSelectionChangedEvent(spell));
 		}
 	}
@@ -666,7 +695,7 @@ namespace TES3::UI {
 			auto enchantment = equipmentStack->object->getEnchantment();
 
 			if (enchantment && mwse::lua::event::MagicSelectionChangedEvent::getEventEnabled()) {
-				auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+				const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 				sol::object response = stateHandle.triggerEvent(new mwse::lua::event::MagicSelectionChangedEvent(enchantment, equipmentStack->object));
 			}
 		}
@@ -720,6 +749,11 @@ namespace TES3::UI {
 	const auto TES3_UI_UpdateEnchantingMenu = reinterpret_cast<void(__cdecl*)()>(0x5C3840);
 	void updateEnchantingMenu() {
 		TES3_UI_UpdateEnchantingMenu();
+	}
+
+	const auto TES3_UI_FlagSkillUpdated = reinterpret_cast<void(__cdecl*)(int)>(0x627320);
+	void flagSkillUpdated(int unknown) {
+		TES3_UI_FlagSkillUpdated(unknown);
 	}
 
 	const auto TES3_UpdateInventoryTiles = reinterpret_cast<void(__cdecl*)()>(0x5CC910);
@@ -811,9 +845,9 @@ namespace TES3::UI {
 	static bool inventorySelectLuaCallbackCloseAfter = true;
 	static sol::protected_function inventorySelectLuaCallback = sol::nil;
 	bool __cdecl luaDispatchedSelectCallback(Element* element, Property property, int data0, int data1, Element* elementAgain) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (inventorySelectLuaCallback.valid()) {
-			sol::table params = stateHandle.state.create_table();
+			sol::table params = stateHandle.getState().create_table();
 
 			auto MenuInventorySelect_object = reinterpret_cast<TES3::BaseObject*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3B7A)).ptrValue);
 			auto MenuInventorySelect_extra = reinterpret_cast<TES3::ItemData*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C48)).ptrValue);
@@ -849,9 +883,9 @@ namespace TES3::UI {
 
 	static sol::protected_function inventorySelectLuaFilter = sol::nil;
 	bool __cdecl luaDispatchedSelectFilter(Element* element, Property property, int data0, int data1, Element* elementAgain) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (inventorySelectLuaFilter.valid()) {
-			sol::table params = stateHandle.state.create_table();
+			sol::table params = stateHandle.getState().create_table();
 
 			auto MenuInventorySelect_filter_object = reinterpret_cast<TES3::BaseObject*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C88)).ptrValue);
 			auto MenuInventorySelect_filter_extra = reinterpret_cast<TES3::ItemData*>(element->getProperty(PropertyType::Pointer, *reinterpret_cast<Property*>(0x7D3C16)).ptrValue);
@@ -979,8 +1013,8 @@ namespace TES3::UI {
 
 		if (magicSelectLuaCallback.valid()) {
 			// The menu was opened from a lua script. Run the callback.
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table params = stateHandle.state.create_table();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table params = stateHandle.getState().create_table();
 			params["item"] = item;
 			params["itemData"] = itemData;
 			params["spell"] = spell;
@@ -1007,8 +1041,8 @@ namespace TES3::UI {
 
 		if (magicSelectLuaCallback.valid()) {
 			// The menu was opened from a lua script. Run the callback.
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table params = stateHandle.state.create_table();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table params = stateHandle.getState().create_table();
 
 			sol::protected_function_result result = magicSelectLuaCallback(params);
 			if (!result.valid()) {
@@ -1173,6 +1207,21 @@ namespace TES3::UI {
 		return { textBuffer, lineCount };
 	}
 
+	void showLoadingMenu(const char* title, float progress) {
+		const auto TES3_UI_showLoadingMenu = reinterpret_cast<void(__cdecl*)(const char*, float)>(0x5DED20);
+		TES3_UI_showLoadingMenu(title, progress);
+	}
+
+	void updateLoadingMenu(float progress) {
+		const auto TES3_UI_updateLoadingMenu = reinterpret_cast<void(__cdecl*)(float)>(0x4C7D90);
+		TES3_UI_updateLoadingMenu(progress);
+	}
+
+	void destroyLoadingMenu() {
+		const auto TES3_UI_destroyLoadingMenu = reinterpret_cast<void(__cdecl*)()>(0x5DEEA0);
+		TES3_UI_destroyLoadingMenu();
+	}
+
 	void pushNewUIID(DWORD address, const char* name) {
 		DWORD id = registerID(name);
 		mwse::genPushEnforced(address, id);
@@ -1227,11 +1276,39 @@ namespace TES3::UI {
 		// Clean up any lua event registration.
 		mwse::lua::cleanupEventRegistrations(self);
 
+		// Clean up stale pointers.
+		const auto worldController = TES3::WorldController::get();
+		const auto menuController = worldController ? worldController->menuController : nullptr;
+		const auto menuInputController = menuController ? menuController->menuInputController : nullptr;
+		if (menuInputController && menuInputController->textInputFocus == self) {
+			menuInputController->textInputFocus = nullptr;
+		}
+		if (MenuInputController::previousTextInputFocus == self) {
+			MenuInputController::previousTextInputFocus = nullptr;
+		}
+
 		// Clean up any lua data.
 		auto luaData = self->getLuaDataContainer();
 		if (luaData) {
 			delete luaData;
 		}
+	}
+
+	bool __fastcall patchKeyboardInput(MenuInputController* controller) {
+		// Let elements know that their focus has changed.
+		if (controller->textInputFocus != MenuInputController::previousTextInputFocus) {
+			if (MenuInputController::previousTextInputFocus) {
+				mwse::lua::triggerEvent(MenuInputController::previousTextInputFocus, registerProperty("inputUnfocus"), 0, 0);
+			}
+			if (controller->textInputFocus) {
+				mwse::lua::triggerEvent(controller->textInputFocus, registerProperty("inputFocus"), 0, 0);
+			}
+			MenuInputController::previousTextInputFocus = controller->textInputFocus;
+		}
+
+		// Call overwritten code.
+		const auto TES3_UI_MenuInputController_keyboardInput = reinterpret_cast<bool(__thiscall*)(MenuInputController*)>(0x58E8A0);
+		return TES3_UI_MenuInputController_keyboardInput(controller);
 	}
 
 	void hook() {
@@ -1269,6 +1346,9 @@ namespace TES3::UI {
 		// Patch inventory item tooltip to get accurate item count from the tile, which was failing on split item stacks.
 		mwse::writeValueEnforced<DWORD>(0x5CC0A9+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
 		mwse::writeValueEnforced<DWORD>(0x5CCC6F+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
+
+		// Patch input elements to allow focus/unfocus events.
+		mwse::genCallEnforced(0x58E1E2, 0x58E8A0, reinterpret_cast<DWORD>(patchKeyboardInput));
 
 		// Provide some UI IDs for elements that don't have them:
 		// Tooltips (HelpMenu)
@@ -1461,5 +1541,16 @@ namespace TES3::UI {
 		pushNewUIID(0x5F3F83, "MenuMulti_bottom_row_right");
 		pushNewUIID(0x5F4168, "MenuMulti_map");
 		pushNewUIID(0x5F4226, "MenuMap_layout");
+
+		// MenuPersuasion
+		pushNewUIID(0x5FFB23, "MenuPersuasion_Header");
+		pushNewUIID(0x5FFD6A, "MenuPersuasion_Admire");
+		pushNewUIID(0x5FFDF3, "MenuPersuasion_Intimidate");
+		pushNewUIID(0x5FFE7E, "MenuPersuasion_Taunt");
+		pushNewUIID(0x5FFF09, "MenuPersuasion_Bribe10");
+		pushNewUIID(0x5FFFCB, "MenuPersuasion_Bribe100");
+		pushNewUIID(0x60008D, "MenuPersuasion_Bribe1000");
+		pushNewUIID(0x5FFBE0, "MenuPersuasion_Footer");
+		pushNewUIID(0x5FFC88, "MenuPersuasion_Gold");
 	}
 }

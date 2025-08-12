@@ -46,11 +46,13 @@ namespace TES3::UI {
 		static Object* lastTooltipObject;
 		static ItemData* lastTooltipItemData;
 		static int lastTooltipCount;
+		static Element* lastTooltipSource;
+		static int lastKeyPressDIK;
 
 		MenuInputController() = delete;
 		~MenuInputController() = delete;
 
-		Element* getTextInputElement();
+		Element* getTextInputElement() const;
 		void acquireTextInput(Element* element);
 		void displayObjectTooltip(TES3::Object* object, TES3::ItemData* itemData, int count = 0);
 
@@ -63,6 +65,8 @@ namespace TES3::UI {
 		//
 		// Custom functions.
 		//
+
+		static Element* previousTextInputFocus;
 
 		void updateObjectTooltip();
 	};
@@ -214,13 +218,17 @@ namespace TES3::UI {
 		// Custom functions.
 		//
 
-		bool getInventoryMenuEnabled();
-		bool getMagicMenuEnabled();
-		bool getMapMenuEnabled();
-		bool getStatsMenuEnabled();
+		bool getInventoryMenuEnabled() const;
+		bool getMagicMenuEnabled() const;
+		bool getMapMenuEnabled() const;
+		bool getStatsMenuEnabled() const;
 
+		bool getShowCombatStats() const;
+		void setShowCombatStats(bool state);
 		bool getGodModeEnabled() const;
 		void setGodModeEnabled(bool state);
+		bool getLightingUpdatesDisabled() const;
+		void setLightingUpdatesDisabled(bool state);
 		bool getAIDisabled() const;
 		void setAIDisabled(bool state);
 		bool getBordersEnabled() const;
@@ -239,6 +247,8 @@ namespace TES3::UI {
 		void setFogOfWarDisabled(bool state);
 		bool getMenusDisabled() const;
 		void setMenusDisabled(bool state);
+		bool getShowKillStats() const;
+		void setShowKillStats(bool state);
 		bool getScriptsDisabled() const;
 		void setScriptsDisabled(bool state);
 		bool getShowPathGrid() const;

@@ -445,6 +445,44 @@ local lerpedVector = myObject:lerp(toVector, transition)
 
 ***
 
+### `max`
+<div class="search_terms" style="display: none">max</div>
+
+Returns a vector containing the maximum values for each component of the given vectors.
+
+```lua
+local result = myObject:max(other)
+```
+
+**Parameters**:
+
+* `other` ([tes3vector3](../types/tes3vector3.md))
+
+**Returns**:
+
+* `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `min`
+<div class="search_terms" style="display: none">min</div>
+
+Returns a vector containing the minimum values for each component of the given vectors.
+
+```lua
+local result = myObject:min(other)
+```
+
+**Parameters**:
+
+* `other` ([tes3vector3](../types/tes3vector3.md))
+
+**Returns**:
+
+* `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
 ### `negate`
 <div class="search_terms" style="display: none">negate</div>
 
@@ -536,6 +574,81 @@ local vector = tes3vector3.new(x, y, z)
 * `x` (number): *Default*: `0`.
 * `y` (number): *Default*: `0`.
 * `z` (number): *Default*: `0`.
+
+**Returns**:
+
+* `vector` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `ones`
+<div class="search_terms" style="display: none">ones</div>
+
+Creates a new vector with all components set to 1.
+
+```lua
+local vector = tes3vector3.ones()
+```
+
+**Returns**:
+
+* `vector` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `unitX`
+<div class="search_terms" style="display: none">unitx</div>
+
+Creates a new vector pointing along the positive X axis.
+
+```lua
+local vector = tes3vector3.unitX()
+```
+
+**Returns**:
+
+* `vector` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `unitY`
+<div class="search_terms" style="display: none">unity</div>
+
+Creates a new vector pointing along the positive Y axis.
+
+```lua
+local vector = tes3vector3.unitY()
+```
+
+**Returns**:
+
+* `vector` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `unitZ`
+<div class="search_terms" style="display: none">unitz</div>
+
+Creates a new vector pointing along the positive Z axis.
+
+```lua
+local vector = tes3vector3.unitZ()
+```
+
+**Returns**:
+
+* `vector` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+### `zeroes`
+<div class="search_terms" style="display: none">zeroes</div>
+
+Creates a new vector with all components set to 0.
+
+```lua
+local vector = tes3vector3.zeroes()
+```
 
 **Returns**:
 

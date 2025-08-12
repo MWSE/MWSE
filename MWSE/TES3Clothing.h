@@ -46,8 +46,17 @@ namespace TES3 {
 		~Clothing();
 
 		//
+		// Other related this-call functions.
+		//
+
+		void setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson);
+
+		//
 		// Custom functions.
 		//
+
+		void addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson);
+		void removeBodyPartsUnder(BodyPartManager* bodyPartManager) const;
 
 		void setIconPath(const char* path);
 		const char* getSlotName();

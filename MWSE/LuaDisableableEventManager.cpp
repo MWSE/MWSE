@@ -88,8 +88,8 @@
 #include "LuaKeybindTestedEvent.h"
 #include "LuaKeyDownEvent.h"
 #include "LuaKeyEvent.h"
-#include "LuaKeyframesLoadEvent.h"
 #include "LuaKeyframesLoadedEvent.h"
+#include "LuaKeyframesLoadEvent.h"
 #include "LuaKeyUpEvent.h"
 #include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
@@ -98,8 +98,8 @@
 #include "LuaLoadGameEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
-#include "LuaMagicReflectEvent.h"
 #include "LuaMagicReflectedEvent.h"
+#include "LuaMagicReflectEvent.h"
 #include "LuaMagicSelectionChangedEvent.h"
 #include "LuaMenuStateEvent.h"
 #include "LuaMeshLoadedEvent.h"
@@ -135,6 +135,7 @@
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
 #include "LuaReferenceSceneNodeCreatedEvent.h"
+#include "LuaRemovedEquipmentBodyPartsEvent.h"
 #include "LuaRepairEvent.h"
 #include "LuaRestInterruptEvent.h"
 #include "LuaSavedGameEvent.h"
@@ -159,6 +160,7 @@
 #include "LuaUiSkillTooltipEvent.h"
 #include "LuaUiSpellTooltipEvent.h"
 #include "LuaUnequippedEvent.h"
+#include "LuaUpdateBodyPartsForItemEvent.h"
 #include "LuaVFXCreatedEvent.h"
 #include "LuaWeaponReadiedEvent.h"
 #include "LuaWeaponUnreadiedEvent.h"
@@ -170,8 +172,8 @@
 namespace mwse::lua::event {
 	void DisableableEventManager::bindToLua() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<DisableableEventManager>("mwseDisableableEventManager");
@@ -312,6 +314,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["referenceActivated"] = sol::property(&ReferenceActivatedEvent::getEventEnabled, &ReferenceActivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceDeactivated"] = sol::property(&ReferenceDeactivatedEvent::getEventEnabled, &ReferenceDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceSceneNodeCreated"] = sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled);
+		usertypeDefinition["removedEquipmentBodyParts"] = sol::property(&RemovedEquipmentBodyPartsEvent::getEventEnabled, &RemovedEquipmentBodyPartsEvent::setEventEnabled);
 		usertypeDefinition["repair"] = sol::property(&RepairEvent::getEventEnabled, &RepairEvent::setEventEnabled);
 		usertypeDefinition["restInterrupt"] = sol::property(&RestInterruptEvent::getEventEnabled, &RestInterruptEvent::setEventEnabled);
 		usertypeDefinition["save"] = sol::property(&SaveGameEvent::getEventEnabled, &SaveGameEvent::setEventEnabled);
@@ -341,6 +344,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["uiSkillTooltip"] = sol::property(&UiSkillTooltipEvent::getEventEnabled, &UiSkillTooltipEvent::setEventEnabled);
 		usertypeDefinition["uiSpellTooltip"] = sol::property(&UiSpellTooltipEvent::getEventEnabled, &UiSpellTooltipEvent::setEventEnabled);
 		usertypeDefinition["unequipped"] = sol::property(&UnequippedEvent::getEventEnabled, &UnequippedEvent::setEventEnabled);
+		usertypeDefinition["updateBodyPartsForItem"] = sol::property(&UpdateBodyPartsForItemEvent::getEventEnabled, &UpdateBodyPartsForItemEvent::setEventEnabled);
 		usertypeDefinition["vfxCreated"] = sol::property(&VFXCreatedEvent::getEventEnabled, &VFXCreatedEvent::setEventEnabled);
 		usertypeDefinition["weaponReadied"] = sol::property(&WeaponReadiedEvent::getEventEnabled, &WeaponReadiedEvent::setEventEnabled);
 		usertypeDefinition["weaponUnreadied"] = sol::property(&WeaponUnreadiedEvent::getEventEnabled, &WeaponUnreadiedEvent::setEventEnabled);

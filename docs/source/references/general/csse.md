@@ -77,7 +77,7 @@ The OpenMW icon will only display if a valid OpenMW installation directory has b
 location = "D:\\Games\\OpenMW"
 ```
 
-Because of the implementation of the OpenMW support, a custom config directory is used. This means user settings such as resolution must be reconfigured the first time the game is run from this environment.
+Because of the implementation of the OpenMW support, a custom config directory is used at "Data Files\MWSE\tmp\csse\openmw". CSSE will make a copy of your settings.cfg file in this folder, but will not keep it synced to any future changes in the OpenMW install.
 
 ##### Test Environment
 

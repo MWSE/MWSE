@@ -8,7 +8,7 @@
 
 A script object.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -19,6 +19,17 @@ The blocked state of the object.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `byteCode`
+<div class="search_terms" style="display: none">bytecode</div>
+
+*Read-only*. A byte representation of instructions that the script will run.
+
+**Returns**:
+
+* `result` (number[])
 
 ***
 
@@ -146,7 +157,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -165,6 +176,19 @@ The soruceless flag of the object.
 
 ***
 
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `supportsLuaData`
 <div class="search_terms" style="display: none">supportsluadata</div>
 
@@ -173,6 +197,17 @@ If true, references of this object can store temporary or persistent lua data.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `text`
+<div class="search_terms" style="display: none">text</div>
+
+*Read-only*. The plain text of the script. Note that line endings do not match the default lua line endings. This requires file IO, and is slow. If `recompile` is used to change the script at runtime, this will not be accurate.
+
+**Returns**:
+
+* `result` (string)
 
 ***
 
@@ -209,4 +244,23 @@ local results = myObject:getVariableData(useLocals)
 **Returns**:
 
 * `results` (table&lt;string, [tes3scriptVariableData](../types/tes3scriptVariableData.md)&gt;, nil): A table with all of the script's variable names as keys.
+
+***
+
+### `recompile`
+<div class="search_terms" style="display: none">recompile</div>
+
+Replaces the bytecode of a script with the code compiled with the given mwscript. This should only be done during the initialized event, prior to a game being loaded.
+
+```lua
+local success = myObject:recompile(text)
+```
+
+**Parameters**:
+
+* `text` (string): The script text to compile. The line endings must be provided using CRLF.
+
+**Returns**:
+
+* `success` (boolean): If true, the script was recompiled successfully.
 

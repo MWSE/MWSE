@@ -74,7 +74,7 @@ namespace se::cs::metadata {
 		for (const auto& metadata : activeMetadata) {
 			try {
 				const auto& data = metadata->toml();
-				auto& deprecated = toml::find<std::vector<std::string>>(data, "tools", "csse", "deprecated");
+				auto deprecated = toml::find<std::vector<std::string>>(data, "tools", "csse", "deprecated");
 				for (auto& id : deprecated) {
 					string::to_lower(id);
 					deprecatedIds.insert(id);

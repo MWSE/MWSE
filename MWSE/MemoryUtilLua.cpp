@@ -60,8 +60,8 @@ namespace mwse::lua {
 
 	// Fills luaFunctionArguments based on given argX parameters and what converters it expects.
 	FunctionDefinition* fillLuaCallArguments(DWORD callingAddress, DWORD functionAt, DWORD ecx, DWORD edx, DWORD arg0 = 0, DWORD arg1 = 0, DWORD arg2 = 0, DWORD arg3 = 0, DWORD arg4 = 0, DWORD arg5 = 0) {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		luaFunctionArguments.clear();
 
@@ -109,8 +109,8 @@ namespace mwse::lua {
 
 	// Actual dispatching function
 	DWORD callGenericLuaFunctionFinal(DWORD callingAddress, FunctionDefinition* definition = nullptr) {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		auto function = luaFunctionOverrides[callingAddress];
 		sol::protected_function_result result = function(sol::as_args(luaFunctionArguments));
@@ -323,8 +323,8 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'address' parameter provided.");
 		}
 
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		sol::optional<DWORD> previousCall = params["previousCall"];
 		DWORD length = params["length"].get_or(5U);
@@ -487,9 +487,13 @@ namespace mwse::lua {
 		return *reinterpret_cast<DWORD*>(object);
 	}
 
+	void dump(void* data, unsigned int length) {
+		log::prettyDump(data, length);
+	}
+
 	void bindMWSEMemoryUtil() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		sol::table mwse = state["mwse"];
 		auto memory = mwse.create_named("memory");
@@ -500,6 +504,7 @@ namespace mwse::lua {
 
 		memory["reinterpret"] = reinterpret;
 		memory["addressOf"] = addressOf;
+		memory["dump"] = dump;
 
 		//
 		// Read operations.
@@ -552,6 +557,7 @@ namespace mwse::lua {
 		convertTo["tes3uiElement"] = convertArgTo<TES3::UI::Element*>;
 		convertTo["tes3worldController"] = convertArgTo<TES3::WorldController*>;
 		convertTo["uint"] = convertArgTo<DWORD>;
+		convertTo["void*"] = convertArgTo<void*>;
 
 		convertFrom = memory.create_named("convertFrom");
 		convertFrom["bool"] = convertArgFrom<bool>;

@@ -186,17 +186,17 @@ tes3ui.createResponseText({ text = ..., type = ..., index = ... })
 ### `tes3ui.createTooltipMenu`
 <div class="search_terms" style="display: none">createtooltipmenu, tooltipmenu</div>
 
-Creates a tooltip menu, which can be an empty menu, an item tooltip, a skill tooltip, or a spell tooltip. This should be called from within a tooltip event callback. These automatically follow the mouse cursor, and are also destroyed automatically when the mouse leaves the originating element. Creating an item tooltip will invoke the uiObjectTooltip event.
+Creates a tooltip menu, which can be an empty menu, an item tooltip, a skill tooltip, or a spell tooltip. This should be called from within a tooltip event callback. These automatically follow the mouse cursor, and are also destroyed automatically when the mouse leaves the originating element. Creating an object tooltip will invoke the uiObjectTooltip event. Creating a tooltip with no argument will create an empty tooltip.
 
 ```lua
-local result = tes3ui.createTooltipMenu({ item = ..., itemData = ..., spell = ..., skill = ... })
+local result = tes3ui.createTooltipMenu({ object = ..., itemData = ..., spell = ..., skill = ... })
 ```
 
 **Parameters**:
 
 * `params` (table): *Optional*.
-	* `item` ([tes3item](../types/tes3item.md), string): *Optional*. The item to create a tooltip for. If not specified, the tooltip will be empty.
-	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The item data for the item.
+	* `object` ([tes3object](../types/tes3object.md), string): *Optional*. The object to create a tooltip for.
+	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The itemData for the object, if providing an object.
 	* `spell` ([tes3spell](../types/tes3spell.md)): *Optional*. The spell to create a tooltip for.
 	* `skill` ([tes3skill](../types/tes3skill.md)): *Optional*. The skill to create a tooltip for.
 
@@ -239,7 +239,7 @@ local result = tes3ui.enterMenuMode(id)
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (boolean): True if the menu was switched, or false if it was already active.
 
 ***
 
@@ -304,6 +304,36 @@ local result = tes3ui.getConsoleReference()
 **Returns**:
 
 * `result` ([tes3reference](../types/tes3reference.md), nil)
+
+***
+
+### `tes3ui.getCursor`
+<div class="search_terms" style="display: none">getcursor, cursor</div>
+
+Locates a help layer menu that represents the player's cursor.
+
+```lua
+local result = tes3ui.getCursor()
+```
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md), nil)
+
+***
+
+### `tes3ui.getCursorTile`
+<div class="search_terms" style="display: none">getcursortile, cursortile</div>
+
+Gets the item tile associated with the player's cursor. Returns `nil` if no item is on the player's cursor.
+
+```lua
+local result = tes3ui.getCursorTile()
+```
+
+**Returns**:
+
+* `result` ([tes3inventoryTile](../types/tes3inventoryTile.md), nil)
 
 ***
 
@@ -554,7 +584,7 @@ tes3ui.logToConsole(text, isCommand)
 		tes3ui.logToConsole("player->ModStrength 10", false)
 	
 		-- This will make "player->ModWillpower 10" appear in the console coloured blue.
-		-- It CAN be selected by using up arrow key, and when the enter is pressed,
+		-- It can be selected by using up arrow key, and when the enter is pressed,
 		-- it will call that function.
 		tes3ui.logToConsole("player->ModWillpower 10", true)
 	
@@ -597,7 +627,7 @@ local result = tes3ui.menuMode()
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (boolean): `true` if in menu mode.
 
 ***
 
@@ -793,27 +823,27 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 			-- .. is Lua operator of concatenation. It joins 2 strings together.
 			title = "Bribe " .. actorReference.object.name,
 			callback = function(e)
-				if e.item then
-					-- If e.item exist, that means that the player picked an
-					-- item in the  menu. It up to us to do something with it.
-					tes3.transferItem({
-						from = tes3.player,
-						to = actorReference,
-						item = e.item,
-						itemData = e.itemData,
-						count = e.count,
-					})
-					-- Here we calculate the total gold value of the transfered item(s), since that
-					-- can be a stack of items. e.count holds the amount of the items selected.
-					local itemWorth = e.item.value * e.count
+				if not e.item then return end
 	
-					-- At last! Now the actual persuasion part. We use `modifier` argument.
-					-- The higher the value we pass there the higher the disposition change.
-					tes3.persuade({
-						actor = actorReference,
-						modifier = math.log10(itemWorth)
-					})
-				end
+				-- If e.item exist, that means that the player picked an
+				-- item in the menu. It up to us to do something with it.
+				tes3.transferItem({
+					from = tes3.player,
+					to = actorReference,
+					item = e.item,
+					itemData = e.itemData,
+					count = e.count,
+				})
+				-- Here we calculate the total gold value of the transfered item(s), since that
+				-- can be a stack of items. e.count holds the amount of the items selected.
+				local itemWorth = e.item.value * e.count
+	
+				-- At last! Now the actual persuasion part. We use `modifier` argument.
+				-- The higher the value we pass there the higher the disposition change.
+				tes3.persuade({
+					actor = actorReference,
+					modifier = math.log10(itemWorth)
+				})
 			end,
 			-- At first it's counter intuitive that this filter selects all the non-enchanted items
 			-- This illusion disappears soon as we relize that the game uses this filter in the
@@ -838,14 +868,15 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 	-- can be passed to `filter` argument of tes3.showInventorySelectMenu().
 	
 	-- This function will filter only weapon items.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function weaponFilter(e)
 		if e.item.objectType == tes3.objectType.weapon then
 			-- The filter function needs to return `true`
 			-- for a certain item to appear in the menu.
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 	
 	-- This is a dictinary of items that can be damaged (have a condition)
@@ -854,6 +885,7 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		[tes3.objectType.armor] = true,
 	}
 	-- This function will filter only items that aren't at full condition.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function damagedItemsFilter(e)
 		-- The first check is whether the item is in our
 		-- dictionary of items with condition
@@ -863,19 +895,20 @@ tes3ui.showInventorySelectMenu({ reference = ..., title = ..., leaveMenuMode = .
 		e.itemData and
 		(e.itemData.condition < e.item.maxCondition) then
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 	
 	local myFilterValue = 256
-	-- This function will filter only items that have a value less than `myFilterValue`
+	-- This function will filter only items that have a value less than `myFilterValue`.
+	---@param e tes3ui.showInventorySelectMenu.filterParams
 	local function valueFilter(e)
 		if (e.item.value < myFilterValue) then
 			return true
-		else
-			return false
 		end
+	
+		return false
 	end
 
 	```
@@ -928,7 +961,7 @@ tes3ui.showMagicSelectMenu({ title = ..., selectSpells = ..., selectPowers = ...
 Displays a message box. This may be a simple toast-style message, or a box with choice buttons.
 
 ```lua
-tes3ui.showMessageMenu({ id = ..., leaveMenuMode = ..., buttons = ..., callbackParams = ..., cancels = ..., cancelText = ..., cancelCallback = ..., header = ..., message = ..., customBlock = ..., page = ..., pageSize = ... })
+local menu = tes3ui.showMessageMenu({ id = ..., leaveMenuMode = ..., buttons = ..., callbackParams = ..., cancels = ..., cancelText = ..., cancelCallback = ..., header = ..., message = ..., customBlock = ..., page = ..., pageSize = ..., maxWidth = ... })
 ```
 
 **Parameters**:
@@ -946,6 +979,11 @@ tes3ui.showMessageMenu({ id = ..., leaveMenuMode = ..., buttons = ..., callbackP
 	* `customBlock` (fun(parent: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. A custom element to be displayed below the header. This function is passed a parent tes3uiElement, which it can modify to add a custom block according to your needs.
 	* `page` (integer): *Default*: `1`.
 	* `pageSize` (integer): *Default*: `30`.
+	* `maxWidth` (integer): *Default*: `400`.
+
+**Returns**:
+
+* `menu` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 

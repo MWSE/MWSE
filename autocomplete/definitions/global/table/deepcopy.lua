@@ -1,8 +1,11 @@
 return {
 	type = "function",
 	description = [[Copies a table's contents. All subtables will also be copied, as will any metatable.]],
-	arguments = {
-		{ name = "t", type = "table" },
+	generics = {
+		{ name = "tableType", inherits = "table" }
 	},
-	valuetype = "table",
+	arguments = {
+		{ name = "t", type = "tableType" },
+	},
+	valuetype = "tableType",
 }

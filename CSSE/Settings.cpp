@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 #include "LogUtil.h"
+#include "StringUtil.h"
 #include "TomlUtil.h"
 #include "PathUtil.h"
 
@@ -147,17 +148,20 @@ namespace se::cs {
 
 		// Search settings
 		clear_filter_on_tab_switch = toml::find_or(v, "clear_filter_on_tab_switch", clear_filter_on_tab_switch);
-		filter_by_id = toml::find_or(v, "filter_by_id", filter_by_id);
-		filter_by_name = toml::find_or(v, "filter_by_name", filter_by_name);
-		filter_by_icon_path = toml::find_or(v, "filter_by_icon_path", filter_by_icon_path);
-		filter_by_model_path = toml::find_or(v, "filter_by_model_path", filter_by_model_path);
-		filter_by_enchantment_id = toml::find_or(v, "filter_by_enchantment_id", filter_by_enchantment_id);
-		filter_by_script_id = toml::find_or(v, "filter_by_script_id", filter_by_script_id);
-		filter_by_book_text = toml::find_or(v, "filter_by_book_text", filter_by_book_text);
-		filter_by_faction = toml::find_or(v, "filter_by_faction", filter_by_faction);
+		search_settings.id = toml::find_or(v, "filter_by_id", search_settings.id);
+		search_settings.name = toml::find_or(v, "filter_by_name", search_settings.name);
+		search_settings.icon_path = toml::find_or(v, "filter_by_icon_path", search_settings.icon_path);
+		search_settings.model_path = toml::find_or(v, "filter_by_model_path", search_settings.model_path);
+		search_settings.enchantment_id = toml::find_or(v, "filter_by_enchantment_id", search_settings.enchantment_id);
+		search_settings.script_id = toml::find_or(v, "filter_by_script_id", search_settings.script_id);
+		search_settings.book_text = toml::find_or(v, "filter_by_book_text", search_settings.book_text);
+		search_settings.faction = toml::find_or(v, "filter_by_faction", search_settings.faction);
+		search_settings.effect = toml::find_or(v, "filter_by_effect", search_settings.effect);
+		search_settings.training = toml::find_or(v, "filter_by_training_skills", search_settings.training);
 		highlight_modified_items = toml::find_or(v, "highlight_modified_items", highlight_modified_items);
-		case_sensitive = toml::find_or(v, "case_sensitive", case_sensitive);
-		use_regex = toml::find_or(v, "use_regex", use_regex);
+		hide_deprecated = toml::find_or(v, "hide_deprecated", hide_deprecated);
+		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
+		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
 
 		// Column settings
 		column_actor_class = toml::find_or(v, "column_actor_class", column_actor_class);
@@ -233,17 +237,20 @@ namespace se::cs {
 
 				// Search settings
 				{ "clear_filter_on_tab_switch", clear_filter_on_tab_switch },
-				{ "filter_by_id", filter_by_id },
-				{ "filter_by_name", filter_by_name },
-				{ "filter_by_icon_path", filter_by_icon_path },
-				{ "filter_by_model_path", filter_by_model_path },
-				{ "filter_by_enchantment_id", filter_by_enchantment_id },
-				{ "filter_by_script_id", filter_by_script_id },
-				{ "filter_by_book_text", filter_by_book_text },
-				{ "filter_by_faction", filter_by_faction },
+				{ "filter_by_id", search_settings.id },
+				{ "filter_by_name", search_settings.name },
+				{ "filter_by_icon_path", search_settings.icon_path },
+				{ "filter_by_model_path", search_settings.model_path },
+				{ "filter_by_enchantment_id", search_settings.enchantment_id },
+				{ "filter_by_script_id", search_settings.script_id },
+				{ "filter_by_book_text", search_settings.book_text },
+				{ "filter_by_faction", search_settings.faction },
+				{ "filter_by_effect", search_settings.effect },
+				{ "filter_by_training_skills", search_settings.training },
 				{ "highlight_modified_items", highlight_modified_items },
-				{ "case_sensitive", case_sensitive },
-				{ "use_regex", use_regex },
+				{ "hide_deprecated", hide_deprecated },
+				{ "case_sensitive", search_settings.case_sensitive },
+				{ "use_regex", search_settings.use_regex },
 
 				// Column settings
 				{ "column_actor_class", column_actor_class },
@@ -362,6 +369,7 @@ namespace se::cs {
 		highlight_deleted_object_color = toml::find_or(v, "highlight_deleted_object_color", highlight_deleted_object_color);
 		highlight_modified_from_master_color = toml::find_or(v, "highlight_modified_from_master_color", highlight_modified_from_master_color);
 		highlight_modified_new_object_color = toml::find_or(v, "highlight_modified_new_object_color", highlight_modified_new_object_color);
+		highlight_deprecated_object_color = toml::find_or(v, "highlight_deprecated_object_color", highlight_deprecated_object_color);
 	}
 
 	toml::value Settings_t::ColorTheme::into_toml() const {
@@ -371,6 +379,7 @@ namespace se::cs {
 				{ "highlight_deleted_object_color", highlight_deleted_object_color },
 				{ "highlight_modified_from_master_color", highlight_modified_from_master_color },
 				{ "highlight_modified_new_object_color", highlight_modified_new_object_color },
+				{ "highlight_deprecated_object_color", highlight_deprecated_object_color },
 			}
 		);
 	}
@@ -379,6 +388,7 @@ namespace se::cs {
 		highlight_deleted_object_packed_color = RGB(highlight_deleted_object_color[0], highlight_deleted_object_color[1], highlight_deleted_object_color[2]);
 		highlight_modified_from_master_packed_color = RGB(highlight_modified_from_master_color[0], highlight_modified_from_master_color[1], highlight_modified_from_master_color[2]);
 		highlight_modified_new_object_packed_color = RGB(highlight_modified_new_object_color[0], highlight_modified_new_object_color[1], highlight_modified_new_object_color[2]);
+		highlight_deprecated_object_packed_color = RGB(highlight_deprecated_object_color[0], highlight_deprecated_object_color[1], highlight_deprecated_object_color[2]);
 	}
 
 	//
@@ -432,15 +442,15 @@ namespace se::cs {
 	//
 
 	void Settings_t::TextSearch::from_toml(const toml::value& v) {
-		use_regex = toml::find_or(v, "use_regex", use_regex);
-		case_sensitive = toml::find_or(v, "case_sensitive", case_sensitive);
+		search_settings.use_regex = toml::find_or(v, "use_regex", search_settings.use_regex);
+		search_settings.case_sensitive = toml::find_or(v, "case_sensitive", search_settings.case_sensitive);
 	}
 
 	toml::value Settings_t::TextSearch::into_toml() const {
 		return toml::value(
 			{
-				{ "use_regex", use_regex },
-				{ "case_sensitive", case_sensitive },
+				{ "use_regex", search_settings.use_regex },
+				{ "case_sensitive", search_settings.case_sensitive },
 			}
 		);
 	}
@@ -514,7 +524,7 @@ namespace se::cs {
 	}
 
 	void Settings_t::load() {
-		if (std::filesystem::current_path() != path::getInstallPath()) {
+		if (!std::filesystem::equivalent(std::filesystem::current_path(), path::getInstallPath())) {
 			log::stream << "[WARNING] Loading config file from unexpected working directory:" << std::endl;
 			log::stream << "  Expected: " << path::getInstallPath().string() << std::endl;
 			log::stream << "  Observed: " << std::filesystem::current_path().string() << std::endl;

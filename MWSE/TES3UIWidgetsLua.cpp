@@ -19,8 +19,8 @@ namespace mwse::lua {
 	using TES3::UI::registerProperty;
 
 	void bindTES3UIWidgets() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		//
 		// Button (PartButton)
@@ -40,6 +40,7 @@ namespace mwse::lua {
 			usertypeDefinition["overActive"] = sol::property(&WidgetButton::getColourActiveOver_lua, &WidgetButton::setColourActiveOver_lua);
 			usertypeDefinition["pressedActive"] = sol::property(&WidgetButton::getColourActivePressed_lua, &WidgetButton::setColourActivePressed_lua);
 			usertypeDefinition["element"] = sol::readonly_property(&WidgetButton::getElement);
+			usertypeDefinition["textElement"] = sol::readonly_property(&WidgetButton::getTextElement);
 		}
 
 		//

@@ -203,7 +203,7 @@ namespace mwse {
 		if (file != INVALID_HANDLE_VALUE)
 		{
 			//Tp21 2006-06-21: Stop MWSE getting stuck if there's no data available to be read (original code from timeslip)
-			if (*fileName == '|') { //check if it's an pipe
+			if (*fileName == '|') { //check if it's a pipe
 				DWORD toread;
 				PeekNamedPipe(file, NULL, 0, NULL, &toread, NULL); //look if there is something to read
 				if (!toread) return 0; //if not, return

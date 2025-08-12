@@ -62,7 +62,7 @@ local function shouldCreateTable(package)
 	return (
 		package.type == "lib" or
 		package.type == "class" and (
-			package.methods and	#package.methods > 0 or
+			package.methods and #package.methods > 0 or
 			package.functions and #package.functions > 0
 		)
 		or false
@@ -111,18 +111,19 @@ end
 
 ---@param type string?
 ---@param package package
+---@param markOptional boolean?
 ---@return string?
-local function getAllPossibleVariationsOfType(type, package)
+local function getAllPossibleVariationsOfType(type, package, markOptional)
 	if (not type) then
 		return nil
 	end
 
 	if (type:startswith("table<")) then
 		local keyType, valueType, other = type:match("table<(.+), (.+)>(.*)")
-		other = getAllPossibleVariationsOfType(other:sub(2), package)
+		other = getAllPossibleVariationsOfType(other:sub(2), package, markOptional)
 		return string.format("table<%s, %s>%s%s",
-			getAllPossibleVariationsOfType(keyType, package),
-			getAllPossibleVariationsOfType(valueType, package),
+			getAllPossibleVariationsOfType(keyType, package, markOptional),
+			getAllPossibleVariationsOfType(valueType, package, markOptional),
 			other ~= "" and "|" or "",
 			other
 		)
@@ -145,7 +146,7 @@ local function getAllPossibleVariationsOfType(type, package)
 		end
 	end
 
-	if (package.optional or package.default ~= nil) then
+	if (markOptional and (package.optional or package.default ~= nil)) then
 		-- If we only have one type, just add ? to it.
 		if (#types == 1 and (not types[1]:startswith("fun("))) then
 			if (not types[1]:endswith("?")) then
@@ -158,6 +159,22 @@ local function getAllPossibleVariationsOfType(type, package)
 	end
 
 	return table.concat(types, "|")
+end
+
+---@param name string?
+---@param package package
+---@return string?
+local function getNameAsOptional(name, package)
+	if (not name) then
+		return nil
+	end
+
+	if (package.optional or package.default ~= nil) then
+		if (not name:endswith("?")) then
+			name = name .. "?"
+		end
+	end
+	return name
 end
 
 ---@param package packageFunction
@@ -181,6 +198,14 @@ local function writeFunction(package, file, namespaceOverride)
 		file:write("--- @deprecated\n")
 	end
 
+	for _, generic in ipairs(package.generics or {}) do
+		file:write(string.format(
+			"--- @generic %s%s\n",
+			generic.name,
+			generic.inherits and (" : " .. generic.inherits) or ""
+		))
+	end
+
 	local functionHasTableArguments = false
 
 	for _, argument in ipairs(package.arguments or {}) do
@@ -195,18 +220,26 @@ local function writeFunction(package, file, namespaceOverride)
 			type = table.concat(types, "|")
 			description = "This table accepts the following values:"
 			for _, tableArgument in ipairs(argument.tableParams) do
-				description = description .. string.format("\n\n`%s`: %s — %s", tableArgument.name or "unknown", getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any", formatLineBreaks(common.getDescriptionString(tableArgument)))
+				description = description .. string.format("\n\n`%s`: %s — %s",
+					getNameAsOptional(tableArgument.name, tableArgument) or "unknown",
+					getAllPossibleVariationsOfType(tableArgument.type, tableArgument) or "any",
+					formatLineBreaks(common.getDescriptionString(tableArgument))
+				)
 			end
 		end
 		file:write(string.format("--- @param %s %s %s\n",
-			argument.name or "unknown",
+			getNameAsOptional(argument.name, argument) or "unknown",
 			getAllPossibleVariationsOfType(type, argument) or "any",
 			formatLineBreaks(description))
 		)
 	end
 
 	for _, returnPackage in ipairs(common.getConsistentReturnValues(package) or {}) do
-		file:write(string.format("--- @return %s %s %s\n", getAllPossibleVariationsOfType(returnPackage.type, returnPackage) or "any", returnPackage.name or "result", formatLineBreaks(common.getDescriptionString(returnPackage))))
+		file:write(string.format("--- @return %s %s %s\n",
+			getAllPossibleVariationsOfType(returnPackage.type, returnPackage, true) or "any",
+			returnPackage.name or "result",
+			formatLineBreaks(common.getDescriptionString(returnPackage))
+		))
 	end
 
 	file:write(string.format("function %s(%s) end\n\n", namespaceOverride or package.namespace, table.concat(getParamNames(package), ", ")))
@@ -218,7 +251,11 @@ local function writeFunction(package, file, namespaceOverride)
 				file:write(string.format("--- @class %s.%s\n", package.namespace, argument.name))
 
 				for _, param in ipairs(argument.tableParams) do
-					file:write(string.format("--- @field %s %s %s\n", param.name, getAllPossibleVariationsOfType(param.type, param), formatLineBreaks(common.getDescriptionString(param))))
+					file:write(string.format("--- @field %s %s %s\n",
+						getNameAsOptional(param.name, param),
+						getAllPossibleVariationsOfType(param.type, param),
+						formatLineBreaks(common.getDescriptionString(param))
+					))
 				end
 				file:write("\n")
 			end
@@ -332,13 +369,13 @@ local function build(package)
 	end
 	local outPath = lfs.join(outDir, package.key .. ".lua")
 
-	-- Write our file. Mark as autogenerated.
+	-- Mark the file as a meta file.
 	local file = assert(io.open(outPath, "w"))
+	file:write("--- @meta\n\n")
+
+	-- Write our file. Mark as autogenerated.
 	file:write("-- This file is autogenerated. Do not edit this file manually. Your changes will be ignored.\n")
 	file:write("-- More information: https://github.com/MWSE/MWSE/tree/master/docs\n\n")
-
-	-- Mark the file as a meta file.
-	file:write("--- @meta\n")
 
 	-- Write description.
 	if package.type == "function" then
@@ -402,13 +439,20 @@ local function build(package)
 
 
 	-- Write out fields.
-	if (package.values) then
-		table.sort(package.values, function(a, b)
-			return a.key:lower() < b.key:lower()
-		end)
-		for _, value in ipairs(package.values) do
-			if (not value.deprecated) then
-				file:write(string.format("--- @field %s %s %s\n", value.key, getAllPossibleVariationsOfType(value.valuetype, value) or "any", formatLineBreaks(common.getDescriptionString(value))))
+	local fieldKeys = { "values", "typeValues" }
+	for _, valueKey in ipairs(fieldKeys) do
+		if (package[valueKey]) then
+			table.sort(package[valueKey], function(a, b)
+				return a.key:lower() < b.key:lower()
+			end)
+			for _, value in ipairs(package[valueKey]) do
+				if (not value.deprecated) then
+					file:write(string.format("--- @field %s %s %s\n",
+						getNameAsOptional(value.key, value),
+						getAllPossibleVariationsOfType(value.valuetype, value) or "any",
+						formatLineBreaks(common.getDescriptionString(value))
+					))
+				end
 			end
 		end
 	end
@@ -435,7 +479,11 @@ local function build(package)
 		for _, key in ipairs(eventDataKeys) do
 			local data = eventData[key]
 			if (not data.deprecated) then
-				file:write(string.format("--- @field %s %s %s\n", key, getAllPossibleVariationsOfType(data.type, data) or "any", formatLineBreaks(common.getDescriptionString(data))))
+				file:write(string.format("--- @field %s %s %s\n",
+					getNameAsOptional(key, data),
+					getAllPossibleVariationsOfType(data.type, data) or "any",
+					formatLineBreaks(common.getDescriptionString(data))
+				))
 			end
 		end
 	end

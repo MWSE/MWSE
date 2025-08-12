@@ -153,7 +153,7 @@ namespace TES3 {
 		if (castType != TES3::SpellCastType::Ability && mwse::lua::event::SpellCastEvent::getEventEnabled()) {
 			// Trigger event, and update the cast chance.
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::SpellCastEvent(this, caster, castChance, *weakestSchoolId));
 			if (eventData.valid()) {
 				castChance = eventData.get_or<float>("castChance", castChance);
@@ -195,11 +195,43 @@ namespace TES3 {
 		setSpellFlag(SpellFlag::Flag::AlwaysSucceeds, value);
 	}
 
+	bool Spell::isAbility() const {
+		return castType == SpellCastType::Ability;
+	}
+
+	bool Spell::isBlightDisease() const {
+		return castType == SpellCastType::Blight;
+	}
+
+	bool Spell::isCorprusDisease() const {
+		return isBlightDisease() && hasEffect(EffectID::Corprus);
+	}
+
+	bool Spell::isCommonDisease() const {
+		return castType == SpellCastType::Disease;
+	}
+
+	bool Spell::isCurse() const {
+		return castType == SpellCastType::Curse;
+	}
+
+	bool Spell::isDisease() const {
+		return isCommonDisease() || isBlightDisease();
+	}
+
+	bool Spell::isPower() const {
+		return castType == SpellCastType::Power;
+	}
+
+	bool Spell::isSpell() const {
+		return castType == SpellCastType::Spell;
+	}
+
 	int Spell::getValue() const {
 		return DataHandler::get()->nonDynamicData->GMSTs[GMST::fSpellValueMult]->value.asFloat * magickaCost;
 	}
 
-	size_t Spell::getActiveEffectCount() {
+	size_t Spell::getActiveEffectCount() const {
 		size_t count = 0;
 		for (size_t i = 0; i < 8; ++i) {
 			if (effects[i].effectID != TES3::EffectID::None) {
@@ -209,13 +241,17 @@ namespace TES3 {
 		return count;
 	}
 
-	int Spell::getFirstIndexOfEffect(int effectId) {
+	int Spell::getFirstIndexOfEffect(int effectId) const {
 		for (size_t i = 0; i < 8; ++i) {
 			if (effects[i].effectID == effectId) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	bool Spell::hasEffect(int effectId) const {
+		return getFirstIndexOfEffect(effectId) != -1;
 	}
 
 	int Spell::calculateBasePuchaseCost() const {

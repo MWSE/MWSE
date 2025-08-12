@@ -99,6 +99,21 @@ myObject:toZero()
 
 ## Functions
 
+### `identity`
+<div class="search_terms" style="display: none">identity</div>
+
+Creates a new identity matrix.
+
+```lua
+local matrix = tes3matrix44.identity()
+```
+
+**Returns**:
+
+* `matrix` ([tes3matrix44](../types/tes3matrix44.md))
+
+***
+
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 

@@ -43,11 +43,11 @@ Roll (1-100) | Slot            | Fallback
 			description = "The projectile used that is hitting the given reference. This is nil for all melee combat.",
 		},
 		["slot"] = {
-			type = "number",
+			type = "tes3.armorSlot",
 			description = "The primary slot that is targeted.",
 		},
 		["fallback"] = {
-			type = "number",
+			type = "tes3.armorSlot",
 			description = "A secondary slot to check for equipment on, if no armor is found using the primary slot.",
 		},
 	},

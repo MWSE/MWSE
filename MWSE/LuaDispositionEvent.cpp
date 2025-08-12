@@ -18,8 +18,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table DispositionEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		// Make sure to handle the case where the mobile isn't available.

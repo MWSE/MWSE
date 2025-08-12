@@ -8,7 +8,7 @@
 
 A creature object that has been cloned. Typically represents a creature that has been instanced in the world.
 
-This type inherits the following: [tes3actor](../types/tes3actor.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3actor](../types/tes3actor.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `actorFlags`
@@ -144,7 +144,7 @@ The bounding box for the object.
 ### `cloneCount`
 <div class="search_terms" style="display: none">clonecount</div>
 
-*Read-only*. The number of clones that exist of this actor.
+*Read-only*. For base objects this is the number of clones that exist of this actor. For instances this is the ordinal number of the instance.
 
 **Returns**:
 
@@ -529,7 +529,7 @@ Simplified access to the base creature's sound generator. A creature to use inst
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -559,14 +559,16 @@ The soruceless flag of the object.
 
 ***
 
-### `stolenList`
-<div class="search_terms" style="display: none">stolenlist</div>
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
 
-A list of actors that the object has been stolen from.
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` (boolean)
 
 ***
 

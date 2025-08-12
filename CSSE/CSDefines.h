@@ -25,11 +25,13 @@ namespace se::cs {
 	struct GameSettingInitializer;
 	struct GlobalVariable;
 	struct ItemData;
+	struct Land;
 	struct LandTexture;
 	struct LeveledCreature;
 	struct LeveledItem;
 	struct Light;
 	struct Lockpick;
+	struct MagicEffect;
 	struct ModelLoader;
 	struct NPC;
 	struct Object;
@@ -111,6 +113,7 @@ namespace se::cs {
 			Spell = 'LEPS',
 			Static = 'TATS',
 			TES3 = '3SET',
+			Training = 'IART',
 			Weapon = 'PAEW',
 		};
 	}

@@ -249,7 +249,10 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		BaseObject* getBaseObject() const;
+		bool supportsActivate() const;
+
+		BaseObject * getBaseObject();
+		BaseObject const* getBaseObject() const;
 
 		bool isActor() const;
 		bool isItem() const;
@@ -374,6 +377,8 @@ namespace TES3 {
 		ReferenceList* getOwningCollection();
 
 		void setScale_lua(float scale);
+
+		bool supportsActivate() const;
 
 	};
 	static_assert(sizeof(Object) == 0x28, "TES3::Object failed size validation");

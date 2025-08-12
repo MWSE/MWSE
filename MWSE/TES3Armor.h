@@ -67,15 +67,20 @@ namespace TES3 {
 		//
 		// Other related this-call functions.
 		//
-		
+
 		float calculateArmorRating(MobileActor * actor);
 		float calculateArmorRatingForNPC(NPC * npc);
 		const char * getSlotName();
 		int getWeightClass();
 
+		void setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson);
+
 		//
 		// Custom functions.
 		//
+
+		void addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson);
+		void removeBodyPartsUnder(BodyPartManager* bodyPartManager) const;
 
 		float getArmorScalar() const;
 

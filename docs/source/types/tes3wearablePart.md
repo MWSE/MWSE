@@ -41,3 +41,35 @@ The type of the wearable part. Maps to [`tes3.activeBodyPart`](https://mwse.gith
 
 * `result` ([tes3.activeBodyPart](../references/active-body-parts.md))
 
+***
+
+### `valid`
+<div class="search_terms" style="display: none">valid</div>
+
+If true, the wearable is valid, and should be operated with.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+## Methods
+
+### `getPart`
+<div class="search_terms" style="display: none">getpart, part</div>
+
+Convenience function to get the relevant body part. Pass `isFemale` if the desired body part is female. If no female body part exists, the male bodyPart will be returned. This returns `nil` for invalid wearables.
+
+```lua
+local result = myObject:getPart(isFemale)
+```
+
+**Parameters**:
+
+* `isFemale` (boolean): If true, return the female part if it is valid. Otherwise, return the male part.
+
+**Returns**:
+
+* `result` ([tes3bodyPart](../types/tes3bodyPart.md))
+

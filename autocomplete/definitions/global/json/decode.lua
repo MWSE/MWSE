@@ -9,7 +9,7 @@ return {
 	arguments = {
 		{ name = "s", type = "string" },
 		{ name = "position", type = "number", optional = true, default = 1 },
-		{ name = "nullValue", type = "string|nil", optional = true, default = "nil" },
+		{ name = "nullValue", type = "string", optional = true },
 	},
 	valuetype = "table",
 }

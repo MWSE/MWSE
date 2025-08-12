@@ -44,7 +44,7 @@ namespace TES3 {
 	const auto TES3_AnimationData_playAnimationGroupForSection = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, AnimGroupID, int, int, int)>(0x470AE0);
 	void AnimationDataVanilla::playAnimationGroupForSection(AnimGroupID animationGroup, int bodySection, int startFlag, int loopCount) {
 		if (mwse::lua::event::PlayAnimationGroupEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::PlayAnimationGroupEvent(reinterpret_cast<AnimationData*>(this), int(animationGroup), bodySection, startFlag, loopCount));
 			if (response.get_type() == sol::type::table) {
 				sol::table eventData = response;

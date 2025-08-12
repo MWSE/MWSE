@@ -161,6 +161,7 @@ namespace TES3 {
 		Sound* findSound(const char*);
 		Sound* getSoundGeneratorSound(Actor*, int);
 		Class* findClass(const char*);
+		Race* findRace(const char*);
 		Faction* findFaction(const char*);
 		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, Vector3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
 		bool addNewObject(BaseObject*);
@@ -190,6 +191,8 @@ namespace TES3 {
 		std::reference_wrapper<Skill[27]> getSkills();
 
 		nonstd::span<GameFile*> getActiveMods();
+
+		IteratedList<GlobalVariable*>* getGlobalsList() const;
 
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
@@ -315,8 +318,8 @@ namespace TES3 {
 		char unknown_0xB4FB;
 		int backgroundThreadID; // 0xB4FC
 		int mainThreadID; // 0xB500
-		int backgroundThread; // 0xB504
-		int mainThread; // 0xB508
+		HANDLE backgroundThread; // 0xB504
+		HANDLE mainThread; // 0xB508
 		char unknown_0xB50C;
 		char unknown_0xB50D;
 		char unknown_0xB50E;
@@ -395,7 +398,11 @@ namespace TES3 {
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
 		void updateCollisionGroupsForActiveCells_raw(bool force = true);
 
+		void getClosestPrisonReferences(Reference** prisonMarker, Reference** stolenGoods);
+
 		bool isCellInMemory(const Cell* cell, bool unknown) const;
+
+		std::tuple<int, int> getCellBufferSize() const;
 
 		//
 		// Custom functions.
@@ -403,12 +410,9 @@ namespace TES3 {
 
 		std::reference_wrapper<ExteriorCellData* [9]> getExteriorCellData_lua();
 
-		//
-		// Debug values.
-		//
-
-		static std::unordered_map<DWORD, std::string_view> currentlyLoadingMeshes;
-		static std::recursive_mutex currentlyLoadingMeshesMutex;
+		long getGameSettingLong(int id) const;
+		float getGameSettingFloat(int id) const;
+		const char* getGameSettingString(int id) const;
 
 	};
 	static_assert(sizeof(DataHandler) == 0xB558, "TES3::DataHandler failed size validation");

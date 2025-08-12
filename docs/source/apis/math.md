@@ -798,7 +798,7 @@ local result = math.isclose(a, b, absoluteTolerance, relativeTolerance)
 
 **Returns**:
 
-* `result` (number)
+* `result` (boolean)
 
 ***
 

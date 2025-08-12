@@ -6,18 +6,48 @@
 #include "TES3HashMap.h"
 
 namespace NI {
+	struct DX8DeviceDesc {
+		int deviceType; // 0x0
+		D3DCAPS8 caps; // 0x4
+		int screenFormats[6]; // 0xD8 // NI::TList
+		bool renderWindowed; // 0xF0
+	};
+	static_assert(sizeof(DX8DeviceDesc) == 0xF4, "NI::DX8DeviceDesc failed size validation");
+
+	struct DX8AdapterDesc {
+		struct DX8AdapterModeDesc {
+			NI::PixelFormat pixelFormat; // 0x0
+			unsigned int unknown_0x20;
+			int d3dFormat; // 0x24
+		};
+		int index; // 0x0
+		D3DADAPTER_IDENTIFIER8 identifier; // 0x4
+		int unknown_0x430;
+		TArray<DX8AdapterModeDesc*> modeList; // 0x434
+		DX8DeviceDesc* HALDeviceDesc; // 0x44C
+		DX8DeviceDesc* REFDeviceDesc; // 0x450
+	};
+	static_assert(sizeof(DX8AdapterDesc) == 0x454, "NI::DX8AdapterDesc failed size validation");
+	static_assert(sizeof(DX8AdapterDesc::DX8AdapterModeDesc) == 0x28, "NI::DX8AdapterDesc::DX8AdapterModeDesc failed size validation");
+
+	struct DX8SystemDesc {
+		size_t adapterCount; // 0x0
+		NI::TArray<DX8AdapterDesc*> adapters; // 0x4
+	};
+	static_assert(sizeof(DX8SystemDesc) == 0x1C, "NI::DX8SystemDesc failed size validation");
+
 	struct DX8Renderer : Renderer {
 		Pointer<void> propertyStatePtr; // 0x1C
 		Pointer<void> effectStatePtr; // 0x20
 		IDirect3DDevice8* d3dDevice; // 0x24
 		HWND deviceWindowHandle; // 0x28
 		char driverDesc[512]; // 0x2C
-		DWORD cuurentAdapterIndex; // 0x22C
+		DWORD currentAdapterIndex; // 0x22C
 		DWORD d3dDeviceType; // 0x230
 		HWND focusWindow; // 0x234
 		DWORD d3dBehaviorFlags; // 0x238
 		D3DPRESENT_PARAMETERS d3dPresentParameters; // 0x23C
-		DWORD systemDesc; // 0x270
+		DX8SystemDesc* systemDesc; // 0x270
 		int unknown_0x274;
 		int unknown_0x278;
 		PackedColor backgroundColor; // 0x27C
@@ -265,6 +295,8 @@ namespace NI {
 		int unknown_0x694;
 		int unknown_0x698;
 		int unknown_0x69C;
+
+		DX8AdapterDesc* getCurrentAdapter() const;
 	};
 	static_assert(sizeof(DX8Renderer) == 0x6A0, "NI::DX8Renderer failed size validation");
 }

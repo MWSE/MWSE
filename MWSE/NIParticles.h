@@ -41,7 +41,7 @@ namespace NI {
 
 		Particles(ParticlesData* data);
 
-		static Pointer<Particles> Particles::create(unsigned short vertexCount, bool hasNormals, bool hasColors);
+		static Pointer<Particles> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
 
 		//
 		// Accessor methods.
@@ -54,7 +54,7 @@ namespace NI {
 	struct AutoNormalParticles : Particles {
 		AutoNormalParticles(AutoNormalParticlesData* data);
 
-		static Pointer<AutoNormalParticles> AutoNormalParticles::create(unsigned short vertexCount, bool hasColors);
+		static Pointer<AutoNormalParticles> create(unsigned short vertexCount, bool hasColors);
 
 		//
 		// Accessor methods.

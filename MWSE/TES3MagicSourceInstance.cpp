@@ -84,7 +84,7 @@ namespace TES3 {
 
 		// Fire off our event.
 		if (mwse::lua::event::AbsorbedMagicEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::AbsorbedMagicEvent(actor, this, absorb));
 			if (eventData.valid()) {
 				sol::optional<float> newAbsorb = eventData["absorb"];

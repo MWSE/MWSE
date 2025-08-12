@@ -63,7 +63,7 @@ namespace mwse::tes3::ui {
 		// Execute event. If the event blocked the call, bail.
 		if (mwse::lua::event::ShowRestWaitMenuEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::ShowRestWaitMenuEvent(allowRest, scripted));
 			if (eventData.valid()) {
 				if (eventData.get_or("block", false)) {

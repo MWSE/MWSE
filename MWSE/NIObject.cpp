@@ -133,7 +133,7 @@ namespace NI {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (mwse::Configuration::KeepAllNetImmerseObjectsAlive) {
 			auto cacheHit = niObjectCache.find(this);
@@ -144,7 +144,7 @@ namespace NI {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		// Loop through RTTI information until we find a type we like.
 		auto currentRTTI = getRunTimeTypeInformation();
@@ -331,7 +331,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObject(const Object* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (!niObjectCache.empty()) {
 			// Clear any events that make use of this object.
@@ -350,7 +350,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		niObjectCache.clear();
 	}
 }

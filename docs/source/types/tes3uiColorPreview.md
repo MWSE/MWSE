@@ -8,7 +8,7 @@
 
 A widget containing properties specific to color previews.
 
-This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md)
+This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md).
 ## Properties
 
 ### `alpha`

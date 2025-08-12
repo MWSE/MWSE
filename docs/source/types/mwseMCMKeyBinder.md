@@ -35,7 +35,7 @@ On the other hand, if the KeyBinder allows binding mouse keys in addition to key
 ```
 
 
-This type inherits the following: [mwseMCMBinder](../types/mwseMCMBinder.md), [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMBinder](../types/mwseMCMBinder.md), [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ??? example "Example: Filtering out key presses that aren't equal to the bound key combination"
 
 	```lua
@@ -54,7 +54,10 @@ This type inherits the following: [mwseMCMBinder](../types/mwseMCMBinder.md), [m
 	local config = mwse.loadConfig("myModConfig", defaultConfig)
 	
 	local function registerModConfig()
-		local template = mwse.mcm.createTemplate({ name = "Test Mod" })
+		local template = mwse.mcm.createTemplate({
+			name = "Test Mod",
+			config = config
+		})
 		template:register()
 	
 		local page = template:createSideBarPage({ label = "Settings" })
@@ -63,10 +66,7 @@ This type inherits the following: [mwseMCMBinder](../types/mwseMCMBinder.md), [m
 			label = "My combo",
 			description = "This combo does...",
 			allowMouse = true,
-			variable = mwse.mcm.createTableVariable({
-				id = "combo",
-				table = config
-			}),
+			configKey = "combo",
 		})
 	end
 	event.register(tes3.event.modConfigReady, registerModConfig)

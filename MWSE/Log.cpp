@@ -50,59 +50,58 @@ namespace mwse::log {
 	static std::ofstream logstream;
 	static odstream debugstream;
 
-	void OpenLog(const char* path)
-	{
+	void OpenLog(const char* path) {
 		logstream.open(path);
 	}
 
-	void CloseLog()
-	{
+	void CloseLog() {
 		logstream.close();
 	}
 
-	std::ostream& getLog()
-	{
+	std::ostream& getLog() {
 		return logstream;
 	}
 
-	std::ostream& getDebug()
-	{
+	std::ostream& getDebug() {
 		return debugstream;
 	}
 
 	void prettyDump(const void* data, const size_t length) {
+		prettyDump(data, length, logstream);
+	}
+
+	void prettyDump(const void* data, const size_t length, std::ostream& output) {
 		constexpr unsigned int LINE_WIDTH = 16u;
 
 		// Prepare log.
-		auto& log = getLog();
-		log << std::hex << std::setfill('0');
+		output << std::hex << std::setfill('0');
 
 		unsigned long address = size_t(data);
 		const size_t dataEnd = address + length;
 		while (address < size_t(data) + length) {
 			// Show address
-			log << std::setw(8) << address;
+			output << std::setw(8) << address;
 
 			// Show the hex codes
 			for (unsigned int offset = 0; offset < LINE_WIDTH; ++offset) {
 				if (address + offset < dataEnd) {
-					log << ' ' << std::setw(2) << unsigned int(*reinterpret_cast<const unsigned char*>(address + offset));
+					output << ' ' << std::setw(2) << unsigned int(*reinterpret_cast<const unsigned char*>(address + offset));
 				}
 				else {
-					log << "   ";
+					output << "   ";
 				}
 			}
 
 			// Show printable characters
-			log << "  ";
+			output << "  ";
 			for (unsigned int offset = 0; offset < LINE_WIDTH; ++offset) {
 				if (address + offset < dataEnd) {
-					if (*reinterpret_cast<const unsigned char*>(address + offset) < 32u) log << '.';
-					else log << *reinterpret_cast<const char*>(address + offset);
+					if (*reinterpret_cast<const unsigned char*>(address + offset) < 32u) output << '.';
+					else output << *reinterpret_cast<const char*>(address + offset);
 				}
 			}
 
-			log << std::endl;
+			output << "\n";
 			address += 0x10;
 		}
 	}

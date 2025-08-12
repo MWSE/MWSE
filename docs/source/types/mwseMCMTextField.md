@@ -8,7 +8,7 @@
 
 A TextField allows you to enter a single line of text and submit with a button. You can also force it to only accept numbers with the `numbersOnly` field.
 
-This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `buttonText`

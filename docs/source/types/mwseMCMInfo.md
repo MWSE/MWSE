@@ -12,7 +12,7 @@ The default behaviour of an Info is a text box with word wrapping.
 
 As this uses word wrap, it is strongly recommended you include a propHeight value for all parent categories and pages to ensure wrapping works correctly.
 
-This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `callback`

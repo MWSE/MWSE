@@ -8,7 +8,7 @@
 
 niRotatingParticlesData objects contain the geometry data necessary to render a niRotatingParticles object. When a niRotatingParticles-based object is created, the actual geometry data is stored in an attached niRotatingParticlesData object.
 
-This type inherits the following: [niParticlesData](../types/niParticlesData.md), [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticlesData](../types/niParticlesData.md), [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `activeCount`
@@ -288,7 +288,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

@@ -191,7 +191,7 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(impulseVelocity, value);
 	}
 
-	Vector3* MobileObject::getPosition() {
+	Vector3* MobileObject::getPosition() const {
 		// Delegate to reference.
 		return &reference->position;
 	}

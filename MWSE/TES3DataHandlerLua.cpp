@@ -34,8 +34,8 @@
 namespace mwse::lua {
 	void bindTES3DataHandler() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::NonDynamicData
 		{
@@ -50,7 +50,7 @@ namespace mwse::lua {
 			usertypeDefinition["classes"] = sol::readonly_property(&TES3::NonDynamicData::classes);
 			usertypeDefinition["dialogues"] = sol::readonly_property(&TES3::NonDynamicData::dialogues);
 			usertypeDefinition["factions"] = sol::readonly_property(&TES3::NonDynamicData::factions);
-			usertypeDefinition["globals"] = sol::readonly_property(&TES3::NonDynamicData::globals);
+			usertypeDefinition["globals"] = sol::readonly_property(&TES3::NonDynamicData::getGlobalsList);
 			usertypeDefinition["isSavingOrLoading"] = sol::readonly_property(&TES3::NonDynamicData::isSavingOrLoading);
 			usertypeDefinition["landTextures"] = sol::readonly_property(&TES3::NonDynamicData::landTextures);
 			usertypeDefinition["lastLoadedFile"] = sol::readonly_property(&TES3::NonDynamicData::lastLoadedOrSavedGame);
@@ -126,7 +126,9 @@ namespace mwse::lua {
 			usertypeDefinition["worldPickObjectRoot"] = sol::readonly_property(&TES3::DataHandler::worldPickObjectRoot);
 
 			// Basic function binding.
+			usertypeDefinition["getCellBufferSizes"] = &TES3::DataHandler::getCellBufferSize;
 			usertypeDefinition["updateCollisionGroupsForActiveCells"] = &TES3::DataHandler::updateCollisionGroupsForActiveCells;
+			usertypeDefinition["updateLightingForExteriorCells"] = &TES3::DataHandler::updateLightingForExteriorCells;
 
 			// Static variable binding.
 			usertypeDefinition["dontThreadLoad"] = sol::var(std::ref(TES3::DataHandler::dontThreadLoad));

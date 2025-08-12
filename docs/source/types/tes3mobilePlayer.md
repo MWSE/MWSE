@@ -8,7 +8,7 @@
 
 A mobile object for a the player.
 
-This type inherits the following: [tes3mobileNPC](../types/tes3mobileNPC.md), [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md)
+This type inherits the following: [tes3mobileNPC](../types/tes3mobileNPC.md), [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md).
 ## Properties
 
 ### `acrobatics`
@@ -357,6 +357,17 @@ The player's current bounty.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `bountyData`
+<div class="search_terms" style="display: none">bountydata</div>
+
+The player's bounty boutny data, which includes information on the bounty, as well as the number of infractions.
+
+**Returns**:
+
+* `result` ([tes3bountyData](../types/tes3bountyData.md))
 
 ***
 
@@ -1767,6 +1778,9 @@ The distance to the player. Updated every frame when the mobile is in an active 
 
 A vector that represents the 3D position of the object.
 
+!!! info
+	For actors, this is the point between the actor's feet.
+
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
@@ -2156,7 +2170,7 @@ Direct access to the actor's sound effect attribute.
 ### `spellReadied`
 <div class="search_terms" style="display: none">spellreadied</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor has a spell readied.
+Friendly access to the actor's flag that controls if the actor has a spell readied.
 
 **Returns**:
 
@@ -2554,8 +2568,12 @@ Equip may fail for the following reasons:
 - The exact match cannot be found when itemData is provided.
 - When a weapon is being used to attack, it cannot be replaced.
 
+!!! warning
+	This method doesn't trigger [equip](https://mwse.github.io/MWSE/events/equip/) or [equipped](https://mwse.github.io/MWSE/events/equipped/) events.
+
+
 ```lua
-local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ... })
+local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ..., playSound = ... })
 ```
 
 **Parameters**:
@@ -2566,6 +2584,7 @@ local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ...,
 	* `addItem` (boolean): *Default*: `false`. If `true`, the item will be added to the actor's inventory if needed.
 	* `selectBestCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the best condition and best charge will be selected.
 	* `selectWorstCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the worst condition and worst charge will be selected. Can be useful for selecting tools.
+	* `playSound` (boolean): *Default*: `true`. If `true`, the default item sound will be played for the item.
 
 **Returns**:
 
@@ -2673,6 +2692,25 @@ local result = myObject:getBootsWeight()
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `getEffectiveAttackDistance`
+<div class="search_terms" style="display: none">geteffectiveattackdistance, effectiveattackdistance</div>
+
+Returns the distance used for checking attack range. This is measured by the distance between the actors' bounding boxes edges, as if the actors were exactly facing each other. The number may be negative if the bounding boxes overlap.
+
+```lua
+local distance = myObject:getEffectiveAttackDistance(mobile)
+```
+
+**Parameters**:
+
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor.
+
+**Returns**:
+
+* `distance` (number)
 
 ***
 
@@ -3088,6 +3126,9 @@ myObject:stopCombat(force)
 <div class="search_terms" style="display: none">unequip</div>
 
 Unequips one or more items from the actor.
+
+!!! note
+	This method triggers the [unequipped](https://mwse.github.io/MWSE/events/unequipped/) event, unlike the `equip` method.
 
 ```lua
 local itemUnequipped = myObject:unequip({ item = ..., itemData = ..., type = ..., armorSlot = ..., clothingSlot = ... })

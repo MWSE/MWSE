@@ -15,6 +15,7 @@ namespace TES3 {
 		bool promptsEquipmentReevaluation() const;
 
 		int getBaseBarterValue(ItemData* itemData = nullptr, bool useSoulValue = true, bool useDurability = true) const;
+		bool getIsCarriable() const;
 
 		sol::table getStolenList_lua(sol::this_state ts);
 

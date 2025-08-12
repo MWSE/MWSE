@@ -9,6 +9,7 @@
 namespace mwse::lua::event {
 	CalculateMovementSpeed::CalculateMovementSpeed(MovementType type, TES3::MobileActor* mobile, float speed) :
 		ObjectFilteredEvent(NULL, mobile->reference),
+		m_Type(type),
 		m_MobileActor(mobile),
 		m_Speed(speed)
 	{
@@ -36,8 +37,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table CalculateMovementSpeed::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["type"] = m_Type;

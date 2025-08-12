@@ -2,6 +2,7 @@
 
 #include "TES3Actor.h"
 #include "TES3ItemData.h"
+#include "TES3Light.h"
 #include "TES3Misc.h"
 
 #include "CodePatchUtil.h"
@@ -56,6 +57,13 @@ namespace TES3 {
 		}
 
 		return value;
+	}
+
+	bool Item::getIsCarriable() const {
+		if (objectType == TES3::ObjectType::Light) {
+			return static_cast<const TES3::Light*>(this)->getCanCarry();
+		}
+		return true;
 	}
 
 	sol::table Item::getStolenList_lua(sol::this_state ts) {

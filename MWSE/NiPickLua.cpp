@@ -15,8 +15,8 @@
 
 namespace mwse::lua {
 	void bindNIPick() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		state.new_usertype<NI::Pick>("niPick",
 			// Disable construction of this type.

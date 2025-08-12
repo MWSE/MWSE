@@ -10,7 +10,7 @@ The niParticleSystemController animates an niParticles-based object. The control
 
 A particle spawn can be set to occur when the particle undergoes a specific condition, such as colliding with an object or dying. When such an event happens, naw particles are generated at the position of the old particle with the same attributes as the original particle. This behaviour will continue until the number of spawn generations equals the number of generations allowed. The number of new particles, precentage of particles that undergo spawning, speed and directional chaos values can be specified.
 
-This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTimeController](../types/niTimeController.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `active`
@@ -655,7 +655,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

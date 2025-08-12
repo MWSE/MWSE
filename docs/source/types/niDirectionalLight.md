@@ -8,7 +8,7 @@
 
 An object that represents a light source located at infinity with parallel light rays traveling in a given direction. The light will project illumination in its model-space positive X axis. The light may be pointed in any direction by rotating the light.
 
-This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`
@@ -540,6 +540,25 @@ local result = myObject:getObjectByName(name)
 
 ***
 
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
+
+***
+
 ### `getProperty`
 <div class="search_terms" style="display: none">getproperty, property</div>
 
@@ -807,7 +826,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -818,7 +837,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given dynamic effect flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

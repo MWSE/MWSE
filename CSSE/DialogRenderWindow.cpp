@@ -14,6 +14,7 @@
 #include "NINode.h"
 #include "NIPick.h"
 #include "NILines.h"
+#include "NITriShape.h"
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
@@ -23,6 +24,7 @@
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 #include "CSStatic.h"
+#include "CSLand.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowSelectionData.h"
@@ -1116,7 +1118,36 @@ namespace se::cs::dialog::render_window {
 	// Patch: Extend Render Window message handling.
 	//
 
-	NI::Texture* getLandscapeTextureUnderCursor() {
+	Land* getActiveExteriorLandForMesh(NI::Node* node) {
+		const auto dataHandler = DataHandler::get();
+		for (auto x = 0; x < 5; ++x) {
+			for (auto y = 0; y < 5; ++y) {
+				const auto exteriorData = dataHandler->exteriorCellData[x][y];
+				if (exteriorData == nullptr) {
+					continue;
+				}
+
+				auto land = exteriorData->cell->getLand();
+				if (land == nullptr) {
+					continue;
+				}
+
+				for (auto b = 0; b < 16; ++b) {
+					if (!land->blockCreated[b]) {
+						continue;
+					}
+
+					if (land->blockTextures[b] == node) {
+						return land;
+					}
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+	LandTexture* getLandscapeTextureUnderCursor() {
 		auto rendererController = RenderController::get();
 		auto sceneGraphController = SceneGraphController::get();
 
@@ -1126,27 +1157,48 @@ namespace se::cs::dialog::render_window {
 			return nullptr;
 		}
 
-		auto pick = sceneGraphController->landscapePick;
+		const auto pick = sceneGraphController->landscapePick;
 		if (!pick->pickObjects(&origin, &direction)) {
 			return nullptr;
 		}
 
-		auto firstResult = pick->results.at(0);
+		const auto firstResult = pick->results.at(0);
 		if (firstResult == nullptr || firstResult->object == nullptr) {
 			return nullptr;
 		}
 
-		auto texturingProperty = firstResult->object->getTexturingProperty();
+		const auto texturingProperty = firstResult->object->getTexturingProperty();
 		if (texturingProperty == nullptr) {
 			return nullptr;
 		}
 
-		auto baseMap = texturingProperty->getBaseMap();
+		const auto baseMap = texturingProperty->getBaseMap();
 		if (baseMap == nullptr) {
 			return nullptr;
 		}
 
-		return baseMap->texture;
+		const auto land = getActiveExteriorLandForMesh(firstResult->object->parentNode);
+		if (land == nullptr) {
+			return nullptr;
+		}
+
+		const auto landTextures = DataHandler::get()->recordHandler->landTextures;
+		const auto& texture = baseMap->texture;
+		for (auto x = 0; x < 16; ++x) {
+			for (auto y = 0; y < 16; ++y) {
+				const auto index = land->textureIndices[x][y];
+				auto landTexture = landTextures->at(index);
+				if (landTexture == nullptr) {
+					continue;
+				}
+
+				if (landTexture->texture == texture) {
+					return landTexture;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	bool PickLandscapeTexture(HWND hWnd) {

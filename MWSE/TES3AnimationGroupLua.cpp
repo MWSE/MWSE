@@ -10,8 +10,8 @@
 namespace mwse::lua {
 	void bindTES3AnimationGroup() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TES3::AnimationGroup::SoundGenKey
 		{

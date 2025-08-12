@@ -18,13 +18,11 @@ event.register(tes3.event.keyDown, onKeyPressed, { filter = tes3.scanCode.u })
 -- Here we define the body of our function.
 onButtonPressed = function(e)
 	-- This corresponds to the first button
-	--  of our message, which is "Yes"
+	-- of our message, which is "Yes"
 	if e.button == 0 then
 		tes3.addItem({
 			reference = tes3.player,
 			item = "ingred_bread_01_UNI3",
 		})
-	else
-		-- Do nothing
 	end
 end

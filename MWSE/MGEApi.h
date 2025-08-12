@@ -231,4 +231,16 @@ namespace mge {
 	inline MGEAPIv1* api = nullptr;
 	inline int apiVersion = 0;
 	inline const MacroFunctions* macros = nullptr;
+
+	struct VersionStruct {
+		BYTE major;
+		BYTE minor;
+		BYTE patch;
+		BYTE build;
+
+		inline bool valid() const {
+			return major > 0 || minor > 0;
+		}
+	};
+	extern VersionStruct guiVersion;
 }

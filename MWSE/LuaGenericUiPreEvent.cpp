@@ -17,8 +17,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table GenericUiPreEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["parent"] = m_Parent;
@@ -34,8 +34,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object GenericUiPreEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 
 		options["filter"] = m_Source->id;

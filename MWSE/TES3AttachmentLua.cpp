@@ -13,8 +13,8 @@
 namespace mwse::lua {
 	void bindTES3Attachment() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TES3::LightAttachmentNode
 		{
@@ -23,7 +23,7 @@ namespace mwse::lua {
 			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Access to node properties.
-			usertypeDefinition["light"] = &TES3::LightAttachmentNode::light;
+			usertypeDefinition["light"] = sol::property(&TES3::LightAttachmentNode::getLight, &TES3::LightAttachmentNode::setLight);
 			usertypeDefinition["value"] = &TES3::LightAttachmentNode::flickerPhase;
 		}
 

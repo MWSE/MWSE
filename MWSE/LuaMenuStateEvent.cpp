@@ -22,8 +22,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table MenuStateEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["menuMode"] = m_InMenuMode;
@@ -35,8 +35,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object MenuStateEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 
 		auto menu = TES3::UI::getMenuOnTop();

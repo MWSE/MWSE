@@ -2,27 +2,27 @@
 
 namespace TES3 {
 	float GlobalVariable::getValue() const {
-		switch (toupper(valueType)) {
-		case 'S': return short(value);
-		case 'L': return int(value);
+		switch (tolower(valueType)) {
+		case 's': return short(value);
+		case 'l': return int(value);
 		}
 		return value;
 	}
 
 	double GlobalVariable::getValue_lua() const {
-		switch (toupper(valueType)) {
-		case 'S': return short(value);
-		case 'L': return int(value);
+		switch (tolower(valueType)) {
+		case 's': return short(value);
+		case 'l': return int(value);
 		}
 		return value;
 	}
 
 	void GlobalVariable::setValue_lua(double v) {
-		switch (toupper(valueType)) {
-		case 'S':
+		switch (tolower(valueType)) {
+		case 's':
 			value = float(short(v));
 			break;
-		case 'L':
+		case 'l':
 			value = float(int(v));
 			break;
 		default:

@@ -11,8 +11,8 @@
 namespace mwse::lua {
 	void bindTES3ActorAnimationController() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TES3::ActorAnimationController
 		{
@@ -46,6 +46,7 @@ namespace mwse::lua {
 			usertypeDefinition["vertexColorProperty"] = &TES3::ActorAnimationController::vertexColorProperty;
 
 			// Custom properties.
+		usertypeDefinition["opacity"] = sol::property(&TES3::ActorAnimationController::getOpacity, &TES3::ActorAnimationController::setOpacity);
 			usertypeDefinition["weaponSpeed"] = sol::property(&TES3::ActorAnimationController::getWeaponAnimSpeed, &TES3::ActorAnimationController::setWeaponAnimSpeed);
 
 			// Basic function binding.

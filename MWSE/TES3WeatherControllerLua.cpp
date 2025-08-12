@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindTES3WeatherController() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Bind TES3::WeatherController::Particle
 		{
@@ -91,7 +91,7 @@ namespace mwse::lua {
 			usertypeDefinition["sunriseHour"] = &TES3::WeatherController::sunriseHour;
 			usertypeDefinition["sunsetDuration"] = &TES3::WeatherController::sunsetDuration;
 			usertypeDefinition["sunsetHour"] = &TES3::WeatherController::sunsetHour;
-			usertypeDefinition["timescaleClouds"] = &TES3::WeatherController::bTimescaleClouds;
+			usertypeDefinition["timescaleClouds"] = &TES3::WeatherController::timescaleClouds;
 			usertypeDefinition["transitionScalar"] = &TES3::WeatherController::transitionScalar;
 			usertypeDefinition["underwaterColor"] = &TES3::WeatherController::underwaterCol;
 			usertypeDefinition["underwaterColorWeight"] = &TES3::WeatherController::underwaterColWeight;

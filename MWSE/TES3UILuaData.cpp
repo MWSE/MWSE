@@ -10,6 +10,10 @@ namespace TES3::UI {
 		data = sol::nil;
 	}
 
+	sol::object LuaData::getData() const {
+		return data;
+	}
+
 	sol::object LuaData::getValue(const std::string_view& key) {
 		return data[key];
 	}

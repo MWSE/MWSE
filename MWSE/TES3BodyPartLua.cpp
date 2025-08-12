@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindTES3BodyPart() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::BodyPart.
 		{
@@ -52,6 +52,10 @@ namespace mwse::lua {
 			usertypeDefinition["type"] = &TES3::WearablePart::bodypartID;
 			usertypeDefinition["male"] = &TES3::WearablePart::male;
 			usertypeDefinition["female"] = &TES3::WearablePart::female;
+			usertypeDefinition["valid"] = sol::readonly_property(&TES3::WearablePart::isValid);
+
+			// Basic function binding.
+			usertypeDefinition["getPart"] = &TES3::WearablePart::getPart;
 		}
 
 		// Binding for TES3::BodyPartManager::AttachNode
@@ -99,6 +103,7 @@ namespace mwse::lua {
 			usertypeDefinition["setBodyPartByIdForObject"] = &TES3::BodyPartManager::setBodyPartByIdForObject;
 			usertypeDefinition["setBodyPartForObject"] = &TES3::BodyPartManager::setBodyPartForObject;
 			usertypeDefinition["updateForReference"] = &TES3::BodyPartManager::updateForReference;
+			usertypeDefinition["getAttachNode"] = &TES3::BodyPartManager::getAttachNode;
 		}
 	}
 }

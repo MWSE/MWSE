@@ -8,7 +8,7 @@
 
 An AI Activate package game object. Sets an actor to activate a reference.
 
-This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md)
+This type inherits the following: [tes3aiPackage](../types/tes3aiPackage.md).
 ## Properties
 
 ### `activateTarget`

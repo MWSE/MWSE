@@ -20,17 +20,23 @@ namespace TES3::UI {
 	Object* MenuInputController::lastTooltipObject = nullptr;
 	ItemData* MenuInputController::lastTooltipItemData = nullptr;
 	int MenuInputController::lastTooltipCount = 0;
+	Element* MenuInputController::lastTooltipSource = nullptr;
+	int MenuInputController::lastKeyPressDIK = 0xFF;
 
 	const auto TES3_MenuInputController_flushBufferedTextEvents = reinterpret_cast<void(__thiscall*)(MenuInputController*)>(0x58E9C0);
 	void MenuInputController::flushBufferedTextEvents() {
 		TES3_MenuInputController_flushBufferedTextEvents(this);
 	}
 
-	Element* MenuInputController::getTextInputElement() {
+	Element* MenuInputController::getTextInputElement() const {
 		return textInputFocus;
 	}
 
 	void MenuInputController::acquireTextInput(Element* element) {
+		if (element && !element->isValid()) {
+			throw std::invalid_argument("Element passed is not valid.");
+		}
+
 		// Set target for buffered text input
 		textInputFocus = element;
 
@@ -58,6 +64,8 @@ namespace TES3::UI {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::UiObjectTooltipEvent(tooltip, object, itemData, count));
 		}
 	}
+
+	Element* MenuInputController::previousTextInputFocus = nullptr;
 
 	void MenuInputController::updateObjectTooltip() {
 		// Do we have a valid tooltip object?
@@ -125,20 +133,28 @@ namespace TES3::UI {
 		TES3_updateFogOfWarRenderState();
 	}
 
-	bool MenuController::getInventoryMenuEnabled() {
+	bool MenuController::getInventoryMenuEnabled() const {
 		return inventoryMenuEnabled;
 	}
 
-	bool MenuController::getMagicMenuEnabled() {
+	bool MenuController::getMagicMenuEnabled() const {
 		return magicMenuEnabled;
 	}
 
-	bool MenuController::getMapMenuEnabled() {
+	bool MenuController::getMapMenuEnabled() const {
 		return mapMenuEnabled;
 	}
 
-	bool MenuController::getStatsMenuEnabled() {
+	bool MenuController::getStatsMenuEnabled() const {
 		return statsMenuEnabled;
+	}
+
+	bool MenuController::getShowCombatStats() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::ShowCombatStats);
+	}
+
+	void MenuController::setShowCombatStats(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::ShowCombatStats, state);
 	}
 
 	bool MenuController::getGodModeEnabled() const {
@@ -147,6 +163,14 @@ namespace TES3::UI {
 
 	void MenuController::setGodModeEnabled(bool state) {
 		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::GodModeEnabled, state);
+	}
+
+	bool MenuController::getLightingUpdatesDisabled() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::LightingUpdateDisabled);
+	}
+
+	void MenuController::setLightingUpdatesDisabled(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::LightingUpdateDisabled, state);
 	}
 
 	bool MenuController::getAIDisabled() const {
@@ -256,6 +280,14 @@ namespace TES3::UI {
 			UI::hideCursor();
 			UI::closeDialogueMenu();
 		}
+	}
+
+	bool MenuController::getShowKillStats() const {
+		return BITMASK_TEST(gameplayFlags, MenuControllerGameplayFlags::KillStats);
+	}
+
+	void MenuController::setShowKillStats(bool state) {
+		BITMASK_SET(gameplayFlags, MenuControllerGameplayFlags::KillStats, state);
 	}
 
 	bool MenuController::getScriptsDisabled() const {

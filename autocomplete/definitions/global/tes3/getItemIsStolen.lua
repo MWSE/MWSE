@@ -6,7 +6,7 @@ return {
 		type = "table",
 		tableParams = {
 			{ name = "item", type = "tes3item", description = "The item to check." },
-			{ name = "from", type = "tes3creature|tes3npc|tes3faction|nil", optional = true, description = "Where the item was stolen from. If not provided, the function will return true if the item was stolen from anyone." }
+			{ name = "from", type = "tes3creature|tes3npc|tes3faction", optional = true, description = "Where the item was stolen from. If not provided, the function will return true if the item was stolen from anyone." }
 		},
 	}},
 	returns = {

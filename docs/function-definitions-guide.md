@@ -34,9 +34,16 @@ Each function definition is just a regular Lua table. The following fields are a
 | ----------- | -------- | ----------- |
 | type        | `string` |  This flag is used when generating syntax highlighting files. The type should always be `"function"` for function definitions. |
 | description | `string` | The description for the function. |
+| generics    | `table`  | The generics available as types for arguments and return values. |
 | arguments   | `table`  | The arguments the function accepts. |
 | examples    | `table`  | A table with entries that are the names of the files included as examples. Each entry is a table itself with one available field, `title`. The title will be shown as the title of the example on the documentation page. |
 | returns     | `table`  | The table with return values. |
+
+`generics` table allows using [generic types](https://luals.github.io/wiki/annotations/#generic). The table has entries which are nested tables for each generic, with the following fields:
+| Field    | Type     | Description |
+| -------- | -------- | ----------- |
+| name     | `string` | The name of the generic type. This name can then be used as a type for any of the function's arguments or return values. |
+| inherits | `string` | An optional parent type for the generic. |
 
 `examples` table looks like this:
 | Field |   Type  | Description |

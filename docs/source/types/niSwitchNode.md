@@ -8,7 +8,7 @@
 
 Represents groups of multiple scene graph subtrees, only one of which is visible at any given time. They are useful for showing different states of a model depending on engine / lua logic. If you detach the active subtree, the switch node will set the active subtree to none, or to an index of -1.
 
-This type inherits the following: [niNode](../types/niNode.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niNode](../types/niNode.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ??? example "Example: A line along the view direction"
 
 	```lua
@@ -688,6 +688,25 @@ local result = myObject:getActiveChild()
 
 ***
 
+### `getChildIndexByName`
+<div class="search_terms" style="display: none">getchildindexbyname, childindexbyname</div>
+
+Searches the `children` array for a node with a name that matches the argument and returns the index of found node. If no node with given name is found returns `-1`.
+
+```lua
+local childIndex = myObject:getChildIndexByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `childIndex` (integer)
+
+***
+
 ### `getEffect`
 <div class="search_terms" style="display: none">geteffect, effect</div>
 
@@ -742,6 +761,25 @@ local result = myObject:getObjectByName(name)
 **Returns**:
 
 * `result` ([niAVObject](../types/niAVObject.md))
+
+***
+
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
 
 ***
 
@@ -1012,7 +1050,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -1023,7 +1061,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

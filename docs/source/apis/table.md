@@ -28,9 +28,9 @@ local result = table.bininsert(t, value, comp)
 
 **Parameters**:
 
-* `t` (table)
-* `value` (unknown)
-* `comp` (fun(a, b): boolean): *Optional*.
+* `t` (valueType[])
+* `value` (valueType)
+* `comp` (fun(a: valueType, b: valueType): boolean): *Optional*.
 
 **Returns**:
 
@@ -55,9 +55,9 @@ local index, highestMatch = table.binsearch(tbl, value, comp, findAll)
 
 **Parameters**:
 
-* `tbl` (table)
-* `value` (unknown): The value to search for.
-* `comp` (fun(a, b): boolean): *Optional*. The function used to sort `tbl`. If not provided, then the standard `<` operator will be used.
+* `tbl` (valueType[])
+* `value` (valueType): The value to search for.
+* `comp` (fun(a: valueType, b: valueType): boolean): *Optional*. The function used to sort `tbl`. If not provided, then the standard `<` operator will be used.
 * `findAll` (boolean): *Default*: `false`. If true,
 
 **Returns**:
@@ -78,12 +78,12 @@ local value, key = table.choice(t)
 
 **Parameters**:
 
-* `t` (table)
+* `t` ({ [keyType]: valueType })
 
 **Returns**:
 
-* `value` (unknown): The randomly chosen value.
-* `key` (unknown): The table key of the chosen value.
+* `value` (valueType): The randomly chosen value.
+* `key` (keyType): The table key of the chosen value.
 
 ***
 
@@ -104,6 +104,26 @@ table.clear(table)
 
 ***
 
+### `table.contains`
+<div class="search_terms" style="display: none">contains</div>
+
+Returns `true` if a `value` is contained in a table `t`, and `false` otherwise.
+
+```lua
+local result = table.contains(t, value)
+```
+
+**Parameters**:
+
+* `t` (table)
+* `value` (unknown)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `table.copy`
 <div class="search_terms" style="display: none">copy</div>
 
@@ -115,12 +135,12 @@ local result = table.copy(from, to)
 
 **Parameters**:
 
-* `from` (table)
-* `to` (table): *Optional*.
+* `from` (fromType)
+* `to` (toType): *Optional*.
 
 **Returns**:
 
-* `result` (table)
+* `result` (fromType, toType)
 
 ***
 
@@ -151,11 +171,11 @@ local result = table.deepcopy(t)
 
 **Parameters**:
 
-* `t` (table)
+* `t` (tableType)
 
 **Returns**:
 
-* `result` (table)
+* `result` (tableType)
 
 ***
 
@@ -181,6 +201,34 @@ local result = table.empty(t, deepCheck)
 
 ***
 
+### `table.equal`
+<div class="search_terms" style="display: none">equal</div>
+
+Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
+Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
+For example, all of the following assertions pass:
+```lua
+assert(table.equal({1, 2}, {1, 2}))
+assert({1, 2} ~= {1, 2})
+assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
+```
+
+
+```lua
+local result = table.equal(left, right)
+```
+
+**Parameters**:
+
+* `left` (table)
+* `right` (table)
+
+**Returns**:
+
+* `result` (boolean): True if the contents of `left` are equal to the contents of `right`. False otherwise.
+
+***
+
 ### `table.filter`
 <div class="search_terms" style="display: none">filter</div>
 
@@ -197,13 +245,13 @@ local result = table.filter(t, f, ...)
 
 **Parameters**:
 
-* `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): boolean)
+* `t` ({ [keyType]: valueType })
+* `f` (fun(k: keyType, v: valueType, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
 
-* `result` (table): The result of using `f` to filter out elements of `t`.
+* `result` ({ [keyType]: valueType }): The result of using `f` to filter out elements of `t`.
 
 ***
 
@@ -222,13 +270,13 @@ local result = table.filterarray(arr, f, ...)
 
 **Parameters**:
 
-* `arr` (table)
-* `f` (fun(i: integer, v: unknown, ...): boolean)
+* `arr` (valueType[])
+* `f` (fun(i: integer, v: valueType, ...): boolean): The function to use when filtering values of `t`. (This is sometimes called a predicate function.)
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
 
-* `result` (table): The result of using `f` to filter out elements of `t`.
+* `result` (valueType[]): The result of using `f` to filter out elements of `t`.
 
 ***
 
@@ -238,17 +286,17 @@ local result = table.filterarray(arr, f, ...)
 Returns the key for a given value, or `nil` if the table does not contain the value.
 
 ```lua
-local result = table.find(t, value)
+local key = table.find(t, value)
 ```
 
 **Parameters**:
 
-* `t` (table)
-* `value` (unknown)
+* `t` ({ [keyType]: valueType })
+* `value` (valueType)
 
 **Returns**:
 
-* `result` (unknown)
+* `key` (keyType, unknown, nil): A `key` such that `tbl[key] == value`, if such a key exists. `nil` otherwise.
 
 ***
 
@@ -263,13 +311,13 @@ local result = table.get(t, key, defaultValue)
 
 **Parameters**:
 
-* `t` (table)
-* `key` (any): The key to use to access the table.
-* `defaultValue` (any): The default value if the key didn't exist in the table.
+* `t` ({ [keyType]: valueType })
+* `key` (keyType): The key to use to access the table.
+* `defaultValue` (defaultValueType): The default value if the key didn't exist in the table.
 
 **Returns**:
 
-* `result` (any)
+* `result` (valueType, defaultValueType, unknown)
 
 ***
 
@@ -284,13 +332,13 @@ local result = table.getset(t, key, defaultValue)
 
 **Parameters**:
 
-* `t` (table)
-* `key` (any): The key to use to access the table.
-* `defaultValue` (any): The default value to set and return if the key didn't exist in the table.
+* `t` ({ [keyType]: valueType })
+* `key` (keyType): The key to use to access the table.
+* `defaultValue` (defaultValueType): The default value to set and return if the key didn't exist in the table.
 
 **Returns**:
 
-* `result` (any)
+* `result` (valueType, defaultValueType, unknown)
 
 ***
 
@@ -305,11 +353,11 @@ local result = table.invert(t)
 
 **Parameters**:
 
-* `t` (table)
+* `t` ({ [keyType]: valueType })
 
 **Returns**:
 
-* `result` (table)
+* `result` ({ [valueType]: keyType })
 
 ***
 
@@ -324,12 +372,12 @@ local keys = table.keys(t, sort)
 
 **Parameters**:
 
-* `t` (table): The table to get keys for.
-* `sort` (boolean, function, nil): *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
+* `t` ({ [keyType]: unknown }): The table to get keys for.
+* `sort` (boolean, fun(a: keyType, b: keyType): boolean): *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
 
 **Returns**:
 
-* `keys` (table): An array of all table keys.
+* `keys` (keyType[]): An array of all table keys.
 
 ***
 
@@ -345,13 +393,13 @@ local result = table.map(t, f, ...)
 
 **Parameters**:
 
-* `t` (table)
-* `f` (fun(k: unknown, v: unknown, ...): unknown)
+* `t` ({ [keyType]: valueType })
+* `f` (fun(k: keyType, v: valueType, ...): newValueType): The function to apply to each element of `t`.
 * `...` (any): Additional parameters to pass to `f`.
 
 **Returns**:
 
-* `result` (table): The result of applying `f` to each value in `t`.
+* `result` ({ [keyType]: newValueType }): The result of applying `f` to each value in `t`.
 
 ***
 
@@ -378,16 +426,16 @@ local newTable = table.new(narray, nhash)
 ### `table.removevalue`
 <div class="search_terms" style="display: none">removevalue, value</div>
 
-Removes a value from a given table. Returns true if the value was successfully removed.
+Removes a `value` from a given `list`. Returns `true` if the value was successfully removed.
 
 ```lua
-local result = table.removevalue(t, value)
+local result = table.removevalue(list, value)
 ```
 
 **Parameters**:
 
-* `t` (table)
-* `value` (unknown)
+* `list` ({ [unknown]: valueType })
+* `value` (valueType)
 
 **Returns**:
 
@@ -430,10 +478,31 @@ local result = table.size(t)
 
 ***
 
+### `table.swap`
+<div class="search_terms" style="display: none">swap</div>
+
+Sets a value in a table and returns any previously defined value for that key.
+
+```lua
+local oldValue = table.swap(t, key, value)
+```
+
+**Parameters**:
+
+* `t` ({ [keyType]: valueType })
+* `key` (keyType): The key to use to access the table.
+* `value` (any): The value to set.
+
+**Returns**:
+
+* `oldValue` (valueType, unknown, nil): The previously defined value at `t[key]`.
+
+***
+
 ### `table.traverse`
 <div class="search_terms" style="display: none">traverse</div>
 
-This function is used to iterate over a graph-like table. You can specify the key of the subtable that contains the child nodes.
+This function performs a DFS over a graph-like table. You can specify the key of the subtable that contains the child nodes.
 
 Each "node" is an object with a children table of other "nodes", each of which might have their own children. For example, a sceneNode is made up of niNodes, and each niNodes can have a list of niNode children. This is best used for recursive data structures like UI elements and sceneNodes etc.
 
@@ -443,12 +512,12 @@ local iterator = table.traverse(t, k)
 
 **Parameters**:
 
-* `t` (table): A table to transverse.
+* `t` (tableType): A table to transverse.
 * `k` (string): *Default*: `children`. The subtable key.
 
 **Returns**:
 
-* `iterator` (fun(): any)
+* `iterator` (fun(): tableType, any)
 
 ??? example "Example: Iterate over all scene nodes attached to player."
 
@@ -459,7 +528,7 @@ local iterator = table.traverse(t, k)
 	```lua
 	local function onLoaded()
 		mwse.log("Player's scene graph:")
-		for node in table.traverse({tes3.player.sceneNode}) do
+		for node in table.traverse({ tes3.player.sceneNode }) do
 			mwse.log("%s : %s", node.RTTI.name, node.name)
 		end
 	end
@@ -481,12 +550,12 @@ local values = table.values(t, sort)
 
 **Parameters**:
 
-* `t` (table): The table to get values for.
-* `sort` (boolean, function, nil): *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
+* `t` ({ [unknown]: valueType }): The table to get values for.
+* `sort` (boolean, fun(a: valueType, b: valueType): boolean): *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
 
 **Returns**:
 
-* `values` (table): An array of all table values.
+* `values` (valueType[]): An array of all table values.
 
 ***
 

@@ -11,8 +11,8 @@
 namespace mwse::lua {
 	void bindTES3MobileProjectile() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Define base mobile projectiles.
 		{

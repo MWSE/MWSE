@@ -7,10 +7,13 @@ If `findAll == true`, then this `binsearch` will return the lowest and highest i
 
 You can optionally provide a `comp` function. If provided, `binsearch` will treat `tbl` as if it had been sorted by `table.sort(tbl, comp)`.
 ]],
+	generics = {
+		{ name = "valueType" }
+	},
 	arguments = {
-		{ name = "tbl", type = "table" },
-		{ name = "value", type = "unknown", description = "The value to search for." },
-		{ name = "comp", type = "fun(a, b):boolean", optional = true, description = "The function used to sort `tbl`. If not provided, then the standard `<` operator will be used." },
+		{ name = "tbl", type = "valueType[]" },
+		{ name = "value", type = "valueType", description = "The value to search for." },
+		{ name = "comp", type = "fun(a: valueType, b: valueType): boolean", optional = true, description = "The function used to sort `tbl`. If not provided, then the standard `<` operator will be used." },
 		{ name = "findAll", type = "boolean", optional = true, default = false, description = "If true," },
 	},
 	returns = {

@@ -189,6 +189,8 @@ namespace TES3::UI {
 		// Custom functions.
 		//
 
+		bool isValid() const;
+
 		const char* getName() const;
 
 		std::string toJson() const;
@@ -317,6 +319,7 @@ namespace TES3::UI {
 		void setPropertyProperty_lua(sol::object key, sol::object value);
 
 		LuaData* getLuaDataContainer() const;
+		sol::object getAllLuaData() const;
 		sol::object getLuaData(const std::string_view& key) const;
 		void setLuaData(sol::this_state ts, const std::string_view& key, sol::object value);
 
@@ -332,6 +335,7 @@ namespace TES3::UI {
 		void saveMenuPosition();
 		bool loadMenuPosition();
 
+		bool reorder_lua(sol::table params);
 		bool reorderChildren_lua(sol::object insertBefore, sol::object moveFrom, int count);
 		void updateLayout_lua(sol::optional<bool> updateTimestamp = true);
 

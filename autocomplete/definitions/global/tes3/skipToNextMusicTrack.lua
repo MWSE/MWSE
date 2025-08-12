@@ -4,6 +4,7 @@ return {
 	arguments = {{
 		name = "params",
 		type = "table",
+		optional = true,
 		tableParams = {
 			{ name = "situation", type = "tes3.musicSituation", optional = true, description = [[Determines what kind of gameplay situation the music should activate for. By default, the function will determine the right solution based on the player's combat state. This value maps to [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.]] },
 			{ name = "crossfade", type = "number", optional = true, default = "1.0", description = "The duration in seconds of the crossfade from the old to the new track. The default is 1.0." },
