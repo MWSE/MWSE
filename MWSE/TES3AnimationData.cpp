@@ -959,7 +959,7 @@ namespace TES3 {
 			return false;
 		}
 
-		auto e = AnimationGroup::LuaEvent::toEvent(key->sound);
+		const auto e = key->getLuaEvent();
 		if (e) {
 			// This is really a "LuaEvent:" key. Signal an event.
 			if (mwse::lua::event::AnimationTriggerEvent::getEventEnabled()) {
