@@ -8,8 +8,8 @@ return {
 			description = "The path to the keyframes file, relative to Data Files\\Meshes.",
 		},
 		["textKeys"] = {
-			type = "table[]",
-			description = "An array of the loaded text key definition. New entries can be inserted as tables with the keys `time`, `key`, and `value`.",
+			type = "{time: number, key: string, value: string}[]",
+			description = "An array of the loaded text key definition. Entries can be modified or inserted as tables with the keys `time`, `key`, and `value`.",
 		},
 	},
 	filter = "path",
