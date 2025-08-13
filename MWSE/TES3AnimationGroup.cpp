@@ -9,7 +9,7 @@
 #include "Log.h"
 
 namespace TES3 {
-	static constexpr auto DEBUG_ANIM_PARSER = true;
+	static constexpr auto DEBUG_ANIM_PARSER = false;
 
 	/// <summary>
 	/// AnimationGroup
