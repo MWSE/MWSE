@@ -954,6 +954,7 @@ namespace TES3 {
 	//
 	// Patch: Lua events from animations. Dependent on new TES3::AnimationGroup parser.
 	//
+
 	bool __fastcall animUpdateSoundEvents_checkEvent(AnimationGroup::SoundGenKey* key, Reference* reference, bool flagExecuteEvent) {
 		if (!flagExecuteEvent || key->sound == nullptr) {
 			return false;

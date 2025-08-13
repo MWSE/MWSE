@@ -93,6 +93,7 @@ return {
 	["keyDown"] = "keyDown",
 	["keyframesLoad"] = "keyframesLoad",
 	["keyframesLoaded"] = "keyframesLoaded",
+	["keyframesParsed"] = "keyframesParsed",
 	["keyUp"] = "keyUp",
 	["leveledCreaturePicked"] = "leveledCreaturePicked",
 	["leveledItemPicked"] = "leveledItemPicked",

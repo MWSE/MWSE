@@ -273,6 +273,12 @@ namespace TES3 {
 		static std::string toCanonicalName(std::string_view name);
 		static int __cdecl parseSeqTextKeysToAnimGroups(NI::Sequence* sequence, const char* meshPath, KeyframeDefinition* kfData);
 	};
+
+	struct ParsedTextKeyEntry {
+		float time;
+		std::string key;
+		std::string value;
+	};
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::AnimationGroup)

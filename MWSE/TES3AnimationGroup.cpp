@@ -6,6 +6,9 @@
 
 #include "NIKeyframeManager.h"
 
+#include "LuaManager.h"
+#include "LuaKeyframesParsedEvent.h"
+
 #include "StringUtil.h"
 
 #include "Log.h"
@@ -224,9 +227,9 @@ namespace TES3 {
 		TextKeyParser(KeyframeDefinition* _kfData) : kfData(_kfData), firstGroup(nullptr), lastGroup(nullptr), matchedCreature(nullptr) {}
 
 		int parse(NI::Sequence* sequence, const char* meshPath);
-		void parseNoteAction(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue);
-		void parseNoteSound(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue);
-		void parseNoteLuaEvent(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue);
+		void parseNoteAction(float time, std::string_view noteKey, std::string_view noteValue);
+		void parseNoteSound(float time, std::string_view noteKey, std::string_view noteValue);
+		void parseNoteLuaEvent(float time, std::string_view noteKey, std::string_view noteValue);
 		float measureRootMovementSpeedOverLoop(NI::TimeController* rootController, AnimationGroup* animGroup);
 		void testResult(NI::Sequence* sequence, const char* meshPath);
 		static void preCacheMappings();
@@ -262,14 +265,15 @@ namespace TES3 {
 			mwse::log::getLog() << "[AnimParser] Parsing kf text keys for " << meshPath << std::endl;
 		}
 
+		std::vector<ParsedTextKeyEntry> entries;
+
 		for (auto& key : sequence->textKeys->getKeys()) {
 			if (!key.text) {
 				continue;
 			}
 
-			// Process multi-line text key.
+			// Go through and collect each key.
 			const char* p = key.text;
-
 			while (*p != '\0') {
 				// Trim newlines.
 				while (*p == '\r' || *p == '\n') { ++p; }
@@ -287,35 +291,55 @@ namespace TES3 {
 					auto valueBegin = splitAt + 1;
 					while (valueBegin != note.end() && *valueBegin == ' ') { ++valueBegin; }
 
-					string_view noteKey{ noteBegin, (size_t)std::distance(note.begin(), splitAt) };
-					string_view noteValue{ &*valueBegin, (size_t)std::distance(valueBegin, note.end()) };
+					std::string noteKey{ noteBegin, (size_t)std::distance(note.begin(), splitAt) };
+					std::string noteValue{ &*valueBegin, (size_t)std::distance(valueBegin, note.end()) };
 
-					// Dispatch based on key name.
-					if (mwse::string::iequal(noteKey, "Sound") || mwse::string::iequal(noteKey, "SoundGen")) {
-						parseNoteSound(key, noteKey, noteValue);
-					}
-					else if (mwse::string::iequal(noteKey, "LuaEvent")) {
-						parseNoteLuaEvent(key, noteKey, noteValue);
-					}
-					else {
-						parseNoteAction(key, noteKey, noteValue);
-					}
+					entries.push_back({ key.time, std::move(noteKey), std::move(noteValue) });
 				}
 
 				// Skip to next newline.
 				while (*p != '\0' && *p != '\n') { ++p; }
 			}
+		}
 
+		// Fire off events to let people modify the entries.
+		using mwse::lua::LuaManager;
+		using mwse::lua::event::KeyframesParsedEvent;
+		if (KeyframesParsedEvent::getEventEnabled()) {
+			const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::object response = stateHandle.triggerEvent(new KeyframesParsedEvent(meshPath, entries));
+			if (response.get_type() == sol::type::table) {
+				sol::table eventData = response;
+				sol::optional<sol::table> luaEntries = eventData["textKeys"];
+				if (luaEntries) {
+					KeyframesParsedEvent::refillEntryVector(luaEntries.value(), entries);
+				}
+			}
+		}
+
+		std::optional<float> previousTextKey;
+		for (const auto& entry : entries) {
+			// Dispatch based on key name.
+			if (mwse::string::iequal(entry.key, "Sound") || mwse::string::iequal(entry.key, "SoundGen")) {
+				parseNoteSound(entry.time, entry.key, entry.value);
+			}
+			else if (mwse::string::iequal(entry.key, "LuaEvent")) {
+				parseNoteLuaEvent(entry.time, entry.key, entry.value);
+			}
+			else {
+				parseNoteAction(entry.time, entry.key, entry.value);
+			}
 
 			// Remove expiring groups after all other notes in the key have been applied.
-			auto iterErase = std::remove_if(
-				activeAnimGroups.begin(), activeAnimGroups.end(),
-				[&](const AnimationGroup* g) {
+			if (previousTextKey && previousTextKey.value() != entry.time) {
+				const auto inExpiredGroups = [&](const AnimationGroup* g) {
 					return std::find(expireGroups.begin(), expireGroups.end(), g) != expireGroups.end();
-				}
-			);
-			activeAnimGroups.erase(iterErase, activeAnimGroups.end());
-			expireGroups.clear();
+				};
+				auto iterErase = std::remove_if(activeAnimGroups.begin(), activeAnimGroups.end(), inExpiredGroups);
+				activeAnimGroups.erase(iterErase, activeAnimGroups.end());
+				expireGroups.clear();
+			}
+			previousTextKey = entry.time;
 		}
 
 		// Calculate root movement and count groups.
@@ -343,7 +367,7 @@ namespace TES3 {
 		return groupCount;
 	}
 
-	void TextKeyParser::parseNoteAction(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue) {
+	void TextKeyParser::parseNoteAction(float time, std::string_view noteKey, std::string_view noteValue) {
 		// Check for animation name. Vanilla animations are indexed by an id, while all others are by string.
 		string lowercaseName = textAsLowercase(noteKey);
 		bool isNamedAnim = false;
@@ -443,8 +467,8 @@ namespace TES3 {
 
 				// Set action timing. The conditional is a safety check to avoid array overrun.
 				if (actionIndex < animGroup->actionCount) {
-					animGroup->actionTimings[actionIndex] = key.time;
-					animGroup->actionFrames[actionIndex] = timeToFrameNumber(key.time);
+					animGroup->actionTimings[actionIndex] = time;
+					animGroup->actionFrames[actionIndex] = timeToFrameNumber(time);
 
 					// Propagate Start/End timing to missing Loop Start/Loop End timing.
 					if (actionClass == AnimGroupActionClass::Looping) {
@@ -495,7 +519,7 @@ namespace TES3 {
 		}
 	}
 
-	void TextKeyParser::parseNoteSound(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue) {
+	void TextKeyParser::parseNoteSound(float time, std::string_view noteKey, std::string_view noteValue) {
 		auto records = DataHandler::get()->nonDynamicData;
 		Sound* matchedSound = nullptr;
 		std::optional<float> volumeParam, pitchParam;
@@ -543,8 +567,8 @@ namespace TES3 {
 				animGroup->setSoundGenCount(animGroup->soundGenCount + 1);
 				auto soundGen = &animGroup->soundGenKeys[newIndex];
 
-				soundGen->startTime = key.time;
-				soundGen->startFrame = timeToFrameNumber(key.time);
+				soundGen->startTime = time;
+				soundGen->startFrame = timeToFrameNumber(time);
 				soundGen->sound = matchedSound;
 				if (volumeParam) {
 					animGroup->setSoundGenVolume(newIndex, volumeParam.value());
@@ -556,7 +580,7 @@ namespace TES3 {
 		}
 	}
 
-	void TextKeyParser::parseNoteLuaEvent(const NI::TextKey& key, std::string_view noteKey, std::string_view noteValue) {
+	void TextKeyParser::parseNoteLuaEvent(float time, std::string_view noteKey, std::string_view noteValue) {
 		string_view eventParam;
 
 		// Decode event name and parameter. The parameter is the first text after a space.
@@ -583,8 +607,8 @@ namespace TES3 {
 			animGroup->setSoundGenCount(animGroup->soundGenCount + 1);
 			auto soundGen = &animGroup->soundGenKeys[newIndex];
 
-			soundGen->startTime = key.time;
-			soundGen->startFrame = timeToFrameNumber(key.time);
+			soundGen->startTime = time;
+			soundGen->startFrame = timeToFrameNumber(time);
 			soundGen->setLuaEvent(newEvent);
 		}
 	}

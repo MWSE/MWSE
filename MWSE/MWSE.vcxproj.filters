@@ -1803,6 +1803,9 @@
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
+    <ClInclude Include="LuaKeyframesParsedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3919,6 +3922,9 @@
     </ClCompile>
     <ClCompile Include="NIDX8Renderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaKeyframesParsedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

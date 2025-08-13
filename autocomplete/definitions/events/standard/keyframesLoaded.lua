@@ -1,7 +1,7 @@
 return {
 	type = "event",
 	description = "This event is triggered when a keyframes file is loaded.",
-	related = { "keyframesLoad" },
+	related = { "meshLoad", "keyframesLoad", "keyframesParsed" },
 	eventData = {
 		["path"] = {
 			type = "string",
