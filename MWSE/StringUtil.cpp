@@ -541,6 +541,13 @@ namespace mwse::string {
 		return string.compare(0, substring.size(), substring) == 0;
 	}
 
+	bool istarts_with(const std::string_view& string, const std::string_view& substring) {
+		if (substring.size() > string.size()) {
+			return false;
+		}
+		return _strnicmp(string.data(), substring.data(), substring.length()) == 0;
+	}
+
 	bool ends_with(const std::string_view& string, const std::string_view& substring) {
 		if (substring.size() >= string.size()) {
 			return false;

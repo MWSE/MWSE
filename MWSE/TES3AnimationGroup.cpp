@@ -6,6 +6,8 @@
 
 #include "NIKeyframeManager.h"
 
+#include "StringUtil.h"
+
 #include "Log.h"
 
 namespace TES3 {
@@ -190,25 +192,6 @@ namespace TES3 {
 		return frame / 15.0f;
 	}
 
-	// Case-insensitive operations for string_view.
-	bool textCIEquals(const std::string_view& text, const std::string_view& s) {
-		if (text.length() != s.length()) {
-			return false;
-		}
-		return _strnicmp(text.data(), s.data(), text.length()) == 0;
-	}
-
-	bool textCIEquals(const std::string_view& text, const char* s) {
-		if (text.length() != std::strlen(s)) {
-			return false;
-		}
-		return _strnicmp(text.data(), s, text.length()) == 0;
-	}
-
-	bool textCIStartsWith(const std::string_view& text, const char* startsWith) {
-		return _strnicmp(text.data(), startsWith, std::strlen(startsWith)) == 0;
-	}
-
 	std::string textAsLowercase(const std::string_view& text) {
 		std::string lowered{ text };
 		std::transform(lowered.begin(), lowered.end(), lowered.begin(), [](unsigned char c) { return std::tolower(c); });
@@ -308,10 +291,10 @@ namespace TES3 {
 					string_view noteValue{ &*valueBegin, (size_t)std::distance(valueBegin, note.end()) };
 
 					// Dispatch based on key name.
-					if (textCIEquals(noteKey, "Sound") || textCIEquals(noteKey, "SoundGen")) {
+					if (mwse::string::iequal(noteKey, "Sound") || mwse::string::iequal(noteKey, "SoundGen")) {
 						parseNoteSound(key, noteKey, noteValue);
 					}
-					else if (textCIEquals(noteKey, "LuaEvent")) {
+					else if (mwse::string::iequal(noteKey, "LuaEvent")) {
 						parseNoteLuaEvent(key, noteKey, noteValue);
 					}
 					else {
@@ -322,6 +305,7 @@ namespace TES3 {
 				// Skip to next newline.
 				while (*p != '\0' && *p != '\n') { ++p; }
 			}
+
 
 			// Remove expiring groups after all other notes in the key have been applied.
 			auto iterErase = std::remove_if(
@@ -383,7 +367,7 @@ namespace TES3 {
 			if (itt != kfData->namedGroups.end()) {
 				matchedGroupId = itt->second->groupId;
 			}
-			else if (textCIStartsWith(noteValue, "AsGroup ")) {
+			else if (mwse::string::istarts_with(noteValue, "AsGroup ")) {
 				// Check for behave-as-group assignment key. Named anims without AsGroup default to Idle9, set above.
 				string asGroup = textAsLowercase(noteValue.substr(8));
 				iterAnimName = mapAnimationNames.find(asGroup);
@@ -411,7 +395,7 @@ namespace TES3 {
 			auto actionText = TES3_animActionTextByActionClass[8 * actionIndex + int(actionClass)];
 
 			// Note this is a prefix match. e.g. actionText could be "Stop."
-			if (textCIStartsWith(noteValue, actionText)) {
+			if (mwse::string::istarts_with(noteValue, actionText)) {
 				// Find if the animation group exists already. Check active anim groups first, then all groups.
 				// Activate group if not already active.
 				AnimationGroup* animGroup = nullptr;
@@ -536,11 +520,11 @@ namespace TES3 {
 			pitchParam = float(std::atof(&*param2));
 		}
 
-		if (textCIEquals(noteKey, "SoundGen")) {
+		if (mwse::string::iequal(noteKey, "SoundGen")) {
 			// Convert soundgens to sounds based on creature.
 			auto iterSoundGenName = std::find_if(
 				TES3_soundGenGenericNames, TES3_soundGenGenericNamesEnd,
-				[&](const char* x) { return textCIStartsWith(noteValue, x); }
+				[&](const char* x) { return mwse::string::istarts_with(noteValue, x); }
 			);
 			if (iterSoundGenName != TES3_soundGenGenericNamesEnd) {
 				int index = iterSoundGenName - TES3_soundGenGenericNames;
@@ -676,7 +660,8 @@ namespace TES3 {
 					}
 				}
 				for (i = 0; i < agNew->soundGenCount; ++i) {
-					if (agNew->soundGenKeys[i].startFrame <= lastActionFrame && !AnimationGroup::LuaEvent::toEvent(agNew->soundGenKeys[i].sound)) {
+					const auto& key = agNew->soundGenKeys[i];
+					if (key.startFrame <= lastActionFrame && !key.hasLuaEvent()) {
 						newSoundGenCount++;
 					}
 				}
