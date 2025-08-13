@@ -767,9 +767,17 @@ namespace TES3 {
 	// Patch: Extended animation system.
 	//
 
+#if _DEBUG
+	// offsetof(AnimationData, customSources) + 0x4
+#define CUSTOM_SOURCES_OFFSET 0x7E8
+#else
+	// offsetof(AnimationData, customSources)
+#define CUSTOM_SOURCES_OFFSET 0x7E4
+#endif
+
 	__declspec(naked) NI::Sequence* addData_getLowerGroup() {
 		__asm {
-			mov edx, [esi + 0x7E4]	// edx = esi->customSources.begin
+			mov edx, [esi + CUSTOM_SOURCES_OFFSET]	// edx = esi->customSources.begin
 			lea eax, [edi + edi*2]
 			mov eax, [edx + eax*4]	// eax = (edx + edi * sizeof(SequenceGroup))->lower
 			ret
@@ -784,7 +792,7 @@ namespace TES3 {
 
 	__declspec(naked) AnimationDataVanilla::SequenceGroup* setSourceKeyFrames_getSequenceGroup() {
 		__asm {
-			mov ebp, [esi + 0x7E4]	// ebp = esi->customSources.begin
+			mov ebp, [esi + CUSTOM_SOURCES_OFFSET]	// ebp = esi->customSources.begin
 			lea eax, [edi + edi*2]
 			lea ebp, [ebp + eax*4]	// ebp = ebp + edi * sizeof(SequenceGroup)
 			ret
@@ -817,7 +825,7 @@ namespace TES3 {
 			lea ecx, [edx + edx*2]
 			add ecx, edi				// ecx += sectionIndex
 			mov edx, [esp + 0x24]		// mov edx, [esp+this]
-			mov edx, [edx + 0x7E4]		// edx = edx->customSources.begin
+			mov edx, [edx + CUSTOM_SOURCES_OFFSET]		// edx = edx->customSources.begin
 			mov [edx + ecx*4], eax		// *sequence = eax
 			jmp $ + 0x16				// jump to end of loop
 		}
@@ -826,7 +834,7 @@ namespace TES3 {
 
 	__declspec(naked) NI::Sequence* update_getUpperSequence() {
 		__asm {
-			mov ecx, [ebp + 0x7E4]	// ecx = ebp->customSources.begin
+			mov ecx, [ebp + CUSTOM_SOURCES_OFFSET]	// ecx = ebp->customSources.begin
 			lea edx, [eax + eax*2 + 1]
 			mov eax, [ecx + edx*4]	// eax = (ecx + eax * sizeof(SequenceGroup))->upper
 			ret
@@ -834,7 +842,7 @@ namespace TES3 {
 	}
 	__declspec(naked) NI::Sequence* update_getLeftArmSequence() {
 		__asm {
-			mov ecx, [ebp + 0x7E4]	// ecx = ebp->customSources.begin
+			mov ecx, [ebp + CUSTOM_SOURCES_OFFSET]	// ecx = ebp->customSources.begin
 			lea edx, [eax + eax*2 + 2]
 			mov eax, [ecx + edx*4]	// eax = (ecx + eax * sizeof(SequenceGroup))->leftArm
 			ret
@@ -843,7 +851,7 @@ namespace TES3 {
 
 	__declspec(naked) NI::Sequence* calcRootMovement_getLowerSequence() {
 		__asm {
-			mov ecx, [esi + 0x7E4]	// ecx = esi->customSources.begin
+			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
 			lea eax, [eax + eax*2]
 			mov ecx, [ecx + eax*4]	// ecx = (ecx + eax * sizeof(SequenceGroup))->lower
 			ret
@@ -858,7 +866,7 @@ namespace TES3 {
 
 	__declspec(naked) NI::Sequence* setSequencePlayback_getSequence() {
 		__asm {
-			mov ecx, [esi + 0x7E4]	// ecx = esi->customSources.begin
+			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
 			lea eax, [eax + eax*2]
 			add eax, edi
 			mov eax, [ecx + eax*4]	// eax = *(ecx + eax * sizeof(SequenceGroup) + edi * sizeof(NI::Sequence*))
@@ -873,7 +881,7 @@ namespace TES3 {
 	const size_t patchSetSequencePlayback_getSequence_size = 2;
 	__declspec(naked) NI::Sequence* setSequencePlayback_getUpperSequence() {
 		__asm {
-			mov ecx, [esi + 0x7E4]	// ecx = esi->customSources.begin
+			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
 			lea edx, [eax + eax*2 + 1]
 			mov eax, [ecx + edx*4]	// eax = (ecx + eax * sizeof(SequenceGroup))->upper
 			ret
@@ -881,7 +889,7 @@ namespace TES3 {
 	}
 	__declspec(naked) NI::Sequence* setSequencePlayback_getLeftArmSequence() {
 		__asm {
-			mov ecx, [esi + 0x7E4]	// ecx = esi->customSources.begin
+			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
 			lea edx, [eax + eax*2 + 2]
 			mov eax, [ecx + edx*4]	// eax = (ecx + eax * sizeof(SequenceGroup))->leftArm
 			ret
@@ -890,7 +898,7 @@ namespace TES3 {
 
 	__declspec(naked) NI::Sequence* setAnimationStateDirect_getSequence() {
 		__asm {
-			mov ecx, [esi + 0x7E4]	// ecx = esi->customSources.begin
+			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
 			lea eax, [eax + eax*2]
 			add eax, edi
 			mov eax, [ecx + eax*4]	// eax = *(ecx + eax * sizeof(SequenceGroup) + edi * sizeof(NI::Sequence*))
