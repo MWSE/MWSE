@@ -1092,10 +1092,11 @@ namespace TES3 {
 
 		// Replace text key to animation group parser.
 		genCallEnforced(0x4EDC8A, 0x4C30F0, reinterpret_cast<DWORD>(&KeyframeDefinition::parseSeqTextKeysToAnimGroups));
+
 		// Disable "Animation group note problem" warning triggered by testing custom notes.
-#if _DEBUG
-		writeByteUnprotected(0x4C3A71, 0xEB);
-#endif
+		if constexpr (DEBUG_ANIM_PARSER) {
+			writeByteUnprotected(0x4C3A71, 0xEB);
+		}
 
 		// Patch every mergeAnimGroups call.
 		auto AnimationDataExtended_mergeAnimGroups = &AnimationData::mergeAnimGroups;

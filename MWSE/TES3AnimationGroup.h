@@ -172,6 +172,8 @@ namespace TES3 {
 		MeleeWeapon,
 	};
 
+	static constexpr auto DEBUG_ANIM_PARSER = false;
+
 	struct AnimationGroup : BaseObject {
 		struct LuaEvent {
 			static constexpr unsigned int eventTag = 0x4541554C; // "LUAE"
