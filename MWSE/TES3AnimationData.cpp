@@ -768,10 +768,11 @@ namespace TES3 {
 	//
 
 #if _DEBUG
-	// offsetof(AnimationData, customSources) + 0x4
+	// Debug builds add another member to vectors, increasing the offset of the data pointer.
+	static constexpr auto CUSTOM_SOURCES_OFFSET_C = offsetof(AnimationData, customSources) + 0x4;
 #define CUSTOM_SOURCES_OFFSET 0x7E8
 #else
-	// offsetof(AnimationData, customSources)
+	static constexpr auto CUSTOM_SOURCES_OFFSET_C = offsetof(AnimationData, customSources);
 #define CUSTOM_SOURCES_OFFSET 0x7E4
 #endif
 
