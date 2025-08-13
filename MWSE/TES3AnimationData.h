@@ -88,7 +88,6 @@ namespace TES3 {
 		void playAnimationGroup(AnimGroupID animationGroup, int startFlag = 0, int loopCount = -1);
 		void cancelAnimationLoop(bool jumpToLoopEnd);
 		bool setOverrideSourceKeyframes(KeyframeDefinition* animData);
-		bool hasOverrideAnimations() const;
 		void setTiming(AnimGroupID groupId, int bodySection, float t);
 		void swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2);
 
@@ -155,6 +154,8 @@ namespace TES3 {
 		bool hasNamedGroup(std::string_view name);
 		void mergeAnimGroup(AnimationGroup* animGroup, int sourceIndex);
 		void onSectionInheritAnim(int bodySection);
+
+		bool hasOverrideAnimations() const;
 
 		void revertSwitchedGroup(const TemporarySwitchedGroup& tsg);
 		void revertTemporarySwitches(int bodySection);

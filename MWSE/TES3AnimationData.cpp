@@ -138,10 +138,6 @@ namespace TES3 {
 		return success;
 	}
 
-	bool AnimationDataVanilla::hasOverrideAnimations() const {
-		return keyframeSources[0].lower != nullptr;
-	}
-
 	void AnimationDataVanilla::setTiming(AnimGroupID groupId, int bodySection, float t) {
 		// Update timing.
 		timings[bodySection] = t;
@@ -606,6 +602,10 @@ namespace TES3 {
 			manager->activateSequence(customSources[newSource].at(bodySection));
 			currentAnimGroupSources[bodySection] = newSource;
 		}
+	}
+
+	bool AnimationData::hasOverrideAnimations() const {
+		return customSources[0].lower != nullptr;
 	}
 
 	bool AnimationData::getVanillaTarget(AnimGroupID groupId, TargetAnimGroup& out_target) {
