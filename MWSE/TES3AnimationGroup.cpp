@@ -109,7 +109,7 @@ namespace TES3 {
 
 	AnimationGroup::LuaEvent* AnimationGroup::LuaEvent::toEvent(Sound* sound) {
 		LuaEvent* e = reinterpret_cast<LuaEvent*>(sound);
-		return (e->tag == eventTag) ? e : nullptr;
+		return (e && e->tag == eventTag) ? e : nullptr;
 	}
 
 	bool AnimationGroup::SoundGenKey::hasLuaEvent() const {
