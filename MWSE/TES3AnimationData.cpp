@@ -1082,6 +1082,10 @@ namespace TES3 {
 		// Override parser call in KeyframeDefinition ctor.
 		writePatchCodeUnprotected(0x4EDC87, reinterpret_cast<BYTE*>(&patchKeyframeDefinitionCallParser), patchKeyframeDefinitionCallParser_size);
 
+		// Extend AnimationGroup dtor to clean up memory.
+		auto AnimationGroup_dtor = &AnimationGroup::dtor;
+		genCallEnforced(0x492863, 0x492880, *reinterpret_cast<DWORD*>(&AnimationGroup_dtor));
+
 		// Patch: Allow changing cast animation speed. Custom speed is read and applied on initial cast.
 		writePatchCodeUnprotected(0x46CAC0, reinterpret_cast<BYTE*>(&patchApplyAnimationSpeed), patchApplyAnimationSpeed_size);
 		genCallUnprotected(0x541B81, reinterpret_cast<DWORD>(&setAnimSpeedOnCast), 0xA);

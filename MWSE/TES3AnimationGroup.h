@@ -177,10 +177,12 @@ namespace TES3 {
 			static constexpr unsigned int eventTag = 0x4541554C; // "LUAE"
 
 			unsigned int tag;
+			int refCount;
 			std::string id;
 			std::string param;
 
-			LuaEvent() : tag(eventTag) {}
+			LuaEvent(const std::string_view& _id, const std::string_view& _param);
+			~LuaEvent();
 			std::string toString() const;
 			static LuaEvent* toEvent(Sound* sound);
 		};
@@ -198,6 +200,7 @@ namespace TES3 {
 			~SoundGenKey() = delete;
 
 			bool hasLuaEvent() const;
+			void freeLuaEvent();
 
 			Sound* getSound() const;
 			void setSound(Sound* sound);

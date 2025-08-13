@@ -15,7 +15,7 @@ namespace TES3 {
 	/// AnimationGroup
 	/// </summary>
 
-	const auto TES3_AnimationGroup_ctor = reinterpret_cast<AnimationGroup* (__thiscall*)(AnimationGroup*, int)>(0x4927F0);
+	const auto TES3_AnimationGroup_ctor = reinterpret_cast<AnimationGroup * (__thiscall*)(AnimationGroup*, int)>(0x4927F0);
 	AnimationGroup* AnimationGroup::ctor(int animGroupId) {
 		TES3_AnimationGroup_ctor(this, animGroupId);
 
@@ -31,6 +31,13 @@ namespace TES3 {
 
 	const auto TES3_AnimationGroup_dtor = reinterpret_cast<void(__thiscall*)(AnimationGroup*)>(0x492880);
 	void AnimationGroup::dtor() {
+		// Clean up lua events.
+		for (auto& key : getSoundGenKeys()) {
+			if (key.hasLuaEvent()) {
+				key.freeLuaEvent();
+			}
+		}
+
 		TES3_AnimationGroup_dtor(this);
 	}
 
@@ -81,6 +88,21 @@ namespace TES3 {
 		return { soundGenKeys, soundGenCount };
 	}
 
+	AnimationGroup::LuaEvent::LuaEvent(const std::string_view& _id, const std::string_view& _param) :
+		tag(eventTag),
+		refCount(0),
+		id(_id),
+		param(_param)
+	{
+
+	}
+
+	AnimationGroup::LuaEvent::~LuaEvent() {
+		if constexpr (DEBUG_ANIM_PARSER) {
+			mwse::log::getLog() << fmt::format("[AnimParser] Cleaning up lua event. ID: '{}'; Param: '{}'\n", id, param);
+		}
+	}
+
 	std::string AnimationGroup::LuaEvent::toString() const {
 		return fmt::format("{} {}", id, param);
 	}
@@ -92,6 +114,18 @@ namespace TES3 {
 
 	bool AnimationGroup::SoundGenKey::hasLuaEvent() const {
 		return LuaEvent::toEvent(sound) != nullptr;
+	}
+
+	void AnimationGroup::SoundGenKey::freeLuaEvent() {
+		if (!event) {
+			return;
+		}
+
+		event->refCount--;
+		if (event->refCount == 0) {
+			delete event;
+		}
+		event = nullptr;
 	}
 
 	Sound* AnimationGroup::SoundGenKey::getSound() const {
@@ -109,15 +143,17 @@ namespace TES3 {
 		if (!hasLuaEvent()) {
 			return nullptr;
 		}
-		return this->event;
+		return event;
 	}
 
-	void AnimationGroup::SoundGenKey::setLuaEvent(LuaEvent* event) {
-		if (this->event && this->event != event) {
-			delete this->event;
-			this->event = nullptr;
+	void AnimationGroup::SoundGenKey::setLuaEvent(LuaEvent* e) {
+		if (event && event != e) {
+			freeLuaEvent();
 		}
-		this->event = event;
+		event = e;
+		if (event) {
+			event->refCount++;
+		}
 	}
 
 	/// <summary>
@@ -556,14 +592,10 @@ namespace TES3 {
 		}
 
 		// Create new event data and place it in the soundgen array of active groups.
-		// TODO: This new object leaks a small amount of memory. This needs to be cleaned up, but it may be referenced in multiple anim groups.
 		if constexpr (DEBUG_ANIM_PARSER) {
 			mwse::log::getLog() << "[AnimParser] LuaEvent name=" << eventName << " param=" << eventParam << std::endl;
 		}
-		auto newEvent = new AnimationGroup::LuaEvent();
-		newEvent->id.assign(eventName);
-		newEvent->param.assign(eventParam);
-
+		const auto newEvent = new AnimationGroup::LuaEvent(eventName, eventParam);
 		for (auto animGroup : activeAnimGroups) {
 			int newIndex = animGroup->soundGenCount;
 			animGroup->setSoundGenCount(animGroup->soundGenCount + 1);
@@ -571,7 +603,7 @@ namespace TES3 {
 
 			soundGen->startTime = key.time;
 			soundGen->startFrame = timeToFrameNumber(key.time);
-			soundGen->event = newEvent;
+			soundGen->setLuaEvent(newEvent);
 		}
 	}
 
