@@ -81,9 +81,43 @@ namespace TES3 {
 		return { soundGenKeys, soundGenCount };
 	}
 
+	std::string AnimationGroup::LuaEvent::toString() const {
+		return fmt::format("{} {}", id, param);
+	}
+
 	AnimationGroup::LuaEvent* AnimationGroup::LuaEvent::toEvent(Sound* sound) {
 		LuaEvent* e = reinterpret_cast<LuaEvent*>(sound);
 		return (e->tag == eventTag) ? e : nullptr;
+	}
+
+	bool AnimationGroup::SoundGenKey::hasLuaEvent() const {
+		return LuaEvent::toEvent(sound) != nullptr;
+	}
+
+	Sound* AnimationGroup::SoundGenKey::getSound() const {
+		if (hasLuaEvent()) {
+			return nullptr;
+		}
+		return sound;
+	}
+
+	void AnimationGroup::SoundGenKey::setSound(Sound* sound) {
+		this->sound = sound;
+	}
+
+	AnimationGroup::LuaEvent* AnimationGroup::SoundGenKey::getLuaEvent() const {
+		if (!hasLuaEvent()) {
+			return nullptr;
+		}
+		return this->event;
+	}
+
+	void AnimationGroup::SoundGenKey::setLuaEvent(LuaEvent* event) {
+		if (this->event && this->event != event) {
+			delete this->event;
+			this->event = nullptr;
+		}
+		this->event = event;
 	}
 
 	/// <summary>

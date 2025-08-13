@@ -13,6 +13,17 @@ namespace mwse::lua {
 		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.getState();
 
+		// Bind TES3::AnimationGroup::LuaEvent
+		{
+			// Start our usertype.
+			auto usertypeDefinition = state.new_usertype<TES3::AnimationGroup::LuaEvent>("tes3animationGroupLuaEvent");
+			usertypeDefinition["new"] = sol::no_constructor;
+			usertypeDefinition[sol::meta_function::to_string] = &TES3::AnimationGroup::LuaEvent::toString;
+
+			usertypeDefinition["id"] = &TES3::AnimationGroup::LuaEvent::id;
+			usertypeDefinition["param"] = &TES3::AnimationGroup::LuaEvent::param;
+		}
+
 		// Bind TES3::AnimationGroup::SoundGenKey
 		{
 			// Start our usertype.
@@ -21,7 +32,8 @@ namespace mwse::lua {
 
 			// Basic property bindings.
 			usertypeDefinition["pitch"] = &TES3::AnimationGroup::SoundGenKey::pitch;
-			usertypeDefinition["sound"] = &TES3::AnimationGroup::SoundGenKey::sound;
+			usertypeDefinition["sound"] = sol::property(&TES3::AnimationGroup::SoundGenKey::getSound, &TES3::AnimationGroup::SoundGenKey::setSound);
+			usertypeDefinition["luaEvent"] = sol::property(&TES3::AnimationGroup::SoundGenKey::getLuaEvent, &TES3::AnimationGroup::SoundGenKey::setLuaEvent);
 			usertypeDefinition["startFrame"] = &TES3::AnimationGroup::SoundGenKey::startFrame;
 			usertypeDefinition["startTime"] = &TES3::AnimationGroup::SoundGenKey::startTime;
 			usertypeDefinition["volume"] = &TES3::AnimationGroup::SoundGenKey::volume;

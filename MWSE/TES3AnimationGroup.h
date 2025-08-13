@@ -181,6 +181,7 @@ namespace TES3 {
 			std::string param;
 
 			LuaEvent() : tag(eventTag) {}
+			std::string toString() const;
 			static LuaEvent* toEvent(Sound* sound);
 		};
 		struct SoundGenKey {
@@ -195,6 +196,13 @@ namespace TES3 {
 
 			SoundGenKey() = delete;
 			~SoundGenKey() = delete;
+
+			bool hasLuaEvent() const;
+
+			Sound* getSound() const;
+			void setSound(Sound* sound);
+			LuaEvent* getLuaEvent() const;
+			void setLuaEvent(LuaEvent* event);
 		};
 
 		AnimGroupID groupId; // 0x10
