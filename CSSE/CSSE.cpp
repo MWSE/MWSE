@@ -688,6 +688,11 @@ namespace se::cs {
 		// Patch: Redirect away from the help file, which is no longer supported by Windows.
 		writeDoubleWordUnprotected(0x6D9ECC, reinterpret_cast<DWORD>(&patch::OverrideWinHelpA));
 
+		// Suppress "Bad note string" messages with new animation systems in MWSE/OpenMW.
+		writeValueEnforced<BYTE>(0x509AAD + 0x3, 0x1, 0x0);
+		writeValueEnforced<BYTE>(0x509B07 + 0x3, 0x1, 0x0);
+		writeValueEnforced<BYTE>(0x509E59 + 0x3, 0x1, 0x0);
+
 		// Install all our sectioned patches.
 		window::main::installPatches();
 		dialog::actor_ai_window::installPatches();
