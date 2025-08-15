@@ -7,6 +7,8 @@ namespace NI {
 	struct AVObject;
 	struct BinaryStream;
 	struct Bound;
+	struct BSAnimationNode;
+	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;

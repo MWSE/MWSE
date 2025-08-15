@@ -1037,6 +1037,10 @@ namespace TES3 {
 		animData->weaponSpeed = animData->getCastSpeed() + FLT_MIN;
 	}
 
+	float __fastcall updateWorldDataBeforeScale(TES3::Reference* reference) {
+		reference->sceneNode->update();
+		return reference->getScale();
+	}
 
 	void AnimationData::patch() {
 		using mwse::genCallEnforced;
@@ -1154,6 +1158,9 @@ namespace TES3 {
 		genCallUnprotected(0x471A84, reinterpret_cast<DWORD>(setAnimationStateDirect_getSequence), 0xB);
 		writePatchCodeUnprotected(0x471A9F, reinterpret_cast<BYTE*>(patchSetAnimationStateDirect), patchSetAnimationStateDirect_size);
 		genCallUnprotected(0x471AA2, reinterpret_cast<DWORD>(setAnimationStateDirect_getSequence), 0x8);
+
+		// This ensures that the first update of world data of NiBSParticleNode happens pre-scale, same as vanilla.
+		genCallUnprotected(0x4E8331, reinterpret_cast<DWORD>(&updateWorldDataBeforeScale), 0x6);
 
 		// Patch sequence cloning to avoid out of bounds read + SequenceManager requires unique sequence names.
 		writePatchCodeUnprotected(0x46BBC6, reinterpret_cast<BYTE*>(patchSplitBodySectionSequences), patchSplitBodySectionSequences_size);

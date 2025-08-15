@@ -619,9 +619,9 @@ namespace TES3 {
 
 			std::swap(rootController->target, target);
 			rootController->setActive(true);
-			rootController->vTable.asController->update(rootController, loopStartTime);
+			rootController->update(loopStartTime);
 			Vector3 startPoint = root.localTranslate;
-			rootController->vTable.asController->update(rootController, loopEndTime);
+			rootController->update(loopEndTime);
 			Vector3 movement = root.localTranslate - startPoint;
 			rootController->setActive(false);
 
