@@ -71,9 +71,7 @@ namespace TES3 {
 
 		AnimationDataVanilla* ctor();
 
-		void calcRootMovement(AnimGroupID animGroup);
 		void playAnimationGroupForSection(AnimGroupID animationGroup, int bodySection, int startFlag = 0, int loopCount = -1);
-		void mergeAnimGroups(AnimationGroup* firstGroup, int sourceIndex);
 		void setHeadNode(NI::Node* head);
 		bool setSourceKeyframes(KeyframeDefinition* kfData, int sourceIndex, bool isBiped);
 		void updateMovementDelta(float timing, Vector3* inout_startingPosition, bool dontUpdatePositionDelta);
@@ -87,7 +85,6 @@ namespace TES3 {
 
 		void playAnimationGroup(AnimGroupID animationGroup, int startFlag = 0, int loopCount = -1);
 		void cancelAnimationLoop(bool jumpToLoopEnd);
-		bool setOverrideSourceKeyframes(KeyframeDefinition* animData);
 		void setTiming(AnimGroupID groupId, int bodySection, float t);
 		void swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2);
 
@@ -153,6 +150,7 @@ namespace TES3 {
 		bool getVanillaTarget(AnimGroupID groupId, TargetAnimGroup& out_target);
 		bool hasNamedGroup(std::string_view name);
 		void mergeAnimGroup(AnimationGroup* animGroup, int sourceIndex);
+		bool setOverrideSourceKeyframes(KeyframeDefinition* animData);
 		void onSectionInheritAnim(int bodySection);
 
 		bool hasOverrideAnimations() const;

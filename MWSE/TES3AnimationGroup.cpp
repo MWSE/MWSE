@@ -44,11 +44,6 @@ namespace TES3 {
 		TES3_AnimationGroup_dtor(this);
 	}
 
-	const auto TES3_AnimationGroup_calcNoteTimes = reinterpret_cast<void(__thiscall*)(AnimationGroup*)>(0x492B70);
-	void AnimationGroup::calcNoteTimes() {
-		TES3_AnimationGroup_calcNoteTimes(this);
-	}
-
 	const auto TES3_AnimationGroup_setSoundGenCount = reinterpret_cast<void(__thiscall*)(AnimationGroup*, unsigned int)>(0x492980);
 	void AnimationGroup::setSoundGenCount(unsigned int newCount) {
 		TES3_AnimationGroup_setSoundGenCount(this, newCount);

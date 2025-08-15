@@ -36,11 +36,6 @@ namespace TES3 {
 		return this;
 	}
 
-	const auto TES3_AnimationData_calcRootMovement = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, AnimGroupID)>(0x46FD80);
-	void AnimationDataVanilla::calcRootMovement(AnimGroupID animGroup) {
-		TES3_AnimationData_calcRootMovement(this, animGroup);
-	}
-
 	const auto TES3_AnimationData_playAnimationGroupForSection = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, AnimGroupID, int, int, int)>(0x470AE0);
 	void AnimationDataVanilla::playAnimationGroupForSection(AnimGroupID animationGroup, int bodySection, int startFlag, int loopCount) {
 		if (mwse::lua::event::PlayAnimationGroupEvent::getEventEnabled()) {
@@ -62,11 +57,6 @@ namespace TES3 {
 		}
 
 		TES3_AnimationData_playAnimationGroupForSection(this, animationGroup, bodySection, startFlag, loopCount);
-	}
-
-	const auto TES3_AnimationData_mergeAnimGroups = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, AnimationGroup*, int)>(0x4708D0);
-	void AnimationDataVanilla::mergeAnimGroups(AnimationGroup* firstGroup, int sourceIndex) {
-		TES3_AnimationData_mergeAnimGroups(this, firstGroup, sourceIndex);
 	}
 
 	const auto TES3_AnimationData_setHeadNode = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, NI::Node*)>(0x4704B0);
@@ -127,15 +117,6 @@ namespace TES3 {
 				}
 			}
 		}
-	}
-
-	bool AnimationDataVanilla::setOverrideSourceKeyframes(KeyframeDefinition* kfData) {
-		constexpr int specialSourceIndex = 0;
-		bool success = setSourceKeyframes(kfData, specialSourceIndex, true);
-		if (success) {
-			mergeAnimGroups(kfData->animationGroups, specialSourceIndex);
-		}
-		return success;
 	}
 
 	void AnimationDataVanilla::setTiming(AnimGroupID groupId, int bodySection, float t) {
@@ -392,6 +373,15 @@ namespace TES3 {
 			}
 			animGroupSoundGens[i] = soundGenArray;
 		}
+	}
+
+	bool AnimationData::setOverrideSourceKeyframes(KeyframeDefinition* kfData) {
+		constexpr int specialSourceIndex = 0;
+		bool success = setSourceKeyframes(kfData, specialSourceIndex, true);
+		if (success) {
+			mergeAnimGroups(kfData->animationGroups, specialSourceIndex);
+		}
+		return success;
 	}
 
 	void AnimationData::mergeAnimGroups(AnimationGroup* firstGroup, int sourceIndex) {
