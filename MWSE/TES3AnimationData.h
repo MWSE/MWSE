@@ -86,7 +86,6 @@ namespace TES3 {
 		void playAnimationGroup(AnimGroupID animationGroup, int startFlag = 0, int loopCount = -1);
 		void cancelAnimationLoop(bool jumpToLoopEnd);
 		void setTiming(AnimGroupID groupId, int bodySection, float t);
-		void swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2);
 
 		float getCastSpeed() const;
 		void setCastSpeed(float speed);
@@ -152,6 +151,7 @@ namespace TES3 {
 		void mergeAnimGroup(AnimationGroup* animGroup, int sourceIndex);
 		bool setOverrideSourceKeyframes(KeyframeDefinition* animData);
 		void onSectionInheritAnim(int bodySection);
+		void swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2);
 
 		bool hasOverrideAnimations() const;
 

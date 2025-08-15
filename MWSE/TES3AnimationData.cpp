@@ -133,7 +133,7 @@ namespace TES3 {
 		currentSoundGenIndices[bodySection] = i;
 	}
 
-	void AnimationDataVanilla::swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2) {
+	void AnimationData::swapAnimationGroups(AnimGroupID animationGroup1, AnimGroupID animationGroup2) {
 		// Swap all animation group specific data.
 		int g1 = int(animationGroup1), g2 = int(animationGroup2);
 		std::swap(animationGroups[g1], animationGroups[g2]);
@@ -145,7 +145,7 @@ namespace TES3 {
 		// Fix up timing and sequence activation if the swap affects the currently playing animation.
 		for (int i = 0; i < BodySectionCount; ++i) {
 			auto group = int(currentAnimGroups[i]);
-			auto sequenceGroup = &this->keyframeSources[i].lower;
+			auto sequenceGroup = &this->customSources[i].lower;
 
 			if (group == g1 || group == g2) {
 				// Ensure correct sequence is activated.
@@ -685,12 +685,10 @@ namespace TES3 {
 				revertSwitchedGroup(tsg);
 			}
 		}
-		auto iterErase = std::remove_if(
-			temporarySwitchedGroups.begin(), temporarySwitchedGroups.end(),
-			[&](const auto& tsg) {
-				return tsg.temporary.sourceIndex == sourceIndex;
-			}
-		);
+		const auto matchTemporarySourceIndex = [&](const auto& tsg) {
+			return tsg.temporary.sourceIndex == sourceIndex;
+		};
+		auto iterErase = std::remove_if(temporarySwitchedGroups.begin(), temporarySwitchedGroups.end(), matchTemporarySourceIndex);
 		temporarySwitchedGroups.erase(iterErase, temporarySwitchedGroups.end());
 
 		// Merge in vanilla groups to replace animgroups from this anim.
@@ -789,12 +787,14 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) void patchSetSourceKeyFrames1() {
 		__asm {
 			mov eax, [ebp + 4]		// eax = sequenceGroup.upper
 		}
 	}
 	const size_t patchSetSourceKeyFrames1_size = 0x3;
+
 	__declspec(naked) void patchSetSourceKeyFrames2() {
 		__asm {
 			nop
@@ -808,7 +808,8 @@ namespace TES3 {
 	const BYTE patchLinkAnimSequences1[] = {
 		0x74, 0x0B		// jmp short
 	};
-	const size_t patchLinkAnimSequences1_size = 0x2;
+	const size_t patchLinkAnimSequences1_size = sizeof(patchLinkAnimSequences1);
+
 	__declspec(naked) void patchLinkAnimSequences2() {
 		__asm {
 			add esp, 8
@@ -831,6 +832,7 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) NI::Sequence* update_getLeftArmSequence() {
 		__asm {
 			mov ecx, [ebp + CUSTOM_SOURCES_OFFSET]	// ecx = ebp->customSources.begin
@@ -848,6 +850,7 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) void patchCalcRootMovement() {
 		__asm {
 			test ecx, ecx
@@ -864,12 +867,14 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) NI::Sequence* patchSetSequencePlayback_getSequence() {
 		__asm {
 			mov eax, ebp			// eax = sourceIndex
 		}
 	}
 	const size_t patchSetSequencePlayback_getSequence_size = 2;
+
 	__declspec(naked) NI::Sequence* setSequencePlayback_getUpperSequence() {
 		__asm {
 			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
@@ -878,6 +883,7 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) NI::Sequence* setSequencePlayback_getLeftArmSequence() {
 		__asm {
 			mov ecx, [esi + CUSTOM_SOURCES_OFFSET]	// ecx = esi->customSources.begin
@@ -896,6 +902,7 @@ namespace TES3 {
 			ret
 		}
 	}
+
 	__declspec(naked) NI::Sequence* patchSetAnimationStateDirect() {
 		__asm {
 			mov eax, ebx			// eax = sourceIndex
@@ -922,6 +929,7 @@ namespace TES3 {
 			return NI_Sequence_ctor(seq, buffer, 1, 1);
 		}
 	}
+
 	__declspec(naked) NI::Sequence* patchSplitBodySectionSequences() {
 		__asm {
 			push ecx				// push sourceIndex
