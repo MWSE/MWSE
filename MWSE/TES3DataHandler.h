@@ -41,7 +41,9 @@ namespace TES3 {
 		// Path is relative to Data Files.
 		NI::Node* loadMesh(const char* path);
 		NI::Pointer<NI::Node> loadMeshUncached(const char* path);
-		KeyframeDefinition* loadKeyframes(const char* path, const char* animation);
+		KeyframeDefinition* loadKeyframes(const char* path, const char* sequenceName);
+		bool releaseMesh(NI::Node* meshRoot);
+		bool releaseKeyframes(KeyframeDefinition* kfData);
 	};
 
 	template <typename OT>
@@ -157,6 +159,7 @@ namespace TES3 {
 		Dialogue* findDialogue(const char*);
 		bool addSound(Sound*);
 		Sound* findSound(const char*);
+		Sound* getSoundGeneratorSound(Actor*, int);
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);

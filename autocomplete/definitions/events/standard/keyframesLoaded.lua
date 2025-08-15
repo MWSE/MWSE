@@ -1,11 +1,15 @@
 return {
 	type = "event",
 	description = "This event is triggered when a keyframes file is loaded.",
-	related = { "keyframesLoad" },
+	related = { "meshLoad", "keyframesLoad", "keyframesParsed" },
 	eventData = {
 		["path"] = {
 			type = "string",
 			description = "The path to the keyframes file, relative to Data Files\\Meshes.",
+		},
+		["keyframe"] = {
+			type = "tes3keyframeDefinition",
+			description = "The loaded keyframe definition.",
 		},
 		["sequenceName"] = {
 			type = "string",

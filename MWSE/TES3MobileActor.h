@@ -296,13 +296,15 @@ namespace TES3 {
 
 		int determineModifiedPrice(int basePrice, bool buying);
 
-		void playVoiceover(int);
+		void playVoiceover(int voiceover);
 		void startDialogue();
 
-		bool isAffectedByAlchemy(Alchemy* alchemy) const;
+		bool aiTurnWhileGreeting(Vector3* lookAt, float minimumFacingDifferenceToStartTurning);
+
+		bool isAffectedByAlchemy(Alchemy * alchemy) const;
 		bool isAffectedBySimilarAlchemy(Alchemy* alchemy) const;
-		bool isAffectedByEnchantment(Enchantment* enchantment) const;
-		bool isAffectedBySpell(Spell* spell) const;
+		bool isAffectedByEnchantment(Enchantment * enchantment) const;
+		bool isAffectedBySpell(Spell * spell) const;
 
 		bool isDiseased() const;
 		bool hasCommonDisease() const;
