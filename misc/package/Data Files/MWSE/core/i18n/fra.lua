@@ -48,4 +48,29 @@ return {
 	["RGB: #"] = "RGB : #",
 	["ARGB: #"] = "ARGB : #",
 	["Choose"] = "Choisir",
+	["Logging Level"] = "Niveau de journalisation",
+	["Trace"] = "Trace",
+	["Debug"] = "Debug",
+	["Info"] = "Info",
+	["Warn"] = "Warn",
+	["Error"] = "Error",
+	["None"] = "Aucun",
+	["Log level options description"] = "\z
+	Modifie le niveau de sévérité actuel des messages de journalisation. Il est recommandé de mettre comme valeur Warn ou Info, \z
+	à moins que vous ne fassiez du débuggage. Pour un niveau de sévérité de journalisation donné, tous les messages d'une sévérité égale ou supérieure seront également journalisés. \z
+	Voici une explication des options :\n\n\z
+	\z
+	Aucun : il n'y aura pas de journalisation de MWSE.\n\n\z
+	\z
+	Error : seuls les messages de la plus haute sévérité (les erreurs) seront journalisés.\n\n\z
+	\z
+	Warn : les erreurs et les messages d'avertissement seront journalisés.\n\n\z
+	\z
+	Info : les message d'erreur, d'avertissement et d'information seront journalisés.\n\n\z
+	\z
+	Debug : les messages d'erreur, d'avertissement, d'information et de débug seront journalisés. Vous risquez de subir une chute de performances.\n\n\z
+	\z
+	Trace : les messages de tous les niveaux de sévérité seront journalisés. Le fichier .log pourrait être difficile à lire, mais ce niveau de sévérité peut être utile quand vous signalez des bugs à un moddeur.\z
+	\z
+	"
 }
