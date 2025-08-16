@@ -4770,6 +4770,7 @@ namespace mwse::lua {
 		if (animFile) {
 			kfData = meshData->loadKeyframes(animFile, animFile);
 			if (kfData == nullptr || kfData->groupCount == 0) {
+				if (kfData) meshData->releaseKeyframes(kfData);
 				throw std::logic_error("Animation file failed to load.");
 			}
 		}
@@ -4811,6 +4812,7 @@ namespace mwse::lua {
 			auto meshData = TES3::DataHandler::get()->nonDynamicData->meshData;
 			auto kfData = meshData->loadKeyframes(animFile, animFile);
 			if (kfData == nullptr || kfData->groupCount == 0) {
+				if (kfData) meshData->releaseKeyframes(kfData);
 				throw std::logic_error("Animation file failed to load.");
 			}
 
