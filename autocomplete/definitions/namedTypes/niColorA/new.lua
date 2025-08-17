@@ -1,6 +1,6 @@
 return {
 	type = "function",
-	description = "Creates a new niColorA.",
+	description = "Creates a new niColorA. This function must be given 0, 3, or 4 arguments.",
 	arguments = {
 		{ name = "r", type = "number", description = "The red value for the color.", optional = true, default = 0 },
 		{ name = "g", type = "number", description = "The green value for the color.", optional = true, default = 0 },

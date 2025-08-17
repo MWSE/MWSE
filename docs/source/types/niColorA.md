@@ -140,7 +140,7 @@ local lerpedcolor = myObject:lerp(tocolor, transition)
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 
-Creates a new niColorA.
+Creates a new niColorA. This function must be given 0, 3, or 4 arguments.
 
 ```lua
 local color = niColorA.new(r, g, b, a)

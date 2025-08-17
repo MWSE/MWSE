@@ -3,7 +3,7 @@
 #include "StringUtil.h"
 
 namespace NI {
-	int SwitchNode::getSwitchIndex() {
+	int SwitchNode::getSwitchIndex() const {
 		return switchIndex;
 	}
 

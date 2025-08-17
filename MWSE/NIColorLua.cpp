@@ -18,7 +18,11 @@ namespace mwse::lua {
 		{
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::PackedColor>("niPackedColor");
-			usertypeDefinition["new"] = sol::constructors<NI::PackedColor(), NI::PackedColor(unsigned char, unsigned char, unsigned char)>();
+			usertypeDefinition["new"] = sol::constructors<
+				NI::PackedColor(),
+				NI::PackedColor(unsigned char, unsigned char, unsigned char),
+				NI::PackedColor(unsigned char, unsigned char, unsigned char, unsigned char)
+			>();
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::to_string] = &NI::PackedColor::toString;
@@ -75,7 +79,11 @@ namespace mwse::lua {
 		{
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::ColorA>("niColorA");
-			usertypeDefinition["new"] = sol::constructors<NI::ColorA(), NI::ColorA(float, float, float, float)>();
+			usertypeDefinition["new"] = sol::constructors<
+				NI::ColorA(),
+				NI::ColorA(float, float, float),
+				NI::ColorA(float, float, float, float)
+			>();
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::to_string] = &NI::ColorA::toString;
