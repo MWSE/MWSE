@@ -10,6 +10,7 @@ local Parent = require("mcm.components.categories.Category")
 
 --- @class mwseMCMPage
 local Page = Parent:new()
+Page.__index = Page
 Page.componentType = "Page"
 Page.indent = 6
 
@@ -31,7 +32,6 @@ function Page:new(data)
 		t.tabUID = tes3ui.registerID(tabUID)
 	end
 	setmetatable(t, self)
-	self.__index = self
 	return t --[[@as mwseMCMPage]]
 
 end

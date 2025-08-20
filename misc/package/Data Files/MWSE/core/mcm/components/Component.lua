@@ -15,6 +15,8 @@ end
 
 --- @class mwseMCMComponent
 local Component = {}
+Component.__index = Component
+
 Component.componentType = "Component"
 Component.paddingBottom = 4
 Component.indent = 12
@@ -38,7 +40,6 @@ function Component:new(data)
 	end
 
 	setmetatable(t, self)
-	self.__index = self
 	--- @cast t mwseMCMComponent
 	return t
 end

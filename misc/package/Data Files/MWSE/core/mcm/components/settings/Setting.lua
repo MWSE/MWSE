@@ -13,6 +13,7 @@ local Parent = require("mcm.components.Component")
 
 --- @class mwseMCMSetting
 local Setting = Parent:new()
+Setting.__index = Setting
 Setting.componentType = "Setting"
 Setting.restartRequired = false
 Setting.restartRequiredMessage = mwse.mcm.i18n("The game must be restarted before this change will come into effect.")
@@ -24,7 +25,6 @@ function Setting:new(data)
 	local t = Parent:new(data) --[[@as mwseMCMSetting]]
 	utils.getOrInheritVariableData(t)
 	setmetatable(t, self)
-	self.__index = self
 	return t
 end
 

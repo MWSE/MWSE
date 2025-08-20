@@ -17,6 +17,7 @@ local MouseOverPage = require("mcm.components.pages.MouseOverPage")
 --- @class mwseMCMSideBarPage
 --- @field sidebarComponents mwseMCMComponent[] *Deprecated*
 local SideBarPage = Parent:new()
+SideBarPage.__index = SideBarPage
 SideBarPage.triggerOn = "MCM:MouseOver"
 SideBarPage.triggerOff = "MCM:MouseLeave"
 
@@ -28,7 +29,6 @@ function SideBarPage:new(data)
 	t.sidebar = MouseOverPage:new({ parentComponent = self})
 
 	setmetatable(t, self)
-	self.__index = self
 	return t
 
 end

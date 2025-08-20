@@ -18,6 +18,7 @@ local Parent = require("mcm.components.settings.Binder")
 
 --- @class mwseMCMKeyBinder
 local KeyBinder = Parent:new()
+KeyBinder.__index = KeyBinder
 KeyBinder.allowMouse = false
 
 -- TODO: Implement flags for enabling the binding of mouse wheel or mouse buttons separately
@@ -28,7 +29,6 @@ function KeyBinder:new(data)
 	local t = Parent:new(data)
 
 	setmetatable(t, self)
-	self.__index = self
 	--- @cast t mwseMCMKeyBinder
 
 	-- All KeyBinders observe keyboard input.

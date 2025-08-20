@@ -9,6 +9,7 @@ local Parent = require("mcm.components.Component")
 --- Class object
 --- @class mwseMCMTemplate
 local Template = Parent:new()
+Template.__index = Template
 
 Template.componentType = "Template"
 
@@ -36,7 +37,6 @@ function Template:new(data)
 	end
 	t.pages = pages
 
-	self.__index = Template.__index
 	return t --[[@as mwseMCMTemplate]]
 end
 
@@ -170,7 +170,7 @@ end
 --- @param thisPage mwseMCMExclusionsPage|mwseMCMFilterPage|mwseMCMMouseOverPage|mwseMCMPage|mwseMCMSideBarPage
 function Template:clickTab(thisPage)
 	local pageBlock = self.elements.pageBlock
-	
+
 	-- Clear previous page
 	pageBlock:destroyChildren()
 	-- Create new page
@@ -354,10 +354,10 @@ function Template:register()
 end
 
 function Template.__index(tbl, key)
-	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method, 
+	-- If the `key` starts with `"create"`, and if there's an `mwse.mcm.create<Component>` method,
 	-- Make a new `Template.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
-	
+
 	if not key:startswith("create") or mwse.mcm[key] == nil then
 		return getmetatable(tbl)[key]
 	end

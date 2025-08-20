@@ -39,7 +39,6 @@ function Category:new(data)
 	t.components = t.components or {}
 
 	setmetatable(t, self)
-	t.__index = self.__index
 	--- @cast t mwseMCMCategory
 
 	local parent = t.parentComponent
@@ -157,23 +156,41 @@ function Category.__index(tbl, key)
 	-- Make a new `Category.create<Component>` method.
 	-- Otherwise, look the value up in the `metatable`.
 
-	if not key:startswith("create") or mwse.mcm[key] == nil then
-		return getmetatable(tbl)[key]
+	-- This should always be true.
+	-- But it still needs to be tested on larger mod lists before the PR is merged.
+	assert(getmetatable(tbl) == Category)
+
+	-- Look up missing values in `Category`
+	local categoryValue = Category[key]
+	if categoryValue ~= nil then
+		return categoryValue
 	end
 
-	Category[key] = function(self, data)
-		if not data then
-			data = {}
-		elseif type(data) == "string" then
-			data = { label = data }
+	-- If the value wasn't found, check if `key` is of the form `create<ComponentClass>`.
+	-- e.g., check for stuff like `myCategory:createSlider`.
+
+
+	-- This will be equal to e.g., `mwse.mcm.createSlider`.
+	local mcmCreateComponent = mwse.mcm[key]
+	if mcmCreateComponent == nil or not key:startswith("create") then
+		return
+	end
+
+	categoryValue = function(self, componentData)
+		if not componentData then
+			componentData = {}
+		elseif type(componentData) == "string" then
+			componentData = { label = componentData }
 		end
-		data.parentComponent = self
-		local component = mwse.mcm[key](data)
+		componentData.parentComponent = self
+		local component = mcmCreateComponent(componentData)
 		table.insert(self.components, component)
 		return component
 	end
+	-- Cache the create function so we don't have to reconstruct it every time.
+	Category[key] = categoryValue
 
-	return Category[key]
+	return categoryValue
 end
 
 return Category

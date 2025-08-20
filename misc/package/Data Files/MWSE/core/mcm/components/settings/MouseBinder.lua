@@ -17,6 +17,7 @@ local Parent = require("mcm.components.settings.Binder")
 
 --- @class mwseMCMMouseBinder
 local MouseBinder = Parent:new()
+MouseBinder.__index = MouseBinder
 MouseBinder.allowButtons = true
 
 --- @param data mwseMCMMouseBinder.new.data|nil
@@ -25,7 +26,6 @@ function MouseBinder:new(data)
 	local t = Parent:new(data)
 
 	setmetatable(t, self)
-	self.__index = self
 	--- @cast t mwseMCMMouseBinder
 
 	local bothDisabled = (not t.allowButtons) and (not t.allowWheel)
