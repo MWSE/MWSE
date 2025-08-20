@@ -29,7 +29,7 @@ function Template:new(data)
 			if not componentClass then
 				error(string.format("Could not intialize page %q", page.label))
 			end
-			page.parentComponent = self
+			page.parentComponent = t
 			page = componentClass:new(page)
 		end
 		table.insert(pages, page)
