@@ -59,7 +59,7 @@ namespace NI {
 
 	struct TextKeyExtraData : ExtraData {
 		unsigned int keyCount; // 0x14
-		TextKey* key; // 0x18
+		TextKey* keys; // 0x18
 
 		//
 		// Custom functions.
