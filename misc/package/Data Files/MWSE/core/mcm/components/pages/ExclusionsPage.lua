@@ -13,6 +13,7 @@ local Parent = require("mcm.components.pages.Page")
 
 --- @class mwseMCMExclusionsPage
 local ExclusionsPage = Parent:new()
+ExclusionsPage.__index = ExclusionsPage
 -- public fields
 ExclusionsPage.label = mwse.mcm.i18n("Exclusions")
 ExclusionsPage.rightListLabel = mwse.mcm.i18n("Allowed")
@@ -35,7 +36,6 @@ function ExclusionsPage:new(data)
 		utils.getOrInheritVariableData(t)
 	end
 	setmetatable(t, self)
-	self.__index = self
 	return t
 end
 
