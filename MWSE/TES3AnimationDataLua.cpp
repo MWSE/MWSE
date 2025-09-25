@@ -2,6 +2,7 @@
 
 #include "LuaManager.h"
 
+#include "TES3ActorAnimationController.h"
 #include "TES3AnimationData.h"
 #include "TES3AnimationGroup.h"
 #include "TES3Reference.h"
@@ -34,15 +35,16 @@ namespace mwse::lua {
 
 			// Basic property bindings.
 			usertypeDefinition["actorNode"] = &TES3::AnimationData::actorNode;
+			usertypeDefinition["animationDefinitions"] = sol::readonly_property(&TES3::AnimationData::getAnimationDefinitions);
 			usertypeDefinition["animationGroups"] = sol::readonly_property(&TES3::AnimationData::getAnimationGroups);
 			usertypeDefinition["animGroupSoundGenCounts"] = sol::readonly_property(&TES3::AnimationData::getAnimGroupSoundGenCounts);
 			//usertypeDefinition["animGroupSoundGens"] = sol::readonly_property(&TES3::AnimationData::getAnimGroupSoundGens);
-			usertypeDefinition["animGroupLayerIndices"] = sol::readonly_property(&TES3::AnimationData::getAnimGroupLayerIndices);
-			usertypeDefinition["approxRootTravelDistances"] = sol::readonly_property(&TES3::AnimationData::getApproxRootTravelDistances);
+			usertypeDefinition["animGroupSourceIndices"] = sol::readonly_property(&TES3::AnimationData::getAnimGroupSourceIndices);
+			usertypeDefinition["approxRootTravelSpeeds"] = sol::readonly_property(&TES3::AnimationData::getApproxRootTravelSpeeds);
 			usertypeDefinition["blinkMorphEndTime"] = sol::readonly_property(&TES3::AnimationData::blinkMorphEndTime);
 			usertypeDefinition["blinkMorphStartTime"] = sol::readonly_property(&TES3::AnimationData::blinkMorphStartTime);
 			usertypeDefinition["castSpeed"] = sol::property(&TES3::AnimationData::getCastSpeed, &TES3::AnimationData::setCastSpeed);
-			usertypeDefinition["currentAnimGroupLayers"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroupLayers);
+			usertypeDefinition["currentAnimGroupLayers"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroupSources);
 			usertypeDefinition["currentAnimGroups"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroups);
 			usertypeDefinition["currentActionIndices"] = sol::readonly_property(&TES3::AnimationData::getCurrentActionIndices);
 			usertypeDefinition["currentSoundGenIndices"] = sol::readonly_property(&TES3::AnimationData::getCurrentSoundGenIndices);
@@ -52,12 +54,13 @@ namespace mwse::lua {
 			usertypeDefinition["headGeometry"] = &TES3::AnimationData::headGeometry;
 			usertypeDefinition["headNode"] = &TES3::AnimationData::headNode;
 			usertypeDefinition["headMorphTiming"] = &TES3::AnimationData::headMorphTiming;
-			usertypeDefinition["keyframeLayers"] = sol::readonly_property(&TES3::AnimationData::getKeyframeLayers);
+			usertypeDefinition["keyframeSources"] = sol::readonly_property(&TES3::AnimationData::getKeyframeSources);
 			usertypeDefinition["lipsyncLevel"] = &TES3::AnimationData::lipsyncLevel;
 			usertypeDefinition["loopCounts"] = sol::readonly_property(&TES3::AnimationData::getLoopCounts);
 			usertypeDefinition["manager"] = &TES3::AnimationData::manager;
 			usertypeDefinition["movementRootNode"] = &TES3::AnimationData::movementRootNode;
-			usertypeDefinition["nextLoopCounts"] = &TES3::AnimationData::nextLoopCounts;
+			usertypeDefinition["nextAnimGroup"] = &TES3::AnimationData::nextAnimGroup;
+			usertypeDefinition["nextLoopCount"] = &TES3::AnimationData::nextLoopCount;
 			usertypeDefinition["movementSpeed"] = sol::readonly_property(&TES3::AnimationData::movementSpeed);
 			usertypeDefinition["positionDeltaMovementRoot"] = &TES3::AnimationData::positionDeltaMovementRoot;
 			usertypeDefinition["spine1Node"] = &TES3::AnimationData::spine1Node;
@@ -72,12 +75,14 @@ namespace mwse::lua {
 			// Basic function bindings.
 			usertypeDefinition["getReference"] = &TES3::AnimationData::getReference;
 			usertypeDefinition["playAnimationGroup"] = &TES3::AnimationData::playAnimationGroup;
-			usertypeDefinition["playAnimationGroupForIndex"] = &TES3::AnimationData::playAnimationGroupForIndex;
+			usertypeDefinition["playAnimationGroupForSection"] = &TES3::AnimationData::playAnimationGroupForSection;
 			usertypeDefinition["setHeadNode"] = &TES3::AnimationData::setHeadNode;
-			usertypeDefinition["setOverrideLayerKeyframes"] = &TES3::AnimationData::setOverrideLayerKeyframes;
+			usertypeDefinition["setOverrideLayerKeyframes"] = &TES3::AnimationData::setOverrideSourceKeyframes;
 			usertypeDefinition["swapAnimationGroups"] = &TES3::AnimationData::swapAnimationGroups;
 
 			// Deprecated bindings.
+			usertypeDefinition["currentAnimGroupLayers"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroupSources);
+			usertypeDefinition["keyframeLayers"] = sol::readonly_property(&TES3::AnimationData::getKeyframeSources);
 			usertypeDefinition["modelRootNode"] = &TES3::AnimationData::movementRootNode;
 		}
 	}

@@ -25,7 +25,7 @@ namespace NI {
 		char* name; // 0x0
 		char* filename; // 0x4
 		int fileNum;
-		NI::TArray<char*> boneNames; // 0xC
+		NI::TArray<char*> objectNames; // 0xC
 		NI::TArray<Pointer<KeyframeController>> controllers; // 0x24
 		Pointer<TextKeyExtraData> textKeys;
 		unsigned int textKeyControllerIndex; // 0x40
@@ -46,12 +46,13 @@ namespace NI {
 		// Custom functions.
 		//
 
+		Pointer<KeyframeController> getController(const char* name) const;
 		void release();
 	};
 	static_assert(sizeof(Sequence) == 0xC0, "NI::Sequence failed size validation");
 
 	struct KeyframeManager : TimeController {
-		TES3::HashMap<int, Sequence*> sequences; // 0x34
+		TES3::HashMap<const char*, Sequence*> sequences; // 0x34
 		bool cumulative; // 0x44
 		TES3::Matrix33 globalScaleRotation; // 0x48
 		TES3::Vector3 globalTranslation; // 0x6C
@@ -60,8 +61,12 @@ namespace NI {
 		// Thiscall functions.
 		//
 
-		void activateSequence(Sequence*);
-		void deactivateSequence(Sequence*);
+		void addSequence(Sequence* seq);
+		void removeSequence(Sequence* seq);
+		void removeAll();
+		bool activateSequence(Sequence* seq);
+		bool deactivateSequence(Sequence* seq);
+		void deactivateAll();
 	};
 	static_assert(sizeof(KeyframeManager) == 0x78, "NI::KeyframeManager failed size validation");
 }
