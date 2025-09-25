@@ -4,7 +4,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- This dictionary-style table holds all of the UI elements that comprise an Exclusions Page.
---- @class mwseMCMExclusionsPageElements : mwseMCMCategoryElements, mwseMCMComponentElements
+--- @class mwseMCMExclusionsPageElements : mwseMCMPageElements, mwseMCMCategoryElements, mwseMCMComponentElements
 --- @field description tes3uiElement|nil A label UI element with the Exclusions Page's description as text.
 --- @field filterList tes3uiElement|nil A block UI element that holds a button for each of the filters of Exclusions Page. If there is only one filter, this UI element won't be visible.
 --- @field leftList tes3uiElement|nil A vertical scroll pane UI element for all the items on the left list.

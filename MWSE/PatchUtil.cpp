@@ -1478,6 +1478,55 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Improve performance of initial game load.
+	//
+
+	static void __cdecl PatchDialogueSorting() {
+		const auto dataHandler = TES3::DataHandler::get();
+		const auto dialogues = dataHandler->nonDynamicData->dialogues;
+		if (dialogues->empty()) {
+			return;
+		}
+
+		// Create a sorter structure that caches the length of the topic so we don't have to constantly calculate it.
+		struct DialogueLengthCache {
+			TES3::Dialogue* dialogue;
+			size_t length;
+
+			DialogueLengthCache(TES3::Dialogue* d) {
+				dialogue = d;
+				length = strlen(d->name ? d->name : "");
+			}
+		};
+		struct {
+			bool operator()(const DialogueLengthCache& a, const DialogueLengthCache& b) {
+				return a.length > b.length;
+			}
+		} dialogueLengthSorter;
+
+		// Clone the dialogues in an array, then sort the array.
+		// TODO: We should improve our TList implementation to support sorting.
+		std::vector<DialogueLengthCache> sortedDialogues;
+		sortedDialogues.reserve(dialogues->size());
+		for (const auto& dialogue : *dialogues) {
+			sortedDialogues.push_back(dialogue);
+		}
+		std::sort(sortedDialogues.begin(), sortedDialogues.end(), dialogueLengthSorter);
+
+		// Clone the sorted data back into the TList, without any allocations.
+		auto itt = dialogues->head;
+		for (auto i = 0; i < sortedDialogues.size(); ++i) {
+			itt->data = sortedDialogues[i].dialogue;
+			itt = itt->next;
+		}
+
+		// Update load progress all at once. This doesn't take a significant amount of time.
+		dataHandler->incrementLoadedRecords(dialogues->size());
+		const auto percentLoaded = dataHandler->getTotalLoadedRecordsFraction() * 100.0f;
+		TES3::UI::updateLoadingMenu(percentLoaded);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2111,6 +2160,10 @@ namespace mwse::patch {
 
 		// Patch: Prevent quickslot failures from stale inventory data.
 		genCallEnforced(0x608608, 0x633E80, reinterpret_cast<DWORD>(PatchFindInventoryTileWithForcedRefreshForPlayer));
+
+		// Patch: Improve performance of initial game load.
+		genCallEnforced(0x4BB84E, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+		genCallEnforced(0x4BC85C, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
 
 #if false
 		// Patch: Update dynamic lights to implement custom light sorting.

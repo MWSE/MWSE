@@ -644,6 +644,16 @@ namespace TES3 {
 		return { gInteriorCellBufferSize::get(), gExteriorCellBufferSize::get() };
 	}
 
+	const auto TES3_DataHandler_incrementLoadedRecords = reinterpret_cast<void(__thiscall*)(DataHandler*, int)>(0x48ED70);
+	void DataHandler::incrementLoadedRecords(int count) {
+		TES3_DataHandler_incrementLoadedRecords(this, count);
+	}
+
+	const auto TES3_DataHandler_getTotalLoadedRecordsFraction = reinterpret_cast<float(__thiscall*)(const DataHandler*)>(0x48ED90);
+	float DataHandler::getTotalLoadedRecordsFraction() const {
+		return TES3_DataHandler_getTotalLoadedRecordsFraction(this);
+	}
+
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {
 		return std::ref(exteriorCellData);
 	}

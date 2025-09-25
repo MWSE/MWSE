@@ -4,6 +4,6 @@ return {
 	arguments = {
 		{ name = "fileName", type = "string", description = "Usually named after your mod." },
 		{ name = "config", type = "table", description = "The config table to save." },
-		{ name = "jsonOptions", type = "table", optional = true, description = "Encoding options. These get passed to the `dkjson` encoder." },
+		{ name = "jsonOptions", type = "jsonConfig", optional = true, description = "Encoding options. These get passed to the `dkjson` encoder." },
 	},
 }

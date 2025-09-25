@@ -24,6 +24,8 @@ Compiles the given string and returns an equivalent lpeg pattern.
 The given string may define either an expression or a grammar. The optional defs table provides 
 extra Lua values to be used by the pattern.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/re.html).
+
 ```lua
 local result = re.compile(s, defs)
 ```
@@ -49,6 +51,8 @@ Otherwise, returns nil.
 
 An optional numeric argument init makes the search starts at that position in the subject string.
 As usual in Lua libraries, a negative value counts from the end. 
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/re.html).
 
 ```lua
 local result = re.find(subject, pattern, init)
@@ -89,6 +93,8 @@ local result = re.find(subject, pattern, init)
 
 Does a global substitution, replacing all occurrences of pattern in the given subject by replacement.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/re.html).
+
 ```lua
 local result = re.gsub(subject, pattern, replacement)
 ```
@@ -128,6 +134,8 @@ local result = re.gsub(subject, pattern, replacement)
 <div class="search_terms" style="display: none">match</div>
 
 Matches the given pattern against the given subject, returning all captures.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/re.html).
 
 ```lua
 local result = re.match(subject, pattern)
@@ -171,6 +179,8 @@ local result = re.match(subject, pattern)
 <div class="search_terms" style="display: none">updatelocale, locale</div>
 
 Updates the pre-defined character classes to the current locale.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/re.html).
 
 ```lua
 re.updatelocale()

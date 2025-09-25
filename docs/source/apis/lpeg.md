@@ -25,6 +25,8 @@ Pattern p must match only strings with some fixed length, and it cannot contain 
 
 Like the and predicate, this pattern never consumes any input, independently of success or failure.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-behind).
+
 ```lua
 local result = lpeg.B(p)
 ```
@@ -45,6 +47,8 @@ local result = lpeg.B(p)
 Create a simple capture pattern, which captures the substring of the subject that matches pattern p.
 	
 The captured value is a string. If p has other captures, their values are returned after this one.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-c).
 
 ```lua
 local result = lpeg.C(p)
@@ -67,6 +71,8 @@ Create an argument capture.
 	
 This pattern matches the empty string and produces the value given as the nth extra argument given 
 in the call to lpeg.match.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-arg).
 
 ```lua
 local result = lpeg.Carg(n)
@@ -97,6 +103,8 @@ that the capture is not inside another complete capture.
 In the same way that LPeg does not specify when it evaluates captures, it does not specify whether
 it reuses values previously produced by the group or re-evaluates them.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-b).
+
 ```lua
 local result = lpeg.Cb(name)
 ```
@@ -117,6 +125,8 @@ local result = lpeg.Cb(name)
 Create a constant capture.
 
 This pattern matches the empty string and produces all given values as its captured values.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-cc).
 
 ```lua
 local result = lpeg.Cc(...)
@@ -148,6 +158,8 @@ accumulator as the first argument and all values produced by the capture as extr
 first result from this call becomes the new value for the accumulator. The final value of the 
 accumulator becomes the captured value.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-f).
+
 ```lua
 local result = lpeg.Cf(p, f)
 ```
@@ -174,6 +186,8 @@ name is given) or named with the given name (which can be any non-nil Lua value)
 An anonymous group serves to join values from several captures into a single capture. A named
 group has a different behavior. In most situations, a named group returns no values at all. Its
 values are only relevant for a following back capture or when used inside a table capture.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-g).
 
 ```lua
 local result = lpeg.Cg(p, name)
@@ -210,6 +224,8 @@ return i.) If the call returns false, nil, or no value, the match fails.
 
 Any extra values returned by f become the values produced by the capture. 
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#matchtime).
+
 ```lua
 local result = lpeg.Cmt(p, f)
 ```
@@ -233,6 +249,8 @@ Create a position capture.
 It matches the empty string and captures the position in the subject where the match occurs. The 
 captured value is a number.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-p).
+
 ```lua
 local result = lpeg.Cp()
 ```
@@ -251,6 +269,8 @@ Create a substitution capture, which captures the substring of the subject that 
 For any capture inside p with a value, the substring that matched the capture is replaced by the 
 capture value (which should be a string). The final captured value is the string resulting from all
 replacements.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-s).
 
 ```lua
 local result = lpeg.Cs(p)
@@ -275,6 +295,8 @@ This capture returns a table with all values from all anonymous captures made by
 this table in successive integer keys, starting at 1. Moreover, for each named capture group 
 created by p, the first value of the group is put into the table with the group name as its key. 
 The captured value is only the table.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#cap-t).
 
 ```lua
 local result = lpeg.Ct(p)
@@ -301,6 +323,8 @@ that belongs to its class.
 
 If called with an argument table, then it creates those fields inside the given table and returns 
 that table. 
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-locale).
 
 ```lua
 local result = lpeg.locale(t)
@@ -332,6 +356,8 @@ match the pattern with a prefix of the given subject string (at position init), 
 arbitrary substring of the subject. So, if we want to find a pattern anywhere in a string, we must
 either write a loop in Lua or write a pattern that matches anywhere. This second approach is easy
 and quite efficient; see examples in the full documentation for details.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#f-match).
 
 ```lua
 local result = lpeg.match(p, subject, init)
@@ -396,6 +422,8 @@ for details.
 If the argument is a function, returns a pattern equivalent to a match-time capture over the empty
 string.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-p).
+
 ```lua
 local result = lpeg.P(value)
 ```
@@ -418,6 +446,8 @@ Returns a pattern that matches any single character belonging to one of the give
 Each range is a string xy of length 2, representing all characters with code between the codes of x and y (both inclusive).
 
 As an example, the pattern lpeg.R("09") matches any digit, and lpeg.R("az", "AZ") matches any ASCII letter.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-r).
 
 ```lua
 local result = lpeg.R(p)
@@ -466,6 +496,8 @@ Note that, if s is a character (that is, a string of length 1), then lpeg.P(s) i
 lpeg.S(s) which is equivalent to lpeg.R(s..s). Note also that both lpeg.S("") and lpeg.R() are 
 patterns that always fail.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-s).
+
 ```lua
 local result = lpeg.S(s)
 ```
@@ -490,6 +522,8 @@ need to change this limit; before changing it you should try to rewrite your pat
 extra space. Nevertheless, a few useful patterns may overflow. Also, with recursive grammars, subjects with
 deep recursion may also need larger limits.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#f-setstack).
+
 ```lua
 lpeg.setmaxstack(max)
 ```
@@ -504,6 +538,8 @@ lpeg.setmaxstack(max)
 <div class="search_terms" style="display: none">type</div>
 
 If the given value is a pattern, return the string "pattern". Otherwise return nil.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#f-type).
 
 ```lua
 local result = lpeg.type(value)
@@ -527,6 +563,8 @@ Create a non-terminal (a variable) for a grammar.
 The created non-terminal refers to the rule indexed by v in the enclosing grammar. See Grammars
 in the full documentation for details.
 
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#op-v).
+
 ```lua
 local result = lpeg.V(v)
 ```
@@ -545,6 +583,8 @@ local result = lpeg.V(v)
 <div class="search_terms" style="display: none">version</div>
 
 Return a string with the running version of lpeg.
+
+[Official documentation](http://www.inf.puc-rio.br/~roberto/lpeg/#f-version).
 
 ```lua
 local result = lpeg.version()

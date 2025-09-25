@@ -8,7 +8,7 @@
 --- The default page is a simple container, it is recommended you use the [SideBarPage](./mwseMCMSideBarPage.md) for basic settings.
 --- @class mwseMCMPage : mwseMCMCategory, mwseMCMComponent
 --- @field componentType "Page" The type of this component.
---- @field elements mwseMCMPageElements This dictionary-style table holds all the UI elements of the Page, for easy access.
+--- @field elements mwseMCMExclusionsPageElements|mwseMCMPageElements This dictionary-style table holds all the UI elements of the Page, for easy access.
 --- @field label string The label field is displayed in the tab for that page at the top of the menu. Defaults to: "Page {number}".
 --- @field noScroll boolean When set to true, the page will not have a scrollbar. Particularly useful if you want to use a [ParagraphField](./mwseMCMParagraphField.md), which is not compatible with scroll panes.
 --- @field showHeader boolean The page's label will only be created if set to true.

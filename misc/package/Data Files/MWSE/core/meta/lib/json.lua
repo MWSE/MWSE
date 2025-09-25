@@ -26,7 +26,7 @@ function json.decode(s, position, nullValue) end
 --- 	If the encoded table has any `string` indices, then this function will convert all `number` indices to `string` indices. For example, `[1]` could be converted to `["1"]`. This should be taken into account when loading/decoding json files.
 --- 
 --- @param object table No description yet available.
---- @param state table? No description yet available.
+--- @param state? jsonConfig *Optional*. No description yet available.
 --- @return string result No description yet available.
 function json.encode(object, state) end
 
@@ -48,6 +48,6 @@ function json.quotestring(s) end
 --- Saves a serializable table to Data Files\\MWSE\\{`fileName`}.json, using `json.encode`.
 --- @param fileName string No description yet available.
 --- @param object table No description yet available.
---- @param config? table *Optional*. No description yet available.
+--- @param config? jsonConfig *Optional*. No description yet available.
 function json.savefile(fileName, object, config) end
 

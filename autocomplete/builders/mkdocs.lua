@@ -508,6 +508,9 @@ local function writePackageDetails(file, package)
 	---@diagnostic disable-next-line: param-type-mismatch
 	local returns = common.getConsistentReturnValues(package)
 	if (package.type == "method" or package.type == "function") then
+		if (package.link) then
+			file:write(string.format("[Official documentation](%s).\n\n", package.link))
+		end
 		---@cast package packageFunction|packageMethod
 		file:write(string.format("```lua\n", package.namespace))
 		if (returns) then

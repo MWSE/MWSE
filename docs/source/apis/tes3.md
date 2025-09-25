@@ -4008,9 +4008,9 @@ tes3.random(seed)
 <div class="search_terms" style="display: none">raytest</div>
 
 Performs a ray test and returns various information related to the result(s). The ray test works by effectively shooting out a line, starting at `position` and pointing towards `direction`, and then checking to see which objects intersect that line.
-	
+
 Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
-	
+
 1. `root`: Things that aren't a `child` of the specified `root` will be skipped. If `root` is not provided, then nothing will be skipped by this process.
 2. `ignore`: Objects in this array will be skipped.
 3. `maxDistance`: If specified, only objects within the specified distance will be checked.
@@ -4021,7 +4021,7 @@ Here is an overview of how some commonly used parameters will alter how `tes3.ra
 	The following suggestions will help to minimize the performance impact of calls to `tes3.rayTest`.
 
 	1. Set a `maxDistance`.
-	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
+	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looking for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
 	3. Try to keep a cached copy of the array used for the `ignore` parameter (if possible).
 	4. Keep maximum size of objects reasonable, and try to limit triangle counts.
 
