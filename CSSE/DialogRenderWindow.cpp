@@ -953,11 +953,10 @@ namespace se::cs::dialog::render_window {
 		return nodeLayer ? nodeLayer->isLayerHidden : false;
 	}
 
-	bool __stdcall CheckNodeHasHiddenFlag(NI::Node* node) {
+	static bool CheckNodeHasHiddenFlag(NI::Node* node) {
 		if (!node) return false;
 		Reference* reference = node->getTes3Reference(false);
-		auto nodeLayer = lw::getLayerByObject(reference);
-		return nodeLayer ? nodeLayer->isLayerHidden : false;
+		return IsReferenceHidden(reference);
 	}
 
 	void __fastcall Patch_SelectionBoxCheckReference(SelectionData* self, DWORD _EDX_, Reference* reference, bool updateVisuals) {

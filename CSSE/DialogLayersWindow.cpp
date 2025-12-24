@@ -1302,7 +1302,6 @@ namespace se::cs::dialog::layer_window {
 
 	void installPatches() {
 		using memory::genCallEnforced;
-		using memory::genCallUnprotected;
 		using memory::genJumpEnforced;
 
 		// For rendering layer overlays on cell loading
