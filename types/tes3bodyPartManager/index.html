@@ -23506,6 +23506,24 @@
 <ul>
 <li><code>result</code> (<a href="../tes3bodyPartManagerActiveBodyPart/">tes3bodyPartManagerActiveBodyPart</a>)</li>
 </ul>
+<details class="example">
+<summary>Example: Adjusting the position of the currently equipped iron dagger on the player character</summary>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">dagger</span> <span class="o">=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">getObject</span><span class="p">(</span><span class="s2">&quot;iron dagger&quot;</span><span class="p">)</span> <span class="cm">--[[@as tes3weapon]]</span>
+<span class="kd">local</span> <span class="n">slot</span> <span class="o">=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">player1stPerson</span><span class="p">.</span><span class="n">bodyPartManager</span><span class="p">:</span><span class="n">getActiveBodyPartForItem</span><span class="p">(</span><span class="n">dagger</span><span class="p">)</span>
+
+<span class="n">slot</span><span class="p">.</span><span class="n">node</span><span class="p">.</span><span class="n">translation</span><span class="p">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">slot</span><span class="p">.</span><span class="n">node</span><span class="p">.</span><span class="n">translation</span><span class="p">.</span><span class="n">z</span> <span class="o">-</span> <span class="mi">20</span>
+<span class="n">slot</span><span class="p">.</span><span class="n">node</span><span class="p">:</span><span class="n">update</span><span class="p">()</span>
+</code></pre></div>
+</details>
+<details class="example">
+<summary>Example: Getting an active body part structure for the currently equipped weapon</summary>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">slot</span> <span class="o">=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">player1stPerson</span><span class="p">.</span><span class="n">bodyPartManager</span><span class="p">:</span><span class="n">getActiveBodyPart</span><span class="p">(</span>
+    <span class="c1">-- armor layer also contains weapons</span>
+    <span class="n">tes3</span><span class="p">.</span><span class="n">activeBodyPartLayer</span><span class="p">.</span><span class="n">armor</span><span class="p">,</span>
+    <span class="n">tes3</span><span class="p">.</span><span class="n">activeBodyPart</span><span class="p">.</span><span class="n">weapon</span>
+<span class="p">)</span>
+</code></pre></div>
+</details>
 <hr />
 <h3 id="getactivebodypartforitem"><code>getActiveBodyPartForItem</code><a class="headerlink" href="#getactivebodypartforitem" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">getactivebodypartforitem, activebodypartforitem</div>
@@ -23618,7 +23636,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="March 27, 2025 22:10:00 UTC">March 27, 2025 22:10:00</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="December 27, 2025 23:14:44 UTC">December 27, 2025 23:14:44</span>
   </span>
 
     
