@@ -1,7 +1,7 @@
 local DependencyType = require("dependencyManagement.DependencyType")
 local DependencyNotifier = require("dependencyManagement.DependencyNotifier")
 local DependencyManager = require("dependencyManagement.DependencyManager")
-local LOG_LEVEL = "INFO"
+local LOG_LEVEL = "TRACE"
 local logger = require("logging.logger").new{
     name = "Dependencies",
     logLevel = LOG_LEVEL
