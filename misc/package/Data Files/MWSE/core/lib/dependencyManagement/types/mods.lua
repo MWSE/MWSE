@@ -155,7 +155,7 @@ local function doModuleCheck(dependencyManager, mods, failures)
 		--check module
 		if dependency["mwse-module"] then
 			dependencyManager.logger:debug("Checking mwse module %s", dependency["mwse-module"])
-			local path = dependency["mwse-module"]:gsub("[/.]", "\\"):lower()
+			local path = dependency["mwse-module"]:gsub("[/.]", "\\")
 			local packagePaths = package.path:gsub("%?%.lua", "?")
 
 			---@param packagePath string
