@@ -36,6 +36,7 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["createBoundingBox"] = &NI::TriShape::createBoundingBox_lua;
+			usertypeDefinition["applySkinDeform"] = &NI::TriShape::applySkinDeform_lua;
 		}
 	}
 }

@@ -29,6 +29,29 @@ namespace NI {
 		return shape;
 	}
 
+	bool TriShape::applySkinDeform_lua() {
+		auto data = getModelData();
+		auto skin = skinInstance.get();
+		if (!data || !skin) {
+			return false;
+		}
+
+		auto deformedData = data->copyData({});
+
+		skin->deform(
+			data->vertex,
+			data->normal,
+			data->vertexCount,
+			deformedData->vertex,
+			deformedData->normal
+		);
+
+		setModelData(deformedData);
+		skinInstance = nullptr;
+
+		return true;
+	}
+
 	nonstd::span<TES3::Vector3> TriShape::getVertices() const {
 		return getModelData()->getVertices();
 	}

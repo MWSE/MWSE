@@ -36,6 +36,7 @@ namespace NI {
 		//
 
 		static Pointer<TriShape> create(unsigned short vertexCount, bool hasNormals, bool hasColors, unsigned short textureCoordSets, unsigned short triangleCount);
+		bool applySkinDeform_lua();
 
 		// Convenient access to model data.
 		nonstd::span<TES3::Vector3> getVertices() const;
