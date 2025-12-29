@@ -2,9 +2,11 @@
 ---@class MWSE.Metadata.Dependency.Mod : MWSE.Metadata.Dependency
 ---@field plugin string
 ---@field version string
+---@field mwse-module string
 
 local util = require("dependencyManagement.util")
 
+---@type table<string, fun(dependency: MWSE.Metadata.Dependency.Mod, modVersion: string?): string>
 local reasons = {
 	plugin = function(dependency)
 		return string.format("Plugin \"%s\" is missing or inactive", dependency.plugin)
@@ -23,20 +25,22 @@ local reasons = {
 	end,
 }
 
+---@param modId string
+---@param dependency MWSE.Metadata.Dependency.Mod
+---@param text? string
 local function getDownloadButton(modId, dependency, text)
-	if dependency.url then
-		if not util.isValidUrl(dependency.url) then
-			return false
-		end
-		return {
-			text = string.format("%s %s", text or "Download", modId),
-			tooltip = string.format('Go to "%s"', dependency.url),
-			callback = function()
-				os.openURL(dependency.url)
-				os.exit()
-			end
-		}
+	if not dependency.url
+		or not util.isValidUrl(dependency.url) then
+		return false
 	end
+	return {
+		text = string.format("%s %s", text or "Download", modId),
+		tooltip = string.format('Go to "%s"', dependency.url),
+		callback = function()
+			os.openURL(dependency.url)
+			os.exit()
+		end
+	}
 end
 
 local function insertReason(e)
@@ -46,10 +50,8 @@ local function insertReason(e)
 			reasons = {}
 		}
 	end
-	if e.dependency then
-		if e.dependency.url then
-			e.failures[e.modId].resolveButton = getDownloadButton(e.modId, e.dependency)
-		end
+	if e.dependency and e.dependency.url then
+		e.failures[e.modId].resolveButton = getDownloadButton(e.modId, e.dependency)
 	end
 	table.insert(e.failures[e.modId].reasons, e.reason)
 end
@@ -155,6 +157,8 @@ local function doModuleCheck(dependencyManager, mods, failures)
 			dependencyManager.logger:debug("Checking mwse module %s", dependency["mwse-module"])
 			local path = dependency["mwse-module"]:gsub("[/.]", "\\"):lower()
 			local packagePaths = package.path:gsub("%?%.lua", "?")
+
+			---@param packagePath string
 			local function checkModule(packagePath)
 				local fullPath = packagePath:gsub("?", path)
 				dependencyManager.logger:debug("Checking module %s", fullPath)
