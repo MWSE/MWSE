@@ -36,6 +36,7 @@
 #include "TES3VFXManager.h"
 #include "TES3WorldController.h"
 
+#include "NIAVObject.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -2210,6 +2211,11 @@ namespace mwse::patch {
 
 		// Patch: Fix NiSwitchNode::UpdateWorldBound malfunctioning when using UpdateOnlyActive and a switchIndex of 0.
 		writeValueEnforced<BYTE>(0x6D85B6, 0x7E, 0x7C);
+
+		// Patch: Fix bound calculation.
+		genCallEnforced(0x4EF118, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
+		genCallEnforced(0x4EF28E, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
+		genCallEnforced(0x4EF53B, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
 	}
 
 	void installPostInitializationPatches() {
