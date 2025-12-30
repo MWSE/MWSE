@@ -177,9 +177,9 @@ namespace TES3 {
 		bool operator!=(const Matrix33& matrix);
 		Matrix33 operator+(const Matrix33& matrix);
 		Matrix33 operator-(const Matrix33& matrix);
-		Matrix33 operator*(const Matrix33& matrix);
+		Matrix33 operator*(const Matrix33& matrix) const;
 		Vector3 operator*(const Vector3& vector) const;
-		Matrix33 operator*(float scalar);
+		Matrix33 operator*(float scalar) const;
 
 		friend std::ostream& operator<<(std::ostream& str, const Matrix33& matrix);
 		std::string toString() const;
