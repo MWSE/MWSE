@@ -152,6 +152,8 @@ namespace TES3 {
 	const Vector3 Vector3::UNIT_NEG_Z = { 0.0f, 0.0f, -1.0f };
 	const Vector3 Vector3::ONES = { 1.0f, 1.0f, 1.0f };
 	const Vector3 Vector3::ZEROES = { 0.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::MIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	const Vector3 Vector3::MAX = { FLT_MAX, FLT_MAX, FLT_MAX };
 
 	Vector3::Vector3() :
 		x(0.0f),

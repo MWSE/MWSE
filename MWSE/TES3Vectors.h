@@ -123,6 +123,8 @@ namespace TES3 {
 		const static Vector3 UNIT_NEG_Z;
 		const static Vector3 ONES;
 		const static Vector3 ZEROES;
+		const static Vector3 MIN;
+		const static Vector3 MAX;
 
 	};
 	static_assert(sizeof(Vector3) == 0xC, "TES3::Vector3 failed size validation");
