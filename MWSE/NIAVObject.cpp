@@ -141,9 +141,7 @@ namespace NI {
 
 	const auto NI_CreateBoundingBoxForNode = reinterpret_cast<void(__cdecl*)(const AVObject*, TES3::Vector3*, TES3::Vector3*, const TES3::Vector3*, const TES3::Matrix33*, const float*)>(0x4EF410);
 	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua() const {
-		constexpr auto min = std::numeric_limits<float>::min();
-		constexpr auto max = std::numeric_limits<float>::max();
-		auto bb = std::make_shared<TES3::BoundingBox>(max, max, max, min, min, min);
+		auto bb = std::make_shared<TES3::BoundingBox>(FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
 		float scale = localScale;
 		NI_CreateBoundingBoxForNode(this, &bb->minimum, &bb->maximum, (const TES3::Vector3*)0x7DE6CC, (const TES3::Matrix33*)0x7DE664, &scale);
 		return bb;
