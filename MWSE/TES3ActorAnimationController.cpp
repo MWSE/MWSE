@@ -153,31 +153,40 @@ namespace TES3 {
 		}
 	}
 
+	const auto TES3_ActorAnimController_selectDeathAnimation = reinterpret_cast<void(__thiscall*)(TES3::ActorAnimationController*)>(0x53F120);
+	void ActorAnimationController::selectDeathAnimation() {
+		// Reset idle anim state and override state so that the death animation has priority.
+		mobileActor->setFlagIdleAnim(false);
+		patchedOverrideState = 0xFF;
+
+		TES3_ActorAnimController_selectDeathAnimation(this);
+	}
+
 	const auto TES3_ActorAnimController_selectMovementAnimAndUpdate = reinterpret_cast<void(__thiscall*)(TES3::ActorAnimationController*, float, bool)>(0x540A90);
 	void ActorAnimationController::selectMovementAnimAndUpdate(float deltaTime, bool flag) {
 		auto state = patchedOverrideState;
 
 		if (state != 0xFF) {
-			auto baseAnimGroup = animationData->currentAnimGroup[0];
-			auto overrideAnimGroup = animationData->currentAnimGroup[2];
+			auto baseAnimGroup = animationData->currentAnimGroups[0];
+			auto overrideAnimGroup = animationData->currentAnimGroups[2];
 
 			// Check if override animation has completed.
 			if (overrideAnimGroup != baseAnimGroup) {
 				// Still animating. Suppress updates to the AnimationAttachment by misusing ActorAnimData internal flags.
 				if (state <= 1) {
-					layerUpperBody.playbackTypeEnum = 8;
+					sectionUpperBody.playbackTypeEnum = 8;
 				}
 				if (state <= 2) {
-					layerShieldArm.playbackTypeEnum = 8;
+					sectionLeftArm.playbackTypeEnum = 8;
 				}
 			}
 			else {
 				// Animation has completed, and been paused at the end. Signal controller to update animations.
 				if (state <= 1) {
-					animationData->currentAnimGroup[1] = 0xFF;
+					animationData->currentAnimGroups[1] = AnimGroupID::NONE;
 				}
 				if (state <= 2) {
-					animationData->currentAnimGroup[2] = 0xFF;
+					animationData->currentAnimGroups[2] = AnimGroupID::NONE;
 				}
 				// End override state.
 				patchedOverrideState = 0xFF;

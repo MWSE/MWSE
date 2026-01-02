@@ -68,6 +68,7 @@ namespace mwse::string {
 	bool niequal(std::string_view a, std::string_view b, size_t maxCount);
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring);
+	bool istarts_with(const std::string_view& string, const std::string_view& substring);
 	bool ends_with(const std::string_view& string, const std::string_view& substring);
 	
 	void strip_start(std::string& string, const std::string_view& substring);
