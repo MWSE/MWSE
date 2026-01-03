@@ -20,6 +20,7 @@
 
 #include "DialogRenderWindow.h"
 #include "DialogObjectWindow.h"
+#include "DialogLayersWindow.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowWidgets.h"
@@ -36,6 +37,8 @@
 #include "DialogProcContext.h"
 
 namespace se::cs::window::main {
+
+	namespace lw = se::cs::dialog::layer_window;
 
 	struct ObjectEditLParam {
 		ObjectType::ObjectType objectType; // 0x0
@@ -588,6 +591,9 @@ namespace se::cs::window::main {
 		case MENU_ID_CSSE_ABOUT:
 			showAboutDialog(hWnd);
 			break;
+		case MENU_ID_VIEW_LAYERS_WINDOW:
+			lw::toggleLayersWindow(IsIconic(lw::hLayersWnd));
+			break;
 		}
 	}
 
@@ -916,6 +922,12 @@ namespace se::cs::window::main {
 		newExtenderMenu.hSubMenu = createExtenderMenu();
 		newExtenderMenu.dwTypeData = (char*)"C&SSE";
 		InsertMenuItemA(menu, 6, TRUE, &newExtenderMenu);
+
+		// Add Layers Window to the View menu.
+		auto viewMenu = GetSubMenu(menu, 2);
+		if (viewMenu) {
+			InsertMenuA(viewMenu, 3, MF_BYPOSITION | MF_STRING, MENU_ID_VIEW_LAYERS_WINDOW, "&Layers Window");
+		}
 	}
 
 	void PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(DialogProcContext& context) {
@@ -981,6 +993,11 @@ namespace se::cs::window::main {
 			PatchDialogProc_AfterCommand_TestInOpenMW(context);
 			break;
 		}
+
+		if (lw::hLayersWnd) {
+			auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+			lw::forceToggleLayersWindow(viewMenu);
+		}
 	}
 
 	void PatchDialogProc_AfterSave(DialogProcContext& context) {
@@ -1009,11 +1026,19 @@ namespace se::cs::window::main {
 		SendMessage(statusWindow, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
 	}
 
+	void PatchDialogProc_BeforeInitMenuPopup(DialogProcContext& context) {
+		auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+		lw::refreshLayersMenuItem(viewMenu);
+	}
+
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x444590);
 
 		// Handle pre-patches.
 		switch (msg) {
+		case WM_INITMENUPOPUP:
+			PatchDialogProc_BeforeInitMenuPopup(context);
+			break;
 		case WM_COMMAND:
 			PatchDialogProc_BeforeCommand(context);
 			break;
