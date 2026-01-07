@@ -1,5 +1,9 @@
 local logger = require("logging.logger")
 local dependencyManagerModule = require("dependencyManagement.DependencyManager")
+local inspect = require("inspect")
+
+mwse.log("tes3.installDirectory = \"%s\"", tes3.installDirectory)
+mwse.log("mwse.activeLuaMods = %s", inspect(mwse.activeLuaMods))
 
 local function execLuaMod(runtime)
 	-- Check for dependencies if we need to.
