@@ -13644,6 +13644,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getlandheightatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandHeightAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlandnormalatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandNormalAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlandshapeatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandShapeAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#updatecollisiongroupsforactivecells" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -23710,6 +23743,39 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getlandheightatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandHeightAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlandnormalatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandNormalAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getlandshapeatposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        getLandShapeAtPosition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#updatecollisiongroupsforactivecells" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -23978,6 +24044,39 @@
 <li><code>interiorBufferSize</code> (number)</li>
 </ul>
 <hr />
+<h3 id="getlandheightatposition"><code>getLandHeightAtPosition</code><a class="headerlink" href="#getlandheightatposition" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">getlandheightatposition, landheightatposition</div>
+
+<p>Gets the land height at a given world position, or <code>nil</code> if the height could not be determined.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">height</span> <span class="o">=</span> <span class="n">myObject</span><span class="p">:</span><span class="n">getLandHeightAtPosition</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>height</code> (number, nil)</li>
+</ul>
+<hr />
+<h3 id="getlandnormalatposition"><code>getLandNormalAtPosition</code><a class="headerlink" href="#getlandnormalatposition" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">getlandnormalatposition, landnormalatposition</div>
+
+<p>Gets the normal vector from the land at a given world position, or <code>nil</code> if the land position could not be determined.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">myObject</span><span class="p">:</span><span class="n">getLandNormalAtPosition</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>normal</code> (<a href="../tes3vector3/">tes3vector3</a>, nil)</li>
+</ul>
+<hr />
+<h3 id="getlandshapeatposition"><code>getLandShapeAtPosition</code><a class="headerlink" href="#getlandshapeatposition" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">getlandshapeatposition, landshapeatposition</div>
+
+<p>Gets the scene graph shape for the land at a given world position, or <code>nil</code> if the land position could not be determined.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">node</span> <span class="o">=</span> <span class="n">myObject</span><span class="p">:</span><span class="n">getLandShapeAtPosition</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>node</code> (<a href="../niTriShape/">niTriShape</a>, nil)</li>
+</ul>
+<hr />
 <h3 id="updatecollisiongroupsforactivecells"><code>updateCollisionGroupsForActiveCells</code><a class="headerlink" href="#updatecollisiongroupsforactivecells" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">updatecollisiongroupsforactivecells, collisiongroupsforactivecells</div>
 
@@ -24022,7 +24121,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="June 20, 2025 02:08:10 UTC">June 20, 2025 02:08:10</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="January 8, 2026 03:47:15 UTC">January 8, 2026 03:47:15</span>
   </span>
 
     
