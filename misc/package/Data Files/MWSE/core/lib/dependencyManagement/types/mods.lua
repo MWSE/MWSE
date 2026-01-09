@@ -152,25 +152,16 @@ local function doModuleCheck(dependencyManager, mods, failures)
 	dependencyManager.logger:debug("Checking mwse modules")
 	for modId, dependency in pairs(mods) do
 		dependencyManager.logger:debug("mod: %s", modId)
-		--check module
-		if dependency["mwse-module"] then
-			dependencyManager.logger:debug("Checking mwse module %s", dependency["mwse-module"])
-			local path = dependency["mwse-module"]:gsub("[/.]", "\\")
-			local packagePaths = package.path:gsub("%?%.lua", "?")
-
-			---@param packagePath string
-			local function checkModule(packagePath)
-				local fullPath = packagePath:gsub("?", path)
-				dependencyManager.logger:debug("Checking module %s", fullPath)
-				return lfs.fileexists(tes3.installDirectory .. fullPath .. ".lua")
-					or lfs.directoryexists(tes3.installDirectory .. fullPath)
-			end
+		local module = dependency["mwse-module"]
+		if module then
+			dependencyManager.logger:debug("Checking mwse module %s", module)
 			local found = false
-			for packagePath in packagePaths:gmatch("[^;]+") do
-				if checkModule(packagePath) then
-					found = true
-					break
-				end
+			local moduleLower = module:lower()
+			local package = mwse.activeLuaMods[moduleLower]
+			if package then
+				found = true
+				dependencyManager.logger:debug("Module %s found.", module)
+				-- Do we want some additional checks here?
 			end
 			if not found then
 				local reason = reasons.missingModule(dependency)
@@ -181,8 +172,6 @@ local function doModuleCheck(dependencyManager, mods, failures)
 					reason = reason,
 					failures = failures
 				}
-			else
-				dependencyManager.logger:debug("MWSE Module %s found", dependency["mwse-module"])
 			end
 		end
 	end
