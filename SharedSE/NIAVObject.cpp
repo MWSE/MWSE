@@ -2,6 +2,7 @@
 
 #include "NICollisionSwitch.h"
 #include "NITriBasedGeometry.h"
+#include "NISwitchNode.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -177,7 +178,7 @@ namespace NI {
 
 	const auto NI_CreateBoundingBoxForNode = reinterpret_cast<void(__cdecl*)(const AVObject*, TES3::Vector3*, TES3::Vector3*, const TES3::Vector3*, const Matrix33*, const float*)>(0x4EF410);
 	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua() const {
-		constexpr auto min = std::numeric_limits<float>::min();
+		constexpr auto min = std::numeric_limits<float>::lowest();
 		constexpr auto max = std::numeric_limits<float>::max();
 		auto bb = std::make_shared<TES3::BoundingBox>(max, max, max, min, min, min);
 		float scale = localScale;
@@ -371,7 +372,12 @@ namespace NI {
 	}
 #endif
 
-	void __cdecl CalculateBounds(const AVObject* object, Vector3& out_min, Vector3& out_max, const Vector3& translation, const Matrix33& rotation, const float& scale) {
+	void __cdecl CalculateBounds(const AVObject* object, Vector3& outMin, Vector3& outMax, const Vector3& translation, const Matrix33& rotation, const float& scale) {
+		// Note: This function is a copy of the MWSE equivilent with hardcoded params.
+		auto accurateSkinned = false;
+		auto observeAppCullFlag = false;
+		auto onlyActiveChildren = false;
+
 		// Ignore collision-disabled subgraphs.
 		if (object->isOfType(RTTIStaticPtr::NiCollisionSwitch)) {
 			const auto asCollisionSwitch = static_cast<const CollisionSwitch*>(object);
@@ -382,12 +388,38 @@ namespace NI {
 
 		// Recurse until we get to a leaf node.
 		if (object->isInstanceOfType(RTTIStaticPtr::NiNode)) {
-			const auto asNode = static_cast<const Node*>(object);
-			for (const auto& child : asNode->children) {
-				if (child) {
-					CalculateBounds(child, out_min, out_max, translation + child->localTranslate, rotation * *child->localRotation, scale * child->localScale);
+			auto calculateChildBounds = [&](const AVObject* child) {
+				if (!child) {
+					return;
+				}
+				if (observeAppCullFlag && child->getAppCulled()) {
+					return;
+				}
+				CalculateBounds(
+					child,
+					outMin,
+					outMax,
+					rotation * child->localTranslate * scale + translation, // translation
+					rotation * (*child->localRotation), // rotation
+					scale * child->localScale // scale
+				);
+			};
+			if (onlyActiveChildren && object->isInstanceOfType(RTTIStaticPtr::NiSwitchNode)) {
+				const auto asNode = static_cast<const SwitchNode*>(object);
+				const auto child = asNode->getActiveChild();
+				calculateChildBounds(child);
+			}
+			else {
+				const auto asNode = static_cast<const Node*>(object);
+				for (const auto& child : asNode->children) {
+					calculateChildBounds(child);
 				}
 			}
+			return;
+		}
+
+		// Optionally ignore culled objects.
+		if (observeAppCullFlag && object->getAppCulled()) {
 			return;
 		}
 
@@ -397,20 +429,41 @@ namespace NI {
 		}
 
 		// Ignore particles.
-		if (object->isInstanceOfType(RTTIStaticPtr::NiParticlesData)) {
+		if (object->isInstanceOfType(RTTIStaticPtr::NiParticles)) {
 			return;
 		}
 
+		const auto asGeometry = static_cast<const Geometry*>(object);
+		const auto modelData = asGeometry->modelData.get();
+		if (!modelData) {
+			return;
+		}
+
+		const auto vertexCount = modelData->getActiveVertexCount();
+		if (vertexCount == 0) {
+			return;
+		}
+
+		auto vertices = modelData->vertex;
+
+		// Optionally apply skin deformations. Note: This is not thread-safe.
+		auto useDeform = accurateSkinned && (asGeometry->skinInstance != nullptr);
+		if (useDeform) {
+			static std::vector<Vector3> deformVertices;
+			deformVertices.reserve(vertexCount);
+			vertices = deformVertices.data();
+			asGeometry->skinInstance->deform(modelData->vertex, nullptr, vertexCount, vertices, nullptr);
+		}
+
 		// Actually look at the vertices.
-		const auto vertices = static_cast<const Geometry*>(object)->modelData->getVertices();
-		for (const auto& vertex : vertices) {
-			const auto v = (rotation * scale * vertex) + translation;
-			out_min.x = std::min(out_min.x, v.x);
-			out_min.y = std::min(out_min.y, v.y);
-			out_min.z = std::min(out_min.z, v.z);
-			out_max.x = std::max(out_max.x, v.x);
-			out_max.y = std::max(out_max.y, v.y);
-			out_max.z = std::max(out_max.z, v.z);
+		for (auto i = 0u; i < vertexCount; ++i) {
+			auto v = rotation * vertices[i] * scale + translation;
+			outMin.x = std::min(outMin.x, v.x);
+			outMin.y = std::min(outMin.y, v.y);
+			outMin.z = std::min(outMin.z, v.z);
+			outMax.x = std::max(outMax.x, v.x);
+			outMax.y = std::max(outMax.y, v.y);
+			outMax.z = std::max(outMax.z, v.z);
 		}
 	}
 
@@ -419,7 +472,7 @@ namespace NI {
 		// Ignore collision-disabled subgraphs.
 		if (object->isOfType(NI::RTTIStaticPtr::NiCollisionSwitch)) {
 			const auto asCollisionSwitch = static_cast<const NI::CollisionSwitch*>(object);
-			if (asCollisionSwitch->getCollisionActive()) {
+			if (!asCollisionSwitch->getCollisionActive()) {
 				return;
 			}
 		}

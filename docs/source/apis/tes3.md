@@ -184,7 +184,7 @@ local count, item, itemData = tes3.addItem({ reference = ..., item = ..., itemDa
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): Who to give items to.
 	* `item` ([tes3item](../types/tes3item.md), [tes3leveledItem](../types/tes3leveledItem.md), string): The item to add. If a leveled item is passed, it will be resolved and added.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
-	* `soul` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md)): *Optional*. For creating filled soul gems.
+	* `soul` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md), string): *Optional*. For creating filled soul gems.
 	* `count` (number): *Default*: `1`. The maximum number of items to add.
 	* `playSound` (boolean): *Default*: `true`. If `false`, the up/down sound for the item won't be played. This only applies if `reference` is the player.
 	* `showMessage` (boolean): *Default*: `false`. If `true`, a message box notifying the player will be shown. This only applies if `reference` is the player.
@@ -3205,7 +3205,12 @@ local state = tes3.is3rdPerson()
 
 This function performs a check whether the provided reference is affected by a certain object or magic effect.
 
-Note `reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+!!! info
+	`reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+
+!!! tip
+	Soul trap effect is only active on the actor during the frame of the actor's death, if the player has a valid soul gem.
+
 
 ```lua
 local isAffectedBy = tes3.isAffectedBy({ reference = ..., effect = ..., object = ... })

@@ -28,7 +28,7 @@ namespace NI {
 		// vTable type overwriting.
 		//
 
-		TriShapeData* getModelData() const;
+		Pointer<TriShapeData> getModelData() const;
 		void linkObject(NI::Stream* stream);
 
 		//

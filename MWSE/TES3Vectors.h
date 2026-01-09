@@ -123,6 +123,8 @@ namespace TES3 {
 		const static Vector3 UNIT_NEG_Z;
 		const static Vector3 ONES;
 		const static Vector3 ZEROES;
+		const static Vector3 MIN;
+		const static Vector3 MAX;
 
 	};
 	static_assert(sizeof(Vector3) == 0xC, "TES3::Vector3 failed size validation");
@@ -177,9 +179,9 @@ namespace TES3 {
 		bool operator!=(const Matrix33& matrix);
 		Matrix33 operator+(const Matrix33& matrix);
 		Matrix33 operator-(const Matrix33& matrix);
-		Matrix33 operator*(const Matrix33& matrix);
+		Matrix33 operator*(const Matrix33& matrix) const;
 		Vector3 operator*(const Vector3& vector) const;
-		Matrix33 operator*(float scalar);
+		Matrix33 operator*(float scalar) const;
 
 		friend std::ostream& operator<<(std::ostream& str, const Matrix33& matrix);
 		std::string toString() const;

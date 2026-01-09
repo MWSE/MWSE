@@ -197,7 +197,7 @@ local result = tes3ui.createTooltipMenu({ object = ..., itemData = ..., spell = 
 * `params` (table): *Optional*.
 	* `object` ([tes3object](../types/tes3object.md), string): *Optional*. The object to create a tooltip for.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The itemData for the object, if providing an object.
-	* `spell` ([tes3spell](../types/tes3spell.md)): *Optional*. The spell to create a tooltip for.
+	* `spell` ([tes3spell](../types/tes3spell.md), string): *Optional*. The spell to create a tooltip for.
 	* `skill` ([tes3skill](../types/tes3skill.md)): *Optional*. The skill to create a tooltip for.
 
 **Returns**:

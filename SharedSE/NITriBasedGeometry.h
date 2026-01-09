@@ -16,7 +16,7 @@ namespace NI {
 		// vTable type overwriting.
 		//
 
-		TriBasedGeometryData* getModelData() { return static_cast<TriBasedGeometryData*>(modelData.get()); }
+		Pointer<TriBasedGeometryData> getModelData() { return static_cast<TriBasedGeometryData*>(modelData.get()); }
 
 	};
 	static_assert(sizeof(TriBasedGeometry) == 0xAC, "NI::TriBasedGeometry failed size validation");

@@ -86,9 +86,7 @@ namespace mwse::lua {
 	}
 
 	bool __cdecl eventDispatcher(Element* owningWidget, Property eventID, int data0, int data1, Element* source) {
-		LuaManager& luaManager = LuaManager::getInstance();
-		const auto stateHandle = luaManager.getThreadSafeStateHandle();
-		auto& state = stateHandle.getState();
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 
 		// Find dispatch target. Almost always source, but is owningWidget for 'focus' and 'unfocus' events.
 		Element* target = source;
@@ -116,7 +114,7 @@ namespace mwse::lua {
 		if (iterBeforeElements != eventCallbacksBefore.end()) {
 			auto iterCallback = iterBeforeElements->second.find(eventID);
 			if (iterCallback != iterBeforeElements->second.end()) {
-				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
+				auto eventData = createEventTable(stateHandle.getState(), owningWidget, eventID, data0, data1, source, target);
 
 				auto& callbacks = iterCallback->second;
 				for (const auto& eventLua : callbacks) {
@@ -150,7 +148,7 @@ namespace mwse::lua {
 			if (iterCallback != iterElements->second.end()) {
 				legacyUsed = true;
 
-				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
+				auto eventData = createEventTable(stateHandle.getState(), owningWidget, eventID, data0, data1, source, target);
 
 				// Note: sol::protected_function needs to be a local, as Lua functions can destroy it when modifying events.
 				sol::protected_function callback = iterCallback->second;
@@ -194,7 +192,7 @@ namespace mwse::lua {
 		if (iterAfterElements != eventCallbacksAfter.end()) {
 			auto iterCallback = iterAfterElements->second.find(eventID);
 			if (iterCallback != iterAfterElements->second.end()) {
-				auto eventData = createEventTable(state, owningWidget, eventID, data0, data1, source, target);
+				auto eventData = createEventTable(stateHandle.getState(), owningWidget, eventID, data0, data1, source, target);
 
 				auto& callbacks = iterCallback->second;
 				for (const auto& eventLua : callbacks) {
@@ -224,14 +222,12 @@ namespace mwse::lua {
 	}
 
 	void __cdecl eventDestroyDispatcher(Element* source) {
-		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.getState();
-
-		// Send off our event.
 		eventDispatcher(source, Property::event_destroy, 0, 0, source);
 	}
 
 	void registerBeforeUIEvent(TES3::UI::Element* target, TES3::UI::Property eventID, sol::protected_function callback, double priority) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		auto& properties = eventCallbacksBefore[target];
 		auto& callbacks = properties[eventID];
 
@@ -260,6 +256,8 @@ namespace mwse::lua {
 	}
 
 	void registerAfterUIEvent(TES3::UI::Element* target, TES3::UI::Property eventID, sol::protected_function callback, double priority) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		auto& properties = eventCallbacksAfter[target];
 		auto& callbacks = properties[eventID];
 
@@ -288,6 +286,8 @@ namespace mwse::lua {
 	}
 
 	void registerUIEvent(Element* target, Property eventID, sol::protected_function callback) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		// Forward the event to our dispatcher.
 		if (eventID == Property::event_destroy) {
 			auto prevDestroy = static_cast<void(__cdecl*)(Element*)>(target->getProperty(PropertyType::Pointer, Property::event_destroy).ptrValue);
@@ -308,6 +308,8 @@ namespace mwse::lua {
 	}
 
 	bool unregisterBeforeUIEvent(Element* target, Property eventID, sol::protected_function callback) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		const auto& targetItt = eventCallbacksBefore.find(target);
 		if (targetItt != eventCallbacksBefore.end()) {
 			const auto& propertyItt = targetItt->second.find(eventID);
@@ -326,6 +328,8 @@ namespace mwse::lua {
 	}
 
 	bool unregisterAfterUIEvent(Element* target, Property eventID, sol::protected_function callback) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		const auto& targetItt = eventCallbacksAfter.find(target);
 		if (targetItt != eventCallbacksAfter.end()) {
 			const auto& propertyItt = targetItt->second.find(eventID);
@@ -344,6 +348,8 @@ namespace mwse::lua {
 	}
 
 	bool unregisterUIEvent(Element* target, Property eventID) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		auto iterCallbacks = eventCallbacksLegacy.find(target);
 		if (iterCallbacks != eventCallbacksLegacy.end()) {
 			return iterCallbacks->second.erase(eventID);
@@ -353,9 +359,6 @@ namespace mwse::lua {
 	}
 
 	bool eventForwarder(sol::table eventData) {
-		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.getState();
-
 		Element* source = eventData["forwardSource"];
 		Element* owningWidget = eventData["widget"];
 		Property eventID = eventData["id"];
@@ -380,6 +383,8 @@ namespace mwse::lua {
 	}
 
 	void cleanupEventRegistrations(TES3::UI::Element* element) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		eventCallbacksBefore.erase(element);
 		eventCallbacksAfter.erase(element);
 		eventCallbacksLegacy.erase(element);
@@ -388,6 +393,8 @@ namespace mwse::lua {
 	}
 
 	void copyLuaCallbacks(TES3::UI::Element* from, TES3::UI::Element* to) {
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		if (auto itt = eventCallbacksBefore.find(from); itt != eventCallbacksBefore.end()) {
 			eventCallbacksBefore[to] = itt->second;
 		}

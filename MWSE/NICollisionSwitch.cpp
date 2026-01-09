@@ -8,7 +8,7 @@ namespace NI {
 		BITMASK_SET_ON(flags, flagCollision);
 	}
 
-	bool CollisionSwitch::getCollisionActive() {
+	bool CollisionSwitch::getCollisionActive() const {
 		return BITMASK_TEST(flags, flagCollision);
 	}
 

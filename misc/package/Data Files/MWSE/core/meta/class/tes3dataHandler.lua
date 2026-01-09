@@ -36,6 +36,18 @@ tes3dataHandler = {}
 --- @return number interiorBufferSize No description yet available.
 function tes3dataHandler:getCellBufferSizes() end
 
+--- Gets the land height at a given world position, or `nil` if the height could not be determined.
+--- @return number|nil height No description yet available.
+function tes3dataHandler:getLandHeightAtPosition() end
+
+--- Gets the normal vector from the land at a given world position, or `nil` if the land position could not be determined.
+--- @return tes3vector3|nil normal No description yet available.
+function tes3dataHandler:getLandNormalAtPosition() end
+
+--- Gets the scene graph shape for the land at a given world position, or `nil` if the land position could not be determined.
+--- @return niTriShape|nil node No description yet available.
+function tes3dataHandler:getLandShapeAtPosition() end
+
 --- No description yet available.
 --- @param params tes3dataHandler.updateCollisionGroupsForActiveCells.params This table accepts the following values:
 --- 

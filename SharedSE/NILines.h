@@ -9,7 +9,7 @@ namespace NI {
 		Lines(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags);
 		~Lines();
 
-		LinesData* getModelData() { return static_cast<LinesData*>(modelData.get()); }
+		Pointer<LinesData> getModelData() const;
 
 		static Pointer<Lines> create(unsigned short vertexCount, bool useColors = false, bool useTextureCoords = false);
 		static Pointer<Lines> create(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags);

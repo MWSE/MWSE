@@ -21,7 +21,7 @@ namespace NI {
 		bool bWorldVerticesDirty; // 0xA8
 		bool bWorldNormalsDirty; // 0xA9
 
-		GeometryData* getModelData() const;
+		Pointer<GeometryData> getModelData() const;
 		void setModelData(GeometryData* data);
 
 		void updateDeforms();

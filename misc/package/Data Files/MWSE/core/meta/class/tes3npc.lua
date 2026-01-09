@@ -11,7 +11,7 @@
 --- !!! note
 --- 	This array is 1-indexed. The array indices correspond to the [`tes3.attribute`](https://mwse.github.io/MWSE/references/attributes/) table plus 1 to account for Lua's 1-based array indexing. In other words `npc.attributes[tes3.attribute.speed + 1]` returns the attribute value corresponding to Speed.
 --- @field autoCalc boolean Direct access to the actor autocalc flag.
---- @field baseDisposition number The actor's base disposition.
+--- @field baseDisposition number The actor's base disposition as read from the esm/esp file(s), before any modifiers are applied.
 --- @field class tes3class *Read-only*. The class that the NPC uses.
 --- @field faction tes3faction *Read-only*. The class that the NPC is joined to.
 --- @field factionRank number The NPC's rank in their faction.

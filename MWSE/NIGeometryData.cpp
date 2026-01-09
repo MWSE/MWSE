@@ -34,6 +34,14 @@ namespace NI {
 		return {};
 	}
 
+	nonstd::span<TES3::Vector3> GeometryData::getActiveVertices() {
+		const auto count = getActiveVertexCount();
+		if (vertex && count > 0) {
+			return nonstd::span(vertex, count);
+		}
+		return {};
+	}
+
 	nonstd::span<TES3::Vector3> GeometryData::getNormals() {
 		if (normal) {
 			return nonstd::span(normal, vertexCount);

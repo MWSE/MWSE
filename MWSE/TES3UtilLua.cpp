@@ -2763,18 +2763,21 @@ namespace mwse::lua {
 		auto mobilePlayer = TES3::WorldController::get()->getMobilePlayer();
 		if (mobilePlayer && mobile == mobilePlayer && getOptionalParam(params, "updateGUI", true)) {
 			if (spell->isActiveCast()) {
-				// Deselect if currently selected.
-				if (mobilePlayer->currentSpell.source.asSpell == spell) {
-					TES3_UI_MenuMagic_deselectMagic();
-				}
+				const auto magicMenu = TES3::UI::findMenu("MenuMagic");
+				if (magicMenu) {
+					// Deselect if currently selected.
+					if (mobilePlayer->currentSpell.source.asSpell == spell) {
+						TES3_UI_MenuMagic_deselectMagic();
+					}
 
-				// Magic menu spell list update.
-				if (spell->castType == TES3::SpellCastType::Spell) {
-					TES3_UI_removeSpellFromGUIList(spell);
-				}
-				else {
-					// Full list refresh is required for powers UI to update.
-					TES3_UI_MenuMagic_refreshAll(spell);
+					// Magic menu spell list update.
+					if (spell->castType == TES3::SpellCastType::Spell) {
+						TES3_UI_removeSpellFromGUIList(spell);
+					}
+					else {
+						// Full list refresh is required for powers UI to update.
+						TES3_UI_MenuMagic_refreshAll(spell);
+					}
 				}
 			}
 			else {

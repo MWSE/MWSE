@@ -64,7 +64,7 @@ function tes3.addClothingSlot(params) end
 --- 
 --- `itemData?`: tes3itemData — *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
 --- 
---- `soul?`: tes3creature|tes3npc — *Optional*. For creating filled soul gems.
+--- `soul?`: tes3creature|tes3npc|string — *Optional*. For creating filled soul gems.
 --- 
 --- `count?`: number — *Default*: `1`. The maximum number of items to add.
 --- 
@@ -89,7 +89,7 @@ function tes3.addItem(params) end
 --- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to give items to.
 --- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|tes3leveledItem|string The item to add. If a leveled item is passed, it will be resolved and added.
 --- @field itemData? tes3itemData *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
---- @field soul? tes3creature|tes3npc *Optional*. For creating filled soul gems.
+--- @field soul? tes3creature|tes3npc|string *Optional*. For creating filled soul gems.
 --- @field count? number *Default*: `1`. The maximum number of items to add.
 --- @field playSound? boolean *Default*: `true`. If `false`, the up/down sound for the item won't be played. This only applies if `reference` is the player.
 --- @field showMessage? boolean *Default*: `false`. If `true`, a message box notifying the player will be shown. This only applies if `reference` is the player.
@@ -1636,7 +1636,12 @@ function tes3.is3rdPerson() end
 
 --- This function performs a check whether the provided reference is affected by a certain object or magic effect.
 --- 
---- Note `reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+--- !!! info
+--- 	`reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+--- 
+--- !!! tip
+--- 	Soul trap effect is only active on the actor during the frame of the actor's death, if the player has a valid soul gem.
+--- 
 --- @param params tes3.isAffectedBy.params This table accepts the following values:
 --- 
 --- `reference`: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.

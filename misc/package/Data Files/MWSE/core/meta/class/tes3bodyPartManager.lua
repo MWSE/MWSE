@@ -17,6 +17,8 @@
 tes3bodyPartManager = {}
 
 --- The method fetches the active body part at a given layer and position. This gives access to the associated scene node, equipped item, and base body part.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/tes3bodyPartManager/#getactivebodypart).
 --- @param layer tes3.activeBodyPartLayer A value from [`tes3.activeBodyPartLayer`](https://mwse.github.io/MWSE/references/active-body-part-layers/) namespace.
 --- @param index tes3.activeBodyPart A value from [`tes3.activeBodyPart`](https://mwse.github.io/MWSE/references/active-body-parts/) namespace.
 --- @return tes3bodyPartManagerActiveBodyPart result No description yet available.

@@ -1552,5 +1552,11 @@ namespace TES3::UI {
 		pushNewUIID(0x60008D, "MenuPersuasion_Bribe1000");
 		pushNewUIID(0x5FFBE0, "MenuPersuasion_Footer");
 		pushNewUIID(0x5FFC88, "MenuPersuasion_Gold");
+
+		// MenuRepair
+		pushNewUIID(0x60D9CA, "MenuRepair_ListEntry");
+		pushNewUIID(0x60DA39, "MenuRepair_EntryLabel");
+		pushNewUIID(0x60DA86, "MenuRepair_EntryIcon");
+		pushNewUIID(0x60DB6F, "MenuRepair_EntryConditionBar");
 	}
 }

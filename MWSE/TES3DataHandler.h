@@ -379,6 +379,12 @@ namespace TES3 {
 		Vector3 getLastExteriorPosition() const;
 		float getLowestZInCurrentCell() const;
 
+		bool getLandHeightAtPosition(const Vector3& position, float* out_height) const;
+		sol::optional<float> getLandHeightAtPosition_lua(const Vector3& position) const;
+		bool getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const;
+		sol::optional<Vector3> getLandNormalAtPosition_lua(const Vector3& position) const;
+		NI::TriShape* getLandShapeAtPosition(const Vector3& position) const;
+
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
 		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);
 		void addTemporarySound(const char* path, Reference * reference = nullptr, int playbackFlags = 0, int volume = 250, float pitch = 1.0f, bool isVoiceover = false, Sound * sound = nullptr);

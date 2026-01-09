@@ -478,7 +478,7 @@ namespace mwse::lua {
 		LuaExecutor::defineLuaBindings();
 
 		// Extend math library.
-		luaState["math"]["nfhuge"] = std::numeric_limits<float>::min();
+		luaState["math"]["nfhuge"] = std::numeric_limits<float>::lowest();
 		luaState["math"]["fhuge"] = std::numeric_limits<float>::max();
 		luaState["math"]["epsilon"] = std::numeric_limits<double>::epsilon();
 		luaState["math"]["fepsilon"] = std::numeric_limits<float>::epsilon();
@@ -4336,7 +4336,7 @@ namespace mwse::lua {
 		return TES3_OnClickRepairOrRecharge(source, prop, dataA, dataB, target);
 	}
 
-	int __cdecl AttemptRepair() {
+	static int __cdecl AttemptRepair() {
 		auto repairMenu = TES3::UI::findMenu("MenuRepair");
 		if (!repairMenu) {
 			return 0;
@@ -4359,7 +4359,7 @@ namespace mwse::lua {
 		const auto strengthTerm = macp->getAttributeStrength()->getCurrent() * 0.1f;
 		const auto fatigueTerm = macp->getFatigueTerm();
 		auto chance = fatigueTerm * (skillTerm + strengthTerm + luckTerm);
-		const auto roll = tes3::rand() % 100;
+		auto roll = tes3::rand() % 100;
 
 		// Calculate the repair amount.
 		const auto fRepairAmountMult = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fRepairAmountMult]->value.asFloat;
@@ -4372,8 +4372,9 @@ namespace mwse::lua {
 		if (event::RepairEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::table result = stateHandle.triggerEvent(new event::RepairEvent(macp, item, itemData, tool, toolData, chance, repairAmount));
+			sol::table result = stateHandle.triggerEvent(new event::RepairEvent(macp, item, itemData, tool, toolData, roll, chance, repairAmount));
 			if (result.valid()) {
+				roll = result.get_or("roll", roll);
 				chance = result.get_or("chance", chance);
 				repairAmount = result.get_or("repairAmount", repairAmount);
 			}
@@ -4877,6 +4878,14 @@ namespace mwse::lua {
 
 	ThreadedStateHandle LuaManager::getThreadSafeStateHandle() {
 		return ThreadedStateHandle(this);
+	}
+
+	bool LuaManager::canLockLuaThread() {
+		if (stateThreadMutex.try_lock()) {
+			stateThreadMutex.unlock();
+			return true;
+		}
+		return false;
 	}
 
 	const sol::state_view& LuaManager::getReadOnlyStateView() {

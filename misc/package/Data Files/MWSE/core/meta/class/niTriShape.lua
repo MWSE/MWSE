@@ -21,6 +21,19 @@ niTriShape = {}
 function niTriShape.new(vertexCount, hasNormals, hasColors, textureCoordSets, triangleCount) end
 
 --- Calculates and creates a bounding box for the object. The existing bounding box, if any, will not be used, a fresh one will always be calculated.
+--- @param args? niTriShape.createBoundingBox.args This table accepts the following values:
+--- 
+--- `accurateSkinned?`: boolean — *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+--- 
+--- `observeAppCullFlag?`: boolean — *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+--- 
+--- `onlyActiveChildren?`: boolean — *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 --- @return tes3boundingBox boundingBox The newly created bounding box.
-function niTriShape:createBoundingBox() end
+function niTriShape:createBoundingBox(args) end
+
+---Table parameter definitions for `niTriShape.createBoundingBox`.
+--- @class niTriShape.createBoundingBox.args
+--- @field accurateSkinned? boolean *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+--- @field observeAppCullFlag? boolean *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+--- @field onlyActiveChildren? boolean *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 

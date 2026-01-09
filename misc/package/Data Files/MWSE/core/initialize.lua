@@ -1,6 +1,10 @@
 --- @diagnostic disable: duplicate-set-field
 --- @diagnostic disable: undefined-global
 
+-- Set garbage collection values.
+collectgarbage("setpause", 150)
+collectgarbage("setstepmul", 500)
+
 -- First, look for objects in the core folder. DLL files may also exist in the root folder.
 package.path = ".\\Data Files\\MWSE\\core\\?.lua;.\\Data Files\\MWSE\\core\\?\\init.lua;"
 package.cpath = "?.dll;.\\Data Files\\MWSE\\core\\?.dll;"

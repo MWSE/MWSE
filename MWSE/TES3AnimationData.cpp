@@ -180,7 +180,7 @@ namespace TES3 {
 		// Update current animation speed if currently casting.
 		if (currentAnimGroups[1] == AnimGroupID::SpellCast) {
 			// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-			weaponSpeed = speed + FLT_MIN;
+			weaponSpeed = speed + std::numeric_limits<float>::min();
 		}
 	}
 
@@ -1042,7 +1042,7 @@ namespace TES3 {
 
 	void __fastcall setAnimSpeedOnCast(TES3::AnimationData* animData) {
 		// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-		animData->weaponSpeed = animData->getCastSpeed() + FLT_MIN;
+		animData->weaponSpeed = animData->getCastSpeed() + std::numeric_limits<float>::min();
 	}
 
 	float __fastcall updateWorldDataBeforeScale(TES3::Reference* reference) {

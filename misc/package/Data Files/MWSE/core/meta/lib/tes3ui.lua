@@ -99,7 +99,7 @@ function tes3ui.createResponseText(params) end
 --- 
 --- `itemData?`: tes3itemData — *Optional*. The itemData for the object, if providing an object.
 --- 
---- `spell?`: tes3spell — *Optional*. The spell to create a tooltip for.
+--- `spell?`: tes3spell|string — *Optional*. The spell to create a tooltip for.
 --- 
 --- `skill?`: tes3skill — *Optional*. The skill to create a tooltip for.
 --- @return tes3uiElement result No description yet available.
@@ -109,7 +109,7 @@ function tes3ui.createTooltipMenu(params) end
 --- @class tes3ui.createTooltipMenu.params
 --- @field object? tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3enchantment|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3object|tes3probe|tes3reference|tes3repairTool|tes3spell|tes3static|tes3weapon|string *Optional*. The object to create a tooltip for.
 --- @field itemData? tes3itemData *Optional*. The itemData for the object, if providing an object.
---- @field spell? tes3spell *Optional*. The spell to create a tooltip for.
+--- @field spell? tes3spell|string *Optional*. The spell to create a tooltip for.
 --- @field skill? tes3skill *Optional*. The skill to create a tooltip for.
 
 --- Requests menu mode be activated on a menu with a given id.

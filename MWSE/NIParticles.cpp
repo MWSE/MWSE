@@ -16,6 +16,10 @@ namespace NI {
 		return geom;
 	}
 
+	Pointer<ParticlesData> Particles::getModelData() const {
+		return static_cast<ParticlesData*>(modelData.get());
+	}
+
 	AutoNormalParticles::AutoNormalParticles(AutoNormalParticlesData* data) : Particles(data) {
 		vTable.asObject = reinterpret_cast<Object_vTable*>(0x74FDE8);
 	}
@@ -25,6 +29,10 @@ namespace NI {
 		auto geom = new AutoNormalParticles(data);
 
 		return geom;
+	}
+
+	Pointer<AutoNormalParticlesData> AutoNormalParticles::getModelData() const {
+		return static_cast<AutoNormalParticlesData*>(modelData.get());
 	}
 
 	const auto NI_ParticlesData_ctor = reinterpret_cast<void(__thiscall*)(ParticlesData*, unsigned short, TES3::Vector3*, TES3::Vector3*, PackedColor*)>(0x6D1ED0);
@@ -91,6 +99,10 @@ namespace NI {
 			return nonstd::span(rotations, vertexCount);
 		}
 		return {};
+	}
+
+	Pointer<RotatingParticlesData> RotatingParticles::getModelData() const {
+		return static_cast<RotatingParticlesData*>(modelData.get());
 	}
 }
 

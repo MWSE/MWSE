@@ -509,6 +509,37 @@ namespace TES3 {
 		return *reinterpret_cast<float*>(0x7B217C);
 	}
 
+	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, float*)>(0x48E410);
+	bool DataHandler::getLandHeightAtPosition(const Vector3& position, float* out_height) const {
+		return TES3_NonDynamicData_getLandHeightAtPosition(this, position, out_height);
+	}
+
+	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const Vector3& position) const {
+		float result = 0.0f;
+		if (!getLandHeightAtPosition(position, &result)) {
+			return {};
+		}
+		return result;
+	}
+
+	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, Vector3&)>(0x48E530);
+	bool DataHandler::getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const {
+		return TES3_NonDynamicData_getLandNormalAtPosition(this, position, out_normal);
+	}
+
+	sol::optional<Vector3> DataHandler::getLandNormalAtPosition_lua(const Vector3& position) const {
+		Vector3 normal;
+		if (!getLandNormalAtPosition(position, normal)) {
+			return {};
+		}
+		return normal;
+	}
+
+	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const Vector3&)>(0x48E660);
+	NI::TriShape* DataHandler::getLandShapeAtPosition(const Vector3& position) const {
+		return TES3_NonDynamicData_getLandShapeAtPosition(this, position);
+	}
+
 	const auto TES3_DataHandler_addSound = reinterpret_cast<void(__thiscall*)(DataHandler*, Sound*, Reference*, int, unsigned char, float, bool, int)>(0x48BD40);
 	void DataHandler::addSound(Sound* sound, Reference* reference, int playbackFlags, unsigned char volume, float pitch, bool isVoiceover, int unknown) {
 		if (sound == nullptr) {

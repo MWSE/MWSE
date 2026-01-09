@@ -61,6 +61,27 @@ namespace mwse::lua {
 			usertypeDefinition["camera"] = sol::readonly_property(&TES3::WorldControllerRenderCamera::getCamera);
 		}
 
+		// Binding for TES3::WorldControllerRenderTarget
+		{
+			// Start our usertype.
+			auto usertypeDefinition = state.new_usertype<TES3::WorldControllerRenderTarget>("tes3worldControllerRenderTarget");
+			usertypeDefinition[sol::base_classes] = sol::bases<TES3::WorldControllerRenderCamera>();
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			// Basic property binding.
+			usertypeDefinition["alphaProperty"] = &TES3::WorldControllerRenderTarget::alphaProperty;
+			usertypeDefinition["directionalLight"] = &TES3::WorldControllerRenderTarget::directionalLight;
+			usertypeDefinition["readbackTexture"] = &TES3::WorldControllerRenderTarget::readbackTexture;
+			usertypeDefinition["renderedTexture"] = &TES3::WorldControllerRenderTarget::renderedTexture;
+			usertypeDefinition["rendererHeight"] = &TES3::WorldControllerRenderTarget::rendererHeight;
+			usertypeDefinition["rendererWidth"] = &TES3::WorldControllerRenderTarget::rendererWidth;
+			usertypeDefinition["targetHeight"] = &TES3::WorldControllerRenderTarget::targetHeight;
+			usertypeDefinition["targetWidth"] = &TES3::WorldControllerRenderTarget::targetWidth;
+			usertypeDefinition["vertexColorProperty"] = &TES3::WorldControllerRenderTarget::vertexColorProperty;
+			usertypeDefinition["zBufferProperty"] = &TES3::WorldControllerRenderTarget::zBufferProperty;
+
+		}
+
 		// Binding for TES3::RechargingItem.
 		{
 			// Start our usertype.

@@ -40,6 +40,32 @@ namespace TES3 {
 			}
 		};
 
+		class IteratorPreserver {
+			friend class IteratedList;
+		public:
+			IteratorPreserver(IteratedList<T>* parent) :
+				m_Parent(parent),
+				m_PreviousCurrent(parent->current)
+			{
+
+			}
+
+			IteratorPreserver(const IteratorPreserver& other) {
+				m_Parent = other.m_Parent;
+				m_PreviousCurrent = other.m_PreviousCurrent;
+			}
+
+			~IteratorPreserver() {
+				if (m_Parent) {
+					m_Parent->current = m_PreviousCurrent;
+				}
+			}
+
+		protected:
+			IteratedList<T>* m_Parent;
+			Node* m_PreviousCurrent;
+		};
+
 		//
 		// std interface functions
 		//
@@ -316,6 +342,13 @@ namespace TES3 {
 		Node* cached_next() {
 			current = current->next;
 			return current;
+		}
+
+		// Creates a class that stores the iterator's current state.
+		// When the preserver destructs, the "current" iterator state is restored.
+		// This should only really be used if doing a managed/cached loop on the list that is otherwise const (no elements added/removed).
+		IteratorPreserver makeIteratorPreserver() {
+			return IteratorPreserver(this);
 		}
 
 	};

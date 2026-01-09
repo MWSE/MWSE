@@ -9,13 +9,14 @@
 #include "TES3MobileActor.h"
 
 namespace mwse::lua::event {
-	RepairEvent::RepairEvent(TES3::MobileActor* repairer, TES3::Item* item, TES3::ItemData* itemData, TES3::RepairTool* tool, TES3::ItemData* toolData, float chance, int repairAmount) :
+	RepairEvent::RepairEvent(TES3::MobileActor* repairer, TES3::Item* item, TES3::ItemData* itemData, TES3::RepairTool* tool, TES3::ItemData* toolData, int roll, float chance, int repairAmount) :
 		ObjectFilteredEvent("repair", item),
 		m_Repairer(repairer),
 		m_Item(item),
 		m_ItemData(itemData),
 		m_Tool(tool),
 		m_ToolData(toolData),
+		m_Roll(roll),
 		m_Chance(chance),
 		m_RepairAmount(repairAmount)
 	{
@@ -35,6 +36,7 @@ namespace mwse::lua::event {
 		eventData["tool"] = m_Tool;
 		eventData["toolItemData"] = m_ToolData;
 
+		eventData["roll"] = m_Roll;
 		eventData["chance"] = m_Chance;
 		eventData["repairAmount"] = m_RepairAmount;
 

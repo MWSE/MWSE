@@ -76,13 +76,26 @@ local transform, valid = myObject:invert()
 
 ***
 
+### `toIdentity`
+<div class="search_terms" style="display: none">toidentity</div>
+
+Sets transform's rotation matrix to the identity matrix, translation to null vector, and scale to 1.0.
+
+```lua
+myObject:toIdentity()
+```
+
+***
+
+## Functions
+
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 
 Creates a new instance of this type.
 
 ```lua
-local result = myObject:new(rotation, translation, scale)
+local result = tes3transform.new(rotation, translation, scale)
 ```
 
 **Parameters**:
@@ -94,17 +107,6 @@ local result = myObject:new(rotation, translation, scale)
 **Returns**:
 
 * `result` ([tes3transform](../types/tes3transform.md))
-
-***
-
-### `toIdentity`
-<div class="search_terms" style="display: none">toidentity</div>
-
-Sets transform's rotation matrix to the identity matrix, translation to null vector, and scale to 1.0.
-
-```lua
-myObject:toIdentity()
-```
 
 ***
 

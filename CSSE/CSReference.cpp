@@ -71,6 +71,42 @@ namespace se::cs {
 		return selectionWidget->parentNode == sceneNode;
 	}
 
+	constexpr auto STRING_DATA_HIDDEN_FLAG = "xHID";
+
+	bool Reference::getHidden() const {
+		if (sceneNode == nullptr) {
+			return false;
+		}
+
+		const auto hideFlag = sceneNode->getStringDataWithValue(STRING_DATA_HIDDEN_FLAG);
+		if (hideFlag == nullptr) {
+			return false;
+		}
+
+		return true;
+	}
+
+	void Reference::setHidden(bool hide) {
+		if (sceneNode == nullptr) {
+			return;
+		}
+
+		const auto isHidden = getHidden();
+		if (hide && !isHidden) {
+			sceneNode->addExtraData(new NI::StringExtraData(STRING_DATA_HIDDEN_FLAG));
+			sceneNode->setAppCulled(true);
+			sceneNode->update();
+		}
+		else if (!hide && isHidden) {
+			const auto hideFlag = sceneNode->getStringDataWithValue(STRING_DATA_HIDDEN_FLAG);
+			if (hideFlag) {
+				sceneNode->removeExtraData(hideFlag);
+				sceneNode->setAppCulled(false);
+				sceneNode->update();
+			}
+		}
+	}
+
 	Cell* Reference::getCell() const {
 		const auto Reference_getCell = reinterpret_cast<Cell*(__thiscall*)(const Reference*)>(0x401B0E);
 		return Reference_getCell(this);

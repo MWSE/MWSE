@@ -295,6 +295,7 @@ function Template:createTabsBlock(parentBlock)
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
 			if tab.widget.state == tes3.uiState.active then
+                tes3.playSound{ sound = "Menu Click" }
 				self:clickTab(self.pages[table.wrapindex(self.pages, i + 1)])
 				break
 			end
@@ -306,6 +307,7 @@ function Template:createTabsBlock(parentBlock)
 		for i, page in ipairs(self.pages) do
 			local tab = tabsBlock:findChild(page.tabUID)
 			if tab.widget.state == tes3.uiState.active then
+                tes3.playSound{ sound = "Menu Click" }
 				self:clickTab(self.pages[table.wrapindex(self.pages, i - 1)])
 				break
 			end

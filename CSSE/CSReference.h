@@ -96,6 +96,9 @@ namespace se::cs {
 		void setSelectionWidgetEnabled(int flag);
 		bool hasActiveSelectionWidget() const;
 
+		bool getHidden() const;
+		void setHidden(bool hide);
+
 		Cell* getCell() const;
 	};
 	static_assert(sizeof(Reference) == 0x78, "TES3::Reference failed size validation");

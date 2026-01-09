@@ -601,8 +601,15 @@ myObject:copyTransforms(source)
 Calculates and creates a bounding box for the object. The existing bounding box, if any, will not be used, a fresh one will always be calculated.
 
 ```lua
-local boundingBox = myObject:createBoundingBox()
+local boundingBox = myObject:createBoundingBox({ accurateSkinned = ..., observeAppCullFlag = ..., onlyActiveChildren = ... })
 ```
+
+**Parameters**:
+
+* `args` (table): *Optional*.
+	* `accurateSkinned` (boolean): *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+	* `observeAppCullFlag` (boolean): *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+	* `onlyActiveChildren` (boolean): *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 
 **Returns**:
 

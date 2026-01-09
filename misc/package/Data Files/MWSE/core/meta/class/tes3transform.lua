@@ -12,6 +12,13 @@
 --- @field translation tes3vector3 The transform's translation vector.
 tes3transform = {}
 
+--- Creates a new instance of this type.
+--- @param rotation? tes3matrix33 *Optional*. No description yet available.
+--- @param translation? tes3vector3 *Optional*. No description yet available.
+--- @param scale? number *Optional*. No description yet available.
+--- @return tes3transform result No description yet available.
+function tes3transform.new(rotation, translation, scale) end
+
 --- Creates a copy of the transform.
 --- @return tes3transform result No description yet available.
 function tes3transform:copy() end
@@ -20,13 +27,6 @@ function tes3transform:copy() end
 --- @return tes3transform transform No description yet available.
 --- @return boolean valid No description yet available.
 function tes3transform:invert() end
-
---- Creates a new instance of this type.
---- @param rotation? tes3matrix33 *Optional*. No description yet available.
---- @param translation? tes3vector3 *Optional*. No description yet available.
---- @param scale? number *Optional*. No description yet available.
---- @return tes3transform result No description yet available.
-function tes3transform:new(rotation, translation, scale) end
 
 --- Sets transform's rotation matrix to the identity matrix, translation to null vector, and scale to 1.0.
 function tes3transform:toIdentity() end

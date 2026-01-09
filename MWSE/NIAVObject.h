@@ -98,12 +98,22 @@ namespace NI {
 		sol::table detachAllProperties_lua(sol::this_state ts);
 
 		bool intersectBounds(const TES3::Vector3* position, const TES3::Vector3* direction, float* out_result) const;
+		void calculateBounds(
+			TES3::Vector3& min,
+			TES3::Vector3& max,
+			const TES3::Vector3& translation,
+			const TES3::Matrix33& rotation,
+			const float& scale,
+			const bool accurateSkinned,
+			const bool observeAppCullFlag,
+			const bool onlyActiveChildren
+		) const;
 
 		//
 		// Custom functions.
 		//
 
-		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua() const;
+		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua(sol::optional<sol::table>) const;
 
 		void clearTransforms();
 		void copyTransforms(const AVObject* from);
@@ -139,6 +149,8 @@ namespace NI {
 
 	};
 	static_assert(sizeof(AVObject) == 0x90, "NI::AVObject failed size validation");
+
+	void __cdecl PatchCalculateBounds(const AVObject* object, TES3::Vector3& out_min, TES3::Vector3& out_max, const TES3::Vector3& translation, const TES3::Matrix33& rotation, const float& scale);
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::AVObject)

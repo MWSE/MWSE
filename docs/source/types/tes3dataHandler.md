@@ -272,6 +272,51 @@ local exteriorBufferSize, interiorBufferSize = myObject:getCellBufferSizes()
 
 ***
 
+### `getLandHeightAtPosition`
+<div class="search_terms" style="display: none">getlandheightatposition, landheightatposition</div>
+
+Gets the land height at a given world position, or `nil` if the height could not be determined.
+
+```lua
+local height = myObject:getLandHeightAtPosition()
+```
+
+**Returns**:
+
+* `height` (number, nil)
+
+***
+
+### `getLandNormalAtPosition`
+<div class="search_terms" style="display: none">getlandnormalatposition, landnormalatposition</div>
+
+Gets the normal vector from the land at a given world position, or `nil` if the land position could not be determined.
+
+```lua
+local normal = myObject:getLandNormalAtPosition()
+```
+
+**Returns**:
+
+* `normal` ([tes3vector3](../types/tes3vector3.md), nil)
+
+***
+
+### `getLandShapeAtPosition`
+<div class="search_terms" style="display: none">getlandshapeatposition, landshapeatposition</div>
+
+Gets the scene graph shape for the land at a given world position, or `nil` if the land position could not be determined.
+
+```lua
+local node = myObject:getLandShapeAtPosition()
+```
+
+**Returns**:
+
+* `node` ([niTriShape](../types/niTriShape.md), nil)
+
+***
+
 ### `updateCollisionGroupsForActiveCells`
 <div class="search_terms" style="display: none">updatecollisiongroupsforactivecells, collisiongroupsforactivecells</div>
 

@@ -2405,7 +2405,7 @@ A flag for if the player has a weapon ready or being readied (visible and held i
 ### `werewolf`
 <div class="search_terms" style="display: none">werewolf</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor in werewolf form.
+*Read-only*. Friendly access to the actor's flag that controls if the actor is in werewolf form.
 
 **Returns**:
 

@@ -1,7 +1,7 @@
 #include "NIGeometry.h"
 
 namespace NI {
-	GeometryData* Geometry::getModelData() const {
+	Pointer<GeometryData> Geometry::getModelData() const {
 		return modelData;
 	}
 

@@ -24,7 +24,7 @@ namespace NI {
 		return new TriShape(vertexCount, vertices, normals, colors, textureCoords, triangleCount, triList, flags);
 	}
 
-	TriShapeData* TriShape::getModelData() const {
+	Pointer<TriShapeData> TriShape::getModelData() const {
 		return static_cast<TriShapeData*>(modelData.get());
 	}
 }

@@ -92,7 +92,7 @@ Barter gold is reset on talking to an actor if fBarterGoldResetDelay hours have 
 ### `baseDisposition`
 <div class="search_terms" style="display: none">basedisposition</div>
 
-The actor's base disposition.
+The actor's base disposition as read from the esm/esp file(s), before any modifiers are applied.
 
 **Returns**:
 

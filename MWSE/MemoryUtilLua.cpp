@@ -74,7 +74,7 @@ namespace mwse::lua {
 			}
 		}
 
-		FunctionDefinition& definition = definitionItt->second;
+		const auto& definition = definitionItt->second;
 
 		if (definition.thisCall) {
 			luaFunctionArguments.push_back(definition.thisCallConverter(ecx));
@@ -104,7 +104,7 @@ namespace mwse::lua {
 			}
 		}
 
-		return &definition;
+		return &definitionItt->second;
 	}
 
 	// Actual dispatching function

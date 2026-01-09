@@ -38,6 +38,7 @@ namespace NI {
 
 		nonstd::span<PackedColor> getColors();
 		nonstd::span<TES3::Vector3> getVertices();
+		nonstd::span<TES3::Vector3> getActiveVertices();
 		nonstd::span<TES3::Vector3> getNormals();
 		nonstd::span<TES3::Vector2> getTextureCoordinates();
 

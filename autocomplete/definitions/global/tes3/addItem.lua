@@ -8,7 +8,7 @@ return {
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string", description = "Who to give items to." },
 			{ name = "item", type = "tes3item|tes3leveledItem|string", description = "The item to add. If a leveled item is passed, it will be resolved and added." },
 			{ name = "itemData", type = "tes3itemData", optional = true, description = "The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data)." },
-			{ name = "soul", type = "tes3creature|tes3npc", optional = true, description = "For creating filled soul gems." },
+			{ name = "soul", type = "tes3creature|tes3npc|string", optional = true, description = "For creating filled soul gems." },
 			{ name = "count", type = "number", optional = true, default = "1", description = "The maximum number of items to add." },
 			{ name = "playSound", type = "boolean", optional = true, default = true, description = "If `false`, the up/down sound for the item won't be played. This only applies if `reference` is the player." },
 			{ name = "showMessage", type = "boolean", optional = true, default = false, description = "If `true`, a message box notifying the player will be shown. This only applies if `reference` is the player." },

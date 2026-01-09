@@ -26,7 +26,7 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		GeometryData* getModelData();
+		Pointer<GeometryData> getModelData() const;
 		void setModelData(GeometryData* data);
 
 	};

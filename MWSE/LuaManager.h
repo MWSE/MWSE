@@ -44,6 +44,7 @@ namespace mwse::lua {
 
 		// Returns a thread-locking reference to the sol2 lua state.
 		ThreadedStateHandle getThreadSafeStateHandle();
+		bool canLockLuaThread();
 
 		const sol::state_view& getReadOnlyStateView();
 
