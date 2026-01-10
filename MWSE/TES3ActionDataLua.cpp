@@ -36,12 +36,11 @@ namespace mwse::lua {
 		usertypeDefinition["animationAttackState"] = &TES3::ActionData::animStateAttack;
 		usertypeDefinition["animGroupBlocking"] = &TES3::ActionData::animGroupBlocking;
 		usertypeDefinition["animGroupCurrentAction"] = &TES3::ActionData::animGroupCurrentAction;
-		usertypeDefinition["animGroupStunEffect"] = &TES3::ActionData::animGroupStunEffect;
+		usertypeDefinition["animGroupNextStun"] = &TES3::ActionData::animGroupNextStun;
 		usertypeDefinition["animSectionCurrentAction"] = &TES3::ActionData::animSectionCurrentAction;
 		usertypeDefinition["attackSwing"] = &TES3::ActionData::attackSwing;
 		usertypeDefinition["attackWasBlocked"] = &TES3::ActionData::attackWasBlocked;
 		usertypeDefinition["blockingState"] = &TES3::ActionData::blockingState;
-		usertypeDefinition["currentAnimationGroup"] = &TES3::ActionData::animGroupCurrentAction;
 		usertypeDefinition["dispositionCombatChange"] = &TES3::ActionData::dispositionCombatChange;
 		usertypeDefinition["fightCombatChange"] = &TES3::ActionData::fightAttrCombatChange;
 		usertypeDefinition["hitTarget"] = &TES3::ActionData::hitTarget;
@@ -62,5 +61,6 @@ namespace mwse::lua {
 
 		// Deprecated properties.
 		usertypeDefinition["attackDirection"] = &TES3::ActionData::physicalAttackType;
+		usertypeDefinition["currentAnimationGroup"] = &TES3::ActionData::animGroupCurrentAction;
 	}
 }
