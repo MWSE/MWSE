@@ -4846,7 +4846,44 @@ namespace mwse::lua {
 	//
 	//
 
+
+	//
+	// Use render thread garbage collection.
+	//
+	
+	static std::thread renderThreadGarbageCollectionThread;
+	static std::atomic<bool> shouldRunRenderThreadGC = false;
+
+	static void PerformGarbageCollection() {
+		auto& luaManager = LuaManager::getInstance();
+		while (true) {
+			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
+			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
+				const auto handle = luaManager.getThreadSafeStateHandle();
+				auto& state = handle.getState();
+				const auto lua_state = state.lua_state();
+
+				const auto stepParam = std::clamp(Configuration::RenderThreadGarbageCollectionStepMult, 1, 2000);
+				lua_gc(lua_state, LUA_GCSTEP, stepParam);
+				lua_gc(lua_state, LUA_GCSTOP, 0);
+
+				shouldRunRenderThreadGC = false;
+			}
+		}
+	}
+
+	const auto TES3_RenderMainScene = reinterpret_cast<void(__cdecl*)()>(0x41C400);
+	static void __cdecl PatchRenderMainScene() {
+		shouldRunRenderThreadGC = true;
+
+		// Call overwritten code.
+		TES3_RenderMainScene();
+	}
+
+	//
 	// Write errors to mwse.log as well.
+	//
+
 	BOOL WINAPI WriteToWarningsFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten, LPOVERLAPPED lpOverlapped) {
 		// Overwritten code.
 		auto result = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, lpNumberOfBytesWritten, lpOverlapped);
@@ -4923,6 +4960,8 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::hook() {
+		const auto handle = getThreadSafeStateHandle();
+
 		// Add core/lib directories to path.
 		{
 			std::stringstream envPath;
@@ -4974,6 +5013,10 @@ namespace mwse::lua {
 
 		// Grab early-load data.
 		luaState["tes3"]["bsaLoader"] = TES3::BSALoader::get();
+
+		// Use render thread garbage collection.
+		renderThreadGarbageCollectionThread = std::thread(PerformGarbageCollection);
+		genCallEnforced(0x41C08E, 0x41C400, reinterpret_cast<DWORD>(PatchRenderMainScene));
 
 		// Hook the RunScript function so we can intercept Lua scripts and invoke Lua code if needed.
 		genJumpUnprotected(TES3_HOOK_RUNSCRIPT_LUACHECK, reinterpret_cast<DWORD>(HookRunScript), TES3_HOOK_RUNSCRIPT_LUACHECK_SIZE);

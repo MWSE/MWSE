@@ -28,8 +28,6 @@ namespace mwse::lua {
 
 	private:
 		LuaManager* luaManager;
-
-
 		std::scoped_lock<std::recursive_mutex> mutexGuard;
 	};
 
