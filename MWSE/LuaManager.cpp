@@ -4860,6 +4860,13 @@ namespace mwse::lua {
 		auto& luaManager = LuaManager::getInstance();
 		while (true) {
 			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
+
+			    // If either flag is false, sleep for 0.25 milliseconds and continue
+			if (!shouldRunRenderThreadGC || !doRenderThreadCollection) {
+				std::this_thread::sleep_for(std::chrono::microseconds(1000));
+				continue;
+			}
+
 			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
 				const auto handle = luaManager.getThreadSafeStateHandle();
 				auto& state = handle.getState();
@@ -4901,7 +4908,7 @@ namespace mwse::lua {
 					
 					// Check if any memory was freed
 					const int currentGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
-					if (currentGarbageCount >= previousGarbageCount) {
+					if (currentGarbageCount >= previousGarbageCount ) {
 						++noProgressSteps;
 						if (noProgressSteps >= maxNoProgressSteps) {
 							// No progress for several steps, break early
@@ -4922,14 +4929,15 @@ namespace mwse::lua {
 
 				// Thread-safe logging - force decimal output
             {
-                std::lock_guard<std::mutex> lock(gcLogMutex);
-                log::getLog() << std::dec  // Force decimal output
+                //std::lock_guard<std::mutex> lock(gcLogMutex);
+               /* log::getLog() << std::dec  // Force decimal output
                               << "[LuaGC] Steps: " << stepCount 
                               << ", Time: " << totalElapsed << "us"
-                              << ", Garbage: " << currentFrameStartGarbageCount.load() << "KB -> " << endGarbageCount << "KB"
+                              << ", Memory: " << currentFrameStartGarbageCount.load() << "KB -> " << endGarbageCount << "KB"
                               << " (freed " << garbageCollected << "KB)"
                               << ", Cycle: " << (cycleCompleted ? "complete" : "partial")
                               << std::endl;
+							  */
             }
 
 				shouldRunRenderThreadGC = false;
@@ -4939,10 +4947,12 @@ namespace mwse::lua {
 
 	const auto TES3_RenderMainScene = reinterpret_cast<void(__cdecl*)()>(0x41C400);
 	static void __cdecl PatchRenderMainScene() {
+		
 		shouldRunRenderThreadGC = true;
 
 		// Call overwritten code.
 		TES3_RenderMainScene();
+
 	}
 
 	//
