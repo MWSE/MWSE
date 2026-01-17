@@ -4852,25 +4852,59 @@ namespace mwse::lua {
 	//
 	
 	static std::thread renderThreadGarbageCollectionThread;
-	static std::atomic<bool> shouldRunRenderThreadGC = false;
+    static std::atomic<bool> shouldRunRenderThreadGC = false;
+    static std::atomic<int> lastFrameGarbageCount = 0;
+    static std::atomic<int> currentFrameStartGarbageCount = 0;
 
-	static void PerformGarbageCollection() {
-		auto& luaManager = LuaManager::getInstance();
-		while (true) {
-			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
-			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
-				const auto handle = luaManager.getThreadSafeStateHandle();
-				auto& state = handle.getState();
-				const auto lua_state = state.lua_state();
+    static void PerformGarbageCollection() {
+        auto& luaManager = LuaManager::getInstance();
+        while (true) {
+            const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
+            if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
+                const auto handle = luaManager.getThreadSafeStateHandle();
+                auto& state = handle.getState();
+                const auto lua_state = state.lua_state();
 
-				const auto stepParam = std::clamp(Configuration::RenderThreadGarbageCollectionStepMult, 1, 2000);
-				lua_gc(lua_state, LUA_GCSTEP, stepParam);
-				lua_gc(lua_state, LUA_GCSTOP, 0);
+                // Read current garbage count at start of GC work
+                currentFrameStartGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
 
-				shouldRunRenderThreadGC = false;
-			}
-		}
-	}
+                // Calculate accumulated garbage since last frame
+                const int accumulatedGarbage = currentFrameStartGarbageCount - lastFrameGarbageCount;
+                
+                // Calculate step parameter as a fraction of accumulated garbage
+                // Configuration::RenderThreadGarbageCollectionStepMult is treated as a fraction
+                const float fraction = Configuration::RenderThreadGarbageCollectionStepMult / 100f;
+                int stepParam = static_cast<int>(accumulatedGarbage * fraction);
+                stepParam = std::clamp(stepParam, 1, 2000);
+
+                // Time budget for GC execution (in milliseconds)
+                const auto timeBudgetMs = Configuration::RenderThreadGarbageCollectionTimeBudget;
+                const auto startTime = std::chrono::high_resolution_clock::now();
+                
+                // Perform GC steps within time budget or until cycle completes
+                while (true) {
+                    // Check time budget
+                    if (timeBudgetMs > 0) {
+                        const auto elapsed = std::chrono::high_resolution_clock::now() - startTime;
+                        const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+                        if (elapsedMs >= timeBudgetMs) {
+                            break;
+                        }
+                    }
+                    
+                    // Perform a GC step; returns 1 when a GC cycle has finished
+                    if (lua_gc(lua_state, LUA_GCSTEP, stepParam) == 1) {
+                        break;
+                    }
+                }
+
+                // Store garbage count at end of frame for next iteration
+                lastFrameGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+
+                shouldRunRenderThreadGC = false;
+            }
+        }
+    }
 
 	const auto TES3_RenderMainScene = reinterpret_cast<void(__cdecl*)()>(0x41C400);
 	static void __cdecl PatchRenderMainScene() {

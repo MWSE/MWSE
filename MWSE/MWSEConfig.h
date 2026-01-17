@@ -19,6 +19,7 @@ namespace mwse {
 		static bool UseGlobalAudio;
 		static bool ReplaceLightSorting;
 		static int RenderThreadGarbageCollectionStepMult;
+		static int RenderThreadGarbageCollectionTimeBudget;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

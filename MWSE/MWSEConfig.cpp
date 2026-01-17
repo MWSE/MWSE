@@ -21,7 +21,8 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
-	int Configuration::RenderThreadGarbageCollectionStepMult = 1;
+	int Configuration::RenderThreadGarbageCollectionStepMult = 25; // Reusing this as the percentage of the memory increase during last frame for the GC step
+	int Configuration::RenderThreadGarbageCollectionTimeBudget = 5; // Using a hard time budget of 5 ms
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -71,5 +72,6 @@ namespace mwse {
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(RenderThreadGarbageCollectionStepMult)
+		DECLARE_CONFIG(RenderThreadGarbageCollectionTimeBudget)
 	}
 }
