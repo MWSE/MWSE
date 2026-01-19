@@ -3428,7 +3428,7 @@ namespace mwse::lua {
 	__declspec(naked) void PatchGetSoulValueForTooltip_LoadObject() {
 		__asm {
 			mov edx, esi // Size: 0x2
-			nop          // Size: 0x1
+			nop		  // Size: 0x1
 		}
 	}
 	constexpr size_t PatchGetSoulValueForTooltip_LoadObject_Size = 0x3;
@@ -3458,7 +3458,7 @@ namespace mwse::lua {
 	__declspec(naked) void PatchGetSoulValueForTooltip_NoMCPLoader() {
 		__asm {
 			mov ecx, [esp + 0x30 - 0x20] // Size: 0x4
-			mov edx, esi                 // Size: 0x2
+			mov edx, esi				 // Size: 0x2
 		}
 	}
 	constexpr size_t PatchGetSoulValueForTooltip_NoMCPLoader_Size = 0x6;
@@ -4852,20 +4852,20 @@ namespace mwse::lua {
 	//
 	
 	static std::thread renderThreadGarbageCollectionThread;
-    static std::atomic<bool> shouldRunRenderThreadGC = false;
-    static std::atomic<int> lastFrameGarbageCount = 0;
-    static std::atomic<int> currentFrameStartGarbageCount = 0;
-	static std::mutex gcLogMutex;  // Add this for thread-safe logging
+	static std::atomic<bool> shouldRunRenderThreadGC = false;
+	static std::condition_variable gcTrigger;
+	static std::mutex gcMutex;
+	static int lastFrameGarbageCount = 0;
+	static int currentFrameStartGarbageCount = 0;
+	static std::atomic<int> memoryBaseline = 50000;
+	static std::mutex gcLogMutex;
+	static int consecutiveNoGCAboveBaseline = 0; 
 	static void PerformGarbageCollection() {
 		auto& luaManager = LuaManager::getInstance();
 		while (true) {
+			std::unique_lock<std::mutex> lock(gcMutex);
+			gcTrigger.wait(lock, [] { return shouldRunRenderThreadGC.load(); });
 			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
-
-			    // If either flag is false, sleep for 0.25 milliseconds and continue
-			if (!shouldRunRenderThreadGC || !doRenderThreadCollection) {
-				std::this_thread::sleep_for(std::chrono::microseconds(1000));
-				continue;
-			}
 
 			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
 				const auto handle = luaManager.getThreadSafeStateHandle();
@@ -4874,49 +4874,31 @@ namespace mwse::lua {
 
 				currentFrameStartGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
 
-				//const float accumulatedGarbage = currentFrameStartGarbageCount - lastFrameGarbageCount;
+				const int stepParam = 1;
+				const auto timeBudgetUs = Configuration::RenderThreadGarbageCollectionTimeBudget;
+				const auto startTime = std::chrono::steady_clock::now();
 				
-				//const float fraction = Configuration::RenderThreadGarbageCollectionStepMult / 100.0f;
-				//int stepParam = static_cast<int>(accumulatedGarbage * fraction);
-				//stepParam = std::clamp(stepParam, 1, 10);
-				int stepParam = 2;
-				const auto timeBudgetMs = Configuration::RenderThreadGarbageCollectionTimeBudget;
-				const auto startTime = std::chrono::high_resolution_clock::now();
+				int stepCount = 0, previousGarbageCount = currentFrameStartGarbageCount;
 				
-				int stepCount = 0;
-				bool cycleCompleted = false;
-				// Perform GC steps within time budget or until cycle completes
-				int noProgressSteps = 0;
-				const int maxNoProgressSteps = 3; // Allow a few steps without progress
-				int previousGarbageCount = currentFrameStartGarbageCount;
-
 				while (true) {
-					if (timeBudgetMs > 0) {
-						const auto elapsed = std::chrono::high_resolution_clock::now() - startTime;
+
+					if (timeBudgetUs > 0) {
+						const auto elapsed = std::chrono::steady_clock::now() - startTime;
 						const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
-						if (elapsedMs >= timeBudgetMs) {
+						if (elapsedMs >= timeBudgetUs) {
 							break;
 						}
 					}
-
-					++stepCount;
 					
-					if (lua_gc(lua_state, LUA_GCSTEP, stepParam) == 1) {
-						cycleCompleted = true;
+					if (stepCount >= 75){
 						break;
 					}
+					++stepCount;
+					lua_gc(lua_state, LUA_GCSTEP, stepParam);
 					
 					// Check if any memory was freed
-					const int currentGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
-					if (currentGarbageCount >= previousGarbageCount ) {
-						++noProgressSteps;
-						if (noProgressSteps >= maxNoProgressSteps) {
-							// No progress for several steps, break early
-							break;
-						}
-					} else {
-						noProgressSteps = 0; // Reset counter on progress
-					}
+					int currentGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+
 					previousGarbageCount = currentGarbageCount;
 				}
 
@@ -4928,27 +4910,31 @@ namespace mwse::lua {
 				lastFrameGarbageCount = endGarbageCount;
 
 				// Thread-safe logging - force decimal output
-            {
-                //std::lock_guard<std::mutex> lock(gcLogMutex);
-               /* log::getLog() << std::dec  // Force decimal output
-                              << "[LuaGC] Steps: " << stepCount 
-                              << ", Time: " << totalElapsed << "us"
-                              << ", Memory: " << currentFrameStartGarbageCount.load() << "KB -> " << endGarbageCount << "KB"
-                              << " (freed " << garbageCollected << "KB)"
-                              << ", Cycle: " << (cycleCompleted ? "complete" : "partial")
-                              << std::endl;
-							  */
-            }
-
+				
+				{
+					std::lock_guard<std::mutex> lock(gcLogMutex);
+					log::getLog() << std::dec  // Force decimal output
+								<< "[LuaGC] Steps: " << stepCount 
+								<< ", Time: " << totalElapsed << "us"
+								<< ", Memory: " << currentFrameStartGarbageCount << "KB -> " << endGarbageCount << "KB"
+								<< " (freed " << garbageCollected << "KB)"
+								<< std::endl;
+				}
+				
 				shouldRunRenderThreadGC = false;
+
 			}
 		}
 	}
 
 	const auto TES3_RenderMainScene = reinterpret_cast<void(__cdecl*)()>(0x41C400);
 	static void __cdecl PatchRenderMainScene() {
-		
-		shouldRunRenderThreadGC = true;
+		{
+			// Start the GC thread
+			std::unique_lock<std::mutex> lock(gcMutex);
+			shouldRunRenderThreadGC = true;
+			gcTrigger.notify_one();
+		}
 
 		// Call overwritten code.
 		TES3_RenderMainScene();

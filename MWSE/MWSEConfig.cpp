@@ -23,6 +23,7 @@ namespace mwse {
 	bool Configuration::ReplaceLightSorting = true;
 	int Configuration::RenderThreadGarbageCollectionStepMult = 1;
 	int Configuration::RenderThreadGarbageCollectionTimeBudget = 3; // Using a hard time budget
+	
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
