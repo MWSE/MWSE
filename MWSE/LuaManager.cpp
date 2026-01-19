@@ -4855,75 +4855,64 @@ namespace mwse::lua {
 	static std::atomic<bool> shouldRunRenderThreadGC = false;
 	static std::condition_variable gcTrigger;
 	static std::mutex gcMutex;
-	static int lastFrameGarbageCount = 0;
-	static int currentFrameStartGarbageCount = 0;
-	static std::atomic<int> memoryBaseline = 50000;
 	static std::mutex gcLogMutex;
-	static int consecutiveNoGCAboveBaseline = 0; 
+
 	static void PerformGarbageCollection() {
 		auto& luaManager = LuaManager::getInstance();
 		while (true) {
 			std::unique_lock<std::mutex> lock(gcMutex);
 			gcTrigger.wait(lock, [] { return shouldRunRenderThreadGC.load(); });
-			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
+			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionMaximumSteps > 0;
 
-			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
-				const auto handle = luaManager.getThreadSafeStateHandle();
-				auto& state = handle.getState();
-				const auto lua_state = state.lua_state();
+			if (!(shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()))
+				continue;
 
-				currentFrameStartGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+			const auto handle = luaManager.getThreadSafeStateHandle();
+			auto& state = handle.getState();
+			const auto lua_state = state.lua_state();
 
-				const int stepParam = 1;
-				const auto timeBudgetUs = Configuration::RenderThreadGarbageCollectionTimeBudget;
-				const auto startTime = std::chrono::steady_clock::now();
-				
-				int stepCount = 0, previousGarbageCount = currentFrameStartGarbageCount;
-				
-				while (true) {
+			const int currentFrameStartGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
 
-					if (timeBudgetUs > 0) {
-						const auto elapsed = std::chrono::steady_clock::now() - startTime;
-						const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
-						if (elapsedMs >= timeBudgetUs) {
-							break;
-						}
-					}
-					
-					if (stepCount >= 75){
+			const auto timeBudgetMs = Configuration::RenderThreadGarbageCollectionTimeBudget;
+			const auto maxSteps	 = Configuration::RenderThreadGarbageCollectionMaximumSteps;
+			const auto startTime = std::chrono::steady_clock::now();
+			int stepCount = 0;
+			
+			while (true) {
+				if (timeBudgetMs > 0) {
+					const auto elapsed = std::chrono::steady_clock::now() - startTime;
+					const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+					if (elapsedMs >= timeBudgetMs) {
 						break;
 					}
-					++stepCount;
-					lua_gc(lua_state, LUA_GCSTEP, stepParam);
-					
-					// Check if any memory was freed
-					int currentGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
-
-					previousGarbageCount = currentGarbageCount;
 				}
-
-				const auto endTime = std::chrono::high_resolution_clock::now();
-				const auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-				
-				const int endGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
-				const int garbageCollected = currentFrameStartGarbageCount - endGarbageCount;
-				lastFrameGarbageCount = endGarbageCount;
-
-				// Thread-safe logging - force decimal output
-				
-				{
-					std::lock_guard<std::mutex> lock(gcLogMutex);
-					log::getLog() << std::dec  // Force decimal output
-								<< "[LuaGC] Steps: " << stepCount 
-								<< ", Time: " << totalElapsed << "us"
-								<< ", Memory: " << currentFrameStartGarbageCount << "KB -> " << endGarbageCount << "KB"
-								<< " (freed " << garbageCollected << "KB)"
-								<< std::endl;
+				if (stepCount >= maxSteps){
+					break;
 				}
-				
-				shouldRunRenderThreadGC = false;
-
+				++stepCount;
+				if (lua_gc(lua_state, LUA_GCSTEP, 0) ==1) {
+					break;
+					}
 			}
+		
+		/*
+			const auto endTime = std::chrono::steady_clock::now();
+			const auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+			
+			const int endGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+			const int garbageCollected = currentFrameStartGarbageCount - endGarbageCount;
+		
+			{
+				std::lock_guard<std::mutex> lock(gcLogMutex);
+				log::getLog() << std::dec  // Force decimal output
+							<< "[LuaGC] Steps: " << stepCount 
+							<< ", Time: " << totalElapsed << "us"
+							<< ", Memory: " << currentFrameStartGarbageCount << "KB -> " << endGarbageCount << "KB"
+							<< " (freed " << garbageCollected << "KB)"
+							<< std::endl;
+			}
+		*/
+			shouldRunRenderThreadGC = false;
 		}
 	}
 
