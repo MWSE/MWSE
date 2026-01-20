@@ -4864,8 +4864,8 @@ namespace mwse::lua {
 			gcTrigger.wait(lock, [] { return shouldRunRenderThreadGC.load(); });
 			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionMaximumSteps > 0;
 
-			if (!(shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()))
-				continue;
+			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()){
+			
 
 			const auto handle = luaManager.getThreadSafeStateHandle();
 			auto& state = handle.getState();
@@ -4912,6 +4912,7 @@ namespace mwse::lua {
 							<< std::endl;
 			}
 		*/
+		}
 			shouldRunRenderThreadGC = false;
 		}
 	}
