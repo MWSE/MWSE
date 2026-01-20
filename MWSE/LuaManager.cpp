@@ -3428,7 +3428,7 @@ namespace mwse::lua {
 	__declspec(naked) void PatchGetSoulValueForTooltip_LoadObject() {
 		__asm {
 			mov edx, esi // Size: 0x2
-			nop          // Size: 0x1
+			nop		  // Size: 0x1
 		}
 	}
 	constexpr size_t PatchGetSoulValueForTooltip_LoadObject_Size = 0x3;
@@ -3458,7 +3458,7 @@ namespace mwse::lua {
 	__declspec(naked) void PatchGetSoulValueForTooltip_NoMCPLoader() {
 		__asm {
 			mov ecx, [esp + 0x30 - 0x20] // Size: 0x4
-			mov edx, esi                 // Size: 0x2
+			mov edx, esi				 // Size: 0x2
 		}
 	}
 	constexpr size_t PatchGetSoulValueForTooltip_NoMCPLoader_Size = 0x6;
@@ -4853,31 +4853,82 @@ namespace mwse::lua {
 	
 	static std::thread renderThreadGarbageCollectionThread;
 	static std::atomic<bool> shouldRunRenderThreadGC = false;
+	static std::condition_variable gcTrigger;
+	static std::mutex gcMutex;
+	static std::mutex gcLogMutex;
 
 	static void PerformGarbageCollection() {
 		auto& luaManager = LuaManager::getInstance();
 		while (true) {
-			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionStepMult > 0;
-			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()) {
-				const auto handle = luaManager.getThreadSafeStateHandle();
-				auto& state = handle.getState();
-				const auto lua_state = state.lua_state();
+			std::unique_lock<std::mutex> lock(gcMutex);
+			gcTrigger.wait(lock, [] { return shouldRunRenderThreadGC.load(); });
+			const auto doRenderThreadCollection = Configuration::RenderThreadGarbageCollectionMaximumSteps > 0;
 
-				const auto stepParam = std::clamp(Configuration::RenderThreadGarbageCollectionStepMult, 1, 2000);
-				lua_gc(lua_state, LUA_GCSTEP, stepParam);
-				lua_gc(lua_state, LUA_GCSTOP, 0);
+			if (shouldRunRenderThreadGC && doRenderThreadCollection && luaManager.canLockLuaThread()){
+			
 
-				shouldRunRenderThreadGC = false;
+			const auto handle = luaManager.getThreadSafeStateHandle();
+			auto& state = handle.getState();
+			const auto lua_state = state.lua_state();
+
+			const int currentFrameStartGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+
+			const auto timeBudgetMs = Configuration::RenderThreadGarbageCollectionTimeBudget;
+			const auto maxSteps	 = Configuration::RenderThreadGarbageCollectionMaximumSteps;
+			const auto startTime = std::chrono::steady_clock::now();
+			int stepCount = 0;
+			
+			while (true) {
+				if (timeBudgetMs > 0) {
+					const auto elapsed = std::chrono::steady_clock::now() - startTime;
+					const auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+					if (elapsedMs >= timeBudgetMs) {
+						break;
+					}
+				}
+				if (stepCount >= maxSteps){
+					break;
+				}
+				++stepCount;
+				if (lua_gc(lua_state, LUA_GCSTEP, 0) ==1) {
+					break;
+					}
 			}
+		
+		/*
+			const auto endTime = std::chrono::steady_clock::now();
+			const auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+			
+			const int endGarbageCount = lua_gc(lua_state, LUA_GCCOUNT, 0);
+			const int garbageCollected = currentFrameStartGarbageCount - endGarbageCount;
+		
+			{
+				std::lock_guard<std::mutex> lock(gcLogMutex);
+				log::getLog() << std::dec  // Force decimal output
+							<< "[LuaGC] Steps: " << stepCount 
+							<< ", Time: " << totalElapsed << "us"
+							<< ", Memory: " << currentFrameStartGarbageCount << "KB -> " << endGarbageCount << "KB"
+							<< " (freed " << garbageCollected << "KB)"
+							<< std::endl;
+			}
+		*/
+		}
+			shouldRunRenderThreadGC = false;
 		}
 	}
 
 	const auto TES3_RenderMainScene = reinterpret_cast<void(__cdecl*)()>(0x41C400);
 	static void __cdecl PatchRenderMainScene() {
-		shouldRunRenderThreadGC = true;
+		{
+			// Start the GC thread
+			std::unique_lock<std::mutex> lock(gcMutex);
+			shouldRunRenderThreadGC = true;
+			gcTrigger.notify_one();
+		}
 
 		// Call overwritten code.
 		TES3_RenderMainScene();
+
 	}
 
 	//

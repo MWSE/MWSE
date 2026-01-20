@@ -21,7 +21,9 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
-	int Configuration::RenderThreadGarbageCollectionStepMult = 1;
+	int Configuration::RenderThreadGarbageCollectionTimeBudget = 3; // Using a hard time budget
+	int Configuration::RenderThreadGarbageCollectionMaximumSteps = 75; // heuristic. 75 seems to perform well on tests
+	
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -70,6 +72,7 @@ namespace mwse {
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
-		DECLARE_CONFIG(RenderThreadGarbageCollectionStepMult)
+		DECLARE_CONFIG(RenderThreadGarbageCollectionMaximumSteps)
+		DECLARE_CONFIG(RenderThreadGarbageCollectionTimeBudget)
 	}
 }
