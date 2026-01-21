@@ -11,6 +11,7 @@ local Parent = require("mcm.components.infos.Info")
 --- @class mwseMCMHyperlink
 --- @field exec string *Deprecated*
 local Hyperlink = Parent:new()
+Hyperlink.__index = Hyperlink
 
 --- @param parentBlock tes3uiElement
 function Hyperlink:makeComponent(parentBlock)

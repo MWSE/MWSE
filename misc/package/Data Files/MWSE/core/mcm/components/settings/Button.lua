@@ -6,6 +6,8 @@ local Parent = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMButton
 local Button = Parent:new()
+Button.__index = Button
+
 Button.disabledText = "---"
 Button.leftSide = true
 Button.buttonText = "---"
