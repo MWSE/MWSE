@@ -447,18 +447,32 @@ function table.copymissing(to, from)
 	end
 end
 
+---@alias table.traverse.filter fun(node: niAVObject|unknown): boolean, boolean
+
 --- @generic tableType
 --- @param t tableType
---- @param k? string
+--- @param k? string|table.traverse.filter
+--- @param filter? table.traverse.filter
 --- @return fun(): tableType|any iterator
-function table.traverse(t, k)
+function table.traverse(t, k, filter)
+	if type(k) == "function" then
+		filter = k
+		k = "children"
+	end
 	k = k or "children"
+	filter = filter or function()
+		return false, false
+	end
+
 	local function iter(nodes)
 		for i, node in ipairs(nodes or t) do
 			if node then
-				coroutine.yield(node)
-				if node[k] then
-					iter(node[k])
+				local skipThisNode, skipChildren = filter(node)
+				if not skipThisNode then
+					coroutine.yield(node)
+					if not skipChildren and node[k] then
+						iter(node[k])
+					end
 				end
 			end
 		end

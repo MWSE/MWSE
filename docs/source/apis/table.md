@@ -502,22 +502,51 @@ local oldValue = table.swap(t, key, value)
 ### `table.traverse`
 <div class="search_terms" style="display: none">traverse</div>
 
-This function performs a DFS over a graph-like table. You can specify the key of the subtable that contains the child nodes.
+This function performs a DFS over a graph-like table. You can specify the key of the subtable that contains the child nodes. A filter can be provided to skip a certain part of the tree.
 
 Each "node" is an object with a children table of other "nodes", each of which might have their own children. For example, a sceneNode is made up of niNodes, and each niNodes can have a list of niNode children. This is best used for recursive data structures like UI elements and sceneNodes etc.
 
 ```lua
-local iterator = table.traverse(t, k)
+local iterator = table.traverse(t, k, filter)
 ```
 
 **Parameters**:
 
 * `t` (tableType): A table to transverse.
-* `k` (string): *Default*: `children`. The subtable key.
+* `k` (string, table.traverse.filter): *Default*: `children`. The subtable key. The function is overloaded, so you can pass the filter as the second argument.
+* `filter` (fun(node: [niAVObject](../types/niAVObject.md)|unknown): boolean, boolean): The filter function. It gets passed each node before it's yielded by the iterator. It has to return 2 values: `skipThisNode` and `skipChildren`. If `skipThisNode` is returned as `true`, then this node and its children will be skipped. If `skipThisNode` is `false` and `skipChildren` is `true` then this node will be iterated over but the child nodes will not.
 
 **Returns**:
 
 * `iterator` (fun(): tableType, any)
+
+??? example "Example: Iterate over scene graph skipping any collision geometry"
+
+	In this example, a filter function is used to skip over the `RootCollisionNode`s that hold geometry used for collision.
+
+	```lua
+	local scene = tes3.game.worldObjectRoot
+	
+	---@param node niAVObject
+	---@return boolean skipThisNode
+	---@return boolean? skipChildren
+	local function filterCollisionGeometry(node)
+		if node:isOfType(ni.type.RootCollisionNode) then
+			-- Note that in this example, we don't even want the RootCollisionNode be yielded so we don't have to return 2 value.
+			-- This way the node and its children will be skipped.
+			-- The other return value can be used to yield the node but skip its children.
+			return true
+		end
+	
+		return false, false
+	end
+	
+	-- Note: the function is overloaded so the filter can be passed as a second argument.
+	for node in table.traverse({ scene }, filterCollisionGeometry) do
+		mwse.log("%s : %s", node.RTTI.name, node.name or "")
+	end
+
+	```
 
 ??? example "Example: Iterate over all scene nodes attached to player."
 

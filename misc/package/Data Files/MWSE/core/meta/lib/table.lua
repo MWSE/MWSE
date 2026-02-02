@@ -210,16 +210,17 @@ function table.size(t) end
 --- @return valueType|unknown|nil oldValue The previously defined value at `t[key]`.
 function table.swap(t, key, value) end
 
---- This function performs a DFS over a graph-like table. You can specify the key of the subtable that contains the child nodes.
+--- This function performs a DFS over a graph-like table. You can specify the key of the subtable that contains the child nodes. A filter can be provided to skip a certain part of the tree.
 --- 
 --- Each "node" is an object with a children table of other "nodes", each of which might have their own children. For example, a sceneNode is made up of niNodes, and each niNodes can have a list of niNode children. This is best used for recursive data structures like UI elements and sceneNodes etc.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/table/#tabletraverse).
 --- @generic tableType
 --- @param t tableType A table to transverse.
---- @param k? string *Default*: `children`. The subtable key.
+--- @param k? string|table.traverse.filter *Default*: `children`. The subtable key. The function is overloaded, so you can pass the filter as the second argument.
+--- @param filter fun(node: niAVObject|unknown): boolean, boolean The filter function. It gets passed each node before it's yielded by the iterator. It has to return 2 values: `skipThisNode` and `skipChildren`. If `skipThisNode` is returned as `true`, then this node and its children will be skipped. If `skipThisNode` is `false` and `skipChildren` is `true` then this node will be iterated over but the child nodes will not.
 --- @return fun(): tableType|any iterator No description yet available.
-function table.traverse(t, k) end
+function table.traverse(t, k, filter) end
 
 --- Returns an array-style table of all values in the given table, t. Optionally, it will sort the returned table.
 --- @generic valueType
