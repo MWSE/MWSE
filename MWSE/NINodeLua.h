@@ -4,8 +4,6 @@
 #include "NIDynamicEffect.h"
 
 namespace mwse::lua {
-	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::Node* self, sol::optional<sol::table> param);
-
 	template <typename T>
 	void setUserdataForNINode(sol::usertype<T>& usertypeDefinition) {
 		setUserdataForNIAVObject(usertypeDefinition);
@@ -24,7 +22,6 @@ namespace mwse::lua {
 		usertypeDefinition["detachChildAt"] = &NI::Node::detachChildAt_lua;
 		usertypeDefinition["detachEffect"] = &NI::Node::detachEffect;
 		usertypeDefinition["getEffect"] = &NI::Node::getEffect;
-		usertypeDefinition["traverse"] = traverse;
 	}
 
 	void bindNINode();
