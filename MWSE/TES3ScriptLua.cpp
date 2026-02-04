@@ -71,19 +71,19 @@ namespace mwse::lua {
 		sol::table results = state.create_table();
 
 		// Append any short variables.
-		for (int i = 0; i < script->header.shortCount; ++i) {
+		for (auto i = 0u; i < script->header.shortCount; ++i) {
 			const char* varName = script->shortVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 's', "index", i, "value", vars->shortVarValues[i]);
 		}
 
 		// Append any long variables.
-		for (int i = 0; i < script->header.longCount; ++i) {
+		for (auto i = 0u; i < script->header.longCount; ++i) {
 			const char* varName = script->longVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 'l', "index", i, "value", vars->longVarValues[i]);
 		}
 
 		// Append any float variables.
-		for (int i = 0; i < script->header.floatCount; ++i) {
+		for (auto i = 0u; i < script->header.floatCount; ++i) {
 			const char* varName = script->floatVarNamePointers[i];
 			results[varName] = state.create_table_with("type", 'f', "index", i, "value", vars->floatVarValues[i]);
 		}

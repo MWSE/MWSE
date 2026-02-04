@@ -1515,7 +1515,7 @@ namespace mwse::patch {
 
 		// Clone the sorted data back into the TList, without any allocations.
 		auto itt = dialogues->head;
-		for (auto i = 0; i < sortedDialogues.size(); ++i) {
+		for (auto i = 0u; i < sortedDialogues.size(); ++i) {
 			itt->data = sortedDialogues[i].dialogue;
 			itt = itt->next;
 		}
