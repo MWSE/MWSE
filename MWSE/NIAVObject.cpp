@@ -389,7 +389,7 @@ namespace NI {
 		NI_AVObject_setModelSpaceABV(this, volume);
 	}
 
-	std::function<Pointer<AVObject>()> AVObject::traverse(sol::optional<sol::table> param) {
+	std::function<Pointer<AVObject>()> AVObject::traverse_lua(sol::optional<sol::table> param) {
 		bool recursive = mwse::lua::getOptionalParam(param, "recursive", true);
 		std::string prefix = mwse::lua::getOptionalParam(param, "prefix", std::string(""));
 		std::unordered_set<unsigned int> filters;
