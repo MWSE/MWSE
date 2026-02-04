@@ -11077,6 +11077,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#traverse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        traverse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#update" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -24607,6 +24618,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#traverse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        traverse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#update" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -25581,6 +25603,35 @@
 <li><code>index</code> (number)</li>
 </ul>
 <hr />
+<h3 id="traverse"><code>traverse</code><a class="headerlink" href="#traverse" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">traverse</div>
+
+<p>Performs a DFS walk over the node's child tree.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">myObject</span><span class="p">:</span><span class="n">traverse</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="p">...,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="p">...,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="p">...</span> <span class="p">})</span>
+</code></pre></div>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>args</code> (table): <em>Optional</em>.<ul>
+<li><code>type</code> (<a href="../../references/ni/types/">ni.type</a>, <a href="../../references/ni/types/">ni.type</a>[], integer): <em>Optional</em>. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.</li>
+<li><code>prefix</code> (string): <em>Optional</em>. If provided, only NI objects with a name matching the prefix are yielded.</li>
+<li><code>recursive</code> (boolean): <em>Default</em>: <code>true</code>. If true, the method also walk over the nested nodes.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>iterator</code> (fun(): <a href="../niAVObject/">niAVObject</a>)</li>
+</ul>
+<details class="example">
+<summary>Example: Usage</summary>
+<div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">sceneNode</span>
+
+<span class="kr">for</span> <span class="n">node</span> <span class="kr">in</span> <span class="n">root</span><span class="p">:</span><span class="n">traverse</span><span class="p">({</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">ni</span><span class="p">.</span><span class="n">type</span><span class="p">.</span><span class="n">NiTriShape</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;tri c_m_shoe&quot;</span> <span class="p">})</span> <span class="kr">do</span>
+    <span class="nb">assert</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="n">scale</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="kr">end</span>
+</code></pre></div>
+</details>
+<hr />
 <h3 id="update"><code>update</code><a class="headerlink" href="#update" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">update</div>
 
@@ -25648,7 +25699,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="January 8, 2026 03:43:46 UTC">January 8, 2026 03:43:46</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="February 4, 2026 21:03:26 UTC">February 4, 2026 21:03:26</span>
   </span>
 
     
