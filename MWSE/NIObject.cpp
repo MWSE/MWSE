@@ -36,6 +36,7 @@
 #include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
+#include "NIRenderedTexture.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -255,6 +256,9 @@ namespace NI {
 				break;
 			case RTTIStaticPtr::NiPointLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PointLight*>(this)));
+				break;
+			case RTTIStaticPtr::NiRenderedTexture:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<RenderedTexture*>(this)));
 				break;
 			case RTTIStaticPtr::NiPosData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PosData*>(this)));

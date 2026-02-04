@@ -1169,7 +1169,7 @@ local createdObject = tes3.createObject({ id = ..., objectType = ..., getIfExist
 Similar to mwscript's PlaceAtPC or PlaceAtMe, this creates a new reference in the game world.
 
 ```lua
-local newReference = tes3.createReference({ object = ..., position = ..., orientation = ..., cell = ..., scale = ... })
+local newReference = tes3.createReference({ object = ..., position = ..., orientation = ..., cell = ..., scale = ..., updateCollisionGroups = ... })
 ```
 
 **Parameters**:
@@ -1180,6 +1180,7 @@ local newReference = tes3.createReference({ object = ..., position = ..., orient
 	* `orientation` ([tes3vector3](../types/tes3vector3.md), number[]): The new orientation for the created reference.
 	* `cell` ([tes3cell](../types/tes3cell.md), string, table): *Optional*. The cell to create the reference in. This is only needed for interior cells.
 	* `scale` (number): *Default*: `1`. A scale for the reference.
+	* `updateCollisionGroups` (boolean): *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 
 **Returns**:
 

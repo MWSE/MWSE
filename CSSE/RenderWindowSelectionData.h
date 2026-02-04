@@ -27,7 +27,11 @@ namespace se::cs::dialog::render_window {
 		void recalculateRadius();
 		void recalculateBound();
 
-		void clear(bool unknownFlag = true);
+		void clear(bool updateVisuals = true);
+
+		void addReference(Reference* objRef, bool updateVisuals = true);
+		bool removeReference(Reference* objRef, bool updateVisuals = true);
+		bool isSelected(Reference* objRef);
 
 		static inline auto get() {
 			return memory::ExternalGlobal<SelectionData*, 0x6CE968>::get();

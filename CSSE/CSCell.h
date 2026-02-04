@@ -44,8 +44,8 @@ namespace se::cs {
 			};
 		}; // 0x1C
 		NI::Pointer<NI::Node> staticObjectsRoot; // 0x2C
-		ReferenceList unknown_0x30;
-		ReferenceList unknown_0x40;
+		ReferenceList cellNpcRefs;
+		ReferenceList cellObjRefs;
 		NI::IteratedList<void*>* movedReferences; // 0x50
 		int unknown_0x54;
 		BaseObject* unknown_0x58;

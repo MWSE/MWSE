@@ -28,6 +28,8 @@
 
 #include "TES3UIManagerLua.h"
 
+#include "MemoryUtil.h"
+
 namespace TES3::UI {
 	static bool bSuppressHelpMenu = false;
 
@@ -368,6 +370,11 @@ namespace TES3::UI {
 		if (mwse::lua::event::ConsoleReferenceChangedEvent::getEventEnabled() && referenceBefore != referenceAfter) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ConsoleReferenceChangedEvent(referenceAfter));
 		}
+	}
+
+
+	Cell* getCellHoveredOnMap() {
+		return mwse::ExternalGlobal<Cell*, 0x7D4644>::get();
 	}
 
 	Element* getCursor() {

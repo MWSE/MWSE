@@ -66,3 +66,22 @@ function niNode:detachEffect(effect) end
 --- @return niAmbientLight|niDirectionalLight|niDynamicEffect|niPointLight|niSpotLight|niTextureEffect|nil effect No description yet available.
 function niNode:getEffect(type) end
 
+--- Performs a DFS walk over the node's child tree.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/niNode/#traverse).
+--- @param args? niNode.traverse.args This table accepts the following values:
+--- 
+--- `type?`: ni.type|ni.type[]|integer — *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+--- 
+--- `prefix?`: string — *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+--- 
+--- `recursive?`: boolean — *Default*: `true`. If true, the method also walk over the nested nodes.
+--- @return fun(): niAVObject iterator No description yet available.
+function niNode:traverse(args) end
+
+---Table parameter definitions for `niNode.traverse`.
+--- @class niNode.traverse.args
+--- @field type? ni.type|ni.type[]|integer *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+--- @field prefix? string *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+--- @field recursive? boolean *Default*: `true`. If true, the method also walk over the nested nodes.
+

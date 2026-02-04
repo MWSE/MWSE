@@ -1007,6 +1007,11 @@ namespace TES3 {
 		point.z = std::clamp(point.z, min.z, max.z);
 	}
 
+	void BoundingBox::initialize() {
+		minimum = Vector3::MAX;
+		maximum = Vector3::MIN;
+	}
+
 	//
 	// Transform
 	//

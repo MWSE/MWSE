@@ -910,6 +910,39 @@ myObject:setFlag(state, index)
 
 ***
 
+### `traverse`
+<div class="search_terms" style="display: none">traverse</div>
+
+Performs a DFS walk over the node's child tree.
+
+```lua
+local iterator = myObject:traverse({ type = ..., prefix = ..., recursive = ... })
+```
+
+**Parameters**:
+
+* `args` (table): *Optional*.
+	* `type` ([ni.type](../references/ni/types.md), [ni.type](../references/ni/types.md)[], integer): *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+	* `prefix` (string): *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+	* `recursive` (boolean): *Default*: `true`. If true, the method also walk over the nested nodes.
+
+**Returns**:
+
+* `iterator` (fun(): [niAVObject](../types/niAVObject.md))
+
+??? example "Example: Usage"
+
+	```lua
+	local root = tes3.player.sceneNode
+	
+	for node in root:traverse({ type = ni.type.NiTriShape, prefix = "tri c_m_shoe" }) do
+		assert(node.scale == 1)
+	end
+
+	```
+
+***
+
 ### `update`
 <div class="search_terms" style="display: none">update</div>
 

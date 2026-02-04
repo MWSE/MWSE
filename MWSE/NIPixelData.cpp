@@ -44,9 +44,14 @@ namespace NI {
 	}
 
 	void PixelData::exportTGA(const char* fileName) const {
-		if (pixelFormat.format != PixelFormat::Format::RGBA) {
-			throw std::runtime_error("Unsupported pixel format for export to TGA.");
+		switch (pixelFormat.format) {
+		case PixelFormat::Format::RGB:
+		case PixelFormat::Format::RGBA:
+			break;
+		default:
+			throw std::runtime_error(fmt::format("Unsupported pixel format for export to TGA: {}.", static_cast<int>(pixelFormat.format)));
 		}
+
 		HANDLE hFile = CreateFileA(
 			fileName,
 			GENERIC_WRITE,
@@ -64,7 +69,7 @@ namespace NI {
 		HeaderTGA header{
 			0, // idLength - No image description
 			0, // colormapType - No color pallete
-			HeaderTGA::DataType::UNCOMPRESSED_RGB,
+			HeaderTGA::DataType::RGB,
 			0, // colormapOrigin
 			0, // colormapLength
 			0, // colormapDepth
@@ -90,17 +95,31 @@ namespace NI {
 		imageData.reserve(bytesToWrite);
 
 		size_t offset = 0;
-		// TGA stores channels in BGR(A) format, so we need to swap blue and red channels
-		for (size_t y = 0; y < height; ++y) {
-			for (size_t x = 0; x < width; ++x) {
-				imageData.emplace_back(pixels[offset + 2]); // Blue
-				imageData.emplace_back(pixels[offset + 1]); // Green
-				imageData.emplace_back(pixels[offset + 0]); // Red
-				imageData.emplace_back(pixels[offset + 3]); // Alpha
-				offset += bytesPerPixel;
+		
+		// TGA stores channels in BGR(A) format so we serialize accordingly
+		if (pixelFormat.format == PixelFormat::Format::RGBA) {
+			for (size_t y = 0; y < height; ++y) {
+				for (size_t x = 0; x < width; ++x) {
+					imageData.emplace_back(pixels[offset + 2]); // B
+					imageData.emplace_back(pixels[offset + 1]); // G
+					imageData.emplace_back(pixels[offset + 0]); // R
+					imageData.emplace_back(pixels[offset + 3]); // A
+					offset += bytesPerPixel;
+				}
 			}
 		}
-
+		else if (pixelFormat.format == PixelFormat::Format::RGB) {
+			for (size_t y = 0; y < height; ++y) {
+				for (size_t x = 0; x < width; ++x) {
+					imageData.emplace_back(pixels[offset + 2]); // B
+					imageData.emplace_back(pixels[offset + 1]); // G
+					imageData.emplace_back(pixels[offset + 0]); // R
+					imageData.emplace_back(255);                // A
+					offset += bytesPerPixel;
+				}
+			}
+		}
+		
 		if (!WriteFile(hFile, imageData.data(), bytesToWrite, &bytesWritten, NULL) || bytesWritten != bytesToWrite) {
 			CloseHandle(hFile);
 			std::filesystem::remove(fileName);

@@ -31,6 +31,7 @@ namespace se::cs {
 		bool getModified() const;
 		void setModified(bool modified);
 		bool getDeleted() const;
+		void setDeleted(bool deleted);
 		bool getPersists() const;
 		bool getBlocked() const;
 

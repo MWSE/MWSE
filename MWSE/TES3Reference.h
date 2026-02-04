@@ -91,6 +91,8 @@ namespace TES3 {
 		void setReferenceActive(bool skipDeleted = true);
 		void setReferenceInactive(bool skipDeleted = true);
 
+		void handleUpdate(bool updateCollisions = true);
+
 		Vector3* getPosition();
 		void setPosition(const Vector3 * newPosition);
 
@@ -130,14 +132,14 @@ namespace TES3 {
 		ItemData* getAttachedItemData() const;
 		void setAttachedItemData(ItemData * itemData);
 		ItemData* getOrCreateAttachedItemData();
-		LockAttachmentNode* getAttachedLockNode();
+		LockAttachmentNode* getAttachedLockNode() const;
 		AnimationData* getAttachedAnimationData() const;
-		BodyPartManager* getAttachedBodyPartManager() ;
+		BodyPartManager* getAttachedBodyPartManager() const;
 		TravelDestination* getAttachedTravelDestination() const;
 
-		LightAttachmentNode* getAttachedDynamicLight();
+		LightAttachmentNode* getAttachedDynamicLight() const;
 		LightAttachmentNode* getOrCreateAttachedDynamicLight_lua(sol::optional<NI::PointLight*> light, sol::optional<float> value);
-		NI::Pointer<NI::Light> getAttachedNiLight();
+		NI::Pointer<NI::Light> getAttachedNiLight() const;
 
 		bool isLeveledSpawn();
 
@@ -149,7 +151,7 @@ namespace TES3 {
 
 		void attemptUnlockDisarm(MobileNPC * disarmer, Item * tool, ItemData * itemData = nullptr);
 
-		int getStackSize();
+		int getStackSize() const;
 		void setStackSize(int count);
 		
 		bool hasValidBaseObject() const;
@@ -176,7 +178,7 @@ namespace TES3 {
 		void setOrientationFromLua(sol::stack_object value);
 
 		// Return a table of name-keyed attachments for this object.
-		sol::table getAttachments_lua(sol::this_state ts);
+		sol::table getAttachments_lua(sol::this_state ts) const;
 
 		bool getSupportsLuaData() const;
 		sol::table getLuaTable();

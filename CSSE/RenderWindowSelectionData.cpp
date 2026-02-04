@@ -16,9 +16,24 @@ namespace se::cs::dialog::render_window {
 		recalculateRadius();
 	}
 
-	void SelectionData::clear(bool unknownFlag) {
+	void SelectionData::clear(bool updateVisuals) {
 		const auto SelectionData_clear = reinterpret_cast<void(__thiscall*)(SelectionData*, bool)>(0x403391);
-		SelectionData_clear(this, unknownFlag);
+		SelectionData_clear(this, updateVisuals);
+	}
+
+	void SelectionData::addReference(Reference* reference, bool updateVisuals) {
+		const auto SelectionData__AddRef = reinterpret_cast<void(__thiscall*)(SelectionData*, Reference*, bool)>(0x546750);
+		SelectionData__AddRef(this, reference, updateVisuals);
+	}
+
+	bool SelectionData::removeReference(Reference* reference, bool updateVisuals) {
+		const auto SelectionData__RemoveRef = reinterpret_cast<bool(__thiscall*)(SelectionData*, Reference*, bool)>(0x546860);
+		return SelectionData__RemoveRef(this, reference, updateVisuals);
+	}
+
+	bool SelectionData::isSelected(Reference* reference) {
+		const auto SelectionData_isSelected = reinterpret_cast<bool(__thiscall*)(SelectionData*, Reference*)>(0x546CC0);
+		return SelectionData_isSelected(this, reference);
 	}
 
 	SelectionData::Target* SelectionData::getLastTarget() const {

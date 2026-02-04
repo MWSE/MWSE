@@ -29,6 +29,7 @@
 #include "TES3Spell.h"
 #include "TES3UIManager.h"
 #include "TES3WorldController.h"
+#include "TES3MobManager.h"
 
 #include "MWSEConfig.h"
 
@@ -296,6 +297,12 @@ namespace TES3 {
 			TES3::UI::setSuppressingHelpMenu(false);
 		}
 
+		// Update compatibility globals.
+		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
+		if (mwseBuildGlobal) {
+			mwseBuildGlobal->value = mwse::Configuration::BuildNumber;
+		}
+
 		return loaded ? LoadGameResult::Success : LoadGameResult::Failure;
 	}
 
@@ -329,7 +336,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_NonDynamicData_findGlobalVariable = reinterpret_cast<GlobalVariable * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA820);
-	GlobalVariable* NonDynamicData::findGlobalVariable(const char* name) {
+	GlobalVariable* NonDynamicData::findGlobalVariable(const char* name) const {
 #if MWSE_CUSTOM_GLOBALS
 		return globals->getVariable(name);
 #else
@@ -421,8 +428,8 @@ namespace TES3 {
 		return magicEffects->getEffectObject(id);
 	}
 
-	const auto TES3_NonDynamicData_createReference = reinterpret_cast<float(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
-	float NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
+	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
+	Reference* NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
 		return TES3_NonDynamicData_createReference(this, object, position, orientation, cellWasCreated, existingReference, cell);
 	}
 
@@ -652,6 +659,10 @@ namespace TES3 {
 		TES3_COLLISION_DATA_RESETTING = isResettingData;
 		COLLISION_DATA_RESET_COLLISION_GROUPS = resetCollisionGroups;
 		updateCollisionGroupsForActiveCells_raw(force);
+	}
+
+	void DataHandler::updateCollisionGroupsForActiveCells_lua(sol::optional<bool> force, sol::optional<bool> isResettingData, sol::optional<bool> resetCollisionGroups) {
+		updateCollisionGroupsForActiveCells(force.value_or(true), isResettingData.value_or(false), resetCollisionGroups.value_or(true));
 	}
 
 	const auto TES3_DataHandler_updateCollisionGroupsForActiveCells = reinterpret_cast<void(__thiscall*)(DataHandler*, bool)>(0x488950);

@@ -10,6 +10,7 @@
 #include "TES3Deque.h"
 #include "TES3HashMap.h"
 #include "TES3Inventory.h"
+#include "TES3MagicEffect.h"
 #include "TES3MagicSourceInstance.h"
 #include "TES3MobileObject.h"
 #include "TES3Statistic.h"
@@ -301,10 +302,11 @@ namespace TES3 {
 
 		bool aiTurnWhileGreeting(Vector3* lookAt, float minimumFacingDifferenceToStartTurning);
 
-		bool isAffectedByAlchemy(Alchemy * alchemy) const;
+		bool isAffectedByAlchemy(Alchemy* alchemy) const;
 		bool isAffectedBySimilarAlchemy(Alchemy* alchemy) const;
-		bool isAffectedByEnchantment(Enchantment * enchantment) const;
-		bool isAffectedBySpell(Spell * spell) const;
+		bool isAffectedByEnchantment(Enchantment* enchantment) const;
+		bool isAffectedBySpell(Spell* spell) const;
+		bool isAffectedByEffect(EffectID::EffectID effect) const;
 
 		bool isDiseased() const;
 		bool hasCommonDisease() const;

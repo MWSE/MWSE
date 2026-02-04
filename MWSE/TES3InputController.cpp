@@ -2,6 +2,9 @@
 
 #include "LuaManager.h"
 
+#include "MWSEConfig.h"
+#include "TES3WorldController.h"
+
 #include "LuaKeybindTestedEvent.h"
 
 namespace TES3 {
@@ -9,14 +12,38 @@ namespace TES3 {
 		return std::ref(rgbButtons);
 	}
 
+	DIDEVICEOBJECTDATA InputController::lastReadKeyboardData = {};
+
 	const auto TES3_InputController_readKeyState = reinterpret_cast<void(__thiscall*)(InputController*)>(0x4065E0);
 	void InputController::readKeyState() {
 		TES3_InputController_readKeyState(this);
 	}
 
 	const auto TES3_InputController_readButtonPressed = reinterpret_cast<int(__thiscall*)(InputController*, DWORD*)>(0x406950);
-	int InputController::readButtonPressed(DWORD* data) {
-		return TES3_InputController_readButtonPressed(this, data);
+	int InputController::readButtonPressed(DWORD* out_dik) {
+		if (!keyboard) {
+			return 0;
+		}
+
+		DWORD readCount = 1;
+		if (keyboard->GetDeviceData(sizeof(lastReadKeyboardData), &lastReadKeyboardData, &readCount, NULL) != DI_OK) {
+			return 0;
+		}
+
+		if (readCount == 0) {
+			return 0;
+		}
+
+		// Pretend that nothing was found if the game isn't in focus.
+		if (mwse::Configuration::RunInBackground && GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+			*out_dik = 0;
+			return 0;
+		}
+
+		*out_dik = lastReadKeyboardData.dwOfs;
+
+		const auto pressed = (lastReadKeyboardData.dwData & 0x80) != 0;
+		return pressed ? 1 : 2;
 	}
 
 	const auto TES3_InputController_keybindTest = reinterpret_cast<BOOL(__thiscall*)(const InputController*, unsigned int, unsigned int)>(0x406F40);

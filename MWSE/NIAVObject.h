@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NIObjectNET.h"
+
+#include "NIBound.h"
 #include "NILinkedList.h"
 #include "NIProperty.h"
 #include "NITransform.h"
@@ -14,7 +16,7 @@ namespace NI {
 	struct AVObject_vTable : Object_vTable {
 		void (__thiscall* updateControllers)(AVObject*, float); // 0x2C
 		void (__thiscall* applyTransform)(AVObject*, TES3::Matrix33*, TES3::Vector3*, bool); // 0x30
-		Bound* (__thiscall* getWorldBound)(AVObject*); // 0x34
+		SphereBound* (__thiscall* getWorldBound)(AVObject*); // 0x34
 		void (__thiscall* createWorldVertices)(AVObject*); // 0x38
 		void (__thiscall* updateWorldVertices)(AVObject*); // 0x3C
 		void (__thiscall* destroyWorldVertices)(AVObject*); // 0x40
@@ -52,7 +54,7 @@ namespace NI {
 		float localScale; // 0x3C
 		TES3::Transform worldTransform; // 0x40
 		ObjectVelocities* velocities; // 0x74
-		void * modelABV; // 0x78
+		BoundingVolume* modelABV; // 0x78
 		void * worldABV; // 0x7C
 		int (__cdecl * collideCallback)(void*); // 0x80
 		void * collideCallbackUserData; // 0x84
@@ -62,7 +64,7 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-		Bound* getWorldBound();
+		SphereBound* getWorldBound();
 
 		TES3::Vector3 getLocalVelocity() const;
 		void setLocalVelocity(TES3::Vector3*);
@@ -139,6 +141,8 @@ namespace NI {
 		Pointer<ZBufferProperty> getZBufferProperty() const;
 		void setZBufferProperty(sol::optional<ZBufferProperty*> prop);
 
+		void setModelSpaceABV(BoundingVolume* volume);
+
 		void update_lua(sol::optional<sol::table> args);
 
 		//
@@ -149,8 +153,6 @@ namespace NI {
 
 	};
 	static_assert(sizeof(AVObject) == 0x90, "NI::AVObject failed size validation");
-
-	void __cdecl PatchCalculateBounds(const AVObject* object, TES3::Vector3& out_min, TES3::Vector3& out_max, const TES3::Vector3& translation, const TES3::Matrix33& rotation, const float& scale);
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::AVObject)

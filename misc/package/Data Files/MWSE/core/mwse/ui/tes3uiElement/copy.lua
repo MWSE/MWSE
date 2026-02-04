@@ -87,7 +87,10 @@ function tes3uiElement:copy(params)
 
 	-- Create our copy.
 	local elementType = self.type
-	local delegate = assert(tes3uiElementCopyDelegates[elementType], string.format("No copy function found for element of type %s.", elementType))
+	local delegate = tes3uiElementCopyDelegates[elementType]
+	if not delegate then
+		error(string.format("No copy function found for element of type %s.", elementType))
+	end
 	local newElement = delegate(params)
 
 	-- Copy basic properties.
@@ -110,7 +113,10 @@ function tes3uiElement:copy(params)
 	-- Copy UI properties?
 	if (table.get(params, "copyProperties", true)) then
 		for _, prop in ipairs(self.properties) do
-			local propDelegate = assert(tes3uiElementCopyPropertyDelegates[prop.type], string.format("No copy function found for element of type %s.", prop.type))
+			local propDelegate = tes3uiElementCopyPropertyDelegates[prop.type]
+			if not propDelegate then
+				error(string.format("No copy function found for element of type %s.", prop.type))
+			end
 			propDelegate(newElement, prop)
 		end
 		mwse.copyLuaCallbacks(self, newElement) --- @diagnostic disable-line

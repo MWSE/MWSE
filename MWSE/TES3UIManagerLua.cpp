@@ -1,5 +1,6 @@
 #include "TES3UIManagerLua.h"
 
+#include "TES3Cell.h"
 #include "TES3GameSetting.h"
 #include "TES3Item.h"
 #include "TES3ItemData.h"
@@ -37,7 +38,7 @@ namespace mwse::lua {
 	static std::unordered_map<Element*, std::unordered_map<Property, EventCallback>> originalCallbackMap;
 	static std::unordered_map<Element*, void(__cdecl*)(Element*)> destroyMap;
 
-	static sol::table createKeyData(sol::state& state, int keyCode) {
+	static sol::table createKeyData(sol::state& state, DWORD keyCode) {
 		const auto inputController = TES3::WorldController::get()->inputController;
 		auto keyData = state.create_table();
 		keyData["keyCode"] = keyCode;
@@ -78,7 +79,7 @@ namespace mwse::lua {
 			// Note that this is a DirectInput key code, not a scan code.
 			const auto charMasked = data0 & 0x7FFFFFFF;
 			eventData["character"] = charMasked > 0 ? state["string"]["char"](charMasked) : sol::object(sol::nil);
-			eventData["keyData"] = createKeyData(state, TES3::UI::MenuInputController::lastKeyPressDIK);
+			eventData["keyData"] = createKeyData(state, TES3::InputController::lastReadKeyboardData.dwOfs);
 			break;
 		}
 
@@ -438,6 +439,7 @@ namespace mwse::lua {
 		tes3ui["getMenuOnTop"] = TES3::UI::getMenuOnTop;
 		tes3ui["getPalette"] = TES3::UI::getPalette_lua;
 		tes3ui["getServiceActor"] = TES3::UI::getServiceActor;
+		tes3ui["getCellHoveredOnMap"] = TES3::UI::getCellHoveredOnMap;
 		tes3ui["getViewportScale"] = TES3::UI::getViewportScale;
 		tes3ui["getViewportSize"] = TES3::UI::getViewportSize_lua;
 		tes3ui["leaveMenuMode"] = TES3::UI::leaveMenuMode;

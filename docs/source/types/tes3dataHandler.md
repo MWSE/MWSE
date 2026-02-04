@@ -323,15 +323,14 @@ local node = myObject:getLandShapeAtPosition()
 No description yet available.
 
 ```lua
-myObject:updateCollisionGroupsForActiveCells({ force = ..., isResettingData = ..., resetCollisionGroups = ... })
+myObject:updateCollisionGroupsForActiveCells(force, isResettingData, resetCollisionGroups)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `force` (boolean): *Default*: `true`.
-	* `isResettingData` (boolean): *Default*: `false`.
-	* `resetCollisionGroups` (boolean): *Default*: `true`.
+* `force` (boolean): *Default*: `true`.
+* `isResettingData` (boolean): *Default*: `false`.
+* `resetCollisionGroups` (boolean): *Default*: `true`.
 
 ***
 

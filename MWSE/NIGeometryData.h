@@ -14,7 +14,7 @@ namespace NI {
 	struct GeometryData : Object {
 		unsigned short vertexCount; // 0x8
 		unsigned short textureSets; // 0xA
-		Bound bounds; // 0xC
+		SphereBound bounds; // 0xC
 		TES3::Vector3* vertex; // 0x1C
 		TES3::Vector3* normal; // 0x20
 		PackedColor* color; // 0x24

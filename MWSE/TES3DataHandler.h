@@ -155,7 +155,7 @@ namespace TES3 {
 		Reference* resolveReferenceBySourceID(unsigned int);
 		Spell* getSpellById(const char*);
 		Script* findScriptByName(const char*);
-		GlobalVariable* findGlobalVariable(const char*);
+		GlobalVariable* findGlobalVariable(const char* name) const;
 		Dialogue* findDialogue(const char*);
 		bool addSound(Sound*);
 		Sound* findSound(const char*);
@@ -175,7 +175,7 @@ namespace TES3 {
 
 		MagicEffect * getMagicEffect(int id);
 
-		float createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+		Reference* createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
 
 		void showLocationOnMap(const char* name);
 		void drawCellMapMarker(Cell* cell, int unused = 0);
@@ -402,6 +402,7 @@ namespace TES3 {
 		void setDynamicLightingForReference(Reference* reference);
 
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
+		void updateCollisionGroupsForActiveCells_lua(sol::optional<bool> force, sol::optional<bool> isResettingData, sol::optional<bool> resetCollisionGroups);
 		void updateCollisionGroupsForActiveCells_raw(bool force = true);
 
 		void getClosestPrisonReferences(Reference** prisonMarker, Reference** stolenGoods);

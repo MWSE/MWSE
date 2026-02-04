@@ -139,6 +139,8 @@ namespace TES3 {
 		char unknown_0x1B3B;
 		InputConfig inputMaps[34]; // 0x1B3C
 
+		static DIDEVICEOBJECTDATA lastReadKeyboardData;
+
 		InputController() = delete;
 		~InputController() = delete;
 
@@ -147,7 +149,7 @@ namespace TES3 {
 		//
 
 		void readKeyState();
-		int readButtonPressed(DWORD* data);
+		int readButtonPressed(DWORD* out_dik);
 		BOOL keybindTest(unsigned int keybind, unsigned int transition) const;
 
 		//
@@ -180,4 +182,5 @@ namespace TES3 {
 	static_assert(sizeof(InputController::GamepadState) == 0xA0, "TES3::InputController::GamepadState failed size validation");
 	static_assert(sizeof(InputController::DeviceAxisSupport) == 0x8, "TES3::InputController::DeviceAxisSupport failed size validation");
 	static_assert(sizeof(InputController::Unknown_0x1B28) == 0xC, "TES3::InputController::Unknown_0x1B28 failed size validation");
+	static_assert(sizeof(DIDEVICEOBJECTDATA) == 0x14, "Unexpected size of DIDEVICEOBJECTDATA structure.");
 }

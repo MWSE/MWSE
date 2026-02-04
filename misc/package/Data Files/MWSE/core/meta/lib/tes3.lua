@@ -689,6 +689,8 @@ function tes3.createObject(params) end
 --- `cell?`: tes3cell|string|table — *Optional*. The cell to create the reference in. This is only needed for interior cells.
 --- 
 --- `scale?`: number — *Default*: `1`. A scale for the reference.
+--- 
+--- `updateCollisionGroups?`: boolean — *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 --- @return tes3reference newReference No description yet available.
 function tes3.createReference(params) end
 
@@ -699,6 +701,7 @@ function tes3.createReference(params) end
 --- @field orientation tes3vector3|number[] The new orientation for the created reference.
 --- @field cell? tes3cell|string|table *Optional*. The cell to create the reference in. This is only needed for interior cells.
 --- @field scale? number *Default*: `1`. A scale for the reference.
+--- @field updateCollisionGroups? boolean *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 
 --- Creates an arbitrary and automatically tracked visual effect. The visual effect can be an `object` (VFX objects can be found in the statics section of the constuction set), or a `magicEffectId`. You must specify one of a `reference`, `position`, or `avObject` to attach it to.
 --- 

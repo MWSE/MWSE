@@ -17,7 +17,7 @@ constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
 constexpr auto NI_AVObject_update = 0x6EB000;
 
 namespace NI {
-	Bound* AVObject::getWorldBound() {
+	SphereBound* AVObject::getWorldBound() {
 		return vTable.asAVObject->getWorldBound(this);
 	}
 
@@ -46,7 +46,7 @@ namespace NI {
 	AVObject* AVObject::getParentByName(const char* name) const {
 		Node* result = parentNode;
 		while (result != nullptr) {
-			if (mwse::string::equal(name, result->name)) {
+			if (mwse::string::iequal(name, result->name)) {
 				return result;
 			}
 			result = result->parentNode;
@@ -245,15 +245,12 @@ namespace NI {
 		}
 	}
 
-	void __cdecl PatchCalculateBounds(const AVObject* object, TES3::Vector3& out_min, TES3::Vector3& out_max, const TES3::Vector3& translation, const TES3::Matrix33& rotation, const float& scale) {
-		object->calculateBounds(out_min, out_max, translation, rotation, scale, false, false, false);
-	}
-
 	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua(sol::optional<sol::table> maybeParams) const {
 		auto accuratedSkinned = mwse::lua::getOptionalParam(maybeParams, "accurateSkinned", false);
 		auto observeAppCullFlag = mwse::lua::getOptionalParam(maybeParams, "observeAppCullFlag", false);
 		auto onlyActiveChildren = mwse::lua::getOptionalParam(maybeParams, "onlyActiveChildren", false);
-		auto bb = std::make_shared<TES3::BoundingBox>(FLT_MAX, FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX);
+		auto bb = std::make_shared<TES3::BoundingBox>();
+		bb->initialize();
 		calculateBounds(bb->minimum, bb->maximum, TES3::Vector3::ZEROES, TES3::Matrix33::IDENTITY, 1.0, accuratedSkinned, observeAppCullFlag, onlyActiveChildren);
 		return bb;
 	}
@@ -386,9 +383,14 @@ namespace NI {
 		}
 	}
 
+	const auto NI_AVObject_setModelSpaceABV = reinterpret_cast<bool(__thiscall*)(AVObject*, BoundingVolume*)>(0x6EB590);
+	void AVObject::setModelSpaceABV(BoundingVolume* volume) {
+		NI_AVObject_setModelSpaceABV(this, volume);
+	}
+
 	void AVObject::update_lua(sol::optional<sol::table> args) {
-		if (args) {
-			auto values = args.value();
+		if (args.has_value()) {
+			auto& values = args.value();
 			float time = values.get_or("time", 0.0f);
 			bool updateControllers = values.get_or("controllers", false);
 			bool updateChildren = values.get_or("children", true);

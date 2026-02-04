@@ -40,11 +40,15 @@ end
 function metatable:set_currentTab(id)
 	local tabs = self:getTabsBlock()
 	local tab = tabs:findChild(string.format("Tab:%s", id))
-	assert(tab, string.format("No tab with the given ID '%s' exists.", id))
+	if not tab then
+		error(string.format("No tab with the given ID '%s' exists.", id))
+	end
 
 	local contents = self:getContentsBlock()
 	local content = contents:findChild(string.format("TabContents:%s", id))
-	assert(content, string.format("No contents for tab with the given ID '%s' exists.", id))
+	if not content then
+		error(string.format("No contents for tab with the given ID '%s' exists.", id))
+	end
 
 	for _, t in ipairs(tabs.children) do
 		if (t == tab) then

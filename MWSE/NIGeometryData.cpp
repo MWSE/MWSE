@@ -15,7 +15,7 @@ namespace NI {
 		}
 	}
 
-	const auto NI_Bound_ComputeFromData = reinterpret_cast<void(__thiscall*)(NI::Bound*, int, TES3::Vector3*, unsigned int)>(0x6ED170);
+	const auto NI_Bound_ComputeFromData = reinterpret_cast<void(__thiscall*)(SphereBound*, int, TES3::Vector3*, unsigned int)>(0x6ED170);
 	void GeometryData::updateModelBound() {
 		NI_Bound_ComputeFromData(&bounds, vertexCount, vertex, sizeof(TES3::Vector3));
 	}

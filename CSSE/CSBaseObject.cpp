@@ -6,6 +6,7 @@
 #include "CSScript.h"
 #include "CSRace.h"
 
+#include "BitUtil.h"
 #include "StringUtil.h"
 
 namespace se::cs {
@@ -27,6 +28,11 @@ namespace se::cs {
 
 	bool BaseObject::getDeleted() const {
 		return (flags & 0x20);
+	}
+
+	void BaseObject::setDeleted(bool deleted) {
+		const auto BaseObject_setDeleted = reinterpret_cast<void(__thiscall*)(BaseObject*, bool)>(0x547810);
+		BaseObject_setDeleted(this, deleted);
 	}
 
 	bool BaseObject::getPersists() const {

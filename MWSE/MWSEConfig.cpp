@@ -24,9 +24,10 @@ namespace mwse {
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
-	UINT Configuration::BuildNumber = UINT_MAX;
+	constexpr auto DEV_BUILD_NUMBER = std::numeric_limits<unsigned short>::max();
+	UINT Configuration::BuildNumber = DEV_BUILD_NUMBER;
+	static_assert(DEV_BUILD_NUMBER == int(float(DEV_BUILD_NUMBER)), "Dev build number could not survive round-trip through mwscript.");
 #endif
-
 
 	// Allow default values to be accessed later.
 	sol::table defaultConfig;

@@ -49,20 +49,10 @@ function tes3dataHandler:getLandNormalAtPosition() end
 function tes3dataHandler:getLandShapeAtPosition() end
 
 --- No description yet available.
---- @param params tes3dataHandler.updateCollisionGroupsForActiveCells.params This table accepts the following values:
---- 
---- `force?`: boolean — *Default*: `true`. No description yet available.
---- 
---- `isResettingData?`: boolean — *Default*: `false`. No description yet available.
---- 
---- `resetCollisionGroups?`: boolean — *Default*: `true`. No description yet available.
-function tes3dataHandler:updateCollisionGroupsForActiveCells(params) end
-
----Table parameter definitions for `tes3dataHandler.updateCollisionGroupsForActiveCells`.
---- @class tes3dataHandler.updateCollisionGroupsForActiveCells.params
---- @field force? boolean *Default*: `true`. No description yet available.
---- @field isResettingData? boolean *Default*: `false`. No description yet available.
---- @field resetCollisionGroups? boolean *Default*: `true`. No description yet available.
+--- @param force? boolean *Default*: `true`. No description yet available.
+--- @param isResettingData? boolean *Default*: `false`. No description yet available.
+--- @param resetCollisionGroups? boolean *Default*: `true`. No description yet available.
+function tes3dataHandler:updateCollisionGroupsForActiveCells(force, isResettingData, resetCollisionGroups) end
 
 --- Updates dynamic lights that affect exterior terrain and reference in exterior cells.
 function tes3dataHandler:updateLightingForExteriorCells() end

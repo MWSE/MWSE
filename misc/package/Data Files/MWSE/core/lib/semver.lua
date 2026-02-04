@@ -50,7 +50,9 @@ local semver = {
       prereleaseWithSign = str:match("^(-.+)$")
       buildWithSign      = str:match("^(+.+)$")
     end
-    assert(prereleaseWithSign or buildWithSign, ("The parameter %q must begin with + or - to denote a prerelease or a build"):format(str))
+    if not (prereleaseWithSign or buildWithSign) then
+      error(("The parameter %q must begin with + or - to denote a prerelease or a build"):format(str))
+    end
     return prereleaseWithSign, buildWithSign
   end
 
@@ -83,7 +85,9 @@ local semver = {
 
   local function parseVersion(str)
     local sMajor, sMinor, sPatch, sPrereleaseAndBuild = str:match("^(%d+)%.?(%d*)%.?(%d*)(.-)$")
-    assert(type(sMajor) == 'string', ("Could not extract version number(s) from %q"):format(str))
+    if type(sMajor) ~= 'string' then
+      error(("Could not extract version number(s) from %q"):format(str))
+    end
     local major, minor, patch = tonumber(sMajor), tonumber(sMinor), tonumber(sPatch)
     local prerelease, build = parsePrereleaseAndBuild(sPrereleaseAndBuild)
     return major, minor, patch, prerelease, build

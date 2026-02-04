@@ -21,7 +21,6 @@ namespace TES3::UI {
 	ItemData* MenuInputController::lastTooltipItemData = nullptr;
 	int MenuInputController::lastTooltipCount = 0;
 	Element* MenuInputController::lastTooltipSource = nullptr;
-	int MenuInputController::lastKeyPressDIK = 0xFF;
 
 	const auto TES3_MenuInputController_flushBufferedTextEvents = reinterpret_cast<void(__thiscall*)(MenuInputController*)>(0x58E9C0);
 	void MenuInputController::flushBufferedTextEvents() {

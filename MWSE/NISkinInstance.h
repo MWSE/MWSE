@@ -44,7 +44,7 @@ namespace NI {
 				float weight; // 0x4
 			};
 			TES3::Transform transform; // 0x0
-			Bound bounds; // 0x34
+			SphereBound bounds; // 0x34
 			VertexWeight* weights; // 0x48
 			unsigned short weightCount; // 0x48
 

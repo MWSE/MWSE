@@ -172,7 +172,7 @@ namespace TES3 {
 		TES3_Reference_deleteDynamicLightAttachment(this);
 	}
 
-	LightAttachmentNode* Reference::getAttachedDynamicLight() {
+	LightAttachmentNode* Reference::getAttachedDynamicLight() const {
 		auto attachment = static_cast<TES3::LightAttachment*>(getAttachment(TES3::AttachmentType::Light));
 		return attachment ? attachment->data : nullptr;
 	}
@@ -218,7 +218,7 @@ namespace TES3 {
 		return attachment->data;
 	}
 
-	NI::Pointer<NI::Light> Reference::getAttachedNiLight() {
+	NI::Pointer<NI::Light> Reference::getAttachedNiLight() const {
 		auto dynamicLight = getAttachedDynamicLight();
 		if (dynamicLight) {
 			return dynamicLight->light;
@@ -435,30 +435,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(false);
 		}
 
-		// Enable simulation for creatures/NPCs.
-		if (baseObject->objectType == TES3::ObjectType::Creature || baseObject->objectType == TES3::ObjectType::NPC) {
-			TES3::WorldController::get()->mobManager->addMob(this);
-			auto mobile = getAttachedMobileActor();
-			if (mobile) {
-				mobile->enterLeaveSimulationByDistance();
-			}
-		}
-		// Activators, containers, and statics need collision.
-		else if (baseObject->objectType == TES3::ObjectType::Activator || baseObject->objectType == TES3::ObjectType::Container || baseObject->objectType == TES3::ObjectType::Static) {
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
-		// Lights need to be configured.
-		else if (baseObject->objectType == TES3::ObjectType::Light) {
-			dataHandler->setDynamicLightingForReference(this);
-
-			// Non-carryable lights also need collision.
-			if (!static_cast<TES3::Light*>(baseObject)->getCanCarry()) {
-				dataHandler->updateCollisionGroupsForActiveCells();
-			}
-		}
-
-		// Ensure the reference receives scene lighting.
-		dataHandler->updateLightingForReference(this);
+		handleUpdate();
 
 		// Finally flag as modified.
 		setObjectModified(true);
@@ -480,32 +457,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(true);
 		}
 
-		// Leave simulation if we have a mobile.
-		if (baseObject->objectType == TES3::ObjectType::Creature || baseObject->objectType == TES3::ObjectType::NPC) {
-			auto mact = getAttachedMobileActor();
-			if (mact) {
-				auto worldController = TES3::WorldController::get();
-
-				// Remove the actor from simulation.
-				worldController->mobManager->removeMob(this);
-
-				// Cleanup related VFX and magic casted by this actor.
-				// This is normally done during actor death near 0x523D53 and is required when deleting actors.
-				worldController->vfxManager->removeForReference(this);
-				worldController->magicInstanceController->retireMagicCastedByActor(this);
-			}
-		}
-		// Update lights for objects.
-		else if (baseObject->objectType == TES3::ObjectType::Light) {
-			detachDynamicLightFromAffectedNodes();
-
-			// Also update collision.
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
-		// Update collision for everything else.
-		else {
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
+		handleUpdate();
 
 		// Clean up any sounds.
 		auto sound = baseObject->getSound();
@@ -558,7 +510,7 @@ namespace TES3 {
 
 		BIT_SET(objectFlags, ObjectFlag::NoCollisionBit, set);
 
-		if (updateCollisions) {
+		if (updateCollisions && getUpdatesCollisionGroups()) {
 			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
 		}
 	}
@@ -883,7 +835,7 @@ namespace TES3 {
 		}
 	}
 
-	int Reference::getStackSize() {
+	int Reference::getStackSize() const {
 		TES3::ItemData* itemData = getAttachedItemData();
 		return itemData ? itemData->count : 1;
 	}
@@ -924,6 +876,30 @@ namespace TES3 {
 		}
 	}
 
+	void Reference::handleUpdate(bool updateCollisions) {
+		const auto dataHandler = DataHandler::get();
+
+		// Did we just make an actor? If so we need to add it to the mob manager.
+		if (baseObject->isMobileCapableActor()) {
+			TES3::WorldController::get()->mobManager->addMob(this);
+			const auto mact = getAttachedMobileActor();
+			if (mact && mact->isActor()) {
+				mact->enterLeaveSimulation(true);
+			}
+		}
+
+		if (baseObject->objectType == TES3::ObjectType::Light) {
+			dataHandler->setDynamicLightingForReference(this);
+		}
+
+		if (updateCollisions && getUpdatesCollisionGroups()) {
+			dataHandler->updateCollisionGroupsForActiveCells();
+		}
+
+		// Ensure the reference receives scene lighting.
+		dataHandler->updateLightingForReference(this);
+	}
+
 	const auto TES3_Reference_getSceneGraphNode = reinterpret_cast<NI::Node*(__thiscall*)(Reference*)>(0x4E81A0);
 	NI::Node * Reference::getSceneGraphNode() {
 		// Ignore for deleted objects.
@@ -931,8 +907,8 @@ namespace TES3 {
 			return nullptr;
 		}
 
-		auto previousNode = sceneNode;
-		auto newNode = TES3_Reference_getSceneGraphNode(this);
+		const auto previousNode = sceneNode;
+		const auto newNode = TES3_Reference_getSceneGraphNode(this);
 		const auto wasCreated = (previousNode == nullptr && newNode != nullptr);
 
 		if (wasCreated && mwse::lua::event::ReferenceSceneNodeCreatedEvent::getEventEnabled() && hasValidBaseObject()) {
@@ -1284,7 +1260,7 @@ namespace TES3 {
 		return itemData;
 	}
 
-	LockAttachmentNode* Reference::getAttachedLockNode() {
+	LockAttachmentNode* Reference::getAttachedLockNode() const {
 		auto attachment = static_cast<TES3::LockAttachment*>(getAttachment(TES3::AttachmentType::Lock));
 		if (attachment) {
 			return attachment->data;
@@ -1300,7 +1276,7 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	BodyPartManager* Reference::getAttachedBodyPartManager() {
+	BodyPartManager* Reference::getAttachedBodyPartManager() const {
 		auto attachment = static_cast<TES3::BodyPartManagerAttachment*>(getAttachment(TES3::AttachmentType::BodyPartManager));
 		if (attachment) {
 			return attachment->data;
@@ -1316,7 +1292,7 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	sol::table Reference::getAttachments_lua(sol::this_state ts) {
+	sol::table Reference::getAttachments_lua(sol::this_state ts) const {
 		sol::state_view state = ts;
 
 		sol::table result = state.create_table();

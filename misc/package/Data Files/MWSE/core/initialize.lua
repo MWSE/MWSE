@@ -236,7 +236,9 @@ end
 local function loadLocaleFile(mod, locale)
 	local success, contents = pcall(dofile, string.format("%s.i18n.%s", mod, locale))
 	if (success) then
-		assert(type(contents) == "table", string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		if type(contents) ~= "table" then
+			error(string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		end
 
 		-- Convert encoding from UTF8 to the right type.
 		convertUTF8Table(contents, tes3.getLanguageCode())

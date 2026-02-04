@@ -24,7 +24,7 @@ namespace NI {
 
 	int SwitchNode::getChildIndexByName(const char* name) const {
 		for (auto i = 0u; i < children.size(); ++i) {
-			if (mwse::string::equal(name, children[i].get()->name)) {
+			if (mwse::string::iequal(name, children[i].get()->name)) {
 				return i;
 			}
 		}

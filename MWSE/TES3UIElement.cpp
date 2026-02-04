@@ -960,13 +960,23 @@ namespace TES3::UI {
 		flagContentChanged = true;
 	}
 
-	NI::Pointer<NI::SourceTexture> Element::getTexture() const {
+	NI::Pointer<NI::Texture> Element::getTexture() const {
 		return texture;
 	}
 
-	void Element::setTexture(NI::Pointer<NI::SourceTexture> value) {
+	void Element::setTexture(NI::Texture* value) {
+		setIcon("");
 		texture = value;
 		contentType = Property::image;
+		if (sceneNode && !sceneNode->children.empty()) {
+			const auto texturingProperty = sceneNode->children.at(0)->getTexturingProperty();
+			if (texturingProperty) {
+				const auto baseMap = texturingProperty->getBaseMap();
+				if (baseMap) {
+					baseMap->texture = value;
+				}
+			}
+		}
 		flagContentChanged = true;
 	}
 

@@ -130,6 +130,10 @@ function tes3ui.findMenu(id) end
 --- Forces the game to update the inventory tile GUI elements. Unlike tes3ui.updateInventoryTiles, this will force-resync the player's inventory to the GUI, rather than updating what is already in the GUI system.
 function tes3ui.forcePlayerInventoryUpdate() end
 
+--- Returns the cell currently being hovered over on the map menu. Note that this currently only supports cells which have a map marker, though this may change in the future.
+--- @return tes3cell|nil result No description yet available.
+function tes3ui.getCellHoveredOnMap() end
+
 --- Gets the reference currently selected by the console, or nil if nothing is selected.
 --- @return tes3reference|nil result No description yet available.
 function tes3ui.getConsoleReference() end

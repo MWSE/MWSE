@@ -292,6 +292,21 @@ tes3ui.forcePlayerInventoryUpdate()
 
 ***
 
+### `tes3ui.getCellHoveredOnMap`
+<div class="search_terms" style="display: none">getcellhoveredonmap, cellhoveredonmap</div>
+
+Returns the cell currently being hovered over on the map menu. Note that this currently only supports cells which have a map marker, though this may change in the future.
+
+```lua
+local result = tes3ui.getCellHoveredOnMap()
+```
+
+**Returns**:
+
+* `result` ([tes3cell](../types/tes3cell.md), nil)
+
+***
+
 ### `tes3ui.getConsoleReference`
 <div class="search_terms" style="display: none">getconsolereference, consolereference</div>
 

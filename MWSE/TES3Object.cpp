@@ -48,6 +48,8 @@
 #include "TES3Weapon.h"
 #include "TES3WorldController.h"
 
+#include "NIBound.h"
+
 #include "TES3UIMenuController.h"
 
 #include "BitUtil.h"
@@ -172,6 +174,16 @@ namespace TES3 {
 		}
 	}
 
+	bool BaseObject::isMobileCapableActor() const {
+		switch (objectType) {
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::NPC:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	bool BaseObject::isItem() const {
 		switch (objectType) {
 		case TES3::ObjectType::Alchemy:
@@ -240,6 +252,22 @@ namespace TES3 {
 
 	void BaseObject::setBlocked(bool value) {
 		BIT_SET(objectFlags, TES3::ObjectFlag::BlockedBit, value);
+	}
+
+	bool BaseObject::getUpdatesCollisionGroups() const {
+		const auto baseObject = getBaseObject();
+
+		switch (baseObject->objectType) {
+		case ObjectType::Activator:
+		case ObjectType::Container:
+		case ObjectType::Door:
+		case ObjectType::Land:
+		case ObjectType::Static:
+			return true;
+		case ObjectType::Light:
+			return !static_cast<const Light*>(this)->getCanCarry();
+		}
+		return false;
 	}
 
 	bool BaseObject::getSupportsLuaData() const {
@@ -726,7 +754,7 @@ namespace TES3 {
 		return object;
 	}
 
-	ReferenceList* Object::getOwningCollection() {
+	ReferenceList* Object::getOwningCollection() const {
 		return owningCollection.asReferenceList;
 	}
 
@@ -795,9 +823,73 @@ namespace TES3 {
 		return TES3_PhysicalObject_getMobile(this);
 	}
 
-	const auto TES3_PhysicalObject_createBoundingBox = reinterpret_cast<void(__thiscall*)(PhysicalObject*)>(0x4EEFC0);
+	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, Vector3& out_min, Vector3& out_max) {
+		// We can reuse bounding volumes if one is available.
+		const auto abv = object->modelABV;
+		if (abv && abv->getType() == NI::BoundingVolumeType::Box) {
+			const auto boxABV = static_cast<const NI::BoxBoundingVolume*>(abv);
+
+			out_min = boxABV->bounds.center - boxABV->bounds.extent;
+			out_max = boxABV->bounds.center + boxABV->bounds.extent;
+			return;
+		}
+
+		object->calculateBounds(out_min, out_max, object->localTranslate, *object->localRotation, object->localScale, false, false, false);
+
+		if (object && object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			auto asNode = static_cast<NI::Node*>(object);
+			asNode->detachAllChildren();
+			asNode->update();
+		}
+
+		const Vector3 extent = (out_max - out_min) * 0.5f;
+		const Vector3 center = extent + out_min;
+		auto newABV = NI::BoxBoundingVolume::create(extent, center, Vector3::UNIT_X, Vector3::UNIT_Y, Vector3::UNIT_Z);
+		object->setModelSpaceABV(newABV);
+	}
+
+	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*)>(0x4EF1D0);
+	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*, const Vector3*, const Matrix33*, const float*)>(0x4EF410);
 	void PhysicalObject::createBoundingBox() {
-		TES3_PhysicalObject_createBoundingBox(this);
+		if (!sceneNode) {
+			return;
+		}
+
+		// Meshes can have custom bounding volumes we need to respect.
+		const auto boundingBoxVolume = sceneNode->getObjectByName("Bounding Box");
+		if (boundingBoxVolume) {
+			boundingBoxVolume->setAppCulled(true);
+		}
+
+		// The game always recreates the bounding box for some reason, rather than reusing memory here.
+		if (boundingBox) {
+			mwse::tes3::_delete(boundingBox);
+		}
+		boundingBox = mwse::tes3::_new<TES3::BoundingBox>();
+		boundingBox->initialize();
+
+		// Use the updated calculation functions.
+		if (boundingBoxVolume) {
+			PatchedSetBBoxFromBoxBV(boundingBoxVolume, boundingBox->minimum, boundingBox->maximum);
+		}
+		else {
+			const auto scale = 1.0f;
+			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, Vector3::ZEROES, Matrix33::IDENTITY, scale, false, false, false);
+		}
+
+		// If we are an actor, we need to validate that the bounding box can be used for steps. If it can't, recreate it using vanilla logic.
+		// This improves compatibility with older mods with broken meshes, such as "Cave Drips" by R-Zero.
+		const auto height = std::fabsf(boundingBox->maximum.z - boundingBox->minimum.z);
+		if (isMobileCapableActor() && height <= 32.0f) {
+			boundingBox->initialize();
+			if (boundingBoxVolume) {
+				TES3_VanillaSetBBoxFromBoxBV(boundingBoxVolume, &boundingBox->minimum, &boundingBox->maximum);
+			}
+			else {
+				const auto scale = 1.0f;
+				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &Vector3::ZEROES, &Matrix33::IDENTITY, &scale);
+			}
+		}
 	}
 
 	BoundingBox* PhysicalObject::getOrCreateBoundingBox() {

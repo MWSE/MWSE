@@ -144,7 +144,7 @@ namespace mwse::patch {
 
 	void* __fastcall PatchScriptOpDisableCollision(TES3::Reference* reference) {
 		// Force update collision.
-		if (PatchScriptOpDisable_ForceCollisionUpdate) {
+		if (PatchScriptOpDisable_ForceCollisionUpdate && reference->getUpdatesCollisionGroups()) {
 			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
 		}
 
@@ -277,21 +277,6 @@ namespace mwse::patch {
 		}
 
 		inputController->readKeyState();
-	}
-
-	int __fastcall PatchGetMorrowindMainWindow_NoBufferReading(TES3::InputController* inputController, DWORD _EDX_, DWORD* key) {
-		if (GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
-			// Read in the input so it doesn't get buffered when we alt-tab back in.
-			inputController->readButtonPressed(key);
-
-			// But pretend that nothing was found.
-			*key = 0;
-			return 0;
-		}
-
-		auto result = inputController->readButtonPressed(key);
-		TES3::UI::MenuInputController::lastKeyPressDIK = result ? *key : 0xFF;
-		return result;
 	}
 
 	//
@@ -1331,6 +1316,29 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Ensure that losing Stunted Magicka doesn't remove the flag permanently.
+	//
+
+	static void __cdecl PatchMagicEffectStuntedMagicka(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
+		auto mobile = effectInstance->target->getAttachedMobileActor();
+		if (mobile == nullptr) {
+			return;
+		}
+
+		const auto magicEffectController = TES3::DataHandler::get()->nonDynamicData->magicEffects;
+		const auto appliesOnce = TES3::MagicEffectController::getEffectFlag(TES3::EffectID::StuntedMagicka, TES3::EffectFlag::AppliedOnceBit);
+		unsigned int attributeVariant = 0;
+		TES3::MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, appliesOnce, &attributeVariant, 0x7886F0, TES3::EffectAttribute::NonResistable, nullptr);
+		if (attributeVariant == 0) {
+			return;
+		}
+
+		// Re-flag stunted magicka bit based on any other effects.
+		const auto stillStunted = mobile->isAffectedByEffect(TES3::EffectID::StuntedMagicka);
+		mobile->setMobileActorFlag(TES3::MobileActorFlag::StuntedMagicka, stillStunted);
+	}
+
+	//
 	// Patch: Suppress sGeneralMastPlugMismatchMsg message.
 	//
 
@@ -2130,13 +2138,15 @@ namespace mwse::patch {
 		WritePatchMagicEffect_RequireMobile<0x464280>(TES3::EffectID::Vampirism);
 		WritePatchMagicEffect_RequireMobile<0x4640D0>(TES3::EffectID::SummonCenturionSphere);
 		WritePatchMagicEffect_RequireMobile<0x464BB0>(TES3::EffectID::SunDamage);
-		WritePatchMagicEffect_RequireMobile<0x464F20>(TES3::EffectID::StuntedMagicka);
 		WritePatchMagicEffect_RequireMobile<0x464100>(TES3::EffectID::SummonFabricant);
 		WritePatchMagicEffect_RequireMobile<0x464130>(TES3::EffectID::SummonWolf);
 		WritePatchMagicEffect_RequireMobile<0x464160>(TES3::EffectID::SummonBear);
 		WritePatchMagicEffect_RequireMobile<0x464190>(TES3::EffectID::SummonBoneWolf);
 		WritePatchMagicEffect_RequireMobile<0x4641C0>(TES3::EffectID::Summon04);
 		WritePatchMagicEffect_RequireMobile<0x4641F0>(TES3::EffectID::Summon05);
+
+		// Other magic effect patches.
+		writeDoubleWordEnforced(0x7884B0 + (TES3::EffectID::StuntedMagicka * 4), 0x464F20, reinterpret_cast<DWORD>(PatchMagicEffectStuntedMagicka));
 
 		// Patch: Suppress sGeneralMastPlugMismatchMsg message.
 		genCallUnprotected(0x477512, reinterpret_cast<DWORD>(GetCachedYesToAll), 0x477518 - 0x477512);
@@ -2175,6 +2185,22 @@ namespace mwse::patch {
 		genCallEnforced(0x4D2F10, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 #endif
+
+		// Patch: Fix NiSwitchNode::UpdateWorldBound malfunctioning when using UpdateOnlyActive and a switchIndex of 0.
+		writeValueEnforced<BYTE>(0x6D85B6, 0x7E, 0x7C);
+
+		// Patch: Fix bound calculation.
+		auto PhysicalObject_createBoundingBox = &TES3::PhysicalObject::createBoundingBox;
+		genCallEnforced(0x49572E, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x495785, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4D2324, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EF99F, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EFE70, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+
+		// Patch: Store last read key state.
+		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
+		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 	}
 
 	void installPostLuaPatches() {
@@ -2188,8 +2214,6 @@ namespace mwse::patch {
 			genCallEnforced(0x477E1E, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BC9E1, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BCA33, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
-			genCallEnforced(0x58E8C6, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
-			genCallEnforced(0x5BCA1D, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
 		}
 
 		// Patch: Fix NiFlipController losing its affectedMap on clone.
@@ -2208,14 +2232,6 @@ namespace mwse::patch {
 			writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
 			writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
 		}
-
-		// Patch: Fix NiSwitchNode::UpdateWorldBound malfunctioning when using UpdateOnlyActive and a switchIndex of 0.
-		writeValueEnforced<BYTE>(0x6D85B6, 0x7E, 0x7C);
-
-		// Patch: Fix bound calculation.
-		genCallEnforced(0x4EF118, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
-		genCallEnforced(0x4EF28E, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
-		genCallEnforced(0x4EF53B, 0x4EF410, reinterpret_cast<DWORD>(NI::PatchCalculateBounds));
 	}
 
 	void installPostInitializationPatches() {

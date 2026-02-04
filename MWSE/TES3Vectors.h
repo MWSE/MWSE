@@ -291,6 +291,7 @@ namespace TES3 {
 		BoundingBox copy() const;
 		std::array<Vector3, 8> vertices() const;
 
+		void initialize();
 		void clampPoint(Vector3& point, const Vector3& origin) const;
 	};
 	static_assert(sizeof(BoundingBox) == 0x18, "TES3::BoundingBox failed size validation");

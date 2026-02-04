@@ -8,7 +8,7 @@
 --- @field cullingPlanes tes3vector4[] The culling planes of the camera: near, far, left, right, top, and bottom.
 --- @field lodAdjust number The level-of-detail adjustment value for the camera. This value is used by NiLODNode objects to multiply the distance between the object whose LOD is being computed and the camera. A higher value will lower the LOD of the objects drawn by the camera.
 --- @field port tes3vector4 The port on the backbuffer of the camera. Represents the rectangular portion of the rendering backbuffer to which the camera's view rectangle is drawn (purely 2D mapping). These values are called port settings. The ordering: X - left, Y - right, Z - top and W - bottom. All port settings must be in the unit interval [0, 1]. The left edge of the backbuffer is 0.0, the right edge is 1.0. The top edge of the backbuffer is 1.0, the bottom edge is 0.0.
---- @field renderer niRenderer *Read-only*. The renderer of the camera.
+--- @field renderer niRenderer The renderer of the camera.
 --- @field scene niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode The scene of the camera.
 --- @field viewDistance number The view distance of the camera.
 --- @field worldDirection tes3vector3 Defines the X-axis of the camera.

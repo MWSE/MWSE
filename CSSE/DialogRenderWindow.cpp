@@ -15,6 +15,7 @@
 #include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
+#include "NIProperty.h"
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
@@ -32,6 +33,7 @@
 #include "Settings.h"
 
 #include "DialogLandscapeEditSettingsWindow.h"
+#include "DialogLayersWindow.h"
 #include "WindowMain.h"
 
 #include "DialogProcContext.h"
@@ -39,6 +41,8 @@
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;
 	__int16 lastCursorPosY = 0;
+
+	namespace lw = se::cs::dialog::layer_window;
 
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> rotationDistribution(0.0, 360.0);
@@ -944,6 +948,28 @@ namespace se::cs::dialog::render_window {
 		return 0;
 	}
 
+	static bool IsReferenceHidden(Reference* reference) {
+		auto nodeLayer = lw::getLayerByObject(reference);
+		return nodeLayer ? nodeLayer->isLayerHidden : false;
+	}
+
+	bool __stdcall CheckNodeHasHiddenFlag(NI::Node* node) {
+		if (!node) return false;
+		Reference* reference = node->getTes3Reference(false);
+		auto nodeLayer = lw::getLayerByObject(reference);
+		return nodeLayer ? nodeLayer->isLayerHidden : false;
+	}
+
+	void __fastcall Patch_SelectionBoxCheckReference(SelectionData* self, DWORD _EDX_, Reference* reference, bool updateVisuals) {
+		// Skip hidden references.
+		if (IsReferenceHidden(reference)) {
+			return;
+		}
+
+		// Call overwritten code.
+		self->addReference(reference, updateVisuals);
+	}
+
 	//
 	// Patch: Make clicking things near skinned objects not painful.
 	//
@@ -961,9 +987,14 @@ namespace se::cs::dialog::render_window {
 
 		Reference* closestRef = nullptr;
 		auto closestDistance = std::numeric_limits<float>::max();
-		
+
 		for (auto& result : sgController->objectPick->results) {
-			if (result == nullptr) {
+			if (result == nullptr || result->object == nullptr) {
+				continue;
+			}
+
+			// Raycast should ignore hidden objects.
+			if (CheckNodeHasHiddenFlag(result->object->parentNode)) {
 				continue;
 			}
 
@@ -1092,12 +1123,14 @@ namespace se::cs::dialog::render_window {
 	// Patch: Prevent selecting hidden references.
 	//
 
-	const auto TES3CS_AddSelectedRef = reinterpret_cast<void(__thiscall*)(SelectionData*, Reference*, bool)>(0x546750);
 	static void __fastcall PatchPreventSelection(SelectionData* self, DWORD _EDX, Reference* reference, bool flag) {
-		if (reference->sceneNode && reference->getHidden()) {
+
+		// Skip soft-hidden objects.
+		auto nodeLayer = lw::getLayerByObject(reference);
+		if (nodeLayer ? nodeLayer->isLayerHidden : false) {
 			return;
 		}
-		TES3CS_AddSelectedRef(self, reference, flag);
+		self->addReference(reference, flag);
 	}
 
 	//
@@ -1369,29 +1402,25 @@ namespace se::cs::dialog::render_window {
 
 	static void hideSelectedReferences() {
 		auto selectionData = SelectionData::get();
-		
-		for (auto target = selectionData->firstTarget; target; target = target->next) {
-			target->reference->setHidden(true);
+
+		auto hiddenLayer = lw::getLayerById(HIDDEN_LAYER_ID);
+
+		hiddenLayer->moveSelectionToLayer();
+
+		if (!hiddenLayer->isLayerHidden)
+		{
+			hiddenLayer->isLayerHidden = true;
+			hiddenLayer->refreshObjects();
 		}
 
 		selectionData->clear();
+
+		renderNextFrame();
 	}
 
-	static void unhideNode(NI::Node* node) {
-		const auto reference = node->getTes3Reference();
-		if (reference) {
-			reference->setHidden(false);
-		}
-
-		for (auto& child : node->children) {
-			if (child && child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-				unhideNode(static_cast<NI::Node*>(child.get()));
-			}
-		}
-	}
-
-	static void unhideAllReferences() {
-		unhideNode(SceneGraphController::get()->objectRoot);
+	void unhideAllReferences() {
+		auto hiddenLayer = lw::getLayerById(HIDDEN_LAYER_ID);
+		hiddenLayer->clearLayer();
 	}
 
 	void saveRenderStateToQuickStart() {
@@ -1599,6 +1628,7 @@ namespace se::cs::dialog::render_window {
 			RANDOMIZE_ROTATION_Z,
 			RANDOMIZE_SCALE,
 			RANDOMIZE_ROTATION_Z_AND_SCALE,
+			ASSIGN_TO_LAYER_BASE = 5000,
 		};
 
 		/*
@@ -1608,6 +1638,7 @@ namespace se::cs::dialog::render_window {
 		*   T: Hide/show water.
 		*	E: Change Reference Data
 		*	H: Hide Selection
+		*	L: Layer Management
 		*	R: Restore Hidden References
 		*	S: Set Snapping Axis
 		*	W: Toggle world axis rotation
@@ -1895,6 +1926,26 @@ namespace se::cs::dialog::render_window {
 		menuItem.dwTypeData = (LPSTR)"&Restore Hidden References";
 		InsertMenuItemA(menu, index++, TRUE, &menuItem);
 
+		MENUITEMINFO subMenuAssignLayer = {};
+		subMenuAssignLayer.cbSize = sizeof(MENUITEMINFO);
+		subMenuAssignLayer.hSubMenu = CreatePopupMenu();
+
+		for (size_t i = 0; i < lw::g_Layers.size(); ++i) {
+			auto layer = lw::g_Layers[i];
+			std::string name = (layer->layerName) ? *layer->layerName : "Unnamed";
+			std::string label = std::to_string(i + 1) + ": " + name;
+
+			AppendMenuA(subMenuAssignLayer.hSubMenu, MF_STRING, ASSIGN_TO_LAYER_BASE + layer->id, label.c_str());
+		}
+
+		menuItem.wID = RESERVED_NO_CALLBACK;
+		menuItem.fMask = MIIM_SUBMENU | MIIM_TYPE | MIIM_STATE;
+		menuItem.fType = MFT_STRING;
+		menuItem.fState = hasReferencesSelected ? MFS_ENABLED : MFS_DISABLED;
+		menuItem.hSubMenu = subMenuAssignLayer.hSubMenu;
+		menuItem.dwTypeData = (LPSTR)"Assign Selection to &Layer";
+		InsertMenuItemA(menu, index++, TRUE, &menuItem);
+
 		menuItem.wID = RESERVED_NO_CALLBACK;
 		menuItem.fMask = MIIM_FTYPE | MIIM_ID;
 		menuItem.fType = MFT_SEPARATOR;
@@ -2069,12 +2120,25 @@ namespace se::cs::dialog::render_window {
 			toggleWaterShown();
 			break;
 		default:
-			log::stream << "Unknown render window context menu ID " << result << " used!" << std::endl;
+			if (result >= ASSIGN_TO_LAYER_BASE && result < ASSIGN_TO_LAYER_BASE + MAX_LAYERS) {
+				size_t layerId = result - ASSIGN_TO_LAYER_BASE;
+				auto targetLayer = lw::getLayerById(layerId);
+				if (targetLayer) {
+					targetLayer->moveSelectionToLayer();
+				}
+			}
+			else {
+				log::stream << "Unknown render window context menu ID " << result << " used!" << std::endl;
+			}
+			break;
 		}
 
 		// Cleanup our menus.
-		DestroyMenu(menu);
+		DestroyMenu(subMenuAssignLayer.hSubMenu);
 		DestroyMenu(subMenuSnappingAxis.hSubMenu);
+		DestroyMenu(subMenuAlignReferences.hSubMenu);
+		DestroyMenu(subMenuReferenceData.hSubMenu);
+		DestroyMenu(menu);
 
 		// We also stole paint stuff, so repaint.
 		SendMessage(hWndRenderWindow, WM_PAINT, 0, 0);
@@ -2246,10 +2310,27 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
+	constexpr UINT layerHotkeyTimer = 0x418u;
+	static int g_LayerInputAccumulator = 0;
+	static bool g_LayerInputModeOverlay = false; // false = hidden, true = overlay
+
 	void PatchDialogProc_BeforeTimer(DialogProcContext& context) {
 		// Fixup window capture if we've lost it when panning.
 		if (gIsPanning::get() && GetCapture() != gRenderWindowHandle::get()) {
 			SetCapture(gRenderWindowHandle::get());
+		}
+
+		if (context.getWParam() == layerHotkeyTimer) {
+			KillTimer(context.getWindowHandle(), layerHotkeyTimer);
+
+			if (g_LayerInputAccumulator > 0) {
+				size_t layerIndex = static_cast<size_t>(g_LayerInputAccumulator) - 1;
+
+				lw::toggleLayerVisuals(layerIndex, g_LayerInputModeOverlay);
+			}
+
+			g_LayerInputAccumulator = 0;
+			context.setResult(TRUE);
 		}
 	}
 
@@ -2340,10 +2421,33 @@ namespace se::cs::dialog::render_window {
 
 	void PatchDialogProc_BeforeKeyDown(DialogProcContext& context) {
 		using windows::isControlDown;
+		using windows::isShiftDown;
 
 		const auto landscapeEditWindow = landscape_edit_settings_window::gWindowHandle::get();
+		const auto vkCode = context.getKeyVirtualCode();
 
-		switch (context.getKeyVirtualCode()) {
+		if (vkCode >= '0' && vkCode <= '9') {
+			bool ctrl = isControlDown();
+			bool shift = isShiftDown();
+
+			if (ctrl || shift) {
+				// Reset accumulator if switching modes or starting new sequence
+				if (g_LayerInputAccumulator == 0) {
+					g_LayerInputModeOverlay = shift;
+				}
+
+				int digit = vkCode - '0';
+				g_LayerInputAccumulator = (g_LayerInputAccumulator * 10) + digit;
+
+				// Reset the timer to wait for next digit
+				SetTimer(context.getWindowHandle(), layerHotkeyTimer, 400, NULL);
+
+				context.setResult(TRUE);
+				return;
+			}
+		}
+
+		switch (vkCode) {
 		case VK_F2:
 			PatchDialogProc_BeforeKeyDown_F2(context);
 			break;
@@ -2631,5 +2735,8 @@ namespace se::cs::dialog::render_window {
 		// Patch: Extend the selection widget to a full NiNode on references.
 		genJumpEnforced(0x40235B, 0x540D50, &Reference::createSelectionWidget);
 
+		// Patch: Prevent selecting soft hidden objects
+		genCallEnforced(0x4682D4, 0x403C92, reinterpret_cast<DWORD>(Patch_SelectionBoxCheckReference));
+		genCallEnforced(0x468341, 0x403C92, reinterpret_cast<DWORD>(Patch_SelectionBoxCheckReference));
 	}
 }
