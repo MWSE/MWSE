@@ -71,25 +71,25 @@ namespace NI {
 		switch (scaleType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			for (int i = 0; i < rotationKeyCount; ++i) {
+			for (auto i = 0u; i < rotationKeyCount; ++i) {
 				if (rotationKeys.asRotKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::Bezier:
-			for (int i = 0; i < rotationKeyCount; ++i) {
+			for (auto i = 0u; i < rotationKeyCount; ++i) {
 				if (rotationKeys.asBezRotKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::TCB:
-			for (int i = 0; i < rotationKeyCount; ++i) {
+			for (auto i = 0u; i < rotationKeyCount; ++i) {
 				if (rotationKeys.asTCBRotKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::Euler:
-			for (int i = 0; i < rotationKeyCount; ++i) {
+			for (auto i = 0u; i < rotationKeyCount; ++i) {
 				if (rotationKeys.asEulerRotKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
@@ -114,19 +114,19 @@ namespace NI {
 		switch (positionType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			for (int i = 0; i < positionKeyCount; ++i) {
+			for (auto i = 0u; i < positionKeyCount; ++i) {
 				if (positionKeys.asPosKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::Bezier:
-			for (int i = 0; i < positionKeyCount; ++i) {
+			for (auto i = 0u; i < positionKeyCount; ++i) {
 				if (positionKeys.asBezPosKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::TCB:
-			for (int i = 0; i < positionKeyCount; ++i) {
+			for (auto i = 0u; i < positionKeyCount; ++i) {
 				if (positionKeys.asTCBPosKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
@@ -151,19 +151,19 @@ namespace NI {
 		switch (scaleType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			for (int i = 0; i < scaleKeyCount; ++i) {
+			for (auto i = 0u; i < scaleKeyCount; ++i) {
 				if (scaleKeys.asFloatKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::Bezier:
-			for (int i = 0; i < scaleKeyCount; ++i) {
+			for (auto i = 0u; i < scaleKeyCount; ++i) {
 				if (scaleKeys.asBezFloatKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}
 			break;
 		case AnimationKey::KeyType::TCB:
-			for (int i = 0; i < scaleKeyCount; ++i) {
+			for (auto i = 0u; i < scaleKeyCount; ++i) {
 				if (scaleKeys.asTCBFloatKey[i].timing >= time) { break; }
 				lastKeyIndex = i;
 			}

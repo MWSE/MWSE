@@ -374,7 +374,7 @@ namespace CrashLogger::LuaMods {
 			std::vector<LuaModResult> results;
 
 			// Gather our lua mod information.
-			for (auto i = 1; i <= luaRuntimes.size(); ++i) {
+			for (auto i = 1u; i <= luaRuntimes.size(); ++i) {
 				sol::table runtime = luaRuntimes[i];
 
 				// We can ignore core mods.
