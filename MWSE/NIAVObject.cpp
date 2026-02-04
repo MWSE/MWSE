@@ -10,12 +10,27 @@
 #include "BitUtil.h"
 #include "LuaUtil.h"
 #include "MemoryUtil.h"
-#include "NIUtil.h"
 #include "StringUtil.h"
 
 constexpr auto NI_AVObject_updateEffects = 0x6EB380;
 constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
 constexpr auto NI_AVObject_update = 0x6EB000;
+
+namespace {
+	bool passesTraverseFilters(const NI::AVObject* object, const std::unordered_set<unsigned int>& typeFilters, std::string_view prefix) {
+		bool passesFilter = typeFilters.empty() ? true : false;
+		if (!passesFilter) {
+			for (const auto type : typeFilters) {
+				if (object->isInstanceOfType((uintptr_t)type)) {
+					passesFilter = true;
+					break;
+				}
+			}
+		}
+		bool passesPrefix = prefix.empty() ? true : object->name && mwse::string::starts_with(object->name, prefix);
+		return passesFilter && passesPrefix;
+	}
+}
 
 namespace NI {
 	SphereBound* AVObject::getWorldBound() {
@@ -424,7 +439,7 @@ namespace NI {
 				if (!nodeChild) {
 					continue;
 				}
-				if (NI::passesTraverseFilters(nodeChild, filters, prefix)) {
+				if (passesTraverseFilters(nodeChild, filters, prefix)) {
 					queue.push(nodeChild);
 				}
 
@@ -434,7 +449,7 @@ namespace NI {
 			}
 		};
 
-		if (NI::passesTraverseFilters(this, filters, prefix)) {
+		if (passesTraverseFilters(this, filters, prefix)) {
 			queue.push(this);
 		}
 		traverseChild(this);
