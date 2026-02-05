@@ -68,7 +68,7 @@ namespace TES3 {
 		void detachDynamicLightFromAffectedNodes();
 		void deleteDynamicLightAttachment(sol::optional<bool> removeLightFromParent = false);
 
-		void setModelPath(const char* path, bool temporary = false);
+		void setModelPath(const char* path);
 		void reloadAnimation(const char* path);
 		bool updateBipedParts();
 

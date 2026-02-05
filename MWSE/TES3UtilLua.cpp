@@ -22,6 +22,8 @@
 #include "NIStream.h"
 #include "NITriShape.h"
 
+#include "NIKeyframeManager.h"
+
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
 #include "TES3AIData.h"
@@ -3134,7 +3136,7 @@ namespace mwse::lua {
 
 					// Play the cast animation.
 					TES3::PlayerAnimationController* animationController = casterMobile->animationController.asPlayer;
-					animationController->animationData->timing[1] = 0.0;
+					animationController->animationData->timings[1] = 0.0;
 					animationController->startCastAnimation();
 				}
 
@@ -4716,7 +4718,7 @@ namespace mwse::lua {
 		}
 	}
 
-	sol::optional<std::tuple<unsigned char, unsigned char, unsigned char>> getCurrentAnimationGroups(sol::table params) {
+	sol::optional<std::tuple<TES3::AnimGroupID, TES3::AnimGroupID, TES3::AnimGroupID>> getCurrentAnimationGroups(sol::table params) {
 		TES3::Reference* reference = getOptionalParamExecutionReference(params);
 		if (reference == nullptr) {
 			throw std::invalid_argument("Invalid 'reference' parameter provided.");
@@ -4727,7 +4729,7 @@ namespace mwse::lua {
 			return {};
 		}
 
-		return std::make_tuple(animData->currentAnimGroup[0], animData->currentAnimGroup[1], animData->currentAnimGroup[2]);
+		return std::make_tuple(animData->currentAnimGroups[0], animData->currentAnimGroups[1], animData->currentAnimGroups[2]);
 	}
 
 	void loadAnimation(sol::table params) {
@@ -4742,18 +4744,28 @@ namespace mwse::lua {
 		}
 
 		// Change the animation temporarily. Passing nullptr resets the animation to base.
-		const char* modelFile = getOptionalParam<const char*>(params, "file", nullptr);
+		const char* animFile = getOptionalParam<const char*>(params, "file", nullptr);
+		auto meshData = TES3::DataHandler::get()->nonDynamicData->meshData;
+		TES3::KeyframeDefinition* kfData = nullptr;
 
-		if (modelFile) {
-			reference->setModelPath(modelFile, true);
-
-			animData = reference->getAttachedAnimationData();
-			if (!animData->hasOverrideAnimations()) {
+		if (animFile) {
+			kfData = meshData->loadKeyframes(animFile, animFile);
+			if (kfData == nullptr || kfData->groupCount == 0) {
+				if (kfData) meshData->releaseKeyframes(kfData);
 				throw std::logic_error("Animation file failed to load.");
 			}
 		}
+
+		if (kfData) {
+			// Add animation, which may exist already.
+			animData->addCustomAnim(kfData);
+			// Make actor use this animation.
+			animData->applyCustomAnim(kfData->filename);
+			meshData->releaseKeyframes(kfData);
+		}
 		else {
-			reference->reloadAnimation(reference->baseObject->getModelPath());
+			// Reset animations to default without unloading them.
+			animData->resetCustomAnims();
 
 			// Reset animation control that may be set by playAnimation.
 			auto mact = reference->getAttachedMobileActor();
@@ -4776,35 +4788,68 @@ namespace mwse::lua {
 		}
 
 		// Allow loading an animation temporarily.
-		const char* modelFile = getOptionalParam<const char*>(params, "mesh", nullptr);
-		if (modelFile != nullptr) {
-			reference->setModelPath(modelFile, true);
-			animData = reference->getAttachedAnimationData();
+		const char* animFile = getOptionalParam<const char*>(params, "mesh", nullptr);
+		if (animFile != nullptr) {
+			auto meshData = TES3::DataHandler::get()->nonDynamicData->meshData;
+			auto kfData = meshData->loadKeyframes(animFile, animFile);
+			if (kfData == nullptr || kfData->groupCount == 0) {
+				if (kfData) meshData->releaseKeyframes(kfData);
+				throw std::logic_error("Animation file failed to load.");
+			}
+
+			// Add animation, which may exist already.
+			animData->addCustomAnim(kfData);
+			// Make actor use this animation.
+			animData->applyCustomAnim(kfData->filename);
+			meshData->releaseKeyframes(kfData);
 		}
+
+		// Handle numerical and named animation params.
+		// A special numerical group id is used within this function for named animation to simplify the logic.
+		const int namedAnimId = 0xAAAA;
 
 		int group = getOptionalParam<int>(params, "group", -1);
-		if (group < -1 || group > 149) {
-			throw std::invalid_argument("Invalid 'group' parameter provided: must be between 0 and 149.");
+		auto groupName = getOptionalParam<const char*>(params, "group");
+		if (group == -1) {
+			group = groupName ? namedAnimId : -1;
+		}
+		else if (group < 0 || group > 149) {
+			throw std::invalid_argument("Invalid 'group' parameter provided: must be between 0 and 149, or a name.");
 		}
 
-		int lowerGroup = getOptionalParam<int>(params, "lower", group);
-		if (lowerGroup < -1 || lowerGroup > 149) {
-			throw std::invalid_argument("Invalid 'lowerGroup' parameter provided: must be between 0 and 149.");
+		int lowerGroup = getOptionalParam<int>(params, "lower", -1);
+		auto lowerGroupName = getOptionalParam<const char*>(params, "lower");
+		if (lowerGroup == -1) {
+			lowerGroup = lowerGroupName ? namedAnimId : group;
+			lowerGroupName = lowerGroupName ? lowerGroupName : groupName;
+		}
+		else if (lowerGroup < 0 || lowerGroup > 149) {
+			throw std::invalid_argument("Invalid 'lower' parameter provided: must be between 0 and 149, or a name.");
 		}
 
-		int upperGroup = getOptionalParam<int>(params, "upper", lowerGroup);
-		if (upperGroup < -1 || upperGroup > 149) {
-			throw std::invalid_argument("Invalid 'upperGroup' parameter provided: must be between 0 and 149.");
+		int upperGroup = getOptionalParam<int>(params, "upper", -1);
+		auto upperGroupName = getOptionalParam<const char*>(params, "upper");
+		if (upperGroup == -1) {
+			upperGroup = upperGroupName ? namedAnimId : lowerGroup;
+			upperGroupName = upperGroupName ? upperGroupName : lowerGroupName;
+		}
+		else if (upperGroup < 0 || upperGroup > 149) {
+			throw std::invalid_argument("Invalid 'upper' parameter provided: must be between 0 and 149, or a name.");
 		}
 
-		int shieldGroup = getOptionalParam<int>(params, "shield", upperGroup);
-		if (shieldGroup < -1 || shieldGroup > 149) {
-			throw std::invalid_argument("Invalid 'shieldGroup' parameter provided: must be between 0 and 149.");
+		int leftArmGroup = getOptionalParam<int>(params, "shield", -1);
+		auto leftArmGroupName = getOptionalParam<const char*>(params, "shield");
+		if (leftArmGroup == -1) {
+			leftArmGroup = leftArmGroupName ? namedAnimId : upperGroup;
+			leftArmGroupName = leftArmGroupName ? leftArmGroupName : upperGroupName;
+		}
+		else if (leftArmGroup < 0 || leftArmGroup > 149) {
+			throw std::invalid_argument("Invalid 'shield' parameter provided: must be between 0 and 149, or a name.");
 		}
 
 		// Play anim group 0 (returns control to AI) if no groups are specified.
-		if (lowerGroup == -1 && upperGroup == -1 && shieldGroup == -1) {
-			group = lowerGroup = upperGroup = shieldGroup = 0;
+		if (lowerGroup == -1 && upperGroup == -1 && leftArmGroup == -1) {
+			group = lowerGroup = upperGroup = leftArmGroup = int(TES3::AnimGroupID::Idle);
 		}
 
 		// Default to immediate start and infinite looping.
@@ -4812,37 +4857,46 @@ namespace mwse::lua {
 		int loopCount = getOptionalParam<int>(params, "loopCount", -1);
 
 		// Start animations.
-		if (lowerGroup != -1) {
-			animData->playAnimationGroupForIndex(lowerGroup, 0, startFlag, loopCount);
+		if (lowerGroupName) {
+			animData->playNamedAnimationGroup(lowerGroupName.value(), 0, startFlag, loopCount);
 		}
-		if (upperGroup != -1) {
-			animData->playAnimationGroupForIndex(upperGroup, 1, startFlag, loopCount);
+		else if (lowerGroup != -1) {
+			animData->playAnimationGroupForSection(TES3::AnimGroupID(lowerGroup), 0, startFlag, loopCount);
 		}
-		if (shieldGroup != -1) {
-			animData->playAnimationGroupForIndex(shieldGroup, 2, startFlag, loopCount);
+		if (upperGroupName) {
+			animData->playNamedAnimationGroup(upperGroupName.value(), 1, startFlag, loopCount);
+		}
+		else if (upperGroup != -1) {
+			animData->playAnimationGroupForSection(TES3::AnimGroupID(upperGroup), 1, startFlag, loopCount);
+		}
+		if (leftArmGroupName) {
+			animData->playNamedAnimationGroup(leftArmGroupName.value(), 2, startFlag, loopCount);
+		}
+		else if (leftArmGroup != -1) {
+			animData->playAnimationGroupForSection(TES3::AnimGroupID(leftArmGroup), 2, startFlag, loopCount);
 		}
 
 		auto mact = reference->getAttachedMobileActor();
 		if (mact) {
-			// If no overall group is specified, do not idle AI and only override specified body part groups.
+			// If no overall group is specified, do not idle AI and only override specified body sections.
 			if (group == -1) {
 				if (mact->animationController.asActor) {
-					unsigned char targetBones = 0xFF;
+					unsigned char targetSection = 0xFF;
 					if (lowerGroup != -1) {
-						targetBones = 0;
+						targetSection = 0;
 					}
 					else if (upperGroup != -1) {
-						targetBones = 1;
+						targetSection = 1;
 					}
-					else if (shieldGroup != -1) {
-						targetBones = 2;
+					else if (leftArmGroup != -1) {
+						targetSection = 2;
 					}
-					mact->animationController.asActor->patchedOverrideState = targetBones;
+					mact->animationController.asActor->patchedOverrideState = targetSection;
 				}
 			}
 			else {
 				// Idle anim flag pauses all AI animation control.
-				bool idleAnim = getOptionalParam<bool>(params, "idleAnim", lowerGroup > 0 || upperGroup > 0 || shieldGroup > 0);
+				bool idleAnim = getOptionalParam<bool>(params, "idleAnim", lowerGroup > 0 || upperGroup > 0 || leftArmGroup > 0);
 				mact->setMobileActorFlag(TES3::MobileActorFlag::IdleAnim, idleAnim);
 				if (mact->animationController.asActor) {
 					mact->animationController.asActor->patchedOverrideState = 0xFF;
@@ -4862,15 +4916,7 @@ namespace mwse::lua {
 			return;
 		}
 
-		if (animData->currentAnimGroup[0] != 0) {
-			animData->loopCounts[0] = 0;
-		}
-		if (animData->currentAnimGroup[1] != 0) {
-			animData->loopCounts[1] = 0;
-		}
-		if (animData->currentAnimGroup[2] != 0) {
-			animData->loopCounts[2] = 0;
-		}
+		animData->cancelAnimationLoop(false);
 	}
 
 	void skipAnimationFrame(sol::table params) {
@@ -4901,7 +4947,7 @@ namespace mwse::lua {
 		sol::state_view state = thisState;
 		sol::table result = state.create_table();
 		for (size_t i = 0; i < 3; ++i) {
-			result[i + 1] = animData->timing[i];
+			result[i + 1] = animData->timings[i];
 		}
 		return result;
 	}
@@ -4921,15 +4967,15 @@ namespace mwse::lua {
 		if (timing.valid() && timing != sol::nil) {
 			if (timing.is<float>()) {
 				const float fTiming = timing.as<float>();
-				animData->timing[0] = fTiming;
-				animData->timing[1] = fTiming;
-				animData->timing[2] = fTiming;
+				animData->timings[0] = fTiming;
+				animData->timings[1] = fTiming;
+				animData->timings[2] = fTiming;
 			}
 			else if (timing.is<sol::table>() && timing.as<sol::table>().size() == 3) {
 				auto timings = timing.as<sol::table>();
-				animData->timing[0] = timings[1];
-				animData->timing[1] = timings[2];
-				animData->timing[2] = timings[3];
+				animData->timings[0] = timings[1];
+				animData->timings[1] = timings[2];
+				animData->timings[2] = timings[3];
 			}
 		}
 	}

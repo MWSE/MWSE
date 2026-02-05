@@ -14,6 +14,7 @@ namespace mwse::lua {
 		usertypeDefinition["cloneCount"] = sol::readonly_property(&TES3::Actor::cloneCount);
 		usertypeDefinition["equipment"] = sol::readonly_property(&TES3::Actor::equipment);
 		usertypeDefinition["inventory"] = sol::readonly_property(&TES3::Actor::inventory);
+		usertypeDefinition["keyframes"] = sol::readonly_property(&TES3::Actor::keyframeData);
 
 		// Functions exposed as properties.
 		usertypeDefinition["barterGold"] = sol::property(&TES3::Actor::getBaseBarterGold, &TES3::Actor::setBaseBarterGold);

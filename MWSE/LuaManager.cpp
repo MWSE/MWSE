@@ -4255,53 +4255,33 @@ namespace mwse::lua {
 		}
 	}
 
-	// Call our custom function when updating animation playback.
-	void __fastcall ActorAnimController_selectMovementAnimAndUpdate(TES3::ActorAnimationController* animController, DWORD _UNUSED_, float deltaTime, bool flag) {
-		animController->selectMovementAnimAndUpdate(deltaTime, flag);
+	//
+	// Patch: Prevent actor changing facing when in idleAnim state.
+	//
+
+	const auto TES3_CombatSession_faceActorWithConditions = reinterpret_cast<int(__thiscall*)(TES3::CombatSession*, TES3::MobileActor*)>(0x549C70);
+	int __fastcall onFaceActorWithConditions(TES3::CombatSession* session, DWORD _EDX_, TES3::MobileActor* mact) {
+		if (mact->getMobileActorFlag(TES3::MobileActorFlag::IdleAnim)) {
+			return 0;
+		}
+		return TES3_CombatSession_faceActorWithConditions(session, mact);
 	}
 
-	//
-	// Patch: Allow changing cast animation speed. Custom speed is read and applied on initial cast.
-	//
-
-#pragma warning(push)
-#pragma warning(disable: 4102)
-	__declspec(naked) bool patchApplyAnimationSpeed() {
+	__declspec(naked) void patchAIMovementFacing() {
 		__asm {
-			fld [ebp + 0x64]		// ebp->AnimationData.deltaTime
+			test dword ptr [esi + 0x10], 0x10000000		// mact.actorFlags & TES3::MobileActorFlag::IdleAnim
+			jnz $ + 0x158			// If set, jump to function exit which returns 0
 
-		isMovementAnim:
-			cmp cl, 0x2B			// AnimGroup_SwimWalkForward
-			jb isWeaponAnim
-			cmp cl, 0x7F			// AnimGroup_Jump2w
-			ja isWeaponAnim
-		movement:
-			fmul [ebp + 0x4D8]		// * ebp->AnimationData.movementSpeed
-			jmp done
-
-		isWeaponAnim:
-			cmp cl, 0x80			// AnimGroup_SpellCast (added test)
-			je weapon
-			cmp cl, 0x83			// AnimGroup_Attack1 (added creature and h2h attacks)
-			jb done
-			cmp cl, 0x8F			// AnimGroup_WeaponTwoWide
-			ja done
-		weapon:
-			fmul [ebp + 0x4DC]		// * ebp->AnimationData.weaponSpeed
-			nop
-			nop
-			nop
-		done:
+			xor eax, eax			// Size-reduced original code
+			xor edx, edx
+			mov [esp + 0x8], edx
+			mov [esp + 0xC], edx
+			mov [esp + 0x10], edx
+			mov al, [esp + 0x2C]
+			test al, al
 		}
 	}
-#pragma warning(pop)
-
-	const size_t patchApplyAnimationSpeed_size = 0x2D;
-
-	void __fastcall SetAnimSpeedOnCast(TES3::AnimationData* animData) {
-		// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-		animData->weaponSpeed = animData->getCastSpeed() + std::numeric_limits<float>::min();
-	}
+	const size_t patchAIMovementFacing_size = 0x23;
 
 	//
 	// Patch: calcMoveSpeed event for creatures.
@@ -5871,9 +5851,6 @@ namespace mwse::lua {
 		// Patch reading correct light culling radius from non-light entities during light updates.
 		writePatchCodeUnprotected(0x485DAD, (BYTE*)&patchGetEntityLightRadius, patchGetEntityLightRadius_size);
 
-		// Allow hand-to-hand animation speed to be changed.
-		writeByteUnprotected(0x46CAD7, 0x89);
-
 		// Make soul gem data writable.
 		DWORD OldProtect;
 		VirtualProtect((DWORD*)0x791C98, 6 * sizeof(TES3::SoulGemData), PAGE_READWRITE, &OldProtect);
@@ -6377,46 +6354,65 @@ namespace mwse::lua {
 		genNOPUnprotected(0x49A4E9, 0xD);
 
 		// Event: playGroup
-		auto AnimationData_playAnimationGroupForIndex = &TES3::AnimationData::playAnimationGroupForIndex;
-		genCallEnforced(0x4C699D, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x4C69AB, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x4C69B9, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x4DC9AF, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x4DC9BD, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x4DC9CB, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x5071B5, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // Non-MCP
-		genCallEnforced(0x507213, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // Non-MCP
-		genCallEnforced(0x524BC8, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x524BD6, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x524BE4, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x540AF3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x540B09, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x540B1E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x540EF9, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex));
-		genCallEnforced(0x745B89, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
-		genCallEnforced(0x745B9E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
-		genCallEnforced(0x745BB3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForIndex)); // MCP-132 added function
+		auto AnimationData_playAnimationGroupForSection = &TES3::AnimationData::playAnimationGroupForSection;
+		genCallEnforced(0x4C699D, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x4C69AB, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x4C69B9, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x4DC9AF, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x4DC9BD, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x4DC9CB, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x524BC8, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x524BD6, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x524BE4, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x540AF3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x540B09, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x540B1E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x540EF9, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x745B89, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x745B9E, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
+		genCallEnforced(0x745BB3, 0x470AE0, *reinterpret_cast<DWORD*>(&AnimationData_playAnimationGroupForSection));
 
 		// Modify actor animation controller to allow blocking animation changes.
+		auto ActorAnimController_selectMovementAnimAndUpdate = &TES3::ActorAnimationController::selectMovementAnimAndUpdate;
 		writePatchCodeUnprotected(0x53DAB5, (BYTE*)&patchActorAnimInit, patchActorAnimInit_size);
 		genCallUnprotected(0x5428A3, reinterpret_cast<DWORD>(&CheckTogglePOV), 6);
-		genCallEnforced(0x53E135, 0x540A90, reinterpret_cast<DWORD>(&ActorAnimController_selectMovementAnimAndUpdate));
+		genCallEnforced(0x53E135, 0x540A90, *reinterpret_cast<DWORD*>(&ActorAnimController_selectMovementAnimAndUpdate));
 
 		// Make mobile IdleAnim flag reset on Stop key, instead of when loopCount reaches zero.
 		genJumpEnforced(0x46DA0D, 0x46E64E, 0x46E49E);
 		genJumpUnprotected(0x46E498, 0x46E64E);
 
-		// Override AnimationData creation.
-		auto AnimationData_ctor = &TES3::AnimationData::ctor;
-		genCallEnforced(0x4E63A5, 0x46B7A0, *reinterpret_cast<DWORD*>(&AnimationData_ctor));
-		genCallEnforced(0x4E64E6, 0x46B7A0, *reinterpret_cast<DWORD*>(&AnimationData_ctor));
-		genCallEnforced(0x4E6766, 0x46B7A0, *reinterpret_cast<DWORD*>(&AnimationData_ctor));
-		genCallEnforced(0x4E69EC, 0x46B7A0, *reinterpret_cast<DWORD*>(&AnimationData_ctor));
-		genCallEnforced(0x4E6C5F, 0x46B7A0, *reinterpret_cast<DWORD*>(&AnimationData_ctor));
+		// Cancel IdleAnim flag on death.
+		auto ActorAnimController_selectDeathAnimation = &TES3::ActorAnimationController::selectDeathAnimation;
+		genCallEnforced(0x507EFB, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x5082A7, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x5083D4, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x524205, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x53F32B, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x5580BC, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
+		genCallEnforced(0x567F23, 0x53F120, *reinterpret_cast<DWORD*>(&ActorAnimController_selectDeathAnimation));
 
-		// Patch: Allow changing cast animation speed. Custom speed is read and applied on initial cast.
-		writePatchCodeUnprotected(0x46CAC0, (BYTE*)&patchApplyAnimationSpeed, patchApplyAnimationSpeed_size);
-		genCallUnprotected(0x541B81, reinterpret_cast<DWORD>(&SetAnimSpeedOnCast), 0xA);
+		// Disable turning on hello if the IdleAnim flag is set.
+		auto MobileActor_aiTurnWhileGreeting = &TES3::MobileActor::aiTurnWhileGreeting;
+		genCallEnforced(0x52EC26, 0x5268F0, *reinterpret_cast<DWORD*>(&MobileActor_aiTurnWhileGreeting));
+		// Disable instantaneous turning in combat if the IdleAnim flag is set.
+		genCallEnforced(0x559317, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x559340, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x559391, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x5593D6, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x559427, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x559480, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x5594D9, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x559532, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		genCallEnforced(0x55958B, 0x549C70, reinterpret_cast<DWORD>(onFaceActorWithConditions));
+		// Disable navigational turning if the IdleAnim flag is set.
+		writePatchCodeUnprotected(0x52670E, (BYTE*)&patchAIMovementFacing, patchAIMovementFacing_size);
+
+		// Extended animation system patches.
+		TES3::AnimationData::patch();
+
+		// Patch: Allow hand-to-hand animation speed to be changed.
+		writeByteUnprotected(0x46CAD7, 0x89);
 
 		// Event: Power Recharged
 		overrideVirtualTableEnforced(0x74AC54, offsetof(PowersHashMap::VirtualTable, deleteKeyValuePair), 0x4F1C50, reinterpret_cast<DWORD>(OnDeletePowerHashMapKVP));

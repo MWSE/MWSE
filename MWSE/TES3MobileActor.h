@@ -297,8 +297,10 @@ namespace TES3 {
 
 		int determineModifiedPrice(int basePrice, bool buying);
 
-		void playVoiceover(int);
+		void playVoiceover(int voiceover);
 		void startDialogue();
+
+		bool aiTurnWhileGreeting(Vector3* lookAt, float minimumFacingDifferenceToStartTurning);
 
 		bool isAffectedByAlchemy(Alchemy* alchemy) const;
 		bool isAffectedBySimilarAlchemy(Alchemy* alchemy) const;

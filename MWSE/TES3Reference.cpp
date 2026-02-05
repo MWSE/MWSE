@@ -282,40 +282,14 @@ namespace TES3 {
 	const auto TES3_MobilePlayer_update1stPersonTransform = reinterpret_cast<void(__thiscall*)(MobilePlayer*)>(0x5684E0);
 	const auto TES3_PlayerAnimationController_updateCameraPosition = reinterpret_cast<void(__thiscall*)(PlayerAnimationController*)>(0x542E60);
 
-	void Reference::setModelPath(const char* path, bool temporary) {
+	void Reference::setModelPath(const char* path) {
+		// Set the path in the base object.
 		auto baseObject = static_cast<TES3::Object*>(getBaseObject());
-		char** modelSlot = nullptr;
-		char* oldModel = nullptr;
-
-		if (temporary) {
-			// Save original model path. getModelPath() does not return the raw path that we want to temporarily modify.
-			if (baseObject->objectType == ObjectType::NPC) {
-				modelSlot = &static_cast<TES3::NPC*>(baseObject)->model;
-			}
-			else if (baseObject->objectType == ObjectType::Creature) {
-				modelSlot = &static_cast<TES3::Creature*>(baseObject)->model;
-			}
-			else if (baseObject->objectType == ObjectType::Container) {
-				modelSlot = &static_cast<TES3::Container*>(baseObject)->model;
-			}
-			if (modelSlot) {
-				std::swap(*modelSlot, oldModel);
-			}
-		}
-
 		baseObject->setModelPath(path);
 
-		// Update model if it is currently part of the scenegraph.
+		// Update model if it is currently part of the scenegraph. This completely resets the skeleton and scene nodes.
 		if (sceneNode) {
 			reloadAnimation(path);
-		}
-
-		// Reset model path if desired.
-		if (modelSlot) {
-			std::swap(*modelSlot, oldModel);
-			if (oldModel) {
-				mwse::tes3::free(oldModel);
-			}
 		}
 	}
 
@@ -346,7 +320,7 @@ namespace TES3 {
 						auto keyframes = modelLoader->loadKeyframes(path, "MWSE Anim");
 
 						if (animData && keyframes) {
-							animData->setOverrideLayerKeyframes(keyframes);
+							animData->setOverrideSourceKeyframes(keyframes);
 						}
 					}
 					else {

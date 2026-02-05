@@ -48,8 +48,8 @@ namespace NI {
 	}
 
 	nonstd::span<TextKey> TextKeyExtraData::getKeys() const {
-		if (key) {
-			return nonstd::span(key, keyCount);
+		if (keys) {
+			return nonstd::span(keys, keyCount);
 		}
 		return {};
 	}

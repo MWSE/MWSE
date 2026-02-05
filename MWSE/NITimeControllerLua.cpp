@@ -318,9 +318,12 @@ namespace mwse::lua {
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::Sequence>("niSequence");
 			usertypeDefinition["new"] = sol::no_constructor;
+			usertypeDefinition[sol::meta_function::to_string] = [](const NI::Sequence* self) {
+				return self->name;
+			};
 
 			// Basic property binding.
-			usertypeDefinition["boneNames"] = sol::readonly_property(&NI::Sequence::boneNames);
+			usertypeDefinition["boneNames"] = sol::readonly_property(&NI::Sequence::objectNames);
 			usertypeDefinition["controllers"] = sol::readonly_property(&NI::Sequence::controllers);
 			usertypeDefinition["endPointTime"] = sol::readonly_property(&NI::Sequence::endPointTime);
 			usertypeDefinition["filename"] = sol::readonly_property(&NI::Sequence::filename);

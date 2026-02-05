@@ -1752,6 +1752,9 @@
     <ClInclude Include="LuaStartGlobalScriptEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaAnimationTriggerEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1799,6 +1802,9 @@
     </ClInclude>
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaKeyframesParsedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3845,6 +3851,9 @@
     <ClCompile Include="LuaStartGlobalScriptEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaAnimationTriggerEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaCalcTouchSpellConeEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3913,6 +3922,9 @@
     </ClCompile>
     <ClCompile Include="NIDX8Renderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaKeyframesParsedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="NIPixelFormat.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>

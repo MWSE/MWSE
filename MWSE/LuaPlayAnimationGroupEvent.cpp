@@ -7,11 +7,11 @@
 #include "TES3Reference.h"
 
 namespace mwse::lua::event {
-	PlayAnimationGroupEvent::PlayAnimationGroupEvent(TES3::AnimationData* animationData, int animationGroup, int triIndex, int startFlag, int loopCount) :
+	PlayAnimationGroupEvent::PlayAnimationGroupEvent(TES3::AnimationData* animationData, int animationGroup, int bodySection, int startFlag, int loopCount) :
 		ObjectFilteredEvent("playGroup", animationData->getReference()),
 		m_AnimationData(animationData),
 		m_AnimationGroup(animationGroup),
-		m_TriIndex(triIndex),
+		m_BodySection(bodySection),
 		m_StartFlag(startFlag),
 		m_LoopCount(loopCount)
 	{
@@ -25,9 +25,9 @@ namespace mwse::lua::event {
 
 		eventData["animationData"] = m_AnimationData;
 		eventData["reference"] = m_AnimationData->getReference();
-		eventData["currentGroup"] = m_AnimationData->currentAnimGroup[m_TriIndex];
+		eventData["currentGroup"] = m_AnimationData->currentAnimGroups[m_BodySection];
 		eventData["group"] = m_AnimationGroup;
-		eventData["index"] = m_TriIndex;
+		eventData["index"] = m_BodySection;
 		eventData["flags"] = m_StartFlag;
 		eventData["loopCount"] = m_LoopCount;
 

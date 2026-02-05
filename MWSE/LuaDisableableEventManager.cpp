@@ -9,6 +9,7 @@
 #include "LuaAddSoundEvent.h"
 #include "LuaAddTempSoundEvent.h"
 #include "LuaAddTopicEvent.h"
+#include "LuaAnimationTriggerEvent.h"
 #include "LuaAttackEvent.h"
 #include "LuaAttackHitEvent.h"
 #include "LuaAttackStartEvent.h"
@@ -89,6 +90,7 @@
 #include "LuaKeyEvent.h"
 #include "LuaKeyframesLoadedEvent.h"
 #include "LuaKeyframesLoadEvent.h"
+#include "LuaKeyframesParsedEvent.h"
 #include "LuaKeyUpEvent.h"
 #include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
@@ -183,6 +185,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["activate"] = sol::property(&ActivateEvent::getEventEnabled, &ActivateEvent::setEventEnabled);
 		usertypeDefinition["activationTargetChanged"] = sol::property(&ActivationTargetChangedEvent::getEventEnabled, &ActivationTargetChangedEvent::setEventEnabled);
 		usertypeDefinition["activeMagicEffectIconsUpdated"] = sol::property(&ActiveMagicEffectIconsUpdatedEvent::getEventEnabled, &ActiveMagicEffectIconsUpdatedEvent::setEventEnabled);
+		usertypeDefinition["animationTrigger"] = sol::property(&AnimationTriggerEvent::getEventEnabled, &AnimationTriggerEvent::setEventEnabled);
 		usertypeDefinition["addSound"] = sol::property(&AddSoundEvent::getEventEnabled, &AddSoundEvent::setEventEnabled);
 		usertypeDefinition["addTempSound"] = sol::property(&AddTempSoundEvent::getEventEnabled, &AddTempSoundEvent::setEventEnabled);
 		usertypeDefinition["attack"] = sol::property(&AttackEvent::getEventEnabled, &AttackEvent::setEventEnabled);
@@ -268,6 +271,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["keyDown"] = sol::property(&KeyDownEvent::getEventEnabled, &KeyDownEvent::setEventEnabled);
 		usertypeDefinition["keyframesLoad"] = sol::property(&KeyframesLoadEvent::getEventEnabled, &KeyframesLoadEvent::setEventEnabled);
 		usertypeDefinition["keyframesLoaded"] = sol::property(&KeyframesLoadedEvent::getEventEnabled, &KeyframesLoadedEvent::setEventEnabled);
+		usertypeDefinition["keyframesParsed"] = sol::property(&KeyframesParsedEvent::getEventEnabled, &KeyframesParsedEvent::setEventEnabled);
 		usertypeDefinition["keyUp"] = sol::property(&KeyUpEvent::getEventEnabled, &KeyUpEvent::setEventEnabled);
 		usertypeDefinition["leveledCreaturePicked"] = sol::property(&LeveledCreaturePickedEvent::getEventEnabled, &LeveledCreaturePickedEvent::setEventEnabled);
 		usertypeDefinition["leveledItemPicked"] = sol::property(&LeveledItemPickedEvent::getEventEnabled, &LeveledItemPickedEvent::setEventEnabled);

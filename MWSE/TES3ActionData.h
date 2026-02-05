@@ -2,10 +2,11 @@
 
 #include "TES3Defines.h"
 
+#include "TES3AnimationGroup.h"
 #include "TES3Vectors.h"
 
 namespace TES3 {
-	enum AttackAnimationState : signed char {
+	enum class AttackAnimationState : signed char {
 		Idle = 0x0,
 		Ready = 0x1,
 		SwingUp = 0x2,
@@ -48,11 +49,11 @@ namespace TES3 {
 		signed char aiBehaviorState; // 0x10
 		AttackAnimationState animStateAttack; // 0x11
 		unsigned char blockingState; // 0x12
-		unsigned char animGroupStunEffect; // 0x13
+		AnimGroupID animGroupNextStun; // 0x13
 		PhysicalAttackType physicalAttackType; // 0x14
 		unsigned char animSectionCurrentAction; // 0x15
-		unsigned char animGroupCurrentAction; // 0x16
-		unsigned char animGroupBlocking; // 0x17
+		AnimGroupID animGroupCurrentAction; // 0x16
+		AnimGroupID animGroupBlocking; // 0x17
 		short quantizedHitAngleX; // 0x18
 		short quantizedHitAngleY; // 0x1A
 		short quantizedHitAngleZ; // 0x1C

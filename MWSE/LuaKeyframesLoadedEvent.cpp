@@ -23,6 +23,7 @@ namespace mwse::lua::event {
 
 		eventData["path"] = m_Path;
 		eventData["sequenceName"] = m_SequenceName;
+		eventData["keyframe"] = m_KeyframeDefinition;
 		// eventData["keyframeDefinition"] = m_KeyframeDefinition;
 
 		auto sequence = m_KeyframeDefinition->sequences[0];
