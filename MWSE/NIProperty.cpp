@@ -382,6 +382,7 @@ namespace NI {
 	}
 
 	unsigned int TexturingProperty::addDecalMap(Texture* texture, unsigned int finalIndex) {
+		finalIndex = std::clamp(finalIndex, (unsigned int)MapType::DECAL_FIRST, (unsigned int)MapType::DECAL_LAST);
 		unsigned int index = (unsigned int)MapType::DECAL_FIRST + getDecalCount();
 
 		// If we can't add a decal map, we will try to push this one over another.
@@ -446,6 +447,7 @@ namespace NI {
 		delete existing;
 		maps.setAtIndex(index, nullptr);
 		decalCount--;
+
 		return true;
 	}
 
@@ -465,7 +467,8 @@ namespace NI {
 	}
 
 	void TexturingProperty::compactDecals() {
-		for (auto i = (unsigned int)MapType::DECAL_FIRST, j = 0u; i < maps.endIndex; ++i) {
+		const auto startIndex = (unsigned int)MapType::DECAL_FIRST;
+		for (auto i = startIndex, j = startIndex; i < maps.endIndex; ++i) {
 			const auto& iV = maps.at(i);
 			auto& jV = maps.at(j);
 			if (iV == nullptr) continue;
