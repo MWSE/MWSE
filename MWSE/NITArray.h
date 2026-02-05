@@ -155,7 +155,7 @@ namespace NI {
 			setSize(other.size());
 			
 			// Copy over values.
-			for (size_t i = 0; i < storageCount; ++i) {
+			for (auto i = 0u; i < storageCount; ++i) {
 				setAtIndex(i, other.storage[i]);
 			}
 
@@ -227,7 +227,7 @@ namespace NI {
 		}
 
 		void clear() {
-			for (size_type i = 0; i < storageCount; ++i) {
+			for (auto i = 0u; i < storageCount; ++i) {
 				storage[i] = T(0);
 			}
 			filledCount = 0;
@@ -235,7 +235,7 @@ namespace NI {
 		}
 		
 		void fill(const_reference value) {
-			for (size_type i = 0; i < storageCount; ++i) {
+			for (auto i = 0u; i < storageCount; ++i) {
 				setAtIndex(i, value);
 			}
 		}
@@ -263,7 +263,7 @@ namespace NI {
 				return INVALID_INDEX;
 			}
 
-			for (size_type i = 0; i < endIndex; ++i) {
+			for (auto i = 0u; i < storageCount; ++i) {
 				if (storage[i] == value) {
 					return i;
 				}
@@ -279,7 +279,7 @@ namespace NI {
 
 			if (index < endIndex) {
 				const auto& oldValue = storage[index];
-				if (value) {
+				if (value != T(0)) {
 					if (!oldValue) {
 						filledCount++;
 					}
@@ -289,13 +289,13 @@ namespace NI {
 				}
 			}
 			else {
-				endIndex = index + 1;
 				if (value) {
 					filledCount++;
 				}
 			}
 
 			storage[index] = value;
+			recalculateEndIndex();
 		}
 
 		void setSize(size_t size) {
@@ -313,12 +313,12 @@ namespace NI {
 				endIndex = size;
 			}
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-			auto newStorage = reinterpret_cast<T* (__cdecl*)(size_t)>(0x727692)(size * 4);
-			memset(newStorage, 0, size * 4);
+			auto newStorage = reinterpret_cast<T* (__cdecl*)(size_t)>(0x727692)(size * sizeof(T));
 #else
 			auto newStorage = new T[size];
 #endif
-			for (size_type i = 0; i < endIndex; ++i) {
+			memset(newStorage, 0, size * sizeof(T));
+			for (auto i = 0u; i < endIndex; ++i) {
 				newStorage[i] = storage[i];
 			}
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
@@ -379,13 +379,40 @@ namespace NI {
 		size_type getFilledCount() const { return filledCount; }
 		size_type getEndIndex() const { return endIndex; }
 
-		void recalculateFirstEmpty() {
-			endIndex = storageCount;
-			for (size_type i = 0; i < storageCount; ++i) {
-				if (storage[i] == T(0)) {
-					endIndex = i;
-					return;
+		void compact(bool resizeStorage = false) {
+			if (filledCount == endIndex) {
+				return;
+			}
+
+			if (filledCount) {
+				for (auto i = 0u, j = 0u; i < endIndex; ++i) {
+					if (storage[i] == T(0)) continue;
+					if (storage[i] != storage[j]) {
+						storage[j] = storage[i];
+					}
+					j++;
 				}
+			}
+
+			endIndex = filledCount;
+
+			if (resizeStorage && filledCount > 0) {
+				if (filledCount > 0) {
+					setSize(filledCount);
+				}
+				else {
+					setSize(1);
+				}
+			}
+		}
+
+		void recalculateEndIndex() {
+			endIndex = storageCount;
+			for (auto i = storageCount - 1; i > 0; --i) {
+				if (storage[i] != T(0)) {
+					break;
+				}
+				endIndex = i;
 			}
 		}
 

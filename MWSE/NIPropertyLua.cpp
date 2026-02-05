@@ -139,6 +139,7 @@ namespace mwse::lua {
 			// Basic function binding.
 			usertypeDefinition["addDecalMap"] = &NI::TexturingProperty::addDecalMap_lua;
 			usertypeDefinition["removeDecalMap"] = &NI::TexturingProperty::removeDecal_lua;
+			usertypeDefinition["removeAllDecalMaps"] = &NI::TexturingProperty::removeDecals;
 		}
 
 		// Binding for NI::VertexColorProperty.

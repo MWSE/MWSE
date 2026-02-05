@@ -227,13 +227,9 @@ namespace NI {
 			DECAL_2,
 			DECAL_3,
 			DECAL_4,
-			DECAL_5,
-			DECAL_6,
-			DECAL_7,
-			DECAL_8,
 
 			DECAL_FIRST = DECAL_1,
-			DECAL_LAST = DECAL_8,
+			DECAL_LAST = DECAL_4,
 
 			MAP_FIRST = BASE,
 			MAP_LAST = DECAL_LAST,
@@ -281,19 +277,20 @@ namespace NI {
 
 		ApplyMode applyMode; // 0x18
 		TArray<Map*> maps; // 0x1C
-		int unknown_34; // 0x34
+		unsigned int decalCount; // 0x34
 
-		Map* getBaseMap();
+		Map* getMap(unsigned int index) const;
+		Map* getBaseMap() const;
 		void setBaseMap(sol::optional<Map*> map);
-		Map* getDarkMap();
+		Map* getDarkMap() const;
 		void setDarkMap(sol::optional<Map*> map);
-		Map* getDetailMap();
+		Map* getDetailMap() const;
 		void setDetailMap(sol::optional<Map*> map);
-		Map* getGlossMap();
+		Map* getGlossMap() const;
 		void setGlossMap(sol::optional<Map*> map);
-		Map* getGlowMap();
+		Map* getGlowMap() const;
 		void setGlowMap(sol::optional<Map*> map);
-		BumpMap* getBumpMap();
+		BumpMap* getBumpMap() const;
 		void setBumpMap(sol::optional<BumpMap*> map);
 
 		unsigned int getUsedMapCount() const;
@@ -301,12 +298,13 @@ namespace NI {
 
 		unsigned int getDecalCount() const;
 		bool canAddDecalMap() const;
-
-		unsigned int addDecalMap(Texture* texture);
-		sol::optional<std::tuple<Map*, unsigned int>> addDecalMap_lua(sol::optional<Texture*> texture);
-
+		unsigned int addDecalMap(Texture* texture, unsigned int index = (unsigned int)MapType::DECAL_LAST);
+		sol::optional<std::tuple<Map*, unsigned int>> addDecalMap_lua(sol::optional<Texture*> texture, sol::optional<unsigned int> index);
 		bool removeDecal(unsigned int index);
 		bool removeDecal_lua(unsigned int index);
+		void removeDecals();
+		void compactDecals();
+		void recalculateDecalCount();
 
 	};
 	static_assert(sizeof(TexturingProperty) == 0x38, "NI::TexturingProperty failed size validation");
