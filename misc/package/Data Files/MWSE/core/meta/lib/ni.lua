@@ -264,6 +264,7 @@ ni.texturingPropertyMapType = require("ni.texturingPropertyMapType")
 ---| `ni.texturingPropertyMapType.decal5`
 ---| `ni.texturingPropertyMapType.decal6`
 ---| `ni.texturingPropertyMapType.decal7`
+---| `ni.texturingPropertyMapType.decal8`
 ---| `ni.texturingPropertyMapType.decalFirst`
 ---| `ni.texturingPropertyMapType.decalLast`
 ---| `ni.texturingPropertyMapType.detail`

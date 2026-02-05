@@ -217,12 +217,13 @@ The human-facing name of the given object.
 Attempts to create a new decal map. If successful, it returns both the new map and the index it was created in.
 
 ```lua
-local map, index = myObject:addDecalMap(texture)
+local map, index = myObject:addDecalMap(texture, index)
 ```
 
 **Parameters**:
 
 * `texture` ([niTexture](../types/niTexture.md)): *Optional*. The texture to assign to the new decal.
+* `index` (number): *Optional*. The desired index to store the decal in, for sorting purposes. Defaults to `ni.texturingPropertyMapType.decalLast`. Note that added decals are compacted down to remove gaps, so the actual index will differ.
 
 **Returns**:
 
@@ -416,6 +417,17 @@ Removes all controllers.
 
 ```lua
 myObject:removeAllControllers()
+```
+
+***
+
+### `removeAllDecalMaps`
+<div class="search_terms" style="display: none">removealldecalmaps, alldecalmaps</div>
+
+Attempts to remove all decal maps.
+
+```lua
+myObject:removeAllDecalMaps()
 ```
 
 ***
