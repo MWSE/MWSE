@@ -7,7 +7,6 @@
 #include "NIDefines.h"
 #include "NINode.h"
 #include "NISortAdjustNode.h"
-#include "NIUtil.h"
 
 namespace mwse::lua {
 	void bindNINode() {
