@@ -227,9 +227,12 @@ namespace NI {
 			DECAL_2,
 			DECAL_3,
 			DECAL_4,
+			DECAL_5,
+			DECAL_6,
+			DECAL_7,
 
 			DECAL_FIRST = DECAL_1,
-			DECAL_LAST = DECAL_4,
+			DECAL_LAST = DECAL_7,
 
 			MAP_FIRST = BASE,
 			MAP_LAST = DECAL_LAST,
