@@ -13,7 +13,8 @@ return {
 	["decal5"] = 11,
 	["decal6"] = 12,
 	["decal7"] = 13,
+	["decal8"] = 14,
 
 	["decalFirst"] = 7,
-	["decalLast"] = 13,
+	["decalLast"] = 14,
 }
