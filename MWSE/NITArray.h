@@ -20,7 +20,7 @@ namespace NI {
 			using iterator_category = std::random_access_iterator_tag;
 
 			using value_type = T;
-			using difference_type = int;
+			using difference_type = std::ptrdiff_t;
 			using pointer = T*;
 			using reference = T&;
 
@@ -29,6 +29,10 @@ namespace NI {
 
 			iterator operator-(difference_type diff) const {
 				return m_Ptr - diff;
+			}
+
+			difference_type operator-(const iterator& other) const {
+				return m_Ptr - other.m_Ptr;
 			}
 
 			iterator& operator--() {
@@ -64,11 +68,27 @@ namespace NI {
 			}
 
 			bool operator==(const iterator& itt) const {
-				return itt.m_Ptr == m_Ptr;
+				return m_Ptr == itt.m_Ptr;
 			}
 
 			bool operator!=(const iterator& itt) const {
-				return itt.m_Ptr != m_Ptr;
+				return m_Ptr != itt.m_Ptr;
+			}
+
+			bool operator<(const iterator& itt) const {
+				return m_Ptr < itt.m_Ptr;
+			}
+
+			bool operator<=(const iterator& itt) const {
+				return m_Ptr <= itt.m_Ptr;
+			}
+
+			bool operator>(const iterator& itt) const {
+				return m_Ptr > itt.m_Ptr;
+			}
+
+			bool operator>=(const iterator& itt) const {
+				return m_Ptr >= itt.m_Ptr;
 			}
 
 			reference operator->() const {
@@ -95,8 +115,8 @@ namespace NI {
 		constexpr iterator begin() noexcept { return storage; }
 		constexpr const_iterator begin() const noexcept { return storage; }
 		constexpr const_iterator cbegin() const noexcept { return begin(); }
-		constexpr iterator end() noexcept { return &storage[storageCount]; }
-		constexpr const_iterator end() const noexcept { return &storage[storageCount]; }
+		constexpr iterator end() noexcept { return &storage[endIndex]; }
+		constexpr const_iterator end() const noexcept { return &storage[endIndex]; }
 		constexpr const_iterator cend() const noexcept { return end(); }
 
 		constexpr reverse_iterator rbegin() noexcept { std::make_reverse_iterator(end()); }
@@ -162,7 +182,7 @@ namespace NI {
 			return *this;
 		}
 
-		const T operator[](size_type index) const { return at(index); }
+		reference operator[](size_type index) const { return at(index); }
 
 		constexpr reference at(size_type pos) {
 			if (pos >= storageCount) {
