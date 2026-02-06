@@ -32,6 +32,50 @@ The filter mode for the Map. Maps to values in [`ni.texturingPropertyFilterMode`
 
 ***
 
+### `isBasicMap`
+<div class="search_terms" style="display: none">isbasicmap, basicmap</div>
+
+True if the is neither a bump nor an extended map.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isBumpMap`
+<div class="search_terms" style="display: none">isbumpmap, bumpmap</div>
+
+True if the map represents a bump map.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isExtendedMap`
+<div class="search_terms" style="display: none">isextendedmap, extendedmap</div>
+
+True if the map represents a decal map created from lua. This type of map can potentially have a non-zero priority.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `priority`
+<div class="search_terms" style="display: none">priority</div>
+
+*Read-only*. The sorting priority of the map. For non-decals, or decals created from the filesystem, this is always 0.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `texCoordSet`
 <div class="search_terms" style="display: none">texcoordset</div>
 

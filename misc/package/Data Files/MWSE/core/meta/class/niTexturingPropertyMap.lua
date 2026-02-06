@@ -7,6 +7,10 @@
 --- @class niTexturingPropertyMap
 --- @field clampMode ni.texturingPropertyClampMode The clamp mode for the Map. Maps to values in [`ni.texturingPropertyClampMode`](https://mwse.github.io/MWSE/references/ni/texturing-property-clamp-modes/) table.
 --- @field filterMode ni.texturingPropertyFilterMode The filter mode for the Map. Maps to values in [`ni.texturingPropertyFilterMode`](https://mwse.github.io/MWSE/references/ni/texturing-property-filter-modes/) table.
+--- @field isBasicMap boolean True if the is neither a bump nor an extended map.
+--- @field isBumpMap boolean True if the map represents a bump map.
+--- @field isExtendedMap boolean True if the map represents a decal map created from lua. This type of map can potentially have a non-zero priority.
+--- @field priority number *Read-only*. The sorting priority of the map. For non-decals, or decals created from the filesystem, this is always 0.
 --- @field texCoordSet integer The texture coordinate set for the Map.
 --- @field texture niRenderedTexture|niSourceTexture|niTexture The texture for the Map.
 niTexturingPropertyMap = {}

@@ -8,6 +8,7 @@
 #include "NITexture.h"
 
 #include "LuaUtil.h"
+#include "StringUtil.h"
 
 namespace NI {
 
@@ -32,6 +33,11 @@ namespace NI {
 
 	void Property::update(float dt) {
 		vTable.asProperty->update(this, dt);
+	}
+
+	const auto NI_Property_copyMembers = reinterpret_cast<void(__thiscall*)(const Property*, Property*)>(0x6E95F0);
+	void Property::copyMembers(Property* to) const {
+		NI_Property_copyMembers(this, to);
 	}
 
 	bool Property::getFlag(unsigned char index) const {
@@ -211,12 +217,40 @@ namespace NI {
 		vTable->destructor(this, false);
 	}
 
+	void TexturingProperty::Map::copyMembers(Map* to) const {
+		to->texture = texture;
+		to->clampMode = clampMode;
+		to->filterMode = filterMode;
+		to->texCoordSet = texCoordSet;
+	}
+
 	Pointer<Texture> TexturingProperty::Map::getTexture_lua() const {
 		return texture;
 	}
 
 	void TexturingProperty::Map::setTexture_lua(Texture* t) {
 		texture = t;
+	}
+
+	bool TexturingProperty::Map::isBasicMap() const {
+		return vTable == (const VirtualTable*)0x7465E8;
+	}
+
+	bool TexturingProperty::Map::isBumpMap() const {
+		return vTable == (const VirtualTable*)0x7507B0;
+	}
+
+	bool TexturingProperty::Map::isExtendedMap() const {
+		return vTable == &ExtendedMap::ExtendedVirtualTable;
+	}
+
+	float TexturingProperty::Map::getPriority() const {
+		if (!isExtendedMap()) {
+			return DEFAULT_PRIORITY;
+		}
+
+		const auto asExtended = static_cast<const ExtendedMap*>(this);
+		return asExtended->priority;
 	}
 
 	TexturingProperty::Map* TexturingProperty::Map::create(sol::optional<sol::table> params) {
@@ -251,6 +285,60 @@ namespace NI {
 		bumpMat[0][1] = 0.0f;
 		bumpMat[1][0] = 0.0f;
 		bumpMat[1][1] = 0.5f;
+	}
+
+	void TexturingProperty::BumpMap::copyMembers(BumpMap* to) const {
+		Map::copyMembers(to);
+		to->lumaScale = lumaScale;
+		to->lumaScale = lumaOffset;
+		to->bumpMat[0][0] = bumpMat[0][0];
+		to->bumpMat[0][1] = bumpMat[0][1];
+		to->bumpMat[1][0] = bumpMat[1][0];
+		to->bumpMat[1][1] = bumpMat[1][1];
+	}
+
+	TexturingProperty::Map::VirtualTable TexturingProperty::ExtendedMap::ExtendedVirtualTable;
+
+	TexturingProperty::ExtendedMap::ExtendedMap() : Map() {
+		vTable = &ExtendedVirtualTable;
+	}
+
+	TexturingProperty::ExtendedMap::ExtendedMap(Texture* _texture, ClampMode _clampMode, FilterMode _filterMode, unsigned int _textCoords) : Map(_texture, _clampMode, _filterMode, _textCoords) {
+		vTable = &ExtendedVirtualTable;
+	}
+
+	void TexturingProperty::ExtendedMap::copyMembers(ExtendedMap* to) const {
+		Map::copyMembers(to);
+		to->priority = priority;
+	}
+
+	void TexturingProperty::copyMembers(TexturingProperty* to) const {
+		Property::copyMembers(to);
+
+		to->applyMode = applyMode;
+		to->decalCount = decalCount;
+		to->maps.growToFit(maps.endIndex);
+
+		for (auto i = 0u; i < maps.endIndex; ++i) {
+			const auto map = getMap(i);
+			if (map == nullptr) continue;
+
+			if (map->isExtendedMap()) {
+				const auto newMap = new ExtendedMap();
+				static_cast<const ExtendedMap*>(map)->copyMembers(newMap);
+				to->maps.setAtIndex(i, newMap);
+			}
+			else if (map->isBumpMap()) {
+				const auto newMap = new BumpMap();
+				static_cast<const BumpMap*>(map)->copyMembers(newMap);
+				to->maps.setAtIndex(i, newMap);
+			}
+			else {
+				const auto newMap = new Map();
+				map->copyMembers(newMap);
+				to->maps.setAtIndex(i, newMap);
+			}
+		}
 	}
 
 	TexturingProperty::Map* TexturingProperty::getMap(unsigned int index) const {
@@ -366,8 +454,34 @@ namespace NI {
 		return count;
 	}
 
+	unsigned int TexturingProperty::getUsedNonDecalMapCount() const {
+		unsigned int count = 0;
+		for (auto i = 0u; i < (unsigned int)MapType::DECAL_FIRST; ++i) {
+			const auto& map = maps.at(i);
+			if (map && map->texture) count++;
+		}
+		return count;
+	}
+
 	bool TexturingProperty::canAddMap() const {
-		return getUsedMapCount() < MAX_MAP_COUNT;
+		return true;
+	}
+
+	void TexturingProperty::removeUnsupportedDecals() {
+		const auto usedMaps = getUsedMapCount();
+		if (usedMaps < MAX_MAP_COUNT) {
+			return;
+		}
+
+		auto toRemove = usedMaps - MAX_MAP_COUNT;
+		for (auto i = maps.endIndex; toRemove > 0; --i) {
+			const auto& map = maps.at(i);
+			if (map == nullptr) continue;
+
+			delete map;
+			maps.erase(i);
+			toRemove--;
+		}
 	}
 
 	unsigned int TexturingProperty::getDecalCount() const {
@@ -375,59 +489,82 @@ namespace NI {
 	}
 
 	bool TexturingProperty::canAddDecalMap() const {
-		if (!canAddMap()) {
-			return false;
-		}
-		return getDecalCount() < MAX_DECAL_COUNT;
+		return true;
 	}
 
-	unsigned int TexturingProperty::addDecalMap(Texture* texture, unsigned int finalIndex) {
-		finalIndex = std::clamp(finalIndex, (unsigned int)MapType::DECAL_FIRST, (unsigned int)MapType::DECAL_LAST);
-		unsigned int index = (unsigned int)MapType::DECAL_FIRST + getDecalCount();
+	unsigned int TexturingProperty::getDecal(const std::string_view& fileName) const {
+		for (auto i = 0u; i < maps.endIndex; ++i) {
+			const auto map = maps.at(i);
+			if (map == nullptr) continue;
 
-		// If we can't add a decal map, we will try to push this one over another.
-		if (!canAddDecalMap()) {
-			// We have a far index that won't fit, so we just won't add the decal.
-			if (finalIndex > index) {
-				return (unsigned int)MapType::INVALID;
-			}
+			const auto& texture = map->texture;
+			if (texture == nullptr) continue;
+			if (!texture->isInstanceOfType(RTTIStaticPtr::NiSourceTexture)) continue;
 
-			index = (unsigned int)MapType::DECAL_LAST;
-			if (getMap(index)) {
-				removeDecal(index);
+			const auto texName = static_cast<const SourceTexture*>(texture.get())->fileName;
+			if (!texName) continue;
+			if (mwse::string::iequal(texName, fileName)) return i;
+		}
+		return (unsigned int)MapType::INVALID;
+	}
+
+	unsigned int TexturingProperty::getDecal(Texture* texture) const {
+		for (auto i = 0u; i < maps.endIndex; ++i) {
+			const auto map = maps.at(i);
+			if (map == nullptr) continue;
+
+			if (map->texture == texture) return i;
+		}
+		return (unsigned int)MapType::INVALID;
+	}
+
+	sol::optional<std::tuple<TexturingProperty::Map*, unsigned int>> TexturingProperty::getDecal_lua(sol::stack_object object) const {
+		auto index = (unsigned int)MapType::INVALID;
+		if (object.is<Texture*>()) {
+			index = getDecal(object.as<Texture*>());
+		}
+		else if (object.is<std::string>()) {
+			index = getDecal(object.as<std::string>());
+		}
+
+		if (index == (unsigned int)MapType::INVALID) {
+			return {};
+		}
+
+		return std::make_tuple(getMap(index), index + 1);
+	}
+
+	unsigned int TexturingProperty::addDecalMap(Texture* texture, float priority, bool allowDuplicates) {
+		// Abort if we already have this decal.
+		if (!allowDuplicates) {
+			const auto existingTextureIndex = getDecal(texture);
+			if (existingTextureIndex != (unsigned int)MapType::INVALID) {
+				return existingTextureIndex;
 			}
 		}
 
-		finalIndex = std::min(finalIndex, index);
-
+		unsigned int index = (unsigned int)MapType::DECAL_FIRST + getDecalCount();
 		maps.growToFit(index);
 
-		auto map = new Map(texture);
+		auto map = new ExtendedMap(texture);
+		map->priority = priority;
 		maps.setAtIndex(index, map);
 		decalCount++;
 
-		// Sort the map as far as we can to its desired index.
-		if (index != finalIndex) {
-			for (auto i = index; i > (unsigned int)MapType::DECAL_FIRST; --i) {
-				std::swap(maps.at(i - 1), maps.at(i));
-			}
-		}
+		// Sort and compact based on priority.
+		sortDecals();
+		compactDecals();
 
-		return finalIndex;
+		return getDecal(texture);
 	}
 
-	sol::optional<std::tuple<TexturingProperty::Map*, unsigned int>> TexturingProperty::addDecalMap_lua(sol::optional<Texture*> texture, sol::optional<unsigned int> index) {
-		const auto newIndex = addDecalMap(texture.value_or(nullptr), index.value_or((unsigned int)MapType::DECAL_LAST) - 1);
+	sol::optional<std::tuple<TexturingProperty::Map*, unsigned int>> TexturingProperty::addDecalMap_lua(sol::optional<Texture*> texture, sol::optional<float> priority, sol::optional<bool> allowDuplicates) {
+		const auto newIndex = addDecalMap(texture.value_or(nullptr), priority.value_or(Map::DEFAULT_PRIORITY), allowDuplicates.value_or(false));
 		if (newIndex == (size_t)MapType::INVALID) {
 			return {};
 		}
 
-		// Compact and find the new index if available.
-		const auto createdMap = maps.at(newIndex);
-		compactDecals();
-		const auto finalIndex = maps.getIndexOfValue(createdMap);
-
-		return std::make_tuple(createdMap, finalIndex + 1);
+		return std::make_tuple(getMap(newIndex), newIndex);
 	}
 
 	bool TexturingProperty::removeDecal(unsigned int index) {
@@ -464,6 +601,16 @@ namespace NI {
 		for (auto i = (unsigned int)MapType::DECAL_FIRST; i < maps.storageCount; ++i) {
 			removeDecal(i);
 		}
+	}
+
+	void TexturingProperty::sortDecals() {
+		std::sort(maps.begin() + (unsigned int)MapType::DECAL_FIRST, maps.end(),
+			[](const auto& a, const auto& b) {
+				const auto aP = a ? a->getPriority() : std::numeric_limits<float>::lowest();
+				const auto bP = b ? b->getPriority() : std::numeric_limits<float>::lowest();
+				return aP > bP;
+			}
+		);
 	}
 
 	void TexturingProperty::compactDecals() {

@@ -217,13 +217,14 @@ The human-facing name of the given object.
 Attempts to create a new decal map. If successful, it returns both the new map and the index it was created in.
 
 ```lua
-local map, index = myObject:addDecalMap(texture, index)
+local map, index = myObject:addDecalMap(texture, priority, allowDuplicates)
 ```
 
 **Parameters**:
 
 * `texture` ([niTexture](../types/niTexture.md)): *Optional*. The texture to assign to the new decal.
-* `index` (number): *Optional*. The desired index to store the decal in, for sorting purposes. Defaults to `ni.texturingPropertyMapType.decalLast`. Note that added decals are compacted down to remove gaps, so the actual index will differ.
+* `priority` (number): *Default*: `0`. The desired sorting priority of the decal. Whenever a new decal is added, decals are resorted to give priority to decals with a higher number. Only 8 textures will ever be rendered at a time, leaving lower priority decals to potentially go unseen.
+* `allowDuplicates` (boolean): *Default*: `false`. If true, duplicates of the same texture can be added. Normally, an existing decal of the same texture will be returned instead.
 
 **Returns**:
 
@@ -259,6 +260,26 @@ local result = myObject:clone()
 **Returns**:
 
 * `result` ([niObject](../types/niObject.md))
+
+***
+
+### `getDecalMap`
+<div class="search_terms" style="display: none">getdecalmap, decalmap</div>
+
+Finds an existing decal applied to the property.
+
+```lua
+local map, index = myObject:getDecalMap(textureOrFileName)
+```
+
+**Parameters**:
+
+* `textureOrFileName` ([niTexture](../types/niTexture.md), string): The texture or file name of the source texture to find.
+
+**Returns**:
+
+* `map` ([niTexturingPropertyMap](../types/niTexturingPropertyMap.md), nil): The existing map.
+* `index` (integer, nil): The index of the existing decal map.
 
 ***
 

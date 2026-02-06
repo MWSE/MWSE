@@ -63,6 +63,8 @@ namespace NI {
 		// Other function addresses.
 		//
 
+		void copyMembers(Property* to) const;
+
 		bool getFlag(unsigned char index) const;
 		void setFlag(bool state, unsigned char index);
 
@@ -262,10 +264,20 @@ namespace NI {
 
 			Map();
 			Map(Texture* texture, ClampMode clampMode = ClampMode::WRAP_S_WRAP_T, FilterMode filterMode = FilterMode::TRILERP, unsigned int textureCoords = 0);
+			Map(const Map&) = delete;
 			~Map();
+
+			void copyMembers(Map* to) const;
 
 			Pointer<Texture> getTexture_lua() const;
 			void setTexture_lua(Texture* texture);
+
+			bool isBasicMap() const;
+			bool isBumpMap() const;
+			bool isExtendedMap() const;
+
+			static constexpr auto DEFAULT_PRIORITY = 0.0f;
+			float getPriority() const;
 
 			static Map* create(sol::optional<sol::table> params);
 
@@ -277,11 +289,25 @@ namespace NI {
 
 			BumpMap();
 			BumpMap(Texture* texture, ClampMode clampMode = ClampMode::WRAP_S_WRAP_T, FilterMode filterMode = FilterMode::BILERP, unsigned int textureCoords = 0);
+
+			void copyMembers(BumpMap* to) const;
+		};
+		struct ExtendedMap : Map {
+			float priority = 0.0f;
+
+			static VirtualTable ExtendedVirtualTable;
+
+			ExtendedMap();
+			ExtendedMap(Texture* texture, ClampMode clampMode = ClampMode::WRAP_S_WRAP_T, FilterMode filterMode = FilterMode::TRILERP, unsigned int textureCoords = 0);
+
+			void copyMembers(ExtendedMap* to) const;
 		};
 
 		ApplyMode applyMode; // 0x18
 		TArray<Map*> maps; // 0x1C
 		unsigned int decalCount; // 0x34
+
+		void copyMembers(TexturingProperty* to) const;
 
 		Map* getMap(unsigned int index) const;
 		Map* getBaseMap() const;
@@ -298,15 +324,21 @@ namespace NI {
 		void setBumpMap(sol::optional<BumpMap*> map);
 
 		unsigned int getUsedMapCount() const;
+		unsigned int getUsedNonDecalMapCount() const;
 		bool canAddMap() const;
+		void removeUnsupportedDecals();
 
 		unsigned int getDecalCount() const;
 		bool canAddDecalMap() const;
-		unsigned int addDecalMap(Texture* texture, unsigned int index = (unsigned int)MapType::DECAL_LAST);
-		sol::optional<std::tuple<Map*, unsigned int>> addDecalMap_lua(sol::optional<Texture*> texture, sol::optional<unsigned int> index);
+		unsigned int getDecal(const std::string_view& fileName) const;
+		unsigned int getDecal(Texture* texture) const;
+		sol::optional<std::tuple<Map*, unsigned int>> getDecal_lua(sol::stack_object object) const;
+		unsigned int addDecalMap(Texture* texture, float priority = Map::DEFAULT_PRIORITY, bool allowDuplicates = false);
+		sol::optional<std::tuple<Map*, unsigned int>> addDecalMap_lua(sol::optional<Texture*> texture, sol::optional<float> priority, sol::optional<bool> allowDuplicates);
 		bool removeDecal(unsigned int index);
 		bool removeDecal_lua(unsigned int index);
 		void removeDecals();
+		void sortDecals();
 		void compactDecals();
 		void recalculateDecalCount();
 

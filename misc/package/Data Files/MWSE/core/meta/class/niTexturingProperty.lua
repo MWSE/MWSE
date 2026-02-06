@@ -19,10 +19,17 @@ niTexturingProperty = {}
 
 --- Attempts to create a new decal map. If successful, it returns both the new map and the index it was created in.
 --- @param texture? niRenderedTexture|niSourceTexture|niTexture *Optional*. The texture to assign to the new decal.
---- @param index? number *Optional*. The desired index to store the decal in, for sorting purposes. Defaults to `ni.texturingPropertyMapType.decalLast`. Note that added decals are compacted down to remove gaps, so the actual index will differ.
+--- @param priority? number *Default*: `0`. The desired sorting priority of the decal. Whenever a new decal is added, decals are resorted to give priority to decals with a higher number. Only 8 textures will ever be rendered at a time, leaving lower priority decals to potentially go unseen.
+--- @param allowDuplicates? boolean *Default*: `false`. If true, duplicates of the same texture can be added. Normally, an existing decal of the same texture will be returned instead.
 --- @return niTexturingPropertyMap|nil map A newly created decal map.
 --- @return integer|nil index The index of the newly added decal map.
-function niTexturingProperty:addDecalMap(texture, index) end
+function niTexturingProperty:addDecalMap(texture, priority, allowDuplicates) end
+
+--- Finds an existing decal applied to the property.
+--- @param textureOrFileName niRenderedTexture|niSourceTexture|niTexture|string The texture or file name of the source texture to find.
+--- @return niTexturingPropertyMap|nil map The existing map.
+--- @return integer|nil index The index of the existing decal map.
+function niTexturingProperty:getDecalMap(textureOrFileName) end
 
 --- Attempts to remove all decal maps.
 function niTexturingProperty:removeAllDecalMaps() end

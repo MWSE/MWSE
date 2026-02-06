@@ -1654,13 +1654,13 @@ namespace mwse::patch {
 	__declspec(naked) void PatchTexturePassMaxTextureCount() {
 		__asm {
 			mov ecx, esp;	// 0x6B4B5B; Size: 2
-			mov edx, esi;	// 0x6B4B5B; Size: 2
-			nop;			// 0x6B4B5D; Size: 5; Replaced by function call
+			mov edx, esi;	// 0x6B4B5D; Size: 2
+			nop;			// 0x6B4B5F; Size: 5; Replaced by function call
 			nop;
 			nop;
 			nop;
 			nop;
-			mov ebp, eax;	// 0x6B4B63; Size: 2; Extra padding for sizing
+			mov ebp, eax;	// 0x6B4B64; Size: 2; Extra padding for sizing
 		}
 	}
 	constexpr size_t PatchTexturePassMaxTextureCount_size = 11;
@@ -2333,9 +2333,20 @@ namespace mwse::patch {
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 
 		// Patch: Extend decal support, and prevent having more than 8 decals from crashing the engine.
-		genNOPUnprotected(0x6B4B5B, 0x6B4B69 - 0x6B4B5B);
-		writePatchCodeUnprotected(0x6B4B5B, (BYTE*)&PatchTexturePassMaxTextureCount, PatchTexturePassMaxTextureCount_size);
-		genCallUnprotected(0x6B4B5B + 0x4, reinterpret_cast<DWORD>(PatchTexturePassMaxTextureCount_GetMap2));
+		{
+			// Make our new Map type, with an identifiable vtable. 
+			constexpr auto mapVTableSize = sizeof(NI::TexturingProperty::Map::VirtualTable);
+			memcpy_s(&NI::TexturingProperty::ExtendedMap::ExtendedVirtualTable, mapVTableSize, (void*)0x7465E8, mapVTableSize);
+
+			// Replace the copyMembers function to correctly copy our new maps.
+			auto TexturingProperty_copyMembers = &NI::TexturingProperty::copyMembers;
+			genCallEnforced(0x6E1DB6, 0x6E1DD0, *reinterpret_cast<DWORD*>(&TexturingProperty_copyMembers));
+
+			// Patch the texture rendering pipeline to abort after 8 textures are rendered.
+			genNOPUnprotected(0x6B4B5B, 0x6B4B69 - 0x6B4B5B);
+			writePatchCodeUnprotected(0x6B4B5B, (BYTE*)&PatchTexturePassMaxTextureCount, PatchTexturePassMaxTextureCount_size);
+			genCallUnprotected(0x6B4B5B + 0x4, reinterpret_cast<DWORD>(PatchTexturePassMaxTextureCount_GetMap2));
+		}
 	}
 
 	void installPostLuaPatches() {

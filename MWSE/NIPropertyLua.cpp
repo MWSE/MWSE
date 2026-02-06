@@ -110,6 +110,10 @@ namespace mwse::lua {
 
 			// Properties that need extra work before returning.
 			usertypeDefinition["texture"] = sol::property(&NI::TexturingProperty::Map::getTexture_lua, &NI::TexturingProperty::Map::setTexture_lua);
+			usertypeDefinition["priority"] = sol::readonly_property(&NI::TexturingProperty::Map::getPriority);
+			usertypeDefinition["isBumpMap"] = sol::readonly_property(&NI::TexturingProperty::Map::isBumpMap);
+			usertypeDefinition["isBasicMap"] = sol::readonly_property(&NI::TexturingProperty::Map::isBasicMap);
+			usertypeDefinition["isExtendedMap"] = sol::readonly_property(&NI::TexturingProperty::Map::isExtendedMap);
 		}
 
 		// Binding for NI::TexturingProperty.
@@ -137,6 +141,7 @@ namespace mwse::lua {
 			usertypeDefinition["glowMap"] = sol::property(&NI::TexturingProperty::getGlowMap, &NI::TexturingProperty::setGlowMap);
 
 			// Basic function binding.
+			usertypeDefinition["getDecalMap"] = &NI::TexturingProperty::getDecal_lua;
 			usertypeDefinition["addDecalMap"] = &NI::TexturingProperty::addDecalMap_lua;
 			usertypeDefinition["removeDecalMap"] = &NI::TexturingProperty::removeDecal_lua;
 			usertypeDefinition["removeAllDecalMaps"] = &NI::TexturingProperty::removeDecals;
