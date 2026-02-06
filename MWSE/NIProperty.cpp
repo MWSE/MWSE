@@ -254,7 +254,7 @@ namespace NI {
 	}
 
 	TexturingProperty::Map* TexturingProperty::getMap(unsigned int index) const {
-		if (maps.endIndex >= index) {
+		if (index >= maps.endIndex) {
 			return nullptr;
 		}
 		return maps.at(index);
