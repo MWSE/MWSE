@@ -1627,6 +1627,45 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Extend decal support, and prevent having more than 8 decals from crashing the engine.
+	//
+
+	struct NiDX8TexturingPass : NI::Object {
+		BYTE dontCare_0x8[0x618];
+		int activeStageCount; // 0x620
+		BYTE dontCare_0x624[0x25F4];
+	};
+	static_assert(sizeof(NiDX8TexturingPass) == 0x2C18, "NI::DX8TexturingPass failed size validation");
+	static_assert(offsetof(NiDX8TexturingPass, activeStageCount) == 0x620);
+
+	static NI::TexturingProperty::Map* __fastcall PatchTexturePassMaxTextureCount_GetMap2(BYTE* esp, NiDX8TexturingPass* pass) {
+		const auto property = *reinterpret_cast<NI::TexturingProperty**>(esp + 0x48 - 0x1C);
+		const auto index = *reinterpret_cast<unsigned int*>(esp + 0x48 - 0x14) / sizeof(void*); // Stored as raw offset.
+
+		// Stop adding decals if we've run out of stages.
+		if (pass->activeStageCount >= 8) {
+			return nullptr;
+		}
+
+		return property->getMap(index);
+	}
+
+	// Replaces 0x6B4B5B -> 0x6B4B69
+	__declspec(naked) void PatchTexturePassMaxTextureCount() {
+		__asm {
+			mov ecx, esp;	// 0x6B4B5B; Size: 2
+			mov edx, esi;	// 0x6B4B5B; Size: 2
+			nop;			// 0x6B4B5D; Size: 5; Replaced by function call
+			nop;
+			nop;
+			nop;
+			nop;
+			mov ebp, eax;	// 0x6B4B63; Size: 2; Extra padding for sizing
+		}
+	}
+	constexpr size_t PatchTexturePassMaxTextureCount_size = 11;
+
+	//
 	// Install all the patches.
 	//
 
@@ -2292,6 +2331,11 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: Extend decal support, and prevent having more than 8 decals from crashing the engine.
+		genNOPUnprotected(0x6B4B5B, 0x6B4B69 - 0x6B4B5B);
+		writePatchCodeUnprotected(0x6B4B5B, (BYTE*)&PatchTexturePassMaxTextureCount, PatchTexturePassMaxTextureCount_size);
+		genCallUnprotected(0x6B4B5B + 0x4, reinterpret_cast<DWORD>(PatchTexturePassMaxTextureCount_GetMap2));
 	}
 
 	void installPostLuaPatches() {
