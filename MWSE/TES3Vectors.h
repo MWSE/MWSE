@@ -312,6 +312,8 @@ namespace TES3 {
 
 		Transform copy() const;
 		void toIdentity();
+
+		Transform lerp(const Transform& to, float transition) const;
 	};
 	static_assert(sizeof(Transform) == 0x34, "TES3::Transform failed size validation");
 }

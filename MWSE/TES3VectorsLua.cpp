@@ -307,6 +307,7 @@ namespace mwse::lua {
 			usertypeDefinition["copy"] = &TES3::Transform::copy;
 			usertypeDefinition["invert"] = sol::resolve<std::tuple<TES3::Transform, bool>() const>(&TES3::Transform::invert);
 			usertypeDefinition["toIdentity"] = &TES3::Transform::toIdentity;
+			usertypeDefinition["lerp"] = &TES3::Transform::lerp;
 		}
 	}
 }

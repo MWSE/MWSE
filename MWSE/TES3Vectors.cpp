@@ -1069,5 +1069,16 @@ namespace TES3 {
 		translation.z = 0.0f;
 		scale = 1.0f;
 	}
+
+	Transform Transform::lerp(const Transform& to, float transition) const {
+		auto transform = Transform();
+		auto newRot = NI::Quaternion();
+		newRot = rotation.toQuaternion().slerp(&to.rotation.toQuaternion(), transition);
+		transform.rotation.fromQuaternion(&newRot);
+
+		transform.translation = translation.lerp(to.translation, transition);
+		transform.scale = mwse::math::lerp(scale, to.scale, transition);
+		return transform;
+	}
 }
 
