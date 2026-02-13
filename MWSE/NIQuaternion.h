@@ -15,6 +15,7 @@ namespace NI {
 
 		Quaternion operator-() const;
 		Quaternion operator*(const Quaternion& q) const;
+		TES3::Vector3 operator*(const TES3::Vector3& v) const;
 
 		friend std::ostream& operator<<(std::ostream& str, const Quaternion& q);
 		std::string toString() const;
