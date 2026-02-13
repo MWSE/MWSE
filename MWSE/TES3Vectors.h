@@ -304,8 +304,8 @@ namespace TES3 {
 		Transform();
 		Transform(const Matrix33& rotation, const Vector3& translation, const float scale);
 
-		Transform operator*(const Transform& transform);
-		Vector3 operator*(const Vector3& transform);
+		Transform operator*(const Transform& transform) const;
+		Vector3 operator*(const Vector3& vector) const;
 
 		bool invert(Transform* out) const;
 		std::tuple<Transform, bool> invert() const;

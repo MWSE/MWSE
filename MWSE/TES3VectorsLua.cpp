@@ -294,8 +294,8 @@ namespace mwse::lua {
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<TES3::Transform(const TES3::Transform&)>(&TES3::Transform::operator*),
-				sol::resolve<TES3::Vector3(const TES3::Vector3&)>(&TES3::Transform::operator*)
+				sol::resolve<TES3::Transform(const TES3::Transform&) const>(&TES3::Transform::operator*),
+				sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::Transform::operator*)
 			);
 
 			// Basic property bindings.

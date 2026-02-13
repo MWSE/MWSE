@@ -1027,7 +1027,7 @@ namespace TES3 {
 	{
 	}
 
-	Transform Transform::operator*(const Transform& transform) {
+	Transform Transform::operator*(const Transform& transform) const {
 		return {
 			rotation * transform.rotation,
 			rotation * transform.translation * scale + translation,
@@ -1035,7 +1035,7 @@ namespace TES3 {
 		};
 	}
 
-	Vector3 Transform::operator*(const Vector3& vector) {
+	Vector3 Transform::operator*(const Vector3& vector) const {
 		return rotation * vector * scale + translation;
 	}
 
@@ -1064,9 +1064,7 @@ namespace TES3 {
 
 	void Transform::toIdentity() {
 		rotation.toIdentity();
-		translation.x = 0.0f;
-		translation.y = 0.0f;
-		translation.z = 0.0f;
+		translation = Vector3::ZEROES;
 		scale = 1.0f;
 	}
 }
