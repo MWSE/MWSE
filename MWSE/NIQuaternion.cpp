@@ -124,6 +124,13 @@ namespace NI {
 		return result;
 	}
 
+	void Quaternion::toIdentity() {
+		w = Quaternion::IDENTITY.w;
+		x = Quaternion::IDENTITY.x;
+		y = Quaternion::IDENTITY.y;
+		z = Quaternion::IDENTITY.z;
+	}
+
 	static Quaternion slerpBase(const Quaternion* q0, const Quaternion* q1, double dot_product, float t) {
 		// Avoid using the vanilla implementation due to numerical issues.
 

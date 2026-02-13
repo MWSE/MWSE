@@ -28,6 +28,7 @@ namespace NI {
 		double dot(const Quaternion* q) const;
 		bool normalize();
 		Quaternion normalized() const;
+		void toIdentity();
 
 		Quaternion slerp(const Quaternion* q, float t) const;
 		Quaternion slerpKeyframe(const Quaternion* q, float t) const;
