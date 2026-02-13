@@ -1067,5 +1067,62 @@ namespace TES3 {
 		translation = Vector3::ZEROES;
 		scale = 1.0f;
 	}
+
+	AnimationTransform::AnimationTransform() {
+		this->toIdentity();
+	}
+
+	AnimationTransform::AnimationTransform(const NI::Quaternion& rotation, const Vector3& translation, const float scale) :
+		rotation(rotation),
+		translation(translation),
+		scale(scale)
+	{
+	}
+	
+	AnimationTransform AnimationTransform::operator*(const AnimationTransform& transform) const {
+		return {
+			rotation * transform.rotation,
+			rotation * transform.translation * scale + translation,
+			scale * transform.scale
+		};
+	}
+	
+	Vector3 AnimationTransform::operator*(const Vector3& vector) const {
+		return rotation * vector * scale + translation;
+	}
+
+	bool AnimationTransform::invert(AnimationTransform* out) const {
+		if (scale == 0.0f) {
+			return false;
+		}
+		out->rotation = rotation.invert();
+		out->scale = 1.0f / scale;
+		out->translation = -(out->rotation * translation * out->scale);
+		return true;
+	}
+
+	std::tuple<AnimationTransform, bool> AnimationTransform::invert() const {
+		auto transform = AnimationTransform();
+		bool valid = invert(&transform);
+		return std::make_tuple(transform, valid);
+	}
+
+	AnimationTransform AnimationTransform::copy() const {
+		return AnimationTransform(rotation, translation, scale);
+	}
+
+	void AnimationTransform::toIdentity() {
+		rotation.toIdentity();
+		translation = Vector3::ZEROES;
+		scale = 1.0f;
+	}
+
+	AnimationTransform AnimationTransform::lerp(const AnimationTransform& transform, float t) const {
+		return {
+			rotation.slerp(&transform.rotation, t),
+			translation.lerp(transform.translation, t),
+			mwse::math::lerp(scale, transform.scale, t)
+		};
+	}
 }
 
