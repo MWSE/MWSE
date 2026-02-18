@@ -868,6 +868,13 @@ namespace TES3 {
 		boundingBox = mwse::tes3::_new<TES3::BoundingBox>();
 		boundingBox->initialize();
 
+		// Markers always have zeroed bounding boxes.
+		if (getIsLocationMarker()) {
+			boundingBox->minimum = Vector3::ZEROES;
+			boundingBox->maximum = Vector3::ZEROES;
+			return;
+		}
+
 		// Use the updated calculation functions.
 		if (boundingBoxVolume) {
 			PatchedSetBBoxFromBoxBV(boundingBoxVolume, boundingBox->minimum, boundingBox->maximum);
@@ -875,12 +882,6 @@ namespace TES3 {
 		else {
 			const auto scale = 1.0f;
 			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, Vector3::ZEROES, Matrix33::IDENTITY, scale, false, false, false);
-		}
-
-		// Markers always have zeroed bounding boxes.
-		if (getIsLocationMarker()) {
-			boundingBox->minimum = Vector3::ZEROES;
-			boundingBox->maximum = Vector3::ZEROES;
 		}
 
 		// If any data ended up uninitialized, we'll also zero it out.
