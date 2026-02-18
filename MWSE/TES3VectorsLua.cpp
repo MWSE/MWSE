@@ -186,7 +186,10 @@ namespace mwse::lua {
 			usertypeDefinition["min"] = &TES3::BoundingBox::minimum;
 
 			// Basic function binding.
+			usertypeDefinition["clampPoint"] = &TES3::BoundingBox::clampPoint;
 			usertypeDefinition["copy"] = &TES3::BoundingBox::copy;
+			usertypeDefinition["hasUninitializedData"] = &TES3::BoundingBox::hasUninitializedData;
+			usertypeDefinition["initialize"] = &TES3::BoundingBox::initialize;
 			usertypeDefinition["vertices"] = &TES3::BoundingBox::vertices;
 		}
 
