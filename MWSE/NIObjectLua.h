@@ -83,6 +83,7 @@ namespace mwse::lua {
 		usertypeDefinition["updateEffects"] = &NI::AVObject::updateEffects;
 		usertypeDefinition["updateProperties"] = &NI::AVObject::updateProperties;
 		usertypeDefinition["setFlag"] = &NI::AVObject::setFlag;
+		usertypeDefinition["traverse"] = &NI::AVObject::traverse_lua;
 
 		// Functions that need their results wrapped.
 		usertypeDefinition["getObjectByName"] = &NI::AVObject::getObjectByName;

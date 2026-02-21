@@ -7,14 +7,30 @@
 #include "NITriBasedGeometry.h"
 #include "NISwitchNode.h"
 
-#include "LuaUtil.h"
 #include "BitUtil.h"
+#include "LuaUtil.h"
 #include "MemoryUtil.h"
 #include "StringUtil.h"
 
 constexpr auto NI_AVObject_updateEffects = 0x6EB380;
 constexpr auto NI_AVObject_updateProperties = 0x6EB0E0;
 constexpr auto NI_AVObject_update = 0x6EB000;
+
+namespace {
+	bool passesTraverseFilters(const NI::AVObject* object, const std::unordered_set<unsigned int>& typeFilters, std::string_view prefix) {
+		bool passesFilter = typeFilters.empty() ? true : false;
+		if (!passesFilter) {
+			for (const auto type : typeFilters) {
+				if (object->isInstanceOfType((uintptr_t)type)) {
+					passesFilter = true;
+					break;
+				}
+			}
+		}
+		bool passesPrefix = prefix.empty() ? true : object->name && mwse::string::starts_with(object->name, prefix);
+		return passesFilter && passesPrefix;
+	}
+}
 
 namespace NI {
 	SphereBound* AVObject::getWorldBound() {
@@ -386,6 +402,66 @@ namespace NI {
 	const auto NI_AVObject_setModelSpaceABV = reinterpret_cast<bool(__thiscall*)(AVObject*, BoundingVolume*)>(0x6EB590);
 	void AVObject::setModelSpaceABV(BoundingVolume* volume) {
 		NI_AVObject_setModelSpaceABV(this, volume);
+	}
+
+	std::function<Pointer<AVObject>()> AVObject::traverse_lua(sol::optional<sol::table> param) {
+		bool recursive = mwse::lua::getOptionalParam(param, "recursive", true);
+		std::string prefix = mwse::lua::getOptionalParam(param, "prefix", std::string(""));
+		std::unordered_set<unsigned int> filters;
+
+		if (param) {
+			sol::table paramTable = param.value().as<sol::table>();
+			sol::object maybeValue = paramTable["type"];
+			if (maybeValue.valid()) {
+				if (maybeValue.is<unsigned int>()) {
+					filters.insert(maybeValue.as<unsigned int>());
+				}
+				else if (maybeValue.is<sol::table>()) {
+					sol::table filterTable = maybeValue.as<sol::table>();
+					for (auto [_, value] : filterTable) {
+						filters.insert(value.as<unsigned int>());
+					}
+				}
+				else {
+					throw std::invalid_argument("Iteration can only be filtered by a NI object type, or a table of object types.");
+				}
+			}
+		}
+
+		std::queue<NI::Pointer<NI::AVObject>> queue;
+		std::function<void(NI::AVObject*)> traverseChild = [&](NI::AVObject* object) {
+			if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+				return;
+			}
+
+			const auto asNode = static_cast<const NI::Node*>(object);
+			for (auto& nodeChild : asNode->children) {
+				if (!nodeChild) {
+					continue;
+				}
+				if (passesTraverseFilters(nodeChild, filters, prefix)) {
+					queue.push(nodeChild);
+				}
+
+				if (recursive) {
+					traverseChild(nodeChild);
+				}
+			}
+		};
+
+		if (passesTraverseFilters(this, filters, prefix)) {
+			queue.push(this);
+		}
+		traverseChild(this);
+
+		return [queue]() mutable -> NI::Pointer<NI::AVObject> {
+			if (queue.empty()) {
+				return nullptr;
+			}
+			auto ret = queue.front();
+			queue.pop();
+			return ret;
+		};
 	}
 
 	void AVObject::update_lua(sol::optional<sol::table> args) {
