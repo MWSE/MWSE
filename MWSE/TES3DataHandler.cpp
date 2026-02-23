@@ -136,6 +136,16 @@ namespace TES3 {
 		return keyframeDefinition;
 	}
 
+	const auto TES3_MeshData_releaseMesh = reinterpret_cast<bool (__thiscall*)(MeshData*, NI::Node*)>(0x4EE5B0);
+	bool MeshData::releaseMesh(NI::Node* rootNode) {
+		return TES3_MeshData_releaseMesh(this, rootNode);
+	}
+
+	const auto TES3_MeshData_releaseKeyframes = reinterpret_cast<bool (__thiscall*)(MeshData*, KeyframeDefinition*)>(0x4EE720);
+	bool MeshData::releaseKeyframes(KeyframeDefinition* kfData) {
+		return TES3_MeshData_releaseKeyframes(this, kfData);
+	}
+
 	//
 	// GlobalHashContainer
 	//
@@ -351,6 +361,11 @@ namespace TES3 {
 	const auto TES3_NonDynamicData_findSound = reinterpret_cast<Sound * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA7A0);
 	Sound* NonDynamicData::findSound(const char* id) {
 		return TES3_NonDynamicData_findSound(this, id);
+	}
+
+	const auto TES3_NonDynamicData_getSoundGeneratorSound = reinterpret_cast<Sound * (__thiscall*)(NonDynamicData*, Actor*, int)>(0x4C7E60);
+	Sound* NonDynamicData::getSoundGeneratorSound(Actor* actor, int index) {
+		return TES3_NonDynamicData_getSoundGeneratorSound(this, actor, index);
 	}
 
 	const auto TES3_NonDynamicData_findClass = reinterpret_cast<Class * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA6B0);

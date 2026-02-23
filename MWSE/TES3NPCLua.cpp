@@ -4,6 +4,7 @@
 #include "TES3ActorLua.h"
 
 #include "TES3NPC.h"
+#include "TES3AnimationGroup.h"
 #include "TES3BodyPart.h"
 #include "TES3Race.h"
 #include "TES3Class.h"

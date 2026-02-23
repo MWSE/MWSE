@@ -439,8 +439,8 @@ namespace mwse::patch {
 		auto worldController = TES3::WorldController::get();
 		auto mobilePlayer = worldController->getMobilePlayer();
 		if (mobilePlayer->actorFlags & TES3::MobileActorFlag::IdleAnim) {
-			TES3_Reference_AnimIdleUpdate(mobilePlayer->reference);
-			TES3_Reference_AnimIdleUpdate(mobilePlayer->firstPersonReference);
+			auto playerRef = mobilePlayer->is3rdPerson() ? mobilePlayer->reference : mobilePlayer->firstPersonReference;
+			TES3_Reference_AnimIdleUpdate(playerRef);
 		}
 	}
 
