@@ -207,6 +207,16 @@ namespace NI {
 			}
 		}
 
+		// Only process active child of switch nodes.
+		if (isInstanceOfType(RTTIStaticPtr::NiSwitchNode)) {
+			const auto asSwitchNode = static_cast<const SwitchNode*>(this);
+			const auto activeChild = asSwitchNode->getActiveChild();
+			if (activeChild) {
+				return activeChild->getLowestVertexZ();
+			}
+			return FLOAT_MAX;
+		}
+
 		// Recurse until we get to a leaf node.
 		if (isInstanceOfType(RTTIStaticPtr::NiNode)) {
 			const auto asNode = static_cast<const Node*>(this);

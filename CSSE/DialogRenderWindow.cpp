@@ -571,39 +571,57 @@ namespace se::cs::dialog::render_window {
 		return node->getLowestVertexZ();
 	}
 
-	void __cdecl Patch_FixDropToSurface_GetLowVertices(const NI::Node* node, float nearToZ) {
+	void __cdecl Patch_FixDropToSurface_GetLowVertices(const NI::AVObject* object, float nearToZ) {
 		constexpr auto NEAR_THRESHOLD = 1.0f;
 		const auto gNearVertexArray = *reinterpret_cast<NI::TArray<NI::Vector3*>**>(0x6CF7C4);
 
-		for (const auto& child : node->children) {
-			if (child) {
-				// Calculate for geometry.
-				if (child->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
-					auto asGeometry = static_cast<const NI::Geometry*>(child.get());
-
-					// Ignore particles.
-					if (asGeometry->isInstanceOfType(NI::RTTIStaticPtr::NiParticles)) {
-						continue;
-					}
-
-					// Add nearby vertices.
-					for (auto i = 0u; i < asGeometry->modelData->vertexCount; ++i) {
-						const auto vertex = &asGeometry->worldVertices[i];
-						if (std::abs(vertex->z - nearToZ) <= NEAR_THRESHOLD) {
-							gNearVertexArray->push_back(vertex);
-						}
-					}
-
-					continue;
-				}
-
-				// Recursively call for child nodes.
-				if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-					auto asNode = static_cast<const NI::Node*>(child.get());
-					Patch_FixDropToSurface_GetLowVertices(asNode, nearToZ);
-					continue;
-				}
+		auto processChild = [&](const NI::AVObject* child) {
+			if (!child) {
+				return;
 			}
+
+			// Calculate for geometry.
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
+				auto asGeometry = static_cast<const NI::Geometry*>(child);
+
+				// Ignore particles.
+				if (asGeometry->isInstanceOfType(NI::RTTIStaticPtr::NiParticles)) {
+					return;
+				}
+
+				// Add nearby vertices.
+				for (auto i = 0u; i < asGeometry->modelData->vertexCount; ++i) {
+					const auto vertex = &asGeometry->worldVertices[i];
+					if (std::abs(vertex->z - nearToZ) <= NEAR_THRESHOLD) {
+						gNearVertexArray->push_back(vertex);
+					}
+				}
+
+				return;
+			}
+
+			// Recursively call for child nodes.
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+				Patch_FixDropToSurface_GetLowVertices(child, nearToZ);
+				return;
+			}
+		};
+
+		// For NiSwitchNode, only process the active child. 
+		// The "UpdateOnlyActive" flag prevents updates on inactive children.
+		if (object->isInstanceOfType(NI::RTTIStaticPtr::NiSwitchNode)) {
+			const auto asSwitchNode = static_cast<const NI::SwitchNode*>(object);
+			const auto child = asSwitchNode->getActiveChild();
+			processChild(child);
+			return;
+		}
+
+		if (object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			const auto asNode = static_cast<const NI::Node*>(object);
+			for (const auto& child : asNode->children) {
+				processChild(child);
+			}
+			return;
 		}
 	}
 
