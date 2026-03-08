@@ -470,11 +470,19 @@ namespace mwse::lua {
 		bindMWSEUtil();
 
 		// Extend OS library.
+		// We can cache the performanceFrequency, since it's set on boot and doesn't change.
+		LARGE_INTEGER rawFrequency, rawStartTime;
+		QueryPerformanceFrequency(&rawFrequency);
+		QueryPerformanceCounter(&rawStartTime);
+		performanceFrequency = rawFrequency.QuadPart;
+		startTimestamp = rawStartTime.QuadPart;
+
 		luaState["os"]["createProcess"] = createProcess;
 		luaState["os"]["getClipboardText"] = getClipboardText;
+		luaState["os"]["getCommandLine"] = getCommandLine;
+		luaState["os"]["getHighPrecisionClock"] = getHighPrecisionClock;
 		luaState["os"]["openURL"] = openURL;
 		luaState["os"]["setClipboardText"] = setClipboardText;
-		luaState["os"]["getCommandLine"] = getCommandLine;
 		LuaExecutor::defineLuaBindings();
 
 		// Extend math library.
