@@ -18,6 +18,7 @@ namespace NI {
 		void attachChild(AVObject* child, bool useFirstAvailable = false);
 		Pointer<AVObject> detachChild(AVObject* child);
 		Pointer<AVObject> detachChildAt(unsigned int index);
+		std::vector<const NI::Pointer<NI::AVObject>> getActiveChildren() const;
 		Pointer<AVObject> setChildAt(unsigned int index, AVObject* child);
 
 		//

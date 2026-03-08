@@ -22,6 +22,16 @@ namespace NI {
 		return nullptr;
 	}
 
+	std::vector<const NI::Pointer<NI::AVObject>> SwitchNode::getActiveChildren() const {
+		std::vector<const NI::Pointer<NI::AVObject>> result;
+		const auto& child = getActiveChild();
+		if (child && !child->isAppCulled()) {
+			result.emplace_back(child);
+		}
+		return result;
+	}
+
+
 	int SwitchNode::getChildIndexByName(const char* name) const {
 		for (auto i = 0u; i < children.size(); ++i) {
 			if (mwse::string::iequal(name, children[i].get()->name)) {

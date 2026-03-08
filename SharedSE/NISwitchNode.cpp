@@ -19,6 +19,15 @@ namespace NI {
 		}
 		return nullptr;
 	}
+
+	std::vector<const NI::Pointer<NI::AVObject>> SwitchNode::getActiveChildren() const {
+		std::vector<const NI::Pointer<NI::AVObject>> result;
+		const auto& child = getActiveChild();
+		if (child && !child->getAppCulled()) {
+			result.emplace_back(child);
+		}
+		return result;
+	}
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

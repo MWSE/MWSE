@@ -45,6 +45,21 @@ namespace NI {
 		return new Node();
 	}
 
+	std::vector<const NI::Pointer<NI::AVObject>> Node::getActiveChildren() const {
+		std::vector<const NI::Pointer<NI::AVObject>> result;
+		result.reserve(children.getFilledCount());
+		for (const auto& child : children) {
+			if (!child) {
+				continue;
+			}
+			if (child->isAppCulled()) {
+				continue;
+			}
+			result.emplace_back(child);
+		}
+		return result;
+	}
+
 	void Node::detachAllChildren() {
 		for (auto i = 0u; i < children.size(); ++i) {
 			detachChildAt(i);

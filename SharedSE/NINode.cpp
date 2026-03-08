@@ -36,6 +36,21 @@ namespace NI {
 		return result;
 	}
 
+	std::vector<const NI::Pointer<NI::AVObject>> Node::getActiveChildren() const {
+		std::vector<const NI::Pointer<NI::AVObject>> result;
+		result.reserve(children.getFilledCount());
+		for (const auto& child : children) {
+			if (!child) {
+				continue;
+			}
+			if (child->getAppCulled()) {
+				continue;
+			}
+			result.emplace_back(child);
+		}
+		return result;
+	}
+
 	Pointer<AVObject> Node::setChildAt(unsigned int index, AVObject* child) {
 		Pointer<AVObject> displaced;
 		vTable.asNode->setChildAt(this, &displaced, index, child);

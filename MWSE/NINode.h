@@ -26,6 +26,7 @@ namespace NI {
 
 		static Pointer<Node> create();
 
+		std::vector<const NI::Pointer<NI::AVObject>> getActiveChildren() const;
 		void detachAllChildren();
 
 		void attachEffect(DynamicEffect* effect);

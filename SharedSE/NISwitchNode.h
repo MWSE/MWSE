@@ -17,6 +17,7 @@ namespace NI {
 		int getSwitchIndex();
 		void setSwitchIndex(int index);
 		Pointer<AVObject> getActiveChild() const;
+		std::vector<const NI::Pointer<NI::AVObject>> getActiveChildren() const;
 
 	};
 	static_assert(sizeof(SwitchNode) == 0xD8, "NI::SwitchNode failed size validation");

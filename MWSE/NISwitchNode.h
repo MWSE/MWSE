@@ -17,6 +17,7 @@ namespace NI {
 		int getSwitchIndex() const;
 		void setSwitchIndex(int index);
 		Pointer<AVObject> getActiveChild() const;
+		std::vector<const NI::Pointer<NI::AVObject>> getActiveChildren() const;
 		int getChildIndexByName(const char*) const;
 
 	};
