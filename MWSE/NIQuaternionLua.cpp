@@ -19,7 +19,10 @@ void mwse::lua::bindNIQuaternion() {
 		// Operator overloading.
 		usertypeDefinition[sol::meta_function::to_string] = &NI::Quaternion::toString;
 		usertypeDefinition["__tojson"] = &NI::Quaternion::toJson;
-		usertypeDefinition[sol::meta_function::multiplication] = sol::resolve<NI::Quaternion(const NI::Quaternion&) const>(&NI::Quaternion::operator*);
+		usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+			sol::resolve<NI::Quaternion(const NI::Quaternion&) const>(&NI::Quaternion::operator*),
+			sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&NI::Quaternion::operator*)
+		);
 		usertypeDefinition[sol::meta_function::unary_minus] = sol::resolve<NI::Quaternion() const>(&NI::Quaternion::operator-);
 
 		// Basic property binding.

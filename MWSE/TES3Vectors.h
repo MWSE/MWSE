@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NIQuaternion.h"
 #include "NIDefines.h"
 
 namespace TES3 {
@@ -305,8 +306,8 @@ namespace TES3 {
 		Transform();
 		Transform(const Matrix33& rotation, const Vector3& translation, const float scale);
 
-		Transform operator*(const Transform& transform);
-		Vector3 operator*(const Vector3& transform);
+		Transform operator*(const Transform& transform) const;
+		Vector3 operator*(const Vector3& vector) const;
 
 		bool invert(Transform* out) const;
 		std::tuple<Transform, bool> invert() const;
@@ -315,4 +316,23 @@ namespace TES3 {
 		void toIdentity();
 	};
 	static_assert(sizeof(Transform) == 0x34, "TES3::Transform failed size validation");
+
+	struct AnimationTransform {
+		NI::Quaternion rotation;
+		TES3::Vector3 translation;
+		float scale;
+
+		AnimationTransform();
+		AnimationTransform(const NI::Quaternion& rotation, const Vector3& translation, const float scale);
+
+		AnimationTransform operator*(const AnimationTransform& transform) const;
+		Vector3 operator*(const Vector3& vector) const;
+
+		bool invert(AnimationTransform* out) const;
+		std::tuple<AnimationTransform, bool> AnimationTransform::invert() const;
+
+		AnimationTransform copy() const;
+		void toIdentity();
+		AnimationTransform lerp(const AnimationTransform& transform, float t) const;
+	};
 }
