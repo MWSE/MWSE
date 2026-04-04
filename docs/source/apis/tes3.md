@@ -699,7 +699,7 @@ local price = tes3.calculatePrice({ object = ..., basePrice = ..., buying = ...,
 	* `buying` (boolean): *Default*: `true`. If `true`, uses the logic for buying a service/item. This is exclusive with `selling`.
 	* `selling` (boolean): *Default*: `false`. If `true`, uses the logic for selling an item. This is exclusive with `buying`.
 	* `merchant` ([tes3mobileActor](../types/tes3mobileActor.md)): The merchant to use for calculating the price.
-	* `bartering` (boolean): *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
+	* `bartering` (boolean): *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcSpellPrice](https://mwse.github.io/MWSE/events/calcSpellPrice) event will be triggered.
 	* `repairing` (boolean): *Default*: `false`. If `true`, a [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
 	* `training` (boolean): *Default*: `false`. If `true`, a [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event will be triggered, passing the given `skill` ID.
 	* `count` (number): *Default*: `1`. If `bartering`, the count passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) event.

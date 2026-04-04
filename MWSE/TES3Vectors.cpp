@@ -1012,6 +1012,11 @@ namespace TES3 {
 		maximum = Vector3::MIN;
 	}
 
+	bool BoundingBox::hasUninitializedData() const {
+		return minimum.x == Vector3::MAX.x || minimum.y == Vector3::MAX.y || minimum.z == Vector3::MAX.z
+			|| maximum.x == Vector3::MIN.x || maximum.y == Vector3::MIN.y || maximum.z == Vector3::MIN.z;
+	}
+
 	//
 	// Transform
 	//

@@ -428,23 +428,7 @@ namespace mwse::lua {
 
 	// LuaManager constructor. This is private, as a singleton.
 	LuaManager::LuaManager() {
-		// Open default lua libraries.
-		luaState.open_libraries();
 
-		// Override the default atpanic to print to the log.
-		luaState.set_panic(&panic);
-		luaState.set_exception_handler(&exceptionHandler);
-
-		// Set up our timers.
-		gameTimers = std::make_shared<TimerController>();
-		simulateTimers = std::make_shared<TimerController>();
-		realTimers = std::make_shared<TimerController>();
-
-		// Overwrite the default print function to print to the MWSE log.
-		luaState["print"] = lua_print;
-
-		// Bind our data types.
-		bindData();
 	}
 
 	void LuaManager::bindData() {
@@ -4923,6 +4907,24 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::hook() {
+		// Open default lua libraries.
+		luaState.open_libraries();
+
+		// Override the default atpanic to print to the log.
+		luaState.set_panic(&panic);
+		luaState.set_exception_handler(&exceptionHandler);
+
+		// Set up our timers.
+		gameTimers = std::make_shared<TimerController>();
+		simulateTimers = std::make_shared<TimerController>();
+		realTimers = std::make_shared<TimerController>();
+
+		// Overwrite the default print function to print to the MWSE log.
+		luaState["print"] = lua_print;
+
+		// Bind our data types.
+		bindData();
+
 		// Add core/lib directories to path.
 		{
 			std::stringstream envPath;

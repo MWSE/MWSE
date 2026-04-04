@@ -53,6 +53,26 @@ local result = myObject:__tostring()
 
 ***
 
+### `clampPoint`
+<div class="search_terms" style="display: none">clamppoint</div>
+
+Clamps a given point into the bounding box, given an origin.
+
+```lua
+local result = myObject:clampPoint(point, origin)
+```
+
+**Parameters**:
+
+* `point` ([tes3vector3](../types/tes3vector3.md)): The point to clamp. It is modified as part of this method call.
+* `origin` ([tes3vector3](../types/tes3vector3.md)): The origin to offset the minimum/maximum vectors by.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `copy`
 <div class="search_terms" style="display: none">copy</div>
 
@@ -65,6 +85,32 @@ local result = myObject:copy()
 **Returns**:
 
 * `result` ([tes3boundingBox](../types/tes3boundingBox.md))
+
+***
+
+### `hasUninitializedData`
+<div class="search_terms" style="display: none">hasuninitializeddata, uninitializeddata</div>
+
+Checks to see if any of the vertices in the bounding box remain at a minimum/maximum after a call to `:initialize()`.
+
+```lua
+local result = myObject:hasUninitializedData()
+```
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `initialize`
+<div class="search_terms" style="display: none">initialize</div>
+
+Resets the bounding box so that the minimum and maximum values are set to their maximum opposites. Useful when recalculating the bounding box.
+
+```lua
+myObject:initialize()
+```
 
 ***
 
