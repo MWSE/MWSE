@@ -156,7 +156,7 @@ function this.unregister(eventType, callback, options)
 
 	-- Handle the special case where `doOnce` was used.
 	if doOnceCallbacks[callback] then
-		callback = doOnceCallbacks[callback] 
+		callback = doOnceCallbacks[callback]
 		doOnceCallbacks[callback] = nil -- Won't be needing this anymore.
 	end
 
@@ -192,7 +192,7 @@ function this.isRegistered(eventType, callback, options)
 
 	-- Handle the special case where `doOnce` was used.
 	if doOnceCallbacks[callback] then
-		callback = doOnceCallbacks[callback] 
+		callback = doOnceCallbacks[callback]
 	end
 
 	-- Make sure options is an empty table if nothing else.
@@ -376,25 +376,34 @@ function this.trigger(eventType, payload, options)
 	payload.eventType = eventType
 	payload.eventFilter = options.filter
 
-	local callbacks = table.copy(getEventTable(eventType, options.filter))
-	for _, callback in pairs(callbacks) do
-		-- Inform error notifier of current eventType.
-		errorNotifier.eventType = eventType
+	local t
+	if options.filter ~= nil then
+		local ft = filteredEvents[eventType]
+		t = ft and ft[options.filter]
+	else
+		t = generalEvents[eventType]
+	end
+	local callbacks = t and table.copy(t)
+	if callbacks then
+		for _, callback in pairs(callbacks) do
+			-- Inform error notifier of current eventType.
+			errorNotifier.eventType = eventType
 
-		local status, result = xpcall(callback, onEventError, payload)
-		if (status == false) then
-			result = nil
-		end
+			local status, result = xpcall(callback, onEventError, payload)
+			if (status == false) then
+				result = nil
+			end
 
-		-- Returning non-nil from the callback claims/blocks the event.
-		if (result ~= nil) then
-			payload.claim = true
-			payload.block = true
-		end
+			-- Returning non-nil from the callback claims/blocks the event.
+			if (result ~= nil) then
+				payload.claim = true
+				payload.block = true
+			end
 
-		-- If the event is claimed, do not excute any further events.
-		if (payload.claim) then
-			return payload
+			-- If the event is claimed, do not excute any further events.
+			if (payload.claim) then
+				return payload
+			end
 		end
 	end
 
