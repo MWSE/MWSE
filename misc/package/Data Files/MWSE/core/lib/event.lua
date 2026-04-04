@@ -376,15 +376,10 @@ function this.trigger(eventType, payload, options)
 	payload.eventType = eventType
 	payload.eventFilter = options.filter
 
-	local t
-	if options.filter ~= nil then
-		local ft = filteredEvents[eventType]
-		t = ft and ft[options.filter]
-	else
-		t = generalEvents[eventType]
-	end
-	local callbacks = t and table.copy(t)
-	if callbacks then
+	local filteredCallbacks = getEventTable(eventType, options.filter)
+	-- If events have registered a filter, then run them now. Otherwise, skip this section.
+	if #filteredCallbacks > 0 then
+		local callbacks = table.copy(filteredCallbacks)
 		for _, callback in pairs(callbacks) do
 			-- Inform error notifier of current eventType.
 			errorNotifier.eventType = eventType
