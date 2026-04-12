@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -152,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="DialogLayersWindow.cpp">
       <Filter>Source Files\UI\DialogClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeEngine.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -449,6 +452,9 @@
       <Filter>Header Files\Metadata</Filter>
     </ClInclude>
     <ClInclude Include="DialogProcContext.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeEngine.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="CSDoor.h">

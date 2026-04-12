@@ -1,4 +1,7 @@
 #include "DialogLayersWindow.h"
+
+#include "ThemeEngine.h"
+#include "Settings.h"
 #include "DialogRenderWindow.h"
 #include "RenderWindowSelectionData.h"
 #include "WindowMain.h"
@@ -878,12 +881,24 @@ namespace se::cs::dialog::layer_window {
 
 				// Background
 				if (pDIS->itemState & ODS_SELECTED) {
-					FillRect(pDIS->hDC, &pDIS->rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
-					SetTextColor(pDIS->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
+					if (theme::isEnabled()) {
+						FillRect(pDIS->hDC, &pDIS->rcItem, theme::getCachedBrush(settings.color_theme.packed_selection_bg));
+						SetTextColor(pDIS->hDC, settings.color_theme.packed_selection_text);
+					}
+					else {
+						FillRect(pDIS->hDC, &pDIS->rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
+						SetTextColor(pDIS->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
+					}
 				}
 				else {
-					FillRect(pDIS->hDC, &pDIS->rcItem, GetSysColorBrush(COLOR_WINDOW));
-					SetTextColor(pDIS->hDC, GetSysColor(COLOR_WINDOWTEXT));
+					if (theme::isEnabled()) {
+						FillRect(pDIS->hDC, &pDIS->rcItem, theme::getCachedBrush(settings.color_theme.packed_listview_bg));
+						SetTextColor(pDIS->hDC, settings.color_theme.packed_listview_text);
+					}
+					else {
+						FillRect(pDIS->hDC, &pDIS->rcItem, GetSysColorBrush(COLOR_WINDOW));
+						SetTextColor(pDIS->hDC, GetSysColor(COLOR_WINDOWTEXT));
+					}
 				}
 				SetBkMode(pDIS->hDC, TRANSPARENT);
 
@@ -1225,7 +1240,7 @@ namespace se::cs::dialog::layer_window {
 		wc.lpfnWndProc = LayersWindowProc;
 		wc.hInstance = se::cs::window::main::hInstance::get();
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+		wc.hbrBackground = theme::isEnabled() ? theme::getCachedBrush(settings.color_theme.packed_window_bg) : (HBRUSH)(COLOR_BTNFACE + 1);
 		wc.lpszClassName = "CSSE_LayersWindow";
 		RegisterClassExA(&wc);
 

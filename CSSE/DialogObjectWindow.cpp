@@ -23,6 +23,8 @@
 
 #include "Settings.h"
 
+#include "ThemeEngine.h"
+
 #include "DialogProcContext.h"
 
 namespace se::cs::dialog::object_window {
@@ -322,6 +324,12 @@ namespace se::cs::dialog::object_window {
 					}
 					else if (metadata::isDeprecated(object)) {
 						lplvcd->clrTextBk = settings.color_theme.highlight_deprecated_object_packed_color;
+						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
+					}
+					else if (theme::isEnabled()) {
+						// Apply theme colors as defaults for non-highlighted rows.
+						lplvcd->clrTextBk = settings.color_theme.packed_listview_bg;
+						lplvcd->clrText = settings.color_theme.packed_listview_text;
 						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
 					}
 				}

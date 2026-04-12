@@ -13,6 +13,8 @@
 
 #include "Settings.h"
 
+#include "ThemeEngine.h"
+
 #include "DialogProcContext.h"
 
 namespace se::cs::dialog::cell_window {
@@ -311,6 +313,12 @@ namespace se::cs::dialog::cell_window {
 					else if (object->getModified()) {
 						// Modified color highlighting. Different colors for modified-master or mod-added object.
 						lplvcd->clrTextBk = object->isFromMaster() ? settings.color_theme.highlight_modified_from_master_packed_color : settings.color_theme.highlight_modified_new_object_packed_color;
+						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
+					}
+					else if (theme::isEnabled()) {
+						// Apply theme colors as defaults for non-highlighted rows.
+						lplvcd->clrTextBk = settings.color_theme.packed_listview_bg;
+						lplvcd->clrText = settings.color_theme.packed_listview_text;
 						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
 					}
 				}

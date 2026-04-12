@@ -43,6 +43,7 @@
 
 #include "BuildDate.h"
 #include "Settings.h"
+#include "ThemeEngine.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -608,6 +609,9 @@ namespace se::cs {
 		using memory::writeValueEnforced;
 		using memory::overrideVirtualTableEnforced;
 
+		// Install theme engine (must be before dialog patches so CBT hook catches all windows).
+		theme::install();
+
 		// Patch: Collect crash dumps.
 #ifndef _DEBUG
 		genCallEnforced(0x620DF9, 0x4049B7, reinterpret_cast<DWORD>(patch::onWinMain));
@@ -735,6 +739,7 @@ namespace se::cs {
 	}
 
 	int CSSE::ExitInstance() {
+		theme::shutdown();
 		settings.save();
 
 		return CWinApp::ExitInstance();

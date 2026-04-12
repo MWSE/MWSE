@@ -364,32 +364,191 @@ namespace se::cs {
 	// Color theme
 	// 
 
+	void Settings_t::ColorTheme::applyPreset(const std::string& name) {
+		if (name == "dark") {
+			use_dark_title_bar = true;
+
+			window_bg         = { 30, 30, 30 };
+			control_bg        = { 45, 45, 48 };
+			text_color        = { 220, 220, 220 };
+			text_disabled     = { 128, 128, 128 };
+			selection_bg      = { 51, 102, 153 };
+			selection_text    = { 255, 255, 255 };
+			button_bg         = { 60, 60, 63 };
+			button_text       = { 220, 220, 220 };
+			edit_bg           = { 40, 40, 43 };
+			edit_text         = { 220, 220, 220 };
+			listview_bg       = { 37, 37, 40 };
+			listview_text     = { 220, 220, 220 };
+			listview_header_bg = { 50, 50, 53 };
+			treeview_bg       = { 37, 37, 40 };
+			treeview_text     = { 220, 220, 220 };
+			tab_active_bg     = { 45, 45, 48 };
+			tab_inactive_bg   = { 35, 35, 38 };
+			menu_bg           = { 40, 40, 43 };
+			menu_text         = { 220, 220, 220 };
+			toolbar_bg        = { 45, 45, 48 };
+			statusbar_bg      = { 0, 122, 204 };
+			statusbar_text    = { 255, 255, 255 };
+
+			// Dark-mode row highlight overrides (desaturated for legibility on dark bg).
+			highlight_deleted_object_color          = { 80, 35, 35 };
+			highlight_modified_from_master_color    = { 35, 70, 35 };
+			highlight_modified_new_object_color     = { 35, 55, 80 };
+			highlight_deprecated_object_color       = { 60, 60, 60 };
+		}
+		else {
+			// "light" or "custom" — use struct defaults (already light).
+			// Reset to default light values.
+			use_dark_title_bar = false;
+
+			window_bg         = { 255, 255, 255 };
+			control_bg        = { 255, 255, 255 };
+			text_color        = { 0, 0, 0 };
+			text_disabled     = { 128, 128, 128 };
+			selection_bg      = { 0, 120, 215 };
+			selection_text    = { 255, 255, 255 };
+			button_bg         = { 225, 225, 225 };
+			button_text       = { 0, 0, 0 };
+			edit_bg           = { 255, 255, 255 };
+			edit_text         = { 0, 0, 0 };
+			listview_bg       = { 255, 255, 255 };
+			listview_text     = { 0, 0, 0 };
+			listview_header_bg = { 240, 240, 240 };
+			treeview_bg       = { 255, 255, 255 };
+			treeview_text     = { 0, 0, 0 };
+			tab_active_bg     = { 255, 255, 255 };
+			tab_inactive_bg   = { 240, 240, 240 };
+			menu_bg           = { 255, 255, 255 };
+			menu_text         = { 0, 0, 0 };
+			toolbar_bg        = { 240, 240, 240 };
+			statusbar_bg      = { 240, 240, 240 };
+			statusbar_text    = { 0, 0, 0 };
+
+			highlight_deleted_object_color          = { 255, 235, 235 };
+			highlight_modified_from_master_color    = { 235, 255, 235 };
+			highlight_modified_new_object_color     = { 215, 240, 255 };
+			highlight_deprecated_object_color       = { 225, 225, 225 };
+		}
+	}
+
 	void Settings_t::ColorTheme::from_toml(const toml::value& v) {
+		// Load the preset first, then allow per-color overrides.
+		preset = toml::find_or(v, "preset", preset);
+		enabled = toml::find_or(v, "enabled", enabled);
+
+		// Apply the preset to populate defaults.
+		if (enabled) {
+			applyPreset(preset);
+		}
+
+		// Override with any explicit values from TOML.
+		use_dark_title_bar = toml::find_or(v, "use_dark_title_bar", use_dark_title_bar);
+
 		// Modified object highlight
 		highlight_deleted_object_color = toml::find_or(v, "highlight_deleted_object_color", highlight_deleted_object_color);
 		highlight_modified_from_master_color = toml::find_or(v, "highlight_modified_from_master_color", highlight_modified_from_master_color);
 		highlight_modified_new_object_color = toml::find_or(v, "highlight_modified_new_object_color", highlight_modified_new_object_color);
 		highlight_deprecated_object_color = toml::find_or(v, "highlight_deprecated_object_color", highlight_deprecated_object_color);
+
+		// Full semantic palette overrides
+		window_bg = toml::find_or(v, "window_bg", window_bg);
+		control_bg = toml::find_or(v, "control_bg", control_bg);
+		text_color = toml::find_or(v, "text_color", text_color);
+		text_disabled = toml::find_or(v, "text_disabled", text_disabled);
+		selection_bg = toml::find_or(v, "selection_bg", selection_bg);
+		selection_text = toml::find_or(v, "selection_text", selection_text);
+		button_bg = toml::find_or(v, "button_bg", button_bg);
+		button_text = toml::find_or(v, "button_text", button_text);
+		edit_bg = toml::find_or(v, "edit_bg", edit_bg);
+		edit_text = toml::find_or(v, "edit_text", edit_text);
+		listview_bg = toml::find_or(v, "listview_bg", listview_bg);
+		listview_text = toml::find_or(v, "listview_text", listview_text);
+		listview_header_bg = toml::find_or(v, "listview_header_bg", listview_header_bg);
+		treeview_bg = toml::find_or(v, "treeview_bg", treeview_bg);
+		treeview_text = toml::find_or(v, "treeview_text", treeview_text);
+		tab_active_bg = toml::find_or(v, "tab_active_bg", tab_active_bg);
+		tab_inactive_bg = toml::find_or(v, "tab_inactive_bg", tab_inactive_bg);
+		menu_bg = toml::find_or(v, "menu_bg", menu_bg);
+		menu_text = toml::find_or(v, "menu_text", menu_text);
+		toolbar_bg = toml::find_or(v, "toolbar_bg", toolbar_bg);
+		statusbar_bg = toml::find_or(v, "statusbar_bg", statusbar_bg);
+		statusbar_text = toml::find_or(v, "statusbar_text", statusbar_text);
 	}
 
 	toml::value Settings_t::ColorTheme::into_toml() const {
 		return toml::value(
 			{
+				// Theme system settings
+				{ "preset", preset },
+				{ "enabled", enabled },
+				{ "use_dark_title_bar", use_dark_title_bar },
+
 				// Modified object highlight
 				{ "highlight_deleted_object_color", highlight_deleted_object_color },
 				{ "highlight_modified_from_master_color", highlight_modified_from_master_color },
 				{ "highlight_modified_new_object_color", highlight_modified_new_object_color },
 				{ "highlight_deprecated_object_color", highlight_deprecated_object_color },
+
+				// Semantic palette
+				{ "window_bg", window_bg },
+				{ "control_bg", control_bg },
+				{ "text_color", text_color },
+				{ "text_disabled", text_disabled },
+				{ "selection_bg", selection_bg },
+				{ "selection_text", selection_text },
+				{ "button_bg", button_bg },
+				{ "button_text", button_text },
+				{ "edit_bg", edit_bg },
+				{ "edit_text", edit_text },
+				{ "listview_bg", listview_bg },
+				{ "listview_text", listview_text },
+				{ "listview_header_bg", listview_header_bg },
+				{ "treeview_bg", treeview_bg },
+				{ "treeview_text", treeview_text },
+				{ "tab_active_bg", tab_active_bg },
+				{ "tab_inactive_bg", tab_inactive_bg },
+				{ "menu_bg", menu_bg },
+				{ "menu_text", menu_text },
+				{ "toolbar_bg", toolbar_bg },
+				{ "statusbar_bg", statusbar_bg },
+				{ "statusbar_text", statusbar_text },
 			}
 		);
 	}
 
 	void Settings_t::ColorTheme::packColors() {
+		// Existing highlight colors
 		highlight_deleted_object_packed_color = RGB(highlight_deleted_object_color[0], highlight_deleted_object_color[1], highlight_deleted_object_color[2]);
 		highlight_modified_from_master_packed_color = RGB(highlight_modified_from_master_color[0], highlight_modified_from_master_color[1], highlight_modified_from_master_color[2]);
 		highlight_modified_new_object_packed_color = RGB(highlight_modified_new_object_color[0], highlight_modified_new_object_color[1], highlight_modified_new_object_color[2]);
 		highlight_deprecated_object_packed_color = RGB(highlight_deprecated_object_color[0], highlight_deprecated_object_color[1], highlight_deprecated_object_color[2]);
+
+		// New semantic palette
+		packed_window_bg = RGB(window_bg[0], window_bg[1], window_bg[2]);
+		packed_control_bg = RGB(control_bg[0], control_bg[1], control_bg[2]);
+		packed_text_color = RGB(text_color[0], text_color[1], text_color[2]);
+		packed_text_disabled = RGB(text_disabled[0], text_disabled[1], text_disabled[2]);
+		packed_selection_bg = RGB(selection_bg[0], selection_bg[1], selection_bg[2]);
+		packed_selection_text = RGB(selection_text[0], selection_text[1], selection_text[2]);
+		packed_button_bg = RGB(button_bg[0], button_bg[1], button_bg[2]);
+		packed_button_text = RGB(button_text[0], button_text[1], button_text[2]);
+		packed_edit_bg = RGB(edit_bg[0], edit_bg[1], edit_bg[2]);
+		packed_edit_text = RGB(edit_text[0], edit_text[1], edit_text[2]);
+		packed_listview_bg = RGB(listview_bg[0], listview_bg[1], listview_bg[2]);
+		packed_listview_text = RGB(listview_text[0], listview_text[1], listview_text[2]);
+		packed_listview_header_bg = RGB(listview_header_bg[0], listview_header_bg[1], listview_header_bg[2]);
+		packed_treeview_bg = RGB(treeview_bg[0], treeview_bg[1], treeview_bg[2]);
+		packed_treeview_text = RGB(treeview_text[0], treeview_text[1], treeview_text[2]);
+		packed_tab_active_bg = RGB(tab_active_bg[0], tab_active_bg[1], tab_active_bg[2]);
+		packed_tab_inactive_bg = RGB(tab_inactive_bg[0], tab_inactive_bg[1], tab_inactive_bg[2]);
+		packed_menu_bg = RGB(menu_bg[0], menu_bg[1], menu_bg[2]);
+		packed_menu_text = RGB(menu_text[0], menu_text[1], menu_text[2]);
+		packed_toolbar_bg = RGB(toolbar_bg[0], toolbar_bg[1], toolbar_bg[2]);
+		packed_statusbar_bg = RGB(statusbar_bg[0], statusbar_bg[1], statusbar_bg[2]);
+		packed_statusbar_text = RGB(statusbar_text[0], statusbar_text[1], statusbar_text[2]);
 	}
+
 
 	//
 	// QuickStart

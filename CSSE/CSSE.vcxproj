@@ -75,7 +75,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;dbghelp.lib;dwmapi.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -116,7 +116,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;dbghelp.lib;dwmapi.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -220,6 +220,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="RenderWindowWidgets.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="TextureRenderer.cpp" />
+    <ClCompile Include="ThemeEngine.cpp" />
     <ClCompile Include="TomlUtil.cpp" />
     <ClCompile Include="WindowMain.cpp" />
     <ClCompile Include="WinUIUtil.cpp" />
@@ -331,6 +332,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="RenderWindowWidgets.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="TextureRenderer.h" />
+    <ClInclude Include="ThemeEngine.h" />
     <ClInclude Include="TomlUtil.h" />
     <ClInclude Include="WindowMain.h" />
     <ClInclude Include="WinUIUtil.h" />

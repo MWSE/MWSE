@@ -173,20 +173,75 @@ namespace se::cs {
 		} landscape_window;
 
 		struct ColorTheme {
-			std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
-			std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
-			std::array<unsigned char, 3> highlight_modified_new_object_color = { 215, 240, 255 };
-			std::array<unsigned char, 3> highlight_deprecated_object_color = { 225, 225, 225 };
+		// === Existing highlight colors (preserved) ===
+		std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
+		std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
+		std::array<unsigned char, 3> highlight_modified_new_object_color = { 215, 240, 255 };
+		std::array<unsigned char, 3> highlight_deprecated_object_color = { 225, 225, 225 };
 
-			unsigned int highlight_deleted_object_packed_color = 0xFFFFFF;
-			unsigned int highlight_modified_from_master_packed_color = 0xFFFFFF;
-			unsigned int highlight_modified_new_object_packed_color = 0xFFFFFF;
-			unsigned int highlight_deprecated_object_packed_color = 0xFFFFFF;
+		unsigned int highlight_deleted_object_packed_color = 0xFFFFFF;
+		unsigned int highlight_modified_from_master_packed_color = 0xFFFFFF;
+		unsigned int highlight_modified_new_object_packed_color = 0xFFFFFF;
+		unsigned int highlight_deprecated_object_packed_color = 0xFFFFFF;
 
-			void from_toml(const toml::value& v);
-			toml::value into_toml() const;
-			void packColors();
-		} color_theme;
+		// === Theme system settings ===
+		std::string preset = "light";     // "light" | "dark" | "custom"
+		bool enabled = false;             // Master switch for full UI theming
+		bool use_dark_title_bar = false;  // DwmSetWindowAttribute dark mode
+
+		// === Semantic palette (defaults are light-mode; applyPreset("dark") overrides) ===
+		std::array<unsigned char, 3> window_bg         = { 255, 255, 255 };
+		std::array<unsigned char, 3> control_bg         = { 255, 255, 255 };
+		std::array<unsigned char, 3> text_color          = { 0, 0, 0 };
+		std::array<unsigned char, 3> text_disabled       = { 128, 128, 128 };
+		std::array<unsigned char, 3> selection_bg        = { 0, 120, 215 };
+		std::array<unsigned char, 3> selection_text      = { 255, 255, 255 };
+		std::array<unsigned char, 3> button_bg           = { 225, 225, 225 };
+		std::array<unsigned char, 3> button_text         = { 0, 0, 0 };
+		std::array<unsigned char, 3> edit_bg             = { 255, 255, 255 };
+		std::array<unsigned char, 3> edit_text           = { 0, 0, 0 };
+		std::array<unsigned char, 3> listview_bg         = { 255, 255, 255 };
+		std::array<unsigned char, 3> listview_text       = { 0, 0, 0 };
+		std::array<unsigned char, 3> listview_header_bg  = { 240, 240, 240 };
+		std::array<unsigned char, 3> treeview_bg         = { 255, 255, 255 };
+		std::array<unsigned char, 3> treeview_text       = { 0, 0, 0 };
+		std::array<unsigned char, 3> tab_active_bg       = { 255, 255, 255 };
+		std::array<unsigned char, 3> tab_inactive_bg     = { 240, 240, 240 };
+		std::array<unsigned char, 3> menu_bg             = { 255, 255, 255 };
+		std::array<unsigned char, 3> menu_text           = { 0, 0, 0 };
+		std::array<unsigned char, 3> toolbar_bg          = { 240, 240, 240 };
+		std::array<unsigned char, 3> statusbar_bg        = { 240, 240, 240 };
+		std::array<unsigned char, 3> statusbar_text      = { 0, 0, 0 };
+
+		// === Packed COLORREF cache (computed by packColors) ===
+		unsigned int packed_window_bg = 0xFFFFFF;
+		unsigned int packed_control_bg = 0xFFFFFF;
+		unsigned int packed_text_color = 0x000000;
+		unsigned int packed_text_disabled = 0x808080;
+		unsigned int packed_selection_bg = 0xD77800;
+		unsigned int packed_selection_text = 0xFFFFFF;
+		unsigned int packed_button_bg = 0xE1E1E1;
+		unsigned int packed_button_text = 0x000000;
+		unsigned int packed_edit_bg = 0xFFFFFF;
+		unsigned int packed_edit_text = 0x000000;
+		unsigned int packed_listview_bg = 0xFFFFFF;
+		unsigned int packed_listview_text = 0x000000;
+		unsigned int packed_listview_header_bg = 0xF0F0F0;
+		unsigned int packed_treeview_bg = 0xFFFFFF;
+		unsigned int packed_treeview_text = 0x000000;
+		unsigned int packed_tab_active_bg = 0xFFFFFF;
+		unsigned int packed_tab_inactive_bg = 0xF0F0F0;
+		unsigned int packed_menu_bg = 0xFFFFFF;
+		unsigned int packed_menu_text = 0x000000;
+		unsigned int packed_toolbar_bg = 0xF0F0F0;
+		unsigned int packed_statusbar_bg = 0xF0F0F0;
+		unsigned int packed_statusbar_text = 0x000000;
+
+		void applyPreset(const std::string& name);
+		void from_toml(const toml::value& v);
+		toml::value into_toml() const;
+		void packColors();
+	} color_theme;
 
 		struct QuickstartSettings {
 			bool enabled = false;
