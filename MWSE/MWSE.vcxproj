@@ -23,6 +23,7 @@
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
+    <ClInclude Include="LuaMagicAbsorbEvent.h" />
     <ClInclude Include="LuaMagicReflectedEvent.h" />
     <ClInclude Include="LuaMagicReflectEvent.h" />
     <ClInclude Include="LuaMagicSelectionChangedEvent.h" />
@@ -655,6 +656,7 @@
     <ClCompile Include="LuaLoadGameEvent.cpp" />
     <ClCompile Include="LuaMagicCastedEvent.cpp" />
     <ClCompile Include="LuaMagicEffectRemovedEvent.cpp" />
+    <ClCompile Include="LuaMagicAbsorbEvent.cpp" />
     <ClCompile Include="LuaMagicReflectedEvent.cpp" />
     <ClCompile Include="LuaMagicReflectEvent.cpp" />
     <ClCompile Include="LuaMagicSelectionChangedEvent.cpp" />

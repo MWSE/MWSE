@@ -250,6 +250,7 @@
 #include "LuaLevelUpEvent.h"
 #include "LuaLoadGameEvent.h"
 #include "LuaLoadedGameEvent.h"
+#include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectEvent.h"
@@ -4698,10 +4699,64 @@ namespace mwse::lua {
 	const size_t patchConsumeItemSwallowArgs_size = 2;
 
 	//
-	// Patch: Magic reflect events.
+	// Patch: Magic absorb/reflect events.
 	//
-	
+
+	const auto vfxAbsorbPtr = reinterpret_cast<TES3::PhysicalObject**>(0x7CF114);
 	const auto vfxReflectPtr = reinterpret_cast<TES3::PhysicalObject**>(0x7CF110);
+
+	bool __stdcall OnMagicAbsorb2(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* hitReference, TES3::ActiveMagicEffect* absorbEffect, int effectIndex) {
+		float absorbChance = float(absorbEffect->unresistedMagnitude);
+
+		if (mwse::lua::event::MagicAbsorbEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicAbsorbEvent(sourceInstance, hitReference, absorbEffect, absorbChance));
+			if (result.valid()) {
+				if (result.get_or("block", false)) {
+					return false;
+				}
+				absorbChance = result["absorbChance"];
+			}
+		}
+
+		int roll = tes3::rand() % 100;
+		bool success = roll < absorbChance;
+		auto absorbVfx = *vfxAbsorbPtr;
+		if (success && absorbVfx) {
+			sourceInstance->playSpellVFX(1.0f, TES3::Vector3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
+		}
+
+		return success;
+	}
+
+	__declspec(naked) bool OnMagicAbsorb() {
+		__asm {
+			mov ecx, [esp + 0CCh]  // mov ecx, effectIndex
+			lea eax, [edi + 8]     // lea eax, [edi + ActiveMagicEffectNode.data]
+			push ecx               // push effectIndex
+			push eax               // push absorbEffect
+			push ebp               // push hitReference
+			push ebx               // push magicSourceInstance
+			call OnMagicAbsorb2
+			ret
+		}
+	}
+
+	__declspec(naked) bool patchMagicAbsorb() {
+		__asm {
+			call OnMagicAbsorb
+			test al, al
+			__asm _emit 0x74 __asm _emit 0x4A  // jz short 0x516FAE
+			__asm _emit 0xEB __asm _emit 0x43  // jmp short 0x516FA9
+			nop
+			nop
+			nop
+			nop
+			nop
+		}
+	}
+	const size_t patchMagicAbsorb_size = 0x10;
 
 	bool __stdcall OnMagicReflect2(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* hitReference, TES3::ActiveMagicEffect* reflectEffect) {
 		float reflectChance = float(reflectEffect->unresistedMagnitude);
@@ -5281,6 +5336,10 @@ namespace mwse::lua {
 		genCallEnforced(0x512A17, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Retire Effects
 		genCallEnforced(0x515AEF, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Process
 		genCallEnforced(0x518FCC, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Spell Effect Event
+
+		// Event: Magic absorb
+		writePatchCodeUnprotected(0x516F5B, (BYTE*)&patchMagicAbsorb, patchMagicAbsorb_size);
+		genCallUnprotected(0x516F5B, reinterpret_cast<DWORD>(OnMagicAbsorb));
 
 		// Event: Reflect magic
 		genNOPUnprotected(0x516EA0, 0x1C);
@@ -6659,7 +6718,7 @@ namespace mwse::lua {
 		genCallEnforced(0x4EEFAA, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
 		genCallEnforced(0x4F026F, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
 		genCallEnforced(0x4F0C83, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
-		
+
 		// Also clean up references, but do it just before deletion so we have more information.
 		auto referenceObjectDestructor = &TES3::Reference::dtor;
 		genJumpEnforced(0x49A675, 0x4E45C0, *reinterpret_cast<DWORD*>(&referenceObjectDestructor));

@@ -95,6 +95,7 @@
 #include "LuaLevelUpEvent.h"
 #include "LuaLoadedGameEvent.h"
 #include "LuaLoadGameEvent.h"
+#include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectedEvent.h"
@@ -275,6 +276,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["load"] = sol::property(&LoadGameEvent::getEventEnabled, &LoadGameEvent::setEventEnabled);
 		usertypeDefinition["loaded"] = sol::property(&LoadedGameEvent::getEventEnabled, &LoadedGameEvent::setEventEnabled);
 		usertypeDefinition["lockPick"] = sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled);
+		usertypeDefinition["magicAbsorb"] = sol::property(&MagicAbsorbEvent::getEventEnabled, &MagicAbsorbEvent::setEventEnabled);
 		usertypeDefinition["magicCasted"] = sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled);
 		usertypeDefinition["magicEffectRemoved"] = sol::property(&MagicEffectRemovedEvent::getEventEnabled, &MagicEffectRemovedEvent::setEventEnabled);
 		usertypeDefinition["magicReflect"] = sol::property(&MagicReflectEvent::getEventEnabled, &MagicReflectEvent::setEventEnabled);
