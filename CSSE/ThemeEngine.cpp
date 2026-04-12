@@ -282,8 +282,12 @@ namespace se::cs::theme {
 
 	static bool isPushButtonStyle(LONG style) {
 		const auto buttonType = style & BS_TYPEMASK;
+		// BS_OWNERDRAW (0xB) overwrites the type bits when ORed onto BS_PUSHBUTTON (0x0)
+		// or BS_DEFPUSHBUTTON (0x1), so recognise it here so drawOwnerDrawButton continues
+		// to handle buttons that were already converted to owner-draw by themeControl.
 		return buttonType == BS_PUSHBUTTON
 			|| buttonType == BS_DEFPUSHBUTTON
+			|| buttonType == BS_OWNERDRAW
 			|| (style & BS_PUSHLIKE) != 0;
 	}
 
