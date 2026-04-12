@@ -34,5 +34,9 @@
 		CMFCPropertyGridProperty* m_PropertyThemePreset = nullptr;
 		CMFCPropertyGridProperty* m_PropertyThemeEnabled = nullptr;
 		CMFCPropertyGridProperty* m_PropertyThemeDarkTitleBar = nullptr;
+
+		// Guard against re-entrant AFX_WM_PROPERTY_CHANGED notifications fired
+		// when SyncThemePropertyValues programmatically updates color properties.
+		bool m_bSyncingTheme = false;
 	};
 //}

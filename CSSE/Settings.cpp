@@ -392,6 +392,7 @@ namespace se::cs {
 			toolbar_bg        = { 45, 45, 48 };
 			statusbar_bg      = { 0, 122, 204 };
 			statusbar_text    = { 255, 255, 255 };
+			border_color      = { 70, 70, 73 };
 
 			// Dark-mode row highlight overrides (desaturated for legibility on dark bg).
 			highlight_deleted_object_color          = { 80, 35, 35 };
@@ -426,6 +427,7 @@ namespace se::cs {
 			toolbar_bg        = { 240, 240, 240 };
 			statusbar_bg      = { 240, 240, 240 };
 			statusbar_text    = { 0, 0, 0 };
+			border_color      = { 160, 160, 160 };
 
 			highlight_deleted_object_color          = { 255, 235, 235 };
 			highlight_modified_from_master_color    = { 235, 255, 235 };
@@ -479,6 +481,7 @@ namespace se::cs {
 		toolbar_bg = toml::find_or(v, "toolbar_bg", toolbar_bg);
 		statusbar_bg = toml::find_or(v, "statusbar_bg", statusbar_bg);
 		statusbar_text = toml::find_or(v, "statusbar_text", statusbar_text);
+		border_color = toml::find_or(v, "border_color", border_color);
 	}
 
 	toml::value Settings_t::ColorTheme::into_toml() const {
@@ -518,6 +521,7 @@ namespace se::cs {
 				{ "toolbar_bg", toolbar_bg },
 				{ "statusbar_bg", statusbar_bg },
 				{ "statusbar_text", statusbar_text },
+				{ "border_color", border_color },
 			}
 		);
 	}
@@ -552,6 +556,7 @@ namespace se::cs {
 		packed_toolbar_bg = RGB(toolbar_bg[0], toolbar_bg[1], toolbar_bg[2]);
 		packed_statusbar_bg = RGB(statusbar_bg[0], statusbar_bg[1], statusbar_bg[2]);
 		packed_statusbar_text = RGB(statusbar_text[0], statusbar_text[1], statusbar_text[2]);
+		packed_border_color = RGB(border_color[0], border_color[1], border_color[2]);
 	}
 
 

@@ -212,6 +212,7 @@ namespace se::cs {
 		std::array<unsigned char, 3> toolbar_bg          = { 240, 240, 240 };
 		std::array<unsigned char, 3> statusbar_bg        = { 240, 240, 240 };
 		std::array<unsigned char, 3> statusbar_text      = { 0, 0, 0 };
+		std::array<unsigned char, 3> border_color        = { 160, 160, 160 };
 
 		// === Packed COLORREF cache (computed by packColors) ===
 		unsigned int packed_window_bg = 0xFFFFFF;
@@ -236,6 +237,7 @@ namespace se::cs {
 		unsigned int packed_toolbar_bg = 0xF0F0F0;
 		unsigned int packed_statusbar_bg = 0xF0F0F0;
 		unsigned int packed_statusbar_text = 0x000000;
+		unsigned int packed_border_color = 0xA0A0A0;
 
 		void applyPreset(const std::string& name);
 		void from_toml(const toml::value& v);

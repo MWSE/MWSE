@@ -2,24 +2,12 @@
 
 #include "CDataBoundPropertyGridProperty.h"
 
+#include "LogUtil.h"
 #include "Settings.h"
 #include "ThemeEngine.h"
 
 namespace {
 	using namespace se::cs;
-
-	COLORREF darkenColor(COLORREF color, double amount) {
-		amount = std::clamp(amount, 0.0, 1.0);
-		const auto scaleChannel = [amount](BYTE channel) {
-			return static_cast<BYTE>(std::clamp(
-				static_cast<int>(std::lround(channel * (1.0 - amount))),
-				0,
-				255
-			));
-		};
-
-		return RGB(scaleChannel(GetRValue(color)), scaleChannel(GetGValue(color)), scaleChannel(GetBValue(color)));
-	}
 
 	CMFCPropertyGridProperty* addThemeColorProperty(CMFCPropertyGridProperty* parent, const CString& name, std::array<unsigned char, 3>* value, const CString& description) {
 		auto* property = new CDataBoundPropertyGridColorProperty(name, value, description);
@@ -97,6 +85,7 @@ void DialogCSSESettings::BuildPropertyGrid() {
 	addThemeColorProperty(m_GroupTheme, "Toolbar Background", &se::cs::settings.color_theme.toolbar_bg, "Toolbar background.");
 	addThemeColorProperty(m_GroupTheme, "Status Bar Background", &se::cs::settings.color_theme.statusbar_bg, "Status bar background.");
 	addThemeColorProperty(m_GroupTheme, "Status Bar Text", &se::cs::settings.color_theme.statusbar_text, "Status bar text color.");
+	addThemeColorProperty(m_GroupTheme, "Border Color", &se::cs::settings.color_theme.border_color, "Border color for buttons, tabs, list headers, and status bar cells.");
 	addThemeColorProperty(m_GroupTheme, "Deleted Highlight", &se::cs::settings.color_theme.highlight_deleted_object_color, "Highlight for deleted records.");
 	addThemeColorProperty(m_GroupTheme, "Modified Master Highlight", &se::cs::settings.color_theme.highlight_modified_from_master_color, "Highlight for changed records that come from a master file.");
 	addThemeColorProperty(m_GroupTheme, "Modified New Highlight", &se::cs::settings.color_theme.highlight_modified_new_object_color, "Highlight for changed records created in the active file.");
@@ -177,7 +166,7 @@ void DialogCSSESettings::ApplyThemeToPropertyGrid() {
 			ct.packed_text_color,
 			ct.packed_control_bg,
 			ct.packed_text_color,
-			darkenColor(ct.packed_control_bg, 0.20)
+			ct.packed_border_color
 		);
 	}
 	else {
@@ -224,30 +213,88 @@ bool DialogCSSESettings::IsThemeProperty(const CMFCPropertyGridProperty* propert
 }
 
 afx_msg LRESULT DialogCSSESettings::OnPropertyChanged(WPARAM wParam, LPARAM lParam) {
-	auto* changedProperty = reinterpret_cast<CMFCPropertyGridProperty*>(lParam);
-	if (changedProperty == nullptr) {
+	using se::cs::log::stream;
+
+	// Ignore notifications fired by our own programmatic SetValue/SetColor calls.
+	if (m_bSyncingTheme) {
+		stream << "[Theme] OnPropertyChanged: suppressed re-entrant notification." << std::endl;
 		return 0;
 	}
 
-	if (changedProperty == m_PropertyThemePreset) {
-		if (se::cs::settings.color_theme.preset == "light" || se::cs::settings.color_theme.preset == "dark") {
-			se::cs::settings.color_theme.applyPreset(se::cs::settings.color_theme.preset);
+	auto* changedProperty = reinterpret_cast<CMFCPropertyGridProperty*>(lParam);
+	if (changedProperty == nullptr) {
+		stream << "[Theme] OnPropertyChanged: null property, ignoring." << std::endl;
+		return 0;
+	}
+
+	// AFX_WM_PROPERTY_CHANGED fires before OnUpdateValue() for combo/dropdown properties.
+	// Manually write the current display value to settings so the rest of this handler
+	// sees the correct up-to-date value regardless of MFC's internal ordering.
+	if (auto* strProp = dynamic_cast<CDataBoundPropertyGridStringProperty*>(changedProperty)) {
+		CString val = strProp->GetValue();
+		if (auto* data = reinterpret_cast<std::string*>(strProp->GetData()))
+			*data = CStringA(val).GetString();
+	}
+	else if (auto* colorProp = dynamic_cast<CDataBoundPropertyGridColorProperty*>(changedProperty)) {
+		if (auto* data = reinterpret_cast<std::array<unsigned char, 3>*>(colorProp->GetData())) {
+			const COLORREF color = colorProp->GetColor();
+			(*data)[0] = GetRValue(color);
+			(*data)[1] = GetGValue(color);
+			(*data)[2] = GetBValue(color);
 		}
 	}
-	else if (IsThemeProperty(changedProperty)
+	else if (auto* boolProp = dynamic_cast<CDataBoundPropertyGridProperty*>(changedProperty)) {
+		const COleVariant val = boolProp->GetValue();
+		if (auto* data = reinterpret_cast<bool*>(boolProp->GetData())) {
+			if (val.vt == VT_BOOL)
+				*data = (val.boolVal == VARIANT_TRUE);
+			else if (val.vt == VT_BSTR) {
+				CStringW s(val.bstrVal);
+				*data = (s.CompareNoCase(L"True") == 0);
+			}
+		}
+	}
+
+	const bool isTheme = IsThemeProperty(changedProperty);
+	stream << "[Theme] OnPropertyChanged: property=" << CStringA(changedProperty->GetName()).GetString()
+		<< " isTheme=" << isTheme
+		<< " preset=" << se::cs::settings.color_theme.preset
+		<< " enabled=" << se::cs::settings.color_theme.enabled
+		<< std::endl;
+
+	if (changedProperty == m_PropertyThemePreset) {
+		const auto& preset = se::cs::settings.color_theme.preset;
+		stream << "[Theme] Preset changed to: " << preset << std::endl;
+		if (preset == "light" || preset == "dark") {
+			se::cs::settings.color_theme.applyPreset(preset);
+			// Selecting a named preset implicitly enables/disables theming so the
+			// user only needs one action — picking "dark" turns it on, "light" turns it off.
+			se::cs::settings.color_theme.enabled = (preset == "dark");
+			stream << "[Theme] applyPreset done. enabled=" << se::cs::settings.color_theme.enabled << std::endl;
+		}
+	}
+	else if (isTheme
 		&& changedProperty != m_PropertyThemeEnabled
 		&& changedProperty != m_PropertyThemeDarkTitleBar) {
 		se::cs::settings.color_theme.preset = "custom";
+		stream << "[Theme] Color override — preset set to custom." << std::endl;
 	}
 
-	if (IsThemeProperty(changedProperty)) {
+	if (isTheme) {
 		se::cs::settings.color_theme.packColors();
+		m_bSyncingTheme = true;
 		SyncThemePropertyValues(m_GroupTheme);
 		ApplyThemeToPropertyGrid();
+		m_bSyncingTheme = false;
+		// Save before refresh so the file timestamp is already up-to-date when
+		// refresh() captures g_LastThemeWriteTime, preventing a spurious hot-reload.
+		se::cs::settings.save();
+		stream << "[Theme] Saved. Calling theme::refresh(). enabled=" << se::cs::settings.color_theme.enabled << std::endl;
 		theme::refresh();
+		stream << "[Theme] theme::refresh() returned." << std::endl;
+	} else {
+		se::cs::settings.save();
 	}
-
-	se::cs::settings.save();
 	return 0;
 }
 

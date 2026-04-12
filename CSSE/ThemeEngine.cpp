@@ -163,6 +163,120 @@ namespace se::cs::theme {
 	}
 
 	//
+	// SetPreferredAppMode — ordinal 135 in uxtheme.dll (Win10+).
+	// ForceDark (2) makes Explorer::ScrollBar and other supported controls render dark.
+	// AllowDarkModeForWindow — ordinal 133, enables dark mode for a specific HWND.
+	//
+
+	using SetPreferredAppModeFn = int(WINAPI*)(int);
+	static SetPreferredAppModeFn g_pSetPreferredAppMode = nullptr;
+	static bool g_AppModeChecked = false;
+
+	using AllowDarkModeForWindowFn = bool(WINAPI*)(HWND, bool);
+	static AllowDarkModeForWindowFn g_pAllowDarkModeForWindow = nullptr;
+	static bool g_AllowDarkChecked = false;
+
+	static void ensureAppModeFunctions() {
+		HMODULE hUx = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		if (!hUx) return;
+
+		if (!g_AppModeChecked) {
+			g_AppModeChecked = true;
+			g_pSetPreferredAppMode = (SetPreferredAppModeFn)GetProcAddress(hUx, MAKEINTRESOURCEA(135));
+		}
+		if (!g_AllowDarkChecked) {
+			g_AllowDarkChecked = true;
+			g_pAllowDarkModeForWindow = (AllowDarkModeForWindowFn)GetProcAddress(hUx, MAKEINTRESOURCEA(133));
+		}
+	}
+
+	static void updatePreferredAppMode() {
+		ensureAppModeFunctions();
+		if (g_pSetPreferredAppMode) {
+			// 2 = ForceDark, 0 = Default
+			g_pSetPreferredAppMode(isEnabled() ? 2 : 0);
+		}
+	}
+
+	static void applyAllowDarkMode(HWND hWnd) {
+		if (!isEnabled()) return;
+		ensureAppModeFunctions();
+		if (g_pAllowDarkModeForWindow) {
+			g_pAllowDarkModeForWindow(hWnd, true);
+		}
+	}
+
+	//
+	// Dark scrollbar fix — patches comctl32's delay-load IAT slot for OpenNcThemeData
+	// (ordinal 49 in uxtheme.dll) to redirect "ScrollBar" → "Explorer::ScrollBar".
+	// Explorer::ScrollBar has a dark variant that respects the app's preferred mode.
+	// Technique from: https://github.com/ysc3839/win32-darkmode (MIT)
+	//
+
+	using fnOpenNcThemeData = HTHEME(WINAPI*)(HWND, LPCWSTR);
+	static fnOpenNcThemeData _OpenNcThemeData = nullptr;
+
+	static HTHEME WINAPI myOpenNcThemeData(HWND hWnd, LPCWSTR classList) {
+		if (wcscmp(classList, L"ScrollBar") == 0) {
+			hWnd = nullptr;
+			classList = L"Explorer::ScrollBar";
+		}
+		return _OpenNcThemeData(hWnd, classList);
+	}
+
+	// Minimal PE helpers (inlined from IatHook.h, MIT licensed, ysc3839/win32-darkmode).
+	template<typename T>
+	T rva2va(void* base, DWORD rva) {
+		return reinterpret_cast<T>(reinterpret_cast<ULONG_PTR>(base) + rva);
+	}
+
+	static PIMAGE_THUNK_DATA findDelayLoadThunkByOrdinal(void* moduleBase, const char* dllName, uint16_t ordinal) {
+		auto* dosHdr = reinterpret_cast<PIMAGE_DOS_HEADER>(moduleBase);
+		auto* ntHdr = rva2va<PIMAGE_NT_HEADERS>(moduleBase, dosHdr->e_lfanew);
+		auto& dataDir = ntHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
+		if (!dataDir.VirtualAddress) return nullptr;
+
+		auto* desc = rva2va<PIMAGE_DELAYLOAD_DESCRIPTOR>(moduleBase, dataDir.VirtualAddress);
+		for (; desc->DllNameRVA; ++desc) {
+			if (_stricmp(rva2va<LPCSTR>(moduleBase, desc->DllNameRVA), dllName) != 0) continue;
+
+			auto* nameThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportNameTableRVA);
+			auto* addrThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportAddressTableRVA);
+			for (; nameThunk->u1.Ordinal; ++nameThunk, ++addrThunk) {
+				if (IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal) &&
+					IMAGE_ORDINAL(nameThunk->u1.Ordinal) == ordinal)
+					return addrThunk;
+			}
+		}
+		return nullptr;
+	}
+
+	static void fixDarkScrollBar() {
+		static bool s_Applied = false;
+		if (s_Applied) return;
+		s_Applied = true;
+
+		HMODULE hUxtheme = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		if (!hUxtheme) return;
+
+		_OpenNcThemeData = (fnOpenNcThemeData)GetProcAddress(hUxtheme, MAKEINTRESOURCEA(49));
+		if (!_OpenNcThemeData) return;
+
+		HMODULE hComctl = LoadLibraryExW(L"comctl32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		if (!hComctl) return;
+
+		auto* addr = findDelayLoadThunkByOrdinal(hComctl, "uxtheme.dll", 49);
+		if (!addr) return;
+
+		DWORD oldProtect = 0;
+		if (VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), PAGE_READWRITE, &oldProtect)) {
+			addr->u1.Function = reinterpret_cast<ULONG_PTR>(myOpenNcThemeData);
+			VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), oldProtect, &oldProtect);
+			log::stream << "Theme engine: patched comctl32 OpenNcThemeData for dark scrollbars." << std::endl;
+		}
+	}
+
+	//
 	// Helper: check common Win32 class names.
 	//
 
@@ -387,9 +501,15 @@ namespace se::cs::theme {
 			return;
 		}
 
+		log::stream << "[Theme] pollForExternalThemeChanges: file changed, reloading. "
+			<< "enabled_before=" << settings.color_theme.enabled
+			<< " preset_before=" << settings.color_theme.preset << std::endl;
+
 		try {
 			settings.load();
 			g_LastThemeWriteTime = currentWriteTime;
+			log::stream << "[Theme] reloaded. enabled_after=" << settings.color_theme.enabled
+				<< " preset_after=" << settings.color_theme.preset << std::endl;
 			refresh();
 			log::stream << "Theme engine: reloaded theme settings from csse.toml." << std::endl;
 		}
@@ -492,7 +612,7 @@ namespace se::cs::theme {
 		const auto textColor = isEnabled() ? settings.color_theme.packed_listview_text : GetSysColor(COLOR_BTNTEXT);
 
 		FillRect(customDraw->hdc, &rect, getCachedBrush(fillColor));
-		FrameRect(customDraw->hdc, &rect, getCachedBrush(darkenColor(fillColor, 0.18)));
+		FrameRect(customDraw->hdc, &rect, getCachedBrush(settings.color_theme.packed_border_color));
 
 		SelectObject(customDraw->hdc, GetStockObject(DEFAULT_GUI_FONT));
 		SetBkMode(customDraw->hdc, TRANSPARENT);
@@ -555,7 +675,7 @@ namespace se::cs::theme {
 		const auto textColor = isEnabled() ? settings.color_theme.packed_statusbar_text : GetSysColor(COLOR_BTNTEXT);
 
 		FillRect(customDraw->hdc, &rect, getCachedBrush(backgroundColor));
-		FrameRect(customDraw->hdc, &rect, getCachedBrush(darkenColor(backgroundColor, 0.18)));
+		FrameRect(customDraw->hdc, &rect, getCachedBrush(settings.color_theme.packed_border_color));
 
 		char buffer[256] = {};
 		const auto textLengthAndFlags = SendMessageA(hStatusBar, SB_GETTEXTA, paneIndex, reinterpret_cast<LPARAM>(buffer));
@@ -688,7 +808,7 @@ namespace se::cs::theme {
 
 		auto rect = drawItem->rcItem;
 		FillRect(drawItem->hDC, &rect, getCachedBrush(backgroundColor));
-		FrameRect(drawItem->hDC, &rect, getCachedBrush(darkenColor(backgroundColor, 0.24)));
+		FrameRect(drawItem->hDC, &rect, getCachedBrush(settings.color_theme.packed_border_color));
 
 		auto image = SendMessageA(hButton, BM_GETIMAGE, IMAGE_ICON, 0);
 		if (image != 0) {
@@ -741,7 +861,7 @@ namespace se::cs::theme {
 		}
 
 		FillRect(drawItem->hDC, &rect, getCachedBrush(backgroundColor));
-		FrameRect(drawItem->hDC, &rect, getCachedBrush(darkenColor(backgroundColor, 0.20)));
+		FrameRect(drawItem->hDC, &rect, getCachedBrush(settings.color_theme.packed_border_color));
 
 		rect.left += 8;
 		rect.right -= 8;
@@ -969,12 +1089,15 @@ namespace se::cs::theme {
 	}
 
 	void refresh() {
+		log::stream << "[Theme] refresh() called. enabled=" << settings.color_theme.enabled
+			<< " preset=" << settings.color_theme.preset << std::endl;
 		g_IsRefreshing = true;
 		updatePreferredAppMode();
 		clearBrushCache();
 		EnumThreadWindows(GetCurrentThreadId(), refreshThreadWindowProc, 0);
 		g_LastThemeWriteTime = getThemeFileWriteTime();
 		g_IsRefreshing = false;
+		log::stream << "[Theme] refresh() done." << std::endl;
 	}
 
 	HBITMAP loadThemedBitmap(HINSTANCE instance, UINT bitmapResourceId) {
