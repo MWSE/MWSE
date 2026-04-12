@@ -378,6 +378,202 @@ namespace se::cs::theme {
 		SendMessageA(hWndStatusBar, SB_SETBKCOLOR, 0, settings.color_theme.packed_statusbar_bg);
 	}
 
+	static void themeTabControlWindow(HWND hWndTab) {
+		if (!isEnabled()) {
+			return;
+		}
+
+		if (g_pSetWindowTheme) {
+			// Tabs need classic rendering when owner-drawn; themed Explorer tabs keep painting
+			// their body/background with system colors and leave visible white seams.
+			g_pSetWindowTheme(hWndTab, L"", L"");
+		}
+
+		SetWindowLongA(hWndTab, GWL_STYLE, GetWindowLongA(hWndTab, GWL_STYLE) | TCS_OWNERDRAWFIXED);
+		SetWindowPos(hWndTab, nullptr, 0, 0, 0, 0,
+			SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+	}
+
+	static bool eraseTabControlBackground(HWND hWnd, HDC hdc) {
+		if (!isEnabled() || !isWindowClass(hWnd, WC_TABCONTROL)) {
+			return false;
+		}
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, getCachedBrush(settings.color_theme.packed_tab_inactive_bg));
+
+		RECT displayRect = clientRect;
+		if (TabCtrl_AdjustRect(hWnd, FALSE, &displayRect)) {
+			FrameRect(hdc, &displayRect, getCachedBrush(darkenColor(settings.color_theme.packed_tab_inactive_bg, 0.22)));
+		}
+
+		return true;
+	}
+
+	static bool isReportListView(HWND hWnd) {
+		return isWindowClass(hWnd, WC_LISTVIEW) && (GetWindowLongA(hWnd, GWL_STYLE) & LVS_TYPEMASK) == LVS_REPORT;
+	}
+
+	static COLORREF getDividerColor(COLORREF backgroundColor) {
+		const auto brightness = GetRValue(backgroundColor) + GetGValue(backgroundColor) + GetBValue(backgroundColor);
+		return brightness < (128 * 3)
+			? lightenColor(backgroundColor, 0.18)
+			: darkenColor(backgroundColor, 0.14);
+	}
+
+	static void drawVerticalDivider(HDC hdc, int x, int top, int bottom, HPEN pen) {
+		MoveToEx(hdc, x, top, nullptr);
+		LineTo(hdc, x, bottom);
+	}
+
+	static void drawHorizontalDivider(HDC hdc, int left, int right, int y, HPEN pen) {
+		MoveToEx(hdc, left, y, nullptr);
+		LineTo(hdc, right, y);
+	}
+
+	static void overlayListViewDividers(HWND hWnd) {
+		if (!isEnabled() || !isReportListView(hWnd)) {
+			return;
+		}
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+
+		auto hHeader = ListView_GetHeader(hWnd);
+		RECT headerRect = {};
+		if (hHeader && GetWindowRect(hHeader, &headerRect)) {
+			MapWindowPoints(nullptr, hWnd, reinterpret_cast<LPPOINT>(&headerRect), 2);
+		}
+
+		const int contentTop = hHeader ? headerRect.bottom : clientRect.top;
+		if (contentTop >= clientRect.bottom) {
+			return;
+		}
+
+		const auto listViewBackground = settings.color_theme.packed_listview_bg;
+		const auto dividerColor = getDividerColor(listViewBackground);
+		const auto hdc = GetDC(hWnd);
+		if (!hdc) {
+			return;
+		}
+
+		const auto pen = CreatePen(PS_SOLID, 1, dividerColor);
+		auto oldPen = reinterpret_cast<HPEN>(SelectObject(hdc, pen));
+
+		const int horizontalScroll = GetScrollPos(hWnd, SB_HORZ);
+		const int columnCount = hHeader ? Header_GetItemCount(hHeader) : 0;
+		int columnX = -horizontalScroll;
+		for (int columnIndex = 0; columnIndex < columnCount - 1; ++columnIndex) {
+			columnX += ListView_GetColumnWidth(hWnd, columnIndex);
+			if (columnX > clientRect.left && columnX < clientRect.right) {
+				drawVerticalDivider(hdc, columnX - 1, contentTop, clientRect.bottom, pen);
+			}
+		}
+
+		const auto extendedStyle = ListView_GetExtendedListViewStyle(hWnd);
+		if ((extendedStyle & LVS_EX_GRIDLINES) != 0) {
+			const int itemCount = ListView_GetItemCount(hWnd);
+			const int firstIndex = ListView_GetTopIndex(hWnd);
+			const int visibleCount = ListView_GetCountPerPage(hWnd) + 1;
+			const int lastIndex = std::min(itemCount, firstIndex + visibleCount);
+
+			for (int itemIndex = firstIndex; itemIndex < lastIndex; ++itemIndex) {
+				RECT itemRect = {};
+				if (!ListView_GetItemRect(hWnd, itemIndex, &itemRect, LVIR_BOUNDS)) {
+					continue;
+				}
+
+				const int dividerY = itemRect.bottom - 1;
+				if (dividerY >= contentTop && dividerY < clientRect.bottom) {
+					drawHorizontalDivider(hdc, clientRect.left, clientRect.right, dividerY, pen);
+				}
+			}
+		}
+
+		SelectObject(hdc, oldPen);
+		DeleteObject(pen);
+		ReleaseDC(hWnd, hdc);
+	}
+
+	static void drawThemedTabItem(HDC hdc, HWND hTab, int itemIndex, RECT rect, bool selected, bool focused) {
+		TCITEMA item = {};
+		char buffer[128] = {};
+		item.mask = TCIF_TEXT;
+		item.pszText = buffer;
+		item.cchTextMax = sizeof(buffer);
+		TabCtrl_GetItem(hTab, itemIndex, &item);
+
+		COLORREF backgroundColor = selected
+			? (isEnabled() ? settings.color_theme.packed_tab_active_bg : GetSysColor(COLOR_WINDOW))
+			: (isEnabled() ? settings.color_theme.packed_tab_inactive_bg : GetSysColor(COLOR_BTNFACE));
+		COLORREF textColor = isEnabled() ? settings.color_theme.packed_text_color : GetSysColor(COLOR_BTNTEXT);
+
+		if (selected) {
+			rect.bottom -= 1;
+		}
+
+		FillRect(hdc, &rect, getCachedBrush(backgroundColor));
+		FrameRect(hdc, &rect, getCachedBrush(darkenColor(backgroundColor, 0.20)));
+
+		rect.left += 8;
+		rect.right -= 8;
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, textColor);
+		DrawTextA(hdc, buffer, -1, &rect, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
+
+		if (focused) {
+			RECT focusRect = rect;
+			InflateRect(&focusRect, -2, -2);
+			DrawFocusRect(hdc, &focusRect);
+		}
+	}
+
+	static bool paintTabControl(HWND hWnd) {
+		if (!isEnabled() || !isWindowClass(hWnd, WC_TABCONTROL)) {
+			return false;
+		}
+
+		PAINTSTRUCT paintStruct = {};
+		HDC hdc = BeginPaint(hWnd, &paintStruct);
+		if (!hdc) {
+			return true;
+		}
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, getCachedBrush(settings.color_theme.packed_tab_inactive_bg));
+
+		RECT displayRect = clientRect;
+		if (TabCtrl_AdjustRect(hWnd, FALSE, &displayRect)) {
+			FrameRect(hdc, &displayRect, getCachedBrush(darkenColor(settings.color_theme.packed_tab_inactive_bg, 0.22)));
+		}
+
+		const int selectedIndex = TabCtrl_GetCurSel(hWnd);
+		const int itemCount = TabCtrl_GetItemCount(hWnd);
+		for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+			if (itemIndex == selectedIndex) {
+				continue;
+			}
+
+			RECT itemRect = {};
+			if (TabCtrl_GetItemRect(hWnd, itemIndex, &itemRect)) {
+				drawThemedTabItem(hdc, hWnd, itemIndex, itemRect, false, false);
+			}
+		}
+
+		if (selectedIndex >= 0) {
+			RECT selectedRect = {};
+			if (TabCtrl_GetItemRect(hWnd, selectedIndex, &selectedRect)) {
+				const bool focused = GetFocus() == hWnd;
+				drawThemedTabItem(hdc, hWnd, selectedIndex, selectedRect, true, focused);
+			}
+		}
+
+		EndPaint(hWnd, &paintStruct);
+		return true;
+	}
+
 	static void themeControl(HWND hWnd) {
 		ensureUxThemeFunction();
 
@@ -414,12 +610,11 @@ namespace se::cs::theme {
 			TreeView_SetTextColor(hWnd, ct.packed_treeview_text);
 		}
 		else if (isWindowClass(hWnd, WC_TABCONTROL)) {
-			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
-			}
-
 			if (isEnabled()) {
-				SetWindowLongA(hWnd, GWL_STYLE, GetWindowLongA(hWnd, GWL_STYLE) | TCS_OWNERDRAWFIXED);
+				themeTabControlWindow(hWnd);
+			}
+			else if (g_pSetWindowTheme) {
+				g_pSetWindowTheme(hWnd, L"Explorer", nullptr);
 			}
 		}
 		else if (isWindowClass(hWnd, WC_COMBOBOX)) {
@@ -847,32 +1042,7 @@ namespace se::cs::theme {
 		auto hTab = drawItem->hwndItem;
 		auto itemIndex = static_cast<int>(drawItem->itemID);
 		const bool selected = TabCtrl_GetCurSel(hTab) == itemIndex;
-
-		TCITEMA item = {};
-		char buffer[128] = {};
-		item.mask = TCIF_TEXT;
-		item.pszText = buffer;
-		item.cchTextMax = sizeof(buffer);
-		TabCtrl_GetItem(hTab, itemIndex, &item);
-
-		auto rect = drawItem->rcItem;
-		COLORREF backgroundColor = selected
-			? (isEnabled() ? settings.color_theme.packed_tab_active_bg : GetSysColor(COLOR_WINDOW))
-			: (isEnabled() ? settings.color_theme.packed_tab_inactive_bg : GetSysColor(COLOR_BTNFACE));
-		COLORREF textColor = isEnabled() ? settings.color_theme.packed_text_color : GetSysColor(COLOR_BTNTEXT);
-
-		if (selected) {
-			rect.bottom -= 1;
-		}
-
-		FillRect(drawItem->hDC, &rect, getCachedBrush(backgroundColor));
-		FrameRect(drawItem->hDC, &rect, getCachedBrush(settings.color_theme.packed_border_color));
-
-		rect.left += 8;
-		rect.right -= 8;
-		SetBkMode(drawItem->hDC, TRANSPARENT);
-		SetTextColor(drawItem->hDC, textColor);
-		DrawTextA(drawItem->hDC, buffer, -1, &rect, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
+		drawThemedTabItem(drawItem->hDC, hTab, itemIndex, drawItem->rcItem, selected, (drawItem->itemState & ODS_FOCUS) != 0);
 		return true;
 	}
 
@@ -963,6 +1133,10 @@ namespace se::cs::theme {
 				break;
 			}
 
+			if (eraseTabControlBackground(hWnd, (HDC)wParam)) {
+				return 1;
+			}
+
 			// Skip the render viewport to avoid painting over D3D.
 			if (isRenderViewport(hWnd)) {
 				break;
@@ -974,6 +1148,18 @@ namespace se::cs::theme {
 			FillRect(hdc, &rc, getCachedBrush(settings.color_theme.packed_window_bg));
 			return 1; // We handled it.
 		}
+
+		case WM_PAINT:
+			if (isEnabled() && isReportListView(hWnd)) {
+				auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+				overlayListViewDividers(hWnd);
+				return result;
+			}
+
+			if (paintTabControl(hWnd)) {
+				return 0;
+			}
+			break;
 
 		case WM_NOTIFY:
 		{
