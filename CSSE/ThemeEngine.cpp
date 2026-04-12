@@ -2,6 +2,7 @@
 
 #include "LogUtil.h"
 #include "Settings.h"
+#include "MemoryUtil.h"
 
 #include <CommCtrl.h>
 #include <dwmapi.h>
@@ -167,25 +168,36 @@ namespace se::cs::theme {
 	//
 
 	using SetPreferredAppModeFn = int(WINAPI*)(int);
+	using AllowDarkModeForWindowFn = void(WINAPI*)(HWND, BOOL);
+
 	static SetPreferredAppModeFn g_pSetPreferredAppMode = nullptr;
+	static AllowDarkModeForWindowFn g_pAllowDarkModeForWindow = nullptr;
 	static bool g_AppModeChecked = false;
 
-	static void ensureSetPreferredAppMode() {
+	static void ensureAppModeFunctions() {
 		if (g_AppModeChecked) return;
 		g_AppModeChecked = true;
 
 		HMODULE hUx = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 		if (hUx) {
 			g_pSetPreferredAppMode = (SetPreferredAppModeFn)GetProcAddress(hUx, MAKEINTRESOURCEA(135));
+			g_pAllowDarkModeForWindow = (AllowDarkModeForWindowFn)GetProcAddress(hUx, MAKEINTRESOURCEA(133));
 		}
 	}
 
 	static void updatePreferredAppMode() {
-		ensureSetPreferredAppMode();
-		if (!g_pSetPreferredAppMode) return;
+		ensureAppModeFunctions();
+		if (g_pSetPreferredAppMode) {
+			// 2 = ForceDark, 0 = Default
+			g_pSetPreferredAppMode(isEnabled() ? 2 : 0);
+		}
+	}
 
-		// 2 = ForceDark, 0 = Default
-		g_pSetPreferredAppMode(isEnabled() ? 2 : 0);
+	static void applyAllowDarkMode(HWND hWnd) {
+		ensureAppModeFunctions();
+		if (g_pAllowDarkModeForWindow) {
+			g_pAllowDarkModeForWindow(hWnd, isEnabled());
+		}
 	}
 
 	//
@@ -206,30 +218,49 @@ namespace se::cs::theme {
 		return _OpenNcThemeData(hWnd, classList);
 	}
 
-	// Minimal PE helpers (inlined from IatHook.h, MIT licensed, ysc3839/win32-darkmode).
 	template<typename T>
-	T rva2va(void* base, DWORD rva) {
+	static T rva2va(void* base, DWORD rva) {
 		return reinterpret_cast<T>(reinterpret_cast<ULONG_PTR>(base) + rva);
 	}
 
-	static PIMAGE_THUNK_DATA findDelayLoadThunkByOrdinal(void* moduleBase, const char* dllName, uint16_t ordinal) {
+	static PIMAGE_THUNK_DATA findImportAddress(void* moduleBase, const char* dllName, uint16_t ordinal) {
 		auto* dosHdr = reinterpret_cast<PIMAGE_DOS_HEADER>(moduleBase);
 		auto* ntHdr = rva2va<PIMAGE_NT_HEADERS>(moduleBase, dosHdr->e_lfanew);
-		auto& dataDir = ntHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
-		if (!dataDir.VirtualAddress) return nullptr;
 
-		auto* desc = rva2va<PIMAGE_DELAYLOAD_DESCRIPTOR>(moduleBase, dataDir.VirtualAddress);
-		for (; desc->DllNameRVA; ++desc) {
-			if (_stricmp(rva2va<LPCSTR>(moduleBase, desc->DllNameRVA), dllName) != 0) continue;
+		// 1. Regular Imports
+		auto& importDir = ntHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+		if (importDir.VirtualAddress) {
+			auto* desc = rva2va<PIMAGE_IMPORT_DESCRIPTOR>(moduleBase, importDir.VirtualAddress);
+			for (; desc->Name; ++desc) {
+				if (_stricmp(rva2va<LPCSTR>(moduleBase, desc->Name), dllName) != 0) continue;
 
-			auto* nameThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportNameTableRVA);
-			auto* addrThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportAddressTableRVA);
-			for (; nameThunk->u1.Ordinal; ++nameThunk, ++addrThunk) {
-				if (IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal) &&
-					IMAGE_ORDINAL(nameThunk->u1.Ordinal) == ordinal)
-					return addrThunk;
+				auto* nameThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->OriginalFirstThunk ? desc->OriginalFirstThunk : desc->FirstThunk);
+				auto* addrThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->FirstThunk);
+				for (; nameThunk->u1.Ordinal; ++nameThunk, ++addrThunk) {
+					if (IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal) && IMAGE_ORDINAL(nameThunk->u1.Ordinal) == ordinal) {
+						return addrThunk;
+					}
+				}
 			}
 		}
+
+		// 2. Delay-load Imports
+		auto& delayDir = ntHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
+		if (delayDir.VirtualAddress) {
+			auto* desc = rva2va<PIMAGE_DELAYLOAD_DESCRIPTOR>(moduleBase, delayDir.VirtualAddress);
+			for (; desc->DllNameRVA; ++desc) {
+				if (_stricmp(rva2va<LPCSTR>(moduleBase, desc->DllNameRVA), dllName) != 0) continue;
+
+				auto* nameThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportNameTableRVA);
+				auto* addrThunk = rva2va<PIMAGE_THUNK_DATA>(moduleBase, desc->ImportAddressTableRVA);
+				for (; nameThunk->u1.Ordinal; ++nameThunk, ++addrThunk) {
+					if (IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal) && IMAGE_ORDINAL(nameThunk->u1.Ordinal) == ordinal) {
+						return addrThunk;
+					}
+				}
+			}
+		}
+
 		return nullptr;
 	}
 
@@ -238,23 +269,28 @@ namespace se::cs::theme {
 		if (s_Applied) return;
 		s_Applied = true;
 
-		HMODULE hUxtheme = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		HMODULE hUxtheme = GetModuleHandleW(L"uxtheme.dll");
+		if (!hUxtheme) hUxtheme = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 		if (!hUxtheme) return;
 
 		_OpenNcThemeData = (fnOpenNcThemeData)GetProcAddress(hUxtheme, MAKEINTRESOURCEA(49));
 		if (!_OpenNcThemeData) return;
 
-		HMODULE hComctl = LoadLibraryExW(L"comctl32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
-		if (!hComctl) return;
+		// Patch common modules that likely call OpenNcThemeData.
+		const char* targetModules[] = { "comctl32.dll", "user32.dll" };
+		for (const char* modName : targetModules) {
+			HMODULE hMod = GetModuleHandleA(modName);
+			if (!hMod) continue;
 
-		auto* addr = findDelayLoadThunkByOrdinal(hComctl, "uxtheme.dll", 49);
-		if (!addr) return;
-
-		DWORD oldProtect = 0;
-		if (VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), PAGE_READWRITE, &oldProtect)) {
-			addr->u1.Function = reinterpret_cast<ULONG_PTR>(myOpenNcThemeData);
-			VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), oldProtect, &oldProtect);
-			log::stream << "Theme engine: patched comctl32 OpenNcThemeData for dark scrollbars." << std::endl;
+			auto* addr = findImportAddress(hMod, "uxtheme.dll", 49);
+			if (addr) {
+				DWORD oldProtect = 0;
+				if (VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), PAGE_READWRITE, &oldProtect)) {
+					addr->u1.Function = reinterpret_cast<ULONG_PTR>(myOpenNcThemeData);
+					VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), oldProtect, &oldProtect);
+					log::stream << "Theme engine: patched " << modName << " IAT for dark scrollbars." << std::endl;
+				}
+			}
 		}
 	}
 
@@ -373,7 +409,7 @@ namespace se::cs::theme {
 
 		if (isWindowClass(hWnd, WC_LISTVIEW)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 
 			const auto& ct = settings.color_theme;
@@ -383,12 +419,12 @@ namespace se::cs::theme {
 
 			const auto hHeader = ListView_GetHeader(hWnd);
 			if (hHeader && g_pSetWindowTheme) {
-				g_pSetWindowTheme(hHeader, L"", L"");
+				g_pSetWindowTheme(hHeader, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 		}
 		else if (isWindowClass(hWnd, WC_TREEVIEW)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 
 			const auto& ct = settings.color_theme;
@@ -397,7 +433,7 @@ namespace se::cs::theme {
 		}
 		else if (isWindowClass(hWnd, WC_TABCONTROL)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 
 			if (isEnabled()) {
@@ -406,7 +442,7 @@ namespace se::cs::theme {
 		}
 		else if (isWindowClass(hWnd, WC_COMBOBOX)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 		}
 		else if (isWindowClass(hWnd, WC_BUTTON)) {
@@ -416,17 +452,20 @@ namespace se::cs::theme {
 		}
 		else if (isWindowClass(hWnd, TOOLBARCLASSNAMEA)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 			themeToolbarWindow(hWnd);
 		}
 		else if (isWindowClass(hWnd, STATUSCLASSNAMEA)) {
 			if (g_pSetWindowTheme) {
-				g_pSetWindowTheme(hWnd, L"", L"");
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
 			}
 			themeStatusBarWindow(hWnd);
 		}
 		else if (isRichEditControl(hWnd)) {
+			if (g_pSetWindowTheme) {
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
+			}
 			themeRichEditControl(hWnd);
 		}
 
@@ -1024,6 +1063,7 @@ namespace se::cs::theme {
 			// Subclass the window for theming.
 			SetWindowSubclass(hWnd, ThemeSubclassProc, 1, 0);
 
+			applyAllowDarkMode(hWnd);
 			themeControl(hWnd);
 
 			// Apply dark title bar to top-level windows immediately.
