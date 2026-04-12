@@ -759,7 +759,7 @@ namespace se::cs::dialog::layer_window {
 				&hCurrentModule
 			);
 
-			HBITMAP hBmp = LoadBitmap(hCurrentModule, MAKEINTRESOURCE(IDB_TOOLBAR_STRIP));
+			HBITMAP hBmp = theme::loadThemedBitmap(hCurrentModule, IDB_TOOLBAR_STRIP);
 
 			HIMAGELIST hImageList = ImageList_Create(16, 16, ILC_COLOR24 | ILC_MASK, 3, 0);
 

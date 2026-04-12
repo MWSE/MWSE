@@ -365,6 +365,8 @@ namespace se::cs {
 	// 
 
 	void Settings_t::ColorTheme::applyPreset(const std::string& name) {
+		preset = name;
+
 		if (name == "dark") {
 			use_dark_title_bar = true;
 
@@ -433,13 +435,16 @@ namespace se::cs {
 	}
 
 	void Settings_t::ColorTheme::from_toml(const toml::value& v) {
+		*this = Settings_t::ColorTheme {};
+
 		// Load the preset first, then allow per-color overrides.
 		preset = toml::find_or(v, "preset", preset);
 		enabled = toml::find_or(v, "enabled", enabled);
 
-		// Apply the preset to populate defaults.
-		if (enabled) {
-			applyPreset(preset);
+		// Always apply a deterministic base preset so later overrides behave predictably.
+		applyPreset(preset == "dark" ? "dark" : "light");
+		if (preset == "custom") {
+			this->preset = "custom";
 		}
 
 		// Override with any explicit values from TOML.

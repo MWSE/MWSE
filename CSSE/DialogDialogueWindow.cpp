@@ -15,6 +15,7 @@
 #include "WinUIUtil.h"
 
 #include "Settings.h"
+#include "ThemeEngine.h"
 
 #include "EditBasicExtended.h"
 
@@ -750,7 +751,8 @@ namespace se::cs::dialog::dialogue_window {
 		const auto lplvcd = context.getNotificationCustomDraw();
 
 		const auto idFrom = lplvcd->nmcd.hdr.idFrom;
-		if (settings.dialogue_window.highlight_modified_items && idFrom == CONTROL_ID_TOPIC_LIST || idFrom == CONTROL_ID_INFO_LIST) {
+		if ((idFrom == CONTROL_ID_TOPIC_LIST || idFrom == CONTROL_ID_INFO_LIST)
+			&& (settings.dialogue_window.highlight_modified_items || theme::isEnabled())) {
 			if (lplvcd->nmcd.dwDrawStage == CDDS_PREPAINT) {
 				SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NOTIFYITEMDRAW);
 			}
@@ -758,13 +760,20 @@ namespace se::cs::dialog::dialogue_window {
 				auto object = (BaseObject*)lplvcd->nmcd.lItemlParam;
 				if (object) {
 					// Background color highlighting.
-					if (object->getDeleted()) {
+					if (settings.dialogue_window.highlight_modified_items && object->getDeleted()) {
 						lplvcd->clrTextBk = settings.color_theme.highlight_deleted_object_packed_color;
+						lplvcd->clrText = settings.color_theme.packed_listview_text;
 						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
 					}
-					else if (object->getModified()) {
+					else if (settings.dialogue_window.highlight_modified_items && object->getModified()) {
 						// Modified color highlighting. Different colors for modified-master or mod-added object.
 						lplvcd->clrTextBk = object->isFromMaster() ? settings.color_theme.highlight_modified_from_master_packed_color : settings.color_theme.highlight_modified_new_object_packed_color;
+						lplvcd->clrText = settings.color_theme.packed_listview_text;
+						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
+					}
+					else if (theme::isEnabled()) {
+						lplvcd->clrTextBk = settings.color_theme.packed_listview_bg;
+						lplvcd->clrText = settings.color_theme.packed_listview_text;
 						SetWindowLongA(hWnd, DWLP_MSGRESULT, CDRF_NEWFONT);
 					}
 				}

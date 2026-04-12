@@ -2,6 +2,7 @@
 
 #include "LogUtil.h"
 #include "MemoryUtil.h"
+#include "ThemeEngine.h"
 #include "WinUIUtil.h"
 
 #include "Settings.h"
@@ -512,7 +513,12 @@ namespace se::cs::window::main {
 		hBMInst = application.m_hInstance;
 		wBMID = IDB_MAIN_TOOLBAR;
 
-		return CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		auto hWndToolbar = CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		if (hWndToolbar && theme::isEnabled()) {
+			theme::applyToolbarBitmap(hWndToolbar, hBMInst, (UINT)wBMID, dxBitmap, dyBitmap, nBitmaps);
+		}
+
+		return hWndToolbar;
 	}
 
 	//
@@ -981,6 +987,7 @@ namespace se::cs::window::main {
 	void PatchDialogProc_AfterCreate(DialogProcContext& context) {
 		PatchDialogProc_AfterCreate_CreateNewCSSEMenu(context);
 		PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(context);
+		theme::refreshWindow(context.getWindowHandle());
 	}
 
 	void PatchDialogProc_AfterCommand_ToggleLandscapeEditing(DialogProcContext& context) {

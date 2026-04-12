@@ -57,3 +57,48 @@ BOOL CDataBoundPropertyGridProperty::OnUpdateValue() {
 
 	return TRUE;
 }
+
+CDataBoundPropertyGridStringProperty::CDataBoundPropertyGridStringProperty(const CString& strName, std::string* pData, LPCTSTR lpszDescr) :
+	CMFCPropertyGridProperty(strName, COleVariant(CString(pData->c_str())), lpszDescr, (DWORD_PTR)pData)
+{
+
+}
+
+BOOL CDataBoundPropertyGridStringProperty::OnUpdateValue() {
+	if (!CMFCPropertyGridProperty::OnUpdateValue()) {
+		return FALSE;
+	}
+
+	auto data = reinterpret_cast<std::string*>(GetData());
+	if (!data) {
+		return TRUE;
+	}
+
+	CString value = GetValue();
+	*data = CStringA(value).GetString();
+	return TRUE;
+}
+
+CDataBoundPropertyGridColorProperty::CDataBoundPropertyGridColorProperty(const CString& strName, std::array<unsigned char, 3>* pData, LPCTSTR lpszDescr) :
+	CMFCPropertyGridColorProperty(strName, RGB((*pData)[0], (*pData)[1], (*pData)[2]), nullptr, lpszDescr, (DWORD_PTR)pData)
+{
+	EnableOtherButton(_T("More Colors..."));
+	EnableAutomaticButton(_T("Theme Default"), GetColor(), FALSE);
+}
+
+BOOL CDataBoundPropertyGridColorProperty::OnUpdateValue() {
+	if (!CMFCPropertyGridColorProperty::OnUpdateValue()) {
+		return FALSE;
+	}
+
+	auto data = reinterpret_cast<std::array<unsigned char, 3>*>(GetData());
+	if (!data) {
+		return TRUE;
+	}
+
+	const auto color = GetColor();
+	(*data)[0] = GetRValue(color);
+	(*data)[1] = GetGValue(color);
+	(*data)[2] = GetBValue(color);
+	return TRUE;
+}

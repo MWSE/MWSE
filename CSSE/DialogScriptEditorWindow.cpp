@@ -11,6 +11,7 @@
 
 #include "Settings.h"
 #include "LogUtil.h"
+#include "ThemeEngine.h"
 
 namespace se::cs::dialog::script_editor_window {
 	GlobalVariable* __fastcall getCompilerGlobalVariable(RecordHandler* recordHandler, DWORD _EDX_, const char* id) {
@@ -47,12 +48,17 @@ namespace se::cs::dialog::script_editor_window {
 		// Set font face and size. Remove bold effect.
 		CHARFORMATA format;
 		format.cbSize = sizeof(CHARFORMATA);
-		format.dwMask = CFM_EFFECTS | CFM_FACE | CFM_SIZE;
+		format.dwMask = CFM_EFFECTS | CFM_FACE | CFM_SIZE | CFM_COLOR;
 		format.dwEffects = 0;
 		format.yHeight = 20 * settings.script_editor.font_size;
 		strcpy_s(format.szFaceName, sizeof(format.szFaceName), settings.script_editor.font_face.c_str());
+		format.crTextColor = theme::isEnabled() ? settings.color_theme.packed_edit_text : GetSysColor(COLOR_WINDOWTEXT);
 
 		SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format);
+
+		if (theme::isEnabled()) {
+			SendMessageA(hWnd, EM_SETBKGNDCOLOR, 0, settings.color_theme.packed_edit_bg);
+		}
 	}
 
 	void installPatches() {

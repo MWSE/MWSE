@@ -9,3 +9,17 @@ public:
 
 	virtual BOOL OnUpdateValue();
 };
+
+class CDataBoundPropertyGridStringProperty : public CMFCPropertyGridProperty {
+public:
+	CDataBoundPropertyGridStringProperty(const CString& strName, std::string* pData, LPCTSTR lpszDescr = NULL);
+
+	virtual BOOL OnUpdateValue();
+};
+
+class CDataBoundPropertyGridColorProperty : public CMFCPropertyGridColorProperty {
+public:
+	CDataBoundPropertyGridColorProperty(const CString& strName, std::array<unsigned char, 3>* pData, LPCTSTR lpszDescr = NULL);
+
+	virtual BOOL OnUpdateValue();
+};
