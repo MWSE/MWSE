@@ -429,6 +429,91 @@ namespace se::cs::theme {
 		return true;
 	}
 
+	static bool isReportListView(HWND hWnd) {
+		return isWindowClass(hWnd, WC_LISTVIEW) && (GetWindowLongA(hWnd, GWL_STYLE) & LVS_TYPEMASK) == LVS_REPORT;
+	}
+
+	static COLORREF getDividerColor(COLORREF backgroundColor) {
+		const auto brightness = GetRValue(backgroundColor) + GetGValue(backgroundColor) + GetBValue(backgroundColor);
+		return brightness < (128 * 3)
+			? lightenColor(backgroundColor, 0.18)
+			: darkenColor(backgroundColor, 0.14);
+	}
+
+	static void drawVerticalDivider(HDC hdc, int x, int top, int bottom, HPEN pen) {
+		MoveToEx(hdc, x, top, nullptr);
+		LineTo(hdc, x, bottom);
+	}
+
+	static void drawHorizontalDivider(HDC hdc, int left, int right, int y, HPEN pen) {
+		MoveToEx(hdc, left, y, nullptr);
+		LineTo(hdc, right, y);
+	}
+
+	static void overlayListViewDividers(HWND hWnd) {
+		if (!isEnabled() || !isReportListView(hWnd)) {
+			return;
+		}
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+
+		auto hHeader = ListView_GetHeader(hWnd);
+		RECT headerRect = {};
+		if (hHeader && GetWindowRect(hHeader, &headerRect)) {
+			MapWindowPoints(nullptr, hWnd, reinterpret_cast<LPPOINT>(&headerRect), 2);
+		}
+
+		const int contentTop = hHeader ? headerRect.bottom : clientRect.top;
+		if (contentTop >= clientRect.bottom) {
+			return;
+		}
+
+		const auto listViewBackground = settings.color_theme.packed_listview_bg;
+		const auto dividerColor = getDividerColor(listViewBackground);
+		const auto hdc = GetDC(hWnd);
+		if (!hdc) {
+			return;
+		}
+
+		const auto pen = CreatePen(PS_SOLID, 1, dividerColor);
+		auto oldPen = reinterpret_cast<HPEN>(SelectObject(hdc, pen));
+
+		const int horizontalScroll = GetScrollPos(hWnd, SB_HORZ);
+		const int columnCount = hHeader ? Header_GetItemCount(hHeader) : 0;
+		int columnX = -horizontalScroll;
+		for (int columnIndex = 0; columnIndex < columnCount - 1; ++columnIndex) {
+			columnX += ListView_GetColumnWidth(hWnd, columnIndex);
+			if (columnX > clientRect.left && columnX < clientRect.right) {
+				drawVerticalDivider(hdc, columnX - 1, contentTop, clientRect.bottom, pen);
+			}
+		}
+
+		const auto extendedStyle = ListView_GetExtendedListViewStyle(hWnd);
+		if ((extendedStyle & LVS_EX_GRIDLINES) != 0) {
+			const int itemCount = ListView_GetItemCount(hWnd);
+			const int firstIndex = ListView_GetTopIndex(hWnd);
+			const int visibleCount = ListView_GetCountPerPage(hWnd) + 1;
+			const int lastIndex = std::min(itemCount, firstIndex + visibleCount);
+
+			for (int itemIndex = firstIndex; itemIndex < lastIndex; ++itemIndex) {
+				RECT itemRect = {};
+				if (!ListView_GetItemRect(hWnd, itemIndex, &itemRect, LVIR_BOUNDS)) {
+					continue;
+				}
+
+				const int dividerY = itemRect.bottom - 1;
+				if (dividerY >= contentTop && dividerY < clientRect.bottom) {
+					drawHorizontalDivider(hdc, clientRect.left, clientRect.right, dividerY, pen);
+				}
+			}
+		}
+
+		SelectObject(hdc, oldPen);
+		DeleteObject(pen);
+		ReleaseDC(hWnd, hdc);
+	}
+
 	static void drawThemedTabItem(HDC hdc, HWND hTab, int itemIndex, RECT rect, bool selected, bool focused) {
 		TCITEMA item = {};
 		char buffer[128] = {};
@@ -1072,6 +1157,12 @@ namespace se::cs::theme {
 		}
 
 		case WM_PAINT:
+			if (isEnabled() && isReportListView(hWnd)) {
+				auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+				overlayListViewDividers(hWnd);
+				return result;
+			}
+
 			if (paintTabControl(hWnd)) {
 				return 0;
 			}
