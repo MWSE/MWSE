@@ -432,6 +432,11 @@ namespace se::cs::theme {
 				SetWindowLongA(hWnd, GWL_STYLE, GetWindowLongA(hWnd, GWL_STYLE) | BS_OWNERDRAW);
 			}
 		}
+		else if (isWindowClass(hWnd, REBARCLASSNAMEA)) {
+			if (g_pSetWindowTheme) {
+				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
+			}
+		}
 		else if (isWindowClass(hWnd, TOOLBARCLASSNAMEA)) {
 			if (g_pSetWindowTheme) {
 				g_pSetWindowTheme(hWnd, isEnabled() ? L"Explorer" : L"", nullptr);
@@ -1019,6 +1024,45 @@ namespace se::cs::theme {
 			}
 			themeChildControls(hWnd);
 
+			return result;
+		}
+
+		case WM_NCPAINT:
+		{
+			// Let the default handler run first so scrollbars and other NC chrome
+			// are painted correctly, then overdraw the sunken 3D border (WS_EX_CLIENTEDGE)
+			// with our flat themed border color.
+			//
+			// Only apply to input/display controls with a genuine sunken border.
+			// Explicitly skip buttons, tab controls, toolbars, etc., which either
+			// have no WS_EX_CLIENTEDGE or draw their own border via owner-draw.
+			LRESULT result = DefSubclassProc(hWnd, msg, wParam, lParam);
+
+			if (isEnabled() && (GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_CLIENTEDGE)) {
+				const bool isInputControl =
+					isWindowClass(hWnd, WC_EDIT) ||
+					isWindowClass(hWnd, WC_LISTVIEW) ||
+					isWindowClass(hWnd, WC_TREEVIEW) ||
+					isWindowClass(hWnd, WC_COMBOBOX) ||
+					isRichEditControl(hWnd);
+
+				if (isInputControl) {
+					HDC hdc = GetWindowDC(hWnd);
+					if (hdc) {
+						RECT rc;
+						GetWindowRect(hWnd, &rc);
+						OffsetRect(&rc, -rc.left, -rc.top);
+
+						// WS_EX_CLIENTEDGE is 2 pixels wide; fill both with our border color.
+						const HBRUSH hbr = getCachedBrush(settings.color_theme.packed_border_color);
+						FrameRect(hdc, &rc, hbr);
+						InflateRect(&rc, -1, -1);
+						FrameRect(hdc, &rc, hbr);
+
+						ReleaseDC(hWnd, hdc);
+					}
+				}
+			}
 			return result;
 		}
 
