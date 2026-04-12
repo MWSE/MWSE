@@ -21,6 +21,7 @@ namespace se::cs::theme {
 		static HFONT g_hMenuFont = nullptr;
 		static std::optional<std::filesystem::file_time_type> g_LastThemeWriteTime;
 		static bool g_IsRefreshing = false;
+		static bool g_IsTheming = false;
 
 		bool isTopLevelWindow(HWND hWnd) {
 			return (GetWindowLongA(hWnd, GWL_STYLE) & WS_CHILD) == 0;
@@ -265,6 +266,14 @@ namespace se::cs::theme {
 	static void themeControl(HWND hWnd) {
 		ensureUxThemeFunction();
 
+		// Prevent reentrancy to avoid infinite recursion when messages like
+		// TB_SETEXTENDEDSTYLE trigger WM_THEMECHANGED during theming.
+		if (g_IsTheming) {
+			return;
+		}
+
+		g_IsTheming = true;
+
 		if (isWindowClass(hWnd, WC_LISTVIEW)) {
 			if (g_pSetWindowTheme) {
 				g_pSetWindowTheme(hWnd, L"", L"");
@@ -327,6 +336,8 @@ namespace se::cs::theme {
 		if (isEnabled()) {
 			InvalidateRect(hWnd, nullptr, TRUE);
 		}
+
+		g_IsTheming = false;
 	}
 
 	//
