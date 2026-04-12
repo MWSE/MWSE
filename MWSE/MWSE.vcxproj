@@ -53,6 +53,7 @@
     <ClInclude Include="LuaActiveMagicEffectIconsUpdatedEvent.h" />
     <ClInclude Include="LuaAttackHitEvent.h" />
     <ClInclude Include="LuaCalcBlockChanceEvent.h" />
+    <ClInclude Include="LuaCalcEnchantingSpellPointCostEvent.h" />
     <ClInclude Include="LuaCalcEnchantmentPriceEvent.h" />
     <ClInclude Include="LuaCameraControlEvent.h" />
     <ClInclude Include="LuaConsoleReferenceChangedEvent.h" />
@@ -574,6 +575,7 @@
     <ClCompile Include="LuaButtonPressedEvent.cpp" />
     <ClCompile Include="LuaCalcArmorRatingEvent.cpp" />
     <ClCompile Include="LuaCalcBlockChanceEvent.cpp" />
+    <ClCompile Include="LuaCalcEnchantingSpellPointCostEvent.cpp" />
     <ClCompile Include="LuaCalcChargenStatsEvent.cpp" />
     <ClCompile Include="LuaCalcEnchantmentPriceEvent.cpp" />
     <ClCompile Include="LuaCalcHitArmorPieceEvent.cpp" />
