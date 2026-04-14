@@ -42,6 +42,11 @@ namespace mwse::patch::IndexedVertexBlending {
 	// device actually lacks IVB and we must stay on geometry blending.
 	static constexpr DWORD kMinIndexedCap = 4;
 
+	// Verified against IDA NiDX8Renderer struct (size 1696):
+	//   +0x024  d3dDevice    (IDirect3DDevice8*)
+	// Used by Hook A for live caps logging and Hook D for render-state upload.
+	static constexpr unsigned kOffset_NiDX8Renderer_d3dDevice = 0x24;
+
 	//
 	// Hook A: NiDX8Renderer::validateDeviceCaps @ 0x6ab960
 	//
@@ -55,23 +60,51 @@ namespace mwse::patch::IndexedVertexBlending {
 	// and ECX so the following `mov [ecx+countHWBones], edx` and `mov al,
 	// [eax+...]` instructions continue to work.
 	//
-	DWORD __stdcall computeCountHWBones(const D3DCAPS8* caps) {
+	DWORD __stdcall computeCountHWBones(void* thisRenderer, const D3DCAPS8* caps) {
 		const DWORD indexedCap = caps->MaxVertexBlendMatrixIndex;
 		const DWORD nonIndexedCap = caps->MaxVertexBlendMatrices;
 
-		if (indexedCap >= kMinIndexedCap) {
+		DWORD liveIndexedCap = indexedCap;
+		DWORD liveNonIndexedCap = nonIndexedCap;
+		bool haveLiveCaps = false;
+
+		if (thisRenderer) {
+			auto device = *reinterpret_cast<IDirect3DDevice8**>(reinterpret_cast<BYTE*>(thisRenderer) + kOffset_NiDX8Renderer_d3dDevice);
+			if (device) {
+				D3DCAPS8 liveCaps{};
+				if (SUCCEEDED(device->GetDeviceCaps(&liveCaps))) {
+					haveLiveCaps = true;
+					liveIndexedCap = liveCaps.MaxVertexBlendMatrixIndex;
+					liveNonIndexedCap = liveCaps.MaxVertexBlendMatrices;
+				}
+			}
+		}
+
+		const DWORD selectedIndexedCap = haveLiveCaps ? liveIndexedCap : indexedCap;
+		const DWORD selectedNonIndexedCap = haveLiveCaps ? liveNonIndexedCap : nonIndexedCap;
+		const char* selectedCapsSource = haveLiveCaps ? "live device" : "cached";
+
+		if (selectedIndexedCap >= kMinIndexedCap) {
 			s_deviceSupportsIVB = true;
-			s_paletteSize = std::min<DWORD>(indexedCap + 1, kPaletteCeiling);
+			s_paletteSize = std::min<DWORD>(selectedIndexedCap + 1, kPaletteCeiling);
 			s_ivbActive = true;
-			log::getLog() << "[MWSE] IndexedVertexBlending: device supports indexed blending (MaxVertexBlendMatrixIndex=" << indexedCap << "), using palette size " << s_paletteSize << "." << std::endl;
+			log::getLog() << "[MWSE] IndexedVertexBlending: cached caps report indexed blending (MaxVertexBlendMatrixIndex=" << indexedCap << ", MaxVertexBlendMatrices=" << nonIndexedCap << ")"
+				<< (haveLiveCaps
+					? " and live device caps report (MaxVertexBlendMatrixIndex=" + std::to_string(liveIndexedCap) + ", MaxVertexBlendMatrices=" + std::to_string(liveNonIndexedCap) + ")"
+					: std::string("; live device caps unavailable"))
+				<< "; using " << selectedCapsSource << " caps with palette size " << s_paletteSize << "." << std::endl;
 			return s_paletteSize;
 		}
 
 		s_deviceSupportsIVB = false;
 		s_paletteSize = 0;
 		s_ivbActive = false;
-		log::getLog() << "[MWSE] IndexedVertexBlending: device reports MaxVertexBlendMatrixIndex=" << indexedCap << "; falling back to geometry blending (countHWBones=" << nonIndexedCap << ")." << std::endl;
-		return nonIndexedCap;
+		log::getLog() << "[MWSE] IndexedVertexBlending: cached caps report MaxVertexBlendMatrixIndex=" << indexedCap << " and MaxVertexBlendMatrices=" << nonIndexedCap
+			<< (haveLiveCaps
+				? "; live device caps report MaxVertexBlendMatrixIndex=" + std::to_string(liveIndexedCap) + " and MaxVertexBlendMatrices=" + std::to_string(liveNonIndexedCap)
+				: std::string("; live device caps unavailable"))
+			<< "; using " << selectedCapsSource << " caps and falling back to geometry blending (countHWBones=" << selectedNonIndexedCap << ")." << std::endl;
+		return selectedNonIndexedCap;
 	}
 
 	__declspec(naked) void validateDeviceCaps_stub() {
@@ -80,8 +113,9 @@ namespace mwse::patch::IndexedVertexBlending {
 		__asm {
 			push eax                        // preserve D3DCAPS8* for 0x6aba38's later read
 			push ecx                        // preserve renderer this* for 0x6aba32's store
-			push eax                        // arg: D3DCAPS8*
-			call computeCountHWBones        // __stdcall pops arg; returns in EAX
+			push eax                        // arg2: D3DCAPS8*
+			push ecx                        // arg1: NiDX8Renderer*
+			call computeCountHWBones        // __stdcall pops args; returns in EAX
 			mov edx, eax                    // propagate count into EDX (matches vanilla)
 			pop ecx
 			pop eax
@@ -368,9 +402,7 @@ namespace mwse::patch::IndexedVertexBlending {
 	static const auto SetSkinnedModelTransforms_vanilla = reinterpret_cast<SetSkinnedModelTransforms_t>(0x6acbe0);
 
 	// Verified against IDA NiDX8Renderer struct (size 1696):
-	//   +0x024  d3dDevice    (IDirect3DDevice8*)
 	//   +0x548  renderState  (NiDX8RenderState*)  -- unused here; we go direct to device.
-	static constexpr unsigned kOffset_NiDX8Renderer_d3dDevice = 0x24;
 
 	void __fastcall SetSkinnedModelTransforms_hook(void* thisRenderer, DWORD /*edx_unused*/, void* skinInstance, NI::SkinPartition::Partition* partition, void* transform, void* bound) {
 		if (!s_ivbActive || !partition || partition->numBones == 0 || !partition->bonePalette) {
