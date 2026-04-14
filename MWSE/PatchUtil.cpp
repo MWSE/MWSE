@@ -61,6 +61,8 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+#include "Patch_IndexedVertexBlending.h"
+
 namespace mwse::patch {
 
 #ifndef _DEBUG
@@ -2360,6 +2362,11 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: Collapse skinned-mesh drawcalls by switching the D3D8 renderer
+		// from Geometry Blending to Indexed Vertex Blending. Stubbed; all hooks
+		// are gated behind runtime device-cap checks inside install().
+		IndexedVertexBlending::install();
 	}
 
 	void installPostLuaPatches() {

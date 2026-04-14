@@ -585,6 +585,9 @@
     <ClInclude Include="TES3UITree.h">
       <Filter>Header Files\DataAdapters\TES3\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Patch_IndexedVertexBlending.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="PatchUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -2719,6 +2722,9 @@
     </ClCompile>
     <ClCompile Include="TES3InputController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="Patch_IndexedVertexBlending.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="PatchUtil.cpp">
       <Filter>Source Files\Utility</Filter>
