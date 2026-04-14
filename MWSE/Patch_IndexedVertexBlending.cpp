@@ -187,8 +187,9 @@ namespace mwse::patch::IndexedVertexBlending {
 	//     / TEXn as per geomData), stride 32 base (12 pos + 16 weights + 4 idx);
 	//   * 4 explicit float weights per vertex (last NOT implicit in XYZB5);
 	//   * 4 bytes of local bone indices packed into the LASTBETA dword, read
-	//     from partition->bones and truncated short→byte (safe: values are
-	//     local palette indices in [0, numBones) ≤ 255).
+	//     from partition->bonePalette (one local palette index per weight slot).
+	//     partition->bones remains the partition-global bone list used by
+	//     SetSkinnedModelTransforms to populate WorldMatrix[0..numBones-1].
 	//
 	// Three call sites patched via genCallEnforced — see install(). Each funnels
 	// through PackSkinnedVB_hook, which tail-calls PackSkinnedVB_vanilla when the
@@ -231,6 +232,10 @@ namespace mwse::patch::IndexedVertexBlending {
 		DWORD pool, int unused3, int* out_vertexStride, int* out_fvf)
 	{
 		if (!s_ivbActive) {
+			return PackSkinnedVB_vanilla(thisVbm, 0, geomData, skinInstance, partition, unused1, unused2, pool, unused3, out_vertexStride, out_fvf);
+		}
+
+		if (!partition || !partition->bonePalette || partition->numBonesPerVertex == 0 || partition->numBonesPerVertex > 4) {
 			return PackSkinnedVB_vanilla(thisVbm, 0, geomData, skinInstance, partition, unused1, unused2, pool, unused3, out_vertexStride, out_fvf);
 		}
 
@@ -307,9 +312,9 @@ namespace mwse::patch::IndexedVertexBlending {
 			}
 
 			BYTE* outIdx = vp + 28;
-			const unsigned short* srcBones = partition->bones + i * numBonesPerVertex;
+			const BYTE* srcBones = partition->bonePalette + i * numBonesPerVertex;
 			for (DWORD b = 0; b < 4; ++b) {
-				outIdx[b] = (b < numBonesPerVertex) ? static_cast<BYTE>(srcBones[b] & 0xFF) : 0;
+				outIdx[b] = (b < numBonesPerVertex) ? srcBones[b] : 0;
 			}
 		}
 
@@ -369,19 +374,12 @@ namespace mwse::patch::IndexedVertexBlending {
 	// partition's list of global bone indices (length numBones) and each vertex's
 	// weights map positionally to WorldMatrix[0..numBones-1].
 	//
-	// In palette mode (which Hook B forces on when s_ivbActive) the same struct
-	// fields take on different semantics:
-	//   partition->bones       -> per-vertex LOCAL palette indices
-	//                             (length numVertices * numBonesPerVertex)
-	//   partition->bonePalette -> global bone index table
-	//                             (unsigned __int8[numBones])
-	// Reading `bones[0..numBones-1]` under this layout just samples the first few
-	// vertices' local indices and treats them as global bone IDs — nonsense.
-	//
-	// Fix without rewriting any NiTransform math: build a temporary unsigned short
-	// array from bonePalette[] and hot-swap partition->bones for the duration of
-	// the vanilla call. The existing arithmetic then sees a familiar "global
-	// indices at bones[i]" layout. After the matrix upload we restore bones and
+	// In palette mode, IDA shows the semantics are still:
+	//   partition->bones       -> partition-global bone index table
+	//                             (unsigned short[numBones])
+	//   partition->bonePalette -> per-vertex LOCAL palette indices
+	//                             (unsigned char[numVertices * numBonesPerVertex])
+	// So vanilla's matrix upload loop is already correct. Hook D only needs to
 	// raise D3DRS_INDEXEDVERTEXBLENDENABLE on the device so the
 	// XYZB5 | LASTBETA_UBYTE4 stream emitted by Hook C actually uses byte indices
 	// to look up WorldMatrix palette entries.
@@ -409,19 +407,9 @@ namespace mwse::patch::IndexedVertexBlending {
 			SetSkinnedModelTransforms_vanilla(thisRenderer, 0, skinInstance, partition, transform, bound);
 			return;
 		}
-
-		// kPaletteCeiling (255) caps the per-partition bone count so the temporary
-		// array always fits on the stack.
-		unsigned short fakeBones[kPaletteCeiling];
-		const unsigned short numBones = partition->numBones;
-		for (unsigned short i = 0; i < numBones; ++i) {
-			fakeBones[i] = partition->bonePalette[i];
-		}
-
-		unsigned short* savedBones = partition->bones;
-		partition->bones = fakeBones;
 		SetSkinnedModelTransforms_vanilla(thisRenderer, 0, skinInstance, partition, transform, bound);
-		partition->bones = savedBones;
+
+		const unsigned short numBones = partition->numBones;
 
 		IDirect3DDevice8* device = *reinterpret_cast<IDirect3DDevice8**>(reinterpret_cast<BYTE*>(thisRenderer) + kOffset_NiDX8Renderer_d3dDevice);
 		if (device) {
