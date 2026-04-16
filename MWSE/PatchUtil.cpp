@@ -37,12 +37,15 @@
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
+#include "NIBound.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
 #include "NIPointLight.h"
+#include "NIRenderer.h"
 #include "NISortAdjustNode.h"
+#include "NITransform.h"
 #include "NiTriShape.h"
 #include "NiTriShapeData.h"
 #include "NIUVController.h"
@@ -60,6 +63,9 @@
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
+
+#include <algorithm>
+#include <vector>
 
 namespace mwse::patch {
 
@@ -1241,6 +1247,210 @@ namespace mwse::patch {
 	const size_t PatchNIDX8Renderer_RenderShape_size = 0x8;
 
 	//
+	// Patch: Wire up the latent NiDX8Renderer batch API.
+	//
+	// NiDX8Renderer ships with BeginBatch / BatchRenderShape / BatchRenderStrips /
+	// EndBatch methods that are fully implemented but never called — xrefs land
+	// only on the vtable at 0x74F4D0. EndBatch runs the per-batch pipeline work
+	// (selectAndLinkPass, updateD3DState, buildPass, light setState, and
+	// ensureAndRegisterStreamables) once per call, then drains a linked list of
+	// BatchedObjects with one DrawIndexedPrimitive per entry. The vanilla batch
+	// API, however, assumes the caller has already grouped shapes by
+	// (propertyState, effectState) — it does no sorting or key-tracking.
+	//
+	// This patch adds the missing group-by-state layer:
+	//   1. Function-entry JMP detours at 0x6ACEF0 (RenderShape) and 0x6ACFC0
+	//      (RenderTristrips) divert each opaque-shape draw into an enqueue
+	//      function that records {propState, effectState, geomData, ...} into
+	//      a per-frame std::vector.
+	//   2. The direct `call NiAVObject::CullShow` at 0x6CC874 inside
+	//      NiCamera::Click is wrapped; after traversal, the flusher stable-sorts
+	//      the queue by (propState, effectState) and emits
+	//      BeginBatch -> BatchRenderShape|Strips (per entry) -> EndBatch
+	//      for each state group.
+	//   3. Shapes flagged with Const_SoftwareSkinningFlag tail-JMP to the
+	//      vanilla RenderShape / RenderTristrips so the existing +0x2F MWSE
+	//      patch still forces them onto the software-skinning path.
+	//
+	// Alpha-blended shapes never reach here; they defer through
+	// NiAlphaAccumulator from NiTriShape::Display before this point.
+	//
+	// Refcount assumption: BatchEntry stores raw pointers to propState /
+	// effectState. Property / effect state objects are held by their owning
+	// NiAVObject property-attach lists and live for the scene graph's lifetime,
+	// so they remain valid between enqueue and flush within a single Click().
+	// If a future scenario creates a state only reachable through the
+	// renderer's currentPropertyState, bump refcounts in enqueue and release
+	// in flush.
+	//
+
+	struct NiDX8BatchEntry {
+		NI::Object* propState;
+		NI::Object* effectState;
+		NI::Object* geomData;
+		NI::Object* skinInstance;
+		NI::Transform* transform;
+		NI::SphereBound* worldBound;
+		bool isStrips;
+	};
+
+	static std::vector<NiDX8BatchEntry> NiDX8BatchQueue;
+	static NI::Renderer* NiDX8BatchActiveRenderer = nullptr;
+
+	// Gate flag: true only during CullShow. When false, enqueue is skipped and
+	// shapes pass through to the vanilla RenderShape / RenderTristrips. This
+	// ensures alpha shapes (replayed by NiAlphaAccumulator::FinishAccumulating
+	// after CullShow returns, in back-to-front depth order) are not collapsed
+	// into state-sorted batches that would destroy their draw order, and that
+	// screen polys / post-Click render paths remain unaffected.
+	static DWORD NiDX8BatchingActive = 0;
+
+	using NiDX8BeginBatch_t = void(__thiscall*)(NI::Renderer*, NI::Object* propState, NI::Object* effectState);
+	using NiDX8EndBatch_t = void(__thiscall*)(NI::Renderer*);
+	using NiDX8BatchRender_t = void(__thiscall*)(NI::Renderer*, NI::Object* geomData, NI::Object* skin, NI::Transform* xform, NI::SphereBound* bound);
+	using NiCullShow_t = void(__thiscall*)(NI::AVObject*, void* camera);
+
+	static const auto NiDX8_BeginBatch = reinterpret_cast<NiDX8BeginBatch_t>(0x6AE030);
+	static const auto NiDX8_EndBatch = reinterpret_cast<NiDX8EndBatch_t>(0x6AE090);
+	static const auto NiDX8_BatchRenderShape = reinterpret_cast<NiDX8BatchRender_t>(0x6AE600);
+	static const auto NiDX8_BatchRenderStrips = reinterpret_cast<NiDX8BatchRender_t>(0x6AE8C0);
+
+	// __fastcall enqueue helpers. Called via tail-JMP from the naked entry
+	// detours; the stack shape matches the underlying __thiscall RenderShape /
+	// RenderTristrips, so MSVC's `ret 10h` for this signature properly unwinds
+	// the original caller's 4 stack args.
+	void __fastcall PatchNIDX8Renderer_EnqueueShape(
+		NI::Renderer* self, void* /*edx*/,
+		NI::Object* geomData, NI::Object* skinInstance,
+		NI::Transform* transform, NI::SphereBound* worldBound) {
+		NiDX8BatchActiveRenderer = self;
+		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
+			self->currentPropertyState.get(),
+			self->currentEffectState.get(),
+			geomData, skinInstance, transform, worldBound,
+			false
+		});
+	}
+
+	void __fastcall PatchNIDX8Renderer_EnqueueStrips(
+		NI::Renderer* self, void* /*edx*/,
+		NI::Object* geomData, NI::Object* skinInstance,
+		NI::Transform* transform, NI::SphereBound* worldBound) {
+		NiDX8BatchActiveRenderer = self;
+		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
+			self->currentPropertyState.get(),
+			self->currentEffectState.get(),
+			geomData, skinInstance, transform, worldBound,
+			true
+		});
+	}
+
+	// Indirect-jump targets. Using a variable-backed indirect JMP avoids MSVC
+	// inline-asm name-mangling ambiguity for __fastcall symbols.
+	static const DWORD NiDX8BatchEnqueueShapeAddr = reinterpret_cast<DWORD>(&PatchNIDX8Renderer_EnqueueShape);
+	static const DWORD NiDX8BatchEnqueueStripsAddr = reinterpret_cast<DWORD>(&PatchNIDX8Renderer_EnqueueStrips);
+
+	// Detour installed at 0x6ACEF0 via 5-byte JMP rel32. Stack on entry:
+	//   [esp]   = return address
+	//   [esp+4] = geomData (NiTriBasedGeomData*)
+	//   [esp+8] = skinInstance
+	//   [esp+C] = transform
+	//   [esp+10]= worldBound
+	// ecx = NiDX8Renderer* this
+	// On software-skinning: reproduce original prologue
+	//   (push ebp; push esi; push edi; mov edi, ecx) and tail-JMP to 0x6ACEF5,
+	// so the vanilla function runs in full and completes via its own `retn 10h`.
+	__declspec(naked) void PatchNIDX8Renderer_HookRenderShape() {
+		__asm {
+			cmp dword ptr [NiDX8BatchingActive], 0
+			jz fallback
+			mov eax, [esp + 4]
+			test word ptr [eax + 0x36], Const_SoftwareSkinningFlag
+			jnz fallback
+			jmp dword ptr [NiDX8BatchEnqueueShapeAddr]
+		fallback:
+			push ebp
+			push esi
+			push edi
+			mov edi, ecx
+			push 0x6ACEF5
+			ret
+		}
+	}
+
+	// Detour installed at 0x6ACFC0. Vanilla prologue is
+	//   push ebx; push esi; push edi; mov edi, ecx  (5 bytes).
+	__declspec(naked) void PatchNIDX8Renderer_HookRenderTristrips() {
+		__asm {
+			cmp dword ptr [NiDX8BatchingActive], 0
+			jz fallback
+			mov eax, [esp + 4]
+			test word ptr [eax + 0x36], Const_SoftwareSkinningFlag
+			jnz fallback
+			jmp dword ptr [NiDX8BatchEnqueueStripsAddr]
+		fallback:
+			push ebx
+			push esi
+			push edi
+			mov edi, ecx
+			push 0x6ACFC5
+			ret
+		}
+	}
+
+	void PatchNIDX8Renderer_FlushBatches() {
+		if (NiDX8BatchQueue.empty()) return;
+		NI::Renderer* renderer = NiDX8BatchActiveRenderer;
+		if (!renderer) {
+			NiDX8BatchQueue.clear();
+			return;
+		}
+
+		std::stable_sort(NiDX8BatchQueue.begin(), NiDX8BatchQueue.end(),
+			[](const NiDX8BatchEntry& a, const NiDX8BatchEntry& b) {
+				if (a.propState != b.propState) return a.propState < b.propState;
+				return a.effectState < b.effectState;
+			});
+
+		NI::Object* curProp = nullptr;
+		NI::Object* curFx = nullptr;
+		bool batchOpen = false;
+
+		for (const auto& e : NiDX8BatchQueue) {
+			if (!batchOpen || e.propState != curProp || e.effectState != curFx) {
+				if (batchOpen) NiDX8_EndBatch(renderer);
+				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
+				curProp = e.propState;
+				curFx = e.effectState;
+				batchOpen = true;
+			}
+			if (e.isStrips) {
+				NiDX8_BatchRenderStrips(renderer, e.geomData, e.skinInstance, e.transform, e.worldBound);
+			}
+			else {
+				NiDX8_BatchRenderShape(renderer, e.geomData, e.skinInstance, e.transform, e.worldBound);
+			}
+		}
+		if (batchOpen) NiDX8_EndBatch(renderer);
+
+		NiDX8BatchQueue.clear();
+		NiDX8BatchActiveRenderer = nullptr;
+	}
+
+	// genCallEnforced replaces the direct CALL at 0x6CC874 (target 0x6EB480).
+	// We run the vanilla traversal — which fills NiDX8BatchQueue via the entry
+	// detours — and then flush. This keeps batching per-Click, so the world /
+	// arm / menu camera passes never cross-contaminate.
+	void __fastcall PatchNIDX8Renderer_CullShowAndFlush(
+		NI::AVObject* scene, void* /*edx*/, void* camera) {
+		const auto vanilla = reinterpret_cast<NiCullShow_t>(0x6EB480);
+		NiDX8BatchingActive = 1;
+		vanilla(scene, camera);
+		NiDX8BatchingActive = 0;
+		PatchNIDX8Renderer_FlushBatches();
+	}
+
+	//
 	// Patch: Fix NiDX8TexturePass::setCTPipelineState always setting the base map
 	// texture coordinate index to 0 instead of reading it from the NIF property.
 	//
@@ -2145,6 +2355,15 @@ namespace mwse::patch {
 		genCallEnforced(0x6E54C5, 0x6F15B0, reinterpret_cast<DWORD>(PatchNITriShapeCopyMembers));
 		writePatchCodeUnprotected(0x6ACF1F, (BYTE*)&PatchNIDX8Renderer_RenderShape, PatchNIDX8Renderer_RenderShape_size);
 		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriShape_vTable, NI::TriShape_vTable::linkObject), 0x6E56D0, *reinterpret_cast<DWORD*>(&TriShape_linkObject));
+
+		// Patch: Wire up the latent NiDX8Renderer batch API so opaque shapes are
+		// coalesced by (propertyState, effectState) and replayed via
+		// BeginBatch / BatchRenderShape|Strips / EndBatch. Detours the two
+		// virtual entry points and wraps the CullShow call inside NiCamera::Click
+		// so the queue is flushed once per camera pass.
+		genJumpUnprotected(0x6ACEF0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderShape), 5);
+		genJumpUnprotected(0x6ACFC0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderTristrips), 5);
+		genCallEnforced(0x6CC874, 0x6EB480, reinterpret_cast<DWORD>(PatchNIDX8Renderer_CullShowAndFlush));
 
 		// Patch: Fix base map texture coordinate index hardcoded to 0 in NiDX8TexturePass::setCTPipelineState.
 		// 0x6B42AC: `mov [edi+28h], ebp` — replace with CALL + NOP the leftover byte at 0x6B42B1.
