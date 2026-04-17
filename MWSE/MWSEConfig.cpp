@@ -21,6 +21,7 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
+	bool Configuration::EnableDX8BatchRendering = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -70,6 +71,7 @@ namespace mwse {
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
+		DECLARE_CONFIG(EnableDX8BatchRendering)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

@@ -45,6 +45,7 @@
 #include "NIPointLight.h"
 #include "NIRenderer.h"
 #include "NISortAdjustNode.h"
+#include "NiTriBasedGeometryData.h"
 #include "NITransform.h"
 #include "NiTriShape.h"
 #include "NiTriShapeData.h"
@@ -1284,6 +1285,21 @@ namespace mwse::patch {
 	// in flush.
 	//
 
+	// Fields beyond (propState, effectState) are required for grouping because
+	// EndBatch does the full pipeline setup (selectAndLinkPass / buildPass /
+	// lightManager::setState / loadBinary) ONCE using the batch's head object
+	// as a representative. Any shape in the same batch that differs on these
+	// inputs would be rendered with the wrong pipeline state. Keys:
+	//   - hasNormals:  selectAndLinkPass / buildPass / ensureAndRegisterStreamables
+	//                  all take hasNormals derived from geomData->normal.
+	//   - textureSets: influences pipeline texture-stage configuration.
+	//   - isSkinned:   retained as a defensive key field, but under the current
+	//                  hook gating (skinInstance != 0 falls through to vanilla)
+	//                  it is always false for enqueued entries. Skinned shapes
+	//                  bypass batching because EndBatch uses firstBatch's
+	//                  skinInstance/partition/bone-count for selectAndLinkPass
+	//                  and the linked vertex-shader variant, which cannot be
+	//                  safely represented by a single head entry across a group.
 	struct NiDX8BatchEntry {
 		NI::Object* propState;
 		NI::Object* effectState;
@@ -1292,6 +1308,9 @@ namespace mwse::patch {
 		NI::Transform* transform;
 		NI::SphereBound* worldBound;
 		bool isStrips;
+		bool hasNormals;
+		bool isSkinned;
+		unsigned short textureSets;
 	};
 
 	static std::vector<NiDX8BatchEntry> NiDX8BatchQueue;
@@ -1323,12 +1342,16 @@ namespace mwse::patch {
 		NI::Renderer* self, void* /*edx*/,
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
+		auto geom = reinterpret_cast<NI::TriBasedGeometryData*>(geomData);
 		NiDX8BatchActiveRenderer = self;
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
 			self->currentPropertyState.get(),
 			self->currentEffectState.get(),
 			geomData, skinInstance, transform, worldBound,
-			false
+			false,
+			geom && geom->normal != nullptr,
+			skinInstance != nullptr,
+			geom ? geom->textureSets : static_cast<unsigned short>(0)
 		});
 	}
 
@@ -1336,12 +1359,16 @@ namespace mwse::patch {
 		NI::Renderer* self, void* /*edx*/,
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
+		auto geom = reinterpret_cast<NI::TriBasedGeometryData*>(geomData);
 		NiDX8BatchActiveRenderer = self;
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
 			self->currentPropertyState.get(),
 			self->currentEffectState.get(),
 			geomData, skinInstance, transform, worldBound,
-			true
+			true,
+			geom && geom->normal != nullptr,
+			skinInstance != nullptr,
+			geom ? geom->textureSets : static_cast<unsigned short>(0)
 		});
 	}
 
@@ -1357,13 +1384,19 @@ namespace mwse::patch {
 	//   [esp+C] = transform
 	//   [esp+10]= worldBound
 	// ecx = NiDX8Renderer* this
-	// On software-skinning: reproduce original prologue
+	// On software-skinning or skinned geometry: reproduce original prologue
 	//   (push ebp; push esi; push edi; mov edi, ecx) and tail-JMP to 0x6ACEF5,
 	// so the vanilla function runs in full and completes via its own `retn 10h`.
+	// Skinned shapes fall through because EndBatch uses firstBatch's skinInstance
+	// for the once-per-group selectAndLinkPass / buildPass calls, and per-entry
+	// skinned state (partition, bone count, vertex-shader variant) cannot be
+	// safely represented by a single representative.
 	__declspec(naked) void PatchNIDX8Renderer_HookRenderShape() {
 		__asm {
 			cmp dword ptr [NiDX8BatchingActive], 0
 			jz fallback
+			cmp dword ptr [esp + 8], 0
+			jnz fallback
 			mov eax, [esp + 4]
 			test word ptr [eax + 0x36], Const_SoftwareSkinningFlag
 			jnz fallback
@@ -1384,6 +1417,8 @@ namespace mwse::patch {
 		__asm {
 			cmp dword ptr [NiDX8BatchingActive], 0
 			jz fallback
+			cmp dword ptr [esp + 8], 0
+			jnz fallback
 			mov eax, [esp + 4]
 			test word ptr [eax + 0x36], Const_SoftwareSkinningFlag
 			jnz fallback
@@ -1409,19 +1444,34 @@ namespace mwse::patch {
 		std::stable_sort(NiDX8BatchQueue.begin(), NiDX8BatchQueue.end(),
 			[](const NiDX8BatchEntry& a, const NiDX8BatchEntry& b) {
 				if (a.propState != b.propState) return a.propState < b.propState;
-				return a.effectState < b.effectState;
+				if (a.effectState != b.effectState) return a.effectState < b.effectState;
+				if (a.hasNormals != b.hasNormals) return a.hasNormals < b.hasNormals;
+				if (a.isSkinned != b.isSkinned) return a.isSkinned < b.isSkinned;
+				return a.textureSets < b.textureSets;
 			});
 
 		NI::Object* curProp = nullptr;
 		NI::Object* curFx = nullptr;
+		bool curHasNormals = false;
+		bool curSkinned = false;
+		unsigned short curTextureSets = 0;
 		bool batchOpen = false;
 
 		for (const auto& e : NiDX8BatchQueue) {
-			if (!batchOpen || e.propState != curProp || e.effectState != curFx) {
+			const bool stateChanged = !batchOpen
+				|| e.propState != curProp
+				|| e.effectState != curFx
+				|| e.hasNormals != curHasNormals
+				|| e.isSkinned != curSkinned
+				|| e.textureSets != curTextureSets;
+			if (stateChanged) {
 				if (batchOpen) NiDX8_EndBatch(renderer);
 				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
 				curProp = e.propState;
 				curFx = e.effectState;
+				curHasNormals = e.hasNormals;
+				curSkinned = e.isSkinned;
+				curTextureSets = e.textureSets;
 				batchOpen = true;
 			}
 			if (e.isStrips) {
@@ -1441,9 +1491,19 @@ namespace mwse::patch {
 	// We run the vanilla traversal — which fills NiDX8BatchQueue via the entry
 	// detours — and then flush. This keeps batching per-Click, so the world /
 	// arm / menu camera passes never cross-contaminate.
+	//
+	// Config gate is checked per-Click so EnableDX8BatchRendering can be flipped
+	// at runtime (e.g. from the Lua console). When false, NiDX8BatchingActive
+	// stays 0, which causes the naked entry detours to fall through to vanilla
+	// RenderShape / RenderTristrips on every shape, producing identical behavior
+	// to a build with the hooks uninstalled.
 	void __fastcall PatchNIDX8Renderer_CullShowAndFlush(
 		NI::AVObject* scene, void* /*edx*/, void* camera) {
 		const auto vanilla = reinterpret_cast<NiCullShow_t>(0x6EB480);
+		if (!Configuration::EnableDX8BatchRendering) {
+			vanilla(scene, camera);
+			return;
+		}
 		NiDX8BatchingActive = 1;
 		vanilla(scene, camera);
 		NiDX8BatchingActive = 0;
@@ -1483,21 +1543,21 @@ namespace mwse::patch {
 			// ebp = 0
 
 			// --- Fix: read baseMap->texCoordSet and clamp ---
-			mov  eax, [esp+0x30]    // eax = NiTexturingProperty* (caller's var_1C)
-			mov  eax, [eax+0x20]    // eax = maps.storage pointer (TArray.storage at prop+0x20)
-			mov  eax, [eax]         // eax = maps.storage[0] = baseMap*
+			mov  eax, [esp+0x30]	// eax = NiTexturingProperty* (callers var_1C)
+			mov  eax, [eax+0x20]	// eax = maps.storage pointer (TArray.storage at prop+0x20)
+			mov  eax, [eax]			// eax = maps.storage[0] = baseMap*
 			test eax, eax
-			jz   use_zero           // baseMap == nullptr → default to 0
+			jz   use_zero			// baseMap == nullptr → default to 0
 
-			mov  eax, [eax+0x10]    // eax = baseMap->texCoordSet
+			mov  eax, [eax+0x10]	// eax = baseMap->texCoordSet
 
 			// Clamp: if texCoordSet >= textureSetCount, use textureSetCount-1
-			mov  ecx, [esp+0x5C]    // ecx = textureSetCount (caller's arg_10)
+			mov  ecx, [esp+0x5C]	// ecx = textureSetCount (caller's arg_10)
 			test ecx, ecx
-			jz   use_zero           // textureSetCount == 0 → clamp to 0
+			jz   use_zero			// textureSetCount == 0 → clamp to 0
 			cmp  eax, ecx
-			jb   write_index        // texCoordSet < textureSetCount → no clamp needed
-			lea  eax, [ecx-1]       // eax = textureSetCount - 1
+			jb   write_index		// texCoordSet < textureSetCount → no clamp needed
+			lea  eax, [ecx-1]		// eax = textureSetCount - 1
 			jmp  write_index
 
 		use_zero:
@@ -2360,7 +2420,9 @@ namespace mwse::patch {
 		// coalesced by (propertyState, effectState) and replayed via
 		// BeginBatch / BatchRenderShape|Strips / EndBatch. Detours the two
 		// virtual entry points and wraps the CullShow call inside NiCamera::Click
-		// so the queue is flushed once per camera pass.
+		// so the queue is flushed once per camera pass. Runtime toggle is
+		// EnableDX8BatchRendering, checked inside PatchNIDX8Renderer_CullShowAndFlush
+		// per Click so it can be flipped at runtime for A/B screenshots.
 		genJumpUnprotected(0x6ACEF0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderShape), 5);
 		genJumpUnprotected(0x6ACFC0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderTristrips), 5);
 		genCallEnforced(0x6CC874, 0x6EB480, reinterpret_cast<DWORD>(PatchNIDX8Renderer_CullShowAndFlush));
