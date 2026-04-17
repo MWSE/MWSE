@@ -27,11 +27,12 @@ namespace mwse {
 	bool Configuration::EnableDX8BatchWorldObjectRoot = true;
 	bool Configuration::EnableDX8BatchWorldLandscapeRoot = true;
 	bool Configuration::EnableDX8BatchWorldPickObjectRoot = true;
-	bool Configuration::EnableDX8BatchWorldVFXRoot = true;
-	bool Configuration::EnableDX8BatchWorldSpellRoot = true;
-	bool Configuration::EnableDX8BatchWorldArmRoot = true;
-	bool Configuration::EnableDX8BatchWorldProjectileRoot = true;
-	bool Configuration::EnableDX8BatchWorldUnclassified = true;
+	bool Configuration::EnableDX8BatchWorldVFXRoot = false;
+	bool Configuration::EnableDX8BatchWorldSpellRoot = false;
+	bool Configuration::EnableDX8BatchWorldArmRoot = false;
+	bool Configuration::EnableDX8BatchWorldProjectileRoot = false;
+	bool Configuration::EnableDX8BatchWorldUnclassified = false;
+	bool Configuration::EnableDX8BatchWaterReflection = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -92,6 +93,7 @@ namespace mwse {
 		DECLARE_CONFIG(EnableDX8BatchWorldArmRoot)
 		DECLARE_CONFIG(EnableDX8BatchWorldProjectileRoot)
 		DECLARE_CONFIG(EnableDX8BatchWorldUnclassified)
+		DECLARE_CONFIG(EnableDX8BatchWaterReflection)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

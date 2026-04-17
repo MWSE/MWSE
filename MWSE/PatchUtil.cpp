@@ -1635,21 +1635,46 @@ namespace mwse::patch {
 		NI::AVObject* scene, void* /*edx*/, void* camera) {
 		const auto vanilla = reinterpret_cast<NiCullShow_t>(0x6EB480);
 
-		// Scope gate first: identify the main world pass so we can time it
-		// regardless of whether batching is on or off this frame. Every other
-		// Click (splashCamera, armCamera, menuCamera, ShadowManager, water
-		// reflection, LoadScreen, MenuRaceSex head, shader water variants) falls
-		// through to vanilla with batching disabled and is excluded from profiling.
+		// Scope gate first: identify the main world pass vs water reflection vs
+		// everything else. Main pass gets per-subtree iteration + profiling.
+		// Water reflection (WaterController::renderWater temporarily swaps
+		// camera->spScene to waterController->waterPlane) gets a single-subtree
+		// batch pass gated by EnableDX8BatchWaterReflection. Every other Click
+		// (splashCamera, armCamera, menuCamera, ShadowManager, LoadScreen,
+		// MenuRaceSex head, shader water variants) falls through to vanilla.
 		const auto wc = TES3::WorldController::get();
 		NI::Node* mainSceneRoot = nullptr;
+		NI::Node* reflectionSceneRoot = nullptr;
 		bool isMainWorldPass = false;
+		bool isWaterReflectionPass = false;
 		if (wc) {
 			const auto& worldCam = wc->worldCamera;
+			const auto mainCamera = worldCam.cameraData.camera.get();
 			mainSceneRoot = worldCam.root.get();
-			isMainWorldPass = camera == worldCam.cameraData.camera.get()
-				&& mainSceneRoot != nullptr
-				&& scene == reinterpret_cast<NI::AVObject*>(mainSceneRoot);
+			if (camera == mainCamera) {
+				if (mainSceneRoot != nullptr
+					&& scene == reinterpret_cast<NI::AVObject*>(mainSceneRoot)) {
+					isMainWorldPass = true;
+				}
+				else {
+					const auto dh = TES3::DataHandler::get();
+					const auto waterCtrl = dh ? dh->waterController : nullptr;
+					if (waterCtrl) {
+						reflectionSceneRoot = waterCtrl->waterPlane.get();
+						isWaterReflectionPass = reflectionSceneRoot != nullptr
+							&& scene == reinterpret_cast<NI::AVObject*>(reflectionSceneRoot);
+					}
+				}
+			}
 		}
+
+		if (isWaterReflectionPass) {
+			const bool enableReflectionBatching = Configuration::EnableDX8BatchRendering
+				&& Configuration::EnableDX8BatchWaterReflection;
+			runSubtreeWithBatchGate(scene, camera, enableReflectionBatching, vanilla);
+			return;
+		}
+
 		if (!isMainWorldPass) {
 			vanilla(scene, camera);
 			return;

@@ -29,6 +29,7 @@ namespace mwse {
 		static bool EnableDX8BatchWorldArmRoot;
 		static bool EnableDX8BatchWorldProjectileRoot;
 		static bool EnableDX8BatchWorldUnclassified;
+		static bool EnableDX8BatchWaterReflection;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();
