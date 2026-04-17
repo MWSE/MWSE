@@ -46,7 +46,6 @@
 #include "NIRenderer.h"
 #include "NINode.h"
 #include "NISortAdjustNode.h"
-#include "NiTriBasedGeometryData.h"
 #include "NITransform.h"
 #include "NiTriShape.h"
 #include "NiTriShapeData.h"
@@ -1286,27 +1285,14 @@ namespace mwse::patch {
 	// in flush.
 	//
 
-	// Fields beyond (propState, effectState) are required for grouping because
-	// EndBatch does the full pipeline setup (selectAndLinkPass / buildPass /
-	// lightManager::setState / loadBinary) ONCE using the batch's head object
-	// as a representative. Any shape in the same batch that differs on these
-	// inputs would be rendered with the wrong pipeline state. Keys:
-	//   - hasNormals:  selectAndLinkPass / buildPass / ensureAndRegisterStreamables
-	//                  all take hasNormals derived from geomData->normal; sets
-	//                  the D3DFVF_NORMAL bit in the created vertex buffer FVF.
-	//   - hasColor:    determines the D3DFVF_DIFFUSE bit in the created FVF;
-	//                  selectAndLinkPass / buildPass select different shader
-	//                  variants based on full FVF, so mixing colored and
-	//                  uncolored shapes in one batch mis-renders the minority.
-	//   - textureSets: influences pipeline texture-stage configuration and the
-	//                  D3DFVF_TEX0..TEX8 bits.
-	//   - isSkinned:   retained as a defensive key field, but under the current
-	//                  hook gating (skinInstance != 0 falls through to vanilla)
-	//                  it is always false for enqueued entries. Skinned shapes
-	//                  bypass batching because EndBatch uses firstBatch's
-	//                  skinInstance/partition/bone-count for selectAndLinkPass
-	//                  and the linked vertex-shader variant, which cannot be
-	//                  safely represented by a single head entry across a group.
+	// EndBatch runs selectAndLinkPass / buildPass / lightManager::setState once
+	// using the batch's head entry as a representative. Only (propState,
+	// effectState) are actually validated as load-bearing signature axes — those
+	// are the two that caused dropped shapes when mixed in a single batch. FVF-
+	// shape axes (normals/colors/textureSets) were captured here during the
+	// earlier bug hunt but turned out to be non-contributors once the scope gate
+	// and per-subtree flush were in place. Kept minimal so grouping is as coarse
+	// as possible.
 	struct NiDX8BatchEntry {
 		NI::Object* propState;
 		NI::Object* effectState;
@@ -1315,10 +1301,6 @@ namespace mwse::patch {
 		NI::Transform* transform;
 		NI::SphereBound* worldBound;
 		bool isStrips;
-		bool hasNormals;
-		bool hasColor;
-		bool isSkinned;
-		unsigned short textureSets;
 	};
 
 	static std::vector<NiDX8BatchEntry> NiDX8BatchQueue;
@@ -1369,17 +1351,12 @@ namespace mwse::patch {
 		NI::Renderer* self, void* /*edx*/,
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
-		auto geom = reinterpret_cast<NI::TriBasedGeometryData*>(geomData);
 		NiDX8BatchActiveRenderer = self;
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
 			self->currentPropertyState.get(),
 			self->currentEffectState.get(),
 			geomData, skinInstance, transform, worldBound,
-			false,
-			geom && geom->normal != nullptr,
-			geom && geom->color != nullptr,
-			skinInstance != nullptr,
-			geom ? geom->textureSets : static_cast<unsigned short>(0)
+			false
 		});
 	}
 
@@ -1387,17 +1364,12 @@ namespace mwse::patch {
 		NI::Renderer* self, void* /*edx*/,
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
-		auto geom = reinterpret_cast<NI::TriBasedGeometryData*>(geomData);
 		NiDX8BatchActiveRenderer = self;
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
 			self->currentPropertyState.get(),
 			self->currentEffectState.get(),
 			geomData, skinInstance, transform, worldBound,
-			true,
-			geom && geom->normal != nullptr,
-			geom && geom->color != nullptr,
-			skinInstance != nullptr,
-			geom ? geom->textureSets : static_cast<unsigned short>(0)
+			true
 		});
 	}
 
@@ -1515,38 +1487,22 @@ namespace mwse::patch {
 		std::stable_sort(NiDX8BatchQueue.begin(), NiDX8BatchQueue.end(),
 			[](const NiDX8BatchEntry& a, const NiDX8BatchEntry& b) {
 				if (a.propState != b.propState) return a.propState < b.propState;
-				if (a.effectState != b.effectState) return a.effectState < b.effectState;
-				if (a.hasNormals != b.hasNormals) return a.hasNormals < b.hasNormals;
-				if (a.hasColor != b.hasColor) return a.hasColor < b.hasColor;
-				if (a.isSkinned != b.isSkinned) return a.isSkinned < b.isSkinned;
-				return a.textureSets < b.textureSets;
+				return a.effectState < b.effectState;
 			});
 
 		NI::Object* curProp = nullptr;
 		NI::Object* curFx = nullptr;
-		bool curHasNormals = false;
-		bool curHasColor = false;
-		bool curSkinned = false;
-		unsigned short curTextureSets = 0;
 		bool batchOpen = false;
 
 		for (const auto& e : NiDX8BatchQueue) {
 			const bool stateChanged = !batchOpen
 				|| e.propState != curProp
-				|| e.effectState != curFx
-				|| e.hasNormals != curHasNormals
-				|| e.hasColor != curHasColor
-				|| e.isSkinned != curSkinned
-				|| e.textureSets != curTextureSets;
+				|| e.effectState != curFx;
 			if (stateChanged) {
 				if (batchOpen) NiDX8_EndBatch(renderer);
 				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
 				curProp = e.propState;
 				curFx = e.effectState;
-				curHasNormals = e.hasNormals;
-				curHasColor = e.hasColor;
-				curSkinned = e.isSkinned;
-				curTextureSets = e.textureSets;
 				batchOpen = true;
 			}
 			if (e.isStrips) {
@@ -1610,6 +1566,45 @@ namespace mwse::patch {
 		}
 	}
 
+	// Profiling counters for the main world pass. See recordMainPassTiming.
+	struct BatchingPerfCounters {
+		LARGE_INTEGER frequency;
+		LARGE_INTEGER accum;
+		unsigned int frameCount;
+		bool lastMode;
+		bool initialized;
+	};
+	static BatchingPerfCounters g_batchingPerf = {};
+	static constexpr unsigned int kBatchingPerfLogEvery = 300;
+
+	// Accumulate main-pass CPU time and log a rolling average every
+	// kBatchingPerfLogEvery frames. When EnableDX8BatchRendering toggles, the
+	// current window is discarded so the logged average never mixes modes.
+	static void recordMainPassTiming(LONGLONG ticks, bool batchingEnabled) {
+		if (!g_batchingPerf.initialized) {
+			QueryPerformanceFrequency(&g_batchingPerf.frequency);
+			g_batchingPerf.lastMode = batchingEnabled;
+			g_batchingPerf.initialized = true;
+		}
+		if (batchingEnabled != g_batchingPerf.lastMode) {
+			g_batchingPerf.accum.QuadPart = 0;
+			g_batchingPerf.frameCount = 0;
+			g_batchingPerf.lastMode = batchingEnabled;
+		}
+		g_batchingPerf.accum.QuadPart += ticks;
+		g_batchingPerf.frameCount++;
+		if (g_batchingPerf.frameCount >= kBatchingPerfLogEvery) {
+			const double ms = static_cast<double>(g_batchingPerf.accum.QuadPart) * 1000.0
+				/ static_cast<double>(g_batchingPerf.frequency.QuadPart);
+			mwse::log::getLog() << "[MWSE][DX8Batch] main-pass avg "
+				<< (ms / g_batchingPerf.frameCount) << " ms over "
+				<< g_batchingPerf.frameCount << " frames (batching "
+				<< (batchingEnabled ? "ON" : "OFF") << ")" << std::endl;
+			g_batchingPerf.accum.QuadPart = 0;
+			g_batchingPerf.frameCount = 0;
+		}
+	}
+
 	// genCallEnforced replaces the direct CALL at 0x6CC874 (target 0x6EB480).
 	// Scope gate: only the primary worldCamera pass with its own sgRoot is
 	// batched. Every other Click that reaches this hook (splashCamera, armCamera,
@@ -1639,59 +1634,73 @@ namespace mwse::patch {
 	void __fastcall PatchNIDX8Renderer_CullShowAndFlush(
 		NI::AVObject* scene, void* /*edx*/, void* camera) {
 		const auto vanilla = reinterpret_cast<NiCullShow_t>(0x6EB480);
-		if (!Configuration::EnableDX8BatchRendering) {
-			vanilla(scene, camera);
-			return;
-		}
 
+		// Scope gate first: identify the main world pass so we can time it
+		// regardless of whether batching is on or off this frame. Every other
+		// Click (splashCamera, armCamera, menuCamera, ShadowManager, water
+		// reflection, LoadScreen, MenuRaceSex head, shader water variants) falls
+		// through to vanilla with batching disabled and is excluded from profiling.
 		const auto wc = TES3::WorldController::get();
-		if (!wc) {
+		NI::Node* mainSceneRoot = nullptr;
+		bool isMainWorldPass = false;
+		if (wc) {
+			const auto& worldCam = wc->worldCamera;
+			mainSceneRoot = worldCam.root.get();
+			isMainWorldPass = camera == worldCam.cameraData.camera.get()
+				&& mainSceneRoot != nullptr
+				&& scene == reinterpret_cast<NI::AVObject*>(mainSceneRoot);
+		}
+		if (!isMainWorldPass) {
 			vanilla(scene, camera);
 			return;
 		}
-		const auto& worldCam = wc->worldCamera;
-		const auto mainCamera = worldCam.cameraData.camera.get();
-		const auto mainSceneRoot = worldCam.root.get();
-		if (camera != mainCamera
-			|| mainSceneRoot == nullptr
-			|| scene != reinterpret_cast<NI::AVObject*>(mainSceneRoot)) {
+
+		const bool batchingEnabled = Configuration::EnableDX8BatchRendering;
+		LARGE_INTEGER start;
+		QueryPerformanceCounter(&start);
+
+		if (!batchingEnabled) {
 			vanilla(scene, camera);
-			return;
 		}
+		else {
+			// Main world pass with batching on: replace the single vanilla(root)
+			// call with a manual iteration of the root's children so each subtree
+			// can be gated independently and flushed in isolation.
+			auto rootNode = mainSceneRoot;
+			for (unsigned int i = 0; i < rootNode->children.endIndex; ++i) {
+				auto child = rootNode->children.storage[i].get();
+				if (child == nullptr) continue;
 
-		// Main world pass confirmed. Replace the single vanilla(root) call with a
-		// manual iteration of the root's children so each subtree can be gated
-		// independently.
-		auto rootNode = mainSceneRoot;
-		for (unsigned int i = 0; i < rootNode->children.endIndex; ++i) {
-			auto child = rootNode->children.storage[i].get();
-			if (child == nullptr) continue;
-
-			const char* childName = child->getName();
-			if (isNamedWorldRoot(childName)) {
-				runSubtreeWithBatchGate(child, camera,
-					isWorldRootBatchingEnabled(childName), vanilla);
-				continue;
-			}
-
-			// Not a known leaf root. If it's a Node, descend one level further
-			// to find the named roots nested under an intermediate wrapper.
-			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-				auto asNode = static_cast<NI::Node*>(child);
-				for (unsigned int j = 0; j < asNode->children.endIndex; ++j) {
-					auto grandchild = asNode->children.storage[j].get();
-					if (grandchild == nullptr) continue;
-					const char* gcName = grandchild->getName();
-					runSubtreeWithBatchGate(grandchild, camera,
-						isWorldRootBatchingEnabled(gcName), vanilla);
+				const char* childName = child->getName();
+				if (isNamedWorldRoot(childName)) {
+					runSubtreeWithBatchGate(child, camera,
+						isWorldRootBatchingEnabled(childName), vanilla);
+					continue;
 				}
-				continue;
-			}
 
-			// Opaque leaf at the top level — pass through with unclassified gate.
-			runSubtreeWithBatchGate(child, camera,
-				Configuration::EnableDX8BatchWorldUnclassified, vanilla);
+				// Not a known leaf root. If it's a Node, descend one level further
+				// to find the named roots nested under an intermediate wrapper.
+				if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+					auto asNode = static_cast<NI::Node*>(child);
+					for (unsigned int j = 0; j < asNode->children.endIndex; ++j) {
+						auto grandchild = asNode->children.storage[j].get();
+						if (grandchild == nullptr) continue;
+						const char* gcName = grandchild->getName();
+						runSubtreeWithBatchGate(grandchild, camera,
+							isWorldRootBatchingEnabled(gcName), vanilla);
+					}
+					continue;
+				}
+
+				// Opaque leaf at the top level — pass through with unclassified gate.
+				runSubtreeWithBatchGate(child, camera,
+					Configuration::EnableDX8BatchWorldUnclassified, vanilla);
+			}
 		}
+
+		LARGE_INTEGER end;
+		QueryPerformanceCounter(&end);
+		recordMainPassTiming(end.QuadPart - start.QuadPart, batchingEnabled);
 	}
 
 	//
