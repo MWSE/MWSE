@@ -1291,8 +1291,14 @@ namespace mwse::patch {
 	// as a representative. Any shape in the same batch that differs on these
 	// inputs would be rendered with the wrong pipeline state. Keys:
 	//   - hasNormals:  selectAndLinkPass / buildPass / ensureAndRegisterStreamables
-	//                  all take hasNormals derived from geomData->normal.
-	//   - textureSets: influences pipeline texture-stage configuration.
+	//                  all take hasNormals derived from geomData->normal; sets
+	//                  the D3DFVF_NORMAL bit in the created vertex buffer FVF.
+	//   - hasColor:    determines the D3DFVF_DIFFUSE bit in the created FVF;
+	//                  selectAndLinkPass / buildPass select different shader
+	//                  variants based on full FVF, so mixing colored and
+	//                  uncolored shapes in one batch mis-renders the minority.
+	//   - textureSets: influences pipeline texture-stage configuration and the
+	//                  D3DFVF_TEX0..TEX8 bits.
 	//   - isSkinned:   retained as a defensive key field, but under the current
 	//                  hook gating (skinInstance != 0 falls through to vanilla)
 	//                  it is always false for enqueued entries. Skinned shapes
@@ -1309,6 +1315,7 @@ namespace mwse::patch {
 		NI::SphereBound* worldBound;
 		bool isStrips;
 		bool hasNormals;
+		bool hasColor;
 		bool isSkinned;
 		unsigned short textureSets;
 	};
@@ -1350,6 +1357,7 @@ namespace mwse::patch {
 			geomData, skinInstance, transform, worldBound,
 			false,
 			geom && geom->normal != nullptr,
+			geom && geom->color != nullptr,
 			skinInstance != nullptr,
 			geom ? geom->textureSets : static_cast<unsigned short>(0)
 		});
@@ -1367,6 +1375,7 @@ namespace mwse::patch {
 			geomData, skinInstance, transform, worldBound,
 			true,
 			geom && geom->normal != nullptr,
+			geom && geom->color != nullptr,
 			skinInstance != nullptr,
 			geom ? geom->textureSets : static_cast<unsigned short>(0)
 		});
@@ -1446,6 +1455,7 @@ namespace mwse::patch {
 				if (a.propState != b.propState) return a.propState < b.propState;
 				if (a.effectState != b.effectState) return a.effectState < b.effectState;
 				if (a.hasNormals != b.hasNormals) return a.hasNormals < b.hasNormals;
+				if (a.hasColor != b.hasColor) return a.hasColor < b.hasColor;
 				if (a.isSkinned != b.isSkinned) return a.isSkinned < b.isSkinned;
 				return a.textureSets < b.textureSets;
 			});
@@ -1453,6 +1463,7 @@ namespace mwse::patch {
 		NI::Object* curProp = nullptr;
 		NI::Object* curFx = nullptr;
 		bool curHasNormals = false;
+		bool curHasColor = false;
 		bool curSkinned = false;
 		unsigned short curTextureSets = 0;
 		bool batchOpen = false;
@@ -1462,6 +1473,7 @@ namespace mwse::patch {
 				|| e.propState != curProp
 				|| e.effectState != curFx
 				|| e.hasNormals != curHasNormals
+				|| e.hasColor != curHasColor
 				|| e.isSkinned != curSkinned
 				|| e.textureSets != curTextureSets;
 			if (stateChanged) {
@@ -1470,6 +1482,7 @@ namespace mwse::patch {
 				curProp = e.propState;
 				curFx = e.effectState;
 				curHasNormals = e.hasNormals;
+				curHasColor = e.hasColor;
 				curSkinned = e.isSkinned;
 				curTextureSets = e.textureSets;
 				batchOpen = true;
