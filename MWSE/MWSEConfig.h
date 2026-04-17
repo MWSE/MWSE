@@ -19,6 +19,16 @@ namespace mwse {
 		static bool UseGlobalAudio;
 		static bool ReplaceLightSorting;
 		static bool EnableDX8BatchRendering;
+		static bool EnableDX8BatchGrouping;
+		static bool EnableDX8BatchStateReset;
+		static bool EnableDX8BatchWorldObjectRoot;
+		static bool EnableDX8BatchWorldLandscapeRoot;
+		static bool EnableDX8BatchWorldPickObjectRoot;
+		static bool EnableDX8BatchWorldVFXRoot;
+		static bool EnableDX8BatchWorldSpellRoot;
+		static bool EnableDX8BatchWorldArmRoot;
+		static bool EnableDX8BatchWorldProjectileRoot;
+		static bool EnableDX8BatchWorldUnclassified;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

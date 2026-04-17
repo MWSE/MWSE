@@ -22,6 +22,16 @@ namespace mwse {
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
 	bool Configuration::EnableDX8BatchRendering = true;
+	bool Configuration::EnableDX8BatchGrouping = true;
+	bool Configuration::EnableDX8BatchStateReset = true;
+	bool Configuration::EnableDX8BatchWorldObjectRoot = true;
+	bool Configuration::EnableDX8BatchWorldLandscapeRoot = true;
+	bool Configuration::EnableDX8BatchWorldPickObjectRoot = true;
+	bool Configuration::EnableDX8BatchWorldVFXRoot = true;
+	bool Configuration::EnableDX8BatchWorldSpellRoot = true;
+	bool Configuration::EnableDX8BatchWorldArmRoot = true;
+	bool Configuration::EnableDX8BatchWorldProjectileRoot = true;
+	bool Configuration::EnableDX8BatchWorldUnclassified = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -72,6 +82,16 @@ namespace mwse {
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(EnableDX8BatchRendering)
+		DECLARE_CONFIG(EnableDX8BatchGrouping)
+		DECLARE_CONFIG(EnableDX8BatchStateReset)
+		DECLARE_CONFIG(EnableDX8BatchWorldObjectRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldLandscapeRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldPickObjectRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldVFXRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldSpellRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldArmRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldProjectileRoot)
+		DECLARE_CONFIG(EnableDX8BatchWorldUnclassified)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

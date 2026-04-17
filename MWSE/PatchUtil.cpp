@@ -44,6 +44,7 @@
 #include "NIPick.h"
 #include "NIPointLight.h"
 #include "NIRenderer.h"
+#include "NINode.h"
 #include "NISortAdjustNode.h"
 #include "NiTriBasedGeometryData.h"
 #include "NITransform.h"
@@ -1341,6 +1342,25 @@ namespace mwse::patch {
 	static const auto NiDX8_BatchRenderShape = reinterpret_cast<NiDX8BatchRender_t>(0x6AE600);
 	static const auto NiDX8_BatchRenderStrips = reinterpret_cast<NiDX8BatchRender_t>(0x6AE8C0);
 
+	// State-reset helpers used after FlushBatches drains. EndBatch does not
+	// restore D3D state: it leaves the last-batch's vertex-blend cache, stream
+	// source bindings, pixel/vertex shader, material, and light state live on
+	// the device. Alpha shapes replayed by NiAlphaAccumulator::FinishAccumulating
+	// (which runs in NiCamera::Click AFTER our CullShowAndFlush returns) will do
+	// their own per-draw selectAndLinkPass / buildPass setup, but any state-cache
+	// lookups that match what EndBatch left skip the actual SetRenderState push.
+	//
+	// Hypothesis B: the cuirass-collar whiteout in size-1 (non-skinned shape
+	// goes through our batch path, alpha-replayed cuirass body inherits dirty
+	// state) is caused by this leak.
+	//
+	// Fix: after FlushBatches, (1) invalidate the vertex-blend cache slot at
+	// renderState + 0x6B0 so the next SetRenderState actually pushes, and (2)
+	// re-run updateD3DState using the renderer's currentPropertyState so the
+	// cached D3D states realign with the "as-if-no-batching-happened" state.
+	using NiDX8UpdateD3DState_t = void(__thiscall*)(void* renderState, void* propState);
+	static const auto NiDX8_UpdateD3DState = reinterpret_cast<NiDX8UpdateD3DState_t>(0x6B82A0);
+
 	// __fastcall enqueue helpers. Called via tail-JMP from the naked entry
 	// detours; the stack shape matches the underlying __thiscall RenderShape /
 	// RenderTristrips, so MSVC's `ret 10h` for this signature properly unwinds
@@ -1442,11 +1462,53 @@ namespace mwse::patch {
 		}
 	}
 
+	// Resync D3D state after EndBatch has left it pointing at the last batched
+	// shape. See comment next to NiDX8_UpdateD3DState for rationale. Keeps the
+	// existing renderer/renderState pointers alive — no re-acquisition risk.
+	static void PatchNIDX8Renderer_ResetD3DStateAfterFlush(NI::Renderer* renderer) {
+		if (!Configuration::EnableDX8BatchStateReset) return;
+		auto rendererBytes = reinterpret_cast<uint8_t*>(renderer);
+		auto renderState = *reinterpret_cast<void**>(rendererBytes + 0x548);
+		auto currentPropState = *reinterpret_cast<void**>(rendererBytes + 0x0C);
+		if (!renderState) return;
+		// Invalidate vertex-blend cache (D3DRS_VERTEXBLEND, slot 151 at +0x6B0)
+		// so the next SetRenderState call actually pushes.
+		*reinterpret_cast<DWORD*>(reinterpret_cast<uint8_t*>(renderState) + 0x6B0) = 0xFFFFFFFFu;
+		if (currentPropState) {
+			NiDX8_UpdateD3DState(renderState, currentPropState);
+		}
+	}
+
 	void PatchNIDX8Renderer_FlushBatches() {
 		if (NiDX8BatchQueue.empty()) return;
 		NI::Renderer* renderer = NiDX8BatchActiveRenderer;
 		if (!renderer) {
 			NiDX8BatchQueue.clear();
+			return;
+		}
+
+		// Diagnostic path: every enqueued shape becomes its own Begin/Render/End
+		// batch, preserving traversal order and bypassing both the sort and the
+		// state-change coalescing. Used to discriminate H1 (state-collapse on an
+		// uncaptured key dimension) from H2 (captured pointers whose pointed-to
+		// state has mutated by flush time) and H4 (finer FVF mismatch). If the
+		// artifact reproduces in this mode, H1 is rejected — each EndBatch's
+		// pipeline setup runs with only the shape's own inputs, so grouping is
+		// not the mechanism.
+		if (!Configuration::EnableDX8BatchGrouping) {
+			for (const auto& e : NiDX8BatchQueue) {
+				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
+				if (e.isStrips) {
+					NiDX8_BatchRenderStrips(renderer, e.geomData, e.skinInstance, e.transform, e.worldBound);
+				}
+				else {
+					NiDX8_BatchRenderShape(renderer, e.geomData, e.skinInstance, e.transform, e.worldBound);
+				}
+				NiDX8_EndBatch(renderer);
+			}
+			PatchNIDX8Renderer_ResetD3DStateAfterFlush(renderer);
+			NiDX8BatchQueue.clear();
+			NiDX8BatchActiveRenderer = nullptr;
 			return;
 		}
 
@@ -1496,20 +1558,84 @@ namespace mwse::patch {
 		}
 		if (batchOpen) NiDX8_EndBatch(renderer);
 
+		PatchNIDX8Renderer_ResetD3DStateAfterFlush(renderer);
 		NiDX8BatchQueue.clear();
 		NiDX8BatchActiveRenderer = nullptr;
 	}
 
-	// genCallEnforced replaces the direct CALL at 0x6CC874 (target 0x6EB480).
-	// We run the vanilla traversal — which fills NiDX8BatchQueue via the entry
-	// detours — and then flush. This keeps batching per-Click, so the world /
-	// arm / menu camera passes never cross-contaminate.
+	// Per-worldroot batching config. Direct-name matches against children of
+	// worldCamera.root (or — if the immediate child is an intermediate wrapper
+	// with no matching name — its children). Known worldroot names come from
+	// Morrowind's hardcoded scene-graph setup: WorldObjectRoot holds references,
+	// WorldLandscapeRoot holds terrain, WorldPickObjectRoot holds pick targets,
+	// etc.
 	//
-	// Config gate is checked per-Click so EnableDX8BatchRendering can be flipped
-	// at runtime (e.g. from the Lua console). When false, NiDX8BatchingActive
-	// stays 0, which causes the naked entry detours to fall through to vanilla
-	// RenderShape / RenderTristrips on every shape, producing identical behavior
-	// to a build with the hooks uninstalled.
+	// Returns true if batching is enabled for a subtree with the given name.
+	// Unknown / unnamed subtrees fall back to EnableDX8BatchWorldUnclassified
+	// so the user can narrow the culprit even when layout differs.
+	static bool isWorldRootBatchingEnabled(const char* name) {
+		if (!name) return Configuration::EnableDX8BatchWorldUnclassified;
+		if (!strcmp(name, "WorldObjectRoot")) return Configuration::EnableDX8BatchWorldObjectRoot;
+		if (!strcmp(name, "WorldLandscapeRoot")) return Configuration::EnableDX8BatchWorldLandscapeRoot;
+		if (!strcmp(name, "WorldPickObjectRoot")) return Configuration::EnableDX8BatchWorldPickObjectRoot;
+		if (!strcmp(name, "WorldVFXRoot")) return Configuration::EnableDX8BatchWorldVFXRoot;
+		if (!strcmp(name, "WorldSpellRoot")) return Configuration::EnableDX8BatchWorldSpellRoot;
+		if (!strcmp(name, "WorldArmRoot")) return Configuration::EnableDX8BatchWorldArmRoot;
+		if (!strcmp(name, "WorldProjectileRoot")) return Configuration::EnableDX8BatchWorldProjectileRoot;
+		return Configuration::EnableDX8BatchWorldUnclassified;
+	}
+
+	static bool isNamedWorldRoot(const char* name) {
+		if (!name) return false;
+		return !strcmp(name, "WorldObjectRoot")
+			|| !strcmp(name, "WorldLandscapeRoot")
+			|| !strcmp(name, "WorldPickObjectRoot")
+			|| !strcmp(name, "WorldVFXRoot")
+			|| !strcmp(name, "WorldSpellRoot")
+			|| !strcmp(name, "WorldArmRoot")
+			|| !strcmp(name, "WorldProjectileRoot");
+	}
+
+	// Drive vanilla CullShow on a single subtree with batching gated per-root.
+	// Drains the batch queue after each subtree so one root's entries never
+	// cross-contaminate another (firstBatch-as-representative bug-farm).
+	static void runSubtreeWithBatchGate(
+		NI::AVObject* subtree, void* camera, bool enableBatching,
+		const NiCullShow_t vanilla) {
+		NiDX8BatchingActive = enableBatching ? 1 : 0;
+		vanilla(subtree, camera);
+		NiDX8BatchingActive = 0;
+		if (enableBatching) {
+			PatchNIDX8Renderer_FlushBatches();
+		}
+	}
+
+	// genCallEnforced replaces the direct CALL at 0x6CC874 (target 0x6EB480).
+	// Scope gate: only the primary worldCamera pass with its own sgRoot is
+	// batched. Every other Click that reaches this hook (splashCamera, armCamera,
+	// menuCamera, ShadowManager::sgShadowCamera, WaterController reflection that
+	// swaps camera.spScene to sgWaterPlane, WorldControllerRenderTarget draws,
+	// LoadScreen / MenuRaceSex head / shader water variants) falls through to a
+	// single vanilla CullShow with batching disabled.
+	//
+	// Inside the main world pass, we manually iterate the scene-root's direct
+	// children so per-worldroot config flags can gate batching at subtree
+	// granularity. Morrowind wraps each logical subsystem (objects, landscape,
+	// pick targets, VFX, spells, projectiles, first-person arm) in a named
+	// NiNode one level below worldCamera.root; toggling their individual
+	// EnableDX8BatchWorld*Root flags lets us bisect whichever subtree is the
+	// dropped-shape source without rebuilds.
+	//
+	// If a direct child is unnamed (or names an intermediate wrapper like
+	// "worldRoot"), we descend one level further looking for known-named roots.
+	// Anything still unmatched at that depth is batched iff
+	// EnableDX8BatchWorldUnclassified is true, giving a safe fallback for scene
+	// layouts that differ from vanilla.
+	//
+	// Cost versus the previous "batch everything in this Click" gate: one extra
+	// vanilla CullShow dispatch per child (redundant frustum-plane rechecks on
+	// the top root's bounds) and one flush per subtree. Both are O(worldroots),
+	// which is ~8 per frame — negligible next to the batching win itself.
 	void __fastcall PatchNIDX8Renderer_CullShowAndFlush(
 		NI::AVObject* scene, void* /*edx*/, void* camera) {
 		const auto vanilla = reinterpret_cast<NiCullShow_t>(0x6EB480);
@@ -1517,10 +1643,55 @@ namespace mwse::patch {
 			vanilla(scene, camera);
 			return;
 		}
-		NiDX8BatchingActive = 1;
-		vanilla(scene, camera);
-		NiDX8BatchingActive = 0;
-		PatchNIDX8Renderer_FlushBatches();
+
+		const auto wc = TES3::WorldController::get();
+		if (!wc) {
+			vanilla(scene, camera);
+			return;
+		}
+		const auto& worldCam = wc->worldCamera;
+		const auto mainCamera = worldCam.cameraData.camera.get();
+		const auto mainSceneRoot = worldCam.root.get();
+		if (camera != mainCamera
+			|| mainSceneRoot == nullptr
+			|| scene != reinterpret_cast<NI::AVObject*>(mainSceneRoot)) {
+			vanilla(scene, camera);
+			return;
+		}
+
+		// Main world pass confirmed. Replace the single vanilla(root) call with a
+		// manual iteration of the root's children so each subtree can be gated
+		// independently.
+		auto rootNode = mainSceneRoot;
+		for (unsigned int i = 0; i < rootNode->children.endIndex; ++i) {
+			auto child = rootNode->children.storage[i].get();
+			if (child == nullptr) continue;
+
+			const char* childName = child->getName();
+			if (isNamedWorldRoot(childName)) {
+				runSubtreeWithBatchGate(child, camera,
+					isWorldRootBatchingEnabled(childName), vanilla);
+				continue;
+			}
+
+			// Not a known leaf root. If it's a Node, descend one level further
+			// to find the named roots nested under an intermediate wrapper.
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+				auto asNode = static_cast<NI::Node*>(child);
+				for (unsigned int j = 0; j < asNode->children.endIndex; ++j) {
+					auto grandchild = asNode->children.storage[j].get();
+					if (grandchild == nullptr) continue;
+					const char* gcName = grandchild->getName();
+					runSubtreeWithBatchGate(grandchild, camera,
+						isWorldRootBatchingEnabled(gcName), vanilla);
+				}
+				continue;
+			}
+
+			// Opaque leaf at the top level — pass through with unclassified gate.
+			runSubtreeWithBatchGate(child, camera,
+				Configuration::EnableDX8BatchWorldUnclassified, vanilla);
+		}
 	}
 
 	//
