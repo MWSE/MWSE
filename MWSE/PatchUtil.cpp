@@ -59,6 +59,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
+#include "PatchOcclusionCulling.h"
 #include "CrashLogExceptionHandler.hpp"
 
 namespace mwse::patch {
@@ -2292,6 +2293,9 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: DX8 Masked Software Occlusion Culling (gated by config flag).
+		occlusion::installPatches();
 	}
 
 	void installPostLuaPatches() {

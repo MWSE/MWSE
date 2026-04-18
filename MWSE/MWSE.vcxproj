@@ -357,6 +357,8 @@
     <ClInclude Include="NISwitchNodeLua.h" />
     <ClInclude Include="NITransform.h" />
     <ClInclude Include="NIUtil.h" />
+    <ClInclude Include="MaskedOcclusionCulling.h" />
+    <ClInclude Include="PatchOcclusionCulling.h" />
     <ClInclude Include="PatchUtil.h" />
     <ClInclude Include="ScriptUtilLua.h" />
     <ClInclude Include="TES3ActorLua.h" />
@@ -861,6 +863,8 @@
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
     <ClCompile Include="NIUtil.cpp" />
+    <ClCompile Include="MaskedOcclusionCulling.cpp" />
+    <ClCompile Include="PatchOcclusionCulling.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
     <ClCompile Include="RngUtil.cpp" />
     <ClCompile Include="ScriptUtil.cpp" />
