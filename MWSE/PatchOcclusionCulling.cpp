@@ -188,6 +188,10 @@ namespace mwse::patch::occlusion {
 	void installPatches() {
 		auto& log = log::getLog();
 
+		log << "MSOC: installPatches entered; Configuration::EnableDX8OcclusionCulling="
+			<< (Configuration::EnableDX8OcclusionCulling ? "true" : "false")
+			<< std::endl;
+
 		if (!Configuration::EnableDX8OcclusionCulling) {
 			log << "MSOC: disabled via Configuration::EnableDX8OcclusionCulling." << std::endl;
 			return;
