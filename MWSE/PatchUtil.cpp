@@ -34,12 +34,14 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
+#include "TES3WaterController.h"
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
 #include "NIBound.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
+#include "NIGeometryData.h"
 #include "NILinesData.h"
 #include "NIPick.h"
 #include "NIPointLight.h"
@@ -1285,14 +1287,11 @@ namespace mwse::patch {
 	// in flush.
 	//
 
-	// EndBatch runs selectAndLinkPass / buildPass / lightManager::setState once
-	// using the batch's head entry as a representative. Only (propState,
-	// effectState) are actually validated as load-bearing signature axes — those
-	// are the two that caused dropped shapes when mixed in a single batch. FVF-
-	// shape axes (normals/colors/textureSets) were captured here during the
-	// earlier bug hunt but turned out to be non-contributors once the scope gate
-	// and per-subtree flush were in place. Kept minimal so grouping is as coarse
-	// as possible.
+	// Queue entry carries the two arguments EndBatch's representative path needs
+	// (propState, effectState) plus the per-shape draw inputs (geomData,
+	// skinInstance, transform, worldBound) and the content fingerprint that
+	// drives sort and group-break. See computeBatchContentHash for what the
+	// fingerprint covers.
 	struct NiDX8BatchEntry {
 		NI::Object* propState;
 		NI::Object* effectState;
@@ -1300,6 +1299,7 @@ namespace mwse::patch {
 		NI::Object* skinInstance;
 		NI::Transform* transform;
 		NI::SphereBound* worldBound;
+		uint32_t contentHash;
 		bool isStrips;
 	};
 
@@ -1313,6 +1313,64 @@ namespace mwse::patch {
 	// into state-sorted batches that would destroy their draw order, and that
 	// screen polys / post-Click render paths remain unaffected.
 	static DWORD NiDX8BatchingActive = 0;
+
+	// Forward-declared so enqueue helpers and FlushBatches can update the
+	// counters. Definition and the accompanying recordMainPassTiming helper
+	// live alongside the main-pass hook further down.
+	struct BatchingPerfCounters {
+		LARGE_INTEGER frequency;
+		LARGE_INTEGER accum;
+		unsigned int frameCount;
+		unsigned int shapesQueued;
+		unsigned int groupsFlushed;
+		unsigned int uniqueContentHashes;
+		bool lastMode;
+		bool initialized;
+	};
+	static BatchingPerfCounters g_batchingPerf;
+
+	// Value-fingerprint of the pipeline-relevant parts of a shape's state —
+	// drives both the sort order and the group-break in FlushBatches.
+	// NiPropertyState is 56 bytes; the first 8 are NiRefObject boilerplate
+	// (vtbl + refcount) and irrelevant to the pipeline. The next 48 bytes are
+	// 12 NiProperty* slots (alpha, fog, material, stencil, texturing,
+	// vertexColor, wireframe, zBuffer, three unknown, rendererSpecific) that
+	// EndBatch's updateD3DState / selectAndLinkPass / buildPass actually read.
+	// Two NiPropertyState instances with identical slot pointers drive
+	// identical pipeline setup regardless of their own object identity —
+	// that's the headroom this hash captures, since the NIF loader allocates
+	// a fresh wrapper per geometry so pointer-identity is always unique (see
+	// lesson 16).
+	//
+	// The hash must also cover the FVF-shape axes EndBatch derives from
+	// firstBatch->geomBuffer->fvf: the hasNormals bit and the textureSets
+	// count. At enqueue time geomBuffer does not exist yet, so we use the
+	// upstream source — GeometryData's own `normal` pointer (present → has
+	// normals) and `textureSets` count. EndBatch's derived fvf bits match
+	// these because the geomBuffer is built from the same geomData.
+	//
+	// rendererSpecific (slot 11) is already covered by the 12-slot fold, so
+	// DrawPrimitive's custom-callback branch cannot collide across groups.
+	static uint32_t computeBatchContentHash(const NI::Object* propState, const NI::Object* effectState, const NI::GeometryData* geomData) {
+		uint32_t h = 2166136261u;
+		if (propState) {
+			auto slots = reinterpret_cast<const uint32_t*>(
+				reinterpret_cast<const uint8_t*>(propState) + 8);
+			for (int i = 0; i < 12; ++i) {
+				h ^= slots[i];
+				h *= 16777619u;
+			}
+		}
+		h ^= reinterpret_cast<uint32_t>(effectState);
+		h *= 16777619u;
+		if (geomData) {
+			uint32_t fvfAxes = static_cast<uint32_t>(geomData->textureSets) & 0xF;
+			fvfAxes |= geomData->normal ? 0x10 : 0;
+			h ^= fvfAxes;
+			h *= 16777619u;
+		}
+		return h;
+	}
 
 	using NiDX8BeginBatch_t = void(__thiscall*)(NI::Renderer*, NI::Object* propState, NI::Object* effectState);
 	using NiDX8EndBatch_t = void(__thiscall*)(NI::Renderer*);
@@ -1352,12 +1410,16 @@ namespace mwse::patch {
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
 		NiDX8BatchActiveRenderer = self;
+		auto propState = self->currentPropertyState.get();
+		auto effectState = self->currentEffectState.get();
+		auto geomDataTyped = static_cast<const NI::GeometryData*>(geomData);
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
-			self->currentPropertyState.get(),
-			self->currentEffectState.get(),
+			propState, effectState,
 			geomData, skinInstance, transform, worldBound,
+			computeBatchContentHash(propState, effectState, geomDataTyped),
 			false
 		});
+		++g_batchingPerf.shapesQueued;
 	}
 
 	void __fastcall PatchNIDX8Renderer_EnqueueStrips(
@@ -1365,12 +1427,16 @@ namespace mwse::patch {
 		NI::Object* geomData, NI::Object* skinInstance,
 		NI::Transform* transform, NI::SphereBound* worldBound) {
 		NiDX8BatchActiveRenderer = self;
+		auto propState = self->currentPropertyState.get();
+		auto effectState = self->currentEffectState.get();
+		auto geomDataTyped = static_cast<const NI::GeometryData*>(geomData);
 		NiDX8BatchQueue.push_back(NiDX8BatchEntry{
-			self->currentPropertyState.get(),
-			self->currentEffectState.get(),
+			propState, effectState,
 			geomData, skinInstance, transform, worldBound,
+			computeBatchContentHash(propState, effectState, geomDataTyped),
 			true
 		});
+		++g_batchingPerf.shapesQueued;
 	}
 
 	// Indirect-jump targets. Using a variable-backed indirect JMP avoids MSVC
@@ -1460,13 +1526,10 @@ namespace mwse::patch {
 		}
 
 		// Diagnostic path: every enqueued shape becomes its own Begin/Render/End
-		// batch, preserving traversal order and bypassing both the sort and the
-		// state-change coalescing. Used to discriminate H1 (state-collapse on an
-		// uncaptured key dimension) from H2 (captured pointers whose pointed-to
-		// state has mutated by flush time) and H4 (finer FVF mismatch). If the
-		// artifact reproduces in this mode, H1 is rejected — each EndBatch's
-		// pipeline setup runs with only the shape's own inputs, so grouping is
-		// not the mechanism.
+		// batch, preserving traversal order and bypassing the sort / group-break.
+		// Kept as a bisection lever — if a regression appears, flipping this off
+		// proves whether the coalesce itself is the culprit vs. something in the
+		// Begin/End envelope.
 		if (!Configuration::EnableDX8BatchGrouping) {
 			for (const auto& e : NiDX8BatchQueue) {
 				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
@@ -1478,32 +1541,33 @@ namespace mwse::patch {
 				}
 				NiDX8_EndBatch(renderer);
 			}
+			g_batchingPerf.groupsFlushed += NiDX8BatchQueue.size();
 			PatchNIDX8Renderer_ResetD3DStateAfterFlush(renderer);
 			NiDX8BatchQueue.clear();
 			NiDX8BatchActiveRenderer = nullptr;
 			return;
 		}
 
+		// Sort by content fingerprint so shapes whose propState slot pointers +
+		// effectState pointer + FVF axes are equal land adjacent and share a
+		// Begin/End envelope. stable_sort preserves traversal order inside a
+		// group, which keeps the firstBatch-as-representative contract well-
+		// behaved (see lesson 10).
 		std::stable_sort(NiDX8BatchQueue.begin(), NiDX8BatchQueue.end(),
 			[](const NiDX8BatchEntry& a, const NiDX8BatchEntry& b) {
-				if (a.propState != b.propState) return a.propState < b.propState;
-				return a.effectState < b.effectState;
+				return a.contentHash < b.contentHash;
 			});
 
-		NI::Object* curProp = nullptr;
-		NI::Object* curFx = nullptr;
+		uint32_t curHash = 0;
 		bool batchOpen = false;
 
 		for (const auto& e : NiDX8BatchQueue) {
-			const bool stateChanged = !batchOpen
-				|| e.propState != curProp
-				|| e.effectState != curFx;
-			if (stateChanged) {
+			if (!batchOpen || e.contentHash != curHash) {
 				if (batchOpen) NiDX8_EndBatch(renderer);
 				NiDX8_BeginBatch(renderer, e.propState, e.effectState);
-				curProp = e.propState;
-				curFx = e.effectState;
+				curHash = e.contentHash;
 				batchOpen = true;
+				++g_batchingPerf.groupsFlushed;
 			}
 			if (e.isStrips) {
 				NiDX8_BatchRenderStrips(renderer, e.geomData, e.skinInstance, e.transform, e.worldBound);
@@ -1513,6 +1577,22 @@ namespace mwse::patch {
 			}
 		}
 		if (batchOpen) NiDX8_EndBatch(renderer);
+
+		// Ceiling self-check: unique content-hashes is the theoretical minimum
+		// group count for this frame. Logged as hashCeiling alongside actual
+		// coalesce — if the two diverge, the group-break loop has drifted.
+		// Post-sort the contentHashes are already in adjacent runs, so a
+		// linear scan is enough.
+		unsigned int uniqueHashes = 0;
+		uint32_t prevHash = 0;
+		for (size_t i = 0; i < NiDX8BatchQueue.size(); ++i) {
+			if (i == 0 || NiDX8BatchQueue[i].contentHash != prevHash) {
+				++uniqueHashes;
+				prevHash = NiDX8BatchQueue[i].contentHash;
+			}
+		}
+
+		g_batchingPerf.uniqueContentHashes += uniqueHashes;
 
 		PatchNIDX8Renderer_ResetD3DStateAfterFlush(renderer);
 		NiDX8BatchQueue.clear();
@@ -1567,19 +1647,19 @@ namespace mwse::patch {
 	}
 
 	// Profiling counters for the main world pass. See recordMainPassTiming.
-	struct BatchingPerfCounters {
-		LARGE_INTEGER frequency;
-		LARGE_INTEGER accum;
-		unsigned int frameCount;
-		bool lastMode;
-		bool initialized;
-	};
-	static BatchingPerfCounters g_batchingPerf = {};
+	// The struct and g_batchingPerf are forward-declared above next to the
+	// batch queue so the enqueue / flush paths can bump the shape / group
+	// counters without dragging this whole helper up the file.
 	static constexpr unsigned int kBatchingPerfLogEvery = 300;
 
 	// Accumulate main-pass CPU time and log a rolling average every
 	// kBatchingPerfLogEvery frames. When EnableDX8BatchRendering toggles, the
 	// current window is discarded so the logged average never mixes modes.
+	// shapesQueued / groupsFlushed are the coalescing ratio: groups near the
+	// queue size means batching is doing no work; a small group count means
+	// real amortization. See PatchNIDX8Renderer_FlushBatches for how groups
+	// are counted (one per BeginBatch call, including the diagnostic
+	// no-grouping path where it equals shapesQueued by construction).
 	static void recordMainPassTiming(LONGLONG ticks, bool batchingEnabled) {
 		if (!g_batchingPerf.initialized) {
 			QueryPerformanceFrequency(&g_batchingPerf.frequency);
@@ -1589,6 +1669,9 @@ namespace mwse::patch {
 		if (batchingEnabled != g_batchingPerf.lastMode) {
 			g_batchingPerf.accum.QuadPart = 0;
 			g_batchingPerf.frameCount = 0;
+			g_batchingPerf.shapesQueued = 0;
+			g_batchingPerf.groupsFlushed = 0;
+			g_batchingPerf.uniqueContentHashes = 0;
 			g_batchingPerf.lastMode = batchingEnabled;
 		}
 		g_batchingPerf.accum.QuadPart += ticks;
@@ -1596,12 +1679,35 @@ namespace mwse::patch {
 		if (g_batchingPerf.frameCount >= kBatchingPerfLogEvery) {
 			const double ms = static_cast<double>(g_batchingPerf.accum.QuadPart) * 1000.0
 				/ static_cast<double>(g_batchingPerf.frequency.QuadPart);
-			mwse::log::getLog() << "[MWSE][DX8Batch] main-pass avg "
-				<< (ms / g_batchingPerf.frameCount) << " ms over "
-				<< g_batchingPerf.frameCount << " frames (batching "
-				<< (batchingEnabled ? "ON" : "OFF") << ")" << std::endl;
+			const double shapesPerFrame = static_cast<double>(g_batchingPerf.shapesQueued)
+				/ static_cast<double>(g_batchingPerf.frameCount);
+			const double groupsPerFrame = static_cast<double>(g_batchingPerf.groupsFlushed)
+				/ static_cast<double>(g_batchingPerf.frameCount);
+			const double coalesceRatio = g_batchingPerf.groupsFlushed > 0
+				? static_cast<double>(g_batchingPerf.shapesQueued)
+					/ static_cast<double>(g_batchingPerf.groupsFlushed)
+				: 0.0;
+			const double hashCoalesceCeiling = g_batchingPerf.uniqueContentHashes > 0
+				? static_cast<double>(g_batchingPerf.shapesQueued)
+					/ static_cast<double>(g_batchingPerf.uniqueContentHashes)
+				: 0.0;
+			// EnableDX8BatchPerfLog is off by default — counters keep rolling so
+			// flipping the flag on mid-session picks up cleanly at the next
+			// window boundary; only the emit is suppressed in release.
+			if (Configuration::EnableDX8BatchPerfLog) {
+				mwse::log::getLog() << "[MWSE][DX8Batch] main-pass avg "
+					<< (ms / g_batchingPerf.frameCount) << " ms over "
+					<< g_batchingPerf.frameCount << " frames (batching "
+					<< (batchingEnabled ? "ON" : "OFF") << "); shapes/frame "
+					<< shapesPerFrame << ", groups/frame " << groupsPerFrame
+					<< ", coalesce " << coalesceRatio
+					<< "x, hashCeiling " << hashCoalesceCeiling << "x" << std::endl;
+			}
 			g_batchingPerf.accum.QuadPart = 0;
 			g_batchingPerf.frameCount = 0;
+			g_batchingPerf.shapesQueued = 0;
+			g_batchingPerf.groupsFlushed = 0;
+			g_batchingPerf.uniqueContentHashes = 0;
 		}
 	}
 
@@ -2644,6 +2750,7 @@ namespace mwse::patch {
 		genJumpUnprotected(0x6ACEF0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderShape), 5);
 		genJumpUnprotected(0x6ACFC0, reinterpret_cast<DWORD>(PatchNIDX8Renderer_HookRenderTristrips), 5);
 		genCallEnforced(0x6CC874, 0x6EB480, reinterpret_cast<DWORD>(PatchNIDX8Renderer_CullShowAndFlush));
+		NiDX8BatchQueue.reserve(1024);
 
 		// Patch: Fix base map texture coordinate index hardcoded to 0 in NiDX8TexturePass::setCTPipelineState.
 		// 0x6B42AC: `mov [edi+28h], ebp` — replace with CALL + NOP the leftover byte at 0x6B42B1.

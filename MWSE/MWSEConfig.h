@@ -21,6 +21,7 @@ namespace mwse {
 		static bool EnableDX8BatchRendering;
 		static bool EnableDX8BatchGrouping;
 		static bool EnableDX8BatchStateReset;
+		static bool EnableDX8BatchPerfLog;
 		static bool EnableDX8BatchWorldObjectRoot;
 		static bool EnableDX8BatchWorldLandscapeRoot;
 		static bool EnableDX8BatchWorldPickObjectRoot;

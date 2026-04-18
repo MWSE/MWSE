@@ -24,6 +24,7 @@ namespace mwse {
 	bool Configuration::EnableDX8BatchRendering = true;
 	bool Configuration::EnableDX8BatchGrouping = true;
 	bool Configuration::EnableDX8BatchStateReset = true;
+	bool Configuration::EnableDX8BatchPerfLog = false;
 	bool Configuration::EnableDX8BatchWorldObjectRoot = true;
 	bool Configuration::EnableDX8BatchWorldLandscapeRoot = true;
 	bool Configuration::EnableDX8BatchWorldPickObjectRoot = true;
@@ -85,6 +86,7 @@ namespace mwse {
 		DECLARE_CONFIG(EnableDX8BatchRendering)
 		DECLARE_CONFIG(EnableDX8BatchGrouping)
 		DECLARE_CONFIG(EnableDX8BatchStateReset)
+		DECLARE_CONFIG(EnableDX8BatchPerfLog)
 		DECLARE_CONFIG(EnableDX8BatchWorldObjectRoot)
 		DECLARE_CONFIG(EnableDX8BatchWorldLandscapeRoot)
 		DECLARE_CONFIG(EnableDX8BatchWorldPickObjectRoot)
