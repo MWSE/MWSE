@@ -2293,12 +2293,13 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
-
-		// Patch: DX8 Masked Software Occlusion Culling (gated by config flag).
-		occlusion::installPatches();
 	}
 
 	void installPostLuaPatches() {
+		// Patch: DX8 Masked Software Occlusion Culling (gated by config flag
+		// so Lua mods can toggle Configuration::EnableDX8OcclusionCulling).
+		occlusion::installPatches();
+
 		// Patch: Be better about showing/hiding the cursor.
 		originalWindowProc = (WNDPROC)SetWindowLongPtr(TES3::WorldController::get()->Win32_hWndParent, GWLP_WNDPROC, (LONG_PTR)PatchWindProc);
 

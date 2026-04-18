@@ -43,7 +43,7 @@ namespace mwse::patch::occlusion {
 	// Original CullShow; all seven call sites are redirected to our detours,
 	// which forward here for the actual work.
 	using CullShowFn = void(__thiscall*)(NI::AVObject*, NI::Camera*);
-	static constexpr auto CullShow_original = reinterpret_cast<CullShowFn>(0x6EB480);
+	static const auto CullShow_original = reinterpret_cast<CullShowFn>(0x6EB480);
 
 	// Per-frame scratch for transformed occluder vertices.
 	static std::vector<float> g_vertexScratch;

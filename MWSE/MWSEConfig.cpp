@@ -21,7 +21,7 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
-	bool Configuration::EnableDX8OcclusionCulling = false;
+	bool Configuration::EnableDX8OcclusionCulling = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
