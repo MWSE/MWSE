@@ -1,5 +1,6 @@
 #include "PatchOcclusionCulling.h"
 
+#include "Log.h"
 #include "MaskedOcclusionCulling.h"
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
@@ -18,6 +19,8 @@
 #include "NITriShapeData.h"
 #include "NITriangle.h"
 
+#include <cstdint>
+#include <ostream>
 #include <vector>
 
 namespace mwse::patch::occlusion {
@@ -136,6 +139,7 @@ namespace mwse::patch::occlusion {
 		}
 
 		g_msoc.ClearBuffer();
+		g_msoc.ResetStats();
 		uploadCameraTransform(camera);
 
 		auto dh = TES3::DataHandler::get();
@@ -151,6 +155,20 @@ namespace mwse::patch::occlusion {
 		g_msocActive = true;
 		CullShow_original(self, camera);
 		g_msocActive = false;
+
+		// Sanity log: every N frames, print how many tiles the occluder pass
+		// actually wrote. If this stays 0, the rasterizer is not taking.
+		static unsigned int frameCounter = 0;
+		if ((++frameCounter % 300) == 0) {
+			const auto covered = g_msoc.CountCoveredTiles();
+			const auto& s = g_msoc.GetStats();
+			log::getLog() << "MSOC: frame " << frameCounter
+				<< " tris=" << s.occluderTrianglesRasterized
+				<< "/" << s.occluderTrianglesSubmitted
+				<< " coveredTiles=" << covered
+				<< " sphereOccluded=" << s.sphereTestsOccluded
+				<< "/" << s.sphereTestsTotal << std::endl;
+		}
 	}
 
 	// Recursive CullShow replacement at the six in-graph sites. Tests the
@@ -168,24 +186,39 @@ namespace mwse::patch::occlusion {
 	}
 
 	void installPatches() {
+		auto& log = log::getLog();
+
 		if (!Configuration::EnableDX8OcclusionCulling) {
+			log << "MSOC: disabled via Configuration::EnableDX8OcclusionCulling." << std::endl;
 			return;
 		}
 
 		g_msoc.SetResolution(kMsocWidth, kMsocHeight);
 
-		// Top-level site inside NiCamera::Click.
-		genCallEnforced(0x6CC874, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_topLevel));
+		static const uintptr_t kSites[7] = {
+			0x6CC874, // top-level: NiCamera::Click
+			0x6C91C0, // NiNode::Display
+			0x6D653B, // NiBSPNode::Display (quadrant 0)
+			0x6D6547, // NiBSPNode::Display (quadrant 1)
+			0x6D6559, // NiBSPNode::Display (quadrant 2)
+			0x6D6565, // NiBSPNode::Display (quadrant 3)
+			0x6D83E2, // NiSwitchNode::Display
+		};
 
-		// Recursive sites: NiNode::Display, NiBSPNode::Display (4 quadrants),
-		// NiSwitchNode::Display. Enumerated via xrefs to NiAVObject::CullShow
-		// (0x6EB480); all seven call sites are covered.
-		genCallEnforced(0x6C91C0, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
-		genCallEnforced(0x6D653B, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
-		genCallEnforced(0x6D6547, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
-		genCallEnforced(0x6D6559, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
-		genCallEnforced(0x6D6565, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
-		genCallEnforced(0x6D83E2, 0x6EB480, reinterpret_cast<DWORD>(detour_CullShow_recursive));
+		unsigned installed = 0;
+		for (unsigned i = 0; i < 7; ++i) {
+			const uintptr_t to = (i == 0)
+				? reinterpret_cast<uintptr_t>(detour_CullShow_topLevel)
+				: reinterpret_cast<uintptr_t>(detour_CullShow_recursive);
+			if (genCallEnforced(kSites[i], 0x6EB480, to)) {
+				++installed;
+			}
+			else {
+				log << "MSOC: failed to install CullShow hook at 0x" << std::hex << kSites[i] << std::dec << std::endl;
+			}
+		}
+		log << "MSOC: installed " << installed << " / 7 CullShow hooks ("
+			<< kMsocWidth << "x" << kMsocHeight << " tile buffer)." << std::endl;
 	}
 
 }

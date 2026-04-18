@@ -66,6 +66,11 @@ namespace mwse::moc {
 		const Stats& GetStats() const { return mStats; }
 		void ResetStats();
 
+		// Number of tiles with any recorded occluder coverage (hiZ0 > 0).
+		// Call after RenderTriangles to verify the rasterizer is actually
+		// writing the buffer.
+		unsigned int CountCoveredTiles() const;
+
 	private:
 		struct Tile {
 			float hiZ0;

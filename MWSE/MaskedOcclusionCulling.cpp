@@ -72,10 +72,15 @@ namespace mwse::moc {
 
 	void MaskedOcclusionCulling::ClearBuffer() {
 		if (!mTiles) return;
+		// hiZ0 = 0 (far sentinel; nothing covered). hiZ1 = +inf (empty-pending
+		// sentinel). Accumulation uses min() so +inf is replaced on first real
+		// depth; promotion takes min(hiZ1, tri) so +inf correctly means "no
+		// prior pending contribution".
+		const float kEmptyPending = std::numeric_limits<float>::infinity();
 		const size_t tileCount = size_t(mTilesX) * size_t(mTilesY);
 		for (size_t i = 0; i < tileCount; ++i) {
 			mTiles[i].hiZ0 = 0.0f;
-			mTiles[i].hiZ1 = 0.0f;
+			mTiles[i].hiZ1 = kEmptyPending;
 			mTiles[i].mask = 0;
 		}
 	}
@@ -86,6 +91,16 @@ namespace mwse::moc {
 
 	void MaskedOcclusionCulling::ResetStats() {
 		mStats = Stats{};
+	}
+
+	unsigned int MaskedOcclusionCulling::CountCoveredTiles() const {
+		if (!mTiles) return 0;
+		const size_t tileCount = size_t(mTilesX) * size_t(mTilesY);
+		unsigned int covered = 0;
+		for (size_t i = 0; i < tileCount; ++i) {
+			if (mTiles[i].hiZ0 > 0.0f) ++covered;
+		}
+		return covered;
 	}
 
 	namespace {
@@ -220,13 +235,17 @@ namespace mwse::moc {
 
 				const uint32_t newMask = tile.mask | triCov;
 				if (newMask == 0xFFFFFFFFu) {
+					// Tile fully covered: promote layer 1 + this triangle into
+					// layer 0. Conservative-far is min (in 1/w, smaller = farther).
 					const float promotedFar = std::min(tile.hiZ1, triMinInvW);
 					tile.hiZ0 = promotedFar;
-					tile.hiZ1 = 0.0f;
+					tile.hiZ1 = std::numeric_limits<float>::infinity();
 					tile.mask = 0;
 				}
 				else {
-					tile.hiZ1 = std::max(tile.hiZ1, triMinInvW);
+					// Partial coverage: accumulate conservative-far of pending
+					// triangles. min (not max) in 1/w space keeps the farthest.
+					tile.hiZ1 = std::min(tile.hiZ1, triMinInvW);
 					tile.mask = newMask;
 				}
 			}
@@ -271,10 +290,21 @@ namespace mwse::moc {
 		if (minClipY >  maxClipW) { mStats.sphereTestsViewCulled++; return CullingResult::VIEW_CULLED; }
 
 		const float invWNear = 1.0f / minClipW;
-		const float ndcMinX = minClipX / maxClipW;
-		const float ndcMaxX = maxClipX / maxClipW;
-		const float ndcMinY = minClipY / maxClipW;
-		const float ndcMaxY = maxClipY / maxClipW;
+
+		// Conservative 2D projection of the axis-aligned clip-space bbox
+		// (cx +/- r, cy +/- r, cw +/- r). Enumerate all four x/w and y/w
+		// ratios; take min and max. Dividing a single signed bound by a
+		// fixed w under-estimates the screen footprint on the outward side
+		// when the bound is on the opposite side of the origin.
+		const auto minmax4 = [](float a, float b, float c, float d, float& lo, float& hi) {
+			lo = std::min(std::min(a, b), std::min(c, d));
+			hi = std::max(std::max(a, b), std::max(c, d));
+		};
+		float ndcMinX, ndcMaxX, ndcMinY, ndcMaxY;
+		minmax4(minClipX / minClipW, minClipX / maxClipW,
+			maxClipX / minClipW, maxClipX / maxClipW, ndcMinX, ndcMaxX);
+		minmax4(minClipY / minClipW, minClipY / maxClipW,
+			maxClipY / minClipW, maxClipY / maxClipW, ndcMinY, ndcMaxY);
 
 		const float screenMinX = ndcMinX * mScreenScaleX + mScreenOffsetX;
 		const float screenMaxX = ndcMaxX * mScreenScaleX + mScreenOffsetX;
