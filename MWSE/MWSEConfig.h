@@ -19,6 +19,9 @@ namespace mwse {
 		static bool UseGlobalAudio;
 		static bool ReplaceLightSorting;
 		static bool EnableDX8OcclusionCulling;
+		static bool DebugOcclusionTintOccluded;
+		static bool DebugOcclusionTintTested;
+		static bool DebugOcclusionTintOccluder;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

@@ -9,9 +9,11 @@
 
 #include "NIAVObject.h"
 #include "NICamera.h"
+#include "NIColor.h"
 #include "NIDefines.h"
 #include "NIGeometryData.h"
 #include "NINode.h"
+#include "NIProperty.h"
 #include "NITArray.h"
 #include "NITransform.h"
 #include "NITriShape.h"
@@ -26,6 +28,7 @@
 #include <cstring>
 #include <limits>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 namespace mwse::patch::occlusion {
@@ -165,6 +168,53 @@ namespace mwse::patch::occlusion {
 		NI::Camera* camera;
 	};
 	static std::vector<PendingDisplay> g_pendingDisplays;
+
+	// Debug tint overlay. When any of the three DebugOcclusionTint* flags
+	// in Configuration are set, we mutate shapes' own NiMaterialProperty
+	// emissive color in place so they render in a distinct hue, then
+	// restore the originals at end-of-frame (renderMainScene_wrapper
+	// post-call). Tint colors:
+	//   red    — OCCLUDED (would have been culled; kept visible for compare)
+	//   green  — test passed (survived the MSOC query)
+	//   yellow — rasterised as an occluder (driving the depth buffer)
+	// Shapes without their own MaterialProperty (mostly NiNodes, some
+	// terrain chunks) are skipped — we don't walk up the parent chain
+	// because inherited properties are shared across siblings and tinting
+	// one would stain the whole subtree.
+	//
+	// The hash map both deduplicates (one property may be hit by multiple
+	// shapes or multiple code paths in a single frame) and preserves the
+	// true pre-frame emissive so the restore step returns to correct
+	// colors, not to an intermediate tint.
+	static const NI::Color kTintOccluded(1.0f, 0.0f, 0.0f);
+	static const NI::Color kTintTested(0.0f, 1.0f, 0.0f);
+	static const NI::Color kTintOccluder(1.0f, 1.0f, 0.0f);
+	static std::unordered_map<NI::MaterialProperty*, NI::Color> g_tintSaves;
+
+	static NI::MaterialProperty* findOwnMaterial(NI::AVObject* obj) {
+		for (auto* node = &obj->propertyNode; node && node->data; node = node->next) {
+			if (node->data->getType() == NI::PropertyType::Material) {
+				return static_cast<NI::MaterialProperty*>(node->data);
+			}
+		}
+		return nullptr;
+	}
+
+	static void tintEmissive(NI::AVObject* obj, const NI::Color& color) {
+		NI::MaterialProperty* m = findOwnMaterial(obj);
+		if (!m) return;
+		g_tintSaves.try_emplace(m, m->emissive);
+		m->emissive = color;
+		m->incrementRevisionId();
+	}
+
+	static void restoreTintedMaterials() {
+		for (const auto& [prop, original] : g_tintSaves) {
+			prop->emissive = original;
+			prop->incrementRevisionId();
+		}
+		g_tintSaves.clear();
+	}
 
 	// Fill g_worldToClip by transposing NI::Camera::worldToCamera into
 	// Intel's column-major v*M layout. NI stores row-major M*v — clip[r] =
@@ -460,6 +510,9 @@ namespace mwse::patch::occlusion {
 					const auto& eye = camera->worldTransform.translation;
 					if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
 						++g_rasterizedAsOccluder;
+						if (Configuration::DebugOcclusionTintOccluder) {
+							tintEmissive(self, kTintOccluder);
+						}
 					}
 				}
 				g_pendingDisplays.push_back({ self, camera });
@@ -473,11 +526,23 @@ namespace mwse::patch::occlusion {
 			const auto result = testSphereVisible(self->worldBoundOrigin, boundRadius);
 			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
 				++g_queryOccluded;
-				restoreIgnoreBits();
-				return;
+				// In tint-debug mode we suppress the cull so the subtree is
+				// still traversed and each leaf can be tinted/rendered.
+				// NiNodes themselves rarely have their own material so the
+				// tint is usually a no-op here; the value is in letting the
+				// children keep running and paint themselves red on their
+				// own OCCLUDED result.
+				if (!Configuration::DebugOcclusionTintOccluded) {
+					restoreIgnoreBits();
+					return;
+				}
+				tintEmissive(self, kTintOccluded);
 			}
-			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
+			else if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
 				++g_queryViewCulled;
+			}
+			else if (Configuration::DebugOcclusionTintTested) {
+				tintEmissive(self, kTintTested);
 			}
 		}
 
@@ -497,10 +562,20 @@ namespace mwse::patch::occlusion {
 				p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
 			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
 				++g_queryOccluded;
+				// Tint-debug mode keeps the shape visible so the user can
+				// see which meshes the culler wrongly hides. Production
+				// mode (default) culls by skipping display.
+				if (Configuration::DebugOcclusionTintOccluded) {
+					tintEmissive(p.shape, kTintOccluded);
+					p.shape->vTable.asAVObject->display(p.shape, p.camera);
+				}
 				continue;
 			}
 			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
 				++g_queryViewCulled;
+			}
+			else if (Configuration::DebugOcclusionTintTested) {
+				tintEmissive(p.shape, kTintTested);
 			}
 			p.shape->vTable.asAVObject->display(p.shape, p.camera);
 		}
@@ -608,6 +683,16 @@ namespace mwse::patch::occlusion {
 		g_inRenderMainScene = true;
 		renderMainScene_original();
 		g_inRenderMainScene = wasActive;
+
+		// Tint-debug restore: the batched renderer reads material state at
+		// draw time, which happens *inside* renderMainScene_original after
+		// the cull pass has populated the render list. By the time we
+		// return here, all draws for this frame are done, so it's safe to
+		// put every tinted material back to its pre-frame emissive. Runs
+		// unconditionally and is a no-op when no tinting happened — saves
+		// us from gating it on the three flags (which may toggle mid-frame
+		// if the user edits from Lua, leaving state inconsistent).
+		restoreTintedMaterials();
 	}
 
 	void installPatches() {

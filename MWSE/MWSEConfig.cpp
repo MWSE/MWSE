@@ -22,6 +22,9 @@ namespace mwse {
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
 	bool Configuration::EnableDX8OcclusionCulling = true;
+	bool Configuration::DebugOcclusionTintOccluded = false;
+	bool Configuration::DebugOcclusionTintTested = false;
+	bool Configuration::DebugOcclusionTintOccluder = false;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -72,6 +75,9 @@ namespace mwse {
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(EnableDX8OcclusionCulling)
+		DECLARE_CONFIG(DebugOcclusionTintOccluded)
+		DECLARE_CONFIG(DebugOcclusionTintTested)
+		DECLARE_CONFIG(DebugOcclusionTintOccluder)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }
