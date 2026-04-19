@@ -357,7 +357,9 @@
     <ClInclude Include="NISwitchNodeLua.h" />
     <ClInclude Include="NITransform.h" />
     <ClInclude Include="NIUtil.h" />
-    <ClInclude Include="MaskedOcclusionCulling.h" />
+    <ClInclude Include="external\msoc\CompilerSpecific.inl" />
+    <ClInclude Include="external\msoc\MaskedOcclusionCulling.h" />
+    <ClInclude Include="external\msoc\MaskedOcclusionCullingCommon.inl" />
     <ClInclude Include="PatchOcclusionCulling.h" />
     <ClInclude Include="PatchUtil.h" />
     <ClInclude Include="ScriptUtilLua.h" />
@@ -863,7 +865,11 @@
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
     <ClCompile Include="NIUtil.cpp" />
-    <ClCompile Include="MaskedOcclusionCulling.cpp" />
+    <ClCompile Include="external\msoc\MaskedOcclusionCulling.cpp" />
+    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX2.cpp">
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX512.cpp" />
     <ClCompile Include="PatchOcclusionCulling.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
     <ClCompile Include="RngUtil.cpp" />

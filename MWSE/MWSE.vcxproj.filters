@@ -31,6 +31,18 @@
     <Filter Include="Source Files\Utility">
       <UniqueIdentifier>{a80f4438-f86c-4c93-8dbc-0b1163f26b48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\External\MSOC">
+      <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External">
+      <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External\MSOC">
+      <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\DataAdapters">
       <UniqueIdentifier>{2fb5c485-2d19-4254-bda9-7ef4f0c79a3b}</UniqueIdentifier>
     </Filter>
@@ -588,8 +600,14 @@
     <ClInclude Include="PatchUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="MaskedOcclusionCulling.h">
-      <Filter>Header Files\Utility</Filter>
+    <ClInclude Include="external\msoc\CompilerSpecific.inl">
+      <Filter>Header Files\External\MSOC</Filter>
+    </ClInclude>
+    <ClInclude Include="external\msoc\MaskedOcclusionCulling.h">
+      <Filter>Header Files\External\MSOC</Filter>
+    </ClInclude>
+    <ClInclude Include="external\msoc\MaskedOcclusionCullingCommon.inl">
+      <Filter>Header Files\External\MSOC</Filter>
     </ClInclude>
     <ClInclude Include="PatchOcclusionCulling.h">
       <Filter>Header Files\Utility</Filter>
@@ -2729,8 +2747,14 @@
     <ClCompile Include="PatchUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="MaskedOcclusionCulling.cpp">
-      <Filter>Source Files\Utility</Filter>
+    <ClCompile Include="external\msoc\MaskedOcclusionCulling.cpp">
+      <Filter>Source Files\External\MSOC</Filter>
+    </ClCompile>
+    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX2.cpp">
+      <Filter>Source Files\External\MSOC</Filter>
+    </ClCompile>
+    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX512.cpp">
+      <Filter>Source Files\External\MSOC</Filter>
     </ClCompile>
     <ClCompile Include="PatchOcclusionCulling.cpp">
       <Filter>Source Files\Utility</Filter>
