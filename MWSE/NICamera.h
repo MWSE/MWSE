@@ -3,6 +3,8 @@
 #include "NINode.h"
 #include "NIRenderer.h"
 
+#include <cstdint>
+
 namespace NI {
 	struct Frustum {
 		float left; // 0x0
@@ -25,17 +27,34 @@ namespace NI {
 		Frustum viewFrustum; // 0x100
 		TES3::Vector4 port; // 0x118
 		Pointer<Node> scene; // 0x128
-		NI::TArray<void*> unknown_0x12C; // Screen related?
+		NI::TArray<void*> screenPolygons; // 0x12C (elements are NiScreenPolygon*)
 		Pointer<Renderer> renderer; // 0x144
-		NI::TArray<void*> unknown_0x148; // Multiple cameras?
-		int unknown_0x160;
+		// Engine-internal TArray<NiPlane*> (IDA calls this "cullingPlanes"; we
+		// use `cullingPlanePtrs` to avoid shadowing the public inline copy
+		// below, which is what MWSE has historically exposed to Lua under the
+		// name `cullingPlanes`). In practice the first 6 pointers target the
+		// inline cullingPlanes[6] below, so NiCamera::UpdateWorldData's
+		// NiPlane::copy writes through these pointers keep the inline mirror
+		// live. CullShow walks this TArray (not the inline copy) when doing
+		// the actual frustum test.
+		NI::TArray<void*> cullingPlanePtrs; // 0x148
+		int countCullingPlanes; // 0x160
+		// Inline vec4[6] mirror of the 6 frustum planes (near, far, left,
+		// right, top, bottom), stored as (normal.x, normal.y, normal.z,
+		// constant). IDA names this `akCullingPlanes`; MWSE exposes it to Lua
+		// as `cullingPlanes` (the name stuck before the TArray above was
+		// understood) so we keep that name here. CullShow's hierarchical
+		// ignore-bit loop also indexes past-end into this storage:
+		// `&cullingPlanes[6].x` is the base of usedCullingPlanesBitfield.
 		TES3::Vector4 cullingPlanes[6]; // 0x164
-		float unknown_0x1C4;
-		float unknown_0x1C8;
-		float unknown_0x1CC;
-		float unknown_0x1D0;
-		void * unknown_0x1D4;
-		int unknown_0x1D8;
+		// Hierarchical "skip this plane" mask, one bit per plane index. An
+		// ancestor that proves the bound is fully inside plane N sets bit N
+		// so descendants can skip re-testing, and clears it on function exit.
+		// 4 dwords = 128 bits; the engine only ever uses the first dword
+		// (up to ~12 planes: 6 frustum + 6 optional user clip planes).
+		uint32_t usedCullingPlanesBitfield[4]; // 0x1C4
+		void* pointer_0x1D4;
+		int field_0x1D8;
 		float LODAdjust; // 0x1DC
 
 		Camera();
