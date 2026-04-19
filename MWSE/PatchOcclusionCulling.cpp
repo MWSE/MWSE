@@ -70,19 +70,19 @@ namespace mwse::patch::occlusion {
 	// the gaps. Walls and floors (one thin axis, two large) still qualify.
 	constexpr float kOccluderMinDimension = 128.0f;
 
-	// Depth slack applied to testee sphere wMin. Sphere-center projection
-	// gives wMin = c.w - r*g_wGradMag, which is the *exact* closest-w of the
-	// bounding sphere — tighter than a corner-based AABB wMin. That tightness
-	// plus single-pass "rasterize-then-test" traversal means a near-coplanar
-	// occluder (wall, ground) rasterised just before us can fill our rect at a
-	// 1/w effectively equal to our own, and TestRect's ties-go-to-OCCLUDED
-	// rule hides us (doors flush to walls, shapes flush to terrain, leaves on
-	// branches). Expand the sphere's effective radius by this factor for the
-	// depth test *only* (the NDC rect keeps the true radius so we don't widen
-	// the tile footprint). A 10% slack is ~4x larger than float-precision tie
-	// bands and still small enough that genuinely-behind-a-wall meshes still
-	// cull.
-	constexpr float kDepthSlackFactor = 1.10f;
+	// Depth slack applied to testee sphere wMin, in world units. Sphere-center
+	// projection gives wMin = c.w - r*g_wGradMag, which is the *exact*
+	// closest-w of the bounding sphere — tighter than a corner-based AABB
+	// wMin. That tightness plus single-pass "rasterize-then-test" traversal
+	// means a near-coplanar occluder (wall, ground) rasterised just before us
+	// can fill our rect at a 1/w effectively equal to our own, and TestRect's
+	// ties-go-to-OCCLUDED rule hides us (doors flush to walls, shapes flush
+	// to terrain, leaves on branches). Push the testee's near surface this
+	// many world units closer to the camera for the depth test *only* (the
+	// NDC rect keeps the true radius so we don't widen the tile footprint).
+	// 128 units ~= the thickness of a typical wall mesh, so a door flush
+	// against a wall now tests in front of the wall's near face.
+	constexpr float kDepthSlackWorldUnits = 128.0f;
 
 	// Intel MSOC is allocated on the heap via Create()/Destroy(). We leak
 	// this on process exit (same pattern as other long-lived MWSE globals).
@@ -221,7 +221,7 @@ namespace mwse::patch::occlusion {
 		const TES3::Vector3& center, float radius) {
 		const ClipXYW c = projectWorld(center.x, center.y, center.z);
 
-		const float wMin = c.w - radius * g_wGradMag * kDepthSlackFactor;
+		const float wMin = c.w - (radius + kDepthSlackWorldUnits) * g_wGradMag;
 		if (wMin <= kNearClipW) {
 			++g_queryNearClip;
 			return ::MaskedOcclusionCulling::VISIBLE;
