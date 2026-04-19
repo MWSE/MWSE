@@ -142,10 +142,12 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_queryViewCulled = 0;
 	static uint64_t g_queryNearClip = 0;
 	static uint64_t g_deferred = 0;
-	// Diagnostic: shapes tested inline with radius below the defer
-	// threshold. These SHOULD have been queued; if this is nonzero the
-	// defer type gate is rejecting them (unexpected geometry type).
-	static uint64_t g_smallInlineTested = 0;
+	// Diagnostic: NiNodes / non-geom AVObjects tested inline during
+	// traversal (as opposed to deferred NiTriBasedGeom leaves). Helps
+	// attribute queryOccluded between "whole subtree culled early"
+	// (inline) and "leaf shape hidden behind fully-populated buffer"
+	// (drain-phase).
+	static uint64_t g_inlineTested = 0;
 
 	// Deferred-display queue for small NiTriShape leaves. Small shapes are
 	// queued during the main traversal and drained *after* all occluder
@@ -425,28 +427,49 @@ namespace mwse::patch::occlusion {
 		}
 
 		if (g_msocActive) {
-			// Small leaf geometry: defer display until the main
-			// traversal has finished populating the depth buffer. Their
-			// MSOC test then runs against the enriched buffer instead
-			// of whatever occluders happened to precede them in
-			// scene-graph order. NiTriBasedGeom covers both NiTriShape
-			// and NiTriStrips (Morrowind ships many decorative meshes
-			// as strip geometry). Geometry leaves have no children so
-			// deferring their display doesn't skip any subtree. Shapes
-			// that would themselves rasterise (radius >= min) stay
-			// inline so the buffer keeps growing during the main pass.
-			if (boundRadius < kOccluderRadiusMin
-				&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
+			// Two-pass: every NiTriBasedGeom leaf (NiTriShape + NiTriStrips,
+			// the bulk of Morrowind's decorative/static meshes) defers its
+			// visibility test until after the main traversal has finished
+			// populating the depth buffer. This eliminates the single-pass
+			// false positive where a leaf is tested against an occluder its
+			// parent or earlier sibling rasterised moments before (door
+			// behind its own wall, leaf in front of its own branch) — by
+			// the time the drain phase runs, every occluder that can
+			// contribute is already in the buffer, so the test result only
+			// depends on geometry and camera, not on scene-graph order.
+			//
+			// Large NiTriShapes still rasterise inline as occluders, but
+			// *without* an own-visibility test — MSOC's "closest 1/w wins"
+			// means rasterising a shape that's itself occluded just
+			// overdraws tiles with farther depths (harmless, wastes a few
+			// triangles). Removing the own-test breaks the cycle where a
+			// shape could fail the test against its own sibling's
+			// rasterisation and still contribute usable occluder depth.
+			//
+			// NiNodes keep testing inline so hierarchical culling can skip
+			// whole subtrees — a building fully behind terrain never needs
+			// its children traversed at all. A NiNode test against a
+			// partially-populated buffer is fine: by the time a node is
+			// reached, its own subtree has not rasterised yet, so no
+			// self-occlusion can happen at that level.
+			const bool isGeom = self->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom);
+			if (isGeom) {
+				if (boundRadius >= kOccluderRadiusMin
+					&& boundRadius <= kOccluderRadiusMax
+					&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
+					const auto& eye = camera->worldTransform.translation;
+					if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
+						++g_rasterizedAsOccluder;
+					}
+				}
 				g_pendingDisplays.push_back({ self, camera });
 				++g_deferred;
 				restoreIgnoreBits();
 				return;
 			}
-			if (boundRadius < kOccluderRadiusMin) {
-				++g_smallInlineTested;
-			}
 
 			++g_queryTested;
+			++g_inlineTested;
 			const auto result = testSphereVisible(self->worldBoundOrigin, boundRadius);
 			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
 				++g_queryOccluded;
@@ -455,13 +478,6 @@ namespace mwse::patch::occlusion {
 			}
 			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
 				++g_queryViewCulled;
-			}
-			if (self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)
-				&& boundRadius <= kOccluderRadiusMax) {
-				const auto& eye = camera->worldTransform.translation;
-				if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
-					++g_rasterizedAsOccluder;
-				}
 			}
 		}
 
@@ -524,7 +540,7 @@ namespace mwse::patch::occlusion {
 			g_queryViewCulled = 0;
 			g_queryNearClip = 0;
 			g_deferred = 0;
-			g_smallInlineTested = 0;
+			g_inlineTested = 0;
 			uploadCameraTransform(camera);
 			g_msocActive = true;
 		}
@@ -564,7 +580,7 @@ namespace mwse::patch::occlusion {
 					<< " viewCulled=" << g_queryViewCulled
 					<< " nearClip=" << g_queryNearClip
 					<< " deferred=" << g_deferred
-					<< " smallInline=" << g_smallInlineTested
+					<< " inlineTested=" << g_inlineTested
 					<< " recursive=" << g_recursiveCalls
 					<< " appCulled=" << g_recursiveAppCulled
 					<< " frustumCulled=" << g_recursiveFrustumCulled
