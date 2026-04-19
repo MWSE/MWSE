@@ -21,9 +21,11 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <ostream>
+#include <vector>
 
 namespace mwse::patch::occlusion {
 
@@ -44,12 +46,16 @@ namespace mwse::patch::occlusion {
 	// enough tile coverage to be worth the rasterisation cost.
 	constexpr float kOccluderRadiusMin = 256.0f;
 
-	// Shrink factor applied to the per-occluder AABB around its centre before
-	// rasterising. Keeps the occluder strictly inside the real geometry for
-	// thick convex shapes; for thin/planar meshes the shrunken box still
-	// approximates the surface with bounded error. OpenMW exposes this as a
-	// user setting; 0.8 matches their default feel.
-	constexpr float kOccluderShrinkFactor = 0.8f;
+	// Upper bound on occluder world-bound radius. A Morrowind cell spans
+	// 8192 world units and a typical large canton building sits around
+	// 1500; anything larger than this threshold is almost certainly a
+	// massive composite mesh (terrain-like prop, skybox geometry, a giant
+	// cave volume) whose AABB spans the frustum and whose per-frame
+	// vertex transform is expensive. Those aren't useful occluders: their
+	// near face rasterises close to the camera so they over-occlude, and
+	// their triangle counts dominate frame cost. Still visibility-tested,
+	// just never rasterised.
+	constexpr float kOccluderRadiusMax = 4096.0f;
 
 	// Safety margin for the inside-occluder guard. Rasterizing an object whose
 	// bounding sphere contains the camera is pathological: its AABB spans the
@@ -72,6 +78,24 @@ namespace mwse::patch::occlusion {
 	// Intel reads clip.x = v.x*m[0] + v.y*m[4] + v.z*m[8] + m[12].
 	// Refreshed each frame at the top of CullShow_replacement_topLevel.
 	static float g_worldToClip[16];
+
+	// Reusable buffers for rasterizeTriShape. Grown on demand, never shrunk;
+	// MSOC is invoked single-threaded from the worldCamera pass so a single
+	// module-level buffer is sufficient.
+	static std::vector<float> g_occluderVerts;
+	static std::vector<unsigned int> g_occluderIndices;
+
+	// Per-frame matrix metrics used by testSphereVisible.
+	// g_ndcRadiusX/Y: L2 norm of the world->clip.x / clip.y coefficients, so
+	// the NDC half-extent of a sphere of radius r at clip-w cw is
+	// r * g_ndcRadiusX / cw (resp. Y). Ignores translation column m[12..15].
+	// g_wGradMag: L2 norm of clip.w coefficients, so the worst-case clip-w
+	// offset from the sphere center to its near surface is r * g_wGradMag.
+	// For a standard perspective projection after a pure-rotation world->view
+	// this is 1.0; computing it from the matrix handles any scaling.
+	static float g_ndcRadiusX = 0.0f;
+	static float g_ndcRadiusY = 0.0f;
+	static float g_wGradMag = 0.0f;
 
 	// Belt-and-braces fallback for non-worldCamera traversals (armCamera,
 	// menuCamera, shadowCamera, etc.). CullShow_replacement is designed to be
@@ -97,6 +121,24 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_queryOccluded = 0;
 	static uint64_t g_queryViewCulled = 0;
 	static uint64_t g_queryNearClip = 0;
+	static uint64_t g_deferred = 0;
+
+	// Deferred-display queue for small NiTriShape leaves. Small shapes are
+	// queued during the main traversal and drained *after* all occluder
+	// rasterisation is complete, so their MSOC visibility test runs
+	// against the fully-populated depth buffer instead of whatever
+	// occluders happened to precede them in scene-graph order. Avoids the
+	// OpenMW two-pass cost (single traversal) and still gives big shapes
+	// priority for rasterisation.
+	//
+	// Only NiTriShape leaves are deferred. NiNodes must stay inline so
+	// their subtree keeps contributing occluders during the main pass;
+	// other leaf types (Particles, etc.) are rare enough to keep inline.
+	struct PendingDisplay {
+		NI::AVObject* shape;
+		NI::Camera* camera;
+	};
+	static std::vector<PendingDisplay> g_pendingDisplays;
 
 	// Fill g_worldToClip from NI::Camera::worldToCamera. NI stores the full
 	// world-to-clip matrix row-major with M*v convention (NI[0..3] is the
@@ -109,6 +151,10 @@ namespace mwse::patch::occlusion {
 				g_worldToClip[col * 4 + row] = ni[row * 4 + col];
 			}
 		}
+		const float* m = g_worldToClip;
+		g_ndcRadiusX = std::sqrt(m[0] * m[0] + m[4] * m[4] + m[8] * m[8]);
+		g_ndcRadiusY = std::sqrt(m[1] * m[1] + m[5] * m[5] + m[9] * m[9]);
+		g_wGradMag = std::sqrt(m[3] * m[3] + m[7] * m[7] + m[11] * m[11]);
 	}
 
 	// Project a world-space point using the cached Intel-layout matrix.
@@ -125,57 +171,36 @@ namespace mwse::patch::occlusion {
 		};
 	}
 
-	// Conservative sphere -> NDC-rect + wmin projection, then Intel's TestRect.
-	// Treats the sphere as its axis-aligned world-space bbox ({center +/- r}
-	// on each axis) and projects all 8 corners. Matches OpenMW's
-	// testVisibleAABB for AABBs; for a sphere the bbox is at worst sqrt(3)
-	// loose, which is tolerable because TestRect is conservative anyway.
+	// Direct sphere -> NDC-rect + wmin projection, then Intel's TestRect.
+	// Projects only the sphere center and derives the NDC half-extent and
+	// near-surface clip-w from per-frame matrix metrics (see
+	// uploadCameraTransform). Tighter than an 8-corner world AABB projection
+	// by ~sqrt(3) and stable under camera rotation — neither the NDC radius
+	// nor wMin depend on how the sphere's bbox aligns with camera axes, so
+	// small-mesh queries don't flicker across TestRect's hiZ thresholds.
 	//
-	// If any corner lies behind the near plane (clip.w <= kNearClipW) we
-	// bail early as VISIBLE: the straddling case needs full 3D clipping that
-	// TestRect does not perform, and conservatively treating the sphere as
-	// visible is the correct fallback.
+	// If the sphere's near surface straddles the near plane we bail as
+	// VISIBLE: TestRect can't project a straddling rect safely.
 	static ::MaskedOcclusionCulling::CullingResult testSphereVisible(
 		const TES3::Vector3& center, float radius) {
-		const float r = radius;
-		const float corners[8][3] = {
-			{ center.x - r, center.y - r, center.z - r },
-			{ center.x + r, center.y - r, center.z - r },
-			{ center.x - r, center.y + r, center.z - r },
-			{ center.x + r, center.y + r, center.z - r },
-			{ center.x - r, center.y - r, center.z + r },
-			{ center.x + r, center.y - r, center.z + r },
-			{ center.x - r, center.y + r, center.z + r },
-			{ center.x + r, center.y + r, center.z + r },
-		};
+		const ClipXYW c = projectWorld(center.x, center.y, center.z);
 
-		float ndcMinX = FLT_MAX, ndcMinY = FLT_MAX;
-		float ndcMaxX = -FLT_MAX, ndcMaxY = -FLT_MAX;
-		float wMin = FLT_MAX;
-
-		for (int i = 0; i < 8; ++i) {
-			const ClipXYW c = projectWorld(corners[i][0], corners[i][1], corners[i][2]);
-			if (c.w <= kNearClipW) {
-				++g_queryNearClip;
-				return ::MaskedOcclusionCulling::VISIBLE;
-			}
-			const float invW = 1.0f / c.w;
-			const float ndcX = c.x * invW;
-			const float ndcY = c.y * invW;
-			ndcMinX = std::min(ndcMinX, ndcX);
-			ndcMaxX = std::max(ndcMaxX, ndcX);
-			ndcMinY = std::min(ndcMinY, ndcY);
-			ndcMaxY = std::max(ndcMaxY, ndcY);
-			wMin = std::min(wMin, c.w);
+		const float wMin = c.w - radius * g_wGradMag;
+		if (wMin <= kNearClipW) {
+			++g_queryNearClip;
+			return ::MaskedOcclusionCulling::VISIBLE;
 		}
 
-		// Off-screen: Intel's TestRect returns VIEW_CULLED for us, but
-		// clamping to [-1, 1] upfront is cheaper and gives us a hook to
-		// short-circuit the call if the rect collapses.
-		ndcMinX = std::max(ndcMinX, -1.0f);
-		ndcMinY = std::max(ndcMinY, -1.0f);
-		ndcMaxX = std::min(ndcMaxX, 1.0f);
-		ndcMaxY = std::min(ndcMaxY, 1.0f);
+		const float invW = 1.0f / c.w;
+		const float cxNdc = c.x * invW;
+		const float cyNdc = c.y * invW;
+		const float rxNdc = radius * g_ndcRadiusX * invW;
+		const float ryNdc = radius * g_ndcRadiusY * invW;
+
+		float ndcMinX = std::max(cxNdc - rxNdc, -1.0f);
+		float ndcMinY = std::max(cyNdc - ryNdc, -1.0f);
+		float ndcMaxX = std::min(cxNdc + rxNdc, 1.0f);
+		float ndcMaxY = std::min(cyNdc + ryNdc, 1.0f);
 		if (ndcMinX >= ndcMaxX || ndcMinY >= ndcMaxY) {
 			return ::MaskedOcclusionCulling::VIEW_CULLED;
 		}
@@ -183,20 +208,40 @@ namespace mwse::patch::occlusion {
 		return g_msoc->TestRect(ndcMinX, ndcMinY, ndcMaxX, ndcMaxY, wMin);
 	}
 
-	// Rasterise a shape's shrunken world-space AABB (12 triangles) as an
-	// occluder. A 12-tri cube is dramatically better at filling whole tiles
-	// and thus at promoting hiZ0 — which is what sphere/rect queries
-	// actually compare against. OpenMW's CellOcclusionCallback uses the same
-	// pattern.
+	// Rasterise a shape's actual triangles (in world space) as an occluder.
+	// Using real triangles instead of the shape's bounding box prevents the
+	// classic "sign hanging off a wall gets falsely occluded because it
+	// lives inside the wall's AABB volume" failure — small meshes embedded
+	// in a large mesh's bbox no longer flicker across tile boundaries.
 	// Returns true if we actually rasterised; false if the shape was skipped
 	// (no data, too thin on some axis, or camera inside the tight AABB).
 	static bool rasterizeTriShape(NI::TriShape* shape, const TES3::Vector3& eye) {
+		// Skip skinned meshes (NPCs, creatures). Their vertices live in
+		// bind-pose space and need skinInstance->deform() to produce the
+		// current animated positions — rasterising the bind-pose verts
+		// would draw the mesh in its T-pose at world origin, far from
+		// where the engine actually renders it. Moving actors are also
+		// poor occluders in practice.
+		if (shape->skinInstance) {
+			return false;
+		}
+
 		auto data = shape->getModelData();
 		if (!data) {
 			return false;
 		}
-		const auto vertexCount = data->vertexCount;
+		// Virtual accessors: the raw vertexCount / triangleListLength
+		// fields are allocation sizes, while getActive*() returns the
+		// logically-valid subset (e.g. after LOD trimming). Using the
+		// raw values over-reads and Intel's gather crashes on the stale
+		// tail entries.
+		const unsigned short vertexCount = data->getActiveVertexCount();
 		if (vertexCount == 0 || data->vertex == nullptr) {
+			return false;
+		}
+		const unsigned short triCount = data->getActiveTriangleCount();
+		const NI::Triangle* tris = data->getTriList();
+		if (triCount == 0 || tris == nullptr) {
 			return false;
 		}
 
@@ -205,11 +250,12 @@ namespace mwse::patch::occlusion {
 		const auto& T = xf.translation;
 		const float s = xf.scale;
 
-		// Tight world-space AABB: transform every vertex once per frame.
-		// Not cached: TriShapeData pointers can be freed and reused, and a
-		// stale cache entry would produce a wrong occluder for a different
-		// mesh. O(V) per occluder for ~dozens of occluders per frame is
-		// negligible (<1ms total).
+		// Transform every vertex once into the reusable world-space buffer.
+		// We also accumulate the tight AABB for the inside-guard and
+		// thin-axis gate. Not cached across frames: TriShapeData pointers
+		// can be freed and reused.
+		g_occluderVerts.resize(static_cast<size_t>(vertexCount) * 3);
+		float* out = g_occluderVerts.data();
 		float minX = FLT_MAX, minY = FLT_MAX, minZ = FLT_MAX;
 		float maxX = -FLT_MAX, maxY = -FLT_MAX, maxZ = -FLT_MAX;
 		for (unsigned short i = 0; i < vertexCount; ++i) {
@@ -220,6 +266,9 @@ namespace mwse::patch::occlusion {
 			const float wx = rx * s + T.x;
 			const float wy = ry * s + T.y;
 			const float wz = rz * s + T.z;
+			out[i * 3 + 0] = wx;
+			out[i * 3 + 1] = wy;
+			out[i * 3 + 2] = wz;
 			if (wx < minX) minX = wx;
 			if (wx > maxX) maxX = wx;
 			if (wy < minY) minY = wy;
@@ -228,10 +277,10 @@ namespace mwse::patch::occlusion {
 			if (wz > maxZ) maxZ = wz;
 		}
 
-		// Reject shapes that are thin on two or more axes (pencil-shaped):
-		// their cube approximation is a fat slab that would falsely occlude
-		// things visible through gaps. Walls/floors with a single thin axis
-		// still qualify. See kOccluderMinDimension for the threshold.
+		// Reject pencil-shaped meshes: their silhouette area is tiny and
+		// the per-frame rasterisation cost isn't worth the near-zero
+		// occlusion contribution. Walls/floors with a single thin axis
+		// still qualify. See kOccluderMinDimension.
 		const float dx = maxX - minX;
 		const float dy = maxY - minY;
 		const float dz = maxZ - minZ;
@@ -243,10 +292,10 @@ namespace mwse::patch::occlusion {
 			return false;
 		}
 
-		// Inside-guard using the tight AABB (expanded by kInsideOccluderMargin).
-		// A tight-AABB test only trips when the camera is genuinely inside
-		// the mesh's volume (as opposed to worldBoundRadius, NI's loose
-		// bounding sphere that on a canton wall encloses the walkway).
+		// Inside-guard: rasterising a mesh the camera sits inside would
+		// cover the screen with near-face depths and falsely occlude
+		// everything behind the far face. Tight AABB + small margin is
+		// enough here since the real triangles are strictly inside it.
 		const float m = kInsideOccluderMargin;
 		if (eye.x >= minX - m && eye.x <= maxX + m &&
 			eye.y >= minY - m && eye.y <= maxY + m &&
@@ -255,44 +304,34 @@ namespace mwse::patch::occlusion {
 			return false;
 		}
 
-		// Shrink AABB around its centre.
-		const float cx = (minX + maxX) * 0.5f;
-		const float cy = (minY + maxY) * 0.5f;
-		const float cz = (minZ + maxZ) * 0.5f;
-		const float hx = (maxX - minX) * 0.5f * kOccluderShrinkFactor;
-		const float hy = (maxY - minY) * 0.5f * kOccluderShrinkFactor;
-		const float hz = (maxZ - minZ) * 0.5f * kOccluderShrinkFactor;
-
-		const float x0 = cx - hx, x1 = cx + hx;
-		const float y0 = cy - hy, y1 = cy + hy;
-		const float z0 = cz - hz, z1 = cz + hz;
-
-		const float verts[8 * 3] = {
-			x0, y0, z0, // 0
-			x1, y0, z0, // 1
-			x0, y1, z0, // 2
-			x1, y1, z0, // 3
-			x0, y0, z1, // 4
-			x1, y0, z1, // 5
-			x0, y1, z1, // 6
-			x1, y1, z1, // 7
-		};
-
-		// Intel's RenderTriangles takes unsigned int (32-bit) indices.
-		static const unsigned int indices[36] = {
-			0, 1, 3,  0, 3, 2, // -Z
-			4, 6, 7,  4, 7, 5, // +Z
-			0, 4, 5,  0, 5, 1, // -Y
-			2, 3, 7,  2, 7, 6, // +Y
-			0, 2, 6,  0, 6, 4, // -X
-			1, 5, 7,  1, 7, 3, // +X
-		};
+		// Expand NI's 16-bit triangle list into MSOC's 32-bit index
+		// buffer. Indices beyond vertexCount-1 would out-of-bounds read
+		// g_occluderVerts inside Intel's gather; clamp defensively.
+		g_occluderIndices.resize(static_cast<size_t>(triCount) * 3);
+		unsigned int* idx = g_occluderIndices.data();
+		unsigned int outTri = 0;
+		for (unsigned short i = 0; i < triCount; ++i) {
+			const unsigned short a = tris[i].vertices[0];
+			const unsigned short b = tris[i].vertices[1];
+			const unsigned short c = tris[i].vertices[2];
+			if (a >= vertexCount || b >= vertexCount || c >= vertexCount) {
+				continue;
+			}
+			idx[outTri * 3 + 0] = a;
+			idx[outTri * 3 + 1] = b;
+			idx[outTri * 3 + 2] = c;
+			++outTri;
+		}
+		if (outTri == 0) {
+			return false;
+		}
 
 		// VertexLayout(12, 4, 8): stride 12 bytes, y at offset 4, z at
-		// offset 8 — i.e. tightly-packed float[3] per vertex.
-		// BACKFACE_NONE because we want nearest-depth to win regardless of
-		// which face is toward the camera.
-		g_msoc->RenderTriangles(verts, indices, 12, g_worldToClip,
+		// offset 8 — tightly-packed float[3] per vertex.
+		// BACKFACE_NONE because NIF winding is not guaranteed consistent
+		// and we want every face to contribute to occluder depth.
+		g_msoc->RenderTriangles(g_occluderVerts.data(), idx,
+			static_cast<int>(outTri), g_worldToClip,
 			::MaskedOcclusionCulling::BACKFACE_NONE,
 			::MaskedOcclusionCulling::CLIP_PLANE_ALL,
 			::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
@@ -351,6 +390,22 @@ namespace mwse::patch::occlusion {
 		}
 
 		if (g_msocActive) {
+			// Small NiTriShape leaves: defer display until the main
+			// traversal has finished populating the depth buffer. Their
+			// MSOC test then runs against the enriched buffer instead
+			// of whatever occluders happened to precede them in
+			// scene-graph order. NiTriShapes have no children so
+			// deferring their display doesn't skip any subtree. Shapes
+			// that would themselves rasterise (radius >= min) stay
+			// inline so the buffer keeps growing during the main pass.
+			if (boundRadius < kOccluderRadiusMin
+				&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
+				g_pendingDisplays.push_back({ self, camera });
+				++g_deferred;
+				restoreIgnoreBits();
+				return;
+			}
+
 			++g_queryTested;
 			const auto result = testSphereVisible(self->worldBoundOrigin, boundRadius);
 			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
@@ -362,7 +417,7 @@ namespace mwse::patch::occlusion {
 				++g_queryViewCulled;
 			}
 			if (self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)
-				&& boundRadius >= kOccluderRadiusMin) {
+				&& boundRadius <= kOccluderRadiusMax) {
 				const auto& eye = camera->worldTransform.translation;
 				if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
 					++g_rasterizedAsOccluder;
@@ -373,6 +428,27 @@ namespace mwse::patch::occlusion {
 		self->vTable.asAVObject->display(self, camera);
 
 		restoreIgnoreBits();
+	}
+
+	// Drain the deferred-display queue built during the main traversal.
+	// Each entry is re-tested against the now-complete depth buffer and
+	// displayed if still visible. Must run before g_msocActive is cleared
+	// so any counters it updates land in the current frame's log line.
+	static void drainPendingDisplays() {
+		for (const auto& p : g_pendingDisplays) {
+			++g_queryTested;
+			const auto result = testSphereVisible(
+				p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
+				++g_queryOccluded;
+				continue;
+			}
+			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
+				++g_queryViewCulled;
+			}
+			p.shape->vTable.asAVObject->display(p.shape, p.camera);
+		}
+		g_pendingDisplays.clear();
 	}
 
 	// Wrapper for the single top-level site (NiCamera::Click at 0x6CC874).
@@ -400,10 +476,12 @@ namespace mwse::patch::occlusion {
 		g_queryOccluded = 0;
 		g_queryViewCulled = 0;
 		g_queryNearClip = 0;
+		g_deferred = 0;
 		uploadCameraTransform(camera);
 
 		g_msocActive = true;
 		CullShow_replacement(self, nullptr, camera);
+		drainPendingDisplays();
 		g_msocActive = false;
 
 		static unsigned int frameCounter = 0;
@@ -414,6 +492,7 @@ namespace mwse::patch::occlusion {
 				<< "/" << g_queryTested
 				<< " viewCulled=" << g_queryViewCulled
 				<< " nearClip=" << g_queryNearClip
+				<< " deferred=" << g_deferred
 				<< " recursive=" << g_recursiveCalls
 				<< " appCulled=" << g_recursiveAppCulled
 				<< " frustumCulled=" << g_recursiveFrustumCulled
