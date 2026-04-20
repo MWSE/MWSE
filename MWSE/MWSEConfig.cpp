@@ -21,10 +21,23 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
-	bool Configuration::EnableDX8OcclusionCulling = true;
+	bool Configuration::EnableMSOC = true;
 	bool Configuration::DebugOcclusionTintOccluded = false;
 	bool Configuration::DebugOcclusionTintTested = false;
 	bool Configuration::DebugOcclusionTintOccluder = false;
+	float Configuration::OcclusionOccluderRadiusMin = 256.0f;
+	float Configuration::OcclusionOccluderRadiusMax = 4096.0f;
+	float Configuration::OcclusionOccluderMinDimension = 128.0f;
+	float Configuration::OcclusionInsideOccluderMargin = 64.0f;
+	float Configuration::OcclusionDepthSlackWorldUnits = 128.0f;
+	UINT Configuration::OcclusionOccluderMaxTriangles = 4096;
+	float Configuration::OcclusionOccludeeMinRadius = 0.1f;
+	bool Configuration::OcclusionEnableInterior = true;
+	bool Configuration::OcclusionEnableExterior = true;
+	bool Configuration::OcclusionAsyncOccluders = false;
+	UINT Configuration::OcclusionThreadpoolThreadCount = 0;
+	UINT Configuration::OcclusionThreadpoolBinsW = 4;
+	UINT Configuration::OcclusionThreadpoolBinsH = 2;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -74,10 +87,23 @@ namespace mwse {
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
-		DECLARE_CONFIG(EnableDX8OcclusionCulling)
+		DECLARE_CONFIG(EnableMSOC)
 		DECLARE_CONFIG(DebugOcclusionTintOccluded)
 		DECLARE_CONFIG(DebugOcclusionTintTested)
 		DECLARE_CONFIG(DebugOcclusionTintOccluder)
+		DECLARE_CONFIG(OcclusionOccluderRadiusMin)
+		DECLARE_CONFIG(OcclusionOccluderRadiusMax)
+		DECLARE_CONFIG(OcclusionOccluderMinDimension)
+		DECLARE_CONFIG(OcclusionInsideOccluderMargin)
+		DECLARE_CONFIG(OcclusionDepthSlackWorldUnits)
+		DECLARE_CONFIG(OcclusionOccluderMaxTriangles)
+		DECLARE_CONFIG(OcclusionOccludeeMinRadius)
+		DECLARE_CONFIG(OcclusionEnableInterior)
+		DECLARE_CONFIG(OcclusionEnableExterior)
+		DECLARE_CONFIG(OcclusionAsyncOccluders)
+		DECLARE_CONFIG(OcclusionThreadpoolThreadCount)
+		DECLARE_CONFIG(OcclusionThreadpoolBinsW)
+		DECLARE_CONFIG(OcclusionThreadpoolBinsH)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

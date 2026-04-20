@@ -603,6 +603,9 @@
     <ClInclude Include="external\msoc\CompilerSpecific.inl">
       <Filter>Header Files\External\MSOC</Filter>
     </ClInclude>
+    <ClInclude Include="external\msoc\CullingThreadpool.h">
+      <Filter>Header Files\External\MSOC</Filter>
+    </ClInclude>
     <ClInclude Include="external\msoc\MaskedOcclusionCulling.h">
       <Filter>Header Files\External\MSOC</Filter>
     </ClInclude>
@@ -2746,6 +2749,9 @@
     </ClCompile>
     <ClCompile Include="PatchUtil.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="external\msoc\CullingThreadpool.cpp">
+      <Filter>Source Files\External\MSOC</Filter>
     </ClCompile>
     <ClCompile Include="external\msoc\MaskedOcclusionCulling.cpp">
       <Filter>Source Files\External\MSOC</Filter>

@@ -4,6 +4,7 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
+#include "TES3Cell.h"
 #include "TES3DataHandler.h"
 #include "TES3WorldController.h"
 
@@ -19,15 +20,18 @@
 #include "NITriShape.h"
 #include "NITriShapeData.h"
 
+#include "external/msoc/CullingThreadpool.h"
 #include "external/msoc/MaskedOcclusionCulling.h"
 
 #include <algorithm>
 #include <cfloat>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <limits>
 #include <ostream>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -42,50 +46,15 @@ namespace mwse::patch::occlusion {
 	// Clip-space w floor. Intel MSOC treats this as the near plane. In
 	// Morrowind units (1 unit ~= 1.4 cm) 1.0 is a safe floor below the
 	// engine's own near plane and well above the numerical noise that
-	// explodes NDC after perspective divide.
+	// explodes NDC after perspective divide. Not exposed as a knob —
+	// numerical floor, lowering it risks NaN in projection math.
 	constexpr float kNearClipW = 1.0f;
 
-	// Lower bound on occluder world-bound radius. Shapes smaller than this are
-	// still visibility-tested but never used as occluders; they don't produce
-	// enough tile coverage to be worth the rasterisation cost.
-	constexpr float kOccluderRadiusMin = 256.0f;
-
-	// Upper bound on occluder world-bound radius. A Morrowind cell spans
-	// 8192 world units and a typical large canton building sits around
-	// 1500; anything larger than this threshold is almost certainly a
-	// massive composite mesh (terrain-like prop, skybox geometry, a giant
-	// cave volume) whose AABB spans the frustum and whose per-frame
-	// vertex transform is expensive. Those aren't useful occluders: their
-	// near face rasterises close to the camera so they over-occlude, and
-	// their triangle counts dominate frame cost. Still visibility-tested,
-	// just never rasterised.
-	constexpr float kOccluderRadiusMax = 4096.0f;
-
-	// Safety margin for the inside-occluder guard. Rasterizing an object whose
-	// bounding sphere contains the camera is pathological: its AABB spans the
-	// entire screen and falsely occludes everything behind. A small margin
-	// guards against near-miss cases (camera just outside but intersecting).
-	constexpr float kInsideOccluderMargin = 64.0f;
-
-	// Minimum AABB extent (world units). A shape is rejected when *two or more*
-	// axes fall below this — i.e. it's pencil-shaped (column, sign, banner)
-	// and its cube approximation would falsely occlude things visible through
-	// the gaps. Walls and floors (one thin axis, two large) still qualify.
-	constexpr float kOccluderMinDimension = 128.0f;
-
-	// Depth slack applied to testee sphere wMin, in world units. Sphere-center
-	// projection gives wMin = c.w - r*g_wGradMag, which is the *exact*
-	// closest-w of the bounding sphere — tighter than a corner-based AABB
-	// wMin. That tightness plus single-pass "rasterize-then-test" traversal
-	// means a near-coplanar occluder (wall, ground) rasterised just before us
-	// can fill our rect at a 1/w effectively equal to our own, and TestRect's
-	// ties-go-to-OCCLUDED rule hides us (doors flush to walls, shapes flush
-	// to terrain, leaves on branches). Push the testee's near surface this
-	// many world units closer to the camera for the depth test *only* (the
-	// NDC rect keeps the true radius so we don't widen the tile footprint).
-	// 128 units ~= the thickness of a typical wall mesh, so a door flush
-	// against a wall now tests in front of the wall's near face.
-	constexpr float kDepthSlackWorldUnits = 128.0f;
+	// All other occluder/occludee thresholds (radius bounds, thin-axis
+	// rejection, inside-occluder margin, testee depth slack, max triangles,
+	// min occludee radius, scene-type gates) are Configuration::Occlusion*
+	// knobs loaded from MWSE.json; see MWSEConfig.{h,cpp} for defaults and
+	// PatchOcclusionCulling-plan.md for the rationale behind each default.
 
 	// Intel MSOC is allocated on the heap via Create()/Destroy(). We leak
 	// this on process exit (same pattern as other long-lived MWSE globals).
@@ -152,6 +121,55 @@ namespace mwse::patch::occlusion {
 	// (inline) and "leaf shape hidden behind fully-populated buffer"
 	// (drain-phase).
 	static uint64_t g_inlineTested = 0;
+	// Phase 2.2 gate counters. Non-zero at default config means a
+	// gate is mis-placed (defaults are tuned to keep all three at 0
+	// on typical scenes).
+	static uint64_t g_skippedTriCount = 0;
+	static uint64_t g_skippedTesteeTiny = 0;
+	static uint64_t g_skippedSceneGate = 0;
+	// Phase 2.2 timers (microseconds). steady_clock is QPC-backed
+	// on MSVC so no QPC wrapper is needed. Rasterize accumulates
+	// each RenderTriangles call; drain wraps the whole drain body.
+	static uint64_t g_rasterizeTimeUs = 0;
+	static uint64_t g_drainPhaseTimeUs = 0;
+	// Phase 3.2: time spent in threadpool Flush() barrier before drain.
+	// Only populated when async mode is active; zero otherwise.
+	static uint64_t g_asyncFlushTimeUs = 0;
+
+	// Phase 3.2 async-rasterization state.
+	//
+	// g_threadpool is created once in installPatches and lives for the
+	// process. Runtime-toggle of OcclusionAsyncOccluders works without a
+	// restart because the threadpool's lifecycle (Wake/Suspend) is driven
+	// per-frame off that flag — a suspended threadpool sleeps at ~0% CPU.
+	//
+	// g_asyncThisFrame latches the async flag at top-level entry so any
+	// mid-frame Configuration edits from Lua don't mix sync and async
+	// submissions within one traversal.
+	//
+	// The two arena vectors own the per-submission triangle data until
+	// Flush() retires the corresponding render job. CullingThreadpool
+	// requires caller-owned buffers to stay unchanged between submission
+	// and completion; we enforce that by moving g_occluderVerts /
+	// g_occluderIndices into the arena per submission (next rasterize call
+	// allocates fresh vectors). Cleared at top-level entry, after
+	// ClearBuffer's implicit Flush has retired the previous frame's jobs.
+	static ::CullingThreadpool* g_threadpool = nullptr;
+	static bool g_asyncThisFrame = false;
+	static std::vector<std::vector<float>> g_asyncOccluderVerts;
+	static std::vector<std::vector<unsigned int>> g_asyncOccluderIndices;
+
+	struct ScopedUsAccumulator {
+		uint64_t& target;
+		std::chrono::steady_clock::time_point start;
+		explicit ScopedUsAccumulator(uint64_t& t)
+			: target(t), start(std::chrono::steady_clock::now()) {}
+		~ScopedUsAccumulator() {
+			target += static_cast<uint64_t>(
+				std::chrono::duration_cast<std::chrono::microseconds>(
+					std::chrono::steady_clock::now() - start).count());
+		}
+	};
 
 	// Deferred-display queue for small NiTriShape leaves. Small shapes are
 	// queued during the main traversal and drained *after* all occluder
@@ -416,7 +434,7 @@ namespace mwse::patch::occlusion {
 		const TES3::Vector3& center, float radius) {
 		const ClipXYW c = projectWorld(center.x, center.y, center.z);
 
-		const float wMin = c.w - (radius + kDepthSlackWorldUnits) * g_wGradMag;
+		const float wMin = c.w - (radius + Configuration::OcclusionDepthSlackWorldUnits) * g_wGradMag;
 		if (wMin <= kNearClipW) {
 			++g_queryNearClip;
 			return ::MaskedOcclusionCulling::VISIBLE;
@@ -475,6 +493,14 @@ namespace mwse::patch::occlusion {
 		if (triCount == 0 || tris == nullptr) {
 			return false;
 		}
+		// Skip absurdly dense meshes as occluders: per-frame vertex transform
+		// and Intel's binning cost scale with triCount, and huge meshes rarely
+		// produce proportionally better occlusion. Still visibility-tested via
+		// their bounding sphere on the drain pass.
+		if (triCount > Configuration::OcclusionOccluderMaxTriangles) {
+			++g_skippedTriCount;
+			return false;
+		}
 
 		const auto& xf = shape->worldTransform;
 		const auto& R = xf.rotation;
@@ -511,13 +537,14 @@ namespace mwse::patch::occlusion {
 		// Reject pencil-shaped meshes: their silhouette area is tiny and
 		// the per-frame rasterisation cost isn't worth the near-zero
 		// occlusion contribution. Walls/floors with a single thin axis
-		// still qualify. See kOccluderMinDimension.
+		// still qualify.
+		const float minDim = Configuration::OcclusionOccluderMinDimension;
 		const float dx = maxX - minX;
 		const float dy = maxY - minY;
 		const float dz = maxZ - minZ;
-		const int thinAxes = (dx < kOccluderMinDimension ? 1 : 0)
-			+ (dy < kOccluderMinDimension ? 1 : 0)
-			+ (dz < kOccluderMinDimension ? 1 : 0);
+		const int thinAxes = (dx < minDim ? 1 : 0)
+			+ (dy < minDim ? 1 : 0)
+			+ (dz < minDim ? 1 : 0);
 		if (thinAxes >= 2) {
 			++g_skippedThin;
 			return false;
@@ -527,7 +554,7 @@ namespace mwse::patch::occlusion {
 		// cover the screen with near-face depths and falsely occlude
 		// everything behind the far face. Tight AABB + small margin is
 		// enough here since the real triangles are strictly inside it.
-		const float m = kInsideOccluderMargin;
+		const float m = Configuration::OcclusionInsideOccluderMargin;
 		if (eye.x >= minX - m && eye.x <= maxX + m &&
 			eye.y >= minY - m && eye.y <= maxY + m &&
 			eye.z >= minZ - m && eye.z <= maxZ + m) {
@@ -561,11 +588,32 @@ namespace mwse::patch::occlusion {
 		// offset 8 — tightly-packed float[3] per vertex.
 		// BACKFACE_NONE because NIF winding is not guaranteed consistent
 		// and we want every face to contribute to occluder depth.
-		g_msoc->RenderTriangles(g_occluderVerts.data(), idx,
-			static_cast<int>(outTri), g_worldToClip,
-			::MaskedOcclusionCulling::BACKFACE_NONE,
-			::MaskedOcclusionCulling::CLIP_PLANE_ALL,
-			::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+		if (g_asyncThisFrame) {
+			// Move our owning buffers into the per-frame arena so the worker
+			// threads have stable pointers until Flush() retires the job.
+			// The next rasterizeTriShape call allocates fresh vectors
+			// (~100us/frame of heap churn, acceptable per plan §3.2).
+			g_asyncOccluderVerts.emplace_back(std::move(g_occluderVerts));
+			g_asyncOccluderIndices.emplace_back(std::move(g_occluderIndices));
+			// Inner vectors hold their buffer pointer across outer-vector
+			// relocations (std::vector move ctor steals the pointer), so
+			// .back().data() is stable for the submission's lifetime.
+			const auto& vtx = g_asyncOccluderVerts.back();
+			const auto& tri = g_asyncOccluderIndices.back();
+			ScopedUsAccumulator t(g_rasterizeTimeUs);
+			g_threadpool->RenderTriangles(vtx.data(), tri.data(),
+				static_cast<int>(outTri),
+				::MaskedOcclusionCulling::BACKFACE_NONE,
+				::MaskedOcclusionCulling::CLIP_PLANE_ALL);
+		}
+		else {
+			ScopedUsAccumulator t(g_rasterizeTimeUs);
+			g_msoc->RenderTriangles(g_occluderVerts.data(), idx,
+				static_cast<int>(outTri), g_worldToClip,
+				::MaskedOcclusionCulling::BACKFACE_NONE,
+				::MaskedOcclusionCulling::CLIP_PLANE_ALL,
+				::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+		}
 		return true;
 	}
 
@@ -654,8 +702,8 @@ namespace mwse::patch::occlusion {
 				// tested/blended geometry (fences, banners, tree leaves)
 				// would fill the depth buffer across their whole quad and
 				// falsely occlude things behind the transparent parts.
-				if (boundRadius >= kOccluderRadiusMin
-					&& boundRadius <= kOccluderRadiusMax
+				if (boundRadius >= Configuration::OcclusionOccluderRadiusMin
+					&& boundRadius <= Configuration::OcclusionOccluderRadiusMax
 					&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
 					if (hasTransparency(self)) {
 						++g_skippedAlpha;
@@ -687,7 +735,32 @@ namespace mwse::patch::occlusion {
 	// displayed if still visible. Must run before g_msocActive is cleared
 	// so any counters it updates land in the current frame's log line.
 	static void drainPendingDisplays() {
+		ScopedUsAccumulator t(g_drainPhaseTimeUs);
+		// Fast path: nothing rasterised this frame means the depth buffer
+		// is still cleared, so every TestRect would return VISIBLE for
+		// shapes in frustum. Skip the query loop entirely and just display
+		// each deferred shape. Saves ~1 µs/entry plus the async Flush cost
+		// (handled at the caller) on occluder-free frames — rare at
+		// defaults, but common in tiny rooms / dense fog / or after a
+		// knob tweak that rejects every candidate.
+		if (g_rasterizedAsOccluder == 0) {
+			for (const auto& p : g_pendingDisplays) {
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+			}
+			g_pendingDisplays.clear();
+			return;
+		}
 		for (const auto& p : g_pendingDisplays) {
+			// Sub-threshold shapes bypass TestRect — their NDC footprint is
+			// too small for the culler to decide reliably and the test cost
+			// isn't worth the per-frame overhead. They still flow through
+			// the queue so display order matches the rest of the deferred
+			// shapes (reordering these would change alpha-sort timing).
+			if (p.shape->worldBoundRadius < Configuration::OcclusionOccludeeMinRadius) {
+				++g_skippedTesteeTiny;
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+				continue;
+			}
 			++g_queryTested;
 			const auto result = testSphereVisible(
 				p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
@@ -730,11 +803,48 @@ namespace mwse::patch::occlusion {
 		if (!g_msocActive && g_inRenderMainScene) {
 			auto wc = TES3::WorldController::get();
 			NI::Camera* mainCamera = wc ? wc->worldCamera.cameraData.camera.get() : nullptr;
-			isTopLevel = (camera == mainCamera);
+			if (camera == mainCamera) {
+				// Scene-type gate: let users disable MSOC in interiors or
+				// exteriors independently. Cheap flag bit test on the active
+				// cell; falls back to exterior behaviour if currentCell isn't
+				// yet populated (main-menu preview, load screen).
+				auto dh = TES3::DataHandler::get();
+				const bool isInterior = dh && dh->currentCell
+					&& dh->currentCell->getIsInterior();
+				const bool sceneEnabled = isInterior
+					? Configuration::OcclusionEnableInterior
+					: Configuration::OcclusionEnableExterior;
+				if (sceneEnabled) {
+					isTopLevel = true;
+				}
+				else {
+					// Counter accumulates only on skipped frames; no
+					// top-level fires then so the reset at the top of
+					// an active frame zeroes it out. Visible only on
+					// the first active frame after a skipped stretch
+					// — this is intended, per Phase 2.2 semantics.
+					++g_skippedSceneGate;
+				}
+			}
 		}
 
 		if (isTopLevel) {
-			g_msoc->ClearBuffer();
+			// Latch async mode once per frame so a mid-frame Lua toggle
+			// can't split submissions between threadpool and direct MOC.
+			g_asyncThisFrame = g_threadpool && Configuration::OcclusionAsyncOccluders;
+			if (g_asyncThisFrame) {
+				// Wake up the worker threads ~100us before the first
+				// RenderTriangles call. ClearBuffer() does an implicit
+				// Flush() which retires any stragglers from the previous
+				// frame — safe to clear the arena once it returns.
+				g_threadpool->WakeThreads();
+				g_threadpool->ClearBuffer();
+				g_asyncOccluderVerts.clear();
+				g_asyncOccluderIndices.clear();
+			}
+			else {
+				g_msoc->ClearBuffer();
+			}
 			g_recursiveCalls = 0;
 			g_recursiveAppCulled = 0;
 			g_recursiveFrustumCulled = 0;
@@ -748,14 +858,43 @@ namespace mwse::patch::occlusion {
 			g_queryNearClip = 0;
 			g_deferred = 0;
 			g_inlineTested = 0;
+			g_skippedTriCount = 0;
+			g_skippedTesteeTiny = 0;
+			g_skippedSceneGate = 0;
+			g_rasterizeTimeUs = 0;
+			g_drainPhaseTimeUs = 0;
+			g_asyncFlushTimeUs = 0;
 			uploadCameraTransform(camera);
+			if (g_asyncThisFrame) {
+				// SetMatrix copies into the threadpool's state ring buffer;
+				// must be called AFTER uploadCameraTransform populated
+				// g_worldToClip. Passed once per frame (all submissions
+				// share the same world-to-clip transform).
+				g_threadpool->SetMatrix(g_worldToClip);
+			}
 			g_msocActive = true;
 		}
 
 		cullShowBody(self, edx, camera);
 
 		if (isTopLevel) {
+			if (g_asyncThisFrame && g_rasterizedAsOccluder > 0) {
+				// Barrier: Flush() blocks until every queued RenderTriangles
+				// is fully rasterised into the shared buffer. Only after
+				// this return is it safe to TestRect (drainPendingDisplays
+				// runs on the main thread but queries the shared buffer).
+				// Skipped when nothing was queued — no work to wait for and
+				// drainPendingDisplays takes the no-TestRect fast path.
+				ScopedUsAccumulator t(g_asyncFlushTimeUs);
+				g_threadpool->Flush();
+			}
 			drainPendingDisplays();
+			if (g_asyncThisFrame) {
+				// Put the workers back to low-overhead sleep between frames.
+				// Next frame's top-level entry will WakeThreads again.
+				g_threadpool->SuspendThreads();
+				g_asyncThisFrame = false;
+			}
 			g_msocActive = false;
 
 			// Cumulative counters survive across frames so rare OCCLUDED
@@ -794,6 +933,14 @@ namespace mwse::patch::occlusion {
 					<< " insideSkipped=" << g_skippedInside
 					<< " thinSkipped=" << g_skippedThin
 					<< " alphaSkipped=" << g_skippedAlpha
+					<< " triSkipped=" << g_skippedTriCount
+					<< " tinySkipped=" << g_skippedTesteeTiny
+					<< " sceneGateSkipped=" << g_skippedSceneGate
+					<< " rasterizeUs=" << g_rasterizeTimeUs
+					<< " drainUs=" << g_drainPhaseTimeUs
+					<< " asyncFlushUs=" << g_asyncFlushTimeUs
+					<< " tp=" << (g_threadpool ? 1 : 0) // _Claude_ threadpool liveness
+					<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0) // _Claude_ JSON-propagated flag (async fires iff tp && cfgAsync)
 					<< " cumul=" << totalOccluded << "/" << totalTested
 					<< "(vc=" << totalViewCulled << ")" << std::endl;
 			}
@@ -834,12 +981,12 @@ namespace mwse::patch::occlusion {
 	void installPatches() {
 		auto& log = log::getLog();
 
-		log << "MSOC: installPatches entered; Configuration::EnableDX8OcclusionCulling="
-			<< (Configuration::EnableDX8OcclusionCulling ? "true" : "false")
+		log << "MSOC: installPatches entered; Configuration::EnableMSOC="
+			<< (Configuration::EnableMSOC ? "true" : "false")
 			<< std::endl;
 
-		if (!Configuration::EnableDX8OcclusionCulling) {
-			log << "MSOC: disabled via Configuration::EnableDX8OcclusionCulling." << std::endl;
+		if (!Configuration::EnableMSOC) {
+			log << "MSOC: disabled via Configuration::EnableMSOC." << std::endl;
 			return;
 		}
 
@@ -850,6 +997,57 @@ namespace mwse::patch::occlusion {
 		}
 		g_msoc->SetResolution(kMsocWidth, kMsocHeight);
 		g_msoc->SetNearClipPlane(kNearClipW);
+
+		// Always create the threadpool, even when async is disabled by
+		// default, so Configuration::OcclusionAsyncOccluders can be toggled
+		// at runtime (e.g. via Lua) without a restart. Workers sleep at
+		// near-zero CPU when suspended; the only cost of unused creation
+		// is the initial thread spin-up (~1ms total) and the ring-buffer
+		// allocation (one-time).
+		unsigned int threadCount = Configuration::OcclusionThreadpoolThreadCount;
+		if (threadCount == 0) {
+			// Auto: leave 2 threads (one full core) for the main thread.
+			const unsigned hw = std::thread::hardware_concurrency();
+			threadCount = hw > 2 ? hw - 2 : 1;
+		}
+		// _Claude_ Safety gate: clamp threadCount to binCount unconditionally.
+		// Intel's CullingThreadpool assigns work by bin — each thread owns a
+		// distinct bin and work-steals the rest. When threadCount > binCount,
+		// surplus threads contend for the same bin mutexes and advance
+		// mRenderPtrs past valid job slots; workers end up reading a recycled
+		// or uninitialised TriList.mPtr and crash inside RenderTrilist
+		// (observed: 26 threads / 8 bins → MaskedOcclusionCullingCommon.inl:1966).
+		// Applies to both auto (0) and manual values — if the user wants more
+		// parallelism, they raise the bin counts, which lifts this ceiling.
+		const unsigned int binCount = Configuration::OcclusionThreadpoolBinsW
+			* Configuration::OcclusionThreadpoolBinsH;
+		if (threadCount > binCount) {
+			log << "MSOC: clamping threadCount from " << threadCount
+				<< " to binCount=" << binCount
+				<< " (threads > bins causes worker crash)." << std::endl;
+			threadCount = binCount;
+		}
+		g_threadpool = new ::CullingThreadpool(threadCount,
+			Configuration::OcclusionThreadpoolBinsW,
+			Configuration::OcclusionThreadpoolBinsH);
+		g_threadpool->SetBuffer(g_msoc);
+		g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
+		g_threadpool->SetNearClipPlane(kNearClipW);
+		// Same tightly-packed float[3] layout the sync path uses.
+		g_threadpool->SetVertexLayout(::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+		// Park the workers until the first async frame wakes them.
+		g_threadpool->SuspendThreads();
+
+		// _Claude_ Log threadpool creation + live config so we can diagnose
+		// "asyncFlushUs=0 every frame" from the MWSE.log without needing a
+		// debugger. If cfgAsync=1 here but per-frame cfgAsync=0 later, Lua
+		// flipped it; if tp=0 here, creation failed (OOM, worker spin-up).
+		log << "MSOC: threadpool created; threads=" << threadCount
+			<< " binsW=" << Configuration::OcclusionThreadpoolBinsW
+			<< " binsH=" << Configuration::OcclusionThreadpoolBinsH
+			<< " tp=" << (g_threadpool ? 1 : 0)
+			<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0)
+			<< std::endl;
 
 		// Function-level detour at NiAVObject::CullShow. The 5-byte
 		// prologue (sub esp,14h; push ebx; push esi) gets overwritten

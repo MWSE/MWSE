@@ -18,10 +18,23 @@ namespace mwse {
 		static bool SuppressUselessWarnings;
 		static bool UseGlobalAudio;
 		static bool ReplaceLightSorting;
-		static bool EnableDX8OcclusionCulling;
+		static bool EnableMSOC;
 		static bool DebugOcclusionTintOccluded;
 		static bool DebugOcclusionTintTested;
 		static bool DebugOcclusionTintOccluder;
+		static float OcclusionOccluderRadiusMin;
+		static float OcclusionOccluderRadiusMax;
+		static float OcclusionOccluderMinDimension;
+		static float OcclusionInsideOccluderMargin;
+		static float OcclusionDepthSlackWorldUnits;
+		static UINT OcclusionOccluderMaxTriangles;
+		static float OcclusionOccludeeMinRadius;
+		static bool OcclusionEnableInterior;
+		static bool OcclusionEnableExterior;
+		static bool OcclusionAsyncOccluders;
+		static UINT OcclusionThreadpoolThreadCount;
+		static UINT OcclusionThreadpoolBinsW;
+		static UINT OcclusionThreadpoolBinsH;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

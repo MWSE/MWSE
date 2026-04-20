@@ -25,7 +25,7 @@ local config = {
 	template = "Template",
 	pages = {
 		{
-			label = "SideBar Page",
+			label = "Main",
 			class = "SideBarPage",
 			components = {
 				{
@@ -205,6 +205,161 @@ Pierre Steeg
 Sebastien Levy (MetaBarj0)
 Tim Peters
 Timeslip]],
+				},
+			},
+		},
+		{
+			label = i18n("msoc.pageLabel"),
+			class = "SideBarPage",
+			components = {
+				{
+					class = "Category",
+					label = i18n("msoc.mainCategory.label"),
+					components = {
+						{
+							class = "OnOffButton",
+							label = i18n("enableMSOC.label"),
+							description = i18n("enableMSOC.description"),
+							variable = { id = "EnableMSOC", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "OnOffButton",
+							label = i18n("occlusionEnableInterior.label"),
+							description = i18n("occlusionEnableInterior.description"),
+							variable = { id = "OcclusionEnableInterior", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "OnOffButton",
+							label = i18n("occlusionEnableExterior.label"),
+							description = i18n("occlusionEnableExterior.description"),
+							variable = { id = "OcclusionEnableExterior", class = "TableVariable", table = mwseConfig },
+						},
+					},
+				},
+				{
+					class = "Category",
+					label = i18n("msoc.occluderCategory.label"),
+					components = {
+						{
+							class = "Slider",
+							label = i18n("occlusionOccluderRadiusMin.label"),
+							description = i18n("occlusionOccluderRadiusMin.description"),
+							min = 0, max = 2048, step = 16, jump = 128,
+							variable = { id = "OcclusionOccluderRadiusMin", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionOccluderRadiusMax.label"),
+							description = i18n("occlusionOccluderRadiusMax.description"),
+							min = 256, max = 16384, step = 128, jump = 1024,
+							variable = { id = "OcclusionOccluderRadiusMax", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionOccluderMinDimension.label"),
+							description = i18n("occlusionOccluderMinDimension.description"),
+							min = 0, max = 1024, step = 8, jump = 64,
+							variable = { id = "OcclusionOccluderMinDimension", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionOccluderMaxTriangles.label"),
+							description = i18n("occlusionOccluderMaxTriangles.description"),
+							min = 64, max = 16384, step = 64, jump = 512,
+							variable = { id = "OcclusionOccluderMaxTriangles", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionInsideOccluderMargin.label"),
+							description = i18n("occlusionInsideOccluderMargin.description"),
+							min = 0, max = 512, step = 8, jump = 32,
+							variable = { id = "OcclusionInsideOccluderMargin", class = "TableVariable", table = mwseConfig },
+						},
+					},
+				},
+				{
+					class = "Category",
+					label = i18n("msoc.occludeeCategory.label"),
+					components = {
+						{
+							class = "Slider",
+							label = i18n("occlusionDepthSlackWorldUnits.label"),
+							description = i18n("occlusionDepthSlackWorldUnits.description"),
+							min = 0, max = 1024, step = 8, jump = 32,
+							variable = { id = "OcclusionDepthSlackWorldUnits", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionOccludeeMinRadius.label"),
+							description = i18n("occlusionOccludeeMinRadius.description"),
+							min = 0, max = 256, step = 1, jump = 16,
+							variable = { id = "OcclusionOccludeeMinRadius", class = "TableVariable", table = mwseConfig },
+						},
+					},
+				},
+				{
+					class = "Category",
+					label = i18n("msoc.threadpoolCategory.label"),
+					components = {
+						{
+							class = "OnOffButton",
+							label = i18n("occlusionAsyncOccluders.label"),
+							description = i18n("occlusionAsyncOccluders.description"),
+							variable = { id = "OcclusionAsyncOccluders", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionThreadpoolThreadCount.label"),
+							description = i18n("occlusionThreadpoolThreadCount.description"),
+							min = 0, max = 16, step = 1, jump = 2,
+							variable = { id = "OcclusionThreadpoolThreadCount", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionThreadpoolBinsW.label"),
+							description = i18n("occlusionThreadpoolBinsW.description"),
+							min = 1, max = 16, step = 1, jump = 2,
+							variable = { id = "OcclusionThreadpoolBinsW", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "Slider",
+							label = i18n("occlusionThreadpoolBinsH.label"),
+							description = i18n("occlusionThreadpoolBinsH.description"),
+							min = 1, max = 16, step = 1, jump = 2,
+							variable = { id = "OcclusionThreadpoolBinsH", class = "TableVariable", table = mwseConfig },
+						},
+					},
+				},
+				{
+					class = "Category",
+					label = i18n("msoc.debugCategory.label"),
+					components = {
+						{
+							class = "OnOffButton",
+							label = i18n("debugOcclusionTintOccluder.label"),
+							description = i18n("debugOcclusionTintOccluder.description"),
+							variable = { id = "DebugOcclusionTintOccluder", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "OnOffButton",
+							label = i18n("debugOcclusionTintOccluded.label"),
+							description = i18n("debugOcclusionTintOccluded.description"),
+							variable = { id = "DebugOcclusionTintOccluded", class = "TableVariable", table = mwseConfig },
+						},
+						{
+							class = "OnOffButton",
+							label = i18n("debugOcclusionTintTested.label"),
+							description = i18n("debugOcclusionTintTested.description"),
+							variable = { id = "DebugOcclusionTintTested", class = "TableVariable", table = mwseConfig },
+						},
+					},
+				},
+			},
+			sidebarComponents = {
+				{
+					class = "Info",
+					label = i18n("msoc.sidebarInfo.label"),
+					text = i18n("msoc.sidebarInfo.text"),
 				},
 			},
 		},

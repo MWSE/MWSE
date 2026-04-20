@@ -2297,7 +2297,7 @@ namespace mwse::patch {
 
 	void installPostLuaPatches() {
 		// Patch: DX8 Masked Software Occlusion Culling (gated by config flag
-		// so Lua mods can toggle Configuration::EnableDX8OcclusionCulling).
+		// so Lua mods can toggle Configuration::EnableMSOC).
 		occlusion::installPatches();
 
 		// Patch: Be better about showing/hiding the cursor.

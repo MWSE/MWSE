@@ -358,6 +358,7 @@
     <ClInclude Include="NITransform.h" />
     <ClInclude Include="NIUtil.h" />
     <ClInclude Include="external\msoc\CompilerSpecific.inl" />
+    <ClInclude Include="external\msoc\CullingThreadpool.h" />
     <ClInclude Include="external\msoc\MaskedOcclusionCulling.h" />
     <ClInclude Include="external\msoc\MaskedOcclusionCullingCommon.inl" />
     <ClInclude Include="PatchOcclusionCulling.h" />
@@ -865,6 +866,7 @@
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
     <ClCompile Include="NIUtil.cpp" />
+    <ClCompile Include="external\msoc\CullingThreadpool.cpp" />
     <ClCompile Include="external\msoc\MaskedOcclusionCulling.cpp" />
     <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX2.cpp">
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
