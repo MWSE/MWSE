@@ -170,50 +170,167 @@ namespace mwse::patch::occlusion {
 	static std::vector<PendingDisplay> g_pendingDisplays;
 
 	// Debug tint overlay. When any of the three DebugOcclusionTint* flags
-	// in Configuration are set, we mutate shapes' own NiMaterialProperty
-	// emissive color in place so they render in a distinct hue, then
-	// restore the originals at end-of-frame (renderMainScene_wrapper
-	// post-call). Tint colors:
+	// in Configuration are set, classified leaves render in a distinct hue:
 	//   red    — OCCLUDED (would have been culled; kept visible for compare)
 	//   green  — test passed (survived the MSOC query)
 	//   yellow — rasterised as an occluder (driving the depth buffer)
-	// Shapes without their own MaterialProperty (mostly NiNodes, some
-	// terrain chunks) are skipped — we don't walk up the parent chain
-	// because inherited properties are shared across siblings and tinting
-	// one would stain the whole subtree.
 	//
-	// The hash map both deduplicates (one property may be hit by multiple
-	// shapes or multiple code paths in a single frame) and preserves the
-	// true pre-frame emissive so the restore step returns to correct
-	// colors, not to an intermediate tint.
+	// Lifetime model (persistent-clone): the first time we tint a shape we
+	// clone its effective MaterialProperty (ancestor-inherited or own),
+	// detach any own material, and attach the clone. The clone stays
+	// attached for the shape's lifetime; subsequent frames only overwrite
+	// emissive + bump revisionID. This avoids the per-frame allocator churn
+	// that caused a crash earlier (~1.7k new/delete per frame × hundreds of
+	// frames drove the DX8 renderer's per-material state cache stale —
+	// freed clones' addresses got recycled and the cache returned dangling
+	// D3D state).
+	//
+	// At end of each main-scene frame every tracked clone is reset to the
+	// source material's current emissive, so the default render state shows
+	// the shape's real color; the next frame's classifications re-apply the
+	// tint. Shapes that never get tinted never allocate.
+	//
+	// Morrowind's art shares NiMaterialProperty instances two ways:
+	//   - via inheritance (a parent NiNode's material applies to every
+	//     descendant without their own),
+	//   - via NIF streamable dedup (two leaf shapes point at the same own
+	//     MaterialProperty object),
+	// and mutating either in place stains every sibling. Cloning avoids
+	// both. Only NiTriBasedGeom leaves are tinted — tinting a NiNode would
+	// propagate via inheritance to every child in its subtree.
 	static const NI::Color kTintOccluded(1.0f, 0.0f, 0.0f);
 	static const NI::Color kTintTested(0.0f, 1.0f, 0.0f);
 	static const NI::Color kTintOccluder(1.0f, 1.0f, 0.0f);
-	static std::unordered_map<NI::MaterialProperty*, NI::Color> g_tintSaves;
 
-	static NI::MaterialProperty* findOwnMaterial(NI::AVObject* obj) {
-		for (auto* node = &obj->propertyNode; node && node->data; node = node->next) {
-			if (node->data->getType() == NI::PropertyType::Material) {
-				return static_cast<NI::MaterialProperty*>(node->data);
+	// NiMaterialProperty vtable address (see NIDefines.h VTableAddress
+	// block). Property::Property() sets the base Property vtable; every
+	// concrete subclass overwrites with its own (see AlphaProperty ctor
+	// in NIProperty.cpp). MWSE exposes no public NiMaterialProperty ctor
+	// so we open-code the same pattern here.
+	constexpr uintptr_t kNiMaterialPropertyVTable = 0x75036C;
+
+	struct TintClone {
+		// Holds the shape alive so the map key + the clone (attached to
+		// the shape's property list) stay valid as long as our map entry
+		// exists. Without this, cell-unload would delete the shape and
+		// leave us with a dangling key + freed clone.
+		NI::Pointer<NI::AVObject> shape;
+		// Holds the source material alive so we can read its current
+		// emissive during end-of-frame reset. For own-material shapes we
+		// detached it from the list; this Pointer is now the sole owner.
+		// For purely-inheriting shapes source is the ancestor's material
+		// (still alive via ancestor); keeping a Pointer is cheap insurance.
+		// Null only if the shape had no reachable MaterialProperty at all.
+		NI::Pointer<NI::MaterialProperty> source;
+		// Owned by the shape's property list (attachProperty adds the ref).
+		// Safe to raw-ptr because the shape Pointer above keeps the list —
+		// and thus this clone — alive for the entry's lifetime.
+		NI::MaterialProperty* clone;
+	};
+	static std::unordered_map<NI::AVObject*, TintClone> g_tintClones;
+
+	// Walk from obj up through ancestors, returning the first
+	// MaterialProperty reached. Matches the engine's property-inheritance
+	// rule: a shape with no own MaterialProperty uses its ancestor's.
+	static NI::MaterialProperty* findInheritedMaterial(NI::AVObject* obj) {
+		for (NI::AVObject* cur = obj; cur; cur = cur->parentNode) {
+			for (auto* node = &cur->propertyNode; node && node->data; node = node->next) {
+				if (node->data->getType() == NI::PropertyType::Material) {
+					return static_cast<NI::MaterialProperty*>(node->data);
+				}
 			}
 		}
 		return nullptr;
 	}
 
-	static void tintEmissive(NI::AVObject* obj, const NI::Color& color) {
-		NI::MaterialProperty* m = findOwnMaterial(obj);
-		if (!m) return;
-		g_tintSaves.try_emplace(m, m->emissive);
-		m->emissive = color;
-		m->incrementRevisionId();
+	// Allocate a standalone NiMaterialProperty seeded from source (if any)
+	// and force the tint into ambient, diffuse, and emissive. All three
+	// channels are set because a sibling NiVertexColorProperty may replace
+	// one of them from baked per-vertex colors (SOURCE_IGNORE /
+	// SOURCE_EMISSIVE / SOURCE_AMBIENT_DIFFUSE); with all three tinted at
+	// most one is overridden and the rest carry the color. World statics
+	// in Morrowind use SOURCE_EMISSIVE so an emissive-only tint is
+	// invisible on them while skinned actors (IGNORE/AMBIENT_DIFFUSE) show
+	// it — the asymmetry we originally saw.
+	static NI::MaterialProperty* cloneMaterialProperty(NI::MaterialProperty* source, const NI::Color& tint) {
+		auto* mat = new NI::MaterialProperty();
+		mat->vTable.asProperty = reinterpret_cast<NI::Property_vTable*>(kNiMaterialPropertyVTable);
+		if (source) {
+			mat->flags = source->flags;
+			mat->index = source->index;
+			mat->specular = source->specular;
+			mat->shininess = source->shininess;
+			mat->alpha = source->alpha;
+		}
+		else {
+			mat->flags = 1;
+			mat->index = 0;
+			mat->specular = NI::Color(0.0f, 0.0f, 0.0f);
+			mat->shininess = 10.0f;
+			mat->alpha = 1.0f;
+		}
+		mat->ambient = tint;
+		mat->diffuse = tint;
+		mat->emissive = tint;
+		mat->revisionID = 0;
+		return mat;
 	}
 
-	static void restoreTintedMaterials() {
-		for (const auto& [prop, original] : g_tintSaves) {
-			prop->emissive = original;
-			prop->incrementRevisionId();
+	static void tintEmissive(NI::AVObject* shape, const NI::Color& color) {
+		// Only leaves: tinting a NiNode would stain every inheriting child.
+		if (!shape->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
+			return;
 		}
-		g_tintSaves.clear();
+
+		// Subsequent tint on an already-cloned shape: overwrite emissive
+		// only. No allocations, no property-list churn.
+		auto it = g_tintClones.find(shape);
+		if (it != g_tintClones.end()) {
+			it->second.clone->emissive = color;
+			it->second.clone->incrementRevisionId();
+			return;
+		}
+
+		// First tint: clone the effective material, detach any own
+		// material, attach the clone. findInheritedMaterial walks from
+		// shape upward so it returns the own material when present,
+		// falling back to an ancestor's.
+		NI::MaterialProperty* source = findInheritedMaterial(shape);
+		NI::MaterialProperty* clone = cloneMaterialProperty(source, color);
+
+		// Detach returns null if the shape had no own material (pure
+		// inheritance). Either way our clone becomes the leading (and
+		// only) Material property on the shape.
+		NI::Pointer<NI::Property> detachedOwn = shape->detachPropertyByType(NI::PropertyType::Material);
+		shape->attachProperty(clone);
+
+		// Keep the source alive. If the own material was detached,
+		// detachedOwn holds the sole ref now — promote it to our map
+		// entry. Otherwise source points into an ancestor's property
+		// list; take a fresh Pointer.
+		NI::Pointer<NI::MaterialProperty> sourcePtr;
+		if (detachedOwn) {
+			sourcePtr = static_cast<NI::MaterialProperty*>(detachedOwn.get());
+		}
+		else {
+			sourcePtr = source;
+		}
+
+		g_tintClones.emplace(shape, TintClone{ shape, sourcePtr, clone });
+	}
+
+	// End-of-frame tint reset: copy each tracked source's current emissive
+	// back into its clone so shapes that weren't re-tinted next frame
+	// render with their real color. Cheaper than detach/re-attach; stays
+	// pointer-stable so the DX8 renderer's per-material cache doesn't churn.
+	static void resetFrameTints() {
+		for (auto& [key, entry] : g_tintClones) {
+			NI::Color target = entry.source
+				? entry.source->emissive
+				: NI::Color(0.0f, 0.0f, 0.0f);
+			entry.clone->emissive = target;
+			entry.clone->incrementRevisionId();
+		}
 	}
 
 	// Fill g_worldToClip by transposing NI::Camera::worldToCamera into
@@ -684,15 +801,18 @@ namespace mwse::patch::occlusion {
 		renderMainScene_original();
 		g_inRenderMainScene = wasActive;
 
-		// Tint-debug restore: the batched renderer reads material state at
+		// Tint-debug reset: the batched renderer reads material state at
 		// draw time, which happens *inside* renderMainScene_original after
 		// the cull pass has populated the render list. By the time we
-		// return here, all draws for this frame are done, so it's safe to
-		// put every tinted material back to its pre-frame emissive. Runs
-		// unconditionally and is a no-op when no tinting happened — saves
-		// us from gating it on the three flags (which may toggle mid-frame
-		// if the user edits from Lua, leaving state inconsistent).
-		restoreTintedMaterials();
+		// return here, all draws for this frame are done, so we flip every
+		// tracked clone back to its source's current emissive. Next frame's
+		// classifications re-apply the tint. No allocations, no property-
+		// list churn — just a field write per tracked shape.
+		//
+		// Runs unconditionally and is a no-op when g_tintClones is empty,
+		// saving us from gating on the three flags (which may toggle mid-
+		// frame if the user edits from Lua, leaving state inconsistent).
+		resetFrameTints();
 	}
 
 	void installPatches() {
