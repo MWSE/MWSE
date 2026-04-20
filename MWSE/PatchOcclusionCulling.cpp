@@ -140,6 +140,7 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_rasterizedAsOccluder = 0;
 	static uint64_t g_skippedInside = 0;
 	static uint64_t g_skippedThin = 0;
+	static uint64_t g_skippedAlpha = 0;
 	static uint64_t g_queryTested = 0;
 	static uint64_t g_queryOccluded = 0;
 	static uint64_t g_queryViewCulled = 0;
@@ -241,6 +242,31 @@ namespace mwse::patch::occlusion {
 			}
 		}
 		return nullptr;
+	}
+
+	// True if obj has an effective NiAlphaProperty (own or ancestor) with
+	// alpha blending OR alpha testing enabled. Such shapes are visually
+	// transparent in parts and must not be rasterised as solid occluders —
+	// doing so fills the depth buffer across their full quad footprint and
+	// falsely occludes everything behind the "holes" (fences, banners,
+	// grates, vines, tree leaves, window glass). They're still visibility-
+	// tested as normal; only the occluder rasterisation is skipped.
+	static bool hasTransparency(NI::AVObject* obj) {
+		for (NI::AVObject* cur = obj; cur; cur = cur->parentNode) {
+			for (auto* node = &cur->propertyNode; node && node->data; node = node->next) {
+				if (node->data->getType() == NI::PropertyType::Alpha) {
+					const unsigned short flags = node->data->flags;
+					if (flags & (NI::AlphaProperty::ALPHA_MASK
+						| NI::AlphaProperty::TEST_ENABLE_MASK)) {
+						return true;
+					}
+					// First AlphaProperty wins per NI's property-inheritance
+					// (nearest-ancestor rule); stop after inspecting it.
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 
 	// Allocate a standalone NiMaterialProperty seeded from source (if any)
@@ -613,22 +639,34 @@ namespace mwse::patch::occlusion {
 			// shape could fail the test against its own sibling's
 			// rasterisation and still contribute usable occluder depth.
 			//
-			// NiNodes keep testing inline so hierarchical culling can skip
-			// whole subtrees — a building fully behind terrain never needs
-			// its children traversed at all. A NiNode test against a
-			// partially-populated buffer is fine: by the time a node is
-			// reached, its own subtree has not rasterised yet, so no
-			// self-occlusion can happen at that level.
+			// NiNodes are *not* MSOC-tested — only frustum-culled (above).
+			// Testing them inline against a partially-populated depth buffer
+			// was a major source of false positives: a ref's root NiNode
+			// tested before the rest of the scene rasterised could fail
+			// against an earlier sibling's occluders and suppress the whole
+			// subtree. Skipping the NiNode test means every leaf that
+			// survives frustum reaches the drain and is tested once against
+			// the final depth buffer — correctness first, at the cost of
+			// losing the "skip whole subtree" shortcut.
 			const bool isGeom = self->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom);
 			if (isGeom) {
+				// Only opaque NiTriShapes rasterise as occluders. Alpha-
+				// tested/blended geometry (fences, banners, tree leaves)
+				// would fill the depth buffer across their whole quad and
+				// falsely occlude things behind the transparent parts.
 				if (boundRadius >= kOccluderRadiusMin
 					&& boundRadius <= kOccluderRadiusMax
 					&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
-					const auto& eye = camera->worldTransform.translation;
-					if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
-						++g_rasterizedAsOccluder;
-						if (Configuration::DebugOcclusionTintOccluder) {
-							tintEmissive(self, kTintOccluder);
+					if (hasTransparency(self)) {
+						++g_skippedAlpha;
+					}
+					else {
+						const auto& eye = camera->worldTransform.translation;
+						if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
+							++g_rasterizedAsOccluder;
+							if (Configuration::DebugOcclusionTintOccluder) {
+								tintEmissive(self, kTintOccluder);
+							}
 						}
 					}
 				}
@@ -636,30 +674,6 @@ namespace mwse::patch::occlusion {
 				++g_deferred;
 				restoreIgnoreBits();
 				return;
-			}
-
-			++g_queryTested;
-			++g_inlineTested;
-			const auto result = testSphereVisible(self->worldBoundOrigin, boundRadius);
-			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
-				++g_queryOccluded;
-				// In tint-debug mode we suppress the cull so the subtree is
-				// still traversed and each leaf can be tinted/rendered.
-				// NiNodes themselves rarely have their own material so the
-				// tint is usually a no-op here; the value is in letting the
-				// children keep running and paint themselves red on their
-				// own OCCLUDED result.
-				if (!Configuration::DebugOcclusionTintOccluded) {
-					restoreIgnoreBits();
-					return;
-				}
-				tintEmissive(self, kTintOccluded);
-			}
-			else if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
-				++g_queryViewCulled;
-			}
-			else if (Configuration::DebugOcclusionTintTested) {
-				tintEmissive(self, kTintTested);
 			}
 		}
 
@@ -727,6 +741,7 @@ namespace mwse::patch::occlusion {
 			g_rasterizedAsOccluder = 0;
 			g_skippedInside = 0;
 			g_skippedThin = 0;
+			g_skippedAlpha = 0;
 			g_queryTested = 0;
 			g_queryOccluded = 0;
 			g_queryViewCulled = 0;
@@ -778,6 +793,7 @@ namespace mwse::patch::occlusion {
 					<< " frustumCulled=" << g_recursiveFrustumCulled
 					<< " insideSkipped=" << g_skippedInside
 					<< " thinSkipped=" << g_skippedThin
+					<< " alphaSkipped=" << g_skippedAlpha
 					<< " cumul=" << totalOccluded << "/" << totalTested
 					<< "(vc=" << totalViewCulled << ")" << std::endl;
 			}
