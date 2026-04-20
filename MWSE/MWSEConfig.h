@@ -31,10 +31,13 @@ namespace mwse {
 		static float OcclusionOccludeeMinRadius;
 		static bool OcclusionEnableInterior;
 		static bool OcclusionEnableExterior;
+		static bool OcclusionSkipTerrainOccludees;
+		static bool OcclusionAggregateTerrain;
 		static bool OcclusionAsyncOccluders;
 		static UINT OcclusionThreadpoolThreadCount;
 		static UINT OcclusionThreadpoolBinsW;
 		static UINT OcclusionThreadpoolBinsH;
+		static UINT OcclusionTemporalCoherenceFrames;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

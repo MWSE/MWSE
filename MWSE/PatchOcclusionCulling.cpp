@@ -86,6 +86,15 @@ namespace mwse::patch::occlusion {
 	static float g_ndcRadiusY = 0.0f;
 	static float g_wGradMag = 0.0f;
 
+	// _Claude_ DataHandler::worldLandscapeRoot captured at top-level frame
+	// entry. Used by the drain loop to short-circuit occludee queries on
+	// terrain patches (25v/32t, ~always visible under the camera). Plain
+	// NiNode named "WorldLandscape" at DH+0x94, persists across cell
+	// changes — so we could cache once, but re-reading per frame is a
+	// single pointer load and stays robust to teardown / new-game reloads.
+	// Null before the game world exists (load screen, menu).
+	static NI::Node* g_worldLandscapeRoot = nullptr;
+
 	// True only while TES3Game_static::renderMainScene (0x41C400) is on the
 	// stack. Gates MSOC activation so every Click tree that fires outside
 	// the per-frame main scene — load-screen splash, offscreen UI targets,
@@ -107,6 +116,12 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_recursiveAppCulled = 0;
 	static uint64_t g_recursiveFrustumCulled = 0;
 	static uint64_t g_rasterizedAsOccluder = 0;
+	// _Claude_ Per-frame sum of outTri across successful rasterizeTriShape
+	// calls. Used to size the threadpool queue (maxJobs): each submission
+	// with outTri <= TRIS_PER_JOB (1024) is one queue slot, so this number
+	// divided by TRIS_PER_JOB + rasterizedAsOccluder gives us the upper
+	// bound on queue writes per frame.
+	static uint64_t g_occluderTriangles = 0;
 	static uint64_t g_skippedInside = 0;
 	static uint64_t g_skippedThin = 0;
 	static uint64_t g_skippedAlpha = 0;
@@ -127,6 +142,91 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_skippedTriCount = 0;
 	static uint64_t g_skippedTesteeTiny = 0;
 	static uint64_t g_skippedSceneGate = 0;
+	// _Claude_ Deferred terrain leaves bypassed from TestRect. Ground
+	// patches sit under the camera and are nearly always visible;
+	// skipping the query saves depth-buffer bandwidth + ~1 µs/leaf.
+	static uint64_t g_skippedTerrain = 0;
+	// _Claude_ Aggregate terrain occluder counters. Each visible Land node
+	// produces one combined RenderTriangles submission; triCount is the
+	// total sum across Lands that frame. Zero unless
+	// Configuration::OcclusionAggregateTerrain is on.
+	static uint64_t g_aggregateTerrainLands = 0;
+	static uint64_t g_aggregateTerrainTris = 0;
+	// _Claude_ Wall-clock time spent in rasterizeAggregateTerrain per
+	// frame (tree walk + vertex transform + RenderTriangles submit).
+	// Includes the async enqueue path when the threadpool is active —
+	// actual worker rasterisation happens in parallel and is not counted.
+	static uint64_t g_aggregateTerrainUs = 0;
+	// _Claude_ Per-Land merged occluder cache. Key = per-Land NiNode
+	// pointer under the WorldLandscape root. Value = world-space vertex
+	// buffer + index buffer, prebuilt on first sight. Scene-graph walk
+	// and vertex transform become O(1) hits after that. Entries are
+	// mark-and-sweep evicted each frame: any key not touched this frame
+	// is stale (cell change destroyed its LandscapeData subtree and its
+	// NiNode pointer). Eviction is safe because previous-frame async
+	// queues are consumed by ClearBuffer()/implicit Flush before the
+	// next aggregate pass runs.
+	struct LandCacheEntry {
+		std::vector<float> verts;
+		std::vector<unsigned int> indices;
+		unsigned int triCount = 0;
+		bool seen = false;
+	};
+	static std::unordered_map<NI::Node*, LandCacheEntry> g_landCache;
+	static uint64_t g_landCacheHits = 0;
+	static uint64_t g_landCacheMisses = 0;
+	static uint64_t g_landCacheEvictions = 0;
+
+	// _Claude_ Temporal coherence cache for drain-phase TestRect results.
+	// Keyed by NI::AVObject* (the deferred shape pointer). Each entry
+	// records the last TestRect verdict and the frame it was taken at.
+	// Configuration::OcclusionTemporalCoherenceFrames (N) controls reuse:
+	// N=0 disables the cache entirely; N>0 reuses a fresh entry for up
+	// to N intervening frames before re-querying.
+	//
+	// _Claude_ We cache only OCCLUDED verdicts. VISIBLE and VIEW_CULLED
+	// fall through to display() anyway, which dereferences the live
+	// p.shape — caching them would add stale-pointer surface area while
+	// gaining nothing on the hit path. OCCLUDED is the only verdict
+	// where the hit lets us skip both TestRect and display().
+	//
+	// Move detection: we compare worldBoundOrigin + worldBoundRadius
+	// against the snapshot taken at query time. Any meaningful change
+	// (animated shape, physics movement) invalidates the entry.
+	//
+	// _Claude_ vtable verify: NI's first 4 bytes are a vtable pointer
+	// constant for the process lifetime per class. We snapshot it on
+	// insert and compare on hit. Mismatch → the address has been freed
+	// and reused for a different-typed object → miss and re-query
+	// (avoids dereferencing wrong-class fields via cached bounds).
+	//
+	// Lifetime safety: shapes can be destroyed between frames, and
+	// NI::AVObject pointers can theoretically be reused by new allocations.
+	// Stale entries are harmless for correctness because the miss path
+	// overwrites them on the next query, but to bound memory we age-prune
+	// entries older than 2*N frames at frame entry.
+	struct DrainCacheEntry {
+		::MaskedOcclusionCulling::CullingResult result;
+		uint32_t lastQueryFrame;
+		void* vtbl; // _Claude_ snapshot of *(void**)shape at insert
+		float boundOriginX, boundOriginY, boundOriginZ;
+		float boundRadius;
+	};
+	static std::unordered_map<NI::AVObject*, DrainCacheEntry> g_drainCache;
+	static uint64_t g_drainCacheHits = 0;
+	static uint64_t g_drainCacheMisses = 0;
+	// File-scope frame counter. Needed by the drain loop to decide
+	// cache freshness; incremented once per top-level frame.
+	static uint32_t g_frameCounter = 0;
+	// _Claude_ Cached currentCell pointer across frames. When it changes
+	// (cell transition: ext→int, int→ext, int→int, ext→ext chunk swap),
+	// we wipe both g_landCache and g_drainCache. Without this, destroyed
+	// NI::Node* / NI::AVObject* pointers can be reused by new allocations
+	// in the fresh cell, and a stale cache entry might dereference freed
+	// memory. Pointer-compare is cheap; full clear happens at most once
+	// per cell load.
+	static TES3::Cell* g_lastCell = nullptr;
+	static uint64_t g_cellChanges = 0;
 	// Phase 2.2 timers (microseconds). steady_clock is QPC-backed
 	// on MSVC so no QPC wrapper is needed. Rasterize accumulates
 	// each RenderTriangles call; drain wraps the whole drain body.
@@ -283,6 +383,21 @@ namespace mwse::patch::occlusion {
 					return false;
 				}
 			}
+		}
+		return false;
+	}
+
+	// _Claude_ Ancestor-walk: true iff obj sits under DataHandler's
+	// worldLandscapeRoot. The terrain tree is shallow — leaf trishape →
+	// subcell NiNode → per-Land NiNode → WorldLandscape root is exactly
+	// four levels, so terrain hits return at iteration 4. Non-terrain
+	// shapes run the loop to scene root (~5–8 levels) and return false;
+	// that's the cost we pay for the terrain skip, measured in cache-hot
+	// pointer chases so it stays under ~1 µs even at 500 deferred leaves.
+	static bool isLandscapeDescendant(NI::AVObject* obj, NI::Node* root) {
+		if (!root) return false;
+		for (NI::AVObject* cur = obj; cur; cur = cur->parentNode) {
+			if (cur == root) return true;
 		}
 		return false;
 	}
@@ -614,7 +729,196 @@ namespace mwse::patch::occlusion {
 				::MaskedOcclusionCulling::CLIP_PLANE_ALL,
 				::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
 		}
+		g_occluderTriangles += outTri; // _Claude_ frame-wide triangle sum
 		return true;
+	}
+
+	// _Claude_ Simple frustum check for aggregate-terrain walk. No mask
+	// bookkeeping — the aggregate pass runs before cullShowBody so
+	// usedCullingPlanesBitfield is still clean and we don't mutate it.
+	// Matches the plane-vs-sphere sign convention at cullShowBody L661.
+	static bool frustumCulledSphere(NI::AVObject* obj, NI::Camera* camera) {
+		const int n = camera->countCullingPlanes;
+		const float r = obj->worldBoundRadius;
+		for (int i = 0; i < n; ++i) {
+			const auto* plane = static_cast<const TES3::Vector4*>(camera->cullingPlanePtrs.storage[i]);
+			const float d = plane->x * obj->worldBoundOrigin.x
+				+ plane->y * obj->worldBoundOrigin.y
+				+ plane->z * obj->worldBoundOrigin.z
+				- plane->w;
+			if (d <= -r) return true;
+		}
+		return false;
+	}
+
+	// _Claude_ Append one terrain TriShape's 25v/32t mesh to the aggregate
+	// buffers, transforming vertices to world space and offsetting indices
+	// by the current vertex base. Mirrors rasterizeTriShape's vertex math
+	// and OOB-index guard, minus the gates/skinning/thin-axis paths that
+	// don't apply to terrain.
+	static void appendTerrainShape(std::vector<float>& aggVerts,
+		std::vector<unsigned int>& aggIdx, NI::TriShape* shape) {
+		auto data = shape->getModelData();
+		if (!data) return;
+		const unsigned short vcount = data->getActiveVertexCount();
+		if (vcount == 0 || data->vertex == nullptr) return;
+		const unsigned short tcount = data->getActiveTriangleCount();
+		const NI::Triangle* tris = data->getTriList();
+		if (tcount == 0 || tris == nullptr) return;
+
+		const unsigned int baseVert = static_cast<unsigned int>(aggVerts.size() / 3);
+		const auto& xf = shape->worldTransform;
+		const auto& R = xf.rotation;
+		const auto& T = xf.translation;
+		const float s = xf.scale;
+
+		aggVerts.resize(aggVerts.size() + static_cast<size_t>(vcount) * 3);
+		float* out = aggVerts.data() + baseVert * 3;
+		for (unsigned short i = 0; i < vcount; ++i) {
+			const auto& v = data->vertex[i];
+			const float rx = R.m0.x * v.x + R.m0.y * v.y + R.m0.z * v.z;
+			const float ry = R.m1.x * v.x + R.m1.y * v.y + R.m1.z * v.z;
+			const float rz = R.m2.x * v.x + R.m2.y * v.y + R.m2.z * v.z;
+			out[i * 3 + 0] = rx * s + T.x;
+			out[i * 3 + 1] = ry * s + T.y;
+			out[i * 3 + 2] = rz * s + T.z;
+		}
+
+		aggIdx.reserve(aggIdx.size() + static_cast<size_t>(tcount) * 3);
+		for (unsigned short i = 0; i < tcount; ++i) {
+			const unsigned short a = tris[i].vertices[0];
+			const unsigned short b = tris[i].vertices[1];
+			const unsigned short c = tris[i].vertices[2];
+			if (a >= vcount || b >= vcount || c >= vcount) continue;
+			aggIdx.push_back(baseVert + a);
+			aggIdx.push_back(baseVert + b);
+			aggIdx.push_back(baseVert + c);
+		}
+	}
+
+	// _Claude_ Build the world-space VB+IB for one per-Land NiNode.
+	// Called on cache miss only. Walks all subcells and trishapes
+	// unconditionally (no per-shape frustum/appCulled filter) because the
+	// result must be valid for any future camera angle. MSOC handles
+	// view-frustum clipping internally during rasterisation, so the
+	// "extra" triangles we include cost negligible compared to the
+	// per-frame walk + matrix multiply they replace.
+	static void buildLandCacheEntry(LandCacheEntry& entry, NI::Node* landNode) {
+		entry.verts.clear();
+		entry.indices.clear();
+		const auto& subcells = landNode->children;
+		for (size_t j = 0; j < subcells.endIndex; ++j) {
+			auto* sub = subcells.storage[j].get();
+			if (!sub) continue;
+			if (!sub->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) continue;
+			auto* subNode = static_cast<NI::Node*>(sub);
+			const auto& shapes = subNode->children;
+			for (size_t k = 0; k < shapes.endIndex; ++k) {
+				auto* shape = shapes.storage[k].get();
+				if (!shape) continue;
+				if (!shape->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) continue;
+				if (hasTransparency(shape)) continue;
+				appendTerrainShape(entry.verts, entry.indices, static_cast<NI::TriShape*>(shape));
+			}
+		}
+		entry.triCount = static_cast<unsigned int>(entry.indices.size() / 3);
+	}
+
+	// _Claude_ Aggregate terrain rasteriser. Walks the WorldLandscape
+	// subtree (root → per-Land NiNode → 16 subcell NiNodes → N NiTriShapes)
+	// and submits one combined occluder per visible Land. Individual
+	// 25v/32t patches fail the thin-axis gate; merging them gives the
+	// hill/horizon silhouette that actually occludes distant architecture.
+	//
+	// Must run inside the isTopLevel block — after ClearBuffer and
+	// uploadCameraTransform, before cullShowBody traversal so the depth
+	// buffer has terrain by the time the drain tests leaves against it.
+	//
+	// Uses g_landCache to amortise the per-Land walk + vertex transform:
+	// first-frame sighting builds the entry, subsequent frames pass the
+	// cached pointers straight to RenderTriangles. Cache lifetime is
+	// tied to the per-Land NiNode pointer — cell-change teardown frees
+	// the old NiNode and a new one is allocated; mark-and-sweep evicts
+	// the stale entry at frame end.
+	static void rasterizeAggregateTerrain(NI::Camera* camera) {
+		if (!g_worldLandscapeRoot) return;
+		if (g_worldLandscapeRoot->getAppCulled()) return;
+
+		ScopedUsAccumulator timer(g_aggregateTerrainUs);
+
+		// Mark all cached entries unseen; we'll flip this for entries we
+		// touch this frame and evict the remainder below.
+		for (auto& kv : g_landCache) kv.second.seen = false;
+
+		const auto& landChildren = g_worldLandscapeRoot->children;
+		for (size_t i = 0; i < landChildren.endIndex; ++i) {
+			auto* land = landChildren.storage[i].get();
+			if (!land) continue;
+			if (!land->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) continue;
+
+			auto* landNode = static_cast<NI::Node*>(land);
+
+			// Get-or-build the cached buffer. Keyed by NiNode pointer;
+			// a cell-change realloc produces a new key and rebuilds.
+			auto [it, inserted] = g_landCache.try_emplace(landNode);
+			LandCacheEntry& entry = it->second;
+			if (inserted) {
+				buildLandCacheEntry(entry, landNode);
+				++g_landCacheMisses;
+			}
+			else {
+				++g_landCacheHits;
+			}
+			entry.seen = true;
+
+			// Per-frame submit decisions still apply. appCulled can toggle
+			// on the per-Land root (game-driven distance culling) and the
+			// frustum test remains a cheap pre-filter before MSOC's own
+			// clipping. Shape-level culling is intentionally omitted — any
+			// filter applied during cache build would bake view-specific
+			// state into a reusable buffer.
+			if (land->getAppCulled()) continue;
+			if (frustumCulledSphere(land, camera)) continue;
+			if (entry.triCount == 0) continue;
+
+			if (g_asyncThisFrame) {
+				// Cached buffers outlive this submission (persistent in
+				// g_landCache until evicted), so we pass their pointers
+				// directly. MSOC queues work for worker threads which
+				// consume it during the drain-phase Flush; by the time
+				// we'd ever evict, that Flush has completed.
+				ScopedUsAccumulator t(g_rasterizeTimeUs);
+				g_threadpool->RenderTriangles(entry.verts.data(), entry.indices.data(),
+					static_cast<int>(entry.triCount),
+					::MaskedOcclusionCulling::BACKFACE_NONE,
+					::MaskedOcclusionCulling::CLIP_PLANE_ALL);
+			}
+			else {
+				ScopedUsAccumulator t(g_rasterizeTimeUs);
+				g_msoc->RenderTriangles(entry.verts.data(), entry.indices.data(),
+					static_cast<int>(entry.triCount), g_worldToClip,
+					::MaskedOcclusionCulling::BACKFACE_NONE,
+					::MaskedOcclusionCulling::CLIP_PLANE_ALL,
+					::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+			}
+
+			++g_aggregateTerrainLands;
+			g_aggregateTerrainTris += entry.triCount;
+		}
+
+		// Sweep: drop entries whose per-Land NiNode isn't a child of
+		// WorldLandscape this frame. Safe to free now because
+		// ClearBuffer() at top-level entry already flushed previous-
+		// frame async work that referenced these pointers.
+		for (auto it = g_landCache.begin(); it != g_landCache.end(); ) {
+			if (!it->second.seen) {
+				it = g_landCache.erase(it);
+				++g_landCacheEvictions;
+			}
+			else {
+				++it;
+			}
+		}
 	}
 
 	// Body of the engine's CullShow, with MSOC query + occluder rasterisation
@@ -702,7 +1006,16 @@ namespace mwse::patch::occlusion {
 				// tested/blended geometry (fences, banners, tree leaves)
 				// would fill the depth buffer across their whole quad and
 				// falsely occlude things behind the transparent parts.
-				if (boundRadius >= Configuration::OcclusionOccluderRadiusMin
+				//
+				// _Claude_ When aggregate-terrain is on, skip per-patch
+				// rasterise for terrain descendants — they're already in
+				// the depth buffer as merged per-Land submissions, and
+				// re-rasterising them is duplicate work (harmless depth-
+				// wise but wastes triangles / threadpool queue slots).
+				const bool skipAsAggregated = Configuration::OcclusionAggregateTerrain
+					&& isLandscapeDescendant(self, g_worldLandscapeRoot);
+				if (!skipAsAggregated
+					&& boundRadius >= Configuration::OcclusionOccluderRadiusMin
 					&& boundRadius <= Configuration::OcclusionOccluderRadiusMax
 					&& self->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
 					if (hasTransparency(self)) {
@@ -751,6 +1064,18 @@ namespace mwse::patch::occlusion {
 			return;
 		}
 		for (const auto& p : g_pendingDisplays) {
+			// _Claude_ Skip occludee tests on terrain patches. Ground sits
+			// under the camera and is effectively always visible; querying
+			// it wastes depth-buffer bandwidth and test time. Ancestor walk
+			// matches against DataHandler::worldLandscapeRoot captured at
+			// frame entry. Still displayed — we only bypass the test.
+			// Gated by Configuration flag for A/B profiling.
+			if (Configuration::OcclusionSkipTerrainOccludees
+				&& isLandscapeDescendant(p.shape, g_worldLandscapeRoot)) {
+				++g_skippedTerrain;
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+				continue;
+			}
 			// Sub-threshold shapes bypass TestRect — their NDC footprint is
 			// too small for the culler to decide reliably and the test cost
 			// isn't worth the per-frame overhead. They still flow through
@@ -761,11 +1086,69 @@ namespace mwse::patch::occlusion {
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 				continue;
 			}
-			++g_queryTested;
-			const auto result = testSphereVisible(
-				p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+			// _Claude_ Temporal coherence: reuse a recent TestRect verdict
+			// when the shape hasn't moved and the cached entry is still
+			// fresh. N=0 disables the fast path entirely so the cache is
+			// harmless (no lookup overhead, map stays empty after prune).
+			const unsigned int tcFrames = Configuration::OcclusionTemporalCoherenceFrames;
+			::MaskedOcclusionCulling::CullingResult result;
+			bool reused = false;
+			if (tcFrames > 0) {
+				auto it = g_drainCache.find(p.shape);
+				if (it != g_drainCache.end()) {
+					const auto& e = it->second;
+					const auto& o = p.shape->worldBoundOrigin;
+					const float r = p.shape->worldBoundRadius;
+					// _Claude_ vtable verify: any pointer load before
+					// the bounds compare. If the slot got freed and
+					// reallocated for a different class, the cached
+					// bounds compare would be reading the wrong fields
+					// at the wrong offsets. Mismatch → miss → re-query.
+					const void* curVtbl =
+						*reinterpret_cast<void* const*>(p.shape);
+					const bool sameClass = e.vtbl == curVtbl;
+					// Bit-exact compare is intentional: static shapes
+					// produce identical floats across frames, and any
+					// animated/moved shape will fail this and re-query.
+					const bool stationary = sameClass &&
+						e.boundOriginX == o.x &&
+						e.boundOriginY == o.y &&
+						e.boundOriginZ == o.z &&
+						e.boundRadius == r;
+					const bool fresh =
+						(g_frameCounter - e.lastQueryFrame) <= tcFrames;
+					if (stationary && fresh) {
+						result = e.result;
+						reused = true;
+						++g_drainCacheHits;
+					}
+				}
+			}
+			if (!reused) {
+				++g_queryTested;
+				result = testSphereVisible(
+					p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+				if (tcFrames > 0) {
+					++g_drainCacheMisses;
+					// _Claude_ Cache only OCCLUDED. VISIBLE and
+					// VIEW_CULLED still call display() this frame,
+					// which dereferences p.shape anyway — caching them
+					// gains nothing on the hit path while widening the
+					// stale-pointer attack surface.
+					if (result == ::MaskedOcclusionCulling::OCCLUDED) {
+						auto& e = g_drainCache[p.shape];
+						e.result = result;
+						e.lastQueryFrame = g_frameCounter;
+						e.vtbl = *reinterpret_cast<void* const*>(p.shape);
+						e.boundOriginX = p.shape->worldBoundOrigin.x;
+						e.boundOriginY = p.shape->worldBoundOrigin.y;
+						e.boundOriginZ = p.shape->worldBoundOrigin.z;
+						e.boundRadius = p.shape->worldBoundRadius;
+					}
+				}
+			}
 			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
-				++g_queryOccluded;
+				if (!reused) ++g_queryOccluded;
 				// Tint-debug mode keeps the shape visible so the user can
 				// see which meshes the culler wrongly hides. Production
 				// mode (default) culls by skipping display.
@@ -776,7 +1159,7 @@ namespace mwse::patch::occlusion {
 				continue;
 			}
 			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
-				++g_queryViewCulled;
+				if (!reused) ++g_queryViewCulled;
 			}
 			else if (Configuration::DebugOcclusionTintTested) {
 				tintEmissive(p.shape, kTintTested);
@@ -800,6 +1183,7 @@ namespace mwse::patch::occlusion {
 	// body, matching the engine 1:1.
 	static void __fastcall CullShow_detour(NI::AVObject* self, void* edx, NI::Camera* camera) {
 		bool isTopLevel = false;
+		TES3::Cell* activeCell = nullptr;
 		if (!g_msocActive && g_inRenderMainScene) {
 			auto wc = TES3::WorldController::get();
 			NI::Camera* mainCamera = wc ? wc->worldCamera.cameraData.camera.get() : nullptr;
@@ -816,6 +1200,13 @@ namespace mwse::patch::occlusion {
 					: Configuration::OcclusionEnableExterior;
 				if (sceneEnabled) {
 					isTopLevel = true;
+					// _Claude_ Capture landscape root for drain-loop skip.
+					// Null on load screen / main menu (dh already null there).
+					g_worldLandscapeRoot = dh->worldLandscapeRoot;
+					// Forwarded to the isTopLevel block below for cell-change
+					// cache invalidation. Stored only on active frames so a
+					// disabled-scene span doesn't spuriously "change cell".
+					activeCell = dh ? dh->currentCell : nullptr;
 				}
 				else {
 					// Counter accumulates only on skipped frames; no
@@ -845,10 +1236,24 @@ namespace mwse::patch::occlusion {
 			else {
 				g_msoc->ClearBuffer();
 			}
+			// _Claude_ Cell-change cache invalidation. Must run AFTER the
+			// ClearBuffer()/Flush above so the threadpool has finished
+			// consuming any cached buffers still referenced by last
+			// frame's queued work — only then is it safe to free them.
+			// Both caches key off pointers that a cell load can free and
+			// reuse (per-Land NiNode*, shape NI::AVObject*), so a wipe
+			// here eliminates the stale-pointer hazard wholesale.
+			if (activeCell != g_lastCell) {
+				g_landCache.clear();
+				g_drainCache.clear();
+				g_lastCell = activeCell;
+				++g_cellChanges;
+			}
 			g_recursiveCalls = 0;
 			g_recursiveAppCulled = 0;
 			g_recursiveFrustumCulled = 0;
 			g_rasterizedAsOccluder = 0;
+			g_occluderTriangles = 0;
 			g_skippedInside = 0;
 			g_skippedThin = 0;
 			g_skippedAlpha = 0;
@@ -861,6 +1266,39 @@ namespace mwse::patch::occlusion {
 			g_skippedTriCount = 0;
 			g_skippedTesteeTiny = 0;
 			g_skippedSceneGate = 0;
+			g_skippedTerrain = 0;
+			g_aggregateTerrainLands = 0;
+			g_aggregateTerrainTris = 0;
+			g_aggregateTerrainUs = 0;
+			g_landCacheHits = 0;
+			g_landCacheMisses = 0;
+			g_landCacheEvictions = 0;
+			g_drainCacheHits = 0;
+			g_drainCacheMisses = 0;
+			++g_frameCounter;
+			// _Claude_ Age-prune the temporal drain cache so entries for
+			// shapes we haven't seen in a while (unloaded cell, destroyed
+			// reference) don't accumulate. Window is 2*N frames — any
+			// entry older than that can't be reused anyway. When the
+			// feature is disabled (N=0) the whole map is dropped so it
+			// doesn't linger from a previous session.
+			{
+				const unsigned int tcFrames = Configuration::OcclusionTemporalCoherenceFrames;
+				if (tcFrames == 0) {
+					if (!g_drainCache.empty()) g_drainCache.clear();
+				}
+				else {
+					const uint32_t maxAge = tcFrames * 2;
+					for (auto it = g_drainCache.begin(); it != g_drainCache.end(); ) {
+						if (g_frameCounter - it->second.lastQueryFrame > maxAge) {
+							it = g_drainCache.erase(it);
+						}
+						else {
+							++it;
+						}
+					}
+				}
+			}
 			g_rasterizeTimeUs = 0;
 			g_drainPhaseTimeUs = 0;
 			g_asyncFlushTimeUs = 0;
@@ -873,6 +1311,16 @@ namespace mwse::patch::occlusion {
 				g_threadpool->SetMatrix(g_worldToClip);
 			}
 			g_msocActive = true;
+
+			// _Claude_ Aggregate terrain pass: submit merged per-Land
+			// occluders before the main traversal so the depth buffer
+			// has hill/horizon silhouettes by the time non-terrain
+			// leaves reach the drain. Individual 25v/32t patches would
+			// fail the thin-axis gate; merging them reclaims terrain
+			// as a useful occluder. Gated for A/B profiling.
+			if (Configuration::OcclusionAggregateTerrain) {
+				rasterizeAggregateTerrain(camera);
+			}
 		}
 
 		cullShowBody(self, edx, camera);
@@ -914,13 +1362,12 @@ namespace mwse::patch::occlusion {
 			// That's the reconciliation channel for "I see culling but
 			// the counters say 0" — if OCCLUDED events happen, every
 			// frame they occur will appear in the log.
-			static unsigned int frameCounter = 0;
-			++frameCounter;
-			const bool baselineTick = (frameCounter % 300) == 0;
+			const bool baselineTick = (g_frameCounter % 300) == 0;
 			const bool hadOccluded = g_queryOccluded > 0;
 			if (baselineTick || hadOccluded) {
-				log::getLog() << "MSOC: frame " << frameCounter
+				log::getLog() << "MSOC: frame " << g_frameCounter
 					<< " rasterized=" << g_rasterizedAsOccluder
+					<< " occluderTris=" << g_occluderTriangles // _Claude_
 					<< " queryOccluded=" << g_queryOccluded
 					<< "/" << g_queryTested
 					<< " viewCulled=" << g_queryViewCulled
@@ -935,6 +1382,17 @@ namespace mwse::patch::occlusion {
 					<< " alphaSkipped=" << g_skippedAlpha
 					<< " triSkipped=" << g_skippedTriCount
 					<< " tinySkipped=" << g_skippedTesteeTiny
+					<< " terrainSkipped=" << g_skippedTerrain // _Claude_
+					<< " aggTerrainLands=" << g_aggregateTerrainLands // _Claude_
+					<< " aggTerrainTris=" << g_aggregateTerrainTris // _Claude_
+					<< " aggTerrainUs=" << g_aggregateTerrainUs // _Claude_
+					<< " landCacheHit=" << g_landCacheHits // _Claude_
+					<< " landCacheMiss=" << g_landCacheMisses // _Claude_
+					<< " landCacheEvict=" << g_landCacheEvictions // _Claude_
+					<< " tcHit=" << g_drainCacheHits // _Claude_
+					<< " tcMiss=" << g_drainCacheMisses // _Claude_
+					<< " tcSize=" << g_drainCache.size() // _Claude_
+					<< " cellChanges=" << g_cellChanges // _Claude_
 					<< " sceneGateSkipped=" << g_skippedSceneGate
 					<< " rasterizeUs=" << g_rasterizeTimeUs
 					<< " drainUs=" << g_drainPhaseTimeUs
@@ -1027,9 +1485,16 @@ namespace mwse::patch::occlusion {
 				<< " (threads > bins causes worker crash)." << std::endl;
 			threadCount = binCount;
 		}
+		// _Claude_ maxJobs=64 (default is 32). Our per-frame submission count
+		// runs 380-580 meshes, each below TRIS_PER_JOB so each maps to one
+		// queue slot. The default 32 overcommits ~15-18x and the main thread
+		// yields repeatedly on CanWrite(). 64 halves the stall rate for a
+		// ~57 MB ring-buffer cost (~55k floats * binsW*binsH * maxJobs * 4B).
+		constexpr unsigned int kMaxJobs = 64;
 		g_threadpool = new ::CullingThreadpool(threadCount,
 			Configuration::OcclusionThreadpoolBinsW,
-			Configuration::OcclusionThreadpoolBinsH);
+			Configuration::OcclusionThreadpoolBinsH,
+			kMaxJobs);
 		g_threadpool->SetBuffer(g_msoc);
 		g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
 		g_threadpool->SetNearClipPlane(kNearClipW);
@@ -1045,6 +1510,7 @@ namespace mwse::patch::occlusion {
 		log << "MSOC: threadpool created; threads=" << threadCount
 			<< " binsW=" << Configuration::OcclusionThreadpoolBinsW
 			<< " binsH=" << Configuration::OcclusionThreadpoolBinsH
+			<< " maxJobs=" << kMaxJobs
 			<< " tp=" << (g_threadpool ? 1 : 0)
 			<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0)
 			<< std::endl;

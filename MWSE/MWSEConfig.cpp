@@ -34,10 +34,13 @@ namespace mwse {
 	float Configuration::OcclusionOccludeeMinRadius = 0.1f;
 	bool Configuration::OcclusionEnableInterior = true;
 	bool Configuration::OcclusionEnableExterior = true;
+	bool Configuration::OcclusionSkipTerrainOccludees = true;
+	bool Configuration::OcclusionAggregateTerrain = true;
 	bool Configuration::OcclusionAsyncOccluders = false;
 	UINT Configuration::OcclusionThreadpoolThreadCount = 0;
 	UINT Configuration::OcclusionThreadpoolBinsW = 4;
 	UINT Configuration::OcclusionThreadpoolBinsH = 2;
+	UINT Configuration::OcclusionTemporalCoherenceFrames = 0;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -100,10 +103,13 @@ namespace mwse {
 		DECLARE_CONFIG(OcclusionOccludeeMinRadius)
 		DECLARE_CONFIG(OcclusionEnableInterior)
 		DECLARE_CONFIG(OcclusionEnableExterior)
+		DECLARE_CONFIG(OcclusionSkipTerrainOccludees)
+		DECLARE_CONFIG(OcclusionAggregateTerrain)
 		DECLARE_CONFIG(OcclusionAsyncOccluders)
 		DECLARE_CONFIG(OcclusionThreadpoolThreadCount)
 		DECLARE_CONFIG(OcclusionThreadpoolBinsW)
 		DECLARE_CONFIG(OcclusionThreadpoolBinsH)
+		DECLARE_CONFIG(OcclusionTemporalCoherenceFrames)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }
