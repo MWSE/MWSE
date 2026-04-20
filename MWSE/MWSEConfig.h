@@ -38,6 +38,8 @@ namespace mwse {
 		static UINT OcclusionThreadpoolBinsW;
 		static UINT OcclusionThreadpoolBinsH;
 		static UINT OcclusionTemporalCoherenceFrames;
+		static bool OcclusionLogPerFrame;
+		static bool OcclusionLogAggregate;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

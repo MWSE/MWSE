@@ -1357,13 +1357,19 @@ namespace mwse::patch::occlusion {
 			totalOccluded += g_queryOccluded;
 			totalViewCulled += g_queryViewCulled;
 
-			// Always log frames with any OCCLUDED so per-test spikes are
-			// captured regardless of the 300-frame baseline sampling.
-			// That's the reconciliation channel for "I see culling but
-			// the counters say 0" — if OCCLUDED events happen, every
-			// frame they occur will appear in the log.
-			const bool baselineTick = (g_frameCounter % 300) == 0;
-			const bool hadOccluded = g_queryOccluded > 0;
+			// _Claude_ Two independently-toggled log channels:
+			//   - OcclusionLogAggregate: periodic 300-frame sample. Steady
+			//     baseline of cumulative counters; useful for "is the
+			//     culler doing anything" at a glance.
+			//   - OcclusionLogPerFrame: any frame that produced an
+			//     OCCLUDED verdict. Reconciliation channel for "I see
+			//     culling but the counters say 0" — every culling event
+			//     gets a line.
+			// Both default off. Identical line format on both channels.
+			const bool baselineTick = Configuration::OcclusionLogAggregate
+				&& (g_frameCounter % 300) == 0;
+			const bool hadOccluded = Configuration::OcclusionLogPerFrame
+				&& g_queryOccluded > 0;
 			if (baselineTick || hadOccluded) {
 				log::getLog() << "MSOC: frame " << g_frameCounter
 					<< " rasterized=" << g_rasterizedAsOccluder

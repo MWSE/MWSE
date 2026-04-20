@@ -87,4 +87,8 @@ return {
 	["debugOcclusionTintOccluded.description"] = "Keeps shapes that failed the MSOC visibility test visible and tints them red. Use to verify the culler is rejecting the right meshes; production use should leave this off (culled meshes are invisible by default).",
 	["debugOcclusionTintTested.label"] = "Tint visible occludees green",
 	["debugOcclusionTintTested.description"] = "Tints every mesh that passed the MSOC visibility test green. Combined with the red and yellow tints, gives a full visual classification of the frame's occlusion decisions.",
+	["occlusionLogPerFrame.label"] = "Log per-frame culling events",
+	["occlusionLogPerFrame.description"] = "Writes one MWSE.log line per frame that produced at least one OCCLUDED verdict. Useful for verifying the culler is firing in a specific scene. Verbose — leave off unless investigating.\n\nDefault: off.",
+	["occlusionLogAggregate.label"] = "Log periodic aggregate stats",
+	["occlusionLogAggregate.description"] = "Writes one MWSE.log line every 300 frames with cumulative culler counters (rasterised, queryOccluded/Tested, viewCulled, drain timings). Useful for steady-state profiling.\n\nDefault: off.",
 }
