@@ -20,8 +20,8 @@
 #include "NITriShape.h"
 #include "NITriShapeData.h"
 
-#include "external/msoc/CullingThreadpool.h"
-#include "external/msoc/MaskedOcclusionCulling.h"
+#include "CullingThreadpool.h"
+#include "MaskedOcclusionCulling.h"
 
 #include <algorithm>
 #include <cfloat>

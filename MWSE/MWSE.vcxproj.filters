@@ -31,16 +31,16 @@
     <Filter Include="Source Files\Utility">
       <UniqueIdentifier>{a80f4438-f86c-4c93-8dbc-0b1163f26b48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\External">
+    <Filter Include="Header Files\Deps">
       <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\External\MSOC">
+    <Filter Include="Header Files\Deps\MSOC">
       <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\External">
+    <Filter Include="Source Files\Deps">
       <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\External\MSOC">
+    <Filter Include="Source Files\Deps\MSOC">
       <UniqueIdentifier>{c7b9a4c1-6e7d-4b8a-9f3c-11a2b3c4d5e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\DataAdapters">
@@ -600,17 +600,17 @@
     <ClInclude Include="PatchUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="external\msoc\CompilerSpecific.inl">
-      <Filter>Header Files\External\MSOC</Filter>
+    <ClInclude Include="..\deps\msoc\CompilerSpecific.inl">
+      <Filter>Header Files\Deps\MSOC</Filter>
     </ClInclude>
-    <ClInclude Include="external\msoc\CullingThreadpool.h">
-      <Filter>Header Files\External\MSOC</Filter>
+    <ClInclude Include="..\deps\msoc\CullingThreadpool.h">
+      <Filter>Header Files\Deps\MSOC</Filter>
     </ClInclude>
-    <ClInclude Include="external\msoc\MaskedOcclusionCulling.h">
-      <Filter>Header Files\External\MSOC</Filter>
+    <ClInclude Include="..\deps\msoc\MaskedOcclusionCulling.h">
+      <Filter>Header Files\Deps\MSOC</Filter>
     </ClInclude>
-    <ClInclude Include="external\msoc\MaskedOcclusionCullingCommon.inl">
-      <Filter>Header Files\External\MSOC</Filter>
+    <ClInclude Include="..\deps\msoc\MaskedOcclusionCullingCommon.inl">
+      <Filter>Header Files\Deps\MSOC</Filter>
     </ClInclude>
     <ClInclude Include="PatchOcclusionCulling.h">
       <Filter>Header Files\Utility</Filter>
@@ -2750,17 +2750,17 @@
     <ClCompile Include="PatchUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="external\msoc\CullingThreadpool.cpp">
-      <Filter>Source Files\External\MSOC</Filter>
+    <ClCompile Include="..\deps\msoc\CullingThreadpool.cpp">
+      <Filter>Source Files\Deps\MSOC</Filter>
     </ClCompile>
-    <ClCompile Include="external\msoc\MaskedOcclusionCulling.cpp">
-      <Filter>Source Files\External\MSOC</Filter>
+    <ClCompile Include="..\deps\msoc\MaskedOcclusionCulling.cpp">
+      <Filter>Source Files\Deps\MSOC</Filter>
     </ClCompile>
-    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX2.cpp">
-      <Filter>Source Files\External\MSOC</Filter>
+    <ClCompile Include="..\deps\msoc\MaskedOcclusionCullingAVX2.cpp">
+      <Filter>Source Files\Deps\MSOC</Filter>
     </ClCompile>
-    <ClCompile Include="external\msoc\MaskedOcclusionCullingAVX512.cpp">
-      <Filter>Source Files\External\MSOC</Filter>
+    <ClCompile Include="..\deps\msoc\MaskedOcclusionCullingAVX512.cpp">
+      <Filter>Source Files\Deps\MSOC</Filter>
     </ClCompile>
     <ClCompile Include="PatchOcclusionCulling.cpp">
       <Filter>Source Files\Utility</Filter>
