@@ -113,6 +113,15 @@ namespace mwse::patch::occlusion {
 	// renderMainScene still run the pure engine-equivalent path.
 	static bool g_msocActive = false;
 
+	// _Claude_ True while the MSOC depth buffer reflects the vanilla main
+	// scene's complete occluder set — set after drainPendingDisplays() in
+	// the top-level cullShow_detour, cleared at the next frame's
+	// ClearBuffer(). Out-of-tree consumers (MGE-XE) gate TestRect queries
+	// on this: queries issued before the drain hit a partial/empty buffer
+	// and would report false-VISIBLE. Never true outside the main-scene
+	// worldCamera pass.
+	static bool g_maskReady = false;
+
 	// Per-frame diagnostics. Reset at the top of each worldCamera traversal.
 	static uint64_t g_recursiveCalls = 0;
 	static uint64_t g_recursiveAppCulled = 0;
@@ -164,11 +173,18 @@ namespace mwse::patch::occlusion {
 	// buffer + index buffer, prebuilt on first sight. Scene-graph walk
 	// and vertex transform become O(1) hits after that. Entries are
 	// mark-and-sweep evicted each frame: any key not touched this frame
-	// is stale (cell change destroyed its LandscapeData subtree and its
-	// NiNode pointer). Eviction is safe because previous-frame async
+	// is stale and dropped. Eviction is safe because previous-frame async
 	// queues are consumed by ClearBuffer()/implicit Flush before the
 	// next aggregate pass runs.
+	//
+	// _Claude_ Lifetime: nodePtr (NI::Pointer) holds a refcount on the
+	// NiNode key so the engine cannot tear it down while it lives in
+	// the map. Without this, an engine-side cell unload between two
+	// frames could free the NiNode and leave us with a dangling key
+	// to dereference on the next pass. Sweep eviction releases the
+	// ref; if we were the last owner the NiNode is destroyed then.
 	struct LandCacheEntry {
+		NI::Pointer<NI::Node> nodePtr;
 		std::vector<float> verts;
 		std::vector<unsigned int> indices;
 		unsigned int triCount = 0;
@@ -197,17 +213,21 @@ namespace mwse::patch::occlusion {
 	// (animated shape, physics movement) invalidates the entry.
 	//
 	// _Claude_ vtable verify: NI's first 4 bytes are a vtable pointer
-	// constant for the process lifetime per class. We snapshot it on
-	// insert and compare on hit. Mismatch → the address has been freed
-	// and reused for a different-typed object → miss and re-query
-	// (avoids dereferencing wrong-class fields via cached bounds).
+	// constant for the process lifetime per class. Belt-and-braces with
+	// shapePtr below — shapePtr already pins the object so the vtable
+	// can't change, but the cheap compare also catches any case where
+	// somehow our shape ref was stripped externally.
 	//
-	// Lifetime safety: shapes can be destroyed between frames, and
-	// NI::AVObject pointers can theoretically be reused by new allocations.
-	// Stale entries are harmless for correctness because the miss path
-	// overwrites them on the next query, but to bound memory we age-prune
-	// entries older than 2*N frames at frame entry.
+	// _Claude_ Lifetime: shapePtr (NI::Pointer) holds a refcount on the
+	// AVObject key so the engine cannot free it while we hold a cache
+	// entry. Without this, raising OcclusionTemporalCoherenceFrames
+	// widened the window in which a destroyed-then-prune-pending entry
+	// could be looked up against a recycled pointer (and crash on the
+	// vtable dereference if the page got unmapped). Age-prune at 2*N
+	// frames bounds memory; on prune the NI::Pointer destructor releases
+	// the ref and the object is freed if we were the last owner.
 	struct DrainCacheEntry {
+		NI::Pointer<NI::AVObject> shapePtr;
 		::MaskedOcclusionCulling::CullingResult result;
 		uint32_t lastQueryFrame;
 		void* vtbl; // _Claude_ snapshot of *(void**)shape at insert
@@ -225,12 +245,16 @@ namespace mwse::patch::occlusion {
 	// identity fingerprints (vtable + worldBound) so reused pointers are
 	// detected and re-tested from scratch.
 	//
-	// Lifetime: the cache persists across frames (we need cross-frame
-	// state for the hysteresis counter). Cell changes wipe it — same
-	// stale-pointer risk as g_drainCache. Mid-cell, a destroyed NiLight*
-	// may be reused by a new allocation; vtable + bound comparison
-	// catches that and falls through to the miss path.
+	// _Claude_ Lifetime: lightPtr (NI::Pointer) holds a refcount on the
+	// NiLight key so the engine cannot free it mid-cell while our entry
+	// lives. Cell-change wipe (g_lightCullCache.clear) releases all refs
+	// at once. Without this, a light freed mid-cell whose address was
+	// reused by a different allocation could be looked up and matched
+	// against a stale entry — at best a wrong cull verdict, at worst a
+	// crash on the vtable dereference. Vtable + bound checks remain as
+	// belt-and-braces.
 	struct LightCullEntry {
+		NI::Pointer<NI::Light> lightPtr;
 		uint32_t lastQueryFrame;
 		uint8_t consecOccluded;
 		bool cullActive;
@@ -754,6 +778,7 @@ namespace mwse::patch::occlusion {
 		// on an occluded first verdict, so the hysteresis counter
 		// has to ramp up before the first darkening.
 		LightCullEntry e;
+		e.lightPtr = light;
 		e.lastQueryFrame = g_frameCounter;
 		e.consecOccluded = occluded ? 1 : 0;
 		e.cullActive = false;
@@ -1082,6 +1107,7 @@ namespace mwse::patch::occlusion {
 			auto [it, inserted] = g_landCache.try_emplace(landNode);
 			LandCacheEntry& entry = it->second;
 			if (inserted) {
+				entry.nodePtr = landNode;
 				buildLandCacheEntry(entry, landNode);
 				++g_landCacheMisses;
 			}
@@ -1358,6 +1384,7 @@ namespace mwse::patch::occlusion {
 					// stale-pointer attack surface.
 					if (result == ::MaskedOcclusionCulling::OCCLUDED) {
 						auto& e = g_drainCache[p.shape];
+						e.shapePtr = p.shape;
 						e.result = result;
 						e.lastQueryFrame = g_frameCounter;
 						e.vtbl = *reinterpret_cast<void* const*>(p.shape);
@@ -1450,6 +1477,12 @@ namespace mwse::patch::occlusion {
 			// Latch async mode once per frame so a mid-frame Lua toggle
 			// can't split submissions between threadpool and direct MOC.
 			g_asyncThisFrame = g_threadpool && Configuration::OcclusionAsyncOccluders;
+			// _Claude_ Mask is about to be wiped. Out-of-tree consumers
+			// (MGE-XE) gate queries on g_maskReady; clear it here so any
+			// query that arrives mid-frame before the drain completes
+			// gets a conservative VISIBLE instead of reading a partial
+			// depth buffer.
+			g_maskReady = false;
 			if (g_asyncThisFrame) {
 				// Wake up the worker threads ~100us before the first
 				// RenderTriangles call. ClearBuffer() does an implicit
@@ -1569,6 +1602,11 @@ namespace mwse::patch::occlusion {
 				g_threadpool->Flush();
 			}
 			drainPendingDisplays();
+			// _Claude_ Mask is now complete and stable for external query.
+			// Flush above (if async) has retired all worker writes; drain
+			// has run every deferred test. g_maskReady stays true until
+			// next frame's ClearBuffer clears it.
+			g_maskReady = true;
 			if (g_asyncThisFrame) {
 				// Put the workers back to low-overhead sleep between frames.
 				// Next frame's top-level entry will WakeThreads again.
@@ -1802,6 +1840,42 @@ namespace mwse::patch::occlusion {
 			<< "Configuration::OcclusionCullLights, default off)." << std::endl;
 	}
 
+	// _Claude_ Mask query API for out-of-tree consumers (MGE-XE etc.).
+	// Single-threaded: Morrowind's renderer is single-threaded and the
+	// MSOC drain has already Flushed all threadpool work by the time
+	// g_maskReady goes true, so no synchronisation is required here.
+	bool isOcclusionMaskReady() {
+		return g_maskReady && g_msoc != nullptr;
+	}
+
+	MaskQueryResult testOcclusionSphere(float worldX, float worldY, float worldZ, float radius) {
+		if (!isOcclusionMaskReady()) {
+			return kMaskQueryNotReady;
+		}
+		const TES3::Vector3 center(worldX, worldY, worldZ);
+		const auto result = testSphereVisible(center, radius);
+		switch (result) {
+		case ::MaskedOcclusionCulling::VISIBLE:     return kMaskQueryVisible;
+		case ::MaskedOcclusionCulling::OCCLUDED:    return kMaskQueryOccluded;
+		case ::MaskedOcclusionCulling::VIEW_CULLED: return kMaskQueryViewCulled;
+		}
+		return kMaskQueryVisible;
+	}
+
+	MaskQueryResult testOcclusionAABB(
+		float minX, float minY, float minZ,
+		float maxX, float maxY, float maxZ)
+	{
+		const float cx = (minX + maxX) * 0.5f;
+		const float cy = (minY + maxY) * 0.5f;
+		const float cz = (minZ + maxZ) * 0.5f;
+		const float dx = maxX - cx;
+		const float dy = maxY - cy;
+		const float dz = maxZ - cz;
+		const float r = std::sqrt(dx * dx + dy * dy + dz * dz);
+		return testOcclusionSphere(cx, cy, cz, r);
+	}
+
 }
 
 // _Claude_ Stable C-ABI shims. Named for GetProcAddress lookup from
@@ -1824,4 +1898,29 @@ void __cdecl mwse_unregisterLightObservedCallback(void(__cdecl* cb)(void* niLigh
 	using Typed = mwse::patch::occlusion::LightObservedCallback;
 	mwse::patch::occlusion::unregisterLightObservedCallback(
 		reinterpret_cast<Typed>(cb));
+}
+
+// _Claude_ Mask query exports. Return values are the MWSE_OCC_* codes
+// (0=Visible, 1=Occluded, 2=ViewCulled, 3=NotReady) — frozen in ABI
+// independent of Intel's internal enum. Cheap to call; safe from the
+// render thread at any point after renderMainScene's drain completes
+// (gate with mwse_isOcclusionMaskReady() if unsure).
+extern "C" __declspec(dllexport)
+int __cdecl mwse_isOcclusionMaskReady() {
+	return mwse::patch::occlusion::isOcclusionMaskReady() ? 1 : 0;
+}
+
+extern "C" __declspec(dllexport)
+int __cdecl mwse_testOcclusionSphere(float worldX, float worldY, float worldZ, float radius) {
+	return static_cast<int>(
+		mwse::patch::occlusion::testOcclusionSphere(worldX, worldY, worldZ, radius));
+}
+
+extern "C" __declspec(dllexport)
+int __cdecl mwse_testOcclusionAABB(
+	float minX, float minY, float minZ,
+	float maxX, float maxY, float maxZ)
+{
+	return static_cast<int>(
+		mwse::patch::occlusion::testOcclusionAABB(minX, minY, minZ, maxX, maxY, maxZ));
 }

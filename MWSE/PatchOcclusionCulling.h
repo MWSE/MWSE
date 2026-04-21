@@ -36,6 +36,36 @@ namespace mwse::patch::occlusion {
 	void registerLightObservedCallback(LightObservedCallback cb);
 	void unregisterLightObservedCallback(LightObservedCallback cb);
 
+	// _Claude_ Mask query API for consumers that want to reuse MWSE's
+	// CPU occlusion mask (e.g. MGE-XE culling its own draw passes
+	// before submission to D3D). Result codes are frozen in ABI —
+	// values match the mwse_testOcclusion* C exports below.
+	enum MaskQueryResult {
+		kMaskQueryVisible    = 0,  // not occluded; draw the thing
+		kMaskQueryOccluded   = 1,  // fully behind the mask; safe to skip
+		kMaskQueryViewCulled = 2,  // rect collapsed; outside the frustum
+		kMaskQueryNotReady   = 3,  // mask not populated this frame
+	};
+
+	// True once the depth buffer reflects the complete vanilla main-scene
+	// occluder set. Flips false at the next frame's ClearBuffer. Callers
+	// should either gate expensive queries on this or accept that a
+	// !ready query returns kMaskQueryNotReady (treat as visible).
+	bool isOcclusionMaskReady();
+
+	// World-space sphere test. Uses the same projection as the engine's
+	// main-scene CullShow — if the caller's draw pass uses a different
+	// camera (different near/far plane, different projection), the
+	// verdict is not meaningful for that pass.
+	MaskQueryResult testOcclusionSphere(
+		float worldX, float worldY, float worldZ, float radius);
+
+	// World-space AABB test. Converts to bounding sphere internally —
+	// same looseness as the engine's own NiAVObject::worldBoundRadius.
+	MaskQueryResult testOcclusionAABB(
+		float minX, float minY, float minZ,
+		float maxX, float maxY, float maxZ);
+
 }
 
 // Stable C-ABI exports for out-of-tree consumers (MGE-XE etc.). Resolve
@@ -47,3 +77,20 @@ void __cdecl mwse_registerLightObservedCallback(void(__cdecl* cb)(void* niLight)
 
 extern "C" __declspec(dllexport)
 void __cdecl mwse_unregisterLightObservedCallback(void(__cdecl* cb)(void* niLight));
+
+// _Claude_ MSOC mask query exports. Return values are the stable
+// MWSE_OCC_* codes (match mwse::patch::occlusion::MaskQueryResult):
+//   0 = Visible     (draw it)
+//   1 = Occluded    (safe to skip)
+//   2 = ViewCulled  (outside the frustum)
+//   3 = NotReady    (mask empty or unbuilt this frame — treat as Visible)
+extern "C" __declspec(dllexport)
+int __cdecl mwse_isOcclusionMaskReady();
+
+extern "C" __declspec(dllexport)
+int __cdecl mwse_testOcclusionSphere(float worldX, float worldY, float worldZ, float radius);
+
+extern "C" __declspec(dllexport)
+int __cdecl mwse_testOcclusionAABB(
+	float minX, float minY, float minZ,
+	float maxX, float maxY, float maxZ);
