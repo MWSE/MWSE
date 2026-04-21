@@ -8,6 +8,28 @@ end
 
 local i18n = mwse.loadTranslations("mwse.config")
 
+-- Cached by the ThreadCount slider's postCreate hook. Lets the Bins
+-- sliders' callbacks redraw the ThreadCount widget on clamp.
+local threadCountSlider = nil
+
+local function captureThreadCountSlider(self)
+	threadCountSlider = self
+end
+
+local function clampOcclusionThreadCount()
+	if mwseConfig.OcclusionThreadpoolThreadCount == 0 then return end
+	local maxThreads = mwseConfig.OcclusionThreadpoolBinsW * mwseConfig.OcclusionThreadpoolBinsH
+	if mwseConfig.OcclusionThreadpoolThreadCount > maxThreads then
+		if threadCountSlider then
+			-- setVariableValue writes the variable AND refreshes the
+			-- widget + label, so the drag snaps to the clamped value.
+			threadCountSlider:setVariableValue(maxThreads)
+		else
+			mwseConfig.OcclusionThreadpoolThreadCount = maxThreads
+		end
+	end
+end
+
 local function resetLighting()
 	if not tes3.player then return end
 
@@ -332,6 +354,8 @@ Timeslip]],
 							description = i18n("occlusionThreadpoolThreadCount.description"),
 							min = 0, max = 16, step = 1, jump = 2,
 							variable = { id = "OcclusionThreadpoolThreadCount", class = "TableVariable", table = mwseConfig },
+							callback = clampOcclusionThreadCount,
+							postCreate = captureThreadCountSlider,
 						},
 						{
 							class = "Slider",
@@ -339,6 +363,7 @@ Timeslip]],
 							description = i18n("occlusionThreadpoolBinsW.description"),
 							min = 1, max = 16, step = 1, jump = 2,
 							variable = { id = "OcclusionThreadpoolBinsW", class = "TableVariable", table = mwseConfig },
+							callback = clampOcclusionThreadCount,
 						},
 						{
 							class = "Slider",
@@ -346,6 +371,7 @@ Timeslip]],
 							description = i18n("occlusionThreadpoolBinsH.description"),
 							min = 1, max = 16, step = 1, jump = 2,
 							variable = { id = "OcclusionThreadpoolBinsH", class = "TableVariable", table = mwseConfig },
+							callback = clampOcclusionThreadCount,
 						},
 					},
 				},
