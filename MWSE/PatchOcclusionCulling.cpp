@@ -250,13 +250,6 @@ namespace mwse::patch::occlusion {
 	// Iterated lock-free from the render thread inside
 	// shouldLightBeEnabled; see header for the full contract.
 	static std::vector<LightObservedCallback> g_lightObservers;
-	// Consecutive occluded frames required before a light starts returning
-	// disabled from updateLights. Exposed as Configuration::
-	// OcclusionLightCullHysteresisFrames; default 3 = ~50 ms at 60 FPS —
-	// below the perceptual threshold for flicker but short enough to pay
-	// back on most "turn away from a lamp row" camera motions. The cache
-	// counter is uint8_t (max 255), so any slider value above that
-	// effectively disables the latch.
 
 	// File-scope frame counter. Needed by the drain loop to decide
 	// cache freshness; incremented once per top-level frame.
@@ -615,22 +608,6 @@ namespace mwse::patch::occlusion {
 		return g_msoc->TestRect(ndcMinX, ndcMinY, ndcMaxX, ndcMaxY, wMin);
 	}
 
-	// _Claude_ Called from the naked hook at 0x6bb7d4 (replaces the original
-	// `mov al, [ebx+0x90]` enabled-read inside NiDX8LightManager::updateLights).
-	// Returns the effective enabled byte: the light's real enabled flag
-	// unless Configuration::OcclusionCullLights is on AND the light's
-	// worldBound sphere has been occluded for at least
-	// Configuration::OcclusionLightCullHysteresisFrames consecutive frames, in which case we
-	// return 0 (disabled). This pre-empts the D3D8 SetLight/LightEnable
-	// pair without touching the scene graph.
-	//
-	// Hysteresis avoids flicker on light/dark boundary crossings:
-	// VISIBLE verdicts immediately reset the counter and unlatch the
-	// cull, so lights that swing back into view reappear the same
-	// frame. OCCLUDED verdicts only latch a cull after N frames in
-	// a row, so a transient misfire (e.g. a frame where the depth
-	// buffer briefly says the sphere is hidden) doesn't darken the
-	// scene for even one frame.
 	// _Claude_ Registry management. Dedup on register so double-registration
 	// (e.g. DLL reload) doesn't cause duplicate observer dispatch. Called
 	// at startup; not on any hot path.
@@ -648,6 +625,25 @@ namespace mwse::patch::occlusion {
 		}
 	}
 
+	// _Claude_ Called from the naked hook at 0x6bb7d4 (replaces the original
+	// `mov al, [ebx+0x90]` enabled-read inside NiDX8LightManager::updateLights).
+	// Returns the effective enabled byte: the light's real enabled flag
+	// unless Configuration::OcclusionCullLights is on AND the light's
+	// worldBound sphere has been occluded for at least
+	// Configuration::OcclusionLightCullHysteresisFrames consecutive frames,
+	// in which case we return 0 (disabled). This pre-empts the D3D8
+	// SetLight/LightEnable pair without touching the scene graph.
+	//
+	// Hysteresis avoids flicker on light/dark boundary crossings: VISIBLE
+	// verdicts immediately reset the counter and unlatch the cull, so
+	// lights that swing back into view reappear the same frame. OCCLUDED
+	// verdicts only latch a cull after N frames in a row, so a transient
+	// misfire (e.g. a frame where the depth buffer briefly says the sphere
+	// is hidden) doesn't darken the scene for even one frame. Default N
+	// is 3 (~50 ms at 60 FPS — below the perceptual flicker threshold but
+	// short enough to pay back on "turn away from a lamp row" motions).
+	// The counter is uint8_t (max 255), so any slider value above that
+	// effectively disables the latch.
 	extern "C" bool __cdecl shouldLightBeEnabled(NI::Light* light) {
 		// _Claude_ Observer dispatch runs first, unconditionally. Observers
 		// see every iterated NiLight — disabled ones, cache-hit path, MSOC
@@ -743,46 +739,6 @@ namespace mwse::patch::occlusion {
 		e.boundRadius = cr;
 		g_lightCullCache[light] = e;
 		return true;
-	}
-
-	// _Claude_ Read-only cache query used by the scene-graph piggyback
-	// in Node::shouldBeAffectedByLight. Unlike shouldLightBeEnabled, this
-	// never invokes testSphereVisible, never writes the cache, and never
-	// increments frame counters — it's a pure lookup against whatever the
-	// render-time hook populated last frame. One-frame-stale by design,
-	// same lag the D3D8 enable hook already tolerates.
-	//
-	// Returns true only when: feature flags are on, a cache entry exists,
-	// the entry's fingerprint matches the live light (vtable + worldBound
-	// + radius), and hysteresis has latched (cullActive == true).
-	// Everything else — disabled features, cache miss, stale fingerprint,
-	// still-ramping hysteresis — returns false so the caller treats the
-	// light as potentially affecting (safe default).
-	bool isLightLatchedOccluded(const NI::Light* light) {
-		if (!Configuration::EnableMSOC) return false;
-		if (!Configuration::OcclusionCullLights) return false;
-		if (!g_msoc) return false;
-		if (light == nullptr) return false;
-
-		auto* const av = static_cast<const NI::AVObject*>(light);
-		void* const curVtbl = *reinterpret_cast<void* const*>(av);
-		const float cx = av->worldBoundOrigin.x;
-		const float cy = av->worldBoundOrigin.y;
-		const float cz = av->worldBoundOrigin.z;
-		const float cr = av->worldBoundRadius;
-
-		auto* const key = const_cast<NI::Light*>(light);
-		auto it = g_lightCullCache.find(key);
-		if (it == g_lightCullCache.end()) return false;
-
-		const auto& e = it->second;
-		if (e.vtbl != curVtbl) return false;
-		if (e.boundOriginX != cx) return false;
-		if (e.boundOriginY != cy) return false;
-		if (e.boundOriginZ != cz) return false;
-		if (e.boundRadius != cr) return false;
-
-		return e.cullActive;
 	}
 
 	// _Claude_ Naked trampoline installed at 0x6bb7d4 in place of
@@ -1822,6 +1778,8 @@ namespace mwse::patch::occlusion {
 // names here stay stable — consumers look up by name, not ordinal.
 extern "C" __declspec(dllexport)
 void __cdecl mwse_registerLightObservedCallback(void(__cdecl* cb)(void* niLight)) {
+	// Safe: void* and NI::Light* have identical representation on x86 and
+	// both function pointers use __cdecl, so the cast is an ABI formality.
 	using Typed = mwse::patch::occlusion::LightObservedCallback;
 	mwse::patch::occlusion::registerLightObservedCallback(
 		reinterpret_cast<Typed>(cb));
@@ -1829,6 +1787,7 @@ void __cdecl mwse_registerLightObservedCallback(void(__cdecl* cb)(void* niLight)
 
 extern "C" __declspec(dllexport)
 void __cdecl mwse_unregisterLightObservedCallback(void(__cdecl* cb)(void* niLight)) {
+	// Same ABI-formality cast as the register shim above.
 	using Typed = mwse::patch::occlusion::LightObservedCallback;
 	mwse::patch::occlusion::unregisterLightObservedCallback(
 		reinterpret_cast<Typed>(cb));

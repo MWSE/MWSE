@@ -10,14 +10,6 @@ namespace mwse::patch::occlusion {
 	// No-op unless Configuration::EnableMSOC is set.
 	void installPatches();
 
-	// _Claude_ Returns true iff `light` is latched-OCCLUDED by the per-frame
-	// MSOC cache populated at render time. Pure read — no testSphereVisible
-	// call, no cache writes. Safe to call from the scene-graph game pass
-	// (one frame behind render, matches the D3D8 enable hook's lag). Returns
-	// false on cache miss, stale fingerprint, hysteresis not yet latched,
-	// OcclusionCullLights off, EnableMSOC off, or backend not initialised.
-	bool isLightLatchedOccluded(const NI::Light* light);
-
 	// _Claude_ Observer callback fired once per iteration of
 	// NiDX8LightManager::updateLights for every NiLight* the renderer walks
 	// — before the MSOC cull decision, before the enabled check. Observers
