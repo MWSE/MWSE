@@ -321,6 +321,12 @@ namespace mwse::patch::occlusion {
 	struct PendingDisplay {
 		NI::AVObject* shape;
 		NI::Camera* camera;
+		// _Claude_ True when the main pass rasterised this shape as an
+		// occluder. The drain loop uses this to skip re-tinting so the
+		// occluder (yellow) classification is not overwritten by the
+		// drain's Tested (green) / Occluded (red) tints. Draw-side
+		// TestRect still runs — this only gates the debug tint write.
+		bool rasterisedAsOccluder;
 	};
 	static std::vector<PendingDisplay> g_pendingDisplays;
 
@@ -498,6 +504,12 @@ namespace mwse::patch::occlusion {
 		// only) Material property on the shape.
 		NI::Pointer<NI::Property> detachedOwn = shape->detachPropertyByType(NI::PropertyType::Material);
 		shape->attachProperty(clone);
+		// _Claude_ Required: attachProperty only mutates the raw list; the
+		// renderer reads from a per-Geometry effective-material cache that
+		// updateProperties() rebuilds. Without this call the clone sits in
+		// the list but draws keep using the previously-cached material —
+		// tints appear only when something else triggers a property update.
+		shape->updateProperties();
 
 		// Keep the source alive. If the own material was detached,
 		// detachedOwn holds the sole ref now — promote it to our map
@@ -514,17 +526,30 @@ namespace mwse::patch::occlusion {
 		g_tintClones.emplace(shape, TintClone{ shape, sourcePtr, clone });
 	}
 
-	// End-of-frame tint reset: copy each tracked source's current emissive
-	// back into its clone so shapes that weren't re-tinted next frame
-	// render with their real color. Cheaper than detach/re-attach; stays
-	// pointer-stable so the DX8 renderer's per-material cache doesn't churn.
+	// End-of-frame tint reset: restore each tracked source's ambient,
+	// diffuse, and emissive into its clone so shapes that weren't re-
+	// tinted next frame render with their real color. All three channels
+	// must be reset because tintEmissive sets all three (see
+	// cloneMaterialProperty for the NiVertexColorProperty SOURCE rationale)
+	// — restoring only emissive leaves IGNORE/AMBIENT_DIFFUSE shapes
+	// permanently green. Pointer-stable (no detach/re-attach), but
+	// updateProperties() is required so the per-Geometry effective-material
+	// cache the DX8 renderer reads picks up the new colors.
 	static void resetFrameTints() {
+		const NI::Color zero(0.0f, 0.0f, 0.0f);
 		for (auto& [key, entry] : g_tintClones) {
-			NI::Color target = entry.source
-				? entry.source->emissive
-				: NI::Color(0.0f, 0.0f, 0.0f);
-			entry.clone->emissive = target;
+			if (entry.source) {
+				entry.clone->ambient = entry.source->ambient;
+				entry.clone->diffuse = entry.source->diffuse;
+				entry.clone->emissive = entry.source->emissive;
+			}
+			else {
+				entry.clone->ambient = zero;
+				entry.clone->diffuse = zero;
+				entry.clone->emissive = zero;
+			}
 			entry.clone->incrementRevisionId();
+			entry.shape->updateProperties();
 		}
 	}
 
@@ -1196,6 +1221,7 @@ namespace mwse::patch::occlusion {
 			// losing the "skip whole subtree" shortcut.
 			const bool isGeom = self->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom);
 			if (isGeom) {
+				bool didRasterise = false;
 				// Only opaque NiTriShapes rasterise as occluders. Alpha-
 				// tested/blended geometry (fences, banners, tree leaves)
 				// would fill the depth buffer across their whole quad and
@@ -1219,13 +1245,14 @@ namespace mwse::patch::occlusion {
 						const auto& eye = camera->worldTransform.translation;
 						if (rasterizeTriShape(static_cast<NI::TriShape*>(self), eye)) {
 							++g_rasterizedAsOccluder;
+							didRasterise = true;
 							if (Configuration::DebugOcclusionTintOccluder) {
 								tintEmissive(self, kTintOccluder);
 							}
 						}
 					}
 				}
-				g_pendingDisplays.push_back({ self, camera });
+				g_pendingDisplays.push_back({ self, camera, didRasterise });
 				++g_deferred;
 				restoreIgnoreBits();
 				return;
@@ -1345,7 +1372,10 @@ namespace mwse::patch::occlusion {
 				if (!reused) ++g_queryOccluded;
 				// Tint-debug mode keeps the shape visible so the user can
 				// see which meshes the culler wrongly hides. Production
-				// mode (default) culls by skipping display.
+				// mode (default) culls by skipping display. Red overwrites
+				// any yellow (occluder) tint on purpose — a rasterised
+				// shape that still tests OCCLUDED is a visibility error
+				// worth surfacing, not a status we should hide.
 				if (Configuration::DebugOcclusionTintOccluded) {
 					tintEmissive(p.shape, kTintOccluded);
 					p.shape->vTable.asAVObject->display(p.shape, p.camera);
@@ -1355,7 +1385,10 @@ namespace mwse::patch::occlusion {
 			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
 				if (!reused) ++g_queryViewCulled;
 			}
-			else if (Configuration::DebugOcclusionTintTested) {
+			// _Claude_ Skip Tested-tint for shapes that already got the
+			// Occluder tint in the main pass; last-write-wins would flip
+			// yellow → green and hide the occluder classification.
+			else if (Configuration::DebugOcclusionTintTested && !p.rasterisedAsOccluder) {
 				tintEmissive(p.shape, kTintTested);
 			}
 			p.shape->vTable.asAVObject->display(p.shape, p.camera);
