@@ -12,7 +12,9 @@
 #include "NICamera.h"
 #include "NIColor.h"
 #include "NIDefines.h"
+#include "NIDynamicEffect.h"
 #include "NIGeometryData.h"
+#include "NILight.h"
 #include "NINode.h"
 #include "NIProperty.h"
 #include "NITArray.h"
@@ -215,6 +217,47 @@ namespace mwse::patch::occlusion {
 	static std::unordered_map<NI::AVObject*, DrainCacheEntry> g_drainCache;
 	static uint64_t g_drainCacheHits = 0;
 	static uint64_t g_drainCacheMisses = 0;
+
+	// _Claude_ Per-light occlusion cache for the updateLights hook (gated
+	// by Configuration::OcclusionCullLights). Keyed by NI::Light*. Entry
+	// records the last frame the light was queried, the most recent MSOC
+	// verdict, consecutive-occluded frame counter for hysteresis, and
+	// identity fingerprints (vtable + worldBound) so reused pointers are
+	// detected and re-tested from scratch.
+	//
+	// Lifetime: the cache persists across frames (we need cross-frame
+	// state for the hysteresis counter). Cell changes wipe it — same
+	// stale-pointer risk as g_drainCache. Mid-cell, a destroyed NiLight*
+	// may be reused by a new allocation; vtable + bound comparison
+	// catches that and falls through to the miss path.
+	struct LightCullEntry {
+		uint32_t lastQueryFrame;
+		uint8_t consecOccluded;
+		bool cullActive;
+		void* vtbl;
+		float boundOriginX, boundOriginY, boundOriginZ;
+		float boundRadius;
+	};
+	static std::unordered_map<NI::Light*, LightCullEntry> g_lightCullCache;
+	static uint64_t g_lightsTested = 0;
+	static uint64_t g_lightsOccluded = 0;
+	static uint64_t g_lightCullCacheHits = 0;
+	static uint64_t g_lightCullCacheMisses = 0;
+
+	// _Claude_ Observer callbacks. Populated at startup by external
+	// consumers (e.g. MGE-XE) that want to tap into the live
+	// renderer-iterated NiLight list without re-patching 0x6BB7D4.
+	// Iterated lock-free from the render thread inside
+	// shouldLightBeEnabled; see header for the full contract.
+	static std::vector<LightObservedCallback> g_lightObservers;
+	// Consecutive occluded frames required before a light starts returning
+	// disabled from updateLights. Exposed as Configuration::
+	// OcclusionLightCullHysteresisFrames; default 3 = ~50 ms at 60 FPS —
+	// below the perceptual threshold for flicker but short enough to pay
+	// back on most "turn away from a lamp row" camera motions. The cache
+	// counter is uint8_t (max 255), so any slider value above that
+	// effectively disables the latch.
+
 	// File-scope frame counter. Needed by the drain loop to decide
 	// cache freshness; incremented once per top-level frame.
 	static uint32_t g_frameCounter = 0;
@@ -570,6 +613,201 @@ namespace mwse::patch::occlusion {
 		}
 
 		return g_msoc->TestRect(ndcMinX, ndcMinY, ndcMaxX, ndcMaxY, wMin);
+	}
+
+	// _Claude_ Called from the naked hook at 0x6bb7d4 (replaces the original
+	// `mov al, [ebx+0x90]` enabled-read inside NiDX8LightManager::updateLights).
+	// Returns the effective enabled byte: the light's real enabled flag
+	// unless Configuration::OcclusionCullLights is on AND the light's
+	// worldBound sphere has been occluded for at least
+	// Configuration::OcclusionLightCullHysteresisFrames consecutive frames, in which case we
+	// return 0 (disabled). This pre-empts the D3D8 SetLight/LightEnable
+	// pair without touching the scene graph.
+	//
+	// Hysteresis avoids flicker on light/dark boundary crossings:
+	// VISIBLE verdicts immediately reset the counter and unlatch the
+	// cull, so lights that swing back into view reappear the same
+	// frame. OCCLUDED verdicts only latch a cull after N frames in
+	// a row, so a transient misfire (e.g. a frame where the depth
+	// buffer briefly says the sphere is hidden) doesn't darken the
+	// scene for even one frame.
+	// _Claude_ Registry management. Dedup on register so double-registration
+	// (e.g. DLL reload) doesn't cause duplicate observer dispatch. Called
+	// at startup; not on any hot path.
+	void registerLightObservedCallback(LightObservedCallback cb) {
+		if (cb == nullptr) return;
+		const auto it = std::find(g_lightObservers.begin(), g_lightObservers.end(), cb);
+		if (it != g_lightObservers.end()) return;
+		g_lightObservers.push_back(cb);
+	}
+
+	void unregisterLightObservedCallback(LightObservedCallback cb) {
+		const auto it = std::find(g_lightObservers.begin(), g_lightObservers.end(), cb);
+		if (it != g_lightObservers.end()) {
+			g_lightObservers.erase(it);
+		}
+	}
+
+	extern "C" bool __cdecl shouldLightBeEnabled(NI::Light* light) {
+		// _Claude_ Observer dispatch runs first, unconditionally. Observers
+		// see every iterated NiLight — disabled ones, cache-hit path, MSOC
+		// backend missing, whatever. Empty-vector path is one predicted
+		// branch; single-observer path is one indirect call. See header
+		// for the contract observers must honour.
+		for (const auto cb : g_lightObservers) {
+			cb(light);
+		}
+
+		// The true enabled flag — always fetched, since a disabled
+		// light stays disabled regardless of occlusion.
+		const bool realEnabled = light->enabled;
+		if (!realEnabled) {
+			return false;
+		}
+		if (!Configuration::OcclusionCullLights) {
+			return true;
+		}
+		if (!g_msoc) {
+			// Hook installed but MSOC backend failed to init — bypass.
+			return true;
+		}
+
+		// Identity fingerprints. Captured on the NI::AVObject base
+		// (Light inherits AVObject) so worldBound comparisons are
+		// offsetof-stable across subclasses (NiPoint/Spot/Ambient/
+		// DirectionalLight all share this layout).
+		NI::AVObject* const av = light;
+		void* const curVtbl = *reinterpret_cast<void**>(av);
+		const float cx = av->worldBoundOrigin.x;
+		const float cy = av->worldBoundOrigin.y;
+		const float cz = av->worldBoundOrigin.z;
+		const float cr = av->worldBoundRadius;
+
+		// Degenerate bound: no sphere to test. Pass through as enabled
+		// (we can't make a reliable verdict, and a zero-radius light
+		// is likely an ambient or freshly-created instance whose
+		// worldBound hasn't propagated yet).
+		if (cr <= 0.0f) {
+			return true;
+		}
+
+		auto it = g_lightCullCache.find(light);
+		const bool haveValidEntry = (it != g_lightCullCache.end())
+			&& it->second.vtbl == curVtbl
+			&& it->second.boundOriginX == cx
+			&& it->second.boundOriginY == cy
+			&& it->second.boundOriginZ == cz
+			&& it->second.boundRadius == cr;
+
+		// Same-frame cache hit — return latched verdict without re-testing.
+		if (haveValidEntry && it->second.lastQueryFrame == g_frameCounter) {
+			++g_lightCullCacheHits;
+			return !it->second.cullActive;
+		}
+
+		// Miss (or stale) — run MSOC test.
+		++g_lightCullCacheMisses;
+		++g_lightsTested;
+		const TES3::Vector3 center{ cx, cy, cz };
+		const auto verdict = testSphereVisible(center, cr);
+		const bool occluded = (verdict == ::MaskedOcclusionCulling::OCCLUDED);
+		if (occluded) ++g_lightsOccluded;
+
+		if (haveValidEntry) {
+			auto& e = it->second;
+			e.lastQueryFrame = g_frameCounter;
+			if (occluded) {
+				if (e.consecOccluded < 0xFF) ++e.consecOccluded;
+				if (e.consecOccluded >= Configuration::OcclusionLightCullHysteresisFrames) {
+					e.cullActive = true;
+				}
+			}
+			else {
+				e.consecOccluded = 0;
+				e.cullActive = false;
+			}
+			return !e.cullActive;
+		}
+
+		// Fresh insert — starting state is "not culled yet," even
+		// on an occluded first verdict, so the hysteresis counter
+		// has to ramp up before the first darkening.
+		LightCullEntry e;
+		e.lastQueryFrame = g_frameCounter;
+		e.consecOccluded = occluded ? 1 : 0;
+		e.cullActive = false;
+		e.vtbl = curVtbl;
+		e.boundOriginX = cx;
+		e.boundOriginY = cy;
+		e.boundOriginZ = cz;
+		e.boundRadius = cr;
+		g_lightCullCache[light] = e;
+		return true;
+	}
+
+	// _Claude_ Read-only cache query used by the scene-graph piggyback
+	// in Node::shouldBeAffectedByLight. Unlike shouldLightBeEnabled, this
+	// never invokes testSphereVisible, never writes the cache, and never
+	// increments frame counters — it's a pure lookup against whatever the
+	// render-time hook populated last frame. One-frame-stale by design,
+	// same lag the D3D8 enable hook already tolerates.
+	//
+	// Returns true only when: feature flags are on, a cache entry exists,
+	// the entry's fingerprint matches the live light (vtable + worldBound
+	// + radius), and hysteresis has latched (cullActive == true).
+	// Everything else — disabled features, cache miss, stale fingerprint,
+	// still-ramping hysteresis — returns false so the caller treats the
+	// light as potentially affecting (safe default).
+	bool isLightLatchedOccluded(const NI::Light* light) {
+		if (!Configuration::EnableMSOC) return false;
+		if (!Configuration::OcclusionCullLights) return false;
+		if (!g_msoc) return false;
+		if (light == nullptr) return false;
+
+		auto* const av = static_cast<const NI::AVObject*>(light);
+		void* const curVtbl = *reinterpret_cast<void* const*>(av);
+		const float cx = av->worldBoundOrigin.x;
+		const float cy = av->worldBoundOrigin.y;
+		const float cz = av->worldBoundOrigin.z;
+		const float cr = av->worldBoundRadius;
+
+		auto* const key = const_cast<NI::Light*>(light);
+		auto it = g_lightCullCache.find(key);
+		if (it == g_lightCullCache.end()) return false;
+
+		const auto& e = it->second;
+		if (e.vtbl != curVtbl) return false;
+		if (e.boundOriginX != cx) return false;
+		if (e.boundOriginY != cy) return false;
+		if (e.boundOriginZ != cz) return false;
+		if (e.boundRadius != cr) return false;
+
+		return e.cullActive;
+	}
+
+	// _Claude_ Naked trampoline installed at 0x6bb7d4 in place of
+	// `mov al, [ebx+NiLight.super.enabled]` (6 bytes). Writes `call rel32`
+	// + NOP across those 6 bytes; we enter here with ebx = NiLight* and
+	// must return with AL holding the effective enabled byte. The
+	// instruction after our patch (`mov [esp+...], ebx` at 0x6bb7da,
+	// then `test al, al` at 0x6bb7de) only cares about AL; upper EAX
+	// bits are free to trash, same as the original mov-al semantics.
+	__declspec(naked) void updateLights_enabledRead_hook() {
+		__asm {
+			// Preserve volatile regs we clobber. ebx/esi/edi/ebp are
+			// non-volatile and the C function honours that, but ecx/edx
+			// are nominally caller-save and the surrounding loop doesn't
+			// save them before our site, so we guard them ourselves.
+			push ecx
+			push edx
+			push ebx                 // arg: NI::Light*
+			call shouldLightBeEnabled
+			add esp, 4
+			movzx eax, al            // zero-extend so upper bits are defined
+			pop edx
+			pop ecx
+			retn
+		}
 	}
 
 	// Rasterise a shape's actual triangles (in world space) as an occluder.
@@ -1246,6 +1484,7 @@ namespace mwse::patch::occlusion {
 			if (activeCell != g_lastCell) {
 				g_landCache.clear();
 				g_drainCache.clear();
+				g_lightCullCache.clear();
 				g_lastCell = activeCell;
 				++g_cellChanges;
 			}
@@ -1275,6 +1514,10 @@ namespace mwse::patch::occlusion {
 			g_landCacheEvictions = 0;
 			g_drainCacheHits = 0;
 			g_drainCacheMisses = 0;
+			g_lightsTested = 0;
+			g_lightsOccluded = 0;
+			g_lightCullCacheHits = 0;
+			g_lightCullCacheMisses = 0;
 			++g_frameCounter;
 			// _Claude_ Age-prune the temporal drain cache so entries for
 			// shapes we haven't seen in a while (unloaded cell, destroyed
@@ -1556,6 +1799,37 @@ namespace mwse::patch::occlusion {
 		log << "MSOC: CullShow detour installed at 0x6EB480; wrapped "
 			<< renderMainSceneInstalled << " / 3 renderMainScene call sites ("
 			<< kMsocWidth << "x" << kMsocHeight << " tile buffer)." << std::endl;
+
+		// _Claude_ Light cull hook. Replaces the 6-byte
+		// `mov al, [ebx+NiLight.super.enabled]` at 0x6bb7d4 inside
+		// NiDX8LightManager::updateLights with `call shouldLightBeEnabled;
+		// nop`. Installed unconditionally so Configuration::OcclusionCullLights
+		// can be toggled at runtime without a restart; the detour itself
+		// short-circuits to the real enabled flag when the feature is off
+		// or MSOC failed to initialise.
+		genCallUnprotected(0x6bb7d4,
+			reinterpret_cast<DWORD>(updateLights_enabledRead_hook), 6);
+		log << "MSOC: light cull hook installed at 0x6bb7d4 (gated by "
+			<< "Configuration::OcclusionCullLights, default off)." << std::endl;
 	}
 
+}
+
+// _Claude_ Stable C-ABI shims. Named for GetProcAddress lookup from
+// out-of-tree consumers (MGE-XE etc.). NI::Light* and void* share
+// representation on x86; the reinterpret_cast is an ABI formality. If
+// MWSE is renamed or moved behind a different DLL name, the export
+// names here stay stable — consumers look up by name, not ordinal.
+extern "C" __declspec(dllexport)
+void __cdecl mwse_registerLightObservedCallback(void(__cdecl* cb)(void* niLight)) {
+	using Typed = mwse::patch::occlusion::LightObservedCallback;
+	mwse::patch::occlusion::registerLightObservedCallback(
+		reinterpret_cast<Typed>(cb));
+}
+
+extern "C" __declspec(dllexport)
+void __cdecl mwse_unregisterLightObservedCallback(void(__cdecl* cb)(void* niLight)) {
+	using Typed = mwse::patch::occlusion::LightObservedCallback;
+	mwse::patch::occlusion::unregisterLightObservedCallback(
+		reinterpret_cast<Typed>(cb));
 }

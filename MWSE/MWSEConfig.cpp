@@ -36,6 +36,8 @@ namespace mwse {
 	bool Configuration::OcclusionEnableExterior = true;
 	bool Configuration::OcclusionSkipTerrainOccludees = true;
 	bool Configuration::OcclusionAggregateTerrain = true;
+	bool Configuration::OcclusionCullLights = false;
+	UINT Configuration::OcclusionLightCullHysteresisFrames = 3;
 	bool Configuration::OcclusionAsyncOccluders = false;
 	UINT Configuration::OcclusionThreadpoolThreadCount = 0;
 	UINT Configuration::OcclusionThreadpoolBinsW = 4;
@@ -107,6 +109,8 @@ namespace mwse {
 		DECLARE_CONFIG(OcclusionEnableExterior)
 		DECLARE_CONFIG(OcclusionSkipTerrainOccludees)
 		DECLARE_CONFIG(OcclusionAggregateTerrain)
+		DECLARE_CONFIG(OcclusionCullLights)
+		DECLARE_CONFIG(OcclusionLightCullHysteresisFrames)
 		DECLARE_CONFIG(OcclusionAsyncOccluders)
 		DECLARE_CONFIG(OcclusionThreadpoolThreadCount)
 		DECLARE_CONFIG(OcclusionThreadpoolBinsW)
