@@ -38,11 +38,11 @@ namespace mwse {
 	bool Configuration::OcclusionAggregateTerrain = true;
 	bool Configuration::OcclusionCullLights = true;
 	UINT Configuration::OcclusionLightCullHysteresisFrames = 3;
-	bool Configuration::OcclusionAsyncOccluders = false;
+	bool Configuration::OcclusionAsyncOccluders = true;
 	UINT Configuration::OcclusionThreadpoolThreadCount = 0;
 	UINT Configuration::OcclusionThreadpoolBinsW = 4;
 	UINT Configuration::OcclusionThreadpoolBinsH = 2;
-	UINT Configuration::OcclusionTemporalCoherenceFrames = 0;
+	UINT Configuration::OcclusionTemporalCoherenceFrames = 4;
 	bool Configuration::OcclusionLogPerFrame = false;
 	bool Configuration::OcclusionLogAggregate = false;
 #ifdef APPVEYOR_BUILD_NUMBER
