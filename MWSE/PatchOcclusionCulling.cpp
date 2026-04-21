@@ -26,11 +26,13 @@
 #include "MaskedOcclusionCulling.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cfloat>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
 #include <limits>
 #include <ostream>
 #include <thread>
@@ -153,6 +155,13 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_skippedTriCount = 0;
 	static uint64_t g_skippedTesteeTiny = 0;
 	static uint64_t g_skippedSceneGate = 0;
+	// _Claude_ Frames where a menu was open and we skipped MSOC entirely.
+	// Cumulative across the session (not reset per top-level frame, since
+	// these are exactly the frames where the per-frame reset doesn't run).
+	// Incremented per top-level CullShow_detour entry while flagMenuMode
+	// is set, so on a busy menu pass it can grow by several per actual
+	// game frame — the rate matters less than the fact that it's non-zero.
+	static uint64_t g_skippedMenuMode = 0;
 	// _Claude_ Deferred terrain leaves bypassed from TestRect. Ground
 	// patches sit under the camera and are nearly always visible;
 	// skipping the query saves depth-buffer bandwidth + ~1 µs/leaf.
@@ -212,25 +221,18 @@ namespace mwse::patch::occlusion {
 	// against the snapshot taken at query time. Any meaningful change
 	// (animated shape, physics movement) invalidates the entry.
 	//
-	// _Claude_ vtable verify: NI's first 4 bytes are a vtable pointer
-	// constant for the process lifetime per class. Belt-and-braces with
-	// shapePtr below — shapePtr already pins the object so the vtable
-	// can't change, but the cheap compare also catches any case where
-	// somehow our shape ref was stripped externally.
-	//
 	// _Claude_ Lifetime: shapePtr (NI::Pointer) holds a refcount on the
 	// AVObject key so the engine cannot free it while we hold a cache
 	// entry. Without this, raising OcclusionTemporalCoherenceFrames
 	// widened the window in which a destroyed-then-prune-pending entry
 	// could be looked up against a recycled pointer (and crash on the
-	// vtable dereference if the page got unmapped). Age-prune at 2*N
-	// frames bounds memory; on prune the NI::Pointer destructor releases
-	// the ref and the object is freed if we were the last owner.
+	// dereference if the page got unmapped). Age-prune at 2*N frames
+	// bounds memory; on prune the NI::Pointer destructor releases the
+	// ref and the object is freed if we were the last owner.
 	struct DrainCacheEntry {
 		NI::Pointer<NI::AVObject> shapePtr;
 		::MaskedOcclusionCulling::CullingResult result;
 		uint32_t lastQueryFrame;
-		void* vtbl; // _Claude_ snapshot of *(void**)shape at insert
 		float boundOriginX, boundOriginY, boundOriginZ;
 		float boundRadius;
 	};
@@ -242,8 +244,7 @@ namespace mwse::patch::occlusion {
 	// by Configuration::OcclusionCullLights). Keyed by NI::Light*. Entry
 	// records the last frame the light was queried, the most recent MSOC
 	// verdict, consecutive-occluded frame counter for hysteresis, and
-	// identity fingerprints (vtable + worldBound) so reused pointers are
-	// detected and re-tested from scratch.
+	// the worldBound snapshot used for move detection.
 	//
 	// _Claude_ Lifetime: lightPtr (NI::Pointer) holds a refcount on the
 	// NiLight key so the engine cannot free it mid-cell while our entry
@@ -251,14 +252,12 @@ namespace mwse::patch::occlusion {
 	// at once. Without this, a light freed mid-cell whose address was
 	// reused by a different allocation could be looked up and matched
 	// against a stale entry — at best a wrong cull verdict, at worst a
-	// crash on the vtable dereference. Vtable + bound checks remain as
-	// belt-and-braces.
+	// crash on the dereference.
 	struct LightCullEntry {
 		NI::Pointer<NI::Light> lightPtr;
 		uint32_t lastQueryFrame;
 		uint8_t consecOccluded;
 		bool cullActive;
-		void* vtbl;
 		float boundOriginX, boundOriginY, boundOriginZ;
 		float boundRadius;
 	};
@@ -295,6 +294,88 @@ namespace mwse::patch::occlusion {
 	// Phase 3.2: time spent in threadpool Flush() barrier before drain.
 	// Only populated when async mode is active; zero otherwise.
 	static uint64_t g_asyncFlushTimeUs = 0;
+	// _Claude_ Freeze diagnostic: time spent inside the threadpool's
+	// WakeThreads() spin (`while (mNumSuspendedThreads < mNumThreads)
+	// yield()` in Intel's CullingThreadpool). Should be ~0 every frame;
+	// any non-trivial value here means a worker didn't reach its
+	// suspended state from the previous frame's SuspendThreads(), and a
+	// permanently-stuck worker would peg this at infinity (i.e. freeze).
+	// Reset per frame; max-seen kept for the lifetime so a single
+	// outlier shows up in the next periodic log even if the average
+	// stays low.
+	static uint64_t g_wakeThreadsTimeUs = 0;
+	static uint64_t g_maxWakeThreadsUsSession = 0;
+	// _Claude_ Recursion diagnostic. CullShow descends NiNode children
+	// recursively via display(); a runaway tree (cycle, broken sentinel)
+	// would manifest as ever-growing depth before a stack overflow.
+	// g_callDepth is incremented at CullShow_detour entry / decremented
+	// at exit, so a debugger attached during a freeze can read it
+	// directly. g_maxCallDepthThisFrame tracks the per-frame peak;
+	// g_maxCallDepthSession is the lifetime peak for the periodic log.
+	static uint32_t g_callDepth = 0;
+	static uint32_t g_maxCallDepthThisFrame = 0;
+	static uint32_t g_maxCallDepthSession = 0;
+	// _Claude_ Last-checkpoint marker. Updated as the top-level frame
+	// passes each major stage, so a debugger attached to a frozen
+	// process can identify which stage the main thread is stuck in
+	// without needing symbols. Numbering is intentionally stable
+	// (don't renumber): 0 idle, 1 entered top-level, 2 wakeThreads,
+	// 3 clearBuffer, 4 cellWipe, 5 ageprune, 6 uploadCamera,
+	// 7 setMatrix, 8 aggTerrain, 9 cullShowBody, 10 flush, 11 drain,
+	// 12 suspendThreads, 13 exited top-level cleanly.
+	static volatile uint32_t g_lastStage = 0;
+
+	// _Claude_ Freeze-forensics watchdog. A background thread polls
+	// the checkpoint globals every ~250ms and writes an atomic
+	// snapshot to disk (trunc mode, so the file is always the latest
+	// state — no parse needed). When the game hard-freezes and
+	// Windows kills it, the file left behind shows which stage the
+	// main thread was in, the recursion depth at freeze time, and
+	// how long it has been since the last clean frame end. Without
+	// this, a freeze with no log tail and no crash dump is opaque.
+	//
+	// g_lastFrameEndTimeMs is published by the main thread at the
+	// end of each top-level frame (after g_lastStage = 13). The
+	// watchdog reads it to compute "time since last clean exit".
+	// Using steady_clock::now().time_since_epoch().count() in ms;
+	// std::atomic<uint64_t> gives cheap wait-free publish on x86.
+	static std::atomic<uint64_t> g_lastFrameEndTimeMs{0};
+	// _Claude_ Set true on orderly shutdown. There's no such path for
+	// MSOC today (we detach the watchdog), but if one is added later
+	// the thread will observe this and exit its sleep loop.
+	static std::atomic<bool> g_watchdogStop{false};
+
+	// _Claude_ Human-readable stage label so the forensics file can
+	// be read without cross-referencing the numeric table above.
+	// Kept in sync with the g_lastStage numbering comment.
+	static const char* stageName(uint32_t s) {
+		switch (s) {
+			case 0:  return "idle";
+			case 1:  return "entered";
+			case 2:  return "wakeThreads";
+			case 3:  return "clearBuffer";
+			case 4:  return "cellWipe";
+			case 5:  return "agePrune";
+			case 6:  return "uploadCamera";
+			case 7:  return "setMatrix";
+			case 8:  return "aggTerrain";
+			case 9:  return "cullShowBody";
+			case 10: return "flush";
+			case 11: return "drain";
+			case 12: return "suspendThreads";
+			case 13: return "exitedClean";
+			default: return "unknown";
+		}
+	}
+
+	// Forward decl — body defined after Phase 3.2 globals so it can
+	// reference g_threadpool / g_asyncThisFrame.
+	static void watchdogTick();
+
+	// Forward decl — body defined alongside installPatches() so it can
+	// share the lazy create/destroy helpers. Called from CullShow_detour
+	// at the safe top-of-frame point.
+	static bool ensureMSOCResourcesMatchConfig();
 
 	// Phase 3.2 async-rasterization state.
 	//
@@ -318,6 +399,55 @@ namespace mwse::patch::occlusion {
 	static bool g_asyncThisFrame = false;
 	static std::vector<std::vector<float>> g_asyncOccluderVerts;
 	static std::vector<std::vector<unsigned int>> g_asyncOccluderIndices;
+
+	// _Claude_ Watchdog loop (body — forward-declared higher up).
+	// 250ms cadence is a compromise: fast enough to catch a freeze
+	// before the user alt-tabs out, slow enough not to thrash the
+	// disk (one small trunc-write per tick). File lives in CWD
+	// (= modlist root under MO2), alongside MWSE.log, so the user
+	// can attach both when reporting.
+	static void watchdogTick() {
+		using namespace std::chrono;
+		while (!g_watchdogStop.load(std::memory_order_relaxed)) {
+			std::this_thread::sleep_for(milliseconds(250));
+
+			const uint64_t nowMs = static_cast<uint64_t>(
+				duration_cast<milliseconds>(
+					steady_clock::now().time_since_epoch()).count());
+			const uint64_t lastEnd = g_lastFrameEndTimeMs.load(
+				std::memory_order_relaxed);
+			const uint64_t sinceFrameEndMs = lastEnd == 0
+				? 0 : (nowMs - lastEnd);
+
+			// Snapshot volatile/racy globals. Reads may tear on
+			// 64-bit counters but torn values still bracket the
+			// real value well enough for post-mortem.
+			const uint32_t stage = g_lastStage;
+			const uint32_t depth = g_callDepth;
+			const uint32_t maxDepth = g_maxCallDepthSession;
+			const uint64_t frame = g_frameCounter;
+			const bool asyncNow = g_asyncThisFrame;
+			const bool tpAlive = g_threadpool != nullptr;
+
+			// Trunc mode: each tick overwrites — the file is
+			// always the freshest snapshot. If the process
+			// hard-freezes, whatever the watchdog last wrote is
+			// what Windows has on disk at kill time.
+			std::ofstream f("MSOC.forensics.txt",
+				std::ios::out | std::ios::trunc);
+			if (!f.is_open()) continue;
+			f << "frame=" << frame
+			  << " stage=" << stage << "(" << stageName(stage) << ")"
+			  << " depth=" << depth
+			  << " maxDepthSess=" << maxDepth
+			  << " sinceFrameEndMs=" << sinceFrameEndMs
+			  << " asyncThisFrame=" << (asyncNow ? 1 : 0)
+			  << " threadpoolAlive=" << (tpAlive ? 1 : 0)
+			  << " nowMs=" << nowMs
+			  << " lastEndMs=" << lastEnd
+			  << std::endl;
+		}
+	}
 
 	struct ScopedUsAccumulator {
 		uint64_t& target;
@@ -722,7 +852,6 @@ namespace mwse::patch::occlusion {
 		// offsetof-stable across subclasses (NiPoint/Spot/Ambient/
 		// DirectionalLight all share this layout).
 		NI::AVObject* const av = light;
-		void* const curVtbl = *reinterpret_cast<void**>(av);
 		const float cx = av->worldBoundOrigin.x;
 		const float cy = av->worldBoundOrigin.y;
 		const float cz = av->worldBoundOrigin.z;
@@ -738,7 +867,6 @@ namespace mwse::patch::occlusion {
 
 		auto it = g_lightCullCache.find(light);
 		const bool haveValidEntry = (it != g_lightCullCache.end())
-			&& it->second.vtbl == curVtbl
 			&& it->second.boundOriginX == cx
 			&& it->second.boundOriginY == cy
 			&& it->second.boundOriginZ == cz
@@ -782,7 +910,6 @@ namespace mwse::patch::occlusion {
 		e.lastQueryFrame = g_frameCounter;
 		e.consecOccluded = occluded ? 1 : 0;
 		e.cullActive = false;
-		e.vtbl = curVtbl;
 		e.boundOriginX = cx;
 		e.boundOriginY = cy;
 		e.boundOriginZ = cz;
@@ -1303,7 +1430,11 @@ namespace mwse::patch::occlusion {
 		// (handled at the caller) on occluder-free frames — rare at
 		// defaults, but common in tiny rooms / dense fog / or after a
 		// knob tweak that rejects every candidate.
-		if (g_rasterizedAsOccluder == 0) {
+		// _Claude_ Aggregate-terrain submissions count as occluders too —
+		// a pass that put 40k+ hill/horizon triangles in the buffer can
+		// still cull deferred leaves behind it, so we must not short-circuit
+		// just because no main-pass leaf qualified.
+		if (g_rasterizedAsOccluder == 0 && g_aggregateTerrainLands == 0) {
 			for (const auto& p : g_pendingDisplays) {
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 			}
@@ -1346,18 +1477,10 @@ namespace mwse::patch::occlusion {
 					const auto& e = it->second;
 					const auto& o = p.shape->worldBoundOrigin;
 					const float r = p.shape->worldBoundRadius;
-					// _Claude_ vtable verify: any pointer load before
-					// the bounds compare. If the slot got freed and
-					// reallocated for a different class, the cached
-					// bounds compare would be reading the wrong fields
-					// at the wrong offsets. Mismatch → miss → re-query.
-					const void* curVtbl =
-						*reinterpret_cast<void* const*>(p.shape);
-					const bool sameClass = e.vtbl == curVtbl;
-					// Bit-exact compare is intentional: static shapes
-					// produce identical floats across frames, and any
-					// animated/moved shape will fail this and re-query.
-					const bool stationary = sameClass &&
+					// _Claude_ Bit-exact compare is intentional: static
+					// shapes produce identical floats across frames, and
+					// any animated/moved shape will fail this and re-query.
+					const bool stationary =
 						e.boundOriginX == o.x &&
 						e.boundOriginY == o.y &&
 						e.boundOriginZ == o.z &&
@@ -1387,7 +1510,6 @@ namespace mwse::patch::occlusion {
 						e.shapePtr = p.shape;
 						e.result = result;
 						e.lastQueryFrame = g_frameCounter;
-						e.vtbl = *reinterpret_cast<void* const*>(p.shape);
 						e.boundOriginX = p.shape->worldBoundOrigin.x;
 						e.boundOriginY = p.shape->worldBoundOrigin.y;
 						e.boundOriginZ = p.shape->worldBoundOrigin.z;
@@ -1436,47 +1558,94 @@ namespace mwse::patch::occlusion {
 	// renderMainScene (load screen, screenshots, etc.) — just runs the
 	// body, matching the engine 1:1.
 	static void __fastcall CullShow_detour(NI::AVObject* self, void* edx, NI::Camera* camera) {
+		// _Claude_ Depth tracking for freeze diagnostic. Increments on
+		// every entry (top-level + recursive descents through display());
+		// the per-frame max gets surfaced in the periodic log. Wrapped in
+		// a struct so the decrement happens on every return path including
+		// any future early-exit paths.
+		struct DepthGuard {
+			DepthGuard() {
+				++g_callDepth;
+				if (g_callDepth > g_maxCallDepthThisFrame) {
+					g_maxCallDepthThisFrame = g_callDepth;
+				}
+			}
+			~DepthGuard() { --g_callDepth; }
+		} depthGuard;
 		bool isTopLevel = false;
 		TES3::Cell* activeCell = nullptr;
 		if (!g_msocActive && g_inRenderMainScene) {
 			auto wc = TES3::WorldController::get();
 			NI::Camera* mainCamera = wc ? wc->worldCamera.cameraData.camera.get() : nullptr;
-			if (camera == mainCamera) {
+			// _Claude_ Skip MSOC entirely while a menu is open (MCM, inventory,
+			// dialogue, journal, console, etc). Two reasons:
+			//   1. The threadpool's WakeThreads / Flush spin-locks have no
+			//      timeout — a worker that doesn't reach the suspended state
+			//      between frames freezes the main thread. Menu mode is the
+			//      observed trigger for that race.
+			//   2. FPS doesn't matter while a menu is open; the world behind
+			//      the menu can render with vanilla frustum culling only.
+			// The threadpool stays in whatever state the previous top-level
+			// frame left it (suspended, since SuspendThreads runs at the end
+			// of every active frame). Skipping isTopLevel here means we
+			// neither WakeThreads nor SuspendThreads while the menu is up,
+			// which sidesteps the race wholesale.
+			const bool inMenuMode = wc && wc->flagMenuMode;
+			if (inMenuMode) ++g_skippedMenuMode;
+			if (camera == mainCamera && !inMenuMode) {
 				// Scene-type gate: let users disable MSOC in interiors or
 				// exteriors independently. Cheap flag bit test on the active
 				// cell; falls back to exterior behaviour if currentCell isn't
 				// yet populated (main-menu preview, load screen).
+				// _Claude_ dh null on load screen / main menu — no scene to
+				// cull, so we stay out of isTopLevel entirely rather than
+				// null-check at every use inside the block.
 				auto dh = TES3::DataHandler::get();
-				const bool isInterior = dh && dh->currentCell
-					&& dh->currentCell->getIsInterior();
-				const bool sceneEnabled = isInterior
-					? Configuration::OcclusionEnableInterior
-					: Configuration::OcclusionEnableExterior;
-				if (sceneEnabled) {
-					isTopLevel = true;
-					// _Claude_ Capture landscape root for drain-loop skip.
-					// Null on load screen / main menu (dh already null there).
-					g_worldLandscapeRoot = dh->worldLandscapeRoot;
-					// Forwarded to the isTopLevel block below for cell-change
-					// cache invalidation. Stored only on active frames so a
-					// disabled-scene span doesn't spuriously "change cell".
-					activeCell = dh ? dh->currentCell : nullptr;
-				}
-				else {
-					// Counter accumulates only on skipped frames; no
-					// top-level fires then so the reset at the top of
-					// an active frame zeroes it out. Visible only on
-					// the first active frame after a skipped stretch
-					// — this is intended, per Phase 2.2 semantics.
-					++g_skippedSceneGate;
+				if (dh) {
+					const bool isInterior = dh->currentCell
+						&& dh->currentCell->getIsInterior();
+					// _Claude_ EnableMSOC is the master runtime gate.
+					// Reconcile resource state with the live config first:
+					// if the user just toggled MSOC on, allocate g_msoc +
+					// threadpool now; if they just toggled it off, tear
+					// them down (joins workers, frees ~57MB). The reconciler
+					// is idempotent in steady state. Returns true only when
+					// MSOC is enabled AND resources are live; on failure
+					// (alloc returned null) it returns false and we fall
+					// through to vanilla cullShowBody for this frame.
+					const bool resourcesLive = ensureMSOCResourcesMatchConfig();
+					const bool sceneEnabled = resourcesLive
+						&& (isInterior
+							? Configuration::OcclusionEnableInterior
+							: Configuration::OcclusionEnableExterior);
+					if (sceneEnabled) {
+						isTopLevel = true;
+						// Captured for drain-loop terrain-skip.
+						g_worldLandscapeRoot = dh->worldLandscapeRoot;
+						// Forwarded to the isTopLevel block below for
+						// cell-change cache invalidation. Stored only on
+						// active frames so a disabled-scene span doesn't
+						// spuriously "change cell".
+						activeCell = dh->currentCell;
+					}
+					else {
+						// Counter accumulates only on skipped frames; no
+						// top-level fires then so the reset at the top of
+						// an active frame zeroes it out. Visible only on
+						// the first active frame after a skipped stretch
+						// — this is intended, per Phase 2.2 semantics.
+						++g_skippedSceneGate;
+					}
 				}
 			}
 		}
 
 		if (isTopLevel) {
+			g_lastStage = 1; // _Claude_ entered top-level
 			// Latch async mode once per frame so a mid-frame Lua toggle
 			// can't split submissions between threadpool and direct MOC.
-			g_asyncThisFrame = g_threadpool && Configuration::OcclusionAsyncOccluders;
+			g_asyncThisFrame = g_threadpool
+				&& Configuration::OcclusionAsyncOccluders;
 			// _Claude_ Mask is about to be wiped. Out-of-tree consumers
 			// (MGE-XE) gate queries on g_maskReady; clear it here so any
 			// query that arrives mid-frame before the drain completes
@@ -1488,12 +1657,18 @@ namespace mwse::patch::occlusion {
 				// RenderTriangles call. ClearBuffer() does an implicit
 				// Flush() which retires any stragglers from the previous
 				// frame — safe to clear the arena once it returns.
-				g_threadpool->WakeThreads();
+				g_lastStage = 2;
+				{
+					ScopedUsAccumulator t(g_wakeThreadsTimeUs);
+					g_threadpool->WakeThreads();
+				}
+				g_lastStage = 3;
 				g_threadpool->ClearBuffer();
 				g_asyncOccluderVerts.clear();
 				g_asyncOccluderIndices.clear();
 			}
 			else {
+				g_lastStage = 3;
 				g_msoc->ClearBuffer();
 			}
 			// _Claude_ Cell-change cache invalidation. Must run AFTER the
@@ -1503,10 +1678,17 @@ namespace mwse::patch::occlusion {
 			// Both caches key off pointers that a cell load can free and
 			// reuse (per-Land NiNode*, shape NI::AVObject*), so a wipe
 			// here eliminates the stale-pointer hazard wholesale.
+			g_lastStage = 4; // _Claude_ cellWipe
 			if (activeCell != g_lastCell) {
 				g_landCache.clear();
 				g_drainCache.clear();
 				g_lightCullCache.clear();
+				// _Claude_ Debug-tint map: releases our NI::Pointer refs
+				// on shapes from the outgoing cell so they can actually
+				// be freed. Shapes that survive the cell change (player,
+				// inventory items) get re-entered on their next tint
+				// call and end-of-frame reset continues working.
+				g_tintClones.clear();
 				g_lastCell = activeCell;
 				++g_cellChanges;
 			}
@@ -1541,6 +1723,7 @@ namespace mwse::patch::occlusion {
 			g_lightCullCacheHits = 0;
 			g_lightCullCacheMisses = 0;
 			++g_frameCounter;
+			g_lastStage = 5; // _Claude_ ageprune (drain + light caches below)
 			// _Claude_ Age-prune the temporal drain cache so entries for
 			// shapes we haven't seen in a while (unloaded cell, destroyed
 			// reference) don't accumulate. Window is 2*N frames — any
@@ -1564,11 +1747,44 @@ namespace mwse::patch::occlusion {
 					}
 				}
 			}
+			// _Claude_ Age-prune the light-cull cache on the same pattern.
+			// Without this, transient lights (spell effects, thrown-item
+			// glows, light-projectile spells) accumulate entries until the
+			// next cell change — each one pinned alive via the NI::Pointer
+			// key. Window is 2*hysteresis frames: any entry not queried
+			// within that span isn't being iterated by the renderer anymore
+			// and can't affect hysteresis state. When light culling is
+			// disabled the whole map is dropped so a previously-enabled
+			// session doesn't linger.
+			{
+				if (!Configuration::OcclusionCullLights) {
+					if (!g_lightCullCache.empty()) g_lightCullCache.clear();
+				}
+				else {
+					const uint32_t maxAge =
+						Configuration::OcclusionLightCullHysteresisFrames * 2;
+					for (auto it = g_lightCullCache.begin(); it != g_lightCullCache.end(); ) {
+						if (g_frameCounter - it->second.lastQueryFrame > maxAge) {
+							it = g_lightCullCache.erase(it);
+						}
+						else {
+							++it;
+						}
+					}
+				}
+			}
 			g_rasterizeTimeUs = 0;
 			g_drainPhaseTimeUs = 0;
 			g_asyncFlushTimeUs = 0;
+			// _Claude_ Freeze diagnostics: per-frame counters reset here
+			// alongside the rest. Session maxes (g_max*Session) are NOT
+			// reset — they're lifetime peaks for the periodic log.
+			g_wakeThreadsTimeUs = 0;
+			g_maxCallDepthThisFrame = 0;
+			g_lastStage = 6; // _Claude_ uploadCamera
 			uploadCameraTransform(camera);
 			if (g_asyncThisFrame) {
+				g_lastStage = 7; // _Claude_ setMatrix
 				// SetMatrix copies into the threadpool's state ring buffer;
 				// must be called AFTER uploadCameraTransform populated
 				// g_worldToClip. Passed once per frame (all submissions
@@ -1584,14 +1800,26 @@ namespace mwse::patch::occlusion {
 			// fail the thin-axis gate; merging them reclaims terrain
 			// as a useful occluder. Gated for A/B profiling.
 			if (Configuration::OcclusionAggregateTerrain) {
+				g_lastStage = 8; // _Claude_ aggTerrain
 				rasterizeAggregateTerrain(camera);
 			}
 		}
 
+		g_lastStage = 9; // _Claude_ cullShowBody (or non-top-level body)
 		cullShowBody(self, edx, camera);
 
 		if (isTopLevel) {
-			if (g_asyncThisFrame && g_rasterizedAsOccluder > 0) {
+			// _Claude_ Aggregate-terrain submissions also go through the
+			// threadpool, so the Flush gate must account for them too —
+			// otherwise a frame with terrain but no main-pass occluders
+			// SuspendThreads() with queued work still in the ring, which
+			// can leave the threadpool in an inconsistent state next
+			// frame (suspected cause of a freeze on menu entry). Same
+			// shape as the drain fast-path gate.
+			const bool hadAsyncWork = g_asyncThisFrame
+				&& (g_rasterizedAsOccluder > 0 || g_aggregateTerrainLands > 0);
+			if (hadAsyncWork) {
+				g_lastStage = 10; // _Claude_ flush
 				// Barrier: Flush() blocks until every queued RenderTriangles
 				// is fully rasterised into the shared buffer. Only after
 				// this return is it safe to TestRect (drainPendingDisplays
@@ -1601,6 +1829,7 @@ namespace mwse::patch::occlusion {
 				ScopedUsAccumulator t(g_asyncFlushTimeUs);
 				g_threadpool->Flush();
 			}
+			g_lastStage = 11; // _Claude_ drain
 			drainPendingDisplays();
 			// _Claude_ Mask is now complete and stable for external query.
 			// Flush above (if async) has retired all worker writes; drain
@@ -1608,12 +1837,38 @@ namespace mwse::patch::occlusion {
 			// next frame's ClearBuffer clears it.
 			g_maskReady = true;
 			if (g_asyncThisFrame) {
+				g_lastStage = 12; // _Claude_ suspendThreads
 				// Put the workers back to low-overhead sleep between frames.
 				// Next frame's top-level entry will WakeThreads again.
 				g_threadpool->SuspendThreads();
 				g_asyncThisFrame = false;
 			}
 			g_msocActive = false;
+			// _Claude_ Update lifetime peaks for the periodic log. These
+			// stay across frames so a single outlier shows up in the next
+			// baseline tick even if subsequent frames are quiet.
+			if (g_wakeThreadsTimeUs > g_maxWakeThreadsUsSession) {
+				g_maxWakeThreadsUsSession = g_wakeThreadsTimeUs;
+			}
+			if (g_maxCallDepthThisFrame > g_maxCallDepthSession) {
+				g_maxCallDepthSession = g_maxCallDepthThisFrame;
+			}
+			g_lastStage = 13; // _Claude_ exited top-level cleanly
+			// _Claude_ Publish the frame-end timestamp for the
+			// watchdog. If the next frame freezes mid-body, the
+			// forensics file shows "sinceFrameEndMs" growing
+			// without bound — telling us the freeze is inside
+			// MSOC code. If sinceFrameEndMs stays small (near
+			// 250ms) while the game is frozen, the freeze is
+			// upstream of CullShow_detour (game loop, MGE-XE,
+			// D3D present, etc.) because frames are still
+			// completing MSOC cleanly.
+			g_lastFrameEndTimeMs.store(
+				static_cast<uint64_t>(
+					std::chrono::duration_cast<std::chrono::milliseconds>(
+						std::chrono::steady_clock::now()
+							.time_since_epoch()).count()),
+				std::memory_order_relaxed);
 
 			// Cumulative counters survive across frames so rare OCCLUDED
 			// events — scenes where one building sits squarely behind
@@ -1670,9 +1925,14 @@ namespace mwse::patch::occlusion {
 					<< " tcSize=" << g_drainCache.size() // _Claude_
 					<< " cellChanges=" << g_cellChanges // _Claude_
 					<< " sceneGateSkipped=" << g_skippedSceneGate
+					<< " menuModeSkipped=" << g_skippedMenuMode // _Claude_ cumulative
 					<< " rasterizeUs=" << g_rasterizeTimeUs
 					<< " drainUs=" << g_drainPhaseTimeUs
 					<< " asyncFlushUs=" << g_asyncFlushTimeUs
+					<< " wakeUs=" << g_wakeThreadsTimeUs // _Claude_ this frame's WakeThreads spin
+					<< " maxWakeUsSess=" << g_maxWakeThreadsUsSession // _Claude_ lifetime peak
+					<< " maxDepthFrame=" << g_maxCallDepthThisFrame // _Claude_ this frame's recursion peak
+					<< " maxDepthSess=" << g_maxCallDepthSession // _Claude_ lifetime peak
 					<< " tp=" << (g_threadpool ? 1 : 0) // _Claude_ threadpool liveness
 					<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0) // _Claude_ JSON-propagated flag (async fires iff tp && cfgAsync)
 					<< " cumul=" << totalOccluded << "/" << totalTested
@@ -1712,6 +1972,124 @@ namespace mwse::patch::occlusion {
 		resetFrameTints();
 	}
 
+	// _Claude_ Allocate g_msoc + g_threadpool. Idempotent: returns true
+	// without doing anything if both already exist. Returns false if
+	// MSOC creation failed (g_msoc null) — callers should treat that as
+	// a permanent disable. Called from installPatches() at startup when
+	// EnableMSOC is on, and from the top-of-detour ensure-helper when
+	// the user toggles MSOC on at runtime.
+	static bool createMSOCResources(std::ostream& log) {
+		if (g_msoc && g_threadpool) return true;
+
+		if (!g_msoc) {
+			g_msoc = ::MaskedOcclusionCulling::Create();
+			if (!g_msoc) {
+				log << "MSOC: MaskedOcclusionCulling::Create() returned null; occlusion disabled." << std::endl;
+				return false;
+			}
+			g_msoc->SetResolution(kMsocWidth, kMsocHeight);
+			g_msoc->SetNearClipPlane(kNearClipW);
+		}
+
+		if (!g_threadpool) {
+			const unsigned int binCount = Configuration::OcclusionThreadpoolBinsW
+				* Configuration::OcclusionThreadpoolBinsH;
+			unsigned int threadCount = Configuration::OcclusionThreadpoolThreadCount;
+			if (threadCount == 0) {
+				// _Claude_ Auto-sizing. Take hw-2 (leave one full core for the
+				// main thread) but cap at binCount/2 so each worker owns ~2 bins
+				// — this keeps Intel's work-stealing path enabled (gated on
+				// binCount > threadCount) and avoids the 1:1 case where the
+				// busiest bin sets frame latency. Floor of 1 covers tiny CPUs
+				// and binCount=1 edge cases.
+				const unsigned hw = std::thread::hardware_concurrency();
+				const unsigned int hwBudget = hw > 2 ? hw - 2 : 1;
+				const unsigned int binCap = binCount / 2 > 0 ? binCount / 2 : 1;
+				threadCount = hwBudget < binCap ? hwBudget : binCap;
+			}
+			// _Claude_ Safety gate: clamp threadCount to binCount unconditionally.
+			// Intel's CullingThreadpool assigns work by bin — surplus threads
+			// contend for the same bin mutexes and crash inside RenderTrilist.
+			// Auto-sizing already respects this via binCap, but a manual
+			// OcclusionThreadpoolThreadCount value can still trip it.
+			if (threadCount > binCount) {
+				log << "MSOC: clamping threadCount from " << threadCount
+					<< " to binCount=" << binCount
+					<< " (threads > bins causes worker crash)." << std::endl;
+				threadCount = binCount;
+			}
+			constexpr unsigned int kMaxJobs = 64;
+			g_threadpool = new ::CullingThreadpool(threadCount,
+				Configuration::OcclusionThreadpoolBinsW,
+				Configuration::OcclusionThreadpoolBinsH,
+				kMaxJobs);
+			g_threadpool->SetBuffer(g_msoc);
+			g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
+			g_threadpool->SetNearClipPlane(kNearClipW);
+			g_threadpool->SetVertexLayout(::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+			g_threadpool->SuspendThreads();
+
+			log << "MSOC: threadpool created; threads=" << threadCount
+				<< " binsW=" << Configuration::OcclusionThreadpoolBinsW
+				<< " binsH=" << Configuration::OcclusionThreadpoolBinsH
+				<< " maxJobs=" << kMaxJobs
+				<< " tp=" << (g_threadpool ? 1 : 0)
+				<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0)
+				<< std::endl;
+		}
+		return true;
+	}
+
+	// _Claude_ Free g_msoc + g_threadpool and clear the async arenas.
+	// MUST be called only when no async work is in flight: between
+	// frames on the render thread, with g_msocActive == false. The
+	// threadpool destructor calls WakeThreads + sets mKillThreads +
+	// joins all workers — bounded but blocking; up to a few ms while
+	// any unparked worker reaches its suspend point.
+	//
+	// Mask-ready state and pending displays are also cleared so a
+	// subsequent re-enable starts from a clean slate. Out-of-tree
+	// query consumers (MGE-XE) will see g_maskReady=false and treat
+	// queries as VISIBLE until the first re-enabled frame populates
+	// the mask.
+	static void destroyMSOCResources(std::ostream& log) {
+		if (!g_msoc && !g_threadpool) return;
+
+		if (g_threadpool) {
+			delete g_threadpool;
+			g_threadpool = nullptr;
+		}
+		if (g_msoc) {
+			::MaskedOcclusionCulling::Destroy(g_msoc);
+			g_msoc = nullptr;
+		}
+		g_asyncOccluderVerts.clear();
+		g_asyncOccluderVerts.shrink_to_fit();
+		g_asyncOccluderIndices.clear();
+		g_asyncOccluderIndices.shrink_to_fit();
+		g_asyncThisFrame = false;
+		g_maskReady = false;
+
+		log << "MSOC: resources freed (threadpool joined, mask buffer destroyed)." << std::endl;
+	}
+
+	// _Claude_ Idempotent reconciler called at the safe top-of-frame
+	// point in CullShow_detour. Brings live resource state into agreement
+	// with Configuration::EnableMSOC. Returns false if creation failed
+	// (treat as permanently disabled this frame) or if disabled — caller
+	// should skip MSOC entirely. Returns true if resources are live and
+	// the frame may proceed with MSOC.
+	static bool ensureMSOCResourcesMatchConfig() {
+		auto& log = log::getLog();
+		if (Configuration::EnableMSOC) {
+			return createMSOCResources(log);
+		}
+		else {
+			destroyMSOCResources(log);
+			return false;
+		}
+	}
+
 	void installPatches() {
 		auto& log = log::getLog();
 
@@ -1719,77 +2097,38 @@ namespace mwse::patch::occlusion {
 			<< (Configuration::EnableMSOC ? "true" : "false")
 			<< std::endl;
 
-		if (!Configuration::EnableMSOC) {
-			log << "MSOC: disabled via Configuration::EnableMSOC." << std::endl;
-			return;
+		// _Claude_ Hooks always install. The detour body is free when the
+		// runtime gate (sceneEnabled at top-of-frame) is false — it just
+		// calls vanilla cullShowBody. Resources (g_msoc + threadpool) are
+		// allocated eagerly here when EnableMSOC starts on, or lazily on
+		// the first MCM toggle-on via ensureMSOCResourcesMatchConfig() at
+		// the top of the detour. When the user toggles MSOC off at
+		// runtime, the next safe top-of-frame tears the threadpool down
+		// (joins workers, frees the ~57MB ring buffer, destroys g_msoc).
+
+		if (Configuration::EnableMSOC) {
+			createMSOCResources(log);
+		}
+		else {
+			log << "MSOC: starting with EnableMSOC=false; resources will be allocated on first MCM toggle-on." << std::endl;
 		}
 
-		g_msoc = ::MaskedOcclusionCulling::Create();
-		if (!g_msoc) {
-			log << "MSOC: MaskedOcclusionCulling::Create() returned null; occlusion disabled." << std::endl;
-			return;
+		// _Claude_ Spawn the freeze-forensics watchdog. Detached so
+		// it survives until process exit without needing a join — we
+		// have no orderly shutdown path for occlusion patches, and
+		// the thread is read-only on racy globals so a torn read at
+		// exit is harmless. If the user reports a freeze, the last
+		// state snapshot will be sitting in MSOC.forensics.txt next
+		// to MWSE.log.
+		try {
+			std::thread(watchdogTick).detach();
+			log << "MSOC: forensics watchdog thread spawned (250ms tick; "
+				"writes MSOC.forensics.txt)." << std::endl;
 		}
-		g_msoc->SetResolution(kMsocWidth, kMsocHeight);
-		g_msoc->SetNearClipPlane(kNearClipW);
-
-		// Always create the threadpool, even when async is disabled by
-		// default, so Configuration::OcclusionAsyncOccluders can be toggled
-		// at runtime (e.g. via Lua) without a restart. Workers sleep at
-		// near-zero CPU when suspended; the only cost of unused creation
-		// is the initial thread spin-up (~1ms total) and the ring-buffer
-		// allocation (one-time).
-		unsigned int threadCount = Configuration::OcclusionThreadpoolThreadCount;
-		if (threadCount == 0) {
-			// Auto: leave 2 threads (one full core) for the main thread.
-			const unsigned hw = std::thread::hardware_concurrency();
-			threadCount = hw > 2 ? hw - 2 : 1;
+		catch (const std::exception& e) {
+			log << "MSOC: failed to spawn forensics watchdog: "
+				<< e.what() << std::endl;
 		}
-		// _Claude_ Safety gate: clamp threadCount to binCount unconditionally.
-		// Intel's CullingThreadpool assigns work by bin — each thread owns a
-		// distinct bin and work-steals the rest. When threadCount > binCount,
-		// surplus threads contend for the same bin mutexes and advance
-		// mRenderPtrs past valid job slots; workers end up reading a recycled
-		// or uninitialised TriList.mPtr and crash inside RenderTrilist
-		// (observed: 26 threads / 8 bins → MaskedOcclusionCullingCommon.inl:1966).
-		// Applies to both auto (0) and manual values — if the user wants more
-		// parallelism, they raise the bin counts, which lifts this ceiling.
-		const unsigned int binCount = Configuration::OcclusionThreadpoolBinsW
-			* Configuration::OcclusionThreadpoolBinsH;
-		if (threadCount > binCount) {
-			log << "MSOC: clamping threadCount from " << threadCount
-				<< " to binCount=" << binCount
-				<< " (threads > bins causes worker crash)." << std::endl;
-			threadCount = binCount;
-		}
-		// _Claude_ maxJobs=64 (default is 32). Our per-frame submission count
-		// runs 380-580 meshes, each below TRIS_PER_JOB so each maps to one
-		// queue slot. The default 32 overcommits ~15-18x and the main thread
-		// yields repeatedly on CanWrite(). 64 halves the stall rate for a
-		// ~57 MB ring-buffer cost (~55k floats * binsW*binsH * maxJobs * 4B).
-		constexpr unsigned int kMaxJobs = 64;
-		g_threadpool = new ::CullingThreadpool(threadCount,
-			Configuration::OcclusionThreadpoolBinsW,
-			Configuration::OcclusionThreadpoolBinsH,
-			kMaxJobs);
-		g_threadpool->SetBuffer(g_msoc);
-		g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
-		g_threadpool->SetNearClipPlane(kNearClipW);
-		// Same tightly-packed float[3] layout the sync path uses.
-		g_threadpool->SetVertexLayout(::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
-		// Park the workers until the first async frame wakes them.
-		g_threadpool->SuspendThreads();
-
-		// _Claude_ Log threadpool creation + live config so we can diagnose
-		// "asyncFlushUs=0 every frame" from the MWSE.log without needing a
-		// debugger. If cfgAsync=1 here but per-frame cfgAsync=0 later, Lua
-		// flipped it; if tp=0 here, creation failed (OOM, worker spin-up).
-		log << "MSOC: threadpool created; threads=" << threadCount
-			<< " binsW=" << Configuration::OcclusionThreadpoolBinsW
-			<< " binsH=" << Configuration::OcclusionThreadpoolBinsH
-			<< " maxJobs=" << kMaxJobs
-			<< " tp=" << (g_threadpool ? 1 : 0)
-			<< " cfgAsync=" << (Configuration::OcclusionAsyncOccluders ? 1 : 0)
-			<< std::endl;
 
 		// Function-level detour at NiAVObject::CullShow. The 5-byte
 		// prologue (sub esp,14h; push ebx; push esi) gets overwritten

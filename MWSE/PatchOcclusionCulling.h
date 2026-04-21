@@ -7,7 +7,16 @@ namespace NI {
 namespace mwse::patch::occlusion {
 
 	// Install hooks for DX8 Masked Software Occlusion Culling.
-	// No-op unless Configuration::EnableMSOC is set.
+	// _Claude_ Hooks always install — EnableMSOC is a pure runtime gate,
+	// re-checked every frame inside the detour. MCM can toggle culling
+	// on/off at any time. When the gate is off, the detour falls through
+	// to vanilla cullShowBody at zero overhead. Resources (g_msoc + the
+	// ~57MB ring-buffer threadpool) are allocated lazily on the first
+	// MCM toggle-on (or eagerly at startup if EnableMSOC begins true) and
+	// torn down on toggle-off (workers joined, buffers freed). Toggling
+	// off→on costs one threadpool spin-up (~1ms); toggling on→off blocks
+	// the next render frame for the worker join (bounded, typically <1ms
+	// because workers were already suspended).
 	void installPatches();
 
 	// _Claude_ Observer callback fired once per iteration of
@@ -24,10 +33,11 @@ namespace mwse::patch::occlusion {
 	//   - Runs inside the render-thread hot loop. Keep work minimal: dedup
 	//     + cheap publish. No logging, no allocation on the steady path.
 	//   - Do not mutate the light or the scene graph.
-	//   - Observers fire only while the hook is installed
-	//     (Configuration::EnableMSOC == true at startup). If you need
-	//     observation without culling, set EnableMSOC on and leave
-	//     OcclusionCullLights off — the hook stays, cull short-circuits.
+	//   - Observers fire whenever the detour runs, which is every frame
+	//     once the patches are installed. EnableMSOC OFF still walks the
+	//     light list (the detour just short-circuits the cull decision),
+	//     so observers see the same data either way — set OcclusionCullLights
+	//     off if you want observation without the cull side-effect.
 	//
 	// Thread safety: register before rendering starts. The vector is
 	// iterated lock-free from the render thread; post-frame mutation is
