@@ -14,6 +14,8 @@
 // under the License.
 ////////////////////////////////////////////////////////////////////////////////
 #include <assert.h>
+#include <chrono>
+#include <fstream>
 #include "CullingThreadpool.h"
 
 #define SAFE_DELETE(X) {if (X != nullptr) delete X; X = nullptr;}
@@ -186,17 +188,42 @@ inline CullingThreadpool::RenderJobQueue::Job *CullingThreadpool::RenderJobQueue
 
 void CullingThreadpool::RenderJobQueue::Reset()
 {
-	mWritePtr = 0;
-	mBinningPtr = 0;
-
-	for (unsigned int i = 0; i < mNumBins; ++i)
-		mRenderPtrs[i] = 0;
-
+	// _Claude_ Order matters: poison mJobs FIRST, then zero render pointers,
+	// then zero write/binning pointers. The original Intel ordering (write
+	// pointers first, render pointers second, mJobs last) had a race that
+	// caused 30-second freezes at stage=3(clearBuffer) for at least one
+	// MWSE user — diagnosed via MSOC.flushdump.txt showing mWritePtr=0
+	// alongside mRenderPtrs= 6 2 6 6 6 6 3 4 6 1 6 6 6 6 3 4. Reproduction:
+	//   1. Reset zeros mRenderPtrs[i] = 0 (still hasn't touched mJobs).
+	//   2. Worker calls GetRenderJob: mRenderPtrs[binIdx]=0, but reads
+	//      mJobs[0].mBinningJobCompletedIdx which still holds the OLD
+	//      value (from a prior frame whose mWritePtr wrapped past
+	//      mMaxJobs and back to 0).
+	//   3. If the OLD value happens to be 0, the comparison succeeds and
+	//      the worker returns a stale job pointer, runs RenderTrilist on
+	//      stale data, then AdvanceRenderJob increments mRenderPtrs[binIdx]
+	//      from 0 to 1.
+	//   4. Cascade repeats per bin until Reset finally reaches and poisons
+	//      the relevant mJobs slot.
+	//   5. Pipeline ends up wedged with mRenderPtrs > mWritePtr=0; next
+	//      ClearBuffer's Flush spins forever waiting for IsPipelineEmpty
+	//      (= GetMinRenderPtr == mWritePtr) which can never be true.
+	// The reorder closes the window: once mJobs[*] are all -1 (UINT_MAX
+	// when read as unsigned), GetRenderJob's comparison
+	// `mRenderPtrs[binIdx] != mJobs[...].mBinningJobCompletedIdx` always
+	// fails (mRenderPtrs is a small frame counter, never UINT_MAX), so
+	// no spurious AdvanceRenderJob can fire while Reset is in progress.
 	for (unsigned int i = 0; i < mMaxJobs; ++i)
 	{
 		mJobs[i].mBinningJobCompletedIdx = -1;
 		mJobs[i].mBinningJobStartedIdx = -1;
 	}
+
+	for (unsigned int i = 0; i < mNumBins; ++i)
+		mRenderPtrs[i] = 0;
+
+	mWritePtr = 0;
+	mBinningPtr = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -379,9 +406,75 @@ void CullingThreadpool::SuspendThreads()
 
 void CullingThreadpool::Flush()
 {
-	// Wait for pipeline to be empty (i.e. all work is finished)
+	// _Claude_ Diagnostic for MWSE freeze investigation. Flush() can spin
+	// forever on IsPipelineEmpty() if the renderqueue gets into a bad
+	// state (stuck mBinMutexes[i], missed visibility on mWritePtr, etc.)
+	// This is the prime suspect for the user-reported stage=3(clearBuffer)
+	// 30-second freezes at 98% CPU. After kFlushStuckThresholdMs of
+	// continuous spinning, write a one-shot snapshot of the queue's
+	// internal state to MSOC.flushdump.txt (truncate mode, alongside
+	// MSOC.forensics.txt) so we have actual data to diagnose with rather
+	// than guesses. The spin continues afterward — this is observation
+	// only, no behavioural change.
+	constexpr long long kFlushStuckThresholdMs = 2000;
+	const auto spinStart = std::chrono::steady_clock::now();
+	bool dumped = false;
+
 	while (!mRenderQueue->IsPipelineEmpty())
+	{
 		std::this_thread::yield();
+
+		if (!dumped)
+		{
+			const auto now = std::chrono::steady_clock::now();
+			const auto spinMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+				now - spinStart).count();
+			if (spinMs >= kFlushStuckThresholdMs)
+			{
+				dumped = true;
+				try
+				{
+					std::ofstream f("MSOC.flushdump.txt", std::ios::trunc);
+					if (f)
+					{
+						const auto epochMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+							now.time_since_epoch()).count();
+						f << "flush_dump_at_ms=" << epochMs
+							<< " spin_ms=" << spinMs << "\n";
+						f << "mWritePtr=" << mRenderQueue->mWritePtr
+							<< " mBinningPtr=" << mRenderQueue->mBinningPtr.load()
+							<< " mNumBins=" << mRenderQueue->mNumBins
+							<< " mMaxJobs=" << mRenderQueue->mMaxJobs << "\n";
+						f << "mSuspendThreads=" << (mSuspendThreads ? 1 : 0)
+							<< " mNumSuspendedThreads=" << mNumSuspendedThreads
+							<< "/" << mNumThreads
+							<< " mKillThreads=" << (mKillThreads ? 1 : 0) << "\n";
+						f << "mRenderPtrs=";
+						for (unsigned int i = 0; i < mRenderQueue->mNumBins; ++i)
+							f << " " << mRenderQueue->mRenderPtrs[i].load();
+						f << "\n";
+						f << "mBinMutexes=";
+						for (unsigned int i = 0; i < mRenderQueue->mNumBins; ++i)
+							f << " " << mRenderQueue->mBinMutexes[i].load();
+						f << "\n";
+						for (unsigned int i = 0; i < mRenderQueue->mMaxJobs; ++i)
+						{
+							f << "mJobs[" << i << "].started="
+								<< (int)mRenderQueue->mJobs[i].mBinningJobStartedIdx
+								<< " .completed="
+								<< (int)mRenderQueue->mJobs[i].mBinningJobCompletedIdx
+								<< "\n";
+						}
+					}
+				}
+				catch (...)
+				{
+					// Diagnostic only — never let dump failure escalate
+					// into a real bug.
+				}
+			}
+		}
+	}
 
 	// Reset queue counters
 	mRenderQueue->Reset();

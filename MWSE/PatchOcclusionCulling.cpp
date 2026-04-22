@@ -341,7 +341,9 @@ namespace mwse::patch::occlusion {
 	// (don't renumber): 0 idle, 1 entered top-level, 2 wakeThreads,
 	// 3 clearBuffer, 4 cellWipe, 5 ageprune, 6 uploadCamera,
 	// 7 setMatrix, 8 aggTerrain, 9 cullShowBody, 10 flush, 11 drain,
-	// 12 suspendThreads, 13 exited top-level cleanly.
+	// 12 suspendThreads, 13 exited top-level cleanly,
+	// 14 drainClassify (parallel phase 1 in flight),
+	// 15 drainAction (phase 2 in flight).
 	static volatile uint32_t g_lastStage = 0;
 
 	// _Claude_ Freeze-forensics watchdog. A background thread polls
@@ -383,6 +385,8 @@ namespace mwse::patch::occlusion {
 			case 11: return "drain";
 			case 12: return "suspendThreads";
 			case 13: return "exitedClean";
+			case 14: return "drainClassify";
+			case 15: return "drainAction";
 			default: return "unknown";
 		}
 	}
@@ -1776,6 +1780,15 @@ namespace mwse::patch::occlusion {
 		// thread.
 		g_drainSlots.resize(n);
 		if (runParallel) {
+			// _Claude_ Stage marker: a worker hang during phase 1 will
+			// freeze the main thread inside the done barrier with this
+			// stage latched. The watchdog snapshot then shows
+			// stage=14(drainClassify) with climbing sinceFrameEndMs —
+			// the diagnostic signal for this new failure mode. Serial
+			// fallback stays at stage 11 (drain) since a serial-mode
+			// freeze inside classifyDrainRange is indistinguishable
+			// from a freeze in the pre-refactor loop.
+			g_lastStage = 14;
 			const size_t half = n / 2;
 			g_drainRanges[0] = { 0, half };
 			g_drainRanges[1] = { half, n };
@@ -1814,6 +1827,7 @@ namespace mwse::patch::occlusion {
 
 		// Phase 2: serial action pass. Counter-increment semantics match
 		// the pre-refactor loop exactly — see the function comment.
+		g_lastStage = 15;
 		for (size_t i = 0; i < n; ++i) {
 			const auto& p = g_pendingDisplays[i];
 			const auto& s = g_drainSlots[i];
@@ -2114,6 +2128,7 @@ namespace mwse::patch::occlusion {
 			g_drainPhaseTimeUs = 0;
 			g_drainTestRectUs = 0; // _Claude_ audit
 			g_drainDisplayUs = 0; // _Claude_ audit
+			g_parallelDrainUs = 0; // _Claude_ parallel-drain barrier wall time
 			g_asyncFlushTimeUs = 0;
 			// _Claude_ Freeze diagnostics: per-frame counters reset here
 			// alongside the rest. Session maxes (g_max*Session) are NOT
@@ -2269,6 +2284,7 @@ namespace mwse::patch::occlusion {
 					<< " drainUs=" << g_drainPhaseTimeUs
 					<< " testRectUs=" << g_drainTestRectUs // _Claude_ audit
 					<< " displayUs=" << g_drainDisplayUs // _Claude_ audit
+					<< " parallelDrainUs=" << g_parallelDrainUs // _Claude_ phase-1 barrier wall time
 					<< " asyncFlushUs=" << g_asyncFlushTimeUs
 					<< " wakeUs=" << g_wakeThreadsTimeUs // _Claude_ this frame's WakeThreads spin
 					<< " maxWakeUsSess=" << g_maxWakeThreadsUsSession // _Claude_ lifetime peak
@@ -2335,6 +2351,21 @@ namespace mwse::patch::occlusion {
 		if (!g_threadpool) {
 			const unsigned int binCount = Configuration::OcclusionThreadpoolBinsW
 				* Configuration::OcclusionThreadpoolBinsH;
+			// _Claude_ Hard cap on worker count. Intel's CullingThreadpool
+			// uses hand-rolled spin-semaphores in its worker dispatch and
+			// livelocks at ~98% CPU when too many workers spin against the
+			// same bin queues; one user-reported freeze on a
+			// 28-logical-thread CPU was traced to 26 spinning workers
+			// saturating the scheduler so no individual worker could be
+			// rescheduled to make progress. 12 is comfortably above the
+			// hot-path workload's parallelism and stays well below the
+			// saturation threshold even on many-core consumer CPUs and
+			// future-proof against absurd reports (dual-socket Xeon ~80).
+			// Applied as a safety gate to BOTH auto-sizing and manual
+			// OcclusionThreadpoolThreadCount values — defence in depth
+			// against the livelock failure mode regardless of how
+			// threadCount got picked.
+			constexpr unsigned int kAutoMax = 12;
 			unsigned int threadCount = Configuration::OcclusionThreadpoolThreadCount;
 			if (threadCount == 0) {
 				// _Claude_ Auto-sizing. Take hw-2 (leave one full core for the
@@ -2342,11 +2373,26 @@ namespace mwse::patch::occlusion {
 				// — this keeps Intel's work-stealing path enabled (gated on
 				// binCount > threadCount) and avoids the 1:1 case where the
 				// busiest bin sets frame latency. Floor of 1 covers tiny CPUs
-				// and binCount=1 edge cases.
+				// and binCount=1 edge cases. kAutoMax applied via std::min
+				// so auto path naturally respects the livelock cap; the
+				// gate below catches manual overrides.
 				const unsigned hw = std::thread::hardware_concurrency();
 				const unsigned int hwBudget = hw > 2 ? hw - 2 : 1;
 				const unsigned int binCap = binCount / 2 > 0 ? binCount / 2 : 1;
-				threadCount = hwBudget < binCap ? hwBudget : binCap;
+				threadCount = std::min({ hwBudget, binCap, kAutoMax });
+			}
+			// _Claude_ Safety gate: clamp manual overrides to kAutoMax.
+			// Auto-sizing already incorporates the cap, so this only fires
+			// for manual OcclusionThreadpoolThreadCount values exceeding
+			// the livelock threshold. Logged so a user who set a high
+			// manual value sees why they got fewer workers than they asked
+			// for.
+			if (threadCount > kAutoMax) {
+				log << "MSOC: clamping threadCount from " << threadCount
+					<< " to kAutoMax=" << kAutoMax
+					<< " (Intel CullingThreadpool livelocks at high"
+					<< " worker counts on saturated CPUs)." << std::endl;
+				threadCount = kAutoMax;
 			}
 			// _Claude_ Safety gate: clamp threadCount to binCount unconditionally.
 			// Intel's CullingThreadpool assigns work by bin — surplus threads
