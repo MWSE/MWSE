@@ -31,7 +31,7 @@ namespace mwse {
 	float Configuration::OcclusionInsideOccluderMargin = 64.0f;
 	float Configuration::OcclusionDepthSlackWorldUnits = 128.0f;
 	UINT Configuration::OcclusionOccluderMaxTriangles = 4096;
-	float Configuration::OcclusionOccludeeMinRadius = 1.0f;
+	UINT Configuration::OcclusionOccludeeMinRadius = 1;
 	bool Configuration::OcclusionEnableInterior = true;
 	bool Configuration::OcclusionEnableExterior = true;
 	bool Configuration::OcclusionSkipTerrainOccludees = true;

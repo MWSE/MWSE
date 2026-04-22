@@ -28,7 +28,7 @@ namespace mwse {
 		static float OcclusionInsideOccluderMargin;
 		static float OcclusionDepthSlackWorldUnits;
 		static UINT OcclusionOccluderMaxTriangles;
-		static float OcclusionOccludeeMinRadius;
+		static UINT OcclusionOccludeeMinRadius;
 		static bool OcclusionEnableInterior;
 		static bool OcclusionEnableExterior;
 		static bool OcclusionSkipTerrainOccludees;

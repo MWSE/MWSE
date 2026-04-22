@@ -309,6 +309,16 @@ namespace mwse::patch::occlusion {
 	// inside drainPendingDisplays — terrain-skip, tiny-skip, debug-tint,
 	// and the visible path. They should sum to ≈ drainUs minus loop bookkeeping.
 	static uint64_t g_drainTestRectUs = 0;
+	// _Claude_ Nanosecond-resolution counter for testSphereVisible work.
+	// The microsecond accumulator (g_drainTestRectUs via ScopedUsAccumulator)
+	// truncates each individual call to whole µs; on this workload most
+	// TestRect calls are sub-microsecond, so they accumulate as 0 and the
+	// reported total is an order of magnitude under the truth. This counter
+	// times each call at ns resolution and sums directly, so the total is
+	// faithful even when individual calls are 100-700 ns. Workers race-sum
+	// into this from the parallel drain path the same way they race on the
+	// µs counter — see audit §8, harmless for diagnostics.
+	static uint64_t g_drainTestRectNs = 0;
 	static uint64_t g_drainDisplayUs = 0;
 	// Phase 3.2: time spent in threadpool Flush() barrier before drain.
 	// Only populated when async mode is active; zero otherwise.
@@ -1666,9 +1676,16 @@ namespace mwse::patch::occlusion {
 
 			::MaskedOcclusionCulling::CullingResult r;
 			{
-				ScopedUsAccumulator tt(g_drainTestRectUs);
+				// _Claude_ Explicit ns-resolution timer; ScopedUsAccumulator
+				// truncates sub-µs calls to 0 and individual TestRect calls
+				// here are ~100-700 ns. Accumulates into g_drainTestRectNs;
+				// emitted as testRectNs in the per-frame log line.
+				const auto t0 = std::chrono::steady_clock::now();
 				r = testSphereVisible(
 					p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+				g_drainTestRectNs += static_cast<uint64_t>(
+					std::chrono::duration_cast<std::chrono::nanoseconds>(
+						std::chrono::steady_clock::now() - t0).count());
 			}
 			slot.ranTestRect = true;
 			switch (r) {
@@ -2127,6 +2144,7 @@ namespace mwse::patch::occlusion {
 			g_rasterizeTimeUs = 0;
 			g_drainPhaseTimeUs = 0;
 			g_drainTestRectUs = 0; // _Claude_ audit
+			g_drainTestRectNs = 0; // _Claude_ ns-resolution counter for sub-µs TestRect calls
 			g_drainDisplayUs = 0; // _Claude_ audit
 			g_parallelDrainUs = 0; // _Claude_ parallel-drain barrier wall time
 			g_asyncFlushTimeUs = 0;
@@ -2282,7 +2300,8 @@ namespace mwse::patch::occlusion {
 					<< " menuModeSkipped=" << g_skippedMenuMode // _Claude_ cumulative
 					<< " rasterizeUs=" << g_rasterizeTimeUs
 					<< " drainUs=" << g_drainPhaseTimeUs
-					<< " testRectUs=" << g_drainTestRectUs // _Claude_ audit
+					<< " testRectUs=" << g_drainTestRectUs // _Claude_ audit (broken: truncates sub-µs calls; see testRectNs)
+					<< " testRectNs=" << g_drainTestRectNs // _Claude_ honest ns-summed TestRect total
 					<< " displayUs=" << g_drainDisplayUs // _Claude_ audit
 					<< " parallelDrainUs=" << g_parallelDrainUs // _Claude_ phase-1 barrier wall time
 					<< " asyncFlushUs=" << g_asyncFlushTimeUs
