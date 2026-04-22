@@ -80,8 +80,15 @@ protected:
 
 		struct Job
 		{
-			volatile unsigned int mBinningJobStartedIdx;
-			volatile unsigned int mBinningJobCompletedIdx;
+			// _Claude_ Atomified to close cae2593f76's race. Workers read these
+			// fields concurrently with Reset's writes; volatile gives no
+			// cross-thread happens-before, so without atomic ordering the
+			// poison-mJobs-first ordering in Reset() can be observed
+			// reordered by other cores. seq_cst (the default) is correct
+			// here — these are not perf-critical (each is touched at most
+			// once per job).
+			std::atomic_uint      mBinningJobStartedIdx;
+			std::atomic_uint      mBinningJobCompletedIdx;
 			BinningJob            mBinningJob;
 			TriList               *mRenderJobs;
 		};
@@ -89,7 +96,11 @@ protected:
 		unsigned int          mNumBins;
 		unsigned int          mMaxJobs;
 
-		volatile unsigned int mWritePtr;
+		// _Claude_ Atomified — see Job comment above. mWritePtr is read by
+		// every worker on every loop iteration via CanBin / CanWrite /
+		// IsPipelineEmpty, but the read is one load and seq_cst load on x86
+		// is just a normal MOV, so cost is unchanged from volatile.
+		std::atomic_uint      mWritePtr;
 		std::atomic_uint      mBinningPtr;
 		std::atomic_uint      *mRenderPtrs;
 		std::atomic_uint      *mBinMutexes;
@@ -142,9 +153,13 @@ protected:
 	// Threads and control variables
 	std::mutex              mSuspendedMutex;
 	std::condition_variable mSuspendedCV;
-	volatile bool           mKillThreads;
-	volatile bool           mSuspendThreads;
-	volatile unsigned int   mNumSuspendedThreads;
+	// _Claude_ Atomified — same rationale as Job/mWritePtr above. The
+	// SuspendThreads/WakeThreads handshake reads these from multiple cores
+	// without lock-protected writes; volatile alone does not establish the
+	// happens-before relationship the design assumes.
+	std::atomic<bool>       mKillThreads;
+	std::atomic<bool>       mSuspendThreads;
+	std::atomic_uint        mNumSuspendedThreads;
 	std::thread             *mThreads;
 
 	// State variables and command queue

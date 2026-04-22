@@ -166,7 +166,9 @@ inline CullingThreadpool::RenderJobQueue::Job *CullingThreadpool::RenderJobQueue
 
 inline void CullingThreadpool::RenderJobQueue::FinishedBinningJob(Job *job)
 {
-	job->mBinningJobCompletedIdx = job->mBinningJobStartedIdx;
+	// _Claude_ Explicit .load() because both fields are now std::atomic;
+	// atomic-to-atomic operator= is deleted by std::atomic.
+	job->mBinningJobCompletedIdx = job->mBinningJobStartedIdx.load();
 }
 
 inline CullingThreadpool::RenderJobQueue::Job *CullingThreadpool::RenderJobQueue::GetRenderJob(int binIdx)
@@ -188,12 +190,31 @@ inline CullingThreadpool::RenderJobQueue::Job *CullingThreadpool::RenderJobQueue
 
 void CullingThreadpool::RenderJobQueue::Reset()
 {
-	// _Claude_ Order matters: poison mJobs FIRST, then zero render pointers,
-	// then zero write/binning pointers. The original Intel ordering (write
-	// pointers first, render pointers second, mJobs last) had a race that
-	// caused 30-second freezes at stage=3(clearBuffer) for at least one
-	// MWSE user — diagnosed via MSOC.flushdump.txt showing mWritePtr=0
-	// alongside mRenderPtrs= 6 2 6 6 6 6 3 4 6 1 6 6 6 6 3 4. Reproduction:
+	// _Claude_ HISTORICAL: This poison-mJobs-first ordering was the
+	// cae2593f76 fix for the original freeze. It closed one specific
+	// reproduction but RELIED on cross-thread visibility ordering that
+	// volatile (the original field types) does not provide — a second
+	// freeze with mRenderPtrs=1,1,1,...  proved the same class of bug
+	// could still occur. The complete fix lives in two later changes:
+	//   1. The mJobs/mWritePtr/mSuspendThreads/mNumSuspendedThreads/
+	//      mKillThreads fields are now std::atomic, so writes here have
+	//      seq_cst ordering relative to worker reads (see CullingThreadpool.h).
+	//   2. Flush() now SuspendThreads + polls until mNumSuspendedThreads
+	//      == mNumThreads BEFORE calling this method, so workers are
+	//      parked in cv.wait while Reset runs — they cannot read these
+	//      fields concurrent with the writes at all.
+	// The ordering below is kept (rather than reverted to Intel's) so
+	// the defense remains layered: even if a future caller bypasses
+	// the suspend protocol, poisoning mJobs first still blocks the
+	// specific stale-comparison race the original cae2593f76 commit
+	// targeted.
+	//
+	// Original cae2593f76 reasoning, kept verbatim for historical context:
+	// The original Intel ordering (write pointers first, render pointers
+	// second, mJobs last) caused 30-second freezes at stage=3(clearBuffer)
+	// for at least one MWSE user — diagnosed via MSOC.flushdump.txt showing
+	// mWritePtr=0 alongside mRenderPtrs= 6 2 6 6 6 6 3 4 6 1 6 6 6 6 3 4.
+	// Reproduction:
 	//   1. Reset zeros mRenderPtrs[i] = 0 (still hasn't touched mJobs).
 	//   2. Worker calls GetRenderJob: mRenderPtrs[binIdx]=0, but reads
 	//      mJobs[0].mBinningJobCompletedIdx which still holds the OLD
@@ -476,8 +497,41 @@ void CullingThreadpool::Flush()
 		}
 	}
 
-	// Reset queue counters
+	// _Claude_ Suspend workers fully before Reset so they cannot race with
+	// Reset's writes. The cae2593f76 reordering (poison mJobs first) was
+	// inadequate on its own — even with the correct atomic ordering on
+	// the fields (now in place), workers in the inner loop can pick up
+	// stale snapshots between Reset writes if they observe the writes
+	// out of order, then call AdvanceRenderJob and leave mRenderPtrs
+	// above mWritePtr. The cv-based suspension establishes a release/
+	// acquire edge: Reset's writes (after suspend) happen-before the
+	// next round of worker reads (after wake). Polling waits for
+	// mNumSuspendedThreads == mNumThreads so the post-Reset Wake reaches
+	// only parked workers.
+	//
+	// Cost per Flush: one cv broadcast + one wake spin (≤ a few µs since
+	// workers are already idle by the time the spin loop above exits).
+	// Saves the entire freeze failure mode, which is unbounded.
+	//
+	// If workers were already suspended (defensive — not the normal
+	// caller pattern), don't wake them at the end so the caller's state
+	// expectation is preserved.
+	const bool wasAlreadySuspended = mSuspendThreads.load();
+	if (!wasAlreadySuspended) {
+		SuspendThreads();
+	}
+	while (mNumSuspendedThreads < mNumThreads) {
+		std::this_thread::yield();
+	}
+
+	// Reset queue counters — race-free now: every worker is parked in
+	// mSuspendedCV.wait, so they cannot read mWritePtr / mJobs / etc.
+	// concurrent with the writes below.
 	mRenderQueue->Reset();
+
+	if (!wasAlreadySuspended) {
+		WakeThreads();
+	}
 }
 
 void CullingThreadpool::SetBuffer(MaskedOcclusionCulling *moc)
