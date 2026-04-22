@@ -40,7 +40,6 @@
 #include <ostream>
 #include <thread>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 namespace mwse::patch::occlusion {
@@ -321,22 +320,6 @@ namespace mwse::patch::occlusion {
 	// µs counter — see audit §8, harmless for diagnostics.
 	static uint64_t g_drainTestRectNs = 0;
 	static uint64_t g_drainDisplayUs = 0;
-	// _Claude_ Stage 1 drain-sort instrumentation (throwaway scaffolding).
-	// Resolves the §7 IDA findings + drain-state-sort handoff's Stage 1
-	// measurements: how expensive is the sort itself, how expensive is the
-	// per-shape state-property walk, and how do the distinct-field counts
-	// validate the §4.2 64-bit key bit allocation. Removed once the
-	// Stage 2 ship/no-ship decision is made — no production consumers.
-	static uint64_t g_drainSortUs = 0;
-	static uint64_t g_drainHashUs = 0;
-	static uint32_t g_distinctFvf = 0;
-	static uint32_t g_distinctTexture = 0;
-	static uint32_t g_distinctMaterial = 0;
-	static uint32_t g_preservedCount = 0;
-	static uint32_t g_stencilShapeCount = 0;
-	// Reusable index buffer so sort-cost measurement isn't polluted by
-	// per-frame allocator churn. Lifetime matches g_pendingDisplays.
-	static std::vector<size_t> g_sortScratch;
 	// Phase 3.2: time spent in threadpool Flush() barrier before drain.
 	// Only populated when async mode is active; zero otherwise.
 	static uint64_t g_asyncFlushTimeUs = 0;
@@ -1751,129 +1734,6 @@ namespace mwse::patch::occlusion {
 		}
 	}
 
-	// _Claude_ Stage 1 drain-sort instrumentation (throwaway scaffolding).
-	// One pass through g_pendingDisplays measuring (a) raw sort cost on a
-	// parallel index array — same N as the real sort would touch, but
-	// doesn't reorder g_pendingDisplays so phase-1/phase-2 invariants stay
-	// intact — and (b) per-shape state-property walk cost plus distinct
-	// FVF/texture/material counts and preserved/stencil bucket sizes.
-	// Numbers feed Stage 2's bit-allocation and ship/no-ship decision per
-	// the drain-state-sort handoff §5. Removed once that decision lands.
-
-	// Snapshot of the property + geometry state used to build the §4.2
-	// sort key. Stub form — production code will collapse this with
-	// mustPreserveOrder() and the three hashes.
-	struct StateSnapshot {
-		bool hasAlpha;        // blend OR test
-		bool hasStencil;      // stencil property attached AND enabled
-		NI::TexturingProperty* tex;
-		NI::MaterialProperty* mat;
-		uint32_t fvf;
-	};
-
-	static uint32_t computeFvfHashStub(NI::AVObject* shape) {
-		// Per §7.3 IDA findings: NiGeometryData has no FVF flag bits, so
-		// we probe pointer-vs-null. textureSets is the UV-set count.
-		if (!shape->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) return 0;
-		auto* geom = static_cast<NI::Geometry*>(shape);
-		auto* gd = geom->modelData.get();
-		if (!gd) return 0;
-		uint32_t h = 0;
-		if (gd->normal)         h |= 1;
-		if (gd->color)          h |= 2;
-		h |= (gd->textureSets & 0x3) << 2;
-		if (geom->skinInstance) h |= (1u << 3);
-		return h;
-	}
-
-	static StateSnapshot snapshotState(NI::AVObject* obj) {
-		StateSnapshot s = {};
-		// Mirrors hasTransparency()'s walk pattern (cur=obj; cur;
-		// cur=cur->parentNode) — first occurrence of each property type
-		// wins per NetImmerse's nearest-ancestor inheritance rule.
-		for (NI::AVObject* cur = obj; cur; cur = cur->parentNode) {
-			for (auto* node = &cur->propertyNode; node && node->data; node = node->next) {
-				const auto type = node->data->getType();
-				switch (type) {
-				case NI::PropertyType::Alpha:
-					if (!s.hasAlpha) {
-						const unsigned short flags = node->data->flags;
-						s.hasAlpha = (flags & (NI::AlphaProperty::ALPHA_MASK
-											 | NI::AlphaProperty::TEST_ENABLE_MASK)) != 0;
-					}
-					break;
-				case NI::PropertyType::Stencil:
-					if (!s.hasStencil) {
-						auto* st = static_cast<NI::StencilProperty*>(node->data);
-						if (st->enabled) s.hasStencil = true;
-					}
-					break;
-				case NI::PropertyType::Texturing:
-					if (!s.tex) s.tex = static_cast<NI::TexturingProperty*>(node->data);
-					break;
-				case NI::PropertyType::Material:
-					if (!s.mat) s.mat = static_cast<NI::MaterialProperty*>(node->data);
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		s.fvf = computeFvfHashStub(obj);
-		return s;
-	}
-
-	static void instrumentDrainSortAndHash() {
-		const size_t n = g_pendingDisplays.size();
-		if (n == 0) return;
-
-		// Sort timer — parallel index-array dummy sort by raw shape pointer.
-		// Pointer compare is the cheapest possible comparator; this isolates
-		// the sort algorithm cost from the comparator's complexity. The real
-		// sort with the §4.2 64-bit key adds a few ns per compare on top of
-		// this number. Doesn't mutate g_pendingDisplays.
-		{
-			ScopedUsAccumulator t(g_drainSortUs);
-			g_sortScratch.resize(n);
-			for (size_t i = 0; i < n; ++i) g_sortScratch[i] = i;
-			std::sort(g_sortScratch.begin(), g_sortScratch.end(),
-				[](size_t a, size_t b) {
-					return reinterpret_cast<uintptr_t>(g_pendingDisplays[a].shape)
-						 < reinterpret_cast<uintptr_t>(g_pendingDisplays[b].shape);
-				});
-		}
-
-		// Property walk + distinct counters. Walks each shape's inheritance
-		// chain once and records distinct FVF / base-texture / material
-		// values, plus the preserve-order bucket sizes.
-		{
-			ScopedUsAccumulator t(g_drainHashUs);
-			std::unordered_set<uint32_t> fvfSeen;
-			std::unordered_set<NI::Texture*> texSeen;
-			std::unordered_set<NI::MaterialProperty*> matSeen;
-			uint32_t preserved = 0;
-			uint32_t stencil = 0;
-			for (const auto& p : g_pendingDisplays) {
-				StateSnapshot s = snapshotState(p.shape);
-				fvfSeen.insert(s.fvf);
-				NI::Texture* tex0 = nullptr;
-				if (s.tex && s.tex->maps.size() > 0) {
-					auto* m = s.tex->maps.at_legacy(0);
-					if (m) tex0 = m->texture.get();
-				}
-				texSeen.insert(tex0);
-				matSeen.insert(s.mat);
-				if (s.hasStencil) ++stencil;
-				if (s.hasAlpha || s.hasStencil) ++preserved;
-			}
-			g_distinctFvf       = static_cast<uint32_t>(fvfSeen.size());
-			g_distinctTexture   = static_cast<uint32_t>(texSeen.size());
-			g_distinctMaterial  = static_cast<uint32_t>(matSeen.size());
-			g_preservedCount    = preserved;
-			g_stencilShapeCount = stencil;
-		}
-	}
-
 	// Drain the deferred-display queue built during the main traversal.
 	// Each entry is re-tested against the now-complete depth buffer and
 	// displayed if still visible. Must run before g_msocActive is cleared
@@ -1910,13 +1770,6 @@ namespace mwse::patch::occlusion {
 			g_pendingDisplays.clear();
 			return;
 		}
-
-		// _Claude_ Stage 1 throwaway scaffolding — runs only on the
-		// occluder path (the fast path above doesn't represent the workload
-		// the sort would actually be applied to). See instrumentation
-		// helper above and the drain-state-sort handoff §5 for what each
-		// counter feeds into.
-		instrumentDrainSortAndHash();
 
 		const size_t n = g_pendingDisplays.size();
 
@@ -2294,15 +2147,6 @@ namespace mwse::patch::occlusion {
 			g_drainTestRectNs = 0; // _Claude_ ns-resolution counter for sub-µs TestRect calls
 			g_drainDisplayUs = 0; // _Claude_ audit
 			g_parallelDrainUs = 0; // _Claude_ parallel-drain barrier wall time
-			// _Claude_ Stage 1 drain-sort instrumentation reset; counters
-			// are populated per-frame inside instrumentDrainSortAndHash.
-			g_drainSortUs = 0;
-			g_drainHashUs = 0;
-			g_distinctFvf = 0;
-			g_distinctTexture = 0;
-			g_distinctMaterial = 0;
-			g_preservedCount = 0;
-			g_stencilShapeCount = 0;
 			g_asyncFlushTimeUs = 0;
 			// _Claude_ Freeze diagnostics: per-frame counters reset here
 			// alongside the rest. Session maxes (g_max*Session) are NOT
@@ -2460,14 +2304,6 @@ namespace mwse::patch::occlusion {
 					<< " testRectNs=" << g_drainTestRectNs // _Claude_ honest ns-summed TestRect total
 					<< " displayUs=" << g_drainDisplayUs // _Claude_ audit
 					<< " parallelDrainUs=" << g_parallelDrainUs // _Claude_ phase-1 barrier wall time
-					// _Claude_ Stage 1 drain-sort scaffolding (throwaway).
-					<< " sortUs=" << g_drainSortUs
-					<< " hashUs=" << g_drainHashUs
-					<< " distinctFvf=" << g_distinctFvf
-					<< " distinctTex=" << g_distinctTexture
-					<< " distinctMat=" << g_distinctMaterial
-					<< " preserved=" << g_preservedCount
-					<< " stencil=" << g_stencilShapeCount
 					<< " asyncFlushUs=" << g_asyncFlushTimeUs
 					<< " wakeUs=" << g_wakeThreadsTimeUs // _Claude_ this frame's WakeThreads spin
 					<< " maxWakeUsSess=" << g_maxWakeThreadsUsSession // _Claude_ lifetime peak
