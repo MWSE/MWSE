@@ -712,16 +712,28 @@ namespace mwse::patch::occlusion {
 	// invisible on them while skinned actors (IGNORE/AMBIENT_DIFFUSE) show
 	// it — the asymmetry we originally saw.
 	static NI::MaterialProperty* cloneMaterialProperty(NI::MaterialProperty* source, const NI::Color& tint) {
-		auto* mat = new NI::MaterialProperty();
-		mat->vTable.asProperty = reinterpret_cast<NI::Property_vTable*>(kNiMaterialPropertyVTable);
+		// _Claude_ Returns a NiMaterialProperty with refCount=1 ("caller-
+		// owned" convention, matching the engine's own NiObject::Clone
+		// semantics). attachProperty's wrapper at 0x405840 has a temp-
+		// Pointer cycle around AddHead (claim+release) that net-zeros
+		// the input refcount; if we returned refCount=0, the cycle
+		// would be 0→1→0 → DELETE, leaving the property list with a
+		// dangling pointer that the heap free-list keeps readable for
+		// a while before reuse triggers a delayed crash.
+		NI::MaterialProperty* mat;
 		if (source) {
-			mat->flags = source->flags;
-			mat->index = source->index;
-			mat->specular = source->specular;
-			mat->shininess = source->shininess;
-			mat->alpha = source->alpha;
+			// Engine's NiObject::Clone (0x6E9910) does a stream-based
+			// deep copy and returns refCount=1. Preferred path because
+			// it picks up every inherited field (incl. anything we
+			// don't enumerate manually below).
+			mat = static_cast<NI::MaterialProperty*>(source->createClone());
 		}
 		else {
+			// No source to clone — fresh allocation. NiObject::ctor sets
+			// refCount=0; bump to 1 to match the createClone path.
+			mat = new NI::MaterialProperty();
+			mat->refCount = 1;
+			mat->vTable.asProperty = reinterpret_cast<NI::Property_vTable*>(kNiMaterialPropertyVTable);
 			mat->flags = 1;
 			mat->index = 0;
 			mat->specular = NI::Color(0.0f, 0.0f, 0.0f);
