@@ -297,6 +297,13 @@ namespace mwse::patch::occlusion {
 	// each RenderTriangles call; drain wraps the whole drain body.
 	static uint64_t g_rasterizeTimeUs = 0;
 	static uint64_t g_drainPhaseTimeUs = 0;
+	// _Claude_ Drain sub-phase timers for the parallel-TestRect audit.
+	// testRectUs sums every testSphereVisible() call (the only path into
+	// MOC::TestRect from the drain). displayUs sums every display() call
+	// inside drainPendingDisplays — terrain-skip, tiny-skip, debug-tint,
+	// and the visible path. They should sum to ≈ drainUs minus loop bookkeeping.
+	static uint64_t g_drainTestRectUs = 0;
+	static uint64_t g_drainDisplayUs = 0;
 	// Phase 3.2: time spent in threadpool Flush() barrier before drain.
 	// Only populated when async mode is active; zero otherwise.
 	static uint64_t g_asyncFlushTimeUs = 0;
@@ -455,15 +462,24 @@ namespace mwse::patch::occlusion {
 		}
 	}
 
+	// _Claude_ Gated on either log channel — when both are off the timer is
+	// a no-op (nullptr target, no clock reads), saving the QPC overhead in
+	// production. Read-once at construction so a mid-scope MCM toggle can't
+	// flip the destructor onto a still-zero `start`.
 	struct ScopedUsAccumulator {
-		uint64_t& target;
+		uint64_t* target;
 		std::chrono::steady_clock::time_point start;
 		explicit ScopedUsAccumulator(uint64_t& t)
-			: target(t), start(std::chrono::steady_clock::now()) {}
+			: target((Configuration::OcclusionLogPerFrame
+					   || Configuration::OcclusionLogAggregate) ? &t : nullptr) {
+			if (target) start = std::chrono::steady_clock::now();
+		}
 		~ScopedUsAccumulator() {
-			target += static_cast<uint64_t>(
-				std::chrono::duration_cast<std::chrono::microseconds>(
-					std::chrono::steady_clock::now() - start).count());
+			if (target) {
+				*target += static_cast<uint64_t>(
+					std::chrono::duration_cast<std::chrono::microseconds>(
+						std::chrono::steady_clock::now() - start).count());
+			}
 		}
 	};
 
@@ -1542,6 +1558,7 @@ namespace mwse::patch::occlusion {
 		// still cull deferred leaves behind it, so we must not short-circuit
 		// just because no main-pass leaf qualified.
 		if (g_rasterizedAsOccluder == 0 && g_aggregateTerrainLands == 0) {
+			ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit (whole-loop)
 			for (const auto& p : g_pendingDisplays) {
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 			}
@@ -1558,6 +1575,7 @@ namespace mwse::patch::occlusion {
 			if (Configuration::OcclusionSkipTerrainOccludees
 				&& isLandscapeDescendant(p.shape, g_worldLandscapeRoot)) {
 				++g_skippedTerrain;
+				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 				continue;
 			}
@@ -1568,6 +1586,7 @@ namespace mwse::patch::occlusion {
 			// shapes (reordering these would change alpha-sort timing).
 			if (p.shape->worldBoundRadius < Configuration::OcclusionOccludeeMinRadius) {
 				++g_skippedTesteeTiny;
+				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 				continue;
 			}
@@ -1603,8 +1622,11 @@ namespace mwse::patch::occlusion {
 			}
 			if (!reused) {
 				++g_queryTested;
-				result = testSphereVisible(
-					p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+				{
+					ScopedUsAccumulator t(g_drainTestRectUs); // _Claude_ audit
+					result = testSphereVisible(
+						p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+				}
 				if (tcFrames > 0) {
 					++g_drainCacheMisses;
 					// _Claude_ Cache only OCCLUDED. VISIBLE and
@@ -1634,6 +1656,7 @@ namespace mwse::patch::occlusion {
 				// worth surfacing, not a status we should hide.
 				if (Configuration::DebugOcclusionTintOccluded) {
 					tintEmissive(p.shape, kTintOccluded);
+					ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
 					p.shape->vTable.asAVObject->display(p.shape, p.camera);
 				}
 				continue;
@@ -1647,7 +1670,10 @@ namespace mwse::patch::occlusion {
 			else if (Configuration::DebugOcclusionTintTested && !p.rasterisedAsOccluder) {
 				tintEmissive(p.shape, kTintTested);
 			}
-			p.shape->vTable.asAVObject->display(p.shape, p.camera);
+			{
+				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+			}
 		}
 		g_pendingDisplays.clear();
 	}
@@ -1882,6 +1908,8 @@ namespace mwse::patch::occlusion {
 			}
 			g_rasterizeTimeUs = 0;
 			g_drainPhaseTimeUs = 0;
+			g_drainTestRectUs = 0; // _Claude_ audit
+			g_drainDisplayUs = 0; // _Claude_ audit
 			g_asyncFlushTimeUs = 0;
 			// _Claude_ Freeze diagnostics: per-frame counters reset here
 			// alongside the rest. Session maxes (g_max*Session) are NOT
@@ -2035,6 +2063,8 @@ namespace mwse::patch::occlusion {
 					<< " menuModeSkipped=" << g_skippedMenuMode // _Claude_ cumulative
 					<< " rasterizeUs=" << g_rasterizeTimeUs
 					<< " drainUs=" << g_drainPhaseTimeUs
+					<< " testRectUs=" << g_drainTestRectUs // _Claude_ audit
+					<< " displayUs=" << g_drainDisplayUs // _Claude_ audit
 					<< " asyncFlushUs=" << g_asyncFlushTimeUs
 					<< " wakeUs=" << g_wakeThreadsTimeUs // _Claude_ this frame's WakeThreads spin
 					<< " maxWakeUsSess=" << g_maxWakeThreadsUsSession // _Claude_ lifetime peak
