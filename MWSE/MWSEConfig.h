@@ -33,6 +33,7 @@ namespace mwse {
 		static bool OcclusionEnableExterior;
 		static bool OcclusionSkipTerrainOccludees;
 		static bool OcclusionAggregateTerrain;
+		static UINT OcclusionTerrainResolution;
 		static bool OcclusionCullLights;
 		static UINT OcclusionLightCullHysteresisFrames;
 		static bool OcclusionAsyncOccluders;

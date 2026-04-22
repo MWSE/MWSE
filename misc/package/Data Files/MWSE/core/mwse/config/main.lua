@@ -269,6 +269,17 @@ Timeslip]],
 							variable = { id = "OcclusionAggregateTerrain", class = "TableVariable", table = mwseConfig },
 						},
 						{
+							class = "Dropdown",
+							label = i18n("occlusionTerrainResolution.label"),
+							description = i18n("occlusionTerrainResolution.description"),
+							options = {
+								{ label = i18n("occlusionTerrainResolution.optionFull"),    value = 0 },
+								{ label = i18n("occlusionTerrainResolution.optionHalf"),    value = 1 },
+								{ label = i18n("occlusionTerrainResolution.optionCorners"), value = 2 },
+							},
+							variable = { id = "OcclusionTerrainResolution", class = "TableVariable", table = mwseConfig },
+						},
+						{
 							class = "OnOffButton",
 							label = i18n("occlusionCullLights.label"),
 							description = i18n("occlusionCullLights.description"),

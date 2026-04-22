@@ -198,6 +198,12 @@ namespace mwse::patch::occlusion {
 		std::vector<unsigned int> indices;
 		unsigned int triCount = 0;
 		bool seen = false;
+		// _Claude_ Records the OcclusionTerrainResolution value the entry
+		// was built under. On cache hit, a mismatch forces a rebuild so
+		// MCM dropdown changes take effect lazily without a global cache
+		// flush. Sentinel 0xff means "uninitialised" (any real value
+		// triggers rebuild).
+		uint8_t builtForResolution = 0xff;
 	};
 	static std::unordered_map<NI::Node*, LandCacheEntry> g_landCache;
 	static uint64_t g_landCacheHits = 0;
@@ -1128,7 +1134,8 @@ namespace mwse::patch::occlusion {
 	// and OOB-index guard, minus the gates/skinning/thin-axis paths that
 	// don't apply to terrain.
 	static void appendTerrainShape(std::vector<float>& aggVerts,
-		std::vector<unsigned int>& aggIdx, NI::TriShape* shape) {
+		std::vector<unsigned int>& aggIdx, NI::TriShape* shape,
+		unsigned int step) {
 		auto data = shape->getModelData();
 		if (!data) return;
 		const unsigned short vcount = data->getActiveVertexCount();
@@ -1137,12 +1144,87 @@ namespace mwse::patch::occlusion {
 		const NI::Triangle* tris = data->getTriList();
 		if (tcount == 0 || tris == nullptr) return;
 
-		const unsigned int baseVert = static_cast<unsigned int>(aggVerts.size() / 3);
 		const auto& xf = shape->worldTransform;
 		const auto& R = xf.rotation;
 		const auto& T = xf.translation;
 		const float s = xf.scale;
 
+		// _Claude_ Downsample fast path: Morrowind terrain subcells are
+		// canonically a 5x5 grid in row-major order (vertex index = row*5 + col,
+		// 25v/32t). When step ∈ {2, 4} and vcount == 25, sample every `step`-th
+		// vertex on each axis, taking min-z over the dropped neighbours so the
+		// silhouette can only shrink (conservative-as-occluder: under-occlude
+		// rather than over-occlude). step values: 2 -> 3x3 grid (8 tris),
+		// 4 -> 2x2 grid (2 tris). Any other vcount or step (3, 5+, etc.)
+		// falls through to the full-resolution path — non-grid terrain shapes
+		// (rare; possibly mod content) and unsupported steps are submitted
+		// intact, which is correct-but-unoptimised. Only 2 and 4 divide the
+		// 4-quad edge cleanly without dropping the seam row.
+		if (vcount == 25 && (step == 2 || step == 4)) {
+			// Coarse-grid axis count: step=2 -> 3 verts/edge, step=4 -> 2.
+			const unsigned int n = (4u / step) + 1u;
+			const unsigned int baseVert = static_cast<unsigned int>(aggVerts.size() / 3);
+			aggVerts.resize(aggVerts.size() + static_cast<size_t>(n * n) * 3);
+			float* out = aggVerts.data() + baseVert * 3;
+
+			// For each kept vertex (cr, cc) in coarse grid, take min-world-z
+			// over the source verts in the source-grid neighbourhood
+			// [cr*step .. cr*step+(step-1)] x [cc*step .. cc*step+(step-1)],
+			// clipped to [0,4]. Source verts at the right/bottom seam are
+			// only covered by the last-row/column kept vertex itself, which
+			// is fine — the seam already matches the next subcell exactly.
+			for (unsigned int cr = 0; cr < n; ++cr) {
+				for (unsigned int cc = 0; cc < n; ++cc) {
+					const unsigned int sr0 = cr * step;
+					const unsigned int sc0 = cc * step;
+					const unsigned int sr1 = (cr + 1 == n) ? sr0 : sr0 + (step - 1);
+					const unsigned int sc1 = (cc + 1 == n) ? sc0 : sc0 + (step - 1);
+
+					float minWz = std::numeric_limits<float>::infinity();
+					float keepX = 0, keepY = 0;
+					// Track the kept (x,y) at the canonical anchor (sr0, sc0)
+					// so the coarse XY grid stays regular — only Z is min-folded.
+					for (unsigned int sr = sr0; sr <= sr1; ++sr) {
+						for (unsigned int sc = sc0; sc <= sc1; ++sc) {
+							const auto& v = data->vertex[sr * 5 + sc];
+							const float rx = R.m0.x * v.x + R.m0.y * v.y + R.m0.z * v.z;
+							const float ry = R.m1.x * v.x + R.m1.y * v.y + R.m1.z * v.z;
+							const float rz = R.m2.x * v.x + R.m2.y * v.y + R.m2.z * v.z;
+							const float wx = rx * s + T.x;
+							const float wy = ry * s + T.y;
+							const float wz = rz * s + T.z;
+							if (sr == sr0 && sc == sc0) { keepX = wx; keepY = wy; }
+							if (wz < minWz) minWz = wz;
+						}
+					}
+					float* dst = out + (cr * n + cc) * 3;
+					dst[0] = keepX;
+					dst[1] = keepY;
+					dst[2] = minWz;
+				}
+			}
+
+			// Build (n-1)*(n-1)*2 triangles. BACKFACE_NONE is used downstream,
+			// so winding doesn't matter — both per-quad triangles are emitted
+			// in CCW relative to a top-down view, but the rasterizer accepts
+			// either.
+			const unsigned int qN = n - 1;
+			aggIdx.reserve(aggIdx.size() + static_cast<size_t>(qN * qN) * 6);
+			for (unsigned int qr = 0; qr < qN; ++qr) {
+				for (unsigned int qc = 0; qc < qN; ++qc) {
+					const unsigned int v00 = baseVert + (qr * n + qc);
+					const unsigned int v01 = baseVert + (qr * n + (qc + 1));
+					const unsigned int v10 = baseVert + ((qr + 1) * n + qc);
+					const unsigned int v11 = baseVert + ((qr + 1) * n + (qc + 1));
+					aggIdx.push_back(v00); aggIdx.push_back(v10); aggIdx.push_back(v01);
+					aggIdx.push_back(v10); aggIdx.push_back(v11); aggIdx.push_back(v01);
+				}
+			}
+			return;
+		}
+
+		// Full-resolution path: copy every source vert + every source tri.
+		const unsigned int baseVert = static_cast<unsigned int>(aggVerts.size() / 3);
 		aggVerts.resize(aggVerts.size() + static_cast<size_t>(vcount) * 3);
 		float* out = aggVerts.data() + baseVert * 3;
 		for (unsigned short i = 0; i < vcount; ++i) {
@@ -1174,9 +1256,22 @@ namespace mwse::patch::occlusion {
 	// view-frustum clipping internally during rasterisation, so the
 	// "extra" triangles we include cost negligible compared to the
 	// per-frame walk + matrix multiply they replace.
+	// _Claude_ Map MCM dropdown value (0/1/2) to subsample step (1/2/4).
+	// 0=Full (5x5, 32 tris/subcell), 1=Half (3x3, 8 tris/subcell),
+	// 2=Corners (2x2, 2 tris/subcell). Out-of-range values clamp to Full
+	// so a malformed JSON edit doesn't disable terrain entirely.
+	static unsigned int currentTerrainStep() {
+		switch (Configuration::OcclusionTerrainResolution) {
+		case 1: return 2;
+		case 2: return 4;
+		default: return 1;
+		}
+	}
+
 	static void buildLandCacheEntry(LandCacheEntry& entry, NI::Node* landNode) {
 		entry.verts.clear();
 		entry.indices.clear();
+		const unsigned int step = currentTerrainStep();
 		const auto& subcells = landNode->children;
 		for (size_t j = 0; j < subcells.endIndex; ++j) {
 			auto* sub = subcells.storage[j].get();
@@ -1189,10 +1284,11 @@ namespace mwse::patch::occlusion {
 				if (!shape) continue;
 				if (!shape->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) continue;
 				if (hasTransparency(shape)) continue;
-				appendTerrainShape(entry.verts, entry.indices, static_cast<NI::TriShape*>(shape));
+				appendTerrainShape(entry.verts, entry.indices, static_cast<NI::TriShape*>(shape), step);
 			}
 		}
 		entry.triCount = static_cast<unsigned int>(entry.indices.size() / 3);
+		entry.builtForResolution = static_cast<uint8_t>(Configuration::OcclusionTerrainResolution);
 	}
 
 	// _Claude_ Aggregate terrain rasteriser. Walks the WorldLandscape
@@ -1233,8 +1329,19 @@ namespace mwse::patch::occlusion {
 			// a cell-change realloc produces a new key and rebuilds.
 			auto [it, inserted] = g_landCache.try_emplace(landNode);
 			LandCacheEntry& entry = it->second;
+			// _Claude_ Treat a resolution-mismatch as a miss so MCM
+			// dropdown changes propagate lazily — the entry already
+			// in the map gets rebuilt at the new resolution on its
+			// next visit. nodePtr stays valid (the NI::Pointer keeps
+			// the engine's NiNode pinned), so we only need to redo
+			// the verts/indices.
+			const uint8_t curRes = static_cast<uint8_t>(Configuration::OcclusionTerrainResolution);
 			if (inserted) {
 				entry.nodePtr = landNode;
+				buildLandCacheEntry(entry, landNode);
+				++g_landCacheMisses;
+			}
+			else if (entry.builtForResolution != curRes) {
 				buildLandCacheEntry(entry, landNode);
 				++g_landCacheMisses;
 			}
@@ -2019,15 +2126,51 @@ namespace mwse::patch::occlusion {
 				threadCount = binCount;
 			}
 			constexpr unsigned int kMaxJobs = 64;
-			g_threadpool = new ::CullingThreadpool(threadCount,
-				Configuration::OcclusionThreadpoolBinsW,
-				Configuration::OcclusionThreadpoolBinsH,
-				kMaxJobs);
-			g_threadpool->SetBuffer(g_msoc);
-			g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
-			g_threadpool->SetNearClipPlane(kNearClipW);
-			g_threadpool->SetVertexLayout(::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
-			g_threadpool->SuspendThreads();
+			// _Claude_ Partial-failure cleanup. The realistic throw site is
+			// the threadpool ctor's per-thread state ring buffer (~57 MB
+			// new[]). On bad_alloc — or any exception out of Set* /
+			// SuspendThreads — we have a half-built world: g_msoc allocated,
+			// g_threadpool either null (ctor threw before assignment) or
+			// partially configured. Destroy both, return false; the
+			// reconciler treats this frame as MSOC-disabled and the caller
+			// (detour top-of-frame) falls through to vanilla cullShowBody.
+			// Cost on the no-throw path is zero — try-block entry is a
+			// few ns and this code only runs at install / on MCM toggle-on,
+			// not per-frame (createMSOCResources short-circuits at the top
+			// once both globals are live).
+			try {
+				g_threadpool = new ::CullingThreadpool(threadCount,
+					Configuration::OcclusionThreadpoolBinsW,
+					Configuration::OcclusionThreadpoolBinsH,
+					kMaxJobs);
+				g_threadpool->SetBuffer(g_msoc);
+				g_threadpool->SetResolution(kMsocWidth, kMsocHeight);
+				g_threadpool->SetNearClipPlane(kNearClipW);
+				g_threadpool->SetVertexLayout(::MaskedOcclusionCulling::VertexLayout(12, 4, 8));
+				g_threadpool->SuspendThreads();
+			}
+			catch (const std::exception& e) {
+				log << "MSOC: threadpool creation threw: " << e.what()
+					<< "; freeing partial state, occlusion disabled this session." << std::endl;
+				if (g_threadpool) {
+					delete g_threadpool;
+					g_threadpool = nullptr;
+				}
+				::MaskedOcclusionCulling::Destroy(g_msoc);
+				g_msoc = nullptr;
+				return false;
+			}
+			catch (...) {
+				log << "MSOC: threadpool creation threw non-std exception; "
+					"freeing partial state, occlusion disabled this session." << std::endl;
+				if (g_threadpool) {
+					delete g_threadpool;
+					g_threadpool = nullptr;
+				}
+				::MaskedOcclusionCulling::Destroy(g_msoc);
+				g_msoc = nullptr;
+				return false;
+			}
 
 			log << "MSOC: threadpool created; threads=" << threadCount
 				<< " binsW=" << Configuration::OcclusionThreadpoolBinsW

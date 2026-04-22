@@ -36,6 +36,17 @@ namespace mwse {
 	bool Configuration::OcclusionEnableExterior = true;
 	bool Configuration::OcclusionSkipTerrainOccludees = true;
 	bool Configuration::OcclusionAggregateTerrain = true;
+	// _Claude_ MCM dropdown index for terrain occluder resolution.
+	// Each per-cell terrain NiTriShape is a 5x5 grid (25v/32t).
+	//   0 = Full    (5x5, 32 tris/subcell) — vanilla, max accuracy
+	//   1 = Half    (3x3, 8 tris/subcell)  — ~4x rasterizer cost reduction
+	//   2 = Corners (2x2, 2 tris/subcell)  — ~16x; aggressive
+	// Index → subsample step (1/2/4) mapping lives in
+	// PatchOcclusionCulling.cpp::currentTerrainStep(). Min-z is applied
+	// across the dropped neighbourhood at the downsampled vertex so the
+	// silhouette can only shrink — keeps the occluder buffer safe
+	// (under-occlude rather than over-occlude).
+	UINT Configuration::OcclusionTerrainResolution = 1;
 	bool Configuration::OcclusionCullLights = true;
 	UINT Configuration::OcclusionLightCullHysteresisFrames = 3;
 	bool Configuration::OcclusionAsyncOccluders = true;
@@ -109,6 +120,7 @@ namespace mwse {
 		DECLARE_CONFIG(OcclusionEnableExterior)
 		DECLARE_CONFIG(OcclusionSkipTerrainOccludees)
 		DECLARE_CONFIG(OcclusionAggregateTerrain)
+		DECLARE_CONFIG(OcclusionTerrainResolution)
 		DECLARE_CONFIG(OcclusionCullLights)
 		DECLARE_CONFIG(OcclusionLightCullHysteresisFrames)
 		DECLARE_CONFIG(OcclusionAsyncOccluders)
