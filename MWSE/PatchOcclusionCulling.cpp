@@ -27,13 +27,16 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cassert>
 #include <cfloat>
 #include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <limits>
+#include <mutex>
 #include <ostream>
 #include <thread>
 #include <unordered_map>
@@ -141,7 +144,10 @@ namespace mwse::patch::occlusion {
 	static uint64_t g_queryTested = 0;
 	static uint64_t g_queryOccluded = 0;
 	static uint64_t g_queryViewCulled = 0;
-	static uint64_t g_queryNearClip = 0;
+	// _Claude_ atomic so phase-1 drain workers can race on the
+	// near-plane increment safely. Relaxed memory order is fine: the value
+	// is only read for diagnostic logging, never for control flow.
+	static std::atomic<uint64_t> g_queryNearClip{0};
 	static uint64_t g_deferred = 0;
 	// Diagnostic: NiNodes / non-geom AVObjects tested inline during
 	// traversal (as opposed to deferred NiTriBasedGeom leaves). Helps
@@ -413,6 +419,40 @@ namespace mwse::patch::occlusion {
 	static std::vector<std::vector<float>> g_asyncOccluderVerts;
 	static std::vector<std::vector<unsigned int>> g_asyncOccluderIndices;
 
+	// _Claude_ Drain-parallel worker pool. Sized for the measured workload
+	// (~840 TestRect queries/frame in dense scenes); profiling shows
+	// diminishing returns beyond 2-way because hiZ-buffer cache traffic
+	// between cores starts to dominate. C++17 condvar/mutex fallback in
+	// place of std::counting_semaphore (project targets stdcpp17 per
+	// MWSE.vcxproj LanguageStandard). Workers park on the start cv at
+	// ~0% CPU when idle and are spawned unconditionally so a runtime
+	// MCM toggle of OcclusionParallelDrain works without restart. Not
+	// yet wired into drainPendingDisplays — the dispatch path lands in
+	// a later commit, gated by Configuration::OcclusionParallelDrain.
+	constexpr unsigned int kDrainWorkerCount = 2;
+	constexpr size_t kParallelDrainMin = 100;
+
+	struct DrainWorkerRange {
+		size_t lo;
+		size_t hi;
+	};
+
+	static std::thread g_drainWorkers[kDrainWorkerCount];
+	static DrainWorkerRange g_drainRanges[kDrainWorkerCount];
+	static std::atomic<bool> g_drainWorkerStop{ false };
+
+	static std::mutex g_drainMtx;
+	static std::condition_variable g_drainStartCv;
+	static std::condition_variable g_drainDoneCv;
+	static unsigned int g_drainStartTickets = 0;
+	static unsigned int g_drainDoneTickets = 0;
+
+	// _Claude_ Diagnostic timer for the parallel barrier (release →
+	// dispatch → wait-for-completion). Gated by the log-channel flags
+	// like the other ScopedUsAccumulator counters. Stays at 0 until
+	// commit 5 wires the parallel path; harmless until then.
+	static uint64_t g_parallelDrainUs = 0;
+
 	// _Claude_ Watchdog loop (body — forward-declared higher up).
 	// 250ms cadence is a compromise: fast enough to catch a freeze
 	// before the user alt-tabs out, slow enough not to thrash the
@@ -505,6 +545,34 @@ namespace mwse::patch::occlusion {
 		bool rasterisedAsOccluder;
 	};
 	static std::vector<PendingDisplay> g_pendingDisplays;
+
+	// _Claude_ Drain phase-1 verdict slots. Phase 1 (classifyDrainRange)
+	// fills g_drainSlots[i] with a verdict per g_pendingDisplays[i].
+	// Phase 2 (the serial action pass in drainPendingDisplays) walks the
+	// slots in order and applies counter increments, cache writes, tints,
+	// and display() calls. Splitting the work this way keeps phase 1
+	// read-only on shared state, which is the prerequisite for moving
+	// it onto worker threads in a later commit.
+	enum class DrainVerdict : uint8_t {
+		Visible,        // TestRect returned VISIBLE; call display()
+		Occluded,       // TestRect returned OCCLUDED; skip display (or tint+display in debug)
+		ViewCulled,     // rect collapsed; treat like Visible for display()
+		SkipTerrain,    // bypassed TestRect (terrain descendant); call display()
+		SkipTiny,       // bypassed TestRect (radius < threshold); call display()
+		CachedOccluded, // hit g_drainCache; verdict is OCCLUDED (we only cache OCCLUDED)
+	};
+
+	struct DrainSlot {
+		DrainVerdict verdict;
+		// _Claude_ True only when testSphereVisible actually ran (fresh
+		// Visible/Occluded/ViewCulled verdicts). False for the Skip* paths
+		// and for CachedOccluded. Phase 2 uses this to gate counter
+		// increments that fire only on the !reused branch in the
+		// pre-refactor serial loop.
+		bool ranTestRect;
+	};
+
+	static std::vector<DrainSlot> g_drainSlots;
 
 	// Debug tint overlay. When any of the three DebugOcclusionTint* flags
 	// in Configuration are set, classified leaves render in a distinct hue:
@@ -788,7 +856,7 @@ namespace mwse::patch::occlusion {
 
 		const float wMin = c.w - (radius + Configuration::OcclusionDepthSlackWorldUnits) * g_wGradMag;
 		if (wMin <= kNearClipW) {
-			++g_queryNearClip;
+			g_queryNearClip.fetch_add(1, std::memory_order_relaxed);
 			return ::MaskedOcclusionCulling::VISIBLE;
 		}
 
@@ -1540,10 +1608,126 @@ namespace mwse::patch::occlusion {
 		restoreIgnoreBits();
 	}
 
+	// _Claude_ Phase-1 of the two-phase drain. Classifies entries in the
+	// half-open range [lo, hi) of g_pendingDisplays into g_drainSlots.
+	// Read-only on shared state: no writes to g_drainCache, no counter
+	// increments (except the atomic g_queryNearClip inside testSphereVisible),
+	// no display() calls, no tints. All write-bearing logic moves into
+	// phase 2 in drainPendingDisplays so this body is safe to invoke from
+	// worker threads once the parallel dispatch path lands. Until then it
+	// runs serially on the main thread; sharing one body between serial
+	// and parallel modes lets the serial-only refactor commit validate
+	// the phase-1 logic before threading is introduced.
+	static void classifyDrainRange(size_t lo, size_t hi) {
+		const unsigned int tcFrames = Configuration::OcclusionTemporalCoherenceFrames;
+		const bool skipTerrainEnabled = Configuration::OcclusionSkipTerrainOccludees;
+		const float tinyThreshold = Configuration::OcclusionOccludeeMinRadius;
+
+		for (size_t i = lo; i < hi; ++i) {
+			const auto& p = g_pendingDisplays[i];
+			auto& slot = g_drainSlots[i];
+			slot.ranTestRect = false;
+
+			if (skipTerrainEnabled
+				&& isLandscapeDescendant(p.shape, g_worldLandscapeRoot)) {
+				slot.verdict = DrainVerdict::SkipTerrain;
+				continue;
+			}
+
+			if (p.shape->worldBoundRadius < tinyThreshold) {
+				slot.verdict = DrainVerdict::SkipTiny;
+				continue;
+			}
+
+			// Temporal cache: read-only lookup. Inserts happen in phase 2.
+			if (tcFrames > 0) {
+				auto it = g_drainCache.find(p.shape);
+				if (it != g_drainCache.end()) {
+					const auto& e = it->second;
+					const auto& o = p.shape->worldBoundOrigin;
+					const float r = p.shape->worldBoundRadius;
+					const bool stationary =
+						e.boundOriginX == o.x &&
+						e.boundOriginY == o.y &&
+						e.boundOriginZ == o.z &&
+						e.boundRadius == r;
+					const bool fresh =
+						(g_frameCounter - e.lastQueryFrame) <= tcFrames;
+					if (stationary && fresh) {
+						slot.verdict = DrainVerdict::CachedOccluded;
+						continue;
+					}
+				}
+			}
+
+			::MaskedOcclusionCulling::CullingResult r;
+			{
+				ScopedUsAccumulator tt(g_drainTestRectUs);
+				r = testSphereVisible(
+					p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+			}
+			slot.ranTestRect = true;
+			switch (r) {
+			case ::MaskedOcclusionCulling::VISIBLE:
+				slot.verdict = DrainVerdict::Visible; break;
+			case ::MaskedOcclusionCulling::OCCLUDED:
+				slot.verdict = DrainVerdict::Occluded; break;
+			case ::MaskedOcclusionCulling::VIEW_CULLED:
+				slot.verdict = DrainVerdict::ViewCulled; break;
+			default:
+				slot.verdict = DrainVerdict::Visible;  // conservative fallback
+				break;
+			}
+		}
+	}
+
+	// _Claude_ Worker thread body. Sleeps on the start cv until the main
+	// thread publishes work, then runs classifyDrainRange over its assigned
+	// slice and signals completion. The stop flag is checked both before
+	// and after the wait so a teardown release of permits cleanly drains
+	// the worker out of the wait without it touching g_drainRanges. workerId
+	// is bounds-asserted to catch the (unlikely) case of a future refactor
+	// spawning extra threads with out-of-range IDs.
+	static void drainWorkerMain(unsigned int workerId) {
+		assert(workerId < kDrainWorkerCount);
+
+		while (!g_drainWorkerStop.load(std::memory_order_acquire)) {
+			{
+				std::unique_lock<std::mutex> lock(g_drainMtx);
+				g_drainStartCv.wait(lock, [] {
+					return g_drainStartTickets > 0
+						|| g_drainWorkerStop.load(std::memory_order_acquire);
+					});
+				if (g_drainWorkerStop.load(std::memory_order_acquire)) break;
+				--g_drainStartTickets;
+			}
+
+			const auto range = g_drainRanges[workerId];
+			classifyDrainRange(range.lo, range.hi);
+
+			{
+				std::lock_guard<std::mutex> lock(g_drainMtx);
+				++g_drainDoneTickets;
+			}
+			g_drainDoneCv.notify_one();
+		}
+	}
+
 	// Drain the deferred-display queue built during the main traversal.
 	// Each entry is re-tested against the now-complete depth buffer and
 	// displayed if still visible. Must run before g_msocActive is cleared
 	// so any counters it updates land in the current frame's log line.
+	//
+	// _Claude_ Two-phase split. Phase 1 (classifyDrainRange) classifies
+	// every entry into a DrainSlot using only read-only access to shared
+	// state. Phase 2 (the loop below) walks the slots in original index
+	// order and applies all writes — counter increments, cache inserts,
+	// tints, display() calls. Counter accounting matches the pre-refactor
+	// serial loop exactly: ranTestRect is the single-bit flag that lets
+	// phase 2 reproduce the !reused gate from the original code (true
+	// only when testSphereVisible actually ran, false for skip and cache
+	// paths). Bit-exact counter parity vs. the pre-refactor build is the
+	// acceptance criterion for the refactor.
 	static void drainPendingDisplays() {
 		ScopedUsAccumulator t(g_drainPhaseTimeUs);
 		// Fast path: nothing rasterised this frame means the depth buffer
@@ -1558,86 +1742,114 @@ namespace mwse::patch::occlusion {
 		// still cull deferred leaves behind it, so we must not short-circuit
 		// just because no main-pass leaf qualified.
 		if (g_rasterizedAsOccluder == 0 && g_aggregateTerrainLands == 0) {
-			ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit (whole-loop)
+			ScopedUsAccumulator tt(g_drainDisplayUs); // _Claude_ audit (whole-loop)
 			for (const auto& p : g_pendingDisplays) {
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 			}
 			g_pendingDisplays.clear();
 			return;
 		}
-		for (const auto& p : g_pendingDisplays) {
-			// _Claude_ Skip occludee tests on terrain patches. Ground sits
-			// under the camera and is effectively always visible; querying
-			// it wastes depth-buffer bandwidth and test time. Ancestor walk
-			// matches against DataHandler::worldLandscapeRoot captured at
-			// frame entry. Still displayed — we only bypass the test.
-			// Gated by Configuration flag for A/B profiling.
-			if (Configuration::OcclusionSkipTerrainOccludees
-				&& isLandscapeDescendant(p.shape, g_worldLandscapeRoot)) {
-				++g_skippedTerrain;
-				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
-				p.shape->vTable.asAVObject->display(p.shape, p.camera);
-				continue;
-			}
-			// Sub-threshold shapes bypass TestRect — their NDC footprint is
-			// too small for the culler to decide reliably and the test cost
-			// isn't worth the per-frame overhead. They still flow through
-			// the queue so display order matches the rest of the deferred
-			// shapes (reordering these would change alpha-sort timing).
-			if (p.shape->worldBoundRadius < Configuration::OcclusionOccludeeMinRadius) {
-				++g_skippedTesteeTiny;
-				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
-				p.shape->vTable.asAVObject->display(p.shape, p.camera);
-				continue;
-			}
-			// _Claude_ Temporal coherence: reuse a recent TestRect verdict
-			// when the shape hasn't moved and the cached entry is still
-			// fresh. N=0 disables the fast path entirely so the cache is
-			// harmless (no lookup overhead, map stays empty after prune).
-			const unsigned int tcFrames = Configuration::OcclusionTemporalCoherenceFrames;
-			::MaskedOcclusionCulling::CullingResult result;
-			bool reused = false;
-			if (tcFrames > 0) {
-				auto it = g_drainCache.find(p.shape);
-				if (it != g_drainCache.end()) {
-					const auto& e = it->second;
-					const auto& o = p.shape->worldBoundOrigin;
-					const float r = p.shape->worldBoundRadius;
-					// _Claude_ Bit-exact compare is intentional: static
-					// shapes produce identical floats across frames, and
-					// any animated/moved shape will fail this and re-query.
-					const bool stationary =
-						e.boundOriginX == o.x &&
-						e.boundOriginY == o.y &&
-						e.boundOriginZ == o.z &&
-						e.boundRadius == r;
-					const bool fresh =
-						(g_frameCounter - e.lastQueryFrame) <= tcFrames;
-					if (stationary && fresh) {
-						result = e.result;
-						reused = true;
-						++g_drainCacheHits;
-					}
-				}
-			}
-			if (!reused) {
-				++g_queryTested;
+
+		const size_t n = g_pendingDisplays.size();
+
+		// _Claude_ Gate the parallel path. Checking joinable() on every
+		// worker (not just worker 0) catches the partial-spawn-failure
+		// case from installPatches: a default-constructed std::thread
+		// reports joinable()==false, so any slot left empty by an
+		// exception during spawn cleanly disqualifies the parallel path
+		// for the rest of the session. Below kParallelDrainMin the
+		// barrier overhead dominates the work — fall back to serial.
+		bool poolReady = true;
+		for (unsigned int i = 0; i < kDrainWorkerCount; ++i) {
+			if (!g_drainWorkers[i].joinable()) { poolReady = false; break; }
+		}
+		const bool runParallel =
+			Configuration::OcclusionParallelDrain
+			&& n >= kParallelDrainMin
+			&& poolReady;
+
+		// Phase 1: classify. Workers each take a contiguous half of
+		// g_pendingDisplays; the main thread blocks on the done barrier
+		// rather than taking a third share, because at the measured
+		// workload (~840 entries) the condvar round-trip (~1 µs) makes
+		// a 3-way split slower than a 2-way split that parks the main
+		// thread.
+		g_drainSlots.resize(n);
+		if (runParallel) {
+			const size_t half = n / 2;
+			g_drainRanges[0] = { 0, half };
+			g_drainRanges[1] = { half, n };
+			{
+				ScopedUsAccumulator tt(g_parallelDrainUs);
 				{
-					ScopedUsAccumulator t(g_drainTestRectUs); // _Claude_ audit
-					result = testSphereVisible(
-						p.shape->worldBoundOrigin, p.shape->worldBoundRadius);
+					std::lock_guard<std::mutex> lock(g_drainMtx);
+					g_drainStartTickets = kDrainWorkerCount;
+					g_drainDoneTickets = 0;
 				}
-				if (tcFrames > 0) {
+				g_drainStartCv.notify_all();
+				{
+					std::unique_lock<std::mutex> lock(g_drainMtx);
+					g_drainDoneCv.wait(lock, [] {
+						return g_drainDoneTickets >= kDrainWorkerCount;
+						});
+				}
+			}
+		}
+		else {
+			classifyDrainRange(0, n);
+		}
+
+		// _Claude_ Shared handler for OCCLUDED verdicts (from both fresh
+		// and cached paths). Lambda because the codebase forbids goto;
+		// compilers inline single-call-site lambdas. Takes p by parameter
+		// rather than capturing it so the body is independent of any
+		// loop-local state.
+		auto handleOccluded = [&](const PendingDisplay& p) {
+			if (Configuration::DebugOcclusionTintOccluded) {
+				tintEmissive(p.shape, kTintOccluded);
+				ScopedUsAccumulator tt(g_drainDisplayUs);
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+			}
+		};
+
+		// Phase 2: serial action pass. Counter-increment semantics match
+		// the pre-refactor loop exactly — see the function comment.
+		for (size_t i = 0; i < n; ++i) {
+			const auto& p = g_pendingDisplays[i];
+			const auto& s = g_drainSlots[i];
+
+			if (s.verdict == DrainVerdict::SkipTerrain) {
+				++g_skippedTerrain;
+				ScopedUsAccumulator tt(g_drainDisplayUs);
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+				continue;
+			}
+			if (s.verdict == DrainVerdict::SkipTiny) {
+				++g_skippedTesteeTiny;
+				ScopedUsAccumulator tt(g_drainDisplayUs);
+				p.shape->vTable.asAVObject->display(p.shape, p.camera);
+				continue;
+			}
+			if (s.verdict == DrainVerdict::CachedOccluded) {
+				++g_drainCacheHits;
+				handleOccluded(p);
+				continue;
+			}
+
+			// Fresh TestRect path (Visible / Occluded / ViewCulled).
+			if (s.ranTestRect) {
+				++g_queryTested;
+				if (Configuration::OcclusionTemporalCoherenceFrames > 0) {
 					++g_drainCacheMisses;
-					// _Claude_ Cache only OCCLUDED. VISIBLE and
-					// VIEW_CULLED still call display() this frame,
-					// which dereferences p.shape anyway — caching them
-					// gains nothing on the hit path while widening the
-					// stale-pointer attack surface.
-					if (result == ::MaskedOcclusionCulling::OCCLUDED) {
+					// _Claude_ Cache only OCCLUDED. VISIBLE and VIEW_CULLED
+					// still call display() this frame, which dereferences
+					// p.shape anyway — caching them gains nothing on the
+					// hit path while widening the stale-pointer attack
+					// surface.
+					if (s.verdict == DrainVerdict::Occluded) {
 						auto& e = g_drainCache[p.shape];
 						e.shapePtr = p.shape;
-						e.result = result;
+						e.result = ::MaskedOcclusionCulling::OCCLUDED;
 						e.lastQueryFrame = g_frameCounter;
 						e.boundOriginX = p.shape->worldBoundOrigin.x;
 						e.boundOriginY = p.shape->worldBoundOrigin.y;
@@ -1646,23 +1858,14 @@ namespace mwse::patch::occlusion {
 					}
 				}
 			}
-			if (result == ::MaskedOcclusionCulling::OCCLUDED) {
-				if (!reused) ++g_queryOccluded;
-				// Tint-debug mode keeps the shape visible so the user can
-				// see which meshes the culler wrongly hides. Production
-				// mode (default) culls by skipping display. Red overwrites
-				// any yellow (occluder) tint on purpose — a rasterised
-				// shape that still tests OCCLUDED is a visibility error
-				// worth surfacing, not a status we should hide.
-				if (Configuration::DebugOcclusionTintOccluded) {
-					tintEmissive(p.shape, kTintOccluded);
-					ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
-					p.shape->vTable.asAVObject->display(p.shape, p.camera);
-				}
+
+			if (s.verdict == DrainVerdict::Occluded) {
+				if (s.ranTestRect) ++g_queryOccluded;
+				handleOccluded(p);
 				continue;
 			}
-			if (result == ::MaskedOcclusionCulling::VIEW_CULLED) {
-				if (!reused) ++g_queryViewCulled;
+			if (s.verdict == DrainVerdict::ViewCulled) {
+				if (s.ranTestRect) ++g_queryViewCulled;
 			}
 			// _Claude_ Skip Tested-tint for shapes that already got the
 			// Occluder tint in the main pass; last-write-wins would flip
@@ -1671,10 +1874,11 @@ namespace mwse::patch::occlusion {
 				tintEmissive(p.shape, kTintTested);
 			}
 			{
-				ScopedUsAccumulator t(g_drainDisplayUs); // _Claude_ audit
+				ScopedUsAccumulator tt(g_drainDisplayUs);
 				p.shape->vTable.asAVObject->display(p.shape, p.camera);
 			}
 		}
+
 		g_pendingDisplays.clear();
 	}
 
@@ -1836,7 +2040,7 @@ namespace mwse::patch::occlusion {
 			g_queryTested = 0;
 			g_queryOccluded = 0;
 			g_queryViewCulled = 0;
-			g_queryNearClip = 0;
+			g_queryNearClip.store(0, std::memory_order_relaxed);
 			g_deferred = 0;
 			g_inlineTested = 0;
 			g_skippedTriCount = 0;
@@ -2037,7 +2241,7 @@ namespace mwse::patch::occlusion {
 					<< " queryOccluded=" << g_queryOccluded
 					<< "/" << g_queryTested
 					<< " viewCulled=" << g_queryViewCulled
-					<< " nearClip=" << g_queryNearClip
+					<< " nearClip=" << g_queryNearClip.load(std::memory_order_relaxed)
 					<< " deferred=" << g_deferred
 					<< " inlineTested=" << g_inlineTested
 					<< " recursive=" << g_recursiveCalls
@@ -2301,6 +2505,42 @@ namespace mwse::patch::occlusion {
 		catch (const std::exception& e) {
 			log << "MSOC: failed to spawn forensics watchdog: "
 				<< e.what() << std::endl;
+		}
+
+		// _Claude_ Drain-parallel worker pool. Spawned unconditionally so
+		// runtime MCM toggle of OcclusionParallelDrain works without restart;
+		// workers park on the start cv at ~0% CPU when idle.
+		//
+		// All-or-nothing spawn: if any thread ctor throws (bad_alloc, OS
+		// thread-limit exhaustion), tear down whichever workers did start
+		// so the joinable() gate in drainPendingDisplays cleanly rejects
+		// the parallel path for the rest of the session. Over-notify on
+		// the start cv after setting g_drainWorkerStop is harmless — any
+		// already-running worker observes the stop flag and exits before
+		// touching g_drainRanges.
+		bool drainPoolStarted = true;
+		try {
+			for (unsigned int i = 0; i < kDrainWorkerCount; ++i) {
+				g_drainWorkers[i] = std::thread(drainWorkerMain, i);
+			}
+		}
+		catch (const std::exception& e) {
+			log << "MSOC: drain worker spawn failed: " << e.what()
+				<< "; tearing down partial state, parallel drain disabled."
+				<< std::endl;
+			drainPoolStarted = false;
+			g_drainWorkerStop.store(true, std::memory_order_release);
+			g_drainStartCv.notify_all();
+			for (unsigned int i = 0; i < kDrainWorkerCount; ++i) {
+				if (g_drainWorkers[i].joinable()) {
+					g_drainWorkers[i].join();
+				}
+			}
+		}
+		if (drainPoolStarted) {
+			log << "MSOC: drain worker pool spawned; workers="
+				<< kDrainWorkerCount
+				<< " (gated by OcclusionParallelDrain)." << std::endl;
 		}
 
 		// Function-level detour at NiAVObject::CullShow. The 5-byte

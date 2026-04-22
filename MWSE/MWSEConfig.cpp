@@ -54,6 +54,7 @@ namespace mwse {
 	UINT Configuration::OcclusionThreadpoolBinsW = 4;
 	UINT Configuration::OcclusionThreadpoolBinsH = 2;
 	UINT Configuration::OcclusionTemporalCoherenceFrames = 4;
+	bool Configuration::OcclusionParallelDrain = false;
 	bool Configuration::OcclusionLogPerFrame = false;
 	bool Configuration::OcclusionLogAggregate = false;
 #ifdef APPVEYOR_BUILD_NUMBER
@@ -128,6 +129,7 @@ namespace mwse {
 		DECLARE_CONFIG(OcclusionThreadpoolBinsW)
 		DECLARE_CONFIG(OcclusionThreadpoolBinsH)
 		DECLARE_CONFIG(OcclusionTemporalCoherenceFrames)
+		DECLARE_CONFIG(OcclusionParallelDrain)
 		DECLARE_CONFIG(OcclusionLogPerFrame)
 		DECLARE_CONFIG(OcclusionLogAggregate)
 		DECLARE_CONFIG(BuildNumber)
