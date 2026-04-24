@@ -106,6 +106,7 @@
 --- @field register fun(eventId: '"load"', callback: (fun(e: loadEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"loaded"', callback: (fun(e: loadedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"lockPick"', callback: (fun(e: lockPickEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"magicAbsorb"', callback: (fun(e: magicAbsorbEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"magicCasted"', callback: (fun(e: magicCastedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"magicEffectRemoved"', callback: (fun(e: magicEffectRemovedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"magicEffectsResolved"', callback: (fun(e: magicEffectsResolvedEventData): boolean?), options: table?)

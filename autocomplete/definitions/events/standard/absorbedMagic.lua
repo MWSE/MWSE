@@ -1,9 +1,10 @@
 return {
 	type = "event",
-	description = [[This event is triggered after magic absorption absorbs and cancels a magic effect, and just before magic absorption gives magicka to the target. It can control the amount of magicka restored.
+	description =
+	[[This event is triggered after magic absorption absorbs and cancels a magic effect, and just before magic absorption gives magicka to the target. It can control the amount of magicka restored.
 
 This event occurs once per effect restored, so a multi-effect spell may trigger this multiple times. The default amount restored is equal to the casting cost of the entire spell, which is the vanilla behaviour.]],
-	related = { "spellResist", "spellResisted" },
+	related = { "magicAbsorb", "spellResist", "spellResisted" },
 	eventData = {
 		["target"] = {
 			type = "tes3reference",
