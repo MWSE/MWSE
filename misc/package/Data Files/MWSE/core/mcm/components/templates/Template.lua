@@ -16,7 +16,7 @@ Template.componentType = "Template"
 --- @return mwseMCMTemplate template
 function Template:new(data)
 	data.name = data.name or data.label
-	local t = Parent:new(data)
+	local t = Parent.new(self, data)
 	setmetatable(t, self)
 
 	-- Create Pages
@@ -29,7 +29,7 @@ function Template:new(data)
 			if not componentClass then
 				error(string.format("Could not intialize page %q", page.label))
 			end
-			page.parentComponent = self
+			page.parentComponent = t
 			page = componentClass:new(page)
 		end
 		table.insert(pages, page)
