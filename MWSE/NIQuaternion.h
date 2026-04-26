@@ -15,6 +15,7 @@ namespace NI {
 
 		Quaternion operator-() const;
 		Quaternion operator*(const Quaternion& q) const;
+		TES3::Vector3 operator*(const TES3::Vector3& v) const;
 
 		friend std::ostream& operator<<(std::ostream& str, const Quaternion& q);
 		std::string toString() const;
@@ -27,6 +28,7 @@ namespace NI {
 		double dot(const Quaternion* q) const;
 		bool normalize();
 		Quaternion normalized() const;
+		void toIdentity();
 
 		Quaternion slerp(const Quaternion* q, float t) const;
 		Quaternion slerpKeyframe(const Quaternion* q, float t) const;

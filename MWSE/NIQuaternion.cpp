@@ -44,6 +44,18 @@ namespace NI {
 		return result;
 	}
 
+	// Rotates a vector by rotation stored in this quaternion. Uses Euler-Rodrigues formula.
+	// https://en.wikipedia.org/wiki/Euler%E2%80%93Rodrigues_formula#Vector_formulation
+	TES3::Vector3 Quaternion::operator*(const TES3::Vector3& v) const {
+		const auto vectorPart = TES3::Vector3(x, y, z);
+		const auto cross = vectorPart.crossProduct(&v);
+		auto result = TES3::Vector3();
+		
+		result = v + cross * w * 2 + vectorPart.crossProduct(&cross) * 2;
+
+		return result;
+	}
+
 	std::ostream& operator<<(std::ostream& str, const Quaternion& q) {
 		str << "{" << q.w << "," << q.x << "," << q.y << "," << q.z << "}";
 		return str;
@@ -110,6 +122,13 @@ namespace NI {
 		Quaternion result = *this;
 		result.normalize();
 		return result;
+	}
+
+	void Quaternion::toIdentity() {
+		w = Quaternion::IDENTITY.w;
+		x = Quaternion::IDENTITY.x;
+		y = Quaternion::IDENTITY.y;
+		z = Quaternion::IDENTITY.z;
 	}
 
 	static Quaternion slerpBase(const Quaternion* q0, const Quaternion* q1, double dot_product, float t) {

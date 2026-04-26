@@ -297,8 +297,8 @@ namespace mwse::lua {
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<TES3::Transform(const TES3::Transform&)>(&TES3::Transform::operator*),
-				sol::resolve<TES3::Vector3(const TES3::Vector3&)>(&TES3::Transform::operator*)
+				sol::resolve<TES3::Transform(const TES3::Transform&) const>(&TES3::Transform::operator*),
+				sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::Transform::operator*)
 			);
 
 			// Basic property bindings.
@@ -310,6 +310,32 @@ namespace mwse::lua {
 			usertypeDefinition["copy"] = &TES3::Transform::copy;
 			usertypeDefinition["invert"] = sol::resolve<std::tuple<TES3::Transform, bool>() const>(&TES3::Transform::invert);
 			usertypeDefinition["toIdentity"] = &TES3::Transform::toIdentity;
+		}
+
+		// Binding for TES3::AnimationTransform.
+		{
+			// Start our usertype.
+			auto usertypeDefinition = state.new_usertype<TES3::AnimationTransform>("tes3animationTransform");
+			usertypeDefinition["new"] = sol::constructors<
+				TES3::AnimationTransform(),
+				TES3::AnimationTransform(const NI::Quaternion& rotation, const TES3::Vector3& translation, const float scale)
+			>();
+
+			// Operator overloading.
+			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
+				sol::resolve<TES3::AnimationTransform(const TES3::AnimationTransform&) const>(&TES3::AnimationTransform::operator*),
+				sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::AnimationTransform::operator*)
+			);
+
+			// Basic propety bindings.
+			usertypeDefinition["rotation"] = &TES3::AnimationTransform::rotation;
+			usertypeDefinition["translation"] = &TES3::AnimationTransform::translation;
+			usertypeDefinition["scale"] = &TES3::AnimationTransform::scale;
+
+			// Basic function binding
+			usertypeDefinition["copy"] = &TES3::AnimationTransform::copy;
+			usertypeDefinition["invert"] = sol::resolve<std::tuple<TES3::AnimationTransform, bool>() const>(&TES3::AnimationTransform::invert);
+			usertypeDefinition["toIdentity"] = &TES3::AnimationTransform::toIdentity;
 		}
 	}
 }
