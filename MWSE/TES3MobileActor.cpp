@@ -1168,20 +1168,20 @@ namespace TES3 {
 
 	const auto TES3_MobileActor_wearItem = reinterpret_cast<void(__thiscall*)(MobileActor*, Object*, ItemData*, bool, bool)>(0x52C770);
 	bool MobileActor::wearItem(Object * item, ItemData * itemData, bool addItem, bool unknown, bool useEvents) {
-		if (useEvents && mwse::lua::event::EquipEvent::getEventEnabled()) {
-			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::EquipEvent(reference, item, itemData));
-			if (eventData.valid() && eventData.get_or("block", false)) {
-				return false;
-			}
-		}
+		//if (useEvents && mwse::lua::event::EquipEvent::getEventEnabled()) {
+		//	const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		//	sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::EquipEvent(reference, item, itemData));
+		//	if (eventData.valid() && eventData.get_or("block", false)) {
+		//		return false;
+		//	}
+		//}
 
 		TES3_MobileActor_wearItem(this, item, itemData, addItem, unknown);
 
-		if (useEvents && mwse::lua::event::EquippedEvent::getEventEnabled()) {
-			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			stateHandle.triggerEvent(new mwse::lua::event::EquippedEvent(static_cast<TES3::Actor*>(reference->baseObject), this, item, itemData));
-		}
+		//if (useEvents && mwse::lua::event::EquippedEvent::getEventEnabled()) {
+		//	const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		//	stateHandle.triggerEvent(new mwse::lua::event::EquippedEvent(static_cast<TES3::Actor*>(reference->baseObject), this, item, itemData));
+		//}
 
 		return true;
 	}
