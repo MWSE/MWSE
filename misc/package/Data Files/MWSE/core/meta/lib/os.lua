@@ -7,7 +7,7 @@
 --- @class oslib
 os = {}
 
---- Return CPU time since Lua started in seconds.
+--- Returns CPU time since Lua started in seconds.
 --- @return number result No description yet available.
 function os.clock() end
 
@@ -37,6 +37,10 @@ function os.getClipboardText() end
 --- Returns the command line array for the currently execution. This almost always has one value, which is the (potentially relative) path to Morrowind.exe
 --- @return string[] commandLine An array of strings that reprents the command line.
 function os.getCommandLine() end
+
+--- Returns CPU time since Lua started in seconds. This is a high-precision clock meant for use in profiling.
+--- @return number result No description yet available.
+function os.getHighPrecisionClock() end
 
 --- Opens the given `url` in the default browser. This has an advantage over using `os.execute("start https://my.url")` in that it does not create a command prompt window.
 --- @param url string The URL to open.
