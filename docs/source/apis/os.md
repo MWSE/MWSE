@@ -13,7 +13,7 @@ Provides various OS-specific functions.
 ### `os.clock`
 <div class="search_terms" style="display: none">clock</div>
 
-Return CPU time since Lua started in seconds.
+Returns CPU time since Lua started in seconds.
 
 ```lua
 local result = os.clock()
@@ -92,6 +92,21 @@ local commandLine = os.getCommandLine()
 **Returns**:
 
 * `commandLine` (string[]): An array of strings that reprents the command line.
+
+***
+
+### `os.getHighPrecisionClock`
+<div class="search_terms" style="display: none">gethighprecisionclock, highprecisionclock</div>
+
+Returns CPU time since Lua started in seconds. This is a high-precision clock meant for use in profiling.
+
+```lua
+local result = os.getHighPrecisionClock()
+```
+
+**Returns**:
+
+* `result` (number)
 
 ***
 
