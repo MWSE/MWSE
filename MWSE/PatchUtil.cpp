@@ -1241,6 +1241,69 @@ namespace mwse::patch {
 	const size_t PatchNIDX8Renderer_RenderShape_size = 0x8;
 
 	//
+	// Patch: Fix NiDX8TexturePass::setCTPipelineState always setting the base map
+	// texture coordinate index to 0 instead of reading it from the NIF property.
+	//
+	// Bug at 0x6B42AC: `mov [edi+28h], ebp` hardcodes ebp (=0) into
+	// NiDX8TextureStage::sourceTexcoordIndex (+0x28) for stage[0]. Every other
+	// map type (detail, glow, dark, decal, bump, gloss) correctly reads
+	// NiTexturingProperty::Map::texCoordSet (+0x10) and clamps it to
+	// [0, textureSetCount-1]. The base map skips that read entirely.
+	//
+	// Fix: a 5-byte CALL replaces the buggy 3-byte mov plus the first 2 bytes of
+	// the following `mov [edi+48h], ebp`. A single NOP covers the leftover byte
+	// at 0x6B42B1. The hook reads baseMap->texCoordSet, clamps it, writes it to
+	// stage[0].sourceTexcoordIndex, and replicates the clobbered [edi+48h]=0 write.
+	//
+	// Stack layout on entry (ecx/thiscall frame of 0x6B41B0):
+	//   sub esp,38h + push ebx/ebp/esi/edi → 0x48 total frame
+	//   [esp+0x2C] = NiTexturingProperty*  (var_1C in IDA; caller saved to stack)
+	//   [esp+0x58] = textureSetCount       (arg_10, 5th explicit parameter)
+	// After the CALL at 0x6B42AC pushes a return address (+4):
+	//   [esp+0x30] = NiTexturingProperty*
+	//   [esp+0x5C] = textureSetCount
+	//
+	// NiTexturingProperty::TArray<Map*> maps is at prop+0x1C.
+	// TArray.storage (pointer to element array) is at TArray+0x4 → prop+0x20.
+	// maps.storage[0] is the base Map*; Map::texCoordSet is at Map+0x10.
+	//
+	__declspec(naked) void PatchNiDX8TexturePass_BaseMapTexcoord() {
+		__asm {
+			// edi = NiDX8TextureStage* (stage[0], always valid at this call site)
+			// ebp = 0
+
+			// --- Fix: read baseMap->texCoordSet and clamp ---
+			mov  eax, [esp+0x30]    // eax = NiTexturingProperty* (caller's var_1C)
+			mov  eax, [eax+0x20]    // eax = maps.storage pointer (TArray.storage at prop+0x20)
+			mov  eax, [eax]         // eax = maps.storage[0] = baseMap*
+			test eax, eax
+			jz   use_zero           // baseMap == nullptr → default to 0
+
+			mov  eax, [eax+0x10]    // eax = baseMap->texCoordSet
+
+			// Clamp: if texCoordSet >= textureSetCount, use textureSetCount-1
+			mov  ecx, [esp+0x5C]    // ecx = textureSetCount (caller's arg_10)
+			test ecx, ecx
+			jz   use_zero           // textureSetCount == 0 → clamp to 0
+			cmp  eax, ecx
+			jb   write_index        // texCoordSet < textureSetCount → no clamp needed
+			lea  eax, [ecx-1]       // eax = textureSetCount - 1
+			jmp  write_index
+
+		use_zero:
+			xor  eax, eax
+
+		write_index:
+			mov  [edi+0x28], eax    // stage[0].sourceTexcoordIndex = texCoordSet
+
+			// --- Replicate clobbered instruction: mov [edi+48h], ebp (= 0) ---
+			mov  [edi+0x48], ebp
+
+			ret
+		}
+	}
+
+	//
 	// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
 	//
 
@@ -2090,6 +2153,11 @@ namespace mwse::patch {
 		genCallEnforced(0x6E54C5, 0x6F15B0, reinterpret_cast<DWORD>(PatchNITriShapeCopyMembers));
 		writePatchCodeUnprotected(0x6ACF1F, (BYTE*)&PatchNIDX8Renderer_RenderShape, PatchNIDX8Renderer_RenderShape_size);
 		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriShape_vTable, NI::TriShape_vTable::linkObject), 0x6E56D0, *reinterpret_cast<DWORD*>(&TriShape_linkObject));
+
+		// Patch: Fix base map texture coordinate index hardcoded to 0 in NiDX8TexturePass::setCTPipelineState.
+		// 0x6B42AC: `mov [edi+28h], ebp` — replace with CALL + NOP the leftover byte at 0x6B42B1.
+		genNOPUnprotected(0x6B42B1, 1);
+		genCallUnprotected(0x6B42AC, reinterpret_cast<DWORD>(PatchNiDX8TexturePass_BaseMapTexcoord));
 
 		// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
 		genCallUnprotected(0x4559B2, reinterpret_cast<DWORD>(PatchRemoveMagicsByEffect), 0x8);
