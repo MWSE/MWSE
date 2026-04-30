@@ -207,6 +207,7 @@
 #include "LuaCalcBarterPriceEvent.h"
 #include "LuaCalcBlockChanceEvent.h"
 #include "LuaCalcChargenStatsEvent.h"
+#include "LuaCalcEnchantingSpellPointCostEvent.h"
 #include "LuaCalcEnchantmentPriceEvent.h"
 #include "LuaCalcHitArmorPieceEvent.h"
 #include "LuaCalcHitChanceEvent.h"
@@ -2380,6 +2381,54 @@ namespace mwse::lua {
 		}
 
 		return price;
+	}
+
+	static auto& TES3_Global_EnchantingPrice = *reinterpret_cast<int*>(0x7D35F4);
+	static auto& TES3_Global_IsVendorEnchant = *reinterpret_cast<unsigned char*>(0x7D36F0);
+
+	unsigned char __stdcall OnCalculateEnchantingSpellPointCost(float* spellPointCost, TES3::UI::Element* menu, TES3::UI::Element* currentChargeLabel) {
+		if (spellPointCost && event::CalculateEnchantingSpellPointCostEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
+
+			auto serviceActor = TES3::UI::getServiceActor();
+			sol::table result = stateHandle.triggerEvent(new event::CalculateEnchantingSpellPointCostEvent(serviceActor, *spellPointCost));
+			if (result.valid()) {
+				auto updatedSpellPointCost = result.get_or("spellPointCost", *spellPointCost);
+				if (updatedSpellPointCost != *spellPointCost) {
+					*spellPointCost = updatedSpellPointCost;
+
+					if (currentChargeLabel) {
+						currentChargeLabel->setProperty(TES3::UI::registerProperty("MenuEnchantment_Effect"), static_cast<int>(*spellPointCost));
+					}
+
+					if (menu) {
+						auto dataHandler = TES3::DataHandler::get();
+						auto worldController = TES3::WorldController::get();
+						auto mobilePlayer = worldController ? worldController->getMobilePlayer() : nullptr;
+						if (dataHandler && mobilePlayer) {
+							auto enchantChance = static_cast<int>(mobilePlayer->getSkillValue(TES3::SkillID::Enchant)
+								- dataHandler->getGameSettingFloat(TES3::GMST::fEnchantmentChanceMult) * *spellPointCost);
+							menu->setProperty(TES3::UI::registerProperty("MenuEnchantment_chance"), enchantChance);
+							TES3_Global_EnchantingPrice = enchantChance;
+						}
+					}
+				}
+			}
+		}
+
+		return TES3_Global_IsVendorEnchant;
+	}
+
+	__declspec(naked) void OnCalculateEnchantingSpellPointCost_Wrapper() {
+		__asm {
+			lea eax, [esp + 0x14]				// caller local float price at [esp + 0x10], plus 4-byte return address
+			push edi						// currentChargeLabel
+			push ebx						// menu
+			push eax						// spellPointCost
+			call OnCalculateEnchantingSpellPointCost
+			ret
+		}
 	}
 
 	//
@@ -5741,6 +5790,9 @@ namespace mwse::lua {
 
 		// Event: Calculate enchantment making price.
 		genCallEnforced(0x5C3C47, 0x52AA50, reinterpret_cast<DWORD>(OnCalculateEnchantmentPrice));
+
+		// Event: Calculate enchanting spell point cost.
+		genCallUnprotected(0x5C3BFC, reinterpret_cast<DWORD>(OnCalculateEnchantingSpellPointCost_Wrapper));
 
 		// Event: Calculate spell making point cost.
 		genCallEnforced(0x6223BD, 0x581F30, reinterpret_cast<DWORD>(OnCalculateSpellmakingSpellPointCost));

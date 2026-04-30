@@ -1599,6 +1599,9 @@
     <ClInclude Include="LuaCalcBlockChanceEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaCalcEnchantingSpellPointCostEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaCalcSpellmakingSpellPointCostEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -3696,6 +3699,9 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaCalcBlockChanceEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCalcEnchantingSpellPointCostEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaCalcSpellmakingSpellPointCostEvent.cpp">
