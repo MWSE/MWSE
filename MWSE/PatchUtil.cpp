@@ -1524,7 +1524,7 @@ namespace mwse::patch {
 
 		// Clone the sorted data back into the TList, without any allocations.
 		auto itt = dialogues->head;
-		for (auto i = 0; i < sortedDialogues.size(); ++i) {
+		for (auto i = 0u; i < sortedDialogues.size(); ++i) {
 			itt->data = sortedDialogues[i].dialogue;
 			itt = itt->next;
 		}
@@ -1624,6 +1624,14 @@ namespace mwse::patch {
 		}
 
 		return context.getResult();
+	}
+
+	// Replacement for the Sleep() call inside DataHandler::sub_48F5F0's
+	// background-load polling loop. Ignores the value originally pushed by the
+	// call site and re-reads the configured interval on every invocation, so
+	// the MCM slider can be tweaked live without restarting the game.
+	static void __stdcall PatchBackgroundLoadSleep(DWORD) {
+		Sleep(Configuration::BackgroundLoadPollIntervalMs);
 	}
 
 	//
@@ -2309,6 +2317,13 @@ namespace mwse::patch {
 			genCallEnforced(0x5BC9E1, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BCA33, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 		}
+
+		// Patch: Replace the Sleep(100) call inside the background loader's
+		// progress-show polling loop with a wrapper that reads
+		// Configuration::BackgroundLoadPollIntervalMs at every call. The site
+		// is a 6-byte `FF 15 [IAT_Sleep]` indirect call at 0x48F88E; the
+		// preceding `push 64h` is left in place and ignored by the wrapper.
+		genCallUnprotected(0x48F88E, reinterpret_cast<DWORD>(PatchBackgroundLoadSleep), 0x6);
 
 		// Patch: Fix NiFlipController losing its affectedMap on clone.
 		if (Configuration::PatchNiFlipController) {
