@@ -4084,7 +4084,9 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.lockPick`
 ---| `tes3.event.magicAbsorb`
 ---| `tes3.event.magicCasted`
+---| `tes3.event.magicEffectBegan`
 ---| `tes3.event.magicEffectRemoved`
+---| `tes3.event.magicEffectRetired`
 ---| `tes3.event.magicEffectsResolved`
 ---| `tes3.event.magicReflect`
 ---| `tes3.event.magicReflected`
