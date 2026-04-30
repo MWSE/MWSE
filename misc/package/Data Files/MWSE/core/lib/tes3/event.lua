@@ -18,6 +18,7 @@ return {
 	["calcBarterPrice"] = "calcBarterPrice",
 	["calcBlockChance"] = "calcBlockChance",
 	["calcChargenStats"] = "calcChargenStats",
+	["calcEnchantingSpellPointCost"] = "calcEnchantingSpellPointCost",
 	["calcEnchantmentPrice"] = "calcEnchantmentPrice",
 	["calcFlySpeed"] = "calcFlySpeed",
 	["calcHitChance"] = "calcHitChance",

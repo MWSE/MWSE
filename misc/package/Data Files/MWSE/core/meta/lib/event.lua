@@ -25,6 +25,7 @@
 --- @field register fun(eventId: '"calcBarterPrice"', callback: (fun(e: calcBarterPriceEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcBlockChance"', callback: (fun(e: calcBlockChanceEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcChargenStats"', callback: (fun(e: calcChargenStatsEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"calcEnchantingSpellPointCost"', callback: (fun(e: calcEnchantingSpellPointCostEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcEnchantmentPrice"', callback: (fun(e: calcEnchantmentPriceEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcFlySpeed"', callback: (fun(e: calcFlySpeedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"calcHitChance"', callback: (fun(e: calcHitChanceEventData): boolean?), options: table?)
