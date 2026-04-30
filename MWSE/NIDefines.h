@@ -56,6 +56,7 @@ namespace NI {
 	struct RotatingParticles;
 	struct RotatingParticlesData;
 	struct RTTI;
+	struct ScreenPolygon;
 	struct Sequence;
 	struct SourceTexture;
 	struct SphereBound;
