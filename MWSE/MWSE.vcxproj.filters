@@ -960,6 +960,12 @@
     <ClInclude Include="LuaMagicCastedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaMagicEffectRetiredEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicEffectBeganEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaSpellCastEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -3015,6 +3021,12 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaMagicCastedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicEffectRetiredEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicEffectBeganEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaSpellCastEvent.cpp">

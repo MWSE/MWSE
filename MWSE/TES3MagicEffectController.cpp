@@ -17,6 +17,8 @@
 #include "TES3UIWidgets.h"
 
 #include "LuaManager.h"
+#include "LuaMagicEffectBeganEvent.h"
+#include "LuaMagicEffectRetiredEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUtil.h"
 
@@ -324,6 +326,59 @@ namespace TES3 {
 
 		// Call the original function.
 		return TES3_MagicSourceInstance_SpellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, negateOnExpiry, isUncapped, attribute, attributeTypeInfo, resistAttribute, resistFunction);
+	}
+
+	static void __cdecl TriggerMagicEffectStateChangeEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex, SpellEffectState previousState, SpellEffectState currentState) {
+		if (previousState == SpellEffectState::Beginning && currentState != SpellEffectState::Beginning && currentState != SpellEffectState::Retired) {
+			if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
+			}
+		}
+
+		if (previousState != SpellEffectState::Beginning && previousState != SpellEffectState::Retired && currentState == SpellEffectState::Retired) {
+			if (mwse::lua::event::MagicEffectRetiredEvent::getEventEnabled()) {
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectRetiredEvent(sourceInstance, effectInstance, effectIndex));
+			}
+		}
+	}
+
+	__declspec(naked) static void PatchMagicEffectDispatchStateChangeEvents() {
+		__asm {
+			// Preserve the state before the effect dispatch mutates the stack-local MagicEffectInstance.
+			push dword ptr [ebp - 0x7C]
+
+			// Replaced code: data_mgefDispatchTable[effectId](sourceInstance, deltaTime, effectInstance, effectIndex).
+			push edi
+			lea edx, [ebp - 0x90]
+			push edx
+			push eax
+			push esi
+			call dword ptr [ecx * 4 + 0x7884B0]
+			add esp, 0x10
+
+			// Trigger MWSE events for begin/retire transitions on this individual effect.
+			pop edx
+			mov eax, [ebp - 0x7C]
+			push eax
+			push edx
+			push edi
+			lea ecx, [ebp - 0x90]
+			push ecx
+			push esi
+			call TriggerMagicEffectStateChangeEvent
+			add esp, 0x14
+
+			// Replaced code: branch based on the post-dispatch state.
+			mov eax, [ebp - 0x7C]
+			cmp eax, 7
+			jnz notRetired
+			mov eax, 0x515AC3
+			jmp eax
+
+		notRetired:
+			mov eax, 0x515B19
+			jmp eax
+		}
 	}
 
 	std::tuple<bool, sol::object> triggerSpellEffectEvent(sol::table self, sol::optional<sol::table> maybe_data, sol::this_state s) {
@@ -780,6 +835,9 @@ namespace TES3 {
 		mwse::genCallEnforced(0x46325C, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
 		mwse::genCallEnforced(0x464271, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
 		mwse::genCallEnforced(0x463BD5, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
+
+		// Trigger began/retired events from per-effect state transitions in MagicSourceInstance::process.
+		mwse::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
 
 		// Trigger any events on spell collision.
 		mwse::genCallEnforced(0x573775, 0x5175C0, (DWORD)OnSpellProjectileHit);
