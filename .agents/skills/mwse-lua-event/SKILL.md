@@ -385,14 +385,8 @@ After editing the `.lua` definition files, regenerate:
 
 ```bash
 cd autocomplete
+lua builders/emmy.lua
 lua builders/mkdocs.lua
-```
-
-Or run the full builder that also regenerates Lua type definitions:
-
-```bash
-cd autocomplete
-python builders/build.py
 ```
 
 Output: `docs/source/events/<eventName>.md` is created/updated automatically.
