@@ -1,6 +1,10 @@
 --- @diagnostic disable: duplicate-set-field
 --- @diagnostic disable: undefined-global
 
+-- Set garbage collection values.
+collectgarbage("setpause", 150)
+collectgarbage("setstepmul", 500)
+
 -- First, look for objects in the core folder. DLL files may also exist in the root folder.
 package.path = ".\\Data Files\\MWSE\\core\\?.lua;.\\Data Files\\MWSE\\core\\?\\init.lua;"
 package.cpath = "?.dll;.\\Data Files\\MWSE\\core\\?.dll;"
@@ -232,7 +236,9 @@ end
 local function loadLocaleFile(mod, locale)
 	local success, contents = pcall(dofile, string.format("%s.i18n.%s", mod, locale))
 	if (success) then
-		assert(type(contents) == "table", string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		if type(contents) ~= "table" then
+			error(string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		end
 
 		-- Convert encoding from UTF8 to the right type.
 		convertUTF8Table(contents, tes3.getLanguageCode())

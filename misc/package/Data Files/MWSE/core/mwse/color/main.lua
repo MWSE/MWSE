@@ -25,7 +25,9 @@ local ARGB_HEX_CODE_LEN = 8
 function mwse.color.hexToRgb(hex)
 	assert(type(hex) == "string", "Invalid 'hex' parameter provided. Must be a string.")
 	local n = tonumber(hex, 16)
-	assert(n ~= nil, string.format("Can't convert given %q hex code to RGB.", hex))
+	if n == nil then
+		error(string.format("Can't convert given %q hex code to RGB.", hex))
+	end
 	local rgb = {
 		r = bit.rshift(bit.band(n, 0xFF0000), 16) / 255,
 		g = bit.rshift(bit.band(n, 0x00FF00),  8) / 255,

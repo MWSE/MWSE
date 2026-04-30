@@ -589,11 +589,11 @@ The element's text. Text input can be read by accessing this property.
 ### `texture`
 <div class="search_terms" style="display: none">texture</div>
 
-The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
+The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2. Setting this value manually will clear the texture path from the element.
 
 **Returns**:
 
-* `result` ([niSourceTexture](../types/niSourceTexture.md))
+* `result` ([niTexture](../types/niTexture.md))
 
 ***
 

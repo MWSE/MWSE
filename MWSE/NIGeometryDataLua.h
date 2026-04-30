@@ -15,6 +15,7 @@ namespace mwse::lua {
 		usertypeDefinition["vertexCount"] = sol::readonly_property(&NI::GeometryData::getActiveVertexCount);
 
 		// Safe access to arrays.
+		usertypeDefinition["activeVertices"] = sol::readonly_property(&NI::GeometryData::getActiveVertices);
 		usertypeDefinition["colors"] = sol::readonly_property(&NI::GeometryData::getColors);
 		usertypeDefinition["normals"] = sol::readonly_property(&NI::GeometryData::getNormals);
 		usertypeDefinition["texCoords"] = sol::readonly_property(&NI::GeometryData::getTextureCoordinates);

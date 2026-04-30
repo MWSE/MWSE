@@ -1023,6 +1023,15 @@ namespace TES3 {
 		return TES3_MobileActor_isAffectedBySpell(this, spell);
 	}
 
+	bool MobileActor::isAffectedByEffect(TES3::EffectID::EffectID effect) const {
+		for (const auto& itt : activeMagicEffects) {
+			if (itt.magicEffectID == effect) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	const auto TES3_MobileActor_isDiseased = reinterpret_cast<bool(__thiscall*)(const MobileActor*)>(0x54DB80);
 	bool MobileActor::isDiseased() const {
 		return TES3_MobileActor_isDiseased(this);
@@ -1061,23 +1070,11 @@ namespace TES3 {
 	}
 
 	bool MobileActor::hasCorprusDisease() const {
-		for (const auto& effect : activeMagicEffects) {
-			if (effect.magicEffectID == EffectID::Corprus) {
-				return true;
-			}
-		}
-
-		return false;
+		return isAffectedByEffect(EffectID::Corprus);
 	}
 
 	bool MobileActor::hasVampirism() const {
-		for (const auto& effect : activeMagicEffects) {
-			if (effect.magicEffectID == EffectID::Vampirism) {
-				return true;
-			}
-		}
-
-		return false;
+		return isAffectedByEffect(EffectID::Vampirism);
 	}
 
 	const auto TES3_MobileActor_getSpellList = reinterpret_cast<SpellList * (__thiscall*)(const MobileActor*)>(0x52B3D0);
@@ -1191,6 +1188,11 @@ namespace TES3 {
 
 	bool MobileActor::equipItem(Object * item, ItemData * itemData, bool addItem, bool selectBestCondition, bool selectWorstCondition, bool useEvents) {
 		Actor* actor = static_cast<Actor*>(reference->baseObject);
+
+		// Equipping lights while in werewolf form causes crashes.
+		if (item->objectType == ObjectType::Light && getIsWerewolf()) {
+			return false;
+		}
 
 		// Equipping weapons while they are in use breaks animations and AI.
 		if (item->objectType == ObjectType::Weapon && isAttackingOrCasting()) {
@@ -1541,7 +1543,7 @@ namespace TES3 {
 		if (!isNotKnockedDownOrOut() || (animGroup >= Hit1 && animGroup <= SwimHit3)) {
 			return false;
 		}
-			
+
 		if (knockDown) {
 			// Knockdown, heavy stun. When the character falls to their knees and takes seconds to recover.
 			WorldController::get()->magicInstanceController->interruptCasting(reference);

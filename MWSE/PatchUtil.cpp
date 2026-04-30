@@ -21,6 +21,7 @@
 #include "TES3ItemData.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
+#include "TES3MagicEffectController.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3Misc.h"
 #include "TES3MobilePlayer.h"
@@ -36,6 +37,7 @@
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
+#include "NIAVObject.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -143,7 +145,7 @@ namespace mwse::patch {
 
 	void* __fastcall PatchScriptOpDisableCollision(TES3::Reference* reference) {
 		// Force update collision.
-		if (PatchScriptOpDisable_ForceCollisionUpdate) {
+		if (PatchScriptOpDisable_ForceCollisionUpdate && reference->getUpdatesCollisionGroups()) {
 			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
 		}
 
@@ -276,21 +278,6 @@ namespace mwse::patch {
 		}
 
 		inputController->readKeyState();
-	}
-
-	int __fastcall PatchGetMorrowindMainWindow_NoBufferReading(TES3::InputController* inputController, DWORD _EDX_, DWORD* key) {
-		if (GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
-			// Read in the input so it doesn't get buffered when we alt-tab back in.
-			inputController->readButtonPressed(key);
-
-			// But pretend that nothing was found.
-			*key = 0;
-			return 0;
-		}
-
-		auto result = inputController->readButtonPressed(key);
-		TES3::UI::MenuInputController::lastKeyPressDIK = result ? *key : 0xFF;
-		return result;
 	}
 
 	//
@@ -1313,14 +1300,43 @@ namespace mwse::patch {
 	// Patch: Prevent crash with magic effects on invalid targets.
 	//
 
-	void __cdecl PatchMagicEffectFortifySkill(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
+	template <DWORD effectTickFunc>
+	static void __cdecl PatchMagicEffect_RequireMobile(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
 		auto mobile = effectInstance->target->getAttachedMobileActor();
 		if (mobile == nullptr) {
 			return;
 		}
 
-		const auto MagicEffectFortifySkill = reinterpret_cast<void(__cdecl*)(TES3::MagicSourceInstance*, float, TES3::MagicEffectInstance*, int)>(0x4625F0);
-		MagicEffectFortifySkill(sourceInstance, deltaTime, effectInstance, effectIndex);
+		const auto fn = reinterpret_cast<TES3::MagicEffectController::spellEffectTickFunction>(effectTickFunc);
+		fn(sourceInstance, deltaTime, effectInstance, effectIndex);
+	}
+
+	template <DWORD effectTickFunc>
+	inline static void WritePatchMagicEffect_RequireMobile(TES3::EffectID::EffectID effectId) {
+		writeDoubleWordEnforced(0x7884B0 + (effectId * 4), effectTickFunc, reinterpret_cast<DWORD>(PatchMagicEffect_RequireMobile<effectTickFunc>));
+	}
+
+	//
+	// Patch: Ensure that losing Stunted Magicka doesn't remove the flag permanently.
+	//
+
+	static void __cdecl PatchMagicEffectStuntedMagicka(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
+		auto mobile = effectInstance->target->getAttachedMobileActor();
+		if (mobile == nullptr) {
+			return;
+		}
+
+		const auto magicEffectController = TES3::DataHandler::get()->nonDynamicData->magicEffects;
+		const auto appliesOnce = TES3::MagicEffectController::getEffectFlag(TES3::EffectID::StuntedMagicka, TES3::EffectFlag::AppliedOnceBit);
+		unsigned int attributeVariant = 0;
+		TES3::MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, appliesOnce, &attributeVariant, 0x7886F0, TES3::EffectAttribute::NonResistable, nullptr);
+		if (attributeVariant == 0) {
+			return;
+		}
+
+		// Re-flag stunted magicka bit based on any other effects.
+		const auto stillStunted = mobile->isAffectedByEffect(TES3::EffectID::StuntedMagicka);
+		mobile->setMobileActorFlag(TES3::MobileActorFlag::StuntedMagicka, stillStunted);
 	}
 
 	//
@@ -1373,8 +1389,8 @@ namespace mwse::patch {
 	//
 
 	inline static void WritePatchKeyCharacter(unsigned int key, char character) {
-		writeValueEnforced<char>(0x775148 + key, 0, character); // US, Unshifted
-		writeValueEnforced<char>(0x775248 + key, 0, character); // US, Shifted
+		writeByteUnprotected(0x775148 + key, character); // US, Unshifted
+		writeByteUnprotected(0x775248 + key, character); // US, Shifted
 		writeValueEnforced<char>(0x775348 + key, 0, character); // DE, Unshifted
 		writeValueEnforced<char>(0x775448 + key, 0, character); // DE, Shifted
 		writeValueEnforced<char>(0x775548 + key, 0, character); // FR, Unshifted
@@ -1392,6 +1408,12 @@ namespace mwse::patch {
 		WritePatchKeyCharacter(DIK_NUMPAD7, '7');
 		WritePatchKeyCharacter(DIK_NUMPAD8, '8');
 		WritePatchKeyCharacter(DIK_NUMPAD9, '9');
+		WritePatchKeyCharacter(DIK_NUMPADEQUALS, '=');
+		WritePatchKeyCharacter(DIK_NUMPADMINUS, '-');
+		WritePatchKeyCharacter(DIK_NUMPADPERIOD, '.');
+		WritePatchKeyCharacter(DIK_NUMPADPLUS, '+');
+		WritePatchKeyCharacter(DIK_NUMPADSLASH, '/');
+		WritePatchKeyCharacter(DIK_NUMPADSTAR, '*');
 	}
 
 	//
@@ -1453,6 +1475,164 @@ namespace mwse::patch {
 
 		// Call original code.
 		return TES3::UI::findMenu(id);
+	}
+
+	//
+	// Patch: IDK something
+	//
+
+	static TES3::UI::InventoryTile* __fastcall PatchFindInventoryTileWithForcedRefreshForPlayer(TES3::InventoryData* inventoryData, DWORD _EDX_, const TES3::Item* item) {
+		const auto player = TES3::WorldController::get()->getMobilePlayer()->reference;
+		inventoryData->refreshForReference(player, 2);
+		return inventoryData->findTile(item);
+	}
+
+	//
+	// Patch: Improve performance of initial game load.
+	//
+
+	static void __cdecl PatchDialogueSorting() {
+		const auto dataHandler = TES3::DataHandler::get();
+		const auto dialogues = dataHandler->nonDynamicData->dialogues;
+		if (dialogues->empty()) {
+			return;
+		}
+
+		// Create a sorter structure that caches the length of the topic so we don't have to constantly calculate it.
+		struct DialogueLengthCache {
+			TES3::Dialogue* dialogue;
+			size_t length;
+
+			DialogueLengthCache(TES3::Dialogue* d) {
+				dialogue = d;
+				length = strlen(d->name ? d->name : "");
+			}
+		};
+		struct {
+			bool operator()(const DialogueLengthCache& a, const DialogueLengthCache& b) {
+				return a.length > b.length;
+			}
+		} dialogueLengthSorter;
+
+		// Clone the dialogues in an array, then sort the array.
+		// TODO: We should improve our TList implementation to support sorting.
+		std::vector<DialogueLengthCache> sortedDialogues;
+		sortedDialogues.reserve(dialogues->size());
+		for (const auto& dialogue : *dialogues) {
+			sortedDialogues.push_back(dialogue);
+		}
+		std::sort(sortedDialogues.begin(), sortedDialogues.end(), dialogueLengthSorter);
+
+		// Clone the sorted data back into the TList, without any allocations.
+		auto itt = dialogues->head;
+		for (auto i = 0u; i < sortedDialogues.size(); ++i) {
+			itt->data = sortedDialogues[i].dialogue;
+			itt = itt->next;
+		}
+
+		// Update load progress all at once. This doesn't take a significant amount of time.
+		dataHandler->incrementLoadedRecords(dialogues->size());
+		const auto percentLoaded = dataHandler->getTotalLoadedRecordsFraction() * 100.0f;
+		TES3::UI::updateLoadingMenu(percentLoaded);
+	}
+
+	//
+	// Patch: Be better about showing/hiding the cursor.
+	//
+
+	static WNDPROC originalWindowProc = nullptr;
+	using gCursorShown = ExternalGlobal<bool, 0x776D0C>;
+	static bool showCursorFlag = true;
+
+	static void SetCursorShown(HWND hWnd, bool shown) {
+		if (gCursorShown::get() == shown) {
+			return;
+		}
+		gCursorShown::set(shown);
+
+		const auto worldController = TES3::WorldController::get();
+		if (!worldController) {
+			return;
+		}
+
+		const auto inputController = worldController->inputController;
+		if (!inputController) {
+			return;
+		}
+
+		// Only call ShowCursor if needed.
+		if (showCursorFlag != shown) {
+			ShowCursor(shown);
+			showCursorFlag = shown;
+		}
+
+		// Sync mouse state.
+		DIMOUSESTATE2 mouseState = {};
+		const auto mouseStateR = inputController->mouse->GetDeviceState(sizeof(mouseState), &mouseState);
+		const auto mouseAcquired = (mouseStateR == DIERR_INPUTLOST || mouseStateR == DIERR_NOTACQUIRED);
+		if (shown != mouseAcquired) {
+			if (shown) {
+				inputController->mouse->Unacquire();
+			}
+			else {
+				inputController->mouse->Acquire();
+			}
+		}
+
+		// Sync keyboard state.
+		BYTE keyboardState[256] = {};
+		const auto keyboardStateR = inputController->keyboard->GetDeviceState(sizeof(keyboardState), &keyboardState);
+		const auto keyboardAcquired = (keyboardStateR == DIERR_INPUTLOST || keyboardStateR == DIERR_NOTACQUIRED);
+		if (shown != keyboardAcquired) {
+			if (shown) {
+				inputController->keyboard->Unacquire();
+			}
+			else {
+				inputController->keyboard->Acquire();
+			}
+		}
+	}
+
+	static void PatchWindProc_CursorHitTest(windows::DialogProcContext& context) {
+		context.callOriginalFunction();
+		const auto hWnd = context.getWindowHandle();
+		const auto result = context.getResult();
+		auto shouldShow = result != HTCLIENT;
+
+		SetCursorShown(hWnd, shouldShow);
+	}
+
+	static LRESULT __stdcall PatchWindProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+		windows::DialogProcContext context(hWnd, msg, wParam, lParam, (DWORD)originalWindowProc);
+
+		switch (msg) {
+		case WM_ACTIVATE:
+			SetCursorShown(hWnd, context.getLOWParam() != WA_INACTIVE);
+			break;
+		case WM_SETFOCUS:
+			SetCursorShown(hWnd, false);
+			break;
+		case WM_KILLFOCUS:
+			SetCursorShown(hWnd, true);
+			break;
+		case WM_NCHITTEST:
+			PatchWindProc_CursorHitTest(context);
+			break;
+		}
+
+		if (!context.hasResult()) {
+			context.callOriginalFunction();
+		}
+
+		return context.getResult();
+	}
+
+	// Replacement for the Sleep() call inside DataHandler::sub_48F5F0's
+	// background-load polling loop. Ignores the value originally pushed by the
+	// call site and re-reads the configured interval on every invocation, so
+	// the MCM slider can be tweaked live without restarting the game.
+	static void __stdcall PatchBackgroundLoadSleep(DWORD) {
+		Sleep(Configuration::BackgroundLoadPollIntervalMs);
 	}
 
 	//
@@ -1922,7 +2102,151 @@ namespace mwse::patch {
 		writePatchCodeUnprotected(0x4D8DD7, (BYTE*)&PatchSoulTrappedCreatureNotFound3, PatchSoulTrappedCreatureNotFound3_size);
 
 		// Patch: Prevent crash with magic effects on invalid targets.
-		writeDoubleWordEnforced(0x7884B0 + (TES3::EffectID::FortifySkill * 4), 0x4625F0, reinterpret_cast<DWORD>(PatchMagicEffectFortifySkill));
+		WritePatchMagicEffect_RequireMobile<0x45F170>(TES3::EffectID::WaterBreathing);
+		WritePatchMagicEffect_RequireMobile<0x45F1D0>(TES3::EffectID::SwiftSwim);
+		WritePatchMagicEffect_RequireMobile<0x45F230>(TES3::EffectID::WaterWalking);
+		WritePatchMagicEffect_RequireMobile<0x45F2B0>(TES3::EffectID::Shield);
+		WritePatchMagicEffect_RequireMobile<0x45F310>(TES3::EffectID::FireShield);
+		WritePatchMagicEffect_RequireMobile<0x45F410>(TES3::EffectID::LightningShield);
+		WritePatchMagicEffect_RequireMobile<0x45F390>(TES3::EffectID::FrostShield);
+		WritePatchMagicEffect_RequireMobile<0x45F490>(TES3::EffectID::Burden);
+		WritePatchMagicEffect_RequireMobile<0x45F5C0>(TES3::EffectID::Feather);
+		WritePatchMagicEffect_RequireMobile<0x45F6F0>(TES3::EffectID::Jump);
+		WritePatchMagicEffect_RequireMobile<0x45F750>(TES3::EffectID::Levitate);
+		WritePatchMagicEffect_RequireMobile<0x45F840>(TES3::EffectID::SlowFall);
+		//WritePatchMagicEffect_RequireMobile<0x45F9A0>(TES3::EffectID::Lock);
+		//WritePatchMagicEffect_RequireMobile<0x45FB40>(TES3::EffectID::Open);
+		WritePatchMagicEffect_RequireMobile<0x45FF20>(TES3::EffectID::FireDamage);
+		WritePatchMagicEffect_RequireMobile<0x45FF80>(TES3::EffectID::ShockDamage);
+		WritePatchMagicEffect_RequireMobile<0x45FFE0>(TES3::EffectID::FrostDamage);
+		WritePatchMagicEffect_RequireMobile<0x460040>(TES3::EffectID::DrainAttribute);
+		WritePatchMagicEffect_RequireMobile<0x460120>(TES3::EffectID::DrainHealth);
+		WritePatchMagicEffect_RequireMobile<0x460180>(TES3::EffectID::DrainMagicka);
+		WritePatchMagicEffect_RequireMobile<0x460300>(TES3::EffectID::DrainFatigue);
+		WritePatchMagicEffect_RequireMobile<0x460240>(TES3::EffectID::DrainSkill);
+		WritePatchMagicEffect_RequireMobile<0x460040>(TES3::EffectID::DamageAttribute);
+		WritePatchMagicEffect_RequireMobile<0x460120>(TES3::EffectID::DamageHealth);
+		WritePatchMagicEffect_RequireMobile<0x460180>(TES3::EffectID::DamageMagicka);
+		WritePatchMagicEffect_RequireMobile<0x460300>(TES3::EffectID::DamageFatigue);
+		WritePatchMagicEffect_RequireMobile<0x460240>(TES3::EffectID::DamageSkill);
+		WritePatchMagicEffect_RequireMobile<0x4603C0>(TES3::EffectID::Poison);
+		WritePatchMagicEffect_RequireMobile<0x460420>(TES3::EffectID::WeaknessToFire);
+		WritePatchMagicEffect_RequireMobile<0x460480>(TES3::EffectID::WeaknessToFrost);
+		WritePatchMagicEffect_RequireMobile<0x4604E0>(TES3::EffectID::WeaknessToShock);
+		WritePatchMagicEffect_RequireMobile<0x460540>(TES3::EffectID::WeaknessToMagicka);
+		WritePatchMagicEffect_RequireMobile<0x4605A0>(TES3::EffectID::WeaknessToCommonDisease);
+		WritePatchMagicEffect_RequireMobile<0x460600>(TES3::EffectID::WeaknessToBlightDisease);
+		WritePatchMagicEffect_RequireMobile<0x460660>(TES3::EffectID::WeaknessToCorprus);
+		WritePatchMagicEffect_RequireMobile<0x4606C0>(TES3::EffectID::WeaknessToPoison);
+		WritePatchMagicEffect_RequireMobile<0x460720>(TES3::EffectID::WeaknessToNormalWeapons);
+		WritePatchMagicEffect_RequireMobile<0x460780>(TES3::EffectID::DisintegrateWeapon);
+		WritePatchMagicEffect_RequireMobile<0x4608C0>(TES3::EffectID::DisintegrateArmor);
+		WritePatchMagicEffect_RequireMobile<0x460D30>(TES3::EffectID::Invisibility);
+		WritePatchMagicEffect_RequireMobile<0x460BE0>(TES3::EffectID::Chameleon);
+		WritePatchMagicEffect_RequireMobile<0x460ED0>(TES3::EffectID::Light);
+		WritePatchMagicEffect_RequireMobile<0x460E70>(TES3::EffectID::Sanctuary);
+		WritePatchMagicEffect_RequireMobile<0x4610F0>(TES3::EffectID::NightEye);
+		WritePatchMagicEffect_RequireMobile<0x4611F0>(TES3::EffectID::Charm);
+		WritePatchMagicEffect_RequireMobile<0x461350>(TES3::EffectID::Paralyze);
+		WritePatchMagicEffect_RequireMobile<0x461490>(TES3::EffectID::Silence);
+		WritePatchMagicEffect_RequireMobile<0x4614F0>(TES3::EffectID::Blind);
+		WritePatchMagicEffect_RequireMobile<0x461690>(TES3::EffectID::Sound);
+		WritePatchMagicEffect_RequireMobile<0x461800>(TES3::EffectID::CalmHumanoid);
+		WritePatchMagicEffect_RequireMobile<0x4619E0>(TES3::EffectID::CalmCreature);
+		WritePatchMagicEffect_RequireMobile<0x461890>(TES3::EffectID::FrenzyHumanoid);
+		WritePatchMagicEffect_RequireMobile<0x461A70>(TES3::EffectID::FrenzyCreature);
+		WritePatchMagicEffect_RequireMobile<0x461970>(TES3::EffectID::DemoralizeHumanoid);
+		WritePatchMagicEffect_RequireMobile<0x461B50>(TES3::EffectID::DemoralizeCreature);
+		WritePatchMagicEffect_RequireMobile<0x461900>(TES3::EffectID::RallyHumanoid);
+		WritePatchMagicEffect_RequireMobile<0x461AE0>(TES3::EffectID::RallyCreature);
+		WritePatchMagicEffect_RequireMobile<0x461CC0>(TES3::EffectID::Dispel);
+		WritePatchMagicEffect_RequireMobile<0x463270>(TES3::EffectID::SoulTrap);
+		WritePatchMagicEffect_RequireMobile<0x4634D0>(TES3::EffectID::Telekinesis);
+		WritePatchMagicEffect_RequireMobile<0x463580>(TES3::EffectID::Mark);
+		WritePatchMagicEffect_RequireMobile<0x463650>(TES3::EffectID::Recall);
+		WritePatchMagicEffect_RequireMobile<0x463820>(TES3::EffectID::DivineIntervention);
+		WritePatchMagicEffect_RequireMobile<0x463900>(TES3::EffectID::AlmsiviIntervention);
+		WritePatchMagicEffect_RequireMobile<0x4639E0>(TES3::EffectID::DetectAnimal);
+		WritePatchMagicEffect_RequireMobile<0x463A90>(TES3::EffectID::DetectEnchantment);
+		WritePatchMagicEffect_RequireMobile<0x463B10>(TES3::EffectID::DetectKey);
+		WritePatchMagicEffect_RequireMobile<0x463B90>(TES3::EffectID::SpellAbsorption);
+		WritePatchMagicEffect_RequireMobile<0x463B90>(TES3::EffectID::Reflect);
+		WritePatchMagicEffect_RequireMobile<0x461BC0>(TES3::EffectID::CureCommonDisease);
+		WritePatchMagicEffect_RequireMobile<0x461C40>(TES3::EffectID::CureBlightDisease);
+		WritePatchMagicEffect_RequireMobile<0x461DC0>(TES3::EffectID::CureCorprus);
+		WritePatchMagicEffect_RequireMobile<0x461EC0>(TES3::EffectID::CurePoison);
+		WritePatchMagicEffect_RequireMobile<0x461E40>(TES3::EffectID::CureParalyzation);
+		WritePatchMagicEffect_RequireMobile<0x461F40>(TES3::EffectID::RestoreAttribute);
+		WritePatchMagicEffect_RequireMobile<0x462030>(TES3::EffectID::RestoreHealth);
+		WritePatchMagicEffect_RequireMobile<0x4620B0>(TES3::EffectID::RestoreMagicka);
+		WritePatchMagicEffect_RequireMobile<0x462180>(TES3::EffectID::RestoreFatigue);
+		WritePatchMagicEffect_RequireMobile<0x462250>(TES3::EffectID::RestoreSkill);
+		WritePatchMagicEffect_RequireMobile<0x462330>(TES3::EffectID::FortifyAttribute);
+		WritePatchMagicEffect_RequireMobile<0x462410>(TES3::EffectID::FortifyHealth);
+		WritePatchMagicEffect_RequireMobile<0x462470>(TES3::EffectID::FortifyMagicka);
+		WritePatchMagicEffect_RequireMobile<0x462530>(TES3::EffectID::FortifyFatigue);
+		WritePatchMagicEffect_RequireMobile<0x4625F0>(TES3::EffectID::FortifySkill);
+		WritePatchMagicEffect_RequireMobile<0x4626E0>(TES3::EffectID::FortifyMagickaMultiplier);
+		WritePatchMagicEffect_RequireMobile<0x4627F0>(TES3::EffectID::AbsorbAttribute);
+		WritePatchMagicEffect_RequireMobile<0x462940>(TES3::EffectID::AbsorbHealth);
+		WritePatchMagicEffect_RequireMobile<0x462A00>(TES3::EffectID::AbsorbMagicka);
+		WritePatchMagicEffect_RequireMobile<0x462B60>(TES3::EffectID::AbsorbFatigue);
+		WritePatchMagicEffect_RequireMobile<0x462CC0>(TES3::EffectID::AbsorbSkill);
+		WritePatchMagicEffect_RequireMobile<0x462E00>(TES3::EffectID::ResistFire);
+		WritePatchMagicEffect_RequireMobile<0x462E60>(TES3::EffectID::ResistFrost);
+		WritePatchMagicEffect_RequireMobile<0x462EC0>(TES3::EffectID::ResistShock);
+		WritePatchMagicEffect_RequireMobile<0x462F20>(TES3::EffectID::ResistMagicka);
+		WritePatchMagicEffect_RequireMobile<0x462F80>(TES3::EffectID::ResistCommonDisease);
+		WritePatchMagicEffect_RequireMobile<0x462FE0>(TES3::EffectID::ResistBlightDisease);
+		WritePatchMagicEffect_RequireMobile<0x463040>(TES3::EffectID::ResistCorprus);
+		WritePatchMagicEffect_RequireMobile<0x4630A0>(TES3::EffectID::ResistPoison);
+		WritePatchMagicEffect_RequireMobile<0x463100>(TES3::EffectID::ResistNormalWeapons);
+		WritePatchMagicEffect_RequireMobile<0x463160>(TES3::EffectID::ResistParalysis);
+		WritePatchMagicEffect_RequireMobile<0x461D40>(TES3::EffectID::RemoveCurse);
+		WritePatchMagicEffect_RequireMobile<0x4631C0>(TES3::EffectID::TurnUndead);
+		WritePatchMagicEffect_RequireMobile<0x463E00>(TES3::EffectID::SummonScamp);
+		WritePatchMagicEffect_RequireMobile<0x463E30>(TES3::EffectID::SummonClannfear);
+		WritePatchMagicEffect_RequireMobile<0x463E60>(TES3::EffectID::SummonDaedroth);
+		WritePatchMagicEffect_RequireMobile<0x463E90>(TES3::EffectID::SummonDremora);
+		WritePatchMagicEffect_RequireMobile<0x463EC0>(TES3::EffectID::SummonGhost);
+		WritePatchMagicEffect_RequireMobile<0x463EF0>(TES3::EffectID::SummonSkeleton);
+		WritePatchMagicEffect_RequireMobile<0x463F20>(TES3::EffectID::SummonLeastBonewalker);
+		WritePatchMagicEffect_RequireMobile<0x463F50>(TES3::EffectID::SummonGreaterBonewalker);
+		WritePatchMagicEffect_RequireMobile<0x463F80>(TES3::EffectID::SummonBonelord);
+		WritePatchMagicEffect_RequireMobile<0x463FB0>(TES3::EffectID::SummonTwilight);
+		WritePatchMagicEffect_RequireMobile<0x463FE0>(TES3::EffectID::SummonHunger);
+		WritePatchMagicEffect_RequireMobile<0x464010>(TES3::EffectID::SummonGoldenSaint);
+		WritePatchMagicEffect_RequireMobile<0x464040>(TES3::EffectID::SummonFlameAtronach);
+		WritePatchMagicEffect_RequireMobile<0x464070>(TES3::EffectID::SummonFrostAtronach);
+		WritePatchMagicEffect_RequireMobile<0x4640A0>(TES3::EffectID::SummonStormAtronach);
+		WritePatchMagicEffect_RequireMobile<0x464220>(TES3::EffectID::FortifyAttackBonus);
+		WritePatchMagicEffect_RequireMobile<0x463490>(TES3::EffectID::CommandCreature);
+		WritePatchMagicEffect_RequireMobile<0x4634B0>(TES3::EffectID::CommandHumanoid);
+		WritePatchMagicEffect_RequireMobile<0x463BE0>(TES3::EffectID::BoundDagger);
+		WritePatchMagicEffect_RequireMobile<0x463C10>(TES3::EffectID::BoundLongsword);
+		WritePatchMagicEffect_RequireMobile<0x463C40>(TES3::EffectID::BoundMace);
+		WritePatchMagicEffect_RequireMobile<0x463C70>(TES3::EffectID::BoundBattleAxe);
+		WritePatchMagicEffect_RequireMobile<0x463CA0>(TES3::EffectID::BoundSpear);
+		WritePatchMagicEffect_RequireMobile<0x463CD0>(TES3::EffectID::BoundLongbow);
+		WritePatchMagicEffect_RequireMobile<0x464C90>(TES3::EffectID::ExtraSpell);
+		WritePatchMagicEffect_RequireMobile<0x463D00>(TES3::EffectID::BoundCuirass);
+		WritePatchMagicEffect_RequireMobile<0x463D30>(TES3::EffectID::BoundHelm);
+		WritePatchMagicEffect_RequireMobile<0x463D60>(TES3::EffectID::BoundBoots);
+		WritePatchMagicEffect_RequireMobile<0x463D90>(TES3::EffectID::BoundShield);
+		WritePatchMagicEffect_RequireMobile<0x463DC0>(TES3::EffectID::BoundGloves);
+		WritePatchMagicEffect_RequireMobile<0x464490>(TES3::EffectID::Corprus);
+		WritePatchMagicEffect_RequireMobile<0x464280>(TES3::EffectID::Vampirism);
+		WritePatchMagicEffect_RequireMobile<0x4640D0>(TES3::EffectID::SummonCenturionSphere);
+		WritePatchMagicEffect_RequireMobile<0x464BB0>(TES3::EffectID::SunDamage);
+		WritePatchMagicEffect_RequireMobile<0x464100>(TES3::EffectID::SummonFabricant);
+		WritePatchMagicEffect_RequireMobile<0x464130>(TES3::EffectID::SummonWolf);
+		WritePatchMagicEffect_RequireMobile<0x464160>(TES3::EffectID::SummonBear);
+		WritePatchMagicEffect_RequireMobile<0x464190>(TES3::EffectID::SummonBoneWolf);
+		WritePatchMagicEffect_RequireMobile<0x4641C0>(TES3::EffectID::Summon04);
+		WritePatchMagicEffect_RequireMobile<0x4641F0>(TES3::EffectID::Summon05);
+
+		// Other magic effect patches.
+		writeDoubleWordEnforced(0x7884B0 + (TES3::EffectID::StuntedMagicka * 4), 0x464F20, reinterpret_cast<DWORD>(PatchMagicEffectStuntedMagicka));
 
 		// Patch: Suppress sGeneralMastPlugMismatchMsg message.
 		genCallUnprotected(0x477512, reinterpret_cast<DWORD>(GetCachedYesToAll), 0x477518 - 0x477512);
@@ -1945,6 +2269,13 @@ namespace mwse::patch {
 		// Patch: Fix invalid UI memory pointer.
 		genCallEnforced(0x5C48DB, 0x595370, reinterpret_cast<DWORD>(PatchEnchantingMenuPointer));
 
+		// Patch: Prevent quickslot failures from stale inventory data.
+		genCallEnforced(0x608608, 0x633E80, reinterpret_cast<DWORD>(PatchFindInventoryTileWithForcedRefreshForPlayer));
+
+		// Patch: Improve performance of initial game load.
+		genCallEnforced(0x4BB84E, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+		genCallEnforced(0x4BC85C, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+
 #if false
 		// Patch: Update dynamic lights to implement custom light sorting.
 		genCallEnforced(0x485B60, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
@@ -1955,11 +2286,30 @@ namespace mwse::patch {
 		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 #endif
 
+		// Patch: Fix NiSwitchNode::UpdateWorldBound malfunctioning when using UpdateOnlyActive and a switchIndex of 0.
+		writeValueEnforced<BYTE>(0x6D85B6, 0x7E, 0x7C);
+
+		// Patch: Fix bound calculation.
+		auto PhysicalObject_createBoundingBox = &TES3::PhysicalObject::createBoundingBox;
+		genCallEnforced(0x49572E, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x495785, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4D2324, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EF99F, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EFE70, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+
+		// Patch: Store last read key state.
+		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
+		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
 		// Pach: Extend weather system.
 		TES3::WeatherController::installPatches();
 	}
 
 	void installPostLuaPatches() {
+		// Patch: Be better about showing/hiding the cursor.
+		originalWindowProc = (WNDPROC)SetWindowLongPtr(TES3::WorldController::get()->Win32_hWndParent, GWLP_WNDPROC, (LONG_PTR)PatchWindProc);
+
 		// Patch: The window is never out of focus.
 		if (Configuration::RunInBackground) {
 			writeByteUnprotected(0x416BC3 + 0x2 + 0x4, 1);
@@ -1970,9 +2320,14 @@ namespace mwse::patch {
 			genCallEnforced(0x477E1E, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BC9E1, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BCA33, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
-			genCallEnforced(0x58E8C6, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
-			genCallEnforced(0x5BCA1D, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
 		}
+
+		// Patch: Replace the Sleep(100) call inside the background loader's
+		// progress-show polling loop with a wrapper that reads
+		// Configuration::BackgroundLoadPollIntervalMs at every call. The site
+		// is a 6-byte `FF 15 [IAT_Sleep]` indirect call at 0x48F88E; the
+		// preceding `push 64h` is left in place and ignored by the wrapper.
+		genCallUnprotected(0x48F88E, reinterpret_cast<DWORD>(PatchBackgroundLoadSleep), 0x6);
 
 		// Patch: Fix NiFlipController losing its affectedMap on clone.
 		if (Configuration::PatchNiFlipController) {

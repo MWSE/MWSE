@@ -15,7 +15,7 @@
 --- @field red number Alias for the red value of the color.
 niColorA = {}
 
---- Creates a new niColorA.
+--- Creates a new niColorA. This function must be given 0, 3, or 4 arguments.
 --- @param r? number *Default*: `0`. The red value for the color.
 --- @param g? number *Default*: `0`. The green value for the color.
 --- @param b? number *Default*: `0`. The blue value for the color.

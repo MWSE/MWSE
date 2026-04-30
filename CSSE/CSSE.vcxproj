@@ -52,6 +52,14 @@
     <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+    <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
+    <BuildDateHeaderContents>#pragma once&#xD;&#xA;&#xD;&#xA;#define CSSE_BUILD_DATE $(BuildDate)&#xD;&#xA;</BuildDateHeaderContents>
+  </PropertyGroup>
+  <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
+    <WriteLinesToFile File="$(BuildDateHeader)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
@@ -90,14 +98,6 @@
       <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
 copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define CSSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -131,14 +131,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
 copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define CSSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CDataBoundPropertyGridProperty.cpp" />
@@ -179,6 +171,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogEditObjectWindow.cpp" />
     <ClCompile Include="DialogEditSpellObjectWindow.cpp" />
     <ClCompile Include="DialogLandscapeEditSettingsWindow.cpp" />
+    <ClCompile Include="DialogLayersWindow.cpp" />
     <ClCompile Include="DialogPathGridWindow.cpp" />
     <ClCompile Include="DialogPreviewWindow.cpp" />
     <ClCompile Include="DialogProcContext.cpp" />
@@ -243,6 +236,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
+    <ClInclude Include="DialogLayersWindow.h" />
     <ClInclude Include="DialogPathGridWindow.h" />
     <ClInclude Include="DialogProcContext.h" />
     <ClInclude Include="DialogUseReportWindow.h" />
@@ -337,6 +331,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ResourceCompile Include="CSSE.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="layer_toolbar.bmp" />
     <Image Include="main_toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

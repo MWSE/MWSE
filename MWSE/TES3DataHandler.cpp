@@ -29,6 +29,7 @@
 #include "TES3Spell.h"
 #include "TES3UIManager.h"
 #include "TES3WorldController.h"
+#include "TES3MobManager.h"
 
 #include "MWSEConfig.h"
 
@@ -286,6 +287,12 @@ namespace TES3 {
 			TES3::UI::setSuppressingHelpMenu(false);
 		}
 
+		// Update compatibility globals.
+		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
+		if (mwseBuildGlobal) {
+			mwseBuildGlobal->value = mwse::Configuration::BuildNumber;
+		}
+
 		return loaded ? LoadGameResult::Success : LoadGameResult::Failure;
 	}
 
@@ -319,7 +326,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_NonDynamicData_findGlobalVariable = reinterpret_cast<GlobalVariable * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA820);
-	GlobalVariable* NonDynamicData::findGlobalVariable(const char* name) {
+	GlobalVariable* NonDynamicData::findGlobalVariable(const char* name) const {
 #if MWSE_CUSTOM_GLOBALS
 		return globals->getVariable(name);
 #else
@@ -406,8 +413,8 @@ namespace TES3 {
 		return magicEffects->getEffectObject(id);
 	}
 
-	const auto TES3_NonDynamicData_createReference = reinterpret_cast<float(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
-	float NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
+	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
+	Reference* NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
 		return TES3_NonDynamicData_createReference(this, object, position, orientation, cellWasCreated, existingReference, cell);
 	}
 
@@ -492,6 +499,37 @@ namespace TES3 {
 
 	float DataHandler::getLowestZInCurrentCell() const {
 		return *reinterpret_cast<float*>(0x7B217C);
+	}
+
+	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, float*)>(0x48E410);
+	bool DataHandler::getLandHeightAtPosition(const Vector3& position, float* out_height) const {
+		return TES3_NonDynamicData_getLandHeightAtPosition(this, position, out_height);
+	}
+
+	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const Vector3& position) const {
+		float result = 0.0f;
+		if (!getLandHeightAtPosition(position, &result)) {
+			return {};
+		}
+		return result;
+	}
+
+	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, Vector3&)>(0x48E530);
+	bool DataHandler::getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const {
+		return TES3_NonDynamicData_getLandNormalAtPosition(this, position, out_normal);
+	}
+
+	sol::optional<Vector3> DataHandler::getLandNormalAtPosition_lua(const Vector3& position) const {
+		Vector3 normal;
+		if (!getLandNormalAtPosition(position, normal)) {
+			return {};
+		}
+		return normal;
+	}
+
+	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const Vector3&)>(0x48E660);
+	NI::TriShape* DataHandler::getLandShapeAtPosition(const Vector3& position) const {
+		return TES3_NonDynamicData_getLandShapeAtPosition(this, position);
 	}
 
 	const auto TES3_DataHandler_addSound = reinterpret_cast<void(__thiscall*)(DataHandler*, Sound*, Reference*, int, unsigned char, float, bool, int)>(0x48BD40);
@@ -608,6 +646,10 @@ namespace TES3 {
 		updateCollisionGroupsForActiveCells_raw(force);
 	}
 
+	void DataHandler::updateCollisionGroupsForActiveCells_lua(sol::optional<bool> force, sol::optional<bool> isResettingData, sol::optional<bool> resetCollisionGroups) {
+		updateCollisionGroupsForActiveCells(force.value_or(true), isResettingData.value_or(false), resetCollisionGroups.value_or(true));
+	}
+
 	const auto TES3_DataHandler_updateCollisionGroupsForActiveCells = reinterpret_cast<void(__thiscall*)(DataHandler*, bool)>(0x488950);
 	void DataHandler::updateCollisionGroupsForActiveCells_raw(bool force) {
 		TES3_DataHandler_updateCollisionGroupsForActiveCells(this, force);
@@ -627,6 +669,16 @@ namespace TES3 {
 		using gExteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B48>;
 		using gInteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B10>;
 		return { gInteriorCellBufferSize::get(), gExteriorCellBufferSize::get() };
+	}
+
+	const auto TES3_DataHandler_incrementLoadedRecords = reinterpret_cast<void(__thiscall*)(DataHandler*, int)>(0x48ED70);
+	void DataHandler::incrementLoadedRecords(int count) {
+		TES3_DataHandler_incrementLoadedRecords(this, count);
+	}
+
+	const auto TES3_DataHandler_getTotalLoadedRecordsFraction = reinterpret_cast<float(__thiscall*)(const DataHandler*)>(0x48ED90);
+	float DataHandler::getTotalLoadedRecordsFraction() const {
+		return TES3_DataHandler_getTotalLoadedRecordsFraction(this);
 	}
 
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {

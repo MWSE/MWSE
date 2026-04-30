@@ -23,41 +23,43 @@ In this example, all of these lockpicks are represented by a single tes3itemStac
 	
 	--- This is a generic iterator function that is used
 	--- to loop over all the items in an inventory
-	---@param ref tes3reference
+	---@param actor tes3actor
 	---@return fun(): tes3item, integer, tes3itemData|nil
-	local function iterItems(ref)
+	local function iterItems(actor)
 		local function iterator()
-			for _, stack in pairs(ref.object.inventory) do
-				---@cast stack tes3itemStack
+			for _, stack in pairs(actor.inventory) do
 				local item = stack.object
+				-- Skip uncarryable lights. They are hidden from the interface. A MWSE mod
+				-- could make the player glow from transferring such lights, which the player
+				-- can't remove. Some creatures like atronaches have uncarryable lights
+				-- in their inventory to make them glow that are not supposed to be looted.
+				if item.canCarry == false then
+					goto continue
+				end
 	
 				-- Account for restocking items,
-				-- since their count is negative
+				-- since their count is negative.
 				local count = math.abs(stack.count)
 	
-				-- first yield stacks with custom data
-				if stack.variables then
-					for _, data in pairs(stack.variables) do
-						if data then
-							-- Note that data.count is always 1 for items in inventories.
-							-- That field is only relevant for items in the game world, which
-							-- are stored as references. In that case tes3itemData.count field
-							-- contains the amount of items in the in-game-world stack of items.
-							coroutine.yield(item, data.count, data)
-							count = count - data.count
-						end
-					end
+				-- First yield stacks with custom data
+				for _, data in pairs(stack.variables or {}) do
+					coroutine.yield(item, data.count, data)
+					count = count - data.count
 				end
-				-- then yield all the remaining copies
+	
+				-- Then yield all the remaining copies
 				if count > 0 then
 					coroutine.yield(item, count)
 				end
+	
+				:: continue ::
 			end
 		end
 		return coroutine.wrap(iterator)
 	end
 	
-	for item, count, itemData in iterItems(tes3.player) do
+	local player = tes3.player.object --[[@as tes3actor]]
+	for item, count, itemData in iterItems(player) do
 		debug.log(item)
 		debug.log(count)
 		debug.log(itemData)

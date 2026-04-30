@@ -255,6 +255,7 @@ namespace TES3 {
 		BaseObject const* getBaseObject() const;
 
 		bool isActor() const;
+		bool isMobileCapableActor() const;
 		bool isItem() const;
 		bool isWeaponOrAmmo() const;
 		const char* getSourceFilename() const;
@@ -270,6 +271,8 @@ namespace TES3 {
 
 		bool getBlocked() const;
 		void setBlocked(bool value);
+
+		bool getUpdatesCollisionGroups() const;
 
 		bool getSupportsLuaData() const;
 
@@ -374,7 +377,7 @@ namespace TES3 {
 		static void finishCreateCopy_lua(Object* created, sol::optional<sol::table> params);
 
 		Object* skipDeletedObjects();
-		ReferenceList* getOwningCollection();
+		ReferenceList* getOwningCollection() const;
 
 		void setScale_lua(float scale);
 

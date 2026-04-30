@@ -69,6 +69,28 @@ local result = myObject:getActiveBodyPart(layer, index)
 
 * `result` ([tes3bodyPartManagerActiveBodyPart](../types/tes3bodyPartManagerActiveBodyPart.md))
 
+??? example "Example: Adjusting the position of the currently equipped iron dagger on the player character"
+
+	```lua
+	local dagger = tes3.getObject("iron dagger") --[[@as tes3weapon]]
+	local slot = tes3.player1stPerson.bodyPartManager:getActiveBodyPartForItem(dagger)
+	
+	slot.node.translation.z = slot.node.translation.z - 20
+	slot.node:update()
+
+	```
+
+??? example "Example: Getting an active body part structure for the currently equipped weapon"
+
+	```lua
+	local slot = tes3.player1stPerson.bodyPartManager:getActiveBodyPart(
+		-- armor layer also contains weapons
+		tes3.activeBodyPartLayer.armor,
+		tes3.activeBodyPart.weapon
+	)
+
+	```
+
 ***
 
 ### `getActiveBodyPartForItem`

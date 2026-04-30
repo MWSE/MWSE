@@ -103,7 +103,7 @@ Alias for the red value of the color.
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 
-Creates a new niPackedColor object.
+Creates a new niPackedColor object. This function must be given 0, 3, or 4 arguments.
 
 ```lua
 local color = niPackedColor.new(r, g, b, a)

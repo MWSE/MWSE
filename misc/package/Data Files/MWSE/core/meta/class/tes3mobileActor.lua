@@ -143,7 +143,7 @@
 --- @field waterWalking number Direct access to the actor's water walking effect attribute.
 --- @field weaponDrawn boolean *Read-only*. Friendly access to the actor's flag that shows if the weapon model is visible. When readying a weapon, there is a short period of time at the start of the animation, where the weapon is not visible yet. This flag will only be set after this initial stage is done. This flag is still set with hand-to-hand even though it doesn't use a model. Setting this to false while a weapon is drawn will normally cause the actor to play its weapon draw animation again.
 --- @field weaponReady boolean A flag for if the actor has a weapon ready or being readied (visible and held in the hand). Setting it to true will cause the actor to take out their weapon. Setting it to false will cause the actor to put it away.
---- @field werewolf boolean *Read-only*. Friendly access to the actor's flag that controls if the actor in werewolf form.
+--- @field werewolf boolean *Read-only*. Friendly access to the actor's flag that controls if the actor is in werewolf form.
 --- @field width number *Read-only*. No description yet available.
 --- @field willpower tes3statistic|tes3statisticSkill *Read-only*. Direct access to the actor's willpower attribute statistic. If you are setting player stats, instead use `tes3.setStatistic` to also update the UI immediately.
 tes3mobileActor = {}
@@ -243,9 +243,14 @@ function tes3mobileActor:doJump(params) end
 --- Equips an item, optionally adding the item if needed. If the best match is already equipped, it does not perform an unequip-equip cycle, but does return `true`. If the item cannot be equipped, it will return `false`.
 --- 
 --- Equip may fail for the following reasons:
+--- 
 --- - The item cannot be found in the inventory.
 --- - The exact match cannot be found when itemData is provided.
 --- - When a weapon is being used to attack, it cannot be replaced.
+--- 
+--- !!! warning
+--- 	This method doesn't trigger [equip](https://mwse.github.io/MWSE/events/equip/) or [equipped](https://mwse.github.io/MWSE/events/equipped/) events.
+--- 
 --- @param params tes3mobileActor.equip.params This table accepts the following values:
 --- 
 --- `item`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string — The item to equip.
@@ -451,6 +456,9 @@ function tes3mobileActor:startDialogue() end
 function tes3mobileActor:stopCombat(force) end
 
 --- Unequips one or more items from the actor.
+--- 
+--- !!! note
+--- 	This method triggers the [unequipped](https://mwse.github.io/MWSE/events/unequipped/) event, unlike the `equip` method.
 --- @param params tes3mobileActor.unequip.params This table accepts the following values:
 --- 
 --- `item?`: tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|string — *Optional*. The item to unequip.

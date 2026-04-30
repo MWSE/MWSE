@@ -7,7 +7,7 @@ namespace NI {
 		vTable.asObject = reinterpret_cast<Object_vTable*>(0x7508B0);
 	}
 
-	TriShapeData* TriShape::getModelData() const {
+	Pointer<TriShapeData> TriShape::getModelData() const {
 		return static_cast<TriShapeData*>(modelData.get());
 	}
 

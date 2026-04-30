@@ -35,6 +35,17 @@ The active triangle count of the object.
 
 ***
 
+### `activeVertices`
+<div class="search_terms" style="display: none">activevertices</div>
+
+*Read-only*. The array of active vertex position data. The length of the array is equal to `vertexCount`.
+
+**Returns**:
+
+* `result` ([tes3vector3](../types/tes3vector3.md)[])
+
+***
+
 ### `bounds`
 <div class="search_terms" style="display: none">bounds</div>
 

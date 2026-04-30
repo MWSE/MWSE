@@ -18,12 +18,10 @@ local logger = logging.new{
 
 ---@class MWSE.DependencyType.params
 ---@field id string The unique identifier for this dependency type. All fields in the dependency will be prefixed with this value, for example, "mwse.buildDate" etc.
----@field checkDependency fun(self, dependency):boolean, MWSE.DependencyType.Failure[]? A function that checks if the given dependency is met. If the dependency is not met, the function should return false and a string describing why the dependency is not met.
----@field logLevel mwseLoggerLogLevel? The log level to use for this dependency type. Defaults to "DEBUG".
+---@field checkDependency fun(self, dependency): boolean, MWSE.DependencyType.Failure[]? A function that checks if the given dependency is met. If the dependency is not met, the function should return false and a string describing why the dependency is not met.
+---@field logLevel mwseLogger.logLevel? The log level to use for this dependency type. Defaults to "DEBUG".
 
----@class MWSE.DependencyType
----@field id string The unique identifier for this dependency type. All fields in the dependency will be prefixed with this value, for example, "mwse.buildDate" etc.
----@field checkDependency fun(self, dependency):boolean, MWSE.DependencyType.Failure[] A function that checks if the given dependency is met. If the dependency is not met, the function should return false and a string describing why the dependency is not met.
+---@class MWSE.DependencyType : MWSE.DependencyType.params
 ---@field logger mwseLogger The logger for this dependency type.
 local DependencyType = {
     registeredDependencyTypes = {}
@@ -35,6 +33,7 @@ function DependencyType.registerDependencyType(e)
     logger:assert(type(e.checkDependency) == "function", "DependencyType check must be a function")
 
     local dependencyType = e
+    ---@cast dependencyType MWSE.DependencyType
     dependencyType.logger = logging.new{
         modName = "DependencyType",
         moduleName = e.id,

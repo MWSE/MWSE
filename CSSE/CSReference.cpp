@@ -71,8 +71,15 @@ namespace se::cs {
 		return selectionWidget->parentNode == sceneNode;
 	}
 
+
 	Cell* Reference::getCell() const {
 		const auto Reference_getCell = reinterpret_cast<Cell*(__thiscall*)(const Reference*)>(0x401B0E);
 		return Reference_getCell(this);
+	}
+
+	// Super cursed, but targetID is not set for newly created objects
+	std::string Reference::getUniqueID() const {
+		auto stringID = getObjectID() + position.toString() + orientationNonAttached.toString();
+		return stringID;
 	}
 }

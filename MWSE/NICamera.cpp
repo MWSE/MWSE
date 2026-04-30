@@ -29,7 +29,7 @@ namespace NI {
 		NI_Camera_click(this, something);
 	}
 
-	const auto NI_Camera_swapBuffers = reinterpret_cast<void(__thiscall*)(Camera*)>(0x6CC780);
+	const auto NI_Camera_swapBuffers = reinterpret_cast<void(__thiscall*)(Camera*)>(0x6CC930);
 	void Camera::swapBuffers() {
 		NI_Camera_swapBuffers(this);
 	}

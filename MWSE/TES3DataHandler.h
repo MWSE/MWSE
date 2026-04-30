@@ -153,7 +153,7 @@ namespace TES3 {
 		Reference* resolveReferenceBySourceID(unsigned int);
 		Spell* getSpellById(const char*);
 		Script* findScriptByName(const char*);
-		GlobalVariable* findGlobalVariable(const char*);
+		GlobalVariable* findGlobalVariable(const char* name) const;
 		Dialogue* findDialogue(const char*);
 		bool addSound(Sound*);
 		Sound* findSound(const char*);
@@ -172,7 +172,7 @@ namespace TES3 {
 
 		MagicEffect * getMagicEffect(int id);
 
-		float createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+		Reference* createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
 
 		void showLocationOnMap(const char* name);
 		void drawCellMapMarker(Cell* cell, int unused = 0);
@@ -376,6 +376,12 @@ namespace TES3 {
 		Vector3 getLastExteriorPosition() const;
 		float getLowestZInCurrentCell() const;
 
+		bool getLandHeightAtPosition(const Vector3& position, float* out_height) const;
+		sol::optional<float> getLandHeightAtPosition_lua(const Vector3& position) const;
+		bool getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const;
+		sol::optional<Vector3> getLandNormalAtPosition_lua(const Vector3& position) const;
+		NI::TriShape* getLandShapeAtPosition(const Vector3& position) const;
+
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
 		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);
 		void addTemporarySound(const char* path, Reference * reference = nullptr, int playbackFlags = 0, int volume = 250, float pitch = 1.0f, bool isVoiceover = false, Sound * sound = nullptr);
@@ -393,6 +399,7 @@ namespace TES3 {
 		void setDynamicLightingForReference(Reference* reference);
 
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
+		void updateCollisionGroupsForActiveCells_lua(sol::optional<bool> force, sol::optional<bool> isResettingData, sol::optional<bool> resetCollisionGroups);
 		void updateCollisionGroupsForActiveCells_raw(bool force = true);
 
 		void getClosestPrisonReferences(Reference** prisonMarker, Reference** stolenGoods);
@@ -400,6 +407,9 @@ namespace TES3 {
 		bool isCellInMemory(const Cell* cell, bool unknown) const;
 
 		std::tuple<int, int> getCellBufferSize() const;
+
+		void incrementLoadedRecords(int count);
+		float getTotalLoadedRecordsFraction() const;
 
 		//
 		// Custom functions.

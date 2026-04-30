@@ -4,6 +4,7 @@
 
 #include "BuildDate.h"
 #include "MWSEDefs.h"
+#include "MWSEConfig.h"
 #include "UTF8Convert.h"
 #include "WindowsUtil.h"
 
@@ -17,12 +18,6 @@
 #include "TES3WorldController.h"
 
 namespace mwse::lua {
-#ifdef APPVEYOR_BUILD_NUMBER
-	constexpr unsigned int buildNumber = APPVEYOR_BUILD_NUMBER;
-#else
-	constexpr unsigned int buildNumber = UINT_MAX;
-#endif
-
 	void crash() {
 		// You're not my manager!
 		int* x = nullptr;
@@ -73,7 +68,7 @@ namespace mwse::lua {
 
 		// Basic value binding.
 		lua_mwse["buildDate"] = MWSE_BUILD_DATE;
-		lua_mwse["buildNumber"] = buildNumber;
+		lua_mwse["buildNumber"] = Configuration::BuildNumber;
 		lua_mwse["version"] = MWSE_VERSION_INTEGER;
 #if _DEBUG
 		lua_mwse["debugBuild"] = true;

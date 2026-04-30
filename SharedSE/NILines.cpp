@@ -18,6 +18,10 @@ namespace NI {
 		vTable.asObject->destructor(this, 0);
 	}
 
+	Pointer<LinesData> Lines::getModelData() const {
+		return static_cast<LinesData*>(modelData.get());
+	}
+
 	Pointer<Lines> Lines::create(unsigned short vertexCount, bool useColors, bool useTextureCoords) {
 		auto vertices = se::memory::_new<Vector3>(vertexCount);
 		auto lineSegmentFlags = se::memory::_new<bool>(vertexCount);

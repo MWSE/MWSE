@@ -11,5 +11,6 @@
 --- @field itemData tes3itemData *Read-only*. The item data relevant to the repaired item.
 --- @field repairAmount number The amount of condition that will be restored to the item.
 --- @field repairer tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The actor performing the repair. Note that this is currently always the player, but this may change in future updates.
+--- @field roll number The roll, an integer between 0 and 99, used to determine how successful the attempt was. The `repairAmount` is calculated by this value. If `roll` is greater or equal to `chance`, the repair will be a failure.
 --- @field tool tes3repairTool *Read-only*. The repair tool being used.
 --- @field toolData tes3itemData *Read-only*. The item data relevant to repair tool.

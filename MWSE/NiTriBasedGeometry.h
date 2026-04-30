@@ -18,7 +18,7 @@ namespace NI {
 		//
 
 		bool findIntersections(const TES3::Vector3* position, const TES3::Vector3* direction, Pick* pick);
-		TriBasedGeometryData* getModelData() { return static_cast<TriBasedGeometryData*>(modelData.get()); }
+		Pointer<TriBasedGeometryData> getModelData() const;
 
 	};
 	static_assert(sizeof(TriBasedGeometry) == 0xAC, "NI::TriBasedGeometry failed size validation");

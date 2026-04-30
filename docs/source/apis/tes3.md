@@ -184,7 +184,7 @@ local count, item, itemData = tes3.addItem({ reference = ..., item = ..., itemDa
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): Who to give items to.
 	* `item` ([tes3item](../types/tes3item.md), [tes3leveledItem](../types/tes3leveledItem.md), string): The item to add. If a leveled item is passed, it will be resolved and added.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
-	* `soul` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md)): *Optional*. For creating filled soul gems.
+	* `soul` ([tes3creature](../types/tes3creature.md), [tes3npc](../types/tes3npc.md), string): *Optional*. For creating filled soul gems.
 	* `count` (number): *Default*: `1`. The maximum number of items to add.
 	* `playSound` (boolean): *Default*: `true`. If `false`, the up/down sound for the item won't be played. This only applies if `reference` is the player.
 	* `showMessage` (boolean): *Default*: `false`. If `true`, a message box notifying the player will be shown. This only applies if `reference` is the player.
@@ -699,7 +699,7 @@ local price = tes3.calculatePrice({ object = ..., basePrice = ..., buying = ...,
 	* `buying` (boolean): *Default*: `true`. If `true`, uses the logic for buying a service/item. This is exclusive with `selling`.
 	* `selling` (boolean): *Default*: `false`. If `true`, uses the logic for selling an item. This is exclusive with `buying`.
 	* `merchant` ([tes3mobileActor](../types/tes3mobileActor.md)): The merchant to use for calculating the price.
-	* `bartering` (boolean): *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
+	* `bartering` (boolean): *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcSpellPrice](https://mwse.github.io/MWSE/events/calcSpellPrice) event will be triggered.
 	* `repairing` (boolean): *Default*: `false`. If `true`, a [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
 	* `training` (boolean): *Default*: `false`. If `true`, a [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event will be triggered, passing the given `skill` ID.
 	* `count` (number): *Default*: `1`. If `bartering`, the count passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) event.
@@ -1169,7 +1169,7 @@ local createdObject = tes3.createObject({ id = ..., objectType = ..., getIfExist
 Similar to mwscript's PlaceAtPC or PlaceAtMe, this creates a new reference in the game world.
 
 ```lua
-local newReference = tes3.createReference({ object = ..., position = ..., orientation = ..., cell = ..., scale = ... })
+local newReference = tes3.createReference({ object = ..., position = ..., orientation = ..., cell = ..., scale = ..., updateCollisionGroups = ... })
 ```
 
 **Parameters**:
@@ -1180,6 +1180,7 @@ local newReference = tes3.createReference({ object = ..., position = ..., orient
 	* `orientation` ([tes3vector3](../types/tes3vector3.md), number[]): The new orientation for the created reference.
 	* `cell` ([tes3cell](../types/tes3cell.md), string, table): *Optional*. The cell to create the reference in. This is only needed for interior cells.
 	* `scale` (number): *Default*: `1`. A scale for the reference.
+	* `updateCollisionGroups` (boolean): *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 
 **Returns**:
 
@@ -1727,7 +1728,7 @@ local result = tes3.getAnimationActionTiming({ reference = ..., group = ... })
 
 * `params` (table)
 	* `reference` ([tes3reference](../types/tes3reference.md), [tes3mobileActor](../types/tes3mobileActor.md), string): A reference to the which actor whose animations will be checked.
-	* `group` ([tes3.animationGroup](../references/animation-groups.md), integer): *Optional*. The animation group id to get the action timings for. Maps to [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) constants.
+	* `group` ([tes3.animationGroup](../references/animation-groups.md), integer): The animation group id to get the action timings for. Maps to [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) constants.
 
 **Returns**:
 
@@ -3205,7 +3206,12 @@ local state = tes3.is3rdPerson()
 
 This function performs a check whether the provided reference is affected by a certain object or magic effect.
 
-Note `reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+!!! info
+	`reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+
+!!! tip
+	Soul trap effect is only active on the actor during the frame of the actor's death, if the player has a valid soul gem.
+
 
 ```lua
 local isAffectedBy = tes3.isAffectedBy({ reference = ..., effect = ..., object = ... })
@@ -4008,9 +4014,9 @@ tes3.random(seed)
 <div class="search_terms" style="display: none">raytest</div>
 
 Performs a ray test and returns various information related to the result(s). The ray test works by effectively shooting out a line, starting at `position` and pointing towards `direction`, and then checking to see which objects intersect that line.
-	
+
 Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
-	
+
 1. `root`: Things that aren't a `child` of the specified `root` will be skipped. If `root` is not provided, then nothing will be skipped by this process.
 2. `ignore`: Objects in this array will be skipped.
 3. `maxDistance`: If specified, only objects within the specified distance will be checked.
@@ -4021,7 +4027,7 @@ Here is an overview of how some commonly used parameters will alter how `tes3.ra
 	The following suggestions will help to minimize the performance impact of calls to `tes3.rayTest`.
 
 	1. Set a `maxDistance`.
-	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
+	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looking for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
 	3. Try to keep a cached copy of the array used for the `ignore` parameter (if possible).
 	4. Keep maximum size of objects reasonable, and try to limit triangle counts.
 
@@ -5035,7 +5041,7 @@ local musicTrackQueued = tes3.skipToNextMusicTrack({ situation = ..., crossfade 
 
 **Parameters**:
 
-* `params` (table)
+* `params` (table): *Optional*.
 	* `situation` ([tes3.musicSituation](../references/music-situations.md)): *Optional*. Determines what kind of gameplay situation the music should activate for. By default, the function will determine the right solution based on the player's combat state. This value maps to [`tes3.musicSituation`](https://mwse.github.io/MWSE/references/music-situations/) constants.
 	* `crossfade` (number): *Default*: `1.0`. The duration in seconds of the crossfade from the old to the new track. The default is 1.0.
 	* `volume` (number): *Optional*. The volume at which the music will play. If no volume is provided, the user's volume setting will be used.

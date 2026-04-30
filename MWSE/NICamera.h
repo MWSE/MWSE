@@ -25,17 +25,14 @@ namespace NI {
 		Frustum viewFrustum; // 0x100
 		TES3::Vector4 port; // 0x118
 		Pointer<Node> scene; // 0x128
-		NI::TArray<void*> unknown_0x12C; // Screen related?
+		NI::TArray<ScreenPolygon*> screenPolygons; // 0x12C
 		Pointer<Renderer> renderer; // 0x144
-		NI::TArray<void*> unknown_0x148; // Multiple cameras?
-		int unknown_0x160;
+		NI::TArray<void*> cullingPlanePtrs; // 0x148
+		int countCullingPlanes; // 0x160
 		TES3::Vector4 cullingPlanes[6]; // 0x164
-		float unknown_0x1C4;
-		float unknown_0x1C8;
-		float unknown_0x1CC;
-		float unknown_0x1D0;
-		void * unknown_0x1D4;
-		int unknown_0x1D8;
+		uint32_t usedCullingPlanesBitfield[4]; // 0x1C4
+		void* pointer_0x1D4;
+		int field_0x1D8;
 		float LODAdjust; // 0x1DC
 
 		Camera();

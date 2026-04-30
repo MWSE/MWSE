@@ -207,6 +207,7 @@
 #include "LuaCalcBarterPriceEvent.h"
 #include "LuaCalcBlockChanceEvent.h"
 #include "LuaCalcChargenStatsEvent.h"
+#include "LuaCalcEnchantingSpellPointCostEvent.h"
 #include "LuaCalcEnchantmentPriceEvent.h"
 #include "LuaCalcHitArmorPieceEvent.h"
 #include "LuaCalcHitChanceEvent.h"
@@ -250,6 +251,7 @@
 #include "LuaLevelUpEvent.h"
 #include "LuaLoadGameEvent.h"
 #include "LuaLoadedGameEvent.h"
+#include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectEvent.h"
@@ -428,23 +430,7 @@ namespace mwse::lua {
 
 	// LuaManager constructor. This is private, as a singleton.
 	LuaManager::LuaManager() {
-		// Open default lua libraries.
-		luaState.open_libraries();
 
-		// Override the default atpanic to print to the log.
-		luaState.set_panic(&panic);
-		luaState.set_exception_handler(&exceptionHandler);
-
-		// Set up our timers.
-		gameTimers = std::make_shared<TimerController>();
-		simulateTimers = std::make_shared<TimerController>();
-		realTimers = std::make_shared<TimerController>();
-
-		// Overwrite the default print function to print to the MWSE log.
-		luaState["print"] = lua_print;
-
-		// Bind our data types.
-		bindData();
 	}
 
 	void LuaManager::bindData() {
@@ -470,15 +456,23 @@ namespace mwse::lua {
 		bindMWSEUtil();
 
 		// Extend OS library.
+		// We can cache the performanceFrequency, since it's set on boot and doesn't change.
+		LARGE_INTEGER rawFrequency, rawStartTime;
+		QueryPerformanceFrequency(&rawFrequency);
+		QueryPerformanceCounter(&rawStartTime);
+		performanceFrequency = rawFrequency.QuadPart;
+		startTimestamp = rawStartTime.QuadPart;
+
 		luaState["os"]["createProcess"] = createProcess;
 		luaState["os"]["getClipboardText"] = getClipboardText;
+		luaState["os"]["getCommandLine"] = getCommandLine;
+		luaState["os"]["getHighPrecisionClock"] = getHighPrecisionClock;
 		luaState["os"]["openURL"] = openURL;
 		luaState["os"]["setClipboardText"] = setClipboardText;
-		luaState["os"]["getCommandLine"] = getCommandLine;
 		LuaExecutor::defineLuaBindings();
 
 		// Extend math library.
-		luaState["math"]["nfhuge"] = std::numeric_limits<float>::min();
+		luaState["math"]["nfhuge"] = std::numeric_limits<float>::lowest();
 		luaState["math"]["fhuge"] = std::numeric_limits<float>::max();
 		luaState["math"]["epsilon"] = std::numeric_limits<double>::epsilon();
 		luaState["math"]["fepsilon"] = std::numeric_limits<float>::epsilon();
@@ -2387,6 +2381,54 @@ namespace mwse::lua {
 		}
 
 		return price;
+	}
+
+	static auto& TES3_Global_EnchantingPrice = *reinterpret_cast<int*>(0x7D35F4);
+	static auto& TES3_Global_IsVendorEnchant = *reinterpret_cast<unsigned char*>(0x7D36F0);
+
+	unsigned char __stdcall OnCalculateEnchantingSpellPointCost(float* spellPointCost, TES3::UI::Element* menu, TES3::UI::Element* currentChargeLabel) {
+		if (spellPointCost && event::CalculateEnchantingSpellPointCostEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
+
+			auto serviceActor = TES3::UI::getServiceActor();
+			sol::table result = stateHandle.triggerEvent(new event::CalculateEnchantingSpellPointCostEvent(serviceActor, *spellPointCost));
+			if (result.valid()) {
+				auto updatedSpellPointCost = result.get_or("spellPointCost", *spellPointCost);
+				if (updatedSpellPointCost != *spellPointCost) {
+					*spellPointCost = updatedSpellPointCost;
+
+					if (currentChargeLabel) {
+						currentChargeLabel->setProperty(TES3::UI::registerProperty("MenuEnchantment_Effect"), static_cast<int>(*spellPointCost));
+					}
+
+					if (menu) {
+						auto dataHandler = TES3::DataHandler::get();
+						auto worldController = TES3::WorldController::get();
+						auto mobilePlayer = worldController ? worldController->getMobilePlayer() : nullptr;
+						if (dataHandler && mobilePlayer) {
+							auto enchantChance = static_cast<int>(mobilePlayer->getSkillValue(TES3::SkillID::Enchant)
+								- dataHandler->getGameSettingFloat(TES3::GMST::fEnchantmentChanceMult) * *spellPointCost);
+							menu->setProperty(TES3::UI::registerProperty("MenuEnchantment_chance"), enchantChance);
+							TES3_Global_EnchantingPrice = enchantChance;
+						}
+					}
+				}
+			}
+		}
+
+		return TES3_Global_IsVendorEnchant;
+	}
+
+	__declspec(naked) void OnCalculateEnchantingSpellPointCost_Wrapper() {
+		__asm {
+			lea eax, [esp + 0x14]				// caller local float price at [esp + 0x10], plus 4-byte return address
+			push edi						// currentChargeLabel
+			push ebx						// menu
+			push eax						// spellPointCost
+			call OnCalculateEnchantingSpellPointCost
+			ret
+		}
 	}
 
 	//
@@ -4300,7 +4342,7 @@ namespace mwse::lua {
 
 	void __fastcall SetAnimSpeedOnCast(TES3::AnimationData* animData) {
 		// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-		animData->weaponSpeed = animData->getCastSpeed() + FLT_MIN;
+		animData->weaponSpeed = animData->getCastSpeed() + std::numeric_limits<float>::min();
 	}
 
 	//
@@ -4356,7 +4398,7 @@ namespace mwse::lua {
 		return TES3_OnClickRepairOrRecharge(source, prop, dataA, dataB, target);
 	}
 
-	int __cdecl AttemptRepair() {
+	static int __cdecl AttemptRepair() {
 		auto repairMenu = TES3::UI::findMenu("MenuRepair");
 		if (!repairMenu) {
 			return 0;
@@ -4379,7 +4421,7 @@ namespace mwse::lua {
 		const auto strengthTerm = macp->getAttributeStrength()->getCurrent() * 0.1f;
 		const auto fatigueTerm = macp->getFatigueTerm();
 		auto chance = fatigueTerm * (skillTerm + strengthTerm + luckTerm);
-		const auto roll = tes3::rand() % 100;
+		auto roll = tes3::rand() % 100;
 
 		// Calculate the repair amount.
 		const auto fRepairAmountMult = TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fRepairAmountMult]->value.asFloat;
@@ -4392,8 +4434,9 @@ namespace mwse::lua {
 		if (event::RepairEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::table result = stateHandle.triggerEvent(new event::RepairEvent(macp, item, itemData, tool, toolData, chance, repairAmount));
+			sol::table result = stateHandle.triggerEvent(new event::RepairEvent(macp, item, itemData, tool, toolData, roll, chance, repairAmount));
 			if (result.valid()) {
+				roll = result.get_or("roll", roll);
 				chance = result.get_or("chance", chance);
 				repairAmount = result.get_or("repairAmount", repairAmount);
 			}
@@ -4713,10 +4756,64 @@ namespace mwse::lua {
 	const size_t patchConsumeItemSwallowArgs_size = 2;
 
 	//
-	// Patch: Magic reflect events.
+	// Patch: Magic absorb/reflect events.
 	//
-	
+
+	const auto vfxAbsorbPtr = reinterpret_cast<TES3::PhysicalObject**>(0x7CF114);
 	const auto vfxReflectPtr = reinterpret_cast<TES3::PhysicalObject**>(0x7CF110);
+
+	bool __stdcall OnMagicAbsorb2(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* hitReference, TES3::ActiveMagicEffect* absorbEffect, int effectIndex) {
+		float absorbChance = float(absorbEffect->unresistedMagnitude);
+
+		if (mwse::lua::event::MagicAbsorbEvent::getEventEnabled()) {
+			auto& luaManager = mwse::lua::LuaManager::getInstance();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicAbsorbEvent(sourceInstance, hitReference, absorbEffect, absorbChance));
+			if (result.valid()) {
+				if (result.get_or("block", false)) {
+					return false;
+				}
+				absorbChance = result["absorbChance"];
+			}
+		}
+
+		int roll = tes3::rand() % 100;
+		bool success = roll < absorbChance;
+		auto absorbVfx = *vfxAbsorbPtr;
+		if (success && absorbVfx) {
+			sourceInstance->playSpellVFX(1.0f, TES3::Vector3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
+		}
+
+		return success;
+	}
+
+	__declspec(naked) bool OnMagicAbsorb() {
+		__asm {
+			mov ecx, [esp + 0CCh]  // mov ecx, effectIndex
+			lea eax, [edi + 8]     // lea eax, [edi + ActiveMagicEffectNode.data]
+			push ecx               // push effectIndex
+			push eax               // push absorbEffect
+			push ebp               // push hitReference
+			push ebx               // push magicSourceInstance
+			call OnMagicAbsorb2
+			ret
+		}
+	}
+
+	__declspec(naked) bool patchMagicAbsorb() {
+		__asm {
+			call OnMagicAbsorb
+			test al, al
+			__asm _emit 0x74 __asm _emit 0x4A  // jz short 0x516FAE
+			__asm _emit 0xEB __asm _emit 0x43  // jmp short 0x516FA9
+			nop
+			nop
+			nop
+			nop
+			nop
+		}
+	}
+	const size_t patchMagicAbsorb_size = 0x10;
 
 	bool __stdcall OnMagicReflect2(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* hitReference, TES3::ActiveMagicEffect* reflectEffect) {
 		float reflectChance = float(reflectEffect->unresistedMagnitude);
@@ -4899,6 +4996,14 @@ namespace mwse::lua {
 		return ThreadedStateHandle(this);
 	}
 
+	bool LuaManager::canLockLuaThread() {
+		if (stateThreadMutex.try_lock()) {
+			stateThreadMutex.unlock();
+			return true;
+		}
+		return false;
+	}
+
 	const sol::state_view& LuaManager::getReadOnlyStateView() {
 		return luaState;
 	}
@@ -4914,6 +5019,24 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::hook() {
+		// Open default lua libraries.
+		luaState.open_libraries();
+
+		// Override the default atpanic to print to the log.
+		luaState.set_panic(&panic);
+		luaState.set_exception_handler(&exceptionHandler);
+
+		// Set up our timers.
+		gameTimers = std::make_shared<TimerController>();
+		simulateTimers = std::make_shared<TimerController>();
+		realTimers = std::make_shared<TimerController>();
+
+		// Overwrite the default print function to print to the MWSE log.
+		luaState["print"] = lua_print;
+
+		// Bind our data types.
+		bindData();
+
 		// Add core/lib directories to path.
 		{
 			std::stringstream envPath;
@@ -5270,6 +5393,10 @@ namespace mwse::lua {
 		genCallEnforced(0x512A17, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Retire Effects
 		genCallEnforced(0x515AEF, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Process
 		genCallEnforced(0x518FCC, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Spell Effect Event
+
+		// Event: Magic absorb
+		writePatchCodeUnprotected(0x516F5B, (BYTE*)&patchMagicAbsorb, patchMagicAbsorb_size);
+		genCallUnprotected(0x516F5B, reinterpret_cast<DWORD>(OnMagicAbsorb));
 
 		// Event: Reflect magic
 		genNOPUnprotected(0x516EA0, 0x1C);
@@ -5663,6 +5790,9 @@ namespace mwse::lua {
 
 		// Event: Calculate enchantment making price.
 		genCallEnforced(0x5C3C47, 0x52AA50, reinterpret_cast<DWORD>(OnCalculateEnchantmentPrice));
+
+		// Event: Calculate enchanting spell point cost.
+		genCallUnprotected(0x5C3BFC, reinterpret_cast<DWORD>(OnCalculateEnchantingSpellPointCost_Wrapper));
 
 		// Event: Calculate spell making point cost.
 		genCallEnforced(0x6223BD, 0x581F30, reinterpret_cast<DWORD>(OnCalculateSpellmakingSpellPointCost));
@@ -6648,7 +6778,7 @@ namespace mwse::lua {
 		genCallEnforced(0x4EEFAA, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
 		genCallEnforced(0x4F026F, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
 		genCallEnforced(0x4F0C83, 0x4F0CA0, *reinterpret_cast<DWORD*>(&baseObjectDestructor));
-		
+
 		// Also clean up references, but do it just before deletion so we have more information.
 		auto referenceObjectDestructor = &TES3::Reference::dtor;
 		genJumpEnforced(0x49A675, 0x4E45C0, *reinterpret_cast<DWORD*>(&referenceObjectDestructor));

@@ -40,6 +40,8 @@ namespace TES3::UI {
 	Reference* getConsoleReference();
 	void __cdecl setConsoleReference(Reference* reference);
 
+	Cell* getCellHoveredOnMap();
+
 	Element* getCursor();
 	InventoryTile* getCursorTile();
 

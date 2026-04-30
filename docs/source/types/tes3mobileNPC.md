@@ -1440,6 +1440,9 @@ The distance to the player. Updated every frame when the mobile is in an active 
 
 A vector that represents the 3D position of the object.
 
+!!! info
+	For actors, this is the point between the actor's feet.
+
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
@@ -1962,7 +1965,7 @@ A flag for if the actor has a weapon ready or being readied (visible and held in
 ### `werewolf`
 <div class="search_terms" style="display: none">werewolf</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor in werewolf form.
+*Read-only*. Friendly access to the actor's flag that controls if the actor is in werewolf form.
 
 **Returns**:
 
@@ -2121,9 +2124,14 @@ local result = myObject:doJump({ velocity = ..., applyFatigueCost = ..., allowMi
 Equips an item, optionally adding the item if needed. If the best match is already equipped, it does not perform an unequip-equip cycle, but does return `true`. If the item cannot be equipped, it will return `false`.
 
 Equip may fail for the following reasons:
+
 - The item cannot be found in the inventory.
 - The exact match cannot be found when itemData is provided.
 - When a weapon is being used to attack, it cannot be replaced.
+
+!!! warning
+	This method doesn't trigger [equip](https://mwse.github.io/MWSE/events/equip/) or [equipped](https://mwse.github.io/MWSE/events/equipped/) events.
+
 
 ```lua
 local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ..., playSound = ... })
@@ -2610,6 +2618,9 @@ myObject:stopCombat(force)
 <div class="search_terms" style="display: none">unequip</div>
 
 Unequips one or more items from the actor.
+
+!!! note
+	This method triggers the [unequipped](https://mwse.github.io/MWSE/events/unequipped/) event, unlike the `equip` method.
 
 ```lua
 local itemUnequipped = myObject:unequip({ item = ..., itemData = ..., type = ..., armorSlot = ..., clothingSlot = ... })

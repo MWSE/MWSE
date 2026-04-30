@@ -8,7 +8,7 @@
 
 This dictionary-style table holds all of the UI elements that comprise an Exclusions Page.
 
-This type inherits the following: [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md).
+This type inherits the following: [mwseMCMPageElements](../types/mwseMCMPageElements.md), [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md).
 ## Properties
 
 ### `description`
@@ -85,6 +85,28 @@ The top UI element for this component. All the other UI elements that comprise a
 **Returns**:
 
 * `result` ([tes3uiElement](../types/tes3uiElement.md), nil)
+
+***
+
+### `resetButton`
+<div class="search_terms" style="display: none">resetbutton</div>
+
+This is the Reset button UI element.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `resetContainer`
+<div class="search_terms" style="display: none">resetcontainer</div>
+
+This is the parent UI element for the Page's Reset button.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 

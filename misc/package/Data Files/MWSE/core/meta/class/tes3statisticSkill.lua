@@ -10,6 +10,6 @@
 --- @field base number The base value of the skill statistic. Damage, and fortify spell effects don't change base skill value.
 --- @field baseRaw number The base value of the skill statistic, as stored in memory. Prefer to use `.base` unless you know what you're doing.
 --- @field current number The current value of the skill statistic.
---- @field currentRaw number The current value of the skill statistic, as stored in memory. Prefer to use `.current` unless you know what you're doing.
+--- @field currentRaw number The current value of the skill statistic, as stored in memory. When a certain statistic would reach negative value, its `current` value will be `0` while `currentRaw` will be the actual negative value. Prefer to use `.current` unless you know what you're doing.
 --- @field normalized number The normalized value of the skill statistic.
 --- @field type tes3.skillType The type of the skill, as assigned by the actor's class. Maps to values in [`tes3.skillType`](https://mwse.github.io/MWSE/references/skill-types/) namespace.

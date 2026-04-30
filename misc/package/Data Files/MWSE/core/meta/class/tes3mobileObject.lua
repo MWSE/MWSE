@@ -22,6 +22,9 @@
 --- @field objectType tes3.objectType *Read-only*. The type of mobile object. Maps to values in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/) namespace.
 --- @field playerDistance number The distance to the player. Updated every frame when the mobile is in an active cell.
 --- @field position tes3vector3 A vector that represents the 3D position of the object.
+--- 
+--- !!! info
+--- 	For actors, this is the point between the actor's feet.
 --- @field prevMovementFlags integer Access to the root mobile object movement flags from the previous frame, represented as an integer. Should not be accessed directly.
 --- @field reference tes3reference *Read-only*. Access to the reference object for the mobile, if any.
 --- @field velocity tes3vector3 A vector that represents the 3D velocity of the object.

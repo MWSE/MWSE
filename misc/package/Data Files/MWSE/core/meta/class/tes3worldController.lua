@@ -10,7 +10,7 @@
 --- @field armCamera tes3worldControllerRenderCamera|tes3worldControllerRenderTarget *Read-only*. The access to the first person arms camera.
 --- @field audioController tes3audioController *Read-only*. The audio controller.
 --- @field blindnessFader tes3fader *Read-only*. Screen overlay fader for the blind effect.
---- @field characterRenderTarget tes3worldControllerRenderTarget *Read-only*. 
+--- @field characterRenderTarget tes3worldControllerRenderTarget *Read-only*. The inventory paperdoll render target.
 --- @field charGenState tes3globalVariable *Read-only*. The `charGenState` global variable. Indicates progress through character generation. Has a value of `-1` when chargen is complete.
 --- @field countMusicTracksBattle number *Read-only*. The number of available battle music tracks.
 --- @field countMusicTracksExplore number *Read-only*. The number of available explore music tracks.

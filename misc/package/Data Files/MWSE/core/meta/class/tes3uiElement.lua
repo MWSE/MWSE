@@ -91,7 +91,7 @@
 --- 
 --- !!! tip
 --- 	If your element's text is a number, you need to manually convert it to string using `tostring()`.
---- @field texture niSourceTexture The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
+--- @field texture niRenderedTexture|niSourceTexture|niTexture The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2. Setting this value manually will clear the texture path from the element.
 --- @field type tes3.uiElementType *Read-only*. The type of content this `tes3uiElement` represents. This is an expanded set of the options available from the `contentType` property. Maps to values in [`tes3.uiElementType`](https://mwse.github.io/MWSE/references/tes3uiElement-types/).
 --- @field visible boolean Controls if the element is visible.
 --- @field widget tes3uiButton|tes3uiColorPicker|tes3uiColorPreview|tes3uiCycleButton|tes3uiFillBar|tes3uiHyperlink|tes3uiParagraphInput|tes3uiScrollPane|tes3uiSlider|tes3uiTabContainer|tes3uiTextInput|tes3uiTextSelect|tes3uiWidget|nil Access to element specific properties. This will be `nil` if there are no element specific properties. See the return types and the create* functions for more details.

@@ -78,8 +78,8 @@ namespace se::cs {
 			};
 		};
 		Attachment* firstAttachment; // 0x68
-		int unknown_0x6C;
-		int unknown_0x70;
+		int sourceID;
+		int targetID; // Master index?
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
 		Attachment* getAttachment(Attachment::Type type) const;
@@ -97,6 +97,8 @@ namespace se::cs {
 		bool hasActiveSelectionWidget() const;
 
 		Cell* getCell() const;
+
+		std::string getUniqueID() const;
 	};
 	static_assert(sizeof(Reference) == 0x78, "TES3::Reference failed size validation");
 }

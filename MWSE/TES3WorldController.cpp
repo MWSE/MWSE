@@ -332,9 +332,20 @@ namespace TES3 {
 		TES3_InventoryData_AddInventoryItems(this, inventory, type);
 	}
 
-	const auto TES3_InventoryData_findTile = reinterpret_cast<UI::InventoryTile * (__thiscall*)(InventoryData*, Item*, ItemData*, int)>(0x633E40);
-	UI::InventoryTile* InventoryData::findTile(Item* item, ItemData* itemData, int type) {
-		return TES3_InventoryData_findTile(this, item, itemData, type);
+	void InventoryData::refreshForReference(const Reference* reference, int type) {
+		clearIcons(2);
+		const auto inventory = reference->getInventory();
+		addInventoryItems(inventory, 2);
+	}
+
+	const auto TES3_InventoryData_findTile = reinterpret_cast<UI::InventoryTile * (__thiscall*)(const InventoryData*, const Item*)>(0x633E80);
+	UI::InventoryTile* InventoryData::findTile(const Item* item) const {
+		return TES3_InventoryData_findTile(this, item);
+	}
+
+	const auto TES3_InventoryData_findTileExact = reinterpret_cast<UI::InventoryTile * (__thiscall*)(const InventoryData*, Item*, ItemData*, int)>(0x633E40);
+	UI::InventoryTile* InventoryData::findTile(Item* item, ItemData* itemData, int type) const {
+		return TES3_InventoryData_findTileExact(this, item, itemData, type);
 	}
 
 	const auto TES3_InventoryData_mergeTile = reinterpret_cast<void(__thiscall*)(InventoryData*, UI::InventoryTile*)>(0x632FC0);

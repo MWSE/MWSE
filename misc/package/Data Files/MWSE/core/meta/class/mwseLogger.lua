@@ -83,7 +83,7 @@ function mwseLogger.getLoggers(modDir) end
 --- 
 --- `abbreviateHeader?`: boolean — *Default*: `false`. Should the headers be abbreviated?
 --- 
---- `formatter?`: fun(self: Logger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string — *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
+--- `formatter?`: fun(self: mwseLogger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string — *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
 --- @return mwseLogger log The newly created logger.
 function mwseLogger.new(params) end
 
@@ -96,7 +96,7 @@ function mwseLogger.new(params) end
 --- @field outputFile? boolean|string *Default*: `false`. The path of the output file to write log messages in. This path is taken relative to `Data Files/MWSE/logs/`. If not provided, log messages will be written to `MWSE.log`. If `true`, then the `modDir` will be used as the output path.
 --- @field includeTimestamp? boolean *Default*: `true`. Should timestamps be included in logging messages? The timestamps are relative to the time that the game was launched.
 --- @field abbreviateHeader? boolean *Default*: `false`. Should the headers be abbreviated?
---- @field formatter? fun(self: Logger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
+--- @field formatter? fun(self: mwseLogger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
 
 --- Logs and raises an error if the value of its argument v is false (i.e., `nil` or `false`); otherwise, returns all its arguments.
 --- @generic T
@@ -126,17 +126,17 @@ function mwseLogger:assert(v, message, ...) end
 function mwseLogger:debug(message, ...) end
 
 --- 		Returns true if the messages of the given log level will be logged.
---- 		This method is deprecated. It is recommended to either use 
+--- 		This method is deprecated. It is recommended to either use
 --- 		[lazy evaluation](../guides/logging.md#passing-functions-to-the-logging-methods)
 --- 		or check the logging level directly, e.g.:
 --- 		```lua
---- 		if log.level >= mwse.logLevel.debug then 
+--- 		if log.level >= mwse.logLevel.debug then
 --- 			-- do stuff
 --- 		end
 --- 		```
 --- 	
 --- @deprecated
---- @param logLevel mwseLoggerLogLevel Options are: "TRACE", "DEBUG", "INFO", "WARN", "ERROR" and "NONE".
+--- @param logLevel mwseLogger.logLevel|mwseLogger.logLevelString No description yet available.
 --- @return boolean doLog No description yet available.
 function mwseLogger:doLog(logLevel) end
 

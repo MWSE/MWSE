@@ -137,7 +137,7 @@ namespace TES3 {
 		constexpr unsigned char spellCastAnimID = 0x80;
 		if (currentAnimGroup[1] == spellCastAnimID) {
 			// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-			weaponSpeed = speed + FLT_MIN;
+			weaponSpeed = speed + std::numeric_limits<float>::min();
 		}
 	}
 

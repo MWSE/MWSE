@@ -184,7 +184,9 @@ namespace TES3 {
 
 		_declspec(dllexport) void clearIcons(int type);
 		_declspec(dllexport) void addInventoryItems(Inventory* inventory, int type);
-		_declspec(dllexport) UI::InventoryTile* findTile(Item* item, ItemData* itemData, int type);
+		void refreshForReference(const Reference* reference, int type);
+		_declspec(dllexport) UI::InventoryTile* findTile(const Item* item) const;
+		_declspec(dllexport) UI::InventoryTile* findTile(Item* item, ItemData* itemData, int type) const;
 		_declspec(dllexport) void mergeTile(UI::InventoryTile* tile);
 
 	};

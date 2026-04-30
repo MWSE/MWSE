@@ -47,7 +47,7 @@ namespace NI {
 		// Accessor methods.
 		//
 
-		ParticlesData* getModelData() const { return static_cast<ParticlesData*>(modelData.get()); }
+		Pointer<ParticlesData> getModelData() const;
 	};
 	static_assert(sizeof(Particles) == 0xB0, "NI::Particles failed size validation");
 
@@ -60,7 +60,7 @@ namespace NI {
 		// Accessor methods.
 		//
 
-		AutoNormalParticlesData* getModelData() const { return static_cast<AutoNormalParticlesData*>(modelData.get()); }
+		Pointer<AutoNormalParticlesData> getModelData() const;
 	};
 	static_assert(sizeof(AutoNormalParticles) == 0xB0, "NI::AutoNormalParticles failed size validation");
 
@@ -71,7 +71,7 @@ namespace NI {
 		// Accessor methods.
 		//
 
-		RotatingParticlesData* getModelData() const { return static_cast<RotatingParticlesData*>(modelData.get()); }
+		Pointer<RotatingParticlesData> getModelData() const;
 	};
 	static_assert(sizeof(RotatingParticles) == 0xB0, "NI::RotatingParticles failed size validation");
 }

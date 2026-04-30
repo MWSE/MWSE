@@ -21,12 +21,14 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
+	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
-	UINT Configuration::BuildNumber = UINT_MAX;
+	constexpr auto DEV_BUILD_NUMBER = std::numeric_limits<unsigned short>::max();
+	UINT Configuration::BuildNumber = DEV_BUILD_NUMBER;
+	static_assert(DEV_BUILD_NUMBER == int(float(DEV_BUILD_NUMBER)), "Dev build number could not survive round-trip through mwscript.");
 #endif
-
 
 	// Allow default values to be accessed later.
 	sol::table defaultConfig;
@@ -69,6 +71,7 @@ namespace mwse {
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
+		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

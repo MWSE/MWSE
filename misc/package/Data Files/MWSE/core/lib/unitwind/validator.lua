@@ -61,8 +61,9 @@ Validator.validate = function(object, schema)
         end
 
         if not matchesType then
-            assert(type(object) == schema,
-            string.format('Validation failed: expected type "%s", got "%s"', schema, type(object)))
+            if type(object) ~= schema then
+                error(string.format('Validation failed: expected type "%s", got "%s"', schema, type(object)))
+            end
         end
         return
     end
@@ -78,12 +79,18 @@ Validator.validate = function(object, schema)
 
     for key, field in pairs(schema.fields) do
         --check schema values
-        assert(type(field) == "table", string.format('Validation failed: "%s" field data is not a table.', key))
-        assert(field.type, string.format('Validation failed: "%s" field data missing type.', key))
+        if type(field) ~= "table" then
+            error(string.format('Validation failed: "%s" field data is not a table.', key))
+        end
+        if not field.type then
+            error(string.format('Validation failed: "%s" field data missing type.', key))
+        end
 
         --check required field exists
         if field.required then
-            assert(object[key] ~= nil, string.format('Validation failed for "%s": Missing required "%s" field.', schemaName, key))
+            if object[key] == nil then
+                error(string.format('Validation failed for "%s": Missing required "%s" field.', schemaName, key))
+            end
         end
 
         if object[key] ~= nil then
@@ -118,18 +125,15 @@ Validator.validate = function(object, schema)
                                     valuesString = string.format('%s, %s', valuesString, str)
                                 end
                                 for _, tableValue in ipairs(object[key]) do
-                                    assert(field.values[tableValue],
-                                        string.format('Validation failed for %s, expected one of the following values: [%s], got %s',
-                                            schemaName, valuesString, tableValue
-                                        )
-                                    )
+                                    if not field.values[tableValue] then
+                                        error(string.format('Validation failed for %s, expected one of the following values: [%s], got %s', schemaName, valuesString, tableValue))
+                                    end
                                 end
                                 for _, tableValue in pairs(object[key]) do
-                                    assert(field.values[tableValue],
-                                        string.format('Validation failed for %s, expected one of the following values: [%s], got %s',
-                                            schemaName, valuesString, tableValue
-                                        )
-                                    )
+                                    if not field.values[tableValue] then
+                                        error(string.format('Validation failed for %s, expected one of the following values: [%s], got %s', schemaName, valuesString, tableValue))
+                                    end
+
                                 end
                             end
                         end
@@ -152,7 +156,9 @@ Validator.validate = function(object, schema)
             end
         elseif field.default ~= nil then
             --nil, initialise default
-            assert(type(object) == "table", string.format("Validation failed: %s is not a table.", object))
+            if type(object) ~= "table" then
+                error(string.format("Validation failed: %s is not a table.", object))
+            end
             object[key] = field.default
         end
     end

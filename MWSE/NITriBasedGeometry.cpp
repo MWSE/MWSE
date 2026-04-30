@@ -169,4 +169,8 @@ namespace NI {
 
 		return addedResult;
 	}
+
+	Pointer<TriBasedGeometryData> TriBasedGeometry::getModelData() const {
+		return static_cast<TriBasedGeometryData*>(modelData.get());
+	}
 }

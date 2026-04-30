@@ -12,12 +12,12 @@ namespace NI {
 		struct HeaderTGA {
 			enum struct DataType : unsigned char {
 				NO_IMAGE_DATA = 0,
-				UNCOMPRESSED_PALLETIZED = 1,
-				UNCOMPRESSED_RGB = 2,
-				UNCOMPRESSED_BLACK_WHITE = 3,
+				PALLETIZED = 1,
+				RGB = 2,
+				GRAYSCALE = 3,
 				RLE_PALLETIZED = 9,
 				RLE_RGB = 10,
-				COMPRESSED_BLACK_WHITE = 11,
+				RLE_GRAYSCALE = 11,
 				COMPRESSED_1 = 32,
 				COMPRESSED_2 = 33
 			};

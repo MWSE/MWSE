@@ -112,22 +112,27 @@ namespace TES3 {
 	}
 
 	EquipmentStack* Actor::getEquippedItem(Object* item) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedItem(this, item);
 	}
 
 	EquipmentStack* Actor::getEquippedItemExact(Object* item, ItemData* itemData) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedItemExact(this, item, itemData);
 	}
 
 	EquipmentStack* Actor::getEquippedArmorBySlot(ArmorSlot::value_type slot) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedArmorBySlot(this, slot);
 	}
 
 	EquipmentStack* Actor::getEquippedClothingBySlot(ClothingSlot::value_type slot) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedClothingBySlot(this, slot);
 	}
 
 	EquipmentStack* Actor::getEquippedWeapon() {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedWeapon(this);
 	}
 

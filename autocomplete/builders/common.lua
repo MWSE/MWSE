@@ -1,4 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
+---@class common
+---@field common.lfs lfslib
 local common = {}
 
 --- A wrapper around `print` that allows format strings.
@@ -218,7 +220,7 @@ end
 -- lfs library extensions
 --
 
----@class common.lfs : lfslib
+---@class lfs : LuaFileSystem
 local lfs = require("lfs")
 
 --- @param ... string Parts of a file path.
@@ -321,7 +323,7 @@ common.defaultExperimentalAPIWarning = [[
 
 --- @param package package
 --- @param useDefault boolean|nil Use default descriptions?
---- @return string description This will be `nil` if there were no `parts`.
+--- @return string? description This will be `nil` if there were no `parts`.
 function common.getDescriptionString(package, useDefault)
 	if (useDefault == nil) then
 		useDefault = true

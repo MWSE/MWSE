@@ -168,7 +168,7 @@ The port on the backbuffer of the camera. Represents the rectangular portion of 
 ### `renderer`
 <div class="search_terms" style="display: none">renderer</div>
 
-*Read-only*. The renderer of the camera.
+The renderer of the camera.
 
 **Returns**:
 

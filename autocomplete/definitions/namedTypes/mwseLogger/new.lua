@@ -15,7 +15,7 @@ return {
 
 			{ name = "includeTimestamp", type = "boolean", optional = true, default = true, description = "Should timestamps be included in logging messages? The timestamps are relative to the time that the game was launched." },
 			{ name = "abbreviateHeader", type = "boolean", optional = true, default = false, description = "Should the headers be abbreviated?" },
-			{ name = "formatter", type = "fun(self: Logger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string", optional = true, description = "A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used." },
+			{ name = "formatter", type = "fun(self: mwseLogger, record: mwseLoggerRecord, ...: string|any|fun(...): ...): string", optional = true, description = "A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used." },
 
 		},
 	}},

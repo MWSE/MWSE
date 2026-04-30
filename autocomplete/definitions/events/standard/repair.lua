@@ -27,6 +27,10 @@ return {
 			readOnly = true,
 			description = "The item data relevant to repair tool.",
 		},
+		["roll"] = {
+			type = "number",
+			description = "The roll, an integer between 0 and 99, used to determine how successful the attempt was. The `repairAmount` is calculated by this value. If `roll` is greater or equal to `chance`, the repair will be a failure.",
+		},
 		["chance"] = {
 			type = "number",
 			description = "The percent chance of the repair being successful. This can be changed to modify the player's chance of repairing. It is not limited at 100.",

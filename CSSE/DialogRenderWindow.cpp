@@ -15,6 +15,7 @@
 #include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
+#include "NIProperty.h"
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
@@ -32,6 +33,7 @@
 #include "Settings.h"
 
 #include "DialogLandscapeEditSettingsWindow.h"
+#include "DialogLayersWindow.h"
 #include "WindowMain.h"
 
 #include "DialogProcContext.h"
@@ -39,6 +41,8 @@
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;
 	__int16 lastCursorPosY = 0;
+
+	namespace lw = se::cs::dialog::layer_window;
 
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> rotationDistribution(0.0, 360.0);
@@ -567,39 +571,57 @@ namespace se::cs::dialog::render_window {
 		return node->getLowestVertexZ();
 	}
 
-	void __cdecl Patch_FixDropToSurface_GetLowVertices(const NI::Node* node, float nearToZ) {
+	void __cdecl Patch_FixDropToSurface_GetLowVertices(const NI::AVObject* object, float nearToZ) {
 		constexpr auto NEAR_THRESHOLD = 1.0f;
 		const auto gNearVertexArray = *reinterpret_cast<NI::TArray<NI::Vector3*>**>(0x6CF7C4);
 
-		for (const auto& child : node->children) {
-			if (child) {
-				// Calculate for geometry.
-				if (child->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
-					auto asGeometry = static_cast<const NI::Geometry*>(child.get());
-
-					// Ignore particles.
-					if (asGeometry->isInstanceOfType(NI::RTTIStaticPtr::NiParticles)) {
-						continue;
-					}
-
-					// Add nearby vertices.
-					for (auto i = 0u; i < asGeometry->modelData->vertexCount; ++i) {
-						const auto vertex = &asGeometry->worldVertices[i];
-						if (std::abs(vertex->z - nearToZ) <= NEAR_THRESHOLD) {
-							gNearVertexArray->push_back(vertex);
-						}
-					}
-
-					continue;
-				}
-
-				// Recursively call for child nodes.
-				if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-					auto asNode = static_cast<const NI::Node*>(child.get());
-					Patch_FixDropToSurface_GetLowVertices(asNode, nearToZ);
-					continue;
-				}
+		auto processChild = [&](const NI::AVObject* child) {
+			if (!child) {
+				return;
 			}
+
+			// Calculate for geometry.
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiTriBasedGeom)) {
+				auto asGeometry = static_cast<const NI::Geometry*>(child);
+
+				// Ignore particles.
+				if (asGeometry->isInstanceOfType(NI::RTTIStaticPtr::NiParticles)) {
+					return;
+				}
+
+				// Add nearby vertices.
+				for (auto i = 0u; i < asGeometry->modelData->vertexCount; ++i) {
+					const auto vertex = &asGeometry->worldVertices[i];
+					if (std::abs(vertex->z - nearToZ) <= NEAR_THRESHOLD) {
+						gNearVertexArray->push_back(vertex);
+					}
+				}
+
+				return;
+			}
+
+			// Recursively call for child nodes.
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+				Patch_FixDropToSurface_GetLowVertices(child, nearToZ);
+				return;
+			}
+		};
+
+		// For NiSwitchNode, only process the active child. 
+		// The "UpdateOnlyActive" flag prevents updates on inactive children.
+		if (object->isInstanceOfType(NI::RTTIStaticPtr::NiSwitchNode)) {
+			const auto asSwitchNode = static_cast<const NI::SwitchNode*>(object);
+			const auto child = asSwitchNode->getActiveChild();
+			processChild(child);
+			return;
+		}
+
+		if (object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			const auto asNode = static_cast<const NI::Node*>(object);
+			for (const auto& child : asNode->children) {
+				processChild(child);
+			}
+			return;
 		}
 	}
 
@@ -944,6 +966,28 @@ namespace se::cs::dialog::render_window {
 		return 0;
 	}
 
+	static bool IsReferenceHidden(Reference* reference) {
+		auto nodeLayer = lw::getLayerByObject(reference);
+		return nodeLayer ? nodeLayer->isLayerHidden : false;
+	}
+
+	bool __stdcall CheckNodeHasHiddenFlag(NI::Node* node) {
+		if (!node) return false;
+		Reference* reference = node->getTes3Reference(false);
+		auto nodeLayer = lw::getLayerByObject(reference);
+		return nodeLayer ? nodeLayer->isLayerHidden : false;
+	}
+
+	void __fastcall Patch_SelectionBoxCheckReference(SelectionData* self, DWORD _EDX_, Reference* reference, bool updateVisuals) {
+		// Skip hidden references.
+		if (IsReferenceHidden(reference)) {
+			return;
+		}
+
+		// Call overwritten code.
+		self->addReference(reference, updateVisuals);
+	}
+
 	//
 	// Patch: Make clicking things near skinned objects not painful.
 	//
@@ -961,9 +1005,14 @@ namespace se::cs::dialog::render_window {
 
 		Reference* closestRef = nullptr;
 		auto closestDistance = std::numeric_limits<float>::max();
-		
+
 		for (auto& result : sgController->objectPick->results) {
-			if (result == nullptr) {
+			if (result == nullptr || result->object == nullptr) {
+				continue;
+			}
+
+			// Raycast should ignore hidden objects.
+			if (CheckNodeHasHiddenFlag(result->object->parentNode)) {
 				continue;
 			}
 
@@ -1086,6 +1135,20 @@ namespace se::cs::dialog::render_window {
 
 		const auto avObject = memory::getMainStructureFromOffset<NI::AVObject>(properties, offsetof(NI::AVObject, propertyNode));
 		avObject->attachProperty(prop);
+	}
+
+	//
+	// Patch: Prevent selecting hidden references.
+	//
+
+	static void __fastcall PatchPreventSelection(SelectionData* self, DWORD _EDX, Reference* reference, bool flag) {
+
+		// Skip soft-hidden objects.
+		auto nodeLayer = lw::getLayerByObject(reference);
+		if (nodeLayer ? nodeLayer->isLayerHidden : false) {
+			return;
+		}
+		self->addReference(reference, flag);
 	}
 
 	//
@@ -1355,38 +1418,27 @@ namespace se::cs::dialog::render_window {
 		UndoManager::get()->storeCheckpoint(UndoManager::Action::Moved);
 	}
 
-	void hideSelectedReferences() {
+	static void hideSelectedReferences() {
 		auto selectionData = SelectionData::get();
-		
-		for (auto target = selectionData->firstTarget; target; target = target->next) {
-			auto node = target->reference->sceneNode;
-			if (node) {
-				node->addExtraData(new NI::StringExtraData("xHID"));
-				node->setAppCulled(true);
-				node->update();
-			}
+
+		auto hiddenLayer = lw::getLayerById(HIDDEN_LAYER_ID);
+
+		hiddenLayer->moveSelectionToLayer();
+
+		if (!hiddenLayer->isLayerHidden)
+		{
+			hiddenLayer->isLayerHidden = true;
+			hiddenLayer->refreshObjects();
 		}
 
 		selectionData->clear();
-	}
 
-	void unhideNode(NI::Node* node) {
-		auto hideFlag = node->getStringDataWithValue("xHID");
-		if (hideFlag) {
-			node->removeExtraData(hideFlag);
-			node->setAppCulled(false);
-			node->update();
-		}
-
-		for (auto& child : node->children) {
-			if (child && child->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
-				unhideNode(static_cast<NI::Node*>(child.get()));
-			}
-		}
+		renderNextFrame();
 	}
 
 	void unhideAllReferences() {
-		unhideNode(SceneGraphController::get()->objectRoot);
+		auto hiddenLayer = lw::getLayerById(HIDDEN_LAYER_ID);
+		hiddenLayer->clearLayer();
 	}
 
 	void saveRenderStateToQuickStart() {
@@ -1594,6 +1646,7 @@ namespace se::cs::dialog::render_window {
 			RANDOMIZE_ROTATION_Z,
 			RANDOMIZE_SCALE,
 			RANDOMIZE_ROTATION_Z_AND_SCALE,
+			ASSIGN_TO_LAYER_BASE = 5000,
 		};
 
 		/*
@@ -1603,6 +1656,7 @@ namespace se::cs::dialog::render_window {
 		*   T: Hide/show water.
 		*	E: Change Reference Data
 		*	H: Hide Selection
+		*	L: Layer Management
 		*	R: Restore Hidden References
 		*	S: Set Snapping Axis
 		*	W: Toggle world axis rotation
@@ -1890,6 +1944,26 @@ namespace se::cs::dialog::render_window {
 		menuItem.dwTypeData = (LPSTR)"&Restore Hidden References";
 		InsertMenuItemA(menu, index++, TRUE, &menuItem);
 
+		MENUITEMINFO subMenuAssignLayer = {};
+		subMenuAssignLayer.cbSize = sizeof(MENUITEMINFO);
+		subMenuAssignLayer.hSubMenu = CreatePopupMenu();
+
+		for (size_t i = 0; i < lw::g_Layers.size(); ++i) {
+			auto layer = lw::g_Layers[i];
+			std::string name = (layer->layerName) ? *layer->layerName : "Unnamed";
+			std::string label = std::to_string(i + 1) + ": " + name;
+
+			AppendMenuA(subMenuAssignLayer.hSubMenu, MF_STRING, ASSIGN_TO_LAYER_BASE + layer->id, label.c_str());
+		}
+
+		menuItem.wID = RESERVED_NO_CALLBACK;
+		menuItem.fMask = MIIM_SUBMENU | MIIM_TYPE | MIIM_STATE;
+		menuItem.fType = MFT_STRING;
+		menuItem.fState = hasReferencesSelected ? MFS_ENABLED : MFS_DISABLED;
+		menuItem.hSubMenu = subMenuAssignLayer.hSubMenu;
+		menuItem.dwTypeData = (LPSTR)"Assign Selection to &Layer";
+		InsertMenuItemA(menu, index++, TRUE, &menuItem);
+
 		menuItem.wID = RESERVED_NO_CALLBACK;
 		menuItem.fMask = MIIM_FTYPE | MIIM_ID;
 		menuItem.fType = MFT_SEPARATOR;
@@ -2064,12 +2138,25 @@ namespace se::cs::dialog::render_window {
 			toggleWaterShown();
 			break;
 		default:
-			log::stream << "Unknown render window context menu ID " << result << " used!" << std::endl;
+			if (result >= ASSIGN_TO_LAYER_BASE && result < ASSIGN_TO_LAYER_BASE + MAX_LAYERS) {
+				size_t layerId = result - ASSIGN_TO_LAYER_BASE;
+				auto targetLayer = lw::getLayerById(layerId);
+				if (targetLayer) {
+					targetLayer->moveSelectionToLayer();
+				}
+			}
+			else {
+				log::stream << "Unknown render window context menu ID " << result << " used!" << std::endl;
+			}
+			break;
 		}
 
 		// Cleanup our menus.
-		DestroyMenu(menu);
+		DestroyMenu(subMenuAssignLayer.hSubMenu);
 		DestroyMenu(subMenuSnappingAxis.hSubMenu);
+		DestroyMenu(subMenuAlignReferences.hSubMenu);
+		DestroyMenu(subMenuReferenceData.hSubMenu);
+		DestroyMenu(menu);
 
 		// We also stole paint stuff, so repaint.
 		SendMessage(hWndRenderWindow, WM_PAINT, 0, 0);
@@ -2241,10 +2328,27 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
+	constexpr UINT layerHotkeyTimer = 0x418u;
+	static int g_LayerInputAccumulator = 0;
+	static bool g_LayerInputModeOverlay = false; // false = hidden, true = overlay
+
 	void PatchDialogProc_BeforeTimer(DialogProcContext& context) {
 		// Fixup window capture if we've lost it when panning.
 		if (gIsPanning::get() && GetCapture() != gRenderWindowHandle::get()) {
 			SetCapture(gRenderWindowHandle::get());
+		}
+
+		if (context.getWParam() == layerHotkeyTimer) {
+			KillTimer(context.getWindowHandle(), layerHotkeyTimer);
+
+			if (g_LayerInputAccumulator > 0) {
+				size_t layerIndex = static_cast<size_t>(g_LayerInputAccumulator) - 1;
+
+				lw::toggleLayerVisuals(layerIndex, g_LayerInputModeOverlay);
+			}
+
+			g_LayerInputAccumulator = 0;
+			context.setResult(TRUE);
 		}
 	}
 
@@ -2335,10 +2439,33 @@ namespace se::cs::dialog::render_window {
 
 	void PatchDialogProc_BeforeKeyDown(DialogProcContext& context) {
 		using windows::isControlDown;
+		using windows::isShiftDown;
 
 		const auto landscapeEditWindow = landscape_edit_settings_window::gWindowHandle::get();
+		const auto vkCode = context.getKeyVirtualCode();
 
-		switch (context.getKeyVirtualCode()) {
+		if (vkCode >= '0' && vkCode <= '9') {
+			bool ctrl = isControlDown();
+			bool shift = isShiftDown();
+
+			if (ctrl || shift) {
+				// Reset accumulator if switching modes or starting new sequence
+				if (g_LayerInputAccumulator == 0) {
+					g_LayerInputModeOverlay = shift;
+				}
+
+				int digit = vkCode - '0';
+				g_LayerInputAccumulator = (g_LayerInputAccumulator * 10) + digit;
+
+				// Reset the timer to wait for next digit
+				SetTimer(context.getWindowHandle(), layerHotkeyTimer, 400, NULL);
+
+				context.setResult(TRUE);
+				return;
+			}
+		}
+
+		switch (vkCode) {
 		case VK_F2:
 			PatchDialogProc_BeforeKeyDown_F2(context);
 			break;
@@ -2610,6 +2737,9 @@ namespace se::cs::dialog::render_window {
 		genCallEnforced(0x45F4ED, 0x4015A0, reinterpret_cast<DWORD>(PatchFixMaterialPropertyColors));
 		genCallEnforced(0x45F626, 0x4015A0, reinterpret_cast<DWORD>(PatchAddBlankTexturingProperty));
 
+		// Prevent selecting hidden objects.
+		genJumpEnforced(0x403C92, 0x546750, reinterpret_cast<DWORD>(PatchPreventSelection));
+
 		// Patch: Add scale information to status window.
 		genCallEnforced(0x45C962, 0x404881, reinterpret_cast<DWORD>(Patch_ExtendReferenceStatusData));
 
@@ -2623,5 +2753,8 @@ namespace se::cs::dialog::render_window {
 		// Patch: Extend the selection widget to a full NiNode on references.
 		genJumpEnforced(0x40235B, 0x540D50, &Reference::createSelectionWidget);
 
+		// Patch: Prevent selecting soft hidden objects
+		genCallEnforced(0x4682D4, 0x403C92, reinterpret_cast<DWORD>(Patch_SelectionBoxCheckReference));
+		genCallEnforced(0x468341, 0x403C92, reinterpret_cast<DWORD>(Patch_SelectionBoxCheckReference));
 	}
 }

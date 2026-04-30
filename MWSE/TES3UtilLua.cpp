@@ -457,6 +457,7 @@ namespace mwse::lua {
 		const auto mobilePlayer = worldController->getMobilePlayer();
 		const auto defaultSituation = mobilePlayer && mobilePlayer->getFlagInCombat() ? TES3::MusicSituation::Combat : TES3::MusicSituation::Explore;
 		const auto situation = (TES3::MusicSituation)getOptionalParam<int>(params, "situation", (int)defaultSituation);
+		mwse::lua::event::MusicChangeTrackEvent::ms_Context = "lua";
 
 		if (!worldController->selectNextMusicTrack(situation)) {
 			return false;
@@ -2761,18 +2762,21 @@ namespace mwse::lua {
 		auto mobilePlayer = TES3::WorldController::get()->getMobilePlayer();
 		if (mobilePlayer && mobile == mobilePlayer && getOptionalParam(params, "updateGUI", true)) {
 			if (spell->isActiveCast()) {
-				// Deselect if currently selected.
-				if (mobilePlayer->currentSpell.source.asSpell == spell) {
-					TES3_UI_MenuMagic_deselectMagic();
-				}
+				const auto magicMenu = TES3::UI::findMenu("MenuMagic");
+				if (magicMenu) {
+					// Deselect if currently selected.
+					if (mobilePlayer->currentSpell.source.asSpell == spell) {
+						TES3_UI_MenuMagic_deselectMagic();
+					}
 
-				// Magic menu spell list update.
-				if (spell->castType == TES3::SpellCastType::Spell) {
-					TES3_UI_removeSpellFromGUIList(spell);
-				}
-				else {
-					// Full list refresh is required for powers UI to update.
-					TES3_UI_MenuMagic_refreshAll(spell);
+					// Magic menu spell list update.
+					if (spell->castType == TES3::SpellCastType::Spell) {
+						TES3_UI_removeSpellFromGUIList(spell);
+					}
+					else {
+						// Full list refresh is required for powers UI to update.
+						TES3_UI_MenuMagic_refreshAll(spell);
+					}
 				}
 			}
 			else {
@@ -2966,7 +2970,7 @@ namespace mwse::lua {
 		return cell;
 	}
 
-	TES3::Reference* createReference(sol::table params) {
+	static TES3::Reference* createReference(sol::table params) {
 		auto dataHandler = TES3::DataHandler::get();
 
 		// Get the object we are going to create a reference for.
@@ -3020,30 +3024,8 @@ namespace mwse::lua {
 			reference->setScale(scale.value());
 		}
 
-		// Did we just make an actor? If so we need to add it to the mob manager.
-		if (object->objectType == TES3::ObjectType::Creature || object->objectType == TES3::ObjectType::NPC) {
-			TES3::WorldController::get()->mobManager->addMob(reference);
-			auto mact = reference->getAttachedMobileActor();
-			if (mact && mact->isActor()) {
-				mact->enterLeaveSimulation(true);
-			}
-		}
-		// Activators, containers, and statics need collision.
-		else if (object->objectType == TES3::ObjectType::Activator || object->objectType == TES3::ObjectType::Container || object->objectType == TES3::ObjectType::Static) {
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
-		// Lights need to be configured.
-		else if (object->objectType == TES3::ObjectType::Light) {
-			dataHandler->setDynamicLightingForReference(reference);
-
-			// Non-carryable lights also need collision.
-			if (!static_cast<TES3::Light*>(object)->getCanCarry()) {
-				dataHandler->updateCollisionGroupsForActiveCells();
-			}
-		}
-
-		// Ensure the reference receives scene lighting.
-		dataHandler->updateLightingForReference(reference);
+		const auto updateCollisions = getOptionalParam<bool>(params, "updateCollisionGroups", true);
+		reference->handleUpdate(false, updateCollisions);
 
 		// Make sure everything is set as modified.
 		reference->setObjectModified(true);

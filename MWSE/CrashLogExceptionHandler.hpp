@@ -622,7 +622,7 @@ namespace CrashLogger {
 			mwse_log << ("%s", fmt::format("Processed in {:d} ms, printed in {:d} ms", (long)timeProcessing.count(), (long)timePrinting.count()).c_str());
 		}
 
-		//Logger::Copy();
+		mwse::log::getLog().flush();
 
 		SymCleanup(GetCurrentProcess());
 	};

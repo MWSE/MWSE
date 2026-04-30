@@ -34,6 +34,7 @@ Each function definition is just a regular Lua table. The following fields are a
 | ----------- | -------- | ----------- |
 | type        | `string` |  This flag is used when generating syntax highlighting files. The type should always be `"function"` for function definitions. |
 | description | `string` | The description for the function. |
+| link        | `string` | This will add provided link with the "Official documentation." text after the function's description on built Markdown page. |
 | generics    | `table`  | The generics available as types for arguments and return values. |
 | arguments   | `table`  | The arguments the function accepts. |
 | examples    | `table`  | A table with entries that are the names of the files included as examples. Each entry is a table itself with one available field, `title`. The title will be shown as the title of the example on the documentation page. |

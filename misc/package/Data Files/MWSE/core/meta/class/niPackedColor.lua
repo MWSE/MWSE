@@ -15,7 +15,7 @@
 --- @field red integer Alias for the red value of the color.
 niPackedColor = {}
 
---- Creates a new niPackedColor object.
+--- Creates a new niPackedColor object. This function must be given 0, 3, or 4 arguments.
 --- @param r? integer *Default*: `0`. The red value for the color.
 --- @param g? integer *Default*: `0`. The green value for the color.
 --- @param b? integer *Default*: `0`. The blue value for the color.

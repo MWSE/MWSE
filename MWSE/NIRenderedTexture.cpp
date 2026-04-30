@@ -6,20 +6,20 @@
 #include "TES3WorldController.h"
 
 namespace NI {
-	const auto NI_RenderedTexture_create = reinterpret_cast<RenderedTexture* (__cdecl*)(unsigned int, unsigned int, Renderer*, Texture::FormatPrefs*)>(0x6DC090);
-	RenderedTexture* RenderedTexture::create(unsigned int width, unsigned int height) {
+	const auto NI_RenderedTexture_create = reinterpret_cast<RenderedTexture* (__cdecl*)(unsigned int, unsigned int, Renderer*, const Texture::FormatPrefs*)>(0x6DC090);
+	Pointer<RenderedTexture> RenderedTexture::create(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs) {
 		auto renderer = TES3::WorldController::get()->renderer;
-		auto prefs = Texture::FormatPrefs::DEFAULT_PREFS;
-		auto texture = NI_RenderedTexture_create(width, height, renderer, prefs);
+		const auto prefsVal = prefs.value_or(&Texture::FormatPrefs::DEFAULT_LUA_PREFS);
+		auto texture = NI_RenderedTexture_create(width, height, renderer, prefsVal);
 		return texture;
 	}
 
 	//
 	// Copies the render target contents from the GPU into CPU accessible pixelData.
 	//
+
 	bool RenderedTexture::readback(NI::PixelData* pixelData) {
 		auto renderer = static_cast<NI::DX8Renderer*>(TES3::WorldController::get()->renderer);
-		bool success = false;
 
 		if (pixelData == nullptr) {
 			return false;
@@ -35,23 +35,46 @@ namespace NI {
 		IDirect3DSurface8* readbackSurface = nullptr;
 
 		// Create system memory surface to copy to.
-		D3DSURFACE_DESC surfaceDesc;
 		rtTexture->GetSurfaceLevel(0, &rtSurface);
-		rtSurface->GetDesc(&surfaceDesc);
-		renderer->d3dDevice->CreateImageSurface(width, height, surfaceDesc.Format, &readbackSurface);
+		const auto desiredFormat = pixelData->pixelFormat.getD3DFormat();
+		if (renderer->d3dDevice->CreateImageSurface(width, height, desiredFormat, &readbackSurface) != D3D_OK) {
+			rtSurface->Release();
+			return false;
+		}
 
-		if (renderer->d3dDevice->CopyRects(rtSurface, nullptr, 0, readbackSurface, nullptr) == D3D_OK) {
-			D3DLOCKED_RECT lock;
-			if (readbackSurface->LockRect(&lock, nullptr, D3DLOCK_NOSYSLOCK | D3DLOCK_READONLY) == D3D_OK) {
-				// Copy from system memory surface to pixelData.
-				memcpy(pixelData->pixels, lock.pBits, pixelData->offsets[1] - pixelData->offsets[0]);
-				success = true;
+		if (renderer->d3dDevice->CopyRects(rtSurface, nullptr, 0, readbackSurface, nullptr) != D3D_OK) {
+			readbackSurface->Release();
+			rtSurface->Release();
+			return false;
+		}
+
+		D3DLOCKED_RECT lock;
+		if (readbackSurface->LockRect(&lock, nullptr, D3DLOCK_NOSYSLOCK | D3DLOCK_READONLY) != D3D_OK) {
+			readbackSurface->Release();
+			rtSurface->Release();
+			return false;
+		}
+
+		// Copy from system memory surface to pixelData.
+		memcpy(pixelData->pixels, lock.pBits, pixelData->offsets[1] - pixelData->offsets[0]);
+		readbackSurface->Release();
+		readbackSurface = nullptr;
+		rtSurface->Release();
+		rtSurface = nullptr;
+
+		// For some reason the game needs to swap B and R pixels.
+		// See paper doll code, or around 0x42F939.
+		if (desiredFormat == D3DFMT_A8R8G8B8) {
+			const auto pixels = reinterpret_cast<PixelRGBA*>(pixelData->pixels);
+			const auto pixelCount = pixelData->getWidth() * pixelData->getHeight();
+			for (auto i = 0u; i < pixelCount; ++i) {
+				auto& pixel = pixels[i];
+				std::swap(pixel.r, pixel.b);
 			}
 		}
 
-		readbackSurface->Release();
-		rtSurface->Release();
-
-		return success;
+		return true;
 	}
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::RenderedTexture)

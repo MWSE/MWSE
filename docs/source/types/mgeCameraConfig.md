@@ -35,7 +35,7 @@ The active world render distance in world units. This is the non-distant part th
 ### `shakeAcceleration`
 <div class="search_terms" style="display: none">shakeacceleration</div>
 
-Camera shake acceleration. Camera shake must be enabled to see an effect.
+Camera shake acceleration. Camera shake must be enabled to see an effect. The `shakeMagnitude` is increased by this value each second.
 
 **Returns**:
 
@@ -57,7 +57,7 @@ Set if camera shake is active.
 ### `shakeMagnitude`
 <div class="search_terms" style="display: none">shakemagnitude</div>
 
-Camera shake magnitude. Camera shake must be enabled to see an effect.
+Camera shake magnitude in range [0, 100]. Camera shake must be enabled to see an effect.
 
 **Returns**:
 

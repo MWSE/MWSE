@@ -127,6 +127,9 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["getCellBufferSizes"] = &TES3::DataHandler::getCellBufferSize;
+			usertypeDefinition["getLandHeightAtPosition"] = &TES3::DataHandler::getLandHeightAtPosition_lua;
+			usertypeDefinition["getLandShapeAtPosition"] = &TES3::DataHandler::getLandShapeAtPosition;
+			usertypeDefinition["getLandNormalAtPosition"] = &TES3::DataHandler::getLandNormalAtPosition_lua;
 			usertypeDefinition["updateCollisionGroupsForActiveCells"] = &TES3::DataHandler::updateCollisionGroupsForActiveCells;
 			usertypeDefinition["updateLightingForExteriorCells"] = &TES3::DataHandler::updateLightingForExteriorCells;
 

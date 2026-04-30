@@ -14,7 +14,7 @@ namespace NI {
 		// Custom functions.
 		//
 
-		int getSwitchIndex();
+		int getSwitchIndex() const;
 		void setSwitchIndex(int index);
 		Pointer<AVObject> getActiveChild() const;
 		int getChildIndexByName(const char*) const;

@@ -23,6 +23,7 @@
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
+    <ClInclude Include="LuaMagicAbsorbEvent.h" />
     <ClInclude Include="LuaMagicReflectedEvent.h" />
     <ClInclude Include="LuaMagicReflectEvent.h" />
     <ClInclude Include="LuaMagicSelectionChangedEvent.h" />
@@ -52,6 +53,7 @@
     <ClInclude Include="LuaActiveMagicEffectIconsUpdatedEvent.h" />
     <ClInclude Include="LuaAttackHitEvent.h" />
     <ClInclude Include="LuaCalcBlockChanceEvent.h" />
+    <ClInclude Include="LuaCalcEnchantingSpellPointCostEvent.h" />
     <ClInclude Include="LuaCalcEnchantmentPriceEvent.h" />
     <ClInclude Include="LuaCameraControlEvent.h" />
     <ClInclude Include="LuaConsoleReferenceChangedEvent.h" />
@@ -574,6 +576,7 @@
     <ClCompile Include="LuaButtonPressedEvent.cpp" />
     <ClCompile Include="LuaCalcArmorRatingEvent.cpp" />
     <ClCompile Include="LuaCalcBlockChanceEvent.cpp" />
+    <ClCompile Include="LuaCalcEnchantingSpellPointCostEvent.cpp" />
     <ClCompile Include="LuaCalcChargenStatsEvent.cpp" />
     <ClCompile Include="LuaCalcEnchantmentPriceEvent.cpp" />
     <ClCompile Include="LuaCalcHitArmorPieceEvent.cpp" />
@@ -656,6 +659,7 @@
     <ClCompile Include="LuaLoadGameEvent.cpp" />
     <ClCompile Include="LuaMagicCastedEvent.cpp" />
     <ClCompile Include="LuaMagicEffectRemovedEvent.cpp" />
+    <ClCompile Include="LuaMagicAbsorbEvent.cpp" />
     <ClCompile Include="LuaMagicReflectedEvent.cpp" />
     <ClCompile Include="LuaMagicReflectEvent.cpp" />
     <ClCompile Include="LuaMagicSelectionChangedEvent.cpp" />
@@ -773,6 +777,7 @@
     <ClCompile Include="NIParticlesLua.cpp" />
     <ClCompile Include="NIParticleSystemController.cpp" />
     <ClCompile Include="NIPathController.cpp" />
+    <ClCompile Include="NIPixelFormat.cpp" />
     <ClCompile Include="NIProperty.cpp" />
     <ClCompile Include="NIQuaternion.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
@@ -1300,6 +1305,14 @@
     <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+    <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
+    <BuildDateHeaderContents>#pragma once&#xD;&#xA;&#xD;&#xA;#define MWSE_BUILD_DATE $(BuildDate)&#xD;&#xA;</BuildDateHeaderContents>
+  </PropertyGroup>
+  <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
+    <WriteLinesToFile File="$(BuildDateHeader)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
@@ -1338,14 +1351,6 @@
       <Command>copy /y "$(TargetDir)MWSE.dll" "$(MorrowindDir)MWSE.dll"
 copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
-echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -1377,14 +1382,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <Command>copy /y "$(TargetDir)MWSE.dll" "$(MorrowindDir)MWSE.dll"
 copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
-echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

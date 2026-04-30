@@ -3,7 +3,7 @@
 #include "NiLinesData.h"
 
 namespace NI {
-	LinesData* Lines::getModelData() const {
+	Pointer<LinesData> Lines::getModelData() const {
 		return static_cast<LinesData*>(modelData.get());
 	}
 }

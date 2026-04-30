@@ -18,7 +18,6 @@ namespace mwse::lua {
 		{
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::SourceTexture::FormatPrefs>("niFormatPrefs");
-			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
 			usertypeDefinition["alphaLayout"] = &NI::SourceTexture::FormatPrefs::alphaFormat;

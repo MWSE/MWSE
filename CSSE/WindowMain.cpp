@@ -20,6 +20,7 @@
 
 #include "DialogRenderWindow.h"
 #include "DialogObjectWindow.h"
+#include "DialogLayersWindow.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowWidgets.h"
@@ -29,6 +30,7 @@
 
 #include "MathUtil.h"
 #include "PathUtil.h"
+#include "StringUtil.h"
 
 #include "CSSE.h"
 #include "resource.h"
@@ -36,6 +38,9 @@
 #include "DialogProcContext.h"
 
 namespace se::cs::window::main {
+
+	constexpr auto LOG_STARTUP_PERFORMANCE_RESULTS = false;
+	const auto initializationTimer = std::chrono::high_resolution_clock::now();
 
 	struct ObjectEditLParam {
 		ObjectType::ObjectType objectType; // 0x0
@@ -402,21 +407,42 @@ namespace se::cs::window::main {
 	// Patch: Throttle UI status updates.
 	//
 
-	static auto last2ndClassUpdateTime = std::chrono::milliseconds::zero();
-	const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, LPARAM)>(0x46E680);
-	void __cdecl PatchThrottleMessageUpdate(WPARAM type, LPARAM lParam) {
-		if (type == 2) {
-			const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch());
-			const auto msSinceLastUpdate = now - last2ndClassUpdateTime;
-			if (msSinceLastUpdate.count() < 20) {
-				return;
-			}
-			last2ndClassUpdateTime = now;
+	constexpr auto STATUS_WINDOW_CELL_COUNT = 5u;
+	static std::array<std::string, STATUS_WINDOW_CELL_COUNT> cachedStatusWindowText;
+	static std::optional<std::string> bufferedIndex2Text;
+
+	const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, const char*)>(0x46E680);
+
+	static void UpdateStatusWindow(WPARAM index, const char* text, bool buffer2ndText) {
+		// Invalid array access. Also doesn't make any sense. Also also won't do anything anyway.
+		if (index >= STATUS_WINDOW_CELL_COUNT) {
+			return;
 		}
-		else {
-			last2ndClassUpdateTime = std::chrono::milliseconds::zero();
+
+		// Only update the 2nd status text when another text has updated.
+		if (index == 2 && buffer2ndText) {
+			bufferedIndex2Text = text;
+			return;
 		}
-		TES3CS_UpdateStatusMessage(type, lParam);
+
+		// Make sure the text is actually going to change.
+		auto& previousText = cachedStatusWindowText[index];
+		if (se::string::equal(previousText, text)) {
+			return;
+		}
+		previousText = text;
+
+		TES3CS_UpdateStatusMessage(index, text);
+
+		// If we have any buffered 2nd-cell text, we can update it now.
+		if (bufferedIndex2Text) {
+			UpdateStatusWindow(2, bufferedIndex2Text.value().c_str(), false);
+			bufferedIndex2Text.reset();
+		}
+	}
+
+	static void __cdecl PatchThrottleMessageUpdate(WPARAM index, const char* text) {
+		UpdateStatusWindow(index, text, true);
 	}
 
 	//
@@ -465,6 +491,12 @@ namespace se::cs::window::main {
 			rotationMatrix.fromEulerXYZ(qsRot[0], qsRot[1], qsRot[2]);
 			renderController->node->setLocalRotationMatrix(&rotationMatrix);
 			renderController->node->update();
+
+			// Finish measure of initialization time.
+			if constexpr (LOG_STARTUP_PERFORMANCE_RESULTS) {
+				const auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
+				log::stream << "Total main window startup time: " << timeToInitialize.count() << "ms" << std::endl;
+			}
 		}
 
 		isQuickStarting = false;
@@ -587,6 +619,9 @@ namespace se::cs::window::main {
 			break;
 		case MENU_ID_CSSE_ABOUT:
 			showAboutDialog(hWnd);
+			break;
+		case MENU_ID_VIEW_LAYERS_WINDOW:
+			dialog::layer_window::toggleLayersWindow(IsIconic(dialog::layer_window::hLayersWnd));
 			break;
 		}
 	}
@@ -916,6 +951,12 @@ namespace se::cs::window::main {
 		newExtenderMenu.hSubMenu = createExtenderMenu();
 		newExtenderMenu.dwTypeData = (char*)"C&SSE";
 		InsertMenuItemA(menu, 6, TRUE, &newExtenderMenu);
+
+		// Add Layers Window to the View menu.
+		auto viewMenu = GetSubMenu(menu, 2);
+		if (viewMenu) {
+			InsertMenuA(viewMenu, 3, MF_BYPOSITION | MF_STRING, MENU_ID_VIEW_LAYERS_WINDOW, "&Layers Window");
+		}
 	}
 
 	void PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(DialogProcContext& context) {
@@ -981,6 +1022,11 @@ namespace se::cs::window::main {
 			PatchDialogProc_AfterCommand_TestInOpenMW(context);
 			break;
 		}
+
+		if (dialog::layer_window::hLayersWnd) {
+			auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+			dialog::layer_window::forceToggleLayersWindow(viewMenu);
+		}
 	}
 
 	void PatchDialogProc_AfterSave(DialogProcContext& context) {
@@ -1009,11 +1055,19 @@ namespace se::cs::window::main {
 		SendMessage(statusWindow, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
 	}
 
+	void PatchDialogProc_BeforeInitMenuPopup(DialogProcContext& context) {
+		auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+		dialog::layer_window::refreshLayersMenuItem(viewMenu);
+	}
+
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x444590);
 
 		// Handle pre-patches.
 		switch (msg) {
+		case WM_INITMENUPOPUP:
+			PatchDialogProc_BeforeInitMenuPopup(context);
+			break;
 		case WM_COMMAND:
 			PatchDialogProc_BeforeCommand(context);
 			break;
@@ -1058,6 +1112,11 @@ namespace se::cs::window::main {
 		using memory::genJumpEnforced;
 		using memory::genCallEnforced;
 		using memory::genCallUnprotected;
+
+		// If we're profiling, suppress message windows.
+		if (LOG_STARTUP_PERFORMANCE_RESULTS) {
+			memory::ExternalGlobal<bool, 0x6D0B6D>::set(true);
+		}
 
 		// Patch: Throttle UI status updates.
 		genJumpEnforced(0x404881, 0x46E680, reinterpret_cast<DWORD>(PatchThrottleMessageUpdate));

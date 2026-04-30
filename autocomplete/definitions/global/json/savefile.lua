@@ -4,6 +4,6 @@ return {
 	arguments = {
 		{ name = "fileName", type = "string" },
 		{ name = "object", type = "table" },
-		{ name = "config", type = "table", optional = true },
+		{ name = "config", type = "jsonConfig", optional = true },
 	},
 }

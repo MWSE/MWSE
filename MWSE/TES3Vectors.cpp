@@ -152,6 +152,8 @@ namespace TES3 {
 	const Vector3 Vector3::UNIT_NEG_Z = { 0.0f, 0.0f, -1.0f };
 	const Vector3 Vector3::ONES = { 1.0f, 1.0f, 1.0f };
 	const Vector3 Vector3::ZEROES = { 0.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::MIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	const Vector3 Vector3::MAX = { FLT_MAX, FLT_MAX, FLT_MAX };
 
 	Vector3::Vector3() :
 		x(0.0f),
@@ -515,9 +517,9 @@ namespace TES3 {
 	const auto TES3_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(Matrix33*, const Matrix33*)>(0x6E7ED0);
 	const auto TES3_Matrix33_addMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E7F60);
 	const auto TES3_Matrix33_subtractMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E8000);
-	const auto TES3_Matrix33_multiplyMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E80A0);
+	const auto TES3_Matrix33_multiplyMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(const Matrix33*, Matrix33*, const Matrix33*)>(0x6E80A0);
 	const auto TES3_Matrix33_multiplyVector = reinterpret_cast<Vector3 * (__thiscall*)(const Matrix33*, Vector3*, const Vector3*)>(0x6E8230);
-	const auto TES3_Matrix33_multiplyScalar = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, float)>(0x6E81B0);
+	const auto TES3_Matrix33_multiplyScalar = reinterpret_cast<Matrix33 * (__thiscall*)(const Matrix33*, Matrix33*, float)>(0x6E81B0);
 
 	const auto TES3_Matrix33_toIdentity = reinterpret_cast<void(__thiscall*)(Matrix33*)>(0x6E7CF0);
 	const auto TES3_Matrix33_toRotationX = reinterpret_cast<void(__thiscall*)(Matrix33*, float)>(0x6E7D20);
@@ -593,7 +595,7 @@ namespace TES3 {
 		return result;
 	}
 
-	Matrix33 Matrix33::operator*(const Matrix33& matrix) {
+	Matrix33 Matrix33::operator*(const Matrix33& matrix) const {
 		Matrix33 result;
 		TES3_Matrix33_multiplyMatrix(this, &result, &matrix);
 		return result;
@@ -605,7 +607,7 @@ namespace TES3 {
 		return result;
 	}
 
-	Matrix33 Matrix33::operator*(float scalar) {
+	Matrix33 Matrix33::operator*(float scalar) const {
 		Matrix33 result;
 		TES3_Matrix33_multiplyScalar(this, &result, scalar);
 		return result;
@@ -1003,6 +1005,16 @@ namespace TES3 {
 		point.x = std::clamp(point.x, min.x, max.x);
 		point.y = std::clamp(point.y, min.y, max.y);
 		point.z = std::clamp(point.z, min.z, max.z);
+	}
+
+	void BoundingBox::initialize() {
+		minimum = Vector3::MAX;
+		maximum = Vector3::MIN;
+	}
+
+	bool BoundingBox::hasUninitializedData() const {
+		return minimum.x == Vector3::MAX.x || minimum.y == Vector3::MAX.y || minimum.z == Vector3::MAX.z
+			|| maximum.x == Vector3::MIN.x || maximum.y == Vector3::MIN.y || maximum.z == Vector3::MIN.z;
 	}
 
 	//

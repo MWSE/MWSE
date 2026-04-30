@@ -249,6 +249,9 @@ The distance to the player. Updated every frame when the mobile is in an active 
 
 A vector that represents the 3D position of the object.
 
+!!! info
+	For actors, this is the point between the actor's feet.
+
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))

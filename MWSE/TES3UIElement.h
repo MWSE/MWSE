@@ -42,7 +42,7 @@ namespace TES3::UI {
 		int unknown_0x84;
 		NI::Pointer<NI::Node> sceneNode; // 0x88
 		void* extraData; // 0x8C
-		NI::Pointer<NI::SourceTexture> texture; // 0x90
+		NI::Pointer<NI::Texture> texture; // 0x90
 		int cached_offsetX; // 0x94
 		int cached_offsetY; // 0x98
 		int nodeMinX; // 0x9C
@@ -291,8 +291,8 @@ namespace TES3::UI {
 		void setRepeatKeys(bool value);
 		bool getScaleMode() const;
 		void setScaleMode(bool value);
-		NI::Pointer<NI::SourceTexture> getTexture() const;
-		void setTexture(NI::Pointer<NI::SourceTexture> value);
+		NI::Pointer<NI::Texture> getTexture() const;
+		void setTexture(NI::Texture* value);
 		bool getVisible() const;
 		void setVisible_lua(sol::optional<bool> value = true);
 		int getWidth() const;

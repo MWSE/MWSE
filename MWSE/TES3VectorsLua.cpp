@@ -186,7 +186,10 @@ namespace mwse::lua {
 			usertypeDefinition["min"] = &TES3::BoundingBox::minimum;
 
 			// Basic function binding.
+			usertypeDefinition["clampPoint"] = &TES3::BoundingBox::clampPoint;
 			usertypeDefinition["copy"] = &TES3::BoundingBox::copy;
+			usertypeDefinition["hasUninitializedData"] = &TES3::BoundingBox::hasUninitializedData;
+			usertypeDefinition["initialize"] = &TES3::BoundingBox::initialize;
 			usertypeDefinition["vertices"] = &TES3::BoundingBox::vertices;
 		}
 
@@ -205,9 +208,9 @@ namespace mwse::lua {
 			usertypeDefinition[sol::meta_function::subtraction] = &TES3::Matrix33::operator-;
 			usertypeDefinition[sol::meta_function::equal_to] = &TES3::Matrix33::operator==;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<TES3::Matrix33(const float)>(&TES3::Matrix33::operator*),
+				sol::resolve<TES3::Matrix33(const float) const>(&TES3::Matrix33::operator*),
 				sol::resolve<TES3::Vector3(const TES3::Vector3&) const>(&TES3::Matrix33::operator*),
-				sol::resolve<TES3::Matrix33(const TES3::Matrix33&)>(&TES3::Matrix33::operator*)
+				sol::resolve<TES3::Matrix33(const TES3::Matrix33&) const>(&TES3::Matrix33::operator*)
 			);
 
 			// Operator overloading.

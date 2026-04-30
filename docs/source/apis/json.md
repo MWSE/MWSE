@@ -43,6 +43,8 @@ Decode string into a table.
 	If the encoded table had any `string` indices, then the `table` returned by this function will have no `number` indices. For example, `[1]` could have been converted to `["1"]` in the encoding process.
 
 
+[Official documentation](http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation).
+
 ```lua
 local result = json.decode(s, position, nullValue)
 ```
@@ -68,6 +70,8 @@ Create a string representing the object. Object can be a `table`, `string`, `num
 	If the encoded table has any `string` indices, then this function will convert all `number` indices to `string` indices. For example, `[1]` could be converted to `["1"]`. This should be taken into account when loading/decoding json files.
 
 
+[Official documentation](http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation).
+
 ```lua
 local result = json.encode(object, state)
 ```
@@ -75,7 +79,7 @@ local result = json.encode(object, state)
 **Parameters**:
 
 * `object` (table)
-* `state` (table?)
+* `state` ([jsonConfig](../types/jsonConfig.md)): *Optional*.
 
 **Returns**:
 
@@ -112,6 +116,8 @@ local result = json.loadfile(fileName)
 
 Quote a UTF-8 string and escape critical characters using JSON escape sequences. This function is only necessary when you build your own __tojson functions.
 
+[Official documentation](http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation).
+
 ```lua
 local result = json.quotestring(s)
 ```
@@ -139,5 +145,5 @@ json.savefile(fileName, object, config)
 
 * `fileName` (string)
 * `object` (table)
-* `config` (table): *Optional*.
+* `config` ([jsonConfig](../types/jsonConfig.md)): *Optional*.
 

@@ -533,7 +533,7 @@ local log = mwseLogger.new({ modName = ..., moduleName = ..., level = ..., logTo
 	* `outputFile` (boolean, string): *Default*: `false`. The path of the output file to write log messages in. This path is taken relative to `Data Files/MWSE/logs/`. If not provided, log messages will be written to `MWSE.log`. If `true`, then the `modDir` will be used as the output path.
 	* `includeTimestamp` (boolean): *Default*: `true`. Should timestamps be included in logging messages? The timestamps are relative to the time that the game was launched.
 	* `abbreviateHeader` (boolean): *Default*: `false`. Should the headers be abbreviated?
-	* `formatter` (fun(self: Logger, record: [mwseLoggerRecord](../types/mwseLoggerRecord.md), ...: string|any|fun(...)): string): *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
+	* `formatter` (fun(self: [mwseLogger](../types/mwseLogger.md), record: [mwseLoggerRecord](../types/mwseLoggerRecord.md), ...: string|any|fun(...)): string): *Optional*. A custom formatter. This lets you customize how your logging messages are formatted. If not provided, the default formatter will be used.
 
 **Returns**:
 
