@@ -6,6 +6,7 @@
 #include "TES3Util.h"
 #include "CodePatchUtil.h"
 #include "PatchUtil.h"
+#include "TES3VoiceStreamer.h"
 #include "MWSEDefs.h"
 #include "BuildDate.h"
 
@@ -184,6 +185,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		// Do thread-specific cleanup.
 		break;
 	case DLL_PROCESS_DETACH:
+		// Stop the voice-decode worker before the engine starts tearing down
+		// DSound / DataHandler — otherwise an in-flight LoadSoundFile_Orig on
+		// the worker can fault on its way out.
+		mwse::patch::voice::shutdown();
+
 		// Unhook Lua interface.
 		mwse::lua::LuaManager::getInstance().cleanup();
 		break;

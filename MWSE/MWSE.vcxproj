@@ -543,6 +543,7 @@
     <ClInclude Include="UIUtil.h" />
     <ClInclude Include="UTF8Convert.h" />
     <ClInclude Include="TES3VFXManager.h" />
+    <ClInclude Include="TES3VoiceStreamer.h" />
     <ClInclude Include="VirtualMachine.h" />
     <ClInclude Include="VMExecuteInterface.h" />
     <ClInclude Include="VMHookInterface.h" />
@@ -1012,6 +1013,7 @@
     <ClCompile Include="TES3VectorsLua.cpp" />
     <ClCompile Include="TES3VFXManager.cpp" />
     <ClCompile Include="TES3VFXManagerLua.cpp" />
+    <ClCompile Include="TES3VoiceStreamer.cpp" />
     <ClCompile Include="TES3WaterController.cpp" />
     <ClCompile Include="TES3WaterControllerLua.cpp" />
     <ClCompile Include="TES3Weapon.cpp" />
