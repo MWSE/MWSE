@@ -17,9 +17,11 @@ Every MWSE Lua event follows the same pattern:
 2. **C++ source** – implement constructor and `createEventTable()` in `MWSE/Lua<Name>Event.cpp`
 3. **Hook callback** – add a static callback function and memory patch in `MWSE/LuaManager.cpp`
 4. **Registration** – `#include` the header and call `genCallEnforced` inside `LuaManager::hook()`
-5. **Autocomplete definition** – create `autocomplete/definitions/events/standard/<eventName>.lua`
-6. **Examples** – add Lua example scripts in `autocomplete/definitions/events/standard/<eventName>/`
-7. **Rebuild docs** – run the autocomplete builder; docs are auto-generated
+5. **Disableable event registration** – register the event in `MWSE/LuaDisableableEventManager.cpp`
+6. **Event string constant** – add the string constant to `misc/package/Data Files/MWSE/core/lib/tes3/event.lua`
+7. **Autocomplete definition** – create `autocomplete/definitions/events/standard/<eventName>.lua`
+8. **Examples** – add Lua example scripts in `autocomplete/definitions/events/standard/<eventName>/`
+9. **Rebuild docs** – run the autocomplete builder; docs are auto-generated
 
 ---
 
@@ -279,7 +281,19 @@ Hook addresses (`0xCALLSITE`, `0xORIGINAL_FN`) come from reverse-engineering the
 
 ---
 
-## Step 5 – Autocomplete Definition (`autocomplete/definitions/events/standard/<eventName>.lua`)
+## Step 5 – Disableable Event Registration (`MWSE/LuaDisableableEventManager.cpp`)
+
+The event needs to be registered in `MWSE/LuaDisableableEventManager.cpp`.
+
+---
+
+## Step 6 – Event String Constant (`misc/package/Data Files/MWSE/core/lib/tes3/event.lua`)
+
+The string constant of the event needs to be added to `misc/package/Data Files/MWSE/core/lib/tes3/event.lua`.
+
+---
+
+## Step 7 – Autocomplete Definition (`autocomplete/definitions/events/standard/<eventName>.lua`)
 
 Create the file at `autocomplete/definitions/events/standard/myEvent.lua`. The filename (minus `.lua`) becomes the Lua event name string used in `event.register("myEvent", callback)`.
 
@@ -340,7 +354,7 @@ Supports Markdown and wiki-style links.
 
 ---
 
-## Step 6 – Example Scripts
+## Step 8 – Example Scripts
 
 For each key in `examples`, create a Lua file at:
 
@@ -363,7 +377,7 @@ event.register(tes3.event.myEvent, onMyEvent)
 
 ---
 
-## Step 7 – Rebuild Documentation
+## Step 9 – Rebuild Documentation
 
 Docs are **auto-generated** — never edit `docs/source/events/*.md` by hand.
 
@@ -394,7 +408,9 @@ When adding a new event, verify all of the following:
 - [ ] `LuaManager.cpp` – `#include "Lua<Name>Event.h"` added to the event include block
 - [ ] `LuaManager.cpp` – Static hook callback function(s) added with correct calling convention
 - [ ] `LuaManager.cpp` – `genCallEnforced(...)` call(s) in `LuaManager::hook()` for each call site
+- [ ] `LuaDisableableEventManager.cpp` – event registered
 - [ ] Hook checks `event::<Name>Event::getEventEnabled()` before calling `triggerEvent`
+- [ ] `misc/package/Data Files/MWSE/core/lib/tes3/event.lua` – string constant added
 - [ ] `autocomplete/definitions/events/standard/<eventName>.lua` – definition created with all fields
 - [ ] Example Lua files created for each entry in `examples`
 - [ ] Rebuilt docs with autocomplete builder
