@@ -4,10 +4,13 @@
 
 #include "CSDialogue.h"
 #include "CSDialogueInfo.h"
+#include "CSDataHandler.h"
 #include "CSGameFile.h"
 #include "CSGameSetting.h"
 #include "CSPhysicalObject.h"
 #include "CSRecordHandler.h"
+#include "CSReference.h"
+#include "CSStatic.h"
 
 #include "NIAVObject.h"
 #include "NICamera.h"
@@ -121,6 +124,57 @@ namespace se::cs {
 			else {
 				return ShowDuplicateReferenceWarning(message, referenceCount);
 			}
+		}
+
+		constexpr auto ReferenceFlag_MasterOrigin = 0x1;
+		constexpr auto ReferenceFlag_Modified = 0x2;
+		constexpr auto ReferenceFlag_Deleted = 0x20;
+		constexpr auto ReferenceFlag_Moved = 0x40;
+
+		void __declspec(naked) preserveLocalReferenceIdOnLoad() {
+			__asm {
+				mov eax, [esp + 0x10]
+				mov [esi + 0x70], eax
+				mov [esi + 0x6C], eax
+				push 0
+				mov eax, 0x536583
+				jmp eax
+			}
+		}
+
+		const auto ReferenceHasLeveledBase = reinterpret_cast<bool(__thiscall*)(Reference*)>(0x40156E);
+		bool __cdecl shouldSaveReferenceWithDeletedTombstones(bool flag1, Reference* reference, GameFile* gameFile, bool ignoreLeveled, bool movedRef) {
+			const auto flags = reference->flags;
+			const auto baseObject = reference->baseObject;
+
+			if (baseObject == Static::gDoorMarker::get() || baseObject == gTravelMarker::get()) {
+				return false;
+			}
+
+			if (flags & ReferenceFlag_Deleted) {
+				return reference->targetID != 0;
+			}
+
+			if (flag1) {
+				if ((flags & ReferenceFlag_Modified) == 0) {
+					return false;
+				}
+			}
+			else if (reference->sourceFile && reference->sourceFile != gameFile && (flags & ReferenceFlag_Modified) == 0) {
+				return false;
+			}
+
+			bool result = true;
+			if (!movedRef && (flags & ReferenceFlag_Moved) != 0) {
+				result = DataHandler::get()->recordHandler->unknown_0xB0C8 != 0;
+			}
+
+			const auto objectType = baseObject->objectType;
+			if (!ignoreLeveled && (objectType == ObjectType::Creature || objectType == ObjectType::NPC) && ReferenceHasLeveledBase(reference)) {
+				return false;
+			}
+
+			return result;
 		}
 
 		void __cdecl restoreNiLogMessage(const char* fmt, ...) {
@@ -630,6 +684,10 @@ namespace se::cs {
 
 		// Patch: Suppress "1 duplicate references were removed" warning popups for vanilla masters.
 		genCallEnforced(0x50A9ED, 0x40123A, reinterpret_cast<DWORD>(patch::suppressDuplicateReferenceRemovedWarningForVanillaMasters));
+
+		genJumpUnprotected(0x53657A, reinterpret_cast<DWORD>(patch::preserveLocalReferenceIdOnLoad), 0x9);
+		writeValueEnforced<BYTE>(0x538742, BYTE(0x42), BYTE(0x3A));
+		genJumpEnforced(0x40393B, 0x5384B0, reinterpret_cast<DWORD>(patch::shouldSaveReferenceWithDeletedTombstones));
 
 		// Restore debug logs.
 		if constexpr (LOG_NI_MESSAGES) {
