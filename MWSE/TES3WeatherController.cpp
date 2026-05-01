@@ -405,6 +405,17 @@ namespace TES3 {
 		}
 	}
 
+	static void __fastcall Patch_WeatherController_SwitchWeather_WithEvent(WeatherController* wc, DWORD _EDX_, int weatherId, float startingTransition) {
+		wc->switchWeather(weatherId, startingTransition);
+
+		if (mwse::lua::event::WeatherChangedImmediateEvent::getEventEnabled()) {
+			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
+
+			stateHandle.triggerEvent(new mwse::lua::event::WeatherChangedImmediateEvent());
+		}
+	}
+
 	void WeatherController::installPatches() {
 #if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
 		// Change size of constructor.
@@ -431,11 +442,11 @@ namespace TES3 {
 
 		// Replace function: switchWeather
 		const auto WeatherController_switchWeather = &WeatherController::switchWeather;
-		//mwse::genCallEnforced(0x410368, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
-		//mwse::genCallEnforced(0x441084, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
+		mwse::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		mwse::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
 		mwse::genCallEnforced(0x441AA7, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
-		//mwse::genCallEnforced(0x45CE2D, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
-		//mwse::genCallEnforced(0x45D211, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
+		mwse::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		mwse::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
 		mwse::genCallEnforced(0x4BE166, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
 		mwse::genCallEnforced(0x4BE19A, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
 
