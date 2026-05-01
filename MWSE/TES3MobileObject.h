@@ -2,7 +2,9 @@
 
 #include "TES3Defines.h"
 
+#include "NIDefines.h"
 #include "NINode.h"
+
 #include "TES3Object.h"
 #include "TES3Vectors.h"
 
@@ -291,6 +293,9 @@ namespace TES3 {
 		void enterLeaveSimulationByDistance();
 		IteratedList<ItemStack*>* getInventory() const;
 		bool getBasePositionIsUnderwater() const;
+		void setLightEffectFalloff(unsigned int radius);
+		void setLightEffectDiffuseCol(const NI::Color& colour);
+		void removeLight();
 
 		//
 		// Lua interface functions.
@@ -300,8 +305,10 @@ namespace TES3 {
 		void setBoundSize(const Vector3&);
 		Vector3* getImpulseVelocity();
 		void setImpulseVelocityFromLua(sol::stack_object);
+		LightData* getLightEffectData() const;
 		Vector3* getPosition() const;
 		void setPositionFromLua(sol::stack_object);
+		void setLightEffectDiffuseCol_lua(sol::object object);
 		Vector3* getVelocity();
 		void setVelocityFromLua(sol::stack_object);
 

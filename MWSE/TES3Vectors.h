@@ -68,7 +68,7 @@ namespace TES3 {
 
 		Vector3& operator=(const NI::Color& vector);
 		Vector3& operator=(const sol::table table);
-		Vector3& operator=(const sol::object object);
+		Vector3& operator=(const sol::object& object);
 
 		bool operator==(const Vector3& vector) const;
 		bool operator!=(const Vector3& vector) const;

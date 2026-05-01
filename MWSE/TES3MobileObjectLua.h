@@ -17,6 +17,7 @@ namespace mwse::lua {
 		usertypeDefinition["collisionData"] = sol::readonly_property(&TES3::MobileObject::getCollisions_lua);
 		usertypeDefinition["height"] = &TES3::MobileObject::height;
 		usertypeDefinition["inventory"] = sol::readonly_property(&TES3::MobileObject::getInventory);
+		usertypeDefinition["lightEffectData"] = sol::readonly_property(&TES3::MobileObject::getLightEffectData);
 		usertypeDefinition["movementFlags"] = &TES3::MobileObject::movementFlags;
 		usertypeDefinition["playerDistance"] = &TES3::MobileObject::simulationDistance;
 		usertypeDefinition["prevMovementFlags"] = &TES3::MobileObject::prevMovementFlags;
@@ -32,5 +33,9 @@ namespace mwse::lua {
 		usertypeDefinition["isAffectedByGravity"] = sol::property(&TES3::MobileObject::getAffectedByGravityFlag, &TES3::MobileObject::setAffectedByGravityFlag);
 		usertypeDefinition["mobToMobCollision"] = sol::property(&TES3::MobileObject::getMobToMobCollision, &TES3::MobileObject::setMobToMobCollision);
 		usertypeDefinition["movementCollision"] = sol::property(&TES3::MobileObject::getMovementCollisionFlag, &TES3::MobileObject::setMovementCollisionFlag);
+
+		// Effect light helpers.
+		usertypeDefinition["setLightEffectDiffuseColor"] = &TES3::MobileObject::setLightEffectDiffuseCol_lua;
+		usertypeDefinition["setLightEffectFalloff"] = &TES3::MobileObject::setLightEffectFalloff;
 	}
 }

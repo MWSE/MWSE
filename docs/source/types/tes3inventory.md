@@ -235,3 +235,18 @@ myObject:resolveLeveledItems(mobile)
 
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Optional*. The mobile actor whose stats will be updated.
 
+***
+
+### `updateInternalLight`
+<div class="search_terms" style="display: none">updateinternallight, internallight</div>
+
+Re-evaluates whether the inventory contains a non-carriable internal light item and applies it to the given mobile actor if no active Light magic effect is present. This is useful when implementing custom light spells that can produce negative magnitudes or otherwise need vanilla-style fallback handling.
+
+```lua
+myObject:updateInternalLight(mobile)
+```
+
+**Parameters**:
+
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): The mobile actor whose internal light state should be refreshed.
+
