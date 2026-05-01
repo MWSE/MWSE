@@ -7,6 +7,8 @@
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
+#include "RngUtil.h"
+
 namespace TES3 {
 	static int chooseWeatherFromWeights(const sol::table& weights) {
 		const auto worldController = TES3::WorldController::get();
@@ -51,7 +53,7 @@ namespace TES3 {
 			return TES3::WEATHER_ID_INVALID;
 		}
 
-		const auto roll = (double(rand()) / (double(RAND_MAX) + 1.0)) * totalWeight;
+		const auto roll = mwse::rng::getRandomDouble(0.0, totalWeight);
 		double cumulativeWeight = 0.0;
 		for (const auto& [weatherIndex, weight] : validWeights) {
 			cumulativeWeight += weight;
