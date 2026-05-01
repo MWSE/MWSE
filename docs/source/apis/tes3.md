@@ -529,6 +529,66 @@ local wasAdded = tes3.addTopic({ topic = ..., updateGUI = ... })
 
 ***
 
+### `tes3.addWeather`
+<div class="search_terms" style="display: none">addweather, weather</div>
+
+This function creates a new custom weather. The weather can be scripted through lua. This function should be used inside the [`initialized`](https://mwse.github.io/MWSE/events/initialized/) event callback.
+
+```lua
+local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayColor = ..., ambientNightColor = ..., ambientSunriseColor = ..., ambientSunsetColor = ..., cloudsMaxPercent = ..., cloudsSpeed = ..., fogDayColor = ..., fogNightColor = ..., fogSunriseColor = ..., fogSunsetColor = ..., glareView = ..., landFogDayDepth = ..., landFogNightDepth = ..., skyDayColor = ..., skyNightColor = ..., skySunriseColor = ..., skySunsetColor = ..., sunDayColor = ..., sundiscSunsetColor = ..., sunNightColor = ..., sunSunriseColor = ..., sunSunsetColor = ..., windSpeed = ..., cloudTexture = ..., ambientLoopSoundId = ..., overrideId = ..., rainThreshold = ..., stormThreshold = ..., snowThreshold = ..., raindropsMax = ..., snowflakesMax = ..., supportsParticleLerp = ..., supportsAshCloud = ..., supportsBlightCloud = ..., supportsBlizzard = ..., simulate = ..., transition = ..., unload = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `id` ([tes3.weather](../references/weather-types.md), integer): The unique id of the weather. Must be greater than 10 and less than 254, and must not already be used by another custom weather.
+	* `key` (string): A unique string key for the weather. This is the key added to the `tes3.weather` table, such that `tes3.weather[key] = id`.
+	* `name` (string): The name of the custom weather.
+	* `ambientDayColor` ([tes3vector3](../types/tes3vector3.md), table): Ambient light color during the day.
+	* `ambientNightColor` ([tes3vector3](../types/tes3vector3.md), table): Ambient light color during the night.
+	* `ambientSunriseColor` ([tes3vector3](../types/tes3vector3.md), table): Ambient light color during sunrise.
+	* `ambientSunsetColor` ([tes3vector3](../types/tes3vector3.md), table): Ambient light color during sunset.
+	* `cloudsMaxPercent` (number): *Default*: `1`. The maximum percentage of cloud coverage. Requires a value between 0.0 and 1.0.
+	* `cloudsSpeed` (number): *Default*: `1.25`. The speed that clouds move across the sky.
+	* `fogDayColor` ([tes3vector3](../types/tes3vector3.md), table): Fog color during the day.
+	* `fogNightColor` ([tes3vector3](../types/tes3vector3.md), table): Fog color during the night.
+	* `fogSunriseColor` ([tes3vector3](../types/tes3vector3.md), table): Fog color during sunrise.
+	* `fogSunsetColor` ([tes3vector3](../types/tes3vector3.md), table): Fog color during sunset.
+	* `glareView` (number): *Default*: `1`. Controls how strongly sunlight glares into the camera.
+	* `landFogDayDepth` (number): *Default*: `0.69`. The land fog depth during the day.
+	* `landFogNightDepth` (number): *Default*: `0.69`. The land fog depth during the night.
+	* `skyDayColor` ([tes3vector3](../types/tes3vector3.md), table): Sky color during the day.
+	* `skyNightColor` ([tes3vector3](../types/tes3vector3.md), table): Sky color during the night.
+	* `skySunriseColor` ([tes3vector3](../types/tes3vector3.md), table): Sky color during sunrise.
+	* `skySunsetColor` ([tes3vector3](../types/tes3vector3.md), table): Sky color during sunset.
+	* `sunDayColor` ([tes3vector3](../types/tes3vector3.md), table): Sun color during the day.
+	* `sundiscSunsetColor` ([tes3vector3](../types/tes3vector3.md), table): Sun disc color during sunset.
+	* `sunNightColor` ([tes3vector3](../types/tes3vector3.md), table): Sun color during the night.
+	* `sunSunriseColor` ([tes3vector3](../types/tes3vector3.md), table): Sun color during sunrise.
+	* `sunSunsetColor` ([tes3vector3](../types/tes3vector3.md), table): Sun color during sunset.
+	* `windSpeed` (number): *Default*: `0.1`. The speed of the wind.
+	* `cloudTexture` (string): *Optional*. Path to the cloud texture used by the weather.
+	* `ambientLoopSoundId` (string): *Optional*. The sound ID for the ambient looping sound.
+	* `overrideId` ([tes3.weather](../references/weather-types.md), integer): *Optional*. An override weather id used by the weather system. If provided, dialogue and script checks against the provided ID will return true for this weather as well. This can be used for backwards compatibility with vanilla weathers.
+	* `rainThreshold` (number): *Optional*. The transition threshold to be considered raining.
+	* `stormThreshold` (number): *Optional*. The transition threshold to be considered storming.
+	* `snowThreshold` (number): *Optional*. The transition threshold to be considered snowing.
+	* `raindropsMax` (number): *Optional*. The maximum amount of raindrop particles.
+	* `snowflakesMax` (number): *Optional*. The maximum amount of snowflake particles.
+	* `supportsParticleLerp` (boolean): *Default*: `false`. If true, particle lerping is enabled for this weather.
+	* `supportsAshCloud` (boolean): *Default*: `false`. If true, this weather can support ash clouds.
+	* `supportsBlightCloud` (boolean): *Default*: `false`. If true, this weather can support blight clouds.
+	* `supportsBlizzard` (boolean): *Default*: `false`. If true, this weather can support blizzard effects.
+	* `simulate` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md), transitionScalar: number, deltaTime: number)): *Optional*. A function called every frame while the weather is active.
+	* `transition` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md))): *Optional*. A function called when the weather transitions in.
+	* `unload` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md))): *Optional*. A function called when the weather is unloaded.
+
+**Returns**:
+
+* `weather` ([tes3weatherCustom](../types/tes3weatherCustom.md))
+
+***
+
 ### `tes3.adjustSoundVolume`
 <div class="search_terms" style="display: none">adjustsoundvolume</div>
 

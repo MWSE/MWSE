@@ -6215,8 +6215,15 @@ namespace mwse::lua {
 		return macp->dialogueList->size() > topicCountBefore;
 	}
 
-	TES3::Weather* addWeather(sol::table params) {
-		auto weatherController = TES3::WorldController::get()->weatherController;
+	static TES3::Weather* addWeather(sol::this_state ts, sol::table params) {
+		sol::state_view state = ts;
+		sol::table tes3weathersTable = state["tes3"]["weather"];
+
+		const auto worldController = TES3::WorldController::get();
+		const auto weatherController = worldController ? worldController->weatherController : nullptr;
+		if (weatherController == nullptr) {
+			throw std::runtime_error("Custom weathers cannot be added until the weather controller is initialized.");
+		}
 
 		int id = getOptionalParam<int>(params, "id", -1);;
 		if (id < TES3::WeatherType::MINIMUM || id > TES3::WeatherType::MAXIMUM) {
@@ -6226,6 +6233,15 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'id' parameter provided. A weather with this id already exists.");
 		}
 
+		const auto key = getOptionalParam<std::string>(params, "key");
+		if (!key || key.value().empty()) {
+			throw std::invalid_argument("Invalid 'key' parameter provided. A weather string key be given.");
+		}
+		else if (tes3weathersTable[key.value()] != sol::nil) {
+			throw std::invalid_argument("Invalid 'key' parameter provided. A weather with the given key is already added.");
+		}
+		tes3weathersTable[key.value()] = id;
+
 		const auto name = getOptionalParam<std::string>(params, "name");
 		if (!name || name.value().empty()) {
 			throw std::invalid_argument("Invalid 'name' parameter provided. A weather must be given a name.");
@@ -6233,6 +6249,51 @@ namespace mwse::lua {
 
 		const auto weather = new TES3::WeatherCustom(weatherController);
 		weather->index = id;
+
+		const auto requireVectorParam = [](const sol::table& params, const char* key, TES3::Vector3& result)
+			{
+				const auto value = getOptionalParamVector3(params, key);
+				if (!value.has_value()) {
+					throw std::invalid_argument(fmt::format("Required tes3vector3 parameter '{}' not provided.", key));
+				}
+
+				result = value.value();
+			};
+
+		// Allow adding default weather fields here. Default to some clear weather values.
+		requireVectorParam(params, "ambientDayColor", weather->ambientDayCol);
+		requireVectorParam(params, "ambientNightColor", weather->ambientNightCol);
+		requireVectorParam(params, "ambientSunriseColor", weather->ambientSunriseCol);
+		requireVectorParam(params, "ambientSunsetColor", weather->ambientSunsetCol);
+		weather->cloudsMaxPercent = getOptionalParam<float>(params, "cloudsMaxPercent", 1.0f);
+		weather->cloudsSpeed = getOptionalParam<float>(params, "cloudsSpeed", 1.25f);
+		requireVectorParam(params, "fogDayColor", weather->fogDayCol);
+		requireVectorParam(params, "fogNightColor", weather->fogNightCol);
+		requireVectorParam(params, "fogSunriseColor", weather->fogSunriseCol);
+		requireVectorParam(params, "fogSunsetColor", weather->fogSunsetCol);
+		weather->glareView = getOptionalParam<float>(params, "glareView", 1.0f);
+		weather->landFogDayDepth = getOptionalParam<float>(params, "landFogDayDepth", 0.69f);
+		weather->landFogNightDepth = getOptionalParam<float>(params, "landFogNightDepth", 0.69f);
+		requireVectorParam(params, "skyDayColor", weather->skyDayCol);
+		requireVectorParam(params, "skyNightColor", weather->skyNightCol);
+		requireVectorParam(params, "skySunriseColor", weather->skySunriseCol);
+		requireVectorParam(params, "skySunsetColor", weather->skySunsetCol);
+		requireVectorParam(params, "sunDayColor", weather->sunDayCol);
+		requireVectorParam(params, "sundiscSunsetColor", weather->sundiscSunsetCol);
+		requireVectorParam(params, "sunNightColor", weather->sunNightCol);
+		requireVectorParam(params, "sunSunriseColor", weather->sunSunriseCol);
+		requireVectorParam(params, "sunSunsetColor", weather->sunSunsetCol);
+		weather->windSpeed = getOptionalParam<float>(params, "windSpeed", 0.1f);
+		const auto cloudTexture = getOptionalParam<std::string>(params, "cloudTexture");
+		if (cloudTexture.has_value()) {
+			weather->setCloudTexturePath(cloudTexture.value().c_str());
+		}
+		const auto ambientLoopSoundId = getOptionalParam<std::string>(params, "ambientLoopSoundId");
+		if (ambientLoopSoundId.has_value()) {
+			weather->setAmbientLoopSoundID(ambientLoopSoundId.value().c_str());
+		}
+
+		// Support custom fields.
 		weather->name = name.value();
 		weather->overrideId = getOptionalParam<int>(params, "overrideId");
 		weather->rainThreshold = getOptionalParam<float>(params, "rainThreshold");
