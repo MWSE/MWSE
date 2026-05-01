@@ -153,6 +153,35 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Fix creature head tracking twitching when carrying a light.
+	//
+	// Reorders ActorAnimController::updateProceduralAnim so that updateDynamicLightSource
+	// runs BEFORE proceduralAnimation, preventing light update overhead from interfering
+	// with head rotation interpolation.
+	//
+
+	const auto TES3_MobileObject_updateDynamicLightSource = reinterpret_cast<void(__thiscall*)(TES3::MobileObject*)>(0x5616A0);
+	const auto TES3_AnimationData_proceduralAnimation = reinterpret_cast<void(__thiscall*)(TES3::AnimationData*, int)>(0x46E970);
+
+	void __fastcall PatchFixCreatureHeadTrackingLightTwitching(TES3::ActorAnimationController* animController) {
+		auto mobileActor = animController->mobileActor;
+		auto animationData = animController->animationData;
+
+		// Do the light update FIRST (before applying head rotation).
+		if (mobileActor && mobileActor->getMobileObjectFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
+			auto reference = mobileActor->reference;
+			if (reference == nullptr || !reference->getDisabled()) {
+				TES3_MobileObject_updateDynamicLightSource(mobileActor);
+			}
+		}
+
+		// Now apply procedural animation (head rotation) AFTER light update.
+		if (animationData) {
+			TES3_AnimationData_proceduralAnimation(animationData, 0);
+		}
+	}
+
+	//
 	// Patch: Unify athletics training.
 	//
 
@@ -2300,6 +2329,10 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: Fix creature head tracking twitching when carrying a light.
+		// Redirect ActorAnimController::updateProceduralAnim (0x53E160) to our fixed version.
+		genJumpUnprotected(0x53E160, reinterpret_cast<DWORD>(PatchFixCreatureHeadTrackingLightTwitching));
 	}
 
 	void installPostLuaPatches() {
