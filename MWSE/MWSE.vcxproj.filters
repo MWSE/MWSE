@@ -3692,6 +3692,9 @@
     <ClCompile Include="LuaCalcBlockChanceEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaCalcEnchantingSpellPointCostEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaCalcSpellmakingSpellPointCostEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3860,6 +3863,9 @@
     <ClCompile Include="yamlloader.cpp">
       <Filter>Source Files\Lua</Filter>
     </ClCompile>
+    <ClCompile Include="LuaMagicAbsorbEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaMagicReflectEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3921,6 +3927,9 @@
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
     <ClCompile Include="NIDX8Renderer.cpp">
+      <Filter>Source Files\DataAdapters\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="NIPixelFormat.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>
