@@ -81,6 +81,7 @@ namespace TES3 {
 		void removeItemData(Item* item, ItemData* itemData);
 		void removeItemWithData(MobileActor * mobile, Item * item, ItemData * itemData, int count, bool deleteStackData);
 		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData = false);
+		void updateInternalLight(MobileActor* mobile);
 
 		void resolveLeveledLists(MobileActor* mobile = nullptr);
 

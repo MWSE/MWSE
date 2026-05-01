@@ -3,10 +3,16 @@
 #include "TES3Util.h"
 #include "LuaUtil.h"
 
+#include "NIPointLight.h"
+
 #include "TES3Actor.h"
+#include "TES3DataHandler.h"
 #include "TES3Enchantment.h"
 #include "TES3LeveledList.h"
 #include "TES3Item.h"
+#include "TES3Light.h"
+#include "TES3MagicEffectController.h"
+#include "TES3MobileObject.h"
 #include "TES3MobileActor.h"
 #include "TES3Spell.h"
 #include "TES3Reference.h"
@@ -174,6 +180,40 @@ namespace TES3 {
 	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, Vector3, Vector3, bool)>(0x49B090);
 	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData) {
 		TES3_Inventory_DropItem(this, mobileActor, item, itemData, count, position, orientation, ignoreItemData);
+	}
+
+	void Inventory::updateInternalLight(MobileActor* mobile) {
+		if (mobile) {
+			const auto dataHandler = DataHandler::get();
+			const auto magicEffects = dataHandler && dataHandler->nonDynamicData ? dataHandler->nonDynamicData->magicEffects : nullptr;
+			if (magicEffects) {
+				for (const auto& activeEffect : mobile->activeMagicEffects) {
+					const auto magicEffect = magicEffects->getEffectObject(activeEffect.magicEffectID);
+					if (magicEffect && magicEffect->getHasActorLighting()) {
+						return;
+					}
+				}
+			}
+
+			mobile->removeLight();
+		}
+
+		for (auto itemStack : itemStacks) {
+			if (itemStack == nullptr || itemStack->object == nullptr || itemStack->object->objectType != ObjectType::Light) {
+				continue;
+			}
+
+			const auto light = static_cast<Light*>(itemStack->object);
+			if (!light->getCanCarry()) {
+				light->setupLightForMobile(mobile);
+				internalLight = light;
+			}
+		}
+
+		if (mobile && mobile->lightMagicEffectData && mobile->lightMagicEffectData->light) {
+			mobile->lightMagicEffectData->light->update(0.0f, true, true);
+			mobile->actorFlags &= ~0x80;
+		}
 	}
 
 	// Note: A custom call to TES3_Inventory_resolveLeveledLists is made in LuaManager.cpp.

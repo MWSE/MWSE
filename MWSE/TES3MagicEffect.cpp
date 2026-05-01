@@ -345,6 +345,19 @@ namespace TES3 {
 		return DataHandler::get()->nonDynamicData->magicEffects->effectExtendedData[id];
 	}
 
+	bool MagicEffect::getHasActorLighting() const {
+		if (id == EffectID::Light) {
+			return true;
+		}
+
+		const auto extendedData = getExtendedData();
+		if (extendedData && extendedData->hasActorLighting) {
+			return true;
+		}
+
+		return false;
+	}
+
 
 	//
 	// MagicEffectExtendedData

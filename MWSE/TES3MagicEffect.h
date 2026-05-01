@@ -332,6 +332,8 @@ namespace TES3 {
 
 		MagicEffectExtendedData* getExtendedData() const;
 
+		bool getHasActorLighting() const;
+
 	};
 	static_assert(sizeof(MagicEffect) == 0x0110, "TES3::EffectID:: failed size validation");
 
@@ -341,6 +343,7 @@ namespace TES3 {
 		std::string magnitudeTypePlural;
 		sol::protected_function tickFunction;
 		sol::protected_function collisionFunction;
+		bool hasActorLighting;
 
 		MagicEffectExtendedData();
 

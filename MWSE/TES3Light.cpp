@@ -17,6 +17,11 @@ namespace TES3 {
 		TES3_Light_dtor(this);
 	}
 
+	const auto TES3_EntityLight_setupInternalLight = reinterpret_cast<void(__cdecl*)(const Light*, MobileObject*)>(0x4D3580);
+	void Light::setupLightForMobile(MobileObject* mobile) const {
+		TES3_EntityLight_setupInternalLight(this, mobile);
+	}
+
 	bool Light::getIsDynamic() const {
 		return (flags & LightFlags::Dynamic);
 	}

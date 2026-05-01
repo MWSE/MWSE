@@ -5191,6 +5191,8 @@ namespace mwse::lua {
 			extendedData = new TES3::MagicEffectExtendedData();
 		}
 
+		extendedData->hasActorLighting = getOptionalParam(params, "hasActorLighting", false);
+
 		sol::optional<std::string> name = params["name"];
 		if (name) {
 			extendedData->name = name.value();
