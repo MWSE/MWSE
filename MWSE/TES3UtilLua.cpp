@@ -6234,6 +6234,7 @@ namespace mwse::lua {
 		weather->name = name.value();
 		weather->overrideId = getOptionalParam<int>(params, "overrideId");
 		weather->stormThreshold = getOptionalParam<float>(params, "stormThreshold");
+		weather->supportsParticleLerping = getOptionalParam<bool>(params, "supportsParticleLerp", false);
 
 		// Get the custom functions.
 		sol::optional<sol::protected_function> simulate = params["simulate"];

@@ -157,7 +157,8 @@ namespace TES3 {
 	bool Weather::supportsParticleLerp() const {
 		return index == WeatherType::Rain
 			|| index == WeatherType::Thunder
-			|| index == WeatherType::Snow;
+			|| index == WeatherType::Snow
+			|| (isCustomWeather() && static_cast<const WeatherCustom*>(this)->supportsParticleLerping);
 	}
 
 	float Weather::calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity) {

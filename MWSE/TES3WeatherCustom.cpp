@@ -8,6 +8,7 @@ namespace TES3 {
 
 	WeatherCustom::WeatherCustom() : Weather() {
 		vTable = &VirtualTable;
+		supportsParticleLerping = false;
 	}
 
 	WeatherCustom::WeatherCustom(WeatherController* wc) : WeatherCustom() {
