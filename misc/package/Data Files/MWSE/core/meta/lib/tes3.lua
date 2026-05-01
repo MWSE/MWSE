@@ -400,11 +400,11 @@ function tes3.addTopic(params) end
 --- 
 --- `supportsBlizzard?`: boolean — *Default*: `false`. If true, this weather can support blizzard effects.
 --- 
---- `simulate?`: fun(weather: tes3weatherCustom, transitionScalar: number, deltaTime: number) — *Optional*. A function called every frame while the weather is active.
+--- `simulate?`: fun(e: tes3weatherSimulateEventData) — *Optional*. A function called every frame while the weather is active.
 --- 
---- `transition?`: fun(weather: tes3weatherCustom) — *Optional*. A function called when the weather transitions in.
+--- `transition?`: fun(e: tes3weatherTransitionEventData) — *Optional*. A function called when the weather transitions in.
 --- 
---- `unload?`: fun(weather: tes3weatherCustom) — *Optional*. A function called when the weather is unloaded.
+--- `unload?`: fun(e: tes3weatherUnloadEventData) — *Optional*. A function called when the weather is unloaded.
 --- @return tes3weatherCustom weather No description yet available.
 function tes3.addWeather(params) end
 
@@ -448,9 +448,9 @@ function tes3.addWeather(params) end
 --- @field supportsAshCloud? boolean *Default*: `false`. If true, this weather can support ash clouds.
 --- @field supportsBlightCloud? boolean *Default*: `false`. If true, this weather can support blight clouds.
 --- @field supportsBlizzard? boolean *Default*: `false`. If true, this weather can support blizzard effects.
---- @field simulate? fun(weather: tes3weatherCustom, transitionScalar: number, deltaTime: number) *Optional*. A function called every frame while the weather is active.
---- @field transition? fun(weather: tes3weatherCustom) *Optional*. A function called when the weather transitions in.
---- @field unload? fun(weather: tes3weatherCustom) *Optional*. A function called when the weather is unloaded.
+--- @field simulate? fun(e: tes3weatherSimulateEventData) *Optional*. A function called every frame while the weather is active.
+--- @field transition? fun(e: tes3weatherTransitionEventData) *Optional*. A function called when the weather transitions in.
+--- @field unload? fun(e: tes3weatherUnloadEventData) *Optional*. A function called when the weather is unloaded.
 
 --- Changes the volume of a sound that is playing on a given reference.
 --- @param params tes3.adjustSoundVolume.params This table accepts the following values:

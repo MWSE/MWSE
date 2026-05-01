@@ -579,9 +579,9 @@ local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayCol
 	* `supportsAshCloud` (boolean): *Default*: `false`. If true, this weather can support ash clouds.
 	* `supportsBlightCloud` (boolean): *Default*: `false`. If true, this weather can support blight clouds.
 	* `supportsBlizzard` (boolean): *Default*: `false`. If true, this weather can support blizzard effects.
-	* `simulate` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md), transitionScalar: number, deltaTime: number)): *Optional*. A function called every frame while the weather is active.
-	* `transition` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md))): *Optional*. A function called when the weather transitions in.
-	* `unload` (fun(weather: [tes3weatherCustom](../types/tes3weatherCustom.md))): *Optional*. A function called when the weather is unloaded.
+	* `simulate` (fun(e: [tes3weatherSimulateEventData](../types/tes3weatherSimulateEventData.md))): *Optional*. A function called every frame while the weather is active.
+	* `transition` (fun(e: [tes3weatherTransitionEventData](../types/tes3weatherTransitionEventData.md))): *Optional*. A function called when the weather transitions in.
+	* `unload` (fun(e: [tes3weatherUnloadEventData](../types/tes3weatherUnloadEventData.md))): *Optional*. A function called when the weather is unloaded.
 
 **Returns**:
 

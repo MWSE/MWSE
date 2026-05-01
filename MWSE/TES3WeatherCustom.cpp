@@ -3,7 +3,9 @@
 #include "TES3Sound.h"
 #include "TES3WeatherController.h"
 
+#include "Log.h"
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
 namespace TES3 {
 	Weather_vTable WeatherCustom::VirtualTable;
@@ -41,7 +43,17 @@ namespace TES3 {
 		{
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			if (simulateFunction.valid()) {
-				simulateFunction(this, transitionScalar, deltaTime);
+				auto& state = stateHandle.getState();
+				auto e = state.create_table();
+				e["weather"] = this;
+				e["deltaTime"] = deltaTime;
+				sol::protected_function_result result = simulateFunction(e);
+				if (!result.valid()) {
+					sol::error error = result;
+					mwse::log::getLog() << "Lua error encountered in custom weather simulate function:" << std::endl << error.what() << std::endl;
+					mwse::lua::reportErrorInGame("custom weather simulate", error);
+					return;
+				}
 			}
 		}
 	}
@@ -56,7 +68,25 @@ namespace TES3 {
 		{
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			if (transitionFunction.valid()) {
-				transitionFunction(this);
+				auto direction = 1;
+				if (controller && controller->currentWeather == controller->nextWeather) {
+					direction = 0;
+				}
+				else if (controller && controller->currentWeather == this) {
+					direction = -1;
+				}
+
+				auto& state = stateHandle.getState();
+				auto e = state.create_table();
+				e["weather"] = this;
+				e["direction"] = direction;
+				sol::protected_function_result result = transitionFunction(e);
+				if (!result.valid()) {
+					sol::error error = result;
+					mwse::log::getLog() << "Lua error encountered in custom weather transition function:" << std::endl << error.what() << std::endl;
+					mwse::lua::reportErrorInGame("custom weather transition", error);
+					return;
+				}
 			}
 		}
 	}
@@ -71,7 +101,16 @@ namespace TES3 {
 		{
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			if (unloadFunction.valid()) {
-				unloadFunction(this);
+				auto& state = stateHandle.getState();
+				auto e = state.create_table();
+				e["weather"] = this;
+				sol::protected_function_result result = unloadFunction(e);
+				if (!result.valid()) {
+					sol::error error = result;
+					mwse::log::getLog() << "Lua error encountered in custom weather unload function:" << std::endl << error.what() << std::endl;
+					mwse::lua::reportErrorInGame("custom weather unload", error);
+					return;
+				}
 			}
 		}
 	}

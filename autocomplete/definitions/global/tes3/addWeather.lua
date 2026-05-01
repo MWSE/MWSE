@@ -225,19 +225,19 @@ return {
 			},
 			{
 				name = "simulate",
-				type = "fun(weather: tes3weatherCustom, transitionScalar: number, deltaTime: number)",
+				type = "fun(e: tes3weatherSimulateEventData)",
 				optional = true,
 				description = "A function called every frame while the weather is active."
 			},
 			{
 				name = "transition",
-				type = "fun(weather: tes3weatherCustom)",
+				type = "fun(e: tes3weatherTransitionEventData)",
 				optional = true,
 				description = "A function called when the weather transitions in."
 			},
 			{
 				name = "unload",
-				type = "fun(weather: tes3weatherCustom)",
+				type = "fun(e: tes3weatherUnloadEventData)",
 				optional = true,
 				description = "A function called when the weather is unloaded."
 			},
