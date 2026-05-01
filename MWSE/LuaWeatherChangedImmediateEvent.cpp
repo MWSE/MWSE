@@ -8,6 +8,8 @@
 #include "TES3WorldController.h"
 
 namespace mwse::lua::event {
+	std::atomic<bool> WeatherChangedImmediateEvent::ms_EventGuard = false;
+
 	WeatherChangedImmediateEvent::WeatherChangedImmediateEvent() :
 		GenericEvent("weatherChangedImmediate")
 	{

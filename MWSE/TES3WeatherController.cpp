@@ -367,9 +367,9 @@ namespace TES3 {
 		TES3_WeatherController_setFogColour(this, fogProperty);
 	}
 
-	static std::atomic<bool> weatherEventGuard = false;
-
 	void WeatherController::switchImmediate(int weather) {
+		using mwse::lua::event::WeatherChangedImmediateEvent;
+
 		if (lastActiveRegion) {
 			lastActiveRegion->currentWeatherIndex = weather;
 		}
@@ -377,17 +377,19 @@ namespace TES3 {
 
 		// Fire off the event, after function completes.
 		// Prevent recursive triggering of weather change events.
-		if (!weatherEventGuard && mwse::lua::event::WeatherChangedImmediateEvent::getEventEnabled()) {
+		if (!WeatherChangedImmediateEvent::ms_EventGuard && WeatherChangedImmediateEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 
-			weatherEventGuard = true;
-			stateHandle.triggerEvent(new mwse::lua::event::WeatherChangedImmediateEvent());
-			weatherEventGuard = false;
+			WeatherChangedImmediateEvent::ms_EventGuard = true;
+			stateHandle.triggerEvent(new WeatherChangedImmediateEvent());
+			WeatherChangedImmediateEvent::ms_EventGuard = false;
 		}
 	}
 
 	void WeatherController::switchTransition(int weather) {
+		using mwse::lua::event::WeatherChangedImmediateEvent;
+
 		switchWeather(weather, 0.001f);
 		if (lastActiveRegion) {
 			lastActiveRegion->currentWeatherIndex = weather;
@@ -395,13 +397,13 @@ namespace TES3 {
 
 		// Fire off the event after the transition starts.
 		// Prevent recursive triggering of weather change events.
-		if (!weatherEventGuard && mwse::lua::event::WeatherTransitionStartedEvent::getEventEnabled()) {
+		if (!WeatherChangedImmediateEvent::ms_EventGuard && WeatherChangedImmediateEvent::getEventEnabled()) {
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 
-			weatherEventGuard = true;
-			stateHandle.triggerEvent(new mwse::lua::event::WeatherTransitionStartedEvent());
-			weatherEventGuard = false;
+			WeatherChangedImmediateEvent::ms_EventGuard = true;
+			stateHandle.triggerEvent(new WeatherChangedImmediateEvent());
+			WeatherChangedImmediateEvent::ms_EventGuard = false;
 		}
 	}
 

@@ -8,5 +8,7 @@ namespace mwse::lua::event {
 	public:
 		WeatherChangedImmediateEvent();
 		sol::table createEventTable();
+
+		static std::atomic<bool> ms_EventGuard;
 	};
 }
