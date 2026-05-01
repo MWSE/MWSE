@@ -386,6 +386,9 @@ namespace TES3 {
 	}
 
 	Weather* WeatherController::getWeather(int weatherId) const {
+		if (weatherId < WeatherType::MINIMUM || weatherId > WeatherType::MAXIMUM) {
+			return nullptr;
+		}
 		return arrayWeathers[weatherId];
 	}
 

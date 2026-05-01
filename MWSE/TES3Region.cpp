@@ -1,10 +1,68 @@
 #include "TES3Region.h"
 
+#include "LuaManager.h"
+#include "LuaWeatherSelectEvent.h"
+
 #include "TES3Weather.h"
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
 namespace TES3 {
+	static int chooseWeatherFromWeights(const sol::table& weights) {
+		const auto worldController = TES3::WorldController::get();
+		if (worldController == nullptr || worldController->weatherController == nullptr) {
+			return TES3::WEATHER_ID_INVALID;
+		}
+		const auto weatherController = worldController->weatherController;
+
+		std::vector<std::pair<int, double>> validWeights;
+		double totalWeight = 0.0;
+		for (const auto& [key, value] : weights) {
+			if (!key.is<int>()) {
+				continue;
+			}
+
+			const auto weatherIndex = key.as<int>();
+			double weight = 0.0;
+			if (value.is<double>()) {
+				weight = value.as<double>();
+			}
+			else if (value.is<int>()) {
+				weight = static_cast<double>(value.as<int>());
+			}
+			else {
+				continue;
+			}
+
+			const auto weather = weatherController->getWeather(weatherIndex);
+			if (!weather) {
+				continue;
+			}
+
+			if (weight <= 0.0) {
+				continue;
+			}
+
+			validWeights.emplace_back(weatherIndex, weight);
+			totalWeight += weight;
+		}
+
+		if (validWeights.empty() || totalWeight <= 0.0) {
+			return TES3::WEATHER_ID_INVALID;
+		}
+
+		const auto roll = (double(rand()) / (double(RAND_MAX) + 1.0)) * totalWeight;
+		double cumulativeWeight = 0.0;
+		for (const auto& [weatherIndex, weight] : validWeights) {
+			cumulativeWeight += weight;
+			if (roll < cumulativeWeight) {
+				return weatherIndex;
+			}
+		}
+
+		return validWeights.back().first;
+	}
+
 	//
 	// TES3::RegionSound
 	//
@@ -16,6 +74,31 @@ namespace TES3 {
 	//
 	// TES3::Region
 	//
+
+	void Region::chooseNewWeather() {
+		auto& luaManager = mwse::lua::LuaManager::getInstance();
+		const auto stateHandle = luaManager.getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
+
+		auto chances = state.create_table();
+		for (int weatherIndex = 0; weatherIndex < VANILLA_MAX_WEATHER_COUNT; ++weatherIndex) {
+			chances[weatherIndex] = weatherChances[weatherIndex];
+		}
+
+		if (mwse::lua::event::WeatherSelectEvent::getEventEnabled()) {
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::WeatherSelectEvent(this));
+			if (eventData.valid()) {
+				chances = eventData.get_or("chances", chances);
+			}
+		}
+
+		const auto selectedWeather = chooseWeatherFromWeights(chances);
+		if (selectedWeather != WEATHER_ID_INVALID) {
+			currentWeatherIndex = selectedWeather;
+		}
+
+		vTable.base->setObjectModified(this, true);
+	}
 
 	const auto TES3_Region_randomizeWeather = reinterpret_cast<void(__thiscall*)(Region*)>(0x4812A0);
 	void Region::randomizeWeather() {

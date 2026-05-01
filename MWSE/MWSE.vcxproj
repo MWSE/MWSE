@@ -225,6 +225,7 @@
     <ClInclude Include="LuaWeaponUnreadiedEvent.h" />
     <ClInclude Include="LuaWeatherChangedImmediateEvent.h" />
     <ClInclude Include="LuaWeatherCycledEvent.h" />
+    <ClInclude Include="LuaWeatherSelectEvent.h" />
     <ClInclude Include="LuaWeatherTransitionFinishedEvent.h" />
     <ClInclude Include="LuaWeatherTransitionStartedEvent.h" />
     <ClInclude Include="MWSEConfig.h" />
@@ -736,6 +737,7 @@
     <ClCompile Include="LuaWeaponUnreadiedEvent.cpp" />
     <ClCompile Include="LuaWeatherChangedImmediateEvent.cpp" />
     <ClCompile Include="LuaWeatherCycledEvent.cpp" />
+    <ClCompile Include="LuaWeatherSelectEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionFinishedEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionStartedEvent.cpp" />
     <ClCompile Include="MGEApi.cpp" />

@@ -4161,6 +4161,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.weaponUnreadied`
 ---| `tes3.event.weatherChangedImmediate`
 ---| `tes3.event.weatherCycled`
+---| `tes3.event.weatherSelect`
 ---| `tes3.event.weatherTransitionFinished`
 ---| `tes3.event.weatherTransitionStarted`
 

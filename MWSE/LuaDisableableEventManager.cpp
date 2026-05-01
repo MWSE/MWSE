@@ -167,6 +167,7 @@
 #include "LuaWeaponUnreadiedEvent.h"
 #include "LuaWeatherChangedImmediateEvent.h"
 #include "LuaWeatherCycledEvent.h"
+#include "LuaWeatherSelectEvent.h"
 #include "LuaWeatherTransitionFinishedEvent.h"
 #include "LuaWeatherTransitionStartedEvent.h"
 
@@ -352,6 +353,7 @@ namespace mwse::lua::event {
 		usertypeDefinition["weaponUnreadied"] = sol::property(&WeaponUnreadiedEvent::getEventEnabled, &WeaponUnreadiedEvent::setEventEnabled);
 		usertypeDefinition["weatherChangedImmediate"] = sol::property(&WeatherChangedImmediateEvent::getEventEnabled, &WeatherChangedImmediateEvent::setEventEnabled);
 		usertypeDefinition["weatherCycled"] = sol::property(&WeatherCycledEvent::getEventEnabled, &WeatherCycledEvent::setEventEnabled);
+		usertypeDefinition["weatherSelect"] = sol::property(&WeatherSelectEvent::getEventEnabled, &WeatherSelectEvent::setEventEnabled);
 		usertypeDefinition["weatherTransitionFinished"] = sol::property(&WeatherTransitionFinishedEvent::getEventEnabled, &WeatherTransitionFinishedEvent::setEventEnabled);
 		usertypeDefinition["weatherTransitionStarted"] = sol::property(&WeatherTransitionStartedEvent::getEventEnabled, &WeatherTransitionStartedEvent::setEventEnabled);
 	}

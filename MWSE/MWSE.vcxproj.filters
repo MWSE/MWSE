@@ -987,6 +987,9 @@
     <ClInclude Include="LuaWeatherCycledEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaWeatherSelectEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaWeatherChangedImmediateEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -3051,6 +3054,9 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaWeatherCycledEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaWeatherSelectEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaWeatherChangedImmediateEvent.cpp">
