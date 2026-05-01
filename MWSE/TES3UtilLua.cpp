@@ -6236,7 +6236,12 @@ namespace mwse::lua {
 		weather->rainThreshold = getOptionalParam<float>(params, "rainThreshold");
 		weather->stormThreshold = getOptionalParam<float>(params, "stormThreshold");
 		weather->snowThreshold = getOptionalParam<float>(params, "snowThreshold");
+		weather->raindropsMax = getOptionalParam<float>(params, "raindropsMax");
+		weather->snowflakesMax = getOptionalParam<float>(params, "snowflakesMax");
 		weather->supportsParticleLerping = getOptionalParam<bool>(params, "supportsParticleLerp", false);
+		weather->supportsAshCloud = getOptionalParam<bool>(params, "supportsAshCloud", false);
+		weather->supportsBlightCloud = getOptionalParam<bool>(params, "supportsBlightCloud", false);
+		weather->supportsBlizzard = getOptionalParam<bool>(params, "supportsBlizzard", false);
 
 		// Get the custom functions.
 		sol::optional<sol::protected_function> simulate = params["simulate"];

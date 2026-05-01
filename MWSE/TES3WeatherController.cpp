@@ -17,6 +17,7 @@
 #include "TES3WeatherRain.h"
 #include "TES3WeatherSnow.h"
 #include "TES3WeatherThunder.h"
+#include "TES3WaterController.h"
 #include "TES3WorldController.h"
 
 #include "NIProperty.h"
@@ -33,9 +34,12 @@
 #include "MathUtil.h"
 #include "MemoryUtil.h"
 #include "TES3Util.h"
+#include "TES3UIManager.h"
 
 namespace TES3 {
-	typedef mwse::ExternalGlobal<bool, 0x785FAC> unknown_785FAC;
+	typedef mwse::ExternalGlobal<bool, 0x785FAC> g_fillSnowParticleVolume;
+
+	static void __fastcall Patch_WeatherController_SwitchWeather_WithEvent(WeatherController* wc, DWORD _EDX_, int weatherId, float startingTransition);
 
 	const auto TES3_WeatherController_ctor = reinterpret_cast<WeatherController*(__thiscall*)(WeatherController*, int)>(0x439F60);
 	WeatherController* WeatherController::ctor(int initialWeatherId) {
@@ -107,7 +111,7 @@ namespace TES3 {
 			clearNextWeather();
 		}
 
-		unknown_785FAC::set(true);
+		g_fillSnowParticleVolume::set(true);
 	}
 
 	const auto TES3_WeatherController_enableSky = reinterpret_cast<void(__thiscall*)(WeatherController*)>(0x440820);
@@ -455,35 +459,265 @@ namespace TES3 {
 	}
 
 	const auto TES3_WeatherController_setBackgroundToFog = reinterpret_cast<void(__thiscall*)(WeatherController*, NI::Object*)>(0x43EB20);
+	void WeatherController::setBackgroundToFog(NI::Object* background) {
+		TES3_WeatherController_setBackgroundToFog(this, background);
+	}
+
 	const auto TES3_WeatherController_setFogColour = reinterpret_cast<void(__thiscall*)(WeatherController*, NI::Property*)>(0x43EB80);
+	void WeatherController::setFogColour(NI::Property* fogProperty) {
+		TES3_WeatherController_setFogColour(this, fogProperty);
+	}
+
 	const auto TES3_WeatherController_updateAmbient = reinterpret_cast<void(__thiscall*)(WeatherController*, float)>(0x43EF80);
+	void WeatherController::updateAmbient(float gameHour) {
+		TES3_WeatherController_updateAmbient(this, gameHour);
+	}
+
 	const auto TES3_WeatherController_updateColours = reinterpret_cast<void(__thiscall*)(WeatherController*, float)>(0x43E000);
+	void WeatherController::updateColours(float gameHour) {
+		TES3_WeatherController_updateColours(this, gameHour);
+	}
+
 	const auto TES3_WeatherController_updateClouds = reinterpret_cast<void(__thiscall*)(WeatherController*, float)>(0x43EC20);
+	void WeatherController::updateClouds(float deltaTime) {
+		TES3_WeatherController_updateClouds(this, deltaTime);
+	}
+
 	const auto TES3_WeatherController_updateCloudVertexCols = reinterpret_cast<void(__thiscall*)(WeatherController*)>(0x43EDE0);
+	void WeatherController::updateCloudVertexCols() {
+		TES3_WeatherController_updateCloudVertexCols(this);
+	}
+
+	const auto TES3_WeatherController_lerpFogDepth = reinterpret_cast<float(__thiscall*)(WeatherController*, float)>(0x443FB0);
+	float WeatherController::lerpFogDepth(float gameHour) {
+		return TES3_WeatherController_lerpFogDepth(this, gameHour);
+	}
+
+	const auto TES3_WeatherController_getFogDensityMult = reinterpret_cast<float(__thiscall*)(WeatherController*, float)>(0x444250);
+	float WeatherController::getFogDensityMult(float gameHour) {
+		return TES3_WeatherController_getFogDensityMult(this, gameHour);
+	}
+
 	const auto TES3_WeatherController_updateSunCols = reinterpret_cast<void(__thiscall*)(WeatherController*, float)>(0x43F5F0);
+	void WeatherController::updateSunCols(float gameHour) {
+		TES3_WeatherController_updateSunCols(this, gameHour);
+	}
+
 	const auto TES3_WeatherController_updateSun = reinterpret_cast<void(__thiscall*)(WeatherController*, float)>(0x43FF80);
-	const auto TES3_WeatherController_updateTick = reinterpret_cast<void(__thiscall*)(WeatherController*, NI::Property*, float, bool, float)>(0x440C80);
+	void WeatherController::updateSun(float gameHour) {
+		TES3_WeatherController_updateSun(this, gameHour);
+	}
+
+	void WeatherController::updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour) {
+		const auto worldController = WorldController::get();
+
+		// Rotate the night sky.
+		Matrix33 rotation;
+		rotation.toRotation(
+			std::fmod(worldController->gvarDaysPassed->value, 4.0f) * 0.25f * mwse::math::M_2_PI + gameHour * (1.0f / 24.0f) * mwse::math::M_PI_2,
+			0.0f,
+			0.0f,
+			1.0f
+		);
+		sgSkyNight->setLocalRotationMatrix(&rotation);
+
+		// Check to see if rain/snow particles should cull.
+		if (!updateParticles(1)) {
+			sgRainRoot->setAppCulled(true);
+		}
+		if (!updateParticles(5)) {
+			sgSnowRoot->setAppCulled(true);
+		}
+
+		if (transitionScalar >= 1.0f) {
+			windVelocityNextWeather = Vector3::ZEROES;
+			windVelocityCurrWeather = Vector3::ZEROES;
+
+			if (nextWeather) {
+				if (currentWeather) {
+					currentWeather->unload();
+				}
+
+				currentWeather = nextWeather;
+				nextWeather = nullptr;
+				transitionScalar = 0.0f;
+
+				currentWeather->updateCloudTexture(sgTriCloudsCurrent);
+
+				const auto nextCloudModelData = sgTriCloudsNext ? sgTriCloudsNext->modelData.get() : nullptr;
+				const auto currentCloudModelData = sgTriCloudsCurrent ? sgTriCloudsCurrent->modelData.get() : nullptr;
+				if (nextCloudModelData && currentCloudModelData && nextCloudModelData->textureCoords && currentCloudModelData->textureCoords) {
+					for (auto i = 0u; i < nextCloudModelData->vertexCount; ++i) {
+						currentCloudModelData->textureCoords[i] = nextCloudModelData->textureCoords[i];
+					}
+
+					sgTriCloudsCurrent->vTable.asAVObject->updateWorldVertices(sgTriCloudsCurrent);
+					currentCloudModelData->markAsChanged();
+				}
+			}
+			else {
+				transitionScalar = 0.0f;
+				currentWeather->updateCloudTexture(sgTriCloudsCurrent);
+			}
+		}
+
+		if (transitionScalar > 0.0f && nextWeather) {
+			transitionScalar += deltaTime * nextWeather->transitionDelta;
+		}
+		transitionScalar = std::min(transitionScalar, 1.0f);
+
+		// Instantly switch weather if we are passing time.
+		if (nextWeather && UI::findMenu("MenuTimePass")) {
+			Patch_WeatherController_SwitchWeather_WithEvent(this, 0, nextWeather->index, 1.0f);
+		}
+
+		if (!skyVisible) {
+			sgRainRoot->setAppCulled(true);
+			sgSnowRoot->setAppCulled(true);
+
+			if (dataHandler && dataHandler->waterController) {
+				dataHandler->waterController->setRainFrequency(0.0f);
+			}
+
+			g_fillSnowParticleVolume::set(true);
+			return;
+		}
+
+		// Dispatch simulate calls.
+		if (currentWeather) {
+			currentWeather->simulate(1.0f - transitionScalar, deltaTime);
+			currentWeather->transition();
+		}
+		if (nextWeather) {
+			nextWeather->simulate(transitionScalar, deltaTime);
+			nextWeather->transition();
+		}
+		else if (currentWeather) {
+			if (!currentWeather->getSupportsAshCloud()) {
+				sgAshCloud->setAppCulled(true);
+			}
+			if (!currentWeather->getSupportsBlightCloud()) {
+				sgBlightCloud->setAppCulled(true);
+			}
+			if (!currentWeather->getSupportsBlizzard()) {
+				sgBlizzard->setAppCulled(true);
+			}
+		}
+
+		auto fogDensityMult = lerpFogDepth(gameHour);
+		if (underwaterPitchbendState) {
+			fogDensityMult = getFogDensityMult(worldController->gvarGameHour->value);
+		}
+		fogProperty->density = std::max(fogDensityMult, 0.0f);
+		fogProperty->update(0.0f);
+
+		const auto deactivateParticlesByType = [&](int type, int& activeCount) {
+			for (auto it = listActiveParticles.begin(); it != listActiveParticles.end(); ) {
+				auto particle = *it;
+				if (particle->getType() != type) {
+					++it;
+					continue;
+				}
+
+				it = listActiveParticles.erase(it);
+				particle->object->setAppCulled(true);
+				listInactiveParticles.push_back(particle);
+				--activeCount;
+			}
+		};
+
+		if (activeRainParticles > 0 && !updateParticles(1)) {
+			deactivateParticlesByType(1, activeRainParticles);
+		}
+		if (activeSnowParticles > 0 && !updateParticles(5)) {
+			deactivateParticlesByType(5, activeSnowParticles);
+		}
+
+		if (listActiveParticles.empty()) {
+			sgRainRoot->setAppCulled(true);
+			sgSnowRoot->setAppCulled(true);
+
+			if (dataHandler && dataHandler->waterController) {
+				dataHandler->waterController->setRainFrequency(0.0f);
+			}
+
+			g_fillSnowParticleVolume::set(true);
+			return;
+		}
+
+		auto particlesEffectiveMax = 0.0f;
+		if (currentWeather) {
+			particlesEffectiveMax = currentWeather->getPrecipitationMax();
+		}
+		if (nextWeather) {
+			particlesEffectiveMax = (1.0f - transitionScalar) * particlesEffectiveMax + nextWeather->getPrecipitationMax() * transitionScalar;
+		}
+
+		const auto playerCell = dataHandler ? dataHandler->currentCell : nullptr;
+		if (sgSkyRoot->getAppCulled() || (playerCell && !playerCell->getIsOrBehavesAsExterior())) {
+			if (dataHandler && dataHandler->waterController) {
+				dataHandler->waterController->setRainFrequency(0.0f);
+			}
+		}
+		else if (rainRipples && updateParticles(1)) {
+			if (dataHandler && dataHandler->waterController && snowRipples && updateParticles(5)) {
+				dataHandler->waterController->setRainFrequency(float(activeRainParticles + activeSnowParticles) / particlesEffectiveMax);
+			}
+			else if (dataHandler && dataHandler->waterController) {
+				dataHandler->waterController->setRainFrequency(float(activeRainParticles) / particlesEffectiveMax);
+			}
+		}
+		else if (dataHandler && dataHandler->waterController && snowRipples && updateParticles(5)) {
+			dataHandler->waterController->setRainFrequency(float(activeSnowParticles) / particlesEffectiveMax);
+		}
+
+		const auto waterLevel = playerCell && playerCell->getHasWater() ? playerCell->getWaterLevel().value_or(-100.0f) : -100.0f;
+		for (auto it = listActiveParticles.begin(); it != listActiveParticles.end(); ) {
+			auto particle = *it;
+			particle->update(deltaTime, waterLevel);
+
+			if (!particle->unknown_0x34) {
+				++it;
+				continue;
+			}
+
+			it = listActiveParticles.erase(it);
+			particle->object->setAppCulled(true);
+			listInactiveParticles.push_back(particle);
+
+			const auto particleType = particle->getType();
+			if (particleType == 1) {
+				--activeRainParticles;
+			}
+			else if (particleType == 5) {
+				--activeSnowParticles;
+			}
+		}
+
+		g_fillSnowParticleVolume::set(true);
+	}
+
 	void WeatherController::updateVisuals() {
 		// Allows weather visuals to update when simulation is paused.
 		auto gameHour = WorldController::get()->gvarGameHour->value;
 		auto renderer = WorldController::get()->renderer;
-		auto fogProperty = static_cast<NI::Property*>(DataHandler::get()->sgFogProperty);
+		auto fogProperty = DataHandler::get()->sgFogProperty;
 
-		TES3_WeatherController_updateTick(this, fogProperty, 0.0, true, gameHour);
-		TES3_WeatherController_updateClouds(this, 0.0);
-		TES3_WeatherController_updateColours(this, gameHour);
-		TES3_WeatherController_updateCloudVertexCols(this);
-		TES3_WeatherController_updateAmbient(this, gameHour);
-		TES3_WeatherController_updateSunCols(this, gameHour);
-		TES3_WeatherController_updateSun(this, gameHour);
+		updateTick(fogProperty, 0.0f, true, gameHour);
+		updateClouds(0.0f);
+		updateColours(gameHour);
+		updateCloudVertexCols();
+		updateAmbient(gameHour);
+		updateSunCols(gameHour);
+		updateSun(gameHour);
 
 		// setBackgroundToFog decrements the refCount
 		renderer->refCount++;
-		TES3_WeatherController_setBackgroundToFog(this, renderer);
+		setBackgroundToFog(renderer);
 
 		// setFogColour decrements the refCount
 		fogProperty->refCount++;
-		TES3_WeatherController_setFogColour(this, fogProperty);
+		setFogColour(fogProperty);
 	}
 
 	void WeatherController::switchImmediate(int weather) {
@@ -596,6 +830,11 @@ namespace TES3 {
 		mwse::genCallEnforced(0x4413B3, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
 		mwse::genCallEnforced(0x44141F, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
 
+		// Replace function: updateTick
+		const auto WeatherController_updateTick = &WeatherController::updateTick;
+		mwse::genCallEnforced(0x4103CC, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
+		mwse::genCallEnforced(0x41050E, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
+
 		// Replace function: lerpE0
 		const auto WeatherController_lerpE0 = &WeatherController::lerpE0;
 		mwse::genCallEnforced(0x451FF1, 0x442460, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE0));
@@ -615,5 +854,17 @@ namespace TES3 {
 		bool (Region::*Region_setCurrentWeather)(int) = &Region::setCurrentWeather;
 		mwse::genCallEnforced(0x50C373, 0x4812F0, *reinterpret_cast<const DWORD*>(&Region_setCurrentWeather));
 #endif
+	}
+
+	//
+	// WeatherController::Particle
+	//
+
+	int WeatherController::Particle::getType() const {
+		return vtbl->getType(this);
+	}
+
+	void WeatherController::Particle::update(float dt, float waterLevel) {
+		return vtbl->update(this, dt, waterLevel);
 	}
 }

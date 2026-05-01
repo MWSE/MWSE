@@ -44,9 +44,9 @@ namespace TES3 {
 		struct Particle {
 			struct VirtualTable {
 				void* dtor; // 0x0
-				void* getType; // 0x4
+				int(__thiscall* getType)(const Particle*); // 0x4
 				void* create; // 0x8
-				void* update; // 0xC
+				void(__thiscall* update)(Particle*, float, float); // 0xC
 			};
 			VirtualTable* vtbl;
 			Vector3 unknown_0x4;
@@ -58,6 +58,9 @@ namespace TES3 {
 			int unknown_0x2C;
 			NI::Pointer<NI::AVObject> object; // 0x30
 			int unknown_0x34;
+
+			int getType() const;
+			void update(float dt, float waterLevel);
 		};
 		NI::Pointer<NI::Node> sgSunVis; // 0x0
 		NI::Pointer<NI::Node> sgSunBase; // 0x4
@@ -185,6 +188,7 @@ namespace TES3 {
 		void onInactivateWeather(DataHandler* dataHandler, float gameHour);
 		bool isStormy() const;
 		bool updateParticles(int mode) const;
+		void updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour);
 		float lerpE0() const;
 		Vector3* lerpE4(Vector3* out_result) const;
 
@@ -216,6 +220,16 @@ namespace TES3 {
 		unsigned char getWeatherBaseVolume() const;
 		unsigned char getWeatherScaledVolume(float transitionScalar) const;
 		float getTransitionScalarForWeather(Weather* weather) const;
+		void setBackgroundToFog(NI::Object* background);
+		void setFogColour(NI::Property* fogProperty);
+		void updateAmbient(float gameHour);
+		void updateColours(float gameHour);
+		void updateClouds(float deltaTime);
+		void updateCloudVertexCols();
+		float lerpFogDepth(float gameHour);
+		float getFogDensityMult(float gameHour);
+		void updateSunCols(float gameHour);
+		void updateSun(float gameHour);
 
 		void updateVisuals();
 

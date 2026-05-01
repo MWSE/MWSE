@@ -203,6 +203,54 @@ namespace TES3 {
 		}
 	}
 
+	float Weather::getRaindropsMax() const {
+		switch (index) {
+		case WeatherType::Rain:
+			return static_cast<const WeatherRain*>(this)->raindropsMax;
+		case WeatherType::Thunder:
+			return static_cast<const WeatherThunder*>(this)->raindropsMax;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->raindropsMax.value_or(0.0f);
+			}
+			return 0.0f;
+		}
+	}
+
+	float Weather::getSnowflakesMax() const {
+		switch (index) {
+		case WeatherType::Snow:
+			return static_cast<const WeatherSnow*>(this)->snowflakesMax;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->snowflakesMax.value_or(0.0f);
+			}
+			return 0.0f;
+		}
+	}
+
+	float Weather::getPrecipitationMax() const {
+		switch (index) {
+		case WeatherType::Rain:
+			return static_cast<const WeatherRain*>(this)->raindropsMax;
+		case WeatherType::Thunder:
+			return static_cast<const WeatherThunder*>(this)->raindropsMax;
+		case WeatherType::Snow:
+			return static_cast<const WeatherSnow*>(this)->snowflakesMax;
+		default:
+			if (isCustomWeather()) {
+				const auto customWeather = static_cast<const WeatherCustom*>(this);
+				if (customWeather->raindropsMax.has_value()) {
+					return customWeather->raindropsMax.value();
+				}
+				else if (customWeather->snowflakesMax.has_value()) {
+					return customWeather->snowflakesMax.value();
+				}
+			}
+			return 0.0f;
+		}
+	}
+
 	float Weather::getRelevance() const {
 		if (!controller) {
 			return 0.0f;
@@ -221,6 +269,42 @@ namespace TES3 {
 		}
 
 		return 0.0f;
+	}
+
+	bool Weather::getSupportsAshCloud() const {
+		switch (index) {
+		case WeatherType::Ash:
+			return true;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->supportsAshCloud;
+			}
+			return false;
+		}
+	}
+
+	bool Weather::getSupportsBlightCloud() const {
+		switch (index) {
+		case WeatherType::Blight:
+			return true;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->supportsBlightCloud;
+			}
+			return false;
+		}
+	}
+
+	bool Weather::getSupportsBlizzard() const {
+		switch (index) {
+		case WeatherType::Blizzard:
+			return true;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->supportsBlizzard;
+			}
+			return false;
+		}
 	}
 
 	float Weather::calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity) {
@@ -306,6 +390,28 @@ namespace TES3 {
 		if (controller) {
 			underwaterSoundState = controller->underwaterPitchbendState;
 		}
+	}
+
+	void Weather::updateCloudTexture(NI::TriShape* shape) const {
+		const auto buffer = mwse::tes3::getThreadSafeStringBuffer();
+		if (mwse::tes3::resolveAssetPath(texturePathCloud, buffer) == 0) {
+			mwse::tes3::logAndShowError("Weather %s texture not found.", texturePathCloud);
+			sprintf(buffer, "%s\\tx_mooncircle_full_M.tga", "Textures");
+		}
+
+		auto cloudTexture = NI::SourceTexture::createFromPath(buffer);
+		const auto cloudTextureProperty = shape->getTexturingProperty();
+		if (!cloudTextureProperty) {
+			return;
+		}
+
+		if (cloudTextureProperty->getBaseMap() == nullptr) {
+			const auto baseMap = new NI::TexturingProperty::Map(cloudTexture);
+			baseMap->filterMode = NI::TexturingProperty::FilterMode::BILERP;
+			cloudTextureProperty->setBaseMap(baseMap);
+		}
+
+		cloudTextureProperty->getBaseMap()->texture = cloudTexture;
 	}
 
 	static std::unordered_map<const Weather*, sol::object> weatherObjectCache;

@@ -13,7 +13,12 @@ namespace TES3 {
 		sol::optional<float> rainThreshold;
 		sol::optional<float> stormThreshold;
 		sol::optional<float> snowThreshold;
+		sol::optional<float> raindropsMax;
+		sol::optional<float> snowflakesMax;
 		bool supportsParticleLerping;
+		bool supportsAshCloud;
+		bool supportsBlightCloud;
+		bool supportsBlizzard;
 
 		static Weather_vTable VirtualTable;
 

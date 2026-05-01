@@ -55,6 +55,7 @@ namespace TES3 {
 		//
 
 		void createRipple(float x, float y, float scale, float speed, bool active = true);
+		void setRainFrequency(float frequency);
 		void createRipple_lua(sol::optional<sol::table> params);
 
 		//

@@ -90,11 +90,18 @@ namespace TES3 {
 		float getRainThreshold() const;
 		float getStormThreshold() const;
 		float getSnowThreshold() const;
+		float getRaindropsMax() const;
+		float getSnowflakesMax() const;
+		float getPrecipitationMax() const;
 		float getRelevance() const;
+		bool getSupportsAshCloud() const;
+		bool getSupportsBlightCloud() const;
+		bool getSupportsBlizzard() const;
 		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);
 		void updateUnderwaterFrequency();
+		void updateCloudTexture(NI::TriShape* shape) const;
 
 		// Storage for cached userdata.
 		sol::object getOrCreateLuaObject(lua_State* L) const;
