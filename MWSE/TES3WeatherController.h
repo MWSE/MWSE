@@ -184,6 +184,7 @@ namespace TES3 {
 
 		void transition(int weatherId);
 		void onInactivateWeather(DataHandler* dataHandler, float gameHour);
+		bool isStormy() const;
 		float lerpE0() const;
 		Vector3* lerpE4(Vector3* out_result) const;
 

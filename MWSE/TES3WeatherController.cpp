@@ -188,6 +188,60 @@ namespace TES3 {
 		}
 	}
 
+	bool WeatherController::isStormy() const {
+		const auto isTransitionFullyActive = transitionScalar <= 0.0f || transitionScalar >= 1.0f;
+		const auto currentThreshold = 1.0f - transitionScalar;
+
+		if (currentWeather) {
+			switch (currentWeather->index) {
+			case WeatherType::Ash:
+				if (isTransitionFullyActive || currentThreshold > static_cast<const WeatherAsh*>(currentWeather)->stormThreshold) {
+					return true;
+				}
+				break;
+			case WeatherType::Blight:
+				if (isTransitionFullyActive || currentThreshold > static_cast<const WeatherBlight*>(currentWeather)->stormThreshold) {
+					return true;
+				}
+				break;
+			case WeatherType::Blizzard:
+				if (isTransitionFullyActive || currentThreshold > static_cast<const WeatherBlizzard*>(currentWeather)->stormThreshold) {
+					return true;
+				}
+				break;
+			default:
+				if (currentWeather->isCustomWeather()) {
+					const auto customWeather = static_cast<const WeatherCustom*>(currentWeather);
+					if (customWeather->stormThreshold.has_value()
+						&& (isTransitionFullyActive || currentThreshold > customWeather->stormThreshold.value())) {
+						return true;
+					}
+				}
+				break;
+			}
+		}
+
+		if (nextWeather) {
+			switch (nextWeather->index) {
+			case WeatherType::Ash:
+				return static_cast<const WeatherAsh*>(nextWeather)->stormThreshold < transitionScalar;
+			case WeatherType::Blight:
+				return static_cast<const WeatherBlight*>(nextWeather)->stormThreshold < transitionScalar;
+			case WeatherType::Blizzard:
+				return static_cast<const WeatherBlizzard*>(nextWeather)->stormThreshold < transitionScalar;
+			default:
+				if (nextWeather->isCustomWeather()) {
+					const auto customWeather = static_cast<const WeatherCustom*>(nextWeather);
+					return customWeather->stormThreshold.has_value()
+						&& customWeather->stormThreshold.value() < transitionScalar;
+				}
+				break;
+			}
+		}
+
+		return false;
+	}
+
 	float WeatherController::lerpE0() const {
 		if (currentWeather && currentWeather->supportsParticleLerp() && nextWeather && nextWeather->supportsParticleLerp()) {
 			return mwse::math::lerp(currentWeather->unknown_0xE0, nextWeather->unknown_0xE0, transitionScalar);
@@ -490,6 +544,10 @@ namespace TES3 {
 		// Replace function: onInactivateWeather
 		const auto WeatherController_onInactivateWeather = &WeatherController::onInactivateWeather;
 		mwse::genCallEnforced(0x410245, 0x4415E0, *reinterpret_cast<const DWORD*>(&WeatherController_onInactivateWeather));
+
+		// Replace function: isStormy
+		const auto WeatherController_isStormy = &WeatherController::isStormy;
+		mwse::genCallEnforced(0x43B9E5, 0x452DC0, *reinterpret_cast<const DWORD*>(&WeatherController_isStormy));
 
 		// Replace function: lerpE0
 		const auto WeatherController_lerpE0 = &WeatherController::lerpE0;
