@@ -161,6 +161,68 @@ namespace TES3 {
 			|| (isCustomWeather() && static_cast<const WeatherCustom*>(this)->supportsParticleLerping);
 	}
 
+	float Weather::getRainThreshold() const {
+		switch (index) {
+		case WeatherType::Rain:
+			return static_cast<const WeatherRain*>(this)->rainThreshold;
+		case WeatherType::Thunder:
+			return static_cast<const WeatherThunder*>(this)->rainThreshold;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->rainThreshold.value_or(IMPOSSIBLE_THRESHOLD);
+			}
+			return IMPOSSIBLE_THRESHOLD;
+		}
+	}
+
+	float Weather::getStormThreshold() const {
+		switch (index) {
+		case WeatherType::Ash:
+			return static_cast<const WeatherAsh*>(this)->stormThreshold;
+		case WeatherType::Blight:
+			return static_cast<const WeatherBlight*>(this)->stormThreshold;
+		case WeatherType::Blizzard:
+			return static_cast<const WeatherBlizzard*>(this)->stormThreshold;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->stormThreshold.value_or(IMPOSSIBLE_THRESHOLD);
+			}
+			return IMPOSSIBLE_THRESHOLD;
+		}
+	}
+
+	float Weather::getSnowThreshold() const {
+		switch (index) {
+		case WeatherType::Snow:
+			return static_cast<const WeatherSnow*>(this)->snowThreshold;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->snowThreshold.value_or(IMPOSSIBLE_THRESHOLD);
+			}
+			return IMPOSSIBLE_THRESHOLD;
+		}
+	}
+
+	float Weather::getRelevance() const {
+		if (!controller) {
+			return 0.0f;
+		}
+
+		if (controller->currentWeather == this) {
+			if (!controller->nextWeather || controller->nextWeather->index == WEATHER_ID_INVALID) {
+				return 1.0f;
+			}
+
+			return 1.0f - controller->transitionScalar;
+		}
+
+		if (controller->nextWeather == this) {
+			return controller->transitionScalar;
+		}
+
+		return 0.0f;
+	}
+
 	float Weather::calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity) {
 		const auto cappedScaledWindSpeed = std::min(windSpeed * 8.0f, 70.0f);
 		auto nextWindSpeed = previousVelocity == Vector3::ZEROES ? cappedScaledWindSpeed : previousVelocity.length();

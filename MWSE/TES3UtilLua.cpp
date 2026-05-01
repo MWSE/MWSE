@@ -6233,7 +6233,9 @@ namespace mwse::lua {
 		weather->index = id;
 		weather->name = name.value();
 		weather->overrideId = getOptionalParam<int>(params, "overrideId");
+		weather->rainThreshold = getOptionalParam<float>(params, "rainThreshold");
 		weather->stormThreshold = getOptionalParam<float>(params, "stormThreshold");
+		weather->snowThreshold = getOptionalParam<float>(params, "snowThreshold");
 		weather->supportsParticleLerping = getOptionalParam<bool>(params, "supportsParticleLerp", false);
 
 		// Get the custom functions.

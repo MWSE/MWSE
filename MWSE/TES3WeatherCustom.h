@@ -10,7 +10,9 @@ namespace TES3 {
 		sol::protected_function transitionFunction;
 		sol::protected_function unloadFunction;
 		sol::table data;
+		sol::optional<float> rainThreshold;
 		sol::optional<float> stormThreshold;
+		sol::optional<float> snowThreshold;
 		bool supportsParticleLerping;
 
 		static Weather_vTable VirtualTable;

@@ -86,6 +86,11 @@ namespace TES3 {
 
 		bool isCustomWeather() const;
 		bool supportsParticleLerp() const;
+		static constexpr auto IMPOSSIBLE_THRESHOLD = std::numeric_limits<float>::max();
+		float getRainThreshold() const;
+		float getStormThreshold() const;
+		float getSnowThreshold() const;
+		float getRelevance() const;
 		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);

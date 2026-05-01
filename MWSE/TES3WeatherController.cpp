@@ -242,6 +242,38 @@ namespace TES3 {
 		return false;
 	}
 
+	bool WeatherController::updateParticles(int mode) const {
+		auto currentThreshold = Weather::IMPOSSIBLE_THRESHOLD;
+		auto nextThreshold = Weather::IMPOSSIBLE_THRESHOLD;
+
+		if (mode == 1) {
+			currentThreshold = currentWeather ? currentWeather->getRainThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+			nextThreshold = nextWeather ? nextWeather->getRainThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+		}
+		else if (mode == 5) {
+			currentThreshold = currentWeather ? currentWeather->getSnowThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+			nextThreshold = nextWeather ? nextWeather->getSnowThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+		}
+		else {
+			return false;
+		}
+
+		// Transitions between two weathers that support this mode always return true.
+		if (currentThreshold > 0.0f && nextThreshold > 0.0f) {
+			return true;
+		}
+
+		if (currentWeather && currentWeather->getRelevance() >= currentThreshold) {
+			return true;
+		}
+
+		if (nextWeather && nextWeather->getRelevance() >= nextThreshold) {
+			return true;
+		}
+
+		return false;
+	}
+
 	float WeatherController::lerpE0() const {
 		if (currentWeather && currentWeather->supportsParticleLerp() && nextWeather && nextWeather->supportsParticleLerp()) {
 			return mwse::math::lerp(currentWeather->unknown_0xE0, nextWeather->unknown_0xE0, transitionScalar);
@@ -340,6 +372,10 @@ namespace TES3 {
 		}
 		nextWeather->unload();
 		nextWeather = nullptr;
+	}
+
+	int WeatherController::getNextWeatherIndex() const {
+		return nextWeather ? nextWeather->index : WEATHER_ID_INVALID;
 	}
 
 	std::reference_wrapper<Weather* [MAX_WEATHER_COUNT]> WeatherController::getWeathers() {
@@ -548,6 +584,18 @@ namespace TES3 {
 		// Replace function: isStormy
 		const auto WeatherController_isStormy = &WeatherController::isStormy;
 		mwse::genCallEnforced(0x43B9E5, 0x452DC0, *reinterpret_cast<const DWORD*>(&WeatherController_isStormy));
+
+		// Replace function: updateParticles
+		const auto WeatherController_updateParticles = &WeatherController::updateParticles;
+		mwse::genCallEnforced(0x43BA00, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x43BA1B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x440D20, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x440D37, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x44117B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x4411E5, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x44139C, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x4413B3, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		mwse::genCallEnforced(0x44141F, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
 
 		// Replace function: lerpE0
 		const auto WeatherController_lerpE0 = &WeatherController::lerpE0;

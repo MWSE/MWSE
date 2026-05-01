@@ -185,6 +185,7 @@ namespace TES3 {
 		void transition(int weatherId);
 		void onInactivateWeather(DataHandler* dataHandler, float gameHour);
 		bool isStormy() const;
+		bool updateParticles(int mode) const;
 		float lerpE0() const;
 		Vector3* lerpE4(Vector3* out_result) const;
 
@@ -196,6 +197,9 @@ namespace TES3 {
 		//
 		// Helper functions.
 		//
+
+		int getCurrentWeatherIndex() const;
+		int getNextWeatherIndex() const;
 
 		std::reference_wrapper<Weather* [MAX_WEATHER_COUNT]> getWeathers();
 		Weather* getWeather(int weatherId) const;
