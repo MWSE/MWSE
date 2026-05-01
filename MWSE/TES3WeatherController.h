@@ -9,7 +9,7 @@
 #include "NINode.h"
 
 namespace TES3 {
-#define MWSE_CUSTOM_WEATHERS FALSE
+#define MWSE_CUSTOM_WEATHERS TRUE
 	constexpr int WEATHER_ID_INVALID = -1;
 	constexpr int VANILLA_MAX_WEATHER_COUNT = 10;
 
