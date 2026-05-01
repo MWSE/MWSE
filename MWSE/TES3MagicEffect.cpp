@@ -365,6 +365,7 @@ namespace TES3 {
 
 	MagicEffectExtendedData::MagicEffectExtendedData() {
 		name = "Unnamed Effect";
+		hasActorLighting = false;
 	}
 
 	bool MagicEffectExtendedData::hasName() const {
