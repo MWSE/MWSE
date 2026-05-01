@@ -6233,6 +6233,7 @@ namespace mwse::lua {
 		weather->index = id;
 		weather->name = name.value();
 		weather->overrideId = getOptionalParam<int>(params, "overrideId");
+		weather->isStormy = getOptionalParam<bool>(params, "isStormy", false);
 
 		// Get the custom functions.
 		sol::optional<sol::protected_function> simulate = params["simulate"];

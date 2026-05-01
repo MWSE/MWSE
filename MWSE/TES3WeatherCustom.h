@@ -10,6 +10,7 @@ namespace TES3 {
 		sol::protected_function transitionFunction;
 		sol::protected_function unloadFunction;
 		sol::table data;
+		bool isStormy;
 
 		static Weather_vTable VirtualTable;
 
