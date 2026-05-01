@@ -8,7 +8,6 @@ namespace TES3 {
 
 	WeatherCustom::WeatherCustom() : Weather() {
 		vTable = &VirtualTable;
-		isStormy = false;
 	}
 
 	WeatherCustom::WeatherCustom(WeatherController* wc) : WeatherCustom() {

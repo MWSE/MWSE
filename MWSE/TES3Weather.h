@@ -84,6 +84,7 @@ namespace TES3 {
 		const char* getAmbientLoopSoundID() const;
 		bool setAmbientLoopSoundID(const char* id);
 
+		bool isCustomWeather() const;
 		bool supportsParticleLerp() const;
 		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
 		void updateCloudWind();

@@ -150,6 +150,10 @@ namespace TES3 {
 		return true;
 	}
 
+	bool Weather::isCustomWeather() const {
+		return index != WEATHER_ID_INVALID && index >= VANILLA_MAX_WEATHER_COUNT;
+	}
+
 	bool Weather::supportsParticleLerp() const {
 		return index == WeatherType::Rain
 			|| index == WeatherType::Thunder
