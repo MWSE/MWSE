@@ -901,6 +901,35 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Optimize Entity::setScale to avoid string conversion overhead.
+	//
+	//
+	// The original implementation uses sprintf("%.2f") and atof() to encode scale,
+	// which is inefficient and loses precision. This patch directly encodes the scale
+	// value into the recordFlags high word without string conversion.
+    //
+
+	void __fastcall PatchEntitySetScale(TES3::Object* object, DWORD, float scale, bool bClamp) {
+		if (object->getIsLocationMarker()) {
+			return;
+		}
+
+		if (bClamp) {
+			scale = std::clamp(scale, 0.5f, 2.0f);
+		}
+
+		const auto encoded = static_cast<unsigned int>(static_cast<int>(scale * 1000.0f + 0.5f)) & 0xFFFF;
+		object->objectFlags = (object->objectFlags & 0xFFFF) | (encoded << 16);
+
+		if (object->objectType == TES3::ObjectType::Reference && object->sceneNode) {
+			const auto reference = static_cast<TES3::Reference*>(object);
+			const auto baseScale = reference->baseObject->getScale();
+			object->sceneNode->localScale = fabsf(baseScale * scale);
+			object->sceneNode->update(0.0f, 0, 1);
+		}
+	}
+
+	//
 	// Patch: Respect symbolic links.
 	// 
 	// Unlike most of the Win32 API, FindFirstFileA and FindNextFileA don't respect symbolic links and
@@ -2300,6 +2329,21 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: Optimize Entity::setScale to avoid string conversion overhead.
+		// Override the setScale entry in Entity vtables that use the base implementation.
+		auto PatchEntitySetScale_func = &PatchEntitySetScale;
+		constexpr auto setScale_offset = 0x124; // Offset in InterfaceEntity vtable
+		constexpr auto original_setScale = 0x4f0ea0;
+		constexpr DWORD setScale_vtables[] = {
+			0x7478e0, 0x747a74, 0x747bf4, 0x747fc4, 0x748110, 0x748258, 0x7483a4, 0x7484ec,
+			0x748634, 0x74877c, 0x7488fc, 0x748a7c, 0x748bc8, 0x748d10, 0x748e58, 0x748fa0,
+			0x7490e8, 0x749230, 0x749408, 0x749548, 0x749684, 0x749958, 0x749aa8, 0x749bf4,
+			0x749de8, 0x749f68, 0x74a140, 0x74a2fc, 0x74a444, 0x74a580, 0x74a7a4,
+		};
+		for (const auto vtable : setScale_vtables) {
+			overrideVirtualTableEnforced(vtable, setScale_offset, original_setScale, *reinterpret_cast<DWORD*>(&PatchEntitySetScale_func));
+		}
 	}
 
 	void installPostLuaPatches() {
