@@ -25,6 +25,7 @@
 --- @field landFogDayDepth number The weather's land fog day depth value.
 --- @field landFogNightDepth number The weather's land fog night depth value.
 --- @field name string *Read-only*. The weather's user-friendly name, hardcoded in English to match the INI settings name. These values can be `"Ashstorm"`, `"Blight"`, `"Blizzard"`, `"Clear"`, `"Cloudy"`, `"Foggy"`, `"Overcast"`, `"Rain"`, `"Snow"`, or `"Thunderstorm"` as appropriate.
+--- @field relevance number *Read-only*. The weather's relevance. If the weather is fully active and not transitioning, this value will be 1.0. If it is inactive entirely, it will be 0.0. The value will increase/decrease as it is transitioned to/from.
 --- @field skyDayColor tes3vector3 The weather's sky day color. The values can range from 0 to 1.
 --- @field skyNightColor tes3vector3 The weather's sky night color. The values can range from 0 to 1.
 --- @field skySunriseColor tes3vector3 The weather's sky sunrise color. The values can range from 0 to 1.

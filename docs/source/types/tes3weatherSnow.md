@@ -286,6 +286,17 @@ The weather's particle radius.
 
 ***
 
+### `relevance`
+<div class="search_terms" style="display: none">relevance</div>
+
+*Read-only*. The weather's relevance. If the weather is fully active and not transitioning, this value will be 1.0. If it is inactive entirely, it will be 0.0. The value will increase/decrease as it is transitioned to/from.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `skyDayColor`
 <div class="search_terms" style="display: none">skydaycolor</div>
 

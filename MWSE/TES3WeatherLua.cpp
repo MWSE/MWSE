@@ -115,7 +115,19 @@ namespace mwse::lua {
 			// Basic property binding.
 			usertypeDefinition["data"] = &TES3::WeatherCustom::data;
 			usertypeDefinition["name"] = &TES3::WeatherCustom::name;
+			usertypeDefinition["onSimulate"] = &TES3::WeatherCustom::simulateFunction;
+			usertypeDefinition["onTransition"] = &TES3::WeatherCustom::transitionFunction;
+			usertypeDefinition["onUnload"] = &TES3::WeatherCustom::unloadFunction;
 			usertypeDefinition["overrideId"] = &TES3::WeatherCustom::overrideId;
+			usertypeDefinition["raindropsMax"] = &TES3::WeatherCustom::raindropsMax;
+			usertypeDefinition["rainThreshold"] = &TES3::WeatherCustom::rainThreshold;
+			usertypeDefinition["snowflakesMax"] = &TES3::WeatherCustom::snowflakesMax;
+			usertypeDefinition["snowThreshold"] = &TES3::WeatherCustom::snowThreshold;
+			usertypeDefinition["stormThreshold"] = &TES3::WeatherCustom::stormThreshold;
+			usertypeDefinition["supportsAshCloud"] = &TES3::WeatherCustom::supportsAshCloud;
+			usertypeDefinition["supportsBlightCloud"] = &TES3::WeatherCustom::supportsBlightCloud;
+			usertypeDefinition["supportsBlizzard"] = &TES3::WeatherCustom::supportsBlizzard;
+			usertypeDefinition["supportsParticleLerping"] = &TES3::WeatherCustom::supportsParticleLerping;
 		}
 
 		// Binding for TES3::WeatherFoggy

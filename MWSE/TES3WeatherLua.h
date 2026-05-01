@@ -28,6 +28,7 @@ namespace mwse::lua {
 		usertypeDefinition["landFogDayDepth"] = &TES3::Weather::landFogDayDepth;
 		usertypeDefinition["landFogNightDepth"] = &TES3::Weather::landFogNightDepth;
 		usertypeDefinition["name"] = sol::readonly_property(&TES3::Weather::getName);
+		usertypeDefinition["relevance"] = sol::readonly_property(&TES3::Weather::getRelevance);
 		usertypeDefinition["skyDayColor"] = &TES3::Weather::skyDayCol;
 		usertypeDefinition["skyNightColor"] = &TES3::Weather::skyNightCol;
 		usertypeDefinition["skySunriseColor"] = &TES3::Weather::skySunriseCol;
