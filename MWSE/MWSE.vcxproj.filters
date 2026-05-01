@@ -3932,6 +3932,9 @@
     <ClCompile Include="NIPixelFormat.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
+    <ClCompile Include="TES3WeatherCustom.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MWSE.rc">
