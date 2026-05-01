@@ -378,46 +378,53 @@ namespace se::cs::dialog::render_window {
 
 		const auto rotationSpeed = gObjectRotate::get();
 		auto& cumulativeRot = gCumulativeRotationValues::get();
+
+		// Treat cumulativeRot as rotation vector (axis * angle)
+		// Add delta rotation along the chosen world axis
+		const float deltaAngle = relativeMouseDelta * rotationSpeed * 0.1f;
 		switch (rotationAxis) {
 		case SelectionData::RotationAxis::X:
 			widgets->setAxis(WidgetsAxis::X);
-			cumulativeRot.x += relativeMouseDelta * rotationSpeed * 0.1f;
+			cumulativeRot.x += deltaAngle;
 			break;
 		case SelectionData::RotationAxis::Y:
 			widgets->setAxis(WidgetsAxis::Y);
-			cumulativeRot.y += relativeMouseDelta * rotationSpeed * 0.1f;
+			cumulativeRot.y += deltaAngle;
 			break;
 		case SelectionData::RotationAxis::Z:
 			widgets->setAxis(WidgetsAxis::Z);
-			cumulativeRot.z += relativeMouseDelta * rotationSpeed * 0.1f;
+			cumulativeRot.z += deltaAngle;
 			break;
 		}
 
 		const auto snapAngle = math::degreesToRadians((float)gSnapAngleInDegrees::get());
 		const bool isSnapping = (isControlDown() || isAngleSnapping()) && (snapAngle != 0.0f);
 
-		NI::Vector3 orientation = cumulativeRot;
-		if (isSnapping) {
-			orientation.x = std::roundf(orientation.x / snapAngle) * snapAngle;
-			orientation.y = std::roundf(orientation.y / snapAngle) * snapAngle;
-			orientation.z = std::roundf(orientation.z / snapAngle) * snapAngle;
+		// Treat cumulativeRot as rotation vector (axis * angle)
+		float rawAngle = cumulativeRot.length();
+		NI::Vector3 axis(0.0f, 0.0f, 1.0f);  // Default to Z axis
+
+		if (rawAngle > 0.0001f) {
+			axis = cumulativeRot / rawAngle;
 		}
 
-		// Due to snapping these may have been set to 0, in which case no need to do anything else.
-		if (orientation.x == 0.0f
-			&& orientation.y == 0.0f
-			&& orientation.z == 0.0f)
-		{
+		// Snap the angle magnitude, not individual components
+		float snappedAngle = rawAngle;
+		if (isSnapping && rawAngle > 0.0001f) {
+			snappedAngle = std::roundf(rawAngle / snapAngle) * snapAngle;
+		}
+
+		// Early exit if no rotation to apply
+		if (snappedAngle < 0.0001f) {
 			return 0;
 		}
 
-		// Restart accumulating process.
-		cumulativeRot.x = 0;
-		cumulativeRot.y = 0;
-		cumulativeRot.z = 0;
+		// Subtract the applied rotation from accumulator (preserve remainder for smooth feedback)
+		cumulativeRot = axis * (rawAngle - snappedAngle);
 
+		// Build rotation directly from axis-angle (NO Euler roundtrip!)
 		NI::Matrix33 userRotation;
-		userRotation.fromEulerXYZ(orientation.x, orientation.y, orientation.z);
+		userRotation.toRotation(snappedAngle, axis);
 
 		for (auto target = selectionData->firstTarget; target; target = target->next) {
 			auto reference = target->reference;
@@ -434,7 +441,8 @@ namespace se::cs::dialog::render_window {
 				auto& oldRotation = *reference->sceneNode->localRotation;
 				auto newRotation = userRotation * oldRotation;
 
-				// Slightly modified toEulerXYZ that does not do factorization.
+				// Extract Euler angles for reference orientation storage.
+				NI::Vector3 orientation;
 				{
 					orientation.y = asin(-newRotation.m0.z);
 					if (cos(orientation.y) != 0) {
@@ -445,28 +453,6 @@ namespace se::cs::dialog::render_window {
 						orientation.x = atan2(newRotation.m2.x, newRotation.m2.y);
 						orientation.z = 0;
 					};
-				}
-
-				if (isSnapping && (target == selectionData->firstTarget)) {
-					// Snapping the new rotation after adjustments were applied.
-					// So we must only snap the *current* axis and not all them.
-					switch (rotationAxis) {
-					case SelectionData::RotationAxis::X:
-						orientation.x = std::roundf(orientation.x / snapAngle) * snapAngle;
-						break;
-					case SelectionData::RotationAxis::Y:
-						orientation.y = std::roundf(orientation.y / snapAngle) * snapAngle;
-						break;
-					case SelectionData::RotationAxis::Z:
-						orientation.z = std::roundf(orientation.z / snapAngle) * snapAngle;
-						break;
-					}
-
-					// Ensure the matrix is also snapped.
-					newRotation.fromEulerXYZ(orientation.x, orientation.y, orientation.z);
-
-					// Ensure all targets use the snapped rotation.
-					userRotation = newRotation * oldRotation.transpose();
 				}
 
 				math::standardizeAngleRadians(orientation.x);
