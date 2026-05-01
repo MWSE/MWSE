@@ -85,6 +85,10 @@ namespace TES3 {
 		bool setAmbientLoopSoundID(const char* id);
 
 		bool supportsParticleLerp() const;
+		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
+		void updateCloudWind();
+		void updateAmbientSound(float transitionScalar);
+		void updateUnderwaterFrequency();
 
 		// Storage for cached userdata.
 		sol::object getOrCreateLuaObject(lua_State* L) const;

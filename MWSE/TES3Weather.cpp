@@ -1,19 +1,22 @@
 #include "TES3Weather.h"
 
-#include "TES3WeatherController.h"
-
+#include "TES3DataHandler.h"
 #include "TES3Sound.h"
+#include "TES3Util.h"
+#include "TES3WaterController.h"
 #include "TES3WeatherAsh.h"
 #include "TES3WeatherBlight.h"
 #include "TES3WeatherBlizzard.h"
 #include "TES3WeatherClear.h"
 #include "TES3WeatherCloudy.h"
+#include "TES3WeatherController.h"
 #include "TES3WeatherCustom.h"
 #include "TES3WeatherFoggy.h"
 #include "TES3WeatherOvercast.h"
 #include "TES3WeatherRain.h"
 #include "TES3WeatherSnow.h"
 #include "TES3WeatherThunder.h"
+#include "TES3WorldController.h"
 
 #include "LuaManager.h"
 
@@ -151,6 +154,91 @@ namespace TES3 {
 		return index == WeatherType::Rain
 			|| index == WeatherType::Thunder
 			|| index == WeatherType::Snow;
+	}
+
+	float Weather::calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity) {
+		const auto cappedScaledWindSpeed = std::min(windSpeed * 8.0f, 70.0f);
+		auto nextWindSpeed = previousVelocity == Vector3::ZEROES ? cappedScaledWindSpeed : previousVelocity.length();
+		if (nextWindSpeed == 0.0f) {
+			nextWindSpeed = cappedScaledWindSpeed;
+		}
+
+		const auto randomValue = mwse::tes3::rand() % 0x7FFF;
+		const auto randomizedWindSpeed = ((randomValue * 0.000030518509f) - 0.5f) * cappedScaledWindSpeed + nextWindSpeed;
+		if (randomizedWindSpeed > cappedScaledWindSpeed * 0.5f && randomizedWindSpeed < cappedScaledWindSpeed * 2.0f) {
+			nextWindSpeed = randomizedWindSpeed;
+		}
+		return nextWindSpeed;
+	}
+
+	void Weather::updateCloudWind() {
+		if (!controller) {
+			return;
+		}
+
+		const auto isCurrentWeather = controller->currentWeather == this;
+		auto& velocity = isCurrentWeather ? controller->windVelocityCurrWeather : controller->windVelocityNextWeather;
+		const auto nextWindSpeed = calculateNextWindSpeed(windSpeed, velocity);
+
+		Matrix33 cloudRotation;
+		cloudRotation.toRotation(0.0f, 0.0f, 0.0f, 1.0f);
+		if (isCurrentWeather && controller->sgTriCloudsCurrent) {
+			controller->sgTriCloudsCurrent->setLocalRotationMatrix(&cloudRotation);
+		}
+		else if (controller->sgTriCloudsNext) {
+			controller->sgTriCloudsNext->setLocalRotationMatrix(&cloudRotation);
+		}
+
+		velocity = { 0.0f, nextWindSpeed, 0.0f };
+	}
+
+	void Weather::updateAmbientSound(float transitionScalar) {
+		const auto volume = controller ? controller->getWeatherScaledVolume(transitionScalar) : 0;
+
+		if (soundAmbientLoop) {
+			soundAmbientLoop->loadBuffer(false);
+		}
+
+		if (!soundAmbientLoop && controller && controller->dataHandler) {
+			soundAmbientLoop = controller->dataHandler->nonDynamicData->findSound(soundIDAmbientLoop);
+			if (soundAmbientLoop) {
+				soundAmbientLoop->loadBuffer(false);
+				soundAmbientLoop->setVolumeRaw(volume);
+				updateUnderwaterFrequency();
+			}
+		}
+
+		if (transitionScalar >= 0.05f) {
+			if (soundAmbientLoop && !soundAmbientLoop->isPlaying()) {
+				ambientPlaying = true;
+				soundAmbientLoop->playRaw(SoundPlayFlags::Loop, volume, 1.0f, true);
+				updateUnderwaterFrequency();
+			}
+		}
+		else {
+			ambientPlaying = false;
+			if (soundAmbientLoop && soundAmbientLoop->isPlaying()) {
+				soundAmbientLoop->stop();
+			}
+		}
+	}
+
+	void Weather::updateUnderwaterFrequency() {
+		if (!soundAmbientLoop || !soundAmbientLoop->soundBuffer) {
+			return;
+		}
+
+		const auto dataHandler = TES3::DataHandler::get();
+		if (controller && controller->underwaterPitchbendState && !underwaterSoundState && dataHandler && dataHandler->waterController) {
+			soundAmbientLoop->soundBuffer->setFrequency(dataHandler->waterController->nearWaterUnderwaterFrequency);
+		}
+		else if (controller && !controller->underwaterPitchbendState && underwaterSoundState) {
+			soundAmbientLoop->soundBuffer->setFrequency(1.0f);
+		}
+
+		if (controller) {
+			underwaterSoundState = controller->underwaterPitchbendState;
+		}
 	}
 
 	static std::unordered_map<const Weather*, sol::object> weatherObjectCache;

@@ -1,5 +1,6 @@
 #include "TES3WeatherController.h"
 
+#include "TES3AudioController.h"
 #include "TES3Cell.h"
 #include "TES3DataHandler.h"
 #include "TES3GlobalVariable.h"
@@ -333,6 +334,35 @@ namespace TES3 {
 
 	WeatherBlizzard* WeatherController::getWeatherBlizzard() const {
 		return static_cast<WeatherBlizzard*>(arrayWeathers[WeatherType::Blizzard]);
+	}
+
+	unsigned char WeatherController::getWeatherBaseVolume() const {
+		const auto worldController = WorldController::get();
+		const auto audio = worldController ? worldController->audioController : nullptr;
+		if (!audio) {
+			return 0;
+		}
+
+		return static_cast<unsigned char>(std::clamp<int>(audio->volumeMaster * audio->volumeEffects / 250, 0, 250));
+	}
+
+	unsigned char WeatherController::getWeatherScaledVolume(float transitionScalar) const {
+		return static_cast<unsigned char>(std::clamp<int>(static_cast<int>(getWeatherBaseVolume() * transitionScalar), 0, 250));
+	}
+
+	float WeatherController::getTransitionScalarForWeather(Weather* weather) const {
+		if (currentWeather == weather) {
+			if (!nextWeather || nextWeather->index == WEATHER_ID_INVALID) {
+				return 1.0f;
+			}
+			return 1.0f - transitionScalar;
+		}
+
+		if (nextWeather == weather) {
+			return transitionScalar;
+		}
+
+		return 1.0f;
 	}
 
 	const auto TES3_WeatherController_setBackgroundToFog = reinterpret_cast<void(__thiscall*)(WeatherController*, NI::Object*)>(0x43EB20);

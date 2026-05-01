@@ -209,6 +209,10 @@ namespace TES3 {
 		WeatherSnow* getWeatherSnow() const;
 		WeatherBlizzard* getWeatherBlizzard() const;
 
+		unsigned char getWeatherBaseVolume() const;
+		unsigned char getWeatherScaledVolume(float transitionScalar) const;
+		float getTransitionScalarForWeather(Weather* weather) const;
+
 		void updateVisuals();
 
 		void switchImmediate(int weather);
