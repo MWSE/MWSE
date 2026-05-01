@@ -304,11 +304,17 @@ namespace TES3 {
 		if (weatherId < WeatherType::MINIMUM || weatherId > WeatherType::MAXIMUM) {
 			return;
 		}
-		if (currentWeather) {
-			clearCurrentWeather();
+
+		clearCurrentWeather();
+
+		// If the desired weather is invalid, abort.
+		// This is only likely to happen if loading a save where a custom weather has been removed.
+		const auto weather = getWeather(weatherId);
+		if (weather == nullptr) {
+			return;
 		}
 
-		currentWeather = arrayWeathers[weatherId];
+		currentWeather = weather;
 
 		// Validate cloud texture location.
 		const auto buffer = mwse::tes3::getThreadSafeStringBuffer();
@@ -341,11 +347,16 @@ namespace TES3 {
 			return;
 		}
 
-		if (nextWeather) {
-			clearNextWeather();
+		clearNextWeather();
+
+		// If the desired weather is invalid, abort.
+		// This is only likely to happen if loading a save where a custom weather has been removed.
+		const auto weather = getWeather(weatherId);
+		if (weather == nullptr) {
+			return;
 		}
 
-		nextWeather = arrayWeathers[weatherId];
+		nextWeather = weather;
 
 		// Validate cloud texture location.
 		const auto buffer = mwse::tes3::getThreadSafeStringBuffer();
