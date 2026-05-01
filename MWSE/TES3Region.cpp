@@ -99,7 +99,7 @@ namespace TES3 {
 			currentWeatherIndex = selectedWeather;
 		}
 
-		vTable.base->setObjectModified(this, true);
+		setObjectModified(true);
 	}
 
 	const auto TES3_Region_randomizeWeather = reinterpret_cast<void(__thiscall*)(Region*)>(0x4812A0);

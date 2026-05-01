@@ -2047,14 +2047,14 @@ namespace mwse::lua {
 	}
 	const size_t patchWeatherRegionCheck_size = 0xA;
 
-	bool __fastcall OnWeatherCycle(TES3::Cell* cell, DWORD _UNUSED_) {
+	bool __fastcall OnWeatherCycle(TES3::Cell* cell) {
 		// Fire off the event.
 		if (event::WeatherCycledEvent::getEventEnabled()) {
 			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::WeatherCycledEvent());
 		}
 
 		// Call original function.
-		return reinterpret_cast<bool(__thiscall*)(TES3::Cell*)>(0x4E22F0)(cell);
+		return cell->getIsInterior();
 	}
 
 	void* __cdecl OnWeatherTransitionBegin(const char* texturePath, void* data) {

@@ -125,12 +125,12 @@ namespace TES3 {
 	}
 
 	void WeatherController::transition(int weatherId) {
-		if (transitionScalar == 0.0f) {
+		if (transitionScalar != 0.0f) {
 			return;
 		}
 
-		windVelocityCurrWeather = { 0, 0, 0 };
-		windVelocityNextWeather = { 0, 0, 0 };
+		windVelocityCurrWeather = Vector3::ZEROES;
+		windVelocityNextWeather = Vector3::ZEROES;
 
 		if (currentWeather == nullptr) {
 			switchWeather(weatherId, 1.0f);

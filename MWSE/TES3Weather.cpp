@@ -60,7 +60,6 @@ namespace TES3 {
 		underwaterSoundState = false;
 		ZeroMemory(soundIDAmbientLoop, sizeof(soundIDAmbientLoop));
 		soundAmbientLoop = nullptr;
-
 		unknown_0x208 = 0;
 		unknown_0xE0 = 0;
 		unknown_0xE4 = { 0, 0, 0 };
@@ -114,7 +113,11 @@ namespace TES3 {
 		case WeatherType::Thunder: return "Thunderstorm";
 		}
 
-		return static_cast<const WeatherCustom*>(this)->name.c_str();
+		if (isCustomWeather()) {
+			return static_cast<const WeatherCustom*>(this)->name.c_str();
+		}
+
+		return nullptr;
 	}
 
 	const char* Weather::getCloudTexturePath() const {

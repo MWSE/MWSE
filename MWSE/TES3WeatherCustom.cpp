@@ -3,12 +3,18 @@
 #include "TES3Sound.h"
 #include "TES3WeatherController.h"
 
+#include "LuaManager.h"
+
 namespace TES3 {
 	Weather_vTable WeatherCustom::VirtualTable;
 
 	WeatherCustom::WeatherCustom() : Weather() {
 		vTable = &VirtualTable;
 		supportsParticleLerping = false;
+		supportsParticleLerping = false;
+		supportsAshCloud = false;
+		supportsBlightCloud = false;
+		supportsBlizzard = false;
 	}
 
 	WeatherCustom::WeatherCustom(WeatherController* wc) : WeatherCustom() {
@@ -32,8 +38,11 @@ namespace TES3 {
 		updateCloudWind();
 		updateAmbientSound(transitionScalar);
 
-		if (simulateFunction.valid()) {
-			simulateFunction(this, transitionScalar, deltaTime);
+		{
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			if (simulateFunction.valid()) {
+				simulateFunction(this, transitionScalar, deltaTime);
+			}
 		}
 	}
 
@@ -44,8 +53,11 @@ namespace TES3 {
 			updateUnderwaterFrequency();
 		}
 
-		if (transitionFunction.valid()) {
-			transitionFunction(this);
+		{
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			if (transitionFunction.valid()) {
+				transitionFunction(this);
+			}
 		}
 	}
 
@@ -56,8 +68,11 @@ namespace TES3 {
 			soundAmbientLoop->release();
 		}
 
-		if (unloadFunction.valid()) {
-			unloadFunction(this);
+		{
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			if (unloadFunction.valid()) {
+				unloadFunction(this);
+			}
 		}
 	}
 }
