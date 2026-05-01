@@ -70,11 +70,6 @@ namespace TES3 {
 #endif
 	}
 
-	const auto TES3_WeatherController_getCurrentWeatherIndex = reinterpret_cast<int(__thiscall*)(const WeatherController*)>(0x4424E0);
-	int WeatherController::getCurrentWeatherIndex() const {
-		return TES3_WeatherController_getCurrentWeatherIndex(this);
-	}
-
 	const auto TES3_WeatherController_calcSunDamageScalar = reinterpret_cast<float(__thiscall*)(WeatherController*)>(0x0440630);
 	float WeatherController::calcSunDamageScalar() {
 		float damage = TES3_WeatherController_calcSunDamageScalar(this);
@@ -372,6 +367,10 @@ namespace TES3 {
 		}
 		nextWeather->unload();
 		nextWeather = nullptr;
+	}
+
+	int WeatherController::getCurrentWeatherIndex() const {
+		return currentWeather ? currentWeather->index : WEATHER_ID_INVALID;
 	}
 
 	int WeatherController::getNextWeatherIndex() const {

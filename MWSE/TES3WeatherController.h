@@ -171,7 +171,6 @@ namespace TES3 {
 		WeatherController* ctor(int initialWeatherId);
 		void dtor();
 
-		int getCurrentWeatherIndex() const;
 		float calcSunDamageScalar();
 		void switchWeather(int weatherId, float startingTransition);
 
