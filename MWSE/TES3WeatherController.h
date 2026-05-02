@@ -45,7 +45,7 @@ namespace TES3 {
 			struct VirtualTable {
 				void* dtor; // 0x0
 				int(__thiscall* getType)(const Particle*); // 0x4
-				void* create; // 0x8
+				bool(__thiscall* create)(Particle*, WeatherController*, float, float, float); // 0x8
 				void(__thiscall* update)(Particle*, float, float); // 0xC
 			};
 			VirtualTable* vtbl;
@@ -55,11 +55,12 @@ namespace TES3 {
 			NI::Pointer<NI::Node> rainRoot; // 0x20
 			float remainingLifetime; // 0x24
 			float diameter; // 0x28
-			int unknown_0x2C;
+			float unknown_0x2C;
 			NI::Pointer<NI::AVObject> object; // 0x30
-			int unknown_0x34;
+			bool unknown_0x34;
 
 			int getType() const;
+			bool create(WeatherController* wc, float radius, float heightMin, float heightMax);
 			void update(float dt, float waterLevel);
 		};
 		NI::Pointer<NI::Node> sgSunVis; // 0x0
@@ -188,6 +189,13 @@ namespace TES3 {
 		void onInactivateWeather(DataHandler* dataHandler, float gameHour);
 		bool isStormy() const;
 		bool updateParticles(int mode) const;
+		void setRainCulled(bool culled) const;
+		void setSnowCulled(bool culled) const;
+		void setBlizzardCulled(bool culled) const;
+		void updateStormCloud(NI::Node* stormCloud, float transitionScalar, const Vector2& stormOrigin, float stormThreshold) const;
+		void updateNodeMaterialAlpha(NI::Node* node, float alpha) const;
+		int getActiveParticleCount(int type) const;
+		bool spawnParticle(int type, float radius, float heightMin, float heightMax);
 		void updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour);
 		float lerpE0() const;
 		Vector3* lerpE4(Vector3* out_result) const;

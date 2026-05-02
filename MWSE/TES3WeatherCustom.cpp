@@ -16,8 +16,10 @@ namespace TES3 {
 		windJitterScalar = 1.0f;
 
 		supportsParticleLerping = false;
+		supportsRain = false;
 		supportsAshCloud = false;
 		supportsBlightCloud = false;
+		supportsSnow = false;
 		supportsBlizzard = false;
 	}
 
@@ -60,8 +62,7 @@ namespace TES3 {
 	void WeatherCustom::vtbl_transition() {
 		const auto relevance = getRelevance();
 		if (soundAmbientLoop && soundAmbientLoop->isPlaying()) {
-			soundAmbientLoop->setVolumeRaw(controller ? controller->getWeatherScaledVolume(relevance) : 0);
-			updateUnderwaterFrequency();
+			updatePlayingSoundVolume(soundAmbientLoop, controller ? controller->getWeatherScaledVolume(relevance) : 0);
 		}
 
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();

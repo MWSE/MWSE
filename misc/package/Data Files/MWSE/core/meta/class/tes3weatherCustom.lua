@@ -20,4 +20,6 @@
 --- @field supportsBlightCloud boolean If true, the weather supports blight clouds and they will not be automatically culled.
 --- @field supportsBlizzard boolean If true, the weather supports blizzards and they will not be automatically culled.
 --- @field supportsParticleLerping boolean If true, the weather supports particle lerping.
+--- @field supportsRain boolean If true, the weather supports rain particles.
+--- @field supportsSnow boolean If true, the weather supports snow particles.
 --- @field windJitterScalar number The scale that randomized wind jitter [-0.5, 0.5] is multiplied against.

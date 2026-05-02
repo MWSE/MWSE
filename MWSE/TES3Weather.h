@@ -87,21 +87,31 @@ namespace TES3 {
 		bool isCustomWeather() const;
 		bool supportsParticleLerp() const;
 		static constexpr auto IMPOSSIBLE_THRESHOLD = std::numeric_limits<float>::max();
+		bool getSupportsPrecipitationType(int type) const;
+		float getPrecipitationThreshold(int type) const;
+		float getPrecipitationBlend(int type, float transitionScalar) const;
+		int getPrecipitationParticleTarget(int type, float transitionScalar) const;
 		float getRainThreshold() const;
 		float getStormThreshold() const;
 		float getSnowThreshold() const;
 		float getRaindropsMax() const;
 		float getSnowflakesMax() const;
 		float getPrecipitationMax() const;
+		float getPrecipitationMax(int type) const;
 		float getRelevance() const;
+		bool getSupportsRain() const;
 		bool getSupportsAshCloud() const;
 		bool getSupportsBlightCloud() const;
+		bool getSupportsSnow() const;
 		bool getSupportsBlizzard() const;
 		float getWindJitter() const;
 		static float calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);
-		void updateUnderwaterFrequency() const;
+		void updateLoopSound(Sound*& sound, const char* soundId, bool& playing, unsigned char volume, bool shouldPlay) const;
+		void updatePlayingSoundVolume(Sound* sound, unsigned char volume) const;
+		void updatePrecipitationParticles(int type, float transitionScalar, float deltaTime, float rainRadius, float rainHeightMin, float rainHeightMax, float rainEntranceSpeed) const;
+		void updateUnderwaterFrequency(Sound* sound) const;
 		void updateCloudTexture(NI::TriShape* shape) const;
 
 		// Storage for cached userdata.

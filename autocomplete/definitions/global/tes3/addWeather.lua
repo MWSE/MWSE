@@ -239,13 +239,13 @@ return {
 				name = "transition",
 				type = "fun(e: tes3weatherTransitionEventData)",
 				optional = true,
-				description = "A function called when the weather transitions in."
+				description = "A function called when the weather transitions in. The ambient loop is automatically given a new "
 			},
 			{
 				name = "unload",
 				type = "fun(e: tes3weatherUnloadEventData)",
 				optional = true,
-				description = "A function called when the weather is unloaded."
+				description = "A function called when the weather is unloaded. The soundAmbientLoop is handled automatically."
 			},
 		},
 	}},

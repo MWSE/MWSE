@@ -20,6 +20,7 @@
 #include "TES3WaterController.h"
 #include "TES3WorldController.h"
 
+#include "NIBSAnimationNode.h"
 #include "NIProperty.h"
 #include "NIRenderer.h"
 #include "NISourceTexture.h"
@@ -244,33 +245,166 @@ namespace TES3 {
 	bool WeatherController::updateParticles(int mode) const {
 		auto currentThreshold = Weather::IMPOSSIBLE_THRESHOLD;
 		auto nextThreshold = Weather::IMPOSSIBLE_THRESHOLD;
+		auto currentSupports = false;
+		auto nextSupports = false;
 
 		if (mode == 1) {
 			currentThreshold = currentWeather ? currentWeather->getRainThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
 			nextThreshold = nextWeather ? nextWeather->getRainThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+			currentSupports = currentWeather ? currentWeather->getSupportsRain() : false;
+			nextSupports = nextWeather ? nextWeather->getSupportsRain() : false;
 		}
 		else if (mode == 5) {
 			currentThreshold = currentWeather ? currentWeather->getSnowThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
 			nextThreshold = nextWeather ? nextWeather->getSnowThreshold() : Weather::IMPOSSIBLE_THRESHOLD;
+			currentSupports = currentWeather ? currentWeather->getSupportsSnow() : false;
+			nextSupports = nextWeather ? nextWeather->getSupportsSnow() : false;
 		}
 		else {
 			return false;
 		}
 
 		// Transitions between two weathers that support this mode always return true.
-		if (currentThreshold > 0.0f && nextThreshold > 0.0f) {
+		if (currentSupports && nextSupports) {
 			return true;
 		}
 
-		if (currentWeather && currentWeather->getRelevance() >= currentThreshold) {
+		if (currentSupports && currentThreshold != Weather::IMPOSSIBLE_THRESHOLD && currentWeather && currentWeather->getRelevance() >= currentThreshold) {
 			return true;
 		}
 
-		if (nextWeather && nextWeather->getRelevance() >= nextThreshold) {
+		if (nextSupports && nextThreshold != Weather::IMPOSSIBLE_THRESHOLD && nextWeather && nextWeather->getRelevance() >= nextThreshold) {
 			return true;
 		}
 
 		return false;
+	}
+
+	void WeatherController::setRainCulled(bool culled) const {
+		if (sgRainRoot) {
+			sgRainRoot->setAppCulled(culled);
+		}
+	}
+
+	void WeatherController::setSnowCulled(bool culled) const {
+		if (sgSnowRoot) {
+			sgSnowRoot->setAppCulled(culled);
+		}
+	}
+
+	void WeatherController::setBlizzardCulled(bool culled) const {
+		if (sgBlizzard) {
+			sgBlizzard->setAppCulled(culled);
+		}
+	}
+
+	void WeatherController::updateStormCloud(NI::Node* stormCloud, float transitionScalar, const Vector2& stormOrigin, float stormThreshold) const {
+		if (!stormCloud) {
+			return;
+		}
+
+		const auto worldController = TES3::WorldController::get();
+		const auto camera = worldController ? worldController->worldCamera.getCamera() : nullptr;
+		const auto cameraPosition = camera ? camera->worldBoundOrigin : Vector3::ZEROES;
+		Vector2 stormVector(cameraPosition.x - stormOrigin.x, cameraPosition.y - stormOrigin.y);
+		if (!stormVector.normalize()) {
+			stormVector = Vector2::ZEROES;
+		}
+
+		Matrix33 ashRotation;
+		ashRotation.toRotationZ(-std::atan2(stormVector.x, stormVector.y));
+		stormCloud->setLocalRotationMatrix(&ashRotation);
+
+		if (transitionScalar < stormThreshold) {
+			stormCloud->setAppCulled(true);
+			return;
+		}
+
+		stormCloud->setAppCulled(underwaterPitchbendState);
+
+		const auto alpha = std::clamp((transitionScalar - stormThreshold) / (1.0f - stormThreshold), 0.0f, 1.0f);
+		updateNodeMaterialAlpha(stormCloud, alpha);
+	}
+
+	void WeatherController::updateNodeMaterialAlpha(NI::Node* node, float alpha) const {
+		if (!node) {
+			return;
+		}
+
+		for (auto i = 0u; i < node->children.getEndIndex(); ++i) {
+			const auto child = node->children[i].get();
+			if (child == nullptr || !child->isInstanceOfType(NI::RTTIStaticPtr::NiBSParticleNode)) {
+				continue;
+			}
+
+			const auto particleNode = static_cast<NI::BSParticleNode*>(child);
+			if (particleNode->children.getEndIndex() == 0 || !particleNode->children[0]) {
+				continue;
+			}
+
+			const auto geometry = particleNode->children[0];
+			const auto material = geometry->getMaterialProperty();
+			if (!material) {
+				continue;
+			}
+
+			material->setAlpha(alpha);
+			geometry->updateProperties();
+		}
+	}
+
+	int WeatherController::getActiveParticleCount(int type) const {
+		switch (type) {
+		case 1: return activeRainParticles;
+		case 5: return activeSnowParticles;
+		default: return 0;
+		}
+	}
+
+	bool WeatherController::spawnParticle(int type, float radius, float heightMin, float heightMax) {
+		switch (type) {
+		case 1:
+			break;
+		case 5:
+			break;
+		default:
+			return false;
+		}
+
+		auto particleIter = listInactiveParticles.begin();
+		while (particleIter != listInactiveParticles.end()) {
+			auto particle = *particleIter;
+			if (particle && particle->getType() == type) {
+				break;
+			}
+			++particleIter;
+		}
+
+		if (particleIter == listInactiveParticles.end()) {
+			return false;
+		}
+
+		auto particle = *particleIter;
+		listInactiveParticles.erase(particleIter);
+		if (!particle->create(this, radius, heightMin, heightMax)) {
+			listInactiveParticles.push_back(particle);
+			return false;
+		}
+		listActiveParticles.push_back(particle);
+		if (particle->object) {
+			particle->object->setAppCulled(false);
+		}
+
+		switch (type) {
+		case 1:
+			++activeRainParticles;
+			break;
+		case 5:
+			++activeSnowParticles;
+			break;
+		}
+
+		return true;
 	}
 
 	float WeatherController::lerpE0() const {
@@ -509,6 +643,10 @@ namespace TES3 {
 
 	void WeatherController::updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour) {
 		const auto worldController = WorldController::get();
+		const auto hasWaterController = dataHandler && dataHandler->waterController;
+		if (!hasWaterController) {
+			rainRipples = false;
+		}
 
 		// Rotate the night sky.
 		Matrix33 rotation;
@@ -786,6 +924,34 @@ namespace TES3 {
 		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, transition), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_transition));
 		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, unload), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_unload));
 
+		// Hook the rewritten built-in weather vtables.
+		auto WeatherCloudy_simulate = &WeatherCloudy::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherCloudy, offsetof(Weather_vTable, simulate), 0x447B80, *reinterpret_cast<DWORD*>(&WeatherCloudy_simulate));
+		auto WeatherFoggy_simulate = &WeatherFoggy::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherFog, offsetof(Weather_vTable, simulate), 0x448990, *reinterpret_cast<DWORD*>(&WeatherFoggy_simulate));
+		auto WeatherOvercast_simulate = &WeatherOvercast::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherOvercast, offsetof(Weather_vTable, simulate), 0x449850, *reinterpret_cast<DWORD*>(&WeatherOvercast_simulate));
+		auto WeatherAsh_simulate = &WeatherAsh::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherAshstorm, offsetof(Weather_vTable, simulate), 0x44DDB0, *reinterpret_cast<DWORD*>(&WeatherAsh_simulate));
+		auto WeatherBlight_simulate = &WeatherBlight::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlight, offsetof(Weather_vTable, simulate), 0x44EFB0, *reinterpret_cast<DWORD*>(&WeatherBlight_simulate));
+		auto WeatherSnow_simulate = &WeatherSnow::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherSnow, offsetof(Weather_vTable, simulate), 0x4502A0, *reinterpret_cast<DWORD*>(&WeatherSnow_simulate));
+		auto WeatherBlizzard_simulate = &WeatherBlizzard::simulate;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlizzard, offsetof(Weather_vTable, simulate), 0x451380, *reinterpret_cast<DWORD*>(&WeatherBlizzard_simulate));
+		auto WeatherRain_simulate = &WeatherRain::simulate;
+		auto WeatherRain_transition = &WeatherRain::transition;
+		auto WeatherRain_unload = &WeatherRain::unload;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, simulate), 0x44AB50, *reinterpret_cast<DWORD*>(&WeatherRain_simulate));
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, unload), 0x44A7F0, *reinterpret_cast<DWORD*>(&WeatherRain_unload));
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, transition), 0x44A840, *reinterpret_cast<DWORD*>(&WeatherRain_transition));
+		auto WeatherThunder_simulate = &WeatherThunder::simulate;
+		auto WeatherThunder_transition = &WeatherThunder::transition;
+		auto WeatherThunder_unload = &WeatherThunder::unload;
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, simulate), 0x44C760, *reinterpret_cast<DWORD*>(&WeatherThunder_simulate));
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, unload), 0x44C2C0, *reinterpret_cast<DWORD*>(&WeatherThunder_unload));
+		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, transition), 0x44C360, *reinterpret_cast<DWORD*>(&WeatherThunder_transition));
+
 		// Fixup constructor.
 		const auto WeatherController_ctor = &WeatherController::ctor;
 		mwse::genCallEnforced(0x417F17, DWORD(TES3_WeatherController_ctor), *reinterpret_cast<const DWORD*>(&WeatherController_ctor));
@@ -852,6 +1018,12 @@ namespace TES3 {
 		mwse::genNOPUnprotected(0x50C361, 0x50C370 - 0x50C361);
 		bool (Region::*Region_setCurrentWeather)(int) = &Region::setCurrentWeather;
 		mwse::genCallEnforced(0x50C373, 0x4812F0, *reinterpret_cast<const DWORD*>(&Region_setCurrentWeather));
+#else
+		const auto WeatherController_switchWeather = &WeatherController::switchWeather;
+		mwse::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		mwse::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		mwse::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		mwse::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
 #endif
 	}
 
@@ -861,6 +1033,10 @@ namespace TES3 {
 
 	int WeatherController::Particle::getType() const {
 		return vtbl->getType(this);
+	}
+
+	bool WeatherController::Particle::create(WeatherController* wc, float radius, float heightMin, float heightMax) {
+		return vtbl->create(this, wc, radius, heightMin, heightMax);
 	}
 
 	void WeatherController::Particle::update(float dt, float waterLevel) {

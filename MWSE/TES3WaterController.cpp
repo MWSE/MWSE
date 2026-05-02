@@ -29,6 +29,11 @@ namespace TES3 {
 		createRipple(x.value(), y.value(), scale, speed, active);
 	}
 
+	const auto TES3_WaterController_clearWaterReflectionFlag = reinterpret_cast<void(__thiscall*)(WaterController*)>(0x51E150);
+	void WaterController::clearWaterReflectionFlag() {
+		TES3_WaterController_clearWaterReflectionFlag(this);
+	}
+
 	std::reference_wrapper<float[3]> WaterController::getRippleAlphas() {
 		return rippleAlphas;
 	}

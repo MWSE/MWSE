@@ -166,6 +166,80 @@ namespace TES3 {
 			|| (isCustomWeather() && static_cast<const WeatherCustom*>(this)->supportsParticleLerping);
 	}
 
+	bool Weather::getSupportsPrecipitationType(int type) const {
+		switch (type) {
+		case 1: return getSupportsRain();
+		case 5: return getSupportsSnow();
+		}
+
+		return false;
+	}
+
+	float Weather::getPrecipitationThreshold(int type) const {
+		switch (type) {
+		case 1: return getRainThreshold();
+		case 5: return getSnowThreshold();
+		}
+
+		return IMPOSSIBLE_THRESHOLD;
+	}
+
+	float Weather::getPrecipitationBlend(int type, float transitionScalar) const {
+		if (!controller) {
+			return 0.0f;
+		}
+
+		const auto currentWeather = controller->currentWeather;
+		const auto nextWeather = controller->nextWeather;
+		const auto currentSupportsPrecipitation = currentWeather ? currentWeather->getSupportsPrecipitationType(type) : false;
+		const auto nextSupportsPrecipitation = nextWeather ? nextWeather->getSupportsPrecipitationType(type) : false;
+
+		if (controller->transitionScalar <= 0.0f || controller->transitionScalar >= 1.0f || (currentSupportsPrecipitation && nextSupportsPrecipitation)) {
+			return std::clamp(transitionScalar, 0.0f, 1.0f);
+		}
+
+		const auto precipitationThreshold = getPrecipitationThreshold(type);
+		if (precipitationThreshold == IMPOSSIBLE_THRESHOLD) {
+			return 0.0f;
+		}
+		return std::clamp((transitionScalar - precipitationThreshold) / (1.0f - precipitationThreshold), 0.0f, 1.0f);
+	}
+
+	int Weather::getPrecipitationParticleTarget(int type, float transitionScalar) const {
+		if (!controller) {
+			return 0;
+		}
+
+		const auto currentWeather = controller->currentWeather;
+		const auto nextWeather = controller->nextWeather;
+		const auto currentSupportsPrecipitation = currentWeather ? currentWeather->getSupportsPrecipitationType(type) : false;
+		const auto nextSupportsPrecipitation = nextWeather ? nextWeather->getSupportsPrecipitationType(type) : false;
+		const auto precipitationMax = getPrecipitationMax(type);
+
+		if (controller->transitionScalar <= 0.0f
+			|| controller->transitionScalar >= 1.0f
+			|| (currentSupportsPrecipitation && nextSupportsPrecipitation)) {
+			return static_cast<int>(precipitationMax);
+		}
+
+		const auto precipitationThreshold = getPrecipitationThreshold(type);
+		if (precipitationThreshold == IMPOSSIBLE_THRESHOLD) {
+			return 0;
+		}
+
+		if (currentSupportsPrecipitation && currentWeather && currentWeather->getRelevance() >= precipitationThreshold) {
+			const auto target = static_cast<int>(std::floor((1.0f - controller->transitionScalar) * precipitationMax));
+			return std::max(target, 0);
+		}
+
+		if (nextSupportsPrecipitation && nextWeather && nextWeather->getRelevance() >= precipitationThreshold) {
+			const auto target = static_cast<int>(std::floor(controller->transitionScalar * precipitationMax));
+			return std::max(target, 0);
+		}
+
+		return 0;
+	}
+
 	float Weather::getRainThreshold() const {
 		switch (index) {
 		case WeatherType::Rain:
@@ -235,25 +309,16 @@ namespace TES3 {
 	}
 
 	float Weather::getPrecipitationMax() const {
-		switch (index) {
-		case WeatherType::Rain:
-			return static_cast<const WeatherRain*>(this)->raindropsMax;
-		case WeatherType::Thunder:
-			return static_cast<const WeatherThunder*>(this)->raindropsMax;
-		case WeatherType::Snow:
-			return static_cast<const WeatherSnow*>(this)->snowflakesMax;
-		default:
-			if (isCustomWeather()) {
-				const auto customWeather = static_cast<const WeatherCustom*>(this);
-				if (customWeather->raindropsMax.has_value()) {
-					return customWeather->raindropsMax.value();
-				}
-				else if (customWeather->snowflakesMax.has_value()) {
-					return customWeather->snowflakesMax.value();
-				}
-			}
-			return 0.0f;
+		return std::max(getRaindropsMax(), getSnowflakesMax());
+	}
+
+	float Weather::getPrecipitationMax(int type) const {
+		switch (type) {
+		case 1: return getRaindropsMax();
+		case 5: return getSnowflakesMax();
 		}
+
+		return 0.0f;
 	}
 
 	float Weather::getRelevance() const {
@@ -270,14 +335,27 @@ namespace TES3 {
 				return 1.0f;
 			}
 
-			return 1.0f - controller->transitionScalar;
+			return std::clamp(1.0f - controller->transitionScalar, 0.0f, 1.0f);
 		}
 
 		if (controller->nextWeather == this) {
-			return controller->transitionScalar;
+			return std::clamp(controller->transitionScalar, 0.0f, 1.0f);
 		}
 
 		return 0.0f;
+	}
+
+	bool Weather::getSupportsRain() const {
+		switch (index) {
+		case WeatherType::Rain:
+		case WeatherType::Thunder:
+			return true;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->supportsRain;
+			}
+			return false;
+		}
 	}
 
 	bool Weather::getSupportsAshCloud() const {
@@ -304,6 +382,18 @@ namespace TES3 {
 		}
 	}
 
+	bool Weather::getSupportsSnow() const {
+		switch (index) {
+		case WeatherType::Snow:
+			return true;
+		default:
+			if (isCustomWeather()) {
+				return static_cast<const WeatherCustom*>(this)->supportsSnow;
+			}
+			return false;
+		}
+	}
+
 	bool Weather::getSupportsBlizzard() const {
 		switch (index) {
 		case WeatherType::Blizzard:
@@ -319,6 +409,7 @@ namespace TES3 {
 	float Weather::getWindJitter() const {
 		switch (index) {
 		case WeatherType::Rain: return 0.5f;
+		case WeatherType::Thunder: return 0.5f;
 		}
 
 		if (isCustomWeather()) {
@@ -365,47 +456,94 @@ namespace TES3 {
 	}
 
 	void Weather::updateAmbientSound(float transitionScalar) {
-		const auto volume = controller ? controller->getWeatherScaledVolume(transitionScalar) : 0;
+		updateLoopSound(soundAmbientLoop, soundIDAmbientLoop, ambientPlaying, controller ? controller->getWeatherScaledVolume(transitionScalar) : 0, transitionScalar >= 0.05f);
+	}
 
-		if (soundAmbientLoop) {
-			soundAmbientLoop->loadBuffer(false);
+	void Weather::updateLoopSound(Sound*& sound, const char* soundId, bool& playing, unsigned char volume, bool shouldPlay) const {
+		if (!sound && controller && controller->dataHandler && controller->dataHandler->nonDynamicData) {
+			sound = controller->dataHandler->nonDynamicData->findSound(soundId);
 		}
 
-		if (!soundAmbientLoop && controller && controller->dataHandler) {
-			soundAmbientLoop = controller->dataHandler->nonDynamicData->findSound(soundIDAmbientLoop);
-			if (soundAmbientLoop) {
-				soundAmbientLoop->loadBuffer(false);
-				soundAmbientLoop->setVolumeRaw(volume);
-				updateUnderwaterFrequency();
-			}
+		if (!sound) {
+			playing = false;
+			return;
 		}
 
-		if (transitionScalar >= 0.05f) {
-			if (soundAmbientLoop && !soundAmbientLoop->isPlaying()) {
-				ambientPlaying = true;
-				soundAmbientLoop->playRaw(SoundPlayFlags::Loop, volume, 1.0f, true);
-				updateUnderwaterFrequency();
+		sound->loadBuffer(false);
+		if (!sound->isPlaying()) {
+			sound->setVolumeRaw(volume);
+			updateUnderwaterFrequency(sound);
+		}
+
+		if (shouldPlay) {
+			if (sound->isPlaying()) {
+				sound->adjustPlayingSoundVolume(volume);
 			}
+			else {
+				sound->playRaw(SoundPlayFlags::Loop, volume, 1.0f, true);
+			}
+			updateUnderwaterFrequency(sound);
+			playing = true;
 		}
 		else {
-			ambientPlaying = false;
-			if (soundAmbientLoop && soundAmbientLoop->isPlaying()) {
-				soundAmbientLoop->stop();
+			playing = false;
+			if (sound->isPlaying()) {
+				sound->stop();
 			}
 		}
 	}
 
-	void Weather::updateUnderwaterFrequency() const {
-		if (!soundAmbientLoop || !soundAmbientLoop->soundBuffer) {
+	void Weather::updatePlayingSoundVolume(Sound* sound, unsigned char volume) const {
+		if (!sound || !sound->isPlaying()) {
+			return;
+		}
+
+		sound->adjustPlayingSoundVolume(volume);
+		updateUnderwaterFrequency(sound);
+	}
+
+	void Weather::updatePrecipitationParticles(int type, float transitionScalar, float deltaTime, float rainRadius, float rainHeightMin, float rainHeightMax, float rainEntranceSpeed) const {
+		if (!controller || rainEntranceSpeed <= 0.0f) {
+			return;
+		}
+
+		const auto rainParticleTarget = getPrecipitationParticleTarget(type, transitionScalar);
+		if (rainParticleTarget <= 0) {
+			return;
+		}
+		const auto randomSpawnRoll = mwse::rng::getRandomFloat(0.0f, 1.0f);
+		const auto activeRainParticles = controller->getActiveParticleCount(type);
+		const auto spawnChance = rainParticleTarget > 0 ? double(rainParticleTarget - activeRainParticles) / double(rainParticleTarget) : 0.0;
+		if (randomSpawnRoll > spawnChance) {
+			return;
+		}
+
+		const auto availableParticles = rainParticleTarget - activeRainParticles;
+		const auto spawnBudget = static_cast<double>(availableParticles) * deltaTime / rainEntranceSpeed;
+		if (spawnBudget <= 0.0) {
+			return;
+		}
+
+		auto spawnCount = spawnBudget;
+		while (spawnCount > 0.0 && controller->spawnParticle(type, rainRadius, rainHeightMin, rainHeightMax)) {
+			--spawnCount;
+			if (rainParticleTarget > 0 && controller->getActiveParticleCount(type) >= rainParticleTarget) {
+				break;
+			}
+		}
+	}
+
+	void Weather::updateUnderwaterFrequency(Sound* sound) const {
+		if (!sound || !sound->soundBuffer) {
 			return;
 		}
 
 		const auto dataHandler = TES3::DataHandler::get();
 		if (controller && controller->underwaterPitchbendState && !underwaterSoundState && dataHandler && dataHandler->waterController) {
-			soundAmbientLoop->setFrequency(dataHandler->waterController->nearWaterUnderwaterFrequency);
+			sound->setFrequency(dataHandler->waterController->nearWaterUnderwaterFrequency);
 		}
 		else if (controller && !controller->underwaterPitchbendState && underwaterSoundState) {
-			soundAmbientLoop->setFrequency(1.0f);
+			sound->setFrequency(1.0f);
 		}
 	}
 

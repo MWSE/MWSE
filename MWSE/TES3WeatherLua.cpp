@@ -126,6 +126,7 @@ namespace mwse::lua {
 			usertypeDefinition["stormThreshold"] = &TES3::WeatherCustom::stormThreshold;
 			usertypeDefinition["supportsAshCloud"] = &TES3::WeatherCustom::supportsAshCloud;
 			usertypeDefinition["supportsBlightCloud"] = &TES3::WeatherCustom::supportsBlightCloud;
+			usertypeDefinition["supportsSnow"] = &TES3::WeatherCustom::supportsSnow;
 			usertypeDefinition["supportsBlizzard"] = &TES3::WeatherCustom::supportsBlizzard;
 			usertypeDefinition["supportsParticleLerping"] = &TES3::WeatherCustom::supportsParticleLerping;
 			usertypeDefinition["windJitterScalar"] = &TES3::WeatherCustom::windJitterScalar;
@@ -216,14 +217,14 @@ namespace mwse::lua {
 			usertypeDefinition["rainLoopSoundId"] = sol::property(&TES3::WeatherThunder::soundIDRainLoop, &TES3::WeatherThunder::setRainLoopSoundID);
 			usertypeDefinition["threshold"] = &TES3::WeatherThunder::rainThreshold;
 			usertypeDefinition["thunderFrequency"] = &TES3::WeatherThunder::thunderFrequency;
-			usertypeDefinition["thunderSound1"] = &TES3::WeatherThunder::thunderSound1;
-			usertypeDefinition["thunderSound1Id"] = sol::property(&TES3::WeatherThunder::soundIDThunder1, &TES3::WeatherThunder::setThunder1SoundID);
-			usertypeDefinition["thunderSound2"] = &TES3::WeatherThunder::thunderSound2;
-			usertypeDefinition["thunderSound2Id"] = sol::property(&TES3::WeatherThunder::soundIDThunder2, &TES3::WeatherThunder::setThunder2SoundID);
-			usertypeDefinition["thunderSound3"] = &TES3::WeatherThunder::thunderSound3;
-			usertypeDefinition["thunderSound3Id"] = sol::property(&TES3::WeatherThunder::soundIDThunder3, &TES3::WeatherThunder::setThunder3SoundID);
-			usertypeDefinition["thunderSound4"] = &TES3::WeatherThunder::thunderSound4;
-			usertypeDefinition["thunderSound4Id"] = sol::property(&TES3::WeatherThunder::soundIDThunder4, &TES3::WeatherThunder::setThunder4SoundID);
+			usertypeDefinition["thunderSound1"] = sol::property(&TES3::WeatherThunder::getThunderSound<0>, &TES3::WeatherThunder::setThunderSound<0>);
+			usertypeDefinition["thunderSound1Id"] = sol::property(&TES3::WeatherThunder::getThunderSoundId<0>, &TES3::WeatherThunder::setThunderSoundId<0>);
+			usertypeDefinition["thunderSound2"] = sol::property(&TES3::WeatherThunder::getThunderSound<1>, &TES3::WeatherThunder::setThunderSound<1>);
+			usertypeDefinition["thunderSound2Id"] = sol::property(&TES3::WeatherThunder::getThunderSoundId<1>, &TES3::WeatherThunder::setThunderSoundId<1>);
+			usertypeDefinition["thunderSound3"] = sol::property(&TES3::WeatherThunder::getThunderSound<2>, &TES3::WeatherThunder::setThunderSound<2>);
+			usertypeDefinition["thunderSound3Id"] = sol::property(&TES3::WeatherThunder::getThunderSoundId<2>, &TES3::WeatherThunder::setThunderSoundId<2>);
+			usertypeDefinition["thunderSound4"] = sol::property(&TES3::WeatherThunder::getThunderSound<3>, &TES3::WeatherThunder::setThunderSound<3>);
+			usertypeDefinition["thunderSound4Id"] = sol::property(&TES3::WeatherThunder::getThunderSoundId<3>, &TES3::WeatherThunder::setThunderSoundId<3>);
 			usertypeDefinition["thunderSoundCount"] = &TES3::WeatherThunder::thunderSoundCount;
 			usertypeDefinition["thunderThreshold"] = &TES3::WeatherThunder::thunderThreshold;
 		}

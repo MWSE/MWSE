@@ -17,8 +17,10 @@ namespace TES3 {
 		sol::optional<float> snowflakesMax;
 		float windJitterScalar;
 		bool supportsParticleLerping;
+		bool supportsRain;
 		bool supportsAshCloud;
 		bool supportsBlightCloud;
+		bool supportsSnow;
 		bool supportsBlizzard;
 
 		static Weather_vTable VirtualTable;

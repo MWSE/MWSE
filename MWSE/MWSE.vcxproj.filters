@@ -3434,6 +3434,27 @@
     <ClCompile Include="TES3WeatherThunder.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
+    <ClCompile Include="TES3WeatherCloudy.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherAsh.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherBlight.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherFoggy.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherOvercast.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherSnow.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherBlizzard.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
     <ClCompile Include="LuaScript.cpp">
       <Filter>Source Files\Lua</Filter>
     </ClCompile>

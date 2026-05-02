@@ -6303,8 +6303,10 @@ namespace mwse::lua {
 		weather->snowflakesMax = getOptionalParam<float>(params, "snowflakesMax");
 		weather->windJitterScalar = getOptionalParam<float>(params, "windJitterScalar", 1.0f);
 		weather->supportsParticleLerping = getOptionalParam<bool>(params, "supportsParticleLerp", false);
+		weather->supportsRain = getOptionalParam<bool>(params, "supportsRain", false);
 		weather->supportsAshCloud = getOptionalParam<bool>(params, "supportsAshCloud", false);
 		weather->supportsBlightCloud = getOptionalParam<bool>(params, "supportsBlightCloud", false);
+		weather->supportsSnow = getOptionalParam<bool>(params, "supportsSnow", false);
 		weather->supportsBlizzard = getOptionalParam<bool>(params, "supportsBlizzard", false);
 
 		// Get the custom functions.

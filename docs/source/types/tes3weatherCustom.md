@@ -495,6 +495,28 @@ If true, the weather supports particle lerping.
 
 ***
 
+### `supportsRain`
+<div class="search_terms" style="display: none">supportsrain</div>
+
+If true, the weather supports rain particles.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `supportsSnow`
+<div class="search_terms" style="display: none">supportssnow</div>
+
+If true, the weather supports snow particles.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `transitionDelta`
 <div class="search_terms" style="display: none">transitiondelta</div>
 

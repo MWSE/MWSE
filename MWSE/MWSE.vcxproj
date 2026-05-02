@@ -1026,6 +1026,13 @@
     <ClCompile Include="TES3WeatherController.cpp" />
     <ClCompile Include="TES3WeatherControllerLua.cpp" />
     <ClCompile Include="TES3WeatherCustom.cpp" />
+    <ClCompile Include="TES3WeatherCloudy.cpp" />
+    <ClCompile Include="TES3WeatherAsh.cpp" />
+    <ClCompile Include="TES3WeatherBlight.cpp" />
+    <ClCompile Include="TES3WeatherFoggy.cpp" />
+    <ClCompile Include="TES3WeatherOvercast.cpp" />
+    <ClCompile Include="TES3WeatherSnow.cpp" />
+    <ClCompile Include="TES3WeatherBlizzard.cpp" />
     <ClCompile Include="TES3WeatherLua.cpp" />
     <ClCompile Include="TES3WeatherRain.cpp" />
     <ClCompile Include="TES3WeatherThunder.cpp" />
