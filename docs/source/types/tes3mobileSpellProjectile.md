@@ -88,6 +88,17 @@ Access to the raw damage that this projectile will inflict.
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `expire`
 <div class="search_terms" style="display: none">expire</div>
 

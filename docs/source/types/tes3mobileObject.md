@@ -54,6 +54,17 @@ A vector that shows the size of the bounding box in X and Y directions. `boundSi
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `flags`
 <div class="search_terms" style="display: none">flags</div>
 

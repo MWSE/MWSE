@@ -26,6 +26,7 @@ namespace TES3 {
 			ActiveInSimulation = 0x4,
 			AffectedByGravity = 0x10,
 			CollisionActive = 0x20,
+			LightingValid = 0x80,
 			UsesUnionBV = 0x100,
 			Werewolf = 0x400,
 			Underwater = 0x800,
@@ -48,6 +49,7 @@ namespace TES3 {
 		enum FlagBit {
 			ActiveInSimulationBit = 2,
 			CollisionActiveBit = 5,
+			LightingValidBit = 7,
 			UsesUnionBVBit = 8,
 			WerewolfBit = 10,
 			UnderwaterBit = 11,
@@ -319,6 +321,8 @@ namespace TES3 {
 		bool getMovementCollisionFlag() const;
 		void setMovementCollisionFlag(bool value);
 		sol::table getCollisions_lua(sol::this_state ts) const;
+		bool getLightingValidFlag() const;
+		void setLightingValidFlag(bool value);
 
 		bool getMobToMobCollision() const;
 		void setMobToMobCollision(bool collide);

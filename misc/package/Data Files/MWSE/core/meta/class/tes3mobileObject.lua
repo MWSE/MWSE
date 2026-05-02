@@ -9,6 +9,7 @@
 --- @field boundSize2D tes3vector2 A vector that shows the size of the bounding box in X and Y directions. `boundSize` is a convenience property that exposes the bounding in 3 dimensions.
 --- @field cellX number *Read-only*. The X grid coordinate of the cell the mobile is in.
 --- @field cellY number *Read-only*. The Y grid coordinate of the cell the mobile is in.
+--- @field dynamicLightingValid boolean If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
 --- @field flags integer Access to the root mobile object flags, represented as an integer. Should not be accessed directly.
 --- @field height number The height of the mobile above the ground.
 --- @field impulseVelocity tes3vector3 A vector that represents the 3D acceleration of the object.
