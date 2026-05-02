@@ -1,5 +1,7 @@
 #include "NIRenderer.h"
 
+#include "NIPixelData.h"
+
 namespace NI {
 	char* Renderer::getDriverInfo() {
 		return vTable.asRenderer->getDriverInfo(this);
@@ -26,7 +28,24 @@ namespace NI {
 	}
 
 	PixelData* Renderer::takeScreenshot(const Rect<unsigned int>* bounds) {
-		return vTable.asRenderer->takeScreenshot(this, bounds);
+		auto pixelData = vTable.asRenderer->takeScreenshot(this, bounds);
+		if (pixelData == nullptr) {
+			return nullptr;
+		}
+		const auto desiredFormat = pixelData->pixelFormat.getD3DFormat();
+
+		// For some reason the game needs to swap B and R pixels.
+		// See paper doll code, or around 0x42F939.
+		if (desiredFormat == D3DFMT_X8R8G8B8) {
+			const auto pixels = reinterpret_cast<NI::PixelRGBA*>(pixelData->pixels);
+			const auto pixelCount = pixelData->getWidth() * pixelData->getHeight();
+			for (auto i = 0u; i < pixelCount; ++i) {
+				auto& pixel = pixels[i];
+				std::swap(pixel.r, pixel.b);
+			}
+		}
+
+		return pixelData;
 	}
 
 	bool Renderer::getTextureMemoryStats(unsigned int& total, unsigned int& available) {
