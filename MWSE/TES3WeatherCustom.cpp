@@ -51,7 +51,6 @@ namespace TES3 {
 				sol::error error = result;
 				mwse::log::getLog() << "Lua error encountered in custom weather simulate function:" << std::endl << error.what() << std::endl;
 				mwse::lua::reportErrorInGame("custom weather simulate", error);
-				return;
 			}
 		}
 	}
@@ -91,8 +90,12 @@ namespace TES3 {
 				sol::error error = result;
 				mwse::log::getLog() << "Lua error encountered in custom weather transition function:" << std::endl << error.what() << std::endl;
 				mwse::lua::reportErrorInGame("custom weather transition", error);
-				return;
 			}
+		}
+
+		// Only update the underwater sound state at the very end of simulation/transition.
+		if (controller) {
+			underwaterSoundState = controller->underwaterPitchbendState;
 		}
 	}
 
@@ -113,7 +116,6 @@ namespace TES3 {
 				sol::error error = result;
 				mwse::log::getLog() << "Lua error encountered in custom weather unload function:" << std::endl << error.what() << std::endl;
 				mwse::lua::reportErrorInGame("custom weather unload", error);
-				return;
 			}
 		}
 	}

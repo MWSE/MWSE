@@ -381,21 +381,17 @@ namespace TES3 {
 		}
 	}
 
-	void Weather::updateUnderwaterFrequency() {
+	void Weather::updateUnderwaterFrequency() const {
 		if (!soundAmbientLoop || !soundAmbientLoop->soundBuffer) {
 			return;
 		}
 
 		const auto dataHandler = TES3::DataHandler::get();
 		if (controller && controller->underwaterPitchbendState && !underwaterSoundState && dataHandler && dataHandler->waterController) {
-			soundAmbientLoop->soundBuffer->setFrequency(dataHandler->waterController->nearWaterUnderwaterFrequency);
+			soundAmbientLoop->setFrequency(dataHandler->waterController->nearWaterUnderwaterFrequency);
 		}
 		else if (controller && !controller->underwaterPitchbendState && underwaterSoundState) {
-			soundAmbientLoop->soundBuffer->setFrequency(1.0f);
-		}
-
-		if (controller) {
-			underwaterSoundState = controller->underwaterPitchbendState;
+			soundAmbientLoop->setFrequency(1.0f);
 		}
 	}
 

@@ -100,7 +100,7 @@ namespace TES3 {
 		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);
-		void updateUnderwaterFrequency();
+		void updateUnderwaterFrequency() const;
 		void updateCloudTexture(NI::TriShape* shape) const;
 
 		// Storage for cached userdata.
