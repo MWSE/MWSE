@@ -143,6 +143,8 @@ namespace NI {
 
 		void setModelSpaceABV(BoundingVolume* volume);
 
+		std::function<Pointer<AVObject>()> traverse_lua(sol::optional<sol::table> param);
+
 		void update_lua(sol::optional<sol::table> args);
 
 		//

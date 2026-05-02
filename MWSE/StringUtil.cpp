@@ -535,14 +535,14 @@ namespace mwse::string {
 	}
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring) {
-		if (substring.size() >= string.size()) {
+		if (substring.size() > string.size()) {
 			return false;
 		}
 		return string.compare(0, substring.size(), substring) == 0;
 	}
 
 	bool ends_with(const std::string_view& string, const std::string_view& substring) {
-		if (substring.size() >= string.size()) {
+		if (substring.size() > string.size()) {
 			return false;
 		}
 		return string.compare(string.size() - substring.size(), substring.size(), substring) == 0;
