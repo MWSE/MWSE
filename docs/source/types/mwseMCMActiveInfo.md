@@ -8,7 +8,7 @@
 
 An Info field that shows mouseover information for settings.
 
-This type inherits the following: [mwseMCMMouseOverInfo](../types/mwseMCMMouseOverInfo.md), [mwseMCMInfo](../types/mwseMCMInfo.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMMouseOverInfo](../types/mwseMCMMouseOverInfo.md), [mwseMCMInfo](../types/mwseMCMInfo.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `callback`

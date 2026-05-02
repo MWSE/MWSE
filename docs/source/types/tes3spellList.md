@@ -25,25 +25,6 @@ Direct access to the spells in this list.
 
 ## Methods
 
-### `add`
-<div class="search_terms" style="display: none">add</div>
-
-Adds a spell to the list.
-
-```lua
-local result = myObject:add(spell)
-```
-
-**Parameters**:
-
-* `spell` (string, [tes3spell](../types/tes3spell.md)): The spell.
-
-**Returns**:
-
-* `result` (boolean)
-
-***
-
 ### `contains`
 <div class="search_terms" style="display: none">contains</div>
 
@@ -100,7 +81,7 @@ local result = myObject:getCheapest()
 ### `remove`
 <div class="search_terms" style="display: none">remove</div>
 
-Removes a spell from the list.
+Removes a spell from the list. This is deprecated, please use tes3.removeSpell instead. This function does not update any modified flags or UI systems, so it is likely to cause issues.
 
 ```lua
 local result = myObject:remove(spell)

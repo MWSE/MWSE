@@ -8,7 +8,7 @@
 
 A mobile object for a creature.
 
-This type inherits the following: [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md)
+This type inherits the following: [tes3mobileActor](../types/tes3mobileActor.md), [tes3mobileObject](../types/tes3mobileObject.md).
 ## Properties
 
 ### `actionBeforeCombat`
@@ -371,6 +371,17 @@ This is the time measured in hours from the beginning of the game when the actor
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `effectAttributes`
 <div class="search_terms" style="display: none">effectattributes</div>
 
@@ -407,7 +418,9 @@ This is the time measured in hours from the beginning of the game when the actor
 ### `facing`
 <div class="search_terms" style="display: none">facing</div>
 
-*Read-only*. The facing of the actor, in radians. It corresponds to the `mobile.reference.orientation.z`. Facing of 0 corresponds to the in game North, facing of PI corresponds to the game South. It's in clockwise direction.
+*Read-only*. The facing of the actor, in radians. Facing is defined like a compass heading, positive values are clockwise and North (+Y axis) is zero, while facing of PI corresponds to South (-Y axis).
+
+It's the same as `mobile.reference.orientation.z`.
 
 **Returns**:
 
@@ -583,7 +596,7 @@ No description yet available.
 ### `height`
 <div class="search_terms" style="display: none">height</div>
 
-The height of the mobile above the ground.
+The height of the mobile's bounding box.
 
 **Returns**:
 
@@ -947,6 +960,17 @@ Direct access to the actor's current movement flags, showing if the actor is sne
 
 ***
 
+### `isSpeaking`
+<div class="search_terms" style="display: none">isspeaking, speaking</div>
+
+*Read-only*. This property is `true` when the actor is speaking a dialogue line. This includes: hit grunts, combat reactions, and the usual dialogue.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `isSwimming`
 <div class="search_terms" style="display: none">isswimming, swimming</div>
 
@@ -1021,6 +1045,17 @@ Direct access to the actor's levitate effect attribute.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `lightEffectData`
+<div class="search_terms" style="display: none">lighteffectdata</div>
+
+*Read-only*. Access to the mobile's active spell light data, if a light effect or internal light is currently attached. This can be used to inspect the current stacked light radius before applying additional custom light-spell changes.
+
+**Returns**:
+
+* `result` ([tes3mobileObjectLightData](../types/tes3mobileObjectLightData.md), nil)
 
 ***
 
@@ -1184,6 +1219,9 @@ The distance to the player. Updated every frame when the mobile is in an active 
 <div class="search_terms" style="display: none">position</div>
 
 A vector that represents the 3D position of the object.
+
+!!! info
+	For actors, this is the point between the actor's feet.
 
 **Returns**:
 
@@ -1469,7 +1507,7 @@ Direct access to the actor's sound effect attribute.
 ### `spellReadied`
 <div class="search_terms" style="display: none">spellreadied</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor has a spell readied.
+Friendly access to the actor's flag that controls if the actor has a spell readied.
 
 **Returns**:
 
@@ -1570,6 +1608,10 @@ The currently equipped light.
 
 A vector that represents the 3D velocity of the object.
 
+!!! tip
+	To change the velocity of an actor change this property during the [calcMoveSpeed](https://mwse.github.io/MWSE/events/calcMoveSpeed/) event.
+
+
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
@@ -1634,7 +1676,7 @@ A flag for if the actor has a weapon ready or being readied (visible and held in
 ### `werewolf`
 <div class="search_terms" style="display: none">werewolf</div>
 
-*Read-only*. Friendly access to the actor's flag that controls if the actor in werewolf form.
+*Read-only*. Friendly access to the actor's flag that controls if the actor is in werewolf form.
 
 **Returns**:
 
@@ -1793,12 +1835,17 @@ local result = myObject:doJump({ velocity = ..., applyFatigueCost = ..., allowMi
 Equips an item, optionally adding the item if needed. If the best match is already equipped, it does not perform an unequip-equip cycle, but does return `true`. If the item cannot be equipped, it will return `false`.
 
 Equip may fail for the following reasons:
+
 - The item cannot be found in the inventory.
 - The exact match cannot be found when itemData is provided.
 - When a weapon is being used to attack, it cannot be replaced.
 
+!!! warning
+	This method doesn't trigger [equip](https://mwse.github.io/MWSE/events/equip/) or [equipped](https://mwse.github.io/MWSE/events/equipped/) events.
+
+
 ```lua
-local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ... })
+local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ..., selectBestCondition = ..., selectWorstCondition = ..., playSound = ... })
 ```
 
 **Parameters**:
@@ -1809,6 +1856,7 @@ local itemEquipped = myObject:equip({ item = ..., itemData = ..., addItem = ...,
 	* `addItem` (boolean): *Default*: `false`. If `true`, the item will be added to the actor's inventory if needed.
 	* `selectBestCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the best condition and best charge will be selected.
 	* `selectWorstCondition` (boolean): *Default*: `false`. If `true`, the item in the inventory with the worst condition and worst charge will be selected. Can be useful for selecting tools.
+	* `playSound` (boolean): *Default*: `true`. If `true`, the default item sound will be played for the item.
 
 **Returns**:
 
@@ -1900,6 +1948,25 @@ local result = myObject:getBootsWeight()
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `getEffectiveAttackDistance`
+<div class="search_terms" style="display: none">geteffectiveattackdistance, effectiveattackdistance</div>
+
+Returns the distance used for checking attack range. This is measured by the distance between the actors' bounding boxes edges, as if the actors were exactly facing each other. The number may be negative if the bounding boxes overlap.
+
+```lua
+local distance = myObject:getEffectiveAttackDistance(mobile)
+```
+
+**Parameters**:
+
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): The target actor.
+
+**Returns**:
+
+* `distance` (number)
 
 ***
 
@@ -2201,6 +2268,36 @@ myObject:resurrect({ resetState = ..., moveToStartingLocation = ... })
 
 ***
 
+### `setLightEffectDiffuseColor`
+<div class="search_terms" style="display: none">setlighteffectdiffusecolor, lighteffectdiffusecolor</div>
+
+Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
+
+```lua
+myObject:setLightEffectDiffuseColor(colour)
+```
+
+**Parameters**:
+
+* `colour` ([niColor](../types/niColor.md), [tes3vector3](../types/tes3vector3.md), table): The new diffuse color for the spell light.
+
+***
+
+### `setLightEffectFalloff`
+<div class="search_terms" style="display: none">setlighteffectfalloff, lighteffectfalloff</div>
+
+Sets the falloff radius of the mobile's active spell light and updates its attenuation.
+
+```lua
+myObject:setLightEffectFalloff(radius)
+```
+
+**Parameters**:
+
+* `radius` (integer): The desired light radius.
+
+***
+
 ### `setPowerUseTimestamp`
 <div class="search_terms" style="display: none">setpowerusetimestamp, powerusetimestamp</div>
 
@@ -2262,6 +2359,9 @@ myObject:stopCombat(force)
 <div class="search_terms" style="display: none">unequip</div>
 
 Unequips one or more items from the actor.
+
+!!! note
+	This method triggers the [unequipped](https://mwse.github.io/MWSE/events/unequipped/) event, unlike the `equip` method.
 
 ```lua
 local itemUnequipped = myObject:unequip({ item = ..., itemData = ..., type = ..., armorSlot = ..., clothingSlot = ... })

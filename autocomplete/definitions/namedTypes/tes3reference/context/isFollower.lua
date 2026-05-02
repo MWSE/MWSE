@@ -1,3 +1,11 @@
+local followPackage = {
+	[tes3.aiPackage.follow] = true,
+	-- Depending on your needs, you can also include player's escortees.
+	-- In the base game, AiEscort package is quite rare. Only White Guar
+	-- has that package and with player as the targetActor.
+	[tes3.aiPackage.escort] = true,
+}
+
 --- This function returns `true` if a given mobile has
 --- follow ai package with player as its target
 ---@param mobile tes3mobileNPC|tes3mobileCreature
@@ -12,11 +20,8 @@ local function isFollower(mobile)
 	if not package then
 		return false
 	end
-	if package.type == tes3.aiPackage.follow
-	-- Depending on your needs, you can also include the actor's escorter.
-	-- In the base game, AiEscort package is quite rare. Only White Guar
-	-- has that package and targetActor is the player.
-	or package.type == tes3.aiPackage.escort then
+
+	if followPackage[package.type] then
 		local target = package.targetActor
 
 		if target.objectType == tes3.objectType.mobilePlayer then
@@ -31,13 +36,11 @@ end
 ---@return tes3reference[] followerList
 local function getFollowers()
 	local followers = {}
-	local i = 1
 
 	for _, mobile in pairs(tes3.mobilePlayer.friendlyActors) do
 		---@cast mobile tes3mobileNPC|tes3mobileCreature
 		if isFollower(mobile) then
-			followers[i] = mobile.reference
-			i = i + 1
+			table.insert(followers, mobile.reference)
 		end
 	end
 

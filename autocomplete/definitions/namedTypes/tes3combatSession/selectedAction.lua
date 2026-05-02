@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[The next action. From observed behavior, this roughly maps to:
+	description = [[The current combat action, until the next AI decision. This can be changed to affect what the AI is doing in the short term. From observed behavior, this roughly maps to:
 
 Value | Behavior
 ----- | ---------
@@ -13,7 +13,7 @@ Value | Behavior
 6     | Use summon spell
 7     | Flee
 8     | Cast on-self empowering spell (For example, Ancestor Guardian)
-9     | MaybeEquipUseItem?
+9     | Use alchemy item
 10    | Use enchanted item
 ]],
 	valuetype = "integer",

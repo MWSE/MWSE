@@ -20,12 +20,12 @@ namespace se::cs {
 	}
 
 
-	bool Script::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		if (BaseObject::search(needle, caseSensitive, regex)) {
+	bool Script::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}
 
-		if (text && string::complex_contains(text, needle, caseSensitive, regex)) {
+		if (text && string::complex_contains(text, needle, settings, regex)) {
 			return true;
 		}
 

@@ -20,7 +20,7 @@ event.register(tes3.event.menuExit, menuExitCallback)
 
 ## Event Data
 
-* `menuMode` (boolean): *Read-only*. Always true for this event. This parameter is only useful when registering the same callback for menuEnter and menuExit events.
+* `menuMode` (boolean): *Read-only*. Always false for this event, indicating that menu mode is off. This parameter is only useful when registering the same callback for menuEnter and menuExit events.
 
 
 ## Related events

@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event is triggered when an animation is about to be played.
+This event is triggered when an animation is about to be played. This happens after the `simulated` event.
 
 ```lua
 --- @param e playGroupEventData

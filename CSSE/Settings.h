@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSBaseObject.h"
+
 namespace se::cs {
 	struct Settings_t {
 		//
@@ -77,17 +79,9 @@ namespace se::cs {
 		struct ObjectWindowSettings {
 			bool use_button_style_tabs = true;
 			bool clear_filter_on_tab_switch = true;
-			bool filter_by_id = true;
-			bool filter_by_name = true;
-			bool filter_by_icon_path = true;
-			bool filter_by_model_path = true;
-			bool filter_by_enchantment_id = true;
-			bool filter_by_script_id = true;
-			bool filter_by_book_text = true;
-			bool filter_by_faction = true;
+			BaseObject::SearchSettings search_settings = {};
 			bool highlight_modified_items = true;
-			bool use_regex = false;
-			bool case_sensitive = false;
+			bool hide_deprecated = true;
 
 			ColumnSettings column_actor_class = { ColumnSettings::DEFAULT_SIZE_ID };
 			ColumnSettings column_actor_essential = { ColumnSettings::DEFAULT_SIZE_BOOL };
@@ -182,10 +176,12 @@ namespace se::cs {
 			std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
 			std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
 			std::array<unsigned char, 3> highlight_modified_new_object_color = { 215, 240, 255 };
+			std::array<unsigned char, 3> highlight_deprecated_object_color = { 225, 225, 225 };
 
 			unsigned int highlight_deleted_object_packed_color = 0xFFFFFF;
 			unsigned int highlight_modified_from_master_packed_color = 0xFFFFFF;
 			unsigned int highlight_modified_new_object_packed_color = 0xFFFFFF;
+			unsigned int highlight_deprecated_object_packed_color = 0xFFFFFF;
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;
@@ -214,8 +210,7 @@ namespace se::cs {
 		} script_editor;
 
 		struct TextSearch {
-			bool use_regex = false;
-			bool case_sensitive = false;
+			BaseObject::SearchSettings search_settings = {};
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;

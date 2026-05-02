@@ -7,6 +7,13 @@
 
 namespace se::cs {
 	struct DataHandler {
+		struct ExteriorCellData {
+			unsigned char loadingFlags;
+			Cell* cell;
+
+			ExteriorCellData() = delete;
+			~ExteriorCellData() = delete;
+		};
 		struct WaterRenderController {
 			bool unknown_0x0;
 			bool unknown_0x1;
@@ -17,31 +24,7 @@ namespace se::cs {
 			int tileTextureDivisor; // 0x14
 		};
 		RecordHandler* recordHandler;
-		int unknown_4;
-		int unknown_8;
-		int unknown_C;
-		int unknown_10;
-		int unknown_14;
-		int unknown_18;
-		int unknown_1C;
-		int unknown_20;
-		int unknown_24;
-		int unknown_28;
-		int unknown_2C;
-		int unknown_30;
-		int unknown_34;
-		int unknown_38;
-		int unknown_3C;
-		int unknown_40;
-		int unknown_44;
-		int unknown_48;
-		int unknown_4C;
-		int unknown_50;
-		int unknown_54;
-		int unknown_58;
-		int unknown_5C;
-		int unknown_60;
-		int unknown_64;
+		ExteriorCellData* exteriorCellData[5][5]; // 0x4
 		int unknown_68;
 		int unknown_6C;
 		int unknown_70;
@@ -11672,4 +11655,5 @@ namespace se::cs {
 			return memory::ExternalGlobal<DataHandler*, 0x6CE8F0>::get();
 		}
 	};
+	static_assert(sizeof(DataHandler) == 0xB5D8, "TES3::DataHandler failed size validation");
 }

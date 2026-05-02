@@ -8,7 +8,7 @@
 
 A game structure that keeps track of a magic source and all the actors it affects. Each spell cast, alchemy or enchanted item use is a magic source. Area effect magic can hit multiple actors and have up to 8 effects. Individual magic effects are `tes3magicEffectInstance`s.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -223,7 +223,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -261,6 +261,19 @@ Shows if the state is pre-cast, cast, beginning, working, ending, retired, etc. 
 **Returns**:
 
 * `result` ([tes3.spellState](../references/spell-states.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -376,19 +389,19 @@ myObject:playVisualEffect({ effectIndex = ..., position = ..., visual = ..., sca
 	```lua
 	local function onDamaged(e)
 		-- Check if we killed our target with this damage.
-		if e.killingBlow then
-			-- Iterate through the killed target's active magic effects.
-			for _, activeMagicEffect in pairs(e.mobile.activeMagicEffectList) do
-				-- Check if the target is a vampire.
-				if activeMagicEffect.effectId == tes3.effect.vampirism then
-					-- Play the soul trap visual effect at the position of the target.
-					activeMagicEffect.instance:playVisualEffect{
-						effectIndex = 0,
-						position = e.mobile.position,
-						visual = "VFX_Soul_Trap"
-					}
-					break
-				end
+		if not e.killingBlow then return end
+	
+		-- Iterate through the killed target's active magic effects.
+		for _, activeMagicEffect in pairs(e.mobile.activeMagicEffectList) do
+			-- Check if the target is a vampire.
+			if activeMagicEffect.effectId == tes3.effect.vampirism then
+				-- Play the soul trap visual effect at the position of the target.
+				activeMagicEffect.instance:playVisualEffect{
+					effectIndex = 0,
+					position = e.mobile.position,
+					visual = "VFX_Soul_Trap"
+				}
+				break
 			end
 		end
 	end

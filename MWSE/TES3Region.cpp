@@ -17,11 +17,6 @@ namespace TES3 {
 	// TES3::Region
 	//
 
-	const auto TES3_Region_changeWeather = reinterpret_cast<void(__thiscall*)(Region*, int)>(0x4812F0);
-	void Region::changeWeather(int weather) {
-		TES3_Region_changeWeather(this, weather);
-	}
-
 	const auto TES3_Region_randomizeWeather = reinterpret_cast<void(__thiscall*)(Region*)>(0x4812A0);
 	void Region::randomizeWeather() {
 		TES3_Region_randomizeWeather(this);
@@ -38,16 +33,16 @@ namespace TES3 {
 		strncpy_s(name, value, 32);
 	}
 
-	unsigned char Region::getWeatherChance(unsigned int weatherIndex) {
-		if (weatherIndex < WeatherType::First || weatherIndex > WeatherType::Last) {
+	unsigned char Region::getWeatherChance(int weatherIndex) const {
+		if (weatherIndex < WeatherType::MINIMUM || weatherIndex > WeatherType::MAXIMUM) {
 			return -1;
 		}
 
 		return weatherChances[weatherIndex];
 	}
 
-	void Region::setWeatherChance(unsigned int weatherIndex, unsigned char chance) {
-		if (weatherIndex < WeatherType::First || weatherIndex > WeatherType::Last) {
+	void Region::setWeatherChance(int weatherIndex, unsigned char chance) {
+		if (weatherIndex < WeatherType::MINIMUM || weatherIndex > WeatherType::MAXIMUM) {
 			return;
 		}
 
@@ -59,7 +54,7 @@ namespace TES3 {
 	}
 
 	Weather* Region::getCurrentWeather() const {
-		if (currentWeatherIndex < WeatherType::First || currentWeatherIndex > WeatherType::Last) {
+		if (currentWeatherIndex < WeatherType::MINIMUM || currentWeatherIndex > WeatherType::MAXIMUM) {
 			return nullptr;
 		}
 		return TES3::WorldController::get()->weatherController->arrayWeathers[currentWeatherIndex];
@@ -70,16 +65,21 @@ namespace TES3 {
 	}
 
 	bool Region::setCurrentWeather(int index) {
-		if (index < WeatherType::First || index > WeatherType::Last) {
+		if (index < WeatherType::MINIMUM || index > WeatherType::MAXIMUM) {
 			return false;
 		}
 
-		if (index != currentWeatherIndex) {
-			changeWeather(index);
-			return true;
+		const auto weatherController = TES3::WorldController::get()->weatherController;
+		if (weatherController->arrayWeathers[index] == nullptr) {
+			return false;
 		}
 
-		return false;
+		if (index == currentWeatherIndex) {
+			return false;
+		}
+
+		currentWeatherIndex = index;
+		return true;
 	}
 
 	bool Region::setCurrentWeather_lua(sol::object objectOrId) {

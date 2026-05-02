@@ -23,7 +23,7 @@ The types are arranged into functional groupings. Within each grouping, indentat
  - niRTTI
 
 #### Basic Math and Geometry Classes
- - <span style = "color:Turquoise">niBound</span>
+ - niBound
  - tes3boundingBox
  - tes3matrix33
  - tes3vector2
@@ -45,8 +45,8 @@ The types are arranged into functional groupings. Within each grouping, indentat
 		- niAVObject
 			- niNode
 				- <span  style = "color:YellowGreen">niBSAnimationManager</span>
-				- <span  style = "color:YellowGreen">niBSAnimationNode</span>
-					- <span  style = "color:YellowGreen">niBSParticleNode</span>
+				- niBSAnimationNode
+					- niBSParticleNode
 		- <span  style = "color:YellowGreen">niSequenceStreamHelper</span>
 
 #### Texturing Classes
@@ -73,7 +73,7 @@ The types are arranged into functional groupings. Within each grouping, indentat
 		- niLinesData
 		- niTriBasedGeomData
 			- niParticlesData
-				- <span  style = "color:YellowGreen">niAutoNormalParticlesData</span>
+				- niAutoNormalsParticlesData
 				- niRotatingParticlesData
 			- niTriShapeData
 				- <span  style = "color:YellowGreen">niTriShapeDynamicData</span>
@@ -89,7 +89,7 @@ The types are arranged into functional groupings. Within each grouping, indentat
 					- niTriShape
 					- <span  style = "color:YellowGreen">niTriStrips</span>
 					- niParticles
-						- <span  style = "color:YellowGreen">niAutoNormalParticles</span>
+						- niAutoNormalParticles
 						- niRotatingParticles
 	- <span style = "color:Turquoise">niScreenPolygon</span>
 	- niSkinData
@@ -351,7 +351,7 @@ graph LR
 
 	%% YellowGreen
 	classDef notResearched color:#000, fill: #ADFF2F, stroke: #333, stroke-width: 2px;
-	class BA,BAA,CA,CE,DBA,EBB,EBE,EBF,EBG,EBK,EC,GA,HB,HBA,HBB,HE,HG,HH,HHA,HIA,HL,I,K,N,O,X notResearched;
+	class BA,BAA,CA,CE,EBB,EBE,EBF,EBG,EBK,EC,GA,HB,HBA,HBB,HE,HG,HH,HHA,HIA,HL,I,K,N,O,X notResearched;
 ```
 
 ```mermaid
@@ -468,5 +468,5 @@ graph LR
 
 	%% YellowGreen
 	classDef notResearched color:#000, fill: #ADFF2F, stroke: #333, stroke-width: 2px;
-	class EACCB,EADA,EADB,EADD,EADE,EADH,EADHA,EADIA,EADIB notResearched;
+	class EACCB,EADA,EADB,EADD,EADE,EADIA,EADIB notResearched;
 ```

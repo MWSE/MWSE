@@ -8,7 +8,7 @@
 
 A sound object created in the TES3 CS.
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -135,7 +135,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -151,6 +151,19 @@ The soruceless flag of the object.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -223,6 +236,21 @@ local result = myObject:isPlaying()
 
 ***
 
+### `loadBuffer`
+<div class="search_terms" style="display: none">loadbuffer</div>
+
+Loads the sound buffer. Does nothing if the sound buffer already exists.
+
+```lua
+myObject:loadBuffer(isPointSound)
+```
+
+**Parameters**:
+
+* `isPointSound` (boolean): If true, the sound is positional.
+
+***
+
 ### `play`
 <div class="search_terms" style="display: none">play</div>
 
@@ -238,6 +266,17 @@ myObject:play(playbackFlags, volume, pitch, isNot3D)
 * `volume` (number): *Optional*.
 * `pitch` (number): *Optional*.
 * `isNot3D` (boolean): *Optional*.
+
+***
+
+### `release`
+<div class="search_terms" style="display: none">release</div>
+
+Releases the underlying sound buffer, freeing its memory.
+
+```lua
+myObject:release()
+```
 
 ***
 

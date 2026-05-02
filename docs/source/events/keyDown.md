@@ -23,6 +23,7 @@ event.register(tes3.event.keyDown, keyDownCallback)
 
 ## Event Data
 
+* `element` ([tes3uiElement](../types/tes3uiElement.md)): *Read-only*. The UI element that the key is going to be dispatched to, or `nil` if one is not in focus.
 * `isAltDown` (boolean): *Read-only*. True if either alt key is held.
 * `isControlDown` (boolean): *Read-only*. True if either control key is held.
 * `isShiftDown` (boolean): *Read-only*. True if either shift key is held.
@@ -49,7 +50,10 @@ event.register(tes3.event.keyDown, keyDownCallback)
 	local config = mwse.loadConfig("myModConfig", defaultConfig)
 	
 	local function registerModConfig()
-		local template = mwse.mcm.createTemplate({ name = "Test Mod" })
+		local template = mwse.mcm.createTemplate({
+			name = "Test Mod",
+			config = config
+		})
 		template:register()
 	
 		local page = template:createSideBarPage({ label = "Settings" })
@@ -58,10 +62,7 @@ event.register(tes3.event.keyDown, keyDownCallback)
 			label = "My combo",
 			description = "This combo does...",
 			allowMouse = true,
-			variable = mwse.mcm.createTableVariable({
-				id = "combo",
-				table = config
-			}),
+			configKey = "combo",
 		})
 	end
 	event.register(tes3.event.modConfigReady, registerModConfig)

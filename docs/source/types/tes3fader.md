@@ -201,11 +201,9 @@ local fader = tes3fader.new(distance, unknownBool)
 		-- any other function. We have a need to register this function inside
 		-- our createFader() function, since our `fader` variable is `nil` at start
 		-- (look up). We can't call fader:update() if fader is `nil`.
-		event.register(tes3.event.enterFrame,
-			function()
-				fader:update()
-			end
-		)
+		event.register(tes3.event.enterFrame, function()
+			fader:update()
+		end)
 	end
 	
 	-- The fader needs to be created during `fadersCreated` event,

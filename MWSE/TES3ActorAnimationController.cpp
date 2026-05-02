@@ -17,7 +17,7 @@ namespace TES3 {
 
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Move, this->mobileActor, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -44,7 +44,7 @@ namespace TES3 {
 
 		// Launch our event, and overwrite the speed with what was given back to us.
 		if (mwse::lua::event::CalculateMovementSpeed::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::CalculateMovementSpeed(mwse::lua::event::CalculateMovementSpeed::Move, this->mobileActor, speed));
 			if (eventData.valid()) {
 				speed = eventData["speed"];
@@ -67,8 +67,8 @@ namespace TES3 {
 		return std::clamp(mobileActor->actionData.swingTimer / (maxAttackTiming - startTime), 0.0f, 1.0f);
 	}
 
-	const auto TES3_ActorAnimationController_getOpacity = reinterpret_cast<float(__thiscall*)(ActorAnimationController*)>(0x542130);
-	float ActorAnimationController::getOpacity() {
+	const auto TES3_ActorAnimationController_getOpacity = reinterpret_cast<float(__thiscall*)(const ActorAnimationController*)>(0x542130);
+	float ActorAnimationController::getOpacity() const {
 		return TES3_ActorAnimationController_getOpacity(this);
 	}
 
@@ -90,7 +90,7 @@ namespace TES3 {
 			PhysicalAttackType attack = mobileActor->actionData.physicalAttackType;
 			speed = mobileActor->getWeaponSpeed();
 
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::AttackStartEvent(mobileActor, attack, speed.value()));
 			if (eventData.valid()) {
 				// Replace attack type only if original is slash, chop, or thrust.

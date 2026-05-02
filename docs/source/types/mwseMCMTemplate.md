@@ -8,7 +8,7 @@
 
 A Template is the top level component in MCM. It determines the overall layout of the menu. Can be created with a table or a string (name).
 
-This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `childIndent`
@@ -204,7 +204,7 @@ Use `template:saveOnClose(configFilename, configTable)` to assign a simple save 
 ### `onSearch`
 <div class="search_terms" style="display: none">onsearch</div>
 
-A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
+A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText` (it's in lowercase).
 
 **Returns**:
 
@@ -766,7 +766,7 @@ local template = myObject:new({ name = ..., label = ..., config = ..., defaultCo
 	* `onClose` (fun(modConfigContainer: [tes3uiElement](../types/tes3uiElement.md))): *Optional*. Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable.
 	* `searchChildLabels` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template.
 	* `searchChildDescriptions` (boolean): *Default*: `true`. If true, default search handler will search through all the page and setting `description` fields in this MCM template.
-	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`.
+	* `onSearch` (fun(searchText: string): boolean): *Optional*. A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText` (it's in lowercase).
 	* `pages` (mwseMCMPage.new.data[]): *Optional*. You can create pages for the template directly here. The entries in the array must specify the class of the page.
 	* `indent` (integer): *Default*: `12`. The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component.
 	* `childIndent` (integer): *Optional*. The left padding size in pixels. Used on all the child components.
@@ -864,7 +864,7 @@ myObject:saveOnClose(fileName, config)
 ### `setCustomSearchHandler`
 <div class="search_terms" style="display: none">setcustomsearchhandler, customsearchhandler</div>
 
-This method assigns a custom search handler for the Template. This function should return true if this mod should show up in search results for given `searchText`.
+This method assigns a custom search handler for the Template. This function should return true if this mod should show up in search results for given `searchText` (it's in lowercase).
 
 ```lua
 myObject:setCustomSearchHandler(callback)

@@ -1,6 +1,7 @@
 #include "CSRecordHandler.h"
 
 #include "CSGameSetting.h"
+#include "CSMagicEffect.h"
 
 #include "StringUtil.h"
 
@@ -56,6 +57,16 @@ namespace se::cs {
 		return false;
 	}
 
+	GameSetting* RecordHandler::getGameSettingForAttribute(int id) const {
+		if (id == -1) {
+			return nullptr;
+		}
+
+		const auto gConvertAttributeToGMST = reinterpret_cast<int*>(0x6A7D38);
+		const auto skillGMST = gConvertAttributeToGMST[id];
+		return gameSettingsHandler->gameSettings[skillGMST];
+	}
+
 	GameSetting* RecordHandler::getGameSettingForSkill(int id) const {
 		if (id == -1) {
 			return nullptr;
@@ -76,18 +87,16 @@ namespace se::cs {
 		return gameSettingsHandler->gameSettings[effectGMST];
 	}
 
-	void RecordHandler::getNameForEffect(char* buffer, size_t bufferSize, int effect, int attribute, int skill) const {
-		if (effect == -1) {
-			*buffer = '\0';
-			return;
+	GlobalVariable* RecordHandler::getGlobal(const char* id) const {
+		const auto RecordHandler_getGlobal = reinterpret_cast<GlobalVariable * (__thiscall*)(const RecordHandler*, const char*)>(0x402F31);
+		return RecordHandler_getGlobal(this, id);
+	}
+
+	MagicEffect* RecordHandler::getMagicEffect(int id) {
+		if (id < EffectID::FirstEffect || id > EffectID::LastEffect) {
+			return nullptr;
 		}
-
-		const auto gConvertEffectToGMST = reinterpret_cast<int*>(0x6A7E74);
-		const auto effectGMST = gConvertEffectToGMST[effect];
-		const auto gmst = gameSettingsHandler->gameSettings[effectGMST];
-
-		// TODO: Make this actually show the correct attribute/skill stuff.
-		sprintf_s(buffer, bufferSize, "%s", gmst->value.asString);
+		return &magicEffects[id];
 	}
 
 	GameFile* RecordHandler::getAvailableGameFileByIndex(unsigned int index) const {

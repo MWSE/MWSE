@@ -49,8 +49,9 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		size_t getActiveEffectCount();
-		int getFirstIndexOfEffect(int effectId);
+		size_t getActiveEffectCount() const;
+		int getFirstIndexOfEffect(int effectId) const;
+		bool hasEffect(int effectId) const;
 		bool effectsMatchWith(const Alchemy * other) const;
 		Alchemy* findMatchingAlchemyItem() const;
 		void setIconPath(const char* path);

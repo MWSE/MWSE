@@ -208,9 +208,9 @@ long TES3MACHINE::GetArrayValue(std::string const& caller, long const id, long c
 	}
 
 	long value = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		std::vector<long> const& a = arrays_[id - 1];
-		if (index >= 0 && index < a.size()) {
+		if (index >= 0 && (unsigned long)index < a.size()) {
 			value = a[index];
 		}
 		else {
@@ -234,10 +234,10 @@ long TES3MACHINE::SetArrayValue(std::string const& caller, long const id, long c
 	}
 
 	long success = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		if (index >= 0) {
 			std::vector<long>& a = arrays_[id - 1];
-			if (index + 1 > a.size()) {
+			if ((unsigned long)index + 1 > a.size()) {
 				a.resize(index + 1);
 			}
 			a[index] = value;
@@ -264,7 +264,7 @@ long TES3MACHINE::GetArraySize(std::string const& caller, long const id) {
 	}
 
 	long size = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		size = arrays_[id - 1].size();
 	}
 	else {
@@ -282,7 +282,7 @@ long TES3MACHINE::ClearArray(std::string const& caller, long const id) {
 	}
 
 	long success = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		arrays_[id - 1].clear();
 		success = 1;
 	}

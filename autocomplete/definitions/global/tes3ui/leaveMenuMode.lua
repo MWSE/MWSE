@@ -1,5 +1,5 @@
 return {
 	type = "function",
-	description = [[Requests menu mode be deactivated on a menu with a given id.]],
+	description = [[Requests menu mode be deactivated. Menu mode can't be deactivated if a modal menu is open.]],
 	valuetype = "boolean",
 }

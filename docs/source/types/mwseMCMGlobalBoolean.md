@@ -8,7 +8,7 @@
 
 A variable connected to a Morrowind Global. Treats 0 as false and >=1 as true.
 
-This type inherits the following: [mwseMCMGlobal](../types/mwseMCMGlobal.md), [mwseMCMVariable](../types/mwseMCMVariable.md)
+This type inherits the following: [mwseMCMGlobal](../types/mwseMCMGlobal.md), [mwseMCMVariable](../types/mwseMCMVariable.md).
 ## Properties
 
 ### `class`

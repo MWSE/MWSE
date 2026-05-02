@@ -14,7 +14,7 @@ namespace TES3 {
 		// Allow the event to override the pick.
 		if (mwse::lua::event::LeveledCreaturePickedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::LeveledCreaturePickedEvent(this, result));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
@@ -69,7 +69,7 @@ namespace TES3 {
 		// Allow the event to override the pick.
 		if (mwse::lua::event::LeveledItemPickedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::LeveledItemPickedEvent(this, result));
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;

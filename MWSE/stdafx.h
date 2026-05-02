@@ -2,11 +2,16 @@
 
 // Standard template libraries.
 #include <algorithm>
+#include <charconv>
+#include <chrono>
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iomanip>
+#include <ios>
 #include <iostream>
+#include <istream>
 #include <list>
 #include <map>
 #include <mutex>
@@ -14,6 +19,8 @@
 #include <ostream>
 #include <queue>
 #include <random>
+#include <regex>
+#include <set>
 #include <sstream>
 #include <stddef.h>
 #include <stdexcept>
@@ -23,9 +30,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <future>
-#include <regex>
-#include <charconv>
 
 // Required C includes.
 #include <cmath>
@@ -42,7 +46,14 @@
 
 // 3rd party library: span-lite
 // URL: https://github.com/martinmoene/span-lite
+#define span_CONFIG_SELECT_SPAN span_SPAN_NONSTD
 #include <nonstd/span.hpp>
+
+// 3rd party library: fmt
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+#include <fmt/chrono.h>
+#include <fmt/ranges.h>
 
 // DirectInput/Sound requirements.
 #define DIRECTINPUT_VERSION 0x0800

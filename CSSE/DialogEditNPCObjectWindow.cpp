@@ -2,6 +2,9 @@
 
 #include "LogUtil.h"
 #include "MemoryUtil.h"
+#include "MetadataUtil.h"
+
+#include "CSBodyPart.h"
 
 #include "DialogProcContext.h"
 
@@ -13,6 +16,27 @@ namespace se::cs::dialog::edit_npc_object_window {
 
 	constexpr auto ENABLE_ALL_OPTIMIZATIONS = true;
 	constexpr auto LOG_PERFORMANCE_RESULTS = false;
+
+	//
+	// Patch: Hide deprecated heads/hairs
+	//
+
+	ObjectType::ObjectType __fastcall PatchFilterHeadHair(ObjectType::ObjectType& objectType) {
+		if (objectType != ObjectType::Bodypart) {
+			return objectType;
+		}
+
+		const auto object = reinterpret_cast<BodyPart*>(reinterpret_cast<BYTE*>(&objectType) - offsetof(BaseObject, objectType));
+
+		// Prevent deprecated objects from being added.
+		if (metadata::isDeprecated(object)) {
+			return ObjectType::Invalid;
+		}
+
+		// Return the right value to continue.
+		return ObjectType::Bodypart;
+	}
+
 
 	//
 	// Extended window messages.
@@ -53,7 +77,7 @@ namespace se::cs::dialog::edit_npc_object_window {
 		setRedrawOnExpensiveWindows(context.getWindowHandle(), true);
 
 		if constexpr (LOG_PERFORMANCE_RESULTS) {
-			auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
+			const auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
 			log::stream << "Displaying NPC object data took " << timeToInitialize.count() << "ms" << std::endl;
 		}
 	}
@@ -90,6 +114,10 @@ namespace se::cs::dialog::edit_npc_object_window {
 
 	void installPatches() {
 		using memory::genJumpEnforced;
+		using memory::genCallEnforced;
+
+		// Patch: Hide deprecated heads/hairs
+		genCallEnforced(0x530D99, 0x401843, reinterpret_cast<DWORD>(PatchFilterHeadHair));
 
 		// Patch: Extend handling.
 		genJumpEnforced(0x40313E, 0x423060, reinterpret_cast<DWORD>(PatchDialogProc));

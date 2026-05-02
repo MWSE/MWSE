@@ -18,8 +18,8 @@
 namespace mwse::lua {
 	void bindTES3MobilePlayer() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::MobilePlayer
 		{
@@ -84,6 +84,7 @@ namespace mwse::lua {
 			usertypeDefinition["progressSkillToNextLevel"] = &TES3::MobilePlayer::progressSkillToNextLevel;
 
 			// Functions exposed as properties.
+			usertypeDefinition["bountyData"] = sol::readonly_property(&TES3::MobilePlayer::getBountyData);
 			usertypeDefinition["cameraHeight"] = sol::property(&TES3::MobilePlayer::getCameraHeight, &TES3::MobilePlayer::setCameraHeight_lua);
 			usertypeDefinition["is3rdPerson"] = sol::readonly_property(&TES3::MobilePlayer::is3rdPerson);
 

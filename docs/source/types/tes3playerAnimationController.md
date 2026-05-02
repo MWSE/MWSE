@@ -8,7 +8,7 @@
 
 Works in conjuction with mobile AI to perform idle, movement, and attack animations. Holds data on the status of the current and next desired animation states for the different body sections that can be animated.
 
-This type inherits the following: [tes3actorAnimationController](../types/tes3actorAnimationController.md)
+This type inherits the following: [tes3actorAnimationController](../types/tes3actorAnimationController.md).
 ## Properties
 
 ### `allowVerticalAirControl`
@@ -206,6 +206,17 @@ This it the time of the actor's attack animation in their `.kf`, played during t
 **Returns**:
 
 * `result` ([tes3mobileActor](../types/tes3mobileActor.md))
+
+***
+
+### `opacity`
+<div class="search_terms" style="display: none">opacity</div>
+
+The opacity of the actor.
+
+**Returns**:
+
+* `result` (number)
 
 ***
 

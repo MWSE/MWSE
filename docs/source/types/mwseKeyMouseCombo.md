@@ -8,7 +8,7 @@
 
 A table with the data about mouse and keyboard key combination. Unbound key combinations will have all the fields set to `nil`.
 
-This type inherits the following: [mwseKeyCombo](../types/mwseKeyCombo.md)
+This type inherits the following: [mwseKeyCombo](../types/mwseKeyCombo.md).
 ## Properties
 
 ### `isAltDown`
@@ -62,7 +62,7 @@ Maps to values in [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-
 
 **Returns**:
 
-* `result` ([tes3.scanCode](../references/scan-codes.md), false, nil)
+* `result` ([tes3.scanCode](../references/scan-codes.md), integer, false, nil)
 
 ***
 

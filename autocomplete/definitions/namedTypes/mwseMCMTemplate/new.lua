@@ -23,7 +23,7 @@ return {
 			{ name = "onClose", type = "fun(modConfigContainer: tes3uiElement)", optional = true, description = "Set this to a function which will be called when the menu is closed. Useful for saving variables, such as TableVariable." },
 			{ name = "searchChildLabels", type = "boolean", optional = true, default = true, description = "If true, default search handler will search through all the page and setting `label` and `text` fields in this MCM template." },
 			{ name = "searchChildDescriptions", type = "boolean", optional = true, default = true, description = "If true, default search handler will search through all the page and setting `description` fields in this MCM template." },
-			{ name = "onSearch", type = "fun(searchText: string): boolean", optional = true, description = "A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText`." },
+			{ name = "onSearch", type = "fun(searchText: string): boolean", optional = true, description = "A custom search handler function. This function should return true if this mod Template should show up in search results for given `searchText` (it's in lowercase)." },
 			{ name = "pages", type = "mwseMCMPage.new.data[]", optional = true, description = "You can create pages for the template directly here. The entries in the array must specify the class of the page." },
 			{ name = "indent", type = "integer", optional = true, default = 12, description = "The left padding size in pixels. Only used if the `childIndent` isn't set on the parent component." },
 			{ name = "childIndent", type = "integer", optional = true, description = "The left padding size in pixels. Used on all the child components." },

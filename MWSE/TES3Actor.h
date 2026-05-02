@@ -18,7 +18,7 @@ namespace TES3 {
 
 	struct ActorVirtualTable : PhysicalObjectVirtualTable {
 		bool (__thiscall * loadAnimation)(Actor*); // 0x148
-		Actor * (__thiscall * getBaseActor)(Actor*); // 0x14C
+		Actor * (__thiscall * getBaseActor)(const Actor*); // 0x14C
 		int (__thiscall * addItem)(Actor*, Item*, int, bool); // 0x150
 		int (__thiscall * getBaseBarterGold)(Actor*); // 0x154
 		void (__thiscall * setBaseBarterGold)(Actor*, int); // 0x158
@@ -45,7 +45,7 @@ namespace TES3 {
 		// Function wrappers for our virtual table.
 		//
 
-		Actor * getBaseActor();
+		Actor * getBaseActor() const;
 		int getBaseBarterGold();
 		void setBaseBarterGold(int);
 		bool isGuard();

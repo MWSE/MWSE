@@ -8,7 +8,7 @@
 
 An animation key for tension-, continuity-, and bias-derived values.
 
-This type inherits the following: [niFloatKey](../types/niFloatKey.md), [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niFloatKey](../types/niFloatKey.md), [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `bias`

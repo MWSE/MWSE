@@ -1,6 +1,6 @@
 # Storing Data
 
-MWSE offers various ways to store data persistently. Be at across save sessions for the same character or even persistently across different player characters. To store data that is meant to persist between different characters, you can use provided [json API](https://mwse.github.io/MWSE/apis/json/). It provides a set of functions needed to save Lua's values to json files and load the data to Lua's tables. This process is called serialization. One requirement is that the value can be serialized. Even functions used to work with configuration files `mwse.saveConfig` and `mwse.loadConfig` are implemented with json API.
+MWSE offers various ways to store data persistently. Be that across save sessions for the same character or even persistently across different player characters. To store data that is meant to persist between different characters, you can use provided [json API](https://mwse.github.io/MWSE/apis/json/). It provides a set of functions needed to save Lua's values to json files and load the data to Lua's tables. This process is called serialization. One requirement is that the value can be serialized. Even the functions used to work with configuration files are implemented with this json-based API (those functions being `mwse.saveConfig` and `mwse.loadConfig`).
 
 
 ## Serialization

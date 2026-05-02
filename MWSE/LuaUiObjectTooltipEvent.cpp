@@ -6,6 +6,7 @@
 #include "TES3ItemData.h"
 #include "TES3Reference.h"
 #include "TES3UIElement.h"
+#include "TES3UIMenuController.h"
 
 namespace mwse::lua::event {
 	UiObjectTooltipEvent::UiObjectTooltipEvent(TES3::UI::Element* tooltip, TES3::Object* object, TES3::ItemData* itemData, int count) :
@@ -19,8 +20,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table UiObjectTooltipEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		// If the object is a reference, expose its base object and the reference.
@@ -34,6 +35,8 @@ namespace mwse::lua::event {
 			eventData["object"] = m_Object;
 			eventData["itemData"] = m_ItemData;
 		}
+
+		eventData["creator"] = TES3::UI::MenuInputController::lastTooltipSource;
 
 		eventData["tooltip"] = m_Tooltip;
 		eventData["count"] = m_Count;

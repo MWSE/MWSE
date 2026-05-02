@@ -10,6 +10,7 @@ namespace mwse::lua::event {
 		sol::table createEventTable();
 
 		static TES3::MobileActor* m_Attacker;
+		static const char* m_Source;
 
 	protected:
 		TES3::MobileActor* m_MobileActor;

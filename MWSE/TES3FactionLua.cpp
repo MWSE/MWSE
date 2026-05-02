@@ -8,8 +8,8 @@
 namespace mwse::lua {
 	void bindTES3Faction() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::Faction::Rank
 		{
@@ -67,10 +67,16 @@ namespace mwse::lua {
 			usertypeDefinition["playerRank"] = sol::property(&TES3::Faction::getEffectivePlayerRank, &TES3::Faction::setEffectivePlayerRank);
 
 			// Basic function binding.
+			usertypeDefinition["clearExpel"] = &TES3::Faction::playerClearExpel_lua;
+			usertypeDefinition["demote"] = &TES3::Faction::playerDemote_lua;
+			usertypeDefinition["expel"] = &TES3::Faction::playerExpel_lua;
 			usertypeDefinition["getReactionWithFaction"] = &TES3::Faction::getReactionWithFaction_lua;
 			usertypeDefinition["getLowestJoinedReaction"] = &TES3::Faction::getLowestJoinedReaction_lua;
 			usertypeDefinition["getHighestJoinedReaction"] = &TES3::Faction::getHighestJoinedReaction_lua;
 			usertypeDefinition["getRankName"] = &TES3::Faction::getRankName;
+			usertypeDefinition["join"] = &TES3::Faction::playerJoin_lua;
+			usertypeDefinition["leave"] = &TES3::Faction::playerLeave_lua;
+			usertypeDefinition["promote"] = &TES3::Faction::playerPromote_lua;
 			usertypeDefinition["setRankName"] = &TES3::Faction::setRankName;
 		}
 	}

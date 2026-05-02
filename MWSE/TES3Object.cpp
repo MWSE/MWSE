@@ -48,6 +48,8 @@
 #include "TES3Weapon.h"
 #include "TES3WorldController.h"
 
+#include "NIBound.h"
+
 #include "TES3UIMenuController.h"
 
 #include "BitUtil.h"
@@ -105,8 +107,36 @@ namespace TES3 {
 		return BaseObject_writeFileHeader(this, file);
 	}
 
-	BaseObject* BaseObject::getBaseObject() const {
-		BaseObject* object = const_cast<BaseObject*>(this);
+	bool BaseObject::supportsActivate() const {
+		// Make sure we aren't dealing with references.
+		auto asBase = getBaseObject();
+
+		if (asBase->isItem()) {
+			return static_cast<const Item*>(this)->getIsCarriable();
+		}
+
+		if (asBase->objectType == ObjectType::NPC || asBase->objectType == ObjectType::Creature) {
+			const auto macp = WorldController::get() ? WorldController::get()->getMobilePlayer() : nullptr;
+			if (macp) {
+				return macp->getFlagInCombat();
+			}
+			else {
+				return true;
+			}
+		}
+
+		switch (asBase->objectType) {
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Door:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	BaseObject* BaseObject::getBaseObject() {
+		auto object = static_cast<BaseObject*>(this);
 
 		if (object->objectType == ObjectType::Reference) {
 			object = static_cast<Reference*>(object)->baseObject;
@@ -119,9 +149,33 @@ namespace TES3 {
 		return object;
 	}
 
+	BaseObject const* BaseObject::getBaseObject() const {
+		auto object = static_cast<const BaseObject*>(this);
+
+		if (object->objectType == ObjectType::Reference) {
+			object = static_cast<const Reference*>(object)->baseObject;
+		}
+
+		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
+			object = static_cast<const Actor*>(object)->getBaseActor();
+		}
+
+		return object;
+	}
+
 	bool BaseObject::isActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::NPC:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	bool BaseObject::isMobileCapableActor() const {
+		switch (objectType) {
 		case TES3::ObjectType::Creature:
 		case TES3::ObjectType::NPC:
 			return true;
@@ -200,6 +254,22 @@ namespace TES3 {
 		BIT_SET(objectFlags, TES3::ObjectFlag::BlockedBit, value);
 	}
 
+	bool BaseObject::getUpdatesCollisionGroups() const {
+		const auto baseObject = getBaseObject();
+
+		switch (baseObject->objectType) {
+		case ObjectType::Activator:
+		case ObjectType::Container:
+		case ObjectType::Door:
+		case ObjectType::Land:
+		case ObjectType::Static:
+			return true;
+		case ObjectType::Light:
+			return !static_cast<const Light*>(this)->getCanCarry();
+		}
+		return false;
+	}
+
 	bool BaseObject::getSupportsLuaData() const {
 		// Gold does all kinds of funky things. No ItemData creation on it is allowed.
 		if (objectType == ObjectType::Misc && static_cast<const Misc*>(this)->isGold()) {
@@ -253,7 +323,7 @@ namespace TES3 {
 	}
 
 	sol::object BaseObject::getCachedLuaObject() const {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
 			auto result = cacheHit->second;
@@ -267,7 +337,7 @@ namespace TES3 {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		auto cacheHit = baseObjectCache.find(this);
 		if (cacheHit != baseObjectCache.end()) {
@@ -276,7 +346,7 @@ namespace TES3 {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		sol::object ref = sol::nil;
 		switch ((uint32_t)vTable.object) {
@@ -432,7 +502,7 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
@@ -450,27 +520,27 @@ namespace TES3 {
 	}
 
 	void BaseObject::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		baseObjectCache.clear();
 	}
 
-	void Object::copy(const Object* from, int unknown) {
-		vTable.object->copy(this, from, unknown);
+	void Object::copy(const Object* from, bool shareAIPackageConfig) {
+		vTable.object->copy(this, from, shareAIPackageConfig);
 	}
 
 	void Object::setID(const char* id) {
 		vTable.object->setID(this, id);
 	}
 
-	char* Object::getName() const {
+	const char* Object::getName() const {
 		return vTable.object->getName(this);
 	}
 
-	char* Object::getIconPath() const {
+	const char* Object::getIconPath() const {
 		return vTable.object->getIconPath(this);
 	}
 
-	char* Object::getModelPath() const {
+	const char* Object::getModelPath() const {
 		return vTable.object->getModelPath(this);
 	}
 
@@ -482,15 +552,15 @@ namespace TES3 {
 		return vTable.object->getSound(this);
 	}
 
-	char* Object::getRaceID() const {
+	const char* Object::getRaceID() const {
 		return vTable.object->getRaceID(this);
 	}
 
-	char* Object::getClassID() const {
+	const char* Object::getClassID() const {
 		return vTable.object->getClassID(this);
 	}
 
-	char* Object::getFactionID() const {
+	const char* Object::getFactionID() const {
 		return vTable.object->getFactionID(this);
 	}
 
@@ -518,11 +588,11 @@ namespace TES3 {
 		return vTable.object->getLevel(this);
 	}
 
-	void Object::setDispositionRaw(signed char value) {
+	void Object::setDispositionRaw(int value) {
 		return vTable.object->setDispositionRaw(this, value);
 	}
 
-	int Object::modDisposition(signed int value) {
+	int Object::modDisposition(int value) {
 		return vTable.object->modDisposition(this, value);
 	}
 
@@ -530,7 +600,7 @@ namespace TES3 {
 		return vTable.object->getReputation(this);
 	}
 
-	int Object::setReputation(int reputation) {
+	void Object::setReputation(int reputation) {
 		return vTable.object->setReputation(this, reputation);
 	}
 
@@ -538,7 +608,7 @@ namespace TES3 {
 		return vTable.object->getDispositionRaw(this);
 	}
 
-	int Object::modReputation(int value) {
+	void Object::modReputation(int value) {
 		return vTable.object->modReputation(this, value);
 	}
 
@@ -546,7 +616,7 @@ namespace TES3 {
 		return vTable.object->getType(this);
 	}
 
-	char* Object::getTypeName() const {
+	const char* Object::getTypeName() const {
 		return vTable.object->getTypeName(this);
 	}
 
@@ -684,12 +754,20 @@ namespace TES3 {
 		return object;
 	}
 
-	ReferenceList* Object::getOwningCollection() {
+	ReferenceList* Object::getOwningCollection() const {
 		return owningCollection.asReferenceList;
 	}
 
 	void Object::setScale_lua(float scale) {
 		setScale(scale);
+	}
+
+	bool Object::supportsActivate() const {
+		if (getIsLocationMarker()) {
+			return false;
+		}
+
+		return BaseObject::supportsActivate();
 	}
 
 	// This helper function exists to avoid invoking template instantiations from LuaUtil.h in TES3Object.h.
@@ -745,29 +823,112 @@ namespace TES3 {
 		return TES3_PhysicalObject_getMobile(this);
 	}
 
-	const auto TES3_PhysicalObject_createBoundingBox = reinterpret_cast<void(__thiscall*)(PhysicalObject*)>(0x4EEFC0);
+	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, Vector3& out_min, Vector3& out_max) {
+		// We can reuse bounding volumes if one is available.
+		const auto abv = object->modelABV;
+		if (abv && abv->getType() == NI::BoundingVolumeType::Box) {
+			const auto boxABV = static_cast<const NI::BoxBoundingVolume*>(abv);
+
+			out_min = boxABV->bounds.center - boxABV->bounds.extent;
+			out_max = boxABV->bounds.center + boxABV->bounds.extent;
+			return;
+		}
+
+		object->calculateBounds(out_min, out_max, object->localTranslate, *object->localRotation, object->localScale, false, false, false);
+
+		if (object && object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			auto asNode = static_cast<NI::Node*>(object);
+			asNode->detachAllChildren();
+			asNode->update();
+		}
+
+		const Vector3 extent = (out_max - out_min) * 0.5f;
+		const Vector3 center = extent + out_min;
+		auto newABV = NI::BoxBoundingVolume::create(extent, center, Vector3::UNIT_X, Vector3::UNIT_Y, Vector3::UNIT_Z);
+		object->setModelSpaceABV(newABV);
+	}
+
+	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*)>(0x4EF1D0);
+	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*, const Vector3*, const Matrix33*, const float*)>(0x4EF410);
 	void PhysicalObject::createBoundingBox() {
-		TES3_PhysicalObject_createBoundingBox(this);
+		if (!sceneNode) {
+			return;
+		}
+
+		// Meshes can have custom bounding volumes we need to respect.
+		const auto boundingBoxVolume = sceneNode->getObjectByName("Bounding Box");
+		if (boundingBoxVolume) {
+			boundingBoxVolume->setAppCulled(true);
+		}
+
+		// The game always recreates the bounding box for some reason, rather than reusing memory here.
+		if (boundingBox) {
+			mwse::tes3::_delete(boundingBox);
+		}
+		boundingBox = mwse::tes3::_new<TES3::BoundingBox>();
+		boundingBox->initialize();
+
+		// Markers always have zeroed bounding boxes.
+		if (getIsLocationMarker()) {
+			boundingBox->minimum = Vector3::ZEROES;
+			boundingBox->maximum = Vector3::ZEROES;
+			return;
+		}
+
+		// Use the updated calculation functions.
+		if (boundingBoxVolume) {
+			PatchedSetBBoxFromBoxBV(boundingBoxVolume, boundingBox->minimum, boundingBox->maximum);
+		}
+		else {
+			const auto scale = 1.0f;
+			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, Vector3::ZEROES, Matrix33::IDENTITY, scale, false, false, false);
+		}
+
+		// If any data ended up uninitialized, we'll also zero it out.
+		if (boundingBox->hasUninitializedData()) {
+			boundingBox->minimum = Vector3::ZEROES;
+			boundingBox->maximum = Vector3::ZEROES;
+		}
+
+		// If we are an actor, we need to validate that the bounding box can be used for steps. If it can't, recreate it using vanilla logic.
+		// This improves compatibility with older mods with broken meshes, such as "Cave Drips" by R-Zero.
+		const auto height = std::fabsf(boundingBox->maximum.z - boundingBox->minimum.z);
+		if (isMobileCapableActor() && height <= 32.0f) {
+			boundingBox->initialize();
+			if (boundingBoxVolume) {
+				TES3_VanillaSetBBoxFromBoxBV(boundingBoxVolume, &boundingBox->minimum, &boundingBox->maximum);
+			}
+			else {
+				const auto scale = 1.0f;
+				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &Vector3::ZEROES, &Matrix33::IDENTITY, &scale);
+			}
+		}
 	}
 
 	BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
 		if (!boundingBox) {
+			if (sceneNode == nullptr && !loadMesh()) {
+				return nullptr;
+			}
+
 			createBoundingBox();
 		}
 		return boundingBox;
 	}
 
 	Reference* PhysicalObject::getReference() const {
-		if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
-			return thisRef;
-		}
-		else {
-			auto mobile = getMobile();
-			if (mobile) {
-				return mobile->reference;
+		__try {
+			if (auto thisRef = reinterpret_cast<Reference*>(referenceToThis); thisRef && thisRef->objectType == ObjectType::Reference) {
+				return thisRef;
+			}
+			else {
+				auto mobile = getMobile();
+				if (mobile) {
+					return mobile->reference;
+				}
 			}
 		}
-
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
 	}
 }

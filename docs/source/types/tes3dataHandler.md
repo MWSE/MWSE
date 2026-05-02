@@ -61,7 +61,7 @@ A core game object used for storing both active and non-dynamic gameplay data.
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (number)
 
 ***
 
@@ -72,7 +72,7 @@ A core game object used for storing both active and non-dynamic gameplay data.
 
 **Returns**:
 
-* `result` (boolean)
+* `result` (number)
 
 ***
 
@@ -256,19 +256,90 @@ An engine flag that controls if there is a fade in/out between cells.
 
 ## Methods
 
+### `getCellBufferSizes`
+<div class="search_terms" style="display: none">getcellbuffersizes, cellbuffersizes</div>
+
+The current cell buffer sizes, as determined by Morrowind.ini.
+
+```lua
+local exteriorBufferSize, interiorBufferSize = myObject:getCellBufferSizes()
+```
+
+**Returns**:
+
+* `exteriorBufferSize` (number)
+* `interiorBufferSize` (number)
+
+***
+
+### `getLandHeightAtPosition`
+<div class="search_terms" style="display: none">getlandheightatposition, landheightatposition</div>
+
+Gets the land height at a given world position, or `nil` if the height could not be determined.
+
+```lua
+local height = myObject:getLandHeightAtPosition()
+```
+
+**Returns**:
+
+* `height` (number, nil)
+
+***
+
+### `getLandNormalAtPosition`
+<div class="search_terms" style="display: none">getlandnormalatposition, landnormalatposition</div>
+
+Gets the normal vector from the land at a given world position, or `nil` if the land position could not be determined.
+
+```lua
+local normal = myObject:getLandNormalAtPosition()
+```
+
+**Returns**:
+
+* `normal` ([tes3vector3](../types/tes3vector3.md), nil)
+
+***
+
+### `getLandShapeAtPosition`
+<div class="search_terms" style="display: none">getlandshapeatposition, landshapeatposition</div>
+
+Gets the scene graph shape for the land at a given world position, or `nil` if the land position could not be determined.
+
+```lua
+local node = myObject:getLandShapeAtPosition()
+```
+
+**Returns**:
+
+* `node` ([niTriShape](../types/niTriShape.md), nil)
+
+***
+
 ### `updateCollisionGroupsForActiveCells`
 <div class="search_terms" style="display: none">updatecollisiongroupsforactivecells, collisiongroupsforactivecells</div>
 
 No description yet available.
 
 ```lua
-myObject:updateCollisionGroupsForActiveCells({ force = ..., isResettingData = ..., resetCollisionGroups = ... })
+myObject:updateCollisionGroupsForActiveCells(force, isResettingData, resetCollisionGroups)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `force` (boolean): *Default*: `true`.
-	* `isResettingData` (boolean): *Default*: `false`.
-	* `resetCollisionGroups` (boolean): *Default*: `true`.
+* `force` (boolean): *Default*: `true`.
+* `isResettingData` (boolean): *Default*: `false`.
+* `resetCollisionGroups` (boolean): *Default*: `true`.
+
+***
+
+### `updateLightingForExteriorCells`
+<div class="search_terms" style="display: none">updatelightingforexteriorcells, lightingforexteriorcells</div>
+
+Updates dynamic lights that affect exterior terrain and reference in exterior cells.
+
+```lua
+myObject:updateLightingForExteriorCells()
+```
 

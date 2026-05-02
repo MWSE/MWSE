@@ -1,7 +1,7 @@
 
 # Mod Configuration Menu (MCM)
 
-MWSE comes with a built-in framework for easily making a configuration menu for your mod. All configuration menus made in this way are accessible by pressing the "Mod Config" button in the pause menu. This guide covers the basic concepts and syntax of the Mod Configuration Menu (MCM), and provides some examples to help you get started. More in-depth information can be found on the [`mwse.mcm` API page](../apis/mwse.mcm.md).
+MWSE comes with a built-in framework for easily making a configuration menu for your mod. All configuration menus made in this way are accessible by pressing the "Mod Config" button in the pause menu. This guide covers the basic concepts and syntax of the Mod Configuration Menu (MCM), and provides some examples to help you get started. More in-depth information can be found on the [`mwse.mcm` API page](../apis/mwse.md#mwsemcmcreateactiveinfo).
 
 !!! note
 	The `mwse.mcm` API acts as a complete replacement for the [easyMCM](https://easymcm.readthedocs.io/en/latest/) framework. It is backwards compatible with easyMCM, and provides several new functionalities.
@@ -17,9 +17,9 @@ local myDefaultConfig = {
 }
 
 -- The name of the config json file of your mod.
--- This is used to save/load your config, so that changes persist 
+-- This is used to save/load your config, so that changes persist
 -- between game launches.
-local configPath = "My Awesome Mod" 
+local configPath = "My Awesome Mod"
 
 -- Loaded config, taking into account any setting changes made by the user.
 local myConfig = mwse.loadConfig(configPath, defaultConfig)
@@ -27,13 +27,13 @@ local myConfig = mwse.loadConfig(configPath, defaultConfig)
 -- When the mod config menu is ready to start accepting registrations,
 -- register this mod.
 local function registerModConfig()
-	-- Create the top level component Template. 
+	-- Create the top level component Template.
 	-- This is basically a box that holds all the other parts of the menu.
-	local template = mwse.mcm.createTemplate({ 
+	local template = mwse.mcm.createTemplate({
 		-- This will be displayed in the mod list on the lefthand pane.
-		name = "My Awesome Mod", 
+		name = "My Awesome Mod",
 		-- This makes all settings update the values stored in this table.
-		config = myConfig 
+		config = myConfig
 	})
 
 	-- This tells MWSE to add this config menu to the list.
@@ -45,15 +45,15 @@ local function registerModConfig()
 	-- Create a simple container Page under Template.
 	local page = template:createPage({ label = "Settings" })
 
-	-- Create a button under that controls the `"enabled"` 
+	-- Create a button under that controls the `"enabled"`
 	-- setting in `myConfig`.
 	-- Clicking on this button will change `"enabled"` from `true`
 	-- to `false, and vice-versa.
-	page:createYesNoButton({ 
+	page:createYesNoButton({
 		-- The `label` is the text that will be shown in your config menu.
 		-- It lets users know what the button does.
-		label = "Enable Mod", 
-		configKey = "enabled" 
+		label = "Enable Mod",
+		configKey = "enabled"
 	})
 end
 event.register(tes3.event.modConfigReady, registerModConfig)
@@ -77,15 +77,15 @@ local myDefaultConfig = {
 	yPosition = 0.5, -- 0 means "top-most", and 1 means "bottom-most".
 }
 
-local configPath = "My Awesome Mod" 
+local configPath = "My Awesome Mod"
 local myConfig = mwse.loadConfig(configPath, defaultConfig)
 
 -- When the mod config menu is ready to start accepting registrations,
 -- register this mod.
 local function registerModConfig()
-	
-	local template = mwse.mcm.createTemplate({ 
-		name = "My Awesome Mod", 
+
+	local template = mwse.mcm.createTemplate({
+		name = "My Awesome Mod",
 		config = myConfig
 	})
 	template:register()
@@ -101,12 +101,12 @@ local function registerModConfig()
 	-- Notice how the syntax is exactly the same as the syntax used to create new buttons.
 	-- The only difference is we're now telling the page we want a `PercentageSlider`
 	-- instead of a `YesNoButton`.
-	page:createPercentageSlider({ 
-		label = "Menu X Position", 
+	page:createPercentageSlider({
+		label = "Menu X Position",
 		configKey = "xPosition"
 	})
-	page:createPercentageSlider({ 
-		label = "Menu Y Position", 
+	page:createPercentageSlider({
+		label = "Menu Y Position",
 		configKey = "yPosition"
 	})
 end
@@ -135,14 +135,14 @@ local myDefaultConfig = {
 	},
 }
 
-local configPath = "My Awesome Mod" 
+local configPath = "My Awesome Mod"
 local myConfig = mwse.loadConfig(configPath, defaultConfig)
 
 -- When the mod config menu is ready to start accepting registrations,
 -- register this mod.
 local function registerModConfig()
 	-- Create the top level component Template. This is basically a box that holds all the other parts of the menu.
-	
+
 	local template = mwse.mcm.createTemplate({ name = "My Awesome Mod", config = myConfig })
 	template:register()
 	template:saveOnClose(configPath, myConfig)
@@ -154,12 +154,12 @@ local function registerModConfig()
 	page:createYesNoButton({ label = "Enable Mod", configKey = "enabled" })
 
 	-- Controls the position of the menu.
-	page:createPercentageSlider({ 
-		label = "Menu X Position", 
+	page:createPercentageSlider({
+		label = "Menu X Position",
 		configKey = "xPosition"
 	})
-	page:createPercentageSlider({ 
-		label = "Menu Y Position", 
+	page:createPercentageSlider({
+		label = "Menu Y Position",
 		configKey = "yPosition"
 	})
 
@@ -175,22 +175,22 @@ Now that we've covered a few examples, it might be helpful to explain the big pi
 
 The MCM is made up of things called **components**. In the most simple setup, the MCM consists of three different types of components:
 
-1. Various **Settings**. These are the reason you wanted to make a menu in the first place. 
+1. Various **Settings**. These are the reason you wanted to make a menu in the first place.
 	- They let users change various parts of a `config` table by interacting with various UI elements.
 	- There are many different types of settings: you can have dropdown menus, sliders, buttons, keybinders, and more.
 2. A few **Pages**. These hold various settings, and let you group them into separate pages.
 	- In the simple examples we covered above, we only had at most four settings, so there wasn't really a need for multiple pages.
-		- But as your mod grows, you might find yourself adding a lot of settings to the MCM. 
+		- But as your mod grows, you might find yourself adding a lot of settings to the MCM.
 		- In those situations, it can be nice to split things up across several pages.
 	- There are a few different types of `Pages`, each suited to different use-cases.
 3. One **Template**. This is the thing that holds all the various pages of your mod, as well as some important information about your mod.
 	- It needs to know the `name` of your mod, so it can be properly placed in the list on the left side of the menu.
 	- It can store your mods `config` table, and can facilitate the process of saving changes to a file whenever the menu closes.
 
-All MCMs will consist of those three types of components. They're building blocks of any mod's config menu. 
+All MCMs will consist of those three types of components. They're building blocks of any mod's config menu.
 But there are a couple other components that can be useful:
 
-4. **Categories**. These basically work like subsections of a `Page`. 
+4. **Categories**. These basically work like subsections of a `Page`.
 	- You can add a `Category` to a page as a way to bundle similar settings together.
 	- You can even make categories inside of other categories.
 5. **Infos**. These can sometimes show up in specific situations as a way to present information that's not directly tied to a specific config setting.
@@ -228,11 +228,11 @@ MCM has a lot of features, and one of the most commonly used components is the `
 ```
 
 ### Displaying Default Values of Settings
-As your config menu grows, you may want to include some information about what the default values for various settings are. 
+As your config menu grows, you may want to include some information about what the default values for various settings are.
 Fortunately, the MCM comes with a very straight-forward solution to this problem:
 ```lua hl_lines="4 5"
-local template = mwse.mcm.createTemplate({ 
-	name = "My Awesome Mod", 
+local template = mwse.mcm.createTemplate({
+	name = "My Awesome Mod",
 	config = myConfig,
 	defaultConfig = myDefaultConfig,
 	showDefaultSetting = true,
@@ -297,10 +297,10 @@ template:createExclusionsPage({
 	},
 	-- This filters the right list by ingredient object
 	filters = {
-		{ 
-			label = "Ingredients", 
-			type = "Object", 
-			objectType = tes3.objectType.ingredient 
+		{
+			label = "Ingredients",
+			type = "Object",
+			objectType = tes3.objectType.ingredient
 		},
 	},
 })

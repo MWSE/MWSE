@@ -6,4 +6,12 @@ return {
 		{ name = "index", type = "tes3.activeBodyPart", description = "A value from [`tes3.activeBodyPart`](https://mwse.github.io/MWSE/references/active-body-parts/) namespace." },
 	},
 	valuetype = "tes3bodyPartManagerActiveBodyPart",
+	examples = {
+		["example"] = {
+			title = "Getting an active body part structure for the currently equipped weapon"
+		},
+		["changing position"] = {
+			title = "Adjusting the position of the currently equipped iron dagger on the player character"
+		}
+	}
 }

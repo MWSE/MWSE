@@ -1,1 +1,12 @@
+nav:
+  - MWSE:
+    - api.md
+    - csse.md
+    - patches.md
+    - mwse-update.md
+    - ...
+  - Morrowind:
+    - books.md
+    - game-units.md
+    - ni-class-hierarchy.md
 title: General

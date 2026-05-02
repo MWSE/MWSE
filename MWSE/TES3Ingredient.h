@@ -36,6 +36,8 @@ namespace TES3 {
 		std::reference_wrapper<int[4]> getEffectSkillIds();
 		std::reference_wrapper<int[4]> getEffectAttributeIds();
 
+		int getFirstIndexOfEffect(int effectId) const;
+		bool hasEffect(int effectId) const;
 
 	};
 	static_assert(sizeof(Ingredient) == 0xE0, "TES3::Ingredient failed size validation");

@@ -1,7 +1,9 @@
 #include "NISwitchNode.h"
 
+#include "StringUtil.h"
+
 namespace NI {
-	int SwitchNode::getSwitchIndex() {
+	int SwitchNode::getSwitchIndex() const {
 		return switchIndex;
 	}
 
@@ -18,6 +20,15 @@ namespace NI {
 			return children.at(switchIndex);
 		}
 		return nullptr;
+	}
+
+	int SwitchNode::getChildIndexByName(const char* name) const {
+		for (auto i = 0u; i < children.size(); ++i) {
+			if (mwse::string::iequal(name, children[i].get()->name)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
 

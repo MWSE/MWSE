@@ -35,8 +35,10 @@ namespace NI {
 			AlphaFormat alphaFormat; // 0x8
 
 			FormatPrefs();
+			FormatPrefs(PixelLayout p, MipFlag m, AlphaFormat a);
 
-			static constexpr auto DEFAULT_PREFS = reinterpret_cast<FormatPrefs*>(0x6FC710);
+			static constexpr auto DEFAULT_PREFS = reinterpret_cast<FormatPrefs*>(0x7DE3B4);
+			static const FormatPrefs DEFAULT_LUA_PREFS;
 		};
 		static_assert(sizeof(Texture::FormatPrefs) == 0xC, "NI::Texture::FormatPrefs failed size validation");
 

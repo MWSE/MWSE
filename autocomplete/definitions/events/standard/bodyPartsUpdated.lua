@@ -13,6 +13,11 @@ return {
 			readOnly = true,
 			description = "The reference for the actor whose body parts were updated.",
 		},
+		["updated"] = {
+			type = "boolean",
+			default = false,
+			description = "If set to true, the body part manager will be updated. This should be set if changing any of the active body parts during this event.",
+		},
 	},
 	examples = {
 		["ripLefties"] = {

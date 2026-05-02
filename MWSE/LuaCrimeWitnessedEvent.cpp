@@ -19,16 +19,16 @@ namespace mwse::lua::event {
 	}
 
 	sol::object CrimeWitnessedEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 		options["filter"] = m_Crime->bountyKey.c_str;
 		return options;
 	}
 
 	sol::table CrimeWitnessedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["type"] = m_Crime->bountyKey.c_str;
@@ -45,6 +45,8 @@ namespace mwse::lua::event {
 		eventData["value"] = m_Crime->stolenValue;
 		eventData["witness"] = m_Witness->reference;
 		eventData["witnessMobile"] = m_Witness;
+
+		eventData["crimeEvent"] = m_Crime;
 
 		return eventData;
 	}

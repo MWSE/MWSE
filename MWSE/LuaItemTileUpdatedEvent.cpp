@@ -17,8 +17,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table ItemTileUpdatedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["element"] = m_Tile->element;
@@ -31,8 +31,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object ItemTileUpdatedEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 		options["filter"] = m_Tile->element->getTopLevelParent()->name.cString;
 		return options;

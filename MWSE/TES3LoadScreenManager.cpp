@@ -11,9 +11,9 @@ namespace TES3 {
 
 	}
 
-	void LoadScreenManager::render(bool unknown1, bool unknown2, bool unknown3) {
-		const auto TES3_LoadScreenManager_render = reinterpret_cast<void(__thiscall*)(LoadScreenManager*, bool, bool, bool)>(0x458910);
-		TES3_LoadScreenManager_render(this, unknown1, unknown2, unknown3);
+	bool LoadScreenManager::render(bool unknown1, bool unknown2, bool unknown3) {
+		const auto TES3_LoadScreenManager_render = reinterpret_cast<bool(__thiscall*)(LoadScreenManager*, bool, bool, bool)>(0x458910);
+		return TES3_LoadScreenManager_render(this, unknown1, unknown2, unknown3);
 	}
 
 	void LoadScreenManager::clearMovieState(bool unknown) {

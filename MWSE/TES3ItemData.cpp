@@ -21,25 +21,25 @@ namespace TES3 {
 	// Vanilla ItemData
 	//
 
-	void * ItemDataVanilla::operator new(size_t size) {
+	void* ItemDataVanilla::operator new(size_t size) {
 		return mwse::tes3::_new(size);
 	}
-	void ItemDataVanilla::operator delete(void * address) {
+	void ItemDataVanilla::operator delete(void* address) {
 		mwse::tes3::_delete(address);
 	}
 
-	const auto TES3_ItemData_constructor = reinterpret_cast<ItemDataVanilla*(__thiscall *)(ItemDataVanilla*)>(0x4E44B0);
-	ItemDataVanilla * ItemDataVanilla::ctor(ItemDataVanilla * self) {
+	const auto TES3_ItemData_constructor = reinterpret_cast<ItemDataVanilla* (__thiscall*)(ItemDataVanilla*)>(0x4E44B0);
+	ItemDataVanilla* ItemDataVanilla::ctor(ItemDataVanilla* self) {
 		return TES3_ItemData_constructor(self);
 	}
 
-	const auto TES3_ItemData_destructor = reinterpret_cast<void(__thiscall *)(ItemDataVanilla*)>(0x4E44E0);
-	void ItemDataVanilla::dtor(ItemDataVanilla * self) {
+	const auto TES3_ItemData_destructor = reinterpret_cast<void (__thiscall *)(ItemDataVanilla*)>(0x4E44E0);
+	void ItemDataVanilla::dtor(ItemDataVanilla* self) {
 		TES3_ItemData_destructor(self);
 	}
 
-	ItemDataVanilla * ItemDataVanilla::createForObject(Object * object) {
-		return reinterpret_cast<TES3::ItemDataVanilla*(__cdecl *)(TES3::BaseObject*)>(0x4E7750)(object);
+	ItemDataVanilla* ItemDataVanilla::createForObject(Object* object) {
+		return reinterpret_cast<TES3::ItemDataVanilla* (__cdecl*)(TES3::BaseObject*)>(0x4E7750)(object);
 	}
 
 	//
@@ -47,9 +47,9 @@ namespace TES3 {
 	//
 
 	ItemData::LuaData::LuaData() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-		data = stateHandle.state.create_table();
-		tempData = stateHandle.state.create_table();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		data = stateHandle.getState().create_table();
+		tempData = stateHandle.getState().create_table();
 	}
 
 	ItemData::ItemData() {
@@ -60,23 +60,24 @@ namespace TES3 {
 		dtor(this);
 	}
 
-	ItemData * ItemData::ctor(ItemData * self) {
+	ItemData* ItemData::ctor(ItemData* self) {
 		ItemDataVanilla::ctor(self);
 		self->luaData = nullptr;
+		self->flags = 0;
 		return self;
 	}
 
-	void ItemData::dtor(ItemData * self) {
+	void ItemData::dtor(ItemData* self) {
 		ItemDataVanilla::dtor(self);
 
 		if (self->luaData) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			delete self->luaData;
 			self->luaData = nullptr;
 		}
 	}
 
-	ItemData * ItemData::createForObject(Object * object) {
+	ItemData* ItemData::createForObject(Object* object) {
 		auto itemData = mwse::tes3::_new<ItemData>();
 		ItemData::ctor(itemData);
 
@@ -110,15 +111,32 @@ namespace TES3 {
 		return itemData;
 	}
 
-	const auto TES3_IsItemFullyRepaired = reinterpret_cast<bool(__cdecl *)(ItemDataVanilla*, Item*, bool)>(0x4E7970);
-	bool ItemData::isFullyRepaired(ItemData * itemData, Item * item, bool ignoreOwnership) {
-		if (!TES3_IsItemFullyRepaired(itemData, item, ignoreOwnership)) {
+	ItemData* ItemData::createForBoundItem(Object* object) {
+		auto itemData = createForObject(object);
+		itemData->flags |= ItemDataFlags::ItemDataFlag_BoundItem;
+		return itemData;
+	}
+
+	const auto TES3_IsItemDataStackable = reinterpret_cast<bool (__cdecl*)(ItemDataVanilla*, Item*, bool)>(0x4E7970);
+	bool ItemData::isItemDataStackable(ItemData* itemData, Item* item, bool ignoreOwnership) {
+		// Note: itemData argument may be nullptr.
+
+		// Vanilla checks.
+		if (!TES3_IsItemDataStackable(itemData, item, ignoreOwnership)) {
+			return false;
+		}
+		
+		// Due to checks in TES3_IsItemDataStackable, after this point item and itemData are non-null.
+
+		// Bound items must not lose item data.
+		if (itemData->flags & ItemDataFlags::ItemDataFlag_BoundItem) {
 			return false;
 		}
 
+		// Lua data.
 		if (itemData->luaData) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			static sol::protected_function fnTableEmpty = stateHandle.state["table"]["empty"];
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			static sol::protected_function fnTableEmpty = stateHandle.getState()["table"]["empty"];
 			if (!fnTableEmpty(itemData->luaData->data, true) || !fnTableEmpty(itemData->luaData->tempData, true)) {
 				return false;
 			}
@@ -144,7 +162,8 @@ namespace TES3 {
 			}
 
 			// If the owner type is changing, reset the requirement.
-			if (owner->objectType != newOwner->objectType) {
+			const auto oldOwnerType = owner ? owner->objectType : ObjectType::Invalid;
+			if (oldOwnerType != newOwner->objectType) {
 				requiredVariable = nullptr;
 			}
 
@@ -176,6 +195,9 @@ namespace TES3 {
 			if (value.is<int>()) {
 				requiredRank = value.as<int>();
 			}
+			else if (value == sol::nil) {
+				requiredRank = 0;
+			}
 			else {
 				throw std::exception("Faction ownership used. Requirement must be a rank (number).");
 			}
@@ -183,6 +205,9 @@ namespace TES3 {
 		else if (owner->objectType == TES3::ObjectType::NPC) {
 			if (value.is<TES3::GlobalVariable*>()) {
 				requiredVariable = value.as<TES3::GlobalVariable*>();
+			}
+			else if (value == sol::nil) {
+				requiredVariable = nullptr;
 			}
 			else {
 				throw std::exception("NPC ownership used. Requirement must be a global variable.");
@@ -213,6 +238,13 @@ namespace TES3 {
 		else if (actor.is<TES3::CreatureInstance*>()) {
 			soul = actor.as<TES3::CreatureInstance*>()->baseCreature;
 		}
+		else if (actor == sol::nil) {
+			soul = nullptr;
+		}
+	}
+
+	bool ItemData::isBoundItem() const {
+		return (flags & ItemDataFlags::ItemDataFlag_BoundItem) != 0;
 	}
 
 	void ItemData::setLuaDataTable(sol::object data) {

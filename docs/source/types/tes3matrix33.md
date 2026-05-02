@@ -405,6 +405,21 @@ local result = myObject:transpose()
 
 ## Functions
 
+### `identity`
+<div class="search_terms" style="display: none">identity</div>
+
+Creates a new identity matrix.
+
+```lua
+local matrix = tes3matrix33.identity()
+```
+
+**Returns**:
+
+* `matrix` ([tes3matrix33](../types/tes3matrix33.md))
+
+***
+
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 

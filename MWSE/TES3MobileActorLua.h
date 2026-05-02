@@ -16,12 +16,14 @@ namespace mwse::lua {
 		// Basic property binding.
 		usertypeDefinition["actionBeforeCombat"] = sol::readonly_property(&TES3::MobileActor::actionBeforeCombat);
 		usertypeDefinition["actionData"] = sol::readonly_property(&TES3::MobileActor::actionData);
+		usertypeDefinition["actorFlags"] = &TES3::MobileActor::actorFlags;
 		usertypeDefinition["actorType"] = sol::readonly_property(&TES3::MobileActor::actorType);
 		usertypeDefinition["aiPlanner"] = sol::readonly_property(&TES3::MobileActor::aiPlanner);
 		usertypeDefinition["alarm"] = &TES3::MobileActor::alarm;
 		usertypeDefinition["barterGold"] = &TES3::MobileActor::barterGold;
 		usertypeDefinition["collidingReference"] = sol::readonly_property(&TES3::MobileActor::collidingReference);
 		usertypeDefinition["combatSession"] = sol::readonly_property(&TES3::MobileActor::combatSession);
+		usertypeDefinition["committedCrimes"] = &TES3::MobileActor::committedCrimes;
 		usertypeDefinition["corpseHourstamp"] = &TES3::MobileActor::corpseHourstamp;
 		usertypeDefinition["currentEnchantedItem"] = sol::readonly_property(&TES3::MobileActor::currentEnchantedItem);
 		usertypeDefinition["encumbrance"] = sol::readonly_property(&TES3::MobileActor::encumbrance);
@@ -50,6 +52,7 @@ namespace mwse::lua {
 		usertypeDefinition["scanInterval"] = &TES3::MobileActor::scanInterval;
 		usertypeDefinition["scanTimer"] = sol::readonly_property(&TES3::MobileActor::scanTimer);
 		usertypeDefinition["torchSlot"] = &TES3::MobileActor::torchSlot;
+		usertypeDefinition["witnessedCrimes"] = &TES3::MobileActor::witnessedCrimes;
 
 		// Indirect bindings to unions and arrays.
 		usertypeDefinition["activeMagicEffectList"] = sol::readonly_property(&TES3::MobileActor::getActiveMagicEffectsList_lua);
@@ -125,9 +128,8 @@ namespace mwse::lua {
 		usertypeDefinition["isWalking"] = sol::property(&TES3::MobileActor::getMovementFlagWalking, &TES3::MobileActor::setMovementFlagWalking);
 
 		// Basic function binding.
-		usertypeDefinition["applyHealthDamage"] = &TES3::MobileActor::applyHealthDamage;
-		usertypeDefinition["applyFatigueDamage"] = &TES3::MobileActor::applyFatigueDamage;
 		usertypeDefinition["applyDamage"] = &TES3::MobileActor::applyDamage_lua;
+		usertypeDefinition["applyFatigueDamage"] = &TES3::MobileActor::applyFatigueDamage_lua;
 		usertypeDefinition["applyJumpFatigueCost"] = &TES3::MobileActor::applyJumpFatigueCost;
 		usertypeDefinition["calcEffectiveDamage"] = &TES3::MobileActor::calcEffectiveDamage_lua;
 		usertypeDefinition["calculateJumpVelocity"] = &TES3::MobileActor::calculateJumpVelocity_lua;
@@ -137,13 +139,14 @@ namespace mwse::lua {
 		usertypeDefinition["forceWeaponAttack"] = &TES3::MobileActor::forceWeaponAttack_lua;
 		usertypeDefinition["getActiveMagicEffects"] = &TES3::MobileActor::getActiveMagicEffectsList_lua;
 		usertypeDefinition["getBootsWeight"] = &TES3::MobileActor::getBootsWeight;
-		usertypeDefinition["getViewToActor"] = &TES3::MobileActor::getViewToActor_lua;
-		usertypeDefinition["getViewToPoint"] = &TES3::MobileActor::getViewToPoint_lua;
-		usertypeDefinition["getViewToPointWithFacing"] = &TES3::MobileActor::getViewToPointWithFacing_lua;
+		usertypeDefinition["getEffectiveAttackDistance"] = &TES3::MobileActor::getEffectiveAttackDistance;
 		usertypeDefinition["getFatigueTerm"] = &TES3::MobileActor::getFatigueTerm;
 		usertypeDefinition["getPowerUseTimestamp"] = &TES3::MobileActor::getPowerUseTimestamp;
 		usertypeDefinition["getSkillStatistic"] = &TES3::MobileActor::getSkillStatistic;
 		usertypeDefinition["getSkillValue"] = &TES3::MobileActor::getSkillValue;
+		usertypeDefinition["getViewToActor"] = &TES3::MobileActor::getViewToActor_lua;
+		usertypeDefinition["getViewToPoint"] = &TES3::MobileActor::getViewToPoint_lua;
+		usertypeDefinition["getViewToPointWithFacing"] = &TES3::MobileActor::getViewToPointWithFacing_lua;
 		usertypeDefinition["getWeaponSpeed"] = &TES3::MobileActor::getWeaponSpeed;
 		usertypeDefinition["hasUsedPower"] = &TES3::MobileActor::hasUsedPower;
 		usertypeDefinition["hitStun"] = &TES3::MobileActor::hitStun_lua;
@@ -183,10 +186,12 @@ namespace mwse::lua {
 		usertypeDefinition["isKnockedOut"] = sol::readonly_property(&TES3::MobileActor::isKnockedOut);
 		usertypeDefinition["isParalyzed"] = sol::readonly_property(&TES3::MobileActor::isParalyzed);
 		usertypeDefinition["isReadyingWeapon"] = sol::readonly_property(&TES3::MobileActor::isReadyingWeapon);
+		usertypeDefinition["isSpeaking"] = sol::readonly_property(&TES3::MobileActor::isSpeaking);
 		usertypeDefinition["weaponReady"] = sol::property(&TES3::MobileActor::getWeaponReady, &TES3::MobileActor::setWeaponReady);
 		usertypeDefinition["width"] = sol::readonly_property(&TES3::MobileActor::getWidth);
 
-		// Legacy support for old structures.
+		// Legacy support for functions and old structures.
+		usertypeDefinition["applyHealthDamage"] = &TES3::MobileActor::applyHealthDamage;
 		usertypeDefinition["activeMagicEffects"] = sol::readonly_property(&TES3::MobileActor::getActiveMagicEffects_legacy);
 		usertypeDefinition["activeMagicEffectCount"] = sol::readonly_property(&TES3::MobileActor::getActiveMagicEffectCount_legacy);
 	}

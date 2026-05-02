@@ -83,7 +83,7 @@ A child container from [`tes3dataHandler`](https://mwse.github.io/MWSE/types/tes
 
 **Returns**:
 
-* `result` ([tes3iterator](../types/tes3iterator.md))
+* `result` ([tes3globalVariable](../types/tes3globalVariable.md)[])
 
 ***
 

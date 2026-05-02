@@ -17,40 +17,18 @@ This bounding volume is used internally by the skinning system to calculate boun
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 
-### `rotation`
-<div class="search_terms" style="display: none">rotation</div>
+### `transform`
+<div class="search_terms" style="display: none">transform</div>
 
-Defines the rotation of the bone in the bind pose from the skinned object's coordinate system to the bone's coordinate system.
-
-**Returns**:
-
-* `result` ([tes3matrix33](../types/tes3matrix33.md))
-
-***
-
-### `scale`
-<div class="search_terms" style="display: none">scale</div>
-
-Defines the scale of the bone in the bind pose from the skinned object's coordinate system to the bone's coordinate system.
+Defines the transform of the bone in the bind pose from the skinned object's coordinate system to the bone's coordinate system.
 
 **Returns**:
 
-* `result` (number)
-
-***
-
-### `translation`
-<div class="search_terms" style="display: none">translation</div>
-
-Defines the translation of the bone in bind pose from the skinned object's coordinate system to the bone's coordinate system.
-
-**Returns**:
-
-* `result` ([tes3vector3](../types/tes3vector3.md))
+* `result` ([tes3transform](../types/tes3transform.md))
 
 ***
 

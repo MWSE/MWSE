@@ -1,9 +1,12 @@
-# Morrowind Script Extender Nightly (MWSE 2.1)
+# Morrowind Script Extender
 
-### Download the latest nightly build [here](https://github.com/MWSE/MWSE/releases/download/build-automatic/mwse.zip)!
+The nightly MWSE release is now installed by default[^1] with [MGE XE](https://www.nexusmods.com/morrowind/mods/41102).
 
-The previous stable release is available at the [Morrowind Nexus](https://www.nexusmods.com/morrowind/mods/45468), but is now bundled by default with [MGE XE](https://www.nexusmods.com/morrowind/mods/41102).  
-The stable release does **not** include Lua support.
+[^1]: If you have downloaded the archive file of MGE XE, you will need to manually run MWSE-Update.exe to install nightly MWSE.
+
+Nightly builds of MWSE now include [Lua scripting support](https://mwse.github.io/MWSE/guides/introduction/), new [bug fixes and engine enhancements](https://mwse.github.io/MWSE/references/general/patches/), and the [Construction Set Extender](https://mwse.github.io/MWSE/references/general/csse/).  
+
+Run MWSE-Update.exe regularly to ensure you have the latest version.
 
 For mod authors, the best way to learn MWSE and get assistance is to ask questions in the #mwse channel of the [Morrowind Modding Community Discord](https://discord.gg/nTF2PZR).
 

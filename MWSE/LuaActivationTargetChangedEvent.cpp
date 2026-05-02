@@ -6,20 +6,21 @@
 #include "TES3Reference.h"
 
 namespace mwse::lua::event {
-	ActivationTargetChangedEvent::ActivationTargetChangedEvent(TES3::Reference* previous, TES3::Reference* current) :
+	TES3::Reference* ActivationTargetChangedEvent::ms_PreviousReference = nullptr;
+
+	ActivationTargetChangedEvent::ActivationTargetChangedEvent(TES3::Reference* current) :
 		ObjectFilteredEvent("activationTargetChanged", current),
-		m_PreviousReference(previous),
 		m_CurrentReference(current)
 	{
 
 	}
 
 	sol::table ActivationTargetChangedEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
-		eventData["previous"] = m_PreviousReference;
+		eventData["previous"] = ms_PreviousReference;
 		eventData["current"] = m_CurrentReference;
 
 		return eventData;

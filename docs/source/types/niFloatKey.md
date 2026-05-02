@@ -8,7 +8,7 @@
 
 A simple animation key, that holds an arbitrary floating point value.
 
-This type inherits the following: [niAnimationKey](../types/niAnimationKey.md)
+This type inherits the following: [niAnimationKey](../types/niAnimationKey.md).
 ## Properties
 
 ### `timing`

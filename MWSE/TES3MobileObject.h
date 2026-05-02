@@ -2,7 +2,9 @@
 
 #include "TES3Defines.h"
 
+#include "NIDefines.h"
 #include "NINode.h"
+
 #include "TES3Object.h"
 #include "TES3Vectors.h"
 
@@ -24,12 +26,14 @@ namespace TES3 {
 			ActiveInSimulation = 0x4,
 			AffectedByGravity = 0x10,
 			CollisionActive = 0x20,
+			LightingValid = 0x80,
 			UsesUnionBV = 0x100,
 			Werewolf = 0x400,
 			Underwater = 0x800,
 			TalkedTo = 0x1000,
 			WeaponDrawn = 0x2000,
 			SpellReadied = 0x4000,
+			Commanded = 0x8000,
 			InCombat = 0x10000,
 			Attacked = 0x20000,
 			StuntedMagicka = 0x40000,
@@ -45,12 +49,14 @@ namespace TES3 {
 		enum FlagBit {
 			ActiveInSimulationBit = 2,
 			CollisionActiveBit = 5,
+			LightingValidBit = 7,
 			UsesUnionBVBit = 8,
 			WerewolfBit = 10,
 			UnderwaterBit = 11,
 			TalkedToBit = 12,
 			WeaponDrawnBit = 13,
 			SpellReadiedBit = 14,
+			CommandedBit = 15,
 			InCombatBit = 16,
 			AttackedBit = 17,
 			StuntedMagickaBit = 18,
@@ -146,7 +152,7 @@ namespace TES3 {
 
 	struct MobileActor_vTable : MobileObject_vTable {
 		void (__thiscall* initializeStats)(MobileActor*, void*); // 0x98
-		void (__thiscall* getDispositionRaw)(MobileActor*); // 0x9C
+		int (__thiscall* getDispositionRaw)(MobileActor*); // 0x9C
 		void (__thiscall* calculateNPCWidth)(MobileActor*); // 0xA0
 		void (__thiscall* calculateNPCHeight)(MobileActor*); // 0xA4
 		void (__thiscall* decideActionAI)(MobileActor*); // 0xA8
@@ -219,7 +225,7 @@ namespace TES3 {
 		};
 
 		struct LightData {
-			NI::PointLight * light; // 0x0
+			NI::Pointer<NI::PointLight> light; // 0x0
 			float radius; // 0x4
 			float unknown_0x8;
 		};
@@ -289,6 +295,9 @@ namespace TES3 {
 		void enterLeaveSimulationByDistance();
 		IteratedList<ItemStack*>* getInventory() const;
 		bool getBasePositionIsUnderwater() const;
+		void setLightEffectFalloff(unsigned int radius);
+		void setLightEffectDiffuseCol(const NI::Color& colour);
+		void removeLight();
 
 		//
 		// Lua interface functions.
@@ -298,8 +307,10 @@ namespace TES3 {
 		void setBoundSize(const Vector3&);
 		Vector3* getImpulseVelocity();
 		void setImpulseVelocityFromLua(sol::stack_object);
-		Vector3* getPosition();
+		LightData* getLightEffectData() const;
+		Vector3* getPosition() const;
 		void setPositionFromLua(sol::stack_object);
+		void setLightEffectDiffuseCol_lua(sol::object object);
 		Vector3* getVelocity();
 		void setVelocityFromLua(sol::stack_object);
 
@@ -310,6 +321,8 @@ namespace TES3 {
 		bool getMovementCollisionFlag() const;
 		void setMovementCollisionFlag(bool value);
 		sol::table getCollisions_lua(sol::this_state ts) const;
+		bool getLightingValidFlag() const;
+		void setLightingValidFlag(bool value);
 
 		bool getMobToMobCollision() const;
 		void setMobToMobCollision(bool collide);

@@ -44,8 +44,8 @@ namespace se::cs {
 		return &initializers[index];
 	}
 
-	bool GameSetting::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		if (BaseObject::search(needle, caseSensitive, regex)) {
+	bool GameSetting::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}
 
@@ -53,7 +53,7 @@ namespace se::cs {
 			return false;
 		}
 
-		return string::complex_contains(value.asString, needle, caseSensitive, regex);
+		return string::complex_contains(value.asString, needle, settings, regex);
 	}
 
 }

@@ -12,7 +12,7 @@ Index             | Value | Description
 ----------------- | ----- | -------------------------------------
 shortBladeOneHand | `0`   | Short Blade, One Handed
 longBladeOneHand  | `1`   | Long Blade, One Handed
-longBladeTwoClose | `2`   | Lon Blade, Two Handed
+longBladeTwoClose | `2`   | Long Blade, Two Handed
 bluntOneHand      | `3`   | Blunt Weapon, One Handed
 bluntTwoClose     | `4`   | Blunt Weapon, Two Handed (Warhammers)
 bluntTwoWide      | `5`   | Blunt Weapon, Two Handed (Staffs)

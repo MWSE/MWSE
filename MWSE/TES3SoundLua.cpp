@@ -3,14 +3,15 @@
 #include "LuaManager.h"
 #include "TES3ObjectLua.h"
 
+#include "TES3Creature.h"
 #include "TES3Sound.h"
 #include "TES3SoundGenerator.h"
 
 namespace mwse::lua {
 	void bindTES3Sound() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::Sound.
 		{
@@ -35,7 +36,9 @@ namespace mwse::lua {
 			// Basic function binding.
 			usertypeDefinition["isLooping"] = &TES3::Sound::isLooping;
 			usertypeDefinition["isPlaying"] = &TES3::Sound::isPlaying;
+			usertypeDefinition["loadBuffer"] = &TES3::Sound::loadBuffer;
 			usertypeDefinition["play"] = &TES3::Sound::play_lua;
+			usertypeDefinition["release"] = &TES3::Sound::release;
 			usertypeDefinition["stop"] = &TES3::Sound::stop;
 
 			// Expose float-based volume control.
@@ -62,8 +65,9 @@ namespace mwse::lua {
 			usertypeDefinition["__tojson"] = &TES3::SoundGenerator::toJson;
 
 			// Basic property binding.
-			usertypeDefinition["sound"] = sol::readonly_property(&TES3::SoundGenerator::sound);
-			usertypeDefinition["type"] = sol::readonly_property(&TES3::SoundGenerator::soundType);
+			usertypeDefinition["creature"] = &TES3::SoundGenerator::creature;
+			usertypeDefinition["sound"] = &TES3::SoundGenerator::sound;
+			usertypeDefinition["type"] = &TES3::SoundGenerator::soundType;
 		}
 	}
 }

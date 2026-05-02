@@ -107,6 +107,12 @@ function ColorPicker:getRGBA()
 	return { r = c.r, g = c.g, b = c.b, a = self.currentAlpha }
 end
 
+--- @return number[] arrayRGB
+function ColorPicker:getColorArray()
+	local c = self.currentColor
+	return { c.r, c.g, c.b }
+end
+
 --- @alias IndicatorID
 ---| "main"
 ---| "hue"
@@ -122,7 +128,7 @@ local function getIndicators(parent)
 		local indicator = parent:findChild(UIID)
 		-- Not every Color Picker will have alpha indicator or saturation slider.
 		if indicator then
-			local id = indicator:getLuaData("indicatorID")
+			local id = indicator:getLuaData("mwse:indicatorID")
 			indicators[id] = indicator
 		end
 	end
@@ -184,7 +190,7 @@ function ColorPicker:updateValueInput(newColor, alpha)
 	end
 
 	local newText = ""
-	if input:getLuaData("hasAlpha") then
+	if input:getLuaData("mwse:hasAlpha") then
 		newText = format.pixelToHex({
 			r = newColor.r,
 			g = newColor.g,

@@ -14,9 +14,10 @@ namespace NI {
 		// Custom functions.
 		//
 
-		int getSwitchIndex();
+		int getSwitchIndex() const;
 		void setSwitchIndex(int index);
 		Pointer<AVObject> getActiveChild() const;
+		int getChildIndexByName(const char*) const;
 
 	};
 	static_assert(sizeof(SwitchNode) == 0xD8, "NI::SwitchNode failed size validation");

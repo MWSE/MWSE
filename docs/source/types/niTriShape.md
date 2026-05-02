@@ -8,7 +8,7 @@
 
 An object that allows the sharing of vertices between triangles to create shapes.
 
-This type inherits the following: [niTriBasedGeometry](../types/niTriBasedGeometry.md), [niGeometry](../types/niGeometry.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTriBasedGeometry](../types/niTriBasedGeometry.md), [niGeometry](../types/niGeometry.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `alphaProperty`
@@ -398,8 +398,15 @@ myObject:copyTransforms(source)
 Calculates and creates a bounding box for the object. The existing bounding box, if any, will not be used, a fresh one will always be calculated.
 
 ```lua
-local boundingBox = myObject:createBoundingBox()
+local boundingBox = myObject:createBoundingBox({ accurateSkinned = ..., observeAppCullFlag = ..., onlyActiveChildren = ... })
 ```
+
+**Parameters**:
+
+* `args` (table): *Optional*.
+	* `accurateSkinned` (boolean): *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+	* `observeAppCullFlag` (boolean): *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+	* `onlyActiveChildren` (boolean): *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 
 **Returns**:
 
@@ -476,6 +483,25 @@ local result = myObject:getObjectByName(name)
 **Returns**:
 
 * `result` ([niAVObject](../types/niAVObject.md))
+
+***
+
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
 
 ***
 
@@ -746,7 +772,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -757,7 +783,7 @@ local success = myObject:saveBinary(path)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given NiAVObject flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

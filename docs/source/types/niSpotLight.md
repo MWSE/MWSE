@@ -8,7 +8,7 @@
 
 Represents a spotlight in a scene. The street lights, emmithing the illumination in the cone shape can be represented by this class. Spotlights have a specific location and direction, as well as a distance attenuation and angle attenuation functions. The light direction is handled in the same way as in `niDirectionalLight` - it shines down the model-space positive X axis of the light.
 
-This type inherits the following: [niPointLight](../types/niPointLight.md), [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md)
+This type inherits the following: [niPointLight](../types/niPointLight.md), [niLight](../types/niLight.md), [niDynamicEffect](../types/niDynamicEffect.md), [niAVObject](../types/niAVObject.md), [niObjectNET](../types/niObjectNET.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `affectedNodes`
@@ -595,6 +595,25 @@ local result = myObject:getObjectByName(name)
 
 ***
 
+### `getParentByName`
+<div class="search_terms" style="display: none">getparentbyname, parentbyname</div>
+
+Searches the parent node chain returning the node that matches the argument.
+
+```lua
+local parentNode = myObject:getParentByName(name)
+```
+
+**Parameters**:
+
+* `name` (string)
+
+**Returns**:
+
+* `parentNode` ([niNode](../types/niNode.md), nil)
+
+***
+
 ### `getProperty`
 <div class="search_terms" style="display: none">getproperty, property</div>
 
@@ -862,7 +881,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 
@@ -888,7 +907,7 @@ myObject:setAttenuationForRadius(radius)
 ### `setFlag`
 <div class="search_terms" style="display: none">setflag, flag</div>
 
-Sets a given flag in the niObjectNET flag data. The specifics use of the flag is dependent on the real underlying type.
+Sets a given dynamic effect flag. The specifics use of the flag is dependent on the real underlying type.
 
 ```lua
 myObject:setFlag(state, index)

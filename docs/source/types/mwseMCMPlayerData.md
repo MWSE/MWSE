@@ -10,7 +10,7 @@ Stores the variable on the Player reference.data table. This results in the valu
 
 Settings using mwseMCMPlayerData are in-game only by default, as the Player reference can only be accessed while a game is loaded.
 
-This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md)
+This type inherits the following: [mwseMCMVariable](../types/mwseMCMVariable.md).
 ## Properties
 
 ### `class`

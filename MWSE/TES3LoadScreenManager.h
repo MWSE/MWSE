@@ -31,7 +31,7 @@ namespace TES3 {
 		~LoadScreenManager() = delete;
 
 		void open(const char* movieFile, bool canSkip = true, bool alwaysFalse1 = false, bool alwaysFalse2 = false, bool unknown1 = false, bool alwaysFalse3 = false, bool unknown2 = true);
-		void render(bool unknown1 = true, bool unknown2 = true, bool unknown3 = true);
+		bool render(bool unknown1 = true, bool unknown2 = true, bool unknown3 = true);
 		void clearMovieState(bool unknown = true);
 
 		bool play(const char* movieFile, bool canSkip = true);

@@ -6,9 +6,9 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A leveled creature game object.
+A leveled item game object.
 
-This type inherits the following: [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -256,7 +256,7 @@ The scene graph node for this object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -275,14 +275,16 @@ The soruceless flag of the object.
 
 ***
 
-### `stolenList`
-<div class="search_terms" style="display: none">stolenlist</div>
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
 
-A list of actors that the object has been stolen from.
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` (boolean)
 
 ***
 

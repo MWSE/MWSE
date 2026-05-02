@@ -20,8 +20,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table SpellTickEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		eventData["caster"] = m_SourceInstance->caster;
@@ -44,8 +44,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::object SpellTickEvent::getEventOptions() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto options = state.create_table();
 
 		options["filter"] = m_SourceInstance->sourceCombo.source.asGeneric;

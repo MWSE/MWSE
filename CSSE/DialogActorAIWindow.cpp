@@ -55,7 +55,7 @@ namespace se::cs::dialog::actor_ai_window {
 	}
 
 	void CALLBACK PatchDialogProc_BeforeCommand_FromTravelReturnButton(DialogProcContext& context) {
-		const auto userData = (UserData*)GetWindowLongA(context.getWindowHandle(), GWL_USERDATA);
+		const auto userData = context.getUserData<UserData>();
 
 		// Prevent any command from doing anything if we have no cell.
 		if (userData->returnCell == nullptr) {

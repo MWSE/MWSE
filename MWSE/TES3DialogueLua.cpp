@@ -19,8 +19,8 @@
 namespace mwse::lua {
 	void bindTES3Dialogue() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::Dialogue
 		{
@@ -115,8 +115,11 @@ namespace mwse::lua {
 			usertypeDefinition["__tojson"] = &TES3::Quest::toJson;
 
 			// Basic property binding.
-			usertypeDefinition["dialogue"] = sol::readonly_property(&TES3::Quest::dialogue);
-			usertypeDefinition["info"] = sol::readonly_property(&TES3::Quest::activeInfo);
+			usertypeDefinition["dialogue"] = sol::readonly_property(&TES3::Quest::dialogues);
+			usertypeDefinition["info"] = sol::readonly_property(&TES3::Quest::activeInfos);
+			usertypeDefinition["isActive"] = sol::readonly_property(&TES3::Quest::isActive);
+			usertypeDefinition["isFinished"] = sol::readonly_property(&TES3::Quest::isFinished);
+			usertypeDefinition["isStarted"] = sol::readonly_property(&TES3::Quest::isStarted);
 		}
 	}
 }

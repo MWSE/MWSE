@@ -88,6 +88,9 @@ namespace mwse {
 	void writeDoubleWordUnprotected(DWORD address, DWORD value);
 	bool writeDoubleWordEnforced(DWORD address, DWORD previousValue, DWORD value);
 
+	// Modify a value in memory.
+	bool writeAddFlagEnforced(DWORD address, DWORD flags, DWORD addedFlags);
+
 	template <typename T>
 	bool writeValueEnforced(DWORD address, T previousValue, T value) {
 		T currentValue = *reinterpret_cast<T*>(address);

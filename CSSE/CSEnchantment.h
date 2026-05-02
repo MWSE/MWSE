@@ -12,6 +12,8 @@ namespace se::cs {
 		Effect effects[8]; // 0x34
 		unsigned int enchantFlags; // 0xF4
 		int useCount; // 0xF8
+
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Enchantment) == 0xFC, "Enchantment failed size validation");
 }

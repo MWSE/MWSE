@@ -13,7 +13,7 @@ Provides various OS-specific functions.
 ### `os.clock`
 <div class="search_terms" style="display: none">clock</div>
 
-Return CPU time since Lua started in seconds.
+Returns CPU time since Lua started in seconds.
 
 ```lua
 local result = os.clock()
@@ -95,6 +95,21 @@ local commandLine = os.getCommandLine()
 
 ***
 
+### `os.getHighPrecisionClock`
+<div class="search_terms" style="display: none">gethighprecisionclock, highprecisionclock</div>
+
+Returns CPU time since Lua started in seconds. This is a high-precision clock meant for use in profiling.
+
+```lua
+local result = os.getHighPrecisionClock()
+```
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `os.openURL`
 <div class="search_terms" style="display: none">openurl, url</div>
 
@@ -121,7 +136,7 @@ local result = os.setClipboardText(text)
 
 **Parameters**:
 
-* `text` (string, nil): *Optional*. The text to put in the clipboard. If nil is provided instead, then the clipboard will be cleared.
+* `text` (string): *Optional*. The text to put in the clipboard. If nil is provided instead, then the clipboard will be cleared.
 
 **Returns**:
 

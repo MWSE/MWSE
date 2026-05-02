@@ -11,8 +11,12 @@ namespace NI {
 		vTable.asObject->destructor(this, 0);
 	}
 
-	int DynamicEffect::getType() {
+	int DynamicEffect::getType() const {
 		return vTable.asDynamicEffect->getType(this);
+	}
+
+	bool DynamicEffect::isLight() const {
+		return getType() <= TYPE_SPOT_LIGHT;
 	}
 
 	const auto NI_DynamicEffect_attachAffectedNode = reinterpret_cast<void(__thiscall*)(DynamicEffect*, Node*)>(0x6F3790);

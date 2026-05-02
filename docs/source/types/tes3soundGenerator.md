@@ -8,7 +8,7 @@
 
 A sound generator object created in the TES3 CS
 
-This type inherits the following: [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -19,6 +19,19 @@ The blocked state of the object.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `creature`
+<div class="search_terms" style="display: none">creature</div>
+
+The base creature for this soundgen, which serves as a lookup index. Note that creatures can reference the soundgen of any other creature through the `tes3creature.soundCreature` property, which is generally used for variants of a creature.
+
+When this is nil, the sound is treated as a generic fallback for this soundGen type, which is played when there is no creature match.
+
+**Returns**:
+
+* `result` ([tes3creature](../types/tes3creature.md), nil)
 
 ***
 
@@ -102,7 +115,7 @@ The persistent flag of the object.
 ### `sound`
 <div class="search_terms" style="display: none">sound</div>
 
-*Read-only*. Sound object tied to this sound generator.
+Sound object tied to this sound generator.
 
 **Returns**:
 
@@ -113,7 +126,7 @@ The persistent flag of the object.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -132,6 +145,19 @@ The soruceless flag of the object.
 
 ***
 
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `supportsLuaData`
 <div class="search_terms" style="display: none">supportsluadata</div>
 
@@ -146,7 +172,7 @@ If true, references of this object can store temporary or persistent lua data.
 ### `type`
 <div class="search_terms" style="display: none">type</div>
 
-*Read-only*. Maps to [`tes3.soundGenType`](https://mwse.github.io/MWSE/references/sound-generator-types/) constants.
+Maps to [`tes3.soundGenType`](https://mwse.github.io/MWSE/references/sound-generator-types/) constants.
 
 **Returns**:
 

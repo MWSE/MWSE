@@ -8,7 +8,6 @@ return {
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string", description = "Who to remove items from." },
 			{ name = "item", type = "tes3item|string", description = "The item to remove." },
 			{ name = "itemData", type = "tes3itemData", optional = true, description = "The item data for the exact item to remove." },
-			{ name = "deleteItemData", type = "tes3itemData", optional = true, description = "Whether to delete the item data after remove succeeds. Automatically set if itemData is used. Does not need to be specified for normal usage." },
 			{ name = "count", type = "number", optional = true, default = "1", description = "The maximum number of items to remove." },
 			{ name = "playSound", type = "boolean", optional = true, default = true, description = "If false, the up/down sound for the item won't be played." },
 			{ name = "reevaluateEquipment", type = "boolean", optional = true, default = true, description = "If true, and the item removed is armor, clothing, or a weapon, the actor will reevaluate its equipment choices to see if it needs to equip a new item. This does not affect the player." },

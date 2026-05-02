@@ -4,9 +4,11 @@
 
 #include "TES3UIManager.h"
 
-#include "TES3MobileNPC.h"
-#include "TES3UIElement.h"
+#include "TES3MobilePlayer.h"
 #include "TES3Race.h"
+#include "TES3Reference.h"
+#include "TES3UIElement.h"
+#include "TES3WorldController.h"
 
 #include "LuaManager.h"
 
@@ -33,7 +35,7 @@ namespace TES3 {
 
 		// Trigger isGuard event.
 		mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
-		auto stateHandle = luaManager.getThreadSafeStateHandle();
+		const auto stateHandle = luaManager.getThreadSafeStateHandle();
 		sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::IsGuardEvent(this, isGuard));
 		if (eventData.valid()) {
 			isGuard = eventData.get_or<bool>("isGuard", isGuard);
@@ -88,6 +90,23 @@ namespace TES3 {
 	// NPC
 	//
 
+	Race* NPC::getRace() const {
+		return race;
+	}
+
+	void NPC::setRace(Race* newRace) {
+		race = newRace;
+		if (race) {
+			setModelPath("");
+		}
+
+		const auto worldController = WorldController::get();
+		const auto macp = worldController ? worldController->getMobilePlayer() : nullptr;
+		if (macp && macp->npcInstance->baseNPC == this) {
+			macp->firstPerson->setRace(race);
+		}
+	}
+
 	std::reference_wrapper<unsigned char[8]> NPC::getAttributes() {
 		return std::ref(attributes);
 	}
@@ -100,7 +119,7 @@ namespace TES3 {
 		// Allow lua to determine the soul's value.
 		if (mwse::lua::event::CalculateSoulValueEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
-			auto stateHandle = luaManager.getThreadSafeStateHandle();
+			const auto stateHandle = luaManager.getThreadSafeStateHandle();
 			sol::table payload = stateHandle.triggerEvent(new mwse::lua::event::CalculateSoulValueEvent(this));
 			if (payload.valid()) {
 				return payload["value"];
@@ -129,7 +148,7 @@ namespace TES3 {
 		// Fire off our event.
 		// Avoid firing events on a base NPC, due to the lack of a reference.
 		if (isClone() && mwse::lua::event::DispositionEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table payload = stateHandle.triggerEvent(new mwse::lua::event::DispositionEvent(this, disposition, clamp));
 			if (payload.valid()) {
 				disposition = payload.get_or("disposition", disposition);
@@ -168,7 +187,7 @@ namespace TES3 {
 
 		// Fire off event to let people know equipment has been reevaluated so custom slots can be equipped.
 		if (mwse::lua::event::EquipmentReevaluatedEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			stateHandle.triggerEvent(new mwse::lua::event::EquipmentReevaluatedEvent(this));
 		}
 	}

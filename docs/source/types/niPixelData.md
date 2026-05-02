@@ -8,7 +8,7 @@
 
 Represents 2D arrays of pixel values, as well as pyramids of multiple mipmap levels, each of 2D arrays of pixel values. Also contains information representing the format of the pixels and dimensions of the arrays.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
 
 ### `bytesPerPixel`
@@ -95,6 +95,21 @@ local result = myObject:createSourceTexture()
 **Returns**:
 
 * `result` ([niSourceTexture](../types/niSourceTexture.md))
+
+***
+
+### `exportTGA`
+<div class="search_terms" style="display: none">exporttga</div>
+
+Exports this pixel data as a Truevision TGA file. Only supports export of pixel data in RGBA32 format, which all `niPixelData` created using [`niPixelData.new`](https://mwse.github.io/MWSE/types/niPixelData/#new) are.
+
+```lua
+myObject:exportTGA(path)
+```
+
+**Parameters**:
+
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.tga` extension needs to be specified manually.
 
 ***
 
@@ -201,7 +216,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

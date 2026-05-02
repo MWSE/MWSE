@@ -12,6 +12,7 @@
 #include "CSFaction.h"
 #include "CSGameSetting.h"
 #include "CSIngredient.h"
+#include "CSEffect.h"
 #include "CSLeveledCreature.h"
 #include "CSLeveledItem.h"
 #include "CSLight.h"
@@ -374,6 +375,66 @@ namespace se::cs::dialog::object_window {
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorFactionRank::getSettings() const {
+		return settings.object_window.column_actor_faction_rank;
+	}
+
+	//
+	// Column: Actor training
+	//
+
+	TabColumnTraining::TabColumnTraining() : TabColumn("Training") {
+
+	}
+
+	bool TabColumnTraining::supportsObjectType(ObjectType::ObjectType objectType) const {
+		return objectType == ObjectType::NPC;
+	}
+
+	void TabColumnTraining::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
+		char buffer[256];
+		auto object = static_cast<const NPC*>(getObjectFromDisplayInfo(displayInfo));
+		object->getTraining(buffer, sizeof(buffer));
+		display(displayInfo, buffer);
+	}
+
+	int TabColumnTraining::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
+		char bufferA[256];
+		char bufferB[256];
+		const auto a = static_cast<const NPC*>(lParam1);
+		const auto b = static_cast<const NPC*>(lParam2);
+		a->getTraining(bufferA, sizeof(bufferA));
+		b->getTraining(bufferB, sizeof(bufferB));
+  		return sort(bufferA, bufferB, sortOrderAsc);
+	}
+
+	TabColumn::ColumnSettings& TabColumnTraining::getSettings() const {
+		return settings.object_window.column_actor_faction_rank;
+	}
+
+	//
+	// Column: Actor fight
+	//
+
+	TabColumnFight::TabColumnFight() : TabColumn("Fight") {
+
+	}
+
+	bool TabColumnFight::supportsObjectType(ObjectType::ObjectType objectType) const {
+		return objectType == ObjectType::NPC;
+	}
+
+	void TabColumnFight::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
+		auto object = static_cast<const NPC*>(getObjectFromDisplayInfo(displayInfo));
+		display(displayInfo, object->getFight());
+	}
+
+	int TabColumnFight::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
+		const auto a = static_cast<const NPC*>(lParam1);
+		const auto b = static_cast<const NPC*>(lParam2);
+		return sort(a->getFight(), b->getFight(), sortOrderAsc);
+	}
+
+	TabColumn::ColumnSettings& TabColumnFight::getSettings() const {
 		return settings.object_window.column_actor_faction_rank;
 	}
 
@@ -2289,6 +2350,8 @@ namespace se::cs::dialog::object_window {
 	TabColumnActorEssential TabController::tabColumnActorEssential;
 	TabColumnActorFaction TabController::tabColumnActorFaction;
 	TabColumnActorFactionRank TabController::tabColumnActorFactionRank;
+	TabColumnTraining TabController::tabColumnTraining;
+	TabColumnFight TabController::tabColumnFight;
 	TabColumnActorInventory TabController::tabColumnActorInventory;
 	TabColumnActorLevel TabController::tabColumnActorLevel;
 	TabColumnActorRespawns TabController::tabColumnActorRespawns;
@@ -2551,6 +2614,8 @@ namespace se::cs::dialog::object_window {
 			tabColumnActorRespawns.addToController(this, hWnd);
 			tabColumnAnimation.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
+			tabColumnTraining.addToController(this, hWnd);
+			tabColumnFight.addToController(this, hWnd);
 			break;
 		case ObjectType::Creature:
 			tabColumnName.addToController(this, hWnd);
@@ -2607,7 +2672,7 @@ namespace se::cs::dialog::object_window {
 		tabColumnModified.addToController(this, hWnd);
 	}
 
-	int TabController::getColumnIndexByTitle(const char* title) {
+	int TabController::getColumnIndexByTitle(const char* title) const {
 		for (auto i = 0u; i < columns.size(); ++i) {
 			if (string::equal(columns.at(i)->m_Title, title)) {
 				return i;
@@ -2616,7 +2681,7 @@ namespace se::cs::dialog::object_window {
 		return -1;
 	}
 
-	TabColumn* TabController::getColumnByTitle(const char* title) {
+	TabColumn* TabController::getColumnByTitle(const char* title) const {
 		auto index = getColumnIndexByTitle(title);
 		if (index == -1) {
 			return nullptr;

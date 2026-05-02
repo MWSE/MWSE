@@ -62,10 +62,17 @@ function metatable:set_index(value)
 		return
 	end
 
+	local element = self.element
+	local text = self:getTextElement()
+	local button = self:getButtonElement()
+
 	self.rawdata.index = value
 	self.text = self.options[value].text
 
-	local element = self.element
+	local color = self.options[value].color or tes3ui.getPalette(tes3.palette.normalColor)
+	button.idle = color
+	text.color = color
+
 	element:getTopLevelMenu():updateLayout()
 	element:triggerEvent("valueChanged")
 end
@@ -115,6 +122,10 @@ function metatable:getTextElement()
 	return self.element:findChild("PartButton_text_ptr")
 end
 
+function metatable:getButtonElement()
+	return self.rawdata.button
+end
+
 function metatable:previous()
 	self.index = self.index - 1
 end
@@ -139,14 +150,15 @@ function tes3uiElement:createCycleButton(params)
 	assert(type(params) == "table", "Invalid parameters provided.")
 	validateOptions(params.options)
 	if (params.index) then
-		assert(type(params.options[params.index]) == "number", "Invalid 'index' parameter provided. Must be a valid index into the options table.")
+		assert(type(params.index) == "number", "Invalid 'index' parameter provided. Must be a valid index into the options table.")
+		assert(type(params.options[params.index]) == "table", "Invalid 'index' parameter provided. Must be a valid index into the options table.")
 	end
 
 	-- Create and define basic properties.
 	local button = self:createButton({ id = params.id })
 
 	-- Define as a custom widget.
-	button:makeLuaWidget("cycleButton", { rawdata = {} })
+	button:makeLuaWidget("cycleButton", { rawdata = { button = button.widget } })
 	button.widget.options = params.options
 	button.widget.index = params.index or 1
 

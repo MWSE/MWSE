@@ -9,7 +9,7 @@ function this.inUnitRange(n)
 	return true
 end
 
---- @param pixel mwseColorTable|ffiImagePixel
+--- @param pixel mwseColorTable|mwseColorATable|niColor|niColorA|ffiImagePixel
 function this.pixel(pixel)
 	if not pixel.r
 	or not this.inUnitRange(pixel.r)
@@ -22,14 +22,16 @@ function this.pixel(pixel)
 	return true
 end
 
+local EPSILON = 1e-5
+
 --- Returns a copy with all the channels clamped to unit range.
 --- @param color mwseColorTable|ffiImagePixel
 --- @return mwseColorTable
 function this.clampColor(color)
 	return {
-		r = math.clamp(color.r, 0, 1),
-		g = math.clamp(color.g, 0, 1),
-		b = math.clamp(color.b, 0, 1),
+		r = math.clamp(color.r, EPSILON, 1),
+		g = math.clamp(color.g, EPSILON, 1),
+		b = math.clamp(color.b, EPSILON, 1),
 	}
 end
 

@@ -138,6 +138,424 @@ mge.loadConfig()
 
 ***
 
+### `mge.macros.decreaseFOV`
+<div class="search_terms" style="display: none">macros.decreasefov</div>
+
+Triggers the MGE "Decrease FOV" macro.
+
+```lua
+mge.macros.decreaseFOV()
+```
+
+***
+
+### `mge.macros.decreaseViewRange`
+<div class="search_terms" style="display: none">macros.decreaseviewrange</div>
+
+Triggers the MGE "Decrease View Range" macro.
+
+```lua
+mge.macros.decreaseViewRange()
+```
+
+***
+
+### `mge.macros.decreaseZoom`
+<div class="search_terms" style="display: none">macros.decreasezoom</div>
+
+Triggers the MGE "Decrease Zoom" macro.
+
+```lua
+mge.macros.decreaseZoom()
+```
+
+***
+
+### `mge.macros.disableMusic`
+<div class="search_terms" style="display: none">macros.disablemusic</div>
+
+Triggers the MGE "Disable Music" macro.
+
+```lua
+mge.macros.disableMusic()
+```
+
+***
+
+### `mge.macros.haggleLess1`
+<div class="search_terms" style="display: none">macros.haggleless1</div>
+
+Triggers the MGE "Haggle Less 1" macro.
+
+```lua
+mge.macros.haggleLess1()
+```
+
+***
+
+### `mge.macros.haggleLess10`
+<div class="search_terms" style="display: none">macros.haggleless10</div>
+
+Triggers the MGE "Haggle Less 10" macro.
+
+```lua
+mge.macros.haggleLess10()
+```
+
+***
+
+### `mge.macros.haggleLess100`
+<div class="search_terms" style="display: none">macros.haggleless100</div>
+
+Triggers the MGE "Haggle Less 100" macro.
+
+```lua
+mge.macros.haggleLess100()
+```
+
+***
+
+### `mge.macros.haggleLess1000`
+<div class="search_terms" style="display: none">macros.haggleless1000</div>
+
+Triggers the MGE "Haggle Less 1,000" macro.
+
+```lua
+mge.macros.haggleLess1000()
+```
+
+***
+
+### `mge.macros.haggleLess10000`
+<div class="search_terms" style="display: none">macros.haggleless10000</div>
+
+Triggers the MGE "Haggle Less 10,000" macro.
+
+```lua
+mge.macros.haggleLess10000()
+```
+
+***
+
+### `mge.macros.haggleMore1`
+<div class="search_terms" style="display: none">macros.hagglemore1</div>
+
+Triggers the MGE "Haggle More 1" macro.
+
+```lua
+mge.macros.haggleMore1()
+```
+
+***
+
+### `mge.macros.haggleMore10`
+<div class="search_terms" style="display: none">macros.hagglemore10</div>
+
+Triggers the MGE "Haggle More 10" macro.
+
+```lua
+mge.macros.haggleMore10()
+```
+
+***
+
+### `mge.macros.haggleMore100`
+<div class="search_terms" style="display: none">macros.hagglemore100</div>
+
+Triggers the MGE "Haggle More 100" macro.
+
+```lua
+mge.macros.haggleMore100()
+```
+
+***
+
+### `mge.macros.haggleMore1000`
+<div class="search_terms" style="display: none">macros.hagglemore1000</div>
+
+Triggers the MGE "Haggle More 1,000" macro.
+
+```lua
+mge.macros.haggleMore1000()
+```
+
+***
+
+### `mge.macros.haggleMore10000`
+<div class="search_terms" style="display: none">macros.hagglemore10000</div>
+
+Triggers the MGE "Haggle More 10,000" macro.
+
+```lua
+mge.macros.haggleMore10000()
+```
+
+***
+
+### `mge.macros.increaseFOV`
+<div class="search_terms" style="display: none">macros.increasefov</div>
+
+Triggers the MGE "Increase FOV" macro.
+
+```lua
+mge.macros.increaseFOV()
+```
+
+***
+
+### `mge.macros.increaseViewRange`
+<div class="search_terms" style="display: none">macros.increaseviewrange</div>
+
+Triggers the MGE "Increase View Range" macro.
+
+```lua
+mge.macros.increaseViewRange()
+```
+
+***
+
+### `mge.macros.increaseZoom`
+<div class="search_terms" style="display: none">macros.increasezoom</div>
+
+Triggers the MGE "Increase Zoom" macro.
+
+```lua
+mge.macros.increaseZoom()
+```
+
+***
+
+### `mge.macros.moveBack3PCam`
+<div class="search_terms" style="display: none">macros.moveback3pcam</div>
+
+Triggers the MGE "Move Back 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveBack3PCam()
+```
+
+***
+
+### `mge.macros.moveDown3PCam`
+<div class="search_terms" style="display: none">macros.movedown3pcam</div>
+
+Triggers the MGE "Move Down 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveDown3PCam()
+```
+
+***
+
+### `mge.macros.moveForward3PCam`
+<div class="search_terms" style="display: none">macros.moveforward3pcam</div>
+
+Triggers the MGE "Move Forward 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveForward3PCam()
+```
+
+***
+
+### `mge.macros.moveLeft3PCam`
+<div class="search_terms" style="display: none">macros.moveleft3pcam</div>
+
+Triggers the MGE "Move Left 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveLeft3PCam()
+```
+
+***
+
+### `mge.macros.moveRight3PCam`
+<div class="search_terms" style="display: none">macros.moveright3pcam</div>
+
+Triggers the MGE "Move Right 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveRight3PCam()
+```
+
+***
+
+### `mge.macros.moveUp3PCam`
+<div class="search_terms" style="display: none">macros.moveup3pcam</div>
+
+Triggers the MGE "Move Up 3rd Person Camera" macro.
+
+```lua
+mge.macros.moveUp3PCam()
+```
+
+***
+
+### `mge.macros.nextTrack`
+<div class="search_terms" style="display: none">macros.nexttrack</div>
+
+Triggers the MGE "Next Track" macro.
+
+```lua
+mge.macros.nextTrack()
+```
+
+***
+
+### `mge.macros.resetEnableZoom`
+<div class="search_terms" style="display: none">macros.resetenablezoom</div>
+
+Triggers the MGE "Reset Enable Zoom" macro.
+
+```lua
+mge.macros.resetEnableZoom()
+```
+
+***
+
+### `mge.macros.showLastMessage`
+<div class="search_terms" style="display: none">macros.showlastmessage</div>
+
+Triggers the MGE "Show Last Message" macro.
+
+```lua
+mge.macros.showLastMessage()
+```
+
+***
+
+### `mge.macros.takeScreenshot`
+<div class="search_terms" style="display: none">macros.takescreenshot</div>
+
+Triggers the MGE "Take Screenshot" macro.
+
+```lua
+mge.macros.takeScreenshot()
+```
+
+***
+
+### `mge.macros.toggleBlending`
+<div class="search_terms" style="display: none">macros.toggleblending</div>
+
+Triggers the MGE "Toggle Blending" macro.
+
+```lua
+mge.macros.toggleBlending()
+```
+
+***
+
+### `mge.macros.toggleCrosshair`
+<div class="search_terms" style="display: none">macros.togglecrosshair</div>
+
+Triggers the MGE "Toggle Crosshair" macro.
+
+```lua
+mge.macros.toggleCrosshair()
+```
+
+***
+
+### `mge.macros.toggleDistantLand`
+<div class="search_terms" style="display: none">macros.toggledistantland</div>
+
+Triggers the MGE "Toggle Distant Land" macro.
+
+```lua
+mge.macros.toggleDistantLand()
+```
+
+***
+
+### `mge.macros.toggleFpsCounter`
+<div class="search_terms" style="display: none">macros.togglefpscounter</div>
+
+Triggers the MGE "Toggle FPS Counter" macro.
+
+```lua
+mge.macros.toggleFpsCounter()
+```
+
+***
+
+### `mge.macros.toggleGrass`
+<div class="search_terms" style="display: none">macros.togglegrass</div>
+
+Triggers the MGE "Toggle Grass" macro.
+
+```lua
+mge.macros.toggleGrass()
+```
+
+***
+
+### `mge.macros.toggleLightingMode`
+<div class="search_terms" style="display: none">macros.togglelightingmode</div>
+
+Triggers the MGE "Toggle Lighting Mode" macro.
+
+```lua
+mge.macros.toggleLightingMode()
+```
+
+***
+
+### `mge.macros.toggleShaders`
+<div class="search_terms" style="display: none">macros.toggleshaders</div>
+
+Triggers the MGE "Toggle Shaders" macro.
+
+```lua
+mge.macros.toggleShaders()
+```
+
+***
+
+### `mge.macros.toggleShadows`
+<div class="search_terms" style="display: none">macros.toggleshadows</div>
+
+Triggers the MGE "Toggle Shadows" macro.
+
+```lua
+mge.macros.toggleShadows()
+```
+
+***
+
+### `mge.macros.toggleStatusText`
+<div class="search_terms" style="display: none">macros.togglestatustext</div>
+
+Triggers the MGE "Toggle Status Text" macro.
+
+```lua
+mge.macros.toggleStatusText()
+```
+
+***
+
+### `mge.macros.toggleTransparencyAA`
+<div class="search_terms" style="display: none">macros.toggletransparencyaa</div>
+
+Triggers the MGE "Toggle Transparency AA" macro.
+
+```lua
+mge.macros.toggleTransparencyAA()
+```
+
+***
+
+### `mge.macros.toggleZoom`
+<div class="search_terms" style="display: none">macros.togglezoom</div>
+
+Triggers the MGE "Toggle Zoom" macro.
+
+```lua
+mge.macros.toggleZoom()
+```
+
+***
+
 ### `mge.reloadDistantLand`
 <div class="search_terms" style="display: none">reloaddistantland</div>
 
@@ -172,7 +590,7 @@ mge.saveScreenshot({ path = ..., captureWithUI = ... })
 **Parameters**:
 
 * `params` (table)
-	* `path` (string)
+	* `path` (string): The location of the folder to save the screenshot to. Relative to the Morrowind directory. *Needs* to include the file format extension. The supported file formats are `bmp`, `jpeg`, `dds`, `png`, and `tga`.
 	* `captureWithUI` (boolean): *Default*: `false`. If set to `true`, the screenshot will include the user interface.
 
 ***

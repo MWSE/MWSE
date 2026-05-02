@@ -25,7 +25,7 @@ namespace TES3 {
 	const auto TES3_AnimationData_playAnimationGroupForIndex = reinterpret_cast<void(__thiscall*)(AnimationData*, int, int, int, int)>(0x470AE0);
 	void AnimationData::playAnimationGroupForIndex(int animationGroup, int triIndex, int startFlag, int loopCount) {
 		if (mwse::lua::event::PlayAnimationGroupEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::PlayAnimationGroupEvent(this, animationGroup, triIndex, startFlag, loopCount));
 			if (response.get_type() == sol::type::table) {
 				sol::table eventData = response;
@@ -137,7 +137,7 @@ namespace TES3 {
 		constexpr unsigned char spellCastAnimID = 0x80;
 		if (currentAnimGroup[1] == spellCastAnimID) {
 			// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-			weaponSpeed = speed + FLT_MIN;
+			weaponSpeed = speed + std::numeric_limits<float>::min();
 		}
 	}
 

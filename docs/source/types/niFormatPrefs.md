@@ -41,3 +41,20 @@ The pixel layout. Maps to values in [`ni.textureFormatPrefsPixelLayout`](https:/
 
 * `result` ([ni.textureFormatPrefsPixelLayout](../references/ni/texture-format-preference-pixel-layouts.md))
 
+***
+
+## Functions
+
+### `new`
+<div class="search_terms" style="display: none">new</div>
+
+Creates a new, default NiFormatPrefs.
+
+```lua
+local prefs = niFormatPrefs.new()
+```
+
+**Returns**:
+
+* `prefs` ([niFormatPrefs](../types/niFormatPrefs.md))
+

@@ -136,10 +136,12 @@ The top border size in pixels. When this is set to `-1`, the `borderAllSides` se
 ### `childAlignX`
 <div class="search_terms" style="display: none">childalignx</div>
 
-Sets alignment of child elements inside its parent, though it only works in specific conditions. 0.0 = left/top edge touches left/top edge of parent, 0.5 = centred, 1.0 = right/bottom edge touches right/bottom edge of parent. For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
+Sets alignment of child elements inside its parent, as a fraction of interior space. Either childAlignX or childAlignY is used depending on the flow direction. childAlignX (horizontal alignment) is used for top-to-bottom flow direction, and childAlignY (vertical alignment) is used for left-to-right flow direction. Previous limitations on using this layout have been resolved.
 
-!!! success
-	Child alignment only works if the element has proportional sizing (using widthProportional/heightProportional) and all children use non-proportional sizing (widthProportional and heightProportional are nil).
+0.0 = Left/top edge touches left/top edge of parent.
+0.5 = Centered.
+1.0 = Right/bottom edge touches right/bottom edge of parent.
+For negative values, there is a special case behaviour: all children but the last will be left-aligned/top-aligned, the last child will be right-aligned/bottom-aligned.
 
 **Returns**:
 
@@ -587,11 +589,11 @@ The element's text. Text input can be read by accessing this property.
 ### `texture`
 <div class="search_terms" style="display: none">texture</div>
 
-The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
+The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2. Setting this value manually will clear the texture path from the element.
 
 **Returns**:
 
-* `result` ([niSourceTexture](../types/niSourceTexture.md))
+* `result` ([niTexture](../types/niTexture.md))
 
 ***
 
@@ -1119,6 +1121,26 @@ local result = myObject:createSliderVertical({ id = ..., current = ..., max = ..
 
 ***
 
+### `createTabContainer`
+<div class="search_terms" style="display: none">createtabcontainer, tabcontainer</div>
+
+Creates a collection of elements meant to represent a tab-based interface. With the widget of this element, tabs can be added with `:addTab`, which will contain the content element of that tab. When the user clicks on each tab, other tab content panes will be hidden, in favor of the one associated with the clicked tab. See [`tes3uiTabContainer`](https://mwse.github.io/MWSE/types/tes3uiTabContainer/) for a what the widget provides.
+
+```lua
+local result = myObject:createTabContainer({ id = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `id` (string, number): *Optional*. An identifier to help find this element later.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `createTextInput`
 <div class="search_terms" style="display: none">createtextinput, textinput</div>
 
@@ -1127,7 +1149,7 @@ Creates a single line text input element. To receive input the keyboard must be 
 Text input specific properties can be accessed through the `widget` property. The widget type for text inputs is [`tes3uiTextInput`](https://mwse.github.io/MWSE/types/tes3uiTextInput/).
 
 ```lua
-local result = myObject:createTextInput({ id = ..., text = ..., placeholderText = ..., numeric = ..., autoFocus = ... })
+local result = myObject:createTextInput({ id = ..., text = ..., placeholderText = ..., numeric = ..., autoFocus = ..., createBorder = ... })
 ```
 
 **Parameters**:
@@ -1138,10 +1160,42 @@ local result = myObject:createTextInput({ id = ..., text = ..., placeholderText 
 	* `placeholderText` (string): *Optional*. Placeholder text for the input. If the element is ever made empty, this will be displayed instead in the disabled text color.
 	* `numeric` (boolean): *Default*: `false`. If true, only numbers can be put into the input. The text value of the element will still be a string, and need to be converted using `tonumber`.
 	* `autoFocus` (boolean): *Default*: `false`. If true, the input will be automatically focused after creation.
+	* `createBorder` (boolean): *Default*: `false`. If true, a thin border will be created around the input box. By default it will have standard padding, and will have `widthProportional` set to `1.0`. It can be accessed by the return value's `.parent`.
 
 **Returns**:
 
 * `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+??? example "Example: Search box"
+
+	Text input is just made of text, it doesn't have a border. It's often desirable, to make it clearer to the user, to put the text input inside a thin border.
+
+	```lua
+	--- @param parent tes3uiElement
+	--- @return tes3uiElement input
+	local function createSeachBox(parent)
+		local searchBox = parent:createThinBorder()
+		searchBox.autoHeight = true
+		searchBox.autoWidth = true
+		searchBox.widthProportional = 1.0
+		searchBox.paddingAllSides = 8
+		searchBox.borderBottom = 8
+		searchBox.borderTop = 8
+	
+		local input = searchBox:createTextInput({
+			autoFocus = true,
+			placeholderText = "Search...",
+		})
+		input.autoWidth = true
+	
+		searchBox:registerAfter(tes3.uiEvent.mouseClick, function(e)
+			tes3ui.acquireTextInput(input)
+		end)
+	
+		return input
+	end
+
+	```
 
 ***
 
@@ -1269,7 +1323,7 @@ local result = myObject:findChild(id)
 
 **Returns**:
 
-* `result` ([tes3uiElement](../types/tes3uiElement.md))
+* `result` ([tes3uiElement](../types/tes3uiElement.md), nil)
 
 ***
 
@@ -1285,6 +1339,21 @@ myObject:forwardEvent(id)
 **Parameters**:
 
 * `id` ([tes3uiEventData](../types/tes3uiEventData.md)): The original UI event.
+
+***
+
+### `getAllLuaData`
+<div class="search_terms" style="display: none">getallluadata, allluadata</div>
+
+Gets the parent table of the element's lua data, or `nil` if it has not been created. This function should not be called for getting or setting data. Instead, use `getLuaData` and `setLuaData`. This property exists for diagnostics and internal use.
+
+```lua
+local result = myObject:getAllLuaData()
+```
+
+**Returns**:
+
+* `result` (table?)
 
 ***
 
@@ -1412,7 +1481,7 @@ local object = myObject:getPropertyObject(property, typeCast)
 **Parameters**:
 
 * `property` (number, string): The property to get.
-* `typeCast` (string, nil): *Default*: `"tes3baseObject"`. The casting of the property to get.
+* `typeCast` (string): *Default*: `"tes3baseObject"`. The casting of the property to get.
 
 **Returns**:
 
@@ -1555,6 +1624,10 @@ Widget-specific events:
 * Color Picker:
 	* **colorChanged**
 		Triggers after new color was chosen in the color picker.
+* Tab Container:
+	* **tabFocus**
+	* **tabUnfocus**
+	* **valueChanged**
 ***
 
 #### Event forwarding
@@ -1652,8 +1725,46 @@ myObject:registerBefore(eventID, callback, priority)
 
 ***
 
+### `removeProperty`
+<div class="search_terms" style="display: none">removeproperty, property</div>
+
+Properties are extra variables attached to an element. Morrowind uses these to bind variables to the UI, and they can be useful for element class-specific properties. This function removes a previously existing property.
+
+```lua
+myObject:removeProperty(property)
+```
+
+**Parameters**:
+
+* `property` (number, string): The property to set.
+
+***
+
+### `reorder`
+<div class="search_terms" style="display: none">reorder</div>
+
+Re-orders an element to before or after a sibling element. Provide either a `before` or `after` parameter.
+
+```lua
+local result = myObject:reorder({ before = ..., after = ... })
+```
+
+**Parameters**:
+
+* `params` (table)
+	* `before` ([tes3uiElement](../types/tes3uiElement.md)): *Optional*. The calling element will be moved to before this element.
+	* `after` ([tes3uiElement](../types/tes3uiElement.md)): *Optional*. The calling element will be moved to after this element.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `reorderChildren`
 <div class="search_terms" style="display: none">reorderchildren</div>
+
+This method is deprecated. Prefer to use `tes3uiElement.reorder` when moving single children.
 
 Moves the layout order of the children of this element. `count` elements are taken from starting child `Element` or index (0-based) `moveFrom`, and moved before the child `Element` or index (0-based) `insertBefore`. If `count` is -1, all children after `moveFrom` are moved. If any index is a negative number, then the index represents a distance from the end of the child list.
 

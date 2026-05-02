@@ -14,6 +14,21 @@ namespace TES3 {
 		Invalid
 	};
 
+	namespace EnchantmentFlag {
+		typedef unsigned int value_type;
+
+		enum Flag : value_type {
+			AutoCalc = 0x1,
+
+			AllFlags = (AutoCalc),
+			NoFlags = 0,
+		};
+
+		enum FlagBit {
+			AutoCalcBit = 0,
+		};
+	}
+
 	struct Enchantment : Object {
 		char * objectID; // 0x28
 		EnchantmentCastType castType; // 0x2C
@@ -32,8 +47,15 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		size_t getActiveEffectCount();
-		int getFirstIndexOfEffect(int effectId);
+		bool getSpellFlag(EnchantmentFlag::Flag flag) const;
+		void setSpellFlag(EnchantmentFlag::Flag flag, bool value);
+
+		bool getAutoCalc() const;
+		void setAutoCalc(bool value);
+
+		size_t getActiveEffectCount() const;
+		int getFirstIndexOfEffect(int effectId) const;
+		bool hasEffect(int effectId) const;
 
 		std::reference_wrapper<Effect[8]> getEffects();
 

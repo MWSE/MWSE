@@ -8,7 +8,7 @@
 
 A ParagraphField allows you to enter a multi-line of text. Press ++enter++ to submit or ++shift+enter++ to enter a new line.
 
-This type inherits the following: [mwseMCMTextField](../types/mwseMCMTextField.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMTextField](../types/mwseMCMTextField.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `buttonText`

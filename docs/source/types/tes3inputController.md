@@ -24,7 +24,7 @@ A data structure, off of the world controller, that handles input.
 ### `inputMaps`
 <div class="search_terms" style="display: none">inputmaps</div>
 
-*Read-only*. The array-style access to input bindings.
+*Read-only*. The array-style access to input bindings. To index this array use [tes3.keybind](https://mwse.github.io/MWSE/references/keybinds/) constants increased by `1`. For example, to get the input binding for steal action, you would do: `inputController.inputMaps[tes3.keybind.sneak + 1]`.
 
 **Returns**:
 

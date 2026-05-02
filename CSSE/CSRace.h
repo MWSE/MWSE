@@ -93,7 +93,7 @@ namespace se::cs {
 			BodyPart* bodyParts[int(PartIndex::COUNT) * 2 * 2]; // 0xE4 // Body parts for both sexes and each vampirism state.
 		};
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Race) == 0x1D4, "Race failed size validation");
 }

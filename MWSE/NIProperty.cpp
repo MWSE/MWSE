@@ -34,8 +34,17 @@ namespace NI {
 		vTable.asProperty->update(this, dt);
 	}
 
+	bool Property::getFlag(unsigned char index) const {
+		return BIT_TEST(flags, index);
+	}
+
+	const auto NI_Property_setFlag = reinterpret_cast<void(__thiscall*)(Property*, bool, unsigned char)>(0x405960);
+	void Property::setFlag(bool state, unsigned char index) {
+		NI_Property_setFlag(this, state, index);
+	}
+
 	const auto NI_Property_setFlagBitField = reinterpret_cast<void(__thiscall*)(Property*, unsigned short, unsigned short, unsigned int)>(0x408A10);
-	void  Property::setFlagBitField(unsigned short value, unsigned short mask, unsigned int index) {
+	void Property::setFlagBitField(unsigned short value, unsigned short mask, unsigned int index) {
 		NI_Property_setFlagBitField(this, value, mask, index);
 	}
 
@@ -430,8 +439,8 @@ namespace NI {
 
 	VertexColorProperty::VertexColorProperty() {
 		vTable.asProperty = (Property_vTable*)0x7464F8;
-		source = 0;
-		lighting = 1;
+		source = SOURCE_IGNORE;
+		lighting = LIGHTING_E_A_D;
 	}
 
 	VertexColorProperty::~VertexColorProperty() {

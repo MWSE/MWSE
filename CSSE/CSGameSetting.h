@@ -1564,7 +1564,7 @@ namespace se::cs {
 
 		GameSettingInitializer* getInitializer() const;
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(GameSetting) == 0x18, "GameSetting failed size validation");
 }

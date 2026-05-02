@@ -8,7 +8,7 @@
 
 This dictionary-style table holds all of the UI elements that comprise a mwseMCMMouseOverPage.
 
-This type inherits the following: [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md)
+This type inherits the following: [mwseMCMCategoryElements](../types/mwseMCMCategoryElements.md), [mwseMCMComponentElements](../types/mwseMCMComponentElements.md).
 ## Properties
 
 ### `innerContainer`

@@ -18,7 +18,7 @@ namespace se::cs {
 
 		const char* getTaughtSkillName() const;
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Book) == 0x74, "Book failed size validation");
 }

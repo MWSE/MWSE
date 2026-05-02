@@ -45,6 +45,8 @@ namespace TES3::UI {
 		const char* getText() const;
 		void setText(const char* text);
 
+		Element* getTextElement() const;
+
 		WidgetButton() = delete;
 		~WidgetButton() = delete;
 		static WidgetButton* fromElement(Element* e);

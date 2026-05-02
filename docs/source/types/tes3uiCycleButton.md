@@ -8,7 +8,7 @@
 
 A structure containing properties specific to cycle buttons.
 
-This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md)
+This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md).
 ## Properties
 
 ### `element`

@@ -13,16 +13,22 @@ namespace mwse {
 	bool Configuration::PatchNiFlipController = true;
 	bool Configuration::LetterboxMovies = false;
 	bool Configuration::EnableLogColors = false;
+	bool Configuration::EnableLogLineNumbers = false;
 	bool Configuration::EnableDependencyChecks = true;
 	bool Configuration::ReplaceDialogueFiltering = true;
 	bool Configuration::EnableLuaErrorNotifications = false;
 	bool Configuration::UseSkinnedAccurateActivationRaytests = true;
+	bool Configuration::SuppressUselessWarnings = true;
+	bool Configuration::UseGlobalAudio = false;
+	bool Configuration::ReplaceLightSorting = true;
+	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
-	UINT Configuration::BuildNumber = UINT_MAX;
+	constexpr auto DEV_BUILD_NUMBER = std::numeric_limits<unsigned short>::max();
+	UINT Configuration::BuildNumber = DEV_BUILD_NUMBER;
+	static_assert(DEV_BUILD_NUMBER == int(float(DEV_BUILD_NUMBER)), "Dev build number could not survive round-trip through mwscript.");
 #endif
-
 
 	// Allow default values to be accessed later.
 	sol::table defaultConfig;
@@ -39,8 +45,8 @@ namespace mwse {
 	// Let lua muck with all this.
 	void Configuration::bindToLua() {
 		// Get our lua state.
-		auto stateHandle = lua::LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		defaultConfig = state.create_table();
 
@@ -57,10 +63,15 @@ namespace mwse {
 		DECLARE_CONFIG(PatchNiFlipController)
 		DECLARE_CONFIG(LetterboxMovies)
 		DECLARE_CONFIG(EnableLogColors)
+		DECLARE_CONFIG(EnableLogLineNumbers)
 		DECLARE_CONFIG(EnableDependencyChecks)
 		DECLARE_CONFIG(ReplaceDialogueFiltering)
 		DECLARE_CONFIG(EnableLuaErrorNotifications)
 		DECLARE_CONFIG(UseSkinnedAccurateActivationRaytests)
+		DECLARE_CONFIG(SuppressUselessWarnings)
+		DECLARE_CONFIG(UseGlobalAudio)
+		DECLARE_CONFIG(ReplaceLightSorting)
+		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

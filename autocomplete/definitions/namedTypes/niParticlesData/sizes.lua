@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[The particle sizes. The length of the array is equal to `vertexCount`.]],
+	description = [[An array controlling individual particle sizes. Values should be in the range 0 to 1. The length of the array is equal to `vertexCount`.]],
 	valuetype = "number[]",
 	readOnly = true,
 }

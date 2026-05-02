@@ -68,7 +68,7 @@ A value in the range [0, 1]. The (relative) maximum distance setting for AI simu
 ### `characterRenderTarget`
 <div class="search_terms" style="display: none">characterrendertarget</div>
 
-*Read-only*. 
+*Read-only*. The inventory paperdoll render target.
 
 **Returns**:
 
@@ -457,9 +457,12 @@ No known effect.
 
 The sound played when an item is repaired.
 
+!!! bug
+	Due to a bug in the game engine, the initialization code for this field never sets it to any `tes3sound` object. Instead, use sound IDs "repair" or "repair fail."
+
 **Returns**:
 
-* `result` ([tes3sound](../types/tes3sound.md))
+* `result` ([tes3sound](../types/tes3sound.md), nil)
 
 ***
 

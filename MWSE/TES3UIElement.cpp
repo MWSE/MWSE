@@ -54,6 +54,7 @@ namespace TES3::UI {
 
 	const auto TES3_ui_getProperty = reinterpret_cast<PropertyValue* (__thiscall *)(const Element*, PropertyValue*, Property, PropertyType, const Element*, bool)>(0x581440);
 	const auto TES3_ui_getPropertyType = reinterpret_cast<PropertyType (__thiscall*)(const Element*, Property)>(0x582AD0);
+	const auto TES3_ui_removeProperty = reinterpret_cast<void(__thiscall*)(Element*, Property)>(0x582A70);
 	const auto TES3_ui_getText = reinterpret_cast<const char* (__thiscall *)(const Element*)>(0x580BB0);
 	const auto TES3_ui_setProperty = reinterpret_cast<void (__thiscall *)(Element*, Property, PropertyValue, PropertyType)>(0x581F30);
 	const auto TES3_ui_setText = reinterpret_cast<void(__thiscall *)(Element*, const char*)>(0x58AD30);
@@ -293,6 +294,10 @@ namespace TES3::UI {
 		return TES3_ui_getPropertyType(this, prop) != PropertyType::INVALID;
 	}
 
+	void Element::removeProperty(Property prop) {
+		TES3_ui_removeProperty(this, prop);
+	}
+
 	void Element::setProperty(Property prop, PropertyValue value, PropertyType type) {
 		TES3_ui_setProperty(this, prop, value, type);
 	}
@@ -349,13 +354,17 @@ namespace TES3::UI {
 		TES3_ui_updateSceneGraph(this);
 	}
 
+	bool Element::isValid() const {
+		return this && (tag == 'x' || tag == 'X');
+	}
+
 	const char* Element::getName() const {
 		return name.cString;
 	}
 
 	std::string Element::toJson() const {
 		std::ostringstream ss;
-		ss << "\"tes3uiElement:" << id << ":" << name.cString << "\"";
+		ss << "\"tes3uiElement:" << id << ":" << (name.cString ? name.cString : "(unnamed)") << "\"";
 		return std::move(ss.str());
 	}
 
@@ -951,13 +960,23 @@ namespace TES3::UI {
 		flagContentChanged = true;
 	}
 
-	NI::Pointer<NI::SourceTexture> Element::getTexture() const {
+	NI::Pointer<NI::Texture> Element::getTexture() const {
 		return texture;
 	}
 
-	void Element::setTexture(NI::Pointer<NI::SourceTexture> value) {
+	void Element::setTexture(NI::Texture* value) {
+		setIcon("");
 		texture = value;
 		contentType = Property::image;
+		if (sceneNode && !sceneNode->children.empty()) {
+			const auto texturingProperty = sceneNode->children.at(0)->getTexturingProperty();
+			if (texturingProperty) {
+				const auto baseMap = texturingProperty->getBaseMap();
+				if (baseMap) {
+					baseMap->texture = value;
+				}
+			}
+		}
 		flagContentChanged = true;
 	}
 
@@ -996,6 +1015,10 @@ namespace TES3::UI {
 
 	bool Element::hasProperty_lua(sol::object key) const {
 		return hasProperty(getPropertyFromObject(key));
+	}
+
+	void Element::removeProperty_lua(sol::object key) {
+		return removeProperty(getPropertyFromObject(key));
 	}
 
 	PropertyType Element::getPropertyType_lua(sol::object key) const {
@@ -1090,6 +1113,15 @@ namespace TES3::UI {
 		deferredPropInit();
 
 		return reinterpret_cast<LuaData*>(getProperty(PropertyType::Pointer, propLuaData).ptrValue);
+	}
+
+	sol::object Element::getAllLuaData() const {
+		auto container = getLuaDataContainer();
+		if (container == nullptr) {
+			return sol::nil;
+		}
+
+		return container->getData();
 	}
 
 	sol::object Element::getLuaData(const std::string_view& key) const {
@@ -1248,6 +1280,39 @@ namespace TES3::UI {
 		return TES3_ui_loadMenuPosition(this, 0);
 	}
 
+	bool Element::reorder_lua(sol::table params) {
+		sol::optional<Element*> insertBefore = params["before"];
+		sol::optional<Element*> insertAfter = params["after"];
+		int index = parent->getIndexOfChild(this);
+
+		if (insertBefore && insertBefore.value()) {
+			if (parent != insertBefore.value()->parent) {
+				throw std::runtime_error("reorder: Elements do not have the same parent.");
+			}
+
+			auto indexBefore = parent->getIndexOfChild(insertBefore.value());
+			if (indexBefore == -1) {
+				return false;
+			}
+			
+			return parent->reorderChildren(indexBefore, index, 1);
+		}
+		else if (insertAfter && insertAfter.value()) {
+			if (parent != insertAfter.value()->parent) {
+				throw std::runtime_error("reorder: Elements do not have the same parent.");
+			}
+
+			auto indexAfter = parent->getIndexOfChild(insertAfter.value());
+			if (indexAfter == -1) {
+				return false;
+			}
+
+			return parent->reorderChildren(indexAfter + 1, index, 1);
+		}
+
+		throw std::invalid_argument("reorder: Either 'before' or 'after' must be provided.");
+	}
+
 	bool Element::reorderChildren_lua(sol::object insertBefore, sol::object moveFrom, int count) {
 		int indexInsertBefore, indexMoveFrom;
 
@@ -1335,7 +1400,7 @@ namespace TES3::UI {
 
 			// Make sure the file exists.
 			if (mwse::tes3::resolveAssetPath(path.c_str()) == 0) {
-				throw std::invalid_argument("Provided file does not exist.");
+				throw std::invalid_argument(fmt::format("Provided file does not exist: {}", path));
 			}
 		}
 

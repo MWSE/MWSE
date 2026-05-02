@@ -2,6 +2,7 @@
 
 #include "TES3WeatherController.h"
 
+#include "TES3Sound.h"
 #include "TES3WeatherAsh.h"
 #include "TES3WeatherBlight.h"
 #include "TES3WeatherBlizzard.h"
@@ -54,7 +55,24 @@ namespace TES3 {
 	}
 
 	bool Weather::setAmbientLoopSoundID(const char* id) {
-		return strcpy_s(soundIDAmbientLoop, sizeof(soundIDAmbientLoop), id) == 0;
+		if (id == nullptr) {
+			soundIDAmbientLoop[0] = 0;
+		}
+		else if (strcpy_s(soundIDAmbientLoop, sizeof(soundIDAmbientLoop), id) != 0) {
+			return false;
+		}
+
+		if (soundAmbientLoop) {
+			// Stop previous sound.
+			if (soundAmbientLoop->isPlaying()) {
+				soundAmbientLoop->stop();
+				ambientPlaying = false;
+			}
+
+			// Clearing the sound pointer will cause the weather code to resolve the new sound id and play it.
+			soundAmbientLoop = nullptr;
+		}
+		return true;
 	}
 
 	static std::unordered_map<const Weather*, sol::object> weatherObjectCache;

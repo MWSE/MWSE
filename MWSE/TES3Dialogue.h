@@ -68,10 +68,10 @@ namespace TES3 {
 	};
 
 	struct Dialogue : BaseObject {
-		char * name;
-		DialogueType type;
-		IteratedList<DialogueInfo*> info;
-		int journalIndex;
+		char * name; // 0x10
+		DialogueType type; // 0x14
+		IteratedList<DialogueInfo*> info; // 0x18
+		int journalIndex; // 0x2C
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Dialogue;
 

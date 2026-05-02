@@ -8,7 +8,7 @@
 
 A widget containing properties specific to color pickers.
 
-This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md)
+This type inherits the following: [tes3uiWidget](../types/tes3uiWidget.md).
 ## Properties
 
 ### `alphaBar`
@@ -226,6 +226,21 @@ local color, alpha = myObject:getColorAlpha()
 
 * `color` ([mwseColorTable](../types/mwseColorTable.md))
 * `alpha` (number)
+
+***
+
+### `getColorArray`
+<div class="search_terms" style="display: none">getcolorarray, colorarray</div>
+
+Gets the current RGB color in an array. Usually used to feed the color from the color picker straight to another UI element, e.g. `myElement.color = pickerElement.widget:getColorArray()`.
+
+```lua
+local arrayRGB = myObject:getColorArray()
+```
+
+**Returns**:
+
+* `arrayRGB` (number[])
 
 ***
 

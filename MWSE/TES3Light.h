@@ -42,6 +42,8 @@ namespace TES3 {
 		Light();
 		~Light();
 
+		void setupLightForMobile(MobileObject* mobile) const;
+
 		//
 		// Custom functions.
 		//

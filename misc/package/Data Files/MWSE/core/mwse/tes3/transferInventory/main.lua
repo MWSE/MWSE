@@ -152,7 +152,7 @@ function tes3.transferInventory(params)
 		if not tes3.hasOwnershipAccess({ target = from }) then
 			tes3.triggerCrime({
 				type = tes3.crimeType.theft,
-				victim = tes3.getOwner(from),
+				victim = tes3.getOwner({ reference = from }),
 				value = value,
 			})
 		end

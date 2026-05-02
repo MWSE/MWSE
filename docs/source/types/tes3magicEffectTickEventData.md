@@ -98,7 +98,7 @@ For example, the only effect in vanilla Morrowind that implements this function 
 ### `triggerBoundArmor`
 <div class="search_terms" style="display: none">triggerboundarmor</div>
 
-Performs vanilla armor summoning logic. It can summon one or two armor objects with provided ID(s). To summon gauntlets, provide two IDs.
+Performs vanilla armor summoning logic, but also allows bracers and pauldrons. It can summon one or two armor objects with provided ID(s). When summoning gauntlets, bracers or pauldrons, you can provide two IDs.
 
 ```lua
 myObject:triggerBoundArmor(id, id2)
@@ -107,7 +107,7 @@ myObject:triggerBoundArmor(id, id2)
 **Parameters**:
 
 * `id` (string): The ID of the armor object to summon.
-* `id2` (string): *Optional*. The ID of the additional gauntlet object to summon. The second item ID can only be a gauntlet object.
+* `id2` (string): *Optional*. The ID of the additional gauntlet, bracer or pauldron object to summon.
 
 ***
 

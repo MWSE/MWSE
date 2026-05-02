@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSObject.h"
+
 namespace se::string {
 
 	//
@@ -26,7 +28,7 @@ namespace se::string {
 
 	bool contains(const std::string_view& haystack, const std::string_view& needle);
 
-	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, bool caseSensitive, std::regex* regex);
+	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex);
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring);
 	bool ends_with(const std::string_view& string, const std::string_view& substring);

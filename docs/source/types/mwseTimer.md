@@ -125,8 +125,12 @@ local paused = myObject:pause()
 Resets the timer completion time and iterations count.
 
 ```lua
-myObject:reset()
+local result = myObject:reset()
 ```
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

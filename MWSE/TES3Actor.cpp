@@ -25,7 +25,7 @@ namespace TES3 {
 	const auto TES3_Actor_getEquippedItemExact = reinterpret_cast<EquipmentStack* (__thiscall*)(Actor*, Object*, ItemData*)>(0x496D90);
 	const auto TES3_Actor_getEquippedWeapon = reinterpret_cast<EquipmentStack* (__thiscall*)(Actor*)>(0x496EB0);
 
-	Actor * Actor::getBaseActor() {
+	Actor * Actor::getBaseActor() const {
 		return vTable.actor->getBaseActor(this);
 	}
 
@@ -112,22 +112,27 @@ namespace TES3 {
 	}
 
 	EquipmentStack* Actor::getEquippedItem(Object* item) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedItem(this, item);
 	}
 
 	EquipmentStack* Actor::getEquippedItemExact(Object* item, ItemData* itemData) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedItemExact(this, item, itemData);
 	}
 
 	EquipmentStack* Actor::getEquippedArmorBySlot(ArmorSlot::value_type slot) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedArmorBySlot(this, slot);
 	}
 
 	EquipmentStack* Actor::getEquippedClothingBySlot(ClothingSlot::value_type slot) {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedClothingBySlot(this, slot);
 	}
 
 	EquipmentStack* Actor::getEquippedWeapon() {
+		const auto preserver = equipment.makeIteratorPreserver();
 		return TES3_Actor_getEquippedWeapon(this);
 	}
 
@@ -181,7 +186,7 @@ namespace TES3 {
 		for (const auto& stack : equipment) {
 			const auto item = static_cast<Item*>(stack->object);
 			if (item->objectType == ObjectType::Armor || item->objectType == ObjectType::Clothing) {
-				value += item->getBaseBarterValue(false, useDurability);
+				value += item->getBaseBarterValue(nullptr, useDurability);
 			}
 		}
 		return value;

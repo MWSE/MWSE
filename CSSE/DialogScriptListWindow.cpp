@@ -23,7 +23,7 @@ namespace se::cs::dialog::script_list_window {
 		if (currentSearchRegex) {
 			return std::regex_search(haystack.data(), currentSearchRegex.value());
 		}
-		else if (settings.object_window.case_sensitive) {
+		else if (settings.object_window.search_settings.case_sensitive) {
 			return string::contains(haystack, currentSearchText);
 		}
 		else {
@@ -86,9 +86,9 @@ namespace se::cs::dialog::script_list_window {
 			currentSearchText = std::move(newText);
 
 			// Regex crunching can be slow, so only do it once.
-			if (settings.object_window.use_regex) {
+			if (settings.object_window.search_settings.use_regex) {
 				auto flags = std::regex_constants::extended | std::regex_constants::optimize | std::regex_constants::nosubs;
-				if (!settings.object_window.case_sensitive) {
+				if (!settings.object_window.search_settings.case_sensitive) {
 					flags |= std::regex_constants::icase;
 				}
 

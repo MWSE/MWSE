@@ -59,6 +59,13 @@ namespace se::cs {
 		return HIWORD(m_LParam);
 	}
 
+	HWND DialogProcContext::getDefaultFocus() const {
+#if _DEBUG
+		assert(getMessage() == WM_INITDIALOG);
+#endif
+		return (HWND)getWParam();
+	}
+
 	WPARAM DialogProcContext::getNotificationControlIdentifier() const {
 #if _DEBUG
 		assert(getMessage() == WM_NOTIFY);

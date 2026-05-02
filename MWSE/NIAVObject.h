@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NIObjectNET.h"
+
+#include "NIBound.h"
 #include "NILinkedList.h"
 #include "NIProperty.h"
 #include "NITransform.h"
@@ -14,7 +16,7 @@ namespace NI {
 	struct AVObject_vTable : Object_vTable {
 		void (__thiscall* updateControllers)(AVObject*, float); // 0x2C
 		void (__thiscall* applyTransform)(AVObject*, TES3::Matrix33*, TES3::Vector3*, bool); // 0x30
-		Bound* (__thiscall* getWorldBound)(AVObject*); // 0x34
+		SphereBound* (__thiscall* getWorldBound)(AVObject*); // 0x34
 		void (__thiscall* createWorldVertices)(AVObject*); // 0x38
 		void (__thiscall* updateWorldVertices)(AVObject*); // 0x3C
 		void (__thiscall* destroyWorldVertices)(AVObject*); // 0x40
@@ -22,7 +24,7 @@ namespace NI {
 		void (__thiscall* updateWorldNormals)(AVObject*); // 0x48
 		void (__thiscall* destroyWorldNormals)(AVObject*); // 0x4C
 		void (__thiscall* setAppCulled)(AVObject*, bool); // 0x50
-		bool (__thiscall* getAppCulled)(AVObject*); // 0x54
+		bool (__thiscall* getAppCulled)(const AVObject*); // 0x54
 		void (__thiscall* setPropagationMode)(AVObject*, int); // 0x58
 		AVObject* (__thiscall* getObjectByName)(AVObject*, const char*); // 0x5C
 		void (__thiscall* updateDownwardPass)(AVObject*, float, bool, bool); // 0x60
@@ -52,7 +54,7 @@ namespace NI {
 		float localScale; // 0x3C
 		TES3::Transform worldTransform; // 0x40
 		ObjectVelocities* velocities; // 0x74
-		void * modelABV; // 0x78
+		BoundingVolume* modelABV; // 0x78
 		void * worldABV; // 0x7C
 		int (__cdecl * collideCallback)(void*); // 0x80
 		void * collideCallbackUserData; // 0x84
@@ -61,6 +63,8 @@ namespace NI {
 		//
 		// vTable wrappers.
 		//
+
+		SphereBound* getWorldBound();
 
 		TES3::Vector3 getLocalVelocity() const;
 		void setLocalVelocity(TES3::Vector3*);
@@ -72,15 +76,18 @@ namespace NI {
 			return static_cast<T*>(vTable.asAVObject->getObjectByName(this, name));
 		}
 
-		bool getAppCulled();
+		bool getAppCulled() const;
 		void setAppCulled(bool culled);
 
-		bool isAppCulled();
-		bool isFrustumCulled(Camera*);
+		bool isAppCulled() const;
+		bool isFrustumCulled(Camera*) const;
 
 		//
 		// Other related this-call functions.
 		//
+
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
 
 		void update(float fTime = 0.0f, bool bUpdateControllers = false, bool bUpdateChildren = true);
 		void updateEffects();
@@ -93,18 +100,30 @@ namespace NI {
 		sol::table detachAllProperties_lua(sol::this_state ts);
 
 		bool intersectBounds(const TES3::Vector3* position, const TES3::Vector3* direction, float* out_result) const;
+		void calculateBounds(
+			TES3::Vector3& min,
+			TES3::Vector3& max,
+			const TES3::Vector3& translation,
+			const TES3::Matrix33& rotation,
+			const float& scale,
+			const bool accurateSkinned,
+			const bool observeAppCullFlag,
+			const bool onlyActiveChildren
+		) const;
 
 		//
 		// Custom functions.
 		//
 
-		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua() const;
+		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua(sol::optional<sol::table>) const;
 
 		void clearTransforms();
 		void copyTransforms(const AVObject* from);
 		void copyTransforms(const TES3::Transform* from);
 		void copyTransforms_lua(const sol::stack_object from);
 		TES3::Transform getTransforms() const;
+
+		AVObject* getParentByName(const char*) const;
 
 		Pointer<Property> getProperty(PropertyType type) const;
 		Pointer<AlphaProperty> getAlphaProperty() const;
@@ -121,6 +140,8 @@ namespace NI {
 		void setVertexColorProperty(sol::optional<VertexColorProperty*> prop);
 		Pointer<ZBufferProperty> getZBufferProperty() const;
 		void setZBufferProperty(sol::optional<ZBufferProperty*> prop);
+
+		void setModelSpaceABV(BoundingVolume* volume);
 
 		void update_lua(sol::optional<sol::table> args);
 

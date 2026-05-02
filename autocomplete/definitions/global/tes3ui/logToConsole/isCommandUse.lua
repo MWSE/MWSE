@@ -5,7 +5,7 @@ local function example()
 	tes3ui.logToConsole("player->ModStrength 10", false)
 
 	-- This will make "player->ModWillpower 10" appear in the console coloured blue.
-	-- It CAN be selected by using up arrow key, and when the enter is pressed,
+	-- It can be selected by using up arrow key, and when the enter is pressed,
 	-- it will call that function.
 	tes3ui.logToConsole("player->ModWillpower 10", true)
 

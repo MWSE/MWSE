@@ -1,4 +1,6 @@
 ---@diagnostic disable: duplicate-set-field
+---@class common
+---@field common.lfs lfslib
 local common = {}
 
 --- A wrapper around `print` that allows format strings.
@@ -218,7 +220,7 @@ end
 -- lfs library extensions
 --
 
----@class common.lfs : lfslib
+---@class lfs : LuaFileSystem
 local lfs = require("lfs")
 
 --- @param ... string Parts of a file path.
@@ -321,7 +323,7 @@ common.defaultExperimentalAPIWarning = [[
 
 --- @param package package
 --- @param useDefault boolean|nil Use default descriptions?
---- @return string description This will be `nil` if there were no `parts`.
+--- @return string? description This will be `nil` if there were no `parts`.
 function common.getDescriptionString(package, useDefault)
 	if (useDefault == nil) then
 		useDefault = true
@@ -434,12 +436,16 @@ end
 --- @field namespace string The full namespace of the package.
 --- @field deprecated boolean Allows marking definitions as deprecated. Those definitions aren't written to the web documentation.
 --- @field examples table<string, exampleTable>|nil A table containing the examples. Keys are the example's name/path to the example file.
+--- @field libs package[]|nil For libraries with sub-namespaces such as mwse.mcm, etc., this array contians the nested namespaces.
 
 -- This corresponds to a documentation file with the [`"value"` type](https://github.com/MWSE/MWSE/blob/master/docs/type-definitions-guide.md#value-definitions).
 ---@class packageValue : package
 ---@field valuetype string
 ---@field link string
 
+
+---@class packageFunctionGeneric : package
+---@field inherits string|nil
 
 -- Basic function argument. These are things that can be inside `tableParams`.
 ---@class packageFunctionArgument.Simple : package
@@ -455,6 +461,7 @@ end
 
 -- This corresponds to a documentation file with the [`"function"` type](https://github.com/MWSE/MWSE/blob/master/docs/function-definitions-guide.md#function-definitions).
 --- @class packageFunction : packageValue
+--- @field generics packageFunctionGeneric[]|nil
 --- @field arguments packageFunctionArgument[]
 --- @field returns packageFunctionArgument|packageFunctionArgument[]|nil
 
@@ -466,6 +473,7 @@ end
 --- @field children table<string, package>|nil
 --- @field functions packageFunction[]|nil
 --- @field values packageValue[]|nil
+--- @field typeValues packageValue[]|nil
 
 ---@class packageOverload
 ---@field rightType string
@@ -502,7 +510,7 @@ function common.getConsistentReturnValues(package)
 		end
 		return { { name = package.returns, type = package.valuetype } }
 	end
-	
+
 	if (package.valuetype) then
 		return { { name = "result", type = package.valuetype } }
 	end
@@ -562,8 +570,8 @@ function common.compileEntry(folder, key, parent)
 			local extension = entry:match("[^.]+$")
 			if (extension == "lua") then
 				common.compileEntry(
-					lfs.join(folder, key), 
-					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)), 
+					lfs.join(folder, key),
+					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)),
 					package
 				)
 			end
@@ -596,8 +604,8 @@ function common.compile(folder, key, owningCollection, acceptedType)
 			local extension = entry:match("[^.]+$")
 			if (extension == "lua") then
 				common.compileEntry(
-					lfs.join(folder, key), 
-					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)), 
+					lfs.join(folder, key),
+					entry:match("[^/]+$"):sub(1, -1 * (extension:len() + 2)),
 					package
 				)
 			end
@@ -617,9 +625,9 @@ function common.compilePath(path, owningCollection, acceptedType)
 		local extension = entry:match("[^.]+$")
 		if (extension == "lua") then
 			common.compile(
-				path, 
-				entry:match("[^/]+$") :sub(1, -1 * (extension:len() + 2)), 
-				owningCollection, 
+				path,
+				entry:match("[^/]+$") :sub(1, -1 * (extension:len() + 2)),
+				owningCollection,
 				acceptedType
 			)
 		end
@@ -654,15 +662,13 @@ function common.compileInheritances(classes)
 	for _, class in pairs(classes) do
 		if (class.allDescendents) then
 			local allDescendentKeys = {}
-			if (not class.isAbstract) then
-				table.insert(allDescendentKeys, class.key)
-			end
 			for _, descendent in pairs(class.allDescendents) do
 				if (not descendent.isAbstract) then
 					table.insert(allDescendentKeys, descendent.key)
 				end
 			end
 			if (#allDescendentKeys > 0) then
+				table.insert(allDescendentKeys, class.key)
 				table.sort(allDescendentKeys)
 				class.allDescendentKeys = table.concat(allDescendentKeys, "|")
 			end

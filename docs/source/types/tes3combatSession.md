@@ -6,7 +6,7 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-A structure that keeps track of combat session data.
+A structure that keeps track of combat session data that lasts for the duration of combat. It is mainly used for AI decision making. It is not saved to a savegame.
 
 ## Properties
 
@@ -18,6 +18,27 @@ No description yet available.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `castableSpells`
+<div class="search_terms" style="display: none">castablespells</div>
+
+The list of castable spells that the AI will consider using during combat. This includes both offensive and defensive spells. It is initialized at the start of combat and may be changed by mods at any time. Like other combat session data, it is not saved to a savegame.
+
+This is actually a list collection type. You can use these methods on castableSpells:
+
+castableSpells:add(tes3spell)
+castableSpells:find(tes3spell) -> index
+castableSpells:erase(index)
+castableSpells:clear()
+
+Note that ids cannot be used with these methods.
+
+
+**Returns**:
+
+* `result` ([tes3spell](../types/tes3spell.md)[])
 
 ***
 
@@ -48,7 +69,7 @@ The combat distance.
 ### `lastUseTimestamp`
 <div class="search_terms" style="display: none">lastusetimestamp</div>
 
-Used by the MCP to implement enchanted item cooldown.
+Used by the MCP to implement an alchemy use cooldown for actor AI.
 
 **Returns**:
 
@@ -81,7 +102,7 @@ No description yet available.
 ### `selectedAction`
 <div class="search_terms" style="display: none">selectedaction</div>
 
-The next action. From observed behavior, this roughly maps to:
+The current combat action, until the next AI decision. This can be changed to affect what the AI is doing in the short term. From observed behavior, this roughly maps to:
 
 Value | Behavior
 ----- | ---------
@@ -94,7 +115,7 @@ Value | Behavior
 6     | Use summon spell
 7     | Flee
 8     | Cast on-self empowering spell (For example, Ancestor Guardian)
-9     | MaybeEquipUseItem?
+9     | Use alchemy item
 10    | Use enchanted item
 
 
@@ -107,7 +128,7 @@ Value | Behavior
 ### `selectedItem`
 <div class="search_terms" style="display: none">selecteditem</div>
 
-A potion or an enchanted item whose spell will be used.
+The potion or an enchanted item which was chosen at the last AI decision, if it was a magic item action. Changing this has no effect outside of the decision function, instead use `tes3mobileActor.equipMagic` to change the next castable.
 
 **Returns**:
 
@@ -118,7 +139,7 @@ A potion or an enchanted item whose spell will be used.
 ### `selectedShield`
 <div class="search_terms" style="display: none">selectedshield</div>
 
-*Read-only*. No description yet available.
+*Read-only*. The shield which was chosen at the last physical attack AI decision.
 
 **Returns**:
 
@@ -129,7 +150,7 @@ A potion or an enchanted item whose spell will be used.
 ### `selectedSpell`
 <div class="search_terms" style="display: none">selectedspell</div>
 
-This field containg the spell the actor is currently casting. If not in casting state this field has `nil` value.
+The spell which was chosen at the last AI decision, if it was a spell cast action. Changing this has no effect outside of the decision function, instead use `tes3mobileActor.equipMagic` to change the next castable.
 
 **Returns**:
 
@@ -140,7 +161,7 @@ This field containg the spell the actor is currently casting. If not in casting 
 ### `selectedWeapon`
 <div class="search_terms" style="display: none">selectedweapon</div>
 
-*Read-only*. The weapon the actor is using in this combat session.
+*Read-only*. The weapon which was chosen at the last physical attack AI decision.
 
 **Returns**:
 

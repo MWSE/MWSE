@@ -8,7 +8,7 @@
 
 Contains the geometry data for an `NiTriShape` object.
 
-This type inherits the following: [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md)
+This type inherits the following: [niTriBasedGeometryData](../types/niTriBasedGeometryData.md), [niGeometryData](../types/niGeometryData.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `activeTriangleCount`
@@ -22,6 +22,17 @@ The active triangle count of the object.
 
 ***
 
+### `activeVertices`
+<div class="search_terms" style="display: none">activevertices</div>
+
+*Read-only*. The array of active vertex position data. The length of the array is equal to `vertexCount`.
+
+**Returns**:
+
+* `result` ([tes3vector3](../types/tes3vector3.md)[])
+
+***
+
 ### `bounds`
 <div class="search_terms" style="display: none">bounds</div>
 
@@ -29,7 +40,7 @@ The model-space bounding sphere of the object.
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 
@@ -277,7 +288,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

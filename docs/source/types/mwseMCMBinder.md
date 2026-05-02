@@ -8,7 +8,7 @@
 
 This is an abstract MCM Button Setting used in MCM internally for sharing code between various key/mouse binders.
 
-This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `allowCombinations`

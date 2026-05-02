@@ -55,18 +55,13 @@ namespace TES3 {
 	static_assert(sizeof(StartScript) == 0x34, "TES3::StartScript failed size validation");
 
 	struct Script : BaseObject {
-		char name[32]; // 0x10
-		long shortCount; // 0x30
-		long longCount; // 0x34
-		long floatCount; // 0x38
-		long dataLength; // 0x3C
-		int localVarLength; // The length of the local var names concatenated (includes \0 for string endings)
-		char ** shortVarNamePointers; // 0x44
-		char ** longVarNamePointers; // 0x48
-		char ** floatVarNamePointers; // 0x4C
-		char * varNamePointers; // 0x50
+		ScriptHeader header; // 0x10
+		char** shortVarNamePointers; // 0x44
+		char** longVarNamePointers; // 0x48
+		char** floatVarNamePointers; // 0x4C
+		char* varNamePointers; // 0x50 // Buffer containing all variable names, separated by null terminators. Is of header.localVarNameSize length.
 		int unknown_0x54; // equals zero?
-		void * machineCode; // 0x58
+		BYTE * machineCode; // 0x58
 		ScriptVariables varValues; // 0x5C
 
 		Script() = delete;
@@ -88,13 +83,22 @@ namespace TES3 {
 		void doCommand(ScriptCompiler * compiler, const char* command, int source = TES3::CompilerSource::Default, Reference * reference = nullptr, ScriptVariables * variables = nullptr, DialogueInfo * info = nullptr, Dialogue * dialogue = nullptr);
 
 		void execute(Reference* reference, ScriptVariables* data, DialogueInfo* info, Reference* reference2);
+		void setToCompiledResult(ScriptHeader* header, void* byteCode, const char* varNames, bool resolveParams = true);
 
 		//
 		// Custom functions.
 		//
 
+		sol::optional<std::string> getScriptText() const;
+		nonstd::span<BYTE> getByteCode() const;
+		bool recompile(const char* text);
+
 		sol::table getLocalVars_lua(sol::this_state ts, sol::optional<bool> useLocals = false);
 		std::shared_ptr<mwse::lua::ScriptContext> createContext();
+
+		unsigned int getShortVariableCount() const;
+		unsigned int getLongVariableCount() const;
+		unsigned int getFloatVariableCount() const;
 
 		//
 		// Debug values.

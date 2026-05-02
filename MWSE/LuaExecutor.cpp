@@ -124,8 +124,8 @@ namespace mwse::lua {
 
 	void LuaExecutor::defineLuaBindings() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<LuaExecutor>("mwseLuaExecutor");

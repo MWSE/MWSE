@@ -25,6 +25,7 @@ event.register(tes3.event.damagedHandToHand, damagedHandToHandCallback)
 * `fatigueDamage` (number): *Read-only*. The amount of fatigue damage done.
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile actor that took fatigue damage.
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The mobile’s associated reference.
+* `source` ([tes3.damageSource](../references/damage-sources.md)): *Read-only*. The origin of the damage. May be `tes3.damageSource.attack` or `tes3.damageSource.script`.
 
 
 ## Related events

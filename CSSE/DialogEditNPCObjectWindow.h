@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CSDefines.h"
+
 namespace se::cs::dialog::edit_npc_object_window {
 
 	constexpr UINT DIALOG_ID = 148;
@@ -46,6 +48,22 @@ namespace se::cs::dialog::edit_npc_object_window {
 	constexpr UINT CONTROL_ID_SPD_EDIT = 1604;
 	constexpr UINT CONTROL_ID_STR_EDIT = 1600;
 	constexpr UINT CONTROL_ID_WIL_EDIT = 1602;
+
+	struct UserData {
+		NPC* newNPC; // 0x0
+		NPC* existingNPC; // 0x4
+		int unknown_0x8;
+		RecordHandler* recordHandler; // 0xC
+		HIMAGELIST unknown_0x10;
+		int unknown_0x14;
+		int unknown_0x18;
+		int unknown_0x1C;
+		NPC* unknown_0x20;
+		int unknown_0x24;
+		int unknown_0x28;
+		bool unknown_0x2C;
+	};
+	static_assert(sizeof(UserData) == 0x30, "UserData for the NPC edit window failed size validation");
 
 	void installPatches();
 }

@@ -2,6 +2,8 @@
 
 #include "LuaManager.h"
 
+#include "NIPointLight.h"
+
 #include "TES3MagicEffectInstance.h"
 #include "TES3MagicInstanceController.h"
 #include "TES3MobileActor.h"
@@ -10,8 +12,8 @@
 namespace mwse::lua {
 	void bindTES3MobileActor() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::ActiveMagicEffect
 		{
@@ -67,6 +69,17 @@ namespace mwse::lua {
 			// Legacy bindings for mod support.
 			usertypeDefinition["first"] = sol::readonly_property(&TES3::ActiveMagicEffectLua::getFirst_legacy);
 			usertypeDefinition["next"] = sol::readonly_property(&TES3::ActiveMagicEffectLua::getNext_legacy);
+		}
+
+		// Binding for MobileObject::LightData
+		{
+			using LightData = TES3::MobileObject::LightData;
+
+			auto usertypeDefinition = state.new_usertype<LightData>("tes3mobileObjectLightData");
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			usertypeDefinition["light"] = sol::readonly_property(&LightData::light);
+			usertypeDefinition["radius"] = &LightData::radius;
 		}
 	}
 }

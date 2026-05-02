@@ -9,5 +9,5 @@ return {
 		},
 	}},
 	returns = "region",
-	valuetype = "tes3region",
+	valuetype = "tes3region?",
 }

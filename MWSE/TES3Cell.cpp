@@ -9,6 +9,7 @@
 
 #include "TES3DataHandler.h"
 #include "TES3GameSetting.h"
+#include "TES3Land.h"
 #include "TES3Region.h"
 
 namespace TES3 {

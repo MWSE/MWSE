@@ -29,20 +29,34 @@ namespace NI {
 		b = vector.z;
 	}
 
+	Color::Color(const ColorA& c) {
+		r = c.r;
+		g = c.g;
+		b = c.b;
+	}
+
 	Color::Color(sol::table table) {
 		r = table.get_or("r", table.get_or(1, 0.0f));
 		g = table.get_or("g", table.get_or(2, 0.0f));
 		b = table.get_or("b", table.get_or(3, 0.0f));
 	}
 
-	Color::Color(sol::object object) {
-		if (object.is<TES3::Vector3>()) {
+	Color::Color(const sol::object& object) {
+		if (object.is<Color>()) {
+			*this = Color(object.as<Color>());
+		}
+		else if (object.is<ColorA>()) {
+			*this = Color(object.as<ColorA>());
+		}
+		else if (object.is<TES3::Vector3>()) {
 			*this = Color(object.as<TES3::Vector3>());
 		}
 		else if (object.is<sol::table>()) {
 			*this = Color(object.as<sol::table>());
 		}
-		throw std::invalid_argument("Could not convert lua object to NiColor.");
+		else {
+			throw std::invalid_argument("Could not convert lua object to NiColor.");
+		}
 	}
 
 	Color& Color::operator=(const TES3::Vector3& vector) {
@@ -59,12 +73,18 @@ namespace NI {
 		return *this;
 	}
 
-	Color& Color::operator=(const sol::object object) {
-		if (object.is<TES3::Vector3>()) {
-			*this = object.as<TES3::Vector3>();
+	Color& Color::operator=(const sol::object& object) {
+		if (object.is<Color>()) {
+			*this = Color(object.as<Color>());
+		}
+		else if (object.is<ColorA>()) {
+			*this = Color(object.as<ColorA>());
+		}
+		else if (object.is<TES3::Vector3>()) {
+			*this = Color(object.as<TES3::Vector3>());
 		}
 		else if (object.is<sol::table>()) {
-			*this = object.as<sol::table>();
+			*this = Color(object.as<sol::table>());
 		}
 		else {
 			throw std::invalid_argument("Could not convert lua object to NiColor.");

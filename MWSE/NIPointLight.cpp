@@ -38,15 +38,32 @@ namespace NI {
 		return light;
 	}
 
+	unsigned int PointLight::getRadius() const {
+		// Morrowind keeps this in the specular for some reason.
+		return specular.r;
+	}
+
 	void PointLight::setRadius(unsigned int radius) {
 		// Set light attenuation.
 		setAttenuationForRadius(radius);
 
 		// Set dynamic culling radius, misplaced by Morrowind into specular.
-		auto r = float(radius);
+		const auto r = float(radius);
 		specular.r = r;
 		specular.g = r;
 		specular.b = r;
+	}
+
+	float PointLight::getAttenuationAtDistance(float distance) const {
+		const auto Qd2 = quadraticAttenuation * distance * distance;
+		const auto Ld = linearAttenuation * distance;
+		const auto C = constantAttenuation;
+		return 1.0f / (C + Ld + Qd2);
+	}
+
+	float PointLight::getAttenuationAtPoint(const TES3::Vector3* point) const {
+		const auto distance = worldTransform.translation.distance(point);
+		return getAttenuationAtDistance(distance);
 	}
 
 	void PointLight::setAttenuationForRadius(unsigned int radius) {
@@ -98,6 +115,19 @@ namespace NI {
 		}
 
 		revisionId++;
+	}
+
+	unsigned int PointLight::getSortWeight() const {
+		auto weight = 0u;
+		for (auto node = &affectedNodes; node && node->data; node = node->next) {
+			if (node->data->isAppCulled()) continue;
+
+			const auto count = node->data->getLightCount();
+			if (count > Node::LIGHT_LIMIT) {
+				weight += count;
+			}
+		}
+		return weight;
 	}
 }
 

@@ -11,7 +11,7 @@ namespace NI {
 
 		CollisionSwitch();
 
-		bool getCollisionActive();
+		bool getCollisionActive() const;
 		void setCollisionActive(bool active);
 
 		void linkObject(Stream* stream);

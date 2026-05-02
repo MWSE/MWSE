@@ -19,16 +19,18 @@ namespace mwse::lua {
 	class ThreadedStateHandle {
 	public:
 		ThreadedStateHandle(LuaManager*);
+		~ThreadedStateHandle();
+
+		sol::state& getState() const;
 
 		// Trigger a thread-safe event.
-		sol::object triggerEvent(event::BaseEvent*);
-
-		sol::state& state;
-
-		std::scoped_lock<std::recursive_mutex> mutexGuard;
+		sol::object triggerEvent(event::BaseEvent*) const;
 
 	private:
 		LuaManager* luaManager;
+
+
+		std::scoped_lock<std::recursive_mutex> mutexGuard;
 	};
 
 	class LuaManager {
@@ -42,6 +44,7 @@ namespace mwse::lua {
 
 		// Returns a thread-locking reference to the sol2 lua state.
 		ThreadedStateHandle getThreadSafeStateHandle();
+		bool canLockLuaThread();
 
 		const sol::state_view& getReadOnlyStateView();
 
@@ -63,7 +66,7 @@ namespace mwse::lua {
 
 		// Helper functions to execute main.lua scripts recursively in a directory.
 		void gatherModMetadata();
-		void gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& filename = "main.lua");
+		void gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& scriptFilename = "main.lua");
 		void executeMainModScripts();
 
 		// Management functions for timers.

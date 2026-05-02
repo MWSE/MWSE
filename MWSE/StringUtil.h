@@ -69,12 +69,25 @@ namespace mwse::string {
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring);
 	bool ends_with(const std::string_view& string, const std::string_view& substring);
+	
+	void strip_start(std::string& string, const std::string_view& substring);
+	void strip_end(std::string& string, const std::string_view& substring);
 
 	bool replace(std::string& str, const std::string_view from, const std::string_view to);
 
 	//
 	// Other string utility functions.
 	//
+
+	static inline bool is_printable(const char c) {
+		return std::isprint(c) || std::isspace(c);
+	}
+
+	static inline std::string from_wstring(const std::wstring& wstr) {
+		std::vector<char> buf(wstr.size());
+		std::use_facet<std::ctype<wchar_t>>(std::locale{}).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
+		return std::string(buf.data(), buf.size());
+	}
 
 	static inline void ltrim(std::string& s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) { return !std::isspace(ch); }));

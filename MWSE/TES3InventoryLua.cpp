@@ -15,8 +15,8 @@
 namespace mwse::lua {
 	void bindTES3Inventory() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for TES3::QuickKey
 		{
@@ -110,6 +110,7 @@ namespace mwse::lua {
 			usertypeDefinition["getItemCount"] = &TES3::Inventory::getItemCount_lua;
 			usertypeDefinition["removeItem"] = &TES3::Inventory::removeItem_lua;
 			usertypeDefinition["resolveLeveledItems"] = &TES3::Inventory::resolveLeveledLists_lua;
+			usertypeDefinition["updateInternalLight"] = &TES3::Inventory::updateInternalLight;
 
 			// Legacy bindings.
 			usertypeDefinition["iterator"] = sol::readonly_property(&TES3::Inventory::itemStacks);

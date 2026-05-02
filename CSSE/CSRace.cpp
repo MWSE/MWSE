@@ -3,16 +3,16 @@
 #include "StringUtil.h"
 
 namespace se::cs {
-	bool Race::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		if (BaseObject::search(needle, caseSensitive, regex)) {
+	bool Race::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}
 
-		if (string::complex_contains(name, needle, caseSensitive, regex)) {
+		if (string::complex_contains(name, needle, settings, regex)) {
 			return true;
 		}
 
-		if (description && string::complex_contains(description, needle, caseSensitive, regex)) {
+		if (description && string::complex_contains(description, needle, settings, regex)) {
 			return true;
 		}
 

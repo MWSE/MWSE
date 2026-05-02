@@ -10,6 +10,17 @@ Contains information from a standard UI callback. This is the parameter passed t
 
 ## Properties
 
+### `character`
+<div class="search_terms" style="display: none">character</div>
+
+*Read-only*. For `tes3.uiEvent.keyPress` events, this is the human-facing character that was pressed. While the `keyData` shows the direct keyboard state, `character` shows the translated input. Note that this is language-specific.
+
+**Returns**:
+
+* `result` (string, nil)
+
+***
+
 ### `data0`
 <div class="search_terms" style="display: none">data0</div>
 
@@ -51,6 +62,17 @@ Contains information from a standard UI callback. This is the parameter passed t
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `keyData`
+<div class="search_terms" style="display: none">keydata</div>
+
+*Read-only*. For `tes3.uiEvent.keyPress` events, this is the raw DirectInput data associated with the input. Note that the `keyCode` provided here maps to DirectInput `tes3.keyboardCode` enums, and are not the virtual scan codes from `tes3.scanCode`.
+
+**Returns**:
+
+* `result` ([mwseKeyCombo](../types/mwseKeyCombo.md), nil)
 
 ***
 

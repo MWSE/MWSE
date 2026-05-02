@@ -1,3 +1,10 @@
+--- @diagnostic disable: duplicate-set-field
+--- @diagnostic disable: undefined-global
+
+-- Set garbage collection values.
+collectgarbage("setpause", 150)
+collectgarbage("setstepmul", 500)
+
 -- First, look for objects in the core folder. DLL files may also exist in the root folder.
 package.path = ".\\Data Files\\MWSE\\core\\?.lua;.\\Data Files\\MWSE\\core\\?\\init.lua;"
 package.cpath = "?.dll;.\\Data Files\\MWSE\\core\\?.dll;"
@@ -151,6 +158,31 @@ function dofile(path)
 	error("dofile: Could not resolve path " .. path)
 end
 
+local function addUserFriendlyNameToSolType(friendlyName, metatable)
+	metatable.__type.friendlyName = friendlyName
+end
+
+for friendlyName, maybeUserdataType in pairs(_G) do
+	pcall(addUserFriendlyNameToSolType, friendlyName, maybeUserdataType)
+end
+
+local function getUserdataTypeName(variable)
+    return variable.__type.friendlyName
+end
+
+local originalType = type
+function type(variable)
+	local baseType = originalType(variable)
+	if (baseType == "userdata") then
+		local success, typeName = pcall(getUserdataTypeName, variable)
+		if (success) then
+			return baseType, typeName
+		end
+	end
+	return baseType
+end
+
+
 -------------------------------------------------
 -- Global includes
 -------------------------------------------------
@@ -204,7 +236,9 @@ end
 local function loadLocaleFile(mod, locale)
 	local success, contents = pcall(dofile, string.format("%s.i18n.%s", mod, locale))
 	if (success) then
-		assert(type(contents) == "table", string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		if type(contents) ~= "table" then
+			error(string.format("Translation file for mod %q does not have valid translation file for locale %q.", mod, locale))
+		end
 
 		-- Convert encoding from UTF8 to the right type.
 		convertUTF8Table(contents, tes3.getLanguageCode())
@@ -231,47 +265,8 @@ function mwse.loadTranslations(mod)
 	assert(loadedDefault or loadedLanguage, "Could not load any valid i18n files.")
 
 	-- We create a wrapper around i18n prefixing with the mod key.
-	return setmetatable({ mod = mod }, i18nWrapper)
+	return setmetatable({ mod = mod }, i18nWrapper) --[[@as fun(key: string, data: any?): string]]
 end
-
-
--------------------------------------------------
--- Extend base API: math
--------------------------------------------------
-
--- Seed random number generator.
-math.randomseed(os.time())
-
-function math.lerp(v0, v1, t)
-	return (1 - t) * v0 + t * v1;
-end
-
-function math.clamp(value, low, high)
-	if (low > high) then
-		low, high = high, low
-	end
-	return math.max(low, math.min(high, value))
-end
-
-function math.remap(value, lowIn, highIn, lowOut, highOut)
-	return lowOut + (value - lowIn) * (highOut - lowOut) / (highIn - lowIn)
-end
-
-function math.round(value, digits)
-	local mult = 10 ^ (digits or 0)
-	return math.floor(value * mult + 0.5) / mult
-end
-
-function math.isclose(a, b, absoluteTolerance, relativeTolerance)
-	absoluteTolerance = absoluteTolerance or math.epsilon
-	relativeTolerance = relativeTolerance or 1e-9
-	return math.abs(a-b) <= math.max(relativeTolerance * math.max(math.abs(a), math.abs(b)), absoluteTolerance)
-end
-
-function math.nextPowerOfTwo(value)
-	return math.pow(2, math.ceil(math.log(value) / math.log(2)))
-end
-
 
 -------------------------------------------------
 -- Extend base API: table
@@ -281,7 +276,8 @@ end
 require("table.clear")
 require("table.new")
 
--- The # operator only really makes sense for continuous arrays. Get the real value.
+--- @param t table
+--- @return number result
 function table.size(t)
 	local count = 0
 	for _ in pairs(t) do
@@ -290,6 +286,9 @@ function table.size(t)
 	return count
 end
 
+--- @param t table
+--- @param deepCheck? boolean
+--- @return boolean result
 function table.empty(t, deepCheck)
 	if (deepCheck) then
 		for _, v in pairs(t) do
@@ -305,6 +304,11 @@ function table.empty(t, deepCheck)
 	return true
 end
 
+--- @generic keyType
+--- @generic valueType
+--- @param t { [keyType]: valueType }
+--- @return valueType value
+--- @return keyType key
 function table.choice(t)
 	-- We can abort on empty tables.
 	local size = table.size(t)
@@ -322,6 +326,11 @@ function table.choice(t)
 	return t[key], key
 end
 
+--- @generic keyType
+--- @generic valueType
+--- @param t { [keyType]: valueType }
+--- @param value valueType
+--- @return keyType|unknown|nil key
 function table.find(t, value)
 	for i, v in pairs(t) do
 		if (v == value) then
@@ -330,20 +339,74 @@ function table.find(t, value)
 	end
 end
 
-function table.removevalue(t, value)
-	local i = table.find(t, value)
+--- @param t table
+--- @param value unknown
+--- @return boolean result
+function table.contains(t, value)
+	return table.find(t, value) ~= nil
+end
+
+
+--- @param left table
+--- @param right table
+--- @return boolean result
+function table.equal(left, right)
+
+	-- Try a quick basic equality check.
+	if (left == right) then
+		return true
+	end
+
+	-- Make sure both inputs are tables.
+	if (type(left) ~= "table" or type(right) ~= "table") then
+		return false
+	end
+
+	-- Loop through pairs and see if all values match from t1 -> t2.
+	local size1 = 0
+	-- Store the function locally for faster function calls.
+	local eq = table.equal
+	for k, v1 in pairs(left) do
+		-- Note: If `v1 ~= v2`, then the recursive call to `table.equal` will
+		-- result in a redundant comparison of `v1` and `v2`.
+		-- But, testing shows that for highly similar tables, this approach is faster
+		-- than only checking `not table.equal(v1, v2)`.
+		-- This is likely due to the overhead from function calls.
+
+		local v2 = right[k]
+		if (v1 ~= v2 and not eq(v1, v2)) then
+			return false
+		end
+
+		size1 = size1 + 1
+	end
+
+	-- We can assume t1 == t2 if all values match for t1 -> t2 and both tables have the same size.
+	return size1 == table.size(right)
+end
+
+
+--- @generic valueType
+--- @param list { [unknown]: valueType }
+--- @param value valueType
+--- @return boolean result
+function table.removevalue(list, value)
+	local i = table.find(list, value)
 	if (i ~= nil) then
-		table.remove(t, i)
+		table.remove(list, i)
 		return true
 	end
 	return false
 end
 
+--- @generic fromType : table
+--- @generic toType : table
+--- @param from fromType
+--- @param to? toType
+--- @return fromType|toType result
 function table.copy(from, to)
 	if (to == nil) then
 		to = {}
-	elseif (type(from) ~= "table" or type(to) ~= "table") then
-		error("Arguments for table.copy must be tables.")
 	end
 
 	for k, v in pairs(from) do
@@ -353,6 +416,9 @@ function table.copy(from, to)
 	return to
 end
 
+--- @generic tableType : table
+--- @param t tableType
+--- @return tableType result
 function table.deepcopy(t)
 	local copy = nil
 	if type(t) == "table" then
@@ -367,11 +433,9 @@ function table.deepcopy(t)
 	return copy
 end
 
+--- @param to table
+--- @param from table
 function table.copymissing(to, from)
-	if (type(to) ~= "table" or type(from) ~= "table") then
-		error("Arguments for table.copymissing must be tables.")
-	end
-
 	for k, v in pairs(from) do
 		if (type(to[k]) == "table" and type(v) == "table") then
 			table.copymissing(to[k], v)
@@ -383,6 +447,10 @@ function table.copymissing(to, from)
 	end
 end
 
+--- @generic tableType
+--- @param t tableType
+--- @param k? string
+--- @return fun(): tableType|any iterator
 function table.traverse(t, k)
 	k = k or "children"
 	local function iter(nodes)
@@ -398,6 +466,10 @@ function table.traverse(t, k)
 	return coroutine.wrap(iter)
 end
 
+--- @generic keyType
+--- @param t { [keyType]: unknown }
+--- @param sort? boolean|fun(a: keyType, b: keyType): boolean
+--- @return keyType[] keys
 function table.keys(t, sort)
 	local keys = {}
 	for k, _ in pairs(t) do
@@ -414,6 +486,10 @@ function table.keys(t, sort)
 	return keys
 end
 
+--- @generic valueType
+--- @param t { [unknown]: valueType }
+--- @param sort? boolean|fun(a: valueType, b: valueType): boolean
+--- @return valueType[] values
 function table.values(t, sort)
 	local values = {}
 	for _, v in pairs(t) do
@@ -430,6 +506,10 @@ function table.values(t, sort)
 	return values
 end
 
+--- @generic keyType
+--- @generic valueType
+--- @param t { [keyType]: valueType }
+--- @return { [valueType]: keyType } result
 function table.invert(t)
 	local inverted = {}
 	for k, v in pairs(t) do
@@ -438,30 +518,53 @@ function table.invert(t)
 	return inverted
 end
 
+--- @generic keyType
+--- @generic valueType
+--- @param t { [keyType]: valueType }
+--- @param key keyType
+--- @param value any
+--- @return valueType|unknown|nil oldValue
 function table.swap(t, key, value)
 	local old = t[key]
 	t[key] = value
 	return old
 end
 
-function table.get(t, key, default)
+--- @generic keyType
+--- @generic valueType
+--- @generic defaultValueType
+--- @param t { [keyType]: valueType }
+--- @param key keyType
+--- @param defaultValue defaultValueType
+--- @return valueType|defaultValueType|unknown result
+function table.get(t, key, defaultValue)
 	local value = t[key]
 	if (value == nil) then
-		return default
+		return defaultValue
 	end
 	return value
 end
 
-function table.getset(t, key, default)
+--- @generic keyType
+--- @generic valueType
+--- @generic defaultValueType
+--- @param t { [keyType]: valueType }
+--- @param key keyType
+--- @param defaultValue defaultValueType
+--- @return valueType|defaultValueType|unknown result
+function table.getset(t, key, defaultValue)
 	local value = t[key]
 	if (value ~= nil) then
 		return value
 	end
 
-	t[key] = default
-	return default
+	t[key] = defaultValue
+	return defaultValue
 end
 
+--- @param t table
+--- @param index number
+--- @return number index
 function table.wrapindex(t, index)
 	local size = #t
 	local newIndex = index % size
@@ -469,6 +572,16 @@ function table.wrapindex(t, index)
 		newIndex = size
 	end
 	return newIndex
+end
+
+--- @param t table
+--- @param n? integer
+function table.shuffle(t, n)
+	n = n or #t
+	for i = n, 2, -1 do
+		local j = math.random(i)
+		t[i], t[j] = t[j], t[i]
+	end
 end
 
 
@@ -491,6 +604,13 @@ end
 		on success: two integers: `lowestMatch, highestMatch`
 		on failure: nil
 ]]--
+--- @generic valueType
+--- @param tbl valueType[]
+--- @param value valueType
+--- @param comp? fun(a: valueType, b: valueType): boolean
+--- @param findAll? boolean
+--- @return integer|nil index
+--- @return integer|nil highestMatch
 function table.binsearch(tbl, value, comp, findAll)
 	-- initialize the index variables
 	local first, last, midpt = 1, #tbl, 0
@@ -540,6 +660,11 @@ end
 	returns the index where 'value' was inserted
 ]]--
 local fcomp_default = function( a,b ) return a < b end
+--- @generic valueType
+--- @param t valueType[]
+--- @param value valueType
+--- @param comp? fun(a: valueType, b: valueType): boolean
+--- @return number result
 function table.bininsert(t, value, comp)
 	-- Initialise compare function
 	local comp = comp or fcomp_default
@@ -563,6 +688,13 @@ end
 
 -- functional programming stuff
 
+--- @generic keyType
+--- @generic valueType
+--- @generic newValueType
+--- @param t { [keyType]: valueType }
+--- @param f fun(k: keyType, v: valueType, ...): newValueType
+--- @param ... any
+--- @return { [keyType]: newValueType } result
 function table.map(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
@@ -571,6 +703,12 @@ function table.map(t, f, ...)
 	return tbl
 end
 
+--- @generic keyType
+--- @generic valueType
+--- @param t { [keyType]: valueType }
+--- @param f fun(k: keyType, v: valueType, ...): boolean
+--- @param ... any
+--- @return { [keyType]: valueType } result
 function table.filter(t, f, ...)
 	local tbl = {}
 	for k, v in pairs(t) do
@@ -581,9 +719,14 @@ function table.filter(t, f, ...)
 	return tbl
 end
 
-function table.filterarray(t, f, ...)
+--- @generic valueType
+--- @param arr valueType[]
+--- @param f fun(i: integer, v: valueType, ...): boolean
+--- @param ... any
+--- @return valueType[] result
+function table.filterarray(arr, f, ...)
 	local tbl = {}
-	for i, v in ipairs(t) do
+	for i, v in ipairs(arr) do
 		if f(i, v, ...) then
 			table.insert(tbl, v)
 		end
@@ -595,16 +738,29 @@ end
 -- Extend base API: string
 -------------------------------------------------
 
-function string.startswith(haystack, needle)
-	return string.sub(haystack, 1, string.len(needle)) == needle
+--- @param s string
+--- @param substring string
+--- @return boolean result
+function string.startswith(s, substring)
+	return string.sub(s, 1, string.len(substring)) == substring
 end
 getmetatable("").startswith = string.startswith
 
-function string.endswith(haystack, needle)
-	return needle=='' or string.sub(haystack, -string.len(needle)) == needle
+--- @param s string
+--- @param pattern string
+--- @return boolean result
+function string.endswith(s, pattern)
+	return pattern=='' or string.sub(s, -string.len(pattern)) == pattern
 end
 getmetatable("").endswith = string.endswith
 
+--- @param s string
+--- @param patterns table
+--- @param index? integer
+--- @param plain? boolean
+--- @return string? pattern
+--- @return integer? startindex
+--- @return integer? endindex
 function string.multifind(s, patterns, index, plain)
 	for _, pattern in ipairs(patterns) do
 		local r = { string.find(s, pattern, index, plain) }
@@ -615,11 +771,18 @@ function string.multifind(s, patterns, index, plain)
 end
 getmetatable("").multifind = string.multifind
 
-function string.insert(s1, s2, pos)
-	return s1:sub(1, pos) .. s2 .. s1:sub(pos + 1)
+--- @param s1 string
+--- @param s2 string
+--- @param position integer
+--- @return string result
+function string.insert(s1, s2, position)
+	return s1:sub(1, position) .. s2 .. s1:sub(position + 1)
 end
 getmetatable("").insert = string.insert
 
+--- @param str string
+--- @param sep? string
+--- @return string[] split
 function string.split(str, sep)
 	if sep == nil then
 		sep = "%s"
@@ -632,6 +795,8 @@ function string.split(str, sep)
 end
 getmetatable("").split = string.split
 
+--- @param s string
+--- @return string trimmed
 function string.trim(s)
 	return string.match(s, '^()%s*$') and '' or string.match(s, '^%s*(.*%S)')
 end
@@ -929,6 +1094,11 @@ local function fixLoadedResult(config, defaultConfig)
 	end
 end
 
+--- @generic configType : table
+--- @param fileName string
+--- @param defaults? configType
+--- @return configType result
+--- @overload fun(fileName: string): table?
 function mwse.loadConfig(fileName, defaults)
 	local result = json.loadfile(string.format("config\\%s", fileName))
 
@@ -943,9 +1113,9 @@ function mwse.loadConfig(fileName, defaults)
 end
 
 function mwse.saveConfig(fileName, object, config)
-	if (fileName and object) then
-		json.savefile(string.format("config\\%s", fileName), object, config or { indent = true })
-	end
+	assert(fileName, "No file name provided.")
+	assert(object, "No save object provided.")
+	json.savefile(string.format("config\\%s", fileName), object, config or { indent = true })
 end
 
 -- Exception handler called when an object can't be correctly validated in the save.
@@ -961,6 +1131,8 @@ end
 function mwse.encodeForSave(object)
 	return json.encode(object, { exception = exceptionWhenSaving })
 end
+
+mwse.Logger = require("logger")
 
 
 -------------------------------------------------
@@ -1024,6 +1196,13 @@ mwse.saveConfig("MWSE", userConfig)
 -------------------------------------------------
 
 function tes3.claimSpellEffectId(name, id)
+	-- Ignore duplicate claims.
+	if (name and tes3.effect[name] == id) then
+		return
+	end
+
+	assert(type(name) == "string", "Name must be a string.")
+	assert(type(id) == "number", "ID must be a number.")
 	assert(table.find(tes3.effect, id) == nil, "Effect ID is not unique.")
 	assert(tes3.effect[name] == nil, "Effect name is not unique.")
 	tes3.effect[name] = id
@@ -1033,9 +1212,16 @@ end
 tes3.installDirectory = lfs.currentdir()
 
 local safeObjectHandle = require("mwse_safeObjectHandle")
+--- @return mwseSafeObjectHandle
 function tes3.makeSafeObjectHandle(object)
 	return safeObjectHandle.new(object)
 end
+
+-------------------------------------------------
+-- Extend base API: math
+-------------------------------------------------
+
+dofile("math")
 
 
 -------------------------------------------------

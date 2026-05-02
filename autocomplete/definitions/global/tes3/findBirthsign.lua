@@ -5,5 +5,5 @@ return {
 		{ name = "id", type = "string", description = "ID of the birthsign to search for." },
 	},
 	returns = "birthsign",
-	valuetype = "tes3birthsign",
+	valuetype = "tes3birthsign?",
 }

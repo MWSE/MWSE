@@ -79,8 +79,7 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 	void setSoftenLandscapeVertices(bool value);
 
 	LandTexture* getSelectedTexture();
-	bool setSelectTexture(LandTexture* landTexture);
-	bool setSelectTexture(NI::Texture* texture);
+	bool setSelectTexture(LandTexture* texture);
 
 	bool incrementEditRadius();
 	bool decrementEditRadius();

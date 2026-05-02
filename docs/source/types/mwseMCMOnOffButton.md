@@ -8,7 +8,7 @@
 
 Toggles a Variable between true and false, with the `buttonText` switching between the strings "On" and "Off".
 
-This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMButton](../types/mwseMCMButton.md), [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `buttonText`

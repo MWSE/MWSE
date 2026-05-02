@@ -23,6 +23,7 @@ event.register(tes3.event.crimeWitnessed, crimeWitnessedCallback)
 
 ## Event Data
 
+* `crimeEvent` ([tes3crimeEvent](../types/tes3crimeEvent.md)): *Read-only*. Direct access to the crime event data that was witnessed.
 * `position` ([tes3vector3](../types/tes3vector3.md)): *Read-only*. The position that the crime ocurred at.
 * `realTimestamp` (number): *Read-only*. The timestamp that the crime ocurred at.
 * `type` (string): *Read-only*. The type of crime that was committed. The type can be "attack", "killing", "stealing", "pickpocket", "theft", "trespass", and "werewolf". Crime "theft" is raised when picking up owned items. Crime "trespass" is raised when lockpicking, probing, using Open magic on owned doors or chests and sleeping in owned beds.

@@ -8,7 +8,7 @@
 
 A setting is a component that the player interacts with in some way. Interacting with a setting may update a mwseMCMVariable, or it may call a custom function.
 
-This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `callback`

@@ -8,7 +8,7 @@
 
 A weapon game object.
 
-This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md)
+This type inherits the following: [tes3item](../types/tes3item.md), [tes3physicalObject](../types/tes3physicalObject.md), [tes3object](../types/tes3object.md), [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `blocked`
@@ -124,7 +124,7 @@ Access to the weapon flag bitfield. Known flags can be accessed via other weapon
 ### `icon`
 <div class="search_terms" style="display: none">icon</div>
 
-The path to the object's icon.
+The path to the object's icon. Relative to `Data Files\\icons\\`.
 
 **Returns**:
 
@@ -158,6 +158,17 @@ Access to the flag that controls if this weapon bypasses the "Resist normal weap
 <div class="search_terms" style="display: none">isammo, ammo</div>
 
 *Read-only*. If true, the weapon is a type of ammunition. Arrows and bolts are ammunition, while thrown weapons aren't.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isCarriable`
+<div class="search_terms" style="display: none">iscarriable, carriable</div>
+
+*Read-only*. If true, the item can be carried and interacted with normally in an inventory. While this is false for certain lights, they can still sometimes appear in an inventory, but cannot be interacted with.
 
 **Returns**:
 
@@ -256,7 +267,7 @@ The object's maximum condition.
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 
-The path to the object's mesh.
+The path to the object's mesh. Relative to `Data Files\\meshes\\`.
 
 **Returns**:
 
@@ -352,6 +363,17 @@ The previous object in parent collection's list.
 
 ***
 
+### `promptsEquipmentReevaluation`
+<div class="search_terms" style="display: none">promptsequipmentreevaluation</div>
+
+*Read-only*. If true, the item should prompt equipment reevaluated when added to the actor's inventory. Thus is true for armor, clothing, and weapons.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `reach`
 <div class="search_terms" style="display: none">reach</div>
 
@@ -432,12 +454,11 @@ Gets the skill ID for the attack skill used by the weapon. Maps to values in [`t
 	```lua
 	
 	local function showMessage(e)
-		if e.mobile.readiedWeapon then
-			local id = e.mobile.readiedWeapon.object.skillId
-			local name = tes3.getSkillName(id)
+		if not e.mobile.readiedWeapon then return end
+		local id = e.mobile.readiedWeapon.object.skillId
+		local name = tes3.getSkillName(id)
 	
-			tes3.messageBox(name)
-		end
+		tes3.messageBox(name)
 	end
 	
 	event.register(tes3.event.attackStart, showMessage)
@@ -471,7 +492,7 @@ Slash damage inflicted at minimum weapon swing.
 ### `sourceless`
 <div class="search_terms" style="display: none">sourceless</div>
 
-The soruceless flag of the object.
+The sourceless flag of the object.
 
 **Returns**:
 
@@ -504,11 +525,24 @@ The relative attack speed of the weapon. Controls attack timing and animation sp
 ### `stolenList`
 <div class="search_terms" style="display: none">stolenlist</div>
 
-A list of actors that the object has been stolen from.
+*Read-only*. A non-mutable list of all actors that the item has been stolen from.
 
 **Returns**:
 
-* `result` ([tes3baseObject](../types/tes3baseObject.md)[])
+* `result` ([tes3npc](../types/tes3npc.md)[], [tes3faction](../types/tes3faction.md)[])
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

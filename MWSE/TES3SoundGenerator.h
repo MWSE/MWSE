@@ -18,7 +18,7 @@ namespace TES3 {
 
 	struct SoundGenerator : BaseObject {
 		char name[32];
-		int unknown_0x30;
+		Creature* creature;
 		Sound* sound;
 		SoundType soundType;
 

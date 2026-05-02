@@ -289,6 +289,21 @@ local result = myObject:toRotation()
 
 ## Functions
 
+### `identity`
+<div class="search_terms" style="display: none">identity</div>
+
+Creates a new identity quaternion.
+
+```lua
+local quaternion = niQuaternion.identity()
+```
+
+**Returns**:
+
+* `quaternion` ([niQuaternion](../types/niQuaternion.md))
+
+***
+
 ### `new`
 <div class="search_terms" style="display: none">new</div>
 

@@ -22,7 +22,7 @@ namespace NI {
 		// Custom functions.
 		//
 
-		Pointer<TriShapeData> TriShapeData::cloneData(bool copyNormals, bool copyColors, bool copyTextureCoordinates) const;
+		Pointer<TriShapeData> cloneData(bool copyNormals, bool copyColors, bool copyTextureCoordinates) const;
 		Pointer<TriShapeData> copyData(sol::optional<sol::table> filters) const;
 		nonstd::span<Triangle> getTriangles();
 

@@ -18,5 +18,9 @@ return {
 			readOnly = true,
 			description = "The item data for the item being filtered.",
 		},
+		["filter"] = {
+			type = "boolean|nil",
+			description = "If `true`, the item will be displayed in the menu. If `false`, the item will not be displayed. If left `nil`, the default behavior is used."
+		},
 	},
 }

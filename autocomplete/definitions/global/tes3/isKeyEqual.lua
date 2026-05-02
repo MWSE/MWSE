@@ -110,7 +110,7 @@ return {
 		},
 	}},
 	returns = {
-		{ name = "equal", valuetype = "boolean" }
+		{ name = "equal", type = "boolean" }
 	},
 	examples = {
 		["filtering"] = {

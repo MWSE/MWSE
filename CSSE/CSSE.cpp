@@ -18,10 +18,12 @@
 
 #include "DialogActorAIWindow.h"
 #include "DialogCellWindow.h"
+#include "DialogLayersWindow.h"
 #include "DialogDialogueWindow.h"
 #include "DialogEditObjectWindow.h"
 #include "DialogLandscapeEditSettingsWindow.h"
 #include "DialogObjectWindow.h"
+#include "DialogPathGridWindow.h"
 #include "DialogPreviewWindow.h"
 #include "DialogReferenceData.h"
 #include "DialogRenderWindow.h"
@@ -506,6 +508,7 @@ namespace se::cs {
 		void __fastcall PatchOnLoadFiles(RecordHandler* recordHandler) {
 			CS_RecordHandler_LoadFiles(recordHandler);
 			metadata::reloadModMetadata();
+			se::cs::dialog::layer_window::loadOrCreateLayers();
 		}
 
 		//
@@ -695,6 +698,7 @@ namespace se::cs {
 		dialog::edit_object_window::installPatches();
 		dialog::landscape_edit_settings_window::installPatches();
 		dialog::object_window::installPatches();
+		dialog::path_grid_window::installPatches();
 		dialog::preview_window::installPatches();
 		dialog::reference_data::installPatches();
 		dialog::render_window::installPatches();
@@ -703,6 +707,7 @@ namespace se::cs {
 		dialog::search_and_replace_window::installPatches();
 		dialog::text_search_window::installPatches();
 		dialog::use_report_window::installPatches();
+		dialog::layer_window::installPatches();
 		TextureRenderer::installPatches();
 	}
 

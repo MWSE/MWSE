@@ -29,14 +29,14 @@ namespace TES3 {
 		float combatDistance; // 0x0
 		signed char unknown_0x4;
 		signed char unknown_0x5;
-		unsigned short lastUseTimestamp; // 0x6 // 
-		long ammoDamage; // 0x8
-		MobileActor * parentActor; // 0xC
-		EquipmentStack * selectedWeapon; // 0x10
+		unsigned short mcpAlchemyLastUseTimestamp; // 0x6 // MCP added for potion cooldown.
+		int ammoDamage; // 0x8
+		MobileActor* parentActor; // 0xC
+		EquipmentStack* selectedWeapon; // 0x10
 		int unknown_0x14;
-		EquipmentStack * selectedShield; // 0x18
-		ItemStack * selectedItem; // 0x1C
-		Spell * selectedSpell; // 0x20
+		EquipmentStack* selectedShield; // 0x18
+		ItemStack* selectedItem; // 0x1C
+		Spell* selectedSpell; // 0x20
 		Unknown_0x24* unknown_0x24;
 		int nextAction; // 0x28
 		float spellPriority; // 0x2C

@@ -8,7 +8,7 @@
 
 This dictionary-style table holds all of the UI elements that comprise a mwseMCMButton.
 
-This type inherits the following: [mwseMCMComponentElements](../types/mwseMCMComponentElements.md)
+This type inherits the following: [mwseMCMComponentElements](../types/mwseMCMComponentElements.md).
 ## Properties
 
 ### `button`

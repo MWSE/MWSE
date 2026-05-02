@@ -9,18 +9,18 @@ return {
 		tableParams = {
 			{ name = "label", type = "string", optional = true, description = "The category label." },
 			{ name = "description", type = "string", optional = true, description = "If in a [Sidebar Page](../types/mwseMCMSideBarPage.md), the description will be shown on mouseover." },
-			{ name = "config", type = "table", optional = true, 
+			{ name = "config", type = "table", optional = true,
 				description = "If provided, this `config` will be used to generate [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) for any \z
 					[`mwseMCMSetting`s](./mwseMCMSetting.md) made inside this `Category`/`Page`. \z
 					i.e., this parameter provides an alternative to explicitly constructing new variables. \z
 					Subtables of this `config` can be accessed by passing a `configKey` to any `Category` that is nested inside this one."
 			},
-			{ name = "defaultConfig", type = "table", optional = true, 
+			{ name = "defaultConfig", type = "table", optional = true,
 				description = "Stores a default config that should be used by this mod's `Setting`s. This will initialize the `defaultSetting` \z
 					field of any [`mwseMCMTableVariable`s](./mwseMCMTableVariable.md) created for this mod. \z
 					Sub-configs can be accessed by passing a `configKey` to any `Category` that is nested inside this one."
 			},
-			{ name = "configKey", type = "string|number", optional = true, 
+			{ name = "configKey", type = "string|number", optional = true,
 				description = "This can be used to access subtables of the `config` and `defaultConfig` stored in this component's `parentComponent`. \z
 					This ensures that the `config` and `defaultConfig` stay synchronized."
 			},

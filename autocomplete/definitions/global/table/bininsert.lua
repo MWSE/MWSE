@@ -8,10 +8,13 @@ i.e., `comp(a,b) == true` would mean `a` is less than `b`.
 If you want to sort in reverse order, you may set `comp = function(a, b) return a > b end`.
 
 This function will return the index where `value` was inserted into `t`.]],
+	generics = {
+		{ name = "valueType" }
+	},
 	arguments = {
-		{ name = "t", type = "table" },
-		{ name = "value", type = "unknown" },
-		{ name = "comp", type = "fun(a, b):boolean", optional = true },
+		{ name = "t", type = "valueType[]" },
+		{ name = "value", type = "valueType" },
+		{ name = "comp", type = "fun(a: valueType, b: valueType): boolean", optional = true },
 	},
 	valuetype = "number",
 }

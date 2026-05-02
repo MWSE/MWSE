@@ -254,43 +254,48 @@ namespace oklab {
 			srgb_transfer_function_inv(rgb.b)
 		});
 
-		float C = sqrtf(lab.a * lab.a + lab.b * lab.b);
-		float a_ = lab.a / C;
-		float b_ = lab.b / C;
-
 		float L = lab.L;
+		float C = sqrtf(lab.a * lab.a + lab.b * lab.b);
 		float h = 0.5f + 0.5f * atan2f(-lab.b, -lab.a) / pi;
+		float s = 0.0f;
+		float v = toe(L);
 
-		LC cusp = find_cusp(a_, b_);
-		ST ST_max = to_ST(cusp);
-		float S_max = ST_max.S;
-		float T_max = ST_max.T;
-		float S_0 = 0.5f;
-		float k = 1 - S_0 / S_max;
+		if (std::fpclassify(L) != FP_ZERO && std::fpclassify(std::abs(L - 1.f)) != FP_ZERO && std::fpclassify(C) != FP_ZERO) {
 
-		// first we find L_v, C_v, L_vt and C_vt
+			float a_ = lab.a / C;
+			float b_ = lab.b / C;
 
-		float t = T_max / (C + L * T_max);
-		float L_v = t * L;
-		float C_v = t * C;
+			LC cusp = find_cusp(a_, b_);
+			ST ST_max = to_ST(cusp);
+			float S_max = ST_max.S;
+			float T_max = ST_max.T;
+			float S_0 = 0.5f;
+			float k = 1 - S_0 / S_max;
 
-		float L_vt = toe_inv(L_v);
-		float C_vt = C_v * L_vt / L_v;
+			// first we find L_v, C_v, L_vt and C_vt
 
-		// we can then use these to invert the step that compensates for the toe and the curved top part of the triangle:
-		RGB rgb_scale = oklab_to_linear_srgb({ L_vt, a_ * C_vt, b_ * C_vt });
-		float scale_L = cbrtf(1.f / fmax(fmax(rgb_scale.r, rgb_scale.g), fmax(rgb_scale.b, 0.f)));
+			float t = T_max / (C + L * T_max);
+			float L_v = t * L;
+			float C_v = t * C;
 
-		L = L / scale_L;
-		C = C / scale_L;
+			float L_vt = toe_inv(L_v);
+			float C_vt = C_v * L_vt / L_v;
 
-		C = C * toe(L) / L;
-		L = toe(L);
+			// we can then use these to invert the step that compensates for the toe and the curved top part of the triangle:
+			RGB rgb_scale = oklab_to_linear_srgb({ L_vt, a_ * C_vt, b_ * C_vt });
+			float scale_L = cbrtf(1.f / fmax(fmax(rgb_scale.r, rgb_scale.g), fmax(rgb_scale.b, 0.f)));
 
-		// we can now compute v and s:
+			L = L / scale_L;
+			C = C / scale_L;
 
-		float v = L / L_v;
-		float s = (S_0 + T_max) * C_v / ((T_max * S_0) + T_max * k * C_v);
+			C = C * toe(L) / L;
+			L = toe(L);
+
+			// we can now compute v and s:
+
+			v = L / L_v;
+			s = (S_0 + T_max) * C_v / ((T_max * S_0) + T_max * k * C_v);
+		}
 
 		return { h, s, v };
 	}

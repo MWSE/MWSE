@@ -40,41 +40,43 @@ An inventory composes of an iterator, and flags caching the state of the invento
 	
 	--- This is a generic iterator function that is used
 	--- to loop over all the items in an inventory
-	---@param ref tes3reference
+	---@param actor tes3actor
 	---@return fun(): tes3item, integer, tes3itemData|nil
-	local function iterItems(ref)
+	local function iterItems(actor)
 		local function iterator()
-			for _, stack in pairs(ref.object.inventory) do
-				---@cast stack tes3itemStack
+			for _, stack in pairs(actor.inventory) do
 				local item = stack.object
+				-- Skip uncarryable lights. They are hidden from the interface. A MWSE mod
+				-- could make the player glow from transferring such lights, which the player
+				-- can't remove. Some creatures like atronaches have uncarryable lights
+				-- in their inventory to make them glow that are not supposed to be looted.
+				if item.canCarry == false then
+					goto continue
+				end
 	
 				-- Account for restocking items,
-				-- since their count is negative
+				-- since their count is negative.
 				local count = math.abs(stack.count)
 	
-				-- first yield stacks with custom data
-				if stack.variables then
-					for _, data in pairs(stack.variables) do
-						if data then
-							-- Note that data.count is always 1 for items in inventories.
-							-- That field is only relevant for items in the game world, which
-							-- are stored as references. In that case tes3itemData.count field
-							-- contains the amount of items in the in-game-world stack of items.
-							coroutine.yield(item, data.count, data)
-							count = count - data.count
-						end
-					end
+				-- First yield stacks with custom data
+				for _, data in pairs(stack.variables or {}) do
+					coroutine.yield(item, data.count, data)
+					count = count - data.count
 				end
-				-- then yield all the remaining copies
+	
+				-- Then yield all the remaining copies
 				if count > 0 then
 					coroutine.yield(item, count)
 				end
+	
+				:: continue ::
 			end
 		end
 		return coroutine.wrap(iterator)
 	end
 	
-	for item, count, itemData in iterItems(tes3.player) do
+	local player = tes3.player.object --[[@as tes3actor]]
+	for item, count, itemData in iterItems(player) do
 		debug.log(item)
 		debug.log(count)
 		debug.log(itemData)
@@ -99,7 +101,7 @@ myObject:addItem({ mobile = ..., item = ..., itemData = ..., count = ... })
 
 * `params` (table)
 	* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md), [tes3reference](../types/tes3reference.md), string): *Optional*. The mobile actor whose stats will be updated.
-	* `item` ([tes3item](../types/tes3item.md)): The item to add.
+	* `item` ([tes3item](../types/tes3item.md), [tes3leveledItem](../types/tes3leveledItem.md)): The item or leveled item to add. If adding a leveled item to an inventory of a cloned object (such as [tes3containerInstance](../types/tes3containerInstance.md)), the leveled list will be resolved. Otherwise the leveled item record is added to the inventory directly.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. Any associated item data to add.
 	* `count` (number): *Default*: `1`. The number of items to add.
 
@@ -232,4 +234,19 @@ myObject:resolveLeveledItems(mobile)
 **Parameters**:
 
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Optional*. The mobile actor whose stats will be updated.
+
+***
+
+### `updateInternalLight`
+<div class="search_terms" style="display: none">updateinternallight, internallight</div>
+
+Re-evaluates whether the inventory contains a non-carriable internal light item and applies it to the given mobile actor if no active Light magic effect is present. This is useful when implementing custom light spells that can produce negative magnitudes or otherwise need vanilla-style fallback handling.
+
+```lua
+myObject:updateInternalLight(mobile)
+```
+
+**Parameters**:
+
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): The mobile actor whose internal light state should be refreshed.
 

@@ -48,11 +48,11 @@ namespace se::string {
 		return std::search(haystack.begin(), haystack.end(), needle.begin(), needle.end()) != haystack.end();
 	}
 
-	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, bool caseSensitive, std::regex* regex) {
-		if (regex) {
+	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex) {
+		if (settings.use_regex && regex) {
 			return std::regex_search(haystack.data(), *regex);
 		}
-		else if (caseSensitive) {
+		else if (settings.case_sensitive) {
 			return contains(haystack, needle);
 		}
 		else {

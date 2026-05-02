@@ -32,7 +32,7 @@ namespace se::cs {
 		const char* getLongVarName(int index) const;
 		const char* getFloatVarName(int index) const;
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Script) == 0x70, "Script failed size validation");
 }

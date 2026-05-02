@@ -20,7 +20,7 @@ event.register(tes3.event.weatherChangedImmediate, weatherChangedImmediateCallba
 
 ## Event Data
 
-* `to` ([tes3weather](../types/tes3weather.md)): The weather object that is the new current weather. Can be modified to change behavior.
+* `to` ([tes3weather](../types/tes3weather.md)): The weather object that is the new current weather.
 
 
 ## Related events

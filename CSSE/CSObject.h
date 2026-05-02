@@ -79,106 +79,46 @@ namespace se::cs {
 
 	struct Object : BaseObject {
 		NI::Node* sceneNode; // 0x10
-		int unknown_0x14;
+		BaseObject* unknown_0x14;
 		void* referenceToThis; // 0x18
 		Object* previousInCollection; // 0x1C
 		Object* nextInCollection; // 0x20
 		int unknown_0x24;
 
-		inline const char* getName() const {
-			return vtbl.object->getName(this);
-		}
+		//
+		// Virtual table access
+		//
 
-		inline bool isMarker() const {
-			return vtbl.object->isMarker(this);
-		}
+		const char* getName() const;
+		bool isMarker() const;
+		char* getIcon() const;
+		char* getModel() const;
+		Object* getEnchantment() const;
+		Script* getScript() const;
+		float getScale() const;
+		void setScale(float scale, bool clamp = true);
+		int getCount() const;
+		const char* getTypeName() const;
+		Sound* getSound() const;
+		const char* getRaceName() const;
+		const char* getClassName() const;
+		const char* getFactionName() const;
+		Faction* getFaction() const;
+		bool getIsFemale() const;
+		bool getIsEssential() const;
+		bool getRespawns() const;
+		int getLevel() const;
+		bool getAutoCalc() const;
+		float getWeight() const;
+		int getValue() const;
+		void populateObjectWindow(HWND hWnd) const;
 
-		inline char* getIcon() const {
-			return vtbl.object->getIconPath(this);
-		}
+		//
+		// Custom functions
+		//
 
-		inline char* getModel() const {
-			return vtbl.object->getModelPath(this);
-		}
-
-		inline Object* getEnchantment() const {
-			return vtbl.object->getEnchantment(this);
-		}
-
-		inline Script* getScript() const {
-			return vtbl.object->getScript(this);
-		}
-
-		inline float getScale() const {
-			return vtbl.object->getScale(this);
-		}
-
-		inline void setScale(float scale, bool something = true) {
-			vtbl.object->setScale(this, scale, something);
-		}
-
-		inline int getCount() const {
-			return vtbl.object->getCount(this);
-		}
-
-		inline const char* getTypeName() const {
-			return vtbl.object->getTypeName(this);
-		}
-
-		inline Sound* getSound() const {
-			return vtbl.object->getSound(this);
-		}
-
-		inline const char* getRaceName() const {
-			return vtbl.object->getRaceName(this);
-		}
-
-		inline const char* getClassName() const {
-			return vtbl.object->getClassName(this);
-		}
-
-		inline const char* getFactionName() const {
-			return vtbl.object->getFactionName(this);
-		}
-
-		inline Faction* getFaction() const {
-			return vtbl.object->getFaction(this);
-		}
-
-		inline bool getIsFemale() const {
-			return vtbl.object->getIsFemale(this);
-		}
-
-		inline bool getIsEssential() const {
-			return vtbl.object->getIsEssential(this);
-		}
-
-		inline bool getRespawns() const {
-			return vtbl.object->getRespawns(this);
-		}
-
-		inline int getLevel() const {
-			return vtbl.object->getLevel(this);
-		}
-
-		inline bool getAutoCalc() const {
-			return vtbl.object->getAutoCalc(this);
-		}
-
-		inline float getWeight() const {
-			return vtbl.object->getWeight(this);
-		}
-
-		inline int getValue() const {
-			return vtbl.object->getValue(this);
-		}
-
-		inline void populateObjectWindow(HWND hWnd) const {
-			vtbl.object->populateObjectWindow(this, hWnd);
-		}
-
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
-		bool searchWithInheritance(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Object) == 0x28, "CS::Object failed size validation");
 	static_assert(sizeof(Object_VirtualTable) == 0x138, "CS::Object's virtual table failed size validation");

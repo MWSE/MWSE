@@ -12,8 +12,8 @@
 namespace mwse::lua {
 	void bindNISwitchNode() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<NI::SwitchNode>("niSwitchNode");
@@ -28,5 +28,6 @@ namespace mwse::lua {
 
 		// Basic function binding.
 		usertypeDefinition["getActiveChild"] = &NI::SwitchNode::getActiveChild;
+		usertypeDefinition["getChildIndexByName"] = &NI::SwitchNode::getChildIndexByName;
 	}
 }

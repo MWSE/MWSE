@@ -14,7 +14,7 @@ namespace se::cs {
 		char* description; // 0x8C
 		unsigned int descriptionOffset; // 0x90
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Class) == 0x94, "Class failed size validation");
 }

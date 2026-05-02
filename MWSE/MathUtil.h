@@ -15,4 +15,17 @@ namespace mwse::math {
 	constexpr auto M_SQRT2 = 1.41421356237309504880; // sqrt(2)
 	constexpr auto M_SQRT1_2 = 0.707106781186547524401; // 1/sqrt(2)
 	constexpr auto M_NORMALIZE_EPSILON = 1e-6f; // Epsilon for NiVector normalization.
+	
+	inline float lerp(float a, float b, float t) {
+		return a + t * (b - a);
+	}
+
+	inline double lerp(double a, double b, double t) {
+		return a + t * (b - a);
+	}
+	
+	template <typename T>
+	inline bool near(T a, T b, T e = std::numeric_limits<T>::epsilon()) {
+		return std::abs(a - b) < e;
+	}
 }

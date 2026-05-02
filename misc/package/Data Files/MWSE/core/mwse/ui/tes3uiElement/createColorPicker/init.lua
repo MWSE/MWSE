@@ -90,7 +90,7 @@ local function createIndicator(parent, id, absolutePosAlignX, absolutePosAlignY)
 	indicator.color = CONSTANTS.INDICATOR_COLOR
 	indicator.absolutePosAlignX = absolutePosAlignX
 	indicator.absolutePosAlignY = absolutePosAlignY
-	indicator:setLuaData("indicatorID", id)
+	indicator:setLuaData("mwse:indicatorID", id)
 	return indicator
 end
 
@@ -170,7 +170,7 @@ local function createPickerBlock(params, picker, parent)
 		slider.borderBottom = 8
 		slider.borderLeft = 8
 		slider.borderRight = 8
-		slider:setLuaData("indicatorID", "slider")
+		slider:setLuaData("mwse:indicatorID", "slider")
 	end
 
 	local otherPickersContainer = mainRow
@@ -360,7 +360,7 @@ end
 --- @param input tes3uiElement
 local function getInputValue(input)
 	local text = input.text
-	local hasAlpha = input:getLuaData("hasAlpha")
+	local hasAlpha = input:getLuaData("mwse:hasAlpha")
 
 	-- Clearing the text input will set the color to 0.
 	if text == "" then
@@ -413,7 +413,7 @@ local function createDataBlock(params, picker, parent)
 		id = UIID.textInput,
 		text = inputText,
 	})
-	input:setLuaData("hasAlpha", params.alpha or false)
+	input:setLuaData("mwse:hasAlpha", params.alpha or false)
 	input.autoWidth = true
 	input.widthProportional = 1.0
 

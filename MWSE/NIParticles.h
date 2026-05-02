@@ -8,6 +8,9 @@ namespace NI {
 		unsigned short activeCount; // 0x3C
 		float* sizes; // 0x40
 
+		static Pointer<ParticlesData> create(unsigned short _vertexCount, TES3::Vector3* _vertices, TES3::Vector3* _normals, PackedColor* _colors);
+		static Pointer<ParticlesData> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
+
 		//
 		// Accessor methods.
 		//
@@ -16,8 +19,14 @@ namespace NI {
 	};
 	static_assert(sizeof(ParticlesData) == 0x44, "NI::ParticlesData failed size validation");
 
+	struct AutoNormalParticlesData : ParticlesData {
+		static Pointer<AutoNormalParticlesData> create(unsigned short _vertexCount, TES3::Vector3* _vertices, PackedColor* _colors);
+		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, bool hasColors);
+	};
+	static_assert(sizeof(AutoNormalParticlesData) == 0x44, "NI::AutoNormalParticlesData failed size validation");
+
 	struct RotatingParticlesData : ParticlesData {
-		NI::Quaternion* rotations; // 0x48
+		Quaternion* rotations; // 0x44
 
 		//
 		// Accessor methods.
@@ -28,22 +37,45 @@ namespace NI {
 	static_assert(sizeof(RotatingParticlesData) == 0x48, "NI::RotatingParticlesData failed size validation");
 
 	struct Particles : TriBasedGeometry {
-		AVObject* unknown_0xAC;
+		AVObject* staticBoundPositionSource; // 0xAC
+
+		Particles(ParticlesData* data);
+
+		static Pointer<Particles> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
 
 		//
 		// Accessor methods.
 		//
 
-		ParticlesData* getModelData() const { return static_cast<ParticlesData*>(modelData.get()); }
+		Pointer<ParticlesData> getModelData() const;
 	};
 	static_assert(sizeof(Particles) == 0xB0, "NI::Particles failed size validation");
 
-	struct RotatingParticles : Particles {
+	struct AutoNormalParticles : Particles {
+		AutoNormalParticles(AutoNormalParticlesData* data);
+
+		static Pointer<AutoNormalParticles> create(unsigned short vertexCount, bool hasColors);
+
 		//
 		// Accessor methods.
 		//
 
-		RotatingParticlesData* getModelData() const { return static_cast<RotatingParticlesData*>(modelData.get()); }
+		Pointer<AutoNormalParticlesData> getModelData() const;
+	};
+	static_assert(sizeof(AutoNormalParticles) == 0xB0, "NI::AutoNormalParticles failed size validation");
+
+	struct RotatingParticles : Particles {
+		RotatingParticles(RotatingParticlesData* data);
+
+		//
+		// Accessor methods.
+		//
+
+		Pointer<RotatingParticlesData> getModelData() const;
 	};
 	static_assert(sizeof(RotatingParticles) == 0xB0, "NI::RotatingParticles failed size validation");
 }
+
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::Particles)
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::AutoNormalParticles)
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::RotatingParticles)

@@ -1,5 +1,5 @@
 return {
 	type = "class",
-	description = [[A leveled creature game object.]],
+	description = [[A leveled item game object.]],
 	inherits = "tes3physicalObject",
 }

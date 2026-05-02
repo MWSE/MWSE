@@ -14,8 +14,8 @@ namespace mwse::lua {
 
 	void bindTES3Enchantment() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<TES3::Enchantment>("tes3enchantment");
@@ -31,9 +31,13 @@ namespace mwse::lua {
 		usertypeDefinition["flags"] = &TES3::Enchantment::flags;
 		usertypeDefinition["maxCharge"] = &TES3::Enchantment::maxCharge;
 
+		// Convenient flag access.
+		usertypeDefinition["autoCalc"] = sol::property(&TES3::Enchantment::getAutoCalc, &TES3::Enchantment::setAutoCalc);
+
 		// Basic function binding.
 		usertypeDefinition["getActiveEffectCount"] = &TES3::Enchantment::getActiveEffectCount;
 		usertypeDefinition["getFirstIndexOfEffect"] = &TES3::Enchantment::getFirstIndexOfEffect;
+		usertypeDefinition["hasEffect"] = &TES3::Enchantment::hasEffect;
 
 		// Indirect bindings to unions and arrays.
 		usertypeDefinition["effects"] = sol::readonly_property(&TES3::Enchantment::getEffects);

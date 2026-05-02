@@ -85,7 +85,7 @@ namespace se::cs::dialog::dialogue_window {
 	// Global variables
 	using ghWnd = memory::ExternalGlobal<HWND, 0x6CE9A0>;
 
-	struct DialogueWindowData_Vanilla {
+	struct UserData_Vanilla {
 		int unknown_0x0;
 		int unknown_0x4;
 		bool unknown_0x8;
@@ -100,9 +100,9 @@ namespace se::cs::dialog::dialogue_window {
 		int unknown_0x2C;
 		bool unknown_0x30;
 	};
-	static_assert(sizeof(DialogueWindowData_Vanilla) == 0x34, "DialogueWindowData failed size validation");
+	static_assert(sizeof(UserData_Vanilla) == 0x34, "UserData failed size validation");
 
-	struct DialogueWindowData : DialogueWindowData_Vanilla {
+	struct UserData : UserData_Vanilla {
 		enum class CellFilterMode : unsigned int {
 			UseCellReference,
 			UseRenderWindowCell,

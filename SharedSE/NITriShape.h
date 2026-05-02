@@ -21,7 +21,7 @@ namespace NI {
 		// vTable type overwriting.
 		//
 
-		TriShapeData* getModelData() const;
+		Pointer<TriShapeData> getModelData() const;
 
 		// Convenient access to model data.
 		nonstd::span<Vector3> getVertices() const;

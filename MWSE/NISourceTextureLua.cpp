@@ -11,14 +11,13 @@
 namespace mwse::lua {
 	void bindNISourceTexture() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for NI::SourceTexture::FormatPrefs.
 		{
 			// Start our usertype.
 			auto usertypeDefinition = state.new_usertype<NI::SourceTexture::FormatPrefs>("niFormatPrefs");
-			usertypeDefinition["new"] = sol::no_constructor;
 
 			// Basic property binding.
 			usertypeDefinition["alphaLayout"] = &NI::SourceTexture::FormatPrefs::alphaFormat;

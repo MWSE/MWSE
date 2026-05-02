@@ -8,7 +8,7 @@
 
 A button is the most basic of settings. You click the button, and it calls the function defined in the `callback` field. A number of more advanced button classes extend this class.
 
-This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md)
+This type inherits the following: [mwseMCMSetting](../types/mwseMCMSetting.md), [mwseMCMComponent](../types/mwseMCMComponent.md).
 ## Properties
 
 ### `buttonText`

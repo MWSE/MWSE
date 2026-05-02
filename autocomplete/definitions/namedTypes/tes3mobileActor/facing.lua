@@ -1,6 +1,8 @@
 return {
 	type = "value",
-	description = [[The facing of the actor, in radians. It corresponds to the `mobile.reference.orientation.z`. Facing of 0 corresponds to the in game North, facing of PI corresponds to the game South. It's in clockwise direction.]],
+	description = [[The facing of the actor, in radians. Facing is defined like a compass heading, positive values are clockwise and North (+Y axis) is zero, while facing of PI corresponds to South (-Y axis).
+
+It's the same as `mobile.reference.orientation.z`.]],
 	readOnly = true,
 	valuetype = "number",
 }

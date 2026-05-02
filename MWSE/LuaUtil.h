@@ -10,6 +10,11 @@
 
 namespace mwse::lua {
 	template <typename T>
+	auto sol_copy_wrapper(const T& v) {
+		return [&]() { return v; };
+	}
+
+	template <typename T>
 	T getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, T defaultValue) {
 		T value = defaultValue;
 
@@ -90,7 +95,8 @@ namespace mwse::lua {
 	}
 
 	// Dumps the current stacktrace to the log.
-	void logStackTrace(const char* message = nullptr);
+	void logStackTrace(const char* message = "stack traceback:");
+	std::string getStackTrace(bool removePrefix = false);
 
 	// Report error to in-game notification system.
 	void reportErrorInGame(const char* sourceName, const sol::error& error);

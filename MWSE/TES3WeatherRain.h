@@ -11,7 +11,7 @@ namespace TES3 {
 		float rainThreshold; // 0x428
 		float rainEntranceSpeed; // 0x42C
 		float raindropsMax; // 0x430
-		Sound * rainLoopSound; // 0x434
+		Sound* soundRainLoop; // 0x434
 		bool rainPlaying;  // 0x438
 
 		WeatherRain() = delete;

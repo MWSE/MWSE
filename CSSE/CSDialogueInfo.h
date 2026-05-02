@@ -67,7 +67,7 @@ namespace se::cs {
 
 		bool filter(Object* actor, Reference* reference = nullptr, int source = 1, Dialogue* dialogue = nullptr) const;
 
-		bool search(const std::string_view& needle, bool caseSensitive, std::regex* regex = nullptr) const;
+		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(DialogueInfo) == 0xA4, "TES3::DialogueInfo failed size validation");
 	static_assert(sizeof(DialogueInfo::LoadLinkNode) == 0xC, "TES3::DialogueInfo::LoadLinkNode failed size validation");

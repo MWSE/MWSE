@@ -40,9 +40,9 @@ event.register(tes3.event.calcArmorPieceHit, calcArmorPieceHitCallback)
 
 * `attacker` ([tes3reference](../types/tes3reference.md)): *Read-only*. A shortcut to the attacker mobile's reference.
 * `attackerMobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile who is doing the hitting.
-* `fallback` (number): A secondary slot to check for equipment on, if no armor is found using the primary slot.
+* `fallback` ([tes3.armorSlot](../references/armor-slots.md)): A secondary slot to check for equipment on, if no armor is found using the primary slot.
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile who is being hit.
 * `projectile` ([tes3mobileProjectile](../types/tes3mobileProjectile.md), nil): *Read-only*. The projectile used that is hitting the given reference. This is nil for all melee combat.
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. A shortcut to the mobile's reference.
-* `slot` (number): The primary slot that is targeted.
+* `slot` ([tes3.armorSlot](../references/armor-slots.md)): The primary slot that is targeted.
 

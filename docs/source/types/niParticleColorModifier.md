@@ -8,7 +8,7 @@
 
 This modifer alters the color of each particle as it ages.
 
-This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `colorData`
@@ -143,7 +143,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

@@ -41,6 +41,7 @@ namespace TES3 {
 
 	std::string MagicEffect::getComplexName(int attribute, int skill) const {
 		auto ndd = DataHandler::get()->nonDynamicData;
+		const auto extendedData = getExtendedData();
 
 		std::stringstream ss;
 
@@ -88,8 +89,8 @@ namespace TES3 {
 		else if (nameGMST > 0) {
 			ss << ndd->GMSTs[nameGMST]->value.asString;
 		}
-		else if (auto itt = ndd->magicEffects->effectCustomNames.find(id); itt != ndd->magicEffects->effectCustomNames.end()) {
-			ss << itt->second;
+		else if (extendedData && !extendedData->name.empty()) {
+			ss << extendedData->name;
 		}
 		else {
 			ss << "<invalid effect>";
@@ -340,6 +341,55 @@ namespace TES3 {
 		return reinterpret_cast<int*>(0x7926B8)[school];
 	}
 
+	MagicEffectExtendedData* MagicEffect::getExtendedData() const {
+		return DataHandler::get()->nonDynamicData->magicEffects->effectExtendedData[id];
+	}
+
+	bool MagicEffect::getHasActorLighting() const {
+		if (id == EffectID::Light) {
+			return true;
+		}
+
+		const auto extendedData = getExtendedData();
+		if (extendedData && extendedData->hasActorLighting) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+	//
+	// MagicEffectExtendedData
+	//
+
+	MagicEffectExtendedData::MagicEffectExtendedData() {
+		name = "Unnamed Effect";
+		hasActorLighting = false;
+	}
+
+	bool MagicEffectExtendedData::hasName() const {
+		return !name.empty();
+	}
+
+	bool MagicEffectExtendedData::hasMagnitudeType() const {
+		return !magnitudeType.empty() && !magnitudeTypePlural.empty();
+	}
+
+	std::string_view MagicEffectExtendedData::getMagnitudeType(bool plural) const {
+		if (plural) {
+			return magnitudeTypePlural;
+		}
+		else {
+			return magnitudeType;
+		}
+	}
+
+
+	//
+	// Effect
+	//
+
 	Effect::Effect() {
 		effectID = EffectID::None;
 		skillID = SkillID::Invalid;
@@ -476,7 +526,6 @@ namespace TES3 {
 		seAttributeID(id.value_or(-1));
 	}
 
-
 	sol::optional<std::string> Effect::toString() const {
 		if (effectID == EffectID::None) {
 			return {};
@@ -488,6 +537,8 @@ namespace TES3 {
 		if (effectData == nullptr) {
 			return {};
 		}
+
+		const auto extendedData = effectData->getExtendedData();
 
 		// We'll use a string stream and build up the result.
 		std::stringstream ss;
@@ -508,6 +559,7 @@ namespace TES3 {
 		}
 		else {
 			if (!ndd->magicEffects->getEffectFlag(effectID, EffectFlag::NoMagnitudeBit)) {
+				const auto pluralMagnitude = (magnitudeMax != 1);
 				if (magnitudeMin != magnitudeMax) {
 					ss << " " << magnitudeMin << " " << ndd->GMSTs[GMST::sTo]->value.asString << " " << magnitudeMax;
 				}
@@ -545,28 +597,31 @@ namespace TES3 {
 				case EffectID::DetectAnimal:
 				case EffectID::DetectEnchantment:
 				case EffectID::DetectKey:
-					if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::sfootarea]->value.asString;
+					if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::sfeet]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::sfeet]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::sfootarea]->value.asString;
 					}
 					break;
 				case EffectID::CommandCreature:
 				case EffectID::CommandHumanoid:
-					if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::sLevel]->value.asString;
+					if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::sLevels]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::sLevels]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::sLevel]->value.asString;
 					}
 					break;
 				default:
-					if (magnitudeMax == 1) {
-						ss << " " << ndd->GMSTs[GMST::spoint]->value.asString;
+					if (extendedData && extendedData->hasMagnitudeType()) {
+						ss << extendedData->getMagnitudeType(pluralMagnitude);
+					}
+					else if (pluralMagnitude) {
+						ss << " " << ndd->GMSTs[GMST::spoints]->value.asString;
 					}
 					else {
-						ss << " " << ndd->GMSTs[GMST::spoints]->value.asString;
+						ss << " " << ndd->GMSTs[GMST::spoint]->value.asString;
 					}
 				}
 			}

@@ -6,7 +6,7 @@ return {
 		type = "table",
 		tableParams = {
 			{ name = "reference", type = "tes3reference|tes3mobileActor|string", description = "A reference to the which actor whose animations will be checked." },
-			{ name = "group", type = "tes3.animationGroup|integer", optional = true, description = "The animation group id to get the action timings for. Maps to [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) constants." },
+			{ name = "group", type = "tes3.animationGroup|integer", description = "The animation group id to get the action timings for. Maps to [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) constants." },
 		},
 	}},
 	returns = { name = "result", type = "table<string, number>|nil" }

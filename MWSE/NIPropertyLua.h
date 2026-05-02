@@ -12,6 +12,9 @@ namespace mwse::lua {
 		// Basic property binding.
 		usertypeDefinition["propertyFlags"] = &NI::Property::flags;
 		usertypeDefinition["type"] = sol::readonly_property(&NI::Property::getType);
+
+		// Basic function binding.
+		usertypeDefinition["setFlag"] = &NI::Property::setFlag;
 	}
 
 	void bindNIProperties();

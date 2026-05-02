@@ -1,11 +1,21 @@
 #include "TES3ScriptCompiler.h"
 
 namespace TES3 {
-	bool ScriptCompiler::compile(char* scriptText) {
-		unknown_0x50 = 0;
+	ScriptCompiler::ScriptCompiler() {
+		const auto TES3_ScriptCompiler_ctor = reinterpret_cast<void(__thiscall*)(ScriptCompiler*)>(0x4F7260);
+		TES3_ScriptCompiler_ctor(this);
+	}
+
+	ScriptCompiler::~ScriptCompiler() {
+		const auto TES3_ScriptCompiler_dtor = reinterpret_cast<void(__thiscall*)(ScriptCompiler*)>(0x4F72C0);
+		TES3_ScriptCompiler_dtor(this);
+	}
+
+	bool ScriptCompiler::compile(const char* scriptText) {
+		currentLine = 0;
 		compiledScriptLength = 0;
 		scriptBuffer[0] = 0;
-		memset(scriptOrCompilerId, 0, 0x34);
+		memset(&scriptHeader, 0, sizeof(ScriptHeader));
 		commandIterator = scriptText;
 		command = scriptText;
 
@@ -14,17 +24,24 @@ namespace TES3 {
 			return false;
 		}
 		else if (function == CompilerFunction::BEGIN) {
+
 			shortVarList = new IteratedList<Variable*>();
 			longVarList = new IteratedList<Variable*>();
 			floatVarList = new IteratedList<Variable*>();
 
 			while (compileFunction(function)) {
 				if (compiledScriptLength >= 0x4000) {
+					delete shortVarList;
+					shortVarList = nullptr;
+					delete longVarList;
+					longVarList = nullptr;
+					delete floatVarList;
+					floatVarList = nullptr;
 					return false;
 				}
 
 				if (function == CompilerFunction::END) {
-					scriptBuffer[0] = 0;
+					scriptLineBuffer[0] = 0;
 
 					for (auto& var : *shortVarList) {
 						linkVariable(var);
@@ -45,12 +62,18 @@ namespace TES3 {
 
 					return true;
 				}
-			}
 
-			function = parseFunctionName();
-			if (function == CompilerFunction::INVALID) {
-				// TODO: Error. Need to end with `end`
-				return false;
+				function = parseFunctionName();
+				if (function == CompilerFunction::INVALID) {
+					// TODO: Error. Need to end with `end`
+					delete shortVarList;
+					shortVarList = nullptr;
+					delete longVarList;
+					longVarList = nullptr;
+					delete floatVarList;
+					floatVarList = nullptr;
+					return false;
+				}
 			}
 
 			delete shortVarList;
@@ -79,18 +102,18 @@ namespace TES3 {
 	}
 
 	void ScriptCompiler::linkVariable(Variable* var) {
-		if (scriptLineBuffer && localVariableCount < 4096) {
-			while (localVariableCount < 4096) {
+		if (scriptLineBuffer && scriptHeader.localVarNameSize < 4096) {
+			while (scriptHeader.localVarNameSize < 4096) {
 				if (!isalnum(*var)) {
 					if (*var != '-' && *var != '_') {
-						scriptLineBuffer[localVariableCount++] = 0;
+						scriptLineBuffer[scriptHeader.localVarNameSize++] = 0;
 						return;
 					}
 				}
 
-				scriptLineBuffer[localVariableCount] = *var;
+				scriptLineBuffer[scriptHeader.localVarNameSize] = *var;
 				var = var + 1;
-				localVariableCount++;
+				scriptHeader.localVarNameSize++;
 			}
 		}
 	}

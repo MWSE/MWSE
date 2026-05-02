@@ -14,8 +14,8 @@ namespace {
 
 extern "C" HSV sRGBtoHSV(RGB c) {
 	HSV result = oklab::srgb_to_okhsv(c);
-	// Oklab uses hue in [0, 1]. Remap to [0, 360].
-	result.h = result.h * 360;
+	// Oklab uses hue in [0, 1]. Remap  and wrap to [0, 360).
+	result.h = std::fmod(result.h * 360.f, 360.f);
 	return result;
 }
 

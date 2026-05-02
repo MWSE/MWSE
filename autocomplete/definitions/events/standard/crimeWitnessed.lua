@@ -47,6 +47,11 @@ return {
 			readOnly = true,
 			description = "The mobile actor of the reference that witnessed the crime.",
 		},
+		["crimeEvent"] = {
+			type = "tes3crimeEvent",
+			readOnly = true,
+			description = "Direct access to the crime event data that was witnessed.",
+		},
 	},
 	filter = "type",
 	examples = {

@@ -43,7 +43,7 @@ namespace NI {
 		Pointer<ParticleModifier> particleModifiers; // 0xB4
 		Pointer<ParticleCollider> particleColliders; // 0xB8
 		bool staticBounds; // 0xBC
-		unsigned char firstTime; // 0xBD
+		bool firstTime; // 0xBD
 		float lastEmit; // 0xC0
 
 		nonstd::span<PerParticleData> getPerParticleData();

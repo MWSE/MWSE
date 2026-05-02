@@ -24,12 +24,16 @@ return {
 		["infoRefusal"] = 0,
 		["admireSuccess"] = 1,
 		["admireFail"] = 2,
-		["initimidateSuccess"] = 3,
-		["initimidateFail"] = 4,
+		["intimidateSuccess"] = 3,
+		["intimidateFail"] = 4,
 		["tauntSuccess"] = 5,
 		["tauntFail"] = 6,
 		["serviceRefusal"] = 7,
 		["bribeSuccess"] = 8,
 		["bribeFail"] = 9,
+
+		-- Deprecated. We keep these for backward compatibility.
+		["initimidateSuccess"] = 3,
+		["initimidateFail"] = 4,
 	},
 }

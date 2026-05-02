@@ -10,8 +10,19 @@ niGeometryData objects contain the geometry data necessary to render a niGeometr
 
 The distinction between niGeometry and niGeometryData (and other pairs of NetImmerse classes with similarly distinguished names, such as niTriShape and niTriShapeData) is that niGeometry stores data that cannot be shared when an object is instanced, and niGeometryData stores data that can be shared when an object is instanced. So, for example, when a scene graph is cloned, duplicate copies of the niGeometry objects in the original scene graph are created for the new scene graph, but new niGeometryData objects are not created. Instead, the newly-created niGeometry objects refer to the same niGeometryData objects referred to by the original scene graph.
 
-This type inherits the following: [niObject](../types/niObject.md)
+This type inherits the following: [niObject](../types/niObject.md).
 ## Properties
+
+### `activeVertices`
+<div class="search_terms" style="display: none">activevertices</div>
+
+*Read-only*. The array of active vertex position data. The length of the array is equal to `vertexCount`.
+
+**Returns**:
+
+* `result` ([tes3vector3](../types/tes3vector3.md)[])
+
+***
 
 ### `bounds`
 <div class="search_terms" style="display: none">bounds</div>
@@ -20,7 +31,7 @@ The model-space bounding sphere of the object.
 
 **Returns**:
 
-* `result` (niBound)
+* `result` ([niBound](../types/niBound.md))
 
 ***
 
@@ -224,7 +235,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

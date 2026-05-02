@@ -4,7 +4,7 @@ return {
 	arguments = {
 		{ name = "id", type = "tes3.gmst|integer|string" },
 	},
-	returns = { name = "gameSetting", type = "tes3gameSetting" },
+	returns = { name = "gameSetting", type = "tes3gameSetting?" },
 	examples = {
 		["retrieveGMST"] = {
 			title = "Retrieve value of a GMST",

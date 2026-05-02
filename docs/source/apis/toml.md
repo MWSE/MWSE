@@ -15,6 +15,8 @@ Provides support for interacting with toml data through an extended toml.lua mod
 
 Decode string representing toml into a table.
 
+[Official documentation](https://github.com/LebJe/toml.lua#decoding).
+
 ```lua
 local result = toml.decode(input)
 ```
@@ -33,6 +35,8 @@ local result = toml.decode(input)
 <div class="search_terms" style="display: none">encode</div>
 
 Encodes a table into a toml string.
+
+[Official documentation](https://github.com/LebJe/toml.lua#encoding).
 
 ```lua
 local result = toml.encode(input)

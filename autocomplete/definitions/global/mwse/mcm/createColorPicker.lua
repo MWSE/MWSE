@@ -26,19 +26,19 @@ The same is done by this function if you pass both `parent` and `data` arguments
 					description = "A variable for this setting. If not provided, this setting will try to create a variable using the `config` and `configKey` parameters, if possible."
 				},
 				{ name = "config", type = "table", optional = true, default = "`parentComponent.config`",
-					description = "The config to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. \z
+					description = "The config to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. \z
 							If provided, it will override the config stored in `parentComponent`. \z
 							Otherwise, the value in `parentComponent` will be used."
 				},
 				{ name = "defaultConfig", type = "table", optional = true, default = "`parentComponent.defaultConfig`",
-					description = "The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](./mwseMCMTableVariable.md) for this `Setting`. \z
+					description = "The `defaultConfig` to use when creating a [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) for this `Setting`. \z
 						If provided, it will override the `defaultConfig` stored in `parentComponent`. \z
 						Otherwise, the value in `parentComponent` will be used."
 				},
 				{ name = "configKey", type = "string|number", optional = true,
-					description = "The `configKey` used to create a new [`mwseMCMTableVariable`](./mwseMCMTableVariable.md). \z
+					description = "The `configKey` used to create a new [`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md). \z
 						If this is provided, along with a `config` (which may be inherited from the `parentComponent`), then a new \z
-							[`mwseMCMTableVariable`](./mwseMCMTableVariable.md) variable will be created for this setting."
+							[`mwseMCMTableVariable`](../types/mwseMCMTableVariable.md) variable will be created for this setting."
 				},
 				{ name = "converter", type = "fun(newValue: unknown): unknown", optional = true,
 					description = "A converter to use for this component's `variable`."

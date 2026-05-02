@@ -16,11 +16,12 @@ int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOr
 
 namespace TES3 {
 	struct Weather_vTable {
-		void * deleting;
-		void * simulate;
-		void * unloadAudio;
-		void * transition;
+		void(__thiscall* deleting)(Weather*, bool); // 0x0
+		void(__thiscall* simulate)(Weather*, float, float); // 0x4
+		void(__thiscall* unload)(Weather*); // 0x8
+		void(__thiscall* transition)(Weather*); // 0xC
 	};
+	static_assert(sizeof(Weather_vTable) == 0x10, "TES3::Weather's vtable failed size validation");
 
 	struct Weather {
 		Weather_vTable * vTable; // 0x0
@@ -45,7 +46,7 @@ namespace TES3 {
 		Vector3 sunSunsetCol; // 0xBC
 		Vector3 sunNightCol; // 0xC8
 		Vector3 sundiscSunsetCol; // 0xD4
-		int unknown_0xE0;
+		float unknown_0xE0;
 		Vector3 unknown_0xE4;
 		float cloudsMaxPercent; // 0xF0
 		float landFogDayDepth; // 0xF4

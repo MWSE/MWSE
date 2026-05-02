@@ -128,7 +128,7 @@ function utils.getOrInheritVariableData(setting)
 			restartRequiredMessage = setting.restartRequiredMessage
 		})
 	-- Variable provided? Let's update it for backwards compatibility.
-	elseif setting.variable ~= nil then
+	elseif type(setting.variable) == "table" then
 		setting.variable.defaultSetting = defaultSetting
 		setting.variable.converter = setting.variable.converter or setting.converter
 		--- @diagnostic disable-next-line: param-type-mismatch

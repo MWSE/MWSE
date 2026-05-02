@@ -8,7 +8,7 @@
 
 This modifier makes particles bounce off of a rectangle.
 
-This type inherits the following: [niParticleCollider](../types/niParticleCollider.md), [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md)
+This type inherits the following: [niParticleCollider](../types/niParticleCollider.md), [niParticleModifier](../types/niParticleModifier.md), [niObject](../types/niObject.md).
 ## Properties
 
 ### `collisionPoint`
@@ -253,7 +253,7 @@ local success = myObject:saveBinary(path)
 
 **Parameters**:
 
-* `path` (string): The path to write the file at, relative to the Morrowind installation folder.
+* `path` (string): The path to write the file at, relative to the Morrowind installation folder. The `.nif` extension needs to be specified manually.
 
 **Returns**:
 

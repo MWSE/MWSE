@@ -1,6 +1,7 @@
 #include "TES3Vectors.h"
 
 #include "NIColor.h"
+#include "NINode.h"
 #include "NIQuaternion.h"
 
 #include "MathUtil.h"
@@ -9,6 +10,12 @@ namespace TES3 {
 	//
 	// Vector2
 	//
+	const Vector2 Vector2::UNIT_X = { 1.0f, 0.0f };
+	const Vector2 Vector2::UNIT_NEG_X = { -1.0f, 0.0f };
+	const Vector2 Vector2::UNIT_Y = { 0.0f, 1.0f };
+	const Vector2 Vector2::UNIT_NEG_Y = { 0.0f, -1.0f };
+	const Vector2 Vector2::ONES = { 1.0f, 1.0f };
+	const Vector2 Vector2::ZEROES = { 0.0f, 0.0f };
 
 	Vector2::Vector2() :
 		x(0),
@@ -103,6 +110,14 @@ namespace TES3 {
 		return *this;
 	}
 
+	Vector2 Vector2::min(const Vector2& other) const {
+		return Vector2(std::min(x, other.x), std::min(y, other.y));
+	}
+
+	Vector2 Vector2::max(const Vector2& other) const {
+		return Vector2(std::max(x, other.x), std::max(y, other.y));
+	}
+
 	float Vector2::length() const {
 		return sqrt(x * x + y * y);
 	}
@@ -135,6 +150,10 @@ namespace TES3 {
 	const Vector3 Vector3::UNIT_NEG_Y = { 0.0f, -1.0f, 0.0f };
 	const Vector3 Vector3::UNIT_Z = { 0.0f, 0.0f, 1.0f };
 	const Vector3 Vector3::UNIT_NEG_Z = { 0.0f, 0.0f, -1.0f };
+	const Vector3 Vector3::ONES = { 1.0f, 1.0f, 1.0f };
+	const Vector3 Vector3::ZEROES = { 0.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::MIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	const Vector3 Vector3::MAX = { FLT_MAX, FLT_MAX, FLT_MAX };
 
 	Vector3::Vector3() :
 		x(0.0f),
@@ -166,12 +185,14 @@ namespace TES3 {
 
 	Vector3::Vector3(sol::object object) {
 		if (object.is<NI::Color>()) {
-			*this = NI::Color(object.as<NI::Color>());
+			*this = Vector3(object.as<NI::Color>());
 		}
 		else if (object.is<sol::table>()) {
-			*this = NI::Color(object.as<sol::table>());
+			*this = Vector3(object.as<sol::table>());
 		}
-		throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
+		else {
+			throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
+		}
 	}
 
 	Vector3& Vector3::operator=(const NI::Color& vector) {
@@ -188,7 +209,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Vector3& Vector3::operator=(const sol::object object) {
+	Vector3& Vector3::operator=(const sol::object& object) {
 		if (object.is<NI::Color>()) {
 			*this = object.as<NI::Color>();
 		}
@@ -196,7 +217,7 @@ namespace TES3 {
 			*this = object.as<sol::table>();
 		}
 		else {
-			throw std::invalid_argument("Could not convert lua object to NiColor.");
+			throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
 		}
 		return *this;
 	}
@@ -227,7 +248,7 @@ namespace TES3 {
 
 	Vector3 Vector3::operator-() const {
 		return Vector3(-x, -y, -z);
-	};
+	}
 
 	Vector3 Vector3::operator*(const Vector3& vec3) const {
 		return Vector3(x * vec3.x, y * vec3.y, z * vec3.z);
@@ -260,6 +281,14 @@ namespace TES3 {
 
 	Vector3 Vector3::copy() const {
 		return *this;
+	}
+
+	Vector3 Vector3::min(const Vector3& other) const {
+		return Vector3(std::min(x, other.x), std::min(y, other.y), std::min(z, other.z));
+	}
+
+	Vector3 Vector3::max(const Vector3& other) const {
+		return Vector3(std::max(x, other.x), std::max(y, other.y), std::max(z, other.z));
 	}
 
 	NI::Color Vector3::toNiColor() const {
@@ -366,6 +395,16 @@ namespace TES3 {
 		return Vector3();
 	}
 
+	bool Vector3::canConvertFrom(sol::table& table) {
+		sol::optional<float> x = table["x"];
+		if (!x) x = table[1];
+		sol::optional<float> y = table["y"];
+		if (!y) y = table[2];
+		sol::optional<float> z = table["z"];
+		if (!z) z = table[3];
+		return x && y && z;
+	}
+
 	//
 	// Vector4
 	//
@@ -437,6 +476,14 @@ namespace TES3 {
 		return *this;
 	}
 
+	Vector4 Vector4::min(const Vector4& other) const {
+		return Vector4(std::min(x, other.x), std::min(y, other.y), std::min(z, other.z), std::min(w, other.w));
+	}
+
+	Vector4 Vector4::max(const Vector4& other) const {
+		return Vector4(std::max(x, other.x), std::max(y, other.y), std::max(z, other.z), std::max(w, other.w));
+	}
+
 	float Vector4::distance(const Vector4* vec4) const {
 		float dx = x - vec4->x;
 		float dy = y - vec4->y;
@@ -472,9 +519,9 @@ namespace TES3 {
 	const auto TES3_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(Matrix33*, const Matrix33*)>(0x6E7ED0);
 	const auto TES3_Matrix33_addMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E7F60);
 	const auto TES3_Matrix33_subtractMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E8000);
-	const auto TES3_Matrix33_multiplyMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, const Matrix33*)>(0x6E80A0);
+	const auto TES3_Matrix33_multiplyMatrix = reinterpret_cast<Matrix33 * (__thiscall*)(const Matrix33*, Matrix33*, const Matrix33*)>(0x6E80A0);
 	const auto TES3_Matrix33_multiplyVector = reinterpret_cast<Vector3 * (__thiscall*)(const Matrix33*, Vector3*, const Vector3*)>(0x6E8230);
-	const auto TES3_Matrix33_multiplyScalar = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, Matrix33*, float)>(0x6E81B0);
+	const auto TES3_Matrix33_multiplyScalar = reinterpret_cast<Matrix33 * (__thiscall*)(const Matrix33*, Matrix33*, float)>(0x6E81B0);
 
 	const auto TES3_Matrix33_toIdentity = reinterpret_cast<void(__thiscall*)(Matrix33*)>(0x6E7CF0);
 	const auto TES3_Matrix33_toRotationX = reinterpret_cast<void(__thiscall*)(Matrix33*, float)>(0x6E7D20);
@@ -493,6 +540,12 @@ namespace TES3 {
 	const auto TES3_Matrix33_reorthogonalize = reinterpret_cast<bool(__thiscall*)(Matrix33*)> (0x6E84A0);
 
 	const auto NI_Quaternion_FromRotation = reinterpret_cast<TES3::Matrix33 * (__thiscall*)(const NI::Quaternion*, TES3::Matrix33*)>(0x6FBEF0);
+
+	const Matrix33 Matrix33::IDENTITY = { 
+		1.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 1.0f 
+	};
 
 	Matrix33::Matrix33() : m0(), m1(), m2() {
 
@@ -544,7 +597,7 @@ namespace TES3 {
 		return result;
 	}
 
-	Matrix33 Matrix33::operator*(const Matrix33& matrix) {
+	Matrix33 Matrix33::operator*(const Matrix33& matrix) const {
 		Matrix33 result;
 		TES3_Matrix33_multiplyMatrix(this, &result, &matrix);
 		return result;
@@ -556,7 +609,7 @@ namespace TES3 {
 		return result;
 	}
 
-	Matrix33 Matrix33::operator*(float scalar) {
+	Matrix33 Matrix33::operator*(float scalar) const {
 		Matrix33 result;
 		TES3_Matrix33_multiplyScalar(this, &result, scalar);
 		return result;
@@ -705,7 +758,7 @@ namespace TES3 {
 		NI_Quaternion_FromRotation(q, this);
 	}
 
-	NI::Quaternion Matrix33::toQuaternion() {
+	NI::Quaternion Matrix33::toQuaternion() const {
 		NI::Quaternion result;
 		result.fromRotation(this);
 		return result;
@@ -740,11 +793,18 @@ namespace TES3 {
 		m0.z = up.x;
 		m1.z = up.y;
 		m2.z = up.z;
-	};
+	}
 
 	//
 	// Matrix44
 	//
+
+	const Matrix44 Matrix44::IDENTITY = { 
+		1.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 1.0f 
+	};
 
 	Matrix44::Matrix44() :
 		m0(),
@@ -880,6 +940,13 @@ namespace TES3 {
 
 	}
 
+	BoundingBox::BoundingBox(const BoundingBox& bbox) :
+		minimum(bbox.minimum),
+		maximum(bbox.maximum)
+	{
+
+	}
+
 	BoundingBox::BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) :
 		minimum(minX, minY, minZ),
 		maximum(maxX, maxY, maxZ)
@@ -930,6 +997,26 @@ namespace TES3 {
 			Vector3(maximum.x, minimum.y, minimum.z),
 			Vector3(maximum.x, maximum.y, maximum.z),
 		};
+	}
+
+	void BoundingBox::clampPoint(Vector3& point, const Vector3& origin) const {
+		const auto min = minimum + origin;
+		const auto max = maximum + origin;
+		//const auto min = minimum;
+		//const auto max = maximum;
+		point.x = std::clamp(point.x, min.x, max.x);
+		point.y = std::clamp(point.y, min.y, max.y);
+		point.z = std::clamp(point.z, min.z, max.z);
+	}
+
+	void BoundingBox::initialize() {
+		minimum = Vector3::MAX;
+		maximum = Vector3::MIN;
+	}
+
+	bool BoundingBox::hasUninitializedData() const {
+		return minimum.x == Vector3::MAX.x || minimum.y == Vector3::MAX.y || minimum.z == Vector3::MAX.z
+			|| maximum.x == Vector3::MIN.x || maximum.y == Vector3::MIN.y || maximum.z == Vector3::MIN.z;
 	}
 
 	//

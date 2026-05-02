@@ -11,8 +11,8 @@
 namespace mwse::lua {
 	void bindTES3CombatSession() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Start our usertype.
 		auto usertypeDefinition = state.new_usertype<TES3::CombatSession>("tes3combatSession");
@@ -20,9 +20,10 @@ namespace mwse::lua {
 
 		// Basic property binding.
 		usertypeDefinition["alchemyPriority"] = &TES3::CombatSession::alchemyPriority;
+		usertypeDefinition["castableSpells"] = sol::readonly_property(&TES3::CombatSession::spells);
 		usertypeDefinition["distance"] = &TES3::CombatSession::combatDistance;
 		usertypeDefinition["mobile"] = sol::readonly_property(&TES3::CombatSession::parentActor);
-		usertypeDefinition["lastUseTimestamp"] = &TES3::CombatSession::lastUseTimestamp;
+		usertypeDefinition["lastUseTimestamp"] = &TES3::CombatSession::mcpAlchemyLastUseTimestamp;
 		usertypeDefinition["potionUseFlag"] = &TES3::CombatSession::potionUseFlag;
 		usertypeDefinition["selectedAction"] = &TES3::CombatSession::nextAction;
 		usertypeDefinition["selectedItem"] = &TES3::CombatSession::selectedItem;

@@ -16,8 +16,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table DamageHandToHandEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		if (m_MobileActor) {
@@ -30,9 +30,15 @@ namespace mwse::lua::event {
 			eventData["attackerReference"] = m_Attacker->reference;
 		}
 
+		if (m_Source) {
+			eventData["source"] = m_Source;
+		}
+
 		eventData["fatigueDamage"] = m_FatigueDamage;
 
 		return eventData;
 	}
+
 	TES3::MobileActor* DamageHandToHandEvent::m_Attacker = nullptr;
+	const char* DamageHandToHandEvent::m_Source = nullptr;
 }

@@ -67,15 +67,20 @@ namespace TES3 {
 		//
 		// Other related this-call functions.
 		//
-		
+
 		float calculateArmorRating(MobileActor * actor);
 		float calculateArmorRatingForNPC(NPC * npc);
 		const char * getSlotName();
 		int getWeightClass();
 
+		void setupBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstPerson);
+
 		//
 		// Custom functions.
 		//
+
+		void addActiveBodyParts(BodyPartManager* bodyPartManager, bool isFemale, bool isFirstperson);
+		void removeBodyPartsUnder(BodyPartManager* bodyPartManager) const;
 
 		float getArmorScalar() const;
 
@@ -88,6 +93,8 @@ namespace TES3 {
 
 		float calculateArmorRating_lua(sol::object actor);
 
+		bool isClosedHelmet() const;
+		bool isUsableByBeasts() const;
 	};
 	static_assert(sizeof(Armor) == 0xC4, "TES3::Armor failed size validation");
 

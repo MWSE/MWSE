@@ -548,6 +548,18 @@ namespace mwse::string {
 		return string.compare(string.size() - substring.size(), substring.size(), substring) == 0;
 	}
 
+	void strip_start(std::string& string, const std::string_view& substring) {
+		if (starts_with(string, substring)) {
+			string.erase(0, substring.length());
+		}
+	}
+
+	void strip_end(std::string& string, const std::string_view& substring) {
+		if (ends_with(string, substring)) {
+			string.erase(string.length() - substring.length());
+		}
+	}
+
 	bool replace(std::string& str, const std::string_view from, const std::string_view to) {
 		size_t start_pos = str.find(from);
 		if (start_pos == std::string::npos)

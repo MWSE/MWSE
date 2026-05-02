@@ -17,7 +17,7 @@ A function to call when the tooltip has been created. Passes context information
 
 **Returns**:
 
-* `result` (fun(params: [tes3ui.showMessageMenu.params.tooltip.callbackData](../types/tes3ui.showMessageMenu.params.tooltip.callbackData.md)))
+* `result` (nil, fun(params: [tes3ui.showMessageMenu.params.tooltip.callbackData](../types/tes3ui.showMessageMenu.params.tooltip.callbackData.md)))
 
 ***
 
@@ -28,7 +28,7 @@ The header at the top of the tooltip. Can also be a function that returns a stri
 
 **Returns**:
 
-* `result` (string, fun(callbackParams: table): string, nil)
+* `result` (nil, string, fun(callbackParams: table): string, nil)
 
 ***
 
@@ -39,5 +39,5 @@ The text in the body of the tooltip. Can also be a function that returns a strin
 
 **Returns**:
 
-* `result` (string, fun(callbackParams: table): string, nil)
+* `result` (nil, string, fun(callbackParams: table): string, nil)
 

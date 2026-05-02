@@ -11,7 +11,7 @@ return {
 		["menuMode"] = {
 			type = "boolean",
 			readOnly = true,
-			description = "Always true for this event. This parameter is only useful when registering the same callback for menuEnter and menuExit events.",
+			description = "Always true for this event, indicating that menu mode is on. This parameter is only useful when registering the same callback for menuEnter and menuExit events.",
 		},
 	},
 	filter = "menu.name",

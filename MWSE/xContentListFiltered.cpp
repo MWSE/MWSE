@@ -99,7 +99,7 @@ namespace mwse {
 		long type = 0;
 		long value = 0;
 		float weight = 0;
-		char* name = NULL;
+		const char* name = NULL;
 		TES3::IteratedList<TES3::ItemStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.

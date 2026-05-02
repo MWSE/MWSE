@@ -17,8 +17,8 @@ namespace mwse::lua::event {
 	}
 
 	sol::table DamagedHandToHandEvent::createEventTable() {
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();
 
 		if (m_MobileActor) {
@@ -29,6 +29,10 @@ namespace mwse::lua::event {
 		if (DamageHandToHandEvent::m_Attacker) {
 			eventData["attacker"] = DamageHandToHandEvent::m_Attacker;
 			eventData["attackerReference"] = DamageHandToHandEvent::m_Attacker->reference;
+		}
+
+		if (DamageHandToHandEvent::m_Source) {
+			eventData["source"] = DamageHandToHandEvent::m_Source;
 		}
 
 		eventData["fatigueDamage"] = m_FatigueDamage;

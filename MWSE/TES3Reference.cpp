@@ -4,8 +4,11 @@
 #include "LuaUtil.h"
 
 #include "LuaActivateEvent.h"
+#include "LuaActivationTargetChangedEvent.h"
 #include "LuaBodyPartsUpdatedEvent.h"
 #include "LuaDisarmTrapEvent.h"
+#include "LuaLeveledCreaturePickedEvent.h"
+#include "LuaLeveledItemPickedEvent.h"
 #include "LuaPickLockEvent.h"
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
@@ -62,6 +65,8 @@ namespace TES3 {
 
 	const auto TES3_Reference_dtor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E45C0);
 	void Reference::dtor() {
+		cleanupAssociatedData();
+
 		TES3_Reference_dtor(this);
 	}
 
@@ -69,7 +74,7 @@ namespace TES3 {
 	void Reference::activate(Reference* activator, int unknown) {
 		// If our event data says to block, don't let the object activate.
 		if (mwse::lua::event::ActivateEvent::getEventEnabled() && !isTemporaryInventoryScriptReference()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::ActivateEvent(activator, this));
 			if (response.get_type() == sol::type::table) {
 				sol::table eventData = response;
@@ -167,7 +172,7 @@ namespace TES3 {
 		TES3_Reference_deleteDynamicLightAttachment(this);
 	}
 
-	LightAttachmentNode* Reference::getAttachedDynamicLight() {
+	LightAttachmentNode* Reference::getAttachedDynamicLight() const {
 		auto attachment = static_cast<TES3::LightAttachment*>(getAttachment(TES3::AttachmentType::Light));
 		return attachment ? attachment->data : nullptr;
 	}
@@ -213,7 +218,7 @@ namespace TES3 {
 		return attachment->data;
 	}
 
-	NI::Pointer<NI::Light> Reference::getAttachedNiLight() {
+	NI::Pointer<NI::Light> Reference::getAttachedNiLight() const {
 		auto dynamicLight = getAttachedDynamicLight();
 		if (dynamicLight) {
 			return dynamicLight->light;
@@ -244,7 +249,29 @@ namespace TES3 {
 
 		auto actor = getAttachedMobileActor();
 		if (actor && mwse::lua::event::BodyPartsUpdatedEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::BodyPartsUpdatedEvent(this, actor));
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::BodyPartsUpdatedEvent(this, actor));
+			if (eventData.valid()) {
+				if (eventData.get_or("updated", false)) {
+					const auto bodyPartManager = getAttachedBodyPartManager();
+					if (bodyPartManager == nullptr) {
+						return result;
+					}
+
+					bodyPartManager->updateForReference(this);
+					auto refNode = getSceneGraphNode();
+					refNode->updateProperties();
+					refNode->updateEffects();
+
+					const auto animationData = getAttachedAnimationData();
+					if (animationData) {
+						const auto headNode = bodyPartManager->getActiveBodyPartBaseNode(TES3::BodyPartManager::ActiveBodyPart::Layer::Base, TES3::BodyPartManager::ActiveBodyPart::Index::Head);
+						animationData->setHeadNode(headNode);
+					}
+
+					refNode->update();
+				}
+			}
 		}
 
 		return result;
@@ -416,6 +443,10 @@ namespace TES3 {
 	}
 
 	bool Reference::enable() {
+		if (getDeleted()) {
+			return false;
+		}
+
 		// Make sure we're not already enabled.
 		if (!getDisabled()) {
 			return false;
@@ -430,30 +461,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(false);
 		}
 
-		// Enable simulation for creatures/NPCs.
-		if (baseObject->objectType == TES3::ObjectType::Creature || baseObject->objectType == TES3::ObjectType::NPC) {
-			TES3::WorldController::get()->mobManager->addMob(this);
-			auto mobile = getAttachedMobileActor();
-			if (mobile) {
-				mobile->enterLeaveSimulationByDistance();
-			}
-		}
-		// Activators, containers, and statics need collision.
-		else if (baseObject->objectType == TES3::ObjectType::Activator || baseObject->objectType == TES3::ObjectType::Container || baseObject->objectType == TES3::ObjectType::Static) {
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
-		// Lights need to be configured.
-		else if (baseObject->objectType == TES3::ObjectType::Light) {
-			dataHandler->setDynamicLightingForReference(this);
-
-			// Non-carryable lights also need collision.
-			if (!static_cast<TES3::Light*>(baseObject)->getCanCarry()) {
-				dataHandler->updateCollisionGroupsForActiveCells();
-			}
-		}
-
-		// Ensure the reference receives scene lighting.
-		dataHandler->updateLightingForReference(this);
+		handleUpdate(false, true);
 
 		// Finally flag as modified.
 		setObjectModified(true);
@@ -475,32 +483,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(true);
 		}
 
-		// Leave simulation if we have a mobile.
-		if (baseObject->objectType == TES3::ObjectType::Creature || baseObject->objectType == TES3::ObjectType::NPC) {
-			auto mact = getAttachedMobileActor();
-			if (mact) {
-				auto worldController = TES3::WorldController::get();
-
-				// Remove the actor from simulation.
-				worldController->mobManager->removeMob(this);
-
-				// Cleanup related VFX and magic casted by this actor.
-				// This is normally done during actor death near 0x523D53 and is required when deleting actors.
-				worldController->vfxManager->removeForReference(this);
-				worldController->magicInstanceController->retireMagicCastedByActor(this);
-			}
-		}
-		// Update lights for objects.
-		else if (baseObject->objectType == TES3::ObjectType::Light) {
-			detachDynamicLightFromAffectedNodes();
-
-			// Also update collision.
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
-		// Update collision for everything else.
-		else {
-			dataHandler->updateCollisionGroupsForActiveCells();
-		}
+		handleUpdate(true, true);
 
 		// Clean up any sounds.
 		auto sound = baseObject->getSound();
@@ -553,7 +536,7 @@ namespace TES3 {
 
 		BIT_SET(objectFlags, ObjectFlag::NoCollisionBit, set);
 
-		if (updateCollisions) {
+		if (updateCollisions && getUpdatesCollisionGroups()) {
 			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
 		}
 	}
@@ -575,6 +558,40 @@ namespace TES3 {
 		setScale(1.0f);
 		setDeleted(true);
 		setObjectModified(true);
+	}
+
+	inline void clearIfThis(const Reference* self, Reference*& ptr) {
+		if (ptr == self) {
+			ptr = nullptr;
+		}
+	}
+
+	void Reference::cleanupAssociatedData() {
+		const auto tes3game = TES3::Game::get();
+		const auto worldController = TES3::WorldController::get();
+		const auto mobile = getAttachedMobileActor();
+
+		/*
+		* The game will, after this function returns, clean up the following on its own:
+		*	- Moved References
+		*	- Attachment data
+		*	- Scene node/loaded meshes
+		*	- For the mobile, it cleans up AI planners
+		*/
+
+		// Cleanup activation target.
+		if (tes3game) {
+			if (tes3game->playerTarget == this) {
+				// We use a function here to make sure the event triggers.
+				tes3game->setPlayerTarget(nullptr);
+			}
+			clearIfThis(this, tes3game->tooltipTarget);
+		}
+
+		// Clean up static event references.
+		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
+		clearIfThis(this, mwse::lua::event::LeveledItemPickedEvent::m_Reference);
+		clearIfThis(this, mwse::lua::event::ActivationTargetChangedEvent::ms_PreviousReference);
 	}
 
 	Vector3 * Reference::getPosition() {
@@ -744,7 +761,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::DisarmTrapEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::DisarmTrapEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && lockData->trap));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -804,7 +821,7 @@ namespace TES3 {
 
 			if (mwse::lua::event::PickLockEvent::getEventEnabled()) {
 				auto& luaManager = mwse::lua::LuaManager::getInstance();
-				auto stateHandle = luaManager.getThreadSafeStateHandle();
+				const auto stateHandle = luaManager.getThreadSafeStateHandle();
 				sol::table result = stateHandle.triggerEvent(new mwse::lua::event::PickLockEvent(this, lockData, disarmer, tool, toolItemData, chance, lockData && (lockData->lockLevel > 0)));
 				if (result.valid()) {
 					if (result.get_or("block", false)) {
@@ -844,13 +861,18 @@ namespace TES3 {
 		}
 	}
 
-	int Reference::getStackSize() {
+	int Reference::getStackSize() const {
 		TES3::ItemData* itemData = getAttachedItemData();
 		return itemData ? itemData->count : 1;
 	}
 
 	void Reference::setStackSize(int count) {
-		getOrCreateAttachedItemData()->count = count;
+		const auto itemData = getOrCreateAttachedItemData();
+		if (itemData == nullptr) {
+			throw std::runtime_error("This item does not support tes3itemData creation.");
+		}
+
+		itemData->count = count;
 	}
 
 	bool Reference::hasValidBaseObject() const {
@@ -880,6 +902,44 @@ namespace TES3 {
 		}
 	}
 
+	void Reference::handleUpdate(bool deletion, bool updateCollisions) {
+		const auto dataHandler = DataHandler::get();
+		const auto worldController = TES3::WorldController::get();
+
+		// Did we just make an actor? If so we need to add it to the mob manager.
+		if (baseObject->isMobileCapableActor()) {
+			worldController->mobManager->addMob(this);
+			const auto mact = getAttachedMobileActor();
+			if (mact && mact->isActor()) {
+				if (deletion) {
+					worldController->mobManager->removeMob(this);
+
+					// This is normally done on death, but needs to be forced for deletion.
+					worldController->magicInstanceController->retireMagicCastedByActor(this);
+				}
+				else {
+					mact->enterLeaveSimulation(true);
+				}
+			}
+		}
+
+		if (baseObject->objectType == TES3::ObjectType::Light) {
+			dataHandler->setDynamicLightingForReference(this);
+		}
+
+		if (updateCollisions && getUpdatesCollisionGroups()) {
+			dataHandler->updateCollisionGroupsForActiveCells();
+		}
+
+		// Retire any VFX attached to the reference.
+		if (deletion) {
+			worldController->vfxManager->removeForReference(this);
+		}
+
+		// Ensure the reference receives scene lighting.
+		dataHandler->updateLightingForReference(this);
+	}
+
 	const auto TES3_Reference_getSceneGraphNode = reinterpret_cast<NI::Node*(__thiscall*)(Reference*)>(0x4E81A0);
 	NI::Node * Reference::getSceneGraphNode() {
 		// Ignore for deleted objects.
@@ -887,8 +947,8 @@ namespace TES3 {
 			return nullptr;
 		}
 
-		auto previousNode = sceneNode;
-		auto newNode = TES3_Reference_getSceneGraphNode(this);
+		const auto previousNode = sceneNode;
+		const auto newNode = TES3_Reference_getSceneGraphNode(this);
 		const auto wasCreated = (previousNode == nullptr && newNode != nullptr);
 
 		if (wasCreated && mwse::lua::event::ReferenceSceneNodeCreatedEvent::getEventEnabled() && hasValidBaseObject()) {
@@ -938,9 +998,9 @@ namespace TES3 {
 
 		switch (baseObject->objectType) {
 		case ObjectType::Creature:
-			return static_cast<Creature*>(getBaseObject())->health <= 1;
+			return static_cast<const Creature*>(getBaseObject())->health <= 1;
 		case ObjectType::NPC:
-			return static_cast<NPC*>(getBaseObject())->health <= 1;
+			return static_cast<const NPC*>(getBaseObject())->health <= 1;
 		}
 
 		return {};
@@ -951,7 +1011,7 @@ namespace TES3 {
 		return this == TES3_Inventory_temporaryReference;
 	}
 
-	Inventory * Reference::getInventory() {
+	Inventory* Reference::getInventory() const {
 		// Only actors have inventories.
 		if (!baseObject->isActor()) {
 			return nullptr;
@@ -1240,7 +1300,7 @@ namespace TES3 {
 		return itemData;
 	}
 
-	LockAttachmentNode* Reference::getAttachedLockNode() {
+	LockAttachmentNode* Reference::getAttachedLockNode() const {
 		auto attachment = static_cast<TES3::LockAttachment*>(getAttachment(TES3::AttachmentType::Lock));
 		if (attachment) {
 			return attachment->data;
@@ -1256,7 +1316,7 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	BodyPartManager* Reference::getAttachedBodyPartManager() {
+	BodyPartManager* Reference::getAttachedBodyPartManager() const {
 		auto attachment = static_cast<TES3::BodyPartManagerAttachment*>(getAttachment(TES3::AttachmentType::BodyPartManager));
 		if (attachment) {
 			return attachment->data;
@@ -1272,7 +1332,7 @@ namespace TES3 {
 		return nullptr;
 	}
 
-	sol::table Reference::getAttachments_lua(sol::this_state ts) {
+	sol::table Reference::getAttachments_lua(sol::this_state ts) const {
 		sol::state_view state = ts;
 
 		sol::table result = state.create_table();
@@ -1321,7 +1381,7 @@ namespace TES3 {
 		}
 
 		// Does the base object support it?
-		if (!baseObject->getSupportsLuaData()) {
+		if (baseObject == nullptr || !baseObject->getSupportsLuaData()) {
 			return false;
 		}
 

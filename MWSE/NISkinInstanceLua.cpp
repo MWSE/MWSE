@@ -7,8 +7,8 @@
 namespace mwse::lua {
 	void bindNISkinInstance() {
 		// Get our lua state.
-		auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
-		auto& state = stateHandle.state;
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
 
 		// Binding for NI::SkinInstance.
 		{
@@ -64,9 +64,7 @@ namespace mwse::lua {
 			// Basic bindings.
 			usertypeDefinition["boneData"] = sol::readonly_property(&NI::SkinData::getBones);
 			usertypeDefinition["partition"] = &NI::SkinData::partition;
-			usertypeDefinition["rotation"] = &NI::SkinData::rotation;
-			usertypeDefinition["scale"] = &NI::SkinData::scale;
-			usertypeDefinition["translation"] = &NI::SkinData::translation;
+			usertypeDefinition["transform"] = &NI::SkinData::transform;
 		}
 
 		// Binding for NI::SkinData::BoneData.
@@ -77,9 +75,7 @@ namespace mwse::lua {
 
 			// Basic bindings.
 			usertypeDefinition["bounds"] = &NI::SkinData::BoneData::bounds;
-			usertypeDefinition["rotation"] = &NI::SkinData::BoneData::rotation;
-			usertypeDefinition["scale"] = &NI::SkinData::BoneData::scale;
-			usertypeDefinition["translation"] = &NI::SkinData::BoneData::translation;
+			usertypeDefinition["transform"] = &NI::SkinData::BoneData::transform;
 			usertypeDefinition["weights"] = sol::readonly_property(&NI::SkinData::BoneData::getWeights);
 		}
 

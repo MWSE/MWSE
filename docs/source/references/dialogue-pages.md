@@ -42,8 +42,8 @@ Index              | Value
 infoRefusal        | `0`
 admireSuccess      | `1`
 admireFail         | `2`
-initimidateSuccess | `3`
-initimidateFail    | `4`
+intimidateSuccess  | `3`
+intimidateFail     | `4`
 tauntSuccess       | `5`
 tauntFail          | `6`
 serviceRefusal     | `7`

@@ -24,6 +24,22 @@ namespace NI {
 		LastPropertyType = RendererSpecific,
 	};
 
+	struct PropertyState : Object {
+		AlphaProperty* alpha; // 0x8
+		FogProperty* fog; // 0xC
+		MaterialProperty* material; // 0x10
+		StencilProperty* stencil; // 0x14
+		TexturingProperty* texture; // 0x18
+		VertexColorProperty* vertexColor; // 0x1C
+		WireframeProperty* wireframe; // 0x20
+		ZBufferProperty* zBuffer; // 0x24
+		int unknown_0x28;
+		int unknown_0x2C;
+		int unknown_0x30;
+		void* rendererSpecific; // 0x34
+	};
+	static_assert(sizeof(PropertyState) == 0x38, "NI::PropertyState failed size validation");
+
 	struct Property_vTable : Object_vTable {
 		PropertyType (__thiscall * getType)(const Property*); // 0x2C
 		void (__thiscall * update)(Property*, float); // 0x30
@@ -31,7 +47,7 @@ namespace NI {
 	static_assert(sizeof(Property_vTable) == 0x34, "NI::Property's vtable failed size validation");
 
 	struct Property : ObjectNET {
-		unsigned short flags;
+		unsigned short flags; // 0x14
 
 		Property();
 		~Property();
@@ -47,6 +63,9 @@ namespace NI {
 		// Other function addresses.
 		//
 
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
+
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);
@@ -56,6 +75,17 @@ namespace NI {
 	static_assert(sizeof(Property) == 0x18, "NI::Property failed size validation");
 
 	struct AlphaProperty : Property {
+		enum {
+			ALPHA_MASK = 0x0001,
+			SRC_BLEND_MASK = 0x001E,
+			SRC_BLEND_POS = 1,
+			DEST_BLEND_MASK = 0x01E0,
+			DEST_BLEND_POS = 5,
+			TEST_ENABLE_MASK = 0x0200,
+			TEST_FUNC_MASK = 0x1C00,
+			TEST_FUNC_POS = 10,
+			ALPHA_NOSORTER_MASK = 0x2000
+		};
 		unsigned char alphaTestRef;
 
 		AlphaProperty();
@@ -79,14 +109,14 @@ namespace NI {
 	static_assert(sizeof(FogProperty) == 0x20, "NI::FogProperty failed size validation");
 
 	struct MaterialProperty : Property {
-		int index;
-		Color ambient;
-		Color diffuse;
-		Color specular;
-		Color emissive;
-		float shininess;
-		float alpha;
-		unsigned int revisionID;
+		int index; // 0x18
+		Color ambient; // 0x1C
+		Color diffuse; // 0x28
+		Color specular; // 0x34
+		Color emissive; // 0x40
+		float shininess; // 0x4C
+		float alpha; // 0x50
+		unsigned int revisionID; // 0x54
 
 		//
 		// Custom functions.
@@ -284,6 +314,18 @@ namespace NI {
 	static_assert(sizeof(TexturingProperty::BumpMap) == 0x2C, "NI::TexturingProperty::BumpMap failed size validation");
 
 	struct VertexColorProperty : Property {
+		enum SourceVertexMode {
+			SOURCE_IGNORE,
+			SOURCE_EMISSIVE,
+			SOURCE_AMBIENT_DIFFUSE,
+			SOURCE_NUM_MODES
+		};
+
+		enum LightingMode {
+			LIGHTING_E,
+			LIGHTING_E_A_D,
+			LIGHTING_NUM_MODES
+		};
 		int source; // 0x18
 		int lighting; // 0x1C
 

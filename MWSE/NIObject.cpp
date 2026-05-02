@@ -11,6 +11,7 @@
 #include "NIAnimationData.h"
 #include "NIAVObject.h"
 #include "NIBillboardNode.h"
+#include "NIBSAnimationNode.h"
 #include "NICamera.h"
 #include "NICollisionSwitch.h"
 #include "NIDirectionalLight.h"
@@ -35,6 +36,7 @@
 #include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
+#include "NIRenderedTexture.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -132,7 +134,7 @@ namespace NI {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (mwse::Configuration::KeepAllNetImmerseObjectsAlive) {
 			auto cacheHit = niObjectCache.find(this);
@@ -143,7 +145,7 @@ namespace NI {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		// Loop through RTTI information until we find a type we like.
 		auto currentRTTI = getRunTimeTypeInformation();
@@ -156,11 +158,20 @@ namespace NI {
 			case RTTIStaticPtr::NiAmbientLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AmbientLight*>(this)));
 				break;
+			case RTTIStaticPtr::NiAutoNormalParticles:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<AutoNormalParticles*>(this)));
+				break;
 			case RTTIStaticPtr::NiAVObject:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AVObject*>(this)));
 				break;
 			case RTTIStaticPtr::NiBillboardNode:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<BillboardNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSAnimationNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSAnimationNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSParticleNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSParticleNode*>(this)));
 				break;
 			case RTTIStaticPtr::NiCamera:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<Camera*>(this)));
@@ -246,6 +257,9 @@ namespace NI {
 			case RTTIStaticPtr::NiPointLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PointLight*>(this)));
 				break;
+			case RTTIStaticPtr::NiRenderedTexture:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<RenderedTexture*>(this)));
+				break;
 			case RTTIStaticPtr::NiPosData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PosData*>(this)));
 				break;
@@ -321,7 +335,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObject(const Object* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (!niObjectCache.empty()) {
 			// Clear any events that make use of this object.
@@ -340,7 +354,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		niObjectCache.clear();
 	}
 }

@@ -1,6 +1,9 @@
 return {
 	type = "method",
-	description = [[Unequips one or more items from the actor.]],
+	description = [[Unequips one or more items from the actor.
+
+!!! note
+	This method triggers the [unequipped](https://mwse.github.io/MWSE/events/unequipped/) event, unlike the `equip` method.]],
 	arguments = {{
 		name = "params",
 		type = "table",

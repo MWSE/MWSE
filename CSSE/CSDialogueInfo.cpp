@@ -26,24 +26,24 @@ namespace se::cs {
 		return TES3_DialogueInfo_filter(this, actor, reference, source, dialogue);
 	}
 
-	bool DialogueInfo::search(const std::string_view& needle, bool caseSensitive, std::regex* regex) const {
-		if (loadLinkNodes && loadLinkNodes->name && string::complex_contains(loadLinkNodes->name, needle, caseSensitive, regex)) {
+	bool DialogueInfo::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+		if (loadLinkNodes && loadLinkNodes->name && string::complex_contains(loadLinkNodes->name, needle, settings, regex)) {
 			return true;
 		}
 
-		if (text && string::complex_contains(text, needle, caseSensitive, regex)) {
+		if (text && string::complex_contains(text, needle, settings, regex)) {
 			return true;
 		}
 
-		if (resultsText && string::complex_contains(resultsText, needle, caseSensitive, regex)) {
+		if (resultsText && string::complex_contains(resultsText, needle, settings, regex)) {
 			return true;
 		}
 
-		if (filterCell && string::complex_contains(filterCell->getObjectID(), needle, caseSensitive, regex)) {
+		if (filterCell && string::complex_contains(filterCell->getObjectID(), needle, settings, regex)) {
 			return true;
 		}
 
-		if (filterActor && string::complex_contains(filterActor->getObjectID(), needle, caseSensitive, regex)) {
+		if (filterActor && string::complex_contains(filterActor->getObjectID(), needle, settings, regex)) {
 			return true;
 		}
 
@@ -56,12 +56,12 @@ namespace se::cs {
 			case Condition::Type::TypeNotFaction:
 			case Condition::Type::TypeNotClass:
 			case Condition::Type::TypeNotRace:
-				if (string::complex_contains(condition.compareValue.object->getObjectID(), needle, caseSensitive, regex)) {
+				if (string::complex_contains(condition.compareValue.object->getObjectID(), needle, settings, regex)) {
 					return true;
 				}
 				break;
 			case Condition::Type::TypeJournal:
-				if (condition.compareValue.dialogue->id && string::complex_contains(condition.compareValue.dialogue->id, needle, caseSensitive, regex)) {
+				if (condition.compareValue.dialogue->id && string::complex_contains(condition.compareValue.dialogue->id, needle, settings, regex)) {
 					return true;
 				}
 				break;
