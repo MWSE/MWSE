@@ -291,7 +291,7 @@ namespace TES3 {
 		}
 
 		iterator erase(const_iterator& position) {
-			iterator next(nullptr, this);
+			iterator next(sentinel(), this);
 
 			auto node = position.m_Node;
 			if (node && node != sentinel()) {
