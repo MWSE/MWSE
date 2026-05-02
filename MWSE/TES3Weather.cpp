@@ -264,6 +264,10 @@ namespace TES3 {
 				return 1.0f;
 			}
 
+			if (controller->nextWeather == this) {
+				return 1.0f;
+			}
+
 			return 1.0f - controller->transitionScalar;
 		}
 
