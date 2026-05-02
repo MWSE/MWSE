@@ -457,21 +457,6 @@ namespace TES3 {
 		return static_cast<unsigned char>(std::clamp<int>(static_cast<int>(getWeatherBaseVolume() * transitionScalar), 0, 250));
 	}
 
-	float WeatherController::getTransitionScalarForWeather(Weather* weather) const {
-		if (currentWeather == weather) {
-			if (!nextWeather || nextWeather->index == WEATHER_ID_INVALID) {
-				return 1.0f;
-			}
-			return 1.0f - transitionScalar;
-		}
-
-		if (nextWeather == weather) {
-			return transitionScalar;
-		}
-
-		return 1.0f;
-	}
-
 	const auto TES3_WeatherController_setBackgroundToFog = reinterpret_cast<void(__thiscall*)(WeatherController*, NI::Object*)>(0x43EB20);
 	void WeatherController::setBackgroundToFog(NI::Object* background) {
 		TES3_WeatherController_setBackgroundToFog(this, background);

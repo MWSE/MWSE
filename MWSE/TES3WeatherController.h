@@ -219,7 +219,6 @@ namespace TES3 {
 
 		unsigned char getWeatherBaseVolume() const;
 		unsigned char getWeatherScaledVolume(float transitionScalar) const;
-		float getTransitionScalarForWeather(Weather* weather) const;
 		void setBackgroundToFog(NI::Object* background);
 		void setFogColour(NI::Property* fogProperty);
 		void updateAmbient(float gameHour);
