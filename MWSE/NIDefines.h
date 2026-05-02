@@ -9,6 +9,8 @@ namespace NI {
 	struct BoundingVolume;
 	struct BoxBound;
 	struct BoxBoundingVolume;
+	struct BSAnimationNode;
+	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;
