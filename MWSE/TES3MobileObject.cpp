@@ -278,6 +278,14 @@ namespace TES3 {
 		return results;
 	}
 
+	bool MobileObject::getLightingValidFlag() const {
+		return getMobileObjectFlag(MobileActorFlag::LightingValid);
+	}
+
+	void MobileObject::setLightingValidFlag(bool value) {
+		setMobileObjectFlag(MobileActorFlag::LightingValid, value);
+	}
+
 	bool MobileObject::getMobToMobCollision() const {
 		if (actorFlags & TES3::MobileActorFlag::ActiveInSimulation) {
 			auto mobManager = TES3::WorldController::get()->mobManager;

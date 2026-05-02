@@ -470,6 +470,17 @@ This is the time measured in hours from the beginning of the game when the actor
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `effectAttributes`
 <div class="search_terms" style="display: none">effectattributes</div>
 
