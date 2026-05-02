@@ -97,7 +97,8 @@ namespace TES3 {
 		bool getSupportsAshCloud() const;
 		bool getSupportsBlightCloud() const;
 		bool getSupportsBlizzard() const;
-		static float calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity);
+		float getWindJitter() const;
+		static float calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);
 		void updateUnderwaterFrequency() const;

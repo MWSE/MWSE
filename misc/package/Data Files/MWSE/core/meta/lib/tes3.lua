@@ -392,6 +392,8 @@ function tes3.addTopic(params) end
 --- 
 --- `snowflakesMax?`: number — *Optional*. The maximum amount of snowflake particles.
 --- 
+--- `windJitterScalar?`: number — *Default*: `1`. The significance that wind speed has on randomized cloud movement.
+--- 
 --- `supportsParticleLerp?`: boolean — *Default*: `false`. If true, particle lerping is enabled for this weather.
 --- 
 --- `supportsAshCloud?`: boolean — *Default*: `false`. If true, this weather can support ash clouds.
@@ -444,6 +446,7 @@ function tes3.addWeather(params) end
 --- @field snowThreshold? number *Optional*. The transition threshold to be considered snowing.
 --- @field raindropsMax? number *Optional*. The maximum amount of raindrop particles.
 --- @field snowflakesMax? number *Optional*. The maximum amount of snowflake particles.
+--- @field windJitterScalar? number *Default*: `1`. The significance that wind speed has on randomized cloud movement.
 --- @field supportsParticleLerp? boolean *Default*: `false`. If true, particle lerping is enabled for this weather.
 --- @field supportsAshCloud? boolean *Default*: `false`. If true, this weather can support ash clouds.
 --- @field supportsBlightCloud? boolean *Default*: `false`. If true, this weather can support blight clouds.

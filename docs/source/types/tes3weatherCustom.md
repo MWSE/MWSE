@@ -517,6 +517,17 @@ The weather's underwater sound state flag. This value will be `true`, while the 
 
 ***
 
+### `windJitterScalar`
+<div class="search_terms" style="display: none">windjitterscalar</div>
+
+The scale that randomized wind jitter [-0.5, 0.5] is multiplied against.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `windSpeed`
 <div class="search_terms" style="display: none">windspeed</div>
 

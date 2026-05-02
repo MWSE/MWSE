@@ -196,6 +196,12 @@ return {
 				description = "The maximum amount of snowflake particles."
 			},
 			{
+				name = "windJitterScalar",
+				type = "number",
+				default = 1.0,
+				description = "The significance that wind speed has on randomized cloud movement."
+			},
+			{
 				name = "supportsParticleLerp",
 				type = "boolean",
 				optional = true,

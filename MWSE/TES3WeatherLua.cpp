@@ -128,6 +128,7 @@ namespace mwse::lua {
 			usertypeDefinition["supportsBlightCloud"] = &TES3::WeatherCustom::supportsBlightCloud;
 			usertypeDefinition["supportsBlizzard"] = &TES3::WeatherCustom::supportsBlizzard;
 			usertypeDefinition["supportsParticleLerping"] = &TES3::WeatherCustom::supportsParticleLerping;
+			usertypeDefinition["windJitterScalar"] = &TES3::WeatherCustom::windJitterScalar;
 		}
 
 		// Binding for TES3::WeatherFoggy

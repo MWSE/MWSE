@@ -12,7 +12,9 @@ namespace TES3 {
 
 	WeatherCustom::WeatherCustom() : Weather() {
 		vTable = &VirtualTable;
-		supportsParticleLerping = false;
+
+		windJitterScalar = 1.0f;
+
 		supportsParticleLerping = false;
 		supportsAshCloud = false;
 		supportsBlightCloud = false;

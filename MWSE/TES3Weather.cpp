@@ -22,6 +22,8 @@
 
 #include "LuaObjectInvalidatedEvent.h"
 
+#include "RngUtil.h"
+
 namespace TES3 {
 	//
 	// Weather
@@ -314,18 +316,30 @@ namespace TES3 {
 		}
 	}
 
-	float Weather::calculateNextWindSpeed(float windSpeed, const Vector3& previousVelocity) {
+	float Weather::getWindJitter() const {
+		switch (index) {
+		case WeatherType::Rain: return 0.5f;
+		}
+
+		if (isCustomWeather()) {
+			return static_cast<const WeatherCustom*>(this)->windJitterScalar;
+		}
+
+		return 1.0f;
+	}
+
+	float Weather::calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity) {
 		const auto cappedScaledWindSpeed = std::min(windSpeed * 8.0f, 70.0f);
 		auto nextWindSpeed = previousVelocity == Vector3::ZEROES ? cappedScaledWindSpeed : previousVelocity.length();
 		if (nextWindSpeed == 0.0f) {
 			nextWindSpeed = cappedScaledWindSpeed;
 		}
 
-		const auto randomValue = mwse::tes3::rand() % 0x7FFF;
-		const auto randomizedWindSpeed = ((randomValue * 0.000030518509f) - 0.5f) * cappedScaledWindSpeed + nextWindSpeed;
+		const auto randomizedWindSpeed = mwse::rng::getRandomFloat(-0.5f, 0.5f) * windJitterScalar * cappedScaledWindSpeed + nextWindSpeed;
 		if (randomizedWindSpeed > cappedScaledWindSpeed * 0.5f && randomizedWindSpeed < cappedScaledWindSpeed * 2.0f) {
 			nextWindSpeed = randomizedWindSpeed;
 		}
+
 		return nextWindSpeed;
 	}
 
@@ -336,7 +350,7 @@ namespace TES3 {
 
 		const auto isCurrentWeather = controller->currentWeather == this;
 		auto& velocity = isCurrentWeather ? controller->windVelocityCurrWeather : controller->windVelocityNextWeather;
-		const auto nextWindSpeed = calculateNextWindSpeed(windSpeed, velocity);
+		const auto nextWindSpeed = calculateNextWindSpeed(windSpeed, getWindJitter(), velocity);
 
 		Matrix33 cloudRotation;
 		cloudRotation.toRotation(0.0f, 0.0f, 0.0f, 1.0f);

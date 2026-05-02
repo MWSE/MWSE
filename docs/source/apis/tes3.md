@@ -535,7 +535,7 @@ local wasAdded = tes3.addTopic({ topic = ..., updateGUI = ... })
 This function creates a new custom weather. The weather can be scripted through lua. This function should be used inside the [`initialized`](https://mwse.github.io/MWSE/events/initialized/) event callback.
 
 ```lua
-local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayColor = ..., ambientNightColor = ..., ambientSunriseColor = ..., ambientSunsetColor = ..., cloudsMaxPercent = ..., cloudsSpeed = ..., fogDayColor = ..., fogNightColor = ..., fogSunriseColor = ..., fogSunsetColor = ..., glareView = ..., landFogDayDepth = ..., landFogNightDepth = ..., skyDayColor = ..., skyNightColor = ..., skySunriseColor = ..., skySunsetColor = ..., sunDayColor = ..., sundiscSunsetColor = ..., sunNightColor = ..., sunSunriseColor = ..., sunSunsetColor = ..., windSpeed = ..., cloudTexture = ..., ambientLoopSoundId = ..., overrideId = ..., rainThreshold = ..., stormThreshold = ..., snowThreshold = ..., raindropsMax = ..., snowflakesMax = ..., supportsParticleLerp = ..., supportsAshCloud = ..., supportsBlightCloud = ..., supportsBlizzard = ..., simulate = ..., transition = ..., unload = ... })
+local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayColor = ..., ambientNightColor = ..., ambientSunriseColor = ..., ambientSunsetColor = ..., cloudsMaxPercent = ..., cloudsSpeed = ..., fogDayColor = ..., fogNightColor = ..., fogSunriseColor = ..., fogSunsetColor = ..., glareView = ..., landFogDayDepth = ..., landFogNightDepth = ..., skyDayColor = ..., skyNightColor = ..., skySunriseColor = ..., skySunsetColor = ..., sunDayColor = ..., sundiscSunsetColor = ..., sunNightColor = ..., sunSunriseColor = ..., sunSunsetColor = ..., windSpeed = ..., cloudTexture = ..., ambientLoopSoundId = ..., overrideId = ..., rainThreshold = ..., stormThreshold = ..., snowThreshold = ..., raindropsMax = ..., snowflakesMax = ..., windJitterScalar = ..., supportsParticleLerp = ..., supportsAshCloud = ..., supportsBlightCloud = ..., supportsBlizzard = ..., simulate = ..., transition = ..., unload = ... })
 ```
 
 **Parameters**:
@@ -575,6 +575,7 @@ local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayCol
 	* `snowThreshold` (number): *Optional*. The transition threshold to be considered snowing.
 	* `raindropsMax` (number): *Optional*. The maximum amount of raindrop particles.
 	* `snowflakesMax` (number): *Optional*. The maximum amount of snowflake particles.
+	* `windJitterScalar` (number): *Default*: `1`. The significance that wind speed has on randomized cloud movement.
 	* `supportsParticleLerp` (boolean): *Default*: `false`. If true, particle lerping is enabled for this weather.
 	* `supportsAshCloud` (boolean): *Default*: `false`. If true, this weather can support ash clouds.
 	* `supportsBlightCloud` (boolean): *Default*: `false`. If true, this weather can support blight clouds.

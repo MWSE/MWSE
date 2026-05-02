@@ -6301,6 +6301,7 @@ namespace mwse::lua {
 		weather->snowThreshold = getOptionalParam<float>(params, "snowThreshold");
 		weather->raindropsMax = getOptionalParam<float>(params, "raindropsMax");
 		weather->snowflakesMax = getOptionalParam<float>(params, "snowflakesMax");
+		weather->windJitterScalar = getOptionalParam<float>(params, "windJitterScalar", 1.0f);
 		weather->supportsParticleLerping = getOptionalParam<bool>(params, "supportsParticleLerp", false);
 		weather->supportsAshCloud = getOptionalParam<bool>(params, "supportsAshCloud", false);
 		weather->supportsBlightCloud = getOptionalParam<bool>(params, "supportsBlightCloud", false);

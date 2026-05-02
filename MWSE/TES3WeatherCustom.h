@@ -15,6 +15,7 @@ namespace TES3 {
 		sol::optional<float> snowThreshold;
 		sol::optional<float> raindropsMax;
 		sol::optional<float> snowflakesMax;
+		float windJitterScalar;
 		bool supportsParticleLerping;
 		bool supportsAshCloud;
 		bool supportsBlightCloud;
