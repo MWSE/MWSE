@@ -183,18 +183,11 @@ namespace TES3 {
 	}
 
 	void Inventory::updateInternalLight(MobileActor* mobile) {
-		if (mobile) {
-			const auto dataHandler = DataHandler::get();
-			const auto magicEffects = dataHandler && dataHandler->nonDynamicData ? dataHandler->nonDynamicData->magicEffects : nullptr;
-			if (magicEffects) {
-				for (const auto& activeEffect : mobile->activeMagicEffects) {
-					const auto magicEffect = magicEffects->getEffectObject(activeEffect.magicEffectID);
-					if (magicEffect && magicEffect->getHasActorLighting()) {
-						return;
-					}
-				}
-			}
+		if (mobile && mobile->hasEffectWithActorLighting()) {
+			return;
+		}
 
+		if (mobile) {
 			mobile->removeLight();
 		}
 
@@ -204,15 +197,17 @@ namespace TES3 {
 			}
 
 			const auto light = static_cast<Light*>(itemStack->object);
-			if (!light->getCanCarry()) {
-				light->setupLightForMobile(mobile);
-				internalLight = light;
+			if (light->getCanCarry()) {
+				continue;
 			}
+
+			light->setupLightForMobile(mobile);
+			internalLight = light;
 		}
 
 		if (mobile && mobile->lightMagicEffectData && mobile->lightMagicEffectData->light) {
 			mobile->lightMagicEffectData->light->update(0.0f, true, true);
-			mobile->actorFlags &= ~0x80;
+			mobile->actorFlags &= ~0x80; // TODO: Name and create helper functions for this flag.
 		}
 	}
 
