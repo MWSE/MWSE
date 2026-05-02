@@ -6,4 +6,5 @@
 --- This table is passed to the `transition` callback function in a custom weathers.
 --- @class tes3weatherTransitionEventData
 --- @field direction number *Read-only*. A simple multiplier to indicate the direction of the transition, relative to the event's weather. A positive value means the transition is to the weather. A negative number means it is transitioning away from the weather. A value of 0 means it is transitioning to itself.
+--- @field otherWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The weather being transitioned to or from.
 --- @field weather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The weather currently being transition.

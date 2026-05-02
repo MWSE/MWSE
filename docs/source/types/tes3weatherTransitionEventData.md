@@ -21,6 +21,17 @@ This table is passed to the `transition` callback function in a custom weathers.
 
 ***
 
+### `otherWeather`
+<div class="search_terms" style="display: none">otherweather</div>
+
+*Read-only*. The weather being transitioned to or from.
+
+**Returns**:
+
+* `result` ([tes3weather](../types/tes3weather.md))
+
+***
+
 ### `weather`
 <div class="search_terms" style="display: none">weather</div>
 

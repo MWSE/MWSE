@@ -76,10 +76,19 @@ namespace TES3 {
 					direction = -1;
 				}
 
+				Weather* otherWeather = this;
+				if (controller && controller->nextWeather != this) {
+					otherWeather = controller->nextWeather;
+				}
+				else if (controller && controller->currentWeather != this) {
+					otherWeather = controller->currentWeather;
+				}
+
 				auto& state = stateHandle.getState();
 				auto e = state.create_table();
 				e["weather"] = this;
 				e["direction"] = direction;
+				e["otherWeather"] = otherWeather;
 				sol::protected_function_result result = transitionFunction(e);
 				if (!result.valid()) {
 					sol::error error = result;
