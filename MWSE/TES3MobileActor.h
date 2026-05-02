@@ -311,6 +311,7 @@ namespace TES3 {
 		bool hasBlightDisease() const;
 		bool hasCorprusDisease() const;
 		bool hasVampirism() const;
+		bool hasEffectWithActorLighting() const;
 
 		SpellList* getSpellList();
 		IteratedList<Spell*> * getCombatSpellList();
