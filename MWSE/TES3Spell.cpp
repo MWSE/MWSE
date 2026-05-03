@@ -254,7 +254,7 @@ namespace TES3 {
 		return getFirstIndexOfEffect(effectId) != -1;
 	}
 
-	int Spell::calculateBasePuchaseCost() const {
+	int Spell::calculateBasePurchaseCost() const {
 		return int(magickaCost * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSpellValueMult]->value.asFloat);
 	}
 

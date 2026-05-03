@@ -105,7 +105,7 @@ namespace TES3 {
 		int getFirstIndexOfEffect(int effectId) const;
 		bool hasEffect(int effectId) const;
 
-		int calculateBasePuchaseCost() const;
+		int calculateBasePurchaseCost() const;
 		float calculateCastChance_lua(sol::table params);
 		int getAutoCalcMagickaCost() const;
 

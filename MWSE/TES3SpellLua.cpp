@@ -75,7 +75,7 @@ namespace mwse::lua {
 		setUserdataForTES3Object(usertypeDefinition);
 
 		// Basic property binding.
-		usertypeDefinition["basePurchaseCost"] = sol::readonly_property(&TES3::Spell::calculateBasePuchaseCost);
+		usertypeDefinition["basePurchaseCost"] = sol::readonly_property(&TES3::Spell::calculateBasePurchaseCost);
 		usertypeDefinition["castType"] = &TES3::Spell::castType;
 		usertypeDefinition["effects"] = sol::readonly_property(&TES3::Spell::getEffects);
 		usertypeDefinition["flags"] = &TES3::Spell::spellFlags;
