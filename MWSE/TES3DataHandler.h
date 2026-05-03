@@ -124,7 +124,7 @@ namespace TES3 {
 		StlList<Cell*> * cells; // 0xB264
 		ObjectMapContainer<BaseObject>* allObjectsById; // 0xB268
 		ObjectMapContainer<Dialogue>* allDialoguesById; // 0xB26C
-		char dataFilesPath[260]; // 0xB270
+		char dataFilesPath[MAX_PATH]; // 0xB270
 		char unknown_0xB374;
 		bool isSavingOrLoading; // 0xB375
 		bool isModifyingMasters; // 0xB376

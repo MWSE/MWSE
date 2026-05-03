@@ -428,7 +428,7 @@ namespace mwse::lua {
 		float volume = getOptionalParam<float>(params, "volume", worldController->audioController->getMusicVolume());
 
 		if (relativePath) {
-			char path[260];
+			char path[MAX_PATH];
 
 			std::snprintf(path, sizeof(path), "Data Files/music/%s", relativePath);
 			event::MusicChangeTrackEvent::ms_Context = "lua";
