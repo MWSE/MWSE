@@ -49,15 +49,15 @@ namespace TES3 {
 				void(__thiscall* update)(Particle*, float, float); // 0xC
 			};
 			VirtualTable* vtbl;
-			Vector3 unknown_0x4;
+			Vector3 position; // 0x4
 			Vector3 velocity; // 0x10
 			WeatherController* weatherController; // 0x1C
-			NI::Pointer<NI::Node> rainRoot; // 0x20
+			NI::Pointer<NI::Node> parentNode; // 0x20
 			float remainingLifetime; // 0x24
 			float diameter; // 0x28
-			float unknown_0x2C;
-			NI::Pointer<NI::AVObject> object; // 0x30
-			bool unknown_0x34;
+			float surfaceZ;
+			NI::Pointer<NI::AVObject> particleNode; // 0x30
+			bool expired;
 
 			int getType() const;
 			bool create(WeatherController* wc, float radius, float heightMin, float heightMax);

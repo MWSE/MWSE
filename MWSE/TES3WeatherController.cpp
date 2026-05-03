@@ -391,8 +391,8 @@ namespace TES3 {
 			return false;
 		}
 		listActiveParticles.push_back(particle);
-		if (particle->object) {
-			particle->object->setAppCulled(false);
+		if (particle->particleNode) {
+			particle->particleNode->setAppCulled(false);
 		}
 
 		switch (type) {
@@ -793,7 +793,7 @@ namespace TES3 {
 				}
 
 				it = listActiveParticles.erase(it);
-				particle->object->setAppCulled(true);
+				particle->particleNode->setAppCulled(true);
 				listInactiveParticles.push_back(particle);
 				--activeCount;
 			}
@@ -849,13 +849,13 @@ namespace TES3 {
 			auto particle = *it;
 			particle->update(deltaTime, waterLevel);
 
-			if (!particle->unknown_0x34) {
+			if (!particle->expired) {
 				++it;
 				continue;
 			}
 
 			it = listActiveParticles.erase(it);
-			particle->object->setAppCulled(true);
+			particle->particleNode->setAppCulled(true);
 			listInactiveParticles.push_back(particle);
 
 			const auto particleType = particle->getType();

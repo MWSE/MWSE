@@ -26,8 +26,8 @@ namespace mwse::lua {
 			// Basic property binding.
 			usertypeDefinition["remainingLifetime"] = &WeatherParticle::remainingLifetime;
 			usertypeDefinition["diameter"] = &WeatherParticle::diameter;
-			usertypeDefinition["object"] = &WeatherParticle::object;
-			usertypeDefinition["rainRoot"] = sol::readonly_property(&WeatherParticle::rainRoot);
+			usertypeDefinition["object"] = &WeatherParticle::particleNode;
+			usertypeDefinition["rainRoot"] = sol::readonly_property(&WeatherParticle::parentNode);
 			usertypeDefinition["velocity"] = &WeatherParticle::velocity;
 			usertypeDefinition["weatherController"] = sol::readonly_property(&WeatherParticle::weatherController);
 		}
