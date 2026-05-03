@@ -2475,7 +2475,7 @@ namespace mwse::lua {
 			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
 
 			if (userProvidedOrientation) {
-				reference->relocate(cell, &position.value(), orientation.value().z * (180.0f / math::M_PI));
+				reference->relocate(cell, &position.value(), static_cast<float>(orientation.value().z * (180.0f / math::M_PI)));
 			}
 			else {
 				reference->relocateNoRotation(cell, &position.value());

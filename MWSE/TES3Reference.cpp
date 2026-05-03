@@ -1037,9 +1037,9 @@ namespace TES3 {
 
 		// Recalculate rotation to always be between [0,2pi].
 		constexpr auto math2Pi = (mwse::math::M_PI * 2);
-		auto rotationInRadians = fmod(rotationInDegrees * (mwse::math::M_PI / 180.f), math2Pi);
+		auto rotationInRadians = static_cast<float>(fmod(rotationInDegrees * (mwse::math::M_PI / 180.f), math2Pi));
 		if (rotationInRadians < 0)
-			rotationInRadians += math2Pi;
+			rotationInRadians += static_cast<float>(math2Pi);
 
 		// Get reused variables.
 		auto dataHandler = TES3::DataHandler::get();
@@ -1169,7 +1169,7 @@ namespace TES3 {
 			sceneNode->localRotation->toEulerXYZ(&cachedOrientation);
 		}
 
-		relocate(cell, position, cachedOrientation.z * (180.0f / mwse::math::M_PI));
+		relocate(cell, position, static_cast<float>(cachedOrientation.z * (180.0f / mwse::math::M_PI)));
 
 		setOrientation(&cachedOrientation);
 	}

@@ -38,7 +38,7 @@ namespace TES3 {
 			adjustedDamage = fCombatArmorMinMult * damage;
 		}
 
-		auto armorDamage = damage - adjustedDamage;
+		auto armorDamage = static_cast<int>(damage - adjustedDamage);
 		if (adjustedDamage < 1.0f) {
 			adjustedDamage = 1.0f;
 		}

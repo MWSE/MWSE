@@ -228,7 +228,7 @@ namespace TES3 {
 	}
 
 	int Spell::getValue() const {
-		return DataHandler::get()->nonDynamicData->GMSTs[GMST::fSpellValueMult]->value.asFloat * magickaCost;
+		return static_cast<int>(DataHandler::get()->nonDynamicData->GMSTs[GMST::fSpellValueMult]->value.asFloat * magickaCost);
 	}
 
 	size_t Spell::getActiveEffectCount() const {
