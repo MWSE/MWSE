@@ -68,11 +68,11 @@ struct TES3MACHINE : public VIRTUALMACHINE {
 	TES3::MobilePlayer* GetMacpRecord();
 	long GetRandomLong(long min, long max);
 	float GetRandomFloat(float min, float max);
-	long CreateArray(std::string const& caller);
-	long GetArrayValue(std::string const& caller, long const id, long const index);
-	long SetArrayValue(std::string const& caller, long const id, long const index, long const value);
-	long GetArraySize(std::string const& caller, long const id);
-	long ClearArray(std::string const& caller, long const id);
+	long CreateArray(std::string_view caller);
+	long GetArrayValue(std::string_view caller, long const id, long const index);
+	long SetArrayValue(std::string_view caller, long const id, long const index, long const value);
+	long GetArraySize(std::string_view caller, long const id);
+	long ClearArray(std::string_view caller, long const id);
 	std::vector<std::vector<long> >& arrays();
 
 private:

@@ -290,13 +290,13 @@ namespace TES3 {
 	}
 
 	const auto TES3_TriggerSpellBoundWeaponEvent = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, MagicEffectInstance *, int, const char*)>(0x465B70);
-	void triggerSpellBoundWeaponEvent(sol::table data, const std::string& id) {
+	void triggerSpellBoundWeaponEvent(sol::table data, std::string_view id) {
 		MagicSourceInstance * sourceInstance = data["sourceInstance"];
 		float deltaTime = data["deltaTime"];
 		MagicEffectInstance * effectInstance = data["effectInstance"];
 		int effectIndex = data["effectIndex"];
 
-		TES3_TriggerSpellBoundWeaponEvent(sourceInstance, deltaTime, effectInstance, effectIndex, id.c_str());
+		TES3_TriggerSpellBoundWeaponEvent(sourceInstance, deltaTime, effectInstance, effectIndex, id.data());
 	}
 
 	sol::protected_function genericLuaSpellResistCallback = sol::nil;

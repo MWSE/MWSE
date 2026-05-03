@@ -14,7 +14,7 @@ namespace mwse::lua {
 		int64_t elapsed = endingTime.QuadPart - startTimestamp;
 		// Conversion to microseconds, we do this first to avoid loss-of-precision during the next division
 		elapsed *= 1000000ll;
-		double t = elapsed / performanceFrequency;
+		double t = static_cast<double>(elapsed / performanceFrequency);
 		t /= 1000000;
 		return t;
 	}
@@ -202,8 +202,8 @@ namespace mwse::lua {
 		return executor;
 	}
 
-	void openURL(const std::string& url) {
-		ShellExecute(0, 0, url.c_str(), 0, 0, SW_SHOW);
+	void openURL(std::string_view url) {
+		ShellExecute(0, 0, url.data(), 0, 0, SW_SHOW);
 	}
 
 	bool getIsVirtualKeyPressed(int VK_key) {
