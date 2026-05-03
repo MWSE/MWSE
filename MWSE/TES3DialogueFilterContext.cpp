@@ -110,7 +110,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = faction->getLowestJoinedReaction();
+		context->compareValue = static_cast<float>(faction->getLowestJoinedReaction());
 	}
 
 	void loadFunctionReactionHigh(DialogueFilterContext::ConditionalContext* context) {
@@ -130,7 +130,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = faction->getHighestJoinedReaction();
+		context->compareValue = static_cast<float>(faction->getHighestJoinedReaction());
 	}
 
 	void loadFunctionRankRequirement(DialogueFilterContext::ConditionalContext* context) {
@@ -163,7 +163,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = speaker->getReputation();
+		context->compareValue = static_cast<float>(speaker->getReputation());
 	}
 
 	void loadFunctionHealthPercent(DialogueFilterContext::ConditionalContext* context) {
@@ -196,7 +196,7 @@ namespace TES3 {
 		}
 
 		const auto macp = WorldController::get()->getMobilePlayer();
-		context->compareValue = macp->npcInstance->getLevel();
+		context->compareValue = static_cast<float>(macp->npcInstance->getLevel());
 	}
 
 	void loadFunctionPCHealthPercent(DialogueFilterContext::ConditionalContext* context) {
@@ -306,7 +306,7 @@ namespace TES3 {
 		}
 
 		const auto macp = WorldController::get()->getMobilePlayer();
-		context->compareValue = macp->npcInstance->getEquipmentValue(false);
+		context->compareValue = static_cast<float>(macp->npcInstance->getEquipmentValue(false));
 	}
 
 	void loadFunctionPCCrimeLevel(DialogueFilterContext::ConditionalContext* context) {
@@ -316,7 +316,7 @@ namespace TES3 {
 		}
 
 		const auto macp = WorldController::get()->getMobilePlayer();
-		context->compareValue = macp->getBounty();
+		context->compareValue = static_cast<float>(macp->getBounty());
 	}
 
 	void loadFunctionSameSex(DialogueFilterContext::ConditionalContext* context) {
@@ -376,7 +376,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = faction->getEffectivePlayerRank() - speakerBase->getFactionRank();
+		context->compareValue = static_cast<float>(faction->getEffectivePlayerRank() - speakerBase->getFactionRank());
 	}
 
 	void loadFunctionDetected(DialogueFilterContext::ConditionalContext* context) {
@@ -418,7 +418,7 @@ namespace TES3 {
 		if (mwse::mcp::getFeatureEnabled(mwse::mcp::feature::ServiceRefusalFiltering)) {
 			const auto source = context->parentContext->source;
 			if (source > DialogueInfo::FilterSource::MCP_Offset) {
-				context->compareValue = int(source) - int(DialogueInfo::FilterSource::MCP_Offset);
+				context->compareValue = static_cast<float>(int(source) - int(DialogueInfo::FilterSource::MCP_Offset));
 				return;
 			}
 		}
@@ -435,7 +435,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = answer;
+		context->compareValue = static_cast<float>(answer);
 	}
 
 	void loadFunctionPCIntelligence(DialogueFilterContext::ConditionalContext* context) {
@@ -529,7 +529,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = WorldController::get()->weatherController->getCurrentWeatherIndex();
+		context->compareValue = static_cast<float>(WorldController::get()->weatherController->getCurrentWeatherIndex());
 	}
 
 	void loadFunctionPCVampire(DialogueFilterContext::ConditionalContext* context) {
@@ -548,7 +548,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = context->parentContext->speakerBaseActor->getLevel();
+		context->compareValue = static_cast<float>(context->parentContext->speakerBaseActor->getLevel());
 	}
 
 	void loadFunctionAttacked(DialogueFilterContext::ConditionalContext* context) {
@@ -593,13 +593,13 @@ namespace TES3 {
 		}
 
 		if (target->actorType == MobileActorType::Creature) {
-			context->compareValue = 1;
+			context->compareValue = 1.0f;
 		}
 		else if (target->getIsWerewolf()) {
-			context->compareValue = 2;
+			context->compareValue = 2.0f;
 		}
 		else {
-			context->compareValue = 0;
+			context->compareValue = 0.0f;
 		}
 	}
 
@@ -618,7 +618,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = context->parentContext->speakerMobile->fight;
+		context->compareValue = static_cast<float>(context->parentContext->speakerMobile->fight);
 	}
 
 	void loadFunctionHello(DialogueFilterContext::ConditionalContext* context) {
@@ -627,7 +627,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = context->parentContext->speakerMobile->hello;
+		context->compareValue = static_cast<float>(context->parentContext->speakerMobile->hello);
 	}
 
 	void loadFunctionAlarm(DialogueFilterContext::ConditionalContext* context) {
@@ -636,7 +636,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = context->parentContext->speakerMobile->alarm;
+		context->compareValue = static_cast<float>(context->parentContext->speakerMobile->alarm);
 	}
 
 	void loadFunctionFlee(DialogueFilterContext::ConditionalContext* context) {
@@ -645,7 +645,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = context->parentContext->speakerMobile->flee;
+		context->compareValue = static_cast<float>(context->parentContext->speakerMobile->flee);
 	}
 
 	void loadFunctionShouldAttack(DialogueFilterContext::ConditionalContext* context) {
@@ -675,7 +675,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = WorldController::get()->playerKills->werewolfKills;
+		context->compareValue = static_cast<float>(WorldController::get()->playerKills->werewolfKills);
 	}
 
 	ConditionalLoadFunction loadFunctionFunction(DialogueConditional* conditional) {
@@ -799,7 +799,7 @@ namespace TES3 {
 			context->compareValue = variables->floatVarValues[index];
 			break;
 		case 'l':
-			context->compareValue = variables->longVarValues[index];
+			context->compareValue = static_cast<float>(variables->longVarValues[index]);
 			break;
 		case 's':
 			context->compareValue = variables->shortVarValues[index];
@@ -816,7 +816,7 @@ namespace TES3 {
 			context->resultOverride = true;
 			return;
 		}
-		context->compareValue = context->conditional->journal->journalIndex;
+		context->compareValue = static_cast<float>(context->conditional->journal->journalIndex);
 	}
 
 	void loadItemCount(DialogueFilterContext::ConditionalContext* context) {
@@ -837,7 +837,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = std::abs(playerInventory->getItemCount(item));
+		context->compareValue = static_cast<float>(std::abs(playerInventory->getItemCount(item)));
 	}
 
 	void loadDeadActorCount(DialogueFilterContext::ConditionalContext* context) {
@@ -847,7 +847,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = WorldController::get()->playerKills->getKillCount(context->conditional->actor);
+		context->compareValue = static_cast<float>(WorldController::get()->playerKills->getKillCount(context->conditional->actor));
 	}
 
 	void loadNotID(DialogueFilterContext::ConditionalContext* context) {
