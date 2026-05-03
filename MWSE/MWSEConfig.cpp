@@ -21,6 +21,7 @@ namespace mwse {
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::ReplaceLightSorting = true;
+	bool Configuration::CreateFullMinidumps = false;
 	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
@@ -71,6 +72,7 @@ namespace mwse {
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(ReplaceLightSorting)
+		DECLARE_CONFIG(CreateFullMinidumps)
 		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
 		DECLARE_CONFIG(BuildNumber)
 	}

@@ -180,6 +180,17 @@ local config = {
 					callback = resetLighting,
 				},
 				{
+					class = "OnOffButton",
+					label = i18n("createFullMinidumps.label"),
+					description = i18n("createFullMinidumps.description"),
+					variable = {
+						id = "CreateFullMinidumps",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+					callback = resetLighting,
+				},
+				{
 					class = "Slider",
 					label = i18n("backgroundLoadPollIntervalMs.label"),
 					description = i18n("backgroundLoadPollIntervalMs.description"),

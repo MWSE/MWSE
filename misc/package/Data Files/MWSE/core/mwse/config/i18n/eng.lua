@@ -32,6 +32,8 @@ return {
 	["suppressUselessWarnings.description"] = "If enabled, the initial startup warning about mismatched masters is suppressed. This warning is almost always displayed on any modded install, and often prompts users to click Yes to All, hiding actually helpful warnings.",
 	["replaceLightSorting.label"] = "Replace light sorting?",
 	["replaceLightSorting.description"] = "If enabled, the default method of prioritizing lights that affect a mesh is replaced with a new method. This greatly reduces the amount of landscape seams as well as the amount of light popping, but may diminish the impact of carried torches in some environments.",
+	["createFullMinidumps.label"] = "Create full crash minidumps?",
+	["createFullMinidumps.description"] = "If enabled, full memory minidumps will be created. This is usually not needed, and will result in much larger minidumps being created.",
 	["backgroundLoadPollIntervalMs.label"] = "Background load poll interval (ms)",
 	["backgroundLoadPollIntervalMs.description"] = "Controls how often the game polls the background cell loader while a progress bar is being shown (most noticeable in exterior transitions). Morrowind's default is 100 ms, which can cause slightly noticeable stalls on fast machines that finish loading quickly. Lower values make the game resume sooner at the cost of slightly higher CPU use during loads.",
 }
