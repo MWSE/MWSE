@@ -25,7 +25,7 @@ namespace mwse {
 		long index = mwse::Stack::getInstance().popLong();
 		long value = mwse::Stack::getInstance().popLong();
 
-		long status = mwse::Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
+		short status = mwse::Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
 
 		mwse::Stack::getInstance().pushShort(status);
 

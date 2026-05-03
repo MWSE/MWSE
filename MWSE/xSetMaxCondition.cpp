@@ -24,7 +24,7 @@ namespace mwse {
 
 	float xSetMaxCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get parameter from the stack.
-		long maxCondition = mwse::Stack::getInstance().popLong();
+		int maxCondition = static_cast<int>(mwse::Stack::getInstance().popLong());
 		bool success = false;
 
 		// Get reference.
