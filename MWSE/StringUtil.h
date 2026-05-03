@@ -24,13 +24,13 @@ namespace mwse::string {
 
 		bool exists(const long id);
 
-		bool exists(const std::string& value);
+		bool exists(std::string_view value);
 
 		bool exists(const char* value);
 
 		mwseString& get(const long id);
 
-		mwseString& get(const std::string& value);
+		mwseString& get(std::string_view value);
 
 		mwseString& getOrCreate(const std::string& value);
 
@@ -43,7 +43,7 @@ namespace mwse::string {
 	// String pattern searching functions.
 	//
 
-	std::string interpolate(const std::string& format, mwse::VMExecuteInterface& virtualMachine, bool* suppressNull, std::string* badCodes);
+	std::string interpolate(std::string_view format, mwse::VMExecuteInterface& virtualMachine, bool* suppressNull, std::string* badCodes);
 
 	// Count how many results there should be based on the format string
 	bool enumerate(const char* format, int& substitutions, bool& eolmode);

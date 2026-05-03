@@ -116,12 +116,12 @@ namespace mwse {
 		write(fileName, &value, sizeof(float));
 	}
 
-	void FileSystem::writeString(const char* fileName, const std::string& value, bool suppressNull) {
+	void FileSystem::writeString(const char* fileName, std::string_view value, bool suppressNull) {
 		size_t length = value.length();
 		if (!suppressNull) {
 			length++;
 		}
-		write(fileName, value.c_str(), length);
+		write(fileName, value.data(), length);
 	}
 
 	bool FileSystem::seek(const char* fileName, long position) {
@@ -133,6 +133,7 @@ namespace mwse {
 		}
 		return result;
 	}
+
 	HANDLE FileSystem::openFileAt(const char* fileName, size_t position) {
 		if (!validFileName(fileName)) {
 			return INVALID_HANDLE_VALUE;

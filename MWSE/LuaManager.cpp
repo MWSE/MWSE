@@ -2752,7 +2752,7 @@ namespace mwse::lua {
 
 	bool isPathDisabled(const std::string_view& path) {
 		const auto disabledPathItt = std::find_if(disabledMarkers.begin(), disabledMarkers.end(),
-			[&](const std::string& s) {
+			[&](std::string_view s) {
 				return path.find(s) != std::string::npos;
 			});
 		return disabledPathItt != disabledMarkers.end();

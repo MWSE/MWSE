@@ -9,7 +9,7 @@ namespace mwse {
 		arrays = Arrays_t();
 	}
 
-	size_t Arrays::create(std::string const& caller) {
+	size_t Arrays::create(std::string_view caller) {
 		size_t id = 0;
 		if (arrays.size() < maxArrayId) {
 			id = arrays.size() + 1;
@@ -21,7 +21,7 @@ namespace mwse {
 		return id;
 	}
 
-	ArrayItem_t Arrays::getValue(std::string const& caller, size_t const id, size_t const index) {
+	ArrayItem_t Arrays::getValue(std::string_view caller, size_t const id, size_t const index) {
 		ArrayItem_t value = 0;
 		if (id > 0 && id <= arrays.size()) {
 			ContainedArray_t const& a = arrays[id - 1];
@@ -38,8 +38,9 @@ namespace mwse {
 		return value;
 	}
 
-	short Arrays::setValue(std::string const& caller, size_t const id, size_t const index, ArrayItem_t const value) {
+	short Arrays::setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value) {
 		short success = 0;
+
 		if (id > 0 && id <= arrays.size()) {
 			if (index >= 0) {
 				ContainedArray_t& a = arrays[id - 1];
@@ -59,7 +60,7 @@ namespace mwse {
 		return success;
 	}
 
-	size_t Arrays::getSize(std::string const& caller, size_t const id)
+	size_t Arrays::getSize(std::string_view caller, size_t const id)
 	{
 		size_t size = 0;
 		if (id > 0 && id <= arrays.size()) {
@@ -71,7 +72,7 @@ namespace mwse {
 		return size;
 	}
 
-	long Arrays::clear(std::string const& caller, size_t const id)
+	long Arrays::clear(std::string_view caller, size_t const id)
 	{
 		long success = 0;
 		if (id > 0 && id <= arrays.size()) {

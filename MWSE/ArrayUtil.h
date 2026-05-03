@@ -9,15 +9,15 @@ namespace mwse {
 	public:
 		static Arrays& getInstance() { return singleton; };
 
-		size_t create(std::string const& caller);
+		size_t create(std::string_view caller);
 
-		ArrayItem_t getValue(std::string const& caller, size_t const id, size_t const index);
+		ArrayItem_t getValue(std::string_view caller, size_t const id, size_t const index);
 
-		short setValue(std::string const& caller, size_t const id, size_t const index, ArrayItem_t const value);
+		short setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value);
 
-		size_t getSize(std::string const& caller, size_t const id);
+		size_t getSize(std::string_view caller, size_t const id);
 
-		long clear(std::string const& caller, size_t const id);
+		long clear(std::string_view caller, size_t const id);
 
 		Arrays_t& get();
 

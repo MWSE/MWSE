@@ -51,8 +51,8 @@ namespace mwse::tes3 {
 		return nullptr;
 	}
 
-	TES3::Reference* getReference(const std::string& id) {
-		return getReference(id.c_str());
+	TES3::Reference* getReference(std::string_view id) {
+		return getReference(id.data());
 	}
 
 	const auto TES3_general_setStringSlot = reinterpret_cast<void(__cdecl*)(char**, const char*)>(0x47B410);

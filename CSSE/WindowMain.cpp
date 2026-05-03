@@ -637,7 +637,7 @@ namespace se::cs::window::main {
 	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
-		TCHAR szFile[260] = {};
+		TCHAR szFile[MAX_PATH] = {};
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hWnd;
 		ofn.lpstrFile = szFile;
@@ -740,7 +740,7 @@ namespace se::cs::window::main {
 	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
-		TCHAR szFile[260] = {};
+		TCHAR szFile[MAX_PATH] = {};
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hWnd;
 		ofn.lpstrFile = szFile;

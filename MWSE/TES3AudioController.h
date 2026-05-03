@@ -65,8 +65,8 @@ namespace TES3 {
 		IDirectSound3DListener * primary3DListener; // 0x14
 		unsigned char soundQuality3D; // 0x18
 		DSCAPS capabilities; // 0x1C
-		char nextMusicFilePath[260]; // 0x7C
-		char currentMusicFilePath[260]; // 0x180
+		char nextMusicFilePath[MAX_PATH]; // 0x7C
+		char currentMusicFilePath[MAX_PATH]; // 0x180
 		int timestampBeginFade; // 0x284
 		int timestampNextTrackStart; // 0x288
 		float volumeNextTrack; // 0x28C
