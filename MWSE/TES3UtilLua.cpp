@@ -237,10 +237,10 @@ namespace mwse::lua {
 		return {};
 	}
 
-	bool setGlobal(const std::string& id, double value) {
+	bool setGlobal(std::string_view id, double value) {
 		auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler) {
-			TES3::GlobalVariable* global = dataHandler->nonDynamicData->findGlobalVariable(id.c_str());
+			TES3::GlobalVariable* global = dataHandler->nonDynamicData->findGlobalVariable(id.data());
 			if (global) {
 				global->setValue_lua(value);
 				return true;
@@ -249,10 +249,10 @@ namespace mwse::lua {
 		return false;
 	}
 
-	TES3::GlobalVariable* findGlobal(const std::string& id) {
+	TES3::GlobalVariable* findGlobal(std::string_view id) {
 		auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler) {
-			return dataHandler->nonDynamicData->findGlobalVariable(id.c_str());
+			return dataHandler->nonDynamicData->findGlobalVariable(id.data());
 		}
 		return nullptr;
 	}

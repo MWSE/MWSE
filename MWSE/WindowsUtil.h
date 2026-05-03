@@ -18,7 +18,7 @@ namespace mwse::lua {
 
 	sol::optional<std::shared_ptr<LuaExecutor>> createProcess(sol::table params);
 	
-	void openURL(const std::string& url);
+	void openURL(std::string_view url);
 
 	bool getIsVirtualKeyPressed(int VK_key);
 }
