@@ -107,13 +107,13 @@ namespace mwse::tes3 {
 
 		// Set basic effect data.
 		TES3::Effect& effect = effects[index];
-		effect.effectID = effectId;
+		effect.effectID = static_cast<short>(effectId);
 		effect.rangeType = effectRange;
 		effect.radius = area;
 
 		// Set skill.
 		if (flags & TES3::EffectFlag::TargetSkill) {
-			effect.skillID = skillAttributeId;
+			effect.skillID = static_cast<TES3::SkillID::SkillID>(skillAttributeId);
 		}
 		else {
 			effect.skillID = TES3::SkillID::Invalid;
@@ -121,7 +121,7 @@ namespace mwse::tes3 {
 
 		// Set attribute.
 		if (flags & TES3::EffectFlag::TargetAttribute) {
-			effect.attributeID = skillAttributeId;
+			effect.attributeID = static_cast<TES3::Attribute::Attribute>(skillAttributeId);
 		}
 		else {
 			effect.attributeID = TES3::Attribute::Invalid;

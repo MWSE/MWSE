@@ -40,7 +40,7 @@ namespace NI {
 
 	unsigned int PointLight::getRadius() const {
 		// Morrowind keeps this in the specular for some reason.
-		return specular.r;
+		return static_cast<unsigned int>(specular.r);
 	}
 
 	void PointLight::setRadius(unsigned int radius) {

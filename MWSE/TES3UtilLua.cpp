@@ -2248,7 +2248,7 @@ namespace mwse::lua {
 		}
 
 		if (temporary) {
-			// Only make temporary changes in the dialogue menu. 
+			// Only make temporary changes in the dialogue menu.
 			if (inDialogue) {
 				// Modify the NPC disposition, with clamping of effective disposition.
 				reference->baseObject->modDisposition(value.value());
@@ -6033,7 +6033,7 @@ namespace mwse::lua {
 
 		// Calculate base charge cost.
 		int charge = enchant->chargeCost;
-		int skill = mobile->getSkillValue(TES3::SkillID::Enchant);
+		int skill = int(mobile->getSkillValue(TES3::SkillID::Enchant));
 
 		// Check for enchantedItemRebalance patch to select correct charge calculation.
 		if (mcp::getFeatureEnabled(mcp::feature::EnchantedItemRebalance)) {
@@ -6048,14 +6048,14 @@ namespace mwse::lua {
 		if (event::EnchantChargeUseEvent::getEventEnabled()) {
 			const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 
-			sol::object eventResult = stateHandle.triggerEvent(new event::EnchantChargeUseEvent(enchant, mobile, nullptr, charge));
+			sol::object eventResult = stateHandle.triggerEvent(new event::EnchantChargeUseEvent(enchant, mobile, nullptr, float(charge)));
 
 			// Allow the event to modify charge.
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
 				sol::optional<float> newCharge = eventData["charge"];
 				if (newCharge) {
-					charge = newCharge.value();
+					charge = int(newCharge.value());
 				}
 			}
 		}
@@ -6338,7 +6338,7 @@ namespace mwse::lua {
 			mobile->barterGold += cost;
 
 			// Extend refresh timeout for barterGold refresh system. This prevents the change from being overwritten immediately.
-			auto hourStamp = worldController->gvarDaysPassed->value * 24 + worldController->gvarGameHour->value;
+			auto hourStamp = static_cast<unsigned short>(worldController->gvarDaysPassed->value * 24 + worldController->gvarGameHour->value);
 			if (mobile->actionData.lastBarterHoursPassed == 0) {
 				mobile->actionData.lastBarterHoursPassed = hourStamp;
 			}

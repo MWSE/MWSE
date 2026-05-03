@@ -1042,7 +1042,7 @@ namespace mwse::patch {
 			log::getLog() << "[MWSE] Warning: Pathgrid in cell '" << pathGrid->parentCell->getEditorName() <<
 				"' has mismatching path node count. nodeCount=" << pathGrid->nodeCount << ", node data count=" << pathGrid->nodes.count << std::endl;
 
-			pathGrid->nodeCount = pathGrid->nodes.count;
+			pathGrid->nodeCount = static_cast<unsigned short>(pathGrid->nodes.count);
 		}
 
 		// Perform overwritten code.
