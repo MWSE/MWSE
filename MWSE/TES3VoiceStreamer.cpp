@@ -101,25 +101,6 @@ namespace mwse::patch::voice {
 		std::thread g_worker;
 		std::atomic<bool> g_running{ false };
 
-		// RAII guard for the audio-lists critical section that addTempSound /
-		// updateSounds / sayDialogueVoice all share. Publishing the decoded
-		// buffer must not race with the main thread iterating tempSoundEvents.
-		//
-		// Verified: addTempSound at 0x48C326 reads `mov ecx, [ebp+0xB534]` then
-		// calls NiCriticalSection::Lock — i.e. dh->criticalSectionAudioEvents.
-		// We go through MWSE's enter()/leave() wrappers so we hit the same
-		// NiCriticalSection::Lock path the engine itself uses.
-		class AudioListsLock {
-			TES3::CriticalSection* cs;
-		public:
-			explicit AudioListsLock(const char* id) : cs(TES3::DataHandler::get()->criticalSectionAudioEvents) {
-				cs->enter(id);
-			}
-			~AudioListsLock() { cs->leave(); }
-			AudioListsLock(const AudioListsLock&) = delete;
-			AudioListsLock& operator=(const AudioListsLock&) = delete;
-		};
-
 		// std::default_delete<TES3::SoundBuffer> calls plain `delete sb`, which
 		// invokes SoundBuffer's dtor (Release COMs + free rawAudio) and then its
 		// class-specific operator delete (engine heap free).
@@ -206,10 +187,18 @@ namespace mwse::patch::voice {
 				// engine-allocated buffer + its COM resources via the deleter.
 				EngineSoundBufferPtr decoded(task.audio->loadSoundFile(task.path.c_str(), task.isPointSource));
 
-				// Re-enter the engine to publish. RAII lock scope = the rest of
-				// this iteration; auto-release on every continue path.
+				// Re-enter the engine to publish. We acquire the audio-lists CS
+				// that addTempSound / updateSounds / sayDialogueVoice all share
+				// so the field write below can't race with the main thread
+				// iterating tempSoundEvents.
+				//
+				// Verified offset: addTempSound at 0x48C326 reads
+				// `mov ecx, [ebp+0xB534]` then calls NiCriticalSection::Lock,
+				// i.e. dh->criticalSectionAudioEvents. We go through MWSE's
+				// enter()/leave() wrappers (via CriticalSection::Lock) so we
+				// hit the same NiCriticalSection::Lock path the engine uses.
 				{
-					AudioListsLock lk("MWSE:VoiceStreamer");
+					TES3::CriticalSection::Lock lk(*TES3::DataHandler::get()->criticalSectionAudioEvents, "MWSE:VoiceStreamer");
 
 					// Stub was released while we were decoding (cell change, killSounds).
 					if (task.refcount->load() <= 1) {
