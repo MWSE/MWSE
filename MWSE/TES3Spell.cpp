@@ -254,10 +254,6 @@ namespace TES3 {
 		return getFirstIndexOfEffect(effectId) != -1;
 	}
 
-	int Spell::calculateBasePurchaseCost() const {
-		return int(magickaCost * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSpellValueMult]->value.asFloat);
-	}
-
 	float Spell::calculateCastChance_lua(sol::table params) {
 		bool checkMagicka = mwse::lua::getOptionalParam<bool>(params, "checkMagicka", true);
 		sol::object caster = params["caster"];
