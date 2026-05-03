@@ -23,7 +23,7 @@ namespace NI {
 	// NiColor
 	//
 
-	Color::Color(TES3::Vector3& vector) {
+	Color::Color(const TES3::Vector3& vector) {
 		r = vector.x;
 		g = vector.y;
 		b = vector.z;

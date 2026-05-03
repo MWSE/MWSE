@@ -171,7 +171,7 @@ namespace TES3 {
 
 	}
 
-	Vector3::Vector3(NI::Color& color) {
+	Vector3::Vector3(const NI::Color& color) {
 		x = color.r;
 		y = color.g;
 		z = color.b;
