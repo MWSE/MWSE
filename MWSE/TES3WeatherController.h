@@ -210,6 +210,7 @@ namespace TES3 {
 		//
 
 		int getCurrentWeatherIndex() const;
+		int getCurrentWeatherSpoofedIndex() const;
 		int getNextWeatherIndex() const;
 
 		std::reference_wrapper<Weather* [MAX_WEATHER_COUNT]> getWeathers();

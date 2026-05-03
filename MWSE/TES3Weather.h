@@ -84,6 +84,7 @@ namespace TES3 {
 		const char* getAmbientLoopSoundID() const;
 		bool setAmbientLoopSoundID(const char* id);
 
+		bool isConsideredWeather(int id) const;
 		bool isCustomWeather() const;
 		bool supportsParticleLerp() const;
 		static constexpr auto IMPOSSIBLE_THRESHOLD = std::numeric_limits<float>::max();

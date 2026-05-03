@@ -155,6 +155,23 @@ namespace TES3 {
 		return true;
 	}
 
+	bool Weather::isConsideredWeather(int id) const {
+		if (index == id) {
+			return true;
+		}
+
+		if (!isCustomWeather()) {
+			return false;
+		}
+
+		const auto asCustom = static_cast<const WeatherCustom*>(this);
+		if (!asCustom->overrideId.has_value()) {
+			return false;
+		}
+
+		return asCustom->overrideId.value() == id;
+	}
+
 	bool Weather::isCustomWeather() const {
 		return index != WEATHER_ID_INVALID && index >= VANILLA_MAX_WEATHER_COUNT;
 	}

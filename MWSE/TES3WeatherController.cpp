@@ -522,6 +522,18 @@ namespace TES3 {
 		return currentWeather ? currentWeather->index : WEATHER_ID_INVALID;
 	}
 
+	int WeatherController::getCurrentWeatherSpoofedIndex() const {
+		if (!currentWeather) {
+			return WEATHER_ID_INVALID;
+		}
+
+		if (currentWeather->isCustomWeather()) {
+			return static_cast<const WeatherCustom*>(currentWeather)->overrideId.value_or(WEATHER_ID_INVALID);
+		}
+
+		return currentWeather->index;
+	}
+
 	int WeatherController::getNextWeatherIndex() const {
 		return nextWeather ? nextWeather->index : WEATHER_ID_INVALID;
 	}
