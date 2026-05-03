@@ -38,8 +38,9 @@ namespace mwse {
 		return value;
 	}
 
-	long Arrays::setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value) {
-		long success = 0;
+	short Arrays::setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value) {
+		short success = 0;
+
 		if (id > 0 && id <= arrays.size()) {
 			if (index >= 0) {
 				ContainedArray_t& a = arrays[id - 1];

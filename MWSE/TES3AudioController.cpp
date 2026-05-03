@@ -143,6 +143,10 @@ namespace TES3 {
 		return volume;
 	}
 
+	unsigned char AudioController::getMixVolumeRaw(AudioMixType mixType) const {
+		return static_cast<unsigned char>(getMixVolume(mixType) * 250);
+	}
+
 	float AudioController::getNormalizedMasterVolume() const {
 		return 0.004f * volumeMaster;
 	}

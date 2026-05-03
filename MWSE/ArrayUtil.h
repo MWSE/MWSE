@@ -13,7 +13,7 @@ namespace mwse {
 
 		ArrayItem_t getValue(std::string_view caller, size_t const id, size_t const index);
 
-		long setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value);
+		short setValue(std::string_view caller, size_t const id, size_t const index, ArrayItem_t const value);
 
 		size_t getSize(std::string_view caller, size_t const id);
 

@@ -84,7 +84,7 @@ namespace mwse {
 			encumbrance = round(encumbrance * 100.0) / 100.0;
 		}
 
-		mwse::Stack::getInstance().pushFloat(encumbrance);
+		mwse::Stack::getInstance().pushFloat(static_cast<float>(encumbrance));
 
 		return 0.0f;
 	}

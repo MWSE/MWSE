@@ -484,7 +484,7 @@ namespace TES3 {
 
 	const auto TES3_Effect_calculateCost = reinterpret_cast<double(__cdecl*)(const Effect*)>(0x4AA700);
 	float Effect::calculateCost() const {
-		return TES3_Effect_calculateCost(this);
+		return static_cast<float>(TES3_Effect_calculateCost(this));
 	}
 
 	MagicEffect* Effect::getEffectData() const {

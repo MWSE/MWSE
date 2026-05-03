@@ -38,7 +38,7 @@ namespace TES3 {
 			adjustedDamage = fCombatArmorMinMult * damage;
 		}
 
-		auto armorDamage = damage - adjustedDamage;
+		auto armorDamage = static_cast<int>(damage - adjustedDamage);
 		if (adjustedDamage < 1.0f) {
 			adjustedDamage = 1.0f;
 		}
@@ -127,8 +127,8 @@ namespace TES3 {
 
 		if (hitSound) {
 			// Calculate the hit volume based on the strength of the swing.
-			auto volume = (swing * 50.0f + 200.0f) * worldController->audioController->getMixVolume(AudioMixType::Effects);;
-			dataHandler->addSound(hitSound, reference, 0, volume);
+			auto volume = (swing * 50.0f + 200.0f) * worldController->audioController->getMixVolume(AudioMixType::Effects);
+			dataHandler->addSound(hitSound, reference, 0, static_cast<unsigned char>(volume));
 		}
 
 		if (actorType == TES3::MobileActorType::Player) {

@@ -1159,7 +1159,10 @@ namespace TES3::UI {
 		}
 
 		auto font = TES3::WorldController::get()->fonts[fontIndex];
-		return { font->maxGlyphHeight, font->fontData->lineHeight };
+		return { 
+			static_cast<int>(font->maxGlyphHeight), 
+			static_cast<int>(font->fontData->lineHeight) 
+		};
 	}
 
 	const auto TES3_UI_Font_getTextExtent = reinterpret_cast<void(__thiscall*)(TES3::Font*, const char*, float*, float*, int, int, bool)>(0x40B190);
@@ -1186,7 +1189,11 @@ namespace TES3::UI {
 		// Calculated label height from text layout system.
 		float height = std::floor(verticalAdvance + font->maxGlyphHeight + 1.5f);
 
-		return { width, height, verticalAdvance };
+		return { 
+			static_cast<int>(width),
+			static_cast<int>(height),
+			static_cast<int>(verticalAdvance)
+		};
 	}
 
 	const auto TES3_UI_Font_wrapTextInPlace = reinterpret_cast<int(__thiscall*)(TES3::Font*, char*, unsigned int, bool, char)>(0x40BBC0);

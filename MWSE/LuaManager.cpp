@@ -746,7 +746,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 
 		// Trigger initialization.
@@ -979,7 +979,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 	}
 

@@ -346,7 +346,7 @@ namespace mwse::lua {
 
 		// Apply mix and rescale to 0-250
 		const auto worldController = TES3::WorldController::get();
-		volume *= 250.0 * worldController->audioController->getMixVolume(TES3::AudioMixType(mix));
+		volume *= worldController->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
 
 		// Only allow positional sounds if we are loaded in and have a player reference.
 		const auto mobilePlayer = worldController->getMobilePlayer();
@@ -365,7 +365,7 @@ namespace mwse::lua {
 		// Try to fall back on direct-playing a sound.
 		if (sound) {
 			const auto flags = loop ? TES3::SoundPlayFlags::Loop : NULL;
-			return sound->play(flags, volume, pitch, true);
+			return sound->play(flags, static_cast<unsigned char>(volume), pitch, true);
 		}
 
 		return false;
@@ -405,7 +405,7 @@ namespace mwse::lua {
 		volume = std::min(volume, 1.0);
 
 		// Apply mix and rescale to 0-250
-		volume *= 250.0 * TES3::WorldController::get()->audioController->getMixVolume(TES3::AudioMixType(mix));
+		volume *= TES3::WorldController::get()->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
 
 		TES3::DataHandler::get()->adjustSoundVolume(sound, reference, unsigned char(volume));
 	}
@@ -2248,7 +2248,7 @@ namespace mwse::lua {
 		}
 
 		if (temporary) {
-			// Only make temporary changes in the dialogue menu. 
+			// Only make temporary changes in the dialogue menu.
 			if (inDialogue) {
 				// Modify the NPC disposition, with clamping of effective disposition.
 				reference->baseObject->modDisposition(value.value());
@@ -2475,7 +2475,7 @@ namespace mwse::lua {
 			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
 
 			if (userProvidedOrientation) {
-				reference->relocate(cell, &position.value(), orientation.value().z * (180.0f / math::M_PI));
+				reference->relocate(cell, &position.value(), static_cast<float>(orientation.value().z * (180.0f / math::M_PI)));
 			}
 			else {
 				reference->relocateNoRotation(cell, &position.value());
@@ -4395,7 +4395,7 @@ namespace mwse::lua {
 
 		// Apply volume, using mix channel and rescale to 0-250.
 		auto volume = std::clamp(getOptionalParam(params, "volume", 1.0), 0.0, 1.0);
-		volume *= 250.0 * worldController->audioController->getMixVolume(TES3::AudioMixType::Voice);
+		volume *= worldController->audioController->getMixVolumeRaw(TES3::AudioMixType::Voice);
 
 		// Show a messagebox.
 		if (worldController->showSubtitles || getOptionalParam(params, "forceSubtitle", false)) {
@@ -6033,7 +6033,7 @@ namespace mwse::lua {
 
 		// Calculate base charge cost.
 		int charge = enchant->chargeCost;
-		int skill = mobile->getSkillValue(TES3::SkillID::Enchant);
+		int skill = int(mobile->getSkillValue(TES3::SkillID::Enchant));
 
 		// Check for enchantedItemRebalance patch to select correct charge calculation.
 		if (mcp::getFeatureEnabled(mcp::feature::EnchantedItemRebalance)) {
@@ -6048,14 +6048,14 @@ namespace mwse::lua {
 		if (event::EnchantChargeUseEvent::getEventEnabled()) {
 			const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 
-			sol::object eventResult = stateHandle.triggerEvent(new event::EnchantChargeUseEvent(enchant, mobile, nullptr, charge));
+			sol::object eventResult = stateHandle.triggerEvent(new event::EnchantChargeUseEvent(enchant, mobile, nullptr, float(charge)));
 
 			// Allow the event to modify charge.
 			if (eventResult.valid()) {
 				sol::table eventData = eventResult;
 				sol::optional<float> newCharge = eventData["charge"];
 				if (newCharge) {
-					charge = newCharge.value();
+					charge = int(newCharge.value());
 				}
 			}
 		}
@@ -6338,7 +6338,7 @@ namespace mwse::lua {
 			mobile->barterGold += cost;
 
 			// Extend refresh timeout for barterGold refresh system. This prevents the change from being overwritten immediately.
-			auto hourStamp = worldController->gvarDaysPassed->value * 24 + worldController->gvarGameHour->value;
+			auto hourStamp = static_cast<unsigned short>(worldController->gvarDaysPassed->value * 24 + worldController->gvarGameHour->value);
 			if (mobile->actionData.lastBarterHoursPassed == 0) {
 				mobile->actionData.lastBarterHoursPassed = hourStamp;
 			}

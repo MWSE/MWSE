@@ -125,6 +125,7 @@ namespace TES3 {
 		void setNextMusicFilePath(const char* path);
 
 		float getMixVolume(AudioMixType mixType) const;
+		unsigned char getMixVolumeRaw(AudioMixType mixType) const;
 
 		float getMusicVolume() const;
 
