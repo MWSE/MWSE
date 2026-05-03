@@ -2465,13 +2465,17 @@ namespace mwse::patch {
 			mci.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)miniDumpCallback;
 			mci.CallbackParam = 0;
 
-			auto mdt = (MINIDUMP_TYPE)(MiniDumpWithDataSegs |
+			auto mdt = MiniDumpWithDataSegs |
 				MiniDumpWithHandleData |
 				MiniDumpWithFullMemoryInfo |
 				MiniDumpWithThreadInfo |
-				MiniDumpWithUnloadedModules);
+				MiniDumpWithUnloadedModules;
 
-			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, &mci);
+			if (Configuration::CreateFullMinidumps) {
+				mdt |= MiniDumpWithFullMemory | MiniDumpWithIndirectlyReferencedMemory;
+			}
+
+			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, static_cast<MINIDUMP_TYPE>(mdt), (pep != 0) ? &mdei : 0, 0, &mci);
 
 			if (!rv) {
 				log::getLog() << "MiniDump creation failed. Error: 0x" << std::hex << GetLastError() << std::endl;

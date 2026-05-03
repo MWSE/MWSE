@@ -18,6 +18,7 @@ namespace mwse {
 		static bool SuppressUselessWarnings;
 		static bool UseGlobalAudio;
 		static bool ReplaceLightSorting;
+		static bool CreateFullMinidumps;
 		static UINT BackgroundLoadPollIntervalMs;
 		static UINT BuildNumber;
 
