@@ -187,7 +187,7 @@ namespace TES3 {
 
 	void AudioController::setCurrentMusicFilePath(const char* path) {
 		size_t newLength = strlen(path) + 1;
-		if (newLength > 260) {
+		if (newLength > MAX_PATH) {
 			throw std::invalid_argument("Given path is longer than 260 characters.");
 		}
 
@@ -200,7 +200,7 @@ namespace TES3 {
 
 	void AudioController::setNextMusicFilePath(const char* path) {
 		size_t newLength = strlen(path) + 1;
-		if (newLength > 260) {
+		if (newLength > MAX_PATH) {
 			throw std::invalid_argument("Given path is longer than 260 characters.");
 		}
 

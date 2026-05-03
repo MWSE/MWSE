@@ -30,7 +30,7 @@ namespace TES3 {
 		char unknown_0x4B;
 		int phase; // 0x4C
 		int index; // 0x50
-		char texturePath[260];
+		char texturePath[MAX_PATH];
 		float axisOffset; // 0x158
 
 		Moon() = delete;
