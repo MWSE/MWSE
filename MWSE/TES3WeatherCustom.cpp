@@ -41,9 +41,6 @@ namespace TES3 {
 	}
 
 	void WeatherCustom::vtbl_simulate(float transitionScalar, float deltaTime) {
-		updateCloudWind();
-		updateAmbientSound(transitionScalar);
-
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (simulateFunction.valid()) {
 			auto& state = stateHandle.getState();
@@ -60,11 +57,6 @@ namespace TES3 {
 	}
 
 	void WeatherCustom::vtbl_transition() {
-		const auto relevance = getRelevance();
-		if (soundAmbientLoop && soundAmbientLoop->isPlaying()) {
-			updatePlayingSoundVolume(soundAmbientLoop, controller ? controller->getWeatherScaledVolume(relevance) : 0);
-		}
-
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		if (transitionFunction.valid()) {
 			auto direction = 1;
@@ -97,9 +89,7 @@ namespace TES3 {
 		}
 
 		// Only update the underwater sound state at the very end of simulation/transition.
-		if (controller) {
-			underwaterSoundState = controller->underwaterPitchbendState;
-		}
+		underwaterSoundState = controller->underwaterPitchbendState;
 	}
 
 	void WeatherCustom::vtbl_unload() {
