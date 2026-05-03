@@ -53,11 +53,11 @@ namespace TES3 {
 		float landFogNightDepth; // 0xF8
 		float cloudsSpeed; // 0xFC
 		float windSpeed; // 0x100
-		char texturePathCloud[260]; // 0x104
+		char texturePathCloud[MAX_PATH]; // 0x104
 		int unknown_0x208;
 		bool ambientPlaying;
 		bool underwaterSoundState;
-		char soundIDAmbientLoop[260]; // 0x20E
+		char soundIDAmbientLoop[MAX_PATH]; // 0x20E
 		Sound * soundAmbientLoop; // 0x314
 
 		Weather();

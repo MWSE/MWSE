@@ -4,7 +4,7 @@
 
 namespace TES3 {
 	struct WeatherRain : Weather {
-		char soundIDRainLoop[260]; // 0x318
+		char soundIDRainLoop[MAX_PATH]; // 0x318
 		float rainRadius; // 0x41C
 		float rainHeightMin; // 0x420
 		float rainHeightMax; // 0x424
