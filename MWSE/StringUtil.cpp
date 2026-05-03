@@ -55,7 +55,7 @@ namespace mwse::string {
 			return false;
 		}
 
-		bool exists(const std::string& value) {
+		bool exists(std::string_view value) {
 			for (StringMap_t::iterator it = store.begin(); it != store.end(); ++it) {
 				if (it->second.compare(value) == 0) {
 					return true;
@@ -74,7 +74,7 @@ namespace mwse::string {
 			return it->second;
 		}
 
-		mwseString& get(const std::string& value) {
+		mwseString& get(std::string_view value) {
 			for (StringMap_t::iterator it = store.begin(); it != store.end(); ++it) {
 				if (it->second.compare(value) == 0) {
 					return it->second;
@@ -112,7 +112,7 @@ namespace mwse::string {
 		}
 	}
 
-	std::string interpolate(const std::string& format, mwse::VMExecuteInterface& virtualMachine, bool* suppressNull, std::string* badCodes) {
+	std::string interpolate(std::string_view format, mwse::VMExecuteInterface& virtualMachine, bool* suppressNull, std::string* badCodes) {
 		std::string result;
 
 		*suppressNull = false;

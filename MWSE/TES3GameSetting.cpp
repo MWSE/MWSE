@@ -82,10 +82,10 @@ namespace TES3 {
 		}
 		else if (v.is<double>()) {
 			if (type == 'i') {
-				value.asLong = v.as<double>();
+				value.asLong = static_cast<long>(v.as<double>());
 			}
 			else if (type == 'f') {
-				value.asFloat = v.as<double>();
+				value.asFloat = static_cast<float>(v.as<double>());
 			}
 		}
 	}

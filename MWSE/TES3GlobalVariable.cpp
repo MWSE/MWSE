@@ -4,7 +4,7 @@ namespace TES3 {
 	float GlobalVariable::getValue() const {
 		switch (tolower(valueType)) {
 		case 's': return short(value);
-		case 'l': return int(value);
+		case 'l': return float(int(value));
 		}
 		return value;
 	}

@@ -34,15 +34,6 @@ namespace mwse {
 			return false;
 		}
 
-		// Validate autocalc.
-		if (autocalc < 0 || autocalc > 1) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetEnchantInfo: Autocalc value of range." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(false);
-			return false;
-		}
-
 		const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId);
 		if (enchant == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
@@ -54,8 +45,8 @@ namespace mwse {
 
 		// Set values.
 		enchant->castType = static_cast<TES3::EnchantmentCastType>(type);
-		enchant->chargeCost = cost;
-		enchant->maxCharge = charge;
+		enchant->chargeCost = static_cast<unsigned short>(cost);
+		enchant->maxCharge = static_cast<unsigned short>(charge);
 		enchant->vTable.object->setAutoCalc(enchant, autocalc);
 
 		mwse::Stack::getInstance().pushLong(true);

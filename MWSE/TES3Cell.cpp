@@ -123,7 +123,7 @@ namespace TES3 {
 
 	std::optional<float> Cell::getWaterLevel() const {
 		if (getIsOrBehavesAsExterior()) {
-			return 0.0;
+			return 0.0f;
 		}
 		else if (getHasWater()) {
 			return waterLevelOrRegion.waterLevel;

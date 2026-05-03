@@ -16,15 +16,15 @@ namespace TES3 {
 
 		bool add(Spell*);
 		bool add(const char*);
-		bool add(const std::string&);
+		bool add(std::string_view);
 
 		bool remove(Spell*);
 		bool remove(const char*);
-		bool remove(const std::string&);
+		bool remove(std::string_view);
 
 		bool contains(Spell*);
 		bool contains(const char*);
-		bool contains(const std::string&);
+		bool contains(std::string_view);
 
 		Spell* getCheapest();
 

@@ -18,7 +18,7 @@ namespace TES3 {
 		};
 		char id[32]; // 0x10
 		NI::Pointer<NI::SourceTexture> texture; // 0x30 // Loaded texture.
-		char texturePath[260]; // 0x34
+		char texturePath[MAX_PATH]; // 0x34
 		int indexInTexturesList; // 0x138
 		int indexInLTEX; // 0x13C
 		IteratedList<PropertyMap*> * unknown_0x140; // Relates land textures to texture properties?

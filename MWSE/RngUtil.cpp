@@ -1,7 +1,7 @@
 #include "RngUtil.h"
 
 namespace mwse::rng {
-	static std::mt19937 mwse_rng_mt19937(std::time(0));
+	static std::mt19937 mwse_rng_mt19937(static_cast<unsigned int>(std::time(0)));
 
 	long getRandomLong(long min, long max) {
 		if (min > max) {

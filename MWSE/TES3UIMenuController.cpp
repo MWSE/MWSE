@@ -78,7 +78,7 @@ namespace TES3::UI {
 		}
 
 		// This only matters if the menu already exists and is showing.
-		static const TES3::UI::UI_ID mainHelpLayerMenu = 0x8105;
+		constexpr UI_ID mainHelpLayerMenu = static_cast<UI_ID>(0x8105);
 		auto helpMenu = TES3::UI::findHelpLayerMenu(mainHelpLayerMenu);
 		if (helpMenu == nullptr || helpMenu->visible == false) {
 			return;

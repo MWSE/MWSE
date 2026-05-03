@@ -165,7 +165,7 @@ namespace TES3 {
 		if (value > 255.0 || value < 0.0) {
 			throw std::invalid_argument("tes3sound.setMinDistance: Value must be between 0 and 255.");
 		}
-		setMinDistance(value);
+		setMinDistance(static_cast<unsigned char>(value));
 	}
 
 	unsigned char Sound::getMaxDistance() const {
@@ -180,7 +180,7 @@ namespace TES3 {
 		if (value > 255.0 || value < 0.0) {
 			throw std::invalid_argument("tes3sound.setMaxDistance: Value must be between 0 and 255.");
 		}
-		setMaxDistance(value);
+		setMaxDistance(static_cast<unsigned char>(value));
 	}
 
 	float Sound::getVolume() {
@@ -239,7 +239,7 @@ namespace TES3 {
 		auto loop = mwse::lua::getOptionalParam(params, "loop", false);
 		auto volume = mwse::lua::getOptionalParam(params, "volume", 1.0f) * 250.0f;
 		auto pitch = mwse::lua::getOptionalParam(params, "pitch", 1.0f);
-		return play(loop ? TES3::SoundPlayFlags::Loop : 0, volume, pitch, true);
+		return play(loop ? TES3::SoundPlayFlags::Loop : 0, static_cast<unsigned char>(volume), pitch, true);
 	}
 }
 

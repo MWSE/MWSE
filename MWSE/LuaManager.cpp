@@ -747,7 +747,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 
 		// Trigger initialization.
@@ -980,7 +980,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 	}
 
@@ -2743,7 +2743,7 @@ namespace mwse::lua {
 
 	bool isPathDisabled(const std::string_view& path) {
 		const auto disabledPathItt = std::find_if(disabledMarkers.begin(), disabledMarkers.end(),
-			[&](const std::string& s) {
+			[&](std::string_view s) {
 				return path.find(s) != std::string::npos;
 			});
 		return disabledPathItt != disabledMarkers.end();

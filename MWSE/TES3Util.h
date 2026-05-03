@@ -8,7 +8,7 @@
 
 namespace mwse::tes3 {
 	TES3::Reference* getReference(const char* id);
-	TES3::Reference* getReference(const std::string& id);
+	TES3::Reference* getReference(std::string_view id);
 
 	void setDataString(char** string, const char* contents, bool allowEmpty = false);
 

@@ -47,7 +47,7 @@ namespace mwse {
 	}
 
 	float PushB::execute(mwse::VMExecuteInterface& virtualMachine) {
-		Stack::getInstance().pushByte(pushData);
+		Stack::getInstance().pushByte(static_cast<char>(pushData));
 		return 0.0f;
 	}
 	//----------------------------------------
@@ -71,7 +71,7 @@ namespace mwse {
 	}
 
 	float PushS::execute(mwse::VMExecuteInterface& virtualMachine) {
-		Stack::getInstance().pushShort(pushData);
+		Stack::getInstance().pushShort(static_cast<short>(pushData));
 		return 0.0f;
 	}
 	//----------------------------------------

@@ -382,7 +382,7 @@ void VirtualMachine::setLongGlobal(const char* id, long value)
 		return;
 	}
 
-	globalVar->value = value;
+	globalVar->value = static_cast<float>(value);
 }
 
 short VirtualMachine::getShortGlobal(const char* id)

@@ -246,7 +246,7 @@ namespace TES3 {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = mwse::Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(mwse::Configuration::BuildNumber);
 		}
 
 		return loaded ? LoadGameResult::Success : LoadGameResult::Failure;
@@ -290,7 +290,7 @@ namespace TES3 {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = mwse::Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(mwse::Configuration::BuildNumber);
 		}
 
 		return loaded ? LoadGameResult::Success : LoadGameResult::Failure;
