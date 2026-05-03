@@ -34,12 +34,12 @@ namespace NI {
 		Color& operator=(const sol::table table);
 		Color& operator=(const sol::object& object);
 
-		bool operator==(const Color& c);
-		bool operator!=(const Color& c);
-		Color operator+(const Color&);
-		Color operator-(const Color&);
-		Color operator*(const Color&);
-		Color operator*(const float);
+		bool operator==(const Color&) const;
+		bool operator!=(const Color&) const;
+		Color operator+(const Color&) const;
+		Color operator-(const Color&) const;
+		Color operator*(const Color&) const;
+		Color operator*(const float) const;
 
 		//
 		// Custom functions.
