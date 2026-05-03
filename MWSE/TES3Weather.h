@@ -109,8 +109,12 @@ namespace TES3 {
 		static float calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity);
 		void updateCloudWind();
 		void updateAmbientSound(float transitionScalar);
+		void updateAmbientSound_lua();
+		void playSound(Sound* sound) const;
 		void updateLoopSound(Sound*& sound, const char* soundId, bool& playing, unsigned char volume, bool shouldPlay) const;
+		std::tuple<Sound*, bool> updateLoopSound_lua(Sound* sound, const char* soundId, float volume, bool shouldPlay) const;
 		void updatePlayingSoundVolume(Sound* sound, unsigned char volume) const;
+		void updateSound(Sound* sound, float volume) const;
 		void updatePrecipitationParticles(int type, float transitionScalar, float deltaTime, float rainRadius, float rainHeightMin, float rainHeightMax, float rainEntranceSpeed) const;
 		void updateUnderwaterFrequency(Sound* sound) const;
 		void updateCloudTexture(NI::TriShape* shape) const;

@@ -6308,6 +6308,7 @@ namespace mwse::lua {
 		weather->supportsBlightCloud = getOptionalParam<bool>(params, "supportsBlightCloud", false);
 		weather->supportsSnow = getOptionalParam<bool>(params, "supportsSnow", false);
 		weather->supportsBlizzard = getOptionalParam<bool>(params, "supportsBlizzard", false);
+		weather->data = getOptionalParam<sol::table>(params, "data", state.create_table());
 
 		// Get the custom functions.
 		sol::optional<sol::protected_function> simulate = params["simulate"];

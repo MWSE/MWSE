@@ -476,6 +476,10 @@ namespace TES3 {
 		updateLoopSound(soundAmbientLoop, soundIDAmbientLoop, ambientPlaying, controller ? controller->getWeatherScaledVolume(transitionScalar) : 0, transitionScalar >= 0.05f);
 	}
 
+	void Weather::updateAmbientSound_lua() {
+		updateAmbientSound(getRelevance());
+	}
+
 	void Weather::playSound(Sound* sound) const {
 		if (!sound) {
 			return;
@@ -519,6 +523,13 @@ namespace TES3 {
 		}
 	}
 
+	std::tuple<Sound*, bool> Weather::updateLoopSound_lua(Sound* sound, const char* soundId, float volume, bool shouldPlay) const {
+		bool out_playing = false;
+		const auto scaledVolume = controller->getWeatherScaledVolume(volume);
+		updateLoopSound(sound, soundId, out_playing, scaledVolume, shouldPlay);
+		return { sound, out_playing };
+	}
+
 	void Weather::updatePlayingSoundVolume(Sound* sound, unsigned char volume) const {
 		if (!sound || !sound->isPlaying()) {
 			return;
@@ -526,6 +537,10 @@ namespace TES3 {
 
 		sound->adjustPlayingSoundVolume(volume);
 		updateUnderwaterFrequency(sound);
+	}
+
+	void Weather::updateSound(Sound* sound, float volume) const {
+		updatePlayingSoundVolume(sound, controller->getWeatherScaledVolume(volume));
 	}
 
 	void Weather::updatePrecipitationParticles(int type, float transitionScalar, float deltaTime, float rainRadius, float rainHeightMin, float rainHeightMax, float rainEntranceSpeed) const {

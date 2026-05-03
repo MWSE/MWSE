@@ -38,3 +38,45 @@
 --- @field transitionDelta number The weather's transition delta.
 --- @field underwaterSoundState boolean The weather's underwater sound state flag. This value will be `true`, while the player is underwater.
 --- @field windSpeed number The weather's wind speed.
+tes3weather = {}
+
+--- Gets the precipitation blend state for the given weather type.
+--- @param weather tes3.weather|number The weather index to use the precipitation of.
+--- @param relevance number The scalar for the result.
+--- @return number blend The combined relevence for the precipitation type.
+function tes3weather:getPrecipitationBlend(weather, relevance) end
+
+--- Plays the given sound, using the base weather effect volume. Handles other effects, such as underwater pitch shifting.
+--- @param sound tes3sound The sound to play.
+function tes3weather:playSound(sound) end
+
+--- Updates the default-supported ambient sound.
+function tes3weather:updateAmbientSound() end
+
+--- Updates the cloud rotation based on current wind speed and `windJitterScalar`.
+function tes3weather:updateCloudWind() end
+
+--- Updates the volume of a looping sound. Also handles loading the sound if it isn't given, and will return the loaded sound asnd if it is played. Additionally, it handles underwater frequency changes.
+--- @param sound tes3sound The sound to play. If `nil`, the sound will be loaded using the `soundId` ID and returned as the first value.
+--- @param soundId string The ID of the sound to play. Used to load the sound, if `sound` is `nil`.
+--- @param volume number The scalar for the volume. The final volume played will use the master and effect volume scalars.
+--- @param shouldPlay boolean If true, the sound will continue playing, update its volume, and track underwater frequency changes. If false, the sound will stop playing. This function's second returned value will be true if the sound exists and should play.
+--- @return tes3sound|nil sound The sound given, the newly located/loaded sound, or nil if the sound could not be resolved.
+--- @return boolean playing True if the sound is playing, or false if it is not.
+function tes3weather:updateLoopSound(sound, soundId, volume, shouldPlay) end
+
+--- Updates precipitation particles for the given weather particle type. This handles spawn probability, active particle count, and particle creation using the provided spawn region settings.
+--- @param type number The precipitation particle type to update. `1` is rain and `5` is snow.
+--- @param transitionScalar number The weather's current transition scalar.
+--- @param deltaTime number The frame delta time.
+--- @param radius number The spawn radius for new particles.
+--- @param heightMin number The minimum spawn height for new particles.
+--- @param heightMax number The maximum spawn height for new particles.
+--- @param entranceSpeed number The particle spawn rate scalar. Higher values spawn more slowly.
+function tes3weather:updatePrecipitationParticles(type, transitionScalar, deltaTime, radius, heightMin, heightMax, entranceSpeed) end
+
+--- Updates a simple playing sound. Does not load or autoplay a sound if it is already loaded.
+--- @param sound tes3sound The sound to play.
+--- @param volume number The scalar for the volume. The final volume played will use the master and effect volume scalars.
+function tes3weather:updateSound(sound, volume) end
+
