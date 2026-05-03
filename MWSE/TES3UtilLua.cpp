@@ -346,7 +346,7 @@ namespace mwse::lua {
 
 		// Apply mix and rescale to 0-250
 		const auto worldController = TES3::WorldController::get();
-		volume *= 250.0 * worldController->audioController->getMixVolume(TES3::AudioMixType(mix));
+		volume *= worldController->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
 
 		// Only allow positional sounds if we are loaded in and have a player reference.
 		const auto mobilePlayer = worldController->getMobilePlayer();
@@ -365,7 +365,7 @@ namespace mwse::lua {
 		// Try to fall back on direct-playing a sound.
 		if (sound) {
 			const auto flags = loop ? TES3::SoundPlayFlags::Loop : NULL;
-			return sound->play(flags, volume, pitch, true);
+			return sound->play(flags, static_cast<unsigned char>(volume), pitch, true);
 		}
 
 		return false;
@@ -405,7 +405,7 @@ namespace mwse::lua {
 		volume = std::min(volume, 1.0);
 
 		// Apply mix and rescale to 0-250
-		volume *= 250.0 * TES3::WorldController::get()->audioController->getMixVolume(TES3::AudioMixType(mix));
+		volume *= TES3::WorldController::get()->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
 
 		TES3::DataHandler::get()->adjustSoundVolume(sound, reference, unsigned char(volume));
 	}
@@ -4395,7 +4395,7 @@ namespace mwse::lua {
 
 		// Apply volume, using mix channel and rescale to 0-250.
 		auto volume = std::clamp(getOptionalParam(params, "volume", 1.0), 0.0, 1.0);
-		volume *= 250.0 * worldController->audioController->getMixVolume(TES3::AudioMixType::Voice);
+		volume *= worldController->audioController->getMixVolumeRaw(TES3::AudioMixType::Voice);
 
 		// Show a messagebox.
 		if (worldController->showSubtitles || getOptionalParam(params, "forceSubtitle", false)) {

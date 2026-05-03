@@ -777,7 +777,7 @@ namespace TES3 {
 
 			if (lockData && lockData->trap) {
 				if (chance <= 0 || chance <= (mwse::tes3::rand() % 100)) {
-					dataHandler->addSoundById("Disarm Trap Fail", this, 0, worldController->audioController->getMixVolume(AudioMixType::Effects) * 250);
+					dataHandler->addSoundById("Disarm Trap Fail", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 					if (chance <= 0) {
 						TES3::UI::showMessageBox(ndd->GMSTs[GMST::sTrapImpossible]->value.asString);
 					}
@@ -789,7 +789,7 @@ namespace TES3 {
 					lockData->trap = nullptr;
 					setObjectModified(true);
 					Game::get()->clearTarget();
-					dataHandler->addSoundById("Disarm Trap", this, 0, worldController->audioController->getMixVolume(AudioMixType::Effects) * 250);
+					dataHandler->addSoundById("Disarm Trap", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 
 					auto macp = worldController->getMobilePlayer();
 					if (macp == disarmer) {
@@ -837,7 +837,7 @@ namespace TES3 {
 
 			if (lockData && lockData->lockLevel > 0) {
 				if (chance <= 0 || chance <= (mwse::tes3::rand() % 100)) {
-					dataHandler->addSoundById("Open Lock Fail", this, 0, worldController->audioController->getMixVolume(AudioMixType::Effects) * 250);
+					dataHandler->addSoundById("Open Lock Fail", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 					if (chance <= 0) {
 						TES3::UI::showMessageBox(ndd->GMSTs[GMST::sLockImpossible]->value.asString);
 					}
@@ -849,7 +849,7 @@ namespace TES3 {
 					lockData->locked = false;
 					setObjectModified(true);
 					Game::get()->clearTarget();
-					dataHandler->addSoundById("Open Lock", this, 0, worldController->audioController->getMixVolume(AudioMixType::Effects) * 250);
+					dataHandler->addSoundById("Open Lock", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 
 					auto macp = worldController->getMobilePlayer();
 					if (macp == disarmer) {
