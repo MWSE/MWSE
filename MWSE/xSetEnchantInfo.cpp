@@ -54,8 +54,8 @@ namespace mwse {
 
 		// Set values.
 		enchant->castType = static_cast<TES3::EnchantmentCastType>(type);
-		enchant->chargeCost = cost;
-		enchant->maxCharge = charge;
+		enchant->chargeCost = static_cast<unsigned short>(cost);
+		enchant->maxCharge = static_cast<unsigned short>(charge);
 		enchant->vTable.object->setAutoCalc(enchant, autocalc);
 
 		mwse::Stack::getInstance().pushLong(true);

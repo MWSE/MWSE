@@ -91,7 +91,7 @@ namespace mwse {
 			//! TODO: Recalculate spell cost.
 		}
 		else if (!(flags & TES3::SpellFlag::AutoCalc)) {
-			spell->magickaCost = cost;
+			spell->magickaCost = static_cast<unsigned short>(cost);
 		}
 
 		// Set other information.
