@@ -3,6 +3,8 @@
 #include "TES3Util.h"
 #include "TES3WorldController.h"
 
+#include "MemoryUtil.h"
+
 #include "LuaUtil.h"
 
 #include "LuaSoundObjectPlayEvent.h"
@@ -10,6 +12,27 @@
 #include "LuaManager.h"
 
 namespace TES3 {
+	SoundBuffer::SoundBuffer() {
+		std::memset(this, 0, sizeof(SoundBuffer));
+	}
+
+	SoundBuffer::~SoundBuffer() {
+		// Mirrors the engine's inline destruction in ReleaseSoundBuffer (0x4027E0):
+		// release any DSound COM objects, free the rawAudio peak-envelope buffer.
+		// Operator delete handles the SoundBuffer struct itself.
+		if (lpSound3DBuffer) lpSound3DBuffer->Release();
+		if (lpSoundBuffer) lpSoundBuffer->Release();
+		if (rawAudio) mwse::tes3::_delete(rawAudio);
+	}
+
+	void* SoundBuffer::operator new(size_t size) {
+		return mwse::tes3::_new(size);
+	}
+
+	void SoundBuffer::operator delete(void* p) {
+		mwse::tes3::free(p);
+	}
+
 	Sound::Sound() {
 		ctor();
 	}

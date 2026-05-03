@@ -2359,6 +2359,12 @@ namespace mwse::patch {
 		voice::install();
 	}
 
+	void uninstallPatches() {
+		// Patch: Async voiceover loading — stop the worker before the engine
+		// starts tearing down DSound / DataHandler.
+		voice::shutdown();
+	}
+
 	//
 	// Create minidumps.
 	//
