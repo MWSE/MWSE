@@ -920,6 +920,10 @@ namespace TES3 {
 		}
 	}
 
+	static int __fastcall Patch_GetCurrentWeather(const TES3::WeatherController* wc) {
+		return wc->getCurrentWeatherSpoofedIndex();
+	}
+
 	void WeatherController::installPatches() {
 #if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
 		// Change size of constructor.
@@ -1030,6 +1034,9 @@ namespace TES3 {
 		mwse::genNOPUnprotected(0x50C361, 0x50C370 - 0x50C361);
 		bool (Region::*Region_setCurrentWeather)(int) = &Region::setCurrentWeather;
 		mwse::genCallEnforced(0x50C373, 0x4812F0, *reinterpret_cast<const DWORD*>(&Region_setCurrentWeather));
+
+		// Patch mwscript: GetCurrentWeather
+		mwse::genCallEnforced(0x50C410, 0x4424E0, reinterpret_cast<DWORD>(Patch_GetCurrentWeather));
 #else
 		const auto WeatherController_switchWeather = &WeatherController::switchWeather;
 		mwse::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
