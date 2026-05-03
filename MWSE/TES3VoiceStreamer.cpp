@@ -1,7 +1,5 @@
 #include "TES3VoiceStreamer.h"
 
-#include <dsound.h>
-
 #include "Log.h"
 #include "MemoryUtil.h"
 #include "WindowsUtil.h"
@@ -13,12 +11,6 @@
 #include "TES3Reference.h"
 #include "TES3Sound.h"
 #include "TES3WorldController.h"
-
-#include <atomic>
-#include <condition_variable>
-#include <deque>
-#include <memory>
-#include <thread>
 
 namespace mwse::patch::voice {
 
