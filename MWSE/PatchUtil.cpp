@@ -34,6 +34,7 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
+#include "TES3WeatherController.h"
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
@@ -2300,6 +2301,9 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Pach: Extend weather system.
+		TES3::WeatherController::installPatches();
 	}
 
 	void installPostLuaPatches() {

@@ -319,6 +319,142 @@ function tes3.addTopic(params) end
 --- @field topic tes3dialogue|string The topic to add
 --- @field updateGUI? boolean *Default*: `true`. If true, the GUI will be updated respecting the adding of the topic.
 
+--- This function creates a new custom weather. The weather can be scripted through lua. This function should be used inside the [`initialized`](https://mwse.github.io/MWSE/events/initialized/) event callback.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3addweather).
+--- @param params tes3.addWeather.params This table accepts the following values:
+--- 
+--- `id`: tes3.weather|integer — The unique id of the weather. Must be greater than 10 and less than 254, and must not already be used by another custom weather.
+--- 
+--- `key`: string — A unique string key for the weather. This is the key added to the `tes3.weather` table, such that `tes3.weather[key] = id`.
+--- 
+--- `name`: string — The name of the custom weather.
+--- 
+--- `ambientDayColor`: tes3vector3|table — Ambient light color during the day.
+--- 
+--- `ambientNightColor`: tes3vector3|table — Ambient light color during the night.
+--- 
+--- `ambientSunriseColor`: tes3vector3|table — Ambient light color during sunrise.
+--- 
+--- `ambientSunsetColor`: tes3vector3|table — Ambient light color during sunset.
+--- 
+--- `cloudsMaxPercent?`: number — *Default*: `1`. The maximum percentage of cloud coverage. Requires a value between 0.0 and 1.0.
+--- 
+--- `cloudsSpeed?`: number — *Default*: `1.25`. The speed that clouds move across the sky.
+--- 
+--- `fogDayColor`: tes3vector3|table — Fog color during the day.
+--- 
+--- `fogNightColor`: tes3vector3|table — Fog color during the night.
+--- 
+--- `fogSunriseColor`: tes3vector3|table — Fog color during sunrise.
+--- 
+--- `fogSunsetColor`: tes3vector3|table — Fog color during sunset.
+--- 
+--- `glareView?`: number — *Default*: `1`. Controls how strongly sunlight glares into the camera.
+--- 
+--- `landFogDayDepth?`: number — *Default*: `0.69`. The land fog depth during the day.
+--- 
+--- `landFogNightDepth?`: number — *Default*: `0.69`. The land fog depth during the night.
+--- 
+--- `skyDayColor`: tes3vector3|table — Sky color during the day.
+--- 
+--- `skyNightColor`: tes3vector3|table — Sky color during the night.
+--- 
+--- `skySunriseColor`: tes3vector3|table — Sky color during sunrise.
+--- 
+--- `skySunsetColor`: tes3vector3|table — Sky color during sunset.
+--- 
+--- `sunDayColor`: tes3vector3|table — Sun color during the day.
+--- 
+--- `sundiscSunsetColor`: tes3vector3|table — Sun disc color during sunset.
+--- 
+--- `sunNightColor`: tes3vector3|table — Sun color during the night.
+--- 
+--- `sunSunriseColor`: tes3vector3|table — Sun color during sunrise.
+--- 
+--- `sunSunsetColor`: tes3vector3|table — Sun color during sunset.
+--- 
+--- `windSpeed?`: number — *Default*: `0.1`. The speed of the wind.
+--- 
+--- `cloudTexture?`: string — *Optional*. Path to the cloud texture used by the weather.
+--- 
+--- `ambientLoopSoundId?`: string — *Optional*. The sound ID for the ambient looping sound.
+--- 
+--- `overrideId?`: tes3.weather|integer — *Optional*. An override weather id used by the weather system. If provided, dialogue and script checks against the provided ID will return true for this weather as well. This can be used for backwards compatibility with vanilla weathers.
+--- 
+--- `rainThreshold?`: number — *Optional*. The transition threshold to be considered raining.
+--- 
+--- `stormThreshold?`: number — *Optional*. The transition threshold to be considered storming.
+--- 
+--- `snowThreshold?`: number — *Optional*. The transition threshold to be considered snowing.
+--- 
+--- `raindropsMax?`: number — *Optional*. The maximum amount of raindrop particles.
+--- 
+--- `snowflakesMax?`: number — *Optional*. The maximum amount of snowflake particles.
+--- 
+--- `windJitterScalar?`: number — *Default*: `1`. The significance that wind speed has on randomized cloud movement.
+--- 
+--- `supportsParticleLerp?`: boolean — *Default*: `false`. If true, particle lerping is enabled for this weather.
+--- 
+--- `supportsAshCloud?`: boolean — *Default*: `false`. If true, this weather can support ash clouds.
+--- 
+--- `supportsBlightCloud?`: boolean — *Default*: `false`. If true, this weather can support blight clouds.
+--- 
+--- `supportsBlizzard?`: boolean — *Default*: `false`. If true, this weather can support blizzard effects.
+--- 
+--- `simulate?`: fun(e: tes3weatherSimulateEventData) — *Optional*. A function called every frame while the weather is active.
+--- 
+--- `transition?`: fun(e: tes3weatherTransitionEventData) — *Optional*. A function called when the weather transitions in.
+--- 
+--- `unload?`: fun(e: tes3weatherUnloadEventData) — *Optional*. A function called when the weather is unloaded.
+--- @return tes3weatherCustom weather No description yet available.
+function tes3.addWeather(params) end
+
+---Table parameter definitions for `tes3.addWeather`.
+--- @class tes3.addWeather.params
+--- @field id tes3.weather|integer The unique id of the weather. Must be greater than 10 and less than 254, and must not already be used by another custom weather.
+--- @field key string A unique string key for the weather. This is the key added to the `tes3.weather` table, such that `tes3.weather[key] = id`.
+--- @field name string The name of the custom weather.
+--- @field ambientDayColor tes3vector3|table Ambient light color during the day.
+--- @field ambientNightColor tes3vector3|table Ambient light color during the night.
+--- @field ambientSunriseColor tes3vector3|table Ambient light color during sunrise.
+--- @field ambientSunsetColor tes3vector3|table Ambient light color during sunset.
+--- @field cloudsMaxPercent? number *Default*: `1`. The maximum percentage of cloud coverage. Requires a value between 0.0 and 1.0.
+--- @field cloudsSpeed? number *Default*: `1.25`. The speed that clouds move across the sky.
+--- @field fogDayColor tes3vector3|table Fog color during the day.
+--- @field fogNightColor tes3vector3|table Fog color during the night.
+--- @field fogSunriseColor tes3vector3|table Fog color during sunrise.
+--- @field fogSunsetColor tes3vector3|table Fog color during sunset.
+--- @field glareView? number *Default*: `1`. Controls how strongly sunlight glares into the camera.
+--- @field landFogDayDepth? number *Default*: `0.69`. The land fog depth during the day.
+--- @field landFogNightDepth? number *Default*: `0.69`. The land fog depth during the night.
+--- @field skyDayColor tes3vector3|table Sky color during the day.
+--- @field skyNightColor tes3vector3|table Sky color during the night.
+--- @field skySunriseColor tes3vector3|table Sky color during sunrise.
+--- @field skySunsetColor tes3vector3|table Sky color during sunset.
+--- @field sunDayColor tes3vector3|table Sun color during the day.
+--- @field sundiscSunsetColor tes3vector3|table Sun disc color during sunset.
+--- @field sunNightColor tes3vector3|table Sun color during the night.
+--- @field sunSunriseColor tes3vector3|table Sun color during sunrise.
+--- @field sunSunsetColor tes3vector3|table Sun color during sunset.
+--- @field windSpeed? number *Default*: `0.1`. The speed of the wind.
+--- @field cloudTexture? string *Optional*. Path to the cloud texture used by the weather.
+--- @field ambientLoopSoundId? string *Optional*. The sound ID for the ambient looping sound.
+--- @field overrideId? tes3.weather|integer *Optional*. An override weather id used by the weather system. If provided, dialogue and script checks against the provided ID will return true for this weather as well. This can be used for backwards compatibility with vanilla weathers.
+--- @field rainThreshold? number *Optional*. The transition threshold to be considered raining.
+--- @field stormThreshold? number *Optional*. The transition threshold to be considered storming.
+--- @field snowThreshold? number *Optional*. The transition threshold to be considered snowing.
+--- @field raindropsMax? number *Optional*. The maximum amount of raindrop particles.
+--- @field snowflakesMax? number *Optional*. The maximum amount of snowflake particles.
+--- @field windJitterScalar? number *Default*: `1`. The significance that wind speed has on randomized cloud movement.
+--- @field supportsParticleLerp? boolean *Default*: `false`. If true, particle lerping is enabled for this weather.
+--- @field supportsAshCloud? boolean *Default*: `false`. If true, this weather can support ash clouds.
+--- @field supportsBlightCloud? boolean *Default*: `false`. If true, this weather can support blight clouds.
+--- @field supportsBlizzard? boolean *Default*: `false`. If true, this weather can support blizzard effects.
+--- @field simulate? fun(e: tes3weatherSimulateEventData) *Optional*. A function called every frame while the weather is active.
+--- @field transition? fun(e: tes3weatherTransitionEventData) *Optional*. A function called when the weather transitions in.
+--- @field unload? fun(e: tes3weatherUnloadEventData) *Optional*. A function called when the weather is unloaded.
+
 --- Changes the volume of a sound that is playing on a given reference.
 --- @param params tes3.adjustSoundVolume.params This table accepts the following values:
 --- 
@@ -1118,7 +1254,7 @@ function tes3.getCurrentAIPackageId(params) end
 --- @field reference tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|tes3reference|string No description yet available.
 
 --- Gets the currently active weather, from the player's current region.
---- @return tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder weather No description yet available.
+--- @return tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder weather No description yet available.
 function tes3.getCurrentWeather() end
 
 --- Returns a table with values x and y that contain the current cursor position.
@@ -4161,6 +4297,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.weaponUnreadied`
 ---| `tes3.event.weatherChangedImmediate`
 ---| `tes3.event.weatherCycled`
+---| `tes3.event.weatherSelect`
 ---| `tes3.event.weatherTransitionFinished`
 ---| `tes3.event.weatherTransitionStarted`
 

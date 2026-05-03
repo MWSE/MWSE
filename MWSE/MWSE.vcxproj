@@ -225,6 +225,7 @@
     <ClInclude Include="LuaWeaponUnreadiedEvent.h" />
     <ClInclude Include="LuaWeatherChangedImmediateEvent.h" />
     <ClInclude Include="LuaWeatherCycledEvent.h" />
+    <ClInclude Include="LuaWeatherSelectEvent.h" />
     <ClInclude Include="LuaWeatherTransitionFinishedEvent.h" />
     <ClInclude Include="LuaWeatherTransitionStartedEvent.h" />
     <ClInclude Include="MWSEConfig.h" />
@@ -531,6 +532,7 @@
     <ClInclude Include="TES3WeatherCloudy.h" />
     <ClInclude Include="TES3WeatherController.h" />
     <ClInclude Include="TES3WeatherControllerLua.h" />
+    <ClInclude Include="TES3WeatherCustom.h" />
     <ClInclude Include="TES3WeatherFoggy.h" />
     <ClInclude Include="TES3WeatherLua.h" />
     <ClInclude Include="TES3WeatherOvercast.h" />
@@ -735,6 +737,7 @@
     <ClCompile Include="LuaWeaponUnreadiedEvent.cpp" />
     <ClCompile Include="LuaWeatherChangedImmediateEvent.cpp" />
     <ClCompile Include="LuaWeatherCycledEvent.cpp" />
+    <ClCompile Include="LuaWeatherSelectEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionFinishedEvent.cpp" />
     <ClCompile Include="LuaWeatherTransitionStartedEvent.cpp" />
     <ClCompile Include="MGEApi.cpp" />
@@ -1022,6 +1025,14 @@
     <ClCompile Include="TES3Weather.cpp" />
     <ClCompile Include="TES3WeatherController.cpp" />
     <ClCompile Include="TES3WeatherControllerLua.cpp" />
+    <ClCompile Include="TES3WeatherCustom.cpp" />
+    <ClCompile Include="TES3WeatherCloudy.cpp" />
+    <ClCompile Include="TES3WeatherAsh.cpp" />
+    <ClCompile Include="TES3WeatherBlight.cpp" />
+    <ClCompile Include="TES3WeatherFoggy.cpp" />
+    <ClCompile Include="TES3WeatherOvercast.cpp" />
+    <ClCompile Include="TES3WeatherSnow.cpp" />
+    <ClCompile Include="TES3WeatherBlizzard.cpp" />
     <ClCompile Include="TES3WeatherLua.cpp" />
     <ClCompile Include="TES3WeatherRain.cpp" />
     <ClCompile Include="TES3WeatherThunder.cpp" />

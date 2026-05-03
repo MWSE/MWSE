@@ -9,9 +9,15 @@
 #include "NINode.h"
 
 namespace TES3 {
+#define MWSE_CUSTOM_WEATHERS TRUE
 	constexpr int WEATHER_ID_INVALID = -1;
 	constexpr int VANILLA_MAX_WEATHER_COUNT = 10;
+
+#if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
+	constexpr int MAX_WEATHER_COUNT = 255;
+#else
 	constexpr int MAX_WEATHER_COUNT = VANILLA_MAX_WEATHER_COUNT;
+#endif
 
 	namespace WeatherType {
 		enum WeatherType {
@@ -26,6 +32,9 @@ namespace TES3 {
 			Snow,
 			Blizzard,
 
+			FirstVanilla = Clear,
+			LastVanilla = Blizzard,
+
 			MINIMUM = 0,
 			MAXIMUM = MAX_WEATHER_COUNT - 1
 		};
@@ -35,9 +44,9 @@ namespace TES3 {
 		struct Particle {
 			struct VirtualTable {
 				void* dtor; // 0x0
-				void* getType; // 0x4
-				void* create; // 0x8
-				void* update; // 0xC
+				int(__thiscall* getType)(const Particle*); // 0x4
+				bool(__thiscall* create)(Particle*, WeatherController*, float, float, float); // 0x8
+				void(__thiscall* update)(Particle*, float, float); // 0xC
 			};
 			VirtualTable* vtbl;
 			Vector3 unknown_0x4;
@@ -46,16 +55,24 @@ namespace TES3 {
 			NI::Pointer<NI::Node> rainRoot; // 0x20
 			float remainingLifetime; // 0x24
 			float diameter; // 0x28
-			int unknown_0x2C;
+			float unknown_0x2C;
 			NI::Pointer<NI::AVObject> object; // 0x30
-			int unknown_0x34;
+			bool unknown_0x34;
+
+			int getType() const;
+			bool create(WeatherController* wc, float radius, float heightMin, float heightMax);
+			void update(float dt, float waterLevel);
 		};
-		NI::Node* sgSunVis; // 0x0
-		NI::Node* sgSunBase; // 0x4
-		NI::Node* sgSunGlare; // 0x8
+		NI::Pointer<NI::Node> sgSunVis; // 0x0
+		NI::Pointer<NI::Node> sgSunBase; // 0x4
+		NI::Pointer<NI::Node> sgSunGlare; // 0x8
 		int daysRemaining; // 0xC
 		bool unknown_0x10;
+#if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
+		Weather* vanillaWeathers[VANILLA_MAX_WEATHER_COUNT]; // 0x14
+#else
 		Weather* arrayWeathers[MAX_WEATHER_COUNT]; // 0x14
+#endif
 		Weather* currentWeather; // 0x3C
 		Weather* nextWeather; // 0x40
 		Moon* moonSecunda; // 0x44
@@ -144,6 +161,9 @@ namespace TES3 {
 		Vector3 skyDomePosition; // 0x1DC
 		int sunGlareRayTestLoadBalancer; // 0x1E8
 		bool isSunOccluded; // 0x1EC
+#if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
+		Weather* arrayWeathers[MAX_WEATHER_COUNT];
+#endif
 
 		WeatherController() = delete;
 		~WeatherController() = delete;
@@ -152,16 +172,50 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		int getCurrentWeatherIndex() const;
+		WeatherController* ctor(int initialWeatherId);
+		void dtor();
+
 		float calcSunDamageScalar();
 		void switchWeather(int weatherId, float startingTransition);
 
 		void enableSky();
 		void disableSky();
+
+		//
+		// Custom weather function rewrites
+		//
+
+		void transition(int weatherId);
+		void onInactivateWeather(DataHandler* dataHandler, float gameHour);
+		bool isStormy() const;
+		bool updateParticles(int mode) const;
+		void setRainCulled(bool culled) const;
+		void setSnowCulled(bool culled) const;
+		void setBlizzardCulled(bool culled) const;
+		void updateStormCloud(NI::Node* stormCloud, float transitionScalar, const Vector2& stormOrigin, float stormThreshold) const;
+		void updateNodeMaterialAlpha(NI::Node* node, float alpha) const;
+		int getActiveParticleCount(int type) const;
+		bool spawnParticle(int type, float radius, float heightMin, float heightMax);
+		void updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour);
+		float lerpE0() const;
+		Vector3* lerpE4(Vector3* out_result) const;
+
+		void setCurrentWeather(int weatherId);
+		void clearCurrentWeather();
+		void setNextWeather(int weatherId);
+		void clearNextWeather();
+
+		float getThunderFlashIntensity() const;
+		void setThunderFlashIntensity(float amount);
+		void modThunderFlashIntensity(float amount);
 		
 		//
 		// Helper functions.
 		//
+
+		int getCurrentWeatherIndex() const;
+		int getCurrentWeatherSpoofedIndex() const;
+		int getNextWeatherIndex() const;
 
 		std::reference_wrapper<Weather* [MAX_WEATHER_COUNT]> getWeathers();
 		Weather* getWeather(int weatherId) const;
@@ -176,12 +230,27 @@ namespace TES3 {
 		WeatherSnow* getWeatherSnow() const;
 		WeatherBlizzard* getWeatherBlizzard() const;
 
+		unsigned char getWeatherBaseVolume() const;
+		unsigned char getWeatherScaledVolume(float transitionScalar) const;
+		void setBackgroundToFog(NI::Object* background);
+		void setFogColour(NI::Property* fogProperty);
+		void updateAmbient(float gameHour);
+		void updateColours(float gameHour);
+		void updateClouds(float deltaTime);
+		void updateCloudVertexCols();
+		float lerpFogDepth(float gameHour);
+		float getFogDensityMult(float gameHour);
+		void updateSunCols(float gameHour);
+		void updateSun(float gameHour);
+
 		void updateVisuals();
 
 		void switchImmediate(int weather);
 		void switchTransition(int weather);
+
+		static void installPatches();
 	};
-	static_assert(sizeof(WeatherController) == 0x1F0, "TES3::WeatherController failed size validation");
+	//static_assert(sizeof(WeatherController) == 0x1F0, "TES3::WeatherController failed size validation");
 	static_assert(offsetof(WeatherController, currentWeather) == 0x3C, "TES3::WeatherController::currentWeather failed offset validation");
 	static_assert(offsetof(WeatherController, isSunOccluded) == 0x1EC, "TES3::WeatherController::isSunOccluded failed offset validation");
 	static_assert(sizeof(WeatherController::Particle) == 0x38, "TES3::WeatherController::Particle failed size validation");

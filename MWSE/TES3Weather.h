@@ -53,15 +53,23 @@ namespace TES3 {
 		float landFogNightDepth; // 0xF8
 		float cloudsSpeed; // 0xFC
 		float windSpeed; // 0x100
-		char texturePathCloud[260]; // 0x104
+		char texturePathCloud[MAX_PATH]; // 0x104
 		int unknown_0x208;
 		bool ambientPlaying;
 		bool underwaterSoundState;
-		char soundIDAmbientLoop[260]; // 0x20E
+		char soundIDAmbientLoop[MAX_PATH]; // 0x20E
 		Sound * soundAmbientLoop; // 0x314
 
-		Weather() = delete;
-		~Weather() = delete;
+		Weather();
+		Weather(WeatherController* wc);
+		~Weather();
+
+		void simulate(float transitionScalar, float deltaTime);
+		void unload();
+		void transition();
+
+		void vtbl_transition();
+		void vtbl_unload();
 
 		//
 		// Custom functions.
@@ -75,6 +83,41 @@ namespace TES3 {
 		bool setCloudTexturePath(const char* path);
 		const char* getAmbientLoopSoundID() const;
 		bool setAmbientLoopSoundID(const char* id);
+
+		bool isConsideredWeather(int id) const;
+		bool isCustomWeather() const;
+		bool supportsParticleLerp() const;
+		static constexpr auto IMPOSSIBLE_THRESHOLD = std::numeric_limits<float>::max();
+		bool getSupportsPrecipitationType(int type) const;
+		float getPrecipitationThreshold(int type) const;
+		float getPrecipitationBlend(int type, float transitionScalar) const;
+		int getPrecipitationParticleTarget(int type, float transitionScalar) const;
+		float getRainThreshold() const;
+		float getStormThreshold() const;
+		float getSnowThreshold() const;
+		float getRaindropsMax() const;
+		float getSnowflakesMax() const;
+		float getPrecipitationMax() const;
+		float getPrecipitationMax(int type) const;
+		float getRelevance() const;
+		bool getSupportsRain() const;
+		bool getSupportsAshCloud() const;
+		bool getSupportsBlightCloud() const;
+		bool getSupportsSnow() const;
+		bool getSupportsBlizzard() const;
+		float getWindJitter() const;
+		static float calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity);
+		void updateCloudWind();
+		void updateAmbientSound(float transitionScalar);
+		void updateAmbientSound_lua();
+		void playSound(Sound* sound) const;
+		void updateLoopSound(Sound*& sound, const char* soundId, bool& playing, unsigned char volume, bool shouldPlay) const;
+		std::tuple<Sound*, bool> updateLoopSound_lua(Sound* sound, const char* soundId, float volume, bool shouldPlay) const;
+		void updatePlayingSoundVolume(Sound* sound, unsigned char volume) const;
+		void updateSound(Sound* sound, float volume) const;
+		void updatePrecipitationParticles(int type, float transitionScalar, float deltaTime, float rainRadius, float rainHeightMin, float rainHeightMax, float rainEntranceSpeed) const;
+		void updateUnderwaterFrequency(Sound* sound) const;
+		void updateCloudTexture(NI::TriShape* shape) const;
 
 		// Storage for cached userdata.
 		sol::object getOrCreateLuaObject(lua_State* L) const;

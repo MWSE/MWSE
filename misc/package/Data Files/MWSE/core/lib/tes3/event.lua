@@ -177,6 +177,7 @@ return {
 	["weaponUnreadied"] = "weaponUnreadied",
 	["weatherChangedImmediate"] = "weatherChangedImmediate",
 	["weatherCycled"] = "weatherCycled",
+	["weatherSelect"] = "weatherSelect",
 	["weatherTransitionFinished"] = "weatherTransitionFinished",
 	["weatherTransitionStarted"] = "weatherTransitionStarted",
 }

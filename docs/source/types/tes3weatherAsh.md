@@ -231,6 +231,17 @@ The weather's land fog night depth value.
 
 ***
 
+### `relevance`
+<div class="search_terms" style="display: none">relevance</div>
+
+*Read-only*. The weather's relevance. If the weather is fully active and not transitioning, this value will be 1.0. If it is inactive entirely, it will be 0.0. The value will increase/decrease as it is transitioned to/from.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `skyDayColor`
 <div class="search_terms" style="display: none">skydaycolor</div>
 
@@ -382,4 +393,129 @@ The weather's wind speed.
 **Returns**:
 
 * `result` (number)
+
+***
+
+## Methods
+
+### `getPrecipitationBlend`
+<div class="search_terms" style="display: none">getprecipitationblend, precipitationblend</div>
+
+Gets the precipitation blend state for the given weather type.
+
+```lua
+local blend = myObject:getPrecipitationBlend(weather, relevance)
+```
+
+**Parameters**:
+
+* `weather` ([tes3.weather](../references/weather-types.md), number): The weather index to use the precipitation of.
+* `relevance` (number): The scalar for the result.
+
+**Returns**:
+
+* `blend` (number): The combined relevence for the precipitation type.
+
+***
+
+### `playSound`
+<div class="search_terms" style="display: none">playsound</div>
+
+Plays the given sound, using the base weather effect volume. Handles other effects, such as underwater pitch shifting.
+
+```lua
+myObject:playSound(sound)
+```
+
+**Parameters**:
+
+* `sound` ([tes3sound](../types/tes3sound.md)): The sound to play.
+
+***
+
+### `updateAmbientSound`
+<div class="search_terms" style="display: none">updateambientsound, ambientsound</div>
+
+Updates the default-supported ambient sound.
+
+```lua
+myObject:updateAmbientSound()
+```
+
+**Parameters**:
+
+
+***
+
+### `updateCloudWind`
+<div class="search_terms" style="display: none">updatecloudwind, cloudwind</div>
+
+Updates the cloud rotation based on current wind speed and `windJitterScalar`.
+
+```lua
+myObject:updateCloudWind()
+```
+
+**Parameters**:
+
+
+***
+
+### `updateLoopSound`
+<div class="search_terms" style="display: none">updateloopsound, loopsound</div>
+
+Updates the volume of a looping sound. Also handles loading the sound if it isn't given, and will return the loaded sound asnd if it is played. Additionally, it handles underwater frequency changes.
+
+```lua
+local sound, playing = myObject:updateLoopSound(sound, soundId, volume, shouldPlay)
+```
+
+**Parameters**:
+
+* `sound` ([tes3sound](../types/tes3sound.md)): The sound to play. If `nil`, the sound will be loaded using the `soundId` ID and returned as the first value.
+* `soundId` (string): The ID of the sound to play. Used to load the sound, if `sound` is `nil`.
+* `volume` (number): The scalar for the volume. The final volume played will use the master and effect volume scalars.
+* `shouldPlay` (boolean): If true, the sound will continue playing, update its volume, and track underwater frequency changes. If false, the sound will stop playing. This function's second returned value will be true if the sound exists and should play.
+
+**Returns**:
+
+* `sound` ([tes3sound](../types/tes3sound.md), nil): The sound given, the newly located/loaded sound, or nil if the sound could not be resolved.
+* `playing` (boolean): True if the sound is playing, or false if it is not.
+
+***
+
+### `updatePrecipitationParticles`
+<div class="search_terms" style="display: none">updateprecipitationparticles, precipitationparticles</div>
+
+Updates precipitation particles for the given weather particle type. This handles spawn probability, active particle count, and particle creation using the provided spawn region settings.
+
+```lua
+myObject:updatePrecipitationParticles(type, transitionScalar, deltaTime, radius, heightMin, heightMax, entranceSpeed)
+```
+
+**Parameters**:
+
+* `type` (number): The precipitation particle type to update. `1` is rain and `5` is snow.
+* `transitionScalar` (number): The weather's current transition scalar.
+* `deltaTime` (number): The frame delta time.
+* `radius` (number): The spawn radius for new particles.
+* `heightMin` (number): The minimum spawn height for new particles.
+* `heightMax` (number): The maximum spawn height for new particles.
+* `entranceSpeed` (number): The particle spawn rate scalar. Higher values spawn more slowly.
+
+***
+
+### `updateSound`
+<div class="search_terms" style="display: none">updatesound, sound</div>
+
+Updates a simple playing sound. Does not load or autoplay a sound if it is already loaded.
+
+```lua
+myObject:updateSound(sound, volume)
+```
+
+**Parameters**:
+
+* `sound` ([tes3sound](../types/tes3sound.md)): The sound to play.
+* `volume` (number): The scalar for the volume. The final volume played will use the master and effect volume scalars.
 

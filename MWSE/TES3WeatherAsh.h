@@ -9,6 +9,8 @@ namespace TES3 {
 
 		WeatherAsh() = delete;
 		~WeatherAsh() = delete;
+
+		void simulate(float transitionScalar, float deltaTime);
 	};
 	static_assert(sizeof(WeatherAsh) == 0x324, "TES3::WeatherAsh failed size validation");
 }

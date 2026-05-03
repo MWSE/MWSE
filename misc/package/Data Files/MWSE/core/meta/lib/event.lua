@@ -185,6 +185,7 @@
 --- @field register fun(eventId: '"weaponUnreadied"', callback: (fun(e: weaponUnreadiedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"weatherChangedImmediate"', callback: (fun(e: weatherChangedImmediateEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"weatherCycled"', callback: (fun(e: weatherCycledEventData): boolean?), options: table?)
+--- @field register fun(eventId: '"weatherSelect"', callback: (fun(e: weatherSelectEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"weatherTransitionFinished"', callback: (fun(e: weatherTransitionFinishedEventData): boolean?), options: table?)
 --- @field register fun(eventId: '"weatherTransitionStarted"', callback: (fun(e: weatherTransitionStartedEventData): boolean?), options: table?)
 event = {}

@@ -13,6 +13,8 @@ namespace TES3 {
 
 		WeatherBlight() = delete;
 		~WeatherBlight() = delete;
+
+		void simulate(float transitionScalar, float deltaTime);
 	};
 	static_assert(sizeof(WeatherBlight) == 0x340, "TES3::WeatherBlight failed size validation");
 }

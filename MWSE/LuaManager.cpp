@@ -63,6 +63,7 @@
 #include "TES3PlayerAnimationController.h"
 #include "TES3Probe.h"
 #include "TES3Reference.h"
+#include "TES3Region.h"
 #include "TES3RepairTool.h"
 #include "TES3Script.h"
 #include "TES3SoulGemData.h"
@@ -295,8 +296,8 @@
 #include "LuaUiSpellTooltipEvent.h"
 #include "LuaWeaponReadiedEvent.h"
 #include "LuaWeaponUnreadiedEvent.h"
-#include "LuaWeatherChangedImmediateEvent.h"
 #include "LuaWeatherCycledEvent.h"
+#include "LuaWeatherSelectEvent.h"
 #include "LuaWeatherTransitionFinishedEvent.h"
 #include "LuaWeatherTransitionStartedEvent.h"
 
@@ -2046,24 +2047,14 @@ namespace mwse::lua {
 	}
 	const size_t patchWeatherRegionCheck_size = 0xA;
 
-	bool __fastcall OnWeatherCycle(TES3::Cell* cell, DWORD _UNUSED_) {
+	bool __fastcall OnWeatherCycle(TES3::Cell* cell) {
 		// Fire off the event.
 		if (event::WeatherCycledEvent::getEventEnabled()) {
 			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::WeatherCycledEvent());
 		}
 
 		// Call original function.
-		return reinterpret_cast<bool(__thiscall*)(TES3::Cell*)>(0x4E22F0)(cell);
-	}
-
-	void __fastcall OnWeatherImmediateChange(TES3::WeatherController* controller, DWORD _UNUSED_, int weatherId, float transitionScalar) {
-		// Call original function.
-		controller->switchWeather(weatherId, transitionScalar);
-
-		// Fire off the event, after function completes.
-		if (event::WeatherChangedImmediateEvent::getEventEnabled()) {
-			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::WeatherChangedImmediateEvent());
-		}
+		return cell->getIsInterior();
 	}
 
 	void* __cdecl OnWeatherTransitionBegin(const char* texturePath, void* data) {
@@ -5670,13 +5661,15 @@ namespace mwse::lua {
 
 		// Event: Weather transitions
 		genCallEnforced(0x410294, 0x4E22F0, reinterpret_cast<DWORD>(OnWeatherCycle));
-		genCallEnforced(0x410368, 0x441C40, reinterpret_cast<DWORD>(OnWeatherImmediateChange));
-		genCallEnforced(0x441084, 0x441C40, reinterpret_cast<DWORD>(OnWeatherImmediateChange));
-		genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<DWORD>(OnWeatherImmediateChange));
-		genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<DWORD>(OnWeatherImmediateChange));
 		genCallEnforced(0x441B49, 0x6DE7F0, reinterpret_cast<DWORD>(OnWeatherTransitionBegin));
 		genCallEnforced(0x440F07, 0x414890, reinterpret_cast<DWORD>(OnWeatherTransitionEnd));
 		writePatchCodeUnprotected(0x410308, (BYTE*)&patchWeatherRegionCheck, patchWeatherRegionCheck_size);
+
+		// Event: weatherSelect
+		auto chooseNewWeather = &TES3::Region::chooseNewWeather;
+		genCallEnforced(0x40E875, 0x4812A0, *reinterpret_cast<DWORD*>(&chooseNewWeather));
+		genCallEnforced(0x410281, 0x4812A0, *reinterpret_cast<DWORD*>(&chooseNewWeather));
+		genCallEnforced(0x50C3B5, 0x4812A0, *reinterpret_cast<DWORD*>(&chooseNewWeather));
 
 		// Event: Select music track
 		genCallEnforced(0x40F8CA, 0x410EA0, reinterpret_cast<DWORD>(OnSelectMusicTrack));

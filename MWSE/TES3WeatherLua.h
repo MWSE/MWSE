@@ -28,6 +28,7 @@ namespace mwse::lua {
 		usertypeDefinition["landFogDayDepth"] = &TES3::Weather::landFogDayDepth;
 		usertypeDefinition["landFogNightDepth"] = &TES3::Weather::landFogNightDepth;
 		usertypeDefinition["name"] = sol::readonly_property(&TES3::Weather::getName);
+		usertypeDefinition["relevance"] = sol::readonly_property(&TES3::Weather::getRelevance);
 		usertypeDefinition["skyDayColor"] = &TES3::Weather::skyDayCol;
 		usertypeDefinition["skyNightColor"] = &TES3::Weather::skyNightCol;
 		usertypeDefinition["skySunriseColor"] = &TES3::Weather::skySunriseCol;
@@ -44,6 +45,15 @@ namespace mwse::lua {
 		// Binding for IDs and paths.
 		usertypeDefinition["ambientLoopSoundId"] = sol::property(&TES3::Weather::getAmbientLoopSoundID, &TES3::Weather::setAmbientLoopSoundID);
 		usertypeDefinition["cloudTexture"] = sol::property(&TES3::Weather::getCloudTexturePath, &TES3::Weather::setCloudTexturePath);
+
+		// Basic function binding.
+		usertypeDefinition["getPrecipitationBlend"] = &TES3::Weather::getPrecipitationBlend;
+		usertypeDefinition["playSound"] = &TES3::Weather::playSound;
+		usertypeDefinition["updateAmbientSound"] = &TES3::Weather::updateAmbientSound_lua;
+		usertypeDefinition["updateCloudWind"] = &TES3::Weather::updateCloudWind;
+		usertypeDefinition["updateLoopSound"] = &TES3::Weather::updateLoopSound_lua;
+		usertypeDefinition["updatePrecipitationParticles"] = &TES3::Weather::updatePrecipitationParticles;
+		usertypeDefinition["updateSound"] = &TES3::Weather::updateSound;
 	}
 
 	void bindTES3Weather();

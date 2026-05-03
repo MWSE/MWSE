@@ -529,7 +529,7 @@ namespace TES3 {
 			return;
 		}
 
-		context->compareValue = WorldController::get()->weatherController->getCurrentWeatherIndex();
+		context->compareValue = WorldController::get()->weatherController->getCurrentWeatherSpoofedIndex();
 	}
 
 	void loadFunctionPCVampire(DialogueFilterContext::ConditionalContext* context) {

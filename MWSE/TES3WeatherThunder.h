@@ -4,15 +4,11 @@
 
 namespace TES3 {
 	struct WeatherThunder : Weather {
-		char soundIDThunder1[260]; // 0x318
-		char soundIDThunder2[260]; // 0x41C
-		char soundIDThunder3[260]; // 0x520
-		char soundIDThunder4[260]; // 0x624
-		char soundIDRainLoop[260]; // 0x728
-		Sound* thunderSound1; // 0x82C
-		Sound* thunderSound2; // 0x830
-		Sound* thunderSound3; // 0x834
-		Sound* thunderSound4; // 0x838
+		static constexpr auto THUNDER_SOUND_COUNT = 4;
+
+		char thunderSoundIds[THUNDER_SOUND_COUNT][MAX_PATH]; // 0x318
+		char soundIDRainLoop[MAX_PATH]; // 0x728
+		Sound* thunderSounds[THUNDER_SOUND_COUNT]; // 0x82C
 		int thunderSoundCount; // 0x83C
 		Sound* soundRainLoop; // 0x840
 		float thunderFrequency; // 0x844
@@ -33,11 +29,40 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		void simulate(float transitionScalar, float deltaTime);
+		void transition();
+		void unload();
+
+		void loadThunderSounds();
+
+		const char* getThunderSoundId(size_t index) const;
+		bool setThunderSoundId(size_t index, const char* path);
+		Sound* getLoadedThunderSound(size_t index) const;
+
+		template <size_t index>
+		const char* getThunderSoundId() const {
+			return getThunderSoundId(index);
+		}
+
+		template <size_t index>
+		bool setThunderSoundId(const char* path) {
+			return setThunderSoundId(index, path);
+		}
+
+		Sound* getThunderSound(size_t index) const;
+		void setThunderSound(size_t index, Sound* sound);
+
+		template <size_t index>
+		Sound* getThunderSound() const {
+			return getThunderSound(index);
+		}
+
+		template <size_t index>
+		void setThunderSound(Sound* sound) {
+			setThunderSound(index, sound);
+		}
+
 		bool setRainLoopSoundID(const char* id);
-		bool setThunder1SoundID(const char* id);
-		bool setThunder2SoundID(const char* id);
-		bool setThunder3SoundID(const char* id);
-		bool setThunder4SoundID(const char* id);
 
 	};
 	static_assert(sizeof(WeatherThunder) == 0x86C, "TES3::WeatherThunder failed size validation");
