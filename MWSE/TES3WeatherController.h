@@ -204,6 +204,10 @@ namespace TES3 {
 		void clearCurrentWeather();
 		void setNextWeather(int weatherId);
 		void clearNextWeather();
+
+		float getThunderFlashIntensity() const;
+		void setThunderFlashIntensity(float amount);
+		void modThunderFlashIntensity(float amount);
 		
 		//
 		// Helper functions.

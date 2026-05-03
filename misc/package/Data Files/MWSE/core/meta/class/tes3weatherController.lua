@@ -57,6 +57,7 @@
 --- @field sunriseHour number The sunrise hour.
 --- @field sunsetDuration number The sunset duration.
 --- @field sunsetHour number The sunset hour.
+--- @field thunderFlashIntensity number The active thunder flash intensity.
 --- @field timescaleClouds string The timescale for clouds.
 --- @field transitionScalar number The scalar transition.
 --- @field underwaterColor tes3vector3 The underwater color, represented as a vector. The values can range from 0 to 1.

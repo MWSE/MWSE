@@ -91,6 +91,7 @@ namespace mwse::lua {
 			usertypeDefinition["sunriseHour"] = &TES3::WeatherController::sunriseHour;
 			usertypeDefinition["sunsetDuration"] = &TES3::WeatherController::sunsetDuration;
 			usertypeDefinition["sunsetHour"] = &TES3::WeatherController::sunsetHour;
+			usertypeDefinition["thunderFlashIntensity"] = sol::property(&TES3::WeatherController::getThunderFlashIntensity, &TES3::WeatherController::setThunderFlashIntensity);
 			usertypeDefinition["timescaleClouds"] = &TES3::WeatherController::timescaleClouds;
 			usertypeDefinition["transitionScalar"] = &TES3::WeatherController::transitionScalar;
 			usertypeDefinition["underwaterColor"] = &TES3::WeatherController::underwaterCol;

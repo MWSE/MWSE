@@ -27,35 +27,22 @@ namespace TES3 {
 		updatePrecipitationParticles(1, transitionScalar, deltaTime, rainRadius, rainHeightMin, rainHeightMax, rainEntranceSpeed);
 
 		loadThunderSounds();
-		const auto thunderChance = transitionScalar * thunderFrequency * deltaTime;
+		const auto thunderChance = transitionScalar * thunderFrequency * deltaTime * 0.2f;
 		const auto thunderRoll = mwse::rng::getRandomFloat(0.0f, 1.0f);
 
-		if (thunderRoll <= thunderChance * 0.2f && transitionScalar >= thunderThreshold) {
+		if (thunderRoll <= thunderChance && transitionScalar >= thunderThreshold) {
 			if (thunderSoundCount > 0) {
 				const auto selectedIndex = mwse::rng::getRandomLong(0, thunderSoundCount - 1);
 				const auto thunderSound = getLoadedThunderSound(selectedIndex);
-				if (thunderSound) {
-					thunderSound->playRaw(0, weatherController->getWeatherBaseVolume(), 1.0f, true);
-					updateUnderwaterFrequency(thunderSound);
-				}
-				weatherController->activeThunderFlashIntensity += static_cast<float>(thunderSoundCount - selectedIndex) / static_cast<float>(thunderSoundCount);
+				playSound(thunderSound);
+				weatherController->modThunderFlashIntensity(static_cast<float>(thunderSoundCount - selectedIndex) / static_cast<float>(thunderSoundCount));
 			}
 			else {
-				weatherController->activeThunderFlashIntensity = 1.0f;
-			}
-
-			if (weatherController->dataHandler && weatherController->dataHandler->waterController) {
-				weatherController->dataHandler->waterController->clearWaterReflectionFlag();
+				weatherController->setThunderFlashIntensity(1.0f);
 			}
 		}
 		else if (weatherController->activeThunderFlashIntensity > 0.0f) {
-			weatherController->activeThunderFlashIntensity -= deltaTime * flashDecrement;
-			if (weatherController->activeThunderFlashIntensity <= 0.0f) {
-				weatherController->activeThunderFlashIntensity = 0.0f;
-				if (weatherController->dataHandler && weatherController->dataHandler->waterController) {
-					weatherController->dataHandler->waterController->clearWaterReflectionFlag();
-				}
-			}
+			weatherController->modThunderFlashIntensity(deltaTime * flashDecrement * -1.0f);
 		}
 	}
 

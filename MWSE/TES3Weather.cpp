@@ -476,6 +476,15 @@ namespace TES3 {
 		updateLoopSound(soundAmbientLoop, soundIDAmbientLoop, ambientPlaying, controller ? controller->getWeatherScaledVolume(transitionScalar) : 0, transitionScalar >= 0.05f);
 	}
 
+	void Weather::playSound(Sound* sound) const {
+		if (!sound) {
+			return;
+		}
+
+		sound->playRaw(0, controller->getWeatherBaseVolume(), 1.0f, true);
+		updateUnderwaterFrequency(sound);
+	}
+
 	void Weather::updateLoopSound(Sound*& sound, const char* soundId, bool& playing, unsigned char volume, bool shouldPlay) const {
 		if (!sound && controller && controller->dataHandler && controller->dataHandler->nonDynamicData) {
 			sound = controller->dataHandler->nonDynamicData->findSound(soundId);

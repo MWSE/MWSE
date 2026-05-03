@@ -518,6 +518,30 @@ namespace TES3 {
 		nextWeather = nullptr;
 	}
 
+	float WeatherController::getThunderFlashIntensity() const {
+		return activeThunderFlashIntensity;
+	}
+
+	void WeatherController::setThunderFlashIntensity(float amount) {
+		activeThunderFlashIntensity = amount;
+
+		if (dataHandler && dataHandler->waterController) {
+			dataHandler->waterController->clearWaterReflectionFlag();
+		}
+	}
+
+	void WeatherController::modThunderFlashIntensity(float amount) {
+		activeThunderFlashIntensity += amount;
+
+		if (activeThunderFlashIntensity <= 0.0f) {
+			activeThunderFlashIntensity = 0.0f;
+		}
+
+		if (dataHandler && dataHandler->waterController) {
+			dataHandler->waterController->clearWaterReflectionFlag();
+		}
+	}
+
 	int WeatherController::getCurrentWeatherIndex() const {
 		return currentWeather ? currentWeather->index : WEATHER_ID_INVALID;
 	}
