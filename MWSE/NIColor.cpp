@@ -23,7 +23,7 @@ namespace NI {
 	// NiColor
 	//
 
-	Color::Color(TES3::Vector3& vector) {
+	Color::Color(const TES3::Vector3& vector) {
 		r = vector.x;
 		g = vector.y;
 		b = vector.z;
@@ -92,27 +92,27 @@ namespace NI {
 		return *this;
 	}
 
-	bool Color::operator==(const Color& c) {
+	bool Color::operator==(const Color& c) const {
 		return r == c.r && g == c.g && b == c.b;
 	}
 
-	bool Color::operator!=(const Color& c) {
+	bool Color::operator!=(const Color& c) const {
 		return r != c.r || g != c.g || b != c.b;
 	}
 
-	Color Color::operator+(const Color& c) {
+	Color Color::operator+(const Color& c) const {
 		return Color(r + c.r, g + c.g, b + c.b);
 	}
 
-	Color Color::operator-(const Color& c) {
+	Color Color::operator-(const Color& c) const {
 		return Color(r - c.r, g - c.g, b - c.b);
 	}
 
-	Color Color::operator*(const Color & c) {
+	Color Color::operator*(const Color & c) const {
 		return Color(r * c.r, g * c.g, b * c.b);
 	}
 
-	Color Color::operator*(const float scalar) {
+	Color Color::operator*(const float scalar) const {
 		return Color(r * scalar, g * scalar, b * scalar);
 	}
 
