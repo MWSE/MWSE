@@ -34,6 +34,7 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
+#include "TES3VoiceStreamer.h"
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
@@ -2350,6 +2351,18 @@ namespace mwse::patch {
 			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
 			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
 		}
+
+		// Patch: Async voiceover loading. Eliminates the main-thread MP3 decode
+		// spike when NPCs greet the player. Installed here (rather than in
+		// installPatches) so DataHandler::get() is valid when the worker thread
+		// first acquires criticalSectionAudioEvents.
+		voice::install();
+	}
+
+	void uninstallPatches() {
+		// Patch: Async voiceover loading — stop the worker before the engine
+		// starts tearing down DSound / DataHandler.
+		voice::shutdown();
 	}
 
 	//

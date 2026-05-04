@@ -184,6 +184,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		// Do thread-specific cleanup.
 		break;
 	case DLL_PROCESS_DETACH:
+		// Tear down patches that need orderly shutdown before the engine
+		// starts unloading DSound / DataHandler.
+		mwse::patch::uninstallPatches();
+
 		// Unhook Lua interface.
 		mwse::lua::LuaManager::getInstance().cleanup();
 		break;
