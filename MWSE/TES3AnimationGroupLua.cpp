@@ -36,10 +36,7 @@ namespace mwse::lua {
 			usertypeDefinition["groupId"] = sol::readonly_property(&TES3::AnimationGroup::groupId);
 			usertypeDefinition["nextGroup"] = sol::readonly_property(&TES3::AnimationGroup::nextGroup);
 			usertypeDefinition["soundGenCount"] = sol::readonly_property(&TES3::AnimationGroup::soundGenCount);
-#pragma warning(push)
-#pragma warning(disable: 4624)
 			usertypeDefinition["soundGenKeys"] = sol::readonly_property(&TES3::AnimationGroup::getSoundGenKeys);
-#pragma warning(pop)
 		}
 	}
 }

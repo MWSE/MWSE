@@ -99,17 +99,11 @@ namespace mwse::lua {
 			setUserdataForTES3BaseObject(usertypeDefinition);
 
 			// Basic property binding.
-#pragma warning(push)
-#pragma warning(disable: 4624)
 			usertypeDefinition["actors"] = sol::readonly_property(&TES3::Cell::actors);
 			usertypeDefinition["activators"] = sol::readonly_property(&TES3::Cell::persistentRefs);
-#pragma warning(pop)
 			usertypeDefinition["cellFlags"] = &TES3::Cell::cellFlags;
 			usertypeDefinition["pathGrid"] = sol::readonly_property(&TES3::Cell::pathGrid);
-#pragma warning(push)
-#pragma warning(disable: 4624)
 			usertypeDefinition["statics"] = sol::readonly_property(&TES3::Cell::temporaryRefs);
-#pragma warning(pop)
 
 			// Functions exposed as properties.
 			usertypeDefinition["ambientColor"] = sol::readonly_property(&TES3::Cell::getAmbientColor);

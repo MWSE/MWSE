@@ -44,10 +44,7 @@ namespace mwse::lua {
 			usertypeDefinition["nextArchive"] = sol::readonly_property(&TES3::Archive::nextArchive);
 			usertypeDefinition["offsetToFileNameHashes"] = sol::readonly_property(&TES3::Archive::offsetToFileNameHashes);
 			usertypeDefinition["path"] = sol::readonly_property(&TES3::Archive::path);
-#pragma warning(push)
-#pragma warning(disable: 4624)
 			usertypeDefinition["sizesAndOffsets"] = sol::readonly_property(&TES3::Archive::getFileOffsetSizeDataSpan);
-#pragma warning(pop)
 
 			// Function bindings.
 			usertypeDefinition["findFileIndex"] = &TES3::Archive::findFileIndex_lua;

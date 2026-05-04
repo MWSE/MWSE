@@ -8,8 +8,6 @@
 #include "TES3ReferenceList.h"
 
 namespace mwse::lua {
-#pragma warning(push)
-#pragma warning(disable: 4624)
 	void bindTES3ReferenceList() {
 		// Get our lua state.
 		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
@@ -27,5 +25,4 @@ namespace mwse::lua {
 		usertypeDefinition["head"] = sol::readonly_property(&TES3::ReferenceList::head);
 		usertypeDefinition["tail"] = sol::readonly_property(&TES3::ReferenceList::tail);
 	}
-#pragma warning(pop)
 }
