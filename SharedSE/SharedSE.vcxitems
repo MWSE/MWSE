@@ -36,7 +36,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIAmbientLight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIDirectionalLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIPointLight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NISpotLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix33.h" />
@@ -85,7 +89,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NICamera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionSwitch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.cpp" />
