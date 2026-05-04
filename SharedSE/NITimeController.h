@@ -43,6 +43,9 @@ namespace NI {
 		ObjectNET* target; // 0x28
 		Pointer<TimeController> nextController; // 0x2C
 		bool updateRequired; // 0x30
+
+		// Engine function pointers. Address is Morrowind.exe-specific; CSSE never calls these.
+		static constexpr auto _copy = reinterpret_cast<void(__thiscall*)(const TimeController*, TimeController*)>(0x6FC8E0);
 	};
 	static_assert(sizeof(TimeController) == 0x34, "NI::TimeController failed size validation");
 }

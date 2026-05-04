@@ -16,8 +16,11 @@ namespace NI {
 	}
 
 	BSParticleNode::BSParticleNode() {
-		// Re-uses BSAnimationNode ctor then patches the vtable and sets Follow flag.
-		BSAnimationNode::BSAnimationNode();
+		// Re-runs the engine BSAnimationNode ctor on `this` (the implicit base
+		// call has already done so once; the original code does it twice).
+#if defined(SE_NI_BSANIMATIONNODE_FNADDR_CTOR) && SE_NI_BSANIMATIONNODE_FNADDR_CTOR > 0
+		reinterpret_cast<void(__thiscall*)(BSAnimationNode*)>(SE_NI_BSANIMATIONNODE_FNADDR_CTOR)(this);
+#endif
 		flags |= BSParticleNode::AVObjectFlag::Follow;
 		vTable.asObject = reinterpret_cast<Object_vTable*>(0x750D68);
 	}

@@ -59,6 +59,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticles.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPathController.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIPerParticleData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPick.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelFormat.h" />

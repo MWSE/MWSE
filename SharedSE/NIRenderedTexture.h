@@ -8,13 +8,12 @@ namespace NI {
 		unsigned int width; // 0x2C
 		unsigned int height; // 0x30
 
-		// Implemented only in Morrowind-context builds (requires TES3::WorldController + DX8).
-		static Pointer<RenderedTexture> create(unsigned int width, unsigned int height, const FormatPrefs* prefs = nullptr);
-
+		// Both methods are implemented only in Morrowind-context builds
+		// (require TES3::WorldController + DX8).
 		bool readback(NI::PixelData* pixelData);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		static Pointer<RenderedTexture> create_lua(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs);
+		static Pointer<RenderedTexture> create(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs);
 #endif
 	};
 	static_assert(sizeof(RenderedTexture) == 0x34, "NI::RenderedTexture failed size validation");
