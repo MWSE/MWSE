@@ -6,6 +6,8 @@ namespace TES3 {
 
 	template <typename K, typename V>
 	struct HashMap {
+#pragma warning(push)
+#pragma warning(disable: 4624)
 		struct KeyValuePair {
 			K key; // 0x0
 			V value; // 0x0 + sizeof(K)
@@ -21,6 +23,7 @@ namespace TES3 {
 			};
 			Node* nextNode; // 0x0 + sizeof(K) + sizeof(V) + alignment
 		};
+#pragma warning(pop)
 		struct VirtualTable {
 			void(__thiscall* destructor)(HashMap<K, V>*, bool); // 0x0
 			unsigned int(__thiscall* hashKey)(const HashMap<K, V>*, K); // 0x4
