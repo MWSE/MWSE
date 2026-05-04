@@ -47,8 +47,8 @@ namespace NI {
 		bool hasStringDataStartingWithValue(const char* value) const;
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Reference* getTes3Reference(bool searchParents = false);
-		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false);
+		TES3::Reference* getTes3Reference(bool searchParents = false) const;
+		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;
 #else
 		se::cs::Reference* getTes3Reference(bool searchParents = false);
 #endif
