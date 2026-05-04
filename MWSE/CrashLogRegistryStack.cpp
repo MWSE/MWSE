@@ -173,7 +173,7 @@ namespace CrashLogger::Stack {
 					line << fmt::format(" {:2X} | 0x{:08X} | ", i, espi);
 					if (memoize.find(espi) == memoize.end()) {
 						if (!str.empty()) line << str;
-						memoize.emplace(espi, i);
+						memoize.emplace(espi, static_cast<UINT8>(i));
 					}
 					else {
 						line << fmt::format("Identical to {:2X}", memoize[espi]);

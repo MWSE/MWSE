@@ -1614,6 +1614,9 @@
     <ClInclude Include="TES3VFXManager.h">
       <Filter>Header Files\DataAdapters\TES3\Magic</Filter>
     </ClInclude>
+    <ClInclude Include="TES3VoiceStreamer.h">
+      <Filter>Header Files\DataAdapters\TES3</Filter>
+    </ClInclude>
     <ClInclude Include="MathUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -3714,6 +3717,9 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="TES3VFXManager.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3VoiceStreamer.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="LuaSpellResistedEvent.cpp">

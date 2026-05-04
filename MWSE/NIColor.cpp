@@ -23,10 +23,16 @@ namespace NI {
 	// NiColor
 	//
 
-	Color::Color(TES3::Vector3& vector) {
+	Color::Color(const TES3::Vector3& vector) {
 		r = vector.x;
 		g = vector.y;
 		b = vector.z;
+	}
+
+	Color::Color(const ColorA& c) {
+		r = c.r;
+		g = c.g;
+		b = c.b;
 	}
 
 	Color::Color(sol::table table) {
@@ -35,14 +41,22 @@ namespace NI {
 		b = table.get_or("b", table.get_or(3, 0.0f));
 	}
 
-	Color::Color(sol::object object) {
-		if (object.is<TES3::Vector3>()) {
+	Color::Color(const sol::object& object) {
+		if (object.is<Color>()) {
+			*this = Color(object.as<Color>());
+		}
+		else if (object.is<ColorA>()) {
+			*this = Color(object.as<ColorA>());
+		}
+		else if (object.is<TES3::Vector3>()) {
 			*this = Color(object.as<TES3::Vector3>());
 		}
 		else if (object.is<sol::table>()) {
 			*this = Color(object.as<sol::table>());
 		}
-		throw std::invalid_argument("Could not convert lua object to NiColor.");
+		else {
+			throw std::invalid_argument("Could not convert lua object to NiColor.");
+		}
 	}
 
 	Color& Color::operator=(const TES3::Vector3& vector) {
@@ -59,12 +73,18 @@ namespace NI {
 		return *this;
 	}
 
-	Color& Color::operator=(const sol::object object) {
-		if (object.is<TES3::Vector3>()) {
-			*this = object.as<TES3::Vector3>();
+	Color& Color::operator=(const sol::object& object) {
+		if (object.is<Color>()) {
+			*this = Color(object.as<Color>());
+		}
+		else if (object.is<ColorA>()) {
+			*this = Color(object.as<ColorA>());
+		}
+		else if (object.is<TES3::Vector3>()) {
+			*this = Color(object.as<TES3::Vector3>());
 		}
 		else if (object.is<sol::table>()) {
-			*this = object.as<sol::table>();
+			*this = Color(object.as<sol::table>());
 		}
 		else {
 			throw std::invalid_argument("Could not convert lua object to NiColor.");
@@ -72,27 +92,27 @@ namespace NI {
 		return *this;
 	}
 
-	bool Color::operator==(const Color& c) {
+	bool Color::operator==(const Color& c) const {
 		return r == c.r && g == c.g && b == c.b;
 	}
 
-	bool Color::operator!=(const Color& c) {
+	bool Color::operator!=(const Color& c) const {
 		return r != c.r || g != c.g || b != c.b;
 	}
 
-	Color Color::operator+(const Color& c) {
+	Color Color::operator+(const Color& c) const {
 		return Color(r + c.r, g + c.g, b + c.b);
 	}
 
-	Color Color::operator-(const Color& c) {
+	Color Color::operator-(const Color& c) const {
 		return Color(r - c.r, g - c.g, b - c.b);
 	}
 
-	Color Color::operator*(const Color & c) {
+	Color Color::operator*(const Color & c) const {
 		return Color(r * c.r, g * c.g, b * c.b);
 	}
 
-	Color Color::operator*(const float scalar) {
+	Color Color::operator*(const float scalar) const {
 		return Color(r * scalar, g * scalar, b * scalar);
 	}
 

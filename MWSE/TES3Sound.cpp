@@ -3,6 +3,8 @@
 #include "TES3Util.h"
 #include "TES3WorldController.h"
 
+#include "MemoryUtil.h"
+
 #include "LuaUtil.h"
 
 #include "LuaSoundObjectPlayEvent.h"
@@ -10,6 +12,27 @@
 #include "LuaManager.h"
 
 namespace TES3 {
+	SoundBuffer::SoundBuffer() {
+		std::memset(this, 0, sizeof(SoundBuffer));
+	}
+
+	SoundBuffer::~SoundBuffer() {
+		// Mirrors the engine's inline destruction in ReleaseSoundBuffer (0x4027E0):
+		// release any DSound COM objects, free the rawAudio peak-envelope buffer.
+		// Operator delete handles the SoundBuffer struct itself.
+		if (lpSound3DBuffer) lpSound3DBuffer->Release();
+		if (lpSoundBuffer) lpSoundBuffer->Release();
+		if (rawAudio) mwse::tes3::_delete(rawAudio);
+	}
+
+	void* SoundBuffer::operator new(size_t size) {
+		return mwse::tes3::_new(size);
+	}
+
+	void SoundBuffer::operator delete(void* p) {
+		mwse::tes3::free(p);
+	}
+
 	Sound::Sound() {
 		ctor();
 	}
@@ -130,7 +153,7 @@ namespace TES3 {
 		if (value > 255.0 || value < 0.0) {
 			throw std::invalid_argument("tes3sound.setMinDistance: Value must be between 0 and 255.");
 		}
-		setMinDistance(value);
+		setMinDistance(static_cast<unsigned char>(value));
 	}
 
 	unsigned char Sound::getMaxDistance() const {
@@ -145,7 +168,7 @@ namespace TES3 {
 		if (value > 255.0 || value < 0.0) {
 			throw std::invalid_argument("tes3sound.setMaxDistance: Value must be between 0 and 255.");
 		}
-		setMaxDistance(value);
+		setMaxDistance(static_cast<unsigned char>(value));
 	}
 
 	float Sound::getVolume() {
@@ -180,7 +203,7 @@ namespace TES3 {
 		auto loop = mwse::lua::getOptionalParam(params, "loop", false);
 		auto volume = mwse::lua::getOptionalParam(params, "volume", 1.0f) * 250.0f;
 		auto pitch = mwse::lua::getOptionalParam(params, "pitch", 1.0f);
-		return play(loop ? TES3::SoundPlayFlags::Loop : 0, volume, pitch, true);
+		return play(loop ? TES3::SoundPlayFlags::Loop : 0, static_cast<unsigned char>(volume), pitch, true);
 	}
 }
 

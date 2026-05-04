@@ -88,6 +88,17 @@ Access to the raw damage that this projectile will inflict.
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `expire`
 <div class="search_terms" style="display: none">expire</div>
 
@@ -184,6 +195,17 @@ If `true`, the mobile is affected by gravity. Does not have any effect on spell 
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `lightEffectData`
+<div class="search_terms" style="display: none">lighteffectdata</div>
+
+*Read-only*. Access to the mobile's active spell light data, if a light effect or internal light is currently attached. This can be used to inspect the current stacked light radius before applying additional custom light-spell changes.
+
+**Returns**:
+
+* `result` ([tes3mobileObjectLightData](../types/tes3mobileObjectLightData.md), nil)
 
 ***
 
@@ -299,4 +321,36 @@ Access to the current velocity of the projectile.
 **Returns**:
 
 * `result` ([tes3vector3](../types/tes3vector3.md))
+
+***
+
+## Methods
+
+### `setLightEffectDiffuseColor`
+<div class="search_terms" style="display: none">setlighteffectdiffusecolor, lighteffectdiffusecolor</div>
+
+Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
+
+```lua
+myObject:setLightEffectDiffuseColor(colour)
+```
+
+**Parameters**:
+
+* `colour` ([niColor](../types/niColor.md), [tes3vector3](../types/tes3vector3.md), table): The new diffuse color for the spell light.
+
+***
+
+### `setLightEffectFalloff`
+<div class="search_terms" style="display: none">setlighteffectfalloff, lighteffectfalloff</div>
+
+Sets the falloff radius of the mobile's active spell light and updates its attenuation.
+
+```lua
+myObject:setLightEffectFalloff(radius)
+```
+
+**Parameters**:
+
+* `radius` (integer): The desired light radius.
 

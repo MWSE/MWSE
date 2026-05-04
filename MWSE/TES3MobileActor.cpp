@@ -1077,6 +1077,17 @@ namespace TES3 {
 		return isAffectedByEffect(EffectID::Vampirism);
 	}
 
+	bool MobileActor::hasEffectWithActorLighting() const {
+		const auto magicEffects = DataHandler::get()->nonDynamicData->magicEffects;
+		for (const auto& activeEffect : activeMagicEffects) {
+			const auto magicEffect = magicEffects->getEffectObject(activeEffect.magicEffectID);
+			if (magicEffect && magicEffect->getHasActorLighting()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	const auto TES3_MobileActor_getSpellList = reinterpret_cast<SpellList * (__thiscall*)(const MobileActor*)>(0x52B3D0);
 	SpellList* MobileActor::getSpellList() {
 		return TES3_MobileActor_getSpellList(this);

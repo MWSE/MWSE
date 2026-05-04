@@ -16,8 +16,8 @@ namespace TES3 {
 		return TES3_SpellList_addById(this, id);
 	}
 
-	bool SpellList::add(const std::string& id) {
-		return add(id.c_str());
+	bool SpellList::add(std::string_view id) {
+		return add(id.data());
 	}
 
 	const auto TES3_SpellList_removeByObject = reinterpret_cast<void(__thiscall*)(SpellList*, Spell*)>(0x4ACBE0);
@@ -37,8 +37,8 @@ namespace TES3 {
 		return false;
 	}
 
-	bool SpellList::remove(const std::string& id) {
-		return remove(id.c_str());
+	bool SpellList::remove(std::string_view id) {
+		return remove(id.data());
 	}
 
 	const auto TES3_SpellList_containsObject = reinterpret_cast<bool(__thiscall*)(SpellList*, Spell*)>(0x4ACB50);
@@ -55,8 +55,8 @@ namespace TES3 {
 		return contains(spell);
 	}
 
-	bool SpellList::contains(const std::string& id) {
-		return contains(id.c_str());
+	bool SpellList::contains(std::string_view id) {
+		return contains(id.data());
 	}
 
 	const auto TES3_SpellList_getCheapest = reinterpret_cast<Spell * (__thiscall*)(SpellList*)>(0x4ACB90);

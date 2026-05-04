@@ -360,6 +360,17 @@ This is the time measured in hours from the beginning of the game when the actor
 
 ***
 
+### `dynamicLightingValid`
+<div class="search_terms" style="display: none">dynamiclightingvalid</div>
+
+If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `effectAttributes`
 <div class="search_terms" style="display: none">effectattributes</div>
 
@@ -1012,6 +1023,17 @@ Direct access to the actor's levitate effect attribute.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `lightEffectData`
+<div class="search_terms" style="display: none">lighteffectdata</div>
+
+*Read-only*. Access to the mobile's active spell light data, if a light effect or internal light is currently attached. This can be used to inspect the current stacked light radius before applying additional custom light-spell changes.
+
+**Returns**:
+
+* `result` ([tes3mobileObjectLightData](../types/tes3mobileObjectLightData.md), nil)
 
 ***
 
@@ -2122,6 +2144,36 @@ myObject:resurrect({ resetState = ..., moveToStartingLocation = ... })
 * `params` (table)
 	* `resetState` (boolean): *Default*: `true`. Controls if the stats are reset, the inventory contents are respawned, and the reference recreated. This is the logic that mwscript resurrect uses. It can be useful to reset armor, ammunition, and consumables, if the player has already looted the body. When false, the base stats and inventory are unchanged.
 	* `moveToStartingLocation` (boolean): *Default*: `false`. Controls if the actor should be moved to its spawn point on resurrection. Requires `resetState` to be true.
+
+***
+
+### `setLightEffectDiffuseColor`
+<div class="search_terms" style="display: none">setlighteffectdiffusecolor, lighteffectdiffusecolor</div>
+
+Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
+
+```lua
+myObject:setLightEffectDiffuseColor(colour)
+```
+
+**Parameters**:
+
+* `colour` ([niColor](../types/niColor.md), [tes3vector3](../types/tes3vector3.md), table): The new diffuse color for the spell light.
+
+***
+
+### `setLightEffectFalloff`
+<div class="search_terms" style="display: none">setlighteffectfalloff, lighteffectfalloff</div>
+
+Sets the falloff radius of the mobile's active spell light and updates its attenuation.
+
+```lua
+myObject:setLightEffectFalloff(radius)
+```
+
+**Parameters**:
+
+* `radius` (integer): The desired light radius.
 
 ***
 

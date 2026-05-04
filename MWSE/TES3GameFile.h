@@ -32,8 +32,8 @@ namespace TES3 {
 		int errorCode; // 0x0
 		void* ioObjectBeforeSave; // 0x4
 		void* ioObject; // 0x8
-		char filename[260]; // 0xC
-		char path[260]; // 0x110
+		char filename[MAX_PATH]; // 0xC
+		char path[MAX_PATH]; // 0x110
 		void* field_214;
 		int field_218;
 		int field_21C;

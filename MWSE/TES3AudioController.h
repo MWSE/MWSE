@@ -65,8 +65,8 @@ namespace TES3 {
 		IDirectSound3DListener * primary3DListener; // 0x14
 		unsigned char soundQuality3D; // 0x18
 		DSCAPS capabilities; // 0x1C
-		char nextMusicFilePath[260]; // 0x7C
-		char currentMusicFilePath[260]; // 0x180
+		char nextMusicFilePath[MAX_PATH]; // 0x7C
+		char currentMusicFilePath[MAX_PATH]; // 0x180
 		int timestampBeginFade; // 0x284
 		int timestampNextTrackStart; // 0x288
 		float volumeNextTrack; // 0x28C
@@ -95,6 +95,10 @@ namespace TES3 {
 
 		void pauseMusic();
 		void unpauseMusic();
+
+		SoundBuffer* loadSoundFile(const char* filename, bool isPointSource);
+		void playSoundBuffer(SoundBuffer* soundBuffer, int flags);
+		int setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance);
 
 		//
 		// Custom functions.
@@ -125,6 +129,7 @@ namespace TES3 {
 		void setNextMusicFilePath(const char* path);
 
 		float getMixVolume(AudioMixType mixType) const;
+		unsigned char getMixVolumeRaw(AudioMixType mixType) const;
 
 		float getMusicVolume() const;
 

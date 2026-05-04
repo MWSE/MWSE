@@ -16,20 +16,35 @@ namespace TES3 {
 	struct SoundBuffer {
 		IDirectSoundBuffer * lpSoundBuffer; // 0x0
 		IDirectSound3DBuffer * lpSound3DBuffer; // 0x4
-		char fileHeader[16];
-		short unknown_0x18;
+		// fileHeader is the in-place WAVEFORMATEX that bufferDescription.lpwfxFormat
+		// points at (set by LoadSoundFile). Bytes 0..15 hold WAVEFORMAT + wBitsPerSample,
+		// bytes 16..17 hold cbSize (always 0 for PCM, which is all the engine produces).
+		char fileHeader[18]; // 0x8
+		// 2 bytes implicit alignment padding here (0x1A..0x1B) to align the
+		// DSBUFFERDESC's first DWORD to 4 bytes.
 		DSBUFFERDESC bufferDescription; // 0x1C
 		bool isVoiceover; // 0x40
 		short* rawAudio; // 0x44
-		int unknown_0x48; // Volume related
+		int dBReduction; // 0x48 - distance attenuation in DSound dB units, set by SetSoundBufferPosition's 2D path and subtracted from volume.
 		unsigned char volume; // 0x4C
 		int minDistance; // 0x50
 		int maxDistance; // 0x58
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Sound;
 
-		SoundBuffer() = delete;
-		~SoundBuffer() = delete;
+		// The engine has no separate ctor/dtor for SoundBuffer; LoadSoundFile
+		// and ReleaseSoundBuffer each inline their own setup/teardown. These
+		// match that behavior so MWSE can `new` / `delete` SoundBuffer objects
+		// (via the engine heap, see operator new/delete) without heap mismatch
+		// when those instances cross the engine boundary.
+		SoundBuffer();
+		~SoundBuffer();
+
+		// Class-specific operator new/delete that route through the engine
+		// heap (0x727692 / 0x727530). Required because instances allocated by
+		// MWSE may be released by engine code (and vice versa).
+		static void* operator new(size_t size);
+		static void operator delete(void* p);
 	};
 	static_assert(sizeof(SoundBuffer) == 0x58, "TES3::SoundBuffer failed size validation");
 	static_assert(sizeof(DSBUFFERDESC) == 0x24, "DSBUFFERDESC failed size validation");

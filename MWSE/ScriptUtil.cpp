@@ -328,7 +328,7 @@ namespace mwse::mwscript {
 	}
 
 	int GetButtonPressed(TES3::Script* script, TES3::Reference* reference) {
-		return RunOriginalOpCode(script, reference, OpCode::GetButtonPressed);
+		return static_cast<int>(RunOriginalOpCode(script, reference, OpCode::GetButtonPressed));
 	}
 
 	bool HasItemEquipped(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* itemTemplate) {
@@ -383,7 +383,7 @@ namespace mwse::mwscript {
 
 		// Prepare variables and run original opcode.
 		setScriptSecondObject(itemTemplate);
-		long value = RunOriginalOpCode(script, reference, OpCode::GetItemCount);
+		long value = static_cast<long>(RunOriginalOpCode(script, reference, OpCode::GetItemCount));
 
 		// Restore original script variables.
 		setScriptSecondObject(cachedSecondObject);

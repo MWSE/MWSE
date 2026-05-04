@@ -9,11 +9,13 @@
 --- @field boundSize2D tes3vector2 A vector that shows the size of the bounding box in X and Y directions. `boundSize` is a convenience property that exposes the bounding in 3 dimensions.
 --- @field cellX number *Read-only*. The X grid coordinate of the cell the mobile is in.
 --- @field cellY number *Read-only*. The Y grid coordinate of the cell the mobile is in.
+--- @field dynamicLightingValid boolean If `true`, the mobile's dynamic light data is valid. This flag is unset when a lighting update is needed.
 --- @field flags integer Access to the root mobile object flags, represented as an integer. Should not be accessed directly.
 --- @field height number The height of the mobile above the ground.
 --- @field impulseVelocity tes3vector3 A vector that represents the 3D acceleration of the object.
 --- @field inventory tes3itemStack[] *Read-only*. Access to the items the mobile object has in its inventory.
 --- @field isAffectedByGravity boolean If `true`, the mobile is affected by gravity. Does not have any effect on spell projectiles.
+--- @field lightEffectData tes3mobileObjectLightData|nil *Read-only*. Access to the mobile's active spell light data, if a light effect or internal light is currently attached. This can be used to inspect the current stacked light radius before applying additional custom light-spell changes.
 --- @field mobToMobCollision boolean Allows modifying if this mobile will collide with other mobiles (actors and projectiles). When `true` (default), the actor cannot move through other actors, and projectiles will collide with actors. When `false`, the actor is allowed to move through other actors, and other actors can move through it. Projectiles will pass through actors and other projectiles.
 --- 
 --- May be useful when free movement is required in crowded situations, or to temporarily let the player move past an actor.
@@ -32,3 +34,13 @@
 --- !!! tip
 --- 	To change the velocity of an actor change this property during the [calcMoveSpeed](https://mwse.github.io/MWSE/events/calcMoveSpeed/) event.
 --- 
+tes3mobileObject = {}
+
+--- Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
+--- @param colour niColor|tes3vector3|table The new diffuse color for the spell light.
+function tes3mobileObject:setLightEffectDiffuseColor(colour) end
+
+--- Sets the falloff radius of the mobile's active spell light and updates its attenuation.
+--- @param radius integer The desired light radius.
+function tes3mobileObject:setLightEffectFalloff(radius) end
+

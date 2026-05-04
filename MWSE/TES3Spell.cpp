@@ -228,7 +228,7 @@ namespace TES3 {
 	}
 
 	int Spell::getValue() const {
-		return DataHandler::get()->nonDynamicData->GMSTs[GMST::fSpellValueMult]->value.asFloat * magickaCost;
+		return static_cast<int>(DataHandler::get()->nonDynamicData->GMSTs[GMST::fSpellValueMult]->value.asFloat * magickaCost);
 	}
 
 	size_t Spell::getActiveEffectCount() const {
@@ -252,10 +252,6 @@ namespace TES3 {
 
 	bool Spell::hasEffect(int effectId) const {
 		return getFirstIndexOfEffect(effectId) != -1;
-	}
-
-	int Spell::calculateBasePuchaseCost() const {
-		return int(magickaCost * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSpellValueMult]->value.asFloat);
 	}
 
 	float Spell::calculateCastChance_lua(sol::table params) {

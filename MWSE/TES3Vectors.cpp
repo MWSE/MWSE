@@ -171,7 +171,7 @@ namespace TES3 {
 
 	}
 
-	Vector3::Vector3(NI::Color& color) {
+	Vector3::Vector3(const NI::Color& color) {
 		x = color.r;
 		y = color.g;
 		z = color.b;
@@ -185,12 +185,14 @@ namespace TES3 {
 
 	Vector3::Vector3(sol::object object) {
 		if (object.is<NI::Color>()) {
-			*this = NI::Color(object.as<NI::Color>());
+			*this = Vector3(object.as<NI::Color>());
 		}
 		else if (object.is<sol::table>()) {
-			*this = NI::Color(object.as<sol::table>());
+			*this = Vector3(object.as<sol::table>());
 		}
-		throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
+		else {
+			throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
+		}
 	}
 
 	Vector3& Vector3::operator=(const NI::Color& vector) {
@@ -207,7 +209,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Vector3& Vector3::operator=(const sol::object object) {
+	Vector3& Vector3::operator=(const sol::object& object) {
 		if (object.is<NI::Color>()) {
 			*this = object.as<NI::Color>();
 		}
@@ -215,7 +217,7 @@ namespace TES3 {
 			*this = object.as<sol::table>();
 		}
 		else {
-			throw std::invalid_argument("Could not convert lua object to NiColor.");
+			throw std::invalid_argument("Could not convert lua object to TES3Vector3.");
 		}
 		return *this;
 	}

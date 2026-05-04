@@ -45,13 +45,13 @@ namespace mwse::lua {
 
 		switch (type) {
 		case 's':
-			vars->shortVarValues[index] = value.as<double>();
+			vars->shortVarValues[index] = static_cast<short>(value.as<double>());
 			break;
 		case 'l':
-			vars->longVarValues[index] = value.as<double>();
+			vars->longVarValues[index] = static_cast<long>(value.as<double>());
 			break;
 		case 'f':
-			vars->floatVarValues[index] = value.as<double>();
+			vars->floatVarValues[index] = static_cast<float>(value.as<double>());
 			break;
 		}
 	}

@@ -50,8 +50,8 @@ namespace mwse::lua {
 			usertypeDefinition[sol::meta_function::addition] = &NI::Color::operator+;
 			usertypeDefinition[sol::meta_function::subtraction] = &NI::Color::operator-;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<NI::Color(const NI::Color&)>(&NI::Color::operator*),
-				sol::resolve<NI::Color(const float)>(&NI::Color::operator*)
+				sol::resolve<NI::Color(const NI::Color&) const>(&NI::Color::operator*),
+				sol::resolve<NI::Color(const float) const>(&NI::Color::operator*)
 			);
 			usertypeDefinition[sol::meta_function::to_string] = &NI::Color::toString;
 			usertypeDefinition["__tojson"] = &NI::Color::toJson;

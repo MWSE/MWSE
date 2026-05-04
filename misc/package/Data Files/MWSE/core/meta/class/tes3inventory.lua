@@ -89,3 +89,7 @@ function tes3inventory:removeItem(params) end
 --- @param mobile? tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Optional*. The mobile actor whose stats will be updated.
 function tes3inventory:resolveLeveledItems(mobile) end
 
+--- Re-evaluates whether the inventory contains a non-carriable internal light item and applies it to the given mobile actor if no active Light magic effect is present. This is useful when implementing custom light spells that can produce negative magnitudes or otherwise need vanilla-style fallback handling.
+--- @param mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The mobile actor whose internal light state should be refreshed.
+function tes3inventory:updateInternalLight(mobile) end
+

@@ -62,13 +62,13 @@ namespace TES3 {
 
 		Vector3();
 		Vector3(float x, float y, float z);
-		Vector3(NI::Color& color);
+		Vector3(const NI::Color& color);
 		Vector3(sol::table table);
 		Vector3(sol::object object);
 
 		Vector3& operator=(const NI::Color& vector);
 		Vector3& operator=(const sol::table table);
-		Vector3& operator=(const sol::object object);
+		Vector3& operator=(const sol::object& object);
 
 		bool operator==(const Vector3& vector) const;
 		bool operator!=(const Vector3& vector) const;

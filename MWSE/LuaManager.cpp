@@ -746,7 +746,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 
 		// Trigger initialization.
@@ -979,7 +979,7 @@ namespace mwse::lua {
 		// Update compatibility globals.
 		const auto mwseBuildGlobal = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable("MWSE_BUILD");
 		if (mwseBuildGlobal) {
-			mwseBuildGlobal->value = Configuration::BuildNumber;
+			mwseBuildGlobal->value = static_cast<float>(Configuration::BuildNumber);
 		}
 	}
 
@@ -2752,7 +2752,7 @@ namespace mwse::lua {
 
 	bool isPathDisabled(const std::string_view& path) {
 		const auto disabledPathItt = std::find_if(disabledMarkers.begin(), disabledMarkers.end(),
-			[&](const std::string& s) {
+			[&](std::string_view s) {
 				return path.find(s) != std::string::npos;
 			});
 		return disabledPathItt != disabledMarkers.end();
@@ -5721,6 +5721,16 @@ namespace mwse::lua {
 		genCallEnforced(0x4D83A1, 0x49A190, reinterpret_cast<DWORD>(NPCCloneResolveLeveledLists));
 		genCallEnforced(0x508BB2, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
 		genCallEnforced(0x529B72, 0x49A190, *reinterpret_cast<DWORD*>(&inventoryResolveLeveledLists));
+
+		// Custom actor-lighting effects should block internal light fallback the same way vanilla Light does.
+		auto inventoryCheckForInternalLightItem = &TES3::Inventory::updateInternalLight;
+		genCallEnforced(0x4610C8, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x498502, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x4988D1, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x49935B, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x499537, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x499781, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
+		genCallEnforced(0x521A35, 0x49B670, *reinterpret_cast<DWORD*>(&inventoryCheckForInternalLightItem));
 
 		// Event: Leveled creature picked.
 		auto leveledCreaturePick = &TES3::LeveledCreature::resolve;

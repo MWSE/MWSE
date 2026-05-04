@@ -34,6 +34,7 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
+#include "TES3VoiceStreamer.h"
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
@@ -1042,7 +1043,7 @@ namespace mwse::patch {
 			log::getLog() << "[MWSE] Warning: Pathgrid in cell '" << pathGrid->parentCell->getEditorName() <<
 				"' has mismatching path node count. nodeCount=" << pathGrid->nodeCount << ", node data count=" << pathGrid->nodes.count << std::endl;
 
-			pathGrid->nodeCount = pathGrid->nodes.count;
+			pathGrid->nodeCount = static_cast<unsigned short>(pathGrid->nodes.count);
 		}
 
 		// Perform overwritten code.
@@ -2350,6 +2351,18 @@ namespace mwse::patch {
 			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
 			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
 		}
+
+		// Patch: Async voiceover loading. Eliminates the main-thread MP3 decode
+		// spike when NPCs greet the player. Installed here (rather than in
+		// installPatches) so DataHandler::get() is valid when the worker thread
+		// first acquires criticalSectionAudioEvents.
+		voice::install();
+	}
+
+	void uninstallPatches() {
+		// Patch: Async voiceover loading — stop the worker before the engine
+		// starts tearing down DSound / DataHandler.
+		voice::shutdown();
 	}
 
 	//
@@ -2465,13 +2478,17 @@ namespace mwse::patch {
 			mci.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)miniDumpCallback;
 			mci.CallbackParam = 0;
 
-			auto mdt = (MINIDUMP_TYPE)(MiniDumpWithDataSegs |
+			auto mdt = MiniDumpWithDataSegs |
 				MiniDumpWithHandleData |
 				MiniDumpWithFullMemoryInfo |
 				MiniDumpWithThreadInfo |
-				MiniDumpWithUnloadedModules);
+				MiniDumpWithUnloadedModules;
 
-			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, &mci);
+			if (Configuration::CreateFullMinidumps) {
+				mdt |= MiniDumpWithFullMemory | MiniDumpWithIndirectlyReferencedMemory;
+			}
+
+			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, static_cast<MINIDUMP_TYPE>(mdt), (pep != 0) ? &mdei : 0, 0, &mci);
 
 			if (!rv) {
 				log::getLog() << "MiniDump creation failed. Error: 0x" << std::hex << GetLastError() << std::endl;

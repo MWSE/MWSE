@@ -36,7 +36,7 @@ namespace mwse::lua {
 
 		state["mwse"]["string"]["get"] = [](double value) -> sol::optional<std::string> {
 			try {
-				return { mwse::string::store::get(value).c_str() };
+				return { mwse::string::store::get(static_cast<long>(value)).c_str() };
 			}
 			catch (std::exception&) {
 				return {};
