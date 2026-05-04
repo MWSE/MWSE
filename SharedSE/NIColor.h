@@ -16,10 +16,11 @@ namespace NI {
 	static_assert(sizeof(PackedColor) == 0x4, "NI::PackedColor failed size validation");
 
 	struct Color {
-		float r;
-		float b;
-		float g;
+		float r; // 0x0
+		float g; // 0x4
+		float b; // 0x8
 
 		Color(float _r, float _g, float _b);
 	};
+	static_assert(sizeof(Color) == 0xC, "NI::Color failed size validation");
 }

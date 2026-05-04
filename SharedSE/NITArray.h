@@ -127,7 +127,7 @@ namespace NI {
 			endIndex = 0;
 			filledCount = 0;
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-			storage = se::memory::_new<T>(4);
+			storage = se::memory::_new<T>(size);
 #else
 			storage = new T[size];
 #endif
@@ -355,6 +355,25 @@ namespace NI {
 			}
 			setAtIndex(index, value);
 			return index;
+		}
+
+		int getFirstEmptyIndex() const {
+			for (auto i = 0u; i < endIndex; ++i) {
+				if (!storage[i]) {
+					return i;
+				}
+			}
+			return endIndex;
+		}
+
+		void addToFirstEmptyIndex(const_reference value) {
+			if (!value) {
+				return;
+			}
+
+			const auto index = getFirstEmptyIndex();
+			growToFit(index);
+			setAtIndex(index, value);
 		}
 
 		size_type getFilledCount() const { return filledCount; }
