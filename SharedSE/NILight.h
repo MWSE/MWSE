@@ -10,6 +10,11 @@ namespace NI {
 		Color diffuse; // 0xB8
 		Color specular; // 0xC4
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// MWSE-pattern relocatable construction; impl in MWSE-private NILight.cpp.
+		Light* ctor();
+#endif
+
 		//
 		// Custom functions.
 		//
