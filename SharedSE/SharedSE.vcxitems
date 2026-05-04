@@ -35,6 +35,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionGroup.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionSwitch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIColor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDynamicEffect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIExtraData.h" />
@@ -73,6 +74,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderedTexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISortAdjustNode.h" />
