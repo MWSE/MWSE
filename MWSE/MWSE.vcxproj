@@ -346,7 +346,9 @@
     <ClInclude Include="NIAVObject.h" />
     <ClInclude Include="NICamera.h" />
     <ClInclude Include="NICameraLua.h" />
+    <ClInclude Include="NIConfig.h" />
     <ClInclude Include="NIDefines.h" />
+    <ClInclude Include="NIRTTIDefines.h" />
     <ClInclude Include="NINode.h" />
     <ClInclude Include="NINodeLua.h" />
     <ClInclude Include="NIObject.h" />
