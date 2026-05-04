@@ -75,7 +75,9 @@ namespace NI {
 	struct TextureEffect;
 	struct TexturingProperty;
 	struct TimeController;
+#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
 	struct Transform;
+#endif
 	struct Triangle;
 	struct TriBasedGeometry;
 	struct TriBasedGeometryData;
