@@ -73,6 +73,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderedTexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISortAdjustNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISourceTexture.h" />
@@ -89,12 +90,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
