@@ -3,12 +3,16 @@
 #include "NIBinaryStream.h"
 #include "NIStream.h"
 #include "MemoryUtil.h"
+#include "ExceptionUtil.h"
 
 namespace NI {
-	const auto NI_GeometryData_loadBinary = reinterpret_cast<void(__thiscall*)(GeometryData*, Stream*)>(0x6EF5E0);
 	void LinesData::loadBinary(Stream* stream) {
-		NI_GeometryData_loadBinary(this, stream);
+#if defined(SE_NI_GEOMETRYDATA_FNADDR_LOADBINARY) && SE_NI_GEOMETRYDATA_FNADDR_LOADBINARY > 0
+		reinterpret_cast<void(__thiscall*)(GeometryData*, Stream*)>(SE_NI_GEOMETRYDATA_FNADDR_LOADBINARY)(this, stream);
 		lineSegmentFlags = se::memory::_new<bool>(vertexCount);
 		stream->inStream->read(lineSegmentFlags, vertexCount);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 }

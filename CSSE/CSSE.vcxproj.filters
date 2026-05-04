@@ -346,9 +346,6 @@
     <ClInclude Include="DialogTextSearchWindow.h">
       <Filter>Header Files\UI\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="NILinesData.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="RenderWindowWidgets.h">
       <Filter>Header Files\UI\Controllers</Filter>
     </ClInclude>
@@ -587,9 +584,6 @@
     </ClCompile>
     <ClCompile Include="CSDialogueInfo.cpp">
       <Filter>Source Files\CS</Filter>
-    </ClCompile>
-    <ClCompile Include="NILinesData.cpp">
-      <Filter>Source Files\NI</Filter>
     </ClCompile>
     <ClCompile Include="RenderWindowWidgets.cpp">
       <Filter>Source Files\UI\Controllers</Filter>
