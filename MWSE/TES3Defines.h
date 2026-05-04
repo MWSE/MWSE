@@ -1,8 +1,6 @@
 #pragma once
 
 namespace TES3 {
-	struct ctor_noop {};
-
 	class MagicEffectController;
 	struct ActionAttachment;
 	struct ActionData;
