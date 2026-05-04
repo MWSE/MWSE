@@ -328,11 +328,15 @@ namespace TES3 {
 		return TES3_MagicSourceInstance_SpellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, negateOnExpiry, isUncapped, attribute, attributeTypeInfo, resistAttribute, resistFunction);
 	}
 
+	static void __cdecl TriggerMagicEffectBeganEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
+		}
+	}
+
 	static void __cdecl TriggerMagicEffectStateChangeEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex, SpellEffectState previousState, SpellEffectState currentState) {
 		if (previousState == SpellEffectState::Beginning && currentState != SpellEffectState::Beginning && currentState != SpellEffectState::Retired) {
-			if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
-			}
+			TriggerMagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex);
 		}
 
 		if (previousState != SpellEffectState::Beginning && previousState != SpellEffectState::Retired && currentState == SpellEffectState::Retired) {
@@ -377,6 +381,34 @@ namespace TES3 {
 
 		notRetired:
 			mov eax, 0x515B19
+			jmp eax
+		}
+	}
+
+	__declspec(naked) static void PatchLoadedMagicEffectBeganEvent() {
+		__asm {
+			// Replaced code: increment the target mobile's activeMagicEffects count.
+			mov eax, [esp + 0x1C]
+			inc dword ptr [eax + 0x1CC]
+
+			pushfd
+			pushad
+
+			// ActiveMagicManager::addLoadedMagicSourceInstance has the loaded source instance,
+			// stack-local MagicEffectInstance, and effect index available while adding each active effect.
+			mov eax, [esp + 0x94]
+			lea ecx, [esp + 0x58]
+			mov edx, [esp + 0x38]
+			push edx
+			push ecx
+			push eax
+			call TriggerMagicEffectBeganEvent
+			add esp, 0xC
+
+			popad
+			popfd
+
+			mov eax, 0x4548EE
 			jmp eax
 		}
 	}
@@ -838,6 +870,9 @@ namespace TES3 {
 
 		// Trigger began/retired events from per-effect state transitions in MagicSourceInstance::process.
 		mwse::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
+
+		// Trigger began events for active effects restored while loading a save.
+		mwse::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectBeganEvent), 0xA);
 
 		// Trigger any events on spell collision.
 		mwse::genCallEnforced(0x573775, 0x5175C0, (DWORD)OnSpellProjectileHit);
