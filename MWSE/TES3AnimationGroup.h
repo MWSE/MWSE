@@ -12,7 +12,8 @@ namespace TES3 {
 			Sound* sound; // 0x10
 
 			SoundGenKey() = delete;
-			~SoundGenKey() = delete;
+			// Destructible for template interoperability; instances remain engine-owned.
+			~SoundGenKey() = default;
 		};
 
 		unsigned char groupId; // 0x10

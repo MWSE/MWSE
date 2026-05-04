@@ -25,7 +25,8 @@ namespace TES3 {
 		EquipmentStack* lastUsedEnchItem; // 0x34
 
 		MagicEffectInstance() = delete;
-		~MagicEffectInstance() = delete;
+		// Destructible for template interoperability; instances remain engine-owned.
+		~MagicEffectInstance() = default;
 
 		EquipmentStack* getCreatedStack() const;
 		float getEffectiveMagnitude() const;
