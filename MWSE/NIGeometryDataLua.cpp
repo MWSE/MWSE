@@ -74,7 +74,7 @@ namespace mwse::lua {
 			usertypeDefinition["triangles"] = sol::readonly_property(&NI::TriShapeData::getTriangles);
 
 			// Basic function binding.
-			usertypeDefinition["copy"] = &NI::TriShapeData::copyData;
+			usertypeDefinition["copy"] = static_cast<NI::Pointer<NI::TriShapeData>(NI::TriShapeData::*)(sol::optional<sol::table>) const>(&NI::TriShapeData::copyData);
 		}
 
 		// Binding for NI::Triangle.
