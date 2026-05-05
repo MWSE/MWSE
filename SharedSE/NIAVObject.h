@@ -109,11 +109,10 @@ namespace NI {
 		bool getAppCulled() const;
 		void setAppCulled(bool culled);
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-only conveniences combining flag + culled state.
+		// Conveniences combining flag + culled state. Implementations live in
+		// MWSE-private NIAVObject.cpp; CSSE doesn't currently call them.
 		bool isAppCulled() const;
 		bool isFrustumCulled(Camera*) const;
-#endif
 
 		void createWorldVertices();
 		void updateWorldVertices();
@@ -132,16 +131,16 @@ namespace NI {
 		Matrix33* getLocalRotationMatrix() const;
 		void setLocalRotationMatrix(const Matrix33* matrix);
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-only flag accessors over the bitfield at offset 0x14.
+		// Flag accessors over the bitfield at offset 0x14.
 		bool getFlag(unsigned char index) const;
 		void setFlag(bool state, unsigned char index);
 
-		// MWSE-only ray/sphere intersection test against world-bound.
+		// Ray/sphere intersection test against world-bound. Impl in MWSE-private
+		// NIAVObject.cpp.
 		bool intersectBounds(const Vector3* position, const Vector3* direction, float* out_result) const;
 
-		// MWSE-only member-form bounds calculation. Coexists with the SharedSE
-		// free CalculateBounds() declared at the bottom of this file.
+		// Member-form bounds calculation. Coexists with the free CalculateBounds()
+		// declared at the bottom of this file.
 		void calculateBounds(
 			Vector3& min,
 			Vector3& max,
@@ -152,7 +151,6 @@ namespace NI {
 			const bool observeAppCullFlag,
 			const bool onlyActiveChildren
 		) const;
-#endif
 
 		void attachProperty(Property* property);
 		Pointer<Property> detachPropertyByType(PropertyType type);
@@ -184,16 +182,14 @@ namespace NI {
 		void copyTransforms_lua(const sol::stack_object from);
 #endif
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE alias for getLocalTransform() (kept for API compatibility).
+		// Alias for getLocalTransform() (kept for API compatibility).
 		Transform getTransforms() const;
 
-		// MWSE-only parent-walk helper (vs SharedSE's children-side detach).
+		// Parent-walk helper (counterpart to SharedSE's child-side detach).
 		AVObject* getParentByName(const char*) const;
 
-		// MWSE-only ABV setter; uses the typed BoundingVolume from NIBound.h.
+		// ABV setter; uses the typed BoundingVolume from NIBound.h.
 		void setModelSpaceABV(BoundingVolume* volume);
-#endif
 
 		void detachFromParent();
 
