@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 
 #define MWSE_NO_CUSTOM_ALLOC 1
-#include "..\MWSE\NITArray.h"
+#include "..\SharedSE\NITArray.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
