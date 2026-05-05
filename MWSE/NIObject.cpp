@@ -314,6 +314,21 @@ namespace NI {
 			case RTTIStaticPtr::NiTriShape:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<TriShape*>(this)));
 				break;
+			// Geometry hierarchy: dispatch to the most specific MWSE binding
+			// available. niGeometry and niTriBasedGeometry are abstract types
+			// (per the autocomplete docs); their bindings live in
+			// NIObjectLua.cpp and inherit AVObject's method surface.
+			// Without these cases, a NiTriStrips hit (very common in
+			// Morrowind landscape) walks RTTI all the way down to base
+			// NI::Object, whose metatable lacks getProperty and friends, and
+			// mod-side `rayhit.object:getProperty(...)` errors out.
+			case RTTIStaticPtr::NiTriStrips:
+			case RTTIStaticPtr::NiTriBasedGeom:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<TriBasedGeometry*>(this)));
+				break;
+			case RTTIStaticPtr::NiGeometry:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<Geometry*>(this)));
+				break;
 			case RTTIStaticPtr::NiVertexColorProperty:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<VertexColorProperty*>(this)));
 				break;

@@ -116,5 +116,19 @@ namespace mwse::lua {
 		usertypeDefinition["updateNodeEffects"] = &NI::AVObject::updateEffects;
 	}
 
+	// Speed-optimized binding for NI::Geometry. Abstract class -- no own
+	// members; just chains to AVObject so derived bindings reach AVObject's
+	// surface via the helper (mirrors the autocomplete-documented hierarchy).
+	template <typename T>
+	void setUserdataForNIGeometry(sol::usertype<T>& usertypeDefinition) {
+		setUserdataForNIAVObject(usertypeDefinition);
+	}
+
+	// Speed-optimized binding for NI::TriBasedGeometry. Abstract class.
+	template <typename T>
+	void setUserdataForNITriBasedGeometry(sol::usertype<T>& usertypeDefinition) {
+		setUserdataForNIGeometry(usertypeDefinition);
+	}
+
 	void bindNIObject();
 }
