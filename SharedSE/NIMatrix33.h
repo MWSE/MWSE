@@ -1,6 +1,5 @@
 #pragma once
 
-#include "NIQuaternion.h"
 #include "NIVector3.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
@@ -14,6 +13,11 @@ namespace NI {
 }
 
 #else
+
+// CSSE/standalone struct definition takes a NI::Quaternion in one of its ctors.
+// Pull in NIQuaternion.h here (NOT at the top of the file, to avoid a circular
+// include with NIQuaternion.h's own `#include "NIMatrix33.h"`).
+#include "NIQuaternion.h"
 
 namespace NI {
 	struct Matrix33 {

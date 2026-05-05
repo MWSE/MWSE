@@ -5,6 +5,8 @@
 
 namespace NI {
 	struct TriShape_vTable : TriBasedGeometry_vTable {
+		void* unknown_0x9C;
+		void* unknown_0xA0;
 		void* unknown_0xA4;
 		void* unknown_0xA8;
 	};
