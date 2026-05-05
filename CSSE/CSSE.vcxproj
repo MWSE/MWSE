@@ -202,7 +202,6 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="LogUtil.cpp" />
     <ClCompile Include="MetadataUtil.cpp" />
     <ClCompile Include="ModMetadata.cpp" />
-    <ClCompile Include="NILinesData.cpp" />
     <ClCompile Include="ObjectWindowTabData.cpp" />
     <ClCompile Include="PathUtil.cpp" />
     <ClCompile Include="pch.cpp">
@@ -318,7 +317,6 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="CSBaseObject.h" />
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="NIConfig.h" />
-    <ClInclude Include="NILinesData.h" />
     <ClInclude Include="NIRTTIDefines.h" />
     <ClInclude Include="ObjectWindowTabData.h" />
     <ClInclude Include="RenderWindowSceneGraphController.h" />

@@ -3,6 +3,18 @@
 #include "NIQuaternion.h"
 #include "NIVector3.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
+// In MWSE context, NI::Matrix33 IS TES3::Matrix33. Note that TES3::Matrix33 may
+// lack some signatures the SharedSE definition exposes (e.g. ctor from
+// NI::Quaternion); those are added to TES3 needs-driven as link errors surface.
+#include "TES3Vectors.h"
+namespace NI {
+	using Matrix33 = TES3::Matrix33;
+}
+
+#else
+
 namespace NI {
 	struct Matrix33 {
 		Vector3 m0;
@@ -83,3 +95,5 @@ namespace NI {
 	};
 	static_assert(sizeof(Matrix33) == 0x24, "NI::Matrix33 failed size validation");
 }
+
+#endif

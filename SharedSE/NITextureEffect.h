@@ -1,0 +1,41 @@
+#pragma once
+
+#include "NIDynamicEffect.h"
+#include "NIMatrix33.h"
+#include "NISourceTexture.h"
+#include "NIVector3.h"
+
+namespace NI {
+	struct TextureEffect : DynamicEffect {
+		Matrix33 unknown_0xA8;
+		Vector3 unknnown_0xCC;
+		Matrix33 unknown_0xD8;
+		Vector3 unknnown_0xFC;
+		Pointer<SourceTexture> sourceTexture; // 0x108
+		int unknown_0x10C;
+		int unknown_0x110;
+		int unknown_0x114;
+		int unknown_0x118;
+		int unknown_0x11C;
+		int unknown_0x120;
+		int unknown_0x124;
+		int unknown_0x128;
+		int unknown_0x12C;
+		int unknown_0x130;
+		int unknown_0x134;
+		int unknown_0x138;
+		int unknown_0x13C;
+		int unknown_0x140;
+		int unknown_0x144;
+
+		TextureEffect();
+		~TextureEffect();
+
+		static Pointer<TextureEffect> create();
+	};
+	static_assert(sizeof(TextureEffect) == 0x148, "NI::TextureEffect failed size validation");
+}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::TextureEffect)
+#endif

@@ -2,6 +2,18 @@
 
 #include "NIColor.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
+// In MWSE context, NI::Vector3 IS TES3::Vector3 — same memory layout, same engine
+// dispatch. The typedef bridge lets SharedSE NI consumers compile against MWSE's
+// TES3-typed call sites without per-site adaptation.
+#include "TES3Vectors.h"
+namespace NI {
+	using Vector3 = TES3::Vector3;
+}
+
+#else
+
 namespace NI {
 	struct Vector3 {
 		float x; // 0x0
@@ -62,3 +74,5 @@ namespace NI {
 	};
 	static_assert(sizeof(Vector3) == 0xC, "NI::Vector3 failed size validation");
 }
+
+#endif

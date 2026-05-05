@@ -346,7 +346,9 @@
     <ClInclude Include="NIAVObject.h" />
     <ClInclude Include="NICamera.h" />
     <ClInclude Include="NICameraLua.h" />
+    <ClInclude Include="NIConfig.h" />
     <ClInclude Include="NIDefines.h" />
+    <ClInclude Include="NIRTTIDefines.h" />
     <ClInclude Include="NINode.h" />
     <ClInclude Include="NINodeLua.h" />
     <ClInclude Include="NIObject.h" />
@@ -1340,7 +1342,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1369,7 +1371,7 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
