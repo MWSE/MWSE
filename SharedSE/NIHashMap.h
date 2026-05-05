@@ -1,5 +1,18 @@
 #pragma once
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
+// In MWSE context, NI::HashMap IS TES3::HashMap (same memory layout, same engine
+// dispatch). The typedef bridge lets SharedSE NI consumers (e.g. NIStream)
+// compile against TES3-typed call sites without per-site adaptation.
+#include "TES3HashMap.h"
+namespace NI {
+	template <typename K, typename V>
+	using HashMap = TES3::HashMap<K, V>;
+}
+
+#else
+
 #include "MemoryUtil.h"
 
 namespace NI {
@@ -98,3 +111,5 @@ namespace NI {
 	};
 	static_assert(sizeof(HashMap<const char*, void*>) == 0x10, "NI::HashMap failed size validation");
 }
+
+#endif
