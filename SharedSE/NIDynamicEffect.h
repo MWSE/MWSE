@@ -4,8 +4,8 @@
 
 namespace NI {
 	struct DynamicEffect : AVObject {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-source-of-truth: enum Type for dispatch.
+		// Effect-type tag for getType() dispatch. Pure constants; both targets
+		// can use them.
 		enum Type : int {
 			TYPE_AMBIENT_LIGHT,
 			TYPE_DIRECTIONAL_LIGHT,
@@ -13,7 +13,6 @@ namespace NI {
 			TYPE_SPOT_LIGHT,
 			TYPE_TEXTURE_EFFECT,
 		};
-#endif
 
 		bool enabled; // 0x90
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
@@ -46,10 +45,9 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-only: light-effect predicate. Impl in MWSE-private NIDynamicEffect.cpp.
+		// Light-effect predicate (TYPE_*_LIGHT). Implementation lives in
+		// MWSE-private NIDynamicEffect.cpp; CSSE doesn't currently call it.
 		bool isLight() const;
-#endif
 
 		void attachAffectedNode(Node* node);
 		void detachAffectedNode(Node* node);
