@@ -9,9 +9,10 @@
 #include "TES3MobileActor.h"
 
 namespace mwse::lua::event {
-	MagicReflectEvent::MagicReflectEvent(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* target, TES3::ActiveMagicEffect* reflectEffect, float reflectChance) :
+	MagicReflectEvent::MagicReflectEvent(TES3::MagicSourceInstance* sourceInstance, int effectIndex, TES3::Reference* target, TES3::ActiveMagicEffect* reflectEffect, float reflectChance) :
 		GenericEvent("magicReflect"),
 		m_MagicSourceInstance(sourceInstance),
+		m_EffectIndex(effectIndex),
 		m_Target(target),
 		m_ReflectEffect(reflectEffect),
 		m_ReflectChance(reflectChance)
@@ -31,6 +32,7 @@ namespace mwse::lua::event {
 		eventData["reflectChance"] = m_ReflectChance;
 		eventData["source"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
 		eventData["sourceInstance"] = m_MagicSourceInstance;
+		eventData["effectIndex"] = m_EffectIndex;
 
 		return eventData;
 	}

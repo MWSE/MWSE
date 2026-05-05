@@ -55,7 +55,10 @@
   <PropertyGroup>
     <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
     <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
-    <BuildDateHeaderContents>#pragma once&#xD;&#xA;&#xD;&#xA;#define CSSE_BUILD_DATE $(BuildDate)&#xD;&#xA;</BuildDateHeaderContents>
+    <BuildDateHeaderContents>#pragma once
+
+#define CSSE_BUILD_DATE $(BuildDate)
+</BuildDateHeaderContents>
   </PropertyGroup>
   <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
     <WriteLinesToFile File="$(BuildDateHeader)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
