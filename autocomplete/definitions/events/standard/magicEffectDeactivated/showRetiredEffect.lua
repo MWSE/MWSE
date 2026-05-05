@@ -1,4 +1,4 @@
-local function onMagicEffectRetired(e)
+local function onMagicEffectDeactivated(e)
 	if e.target ~= tes3.player then return end
 
 	local effectName = tes3.getMagicEffect(e.effect.id).name
@@ -6,4 +6,4 @@ local function onMagicEffectRetired(e)
 
 	tes3.messageBox("Effect '%s' from '%s' retired.", effectName, sourceName)
 end
-event.register(tes3.event.magicEffectRetired, onMagicEffectRetired)
+event.register(tes3.event.magicEffectDeactivated, onMagicEffectDeactivated)

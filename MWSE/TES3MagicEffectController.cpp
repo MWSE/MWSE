@@ -17,8 +17,8 @@
 #include "TES3UIWidgets.h"
 
 #include "LuaManager.h"
-#include "LuaMagicEffectBeganEvent.h"
-#include "LuaMagicEffectRetiredEvent.h"
+#include "LuaMagicEffectActivatedEvent.h"
+#include "LuaMagicEffectDeactivatedEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUtil.h"
 
@@ -329,8 +329,8 @@ namespace TES3 {
 	}
 
 	static void __cdecl TriggerMagicEffectBeganEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
-		if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
+		if (mwse::lua::event::MagicEffectActivatedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectActivatedEvent(sourceInstance, effectInstance, effectIndex));
 		}
 	}
 
@@ -340,8 +340,8 @@ namespace TES3 {
 		}
 
 		if (previousState != SpellEffectState::Beginning && previousState != SpellEffectState::Retired && currentState == SpellEffectState::Retired) {
-			if (mwse::lua::event::MagicEffectRetiredEvent::getEventEnabled()) {
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectRetiredEvent(sourceInstance, effectInstance, effectIndex));
+			if (mwse::lua::event::MagicEffectDeactivatedEvent::getEventEnabled()) {
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectDeactivatedEvent(sourceInstance, effectInstance, effectIndex));
 			}
 		}
 	}

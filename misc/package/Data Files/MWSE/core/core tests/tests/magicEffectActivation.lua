@@ -1,23 +1,23 @@
-local log = mwse.Logger.new({ name = "coreTest:effectBeganRetired" })
 local inspect = require("inspect")
+local log = mwse.Logger.new({ name = "coreTest:magicEffectActivation", level  = mwse.logLevel.info })
 
 --- A table of all active effects for all active references.
 --- @type table<tes3reference, table<tes3.effect, number>>
 local activeEffects = {}
 
 --- Track effects being added.
---- @param e magicEffectBeganEventData
-local function onMagicEffectBegan(e)
-	log:info("Magic effect %s began on %s", e.effect, e.target)
+--- @param e magicEffectActivatedEventData
+local function onMagicEffectActivated(e)
+	log:info("Magic effect %s activated on %s", e.effect, e.target)
 	local refEffects = table.getset(activeEffects, e.target, {})
 	refEffects[e.effect.id] = (refEffects[e.effect.id] or 0) + 1
 end
-event.register(tes3.event.magicEffectBegan, onMagicEffectBegan)
+event.register(tes3.event.magicEffectActivated, onMagicEffectActivated)
 
 --- Track effects being removed.
---- @param e magicEffectBeganEventData
-local function onMagicEffectRetired(e)
-	log:info("Magic effect %s retired on %s", e.effect, e.target)
+--- @param e magicEffectActivatedEventData
+local function onMagicEffectDeactivated(e)
+	log:info("Magic effect %s deactivated on %s", e.effect, e.target)
 
 	local refEffects = activeEffects[e.target]
 	if (not refEffects) then
@@ -44,7 +44,7 @@ local function onMagicEffectRetired(e)
 		refEffects[e.effect.id] = newCount
 	end
 end
-event.register(tes3.event.magicEffectRetired, onMagicEffectRetired)
+event.register(tes3.event.magicEffectDeactivated, onMagicEffectDeactivated)
 
 local function testActiveEffects()
 	-- Gather list of all mobiles. Note that the player is not in the main list.

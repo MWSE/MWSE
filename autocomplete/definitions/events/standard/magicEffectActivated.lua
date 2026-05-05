@@ -3,7 +3,7 @@ return {
 	description = [[This event triggers when an individual magic effect begins running on its target.
 
 For a magic source with multiple effects, this event triggers once for each effect as that effect begins. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect begins and once when the frost damage effect begins.]],
-	related = { "magicEffectRetired", "magicEffectRemoved", "spellTick" },
+	related = { "magicEffectDeactivated", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",

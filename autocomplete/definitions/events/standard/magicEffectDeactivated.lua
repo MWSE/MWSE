@@ -3,7 +3,7 @@ return {
 	description = [[This event triggers when an individual magic effect retires after running on its target.
 
 For a magic source with multiple effects, this event triggers once for each effect as that effect retires. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect retires and once when the frost damage effect retires.]],
-	related = { "magicEffectBegan", "magicEffectRemoved", "spellTick" },
+	related = { "magicEffectActivated", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",

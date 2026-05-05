@@ -1,4 +1,4 @@
-#include "LuaMagicEffectBeganEvent.h"
+#include "LuaMagicEffectActivatedEvent.h"
 
 #include "LuaManager.h"
 
@@ -7,8 +7,8 @@
 #include "TES3Reference.h"
 
 namespace mwse::lua::event {
-	MagicEffectBeganEvent::MagicEffectBeganEvent(TES3::MagicSourceInstance* magicSourceInstance, TES3::MagicEffectInstance* magicEffectInstance, int effectIndex) :
-		ObjectFilteredEvent("magicEffectBegan", magicSourceInstance ? magicSourceInstance->sourceCombo.source.asGeneric : nullptr),
+	MagicEffectActivatedEvent::MagicEffectActivatedEvent(TES3::MagicSourceInstance* magicSourceInstance, TES3::MagicEffectInstance* magicEffectInstance, int effectIndex) :
+		ObjectFilteredEvent("magicEffectActivated", magicSourceInstance ? magicSourceInstance->sourceCombo.source.asGeneric : nullptr),
 		m_MagicSourceInstance(magicSourceInstance),
 		m_MagicEffectInstance(magicEffectInstance),
 		m_EffectIndex(effectIndex)
@@ -16,7 +16,7 @@ namespace mwse::lua::event {
 
 	}
 
-	sol::table MagicEffectBeganEvent::createEventTable() {
+	sol::table MagicEffectActivatedEvent::createEventTable() {
 		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.getState();
 		auto eventData = state.create_table();

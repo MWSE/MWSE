@@ -12,7 +12,7 @@ if (table.empty(tests)) then
 		"events",
 		"logging",
 		"mwseLoadConfig",
-		"effectBeganRetired",
+		"magicEffectActivation",
 	}
 end
 

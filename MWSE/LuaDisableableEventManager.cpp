@@ -98,8 +98,8 @@
 #include "LuaLoadGameEvent.h"
 #include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
-#include "LuaMagicEffectBeganEvent.h"
-#include "LuaMagicEffectRetiredEvent.h"
+#include "LuaMagicEffectActivatedEvent.h"
+#include "LuaMagicEffectDeactivatedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectedEvent.h"
 #include "LuaMagicReflectEvent.h"
@@ -282,8 +282,8 @@ namespace mwse::lua::event {
 		usertypeDefinition["lockPick"] = sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled);
 		usertypeDefinition["magicAbsorb"] = sol::property(&MagicAbsorbEvent::getEventEnabled, &MagicAbsorbEvent::setEventEnabled);
 		usertypeDefinition["magicCasted"] = sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled);
-		usertypeDefinition["magicEffectBegan"] = sol::property(&MagicEffectBeganEvent::getEventEnabled, &MagicEffectBeganEvent::setEventEnabled);
-		usertypeDefinition["magicEffectRetired"] = sol::property(&MagicEffectRetiredEvent::getEventEnabled, &MagicEffectRetiredEvent::setEventEnabled);
+		usertypeDefinition["magicEffectActivated"] = sol::property(&MagicEffectActivatedEvent::getEventEnabled, &MagicEffectActivatedEvent::setEventEnabled);
+		usertypeDefinition["magicEffectDeactivated"] = sol::property(&MagicEffectDeactivatedEvent::getEventEnabled, &MagicEffectDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["magicEffectRemoved"] = sol::property(&MagicEffectRemovedEvent::getEventEnabled, &MagicEffectRemovedEvent::setEventEnabled);
 		usertypeDefinition["magicReflect"] = sol::property(&MagicReflectEvent::getEventEnabled, &MagicReflectEvent::setEventEnabled);
 		usertypeDefinition["magicReflected"] = sol::property(&MagicReflectedEvent::getEventEnabled, &MagicReflectedEvent::setEventEnabled);
