@@ -13,6 +13,7 @@
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
 --- @field absorbChance number The % chance that the magic is absorbed. May be modified.
 --- @field absorbEffect tes3activeMagicEffect *Read-only*. The specific spell absorption effect being tested. This is a `tes3activeMagicEffect` instead of a more common magic instance. You can lookup the magic source instance or effect instance with `tes3activeMagicEffect` accessors.
+--- @field effectIndex number *Read-only*. The effect index into the `source` effect list that is being tested against.
 --- @field mobile tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer *Read-only*. The mobile actor that may absorb the spell.
 --- @field source tes3alchemy|tes3enchantment|tes3spell *Read-only*. The magic source.
 --- @field sourceInstance tes3magicSourceInstance *Read-only*. The unique instance of the magic source.

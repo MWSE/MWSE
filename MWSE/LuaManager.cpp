@@ -4768,7 +4768,7 @@ namespace mwse::lua {
 		if (mwse::lua::event::MagicAbsorbEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicAbsorbEvent(sourceInstance, hitReference, absorbEffect, absorbChance));
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicAbsorbEvent(sourceInstance, effectIndex, hitReference, absorbEffect, absorbChance));
 			if (result.valid()) {
 				if (result.get_or("block", false)) {
 					return false;
@@ -4815,14 +4815,14 @@ namespace mwse::lua {
 	}
 	const size_t patchMagicAbsorb_size = 0x10;
 
-	bool __stdcall OnMagicReflect2(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* hitReference, TES3::ActiveMagicEffect* reflectEffect) {
+	bool __stdcall OnMagicReflect2(TES3::MagicSourceInstance* sourceInstance, int effectIndex, TES3::Reference* hitReference, TES3::ActiveMagicEffect* reflectEffect) {
 		float reflectChance = float(reflectEffect->unresistedMagnitude);
 
 		// Allow event overrides.
 		if (mwse::lua::event::MagicReflectEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
-			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicReflectEvent(sourceInstance, hitReference, reflectEffect, reflectChance));
+			sol::table result = stateHandle.triggerEvent(new mwse::lua::event::MagicReflectEvent(sourceInstance, effectIndex, hitReference, reflectEffect, reflectChance));
 			if (result.valid()) {
 				if (result.get_or("block", false)) {
 					return false;
@@ -4850,6 +4850,7 @@ namespace mwse::lua {
 			lea eax, [edi + 8]		// lea eax, [edi + ActiveMagicEffectNode.data]
 			push eax				// push activeMagicEffect
 			push ebp				// push hitReference
+			push esi				// push effectIndex
 			push ebx				// push magicSourceInstance
 			call OnMagicReflect2
 			ret

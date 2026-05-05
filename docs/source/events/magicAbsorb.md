@@ -30,6 +30,7 @@ event.register(tes3.event.magicAbsorb, magicAbsorbCallback)
 
 * `absorbChance` (number): The % chance that the magic is absorbed. May be modified.
 * `absorbEffect` ([tes3activeMagicEffect](../types/tes3activeMagicEffect.md)): *Read-only*. The specific spell absorption effect being tested. This is a `tes3activeMagicEffect` instead of a more common magic instance. You can lookup the magic source instance or effect instance with `tes3activeMagicEffect` accessors.
+* `effectIndex` (number): *Read-only*. The effect index into the `source` effect list that is being tested against.
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile actor that may absorb the spell.
 * `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source.
 * `sourceInstance` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)): *Read-only*. The unique instance of the magic source.
