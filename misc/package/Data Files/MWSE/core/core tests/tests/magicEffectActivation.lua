@@ -1,4 +1,4 @@
-local inspect = require("inspect")
+﻿local inspect = require("inspect")
 local log = mwse.Logger.new({ name = "coreTest:magicEffectActivation", level  = mwse.logLevel.info })
 
 --- A table of all active effects for all active references.
@@ -72,3 +72,55 @@ local function testActiveEffects()
 	end
 end
 event.register(tes3.event.simulate, testActiveEffects)
+
+--- @return table<string, table<tes3.effect, number>>
+local function getPersistentTestStorage()
+	assert(tes3.player and tes3.player.data)
+	return table.getset(tes3.player.data, "testMagicEffectStateData", {})
+end
+
+local function onMagicEffectBegan(e)
+	log:info("Magic effect %s began on %s", e.effect, e.target)
+
+	-- local storage = getPersistentTestStorage()
+	-- local refEffects = table.getset(storage, e.target.id, {})
+	-- refEffects[e.effect.id] = (refEffects[e.effect.id] or 0) + 1
+end
+event.register(tes3.event.magicEffectBegan, onMagicEffectBegan)
+
+local function onMagicEffectEnded(e)
+	log:info("Magic effect %s ended on %s", e.effect, e.target)
+
+	-- local storage = getPersistentTestStorage()
+
+	-- local refEffects = storage[e.target.id]
+	-- if (not refEffects) then
+	-- 	log:error("Attempting to remove effect '%s' from reference '%s': No effects are registered to this reference.", e.effect, e.target)
+	-- 	os.exit()
+	-- end
+
+	-- local currentCount = refEffects[e.effect.id]
+	-- if (not currentCount) then
+	-- 	log:error("Attempting to remove effect '%s' from reference '%s': The effect ID isn't registered to the reference.", e.effect, e.target)
+	-- 	os.exit()
+	-- end
+
+	-- local newCount = currentCount - 1
+	-- if (newCount < 0) then
+	-- 	log:error("Attempting to remove effect '%s' from reference '%s': The effect count became negative.", e.effect, e.target)
+	-- 	os.exit()
+	-- elseif (newCount == 0) then
+	-- 	refEffects[e.effect.id] = nil
+	-- 	if (table.empty(refEffects)) then
+	-- 		storage[e.target.id] = nil
+	-- 	end
+	-- else
+	-- 	refEffects[e.effect.id] = newCount
+	-- end
+end
+event.register(tes3.event.magicEffectEnded, onMagicEffectEnded)
+
+local function testEffectState()
+	-- TODO
+end
+event.register(tes3.event.simulate, testEffectState)

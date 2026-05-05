@@ -4,6 +4,6 @@ local function onMagicEffectDeactivated(e)
 	local effectName = tes3.getMagicEffect(e.effect.id).name
 	local sourceName = e.source.name
 
-	tes3.messageBox("Effect '%s' from '%s' retired.", effectName, sourceName)
+	tes3.messageBox("Effect '%s' from '%s' became inactive.", effectName, sourceName)
 end
 event.register(tes3.event.magicEffectDeactivated, onMagicEffectDeactivated)

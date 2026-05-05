@@ -6,9 +6,9 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event triggers when an individual magic effect begins running on its target.
+This event triggers when an individual magic effect becomes active on its target.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect begins. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect begins and once when the frost damage effect begins.
+For a magic source with multiple effects, this event triggers once for each effect as that effect becomes active on a target. If a source effect later affects another reference, or is restored as a reference is loaded, this event can trigger again for that reference.
 
 ```lua
 --- @param e magicEffectActivatedEventData
@@ -28,17 +28,17 @@ event.register(tes3.event.magicEffectActivated, magicEffectActivatedCallback)
 * `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The caster of the magic source. Can be `nil`.
 * `effect` ([tes3effect](../types/tes3effect.md)): *Read-only*. The specific effect that triggered the event. This is equal to `e.source.effects[e.effectIndex]`. Can be `nil`.
 * `effectIndex` (integer): *Read-only*. The index of the effect in the magic source's effects list.
-* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect.
+* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect that became active.
 * `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source that contains the effect.
 * `sourceInstance` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)): *Read-only*. The unique instance of the magic source that contains the effect.
 * `state` ([tes3.spellState](../references/spell-states.md)): *Read-only*. The state of the magic effect instance when the event fired.
-* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic effect.
+* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic effect instance that became active.
 
 ## Examples
 
-!!! example "Example: Show began effect"
+!!! example "Example: Show Activated Effect"
 
-	Show the magic effect and source names when an effect begins on the player.
+	Show the magic effect and source names when an effect becomes active on the player.
 
 	```lua
 	local function onMagicEffectActivated(e)
@@ -47,7 +47,7 @@ event.register(tes3.event.magicEffectActivated, magicEffectActivatedCallback)
 		local effectName = tes3.getMagicEffect(e.effect.id).name
 		local sourceName = e.source.name
 	
-		tes3.messageBox("Effect '%s' from '%s' began.", effectName, sourceName)
+		tes3.messageBox("Effect '%s' from '%s' became active.", effectName, sourceName)
 	end
 	event.register(tes3.event.magicEffectActivated, onMagicEffectActivated)
 
@@ -56,5 +56,5 @@ event.register(tes3.event.magicEffectActivated, magicEffectActivatedCallback)
 
 ## Related events
 
-[magicEffectDeactivated](./magicEffectDeactivated.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
+[magicEffectBegan](./magicEffectBegan.md){ .md-button }[magicEffectDeactivated](./magicEffectDeactivated.md){ .md-button }[magicEffectEnded](./magicEffectEnded.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
 

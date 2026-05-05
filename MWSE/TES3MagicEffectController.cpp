@@ -18,7 +18,9 @@
 
 #include "LuaManager.h"
 #include "LuaMagicEffectActivatedEvent.h"
+#include "LuaMagicEffectBeganEvent.h"
 #include "LuaMagicEffectDeactivatedEvent.h"
+#include "LuaMagicEffectEndedEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUtil.h"
 
@@ -328,27 +330,47 @@ namespace TES3 {
 		return TES3_MagicSourceInstance_SpellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, negateOnExpiry, isUncapped, attribute, attributeTypeInfo, resistAttribute, resistFunction);
 	}
 
-	static void __cdecl TriggerMagicEffectBeganEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+	static void __cdecl TriggerMagicEffectActivatedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
 		if (mwse::lua::event::MagicEffectActivatedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectActivatedEvent(sourceInstance, effectInstance, effectIndex));
 		}
 	}
 
-	static void __cdecl TriggerMagicEffectStateChangeEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex, SpellEffectState previousState, SpellEffectState currentState) {
+	static void __cdecl TriggerMagicEffectDeactivatedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectDeactivatedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectDeactivatedEvent(sourceInstance, effectInstance, effectIndex));
+		}
+	}
+
+	static void __cdecl TriggerMagicEffectBeganEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
+		}
+	}
+
+	static void __cdecl TriggerMagicEffectEndedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectEndedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectEndedEvent(sourceInstance, effectInstance, effectIndex));
+		}
+	}
+
+	static void __cdecl TriggerMagicEffectStateChangeEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex, float previousTimeActive, SpellEffectState previousState, SpellEffectState currentState) {
 		if (previousState == SpellEffectState::Beginning && currentState != SpellEffectState::Beginning && currentState != SpellEffectState::Retired) {
-			TriggerMagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex);
+			if (previousTimeActive == 0.0f) {
+				TriggerMagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex);
+			}
+			TriggerMagicEffectActivatedEvent(sourceInstance, effectInstance, effectIndex);
 		}
 
 		if (previousState != SpellEffectState::Beginning && previousState != SpellEffectState::Retired && currentState == SpellEffectState::Retired) {
-			if (mwse::lua::event::MagicEffectDeactivatedEvent::getEventEnabled()) {
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectDeactivatedEvent(sourceInstance, effectInstance, effectIndex));
-			}
+			TriggerMagicEffectDeactivatedEvent(sourceInstance, effectInstance, effectIndex);
 		}
 	}
 
 	__declspec(naked) static void PatchMagicEffectDispatchStateChangeEvents() {
 		__asm {
-			// Preserve the state before the effect dispatch mutates the stack-local MagicEffectInstance.
+			// Preserve fields before the effect dispatch mutates the stack-local MagicEffectInstance.
+			push dword ptr [ebp - 0x84]
 			push dword ptr [ebp - 0x7C]
 
 			// Replaced code: data_mgefDispatchTable[effectId](sourceInstance, deltaTime, effectInstance, effectIndex).
@@ -362,15 +384,17 @@ namespace TES3 {
 
 			// Trigger MWSE events for begin/retire transitions on this individual effect.
 			pop edx
+			pop ecx
 			mov eax, [ebp - 0x7C]
 			push eax
 			push edx
+			push ecx
 			push edi
 			lea ecx, [ebp - 0x90]
 			push ecx
 			push esi
 			call TriggerMagicEffectStateChangeEvent
-			add esp, 0x14
+			add esp, 0x18
 
 			// Replaced code: branch based on the post-dispatch state.
 			mov eax, [ebp - 0x7C]
@@ -385,7 +409,40 @@ namespace TES3 {
 		}
 	}
 
-	__declspec(naked) static void PatchLoadedMagicEffectBeganEvent() {
+	__declspec(naked) static void PatchMagicEffectLastRemovedEvent() {
+		__asm {
+			// Replaced code: adjust the stack after node free, then decrement the map count.
+			mov eax, [ebx + 4]
+			add esp, 4
+			dec eax
+			mov [ebx + 4], eax
+
+			// Fire only after removing the last stored instance for this source/effect index.
+			test eax, eax
+			jnz skipEndedEvent
+
+			pushfd
+			pushad
+
+			mov eax, [ebp - 0x28]
+			lea ecx, [ebp - 0x90]
+			mov edx, [ebp - 0x4C]
+			push eax
+			push ecx
+			push edx
+			call TriggerMagicEffectEndedEvent
+			add esp, 0xC
+
+			popad
+			popfd
+
+		skipEndedEvent:
+			mov eax, 0x515CEF
+			jmp eax
+		}
+	}
+
+	__declspec(naked) static void PatchLoadedMagicEffectActivatedEvent() {
 		__asm {
 			// Replaced code: increment the target mobile's activeMagicEffects count.
 			mov eax, [esp + 0x1C]
@@ -402,7 +459,7 @@ namespace TES3 {
 			push edx
 			push ecx
 			push eax
-			call TriggerMagicEffectBeganEvent
+			call TriggerMagicEffectActivatedEvent
 			add esp, 0xC
 
 			popad
@@ -868,11 +925,14 @@ namespace TES3 {
 		mwse::genCallEnforced(0x464271, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
 		mwse::genCallEnforced(0x463BD5, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
 
-		// Trigger began/retired events from per-effect state transitions in MagicSourceInstance::process.
+		// Trigger activation/deactivation events from per-reference state transitions in MagicSourceInstance::process.
 		mwse::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
 
-		// Trigger began events for active effects restored while loading a save.
-		mwse::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectBeganEvent), 0xA);
+		// Trigger ended events from last removal in the per-effect MagicEffectInstance hash map.
+		mwse::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectLastRemovedEvent), 0xA);
+
+		// Trigger activation events for active effects restored while loading a save.
+		mwse::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectActivatedEvent), 0xA);
 
 		// Trigger any events on spell collision.
 		mwse::genCallEnforced(0x573775, 0x5175C0, (DWORD)OnSpellProjectileHit);

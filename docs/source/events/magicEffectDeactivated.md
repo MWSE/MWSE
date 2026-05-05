@@ -6,9 +6,9 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event triggers when an individual magic effect retires after running on its target.
+This event triggers when an individual magic effect becomes inactive on its target.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect retires. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect retires and once when the frost damage effect retires.
+For a magic source with multiple effects, this event triggers once for each effect as that effect becomes inactive on a target. If a source effect affected multiple references, this event can trigger for each reference before `magicEffectEnded` triggers for the source effect.
 
 ```lua
 --- @param e magicEffectDeactivatedEventData
@@ -28,17 +28,17 @@ event.register(tes3.event.magicEffectDeactivated, magicEffectDeactivatedCallback
 * `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The caster of the magic source. Can be `nil`.
 * `effect` ([tes3effect](../types/tes3effect.md)): *Read-only*. The specific effect that triggered the event. This is equal to `e.source.effects[e.effectIndex]`. Can be `nil`.
 * `effectIndex` (integer): *Read-only*. The index of the effect in the magic source's effects list.
-* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect.
+* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect that became inactive.
 * `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source that contains the effect.
 * `sourceInstance` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)): *Read-only*. The unique instance of the magic source that contains the effect.
 * `state` ([tes3.spellState](../references/spell-states.md)): *Read-only*. The state of the magic effect instance when the event fired.
-* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic effect.
+* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic effect instance that became inactive.
 
 ## Examples
 
-!!! example "Example: Show retired effect"
+!!! example "Example: Show Deactivated Effect"
 
-	Show the magic effect and source names when an effect retires on the player.
+	Show the magic effect and source names when an effect becomes inactive on the player.
 
 	```lua
 	local function onMagicEffectDeactivated(e)
@@ -47,7 +47,7 @@ event.register(tes3.event.magicEffectDeactivated, magicEffectDeactivatedCallback
 		local effectName = tes3.getMagicEffect(e.effect.id).name
 		local sourceName = e.source.name
 	
-		tes3.messageBox("Effect '%s' from '%s' retired.", effectName, sourceName)
+		tes3.messageBox("Effect '%s' from '%s' became inactive.", effectName, sourceName)
 	end
 	event.register(tes3.event.magicEffectDeactivated, onMagicEffectDeactivated)
 
@@ -56,5 +56,5 @@ event.register(tes3.event.magicEffectDeactivated, magicEffectDeactivatedCallback
 
 ## Related events
 
-[magicEffectActivated](./magicEffectActivated.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
+[magicEffectActivated](./magicEffectActivated.md){ .md-button }[magicEffectBegan](./magicEffectBegan.md){ .md-button }[magicEffectEnded](./magicEffectEnded.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
 

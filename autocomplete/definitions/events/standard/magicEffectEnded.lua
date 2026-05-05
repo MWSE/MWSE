@@ -1,9 +1,9 @@
 return {
 	type = "event",
-	description = [[This event triggers when an individual magic effect becomes active on its target.
+	description = [[This event triggers when a magic source removes the last active instance for one of its effects.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect becomes active on a target. If a source effect later affects another reference, or is restored as a reference is loaded, this event can trigger again for that reference.]],
-	related = { "magicEffectBegan", "magicEffectDeactivated", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
+For a magic source with multiple effects, this event triggers once for each effect that ends. If the same source effect is active on multiple references, `magicEffectDeactivated` can trigger as each reference stops being affected, but `magicEffectEnded` only triggers when the final stored instance of that source effect is retired.]],
+	related = { "magicEffectActivated", "magicEffectBegan", "magicEffectDeactivated", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
@@ -13,7 +13,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["target"] = {
 			type = "tes3reference",
 			readOnly = true,
-			description = "The target of the magic effect instance that became active.",
+			description = "The target of the magic effect instance that caused the source effect to end.",
 		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
@@ -38,7 +38,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["effectInstance"] = {
 			type = "tes3magicEffectInstance",
 			readOnly = true,
-			description = "The unique instance of the magic effect that became active.",
+			description = "The unique instance of the magic effect that caused the source effect to end.",
 		},
 		["state"] = {
 			type = "tes3.spellState",
@@ -48,9 +48,9 @@ For a magic source with multiple effects, this event triggers once for each effe
 	},
 	filter = "source",
 	examples = {
-		["showActivatedEffect"] = {
-			title = "Show Activated Effect",
-			description = "Show the magic effect and source names when an effect becomes active on the player.",
+		["showEndedEffect"] = {
+			title = "Show Ended Effect",
+			description = "Show the magic effect and source names when a source effect ends on the player.",
 		},
 	}
 }

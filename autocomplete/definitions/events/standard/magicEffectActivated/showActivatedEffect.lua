@@ -4,6 +4,6 @@ local function onMagicEffectActivated(e)
 	local effectName = tes3.getMagicEffect(e.effect.id).name
 	local sourceName = e.source.name
 
-	tes3.messageBox("Effect '%s' from '%s' began.", effectName, sourceName)
+	tes3.messageBox("Effect '%s' from '%s' became active.", effectName, sourceName)
 end
 event.register(tes3.event.magicEffectActivated, onMagicEffectActivated)

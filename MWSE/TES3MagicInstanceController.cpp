@@ -2,6 +2,8 @@
 
 #include "LuaManager.h"
 
+#include "MemoryUtil.h"
+
 #include "LuaActiveMagicEffectIconsUpdatedEvent.h"
 
 namespace TES3 {
@@ -34,6 +36,10 @@ namespace TES3 {
 	const auto TES3_MagicInstanceController_interruptCasting = reinterpret_cast<void(__thiscall*)(MagicInstanceController*, Reference*)>(0x455610);
 	void MagicInstanceController::interruptCasting(Reference* reference) {
 		TES3_MagicInstanceController_interruptCasting(this, reference);
+	}
+
+	unsigned int MagicInstanceController::getSerialCount() {
+		return mwse::ExternalGlobal<unsigned int, 0x7CF0FC>::get();
 	}
 
 	const auto TES3_UI_updateActiveMagicEffectIcons = reinterpret_cast<void(__cdecl*)()>(0x5E2480);

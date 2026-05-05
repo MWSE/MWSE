@@ -1,9 +1,9 @@
 return {
 	type = "event",
-	description = [[This event triggers when an individual magic effect retires after running on its target.
+	description = [[This event triggers when an individual magic effect becomes inactive on its target.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect retires. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect retires and once when the frost damage effect retires.]],
-	related = { "magicEffectActivated", "magicEffectRemoved", "spellTick" },
+For a magic source with multiple effects, this event triggers once for each effect as that effect becomes inactive on a target. If a source effect affected multiple references, this event can trigger for each reference before `magicEffectEnded` triggers for the source effect.]],
+	related = { "magicEffectActivated", "magicEffectBegan", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
@@ -13,7 +13,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["target"] = {
 			type = "tes3reference",
 			readOnly = true,
-			description = "The target of the magic effect.",
+			description = "The target of the magic effect instance that became inactive.",
 		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
@@ -38,7 +38,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["effectInstance"] = {
 			type = "tes3magicEffectInstance",
 			readOnly = true,
-			description = "The unique instance of the magic effect.",
+			description = "The unique instance of the magic effect that became inactive.",
 		},
 		["state"] = {
 			type = "tes3.spellState",
@@ -48,9 +48,9 @@ For a magic source with multiple effects, this event triggers once for each effe
 	},
 	filter = "source",
 	examples = {
-		["showRetiredEffect"] = {
-			title = "Show retired effect",
-			description = "Show the magic effect and source names when an effect retires on the player.",
+		["showDeactivatedEffect"] = {
+			title = "Show Deactivated Effect",
+			description = "Show the magic effect and source names when an effect becomes inactive on the player.",
 		},
 	}
 }

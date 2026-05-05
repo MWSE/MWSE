@@ -1,9 +1,9 @@
 return {
 	type = "event",
-	description = [[This event triggers when an individual magic effect becomes active on its target.
+	description = [[This event triggers when a magic source stores the first active instance for one of its effects.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect becomes active on a target. If a source effect later affects another reference, or is restored as a reference is loaded, this event can trigger again for that reference.]],
-	related = { "magicEffectBegan", "magicEffectDeactivated", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
+For a magic source with multiple effects, this event triggers once for each effect that begins. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect begins and once when the frost damage effect begins. If additional references are affected by the same source effect later, `magicEffectActivated` triggers for those references, but `magicEffectBegan` does not trigger again until a new magic source effect instance is created.]],
+	related = { "magicEffectActivated", "magicEffectDeactivated", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
@@ -13,7 +13,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["target"] = {
 			type = "tes3reference",
 			readOnly = true,
-			description = "The target of the magic effect instance that became active.",
+			description = "The target of the magic effect instance that caused the source effect to begin.",
 		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
@@ -38,7 +38,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 		["effectInstance"] = {
 			type = "tes3magicEffectInstance",
 			readOnly = true,
-			description = "The unique instance of the magic effect that became active.",
+			description = "The unique instance of the magic effect that caused the source effect to begin.",
 		},
 		["state"] = {
 			type = "tes3.spellState",
@@ -48,9 +48,9 @@ For a magic source with multiple effects, this event triggers once for each effe
 	},
 	filter = "source",
 	examples = {
-		["showActivatedEffect"] = {
-			title = "Show Activated Effect",
-			description = "Show the magic effect and source names when an effect becomes active on the player.",
+		["showBeganEffect"] = {
+			title = "Show Began Effect",
+			description = "Show the magic effect and source names when a source effect begins on the player.",
 		},
 	}
 }
