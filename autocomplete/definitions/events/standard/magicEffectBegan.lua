@@ -2,7 +2,7 @@ return {
 	type = "event",
 	description = [[This event triggers when a magic source stores the first active instance for one of its effects.
 
-For a magic source with multiple effects, this event triggers once for each effect that begins. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect begins and once when the frost damage effect begins. If additional references are affected by the same source effect later, `magicEffectActivated` triggers for those references, but `magicEffectBegan` does not trigger again until a new magic source effect instance is created.]],
+For a magic source with multiple effects, this event triggers once for each effect that begins. For example, a spell with fire damage and frost damage effects triggers once when the fire damage effect begins and once when the frost damage effect begins. If additional references are affected, `magicEffectBegan`, `magicEffectActivated`, `magicEffectDeactivated`, and `magicEffectEnded` can each trigger once for each affected reference.]],
 	related = { "magicEffectActivated", "magicEffectDeactivated", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {

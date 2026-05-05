@@ -409,17 +409,13 @@ namespace TES3 {
 		}
 	}
 
-	__declspec(naked) static void PatchMagicEffectLastRemovedEvent() {
+	__declspec(naked) static void PatchMagicEffectRemovedEvent() {
 		__asm {
 			// Replaced code: adjust the stack after node free, then decrement the map count.
 			mov eax, [ebx + 4]
 			add esp, 4
 			dec eax
 			mov [ebx + 4], eax
-
-			// Fire only after removing the last stored instance for this source/effect index.
-			test eax, eax
-			jnz skipEndedEvent
 
 			pushfd
 			pushad
@@ -436,7 +432,6 @@ namespace TES3 {
 			popad
 			popfd
 
-		skipEndedEvent:
 			mov eax, 0x515CEF
 			jmp eax
 		}
@@ -928,8 +923,8 @@ namespace TES3 {
 		// Trigger activation/deactivation events from per-reference state transitions in MagicSourceInstance::process.
 		mwse::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
 
-		// Trigger ended events from last removal in the per-effect MagicEffectInstance hash map.
-		mwse::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectLastRemovedEvent), 0xA);
+		// Trigger ended events when stored MagicEffectInstance nodes are removed.
+		mwse::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectRemovedEvent), 0xA);
 
 		// Trigger activation events for active effects restored while loading a save.
 		mwse::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectActivatedEvent), 0xA);
