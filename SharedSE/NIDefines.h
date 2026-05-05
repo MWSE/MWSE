@@ -13,6 +13,8 @@ namespace NI {
 	struct BoundingVolume;
 	struct BoxBound;
 	struct BoxBoundingVolume;
+	struct BSAnimationNode;
+	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;
@@ -20,6 +22,7 @@ namespace NI {
 	struct ColorA;
 	struct ColorData;
 	struct DirectionalLight;
+	struct DX8Renderer;
 	struct DynamicEffect;
 	struct ExtraData;
 	struct FogProperty;
@@ -57,12 +60,14 @@ namespace NI {
 	struct PointLight;
 	struct PosData;
 	struct Property;
+	struct PropertyState;
 	struct Quaternion;
 	struct RenderedTexture;
 	struct Renderer;
 	struct RotatingParticles;
 	struct RotatingParticlesData;
 	struct RTTI;
+	struct ScreenPolygon;
 	struct Sequence;
 	struct SkinInstance;
 	struct SourceTexture;
@@ -94,6 +99,7 @@ namespace NI {
 	struct Vector3;
 #endif
 	struct VertexColorProperty;
+	struct WireframeProperty;
 	struct ZBufferProperty;
 
 	struct AVObject_vTable;
