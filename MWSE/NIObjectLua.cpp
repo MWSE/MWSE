@@ -6,10 +6,12 @@
 #include "NIDefines.h"
 #include "NIAVObject.h"
 #include "NIDynamicEffect.h"
+#include "NIGeometry.h"
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
 #include "NIRTTI.h"
+#include "NITriBasedGeometry.h"
 
 namespace mwse::lua {
 	void bindNIObject() {
@@ -59,6 +61,30 @@ namespace mwse::lua {
 			// Define inheritance structures. These must be defined in order from top to bottom. The complete chain must be defined.
 			usertypeDefinition[sol::base_classes] = sol::bases<NI::ObjectNET, NI::Object>();
 			setUserdataForNIAVObject(usertypeDefinition);
+		}
+
+		// Binding for NI::Geometry. Abstract; matches autocomplete docs that
+		// declare niGeometry as an isAbstract = true class inheriting from
+		// niAVObject. Without this binding, Geometry-derived engine objects
+		// that lack a more specific case in Object::getOrCreateLuaObject
+		// (notably NiTriStrips, used heavily for Morrowind landscape) would
+		// fall all the way through the RTTI walk to base NI::Object userdata,
+		// whose metatable lacks getProperty and other AVObject methods.
+		{
+			auto usertypeDefinition = state.new_usertype<NI::Geometry>("niGeometry");
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			usertypeDefinition[sol::base_classes] = sol::bases<NI::AVObject, NI::ObjectNET, NI::Object>();
+			setUserdataForNIGeometry(usertypeDefinition);
+		}
+
+		// Binding for NI::TriBasedGeometry. Abstract; matches autocomplete docs.
+		{
+			auto usertypeDefinition = state.new_usertype<NI::TriBasedGeometry>("niTriBasedGeometry");
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			usertypeDefinition[sol::base_classes] = sol::bases<NI::Geometry, NI::AVObject, NI::ObjectNET, NI::Object>();
+			setUserdataForNITriBasedGeometry(usertypeDefinition);
 		}
 
 		// Binding for NI::DynamicEffectLinkedList.
