@@ -20,8 +20,8 @@ namespace NI {
 	Camera::Camera() {
 #if defined(SE_NI_CAMERA_FNADDR_CTOR) && SE_NI_CAMERA_FNADDR_CTOR > 0
 		// Cleanup automatic cruft.
-		se::memory::_delete(unknown_0x12C.storage);
-		se::memory::_delete(unknown_0x148.storage);
+		se::memory::_delete(screenPolygons.storage);
+		se::memory::_delete(cullingPlanePtrs.storage);
 		memset(this, 0, sizeof(Camera));
 
 		const auto NI_Camera_ctor = reinterpret_cast<void(__thiscall*)(Camera*)>(SE_NI_CAMERA_FNADDR_CTOR);
@@ -65,8 +65,32 @@ namespace NI {
 #endif
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	std::reference_wrapper<TES3::Vector4[6]> Camera::getCullingPlanes_lua() {
+	std::reference_wrapper<Vector4[6]> Camera::getCullingPlanes_lua() {
 		return std::ref(cullingPlanes);
+	}
+#endif
+
+	void Camera::swapBuffers() {
+#if defined(SE_NI_CAMERA_FNADDR_SWAPBUFFERS) && SE_NI_CAMERA_FNADDR_SWAPBUFFERS > 0
+		const auto NI_Camera_swapBuffers = reinterpret_cast<void(__thiscall*)(Camera*)>(SE_NI_CAMERA_FNADDR_SWAPBUFFERS);
+		NI_Camera_swapBuffers(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	bool Camera::LookAtWorldPoint(const Vector3* worldPoint, const Vector3* worldUp) {
+#if defined(SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT) && SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT > 0
+		const auto NI_Camera_lookAtWorldPoint = reinterpret_cast<bool(__thiscall*)(Camera*, const Vector3*, const Vector3*)>(SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT);
+		return NI_Camera_lookAtWorldPoint(this, worldPoint, worldUp);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	void Camera::clear_lua(sol::optional<int> flags) {
+		clear(Renderer::ClearFlags(flags.value_or(Renderer::ClearFlags::ALL)));
 	}
 #endif
 

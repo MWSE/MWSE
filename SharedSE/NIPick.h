@@ -62,8 +62,14 @@ namespace NI {
 		PickRecord* addRecord();
 
 		// SharedSE-style ctor/dtor (uses per-target SE_NI_PICK_FNADDR_* macros).
+		// Impls live in SharedSE/NIPick.cpp which only builds into CSSE.
+		// MWSE uses Pick::malloc() / Pick::free() instead, so omit these
+		// decls in MWSE context to avoid sol-usertype-triggered LNK2001 on
+		// the dtor.
+#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
 		Pick();
 		~Pick();
+#endif
 
 		bool pickObjects(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
 		bool pickObjectsWithSkinDeforms(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
@@ -75,8 +81,8 @@ namespace NI {
 	static_assert(sizeof(Pick) == 0x38, "NI::Pick failed size validation");
 
 	struct PickRecord {
-		Geometry* object;
-		AVObject* proxyParent;
+		Pointer<Geometry> object;
+		Pointer<AVObject> proxyParent;
 		Vector3 intersection;
 		float distance;
 		unsigned short triangleIndex;

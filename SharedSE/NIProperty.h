@@ -297,8 +297,15 @@ namespace NI {
 		int unknown_34; // 0x34
 
 
+		// Engine-dispatch ctor/dtor (impls in SharedSE/NIProperty.cpp). Only
+		// declared on targets where SharedSE/NIProperty.cpp is in the build
+		// (currently CSSE; MWSE doesn't need them and never calls them, so
+		// gating the decls avoids unresolved-external link errors when
+		// MWSE-private code stamps out a sol usertype<TexturingProperty>).
+#if defined(SE_NI_TEXTURINGPROPERTY_FNADDR_CTOR) && SE_NI_TEXTURINGPROPERTY_FNADDR_CTOR > 0
 		TexturingProperty();
 		~TexturingProperty();
+#endif
 
 		Map* getBaseMap();
 		Map* getDarkMap();
