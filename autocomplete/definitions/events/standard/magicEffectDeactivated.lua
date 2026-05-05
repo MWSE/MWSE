@@ -2,8 +2,8 @@ return {
 	type = "event",
 	description = [[This event triggers when an individual magic effect becomes inactive on its target.
 
-For a magic source with multiple effects, this event triggers once for each effect as that effect becomes inactive on a target. If a source effect affected multiple references, this event can trigger for each reference before `magicEffectEnded` triggers for the source effect.]],
-	related = { "magicEffectActivated", "magicEffectBegan", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
+For a magic source with multiple effects, this event triggers once for each effect as that effect becomes inactive on a target. If a source effect affected multiple references, this event can trigger for each reference before `magicEffectRemoved` triggers for the source effect.]],
+	related = { "magicEffectActivated", "magicEffectAdded", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",

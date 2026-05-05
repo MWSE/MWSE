@@ -79,17 +79,17 @@ local function getPersistentTestStorage()
 	return table.getset(tes3.player.data, "testMagicEffectStateData", {})
 end
 
-local function onMagicEffectBegan(e)
-	log:info("Magic effect %s began on %s", e.effect, e.target)
+local function onMagicEffectAdded(e)
+	log:info("Magic effect %s added on %s", e.effect, e.target)
 
 	-- local storage = getPersistentTestStorage()
 	-- local refEffects = table.getset(storage, e.target.id, {})
 	-- refEffects[e.effect.id] = (refEffects[e.effect.id] or 0) + 1
 end
-event.register(tes3.event.magicEffectBegan, onMagicEffectBegan)
+event.register(tes3.event.magicEffectAdded, onMagicEffectAdded)
 
-local function onMagicEffectEnded(e)
-	log:info("Magic effect %s ended on %s", e.effect, e.target)
+local function onMagicEffectRemoved(e)
+	log:info("Magic effect %s removed on %s", e.effect, e.target)
 
 	-- local storage = getPersistentTestStorage()
 
@@ -118,7 +118,7 @@ local function onMagicEffectEnded(e)
 	-- 	refEffects[e.effect.id] = newCount
 	-- end
 end
-event.register(tes3.event.magicEffectEnded, onMagicEffectEnded)
+event.register(tes3.event.magicEffectRemoved, onMagicEffectRemoved)
 
 local function testEffectState()
 	-- TODO

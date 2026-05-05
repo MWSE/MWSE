@@ -56,5 +56,5 @@ event.register(tes3.event.magicEffectActivated, magicEffectActivatedCallback)
 
 ## Related events
 
-[magicEffectBegan](./magicEffectBegan.md){ .md-button }[magicEffectDeactivated](./magicEffectDeactivated.md){ .md-button }[magicEffectEnded](./magicEffectEnded.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
+[magicEffectAdded](./magicEffectAdded.md){ .md-button }[magicEffectDeactivated](./magicEffectDeactivated.md){ .md-button }[magicEffectRemoved](./magicEffectRemoved.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
 

@@ -4090,9 +4090,8 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.magicAbsorb`
 ---| `tes3.event.magicCasted`
 ---| `tes3.event.magicEffectActivated`
----| `tes3.event.magicEffectBegan`
+---| `tes3.event.magicEffectAdded`
 ---| `tes3.event.magicEffectDeactivated`
----| `tes3.event.magicEffectEnded`
 ---| `tes3.event.magicEffectRemoved`
 ---| `tes3.event.magicEffectsResolved`
 ---| `tes3.event.magicReflect`

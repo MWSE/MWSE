@@ -18,9 +18,9 @@
 
 #include "LuaManager.h"
 #include "LuaMagicEffectActivatedEvent.h"
-#include "LuaMagicEffectBeganEvent.h"
+#include "LuaMagicEffectAddedEvent.h"
 #include "LuaMagicEffectDeactivatedEvent.h"
-#include "LuaMagicEffectEndedEvent.h"
+#include "LuaMagicEffectRemovedEvent.h"
 #include "LuaSpellTickEvent.h"
 #include "LuaUtil.h"
 
@@ -342,22 +342,22 @@ namespace TES3 {
 		}
 	}
 
-	static void __cdecl TriggerMagicEffectBeganEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
-		if (mwse::lua::event::MagicEffectBeganEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex));
+	static void __cdecl TriggerMagicEffectAddedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectAddedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectAddedEvent(sourceInstance, effectInstance, effectIndex));
 		}
 	}
 
-	static void __cdecl TriggerMagicEffectEndedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
-		if (mwse::lua::event::MagicEffectEndedEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectEndedEvent(sourceInstance, effectInstance, effectIndex));
+	static void __cdecl TriggerMagicEffectRemovedEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex) {
+		if (mwse::lua::event::MagicEffectRemovedEvent::getEventEnabled()) {
+			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MagicEffectRemovedEvent(sourceInstance, effectInstance, effectIndex));
 		}
 	}
 
 	static void __cdecl TriggerMagicEffectStateChangeEvent(MagicSourceInstance* sourceInstance, MagicEffectInstance* effectInstance, int effectIndex, float previousTimeActive, SpellEffectState previousState, SpellEffectState currentState) {
 		if (previousState == SpellEffectState::Beginning && currentState != SpellEffectState::Beginning && currentState != SpellEffectState::Retired) {
 			if (previousTimeActive == 0.0f) {
-				TriggerMagicEffectBeganEvent(sourceInstance, effectInstance, effectIndex);
+				TriggerMagicEffectAddedEvent(sourceInstance, effectInstance, effectIndex);
 			}
 			TriggerMagicEffectActivatedEvent(sourceInstance, effectInstance, effectIndex);
 		}
@@ -426,7 +426,7 @@ namespace TES3 {
 			push eax
 			push ecx
 			push edx
-			call TriggerMagicEffectEndedEvent
+			call TriggerMagicEffectRemovedEvent
 			add esp, 0xC
 
 			popad

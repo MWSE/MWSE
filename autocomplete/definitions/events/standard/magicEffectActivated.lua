@@ -3,7 +3,7 @@ return {
 	description = [[This event triggers when an individual magic effect becomes active on its target.
 
 For a magic source with multiple effects, this event triggers once for each effect as that effect becomes active on a target. If a source effect later affects another reference, or is restored as a reference is loaded, this event can trigger again for that reference.]],
-	related = { "magicEffectBegan", "magicEffectDeactivated", "magicEffectEnded", "magicEffectRemoved", "spellTick" },
+	related = { "magicEffectAdded", "magicEffectDeactivated", "magicEffectRemoved", "spellTick" },
 	eventData = {
 		["caster"] = {
 			type = "tes3reference",
