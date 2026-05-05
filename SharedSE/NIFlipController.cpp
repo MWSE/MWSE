@@ -1,5 +1,7 @@
 #include "NIFlipController.h"
 
+#include "ExceptionUtil.h"
+
 namespace NI {
 	Texture* FlipController::getTextureAtIndex(size_t index) const {
 		return _getTextureAtIndex(this, index);
@@ -14,6 +16,7 @@ namespace NI {
 	}
 
 	void FlipController::copy(FlipController* to) const {
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_COPY) && SE_NI_TIMECONTROLLER_FNADDR_COPY > 0
 		TimeController::_copy(this, to);
 
 		for (size_t i = 0; i < textures.endIndex; ++i) {
@@ -27,5 +30,8 @@ namespace NI {
 		to->secondsPerFrame = secondsPerFrame;
 
 		to->updateTimings();
+#else
+		throw not_implemented_exception();
+#endif
 	}
 }

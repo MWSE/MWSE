@@ -113,6 +113,13 @@
 // NI::Texture
 #define SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS 0x6FC710
 
+// NI::TimeController
+// CS.exe address not yet known. CSSE call sites (e.g.
+// SharedSE/NIFlipController.cpp::copy) must throw not_implemented_exception
+// when this is 0; otherwise a call would jump to whatever happens to live at
+// 0x6FC8E0 in TESConstructionSet.exe -- almost certainly wrong.
+#define SE_NI_TIMECONTROLLER_FNADDR_COPY 0x0
+
 // NI::Camera
 #define SE_NI_CAMERA_FNADDR_CLEAR 0x5BAB70
 #define SE_NI_CAMERA_FNADDR_CLICK 0x5BABA0
