@@ -77,6 +77,13 @@ namespace NI {
 	};
 	static_assert(sizeof(Property) == 0x18, "NI::Property failed size validation");
 
+	// CSSE pulls in GDI+ via pch.h, which #defines ALPHA_MASK as a
+	// function-like macro: `((ARGB) 0xff << ALPHA_SHIFT)`. Without isolation,
+	// our enum constant ALPHA_MASK gets preprocessor-expanded into garbage.
+	// MWSE's stdafx.h doesn't include GDI+ so this never surfaces there.
+	// Push/undef/pop preserves any downstream code that wants the GDI+ macro.
+#pragma push_macro("ALPHA_MASK")
+#undef ALPHA_MASK
 	struct AlphaProperty : Property {
 		enum {
 			ALPHA_MASK = 0x0001,
@@ -97,6 +104,7 @@ namespace NI {
 		static Pointer<AlphaProperty> create();
 	};
 	static_assert(sizeof(AlphaProperty) == 0x1C, "NI::AlphaProperty failed size validation");
+#pragma pop_macro("ALPHA_MASK")
 
 	struct FogProperty : Property {
 		float density;
