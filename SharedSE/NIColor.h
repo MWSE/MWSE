@@ -39,7 +39,7 @@ namespace NI {
 		float b; // 0x8
 
 		Color() : r(0.0f), g(0.0f), b(0.0f) {}
-		Color(float _r, float _g, float _b);
+		Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
 		Color(const ColorA& c);
 		Color(const Vector3& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
