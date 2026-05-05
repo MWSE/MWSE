@@ -2558,7 +2558,7 @@
     <ClCompile Include="TES3MobileProjectile.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIUtil.cpp">
+    <ClCompile Include="..\SharedSE\NIUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="NIObject.cpp">
@@ -3137,7 +3137,7 @@
     <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIGeometry.cpp">
+    <ClCompile Include="..\SharedSE\NIGeometry.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaObjectInvalidatedEvent.cpp">
@@ -3179,7 +3179,7 @@
     <ClCompile Include="NICamera.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIBinaryStream.cpp">
+    <ClCompile Include="..\SharedSE\NIBinaryStream.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIGeometryDataLua.cpp">
@@ -3200,7 +3200,7 @@
     <ClCompile Include="TES3BirthsignLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NITextureEffect.cpp">
+    <ClCompile Include="..\SharedSE\NITextureEffect.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIDynamicEffectLua.cpp">
@@ -3224,7 +3224,7 @@
     <ClCompile Include="LuaPostInfoResponseEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NILinesData.cpp">
+    <ClCompile Include="..\SharedSE\NILinesData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -3257,7 +3257,7 @@
     <ClCompile Include="..\SharedSE\NISwitchNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIRTTI.cpp">
+    <ClCompile Include="..\SharedSE\NIRTTI.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NITriShape.cpp">
@@ -3335,13 +3335,13 @@
     <ClCompile Include="TES3Probe.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIAmbientLight.cpp">
+    <ClCompile Include="..\SharedSE\NIAmbientLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIDirectionalLight.cpp">
+    <ClCompile Include="..\SharedSE\NIDirectionalLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NISpotLight.cpp">
+    <ClCompile Include="..\SharedSE\NISpotLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="MWSEConfig.cpp">
@@ -3350,7 +3350,7 @@
     <ClCompile Include="NIFlipController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIUVController.cpp">
+    <ClCompile Include="..\SharedSE\NIUVController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3CriticalSection.cpp">
@@ -3395,7 +3395,7 @@
     <ClCompile Include="LuaInfoLinkResolveEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NICollisionGroup.cpp">
+    <ClCompile Include="..\SharedSE\NICollisionGroup.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIKeyframeManager.cpp">
@@ -3623,7 +3623,7 @@
     <ClCompile Include="TES3WaterController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIAnimationData.cpp">
+    <ClCompile Include="..\SharedSE\NIAnimationData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIAnimationKey.cpp">
@@ -3698,7 +3698,7 @@
     <ClCompile Include="NIParticleModifier.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticleSystemController.cpp">
+    <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NICopyTransformController.cpp">
