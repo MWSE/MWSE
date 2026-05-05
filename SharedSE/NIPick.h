@@ -9,6 +9,10 @@
 #include "NIVector2.h"
 #include "NIVector3.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "TES3Defines.h"
+#endif
+
 namespace NI {
 	enum class PickType {
 		FIND_ALL,
@@ -22,7 +26,8 @@ namespace NI {
 
 	enum class PickIntersectType {
 		BOUND_INTERSECT,
-		TRIANGLE_INTERSECT
+		TRIANGLE_INTERSECT,
+		UNKNOWN_2,
 	};
 
 	enum class PickCoordinateType {
@@ -50,6 +55,13 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
+		// MWSE-style engine-allocated factory (uses mwse::tes3::malloc + engine ctor).
+		static Pick* malloc();
+		void free();
+
+		PickRecord* addRecord();
+
+		// SharedSE-style ctor/dtor (uses per-target SE_NI_PICK_FNADDR_* macros).
 		Pick();
 		~Pick();
 
@@ -73,6 +85,9 @@ namespace NI {
 		Vector3 normal;
 		PackedColor color;
 
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
+
 		//
 		// Custom functions.
 		//
@@ -80,7 +95,7 @@ namespace NI {
 		std::reference_wrapper<unsigned short[3]> getVertexIndex();
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		Reference* getTES3Reference();
+		TES3::Reference* getTES3Reference();
 #endif
 
 	};

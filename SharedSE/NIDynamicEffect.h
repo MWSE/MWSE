@@ -4,9 +4,25 @@
 
 namespace NI {
 	struct DynamicEffect : AVObject {
+		// Effect-type tag for getType() dispatch. Pure constants; both targets
+		// can use them.
+		enum Type : int {
+			TYPE_AMBIENT_LIGHT,
+			TYPE_DIRECTIONAL_LIGHT,
+			TYPE_POINT_LIGHT,
+			TYPE_SPOT_LIGHT,
+			TYPE_TEXTURE_EFFECT,
+		};
+
 		bool enabled; // 0x90
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// MWSE-original field names + types.
+		unsigned int index; // 0x94
+		unsigned int pushCount; // 0x98
+#else
 		int index; // 0x94
 		int unknown_0x98;
+#endif
 		unsigned int revisionId; // 0x9C
 		NodeLinkedList affectedNodes; // 0xA0
 
@@ -17,11 +33,21 @@ namespace NI {
 		// vTable wrappers.
 		//
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// MWSE-original: const-qualified, matches MWSE-private NIDynamicEffect.cpp.
+		int getType() const;
+#else
+		// SharedSE/CSSE: non-const, matches SharedSE/NIDynamicEffect.cpp.
 		int getType();
+#endif
 
 		//
 		// Other related this-call functions.
 		//
+
+		// Light-effect predicate (TYPE_*_LIGHT). Implementation lives in
+		// MWSE-private NIDynamicEffect.cpp; CSSE doesn't currently call it.
+		bool isLight() const;
 
 		void attachAffectedNode(Node* node);
 		void detachAffectedNode(Node* node);
@@ -30,7 +56,11 @@ namespace NI {
 	static_assert(sizeof(DynamicEffect) == 0xA8, "NI::DynamicEffect failed size validation");
 
 	struct DynamicEffect_vTable : AVObject_vTable {
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		int(__thiscall* getType)(const DynamicEffect*); // 0x94
+#else
 		int(__thiscall* getType)(DynamicEffect*); // 0x94
+#endif
 	};
 	static_assert(sizeof(DynamicEffect_vTable) == 0x98, "NI::DynamicEffect's vtable failed size validation");
 

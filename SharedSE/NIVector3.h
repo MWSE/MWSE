@@ -1,7 +1,5 @@
 #pragma once
 
-#include "NIColor.h"
-
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 
 // In MWSE context, NI::Vector3 IS TES3::Vector3 — same memory layout, same engine
@@ -13,6 +11,14 @@ namespace NI {
 }
 
 #else
+
+// CSSE/standalone struct definition references NI::Color for the
+// `Vector3(NI::Color& color)` ctor below. Pull in NIColor.h here (NOT at the
+// top of the file, to avoid a circular include with NIColor.h's own
+// `#include "NIVector3.h"` -- if NIVector3.h were parsed first, including
+// NIColor.h here would re-enter NIColor.h before the typedef bridge had a
+// chance to define NI::Vector3, breaking NIColor.h's own Vector3 references).
+#include "NIColor.h"
 
 namespace NI {
 	struct Vector3 {
