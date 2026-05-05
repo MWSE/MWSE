@@ -3,21 +3,21 @@
 namespace se::memory {
 #if defined(SE_MEMORY_FNADDR_REALLOC) && SE_MEMORY_FNADDR_REALLOC > 0
 	void* realloc(void* address, size_t size) {
-		const auto TES3_operator_realloc = reinterpret_cast<void* (__cdecl**)(void*, size_t)>(SE_MEMORY_FNADDR_FNADDR_REALLOC);
+		const auto TES3_operator_realloc = reinterpret_cast<void* (__cdecl**)(void*, size_t)>(SE_MEMORY_FNADDR_REALLOC);
 		return (*TES3_operator_realloc)(address, size);
 	}
 #endif
 
 #if defined(SE_MEMORY_FNADDR_MALLOC) && SE_MEMORY_FNADDR_MALLOC > 0
 	void* malloc(size_t size) {
-		const auto TES3_operator_malloc = reinterpret_cast<void* (__cdecl*)(size_t)>(SE_MEMORY_FNADDR_FNADDR_MALLOC);
+		const auto TES3_operator_malloc = reinterpret_cast<void* (__cdecl*)(size_t)>(SE_MEMORY_FNADDR_MALLOC);
 		return TES3_operator_malloc(size);
 	}
 #endif
 
 #if defined(SE_MEMORY_FNADDR_FREE) && SE_MEMORY_FNADDR_FREE > 0
 	void free(void* address) {
-		const auto TES3_operator_free = reinterpret_cast<void(__cdecl*)(void*)>(SE_MEMORY_FNADDR_FNADDR_FREE);
+		const auto TES3_operator_free = reinterpret_cast<void(__cdecl*)(void*)>(SE_MEMORY_FNADDR_FREE);
 		TES3_operator_free(address);
 	}
 #endif

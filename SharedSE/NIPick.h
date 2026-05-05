@@ -55,21 +55,19 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-		// MWSE-style engine-allocated factory (uses mwse::tes3::malloc + engine ctor).
+		// MWSE-style engine-allocated factory (uses se::memory::malloc + engine ctor).
+		// MWSE-only: requires SE_MEMORY_FNADDR_MALLOC/FREE which CSSE doesn't provide.
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		static Pick* malloc();
 		void free();
+#endif
 
 		PickRecord* addRecord();
 
-		// SharedSE-style ctor/dtor (uses per-target SE_NI_PICK_FNADDR_* macros).
-		// Impls live in SharedSE/NIPick.cpp which only builds into CSSE.
-		// MWSE uses Pick::malloc() / Pick::free() instead, so omit these
-		// decls in MWSE context to avoid sol-usertype-triggered LNK2001 on
-		// the dtor.
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
+		// Engine ctor/dtor via per-target SE_NI_PICK_FNADDR_CTOR/DTOR macros.
+		// Body throws not_implemented_exception when address is 0x0.
 		Pick();
 		~Pick();
-#endif
 
 		bool pickObjects(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
 		bool pickObjectsWithSkinDeforms(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);

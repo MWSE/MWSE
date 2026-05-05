@@ -69,10 +69,15 @@
 // NI::Property
 #define SE_NI_PROPERTY_FNADDR_CTOR 0x44A170
 #define SE_NI_PROPERTY_FNADDR_DTOR 0x0
+#define SE_NI_PROPERTY_FNADDR_SETFLAG 0x0
 #define SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD 0x0
 
 // NI::AlphaProperty
 #define SE_NI_ALPHAPROPERTY_VTBL 0x6732E8
+
+// NI::StencilProperty
+// CS.exe address not yet known.
+#define SE_NI_STENCILPROPERTY_VTBL 0x0
 
 // NI::TexturingProperty::Map
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTOR 0x0
@@ -152,3 +157,17 @@
 
 // NI::Bound
 #define SE_NI_BOUND_FNADDR_COMPUTEFROMDATA 0x5B13F0
+
+// NI::TriBasedGeometry
+// CS.exe addresses not yet known. CSSE call sites must throw not_implemented_exception
+// when these are 0; otherwise call would jump to whatever happens to live at the
+// Morrowind address in TESConstructionSet.exe.
+#define SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA 0x0
+#define SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS 0x0
+#define SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE 0x0
+
+// NI::Geometry (base of TriBasedGeometry)
+#define SE_NI_GEOMETRY_FNADDR_LINKOBJECT 0x0
+
+// NI::TriShape vTable address (CS.exe address not yet known)
+#define SE_NI_TRISHAPE_VTBL 0x0

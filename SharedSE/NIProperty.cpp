@@ -1,5 +1,6 @@
 #include "NIProperty.h"
 
+#include "BitUtil.h"
 #include "MemoryUtil.h"
 
 #include "NIBinaryStream.h"
@@ -19,6 +20,7 @@ namespace NI {
 	//
 
 	Property::Property() {
+		flags = 0;
 #if defined(SE_NI_PROPERTY_FNADDR_CTOR) && SE_NI_PROPERTY_FNADDR_CTOR > 0
 		const auto NI_Property_ctor = reinterpret_cast<Property * (__thiscall*)(Property*)>(SE_NI_PROPERTY_FNADDR_CTOR);
 		NI_Property_ctor(this);
@@ -42,6 +44,19 @@ namespace NI {
 		vTable.asProperty->update(this, dt);
 	}
 
+	bool Property::getFlag(unsigned char index) const {
+		return BIT_TEST(flags, index);
+	}
+
+	void Property::setFlag(bool state, unsigned char index) {
+#if defined(SE_NI_PROPERTY_FNADDR_SETFLAG) && SE_NI_PROPERTY_FNADDR_SETFLAG > 0
+		const auto NI_Property_setFlag = reinterpret_cast<void(__thiscall*)(Property*, bool, unsigned char)>(SE_NI_PROPERTY_FNADDR_SETFLAG);
+		NI_Property_setFlag(this, state, index);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 	void Property::setFlagBitField(unsigned short value, unsigned short mask, unsigned int index) {
 #if defined(SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD) && SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD > 0
 		const auto NI_Property_setFlagBitField = reinterpret_cast<void(__thiscall*)(Property*, unsigned short, unsigned short, unsigned int)>(SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD);
@@ -57,16 +72,18 @@ namespace NI {
 
 	AlphaProperty::AlphaProperty() {
 		vTable.asProperty = (Property_vTable*)SE_NI_ALPHAPROPERTY_VTBL;
-		/*
-		// Disabled, cause setFlagBitField causes crashing, will set flags directly instead.
+#if defined(SE_NI_PROPERTY_FNADDR_SETFLAG) && SE_NI_PROPERTY_FNADDR_SETFLAG > 0 && defined(SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD) && SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD > 0
 		setFlag(false, 0);
 		setFlagBitField(6, 0xF, 1);
 		setFlagBitField(7, 0xF, 5);
 		setFlag(false, 9);
 		setFlagBitField(0, 0x7, 10);
-		*/
-		alphaTestRef = 255; // Default to 0% alpha threshold
-		flags = 4844; // Default flags for alpha property from NifSkope
+		alphaTestRef = 0;
+#else
+		// Engine setFlag/setFlagBitField unavailable; precomputed equivalent flag pattern.
+		alphaTestRef = 255;
+		flags = 4844;
+#endif
 	}
 
 	AlphaProperty::~AlphaProperty() {
@@ -176,15 +193,47 @@ namespace NI {
 	}
 
 	//
+	// NiStencilProperty
+	//
+
+	StencilProperty::StencilProperty() {
+		vTable.asProperty = (Property_vTable*)SE_NI_STENCILPROPERTY_VTBL;
+		enabled = false;
+		testFunc = TEST_GREATER;
+		reference = 0;
+		mask = UINT_MAX;
+		failAction = ACTION_KEEP;
+		zFailAction = ACTION_KEEP;
+		passAction = ACTION_INCREMENT;
+		drawMode = DRAW_CCW_OR_BOTH;
+	}
+
+	StencilProperty::~StencilProperty() {
+
+	}
+
+	Pointer<StencilProperty> StencilProperty::create() {
+		return new StencilProperty();
+	}
+
+	//
 	// NiTexturingProperty
 	//
 
 	void* TexturingProperty::Map::operator new(size_t size) {
+#if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
 		return se::memory::_new(size);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	void TexturingProperty::Map::operator delete(void* address) {
+#if defined(SE_MEMORY_FNADDR_DELETE) && SE_MEMORY_FNADDR_DELETE > 0
 		se::memory::_delete(address);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	TexturingProperty::Map::Map() {
@@ -280,20 +329,102 @@ namespace NI {
 		return maps[size_t(MapType::BASE)];
 	}
 
+	TexturingProperty::Map* TexturingProperty::getDarkMap() {
+		return maps[size_t(MapType::DARK)];
+	}
+
+	TexturingProperty::Map* TexturingProperty::getDetailMap() {
+		return maps[size_t(MapType::DETAIL)];
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlossMap() {
+		return maps[size_t(MapType::GLOSS)];
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlowMap() {
+		return maps[size_t(MapType::GLOW)];
+	}
+
+	TexturingProperty::BumpMap* TexturingProperty::getBumpMap() {
+		return static_cast<BumpMap*>(maps[size_t(MapType::BUMP)]);
+	}
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	void TexturingProperty::setBaseMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::BASE)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::BASE), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::BASE), map.value());
+		}
+	}
+
+	void TexturingProperty::setDarkMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::DARK)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DARK), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DARK), map.value());
+		}
+	}
+
+	void TexturingProperty::setDetailMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::DETAIL)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DETAIL), map.value());
+		}
+	}
+
+	void TexturingProperty::setGlossMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::GLOSS)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOSS), map.value());
+		}
+	}
+
+	void TexturingProperty::setGlowMap(sol::optional<Map*> map) {
+		auto currentMap = maps[size_t(MapType::GLOW)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOW), map.value());
+		}
+	}
+
+	void TexturingProperty::setBumpMap(sol::optional<TexturingProperty::BumpMap*> map) {
+		auto currentMap = maps[size_t(MapType::BUMP)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::BUMP), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::BUMP), map.value());
+		}
+	}
+#else
 	void TexturingProperty::setBaseMap(std::optional<Map*> map) {
 		auto currentMap = maps[size_t(MapType::BASE)];
 		if (currentMap) {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::BASE), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::BASE), map.value());
 		}
-	}
-
-	TexturingProperty::Map* TexturingProperty::getDarkMap() {
-		return maps[size_t(MapType::DARK)];
 	}
 
 	void TexturingProperty::setDarkMap(std::optional<Map*> map) {
@@ -302,14 +433,9 @@ namespace NI {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::DARK), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::DARK), map.value());
 		}
-	}
-
-	TexturingProperty::Map* TexturingProperty::getDetailMap() {
-		return maps[size_t(MapType::DETAIL)];
 	}
 
 	void TexturingProperty::setDetailMap(std::optional<Map*> map) {
@@ -318,14 +444,9 @@ namespace NI {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::DETAIL), map.value());
 		}
-	}
-
-	TexturingProperty::Map* TexturingProperty::getGlossMap() {
-		return maps[size_t(MapType::GLOSS)];
 	}
 
 	void TexturingProperty::setGlossMap(std::optional<Map*> map) {
@@ -334,14 +455,9 @@ namespace NI {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::GLOSS), map.value());
 		}
-	}
-
-	TexturingProperty::Map* TexturingProperty::getGlowMap() {
-		return maps[size_t(MapType::GLOW)];
 	}
 
 	void TexturingProperty::setGlowMap(std::optional<Map*> map) {
@@ -350,14 +466,9 @@ namespace NI {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::GLOW), map.value());
 		}
-	}
-
-	TexturingProperty::BumpMap* TexturingProperty::getBumpMap() {
-		return static_cast<BumpMap*>(maps[size_t(MapType::BUMP)]);
 	}
 
 	void TexturingProperty::setBumpMap(std::optional<TexturingProperty::BumpMap*> map) {
@@ -366,11 +477,11 @@ namespace NI {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::BUMP), nullptr);
 		}
-
 		if (map) {
 			maps.setAtIndex(size_t(MapType::BUMP), map.value());
 		}
 	}
+#endif
 
 	unsigned int TexturingProperty::getUsedMapCount() const {
 		unsigned int count = 0;
@@ -465,8 +576,8 @@ namespace NI {
 
 	VertexColorProperty::VertexColorProperty() {
 		vTable.asProperty = (Property_vTable*)SE_NI_VERTEXCOLORPROPERTY_VTBL;
-		source = 0;
-		lighting = 1;
+		source = SOURCE_IGNORE;
+		lighting = LIGHTING_E_A_D;
 	}
 
 	VertexColorProperty::~VertexColorProperty() {
@@ -474,6 +585,18 @@ namespace NI {
 
 	Pointer<VertexColorProperty> VertexColorProperty::create() {
 		return new VertexColorProperty();
+	}
+
+	//
+	// WireframeProperty
+	//
+
+	bool WireframeProperty::getEnabled() const {
+		return BITMASK_TEST(flags, WireframePropertyFlags::Enabled);
+	}
+
+	void WireframeProperty::setEnabled(bool state) {
+		BITMASK_SET(flags, WireframePropertyFlags::Enabled, state);
 	}
 
 	//
@@ -504,5 +627,6 @@ MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::MaterialProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::StencilProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::TexturingProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::VertexColorProperty)
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::WireframeProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::ZBufferProperty)
 #endif

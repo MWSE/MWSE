@@ -3,29 +3,47 @@
 #include "NIPick.h"
 #include "NISkinInstance.h"
 
-#include "MWSEConfig.h"
-
+#include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "MWSEConfig.h"
+#endif
+
 namespace NI {
-	const auto NI_TriBasedGeometry_ctorFromData = reinterpret_cast<void(__thiscall*)(TriBasedGeometry*, TriBasedGeometryData*)>(0x6EFEA0);
 	TriBasedGeometry::TriBasedGeometry(TriBasedGeometryData* data) {
+#if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA) && SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA > 0
+		const auto NI_TriBasedGeometry_ctorFromData = reinterpret_cast<void(__thiscall*)(TriBasedGeometry*, TriBasedGeometryData*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA);
 		NI_TriBasedGeometry_ctorFromData(this, data);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
-	using gPickDefaultTextureCoords = mwse::ExternalGlobal<TES3::Vector2, 0x7DED80>;
-	using gPickDefaultColor = mwse::ExternalGlobal<NI::PackedColor, 0x7DE814>;
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	// Engine-state globals (Morrowind.exe). Direct address access avoids
+	// dragging mwse::ExternalGlobal into SharedSE.
+	static inline Vector2& gPickDefaultTextureCoords() { return *reinterpret_cast<Vector2*>(0x7DED80); }
+	static inline PackedColor& gPickDefaultColor() { return *reinterpret_cast<PackedColor*>(0x7DE814); }
 
-	static bool __cdecl FindIntersectRayWithTriangle(const TES3::Vector3* position, const TES3::Vector3* direction, const TES3::Vector3* vertex1, const TES3::Vector3* vertex2, const TES3::Vector3* vertex3, bool frontOnly, TES3::Vector3* out_intersection, float* out_distance, float* out_weight2, float* out_weight3) {
-		const auto NI_FindIntersectRayWithTriangle = reinterpret_cast<bool(__cdecl*)(const TES3::Vector3*, const TES3::Vector3*, const TES3::Vector3*, const TES3::Vector3*, const TES3::Vector3*, bool, TES3::Vector3*, float*, float*, float*)>(0x6EFF90);
+	static bool __cdecl FindIntersectRayWithTriangle(const Vector3* position, const Vector3* direction, const Vector3* vertex1, const Vector3* vertex2, const Vector3* vertex3, bool frontOnly, Vector3* out_intersection, float* out_distance, float* out_weight2, float* out_weight3) {
+#if defined(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE) && SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE > 0
+		const auto NI_FindIntersectRayWithTriangle = reinterpret_cast<bool(__cdecl*)(const Vector3*, const Vector3*, const Vector3*, const Vector3*, const Vector3*, bool, Vector3*, float*, float*, float*)>(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE);
 		return NI_FindIntersectRayWithTriangle(position, direction, vertex1, vertex2, vertex3, frontOnly, out_intersection, out_distance, out_weight2, out_weight3);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
-	static std::vector<TES3::Vector3> deformVertices;
-	static std::vector<TES3::Vector3> deformNormals;
+	static std::vector<Vector3> deformVertices;
+	static std::vector<Vector3> deformNormals;
+#endif
 
-	const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const TES3::Vector3*, const TES3::Vector3*, Pick*)>(0x6F0350);
-	bool TriBasedGeometry::findIntersections(const TES3::Vector3* position, const TES3::Vector3* direction, Pick* pick) {
+	bool TriBasedGeometry::findIntersections(const Vector3* position, const Vector3* direction, Pick* pick) {
+#if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS) && SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS > 0
+		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Vector3*, const Vector3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
 		// This will be removed in the future when the config option is removed, once we're confident of performance and accuracy.
 		if (!mwse::Configuration::UseSkinnedAccurateActivationRaytests) {
@@ -76,7 +94,7 @@ namespace NI {
 		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
 		const auto directionScaled = worldRotationInverse * (*direction);
 
-		// Loop through all the triangles 
+		// Loop through all the triangles
 		auto addedResult = false;
 		for (auto i = 0u; i < activeTriCount; ++i) {
 			// Get some shorthand variables we'll use throughout.
@@ -90,7 +108,7 @@ namespace NI {
 
 			// Perform our test for the triangle, and calculate the weight to each index.
 			auto distance = std::numeric_limits<float>::infinity();
-			TES3::Vector3 intersection;
+			Vector3 intersection;
 			float weight2, weight3;
 			if (!FindIntersectRayWithTriangle(&worldScaled, &directionScaled, vertex1, vertex2, vertex3, pick->frontOnly, &intersection, &distance, &weight2, &weight3)) {
 				continue;
@@ -123,12 +141,12 @@ namespace NI {
 				result->texture = textureCoords[index1] * weight1 + textureCoords[index2] * weight2 + textureCoords[index3] * weight3;
 			}
 			else {
-				result->texture = gPickDefaultTextureCoords::get();
+				result->texture = gPickDefaultTextureCoords();
 			}
 
-			// Calculate weighted normals. 
+			// Calculate weighted normals.
 			if (pick->returnNormal) {
-				TES3::Vector3 normal = {};
+				Vector3 normal = {};
 				if (pick->returnSmoothNormal && normals) {
 					normal = normals[index1] * weight1 + normals[index2] * weight2 + normals[index3] * weight3;
 				}
@@ -158,7 +176,7 @@ namespace NI {
 				result->color = PackedColor(r, g, b, a);
 			}
 			else {
-				result->color = gPickDefaultColor::get();
+				result->color = gPickDefaultColor();
 			}
 
 			// We can be finished if we just want the first unsorted result.
@@ -168,6 +186,13 @@ namespace NI {
 		}
 
 		return addedResult;
+#else
+		// Non-MWSE targets fall through to engine vanilla behavior.
+		return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
+#endif
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	Pointer<TriBasedGeometryData> TriBasedGeometry::getModelData() const {

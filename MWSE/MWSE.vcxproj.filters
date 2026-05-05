@@ -2579,7 +2579,7 @@
     <ClCompile Include="NICameraLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPick.cpp">
+    <ClCompile Include="..\SharedSE\NIPick.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIPickLua.cpp">
@@ -3134,7 +3134,7 @@
     <ClCompile Include="NIGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITriBasedGeometryData.cpp">
+    <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIGeometry.cpp">
@@ -3254,13 +3254,13 @@
     <ClCompile Include="NIProperty.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NISwitchNode.cpp">
+    <ClCompile Include="..\SharedSE\NISwitchNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIRTTI.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITriShape.cpp">
+    <ClCompile Include="..\SharedSE\NITriShape.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NITimeController.cpp">
@@ -3431,7 +3431,7 @@
     <ClCompile Include="LuaEnchantedItemCreateFailedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriShapeData.cpp">
+    <ClCompile Include="..\SharedSE\NITriShapeData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaAttackStartEvent.cpp">
@@ -3599,7 +3599,7 @@
     <ClCompile Include="LuaUiSkillTooltipEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriBasedGeometry.cpp">
+    <ClCompile Include="..\SharedSE\NITriBasedGeometry.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3DialogueConditional.cpp">

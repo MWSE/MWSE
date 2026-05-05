@@ -161,6 +161,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp" />

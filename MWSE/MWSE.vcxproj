@@ -727,19 +727,19 @@
     <ClCompile Include="NISkinInstanceLua.cpp" />
     <ClCompile Include="NISortAdjustNode.cpp" />
     <ClCompile Include="NISpotLight.cpp" />
-    <ClCompile Include="NISwitchNode.cpp" />
+    <ClCompile Include="..\SharedSE\NISwitchNode.cpp" />
     <ClCompile Include="NIRTTI.cpp" />
     <ClCompile Include="NITextureEffect.cpp" />
     <ClCompile Include="NiTextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="NITimeController.cpp" />
     <ClCompile Include="NITriangle.cpp" />
-    <ClCompile Include="NITriBasedGeometry.cpp" />
-    <ClCompile Include="NITriBasedGeometryData.cpp" />
+    <ClCompile Include="..\SharedSE\NITriBasedGeometry.cpp" />
+    <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp" />
     <ClCompile Include="NILines.cpp" />
     <ClCompile Include="NILinesData.cpp" />
-    <ClCompile Include="NITriShape.cpp" />
-    <ClCompile Include="NITriShapeData.cpp" />
+    <ClCompile Include="..\SharedSE\NITriShape.cpp" />
+    <ClCompile Include="..\SharedSE\NITriShapeData.cpp" />
     <ClCompile Include="NIUVController.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -773,6 +773,9 @@
     <ClCompile Include="TES3Lockpick.cpp" />
     <ClCompile Include="TES3MagicEffectController.cpp" />
     <ClCompile Include="MemoryUtil.cpp" />
+    <ClCompile Include="..\SharedSE\MemoryUtil.cpp">
+      <ObjectFileName>$(IntDir)SharedSE\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="MemoryUtilLua.cpp" />
     <ClCompile Include="MgeVirtualMachine.cpp" />
     <ClCompile Include="MgeTes3Machine.cpp" />
@@ -789,7 +792,7 @@
     <ClCompile Include="NIObject.cpp" />
     <ClCompile Include="NIObjectLua.cpp" />
     <ClCompile Include="NIObjectNET.cpp" />
-    <ClCompile Include="NIPick.cpp" />
+    <ClCompile Include="..\SharedSE\NIPick.cpp" />
     <ClCompile Include="NIPickLua.cpp" />
     <ClCompile Include="NIPixelData.cpp" />
     <ClCompile Include="NIPixelDataLua.cpp" />
@@ -1256,13 +1259,13 @@
   </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

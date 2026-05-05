@@ -2,9 +2,14 @@
 
 #include "NITriShape.h"
 #include "NITriShapeData.h"
+#include "NISkinInstance.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "NIUtil.h"
+#endif
 
 namespace NI {
 	Pick::Pick() {
@@ -22,17 +27,45 @@ namespace NI {
 
 	Pick::~Pick() {
 #if defined(SE_NI_PICK_FNADDR_DTOR) && SE_NI_PICK_FNADDR_DTOR > 0
-		const auto NI_Pick_ctor = reinterpret_cast<void(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_DTOR);
-		NI_Pick_ctor(this);
+		const auto NI_Pick_dtor = reinterpret_cast<void(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_DTOR);
+		NI_Pick_dtor(this);
 #else
 		throw not_implemented_exception();
 #endif
 	}
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	Pick* Pick::malloc() {
+#if defined(SE_NI_PICK_FNADDR_CTOR) && SE_NI_PICK_FNADDR_CTOR > 0 && defined(SE_MEMORY_FNADDR_MALLOC) && SE_MEMORY_FNADDR_MALLOC > 0
+		const auto NI_Pick_ctor = reinterpret_cast<Pick*(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_CTOR);
+		return NI_Pick_ctor(se::memory::malloc<Pick>());
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	void Pick::free() {
+#if defined(SE_NI_PICK_FNADDR_DTOR) && SE_NI_PICK_FNADDR_DTOR > 0 && defined(SE_MEMORY_FNADDR_FREE) && SE_MEMORY_FNADDR_FREE > 0
+		const auto NI_Pick_dtor = reinterpret_cast<void(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_DTOR);
+		NI_Pick_dtor(this);
+		se::memory::free(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+#endif
+
+	PickRecord* Pick::addRecord() {
+		auto record = new PickRecord();
+		lastAddedRecord = record;
+		results.addToFirstEmptyIndex(record);
+		return record;
+	}
+
 	bool Pick::pickObjects(const Vector3* origin, const Vector3* direction, bool append, float maxDistance) {
 #if defined(SE_NI_PICK_FNADDR_PICKOBJECTS) && SE_NI_PICK_FNADDR_PICKOBJECTS > 0
-		const auto TES3_Pick_pickObjects = reinterpret_cast<bool(__thiscall*)(Pick*, const Vector3*, const Vector3*, bool, float)>(SE_NI_PICK_FNADDR_PICKOBJECTS);
-		return TES3_Pick_pickObjects(this, origin, direction, append, maxDistance);
+		const auto NI_Pick_pickObjects = reinterpret_cast<bool(__thiscall*)(Pick*, const Vector3*, const Vector3*, bool, float)>(SE_NI_PICK_FNADDR_PICKOBJECTS);
+		return NI_Pick_pickObjects(this, origin, direction, append, maxDistance);
 #else
 		throw not_implemented_exception();
 #endif
@@ -77,7 +110,7 @@ namespace NI {
 				continue;
 			}
 
-			const auto geometry = static_cast<TriShape*>(result->object);
+			const auto geometry = static_cast<TriShape*>(result->object.get());
 
 			// If the geometry is skinned we apply the skin deform and set the redo flag.
 			// This way the redo raycast (and future raycasts) can handle the object correctly.
@@ -129,8 +162,8 @@ namespace NI {
 
 	void Pick::clearResults() {
 #if defined(SE_NI_PICK_FNADDR_CLEARRESULTS) && SE_NI_PICK_FNADDR_CLEARRESULTS > 0
-		const auto TES3_Pick_clearResults = reinterpret_cast<void(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_CLEARRESULTS);
-		TES3_Pick_clearResults(this);
+		const auto NI_Pick_clearResults = reinterpret_cast<void(__thiscall*)(Pick*)>(SE_NI_PICK_FNADDR_CLEARRESULTS);
+		NI_Pick_clearResults(this);
 #else
 		throw not_implemented_exception();
 #endif
@@ -145,7 +178,29 @@ namespace NI {
 		return nullptr;
 	}
 
+	void* PickRecord::operator new(size_t size) {
+#if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
+		return se::memory::_new(size);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	void PickRecord::operator delete(void* address) {
+#if defined(SE_MEMORY_FNADDR_DELETE) && SE_MEMORY_FNADDR_DELETE > 0
+		se::memory::_delete(address);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 	std::reference_wrapper<unsigned short[3]> PickRecord::getVertexIndex() {
 		return std::ref(vertexIndex);
 	}
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	TES3::Reference* PickRecord::getTES3Reference() {
+		return getAssociatedReference(object);
+	}
+#endif
 }

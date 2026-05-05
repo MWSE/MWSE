@@ -22,17 +22,13 @@ namespace NI {
 		// Custom functions.
 		//
 
-		// MWSE-canonical name; bool-arg overload (engine field copy with toggles).
-		Pointer<TriShapeData> cloneData(bool copyNormals, bool copyColors, bool copyTextureCoordinates) const;
+		// Bool-arg overload (engine field copy with toggles).
+		Pointer<TriShapeData> copyData(bool copyNormals = true, bool copyColors = true, bool copyTextureCoordinates = true) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		// MWSE Lua-bridge overload (sol::table-driven filters).
+		// Lua-bridge overload (sol::table-driven filters).
 		Pointer<TriShapeData> copyData(sol::optional<sol::table> filters) const;
 #endif
-
-		// SharedSE-name bool-arg overload retained for SharedSE/CSSE call sites
-		// (e.g. SharedSE/NIPick.cpp). Functionally equivalent to cloneData.
-		Pointer<TriShapeData> copyData(bool copyNormals = true, bool copyColors = true, bool copyTextureCoordinates = true) const;
 
 		nonstd::span<Triangle> getTriangles();
 

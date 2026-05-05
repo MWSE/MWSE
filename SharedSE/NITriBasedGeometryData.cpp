@@ -1,4 +1,4 @@
-#include "NiTriBasedGeometryData.h"
+#include "NITriBasedGeometryData.h"
 
 namespace NI {
 	Triangle* TriBasedGeometryData::getTriList() {
