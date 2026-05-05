@@ -36,7 +36,9 @@
 #include "TES3VFXManager.h"
 #include "TES3WorldController.h"
 
+#include "BSAnimationManager.h"
 #include "NIAVObject.h"
+#include "NIBSAnimationNode.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -1697,6 +1699,88 @@ namespace mwse::patch {
 		Sleep(Configuration::BackgroundLoadPollIntervalMs);
 	}
 
+	// Defensive validation for a pointer that's about to be dereferenced as
+	// an NI::Object during BSAnimationManager teardown. Returns true if the
+	// pointer + its (presumed) vtable + the first vtable entry all live in
+	// committed, readable, code-bearing memory. The use-after-free we're
+	// guarding against tends to leave the first 4 bytes (vtable pointer)
+	// looking valid while later fields are garbage; a deeper check on
+	// vtable[0] catches the worst cases.
+	static bool IsLiveNIObjectPointer(const void* ptr) {
+		if (!ptr) return false;
+
+		MEMORY_BASIC_INFORMATION mbi = {};
+		if (VirtualQuery(ptr, &mbi, sizeof(mbi)) == 0) return false;
+		if (mbi.State != MEM_COMMIT) return false;
+		if (mbi.Protect & (PAGE_NOACCESS | PAGE_GUARD)) return false;
+
+		const auto vtbl = *reinterpret_cast<const DWORD*>(ptr);
+		if (VirtualQuery(reinterpret_cast<void*>(vtbl), &mbi, sizeof(mbi)) == 0) return false;
+		if (mbi.State != MEM_COMMIT) return false;
+		if (mbi.Protect & (PAGE_NOACCESS | PAGE_GUARD)) return false;
+
+		// vtable[0] (deleting_dtor) should sit in Morrowind.exe's .text
+		// segment (roughly 0x00400000-0x00800000). A heap-residing value
+		// here means the slot was overwritten and the indirect call would
+		// jump into garbage.
+		const auto vtblEntry0 = *reinterpret_cast<const DWORD*>(vtbl);
+		return vtblEntry0 >= 0x400000 && vtblEntry0 < 0x800000;
+	}
+
+	// Defensive replacement for the deleting_dtor of NI::BSAnimationManager.
+	//
+	// Engine bug: BSAnimationManager.managedNodes (TArray<Pointer<BSAnimationNode>>)
+	// can hold dangling pointers to BSAnimationNodes that were already freed
+	// elsewhere during cell-unload. The stock dtor at 0x6EE2A0 walks the array,
+	// decrements refcount via [node+0x4], and if it hits zero calls the node's
+	// virtual deleting_dtor via [node][0]. Both reads happen without
+	// validation -- if `node` is freed memory whose first 4 bytes happen to
+	// resolve to a known NI vtable but whose later fields are garbage,
+	// the indirect call jumps to a corrupt slot and we crash on
+	// EXCEPTION_ACCESS_VIOLATION inside the GameBackgroundThread cell-unload
+	// path. Reproduces especially with cells holding animated flora
+	// (kelp, etc.) that participate in the BSAnimationManager.
+	//
+	// We pre-walk the array under VirtualQuery validation:
+	//   - Live nodes get the standard refcount-decrement + deleting_dtor.
+	//   - Dead nodes are logged and skipped (better to leak the engine
+	//     side's tracking entry than crash the process).
+	// Either way, we NULL the slot so that when the engine's own dtor runs
+	// after our pass it sees the array as already-cleaned and proceeds
+	// cleanly to the TArray storage free + NiNode::dtor parent + delete.
+	static void __fastcall PatchedBSAnimationManagerDeletingDtor(NI::BSAnimationManager* self, DWORD edx_unused, char flags) {
+		auto& nodes = self->managedNodes;
+		for (size_t i = 0; i < nodes.endIndex; ++i) {
+			NI::BSAnimationNode* node = nodes.storage[i].get();
+			if (!node) continue;
+
+			if (IsLiveNIObjectPointer(node)) {
+				if (--node->refCount == 0) {
+					node->vTable.asObject->destructor(node, 1);
+				}
+			}
+			else {
+				log::getLog() << "[MWSE] BSAnimationManager::dtor: skipping freed managed node 0x"
+					<< std::hex << reinterpret_cast<DWORD>(node)
+					<< " (likely use-after-free during cell unload)" << std::endl;
+			}
+			// Bypass Pointer<>::operator= refcount semantics -- the node was
+			// either properly released above or is dead memory we can't touch.
+			// Either way we need the slot zeroed without re-decrementing.
+			*reinterpret_cast<DWORD*>(&nodes.storage[i]) = 0;
+		}
+		nodes.endIndex = 0;
+		nodes.filledCount = 0;
+
+		// Hand off to the engine's stock deleting_dtor. Its managedNodes
+		// loops are no-ops now (count fields zeroed, slots nulled), so it
+		// proceeds to the safe parts: TArray storage free, NiNode::dtor
+		// parent, and the conditional `delete this` based on `flags & 1`.
+		const auto BSAnimationManager_orig_deleting_dtor =
+			reinterpret_cast<void(__thiscall*)(NI::BSAnimationManager*, char)>(0x6EE280);
+		BSAnimationManager_orig_deleting_dtor(self, flags);
+	}
+
 	//
 	// Install all the patches.
 	//
@@ -1758,6 +1842,11 @@ namespace mwse::patch {
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
 		overrideVirtualTableEnforced(0x7501E0, offsetof(NI::Object_vTable, loadBinary), 0x6DA410, *reinterpret_cast<DWORD*>(&NiLinesData_loadBinary));
+
+		// Patch: defensive guard around BSAnimationManager teardown. See
+		// PatchedBSAnimationManagerDeletingDtor for the engine-bug context.
+		// Override deleting_dtor (vtable[0]) on vtbl_sg_BSAnimationManager.
+		overrideVirtualTableEnforced(0x750BD8, 0, 0x6EE280, reinterpret_cast<DWORD>(PatchedBSAnimationManagerDeletingDtor));
 
 		// Patch: Try to catch bogus collisions.
 		auto MobileObject_Collision_clone = &TES3::MobileObject::Collision::clone;
