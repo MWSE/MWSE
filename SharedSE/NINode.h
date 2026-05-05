@@ -26,16 +26,27 @@ namespace NI {
 
 		static Pointer<Node> create();
 
+		void detachAllChildren();
+
 		void attachEffect(DynamicEffect* effect);
 		void detachEffect(DynamicEffect* effect);
 		void detachAllEffects();
 		Pointer<DynamicEffect> getEffect(int type);
+		std::vector<Pointer<DynamicEffect>> getEffects(int type);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void attachChild_lua(AVObject* child, sol::optional<bool> useFirstAvailable);
 		Pointer<AVObject> detachChildAt_lua(size_t index);
 #endif
 
+		bool isAffectedBy(const DynamicEffect* effect) const;
+		size_t getLightCount() const;
+
+		static constexpr auto LIGHT_LIMIT = 8;
+
+		bool shouldBeAffectedByLight(const PointLight* light) const;
+		void updatePointLight(PointLight* light, bool isLand);
+		void sortDynamicEffects(bool isLand);
 	};
 	static_assert(sizeof(Node) == 0xB0, "NI::Node failed size validation");
 
