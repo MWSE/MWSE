@@ -3,7 +3,7 @@
 #include "NIObject.h"
 
 #include "NIBound.h"
-#include "NINode.h"
+#include "NITransform.h"
 #include "NITriangle.h"
 
 namespace NI {
@@ -42,19 +42,15 @@ namespace NI {
 				unsigned short index; // 0x0
 				float weight; // 0x4
 			};
-			Matrix33 rotation; // 0x0
-			Vector3 translation; // 0x24
-			float scale; // 0x30
-			Bound bounds; // 0x34
-			VertexWeight* weights; // 0x48
+			Transform transform; // 0x0  (Matrix33 rotation + Vector3 translation + float scale)
+			SphereBound bounds; // 0x34
+			VertexWeight* weights; // 0x44
 			unsigned short weightCount; // 0x48
 
 			nonstd::span<VertexWeight> getWeights();
 		};
 		Pointer<SkinPartition> partition; // 0x8
-		Matrix33 rotation; // 0xC
-		Vector3 translation; // 0x30
-		float scale; // 0x3C
+		Transform transform; // 0xC
 		unsigned int numBones; // 0x40
 		BoneData* boneData; // 0x44
 
@@ -66,11 +62,11 @@ namespace NI {
 
 	struct SkinInstance : Object {
 		Pointer<SkinData> skinData; // 0x8
-		Pointer<Node> rootParent; // 0xC
+		AVObject* rootParent; // 0xC
 		AVObject** bones; // 0x10
 		int unknown_0x14;
 
-		void deform(const NI::Vector3* srcVertices, const NI::Vector3* srcNormals, unsigned int vertexCount, NI::Vector3* dstVertices, NI::Vector3* dstNormals) const;
+		void deform(const Vector3* srcVertices, const Vector3* srcNormals, unsigned int vertexCount, Vector3* dstVertices, Vector3* dstNormals) const;
 
 		nonstd::span<AVObject*> getBoneObjects();
 	};
