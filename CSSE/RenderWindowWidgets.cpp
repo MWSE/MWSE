@@ -112,7 +112,7 @@ namespace se::cs::dialog::render_window {
 		float gridRadius = std::max(radius, gridSize * 4.0f);
 
 		// Calculate how many vertices we need to fill the grid.
-		int g = 2.0f * (gridRadius / gridSize);
+		int g = (int)(2.0f * (gridRadius / gridSize));
 
 		// Needs an even number of vertices for NiLines to work.
 		g += (g % 2) != 0;
@@ -153,8 +153,8 @@ namespace se::cs::dialog::render_window {
 		for (auto i = 0u; i < vertexCount; ++i) {
 			auto& v = vertices[i];
 			if (i % 2 == 0) {
-				v.x = grid[i] * 0.5;
-				v.y = i;
+				v.x = grid[i] * 0.5f;
+				v.y = (float)i;
 				v.z = 0;
 			}
 			else {
