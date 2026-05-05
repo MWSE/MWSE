@@ -10,11 +10,9 @@ namespace NI {
 	struct AVObject;
 	struct BinaryStream;
 	struct Bound;
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	struct BoundingVolume;
 	struct BoxBound;
 	struct BoxBoundingVolume;
-#endif
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;
@@ -64,10 +62,8 @@ namespace NI {
 	struct Sequence;
 	struct SkinInstance;
 	struct SourceTexture;
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	struct SphereBound;
 	struct SphereBoundingVolume;
-#endif
 	struct SphericalCollider;
 	struct SpotLight;
 	struct StencilProperty;

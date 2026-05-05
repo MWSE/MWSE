@@ -1,7 +1,17 @@
 #pragma once
 
 #include "NIDefines.h"
+#include "NIMatrix33.h"
 #include "NIVector3.h"
+
+// Polymorphic bounding-volume hierarchy used by the NetImmerse engine for
+// occlusion culling, picking, and scene-graph queries. The struct layouts
+// describe the actual engine memory; method implementations live in
+// MWSE-private NIBound.cpp (CSSE does not currently call them, so the
+// declarations exist on the CSSE side as forward API surface only).
+//
+// SphereBound is structurally identical to Bound (Vector3 center + float
+// radius, 0x10 bytes) but is a separate C++ type per MWSE-original.
 
 namespace NI {
 	struct Bound {
@@ -11,22 +21,7 @@ namespace NI {
 		void computeFromData(unsigned int vertexCount, const Vector3* vertices, unsigned int stride);
 	};
 	static_assert(sizeof(Bound) == 0x10, "NI::Bound failed size validation");
-}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-
-// MWSE polymorphic bounding-volume hierarchy. Used by occlusion culling,
-// picking, and other scene-graph queries. Not used by CSSE -- the entire
-// hierarchy is hidden in non-MWSE builds.
-//
-// SphereBound is structurally identical to Bound (Vector3 center + float
-// radius, 0x10 bytes) but is a separate C++ type per MWSE-original. Methods
-// on SphereBound (contains, getClosetPointTo, getFurthestPointFrom) are
-// MWSE-specific and live in MWSE-private NIBound.cpp.
-
-#include "NIMatrix33.h"
-
-namespace NI {
 	enum class BoundingVolumeType : int {
 		Sphere,
 		Box,
@@ -90,5 +85,3 @@ namespace NI {
 	};
 	static_assert(sizeof(BoxBoundingVolume) == 0x40, "NI::SphereBV failed size validation");
 }
-
-#endif
