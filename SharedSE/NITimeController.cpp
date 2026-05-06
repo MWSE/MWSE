@@ -16,23 +16,21 @@ namespace NI {
 #endif
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	void TimeController::ctor() {
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_CTOR) && SE_NI_TIMECONTROLLER_FNADDR_CTOR > 0
 		_ctor(this);
-	}
-
-	void TimeController::dtor() {
-		_dtor(this);
-	}
 #else
-	void TimeController::ctor() {
 		throw not_implemented_exception();
+#endif
 	}
 
 	void TimeController::dtor() {
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_DTOR) && SE_NI_TIMECONTROLLER_FNADDR_DTOR > 0
+		_dtor(this);
+#else
 		throw not_implemented_exception();
-	}
 #endif
+	}
 
 	void TimeController::start(float time) {
 		vTable.asController->start(this, time);
