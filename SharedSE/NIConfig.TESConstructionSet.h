@@ -75,6 +75,14 @@
 // NI::CollisionSwitch vTable address (CS.exe address not yet known)
 #define SE_NI_COLLISIONSWITCH_VTBL 0x0
 
+// NI::Particles (CS.exe addresses not yet known)
+#define SE_NI_PARTICLES_VTBL 0x0
+#define SE_NI_PARTICLESDATA_FNADDR_CTOR 0x0
+
+// NI::AutoNormalParticles (CS.exe addresses not yet known)
+#define SE_NI_AUTONORMALPARTICLES_VTBL 0x0
+#define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x0
+
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 

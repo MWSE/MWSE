@@ -74,6 +74,14 @@
 // NI::CollisionSwitch vTable address
 #define SE_NI_COLLISIONSWITCH_VTBL 0x74F418
 
+// NI::Particles
+#define SE_NI_PARTICLES_VTBL 0x74FCE8
+#define SE_NI_PARTICLESDATA_FNADDR_CTOR 0x6D1ED0
+
+// NI::AutoNormalParticles
+#define SE_NI_AUTONORMALPARTICLES_VTBL 0x74FDE8
+#define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x6D3020
+
 // NI light-radius test (cdecl free function; used by Node::shouldBeAffectedByLight)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x4D19C0
 

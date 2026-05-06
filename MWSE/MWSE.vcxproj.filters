@@ -3443,7 +3443,7 @@
     <ClCompile Include="NIParticlesLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticles.cpp">
+    <ClCompile Include="..\SharedSE\NIParticles.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaAbsorbedMagicEvent.cpp">

@@ -711,7 +711,7 @@
     <ClCompile Include="NIKeyframeManager.cpp" />
     <ClCompile Include="..\SharedSE\NILookAtController.cpp" />
     <ClCompile Include="..\SharedSE\NIParticleModifier.cpp" />
-    <ClCompile Include="NIParticles.cpp" />
+    <ClCompile Include="..\SharedSE\NIParticles.cpp" />
     <ClCompile Include="NIParticlesLua.cpp" />
     <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp" />
     <ClCompile Include="..\SharedSE\NIPathController.cpp" />
