@@ -4,13 +4,15 @@
 #include "ExceptionUtil.h"
 
 namespace NI {
-	const auto BillboardNode_vTable = reinterpret_cast<Node_vTable*>(0x746B00);
-
 	BillboardNode::BillboardNode() : Node() {
-		vTable.asNode = BillboardNode_vTable;
+#if defined(SE_NI_BILLBOARDNODE_VTBL) && SE_NI_BILLBOARDNODE_VTBL > 0
+		vTable.asNode = reinterpret_cast<Node_vTable*>(SE_NI_BILLBOARDNODE_VTBL);
 		savedTime = 0.0f;
 		updateControllers = true;
 		flags |= BillboardNodeFlags::RotateAboutUp;
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	Pointer<BillboardNode> BillboardNode::create() {

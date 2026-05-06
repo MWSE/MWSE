@@ -30,8 +30,12 @@ namespace NI {
 	static_assert(sizeof(AnimationKeyFunctions<AnimationKey::FillDerivedValuesFunction>) == 0x78, "NI::AnimationKeyFunctions failed size validation");
 
 	AnimationKey::FillDerivedValuesFunction AnimationKey::getFillDerivedValuesFunction(AnimationKey::ContentType content, AnimationKey::KeyType key) {
-		auto& fns = *reinterpret_cast<AnimationKeyFunctions<FillDerivedValuesFunction>*>(0x7DF868);
+#if defined(SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS) && SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS > 0
+		auto& fns = *reinterpret_cast<AnimationKeyFunctions<FillDerivedValuesFunction>*>(SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS);
 		return fns[content][key];
+#else
+		return nullptr;
+#endif
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

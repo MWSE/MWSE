@@ -18,11 +18,13 @@ namespace NI {
 	BSParticleNode::BSParticleNode() {
 		// Re-runs the engine BSAnimationNode ctor on `this` (the implicit base
 		// call has already done so once; the original code does it twice).
-#if defined(SE_NI_BSANIMATIONNODE_FNADDR_CTOR) && SE_NI_BSANIMATIONNODE_FNADDR_CTOR > 0
+#if defined(SE_NI_BSANIMATIONNODE_FNADDR_CTOR) && SE_NI_BSANIMATIONNODE_FNADDR_CTOR > 0 && defined(SE_NI_BSPARTICLENODE_VTBL) && SE_NI_BSPARTICLENODE_VTBL > 0
 		reinterpret_cast<void(__thiscall*)(BSAnimationNode*)>(SE_NI_BSANIMATIONNODE_FNADDR_CTOR)(this);
-#endif
 		flags |= BSParticleNode::AVObjectFlag::Follow;
-		vTable.asObject = reinterpret_cast<Object_vTable*>(0x750D68);
+		vTable.asObject = reinterpret_cast<Object_vTable*>(SE_NI_BSPARTICLENODE_VTBL);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	Pointer<BSParticleNode> BSParticleNode::create() {

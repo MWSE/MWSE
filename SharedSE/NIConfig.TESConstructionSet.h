@@ -105,6 +105,28 @@
 // NI::TimeController vTable template (CS.exe address not yet known)
 #define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x0
 
+// NI::AnimationKey global table (CS.exe address not yet known)
+#define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0
+
+// NI::BillboardNode vTable (CS.exe address not yet known)
+#define SE_NI_BILLBOARDNODE_VTBL 0x0
+
+// NI::BSParticleNode vTable (CS.exe address not yet known)
+#define SE_NI_BSPARTICLENODE_VTBL 0x0
+
+// NI::CollisionGroup engine fns (CS.exe addresses not yet known)
+#define SE_NI_COLLISIONGROUP_FNADDR_CONTAINSCOLLIDER 0x0
+#define SE_NI_COLLISIONGROUP_FNADDR_ADDCOLLIDER 0x0
+#define SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDER 0x0
+
+// NI::SourceTexture engine fns + global (CS.exe addresses not yet known)
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPATH 0x0
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x0
+#define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x0
+
+// NI::UVController engine fn (CS.exe address not yet known)
+#define SE_NI_UVCONTROLLER_FNADDR_COPY 0x0
+
 // NI::TimeController engine functions (CS.exe addresses not yet known)
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x0
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x0

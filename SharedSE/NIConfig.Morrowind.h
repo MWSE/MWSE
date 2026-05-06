@@ -104,6 +104,28 @@
 // NI::TimeController vTable template (memcpy-source for derived TimeController_vTable ctor)
 #define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x751200
 
+// NI::AnimationKey global table (FillDerivedValuesFunctions)
+#define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x7DF868
+
+// NI::BillboardNode vTable
+#define SE_NI_BILLBOARDNODE_VTBL 0x746B00
+
+// NI::BSParticleNode vTable
+#define SE_NI_BSPARTICLENODE_VTBL 0x750D68
+
+// NI::CollisionGroup engine fns
+#define SE_NI_COLLISIONGROUP_FNADDR_CONTAINSCOLLIDER 0x6FD800
+#define SE_NI_COLLISIONGROUP_FNADDR_ADDCOLLIDER 0x6FD440
+#define SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDER 0x6FD5A0
+
+// NI::SourceTexture engine fns + global
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPATH 0x6DE7F0
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x6DE940
+#define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x7C4C90
+
+// NI::UVController engine fn
+#define SE_NI_UVCONTROLLER_FNADDR_COPY 0x722330
+
 // NI::TimeController engine functions (raw-address constexprs in header)
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x6FC540
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x6FC610
