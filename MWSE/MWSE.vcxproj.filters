@@ -3050,7 +3050,7 @@
     <ClCompile Include="NIColorLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIColor.cpp">
+    <ClCompile Include="..\SharedSE\NIColor.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Ingredient.cpp">

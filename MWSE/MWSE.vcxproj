@@ -782,7 +782,7 @@
     <ClCompile Include="..\SharedSE\NIAVObject.cpp" />
     <ClCompile Include="NICameraLua.cpp" />
     <ClCompile Include="NICollisionSwitchLua.cpp" />
-    <ClCompile Include="NIColor.cpp" />
+    <ClCompile Include="..\SharedSE\NIColor.cpp" />
     <ClCompile Include="NIColorLua.cpp" />
     <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp" />
     <ClCompile Include="..\SharedSE\NILight.cpp" />
