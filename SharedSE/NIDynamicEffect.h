@@ -15,14 +15,8 @@ namespace NI {
 		};
 
 		bool enabled; // 0x90
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-original field names + types.
 		unsigned int index; // 0x94
 		unsigned int pushCount; // 0x98
-#else
-		int index; // 0x94
-		int unknown_0x98;
-#endif
 		unsigned int revisionId; // 0x9C
 		NodeLinkedList affectedNodes; // 0xA0
 
@@ -33,13 +27,7 @@ namespace NI {
 		// vTable wrappers.
 		//
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-original: const-qualified, matches MWSE-private NIDynamicEffect.cpp.
 		int getType() const;
-#else
-		// SharedSE/CSSE: non-const, matches SharedSE/NIDynamicEffect.cpp.
-		int getType();
-#endif
 
 		//
 		// Other related this-call functions.
@@ -56,11 +44,7 @@ namespace NI {
 	static_assert(sizeof(DynamicEffect) == 0xA8, "NI::DynamicEffect failed size validation");
 
 	struct DynamicEffect_vTable : AVObject_vTable {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		int(__thiscall* getType)(const DynamicEffect*); // 0x94
-#else
-		int(__thiscall* getType)(DynamicEffect*); // 0x94
-#endif
 	};
 	static_assert(sizeof(DynamicEffect_vTable) == 0x98, "NI::DynamicEffect's vtable failed size validation");
 

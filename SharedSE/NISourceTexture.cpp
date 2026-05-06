@@ -1,5 +1,9 @@
 #include "NISourceTexture.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "TES3DataHandler.h"
+#endif
+
 namespace NI {
 	const auto NI_SourceTexture_createFromPath = reinterpret_cast<SourceTexture*(__cdecl*)(const char*, SourceTexture::FormatPrefs*)>(0x6DE7F0);
 	Pointer<SourceTexture> SourceTexture::createFromPath(const char* path, SourceTexture::FormatPrefs* formatPrefs) {
@@ -23,6 +27,18 @@ namespace NI {
 	void SourceTexture::clearPixelData() {
 		vTable.asSourceTexture->clearPixelData(this);
 	}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1 && defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	Pointer<SourceTexture> SourceTexture::createFromPath_lua(const char* path, sol::optional<bool> useCached) {
+		// Try to use caching if possible.
+		auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && useCached.value_or(true)) {
+			return TES3::DataHandler::get()->loadSourceTexture(path);
+		}
+
+		return createFromPath(path);
+	}
+#endif
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
