@@ -46,6 +46,9 @@
 #define SE_NI_OBJECTNET_FNADDR_REMOVEALLEXTRADATA 0x6EA3B0
 #define SE_NI_OBJECTNET_FNADDR_REMOVECONTROLLER 0x6EA450
 #define SE_NI_OBJECTNET_FNADDR_REMOVEEXTRADATA 0x6EA260
+// No standalone NiObjectNET::SetFlag in Morrowind.exe — the flags member
+// lives on NiProperty (Property::SetFlag at 0x405960), not ObjectNET.
+// The decl in SharedSE/NIObjectNET.h is CSSE-only (CS.exe has it at 0x44A130).
 #define SE_NI_OBJECTNET_FNADDR_SETFLAG 0x0
 #define SE_NI_OBJECTNET_FNADDR_SETNAME 0x6EA1A0
 
@@ -154,6 +157,9 @@
 #define SE_NI_DYNAMICEFFECT_FNADDR_ATTACHAFFECTEDNODE 0x6F3790
 #define SE_NI_DYNAMICEFFECT_FNADDR_CTOR 0x6F34E0
 #define SE_NI_DYNAMICEFFECT_FNADDR_DETACHAFFECTEDNODE 0x6F37D0
+// No standalone ClearDynamicEffectNodes in Morrowind.exe — the loop is inlined
+// into NiDynamicEffect::dtor at 0x6F35B0. CSSE has it broken out at 0x402824.
+// MWSE call sites must throw not_implemented_exception or use the dtor path.
 #define SE_NI_FNADDR_CLEARDYNAMICEFFECTNODES 0x0
 
 // NI::Property
@@ -176,8 +182,8 @@
 #define SE_NI_TEXTURINGPROPERTY_BUMPMAP_VTBL 0x7507B0
 
 // NI::TexturingProperty
-#define SE_NI_TEXTURINGPROPERTY_FNADDR_CTOR 0x0
-#define SE_NI_TEXTURINGPROPERTY_FNADDR_DTOR 0x0
+#define SE_NI_TEXTURINGPROPERTY_FNADDR_CTOR 0x6E16C0
+#define SE_NI_TEXTURINGPROPERTY_FNADDR_DTOR 0x6E1880
 
 // NI::VertexColorProperty
 #define SE_NI_VERTEXCOLORPROPERTY_VTBL 0x7464F8
@@ -192,13 +198,13 @@
 #define SE_NI_SKININSTANCE_FNADDR_DEFORM 0x6FA000
 
 // NI::TriShape
-#define SE_NI_TRISHAPE_FNADDR_CTOR 0x0
+#define SE_NI_TRISHAPE_FNADDR_CTOR 0x6E4DD0
 
 // NI::TriShapeData
 #define SE_NI_TRISHAPEDATA_FNADDR_CREATE 0x6E4690
 
 // NI::Lines
-#define SE_NI_LINES_FNADDR_CTOR 0x0
+#define SE_NI_LINES_FNADDR_CTOR 0x6DA790
 
 // NI::GeometryData
 #define SE_NI_GEOMETRYDATA_FNADDR_LOADBINARY 0x6EF5E0
