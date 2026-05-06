@@ -325,8 +325,8 @@ namespace se::cs::dialog::render_window {
 
 				// Calculate the vector from initial mouse position to current.
 				NI::Vector3 difference = (
-					context.panDDX * (cursorPos.x - context.initialCursorPosition.x) +
-					context.panDDY * (cursorPos.y - context.initialCursorPosition.y)
+					context.panDDX * (float)(cursorPos.x - context.initialCursorPosition.x) +
+					context.panDDY * (float)(cursorPos.y - context.initialCursorPosition.y)
 				);
 
 				// Apply camera movement.
@@ -2178,7 +2178,7 @@ namespace se::cs::dialog::render_window {
 			if (gIsRotating::get()) {
 				widgets->updateAngleGuideGeometry(
 					sceneNode->worldBoundRadius,
-					gSnapAngleInDegrees::get()
+					(float)gSnapAngleInDegrees::get()
 				);
 				widgets->updateAngleGuidePosition(
 					sceneNode->localTranslate,

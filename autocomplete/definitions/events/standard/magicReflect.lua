@@ -24,6 +24,11 @@ Each reflect effect active on a target will roll separately; the reflect chances
 			type = "number",
 			description = "The % chance that the magic is reflected. May be modified.",
 		},
+		["effectIndex"] = {
+			type = "number",
+			readOnly = true,
+			description = "The index of the spell effect being tested.",
+		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
 			readOnly = true,

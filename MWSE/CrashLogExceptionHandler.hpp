@@ -83,11 +83,14 @@ namespace CrashLogger::PDB {
 		return name;
 	}
 
+#pragma warning(push)
+#pragma warning(disable: 4200)
 	struct RTTIType {
 		void* typeInfo;
 		UINT32 pad;
 		char name[];
 	};
+#pragma warning(pop)
 
 	struct RTTILocator {
 		UINT32		sig, offset, cdOffset;

@@ -20,6 +20,9 @@ namespace TES3 {
 				};
 			};
 			Node* nextNode; // 0x0 + sizeof(K) + sizeof(V) + alignment
+
+			// Engine-owned storage; key/value teardown is dispatched through deleteKeyValuePair().
+			~Node() {}
 		};
 		struct VirtualTable {
 			void(__thiscall* destructor)(HashMap<K, V>*, bool); // 0x0

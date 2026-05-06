@@ -8,11 +8,12 @@
 namespace mwse::lua::event {
 	class MagicReflectEvent : public GenericEvent, public DisableableEvent<MagicReflectEvent> {
 	public:
-		MagicReflectEvent(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* target, TES3::ActiveMagicEffect* reflectEffect, float reflectChance);
+		MagicReflectEvent(TES3::MagicSourceInstance* sourceInstance, int effectIndex, TES3::Reference* target, TES3::ActiveMagicEffect* reflectEffect, float reflectChance);
 		sol::table createEventTable();
 
 	protected:
 		TES3::MagicSourceInstance* m_MagicSourceInstance;
+		int m_EffectIndex;
 		TES3::Reference* m_Target;
 		TES3::ActiveMagicEffect* m_ReflectEffect;
 		float m_ReflectChance;

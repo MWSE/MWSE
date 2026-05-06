@@ -47,6 +47,21 @@ namespace TES3 {
 		TES3_AudioController_unpauseMusic(this);
 	}
 
+	const auto TES3_AudioController_loadSoundFile = reinterpret_cast<SoundBuffer*(__thiscall*)(AudioController*, const char*, bool)>(0x401DB0);
+	SoundBuffer* AudioController::loadSoundFile(const char* filename, bool isPointSource) {
+		return TES3_AudioController_loadSoundFile(this, filename, isPointSource);
+	}
+
+	const auto TES3_AudioController_playSoundBuffer = reinterpret_cast<void(__thiscall*)(AudioController*, SoundBuffer*, int)>(0x402820);
+	void AudioController::playSoundBuffer(SoundBuffer* soundBuffer, int flags) {
+		TES3_AudioController_playSoundBuffer(this, soundBuffer, flags);
+	}
+
+	const auto TES3_AudioController_setSoundBufferMinMaxDistance = reinterpret_cast<int(__thiscall*)(AudioController*, SoundBuffer*, float, float)>(0x402AC0);
+	int AudioController::setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance) {
+		return TES3_AudioController_setSoundBufferMinMaxDistance(this, soundBuffer, minDistance, maxDistance);
+	}
+
 	bool AudioController::getAudioFlag(AudioFlag::Flag flag) const {
 		return (audioFlags & flag) != 0;
 	}

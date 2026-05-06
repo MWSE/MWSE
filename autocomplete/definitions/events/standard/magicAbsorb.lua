@@ -31,6 +31,11 @@ Each spell absorption effect active on a target will roll separately; the absorb
             readOnly = true,
             description = "The magic source.",
         },
+        ["effectIndex"] = {
+            type = "number",
+            readOnly = true,
+            description = "The effect index into the `source` effect list that is being tested against.",
+        },
         ["sourceInstance"] = {
             type = "tes3magicSourceInstance",
             readOnly = true,

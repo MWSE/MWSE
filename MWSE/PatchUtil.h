@@ -5,5 +5,7 @@ namespace mwse::patch {
 	void installPostLuaPatches();
 	void installPostInitializationPatches();
 
+	void uninstallPatches();
+
 	bool installMiniDumpHook();
 }

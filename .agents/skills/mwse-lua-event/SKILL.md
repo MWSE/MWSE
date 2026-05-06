@@ -1,6 +1,6 @@
 ---
 name: mwse-lua-event
-description: Add new events to the MWSE Lua API. Covers the full end-to-end process: C++ event class (header + source), memory hook registration in LuaManager, autocomplete definition file, example scripts, and documentation generation. Use when the user wants to hook a new Morrowind engine call and expose it to Lua mod authors.
+description: "Add new events to the MWSE Lua API. Covers the full end-to-end process: C++ event class (header + source), memory hook registration in LuaManager, autocomplete definition file, example scripts, and documentation generation. Use when the user wants to hook a new Morrowind engine call and expose it to Lua mod authors."
 ---
 
 # MWSE Lua Event Development

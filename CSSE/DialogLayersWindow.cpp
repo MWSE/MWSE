@@ -440,7 +440,7 @@ namespace se::cs::dialog::layer_window {
 		try {
 			data = toml::parse(LAYER_CONFIG_PATH);
 		}
-		catch (std::exception& e) {
+		catch (std::exception&) {
 			// TODO: Handle parse error
 			return;
 		}

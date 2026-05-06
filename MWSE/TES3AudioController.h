@@ -96,6 +96,10 @@ namespace TES3 {
 		void pauseMusic();
 		void unpauseMusic();
 
+		SoundBuffer* loadSoundFile(const char* filename, bool isPointSource);
+		void playSoundBuffer(SoundBuffer* soundBuffer, int flags);
+		int setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance);
+
 		//
 		// Custom functions.
 		//

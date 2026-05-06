@@ -9,9 +9,10 @@
 #include "TES3MobileActor.h"
 
 namespace mwse::lua::event {
-	MagicAbsorbEvent::MagicAbsorbEvent(TES3::MagicSourceInstance* sourceInstance, TES3::Reference* target, TES3::ActiveMagicEffect* absorbEffect, float absorbChance) :
+	MagicAbsorbEvent::MagicAbsorbEvent(TES3::MagicSourceInstance* sourceInstance, int effectIndex, TES3::Reference* target, TES3::ActiveMagicEffect* absorbEffect, float absorbChance) :
 		GenericEvent("magicAbsorb"),
 		m_MagicSourceInstance(sourceInstance),
+		m_EffectIndex(effectIndex),
 		m_Target(target),
 		m_AbsorbEffect(absorbEffect),
 		m_AbsorbChance(absorbChance)
@@ -31,6 +32,7 @@ namespace mwse::lua::event {
 		eventData["absorbChance"] = m_AbsorbChance;
 		eventData["source"] = m_MagicSourceInstance->sourceCombo.source.asGeneric;
 		eventData["sourceInstance"] = m_MagicSourceInstance;
+		eventData["effectIndex"] = m_EffectIndex;
 
 		return eventData;
 	}
