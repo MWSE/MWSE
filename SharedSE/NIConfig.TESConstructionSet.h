@@ -126,8 +126,10 @@
 // NI::UVController engine fn (CS.exe address not yet known)
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x0
 
-// NI::AVObject engine fn (CS.exe address not yet known)
-#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x0
+// NI::AVObject engine fn — value cross-referenced from the older lowercase
+// alias SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE (line 54), which is a
+// case-typo carried over for backwards compat.
+#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x5DADD0
 
 // NI::TimeController engine functions (CS.exe addresses not yet known)
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x5E9030
@@ -167,7 +169,10 @@
 // inherited-via-ObjectNET SetFlag macro above (CS hoisted SetFlag onto
 // the ObjectNET interface; impl lives on Property).
 #define SE_NI_PROPERTY_FNADDR_SETFLAG 0x44A130
-#define SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD 0x0
+// Cross-referenced from Morrowind's setFlagBitField at 0x408A10 and the CS
+// Property cluster (0x44A0F0..0x44A1F0). Body matches Morrowind's bitfield
+// math: flags = (value<<index) | (flags & ~(mask<<index)).
+#define SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD 0x44A0F0
 
 // NI::AlphaProperty
 #define SE_NI_ALPHAPROPERTY_VTBL 0x6732E8
