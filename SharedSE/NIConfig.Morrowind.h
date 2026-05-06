@@ -82,6 +82,9 @@
 #define SE_NI_AUTONORMALPARTICLES_VTBL 0x74FDE8
 #define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x6D3020
 
+// NI::PointLight vTable address (DynamicEffect_vTable layout)
+#define SE_NI_POINTLIGHT_VTBL 0x749D40
+
 // NI light-radius test (cdecl free function; used by Node::shouldBeAffectedByLight)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x4D19C0
 

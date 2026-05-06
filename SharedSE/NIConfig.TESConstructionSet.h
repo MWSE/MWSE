@@ -83,6 +83,9 @@
 #define SE_NI_AUTONORMALPARTICLES_VTBL 0x0
 #define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x0
 
+// NI::PointLight vTable address (CS.exe address not yet known)
+#define SE_NI_POINTLIGHT_VTBL 0x0
+
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 

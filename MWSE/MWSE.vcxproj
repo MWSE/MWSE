@@ -796,7 +796,7 @@
     <ClCompile Include="NIPickLua.cpp" />
     <ClCompile Include="..\SharedSE\NIPixelData.cpp" />
     <ClCompile Include="NIPixelDataLua.cpp" />
-    <ClCompile Include="NIPointLight.cpp" />
+    <ClCompile Include="..\SharedSE\NIPointLight.cpp" />
     <ClCompile Include="NIPropertyLua.cpp" />
     <ClCompile Include="..\SharedSE\NISourceTexture.cpp" />
     <ClCompile Include="NISourceTextureLua.cpp" />
