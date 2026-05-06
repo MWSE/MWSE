@@ -3248,7 +3248,7 @@
     <ClCompile Include="WindowsUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NICollisionSwitch.cpp">
+    <ClCompile Include="..\SharedSE\NICollisionSwitch.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NIProperty.cpp">

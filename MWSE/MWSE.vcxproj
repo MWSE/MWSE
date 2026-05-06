@@ -694,7 +694,7 @@
     <ClCompile Include="..\SharedSE\NICamera.cpp" />
     <ClCompile Include="..\SharedSE\NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />
-    <ClCompile Include="NICollisionSwitch.cpp" />
+    <ClCompile Include="..\SharedSE\NICollisionSwitch.cpp" />
     <ClCompile Include="NICopyTransformController.cpp" />
     <ClCompile Include="..\SharedSE\NIDirectionalLight.cpp" />
     <ClCompile Include="NIDX8Renderer.cpp" />

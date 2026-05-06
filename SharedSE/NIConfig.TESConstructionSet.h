@@ -69,6 +69,11 @@
 #define SE_NI_NODE_FNADDR_CTOR 0x5B6100
 #define SE_NI_NODE_FNADDR_DETACHALLEFFECTS 0x0
 #define SE_NI_NODE_FNADDR_DETACHEFFECT 0x0
+#define SE_NI_NODE_FNADDR_FINDINTERSECTIONS 0x0
+#define SE_NI_NODE_FNADDR_LINKOBJECT 0x0
+
+// NI::CollisionSwitch vTable address (CS.exe address not yet known)
+#define SE_NI_COLLISIONSWITCH_VTBL 0x0
 
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
