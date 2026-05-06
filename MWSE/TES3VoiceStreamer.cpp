@@ -20,7 +20,7 @@ namespace mwse::patch::voice {
 		// bufferDescription.dwSize == 0 (the real value, set by LoadSoundFile, is
 		// sizeof(DSBUFFERDESC) == 36 — never 0 for a real buffer).
 		//
-		// All stub-awareness in MWSE lives in this file. The five leaf accessor
+		// All stub-awareness in MWSE lives in this file. The six leaf accessor
 		// replacements below check isPending() and short-circuit; everything else
 		// in the engine treats stubs as ordinary SoundBuffers.
 		constexpr DWORD STUB_PENDING_SENTINEL = 0;
@@ -218,14 +218,14 @@ namespace mwse::patch::voice {
 			}
 		}
 
-		// Function-prologue replacements for the five SoundBuffer leaf accessors.
+		// Function-prologue replacements for the six SoundBuffer leaf accessors.
 		// Each is a full C++ reimplementation of the engine function with an
 		// isPending() short-circuit. All installed via genJumpUnprotected, which
 		// replaces the engine's first 5 bytes.
 		//
 		// The engine's existing call sites stay completely untouched — they still
-		// call 0x402B50 / 0x402E90 / 0x4029A0 / 0x402EC0 / 0x4027E0 exactly as
-		// before. Those addresses just route to our C++ now.
+		// call 0x402980 / 0x402B50 / 0x402E90 / 0x4029A0 / 0x402EC0 / 0x4027E0
+		// exactly as before. Those addresses just route to our C++ now.
 
 		// Replaces 0x402B50 AudioController::SetSoundBufferPosition. Faithful
 		// C++ reimplementation of the engine's body. Constants and quadrant
@@ -371,6 +371,20 @@ namespace mwse::patch::voice {
 			return absSample * (1.0f / 32768.0f);
 		}
 
+		// Replaces 0x402980 AudioController::StopSoundBuffer. The original
+		// null-checks the wrapper but not lpSoundBuffer, so any caller that
+		// reaches a pending stub (lpSoundBuffer==null) or a decode-failed real
+		// stub crashes on the vtable read at 0x40298A. removeSound's status
+		// gate doesn't help — getSoundBufferStatus_replacement returns
+		// DSBSTATUS_PLAYING for pending stubs, so the engine falls through to
+		// this function. killSounds and Sound::dtor reach it without any gate.
+		void __fastcall stopSoundBuffer_replacement(TES3::AudioController* /*audio*/, void* /*edx*/, TES3::SoundBuffer* sb) {
+			if (!sb) return;
+			if (isPending(sb)) return;
+			if (!sb->lpSoundBuffer) return;
+			sb->lpSoundBuffer->Stop();
+		}
+
 		// Replaces 0x4027E0 AudioController::ReleaseSoundBuffer.
 		void __fastcall releaseSoundBuffer_replacement(TES3::AudioController* /*audio*/, void* /*edx*/, TES3::SoundBuffer* sb) {
 			if (!sb) return;
@@ -430,12 +444,13 @@ namespace mwse::patch::voice {
 		// Replace the leaf SoundBuffer accessors at their function prologues. The
 		// engine's existing call sites stay untouched; they still call these
 		// addresses, which now route to our C++. All stub-awareness is encapsulated
-		// in the five replacements.
+		// in the six replacements.
 		genJumpUnprotected(0x402E90, reinterpret_cast<DWORD>(&getSoundBufferStatus_replacement));
 		genJumpUnprotected(0x4029A0, reinterpret_cast<DWORD>(&setSoundBufferCurrentPosition_replacement));
 		genJumpUnprotected(0x402EC0, reinterpret_cast<DWORD>(&getSoundBufferLipSyncLevel_replacement));
 		genJumpUnprotected(0x4027E0, reinterpret_cast<DWORD>(&releaseSoundBuffer_replacement));
 		genJumpUnprotected(0x402B50, reinterpret_cast<DWORD>(&setSoundBufferPosition_replacement));
+		genJumpUnprotected(0x402980, reinterpret_cast<DWORD>(&stopSoundBuffer_replacement));
 
 		g_running.store(true, std::memory_order_release);
 		g_worker = std::thread(&workerLoop);
