@@ -226,9 +226,9 @@ namespace NI {
 		void update_lua(sol::optional<sol::table> args);
 #endif
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// Engine raw function (Morrowind.exe address).
-		static constexpr auto _detachPropertyByType = reinterpret_cast<Pointer<Property>* (__thiscall*)(AVObject*, Pointer<Property>*, PropertyType)>(0x6EAE20);
+		// Engine raw function. Per-target address resolved via NIConfig.{Morrowind,TESConstructionSet}.h.
+#if defined(SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE) && SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE > 0
+		static constexpr auto _detachPropertyByType = reinterpret_cast<Pointer<Property>* (__thiscall*)(AVObject*, Pointer<Property>*, PropertyType)>(SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE);
 #endif
 	};
 	static_assert(sizeof(AVObject) == 0x90, "NI::AVObject failed size validation");

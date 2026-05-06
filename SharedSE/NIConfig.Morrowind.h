@@ -126,6 +126,9 @@
 // NI::UVController engine fn
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x722330
 
+// NI::AVObject engine fn
+#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x6EAE20
+
 // NI::TimeController engine functions (raw-address constexprs in header)
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x6FC540
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x6FC610

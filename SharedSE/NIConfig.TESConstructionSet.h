@@ -127,6 +127,9 @@
 // NI::UVController engine fn (CS.exe address not yet known)
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x0
 
+// NI::AVObject engine fn (CS.exe address not yet known)
+#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x0
+
 // NI::TimeController engine functions (CS.exe addresses not yet known)
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x0
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x0
