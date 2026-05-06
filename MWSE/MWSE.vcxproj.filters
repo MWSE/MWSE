@@ -2663,7 +2663,7 @@
     <ClCompile Include="TES3AttachmentLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NINode.cpp">
+    <ClCompile Include="..\SharedSE\NINode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3MobManager.cpp">

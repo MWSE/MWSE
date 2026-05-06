@@ -787,7 +787,7 @@
     <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp" />
     <ClCompile Include="..\SharedSE\NILight.cpp" />
     <ClCompile Include="NILightLua.cpp" />
-    <ClCompile Include="NINode.cpp" />
+    <ClCompile Include="..\SharedSE\NINode.cpp" />
     <ClCompile Include="NINodeLua.cpp" />
     <ClCompile Include="..\SharedSE\NIObject.cpp" />
     <ClCompile Include="NIObjectLua.cpp" />
