@@ -1,11 +1,22 @@
 #include "NITimeController.h"
 
+#include "ExceptionUtil.h"
+
+#include <cstring>
+
 namespace NI {
 	TimeController_vTable::TimeController_vTable() {
-		// Copy everything from the original virtual table.
-		memcpy_s(this, sizeof(TimeController_vTable), (void*)0x751200, sizeof(TimeController_vTable));
+#if defined(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE) && SE_NI_TIMECONTROLLER_VTBL_TEMPLATE > 0
+		// Copy the engine's TimeController vtable layout as a starting template;
+		// derived MWSE controllers (e.g. CopyTransformController) overwrite
+		// individual slots after this base ctor returns.
+		memcpy_s(this, sizeof(TimeController_vTable), reinterpret_cast<void*>(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE), sizeof(TimeController_vTable));
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	void TimeController::ctor() {
 		_ctor(this);
 	}
@@ -13,6 +24,15 @@ namespace NI {
 	void TimeController::dtor() {
 		_dtor(this);
 	}
+#else
+	void TimeController::ctor() {
+		throw not_implemented_exception();
+	}
+
+	void TimeController::dtor() {
+		throw not_implemented_exception();
+	}
+#endif
 
 	void TimeController::start(float time) {
 		vTable.asController->start(this, time);
@@ -66,7 +86,8 @@ namespace NI {
 	void TimeController::setCycleType(unsigned int type) {
 		flags = (flags & ~TimeControllerFlags::CycleTypeMask) | (type & TimeControllerFlags::CycleTypeMask);
 	}
-
 }
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::TimeController)
+#endif

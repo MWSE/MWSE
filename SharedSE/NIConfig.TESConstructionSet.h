@@ -102,6 +102,9 @@
 // NI::Sequence (CS.exe address not yet known)
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x0
 
+// NI::TimeController vTable template (CS.exe address not yet known)
+#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x0
+
 // NI::KeyframeManager (CS.exe addresses not yet known)
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x0
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x0

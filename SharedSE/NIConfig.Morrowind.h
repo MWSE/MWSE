@@ -101,6 +101,9 @@
 // NI::Sequence
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x70F720
 
+// NI::TimeController vTable template (memcpy-source for derived TimeController_vTable ctor)
+#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x751200
+
 // NI::KeyframeManager
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x711360
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x711390

@@ -3263,7 +3263,7 @@
     <ClCompile Include="..\SharedSE\NITriShape.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITimeController.cpp">
+    <ClCompile Include="..\SharedSE\NITimeController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Apparatus.cpp">
