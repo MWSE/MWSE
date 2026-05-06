@@ -719,7 +719,7 @@
     <ClCompile Include="..\SharedSE\NIProperty.cpp" />
     <ClCompile Include="..\SharedSE\NIQuaternion.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
-    <ClCompile Include="NIRenderedTexture.cpp" />
+    <ClCompile Include="..\SharedSE\NIRenderedTexture.cpp" />
     <ClCompile Include="NiRenderedTextureLua.cpp" />
     <ClCompile Include="..\SharedSE\NIRenderer.cpp" />
     <ClCompile Include="NIRendererLua.cpp" />

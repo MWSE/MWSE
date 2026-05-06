@@ -3170,7 +3170,7 @@
     <ClCompile Include="TES3ReferenceList.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIRenderedTexture.cpp">
+    <ClCompile Include="..\SharedSE\NIRenderedTexture.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NIRenderer.cpp">
