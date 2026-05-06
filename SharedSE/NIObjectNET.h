@@ -46,11 +46,17 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
+		// Per-target return type: TES3::Reference for MWSE, se::cs::Reference
+		// for CSSE (legitimate target-specific type, not cosmetic drift).
+		// Const-ness is unified (MWSE-canonical).
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		TES3::Reference* getTes3Reference(bool searchParents = false) const;
-		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;
 #else
-		se::cs::Reference* getTes3Reference(bool searchParents = false);
+		se::cs::Reference* getTes3Reference(bool searchParents = false) const;
+#endif
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;
 #endif
 
 		//
