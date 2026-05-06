@@ -3740,7 +3740,7 @@
     <ClCompile Include="NIDX8Renderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPixelFormat.cpp">
+    <ClCompile Include="..\SharedSE\NIPixelFormat.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>

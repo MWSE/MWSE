@@ -92,6 +92,13 @@
 // NI::SortAdjustNode vTable address (CS.exe address not yet known)
 #define SE_NI_SORTADJUSTNODE_VTBL 0x0
 
+// NI::PixelFormat (D3D8-bound; CSSE has no D3D8 link, addresses irrelevant)
+#define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMFORMAT 0x0
+#define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMRGBA 0x0
+#define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMPALETTE 0x0
+#define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMBUMPLUMA 0x0
+#define SE_NI_PIXELFORMAT_FNADDR_GETD3DFORMAT 0x0
+
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 
