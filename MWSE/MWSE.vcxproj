@@ -37,14 +37,8 @@
     <ClInclude Include="LuaStartGlobalScriptEvent.h" />
     <ClInclude Include="LuaUiSkillTooltipEvent.h" />
     <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h" />
-    <ClInclude Include="NIAccumulator.h" />
-    <ClInclude Include="NIAnimationData.h" />
-    <ClInclude Include="NIAnimationKey.h" />
     <ClInclude Include="NIBoundingVolumeLua.h" />
     <ClInclude Include="NIBSAnimationNodeLua.h" />
-    <ClInclude Include="NIPathController.h" />
-    <ClInclude Include="NISortAdjustNode.h" />
-    <ClInclude Include="NITriShapeDynamicData.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
     <ClInclude Include="TES3CrimeLua.h" />
     <ClInclude Include="TES3DialogueFilterContext.h" />
@@ -80,11 +74,9 @@
     <ClInclude Include="NICollisionGroupLua.h" />
     <ClInclude Include="NICopyTransformController.h" />
     <ClInclude Include="NIDX8TextureData.h" />
-    <ClInclude Include="NIQuaternion.h" />
     <ClInclude Include="NIQuaternionLua.h" />
     <ClInclude Include="NiRenderedTextureLua.h" />
     <ClInclude Include="NiRendererLua.h" />
-    <ClInclude Include="NIScreenPolygon.h" />
     <ClInclude Include="TES3AnimationDataLua.h" />
     <ClInclude Include="TES3ArchiveLua.h" />
     <ClInclude Include="TES3CutscenePlayer.h" />
@@ -101,8 +93,6 @@
     <ClInclude Include="LuaInfoLinkResolveEvent.h" />
     <ClInclude Include="LuaPotionBrewSkillCheckEvent.h" />
     <ClInclude Include="LuaSpellMagickaUseEvent.h" />
-    <ClInclude Include="NIBillboardNode.h" />
-    <ClInclude Include="NIBSAnimationNode.h" />
     <ClInclude Include="LuaBarterOfferEvent.h" />
     <ClInclude Include="LuaBodyPartAssignedEvent.h" />
     <ClInclude Include="LuaCalcHitArmorPieceEvent.h" />
@@ -229,42 +219,16 @@
     <ClInclude Include="LuaWeatherTransitionStartedEvent.h" />
     <ClInclude Include="MWSEConfig.h" />
     <ClInclude Include="MWSEUtilLua.h" />
-    <ClInclude Include="NIBinaryStream.h" />
-    <ClInclude Include="NIBound.h" />
-    <ClInclude Include="NICollisionGroup.h" />
     <ClInclude Include="NIDX8Renderer.h" />
-    <ClInclude Include="NIExtraData.h" />
     <ClInclude Include="NIExtraDataLua.h" />
-    <ClInclude Include="NIFlipController.h" />
-    <ClInclude Include="NIGeometry.h" />
-    <ClInclude Include="NIGeometryData.h" />
     <ClInclude Include="NIGeometryDataLua.h" />
-    <ClInclude Include="NIKeyframeController.h" />
-    <ClInclude Include="NIKeyframeManager.h" />
-    <ClInclude Include="NILines.h" />
-    <ClInclude Include="NILinesData.h" />
-    <ClInclude Include="NILookAtController.h" />
-    <ClInclude Include="NIParticleModifier.h" />
-    <ClInclude Include="NIParticles.h" />
     <ClInclude Include="NIParticlesLua.h" />
-    <ClInclude Include="NIParticleSystemController.h" />
-    <ClInclude Include="NIPerParticleData.h" />
-    <ClInclude Include="NIRect.h" />
-    <ClInclude Include="NIRenderedTexture.h" />
-    <ClInclude Include="NIRenderer.h" />
-    <ClInclude Include="NISkinInstance.h" />
     <ClInclude Include="NISkinInstanceLua.h" />
-    <ClInclude Include="NITArray.h" />
-    <ClInclude Include="NITextureEffect.h" />
     <ClInclude Include="NITextureEffectLua.h" />
     <ClInclude Include="NITextureLua.h" />
-    <ClInclude Include="NITriangle.h" />
     <ClInclude Include="NITriBasedGeometry.h" />
     <ClInclude Include="NITriBasedGeometryData.h" />
     <ClInclude Include="NITriShapeData.h" />
-    <ClInclude Include="NIUVController.h" />
-    <ClInclude Include="NIUVData.h" />
-    <ClInclude Include="NIViewer.h" />
     <ClInclude Include="LuaPotionBrewFailedEvent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TES3ActorAnimationControllerLua.h" />
@@ -281,31 +245,13 @@
     <ClInclude Include="TES3LinkedObjectsList.h" />
     <ClInclude Include="TES3MagicEffectController.h" />
     <ClInclude Include="MemoryUtilLua.h" />
-    <ClInclude Include="NIAmbientLight.h" />
-    <ClInclude Include="NICollisionSwitch.h" />
     <ClInclude Include="NICollisionSwitchLua.h" />
-    <ClInclude Include="NIColor.h" />
     <ClInclude Include="NIColorLua.h" />
-    <ClInclude Include="NIDirectionalLight.h" />
-    <ClInclude Include="NIDynamicEffect.h" />
     <ClInclude Include="NIDynamicEffectLua.h" />
-    <ClInclude Include="NILight.h" />
     <ClInclude Include="NILightLua.h" />
-    <ClInclude Include="NILinkedList.h" />
-    <ClInclude Include="NIPixelData.h" />
     <ClInclude Include="NIPixelDataLua.h" />
-    <ClInclude Include="NIPixelFormat.h" />
-    <ClInclude Include="NIPointLight.h" />
-    <ClInclude Include="NIProperty.h" />
     <ClInclude Include="NIPropertyLua.h" />
-    <ClInclude Include="NISourceTexture.h" />
     <ClInclude Include="NISourceTextureLua.h" />
-    <ClInclude Include="NISpotLight.h" />
-    <ClInclude Include="NITexture.h" />
-    <ClInclude Include="NITriShape.h" />
-    <ClInclude Include="NIPointer.h" />
-    <ClInclude Include="NIStream.h" />
-    <ClInclude Include="NITimeController.h" />
     <ClInclude Include="NITimeControllerLua.h" />
     <ClInclude Include="NILinesLua.h" />
     <ClInclude Include="NITriShapeLua.h" />
@@ -343,22 +289,14 @@
     <ClInclude Include="LuaTimer.h" />
     <ClInclude Include="LuaUtil.h" />
     <ClInclude Include="MemoryUtil.h" />
-    <ClInclude Include="NIAVObject.h" />
-    <ClInclude Include="NICamera.h" />
     <ClInclude Include="NICameraLua.h" />
+    <ClInclude Include="NIConfig.h" />
     <ClInclude Include="NIDefines.h" />
-    <ClInclude Include="NINode.h" />
+    <ClInclude Include="NIRTTIDefines.h" />
     <ClInclude Include="NINodeLua.h" />
-    <ClInclude Include="NIObject.h" />
     <ClInclude Include="NIObjectLua.h" />
-    <ClInclude Include="NIObjectNET.h" />
-    <ClInclude Include="NIPick.h" />
     <ClInclude Include="NIPickLua.h" />
-    <ClInclude Include="NIRTTI.h" />
-    <ClInclude Include="NISwitchNode.h" />
     <ClInclude Include="NISwitchNodeLua.h" />
-    <ClInclude Include="NITransform.h" />
-    <ClInclude Include="NIUtil.h" />
     <ClInclude Include="PatchUtil.h" />
     <ClInclude Include="ScriptUtilLua.h" />
     <ClInclude Include="TES3ActorLua.h" />
@@ -745,64 +683,64 @@
     <ClCompile Include="MGEUtilLua.cpp" />
     <ClCompile Include="MWSEConfig.cpp" />
     <ClCompile Include="MWSEUtilLua.cpp" />
-    <ClCompile Include="NIAmbientLight.cpp" />
-    <ClCompile Include="NIAnimationKey.cpp" />
-    <ClCompile Include="NIBillboardNode.cpp" />
-    <ClCompile Include="NIBinaryStream.cpp" />
-    <ClCompile Include="NIBound.cpp" />
+    <ClCompile Include="..\SharedSE\NIAmbientLight.cpp" />
+    <ClCompile Include="..\SharedSE\NIAnimationKey.cpp" />
+    <ClCompile Include="..\SharedSE\NIBillboardNode.cpp" />
+    <ClCompile Include="..\SharedSE\NIBinaryStream.cpp" />
+    <ClCompile Include="..\SharedSE\NIBound.cpp" />
     <ClCompile Include="NIBoundingVolumeLua.cpp" />
-    <ClCompile Include="NIBSAnimationNode.cpp" />
+    <ClCompile Include="..\SharedSE\NIBSAnimationNode.cpp" />
     <ClCompile Include="NIBSAnimationNodeLua.cpp" />
-    <ClCompile Include="NICamera.cpp" />
-    <ClCompile Include="NICollisionGroup.cpp" />
+    <ClCompile Include="..\SharedSE\NICamera.cpp" />
+    <ClCompile Include="..\SharedSE\NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />
-    <ClCompile Include="NICollisionSwitch.cpp" />
+    <ClCompile Include="..\SharedSE\NICollisionSwitch.cpp" />
     <ClCompile Include="NICopyTransformController.cpp" />
-    <ClCompile Include="NIDirectionalLight.cpp" />
+    <ClCompile Include="..\SharedSE\NIDirectionalLight.cpp" />
     <ClCompile Include="NIDX8Renderer.cpp" />
     <ClCompile Include="NIDX8TextureData.cpp" />
     <ClCompile Include="NIDynamicEffectLua.cpp" />
-    <ClCompile Include="NIExtraData.cpp" />
+    <ClCompile Include="..\SharedSE\NIExtraData.cpp" />
     <ClCompile Include="NIExtraDataLua.cpp" />
-    <ClCompile Include="NIFlipController.cpp" />
-    <ClCompile Include="NIAnimationData.cpp" />
-    <ClCompile Include="NIGeometry.cpp" />
-    <ClCompile Include="NIGeometryData.cpp" />
+    <ClCompile Include="..\SharedSE\NIFlipController.cpp" />
+    <ClCompile Include="..\SharedSE\NIAnimationData.cpp" />
+    <ClCompile Include="..\SharedSE\NIGeometry.cpp" />
+    <ClCompile Include="..\SharedSE\NIGeometryData.cpp" />
     <ClCompile Include="NIGeometryDataLua.cpp" />
-    <ClCompile Include="NIKeyframeController.cpp" />
-    <ClCompile Include="NIKeyframeManager.cpp" />
-    <ClCompile Include="NILookAtController.cpp" />
-    <ClCompile Include="NIParticleModifier.cpp" />
-    <ClCompile Include="NIParticles.cpp" />
+    <ClCompile Include="..\SharedSE\NIKeyframeController.cpp" />
+    <ClCompile Include="..\SharedSE\NIKeyframeManager.cpp" />
+    <ClCompile Include="..\SharedSE\NILookAtController.cpp" />
+    <ClCompile Include="..\SharedSE\NIParticleModifier.cpp" />
+    <ClCompile Include="..\SharedSE\NIParticles.cpp" />
     <ClCompile Include="NIParticlesLua.cpp" />
-    <ClCompile Include="NIParticleSystemController.cpp" />
-    <ClCompile Include="NIPathController.cpp" />
-    <ClCompile Include="NIPixelFormat.cpp" />
-    <ClCompile Include="NIProperty.cpp" />
-    <ClCompile Include="NIQuaternion.cpp" />
+    <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp" />
+    <ClCompile Include="..\SharedSE\NIPathController.cpp" />
+    <ClCompile Include="..\SharedSE\NIPixelFormat.cpp" />
+    <ClCompile Include="..\SharedSE\NIProperty.cpp" />
+    <ClCompile Include="..\SharedSE\NIQuaternion.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
-    <ClCompile Include="NIRenderedTexture.cpp" />
+    <ClCompile Include="..\SharedSE\NIRenderedTexture.cpp" />
     <ClCompile Include="NiRenderedTextureLua.cpp" />
-    <ClCompile Include="NIRenderer.cpp" />
+    <ClCompile Include="..\SharedSE\NIRenderer.cpp" />
     <ClCompile Include="NIRendererLua.cpp" />
-    <ClCompile Include="NISkinInstance.cpp" />
+    <ClCompile Include="..\SharedSE\NISkinInstance.cpp" />
     <ClCompile Include="NISkinInstanceLua.cpp" />
-    <ClCompile Include="NISortAdjustNode.cpp" />
-    <ClCompile Include="NISpotLight.cpp" />
-    <ClCompile Include="NISwitchNode.cpp" />
-    <ClCompile Include="NIRTTI.cpp" />
-    <ClCompile Include="NITextureEffect.cpp" />
+    <ClCompile Include="..\SharedSE\NISortAdjustNode.cpp" />
+    <ClCompile Include="..\SharedSE\NISpotLight.cpp" />
+    <ClCompile Include="..\SharedSE\NISwitchNode.cpp" />
+    <ClCompile Include="..\SharedSE\NIRTTI.cpp" />
+    <ClCompile Include="..\SharedSE\NITextureEffect.cpp" />
     <ClCompile Include="NiTextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
-    <ClCompile Include="NITimeController.cpp" />
-    <ClCompile Include="NITriangle.cpp" />
-    <ClCompile Include="NITriBasedGeometry.cpp" />
-    <ClCompile Include="NITriBasedGeometryData.cpp" />
-    <ClCompile Include="NILines.cpp" />
-    <ClCompile Include="NILinesData.cpp" />
-    <ClCompile Include="NITriShape.cpp" />
-    <ClCompile Include="NITriShapeData.cpp" />
-    <ClCompile Include="NIUVController.cpp" />
+    <ClCompile Include="..\SharedSE\NITimeController.cpp" />
+    <ClCompile Include="..\SharedSE\NITriangle.cpp" />
+    <ClCompile Include="..\SharedSE\NITriBasedGeometry.cpp" />
+    <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp" />
+    <ClCompile Include="..\SharedSE\NILines.cpp" />
+    <ClCompile Include="..\SharedSE\NILinesData.cpp" />
+    <ClCompile Include="..\SharedSE\NITriShape.cpp" />
+    <ClCompile Include="..\SharedSE\NITriShapeData.cpp" />
+    <ClCompile Include="..\SharedSE\NIUVController.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -835,37 +773,40 @@
     <ClCompile Include="TES3Lockpick.cpp" />
     <ClCompile Include="TES3MagicEffectController.cpp" />
     <ClCompile Include="MemoryUtil.cpp" />
+    <ClCompile Include="..\SharedSE\MemoryUtil.cpp">
+      <ObjectFileName>$(IntDir)SharedSE\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="MemoryUtilLua.cpp" />
     <ClCompile Include="MgeVirtualMachine.cpp" />
     <ClCompile Include="MgeTes3Machine.cpp" />
-    <ClCompile Include="NIAVObject.cpp" />
+    <ClCompile Include="..\SharedSE\NIAVObject.cpp" />
     <ClCompile Include="NICameraLua.cpp" />
     <ClCompile Include="NICollisionSwitchLua.cpp" />
-    <ClCompile Include="NIColor.cpp" />
+    <ClCompile Include="..\SharedSE\NIColor.cpp" />
     <ClCompile Include="NIColorLua.cpp" />
-    <ClCompile Include="NIDynamicEffect.cpp" />
-    <ClCompile Include="NILight.cpp" />
+    <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp" />
+    <ClCompile Include="..\SharedSE\NILight.cpp" />
     <ClCompile Include="NILightLua.cpp" />
-    <ClCompile Include="NINode.cpp" />
+    <ClCompile Include="..\SharedSE\NINode.cpp" />
     <ClCompile Include="NINodeLua.cpp" />
-    <ClCompile Include="NIObject.cpp" />
+    <ClCompile Include="..\SharedSE\NIObject.cpp" />
     <ClCompile Include="NIObjectLua.cpp" />
-    <ClCompile Include="NIObjectNET.cpp" />
-    <ClCompile Include="NIPick.cpp" />
+    <ClCompile Include="..\SharedSE\NIObjectNET.cpp" />
+    <ClCompile Include="..\SharedSE\NIPick.cpp" />
     <ClCompile Include="NIPickLua.cpp" />
-    <ClCompile Include="NIPixelData.cpp" />
+    <ClCompile Include="..\SharedSE\NIPixelData.cpp" />
     <ClCompile Include="NIPixelDataLua.cpp" />
-    <ClCompile Include="NIPointLight.cpp" />
+    <ClCompile Include="..\SharedSE\NIPointLight.cpp" />
     <ClCompile Include="NIPropertyLua.cpp" />
-    <ClCompile Include="NISourceTexture.cpp" />
+    <ClCompile Include="..\SharedSE\NISourceTexture.cpp" />
     <ClCompile Include="NISourceTextureLua.cpp" />
-    <ClCompile Include="NIStream.cpp" />
+    <ClCompile Include="..\SharedSE\NIStream.cpp" />
     <ClCompile Include="NISwitchNodeLua.cpp" />
-    <ClCompile Include="NITexture.cpp" />
+    <ClCompile Include="..\SharedSE\NITexture.cpp" />
     <ClCompile Include="NITimeControllerLua.cpp" />
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
-    <ClCompile Include="NIUtil.cpp" />
+    <ClCompile Include="..\SharedSE\NIUtil.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
     <ClCompile Include="RngUtil.cpp" />
     <ClCompile Include="ScriptUtil.cpp" />
@@ -1318,13 +1259,13 @@
   </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -1340,7 +1281,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1369,7 +1310,7 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

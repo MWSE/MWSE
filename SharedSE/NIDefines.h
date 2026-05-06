@@ -10,6 +10,11 @@ namespace NI {
 	struct AVObject;
 	struct BinaryStream;
 	struct Bound;
+	struct BoundingVolume;
+	struct BoxBound;
+	struct BoxBoundingVolume;
+	struct BSAnimationNode;
+	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;
@@ -17,6 +22,7 @@ namespace NI {
 	struct ColorA;
 	struct ColorData;
 	struct DirectionalLight;
+	struct DX8Renderer;
 	struct DynamicEffect;
 	struct ExtraData;
 	struct FogProperty;
@@ -27,7 +33,11 @@ namespace NI {
 	struct KeyframeManager;
 	struct Light;
 	struct MaterialProperty;
+#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
+	// In MWSE context, NI::Matrix33 is a `using` alias to TES3::Matrix33 (typedef
+	// bridge in NIMatrix33.h). A forward struct decl here would conflict.
 	struct Matrix33;
+#endif
 	struct Node;
 	struct Object;
 	struct ObjectNET;
@@ -50,15 +60,19 @@ namespace NI {
 	struct PointLight;
 	struct PosData;
 	struct Property;
+	struct PropertyState;
 	struct Quaternion;
 	struct RenderedTexture;
 	struct Renderer;
 	struct RotatingParticles;
 	struct RotatingParticlesData;
 	struct RTTI;
+	struct ScreenPolygon;
 	struct Sequence;
 	struct SkinInstance;
 	struct SourceTexture;
+	struct SphereBound;
+	struct SphereBoundingVolume;
 	struct SphericalCollider;
 	struct SpotLight;
 	struct StencilProperty;
@@ -71,13 +85,21 @@ namespace NI {
 	struct TextureEffect;
 	struct TexturingProperty;
 	struct TimeController;
+#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
+	// In MWSE context, NI::Transform is a `using` alias to TES3::Transform.
 	struct Transform;
+#endif
+	struct Triangle;
 	struct TriBasedGeometry;
 	struct TriBasedGeometryData;
 	struct TriShape;
 	struct TriShapeData;
+#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
+	// In MWSE context, NI::Vector3 is a `using` alias to TES3::Vector3.
 	struct Vector3;
+#endif
 	struct VertexColorProperty;
+	struct WireframeProperty;
 	struct ZBufferProperty;
 
 	struct AVObject_vTable;

@@ -7,6 +7,16 @@ namespace NI {
 		alphaFormat = AlphaFormat::ALPHA_DEFAULT;
 	}
 
+	Texture::FormatPrefs::FormatPrefs(PixelLayout p, MipFlag m, AlphaFormat a) {
+		pixelLayout = p;
+		mipMapped = m;
+		alphaFormat = a;
+	}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	const Texture::FormatPrefs Texture::FormatPrefs::DEFAULT_LUA_PREFS = Texture::FormatPrefs(PixelLayout::TRUE_COLOR_32, MipFlag::NO, AlphaFormat::SMOOTH);
+#endif
+
 	unsigned int Texture::getWidth() {
 		return vTable.asTexture->getWidth(this);
 	}

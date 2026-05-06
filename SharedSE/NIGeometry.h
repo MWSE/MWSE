@@ -24,6 +24,10 @@ namespace NI {
 		Pointer<GeometryData> getModelData() const;
 		void setModelData(GeometryData* data);
 
+		// Apply skin deform to worldVertices/worldNormals (or provided buffers)
+		// and transform by worldTransform. Depends on AVObject::createWorldVertices
+		// which is defined unconditionally in SharedSE/NIAVObject.cpp now that
+		// the NIAVObject port is complete.
 		void updateDeforms();
 		void updateDeforms(Vector3* out_vertices, Vector3* out_normals);
 	};

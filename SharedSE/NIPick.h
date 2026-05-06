@@ -9,6 +9,10 @@
 #include "NIVector2.h"
 #include "NIVector3.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "TES3Defines.h"
+#endif
+
 namespace NI {
 	enum class PickType {
 		FIND_ALL,
@@ -22,7 +26,8 @@ namespace NI {
 
 	enum class PickIntersectType {
 		BOUND_INTERSECT,
-		TRIANGLE_INTERSECT
+		TRIANGLE_INTERSECT,
+		UNKNOWN_2,
 	};
 
 	enum class PickCoordinateType {
@@ -50,6 +55,17 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
+		// MWSE-style engine-allocated factory (uses se::memory::malloc + engine ctor).
+		// MWSE-only: requires SE_MEMORY_FNADDR_MALLOC/FREE which CSSE doesn't provide.
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		static Pick* malloc();
+		void free();
+#endif
+
+		PickRecord* addRecord();
+
+		// Engine ctor/dtor via per-target SE_NI_PICK_FNADDR_CTOR/DTOR macros.
+		// Body throws not_implemented_exception when address is 0x0.
 		Pick();
 		~Pick();
 
@@ -63,8 +79,8 @@ namespace NI {
 	static_assert(sizeof(Pick) == 0x38, "NI::Pick failed size validation");
 
 	struct PickRecord {
-		Geometry* object;
-		AVObject* proxyParent;
+		Pointer<Geometry> object;
+		Pointer<AVObject> proxyParent;
 		Vector3 intersection;
 		float distance;
 		unsigned short triangleIndex;
@@ -73,6 +89,9 @@ namespace NI {
 		Vector3 normal;
 		PackedColor color;
 
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
+
 		//
 		// Custom functions.
 		//
@@ -80,7 +99,7 @@ namespace NI {
 		std::reference_wrapper<unsigned short[3]> getVertexIndex();
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		Reference* getTES3Reference();
+		TES3::Reference* getTES3Reference();
 #endif
 
 	};

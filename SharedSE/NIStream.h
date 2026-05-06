@@ -2,10 +2,9 @@
 
 #include "NIDefines.h"
 
+#include "NIPointer.h"
 #include "NITArray.h"
 #include "NIHashMap.h"
-
-#include "NIObject.h"
 
 namespace NI {
 	struct Stream {
@@ -65,7 +64,7 @@ namespace NI {
 
 		static Object* getCopiedObject(const Object* existing);
 
-		typedef Object* (__cdecl* CreateFunction)(Stream*);
+		typedef Object* (__cdecl *CreateFunction)(Stream*);
 		static void __cdecl registerLoader(const char* className, CreateFunction createObjectFunction);
 
 		//
@@ -73,6 +72,30 @@ namespace NI {
 		//
 
 		std::string readStdString();
+
+		//
+		// Access to this type's raw functions. Per-target macros let CSSE
+		// (or future targets) supply different addresses; the constexprs are
+		// declared unconditionally so MWSE-private callers that reach for
+		// _readString / _writeString / _getLinkObject / _getObjectIndex /
+		// _registerLoader directly continue to compile after redirect.
+		//
+
+#if defined(SE_NI_STREAM_FNADDR_READSTRING) && SE_NI_STREAM_FNADDR_READSTRING > 0
+		static constexpr auto _readString = reinterpret_cast<void(__thiscall*)(Stream*, char**)>(SE_NI_STREAM_FNADDR_READSTRING);
+#endif
+#if defined(SE_NI_STREAM_FNADDR_WRITESTRING) && SE_NI_STREAM_FNADDR_WRITESTRING > 0
+		static constexpr auto _writeString = reinterpret_cast<void(__thiscall*)(Stream*, const char*)>(SE_NI_STREAM_FNADDR_WRITESTRING);
+#endif
+#if defined(SE_NI_STREAM_FNADDR_GETLINKOBJECT) && SE_NI_STREAM_FNADDR_GETLINKOBJECT > 0
+		static constexpr auto _getLinkObject = reinterpret_cast<Object*(__thiscall*)(const Stream*, int)>(SE_NI_STREAM_FNADDR_GETLINKOBJECT);
+#endif
+#if defined(SE_NI_STREAM_FNADDR_GETLINKID) && SE_NI_STREAM_FNADDR_GETLINKID > 0
+		static constexpr auto _getObjectIndex = reinterpret_cast<int(__thiscall*)(const Stream*, const Object*)>(SE_NI_STREAM_FNADDR_GETLINKID);
+#endif
+#if defined(SE_NI_STREAM_FNADDR_REGISTERLOADER) && SE_NI_STREAM_FNADDR_REGISTERLOADER > 0
+		static constexpr auto _registerLoader = reinterpret_cast<void(__cdecl*)(const char*, CreateFunction)>(SE_NI_STREAM_FNADDR_REGISTERLOADER);
+#endif
 
 	};
 	static_assert(sizeof(Stream) == 0xAC, "NI::Stream failed size validation");

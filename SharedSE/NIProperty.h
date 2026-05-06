@@ -24,6 +24,22 @@ namespace NI {
 		LastPropertyType = RendererSpecific,
 	};
 
+	struct PropertyState : Object {
+		AlphaProperty* alpha; // 0x8
+		FogProperty* fog; // 0xC
+		MaterialProperty* material; // 0x10
+		StencilProperty* stencil; // 0x14
+		TexturingProperty* texture; // 0x18
+		VertexColorProperty* vertexColor; // 0x1C
+		WireframeProperty* wireframe; // 0x20
+		ZBufferProperty* zBuffer; // 0x24
+		int unknown_0x28;
+		int unknown_0x2C;
+		int unknown_0x30;
+		void* rendererSpecific; // 0x34
+	};
+	static_assert(sizeof(PropertyState) == 0x38, "NI::PropertyState failed size validation");
+
 	struct Property_vTable : Object_vTable {
 		PropertyType(__thiscall* getType)(const Property*); // 0x2C
 		void(__thiscall* update)(Property*, float); // 0x30
@@ -47,12 +63,39 @@ namespace NI {
 		// Other function addresses.
 		//
 
+		bool getFlag(unsigned char index) const;
+		void setFlag(bool state, unsigned char index);
+
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// Morrowind.exe engine raw functions. Move to per-target macros via
+		// NIConfig in the guard-cleanup pass when CSSE addresses are needed.
+		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);
+		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const Property*, Stream*)>(0x6E9660);
+#endif
 	};
 	static_assert(sizeof(Property) == 0x18, "NI::Property failed size validation");
 
+	// CSSE pulls in GDI+ via pch.h, which #defines ALPHA_MASK as a
+	// function-like macro: `((ARGB) 0xff << ALPHA_SHIFT)`. Without isolation,
+	// our enum constant ALPHA_MASK gets preprocessor-expanded into garbage.
+	// MWSE's stdafx.h doesn't include GDI+ so this never surfaces there.
+	// Push/undef/pop preserves any downstream code that wants the GDI+ macro.
+#pragma push_macro("ALPHA_MASK")
+#undef ALPHA_MASK
 	struct AlphaProperty : Property {
+		enum {
+			ALPHA_MASK = 0x0001,
+			SRC_BLEND_MASK = 0x001E,
+			SRC_BLEND_POS = 1,
+			DEST_BLEND_MASK = 0x01E0,
+			DEST_BLEND_POS = 5,
+			TEST_ENABLE_MASK = 0x0200,
+			TEST_FUNC_MASK = 0x1C00,
+			TEST_FUNC_POS = 10,
+			ALPHA_NOSORTER_MASK = 0x2000
+		};
 		unsigned char alphaTestRef;
 
 		AlphaProperty();
@@ -61,6 +104,7 @@ namespace NI {
 		static Pointer<AlphaProperty> create();
 	};
 	static_assert(sizeof(AlphaProperty) == 0x1C, "NI::AlphaProperty failed size validation");
+#pragma pop_macro("ALPHA_MASK")
 
 	struct FogProperty : Property {
 		float density;
@@ -125,6 +169,36 @@ namespace NI {
 	static_assert(sizeof(MaterialProperty) == 0x58, "NI::MaterialProperty failed size validation");
 
 	struct StencilProperty : Property {
+		enum TestFunc {
+			TEST_NEVER,
+			TEST_LESS,
+			TEST_EQUAL,
+			TEST_LESSEQUAL,
+			TEST_GREATER,
+			TEST_NOTEQUAL,
+			TEST_GREATEREQUAL,
+			TEST_ALWAYS,
+			TEST_MAX
+		};
+
+		enum Action {
+			ACTION_KEEP,
+			ACTION_ZERO,
+			ACTION_REPLACE,
+			ACTION_INCREMENT,
+			ACTION_DECREMENT,
+			ACTION_INVERT,
+			ACTION_MAX
+		};
+
+		enum DrawMode {
+			DRAW_CCW_OR_BOTH,
+			DRAW_CCW,
+			DRAW_CW,
+			DRAW_BOTH,
+			DRAW_MAX
+		};
+
 		bool enabled;
 		int testFunc;
 		unsigned int reference;
@@ -133,6 +207,11 @@ namespace NI {
 		int zFailAction;
 		int passAction;
 		int drawMode;
+
+		StencilProperty();
+		~StencilProperty();
+
+		static Pointer<StencilProperty> create();
 	};
 	static_assert(sizeof(StencilProperty) == 0x38, "NI::StencilProperty failed size validation");
 
@@ -226,21 +305,35 @@ namespace NI {
 		int unknown_34; // 0x34
 
 
+		// Engine-dispatch ctor/dtor. Body in SharedSE/NIProperty.cpp throws
+		// not_implemented_exception when the per-target SE_NI_TEXTURINGPROPERTY_FNADDR_*
+		// macros are 0x0.
 		TexturingProperty();
 		~TexturingProperty();
 
 		Map* getBaseMap();
-		void setBaseMap(std::optional<Map*> map);
 		Map* getDarkMap();
-		void setDarkMap(std::optional<Map*> map);
 		Map* getDetailMap();
-		void setDetailMap(std::optional<Map*> map);
 		Map* getGlossMap();
-		void setGlossMap(std::optional<Map*> map);
 		Map* getGlowMap();
-		void setGlowMap(std::optional<Map*> map);
 		BumpMap* getBumpMap();
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// MWSE-private NIProperty.cpp uses sol::optional for these setters.
+		void setBaseMap(sol::optional<Map*> map);
+		void setDarkMap(sol::optional<Map*> map);
+		void setDetailMap(sol::optional<Map*> map);
+		void setGlossMap(sol::optional<Map*> map);
+		void setGlowMap(sol::optional<Map*> map);
+		void setBumpMap(sol::optional<BumpMap*> map);
+#else
+		// SharedSE/CSSE: std::optional setters; matches SharedSE/NIProperty.cpp.
+		void setBaseMap(std::optional<Map*> map);
+		void setDarkMap(std::optional<Map*> map);
+		void setDetailMap(std::optional<Map*> map);
+		void setGlossMap(std::optional<Map*> map);
+		void setGlowMap(std::optional<Map*> map);
 		void setBumpMap(std::optional<BumpMap*> map);
+#endif
 
 		unsigned int getUsedMapCount() const;
 		bool canAddMap() const;
@@ -264,6 +357,19 @@ namespace NI {
 	static_assert(sizeof(TexturingProperty::BumpMap) == 0x2C, "NI::TexturingProperty::BumpMap failed size validation");
 
 	struct VertexColorProperty : Property {
+		enum SourceVertexMode {
+			SOURCE_IGNORE,
+			SOURCE_EMISSIVE,
+			SOURCE_AMBIENT_DIFFUSE,
+			SOURCE_NUM_MODES
+		};
+
+		enum LightingMode {
+			LIGHTING_E,
+			LIGHTING_E_A_D,
+			LIGHTING_NUM_MODES
+		};
+
 		int source; // 0x18
 		int lighting; // 0x1C
 
@@ -273,6 +379,19 @@ namespace NI {
 		static Pointer<VertexColorProperty> create();
 	};
 	static_assert(sizeof(VertexColorProperty) == 0x20, "NI::VertexColorProperty failed size validation");
+
+	namespace WireframePropertyFlags {
+		enum WireframePropertyFlags : unsigned int {
+			Enabled = 0x1,
+		};
+	}
+
+	struct WireframeProperty : Property {
+
+		bool getEnabled() const;
+		void setEnabled(bool state);
+	};
+	static_assert(sizeof(WireframeProperty) == 0x18, "NI::WireframeProperty failed size validation");
 
 	struct ZBufferProperty : Property {
 		enum struct TestFunction : unsigned int {
@@ -304,5 +423,6 @@ MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::MaterialProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::StencilProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::TexturingProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::VertexColorProperty)
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::WireframeProperty)
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::ZBufferProperty)
 #endif

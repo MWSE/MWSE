@@ -1,7 +1,10 @@
 #include "NISwitchNode.h"
 
+#include <cstring>
+#include <exception>
+
 namespace NI {
-	int SwitchNode::getSwitchIndex() {
+	int SwitchNode::getSwitchIndex() const {
 		return switchIndex;
 	}
 
@@ -19,8 +22,18 @@ namespace NI {
 		}
 		return nullptr;
 	}
+
+	int SwitchNode::getChildIndexByName(const char* name) const {
+		for (auto i = 0u; i < children.size(); ++i) {
+			const auto child = children[i].get();
+			if (child != nullptr && _stricmp(name, child->name) == 0) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::SwitchNode)
-#endif
+#endif\

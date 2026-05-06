@@ -1,0 +1,201 @@
+#include "NITriBasedGeometry.h"
+
+#include "NIPick.h"
+#include "NISkinInstance.h"
+
+#include "ExceptionUtil.h"
+#include "MemoryUtil.h"
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "MWSEConfig.h"
+#endif
+
+namespace NI {
+	TriBasedGeometry::TriBasedGeometry(TriBasedGeometryData* data) {
+#if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA) && SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA > 0
+		const auto NI_TriBasedGeometry_ctorFromData = reinterpret_cast<void(__thiscall*)(TriBasedGeometry*, TriBasedGeometryData*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA);
+		NI_TriBasedGeometry_ctorFromData(this, data);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+	// Engine-state globals (Morrowind.exe). Direct address access avoids
+	// dragging mwse::ExternalGlobal into SharedSE.
+	static inline Vector2& gPickDefaultTextureCoords() { return *reinterpret_cast<Vector2*>(0x7DED80); }
+	static inline PackedColor& gPickDefaultColor() { return *reinterpret_cast<PackedColor*>(0x7DE814); }
+
+	static bool __cdecl FindIntersectRayWithTriangle(const Vector3* position, const Vector3* direction, const Vector3* vertex1, const Vector3* vertex2, const Vector3* vertex3, bool frontOnly, Vector3* out_intersection, float* out_distance, float* out_weight2, float* out_weight3) {
+#if defined(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE) && SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE > 0
+		const auto NI_FindIntersectRayWithTriangle = reinterpret_cast<bool(__cdecl*)(const Vector3*, const Vector3*, const Vector3*, const Vector3*, const Vector3*, bool, Vector3*, float*, float*, float*)>(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE);
+		return NI_FindIntersectRayWithTriangle(position, direction, vertex1, vertex2, vertex3, frontOnly, out_intersection, out_distance, out_weight2, out_weight3);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	static std::vector<Vector3> deformVertices;
+	static std::vector<Vector3> deformNormals;
+#endif
+
+	bool TriBasedGeometry::findIntersections(const Vector3* position, const Vector3* direction, Pick* pick) {
+#if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS) && SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS > 0
+		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Vector3*, const Vector3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
+		// This will be removed in the future when the config option is removed, once we're confident of performance and accuracy.
+		if (!mwse::Configuration::UseSkinnedAccurateActivationRaytests) {
+			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
+		}
+
+		// Ignore if we don't care about culled geometry.
+		if (pick->observeAppCullFlag && getAppCulled()) {
+			return false;
+		}
+
+		// Check against intersection bounds first.
+		auto boundsDistance = 0.0f;
+		if (!intersectBounds(position, direction, &boundsDistance)) {
+			return false;
+		}
+
+		// If we are just a bounds-based pick, we're basically done.
+		if (pick->intersectType != PickIntersectType::TRIANGLE_INTERSECT) {
+			auto result = pick->addRecord();
+			result->object = this;
+			result->distance = boundsDistance;
+			return true;
+		}
+
+		const auto modelData = getModelData();
+		auto vertices = modelData->vertex;
+		auto normals = modelData->normal;
+		const auto triList = modelData->getTriList();
+		const auto activeTriCount = modelData->getActiveTriangleCount();
+		if (!vertices || !triList || activeTriCount == 0) {
+			return false;
+		}
+
+		// Deform vertices if we're looking at a skinned object. This isn't thread-safe which shouldn't be a problem.
+		if (skinInstance) {
+			const auto vertexCount = modelData->getActiveVertexCount();
+			deformVertices.reserve(vertexCount);
+			deformNormals.reserve(vertexCount);
+			vertices = deformVertices.data();
+			normals = deformNormals.data();
+			skinInstance->deform(modelData->vertex, modelData->normal, vertexCount, vertices, normals);
+		}
+
+		// Calculate our base position/direction for non-uniform scaling.
+		const auto inverseScale = 1.0f / worldTransform.scale;
+		const auto worldRotationInverse = worldTransform.rotation.invert() * inverseScale;
+		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
+		const auto directionScaled = worldRotationInverse * (*direction);
+
+		// Loop through all the triangles
+		auto addedResult = false;
+		for (auto i = 0u; i < activeTriCount; ++i) {
+			// Get some shorthand variables we'll use throughout.
+			const auto& triangle = triList[i];
+			const auto index1 = triangle.vertices[0];
+			const auto index2 = triangle.vertices[1];
+			const auto index3 = triangle.vertices[2];
+			const auto vertex1 = &vertices[index1];
+			const auto vertex2 = &vertices[index2];
+			const auto vertex3 = &vertices[index3];
+
+			// Perform our test for the triangle, and calculate the weight to each index.
+			auto distance = std::numeric_limits<float>::infinity();
+			Vector3 intersection;
+			float weight2, weight3;
+			if (!FindIntersectRayWithTriangle(&worldScaled, &directionScaled, vertex1, vertex2, vertex3, pick->frontOnly, &intersection, &distance, &weight2, &weight3)) {
+				continue;
+			}
+
+			// The above function only calculated the weight of the 2nd and 3rd vertex, so we need to get the final weight.
+			const auto weight1 = 1.0f - weight2 - weight3;
+
+			// At this point we know we have a valid result and can start allocating memory for it.
+			addedResult = true;
+			const auto result = pick->addRecord();
+			result->object = this;
+			result->triangleIndex = i;
+			result->vertexIndex[0] = index1;
+			result->vertexIndex[1] = index2;
+			result->vertexIndex[2] = index3;
+			result->distance = distance;
+
+			// Calculate intersection.
+			if (pick->coordinateType == PickCoordinateType::WORLD_COORDINATES) {
+				result->intersection = worldTransform * intersection;
+			}
+			else {
+				result->intersection = intersection;
+			}
+
+			// Calculate weighted texture coordinates.
+			const auto textureCoords = modelData->textureCoords;
+			if (pick->returnTexture && textureCoords) {
+				result->texture = textureCoords[index1] * weight1 + textureCoords[index2] * weight2 + textureCoords[index3] * weight3;
+			}
+			else {
+				result->texture = gPickDefaultTextureCoords();
+			}
+
+			// Calculate weighted normals.
+			if (pick->returnNormal) {
+				Vector3 normal = {};
+				if (pick->returnSmoothNormal && normals) {
+					normal = normals[index1] * weight1 + normals[index2] * weight2 + normals[index3] * weight3;
+				}
+				else {
+					const auto vertex3m1 = (*vertex3 - *vertex1);
+					normal = (*vertex2 - *vertex1).crossProduct(&vertex3m1);
+				}
+
+				normal.normalize();
+
+				if (pick->coordinateType == PickCoordinateType::WORLD_COORDINATES) {
+					result->normal = worldTransform.rotation * normal;
+				}
+				else {
+					result->normal = normal;
+				}
+			}
+
+			// Calculate weighted vertex colors.
+			const auto colors = modelData->color;
+			if (pick->returnColor && colors) {
+				// Vanilla can overflow or make less accurate color calculations. We don't care to follow that behavior and will be a bit more accurate.
+				const auto r = unsigned char(float(colors[index1].r) * weight1 + float(colors[index2].r) * weight2 + float(colors[index3].r) * weight3);
+				const auto g = unsigned char(float(colors[index1].g) * weight1 + float(colors[index2].g) * weight2 + float(colors[index3].g) * weight3);
+				const auto b = unsigned char(float(colors[index1].b) * weight1 + float(colors[index2].b) * weight2 + float(colors[index3].b) * weight3);
+				const auto a = unsigned char(float(colors[index1].a) * weight1 + float(colors[index2].a) * weight2 + float(colors[index3].a) * weight3);
+				result->color = PackedColor(r, g, b, a);
+			}
+			else {
+				result->color = gPickDefaultColor();
+			}
+
+			// We can be finished if we just want the first unsorted result.
+			if (pick->pickType == PickType::FIND_FIRST && pick->sortType == PickSortType::NO_SORT) {
+				break;
+			}
+		}
+
+		return addedResult;
+#else
+		// Non-MWSE targets fall through to engine vanilla behavior.
+		return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
+#endif
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	Pointer<TriBasedGeometryData> TriBasedGeometry::getModelData() const {
+		return static_cast<TriBasedGeometryData*>(modelData.get());
+	}
+}

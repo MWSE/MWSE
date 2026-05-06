@@ -6,6 +6,8 @@
 
 namespace NI {
 	struct Lines : Geometry {
+		// Engine-dispatch ctor/dtor. Body in SharedSE/NILines.cpp throws
+		// not_implemented_exception when SE_NI_LINES_FNADDR_CTOR is 0x0.
 		Lines(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags);
 		~Lines();
 

@@ -624,30 +624,6 @@
     <ClInclude Include="NIDefines.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NITransform.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIObject.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIObjectNET.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIAVObject.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NINode.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NISwitchNode.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIUtil.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="NIRTTI.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NIObjectLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
@@ -657,14 +633,8 @@
     <ClInclude Include="NINodeLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NICamera.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NICameraLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPick.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="NIPickLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
@@ -807,17 +777,8 @@
     <ClInclude Include="TES3CrimeEvent.h">
       <Filter>Header Files\DataAdapters\TES3\Crime</Filter>
     </ClInclude>
-    <ClInclude Include="NIPointer.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="TES3GameFileLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
-    </ClInclude>
-    <ClInclude Include="NIStream.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NITimeController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="NITimeControllerLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
@@ -1032,9 +993,6 @@
     <ClInclude Include="LuaCalcTravelPriceEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NITriShape.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NITriShapeLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
@@ -1058,15 +1016,6 @@
     </ClInclude>
     <ClInclude Include="LuaFilterInventoryEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPixelFormat.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPixelData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NISourceTexture.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="TES3Land.h">
       <Filter>Header Files\DataAdapters\TES3\Worldspace</Filter>
@@ -1094,12 +1043,6 @@
     </ClInclude>
     <ClInclude Include="LuaUiSpellTooltipEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="NITexture.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIProperty.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaBookGetTextEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
@@ -1164,18 +1107,6 @@
     <ClInclude Include="TES3AudioControllerLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
-    <ClInclude Include="NIDynamicEffect.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPointLight.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIColor.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NILight.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NIDynamicEffectLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
@@ -1184,18 +1115,6 @@
     </ClInclude>
     <ClInclude Include="NIColorLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIAmbientLight.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIDirectionalLight.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NISpotLight.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NILinkedList.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="TES3UIMenuControllerLua.h">
       <Filter>Header Files\Lua\Bindings\TES3\UI</Filter>
@@ -1233,9 +1152,6 @@
     <ClInclude Include="LuaMobileProjectileTerrainCollisionEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NICollisionSwitch.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NICollisionSwitchLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
@@ -1266,25 +1182,10 @@
     <ClInclude Include="NIDX8Renderer.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NIRenderer.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NITextureEffect.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIGeometry.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NITriBasedGeometry.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="NITriBasedGeometryData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIBound.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIGeometryData.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="NITriShapeData.h">
@@ -1311,38 +1212,11 @@
     <ClInclude Include="LuaCalcSunDamageScalarEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NIRenderedTexture.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIRect.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIParticleSystemController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPerParticleData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIParticleModifier.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIBinaryStream.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="TES3HashMap.h">
       <Filter>Header Files\DataAdapters\TES3\Collections</Filter>
     </ClInclude>
     <ClInclude Include="NIGeometryDataLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIExtraData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIKeyframeController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIKeyframeManager.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="TES3BodyPartManager.h">
       <Filter>Header Files\DataAdapters\TES3\_Unsorted_</Filter>
@@ -1377,12 +1251,6 @@
     <ClInclude Include="LuaPostInfoResponseEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NILines.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NILinesData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="MWSEUtilLua.h">
       <Filter>Header Files\Lua\Bindings</Filter>
     </ClInclude>
@@ -1392,16 +1260,7 @@
     <ClInclude Include="WindowsUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NITArray.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIViewer.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="BSAnimationManager.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIBSAnimationNode.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="TES3IteratedList.h">
@@ -1440,15 +1299,6 @@
     <ClInclude Include="MWSEConfig.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NIFlipController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIUVController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIUVData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="TES3CriticalSection.h">
       <Filter>Header Files\DataAdapters\TES3\_Unsorted_</Filter>
     </ClInclude>
@@ -1479,17 +1329,11 @@
     <ClInclude Include="LuaPowerRechargedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NISkinInstance.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="NISkinInstanceLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaInfoLinkResolveEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="NICollisionGroup.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="TES3ActorAnimationControllerLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
@@ -1530,17 +1374,8 @@
     <ClInclude Include="NIParticlesLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NIParticles.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="LuaAbsorbedMagicEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="NILookAtController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NITriangle.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaExecutor.h">
       <Filter>Header Files\Lua</Filter>
@@ -1557,26 +1392,17 @@
     <ClInclude Include="TES3CutscenePlayer.h">
       <Filter>Header Files\DataAdapters\TES3\UI</Filter>
     </ClInclude>
-    <ClInclude Include="NIScreenPolygon.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="TES3AnimationDataLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
     </ClInclude>
     <ClInclude Include="LuaEquipmentReevaluatedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NIBillboardNode.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="TES3UIMenuController.h">
       <Filter>Header Files\DataAdapters\TES3\UI</Filter>
     </ClInclude>
     <ClInclude Include="NIQuaternionLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIQuaternion.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaMeshLoadEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
@@ -1698,12 +1524,6 @@
     <ClInclude Include="TES3DialogueFilterContext.h">
       <Filter>Header Files\DataAdapters\TES3\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="NIAccumulator.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NISortAdjustNode.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="LuaCalcHitDetectionConeEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1718,15 +1538,6 @@
     </ClInclude>
     <ClInclude Include="TES3WaterControllerLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
-    </ClInclude>
-    <ClInclude Include="NIAnimationData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIAnimationKey.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIPathController.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaSimulatedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
@@ -1787,9 +1598,6 @@
     </ClInclude>
     <ClInclude Include="TES3CrimeLua.h">
       <Filter>Header Files\Lua\Bindings\TES3</Filter>
-    </ClInclude>
-    <ClInclude Include="NITriShapeDynamicData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
@@ -2750,13 +2558,13 @@
     <ClCompile Include="TES3MobileProjectile.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIUtil.cpp">
+    <ClCompile Include="..\SharedSE\NIUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NIObject.cpp">
+    <ClCompile Include="..\SharedSE\NIObject.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIAVObject.cpp">
+    <ClCompile Include="..\SharedSE\NIAVObject.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIObjectLua.cpp">
@@ -2771,7 +2579,7 @@
     <ClCompile Include="NICameraLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPick.cpp">
+    <ClCompile Include="..\SharedSE\NIPick.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIPickLua.cpp">
@@ -2855,7 +2663,7 @@
     <ClCompile Include="TES3AttachmentLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NINode.cpp">
+    <ClCompile Include="..\SharedSE\NINode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3MobManager.cpp">
@@ -2867,7 +2675,7 @@
     <ClCompile Include="TES3WeatherController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIStream.cpp">
+    <ClCompile Include="..\SharedSE\NIStream.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3AudioController.cpp">
@@ -2879,7 +2687,7 @@
     <ClCompile Include="TES3GameFileLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIObjectNET.cpp">
+    <ClCompile Include="..\SharedSE\NIObjectNET.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3GameFile.cpp">
@@ -3143,7 +2951,7 @@
     <ClCompile Include="NIPixelDataLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NISourceTexture.cpp">
+    <ClCompile Include="..\SharedSE\NISourceTexture.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3DialogueInfo.cpp">
@@ -3155,7 +2963,7 @@
     <ClCompile Include="LuaUiSpellTooltipEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITexture.cpp">
+    <ClCompile Include="..\SharedSE\NITexture.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Fader.cpp">
@@ -3242,19 +3050,19 @@
     <ClCompile Include="NIColorLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIColor.cpp">
+    <ClCompile Include="..\SharedSE\NIColor.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Ingredient.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIPointLight.cpp">
+    <ClCompile Include="..\SharedSE\NIPointLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIDynamicEffect.cpp">
+    <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NILight.cpp">
+    <ClCompile Include="..\SharedSE\NILight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3UIMenuControllerLua.cpp">
@@ -3275,7 +3083,7 @@
     <ClCompile Include="LuaCalcHitArmorPieceEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIPixelData.cpp">
+    <ClCompile Include="..\SharedSE\NIPixelData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaDisableableEventManager.cpp">
@@ -3323,13 +3131,13 @@
     <ClCompile Include="TES3SoundGenerator.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIGeometryData.cpp">
+    <ClCompile Include="..\SharedSE\NIGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITriBasedGeometryData.cpp">
+    <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIGeometry.cpp">
+    <ClCompile Include="..\SharedSE\NIGeometry.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaObjectInvalidatedEvent.cpp">
@@ -3362,16 +3170,16 @@
     <ClCompile Include="TES3ReferenceList.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIRenderedTexture.cpp">
+    <ClCompile Include="..\SharedSE\NIRenderedTexture.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIRenderer.cpp">
+    <ClCompile Include="..\SharedSE\NIRenderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NICamera.cpp">
+    <ClCompile Include="..\SharedSE\NICamera.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIBinaryStream.cpp">
+    <ClCompile Include="..\SharedSE\NIBinaryStream.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIGeometryDataLua.cpp">
@@ -3392,7 +3200,7 @@
     <ClCompile Include="TES3BirthsignLua.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NITextureEffect.cpp">
+    <ClCompile Include="..\SharedSE\NITextureEffect.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIDynamicEffectLua.cpp">
@@ -3416,7 +3224,7 @@
     <ClCompile Include="LuaPostInfoResponseEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NILinesData.cpp">
+    <ClCompile Include="..\SharedSE\NILinesData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -3440,22 +3248,22 @@
     <ClCompile Include="WindowsUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NICollisionSwitch.cpp">
+    <ClCompile Include="..\SharedSE\NICollisionSwitch.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIProperty.cpp">
+    <ClCompile Include="..\SharedSE\NIProperty.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NISwitchNode.cpp">
+    <ClCompile Include="..\SharedSE\NISwitchNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIRTTI.cpp">
+    <ClCompile Include="..\SharedSE\NIRTTI.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITriShape.cpp">
+    <ClCompile Include="..\SharedSE\NITriShape.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NITimeController.cpp">
+    <ClCompile Include="..\SharedSE\NITimeController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Apparatus.cpp">
@@ -3500,10 +3308,10 @@
     <ClCompile Include="NIExtraDataLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIProperty.cpp">
+    <ClCompile Include="..\SharedSE\NIProperty.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIExtraData.cpp">
+    <ClCompile Include="..\SharedSE\NIExtraData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NITextureLua.cpp">
@@ -3527,22 +3335,22 @@
     <ClCompile Include="TES3Probe.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIAmbientLight.cpp">
+    <ClCompile Include="..\SharedSE\NIAmbientLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIDirectionalLight.cpp">
+    <ClCompile Include="..\SharedSE\NIDirectionalLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NISpotLight.cpp">
+    <ClCompile Include="..\SharedSE\NISpotLight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="MWSEConfig.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NIFlipController.cpp">
+    <ClCompile Include="..\SharedSE\NIFlipController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIUVController.cpp">
+    <ClCompile Include="..\SharedSE\NIUVController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3CriticalSection.cpp">
@@ -3578,7 +3386,7 @@
     <ClCompile Include="TES3ScriptCompiler.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NISkinInstance.cpp">
+    <ClCompile Include="..\SharedSE\NISkinInstance.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NISkinInstanceLua.cpp">
@@ -3587,10 +3395,10 @@
     <ClCompile Include="LuaInfoLinkResolveEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NICollisionGroup.cpp">
+    <ClCompile Include="..\SharedSE\NICollisionGroup.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIKeyframeManager.cpp">
+    <ClCompile Include="..\SharedSE\NIKeyframeManager.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3ActorAnimationControllerLua.cpp">
@@ -3623,7 +3431,7 @@
     <ClCompile Include="LuaEnchantedItemCreateFailedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriShapeData.cpp">
+    <ClCompile Include="..\SharedSE\NITriShapeData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaAttackStartEvent.cpp">
@@ -3635,19 +3443,19 @@
     <ClCompile Include="NIParticlesLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticles.cpp">
+    <ClCompile Include="..\SharedSE\NIParticles.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaAbsorbedMagicEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NILookAtController.cpp">
+    <ClCompile Include="..\SharedSE\NILookAtController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaPotionBrewSkillCheckEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriangle.cpp">
+    <ClCompile Include="..\SharedSE\NITriangle.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaExecutor.cpp">
@@ -3665,13 +3473,13 @@
     <ClCompile Include="LuaEquipmentReevaluatedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIBillboardNode.cpp">
+    <ClCompile Include="..\SharedSE\NIBillboardNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIQuaternionLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIQuaternion.cpp">
+    <ClCompile Include="..\SharedSE\NIQuaternion.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaMeshLoadEvent.cpp">
@@ -3725,7 +3533,7 @@
     <ClCompile Include="LuaVFXCreatedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIKeyframeController.cpp">
+    <ClCompile Include="..\SharedSE\NIKeyframeController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaDialogueEnvironmentCreatedEvent.cpp">
@@ -3791,7 +3599,7 @@
     <ClCompile Include="LuaUiSkillTooltipEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriBasedGeometry.cpp">
+    <ClCompile Include="..\SharedSE\NITriBasedGeometry.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3DialogueConditional.cpp">
@@ -3800,7 +3608,7 @@
     <ClCompile Include="TES3DialogueFilterContext.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NISortAdjustNode.cpp">
+    <ClCompile Include="..\SharedSE\NISortAdjustNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaCalcHitDetectionConeEvent.cpp">
@@ -3815,13 +3623,13 @@
     <ClCompile Include="TES3WaterController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIAnimationData.cpp">
+    <ClCompile Include="..\SharedSE\NIAnimationData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIAnimationKey.cpp">
+    <ClCompile Include="..\SharedSE\NIAnimationKey.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPathController.cpp">
+    <ClCompile Include="..\SharedSE\NIPathController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaSimulatedEvent.cpp">
@@ -3881,16 +3689,16 @@
     <ClCompile Include="NIBSAnimationNodeLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIBSAnimationNode.cpp">
+    <ClCompile Include="..\SharedSE\NIBSAnimationNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIBoundingVolumeLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticleModifier.cpp">
+    <ClCompile Include="..\SharedSE\NIParticleModifier.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIParticleSystemController.cpp">
+    <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NICopyTransformController.cpp">
@@ -3911,7 +3719,7 @@
     <ClCompile Include="MGEApi.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
-    <ClCompile Include="NIBound.cpp">
+    <ClCompile Include="..\SharedSE\NIBound.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="CrashLogCallTrace.cpp">
@@ -3932,7 +3740,7 @@
     <ClCompile Include="NIDX8Renderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPixelFormat.cpp">
+    <ClCompile Include="..\SharedSE\NIPixelFormat.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
   </ItemGroup>

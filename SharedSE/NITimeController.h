@@ -43,6 +43,84 @@ namespace NI {
 		ObjectNET* target; // 0x28
 		Pointer<TimeController> nextController; // 0x2C
 		bool updateRequired; // 0x30
+
+		//
+		// Construction/destruction.
+		//
+
+		void ctor();
+		void dtor();
+
+		//
+		// Related this-call functions.
+		//
+
+		void start(float time);
+		void stop();
+		void update(float deltaTime);
+		void setTarget(ObjectNET*);
+		float computeScaledTime(float dt);
+		bool targetIsRequiredType() const;
+		bool getActive() const;
+		void setActive(bool active);
+		unsigned int getAnimTimingType() const;
+		void setAnimTimingType(unsigned int type);
+		unsigned int getCycleType() const;
+		void setCycleType(unsigned int type);
+
+		// Engine function pointer used by FlipController and others. Per-target
+		// address resolved via NIConfig.{Morrowind,TESConstructionSet}.h. The
+		// CSSE address is unknown today (macro = 0x0), so the constexpr is gated
+		// behind `> 0` and call sites must guard for the not-defined case.
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_COPY) && SE_NI_TIMECONTROLLER_FNADDR_COPY > 0
+		static constexpr auto _copy = reinterpret_cast<void(__thiscall*)(const TimeController*, TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_COPY);
+#endif
+
+		//
+		// Access to engine raw functions. Per-target addresses come from
+		// NIConfig.{Morrowind,TESConstructionSet}.h; each constexpr is gated on
+		// its specific FNADDR macro so call sites compile in both targets but
+		// only resolve to a real address where it's known.
+		//
+
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_CTOR) && SE_NI_TIMECONTROLLER_FNADDR_CTOR > 0
+		static constexpr auto _ctor = reinterpret_cast<void(__thiscall*)(TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_CTOR);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_DTOR) && SE_NI_TIMECONTROLLER_FNADDR_DTOR > 0
+		static constexpr auto _dtor = reinterpret_cast<void(__thiscall*)(TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_DTOR);
+#endif
+
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_LOADBINARY) && SE_NI_TIMECONTROLLER_FNADDR_LOADBINARY > 0
+		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(TimeController*, Stream*)>(SE_NI_TIMECONTROLLER_FNADDR_LOADBINARY);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_REGISTERSTREAMABLES) && SE_NI_TIMECONTROLLER_FNADDR_REGISTERSTREAMABLES > 0
+		static constexpr auto _registerStreamables = reinterpret_cast<bool(__thiscall*)(TimeController*, Stream*)>(SE_NI_TIMECONTROLLER_FNADDR_REGISTERSTREAMABLES);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_LINKOBJECT) && SE_NI_TIMECONTROLLER_FNADDR_LINKOBJECT > 0
+		static constexpr auto _linkObject = reinterpret_cast<void(__thiscall*)(TimeController*, Stream*)>(SE_NI_TIMECONTROLLER_FNADDR_LINKOBJECT);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_SAVEBINARY) && SE_NI_TIMECONTROLLER_FNADDR_SAVEBINARY > 0
+		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(TimeController*, Stream*)>(SE_NI_TIMECONTROLLER_FNADDR_SAVEBINARY);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_ISEQUAL) && SE_NI_TIMECONTROLLER_FNADDR_ISEQUAL > 0
+		static constexpr auto _isEqual = reinterpret_cast<bool(__thiscall*)(const TimeController*, const TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_ISEQUAL);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_ADDVIEWERSTRINGS) && SE_NI_TIMECONTROLLER_FNADDR_ADDVIEWERSTRINGS > 0
+		static constexpr auto _addViewerStrings = reinterpret_cast<void(__thiscall*)(TimeController*, TArray<char*>*)>(SE_NI_TIMECONTROLLER_FNADDR_ADDVIEWERSTRINGS);
+#endif
+
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_START) && SE_NI_TIMECONTROLLER_FNADDR_START > 0
+		static constexpr auto _start = reinterpret_cast<void(__thiscall*)(TimeController*, float)>(SE_NI_TIMECONTROLLER_FNADDR_START);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_STOP) && SE_NI_TIMECONTROLLER_FNADDR_STOP > 0
+		static constexpr auto _stop = reinterpret_cast<void(__thiscall*)(TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_STOP);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_SETTARGET) && SE_NI_TIMECONTROLLER_FNADDR_SETTARGET > 0
+		static constexpr auto _setTarget = reinterpret_cast<void(__thiscall*)(TimeController*, ObjectNET*)>(SE_NI_TIMECONTROLLER_FNADDR_SETTARGET);
+#endif
+#if defined(SE_NI_TIMECONTROLLER_FNADDR_COMPUTESCALEDTIME) && SE_NI_TIMECONTROLLER_FNADDR_COMPUTESCALEDTIME > 0
+		static constexpr auto _computeScaledTime = reinterpret_cast<float(__thiscall*)(TimeController*, float)>(SE_NI_TIMECONTROLLER_FNADDR_COMPUTESCALEDTIME);
+#endif
 	};
 	static_assert(sizeof(TimeController) == 0x34, "NI::TimeController failed size validation");
 }

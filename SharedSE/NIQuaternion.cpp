@@ -3,6 +3,8 @@
 #include "ExceptionUtil.h"
 
 namespace NI {
+	const Quaternion Quaternion::IDENTITY = { 1.0f, 0.0f, 0.0f, 0.0f };
+
 	Quaternion::Quaternion() :
 		w(0.0f),
 		x(0.0f),
@@ -71,8 +73,9 @@ namespace NI {
 	}
 
 	Quaternion Quaternion::exp() const {
-		Quaternion result;
 #if defined(SE_NI_QUATERNION_FNADDR_EXP) && SE_NI_QUATERNION_FNADDR_EXP > 0
+		const auto NI_Quaternion_Exp = reinterpret_cast<Quaternion*(__cdecl*)(Quaternion*, const Quaternion*)>(SE_NI_QUATERNION_FNADDR_EXP);
+		Quaternion result;
 		NI_Quaternion_Exp(&result, this);
 		return result;
 #else
@@ -82,6 +85,7 @@ namespace NI {
 
 	Quaternion Quaternion::log() const {
 #if defined(SE_NI_QUATERNION_FNADDR_LOG) && SE_NI_QUATERNION_FNADDR_LOG > 0
+		const auto NI_Quaternion_Log = reinterpret_cast<Quaternion*(__cdecl*)(Quaternion*, const Quaternion*)>(SE_NI_QUATERNION_FNADDR_LOG);
 		Quaternion result;
 		NI_Quaternion_Log(&result, this);
 		return result;
@@ -226,6 +230,8 @@ namespace NI {
 	}
 
 	NI::Matrix33 Quaternion::toRotation() const {
-		return NI::Matrix33(*this);
+		NI::Matrix33 result;
+		result.fromQuaternion(this);
+		return result;
 	}
 }

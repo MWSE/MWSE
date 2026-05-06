@@ -15,7 +15,9 @@ namespace se::memory {
 		return reinterpret_cast<T * (__cdecl*)(size_t)>(SE_MEMORY_FNADDR_NEW)(sizeof(T) * count);
 	}
 
-	void* _new(size_t size);
+	inline void* _new(size_t size) {
+		return reinterpret_cast<void* (__cdecl*)(size_t)>(SE_MEMORY_FNADDR_NEW)(size);
+	}
 #endif
 
 #if defined(SE_MEMORY_FNADDR_DELETE) && SE_MEMORY_FNADDR_DELETE > 0
