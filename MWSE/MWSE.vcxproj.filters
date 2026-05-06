@@ -2963,7 +2963,7 @@
     <ClCompile Include="LuaUiSpellTooltipEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITexture.cpp">
+    <ClCompile Include="..\SharedSE\NITexture.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3Fader.cpp">
