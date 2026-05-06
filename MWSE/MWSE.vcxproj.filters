@@ -2675,7 +2675,7 @@
     <ClCompile Include="TES3WeatherController.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIStream.cpp">
+    <ClCompile Include="..\SharedSE\NIStream.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3AudioController.cpp">

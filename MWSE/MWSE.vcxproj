@@ -800,7 +800,7 @@
     <ClCompile Include="NIPropertyLua.cpp" />
     <ClCompile Include="..\SharedSE\NISourceTexture.cpp" />
     <ClCompile Include="NISourceTextureLua.cpp" />
-    <ClCompile Include="NIStream.cpp" />
+    <ClCompile Include="..\SharedSE\NIStream.cpp" />
     <ClCompile Include="NISwitchNodeLua.cpp" />
     <ClCompile Include="NITexture.cpp" />
     <ClCompile Include="NITimeControllerLua.cpp" />
