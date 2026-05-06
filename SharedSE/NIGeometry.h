@@ -24,14 +24,12 @@ namespace NI {
 		Pointer<GeometryData> getModelData() const;
 		void setModelData(GeometryData* data);
 
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-		// updateDeforms depends on AVObject::createWorldVertices, which only
-		// has a definition in SharedSE/NIAVObject.cpp. MWSE compiles its own
-		// MWSE/NIAVObject.cpp (lacking that method), so gate these out of
-		// MWSE-mode until NIAVObject.cpp is itself migrated to SharedSE.
+		// Apply skin deform to worldVertices/worldNormals (or provided buffers)
+		// and transform by worldTransform. Depends on AVObject::createWorldVertices
+		// which is defined unconditionally in SharedSE/NIAVObject.cpp now that
+		// the NIAVObject port is complete.
 		void updateDeforms();
 		void updateDeforms(Vector3* out_vertices, Vector3* out_normals);
-#endif
 	};
 	static_assert(sizeof(Geometry) == 0xAC, "NI::Geometry failed size validation");
 

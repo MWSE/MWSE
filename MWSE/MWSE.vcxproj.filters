@@ -2564,7 +2564,7 @@
     <ClCompile Include="NIObject.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIAVObject.cpp">
+    <ClCompile Include="..\SharedSE\NIAVObject.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NIObjectLua.cpp">

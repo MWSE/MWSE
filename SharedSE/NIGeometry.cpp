@@ -9,7 +9,6 @@ namespace NI {
 		vTable.asGeometry->setModelData(this, data);
 	}
 
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
 	void Geometry::updateDeforms() {
 		updateDeforms(worldVertices, worldNormals);
 	}
@@ -26,7 +25,6 @@ namespace NI {
 		skinInstance->deform(modelData->vertex, modelData->normal, modelData->getActiveVertexCount(), out_vertices, out_normals);
 		TransformVertices(out_vertices, modelData->getActiveVertexCount(), &worldTransform);
 	}
-#endif
 
 	void __cdecl TransformVertices(Vector3* vertices, unsigned short vertexCount, const Transform* transform) {
 		TransformVertices(vertices, vertexCount, vertices, transform);

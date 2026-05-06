@@ -779,7 +779,7 @@
     <ClCompile Include="MemoryUtilLua.cpp" />
     <ClCompile Include="MgeVirtualMachine.cpp" />
     <ClCompile Include="MgeTes3Machine.cpp" />
-    <ClCompile Include="NIAVObject.cpp" />
+    <ClCompile Include="..\SharedSE\NIAVObject.cpp" />
     <ClCompile Include="NICameraLua.cpp" />
     <ClCompile Include="NICollisionSwitchLua.cpp" />
     <ClCompile Include="NIColor.cpp" />
