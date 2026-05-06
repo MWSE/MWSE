@@ -3608,7 +3608,7 @@
     <ClCompile Include="TES3DialogueFilterContext.cpp">
       <Filter>Source Files\Lua\Bindings\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NISortAdjustNode.cpp">
+    <ClCompile Include="..\SharedSE\NISortAdjustNode.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaCalcHitDetectionConeEvent.cpp">

@@ -725,7 +725,7 @@
     <ClCompile Include="NIRendererLua.cpp" />
     <ClCompile Include="..\SharedSE\NISkinInstance.cpp" />
     <ClCompile Include="NISkinInstanceLua.cpp" />
-    <ClCompile Include="NISortAdjustNode.cpp" />
+    <ClCompile Include="..\SharedSE\NISortAdjustNode.cpp" />
     <ClCompile Include="..\SharedSE\NISpotLight.cpp" />
     <ClCompile Include="..\SharedSE\NISwitchNode.cpp" />
     <ClCompile Include="..\SharedSE\NIRTTI.cpp" />
