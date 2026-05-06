@@ -3533,7 +3533,7 @@
     <ClCompile Include="LuaVFXCreatedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIKeyframeController.cpp">
+    <ClCompile Include="..\SharedSE\NIKeyframeController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaDialogueEnvironmentCreatedEvent.cpp">

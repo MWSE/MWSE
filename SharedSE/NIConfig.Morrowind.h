@@ -85,6 +85,9 @@
 // NI::PointLight vTable address (DynamicEffect_vTable layout)
 #define SE_NI_POINTLIGHT_VTBL 0x749D40
 
+// NI::KeyframeData
+#define SE_NI_KEYFRAMEDATA_FNADDR_REPLACESCALEDATA 0x70D420
+
 // NI light-radius test (cdecl free function; used by Node::shouldBeAffectedByLight)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x4D19C0
 

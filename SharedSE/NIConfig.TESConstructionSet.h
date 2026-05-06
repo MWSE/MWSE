@@ -86,6 +86,9 @@
 // NI::PointLight vTable address (CS.exe address not yet known)
 #define SE_NI_POINTLIGHT_VTBL 0x0
 
+// NI::KeyframeData (CS.exe address not yet known)
+#define SE_NI_KEYFRAMEDATA_FNADDR_REPLACESCALEDATA 0x0
+
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 
