@@ -99,6 +99,13 @@
 #define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMBUMPLUMA 0x0
 #define SE_NI_PIXELFORMAT_FNADDR_GETD3DFORMAT 0x0
 
+// NI::Sequence (CS.exe address not yet known)
+#define SE_NI_SEQUENCE_FNADDR_DTOR 0x0
+
+// NI::KeyframeManager (CS.exe addresses not yet known)
+#define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x0
+#define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x0
+
 // NI light-radius test (CS.exe address not yet known)
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 

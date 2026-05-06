@@ -708,7 +708,7 @@
     <ClCompile Include="..\SharedSE\NIGeometryData.cpp" />
     <ClCompile Include="NIGeometryDataLua.cpp" />
     <ClCompile Include="..\SharedSE\NIKeyframeController.cpp" />
-    <ClCompile Include="NIKeyframeManager.cpp" />
+    <ClCompile Include="..\SharedSE\NIKeyframeManager.cpp" />
     <ClCompile Include="..\SharedSE\NILookAtController.cpp" />
     <ClCompile Include="..\SharedSE\NIParticleModifier.cpp" />
     <ClCompile Include="..\SharedSE\NIParticles.cpp" />

@@ -3398,7 +3398,7 @@
     <ClCompile Include="..\SharedSE\NICollisionGroup.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIKeyframeManager.cpp">
+    <ClCompile Include="..\SharedSE\NIKeyframeManager.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3ActorAnimationControllerLua.cpp">
