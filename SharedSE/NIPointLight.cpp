@@ -32,7 +32,11 @@ namespace TES3 {
 
 namespace NI {
 	Pointer<PointLight> PointLight::create() {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1 && defined(SE_NI_POINTLIGHT_VTBL) && SE_NI_POINTLIGHT_VTBL > 0 && defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
+#if defined(SE_NI_POINTLIGHT_VTBL) && SE_NI_POINTLIGHT_VTBL > 0 && defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
+		// Light::ctor() is now properly macro-gated in SharedSE/NILight.cpp
+		// (SE_NI_LIGHT_FNADDR_CTOR), so the SE_IS_MWSE wrap from batch 18 is
+		// no longer needed -- SE_NI_POINTLIGHT_VTBL == 0 on CSSE already
+		// excludes this body.
 		PointLight* light = se::memory::_new<PointLight>();
 		light->ctor();
 

@@ -191,8 +191,14 @@ namespace NI {
 	void Node::sortDynamicEffects(bool isLand) {
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// MWSE-specific gameplay logic: prioritize lights when more than
-		// LIGHT_LIMIT are active. Depends on AVObject::getWorldBound (MWSE-only
-		// header surface) and PointLight::getSortWeight (MWSE-only method).
+		// LIGHT_LIMIT are active.
+		//
+		// Gate residual: PointLight::getSortWeight is now in SharedSE (Phase 4
+		// batch 18), but AVObject::getWorldBound() is still SE_IS_MWSE-gated in
+		// NIAVObject.h (returns SphereBound* on MWSE vs BoundingVolume* on
+		// CSSE -- a real ABI difference, not just drift). Lifting this gate
+		// requires a SharedSE-level getWorldBound() shim returning the smallest
+		// common type (Bound*); deferred to a future header-cleanup batch.
 		// Skip if we don't have too many lights.
 		if (getLightCount() <= LIGHT_LIMIT) {
 			return;
