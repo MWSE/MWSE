@@ -3,6 +3,11 @@
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "LuaUtil.h"
+#include "TES3WorldController.h"
+#endif
+
 namespace NI {
 	bool Frustum::setFOV(float fovDegrees, float aspect) {
 		const auto fovRadians = se::math::degreesToRadians(fovDegrees);

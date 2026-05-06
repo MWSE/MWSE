@@ -1,6 +1,17 @@
 #include "NILight.h"
 
+#include "ExceptionUtil.h"
+
 namespace NI {
+	Light* Light::ctor() {
+#if defined(SE_NI_LIGHT_FNADDR_CTOR) && SE_NI_LIGHT_FNADDR_CTOR > 0
+		const auto NI_Light_ctor = reinterpret_cast<Light*(__thiscall*)(Light*)>(SE_NI_LIGHT_FNADDR_CTOR);
+		return NI_Light_ctor(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 	float Light::getDimmer() const {
 		return dimmer;
 	}

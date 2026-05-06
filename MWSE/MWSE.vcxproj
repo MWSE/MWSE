@@ -684,14 +684,14 @@
     <ClCompile Include="MWSEConfig.cpp" />
     <ClCompile Include="MWSEUtilLua.cpp" />
     <ClCompile Include="..\SharedSE\NIAmbientLight.cpp" />
-    <ClCompile Include="NIAnimationKey.cpp" />
+    <ClCompile Include="..\SharedSE\NIAnimationKey.cpp" />
     <ClCompile Include="..\SharedSE\NIBillboardNode.cpp" />
     <ClCompile Include="..\SharedSE\NIBinaryStream.cpp" />
     <ClCompile Include="NIBound.cpp" />
     <ClCompile Include="NIBoundingVolumeLua.cpp" />
     <ClCompile Include="..\SharedSE\NIBSAnimationNode.cpp" />
     <ClCompile Include="NIBSAnimationNodeLua.cpp" />
-    <ClCompile Include="NICamera.cpp" />
+    <ClCompile Include="..\SharedSE\NICamera.cpp" />
     <ClCompile Include="..\SharedSE\NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />
     <ClCompile Include="NICollisionSwitch.cpp" />
@@ -714,7 +714,7 @@
     <ClCompile Include="NIParticles.cpp" />
     <ClCompile Include="NIParticlesLua.cpp" />
     <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp" />
-    <ClCompile Include="NIPathController.cpp" />
+    <ClCompile Include="..\SharedSE\NIPathController.cpp" />
     <ClCompile Include="NIPixelFormat.cpp" />
     <ClCompile Include="NIProperty.cpp" />
     <ClCompile Include="NIQuaternion.cpp" />
@@ -785,7 +785,7 @@
     <ClCompile Include="NIColor.cpp" />
     <ClCompile Include="NIColorLua.cpp" />
     <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp" />
-    <ClCompile Include="NILight.cpp" />
+    <ClCompile Include="..\SharedSE\NILight.cpp" />
     <ClCompile Include="NILightLua.cpp" />
     <ClCompile Include="NINode.cpp" />
     <ClCompile Include="NINodeLua.cpp" />

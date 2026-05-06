@@ -96,6 +96,10 @@
 // NI::ZBufferProperty
 #define SE_NI_ZBUFFERPROPERTY_VTBL 0x6731F0
 
+// NI::Light
+// CS.exe address not yet known.
+#define SE_NI_LIGHT_FNADDR_CTOR 0x0
+
 // NI::SkinInstance
 #define SE_NI_SKININSTANCE_FNADDR_DEFORM 0x5F08A0
 

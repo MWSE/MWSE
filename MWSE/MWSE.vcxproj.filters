@@ -3062,7 +3062,7 @@
     <ClCompile Include="..\SharedSE\NIDynamicEffect.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NILight.cpp">
+    <ClCompile Include="..\SharedSE\NILight.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3UIMenuControllerLua.cpp">
@@ -3176,7 +3176,7 @@
     <ClCompile Include="..\SharedSE\NIRenderer.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NICamera.cpp">
+    <ClCompile Include="..\SharedSE\NICamera.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NIBinaryStream.cpp">
@@ -3626,10 +3626,10 @@
     <ClCompile Include="..\SharedSE\NIAnimationData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIAnimationKey.cpp">
+    <ClCompile Include="..\SharedSE\NIAnimationKey.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIPathController.cpp">
+    <ClCompile Include="..\SharedSE\NIPathController.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaSimulatedEvent.cpp">

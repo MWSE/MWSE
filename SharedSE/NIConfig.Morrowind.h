@@ -95,6 +95,9 @@
 // NI::ZBufferProperty
 #define SE_NI_ZBUFFERPROPERTY_VTBL 0x74652C
 
+// NI::Light
+#define SE_NI_LIGHT_FNADDR_CTOR 0x6F9940
+
 // NI::SkinInstance
 #define SE_NI_SKININSTANCE_FNADDR_DEFORM 0x6FA000
 
