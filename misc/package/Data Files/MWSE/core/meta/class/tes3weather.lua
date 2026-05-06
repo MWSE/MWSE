@@ -35,8 +35,10 @@
 --- @field sunNightColor tes3vector3 The weather's sun night color. The values can range from 0 to 1.
 --- @field sunSunriseColor tes3vector3 The weather's sun sunrise color. The values can range from 0 to 1.
 --- @field sunSunsetColor tes3vector3 The weather's sun sunset color. The values can range from 0 to 1.
+--- @field supportsParticleLerp boolean The weather's particle lerping support flag.
 --- @field transitionDelta number The weather's transition delta.
 --- @field underwaterSoundState boolean The weather's underwater sound state flag. This value will be `true`, while the player is underwater.
+--- @field windJitterScalar number The significance that wind speed has on randomized cloud movement.
 --- @field windSpeed number The weather's wind speed.
 tes3weather = {}
 

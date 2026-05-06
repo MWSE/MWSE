@@ -352,6 +352,17 @@ The weather's sun sunset color. The values can range from 0 to 1.
 
 ***
 
+### `supportsParticleLerp`
+<div class="search_terms" style="display: none">supportsparticlelerp</div>
+
+The weather's particle lerping support flag.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `threshold`
 <div class="search_terms" style="display: none">threshold</div>
 
@@ -382,6 +393,17 @@ The weather's underwater sound state flag. This value will be `true`, while the 
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `windJitterScalar`
+<div class="search_terms" style="display: none">windjitterscalar</div>
+
+The significance that wind speed has on randomized cloud movement.
+
+**Returns**:
+
+* `result` (number)
 
 ***
 

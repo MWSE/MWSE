@@ -484,6 +484,17 @@ If true, the weather supports blizzards and they will not be automatically culle
 
 ***
 
+### `supportsParticleLerp`
+<div class="search_terms" style="display: none">supportsparticlelerp</div>
+
+The weather's particle lerping support flag.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `supportsParticleLerping`
 <div class="search_terms" style="display: none">supportsparticlelerping</div>
 

@@ -38,8 +38,10 @@ namespace mwse::lua {
 		usertypeDefinition["sunNightColor"] = &TES3::Weather::sunNightCol;
 		usertypeDefinition["sunSunriseColor"] = &TES3::Weather::sunSunriseCol;
 		usertypeDefinition["sunSunsetColor"] = &TES3::Weather::sunSunsetCol;
+		usertypeDefinition["supportsParticleLerp"] = sol::readonly_property(&TES3::Weather::supportsParticleLerp);
 		usertypeDefinition["transitionDelta"] = &TES3::Weather::transitionDelta;
 		usertypeDefinition["underwaterSoundState"] = &TES3::Weather::underwaterSoundState;
+		usertypeDefinition["windJitterScalar"] = sol::readonly_property(&TES3::Weather::getWindJitter);
 		usertypeDefinition["windSpeed"] = &TES3::Weather::windSpeed;
 
 		// Binding for IDs and paths.
