@@ -11,6 +11,7 @@ namespace NI {
 		vertices[2] = third;
 	}
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	Triangle::Triangle(const sol::table table) {
 		*this = table;
 	}
@@ -21,6 +22,7 @@ namespace NI {
 		}
 		return *this;
 	}
+#endif
 
 	std::reference_wrapper<unsigned short[3]> Triangle::getVertices() {
 		return std::ref(vertices);

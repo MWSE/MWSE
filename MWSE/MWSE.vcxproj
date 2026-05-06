@@ -733,7 +733,7 @@
     <ClCompile Include="NiTextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="NITimeController.cpp" />
-    <ClCompile Include="NITriangle.cpp" />
+    <ClCompile Include="..\SharedSE\NITriangle.cpp" />
     <ClCompile Include="..\SharedSE\NITriBasedGeometry.cpp" />
     <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp" />
     <ClCompile Include="..\SharedSE\NILines.cpp" />

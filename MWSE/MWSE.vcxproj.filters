@@ -3455,7 +3455,7 @@
     <ClCompile Include="LuaPotionBrewSkillCheckEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NITriangle.cpp">
+    <ClCompile Include="..\SharedSE\NITriangle.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaExecutor.cpp">
