@@ -180,6 +180,9 @@
 // NI::Bound
 #define SE_NI_BOUND_FNADDR_COMPUTEFROMDATA 0x5B13F0
 
+// NI::BoxBoundingVolume (CS.exe address not yet known)
+#define SE_NI_BOXBOUNDINGVOLUME_FNADDR_CREATE 0x0
+
 // NI::TriBasedGeometry
 // CS.exe addresses not yet known. CSSE call sites must throw not_implemented_exception
 // when these are 0; otherwise call would jump to whatever happens to live at the

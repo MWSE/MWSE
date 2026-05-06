@@ -687,7 +687,7 @@
     <ClCompile Include="..\SharedSE\NIAnimationKey.cpp" />
     <ClCompile Include="..\SharedSE\NIBillboardNode.cpp" />
     <ClCompile Include="..\SharedSE\NIBinaryStream.cpp" />
-    <ClCompile Include="NIBound.cpp" />
+    <ClCompile Include="..\SharedSE\NIBound.cpp" />
     <ClCompile Include="NIBoundingVolumeLua.cpp" />
     <ClCompile Include="..\SharedSE\NIBSAnimationNode.cpp" />
     <ClCompile Include="NIBSAnimationNodeLua.cpp" />

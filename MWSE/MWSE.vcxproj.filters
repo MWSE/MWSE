@@ -3719,7 +3719,7 @@
     <ClCompile Include="MGEApi.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
-    <ClCompile Include="NIBound.cpp">
+    <ClCompile Include="..\SharedSE\NIBound.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="CrashLogCallTrace.cpp">
