@@ -12,24 +12,28 @@
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "NIAmbientLight.h"
+#include "NIAnimationData.h"
 #include "NIAVObject.h"
 #include "NIBillboardNode.h"
+#include "NIBSAnimationNode.h"
 #include "NICamera.h"
 #include "NICollisionSwitch.h"
-#include "NIColorData.h"
 #include "NIDirectionalLight.h"
 #include "NIExtraData.h"
 #include "NIKeyframeController.h"
+#include "NILines.h"
 #include "NILookAtController.h"
 #include "NINode.h"
 #include "NIParticleModifier.h"
 #include "NIParticles.h"
 #include "NIParticleSystemController.h"
+#include "NIPathController.h"
 #include "NIPixelData.h"
 #include "NIPointLight.h"
-#include "NIPosData.h"
 #include "NIProperty.h"
+#include "NIRenderedTexture.h"
 #include "NISkinInstance.h"
+#include "NISortAdjustNode.h"
 #include "NISourceTexture.h"
 #include "NISpotLight.h"
 #include "NISwitchNode.h"
@@ -64,11 +68,19 @@ namespace NI {
 	}
 
 	void* Object::operator new(size_t size) {
+#if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
 		return se::memory::_new(size);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	void Object::operator delete(void* address) {
+#if defined(SE_MEMORY_FNADDR_DELETE) && SE_MEMORY_FNADDR_DELETE > 0
 		se::memory::_delete(address);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	RTTI* Object::getRunTimeTypeInformation() const {
@@ -90,7 +102,6 @@ namespace NI {
 	Object* Object::createClone() {
 #if defined(SE_NI_OBJECT_FNADDR_CREATECLONE) && SE_NI_OBJECT_FNADDR_CREATECLONE > 0
 		const auto NI_Object_createClone = reinterpret_cast<Object * (__thiscall*)(Object*)>(SE_NI_OBJECT_FNADDR_CREATECLONE);
-
 		return NI_Object_createClone(this);
 #else
 		throw not_implemented_exception();
@@ -98,7 +109,11 @@ namespace NI {
 	}
 
 	void Object::release() {
-		reinterpret_cast<void(__thiscall*)(Object*)>(0x404630)(this);
+#if defined(SE_NI_OBJECT_FNADDR_RELEASE) && SE_NI_OBJECT_FNADDR_RELEASE > 0
+		reinterpret_cast<void(__thiscall*)(Object*)>(SE_NI_OBJECT_FNADDR_RELEASE)(this);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	bool Object::isOfType(const RTTI* type) const {
@@ -149,7 +164,7 @@ namespace NI {
 			return sol::nil;
 		}
 
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (mwse::Configuration::KeepAllNetImmerseObjectsAlive) {
 			auto cacheHit = niObjectCache.find(this);
@@ -160,7 +175,7 @@ namespace NI {
 		}
 
 		// Make sure we're looking at the main state.
-		L = stateHandle.state;
+		L = stateHandle.getState();
 
 		// Loop through RTTI information until we find a type we like.
 		auto currentRTTI = getRunTimeTypeInformation();
@@ -173,11 +188,20 @@ namespace NI {
 			case RTTIStaticPtr::NiAmbientLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AmbientLight*>(this)));
 				break;
+			case RTTIStaticPtr::NiAutoNormalParticles:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<AutoNormalParticles*>(this)));
+				break;
 			case RTTIStaticPtr::NiAVObject:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<AVObject*>(this)));
 				break;
 			case RTTIStaticPtr::NiBillboardNode:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<BillboardNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSAnimationNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSAnimationNode*>(this)));
+				break;
+			case RTTIStaticPtr::NiBSParticleNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<BSParticleNode*>(this)));
 				break;
 			case RTTIStaticPtr::NiCamera:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<Camera*>(this)));
@@ -194,6 +218,9 @@ namespace NI {
 			case RTTIStaticPtr::NiExtraData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<ExtraData*>(this)));
 				break;
+			case RTTIStaticPtr::NiFloatData:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<FloatData*>(this)));
+				break;
 			case RTTIStaticPtr::NiFogProperty:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<FogProperty*>(this)));
 				break;
@@ -205,6 +232,9 @@ namespace NI {
 				break;
 			case RTTIStaticPtr::NiKeyframeData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<KeyframeData*>(this)));
+				break;
+			case RTTIStaticPtr::NiLines:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<Lines*>(this)));
 				break;
 			case RTTIStaticPtr::NiLookAtController:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<LookAtController*>(this)));
@@ -245,6 +275,9 @@ namespace NI {
 			case RTTIStaticPtr::NiParticleSystemController:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<ParticleSystemController*>(this)));
 				break;
+			case RTTIStaticPtr::NiPathController:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<PathController*>(this)));
+				break;
 			case RTTIStaticPtr::NiPlanarCollider:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PlanarCollider*>(this)));
 				break;
@@ -253,6 +286,9 @@ namespace NI {
 				break;
 			case RTTIStaticPtr::NiPointLight:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PointLight*>(this)));
+				break;
+			case RTTIStaticPtr::NiRenderedTexture:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<RenderedTexture*>(this)));
 				break;
 			case RTTIStaticPtr::NiPosData:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<PosData*>(this)));
@@ -268,6 +304,9 @@ namespace NI {
 				break;
 			case RTTIStaticPtr::NiSkinPartition:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<SkinPartition*>(this)));
+				break;
+			case RTTIStaticPtr::NiSortAdjustNode:
+				ref = sol::make_object_userdata(L, Pointer(static_cast<SortAdjustNode*>(this)));
 				break;
 			case RTTIStaticPtr::NiSourceTexture:
 				ref = sol::make_object_userdata(L, Pointer(static_cast<SourceTexture*>(this)));
@@ -326,7 +365,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObject(const Object* object) {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 
 		if (!niObjectCache.empty()) {
 			// Clear any events that make use of this object.
@@ -345,7 +384,7 @@ namespace NI {
 	}
 
 	void Object::clearCachedLuaObjects() {
-		auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 		niObjectCache.clear();
 	}
 #endif

@@ -789,7 +789,7 @@
     <ClCompile Include="NILightLua.cpp" />
     <ClCompile Include="NINode.cpp" />
     <ClCompile Include="NINodeLua.cpp" />
-    <ClCompile Include="NIObject.cpp" />
+    <ClCompile Include="..\SharedSE\NIObject.cpp" />
     <ClCompile Include="NIObjectLua.cpp" />
     <ClCompile Include="NIObjectNET.cpp" />
     <ClCompile Include="..\SharedSE\NIPick.cpp" />
