@@ -716,7 +716,7 @@
     <ClCompile Include="..\SharedSE\NIParticleSystemController.cpp" />
     <ClCompile Include="..\SharedSE\NIPathController.cpp" />
     <ClCompile Include="NIPixelFormat.cpp" />
-    <ClCompile Include="NIProperty.cpp" />
+    <ClCompile Include="..\SharedSE\NIProperty.cpp" />
     <ClCompile Include="NIQuaternion.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
     <ClCompile Include="NIRenderedTexture.cpp" />

@@ -3251,7 +3251,7 @@
     <ClCompile Include="NICollisionSwitch.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIProperty.cpp">
+    <ClCompile Include="..\SharedSE\NIProperty.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NISwitchNode.cpp">
@@ -3308,7 +3308,7 @@
     <ClCompile Include="NIExtraDataLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NIProperty.cpp">
+    <ClCompile Include="..\SharedSE\NIProperty.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NIExtraData.cpp">
