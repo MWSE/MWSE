@@ -43,6 +43,15 @@ namespace NI {
 #endif
 	}
 
+	void Matrix33::fromQuaternion(const Quaternion* quaternion) {
+#if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
+		const auto NI_Matrix33_ctor_fromQuaternion = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, const Quaternion*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
+		NI_Matrix33_ctor_fromQuaternion(this, quaternion);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 	bool Matrix33::operator==(const Matrix33& matrix) const {
 #if defined(SE_NI_MATRIX33_FNADDR_TESTEQUAL) && SE_NI_MATRIX33_FNADDR_TESTEQUAL > 0
 		const auto NI_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(Matrix33*, const Matrix33*)>(SE_NI_MATRIX33_FNADDR_TESTEQUAL);

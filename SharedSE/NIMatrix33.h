@@ -88,6 +88,11 @@ namespace NI {
 
 		NI::Quaternion toQuaternion();
 
+		// Mirrors TES3::Matrix33::fromQuaternion. Lets unified callers (e.g.
+		// SharedSE/NIQuaternion.cpp toRotation) use the MWSE-canonical pattern
+		// `Matrix33 m; m.fromQuaternion(&q);` in CSSE-mode too.
+		void fromQuaternion(const Quaternion* quaternion);
+
 		bool reorthogonalize();
 
 		//
