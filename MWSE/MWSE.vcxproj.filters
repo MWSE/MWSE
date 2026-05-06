@@ -3131,7 +3131,7 @@
     <ClCompile Include="TES3SoundGenerator.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
-    <ClCompile Include="NIGeometryData.cpp">
+    <ClCompile Include="..\SharedSE\NIGeometryData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="..\SharedSE\NITriBasedGeometryData.cpp">

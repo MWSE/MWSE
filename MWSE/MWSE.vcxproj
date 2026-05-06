@@ -705,7 +705,7 @@
     <ClCompile Include="..\SharedSE\NIFlipController.cpp" />
     <ClCompile Include="..\SharedSE\NIAnimationData.cpp" />
     <ClCompile Include="..\SharedSE\NIGeometry.cpp" />
-    <ClCompile Include="NIGeometryData.cpp" />
+    <ClCompile Include="..\SharedSE\NIGeometryData.cpp" />
     <ClCompile Include="NIGeometryDataLua.cpp" />
     <ClCompile Include="..\SharedSE\NIKeyframeController.cpp" />
     <ClCompile Include="NIKeyframeManager.cpp" />
