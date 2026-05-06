@@ -794,7 +794,7 @@
     <ClCompile Include="NIObjectNET.cpp" />
     <ClCompile Include="..\SharedSE\NIPick.cpp" />
     <ClCompile Include="NIPickLua.cpp" />
-    <ClCompile Include="NIPixelData.cpp" />
+    <ClCompile Include="..\SharedSE\NIPixelData.cpp" />
     <ClCompile Include="NIPixelDataLua.cpp" />
     <ClCompile Include="NIPointLight.cpp" />
     <ClCompile Include="NIPropertyLua.cpp" />

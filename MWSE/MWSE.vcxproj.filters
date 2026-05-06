@@ -3083,7 +3083,7 @@
     <ClCompile Include="LuaCalcHitArmorPieceEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NIPixelData.cpp">
+    <ClCompile Include="..\SharedSE\NIPixelData.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaDisableableEventManager.cpp">

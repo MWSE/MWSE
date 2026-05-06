@@ -4,7 +4,24 @@
 #include "NISourceTexture.h"
 #include "NITexture.h"
 
+#include "ExceptionUtil.h"
+#include "MemoryUtil.h"
+
 namespace NI {
+
+	// Create an RGBA-8bpc PixelData via engine ctor.
+	Pointer<PixelData> PixelData::create(unsigned int width, unsigned int height, unsigned int mipMapLevels) {
+#if defined(SE_NI_PIXELDATA_FNADDR_CTOR_ARGS) && SE_NI_PIXELDATA_FNADDR_CTOR_ARGS > 0 && defined(SE_NI_PIXELFORMAT_GLOBADDR_RGBA32) && SE_NI_PIXELFORMAT_GLOBADDR_RGBA32 > 0 && defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
+		const auto NI_PixelData_ctor_args = reinterpret_cast<void(__thiscall*)(PixelData*, unsigned int, unsigned int, const PixelFormat*, unsigned int)>(SE_NI_PIXELDATA_FNADDR_CTOR_ARGS);
+		const auto NI_PixelFormat_RGBA32 = reinterpret_cast<const PixelFormat*>(SE_NI_PIXELFORMAT_GLOBADDR_RGBA32);
+
+		PixelData* pixelData = se::memory::_new<PixelData>();
+		NI_PixelData_ctor_args(pixelData, width, height, NI_PixelFormat_RGBA32, mipMapLevels);
+		return pixelData;
+#else
+		throw not_implemented_exception();
+#endif
+	}
 
 	Pointer<SourceTexture> PixelData::createSourceTexture() {
 		using FormatPrefs = Texture::FormatPrefs;
