@@ -118,8 +118,10 @@ namespace NI {
 		size_type filledCount; // 0x10 // Number of filled slots.
 		size_type growByCount; // 0x14 // Number of slots to increase storage by.
 
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 		static void* operator new(size_type size) { return se::memory::_new(size); }
 		static void operator delete(void* block) { se::memory::_delete(block); }
+#endif
 
 		TArray(size_type size = 1) {
 			storageCount = size;

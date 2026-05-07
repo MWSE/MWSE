@@ -16,6 +16,7 @@
 
 #include "CodePatchUtil.h"
 #include "MemoryUtil.h"
+#include "MGEApi.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -604,6 +605,19 @@ namespace TES3 {
 	const auto TES3_WorldController_updateEnvironmentLightingWeather = reinterpret_cast<void(__thiscall*)(WorldController*)>(0x4100D0);
 	void WorldController::updateEnvironmentLightingWeather() {
 		TES3_WorldController_updateEnvironmentLightingWeather(this);
+
+		// MGE-XE scene-graph bridge (MGEAPI v4+). MWSE stamps the DataHandler
+		// pointer once on first call, then signals MGE that it is safe to walk
+		// the scene roots. Soft dependency: silent no-op if MGE is older than
+		// v4 or absent. The engine has finished applying timing/lighting/weather
+		// for this frame; cullShow has not yet run for any camera.
+		if (mge::api && mge::apiVersion >= 4) {
+			auto api4 = static_cast<mge::MGEAPIv4*>(mge::api);
+			if (api4->getDataHandler() == nullptr) {
+				api4->setDataHandler(DataHandler::get());
+			}
+			api4->onSceneGraphReady();
+		}
 	}
 
 	float WorldController::getAIDistance() const {

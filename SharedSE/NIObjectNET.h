@@ -9,6 +9,9 @@
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
+#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
+// MGE-XE doesn't reference TES3:: or se::cs:: game classes; getTes3Reference
+// is omitted on this target (declaration below also gated).
 #else
 #include "CSDefines.h"
 #endif
@@ -48,9 +51,13 @@ namespace NI {
 
 		// Per-target return type: TES3::Reference for MWSE, se::cs::Reference
 		// for CSSE (legitimate target-specific type, not cosmetic drift).
-		// Const-ness is unified (MWSE-canonical).
+		// Const-ness is unified (MWSE-canonical). Omitted entirely on MGE,
+		// which has no game-class types to return and never calls into
+		// the MWSE-only NIObjectNET.cpp implementation.
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		TES3::Reference* getTes3Reference(bool searchParents = false) const;
+#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
+		// (intentionally omitted)
 #else
 		se::cs::Reference* getTes3Reference(bool searchParents = false) const;
 #endif
