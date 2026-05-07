@@ -54,7 +54,10 @@ namespace NI {
 
 	bool Matrix33::operator==(const Matrix33& matrix) const {
 #if defined(SE_NI_MATRIX33_FNADDR_TESTEQUAL) && SE_NI_MATRIX33_FNADDR_TESTEQUAL > 0
-		const auto NI_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(Matrix33*, const Matrix33*)>(SE_NI_MATRIX33_FNADDR_TESTEQUAL);
+		// `this` is const inside this const-qualified method; the engine's
+		// testEqual does not mutate either operand, so the function-pointer
+		// type takes const Matrix33* on both sides.
+		const auto NI_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(const Matrix33*, const Matrix33*)>(SE_NI_MATRIX33_FNADDR_TESTEQUAL);
 		return NI_Matrix33_testEqual(this, &matrix);
 #else
 		return m0 == matrix.m0 && m1 == matrix.m1 && m2 == matrix.m2;

@@ -1,5 +1,12 @@
 #include "CodePatchUtil.h"
 
+// Body is gated behind SE_IS_MWSE in the header. Non-MWSE consumers
+// see an empty translation unit here.
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
+#include <windows.h>
+#include <cstdlib>
+
 namespace mwse::mcp {
 	FeatureStoreMap_t featureStore;
 
@@ -67,3 +74,5 @@ namespace mwse::mcp {
 		return !featureStore.empty();
 	}
 }
+
+#endif // SE_IS_MWSE

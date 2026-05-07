@@ -25,8 +25,13 @@ namespace NI {
 	Camera::Camera() {
 #if defined(SE_NI_CAMERA_FNADDR_CTOR) && SE_NI_CAMERA_FNADDR_CTOR > 0
 		// Cleanup automatic cruft.
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 		se::memory::_delete(screenPolygons.storage);
 		se::memory::_delete(cullingPlanePtrs.storage);
+#else
+		delete[] screenPolygons.storage;
+		delete[] cullingPlanePtrs.storage;
+#endif
 		memset(this, 0, sizeof(Camera));
 
 		const auto NI_Camera_ctor = reinterpret_cast<void(__thiscall*)(Camera*)>(SE_NI_CAMERA_FNADDR_CTOR);

@@ -145,6 +145,8 @@ namespace NI {
 
 		return nullptr;
 	}
+#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
+	// (intentionally omitted — declaration is also omitted on this target)
 #else
 	se::cs::Reference* ObjectNET::getTes3Reference(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {

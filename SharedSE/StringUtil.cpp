@@ -48,6 +48,7 @@ namespace se::string {
 		return std::search(haystack.begin(), haystack.end(), needle.begin(), needle.end()) != haystack.end();
 	}
 
+#if defined(SE_IS_CS) && SE_IS_CS == 1
 	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex) {
 		if (settings.use_regex && regex) {
 			return std::regex_search(haystack.data(), *regex);
@@ -59,6 +60,7 @@ namespace se::string {
 			return cicontains(haystack, needle);
 		}
 	}
+#endif
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring) {
 		if (substring.size() >= string.size()) {

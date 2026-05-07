@@ -1,5 +1,12 @@
 #pragma once
 
+// Morrowind Code Patch detection — MWSE-private. Other consumers (CSSE,
+// MGE) have no use for this. Gated behind SE_IS_MWSE; non-MWSE
+// consumers see an empty translation unit.
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
+#include <map>
+
 namespace mwse::mcp {
 	namespace feature {
 		enum Feature : long {
@@ -220,3 +227,5 @@ namespace mwse::mcp {
 	// Returns true if MWSE was able to parse features.
 	bool hasFeaturesFound();
 }
+
+#endif // SE_IS_MWSE

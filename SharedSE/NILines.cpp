@@ -23,6 +23,7 @@ namespace NI {
 	}
 
 	Pointer<Lines> Lines::create(unsigned short vertexCount, bool useColors, bool useTextureCoords) {
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 		auto vertices = se::memory::_new<Vector3>(vertexCount);
 		auto lineSegmentFlags = se::memory::_new<bool>(vertexCount);
 
@@ -37,6 +38,15 @@ namespace NI {
 		}
 
 		return new Lines(vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
+#else
+		auto vertices = new Vector3[vertexCount];
+		auto lineSegmentFlags = new bool[vertexCount];
+
+		PackedColor* colors = useColors ? new PackedColor[vertexCount] : nullptr;
+		Vector2* textureCoords = useTextureCoords ? new Vector2[vertexCount] : nullptr;
+
+		return new Lines(vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
+#endif
 	}
 
 	Pointer<Lines> Lines::create(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags) {

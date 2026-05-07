@@ -1,6 +1,17 @@
 #pragma once
 
+#include <algorithm>
+#include <cctype>
+#include <regex>
+#include <string>
+#include <string_view>
+
+// CSObject.h is needed only for complex_contains' SearchSettings parameter,
+// which is CSSE-specific. Gate the include and that function behind
+// SE_IS_CS so non-CSSE consumers can use the generic string helpers.
+#if defined(SE_IS_CS) && SE_IS_CS == 1
 #include "CSObject.h"
+#endif
 
 namespace se::string {
 
@@ -28,7 +39,9 @@ namespace se::string {
 
 	bool contains(const std::string_view& haystack, const std::string_view& needle);
 
+#if defined(SE_IS_CS) && SE_IS_CS == 1
 	bool complex_contains(const std::string_view& haystack, const std::string_view& needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex);
+#endif
 
 	bool starts_with(const std::string_view& string, const std::string_view& substring);
 	bool ends_with(const std::string_view& string, const std::string_view& substring);
