@@ -42,6 +42,7 @@ namespace mwse::lua {
 
 		// Basic function binding.
 		usertypeDefinition["getEffectInstance"] = &TES3::MagicSourceInstance::getEffectInstance;
+		usertypeDefinition["getEffectInstances"] = &TES3::MagicSourceInstance::getAllEffectInstances;
 		usertypeDefinition["getMagnitudeForIndex"] = &TES3::MagicSourceInstance::getMagnitude;
 		usertypeDefinition["playVisualEffect"] = &TES3::MagicSourceInstance::playSpellVFX_lua;
 
