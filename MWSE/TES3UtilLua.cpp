@@ -3339,9 +3339,9 @@ namespace mwse::lua {
 		sol::state_view state = ts;
 		auto results = state.create_table();
 
-		auto index = 0u;
+		auto index = 1u;
 		const auto maxCount = TES3::MagicInstanceController::getSerialCount();
-		for (auto i = 0u; i < maxCount; ++i) {
+		for (auto i = 0u; i <= maxCount; ++i) {
 			const auto instance = magicInstanceController->getInstanceFromSerial(i);
 			if (!instance) continue;
 			results[index++] = instance;
