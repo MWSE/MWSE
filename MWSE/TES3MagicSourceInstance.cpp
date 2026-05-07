@@ -124,7 +124,7 @@ namespace TES3 {
 		return sourceCombo.getEffectSpan();
 	}
 
-	MagicEffectInstance * MagicSourceInstance::getEffectInstance(int effectIndex, const Reference* reference) {
+	MagicEffectInstance * MagicSourceInstance::getEffectInstance(int effectIndex, const Reference* reference) const {
 		if (effectIndex < 0 || effectIndex > 7) {
 			throw std::invalid_argument("Invalid 'effectIndex' parameter. Must be a number between 0 and 7.");
 		}
@@ -138,6 +138,25 @@ namespace TES3 {
 			return &node->keyValuePair.value;
 		}
 		return nullptr;
+	}
+
+	std::vector<MagicEffectInstance*> MagicSourceInstance::getAllEffectInstances(int effectIndex) const {
+		if (effectIndex < 0 || effectIndex > 7) {
+			throw std::invalid_argument("Invalid 'effectIndex' parameter. Must be a number between 0 and 7.");
+		}
+
+		std::vector<MagicEffectInstance*> results;
+
+		const auto& hashMap = effects[effectIndex];
+		for (auto i = 0u; i < hashMap.bucketCount; ++i) {
+			auto node = hashMap.buckets[i];
+			while (node) {
+				results.push_back(&node->value);
+				node = node->nextNode;
+			}
+		}
+
+		return results;
 	}
 
 	void MagicSourceInstance::playSpellVFX_lua(sol::table params) {

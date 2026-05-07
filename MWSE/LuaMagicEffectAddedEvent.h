@@ -4,9 +4,9 @@
 #include "LuaDisableableEvent.h"
 
 namespace mwse::lua::event {
-	class MagicEffectRemovedEvent : public ObjectFilteredEvent, public DisableableEvent<MagicEffectRemovedEvent> {
+	class MagicEffectAddedEvent : public ObjectFilteredEvent, public DisableableEvent<MagicEffectAddedEvent> {
 	public:
-		MagicEffectRemovedEvent(TES3::MagicSourceInstance* magicSourceInstance, TES3::MagicEffectInstance* magicEffectInstance, int effectIndex);
+		MagicEffectAddedEvent(TES3::MagicSourceInstance* magicSourceInstance, TES3::MagicEffectInstance* magicEffectInstance, int effectIndex);
 		sol::table createEventTable();
 
 	protected:

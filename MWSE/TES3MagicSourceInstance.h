@@ -90,7 +90,8 @@ namespace TES3 {
 		Object* getSourceObject() const;
 		MagicSourceType getSourceType() const;
 		nonstd::span<Effect> getSourceEffects() const;
-		MagicEffectInstance* getEffectInstance(int effectIndex, const Reference* reference);
+		MagicEffectInstance* getEffectInstance(int effectIndex, const Reference* reference) const;
+		std::vector<MagicEffectInstance*> getAllEffectInstances(int effectIndex) const;
 
 		void playSpellVFX_lua(sol::table params);
 

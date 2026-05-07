@@ -960,6 +960,18 @@
     <ClInclude Include="LuaMagicCastedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaMagicEffectAddedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicEffectDeactivatedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicEffectRemovedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMagicEffectActivatedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaSpellCastEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1600,9 +1612,6 @@
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="LuaJumpEvent.h">
-      <Filter>Header Files\Lua\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaMagicEffectRemovedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="TES3VFXManager.h">
@@ -3026,6 +3035,18 @@
     <ClCompile Include="LuaMagicCastedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaMagicEffectAddedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicEffectDeactivatedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicEffectRemovedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMagicEffectActivatedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaSpellCastEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3699,9 +3720,6 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaJumpEvent.cpp">
-      <Filter>Source Files\Lua\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaMagicEffectRemovedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="TES3VFXManager.cpp">

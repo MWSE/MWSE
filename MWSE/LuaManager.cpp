@@ -253,7 +253,6 @@
 #include "LuaLoadedGameEvent.h"
 #include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
-#include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectEvent.h"
 #include "LuaMagicReflectedEvent.h"
 #include "LuaMenuStateEvent.h"
@@ -1713,43 +1712,6 @@ namespace mwse::lua {
 			pop eax
 			ret
 		}
-	}
-
-	//
-	// Event: Magic effect removed
-	//
-
-	bool __fastcall OnMagicEffectRemoved(TES3::Deque<TES3::ActiveMagicEffect>* activeMagicEffects, DWORD _UNUSED_, int serial, int effectIndex) {
-		// Overwritten code from 0x55C9D0.
-		if (!activeMagicEffects->count) {
-			return false;
-		}
-		TES3::Deque<TES3::ActiveMagicEffect>::Node* sentinel = activeMagicEffects->sentinel;
-		TES3::Deque<TES3::ActiveMagicEffect>::Node* node = sentinel->next;
-		if (sentinel->next == sentinel) {
-			return false;
-		}
-		while (node->data.magicInstanceSerial != serial || node->data.magicInstanceEffectIndex != effectIndex) {
-			node = node->next;
-			if (node == sentinel) {
-				return false;
-			}
-		}
-
-		// Dispatch the event.
-		TES3::MagicSourceInstance* magicSourceInstance = TES3::WorldController::get()->magicInstanceController->getInstanceFromSerial(serial);
-		TES3::MobileActor* mobileActor = reinterpret_cast<TES3::MobileActor*>(reinterpret_cast<BYTE*>(activeMagicEffects) - offsetof(TES3::MobileActor, activeMagicEffects));
-
-		if (event::MagicEffectRemovedEvent::getEventEnabled()) {
-			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::MagicEffectRemovedEvent(mobileActor, magicSourceInstance, effectIndex));
-		}
-
-		// Overwritten code from 0x55C9D0.
-		node->previous->next = node->next;
-		node->next->previous = node->previous;
-		delete(node);
-		activeMagicEffects->count--;
-		return true;
 	}
 
 	//
@@ -5388,12 +5350,6 @@ namespace mwse::lua {
 
 		// Event: Spell Resisted
 		genCallUnprotected(0x51880F, reinterpret_cast<DWORD>(OnSpellResistedWrapper), 0x518816 - 0x51880F);
-
-		// Event: Magic effect removed
-		genCallEnforced(0x5125F9, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Destructor
-		genCallEnforced(0x512A17, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Retire Effects
-		genCallEnforced(0x515AEF, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Process
-		genCallEnforced(0x518FCC, 0x55C9D0, reinterpret_cast<DWORD>(OnMagicEffectRemoved)); // Magic Source Instance: Spell Effect Event
 
 		// Event: Magic absorb
 		writePatchCodeUnprotected(0x516F5B, (BYTE*)&patchMagicAbsorb, patchMagicAbsorb_size);

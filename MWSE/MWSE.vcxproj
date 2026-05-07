@@ -65,6 +65,8 @@
     <ClInclude Include="LuaEquipmentReevaluatedEvent.h" />
     <ClInclude Include="LuaKeybindTestedEvent.h" />
     <ClInclude Include="LuaKeyframesLoadEvent.h" />
+    <ClInclude Include="LuaMagicEffectAddedEvent.h" />
+    <ClInclude Include="LuaMagicEffectDeactivatedEvent.h" />
     <ClInclude Include="LuaMagicEffectRemovedEvent.h" />
     <ClInclude Include="LuaMeshLoadEvent.h" />
     <ClInclude Include="LuaRepairEvent.h" />
@@ -173,6 +175,7 @@
     <ClInclude Include="LuaLoadedGameEvent.h" />
     <ClInclude Include="LuaLoadGameEvent.h" />
     <ClInclude Include="LuaMagicCastedEvent.h" />
+    <ClInclude Include="LuaMagicEffectActivatedEvent.h" />
     <ClInclude Include="LuaMenuStateEvent.h" />
     <ClInclude Include="LuaMeshLoadedEvent.h" />
     <ClInclude Include="LuaMobileObjectActivatedEvent.h" />
@@ -658,6 +661,9 @@
     <ClCompile Include="LuaLoadedGameEvent.cpp" />
     <ClCompile Include="LuaLoadGameEvent.cpp" />
     <ClCompile Include="LuaMagicCastedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectAddedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectDeactivatedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectActivatedEvent.cpp" />
     <ClCompile Include="LuaMagicEffectRemovedEvent.cpp" />
     <ClCompile Include="LuaMagicAbsorbEvent.cpp" />
     <ClCompile Include="LuaMagicReflectedEvent.cpp" />

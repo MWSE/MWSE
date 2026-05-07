@@ -6,12 +6,9 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-This event triggers when a magic effect has been removed from an actor. This includes:
+This event triggers when a magic source removes an active instance for one of its effects.
 
- - magic effects that have been resisted or are part of abilities like racial passives and diseases
- - magic effects that are removed when an actor is unloaded
-
-This event doesn't trigger when an effect expires naturally.
+For a magic source with multiple effects, this event triggers once for each effect instance that is removed. If the same source effect is active on multiple references, `magicEffectAdded`, `magicEffectActivated`, `magicEffectDeactivated`, and `magicEffectRemoved` can each trigger once for each affected reference.
 
 ```lua
 --- @param e magicEffectRemovedEventData
@@ -21,44 +18,45 @@ event.register(tes3.event.magicEffectRemoved, magicEffectRemovedCallback)
 ```
 
 !!! tip
-	This event can be filtered based on the **`reference`** event data.
+	This event can be filtered based on the **`source`** event data.
 
 !!! tip
 	An event can be claimed by setting `e.claim` to `true`, or by returning `false` from the callback. Claiming the event prevents any lower priority callbacks from being called.
 
 ## Event Data
 
-* `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The caster of the magic source that contained the magic effect. Can be `nil`.
+* `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The caster of the magic source. Can be `nil`.
 * `effect` ([tes3effect](../types/tes3effect.md)): *Read-only*. The specific effect that triggered the event. This is equal to `e.source.effects[e.effectIndex]`. Can be `nil`.
-* `effectIndex` (number): *Read-only*. The index of the effect in the magic source's effects list.
-* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The effect instance of the effect.
-* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile actor the magic effect is removed from.
-* `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference of the mobile actor the magic effect is removed from.
+* `effectIndex` (integer): *Read-only*. The index of the effect in the magic source's effects list.
+* `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect that caused the source effect to be removed.
+* `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile actor the magic effect is removed from. Use `target.mobile` instead.
+* `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. The reference of the mobile actor the magic effect is removed from. Use `target` instead.
 * `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source that contains the effect.
 * `sourceInstance` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)): *Read-only*. The unique instance of the magic source that contains the effect.
-* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic source that contained the magic effect. Can be `nil` if the target was unloaded.
+* `state` ([tes3.spellState](../references/spell-states.md)): *Read-only*. The state of the magic effect instance when the event fired.
+* `target` ([tes3reference](../types/tes3reference.md)): *Read-only*. The target of the magic effect instance that caused the source effect to be removed.
 
 ## Examples
 
-!!! example "Example: Show removed effect"
+!!! example "Example: Show Removed Effect"
 
-	Show the name of the magic effect and spell/enchantment/alchemy that has been removed from the player.
+	Show the magic effect and source names when an effect instance is removed on the player.
 
 	```lua
 	local function onMagicEffectRemoved(e)
-		-- Make sure we are only showing messages for effects that are applied to the player.
-		if e.mobile ~= tes3.mobilePlayer then return end
+		if e.target ~= tes3.player then return end
 	
-		-- Get the name of the magic effect that has been removed.
 		local effectName = tes3.getMagicEffect(e.effect.id).name
-	
-		-- Get the name of the spell/enchantment/alchemy this magic effect belongs to.
 		local sourceName = e.source.name
 	
-		-- Show a message containing the effect and spell/enchantment/alchemy names to the player.
-		tes3.messageBox("Effect '%s' from '%s' has been removed.", effectName, sourceName)
+		tes3.messageBox("Effect '%s' from '%s' was removed.", effectName, sourceName)
 	end
 	event.register(tes3.event.magicEffectRemoved, onMagicEffectRemoved)
 
 	```
+
+
+## Related events
+
+[magicEffectActivated](./magicEffectActivated.md){ .md-button }[magicEffectAdded](./magicEffectAdded.md){ .md-button }[magicEffectDeactivated](./magicEffectDeactivated.md){ .md-button }[spellTick](./spellTick.md){ .md-button }
 
