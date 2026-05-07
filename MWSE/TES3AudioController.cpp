@@ -1,6 +1,7 @@
 
 #include "TES3AudioController.h"
 
+#include "TES3Sound.h"
 #include "TES3WorldController.h"
 
 #include "LuaManager.h"
@@ -60,6 +61,14 @@ namespace TES3 {
 	const auto TES3_AudioController_setSoundBufferMinMaxDistance = reinterpret_cast<int(__thiscall*)(AudioController*, SoundBuffer*, float, float)>(0x402AC0);
 	int AudioController::setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance) {
 		return TES3_AudioController_setSoundBufferMinMaxDistance(this, soundBuffer, minDistance, maxDistance);
+	}
+
+	void AudioController::stopSoundBuffer(const SoundBuffer* buffer) const {
+		if (!buffer || !buffer->lpSoundBuffer) {
+			return;
+		}
+
+		buffer->lpSoundBuffer->Stop();
 	}
 
 	bool AudioController::getAudioFlag(AudioFlag::Flag flag) const {

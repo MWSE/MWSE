@@ -437,6 +437,25 @@ namespace mwse::patch::voice {
 		genJumpUnprotected(0x4027E0, reinterpret_cast<DWORD>(&releaseSoundBuffer_replacement));
 		genJumpUnprotected(0x402B50, reinterpret_cast<DWORD>(&setSoundBufferPosition_replacement));
 
+		// Patch: Replace the calls to stopSoundBuffer to guard against potential nullptr error on lpSoundBuffer.
+		auto AudioController_stopSoundBuffer = &TES3::AudioController::stopSoundBuffer;
+		genCallEnforced(0x48B72B, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48B753, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48BA2E, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48BA66, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48C121, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48C257, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48C8BD, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48C985, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48CCB0, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48CCD4, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x48CCED, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x510551, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x510A19, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x510BE9, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x51760E, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+		genCallEnforced(0x518460, 0x402980, *reinterpret_cast<DWORD*>(&AudioController_stopSoundBuffer));
+
 		g_running.store(true, std::memory_order_release);
 		g_worker = std::thread(&workerLoop);
 		mwse::windows::SetThreadDescription(g_worker.native_handle(), L"MWSEVoiceDecoder");

@@ -104,6 +104,8 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		void stopSoundBuffer(const SoundBuffer* buffer) const;
+
 		bool getAudioFlag(AudioFlag::Flag flag) const;
 		void setAudioFlag(AudioFlag::Flag flag, bool set);
 		bool getHasStaticBuffers() const;
