@@ -21,6 +21,10 @@
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONY 0x5E1D00
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONZ 0x5E1D40
 #define SE_NI_MATRIX33_FNADDR_TRANSPOSE 0x5E23E0
+// Despite the macro name (kept for migration-compat), this points at
+// NiQuaternion::ToRotation (quat->matrix). Engine signature is
+// (const Quaternion* this, Matrix33* rotation), NOT (Matrix33*, Quaternion*).
+#define SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION 0x5F3F80
 
 // NI::Quaternion
 #define SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS 0x5F3E80
@@ -106,12 +110,23 @@
 
 // NI::AnimationKey global table (CS.exe address not yet known)
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0
+// __cdecl key-data-size helpers (NiFloatKey_static / NiPosKey_static GetDataSize)
+#define SE_NI_FLOATDATA_FNADDR_GETKEYSIZE 0x61C950
+#define SE_NI_POSDATA_FNADDR_GETKEYSIZE 0x61C920
 
-// NI::BillboardNode vTable (CS.exe address not yet known)
+// NI::BillboardNode (vTable CS.exe address not yet known)
 #define SE_NI_BILLBOARDNODE_VTBL 0x0
+#define SE_NI_BILLBOARDNODE_FNADDR_ROTATETOCAMERA 0x5C39F0
 
-// NI::BSParticleNode vTable (CS.exe address not yet known)
+// NI::BSAnimationNode / BSParticleNode (BSParticleNode VTBL not yet known)
+#define SE_NI_BSANIMATIONNODE_FNADDR_CTOR 0x5EBF90
 #define SE_NI_BSPARTICLENODE_VTBL 0x0
+
+// NI::TextureEffect
+#define SE_NI_TEXTUREEFFECT_FNADDR_CTOR 0x5D5050
+
+// NI::RTTI
+#define SE_NI_RTTI_ctor 0x5E9F90
 
 // NI::CollisionGroup engine fns (CS.exe addresses not yet known)
 // NiCollisionGroup is absent from TESConstructionSet.exe — the editor
@@ -251,6 +266,11 @@
 #define SE_NI_CAMERA_FNADDR_CLICK 0x5BABA0
 #define SE_NI_CAMERA_FNADDR_CTOR 0x5BA5F0
 #define SE_NI_CAMERA_FNADDR_DTOR 0x5BA900
+// LookAtWorldPoint CS counterpart not yet located (MW size 0x3DA didn't
+// match cleanly in the 0x5BA-0x5BD Camera cluster — possibly inlined or
+// renamed in the editor build).
+#define SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT 0x0
+#define SE_NI_CAMERA_FNADDR_SWAPBUFFERS 0x5BAD20
 #define SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY 0x5BC680
 #define SE_NI_CAMERA_FNADDR_WORLDPOINTTOSCREENPOINT 0x5BB870
 

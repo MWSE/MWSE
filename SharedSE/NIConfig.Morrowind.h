@@ -21,6 +21,10 @@
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONY 0x6E7D60
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONZ 0x6E7DA0
 #define SE_NI_MATRIX33_FNADDR_TRANSPOSE 0x6E8420
+// Despite the macro name (kept for migration-compat), this points at
+// NiQuaternion::ToRotation (quat->matrix). Engine signature is
+// (const Quaternion* this, Matrix33* rotation), NOT (Matrix33*, Quaternion*).
+#define SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION 0x6FBEF0
 
 // NI::Quaternion
 #define SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS 0x6FBDF0
@@ -109,12 +113,23 @@
 
 // NI::AnimationKey global table (FillDerivedValuesFunctions)
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x7DF868
+// __cdecl key-data-size helpers (NiFloatKey_static / NiPosKey_static GetDataSize)
+#define SE_NI_FLOATDATA_FNADDR_GETKEYSIZE 0x723A20
+#define SE_NI_POSDATA_FNADDR_GETKEYSIZE 0x7239F0
 
-// NI::BillboardNode vTable
+// NI::BillboardNode
 #define SE_NI_BILLBOARDNODE_VTBL 0x746B00
+#define SE_NI_BILLBOARDNODE_FNADDR_ROTATETOCAMERA 0x6D3C00
 
-// NI::BSParticleNode vTable
+// NI::BSAnimationNode / BSParticleNode
+#define SE_NI_BSANIMATIONNODE_FNADDR_CTOR 0x6F1AC0
 #define SE_NI_BSPARTICLENODE_VTBL 0x750D68
+
+// NI::TextureEffect
+#define SE_NI_TEXTUREEFFECT_FNADDR_CTOR 0x6E3620
+
+// NI::RTTI
+#define SE_NI_RTTI_ctor 0x6F9850
 
 // NI::CollisionGroup engine fns
 #define SE_NI_COLLISIONGROUP_FNADDR_CONTAINSCOLLIDER 0x6FD800

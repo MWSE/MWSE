@@ -36,8 +36,10 @@ namespace NI {
 
 	Matrix33::Matrix33(const Quaternion& quaternion) {
 #if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
-		const auto NI_Matrix33_ctor_fromQuaternion = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, const Quaternion*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
-		return NI_Matrix33_ctor_fromQuaternion(this, &quaternion);
+		// Engine fn is NiQuaternion::ToRotation(const Quaternion* this, Matrix33* rotation):
+		// reads quat fields from `this` (ecx), writes matrix elements to first stack arg.
+		const auto NI_Quaternion_toRotation = reinterpret_cast<void(__thiscall*)(const Quaternion*, Matrix33*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
+		NI_Quaternion_toRotation(&quaternion, this);
 #else
 		throw not_implemented_exception();
 #endif
@@ -45,8 +47,8 @@ namespace NI {
 
 	void Matrix33::fromQuaternion(const Quaternion* quaternion) {
 #if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
-		const auto NI_Matrix33_ctor_fromQuaternion = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, const Quaternion*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
-		NI_Matrix33_ctor_fromQuaternion(this, quaternion);
+		const auto NI_Quaternion_toRotation = reinterpret_cast<void(__thiscall*)(const Quaternion*, Matrix33*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
+		NI_Quaternion_toRotation(quaternion, this);
 #else
 		throw not_implemented_exception();
 #endif
