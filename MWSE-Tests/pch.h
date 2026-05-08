@@ -20,9 +20,9 @@
 // fails to compile. Tests use the same Morrowind.exe addresses as MWSE.dll.
 #define SE_MEMORY_FNADDR_NEW 0x727692
 #define SE_MEMORY_FNADDR_DELETE 0x727530
-#define SE_MEMORY_FNADDR_MALLOC 0x0
-#define SE_MEMORY_FNADDR_FREE 0x0
-#define SE_MEMORY_FNADDR_REALLOC 0x0
+#define SE_MEMORY_FNADDR_MALLOC 0x727738
+#define SE_MEMORY_FNADDR_FREE 0x727732
+#define SE_MEMORY_FNADDR_REALLOC 0x746288
 
 #include <list>
 
