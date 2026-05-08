@@ -36,10 +36,15 @@
 #define SE_NI_QUATERNION_FNADDR_SLERP 0x5F3880
 #define SE_NI_QUATERNION_FNADDR_TOANGLEAXIS 0x5F3EB0
 
-// NI::Object
+// NI::Object — CS names this NI::RefObject; same class semantically.
+// Sizes match MW NiObject::ctor (0x23) / dtor (0x14) exactly. The migration
+// previously had CTOR/DTOR pointing at NiObjectNET's larger versions
+// (0x5B27B0 / 0x5B2860, sizes 0x87 / 0xc7) — calling them on a bare
+// NI::Object allocation (only 8 bytes: vtbl + refcount) would have written
+// past its end and corrupted heap memory.
 #define SE_NI_OBJECT_FNADDR_CREATECLONE 0x5DCC70
-#define SE_NI_OBJECT_FNADDR_CTOR 0x5B27B0
-#define SE_NI_OBJECT_FNADDR_DTOR 0x5B2860
+#define SE_NI_OBJECT_FNADDR_CTOR 0x5DCC00
+#define SE_NI_OBJECT_FNADDR_DTOR 0x5DCC50
 #define SE_NI_OBJECT_FNADDR_RELEASE 0x40A710
 #define SE_NI_OBJECT_FNADDR_REGISTERSTREAMABLES 0x5DCF70
 
