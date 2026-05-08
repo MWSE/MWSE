@@ -76,11 +76,11 @@
 
 // NI::Particles (CS.exe addresses not yet known)
 #define SE_NI_PARTICLES_VTBL 0x0
-#define SE_NI_PARTICLESDATA_FNADDR_CTOR 0x0
+#define SE_NI_PARTICLESDATA_FNADDR_CTOR 0x5C17F0
 
 // NI::AutoNormalParticles (CS.exe addresses not yet known)
 #define SE_NI_AUTONORMALPARTICLES_VTBL 0x0
-#define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x0
+#define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x5C2C50
 
 // NI::PointLight vTable address (CS.exe address not yet known)
 #define SE_NI_POINTLIGHT_VTBL 0x0
@@ -99,7 +99,7 @@
 #define SE_NI_PIXELFORMAT_FNADDR_GETD3DFORMAT 0x594B10
 
 // NI::Sequence (CS.exe address not yet known)
-#define SE_NI_SEQUENCE_FNADDR_DTOR 0x0
+#define SE_NI_SEQUENCE_FNADDR_DTOR 0x605C20
 
 // NI::TimeController vTable template (CS.exe address not yet known)
 #define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x0
@@ -123,8 +123,8 @@
 #define SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDER 0x0
 
 // NI::SourceTexture engine fns + global (CS.exe addresses not yet known)
-#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPATH 0x0
-#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x0
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPATH 0x5CFAD0
+#define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x5CFC20
 #define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x0
 
 // NI::UVController engine fn (CS.exe address not yet known)
@@ -156,6 +156,9 @@
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x6083B0
 
 // NI light-radius test (CS.exe address not yet known)
+// LightRadiusTest is a Morrowind-runtime helper (game_dynamicLightTestHelper)
+// called only from game_dynamicLightTest. CS has no game-runtime light culling
+// path — verified by string search ("dynamicLight" / "lightRadius" → 0 hits).
 #define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 
 // NI::DynamicEffect
@@ -186,6 +189,10 @@
 #define SE_NI_STENCILPROPERTY_VTBL 0x0
 
 // NI::TexturingProperty::Map
+// CS inlines NiTexturingProperty::Map ctors directly into the parent
+// TexturingProperty ctor / Clone / CreateFromStream paths (e.g. sub_5D3150
+// at 0x5D31D0-0x5D3236). No standalone Map ctor functions exist; vtable
+// 0x67A7F4 / off_6758A8 is written inline. Both stay 0x0.
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTOR 0x0
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS 0x0
 
@@ -222,7 +229,7 @@
 
 // NI::PixelData
 // CS.exe addresses not yet known.
-#define SE_NI_PIXELDATA_FNADDR_CTOR_ARGS 0x0
+#define SE_NI_PIXELDATA_FNADDR_CTOR_ARGS 0x5C5120
 #define SE_NI_PIXELFORMAT_GLOBADDR_RGBA32 0x0
 
 // NI::StringExtraData
