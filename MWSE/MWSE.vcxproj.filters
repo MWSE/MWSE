@@ -1182,13 +1182,10 @@
     <ClInclude Include="NIDX8Renderer.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NITriBasedGeometry.h">
+    <ClInclude Include="NIConfig.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NITriBasedGeometryData.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NITriShapeData.h">
+    <ClInclude Include="NIRTTIDefines.h">
       <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaObjectInvalidatedEvent.h">
@@ -2337,6 +2334,9 @@
       <Filter>Source Files\Lua</Filter>
     </ClCompile>
     <ClCompile Include="MemoryUtil.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedSE\MemoryUtil.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="TES3ApparatusLua.cpp">
@@ -3656,7 +3656,7 @@
     <ClCompile Include="LuaKeyframesLoadedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NiLines.cpp">
+    <ClCompile Include="..\SharedSE\NILines.cpp">
       <Filter>Source Files\DataAdapters\NI</Filter>
     </ClCompile>
     <ClCompile Include="NiLinesLua.cpp">

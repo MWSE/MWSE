@@ -226,9 +226,6 @@
     <ClInclude Include="NISkinInstanceLua.h" />
     <ClInclude Include="NITextureEffectLua.h" />
     <ClInclude Include="NITextureLua.h" />
-    <ClInclude Include="NITriBasedGeometry.h" />
-    <ClInclude Include="NITriBasedGeometryData.h" />
-    <ClInclude Include="NITriShapeData.h" />
     <ClInclude Include="LuaPotionBrewFailedEvent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TES3ActorAnimationControllerLua.h" />
