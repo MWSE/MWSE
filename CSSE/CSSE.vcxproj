@@ -246,6 +246,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="framework.h" />
     <ClInclude Include="MetadataUtil.h" />
     <ClInclude Include="ModMetadata.h" />
+    <ClInclude Include="NIVirtualTableDefines.h" />
     <ClInclude Include="PathUtil.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />

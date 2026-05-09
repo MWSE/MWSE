@@ -111,7 +111,7 @@
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x605C20
 
 // NI::TimeController vTable template (CS.exe address not yet known)
-#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x0
+#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x751200
 
 // NI::AnimationKey global table (CS.exe address not yet known)
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0

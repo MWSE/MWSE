@@ -7,9 +7,13 @@ namespace NI {
 
 		Vector2();
 		Vector2(float x, float y);
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		Vector2(sol::table table);
+#endif
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		Vector2& operator=(const sol::table table);
+#endif
 
 		bool operator==(const Vector2& vector) const;
 		bool operator!=(const Vector2& vector) const;

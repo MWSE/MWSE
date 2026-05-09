@@ -29,6 +29,30 @@ namespace se::windows {
 	std::optional<std::wstring> GetThreadDescription(HANDLE thread);
 	bool SetThreadDescription(HANDLE thread, const std::wstring_view& description);
 
+	bool isKeyDown(int key);
+
+	inline bool isAltDown() {
+		return isKeyDown(VK_MENU);
+	}
+
+	inline bool isControlDown() {
+		return isKeyDown(VK_CONTROL);
+	}
+
+	inline bool isShiftDown() {
+		return isKeyDown(VK_SHIFT) || isKeyDown(VK_RSHIFT);
+	}
+
+	inline bool isLeftMouseDown() {
+		return isKeyDown(VK_LBUTTON);
+	}
+
+	inline bool isRightMouseDown() {
+		return isKeyDown(VK_RBUTTON);
+	}
+
+	std::filesystem::path getModulePath(HINSTANCE hInstance);
+
 	class DialogProcContext {
 	public:
 		DialogProcContext(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, DWORD originalAddress);

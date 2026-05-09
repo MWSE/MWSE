@@ -26,6 +26,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
@@ -119,6 +120,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CodePatchUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
@@ -135,7 +137,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8TextureData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIVector2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIVector3.cpp" />

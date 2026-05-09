@@ -707,9 +707,6 @@
     <ClCompile Include="TES3LoadScreenManager.cpp" />
     <ClCompile Include="TES3Lockpick.cpp" />
     <ClCompile Include="TES3MagicEffectController.cpp" />
-    <ClCompile Include="..\SharedSE\MemoryUtil.cpp">
-      <ObjectFileName>$(IntDir)SharedSE\</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="MemoryUtilLua.cpp" />
     <ClCompile Include="MgeVirtualMachine.cpp" />
     <ClCompile Include="MgeTes3Machine.cpp" />
@@ -727,7 +724,6 @@
     <ClCompile Include="NITimeControllerLua.cpp" />
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
-    <ClCompile Include="..\SharedSE\NIUtil.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
     <ClCompile Include="RngUtil.cpp" />
     <ClCompile Include="ScriptUtil.cpp" />

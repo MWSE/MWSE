@@ -682,22 +682,22 @@ namespace se::cs::dialog::render_window {
 					const auto scale = reference->getScale();
 					switch (refSnappingAxis) {
 					case SnappingAxis::POSITIVE_X:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.x) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.x) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_X:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.x) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.x) * scale;
 						break;
 					case SnappingAxis::POSITIVE_Y:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.y) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.y) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_Y:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.y) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.y) * scale;
 						break;
 					case SnappingAxis::POSITIVE_Z:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.z) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.z) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_Z:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.z) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.z) * scale;
 						break;
 					}
 

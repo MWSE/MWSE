@@ -24,16 +24,20 @@ namespace NI {
 
 	}
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	Vector2::Vector2(sol::table table) {
 		x = table.get_or("x", table.get_or(1, 0.0f));
 		y = table.get_or("y", table.get_or(2, 0.0f));
 	}
+#endif
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	Vector2& Vector2::operator=(const sol::table table) {
 		x = table.get_or("x", table.get_or(1, 0.0f));
 		y = table.get_or("y", table.get_or(2, 0.0f));
 		return *this;
 	}
+#endif
 
 	bool Vector2::operator==(const Vector2& vec3) const {
 		return x == vec3.x && y == vec3.y;

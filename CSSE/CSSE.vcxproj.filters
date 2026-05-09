@@ -475,6 +475,9 @@
     <ClInclude Include="DialogLayersWindow.h">
       <Filter>Header Files\UI\DialogClasses</Filter>
     </ClInclude>
+    <ClInclude Include="NIVirtualTableDefines.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
