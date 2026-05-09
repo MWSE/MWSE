@@ -51,7 +51,7 @@ namespace mwse {
 
 	float xContentListFiltered::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		TES3::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<TES3::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
+		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
 		long filter = mwse::Stack::getInstance().popLong();
 
 		// If we're not filtering, abandon ship.
@@ -100,7 +100,7 @@ namespace mwse {
 		long value = 0;
 		float weight = 0;
 		const char* name = NULL;
-		TES3::IteratedList<TES3::ItemStack*>::Node* next = NULL;
+		NI::IteratedList<TES3::ItemStack*>::Node* next = NULL;
 
 		// If we aren't given a node, get the first one.
 		if (node == NULL) {

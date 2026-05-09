@@ -2,16 +2,6 @@
 
 #include "NIMatrix33.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-
-// In MWSE context, NI::Transform IS TES3::Transform.
-#include "TES3Vectors.h"
-namespace NI {
-	using Transform = TES3::Transform;
-}
-
-#else
-
 namespace NI {
 	struct Transform {
 		Matrix33 rotation;
@@ -32,5 +22,3 @@ namespace NI {
 	};
 	static_assert(sizeof(Transform) == 0x34, "NI::Transform failed size validation");
 }
-
-#endif

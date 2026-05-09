@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 #include "NIDefines.h"
 #include "NIAmbientLight.h"
@@ -87,7 +87,7 @@ namespace TES3 {
 		void* resolutionModeStringsEnd; // 0x8C
 		void* resolutionModeStringsStorageEnd; // 0x90
 		void* showSceneGraphStruct; // 0x94
-		IteratedList<NI::ObjectNET*>* unknown_0x98; // IDA: pList_98 (TList*) — same shape, exact element type still unconfirmed.
+		NI::IteratedList<NI::ObjectNET*>* unknown_0x98; // IDA: pList_98 (TList*) — same shape, exact element type still unconfirmed.
 		NI::Pointer<NI::Node> worldRoot; // 0x9C
 		NI::Pointer<NI::Node> worldObjectRoot; // 0xA0
 		NI::Pointer<NI::Node> worldPickObjectRoot; // 0xA4

@@ -25,6 +25,12 @@
     <Filter Include="Header Files\Collections">
       <UniqueIdentifier>{6a7ca75a-f3f1-4bc3-afea-9cce16439533}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TES3">
+      <UniqueIdentifier>{ff494a05-00a0-4e7d-b661-bd77ca74c0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Collections">
+      <UniqueIdentifier>{dc2213a8-5f9a-4d9f-8933-eebad18bcffd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h">
@@ -207,9 +213,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
@@ -303,6 +306,33 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAmbientLight.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)BSAnimationManager.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8Renderer.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Deque.h">
+      <Filter>Header Files\Collections</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h">
+      <Filter>Header Files\Collections</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIVector3.cpp">
@@ -327,9 +357,6 @@
       <Filter>Source Files\NI</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsUtil.cpp">
@@ -485,10 +512,40 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8TextureData.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)StdString.cpp">
+      <Filter>Source Files\Collections</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix44.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector4.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector2.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
   </ItemGroup>

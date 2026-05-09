@@ -1,7 +1,8 @@
 #pragma once
 
-#include "NIAVObject.h"
 #include "NIDefines.h"
+#include "NIAVObject.h"
+#include "NITArray.h"
 
 namespace NI {
 	struct Node : AVObject {

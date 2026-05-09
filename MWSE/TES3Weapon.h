@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3Item.h"
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	namespace WeaponType {
@@ -42,7 +42,7 @@ namespace TES3 {
 	}
 
 	struct Weapon : Item {
-		IteratedList<TES3::BaseObject*> stolenList; // 0x30
+		NI::IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44
 		Script * script; // 0x48
 		char * model; // 0x4C

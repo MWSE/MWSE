@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3MobileObject.h"
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 
 namespace TES3 {
 	struct MobileProjectile_vTable : MobileObject_vTable {
@@ -22,7 +22,7 @@ namespace TES3 {
 		float attackSwing; // 0x8C
 		float initialSpeed; // 0x90
 		int unknown_0x94;
-		Vector3 velocity; // 0x98
+		NI::Vector3 velocity; // 0x98
 		float damage; // 0xA4
 		float animTime; // 0xA8
 
@@ -42,7 +42,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		Vector3 getProjectileVelocity() const;
+		NI::Vector3 getProjectileVelocity() const;
 		void setProjectileVelocity_lua(sol::stack_object value);
 
 	};

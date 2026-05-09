@@ -200,10 +200,10 @@ namespace OpenMW::LuaUtil
                 }
                 case ScalarType::Boolean:
                 {
-                    if (mwse::string::iequal(value, "true"))
+                    if (se::string::iequal(value, "true"))
                         return sol::make_object<bool>(lua, true);
 
-                    if (mwse::string::iequal(value, "false"))
+                    if (se::string::iequal(value, "false"))
                         return sol::make_object<bool>(lua, false);
 
                     nodeError(node, "Can not read a boolean value '" + value + "'");

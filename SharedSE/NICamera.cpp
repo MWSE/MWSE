@@ -124,7 +124,7 @@ namespace NI {
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	sol::optional<std::tuple<Vector3, Vector3>> Camera::windowPointToRay_lua(sol::stack_object luaPoint) {
-		TES3::Vector2 point;
+		NI::Vector2 point;
 		if (!mwse::lua::setVectorFromLua(point, luaPoint)) {
 			throw std::runtime_error("Could not convert parameter to tes3vector2.");
 		}
@@ -137,7 +137,7 @@ namespace NI {
 		return {};
 	}
 
-	sol::optional<TES3::Vector2> Camera::worldPointToScreenPoint_lua(sol::stack_object luaPosition) {
+	sol::optional<NI::Vector2> Camera::worldPointToScreenPoint_lua(sol::stack_object luaPosition) {
 		Vector3 position;
 		if (!mwse::lua::setVectorFromLua(position, luaPosition)) {
 			throw std::runtime_error("Could not convert parameter to tes3vector2.");
@@ -146,7 +146,7 @@ namespace NI {
 		float x, y;
 		if (worldPointToScreenPoint(&position, x, y)) {
 			auto worldController = TES3::WorldController::get();
-			return TES3::Vector2((x - 0.5f) * worldController->viewWidth, (y - 0.5f) * worldController->viewHeight);
+			return NI::Vector2((x - 0.5f) * worldController->viewWidth, (y - 0.5f) * worldController->viewHeight);
 		}
 		return {};
 	}

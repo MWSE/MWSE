@@ -163,12 +163,8 @@ namespace NI {
 		//
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// MWSE form takes an optional config table.
-		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua(sol::optional<sol::table>) const;
-#else
-		std::shared_ptr<TES3::BoundingBox> createBoundingBox_lua() const;
-#endif
+		std::shared_ptr<BoundingBox> createBoundingBox_lua(sol::optional<sol::table>) const;
 #endif
 
 		Transform getLocalTransform() const;

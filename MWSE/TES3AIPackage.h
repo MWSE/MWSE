@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 
 // Must be added to header files that declare Ni types that can be derived.
 #define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_AIPACKAGE(T) \
@@ -58,7 +58,7 @@ namespace TES3 {
 		char pad_0x19[2];
 		int distance; // 0x1C
 		int hourOfDay; // 0x20
-		Vector3 targetPosition; // 0x24
+		NI::Vector3 targetPosition; // 0x24
 		bool done; // 0x30
 		bool started; // 0x31
 		bool reset; // 0x32
@@ -113,15 +113,15 @@ namespace TES3 {
 
 	struct AIPackageTravel : AIPackage {
 		struct Config : AIPackageConfig {
-			Vector3 position; // 0x4
+			NI::Vector3 position; // 0x4
 			bool reset; // 0x10
 
 			Config();
 			~Config();
 		};
-		Vector3 destination; // 0x3C
+		NI::Vector3 destination; // 0x3C
 		int unknown_0x48;
-		Vector3 unknown_0x4C;
+		NI::Vector3 unknown_0x4C;
 		void * pathingData; // 0x58
 
 		AIPackageTravel() = delete;
@@ -149,7 +149,7 @@ namespace TES3 {
 			IdleNode() = delete;
 			~IdleNode() = delete;
 		};
-		Vector3 unknown_0x3C;
+		NI::Vector3 unknown_0x3C;
 		int unknown_0x48;
 		short unknown_0x4C;
 		signed char unknown_0x4E;
@@ -169,7 +169,7 @@ namespace TES3 {
 
 	struct AIPackageEscort : AIPackage {
 		struct Config : AIPackageConfig {
-			Vector3 destination; // 0x4
+			NI::Vector3 destination; // 0x4
 			unsigned char duration; // 0x10
 			Actor * actor; // 0x14;
 			Cell * cell; // 0x18
@@ -178,7 +178,7 @@ namespace TES3 {
 			Config();
 			~Config();
 		};
-		Vector3 destination; // 0x3C
+		NI::Vector3 destination; // 0x3C
 		int unknown_0x48;
 		int unknown_0x4C;
 
@@ -190,7 +190,7 @@ namespace TES3 {
 
 	struct AIPackageFollow : AIPackage {
 		struct Config : AIPackageConfig {
-			Vector3 destination; // 0x4
+			NI::Vector3 destination; // 0x4
 			unsigned char duration; // 0x10
 			Actor * actor; // 0x14;
 			Cell * cell; // 0x18
@@ -199,7 +199,7 @@ namespace TES3 {
 			Config();
 			~Config();
 		};
-		Vector3 destination; // 0x3C
+		NI::Vector3 destination; // 0x3C
 		int unknown_0x48;
 		unsigned char unknown_0x4C;
 		unsigned char unknown_0x4D;

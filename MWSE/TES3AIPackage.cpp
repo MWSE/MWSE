@@ -73,11 +73,11 @@ namespace TES3 {
 	}
 
 	void* AIPackageConfig::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 
 	void AIPackageConfig::operator delete(void* address) {
-		mwse::tes3::_delete(address);
+		se::memory::_delete(address);
 	}
 
 	AIPackageConfig::AIPackageConfig() {

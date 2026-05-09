@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TES3 {
+namespace se {
 	template <typename T>
 	class Deque {
 	public:

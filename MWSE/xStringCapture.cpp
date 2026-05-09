@@ -35,7 +35,7 @@ namespace mwse {
 					}
 
 					// Bring the match into string storage and push it back to mwscript.
-					mwseString& match = mwse::string::store::getOrCreate(regex_matches[i].str());
+					mwseString& match = se::string::store::getOrCreate(regex_matches[i].str());
 					mwse::Stack::getInstance().pushString(match);
 					matchesReturned++;
 				}

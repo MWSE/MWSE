@@ -22,7 +22,7 @@ namespace NI {
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	// Engine-state globals (Morrowind.exe). Direct address access avoids
-	// dragging mwse::ExternalGlobal into SharedSE.
+	// dragging se::memory::ExternalGlobal into SharedSE.
 	static inline Vector2& gPickDefaultTextureCoords() { return *reinterpret_cast<Vector2*>(0x7DED80); }
 	static inline PackedColor& gPickDefaultColor() { return *reinterpret_cast<PackedColor*>(0x7DE814); }
 

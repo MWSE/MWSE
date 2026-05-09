@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 
 #include "NIObject.h"
 
@@ -47,7 +47,7 @@ namespace TES3 {
 		
 		void fadeTo(float value, float duration, FaderCallback callback = nullptr);
 
-		void setColor(TES3::Vector3 color, bool alpha);
+		void setColor(NI::Vector3 color, bool alpha);
 		void updateMaterialProperty(float value);
 		void setTexture(const char* path);
 

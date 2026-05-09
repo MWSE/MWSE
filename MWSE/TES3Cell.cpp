@@ -33,7 +33,7 @@ namespace TES3 {
 
 	const auto TES3_Cell_constructor = reinterpret_cast<Cell*(__thiscall *)(Cell*)>(0x4DB500);
 	Cell * Cell::create() {
-		return TES3_Cell_constructor(mwse::tes3::_new<Cell>());
+		return TES3_Cell_constructor(se::memory::_new<Cell>());
 	}
 
 	const auto TES3_Cell_getFirstObjectOfType = reinterpret_cast<Reference*(__thiscall *)(const Cell*, int, unsigned char)>(0x4DBEF0);
@@ -66,8 +66,8 @@ namespace TES3 {
 		TES3_Cell_setName(this, name);
 	}
 
-	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, Vector2*, float, const char*)>(0x4E3730);
-	void Cell::addMapNote(Vector2* position, float unknown, const char* text) {
+	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, NI::Vector2*, float, const char*)>(0x4E3730);
+	void Cell::addMapNote(NI::Vector2* position, float unknown, const char* text) {
 		TES3_Cell_addMapNote(this, position, unknown, text);
 	}
 
@@ -337,7 +337,7 @@ namespace TES3 {
 		return conn;
 	}
 
-	Vector3 PathGrid::Node::getPosition() const {
+	NI::Vector3 PathGrid::Node::getPosition() const {
 		// Convert local position to world position.
 		const auto cell = parentGrid->parentCell;
 		const int cellX = 8192 * cell->getGridX(), cellY = 8192 * cell->getGridY();

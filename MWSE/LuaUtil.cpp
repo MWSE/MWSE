@@ -72,7 +72,7 @@
 #include "TES3Spell.h"
 #include "TES3Static.h"
 #include "TES3UIElement.h"
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 #include "TES3Weapon.h"
 #include "TES3Weather.h"
 #include "TES3WeatherAsh.h"
@@ -298,18 +298,18 @@ namespace mwse::lua {
 		return value;
 	}
 
-	sol::optional<TES3::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key) {
+	sol::optional<NI::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key) {
 		if (maybeParams) {
 			sol::table params = maybeParams.value();
 			sol::object maybeValue = params[key];
 			if (maybeValue.valid()) {
 				// Were we given a real vector?
-				if (maybeValue.is<TES3::Vector2>()) {
-					return maybeValue.as<TES3::Vector2>();
+				if (maybeValue.is<NI::Vector2>()) {
+					return maybeValue.as<NI::Vector2>();
 				}
 				// Were we given a vector3 for some reason?
-				else if (maybeValue.is<TES3::Vector3>()) {
-					return TES3::Vector2(maybeValue.as<TES3::Vector2&>().x, maybeValue.as<TES3::Vector2&>().y);
+				else if (maybeValue.is<NI::Vector3>()) {
+					return NI::Vector2(maybeValue.as<NI::Vector2&>().x, maybeValue.as<NI::Vector2&>().y);
 				}
 				// Were we given a table?
 				else if (maybeValue.get_type() == sol::type::table) {
@@ -321,18 +321,18 @@ namespace mwse::lua {
 		return {};
 	}
 
-	sol::optional<TES3::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key) {
+	sol::optional<NI::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key) {
 		if (maybeParams) {
 			sol::table params = maybeParams.value();
 			sol::object maybeValue = params[key];
 			if (maybeValue.valid()) {
 				// Were we given a real vector?
-				if (maybeValue.is<TES3::Vector3*>()) {
-					return *maybeValue.as<TES3::Vector3*>();
+				if (maybeValue.is<NI::Vector3*>()) {
+					return *maybeValue.as<NI::Vector3*>();
 				}
 
 				// Were we given a table?
-				if (maybeValue.get_type() == sol::type::table && TES3::Vector3::canConvertFrom(maybeValue.as<sol::table>())) {
+				if (maybeValue.get_type() == sol::type::table && NI::Vector3::canConvertFrom(maybeValue.as<sol::table>())) {
 					return maybeValue.as<sol::table>();
 				}
 			}
@@ -455,10 +455,10 @@ namespace mwse::lua {
 		return TES3_UI_ID_NULL;
 	}
 
-	bool setVectorFromLua(TES3::Vector2& vector, sol::stack_object value) {
+	bool setVectorFromLua(NI::Vector2& vector, sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<TES3::Vector2>()) {
-			vector = value.as<TES3::Vector2&>();
+		if (value.is<NI::Vector2>()) {
+			vector = value.as<NI::Vector2&>();
 			return true;
 		}
 		// Allow a simple table to be provided.
@@ -470,10 +470,10 @@ namespace mwse::lua {
 		return false;
 	}
 
-	bool setVectorFromLua(TES3::Vector3& vector, sol::stack_object value) {
+	bool setVectorFromLua(NI::Vector3& vector, sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<TES3::Vector3*>()) {
-			vector = value.as<TES3::Vector3&>();
+		if (value.is<NI::Vector3*>()) {
+			vector = value.as<NI::Vector3&>();
 			return true;
 		}
 		// Allow a simple table to be provided.

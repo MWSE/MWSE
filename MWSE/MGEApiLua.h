@@ -3,7 +3,7 @@
 #include "MGEApi.h"
 #include "MGEPostShaders.h"
 
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 
 namespace mge::lua {
 	class CoreInterface {
@@ -29,7 +29,7 @@ namespace mge::lua {
 	public:
 		static float getFoV();
 		static void setFoV(float fov);
-		static TES3::Vector3 getThirdPersonOffset();
+		static NI::Vector3 getThirdPersonOffset();
 		static void setThirdPersonOffset(sol::stack_object param);
 		static bool getZoomEnabled();
 		static void setZoomEnabled(bool value);

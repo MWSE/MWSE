@@ -23,7 +23,7 @@ namespace TES3 {
 	}
 
 	struct MapNote {
-		Vector3 position; // 0x0
+		NI::Vector3 position; // 0x0
 		char * text; // 0xC
 
 		MapNote() = delete;
@@ -36,7 +36,7 @@ namespace TES3 {
 			int relativeX;
 			int relativeY;
 			int relativeZ;
-			IteratedList<Node**>* connectedNodes; // 0xC
+			NI::IteratedList<Node**>* connectedNodes; // 0xC
 			PathGrid* parentGrid; // 0x10
 			unsigned char connectedCount; // 0x14
 			NI::Pointer<NI::Node> debugNode; // 0x18
@@ -45,7 +45,7 @@ namespace TES3 {
 			~Node() = delete;
 
 			sol::object getConnectedNodes_lua(sol::this_state ts) const;
-			Vector3 getPosition() const;
+			NI::Vector3 getPosition() const;
 		};
 
 		NI::Pointer<NI::Node> sceneNode; // 0x10
@@ -56,7 +56,7 @@ namespace TES3 {
 		Cell* parentCell; // 0x18
 		short granularity; // 0x1C
 		unsigned short nodeCount; // 0x1E
-		IteratedList<Node*> nodes; // 0x20
+		NI::IteratedList<Node*> nodes; // 0x20
 		unsigned int fileOffset; // 0x34
 		bool isLoaded;
 
@@ -129,14 +129,14 @@ namespace TES3 {
 		NI::Node * staticObjectsRoot; // 0x2C
 		ReferenceList actors; // 0x30
 		ReferenceList persistentRefs; // 0x40
-		IteratedList<MovedRef*> * movedReferences; // 0x50
-		IteratedList<unsigned int*> * moveRefSourceIDs; // 0x54
+		NI::IteratedList<MovedRef*> * movedReferences; // 0x50
+		NI::IteratedList<unsigned int*> * moveRefSourceIDs; // 0x54
 		ReferenceList temporaryRefs; // 0x58
-		IteratedList<SourceMod*> allSourceMods; // 0x68
+		NI::IteratedList<SourceMod*> allSourceMods; // 0x68
 		void * fogOfWarData;
 		GameFile * lastModifyingFile;
 		MappingVisuals * mappingVisuals;
-		IteratedList<MapNote*> * mapNotes; // 0x88
+		NI::IteratedList<MapNote*> * mapNotes; // 0x88
 		PathGrid * pathGrid; // 0x8C
 		union {
 			float waterLevel;
@@ -161,7 +161,7 @@ namespace TES3 {
 
 		void setName(const char* name);
 
-		void addMapNote(Vector2* position, float unknown, const char* text);
+		void addMapNote(NI::Vector2* position, float unknown, const char* text);
 
 		void addReference(Reference* reference);
 		void insertReference(Reference* reference);

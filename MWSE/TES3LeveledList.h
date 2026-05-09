@@ -33,7 +33,7 @@ namespace TES3 {
 
 	struct LeveledCreature : PhysicalObject {
 		ActorAnimationController * animationController; // 0x30 // Why?
-		IteratedList<LeveledListNode*> * itemList; // 0x34
+		NI::IteratedList<LeveledListNode*> * itemList; // 0x34
 		int itemCount; // 0x38
 		unsigned int flags; // 0x3C
 		signed char chanceForNothing; // 0x40
@@ -64,7 +64,7 @@ namespace TES3 {
 	static_assert(sizeof(LeveledCreature) == 0x44, "TES3::LeveledCreature failed size validation");
 
 	struct LeveledItem : PhysicalObject {
-		IteratedList<LeveledListNode*> * itemList; // 0x30
+		NI::IteratedList<LeveledListNode*> * itemList; // 0x30
 		int itemCount; // 0x34
 		unsigned int flags; // 0x38
 		signed char chanceForNothing; // 0x3C

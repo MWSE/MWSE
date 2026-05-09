@@ -3,7 +3,15 @@
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
 
+#include "NIQuaternion.h"
+
 namespace NI {
+	const Matrix33 Matrix33::IDENTITY = {
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
 	Matrix33::Matrix33() : m0(), m1(), m2() {
 
 	}
@@ -36,8 +44,6 @@ namespace NI {
 
 	Matrix33::Matrix33(const Quaternion& quaternion) {
 #if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
-		// Engine fn is NiQuaternion::ToRotation(const Quaternion* this, Matrix33* rotation):
-		// reads quat fields from `this` (ecx), writes matrix elements to first stack arg.
 		const auto NI_Quaternion_toRotation = reinterpret_cast<void(__thiscall*)(const Quaternion*, Matrix33*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
 		NI_Quaternion_toRotation(&quaternion, this);
 #else
@@ -369,9 +375,40 @@ namespace NI {
 	}
 #endif
 
-	NI::Quaternion Matrix33::toQuaternion() {
+	NI::Quaternion Matrix33::toQuaternion() const {
 		NI::Quaternion result;
 		result.fromRotation(this);
 		return result;
+	}
+
+	Vector3 Matrix33::getForwardVector() {
+		return Vector3(m0.y, m1.y, m2.y);
+	}
+
+	Vector3 Matrix33::getRightVector() {
+		return Vector3(m0.x, m1.x, m2.x);
+	}
+
+	Vector3 Matrix33::getUpVector() {
+		return Vector3(m0.z, m1.z, m2.z);
+	}
+
+	void Matrix33::lookAt(const Vector3& direction, const Vector3& worldUp) {
+		const auto forward = direction.normalized();
+		auto left = worldUp.crossProduct(&forward);
+		if (left.dotProduct(&left) < se::math::M_NORMALIZE_EPSILON) {
+			left = forward.crossProduct(&Vector3::UNIT_NEG_Y);
+		}
+		left.normalize();
+		const auto up = forward.crossProduct(&left);
+		m0.x = -left.x;
+		m1.x = -left.y;
+		m2.x = -left.z;
+		m0.y = forward.x;
+		m1.y = forward.y;
+		m2.y = forward.z;
+		m0.z = up.x;
+		m1.z = up.y;
+		m2.z = up.z;
 	}
 }

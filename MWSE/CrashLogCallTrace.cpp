@@ -82,7 +82,7 @@ namespace CrashLogger::Thread {
 	std::stringstream output;
 
 	static std::string GetThreadName() {
-		auto name = mwse::windows::GetThreadDescription(GetCurrentThread());
+		auto name = se::windows::GetThreadDescription(GetCurrentThread());
 		if (!name.has_value()) {
 			name = L"<unsupported>";
 		}
@@ -90,7 +90,7 @@ namespace CrashLogger::Thread {
 			name = L"<unknown>";
 		}
 
-		return mwse::string::from_wstring(name.value());
+		return se::string::from_wstring(name.value());
 	}
 
 	extern void Process(EXCEPTION_POINTERS* info) {
@@ -339,7 +339,7 @@ namespace CrashLogger::Mods {
 			for (const auto gameFile : activeMods) {
 				if (!gameFile) break;
 				const auto filename = gameFile->getFilename();
-				const auto author = mwse::string::trim_copy(gameFile->getAuthor());
+				const auto author = se::string::trim_copy(gameFile->getAuthor());
 				const auto size = gameFile->getFileSize();
 				output << fmt::format("{:<{}} | {:<{}} | {} bytes\n", filename, filenameLength, author, authorLength, size);
 			}

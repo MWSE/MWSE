@@ -253,7 +253,7 @@ namespace TES3 {
 		return BASE_DISTANCE + listFriendlyActors.size() * EXTENSION_PER_FRIENDLY;
 	}
 
-	static Vector3 lastPlayerPosition;
+	static NI::Vector3 lastPlayerPosition;
 	static int cameraResetFrames = 0;
 
 	const auto TES3_MobilePlayer_updateScenegraph = reinterpret_cast<void(__thiscall*)(MobilePlayer*)>(0x5679E0);
@@ -266,10 +266,10 @@ namespace TES3 {
 		TES3_MobilePlayer_updateScenegraph(this);
 
 		if (mwse::lua::event::CameraControlEvent::getEventEnabled()) {
-			Transform cameraTransform = cameraRootNode->getTransforms();
-			Transform armCameraTransform = armCameraRootNode->getTransforms();
-			Transform prevCameraTransform = PlayerAnimationController::previousCameraTransform;
-			Transform prevArmCameraTransform = PlayerAnimationController::previousArmCameraTransform;
+			NI::Transform cameraTransform = cameraRootNode->getTransforms();
+			NI::Transform armCameraTransform = armCameraRootNode->getTransforms();
+			NI::Transform prevCameraTransform = PlayerAnimationController::previousCameraTransform;
+			NI::Transform prevArmCameraTransform = PlayerAnimationController::previousArmCameraTransform;
 
 			// Copy current transform over previous if the player teleported a significant distance.
 			// This minimizes glitches on cell changes and other teleport situations.

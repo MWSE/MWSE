@@ -1,7 +1,19 @@
 #include "NIVector3.h"
 
+#include "NIColor.h"
+#include "NIMatrix33.h"
+
 namespace NI {
-	const Vector3 Vector3::DirectionDown = { 0.0f, 0.0f, -1.0f };
+	const Vector3 Vector3::UNIT_X = { 1.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::UNIT_NEG_X = { -1.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::UNIT_Y = { 0.0f, 1.0f, 0.0f };
+	const Vector3 Vector3::UNIT_NEG_Y = { 0.0f, -1.0f, 0.0f };
+	const Vector3 Vector3::UNIT_Z = { 0.0f, 0.0f, 1.0f };
+	const Vector3 Vector3::UNIT_NEG_Z = { 0.0f, 0.0f, -1.0f };
+	const Vector3 Vector3::ONES = { 1.0f, 1.0f, 1.0f };
+	const Vector3 Vector3::ZEROES = { 0.0f, 0.0f, 0.0f };
+	const Vector3 Vector3::MIN = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	const Vector3 Vector3::MAX = { FLT_MAX, FLT_MAX, FLT_MAX };
 
 	Vector3::Vector3() :
 		x(0.0f),
@@ -86,12 +98,20 @@ namespace NI {
 		return Vector3(x + vec3.x, y + vec3.y, z + vec3.z);
 	}
 
+	Vector3 Vector3::operator+(const float value) const {
+		return Vector3(x + value, y + value, z + value);
+	}
+
 	Vector3 Vector3::operator-() const {
 		return Vector3(-x, -y, -z);
 	}
 
 	Vector3 Vector3::operator-(const Vector3& vec3) const {
 		return Vector3(x - vec3.x, y - vec3.y, z - vec3.z);
+	}
+
+	Vector3 Vector3::operator-(const float value) const {
+		return Vector3(x - value, y - value, z - value);
 	}
 
 	Vector3 Vector3::operator*(const Vector3& vec3) const {
@@ -131,6 +151,14 @@ namespace NI {
 		return NI::Color(x, y, z);
 	}
 
+	Vector3 Vector3::min(const Vector3& other) const {
+		return Vector3(std::min(x, other.x), std::min(y, other.y), std::min(z, other.z));
+	}
+
+	Vector3 Vector3::max(const Vector3& other) const {
+		return Vector3(std::max(x, other.x), std::max(y, other.y), std::max(z, other.z));
+	}
+
 	Vector3 Vector3::crossProduct(const Vector3* vec3) const {
 		return Vector3(y * vec3->z - z * vec3->y, z * vec3->x - vec3->z * x, x * vec3->y - y * vec3->x);
 	}
@@ -138,6 +166,15 @@ namespace NI {
 	float Vector3::dotProduct(const Vector3* vec3) const {
 		return vec3->z * z + vec3->y * y + vec3->x * x;
 	}
+
+	Matrix33 Vector3::outerProduct(const Vector3* vec3) const {
+		return Matrix33(
+			(x * vec3->x), (y * vec3->x), (z * vec3->x),
+			(x * vec3->y), (y * vec3->y), (z * vec3->y),
+			(x * vec3->z), (y * vec3->z), (z * vec3->z)
+		);
+	}
+
 
 	Vector3 Vector3::lerp(const Vector3& to, float transition) const {
 		auto transA = 1.0f - transition;
@@ -153,6 +190,26 @@ namespace NI {
 		float dy = y - vec3->y;
 		float dz = z - vec3->z;
 		return sqrt(dz * dz + dx * dx + dy * dy);
+	}
+
+	float Vector3::distanceChebyshev(const Vector3* vec3) const {
+		float dx = fabs(x - vec3->x);
+		float dy = fabs(y - vec3->y);
+		float dz = fabs(z - vec3->z);
+		return std::max(std::max(dx, dy), dz);
+	}
+
+	float Vector3::distanceManhattan(const Vector3* vec3) const {
+		float dx = fabs(x - vec3->x);
+		float dy = fabs(y - vec3->y);
+		float dz = fabs(z - vec3->z);
+		return dx + dy + dz;
+	}
+
+	float Vector3::distanceXY(const Vector3* vec3) const {
+		float dx = x - vec3->x;
+		float dy = y - vec3->y;
+		return sqrt(dx * dx + dy * dy);
 	}
 
 	float Vector3::angle(const Vector3* v) const {
@@ -196,4 +253,16 @@ namespace NI {
 		}
 		return Vector3();
 	}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	bool Vector3::canConvertFrom(sol::table& table) {
+		sol::optional<float> x = table["x"];
+		if (!x) x = table[1];
+		sol::optional<float> y = table["y"];
+		if (!y) y = table[2];
+		sol::optional<float> z = table["z"];
+		if (!z) z = table[3];
+		return x && y && z;
+	}
+#endif
 }

@@ -358,27 +358,15 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua(sol::optional<sol::table> maybeParams) const {
+	std::shared_ptr<BoundingBox> AVObject::createBoundingBox_lua(sol::optional<sol::table> maybeParams) const {
 		auto accuratedSkinned = mwse::lua::getOptionalParam(maybeParams, "accurateSkinned", false);
 		auto observeAppCullFlag = mwse::lua::getOptionalParam(maybeParams, "observeAppCullFlag", false);
 		auto onlyActiveChildren = mwse::lua::getOptionalParam(maybeParams, "onlyActiveChildren", false);
-		auto bb = std::make_shared<TES3::BoundingBox>();
+		auto bb = std::make_shared<BoundingBox>();
 		bb->initialize();
-		calculateBounds(bb->minimum, bb->maximum, TES3::Vector3::ZEROES, TES3::Matrix33::IDENTITY, 1.0, accuratedSkinned, observeAppCullFlag, onlyActiveChildren);
+		calculateBounds(bb->minimum, bb->maximum, NI::Vector3::ZEROES, NI::Matrix33::IDENTITY, 1.0, accuratedSkinned, observeAppCullFlag, onlyActiveChildren);
 		return bb;
 	}
-#else
-	std::shared_ptr<TES3::BoundingBox> AVObject::createBoundingBox_lua() const {
-		constexpr auto min = std::numeric_limits<float>::lowest();
-		constexpr auto max = std::numeric_limits<float>::max();
-		auto bb = std::make_shared<TES3::BoundingBox>(max, max, max, min, min, min);
-		float scale = localScale;
-		const auto NI_CreateBoundingBoxForNode = reinterpret_cast<void(__cdecl*)(const AVObject*, TES3::Vector3*, TES3::Vector3*, const TES3::Vector3*, const Matrix33*, const float*)>(0x4EF410);
-		NI_CreateBoundingBoxForNode(this, &bb->minimum, &bb->maximum, (const TES3::Vector3*)0x7DE6CC, (const Matrix33*)0x7DE664, &scale);
-		return bb;
-	}
-#endif
 #endif
 
 	Transform AVObject::getLocalTransform() const {
@@ -478,8 +466,8 @@ namespace NI {
 		if (source.is<AVObject*>()) {
 			copyTransforms(source.as<AVObject*>());
 		}
-		else if (source.is<TES3::Transform*>()) {
-			copyTransforms(source.as<TES3::Transform*>());
+		else if (source.is<NI::Transform*>()) {
+			copyTransforms(source.as<NI::Transform*>());
 		}
 		else {
 			throw std::invalid_argument("Invalid 'source' parameter provided");
@@ -759,9 +747,9 @@ namespace NI {
 
 #if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
 	// CSSE-only debug helper: vertex-vs-worldvertex sanity check. MWSE's
-	// TES3::Transform::operator*(Vector3) is non-const, conflicting with the
+	// NI::Transform::operator*(Vector3) is non-const, conflicting with the
 	// `const auto transform` deduction below; gating out of MWSE-mode avoids
-	// having to also fix TES3::Transform.
+	// having to also fix NI::Transform.
 	void __cdecl VerifyWorldVertices(const NI::AVObject* object) {
 #if _DEBUG
 		// Ignore collision-disabled subgraphs.

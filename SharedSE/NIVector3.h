@@ -1,24 +1,6 @@
 #pragma once
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-
-// In MWSE context, NI::Vector3 IS TES3::Vector3 — same memory layout, same engine
-// dispatch. The typedef bridge lets SharedSE NI consumers compile against MWSE's
-// TES3-typed call sites without per-site adaptation.
-#include "TES3Vectors.h"
-namespace NI {
-	using Vector3 = TES3::Vector3;
-}
-
-#else
-
-// CSSE/standalone struct definition references NI::Color for the
-// `Vector3(NI::Color& color)` ctor below. Pull in NIColor.h here (NOT at the
-// top of the file, to avoid a circular include with NIColor.h's own
-// `#include "NIVector3.h"` -- if NIVector3.h were parsed first, including
-// NIColor.h here would re-enter NIColor.h before the typedef bridge had a
-// chance to define NI::Vector3, breaking NIColor.h's own Vector3 references).
-#include "NIColor.h"
+#include "NIDefines.h"
 
 namespace NI {
 	struct Vector3 {
@@ -27,8 +9,6 @@ namespace NI {
 		float z; // 0x8
 
 		friend struct Matrix33;
-
-		static const NI::Vector3 DirectionDown;
 
 		Vector3();
 		Vector3(float x, float y, float z);
@@ -47,8 +27,10 @@ namespace NI {
 		bool operator==(const Vector3& vector) const;
 		bool operator!=(const Vector3& vector) const;
 		Vector3 operator+(const Vector3&) const;
+		Vector3 operator+(const float) const;
 		Vector3 operator-() const;
 		Vector3 operator-(const Vector3&) const;
+		Vector3 operator-(const float) const;
 		Vector3 operator*(const Vector3&) const;
 		Vector3 operator*(const float) const;
 		Vector3 operator/(const float) const;
@@ -64,12 +46,19 @@ namespace NI {
 		Vector3 copy() const;
 		NI::Color toNiColor() const;
 
+		Vector3 min(const Vector3& other) const;
+		Vector3 max(const Vector3& other) const;
+
 		Vector3 crossProduct(const Vector3*) const;
 		float dotProduct(const Vector3*) const;
+		Matrix33 outerProduct(const Vector3*) const;
 
 		Vector3 lerp(const Vector3& to, float transition) const;
 		float heightDifference(const Vector3*) const;
 		float distance(const Vector3*) const;
+		float distanceChebyshev(const Vector3*) const;
+		float distanceManhattan(const Vector3*) const;
+		float distanceXY(const Vector3*) const;
 		float angle(const Vector3*) const;
 		float length() const;
 		void negate();
@@ -77,8 +66,21 @@ namespace NI {
 		Vector3 normalized() const;
 		Vector3 interpolate(const Vector3&, const float) const;
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+		static bool canConvertFrom(sol::table& table);
+#endif
+
+		const static Vector3 UNIT_X;
+		const static Vector3 UNIT_NEG_X;
+		const static Vector3 UNIT_Y;
+		const static Vector3 UNIT_NEG_Y;
+		const static Vector3 UNIT_Z;
+		const static Vector3 UNIT_NEG_Z;
+		const static Vector3 ONES;
+		const static Vector3 ZEROES;
+		const static Vector3 MIN;
+		const static Vector3 MAX;
+
 	};
 	static_assert(sizeof(Vector3) == 0xC, "NI::Vector3 failed size validation");
 }
-
-#endif

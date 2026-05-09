@@ -2,6 +2,8 @@
 
 #include "TES3Game.h"
 
+#include "NIVector4.h"
+
 #include "LuaUtil.h"
 
 namespace mge::lua {
@@ -82,14 +84,14 @@ namespace mge::lua {
 		api->cameraSetFoV(fov);
 	}
 
-	TES3::Vector3 CameraConfig::getThirdPersonOffset() {
-		TES3::Vector3 offset;
+	NI::Vector3 CameraConfig::getThirdPersonOffset() {
+		NI::Vector3 offset;
 		api->cameraThirdPersonGetOffset(&offset.x);
 		return offset;
 	}
 
 	void CameraConfig::setThirdPersonOffset(sol::stack_object param) {
-		TES3::Vector3 offset;
+		NI::Vector3 offset;
 		if (!mwse::lua::setVectorFromLua(offset, param)) {
 			throw std::invalid_argument("Provided argument is not convertable to a vector3.");
 		}
@@ -281,7 +283,7 @@ namespace mge::lua {
 		auto skylight_mix = mwse::lua::getOptionalParam<float>(params, "mix", 0.44f);
 
 		if (skylight_scatter) {
-			TES3::Vector4 v(skylight_scatter.value().x, skylight_scatter.value().y, skylight_scatter.value().z, skylight_mix);
+			NI::Vector4 v(skylight_scatter.value().x, skylight_scatter.value().y, skylight_scatter.value().z, skylight_mix);
 			static_cast<MGEAPIv2*>(api)->weatherScatteringSkylightSet(&v.x);
 		}
 		else {

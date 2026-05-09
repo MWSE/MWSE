@@ -61,8 +61,8 @@ namespace TES3 {
 		TES3_Fader_fadeTo(this, value, duration, callback);
 	}
 
-	const auto TES3_Fader_setColor = reinterpret_cast<void(__thiscall*)(Fader*, TES3::Vector3, bool)>(0x40A230);
-	void Fader::setColor(TES3::Vector3 color, bool alpha) {
+	const auto TES3_Fader_setColor = reinterpret_cast<void(__thiscall*)(Fader*, NI::Vector3, bool)>(0x40A230);
+	void Fader::setColor(NI::Vector3 color, bool alpha) {
 		TES3_Fader_setColor(this, color, alpha);
 	}
 
@@ -106,7 +106,7 @@ namespace TES3 {
 	}
 
 	bool Fader::setColor_lua(sol::table params) {
-		sol::optional <TES3::Vector3> color = mwse::lua::getOptionalParamVector3(params, "color");
+		sol::optional <NI::Vector3> color = mwse::lua::getOptionalParamVector3(params, "color");
 		if (!color) {
 			return false;
 		}

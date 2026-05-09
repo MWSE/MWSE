@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIVector3.h"
 
 namespace TES3 {
 	struct AIPlanner {

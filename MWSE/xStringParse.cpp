@@ -31,11 +31,11 @@ namespace mwse {
 
 		int resultCount = 0;
 		bool eolMode = false;
-		mwse::string::enumerate(format.c_str(), resultCount, eolMode);
+		se::string::enumerate(format.c_str(), resultCount, eolMode);
 		resultCount++;
 
 		long* results = new long[resultCount];
-		mwse::string::secernate(format.c_str(), string.c_str(), results, resultCount);
+		se::string::secernate(format.c_str(), string.c_str(), results, resultCount);
 
 		while (resultCount--) {
 			mwse::Stack::getInstance().pushLong(results[resultCount]);

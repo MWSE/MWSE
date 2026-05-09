@@ -52,13 +52,13 @@ namespace TES3 {
 		return isDetected;
 	}
 
-	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, Vector3*, float, IteratedList<MobileActor*>*)>(0x5702B0);
-	void ProcessManager::findActorsInProximity(Vector3 * position, float range, IteratedList<MobileActor*>* outputList) {
+	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, NI::Vector3*, float, NI::IteratedList<MobileActor*>*)>(0x5702B0);
+	void ProcessManager::findActorsInProximity(NI::Vector3 * position, float range, NI::IteratedList<MobileActor*>* outputList) {
 		TES3_ProcessManager_findActorsInProximity(this, position, range, outputList);
 	}
 
-	const auto TES3_ProcessManager_checkAlarmRadius = reinterpret_cast<void(__thiscall*)(ProcessManager*, MobileActor*, IteratedList<AIPlanner*>*)>(0x5704B0);
-	void ProcessManager::checkAlarmRadius(MobileActor * actor, IteratedList<AIPlanner*> * container) {
+	const auto TES3_ProcessManager_checkAlarmRadius = reinterpret_cast<void(__thiscall*)(ProcessManager*, MobileActor*, NI::IteratedList<AIPlanner*>*)>(0x5704B0);
+	void ProcessManager::checkAlarmRadius(MobileActor * actor, NI::IteratedList<AIPlanner*> * container) {
 		TES3_ProcessManager_checkAlarmRadius(this, actor, container);
 	}
 
@@ -194,7 +194,7 @@ namespace TES3 {
 		TES3_MobManager_clampAllActors(this);
 	}
 
-	Vector3* MobManager::getGravity() {
+	NI::Vector3* MobManager::getGravity() {
 		return &gravity;
 	}
 
@@ -202,7 +202,7 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(gravity, value);
 	}
 
-	Vector3* MobManager::getTerminalVelocity() {
+	NI::Vector3* MobManager::getTerminalVelocity() {
 		return &terminalVelocity;
 	}
 
@@ -216,6 +216,6 @@ namespace TES3 {
 
 	void MobManager::setMaxClimbableSlope(float value) {
 		maxClimbableSlopeDegrees = value;
-		dotProductOfMaxClimbableSlope = cos(static_cast<float>(maxClimbableSlopeDegrees * mwse::math::M_PI / 180.0));
+		dotProductOfMaxClimbableSlope = cos(static_cast<float>(maxClimbableSlopeDegrees * se::math::M_PI / 180.0));
 	}
 }

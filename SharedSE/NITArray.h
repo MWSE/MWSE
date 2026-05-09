@@ -101,10 +101,10 @@ namespace NI {
 		constexpr const_iterator end() const noexcept { return &storage[storageCount]; }
 		constexpr const_iterator cend() const noexcept { return end(); }
 
-		constexpr reverse_iterator rbegin() noexcept { std::make_reverse_iterator(end()); }
+		constexpr reverse_iterator rbegin() noexcept { return std::make_reverse_iterator(end()); }
 		constexpr const_reverse_iterator rbegin() const noexcept { return std::make_reverse_iterator(end()); }
 		constexpr const_reverse_iterator crbegin() const noexcept { return std::make_reverse_iterator(end()); }
-		constexpr reverse_iterator rend() noexcept { std::make_reverse_iterator(begin()); }
+		constexpr reverse_iterator rend() noexcept { return std::make_reverse_iterator(begin()); }
 		constexpr const_reverse_iterator rend() const noexcept { return std::make_reverse_iterator(begin()); }
 		constexpr const_reverse_iterator crend() const noexcept { return std::make_reverse_iterator(begin()); }
 

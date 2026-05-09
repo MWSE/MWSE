@@ -37,8 +37,8 @@ namespace TES3 {
 			};
 			NI::Pointer<NI::Node> node; // 0x0
 			unsigned int flags; // 0x4
-			Vector3 translation; // 0x8
-			Matrix33 rotation; // 0x14
+			NI::Vector3 translation; // 0x8
+			NI::Matrix33 rotation; // 0x14
 
 			AttachNode() = delete;
 			~AttachNode() = delete;

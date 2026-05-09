@@ -3,14 +3,16 @@
 #include "TES3Defines.h"
 #include "NIDefines.h"
 
-#include "TES3Deque.h"
+#include "Deque.h"
 
 #include "NINode.h"
 
 namespace TES3 {
+	using se::Deque;
+
 	struct VFX {
 		Reference* target; // 0x0
-		Vector3 position; // 0x4
+		NI::Vector3 position; // 0x4
 		NI::AVObject* createdFromNode; // 0x10
 		float maxAge; // 0x14
 		float age; // 0x18
@@ -41,7 +43,7 @@ namespace TES3 {
 		float endKeyTime; // 0x10
 		float keyTime; // 0x14
 		float scale; // 0x18
-		Vector3 position; // 0x1C
+		NI::Vector3 position; // 0x1C
 		unsigned int sourceInstanceSerial; // 0x28
 		int vfxId; // 0x2C
 		char effectObjectId[32]; // 0x30
@@ -53,7 +55,7 @@ namespace TES3 {
 	static_assert(sizeof(VFXSerialized) == 0x98, "TES3::VFXSerialized failed size validation");
 
 	struct VFXManager {
-		Deque<VFX*> vfxNodes; // 0x0
+		se::Deque<VFX*> vfxNodes; // 0x0
 		NI::Pointer<NI::Node> worldVFXRoot; // 0x8
 		NI::Pointer<NI::AVObject> unknown_0xC;
 
@@ -65,7 +67,7 @@ namespace TES3 {
 		VFX* createForEffect(unsigned int serial, PhysicalObject* effect, int animLoopCount, float lifespan, float scale, float verticalOffset);
 
 		VFX* createForReference(unsigned int serial, PhysicalObject* effect, Reference* reference, int animLoopCount, float lifespan, float scale, float verticalOffset);
-		VFX* createAtPosition(unsigned int serial, PhysicalObject* effect, Vector3* position, int animLoopCount, float lifespan, float scale, float verticalOffset);
+		VFX* createAtPosition(unsigned int serial, PhysicalObject* effect, NI::Vector3* position, int animLoopCount, float lifespan, float scale, float verticalOffset);
 		VFX* createForAVObject(unsigned int serial, PhysicalObject* effect, NI::AVObject* avObject, int animLoopCount, float lifespan, float scale, float verticalOffset);
 
 		void remove(VFX* vfx);

@@ -591,7 +591,7 @@ namespace mwse::lua {
 					break;
 				}
 
-				if (string::iequal(buffer, modName)) {
+				if (se::string::iequal(buffer, modName)) {
 					return true;
 				}
 			}
@@ -765,23 +765,23 @@ namespace mwse::lua {
 		return sol::optional<NI::Camera*>();
 	}
 
-	sol::optional<TES3::Vector3> getCameraVector() {
+	sol::optional<NI::Vector3> getCameraVector() {
 		auto worldController = TES3::WorldController::get();
 		if (worldController) {
 			return worldController->worldCamera.cameraData.camera->worldDirection;
 		}
-		return sol::optional<TES3::Vector3>();
+		return sol::optional<NI::Vector3>();
 	}
 
-	sol::optional<TES3::Vector3> getCameraPosition() {
+	sol::optional<NI::Vector3> getCameraPosition() {
 		auto worldController = TES3::WorldController::get();
 		if (worldController) {
 			return worldController->worldCamera.cameraData.camera->worldBoundOrigin;
 		}
-		return sol::optional<TES3::Vector3>();
+		return sol::optional<NI::Vector3>();
 	}
 
-	sol::optional<TES3::Vector3> getPlayerEyePosition() {
+	sol::optional<NI::Vector3> getPlayerEyePosition() {
 		auto worldController = TES3::WorldController::get();
 		if (worldController) {
 			auto mobilePlayer = worldController->getMobilePlayer();
@@ -789,16 +789,16 @@ namespace mwse::lua {
 				return mobilePlayer->animationController.asPlayer->firstPersonHeadCameraNode->worldTransform.translation;
 			}
 		}
-		return sol::optional<TES3::Vector3>();
+		return sol::optional<NI::Vector3>();
 	}
 
-	sol::optional<TES3::Vector3> getPlayerEyeVector() {
+	sol::optional<NI::Vector3> getPlayerEyeVector() {
 		auto worldController = TES3::WorldController::get();
 		if (worldController) {
 			auto rotation = worldController->armCamera.cameraRoot->localRotation;
-			return TES3::Vector3(rotation->m0.y, rotation->m1.y, rotation->m2.y);
+			return NI::Vector3(rotation->m0.y, rotation->m1.y, rotation->m2.y);
 		}
-		return sol::optional<TES3::Vector3>();
+		return sol::optional<NI::Vector3>();
 	}
 
 	int getPlayerActivationDistance() {
@@ -820,7 +820,7 @@ namespace mwse::lua {
 		return distance;
 	}
 
-	sol::optional<TES3::Vector3> get3rdPersonCameraOffset() {
+	sol::optional<NI::Vector3> get3rdPersonCameraOffset() {
 		auto worldController = TES3::WorldController::get();
 		if (!worldController) {
 			return {};
@@ -877,13 +877,13 @@ namespace mwse::lua {
 		sol::state_view state = this_state;
 
 		// Make sure we got our required position.
-		sol::optional<TES3::Vector3> position = getOptionalParamVector3(params, "position");
+		sol::optional<NI::Vector3> position = getOptionalParamVector3(params, "position");
 		if (!position) {
 			return sol::make_object(state, false);
 		}
 
 		// Make sure we got our required direction.
-		sol::optional<TES3::Vector3> direction = getOptionalParamVector3(params, "direction");
+		sol::optional<NI::Vector3> direction = getOptionalParamVector3(params, "direction");
 		if (!direction) {
 			return sol::make_object(state, false);
 		}
@@ -1149,7 +1149,7 @@ namespace mwse::lua {
 
 	TES3::EquipmentStack* getEquippedItem(sol::table params) {
 		// Find our equipment based on the object given.
-		TES3::IteratedList<TES3::EquipmentStack*>* equipment = NULL;
+		NI::IteratedList<TES3::EquipmentStack*>* equipment = NULL;
 		sol::object actor = params["actor"];
 		if (actor.valid()) {
 			if (actor.is<TES3::Reference*>()) {
@@ -1307,12 +1307,12 @@ namespace mwse::lua {
 		}
 	}
 
-	sol::optional<TES3::Vector2> getCursorPosition() {
+	sol::optional<NI::Vector2> getCursorPosition() {
 		auto worldController = TES3::WorldController::get();
 		if (worldController) {
-			return TES3::Vector2(worldController->mouseController->position.x, worldController->mouseController->position.z);
+			return NI::Vector2(worldController->mouseController->position.x, worldController->mouseController->position.z);
 		}
-		return sol::optional<TES3::Vector2>();
+		return sol::optional<NI::Vector2>();
 	}
 
 	TES3::Skill* getSkill(int skillID) {
@@ -1595,7 +1595,7 @@ namespace mwse::lua {
 
 			// Update the scene graph with the new orientation.
 			if (reference->sceneNode) {
-				TES3::Matrix33 tempOutArg;
+				NI::Matrix33 tempOutArg;
 				reference->sceneNode->setLocalRotationMatrix(reference->updateSceneMatrix(&tempOutArg));
 				reference->sceneNode->update();
 			}
@@ -2408,13 +2408,13 @@ namespace mwse::lua {
 		}
 
 		// Get the position.
-		sol::optional<TES3::Vector3> position = getOptionalParamVector3(params, "position");
+		sol::optional<NI::Vector3> position = getOptionalParamVector3(params, "position");
 		if (!position) {
 			return false;
 		}
 
 		// Get the orientation.
-		sol::optional<TES3::Vector3> orientation = getOptionalParamVector3(params, "orientation");
+		sol::optional<NI::Vector3> orientation = getOptionalParamVector3(params, "orientation");
 		const auto userProvidedOrientation = orientation.has_value();
 		if (!userProvidedOrientation) {
 			orientation = reference->orientation;
@@ -2455,11 +2455,11 @@ namespace mwse::lua {
 
 			sol::optional<bool> teleportCompanions = params["teleportCompanions"];
 			if (teleportCompanions.value_or(true) && macp->listFriendlyActors.size() > 0) {
-				const auto TES3_cellChangeWithCompanions = reinterpret_cast<void(__cdecl*)(TES3::Vector3, TES3::Vector3, TES3::Cell*)>(0x45C9B0);
+				const auto TES3_cellChangeWithCompanions = reinterpret_cast<void(__cdecl*)(NI::Vector3, NI::Vector3, TES3::Cell*)>(0x45C9B0);
 				TES3_cellChangeWithCompanions(position.value(), orientation.value(), cell);
 			}
 			else {
-				const auto TES3_cellChange = reinterpret_cast<void(__cdecl*)(TES3::Vector3, TES3::Vector3, TES3::Cell*, int)>(0x45CEF0);
+				const auto TES3_cellChange = reinterpret_cast<void(__cdecl*)(NI::Vector3, NI::Vector3, TES3::Cell*, int)>(0x45CEF0);
 				sol::optional<bool> flag = params["flag"];
 				TES3_cellChange(position.value(), orientation.value(), cell, flag.value_or(true));
 			}
@@ -2475,7 +2475,7 @@ namespace mwse::lua {
 			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
 
 			if (userProvidedOrientation) {
-				reference->relocate(cell, &position.value(), static_cast<float>(orientation.value().z * (180.0f / math::M_PI)));
+				reference->relocate(cell, &position.value(), static_cast<float>(orientation.value().z * (180.0f / se::math::M_PI)));
 			}
 			else {
 				reference->relocateNoRotation(cell, &position.value());
@@ -2506,11 +2506,11 @@ namespace mwse::lua {
 		return reinterpret_cast<int(__stdcall*)()>(0x4678F0)();
 	}
 
-	TES3::Vector3 getLastExteriorPosition() {
+	NI::Vector3 getLastExteriorPosition() {
 		return TES3::DataHandler::get()->getLastExteriorPosition();
 	}
 
-	sol::optional<TES3::Vector3> getClosestExteriorPosition(sol::optional<sol::table> params) {
+	sol::optional<NI::Vector3> getClosestExteriorPosition(sol::optional<sol::table> params) {
 		auto reference = getOptionalParamExecutionReference(params);
 		if (reference == nullptr) {
 			// Default to player.
@@ -2988,7 +2988,7 @@ namespace mwse::lua {
 		}
 
 		// Get the orientation.
-		TES3::Vector3 orientation(0.0f, 0.0f, 0.0f);
+		NI::Vector3 orientation(0.0f, 0.0f, 0.0f);
 		auto maybeOrientation = getOptionalParamVector3(params, "orientation");
 		if (maybeOrientation) {
 			orientation = maybeOrientation.value();
@@ -3058,13 +3058,13 @@ namespace mwse::lua {
 		}
 
 		// Get the position.
-		sol::optional<TES3::Vector3> position = getOptionalParamVector3(params, "position");
+		sol::optional<NI::Vector3> position = getOptionalParamVector3(params, "position");
 		if (!position) {
 			throw std::invalid_argument("Invalid position parameter provided.");
 		}
 
 		// Get the orientation.
-		sol::optional<TES3::Vector3> orientation = getOptionalParamVector3(params, "orientation");
+		sol::optional<NI::Vector3> orientation = getOptionalParamVector3(params, "orientation");
 		if (!orientation) {
 			throw std::invalid_argument("Invalid orientation parameter provided.");
 		}
@@ -3922,7 +3922,7 @@ namespace mwse::lua {
 							// Clean up after our check and manually delete.
 							removedEquipStack->object = nullptr;
 							removedEquipStack->itemData = nullptr;
-							mwse::tes3::_delete(removedEquipStack);
+							se::memory::_delete(removedEquipStack);
 							removedEquipStack = nullptr;
 						}
 					}
@@ -4161,7 +4161,7 @@ namespace mwse::lua {
 
 			// Detach the attachment and delete the associated data.
 			reference->removeAttachment(reference->getAttachment(TES3::AttachmentType::Variables));
-			tes3::_delete(itemData);
+			se::memory::_delete(itemData);
 			reference->setObjectModified(true);
 			return true;
 		}
@@ -4291,7 +4291,7 @@ namespace mwse::lua {
 			config->destination = destination.value();
 		}
 		else {
-			config->destination = TES3::Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0f);
+			config->destination = NI::Vector3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0f);
 		}
 		config->duration = getOptionalParam<unsigned char>(params, "duration", 0);
 		config->actor = static_cast<TES3::Actor*>(target->baseObject);
@@ -4607,7 +4607,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'object' parameter provided.");
 		}
 
-		sol::optional<TES3::Vector3> position = getOptionalParamVector3(params, "position");
+		sol::optional<NI::Vector3> position = getOptionalParamVector3(params, "position");
 		if (!position) {
 			position = dataHandler->getLastExteriorPosition();
 		}
@@ -5385,7 +5385,7 @@ namespace mwse::lua {
 		auto macp = TES3::WorldController::get()->getMobilePlayer();
 
 		// Get the position.
-		sol::optional<TES3::Vector3> position = getOptionalParamVector3(params, "position");
+		sol::optional<NI::Vector3> position = getOptionalParamVector3(params, "position");
 		if (!position) {
 			throw std::invalid_argument("Invalid 'position' parameter provided.");
 		}
@@ -5406,7 +5406,7 @@ namespace mwse::lua {
 		}
 
 		if (macp->markLocation == nullptr) {
-			macp->markLocation = tes3::_new<TES3::MarkData>();
+			macp->markLocation = se::memory::_new<TES3::MarkData>();
 		}
 
 		macp->markLocation->position = position.value();
@@ -5417,7 +5417,7 @@ namespace mwse::lua {
 	void clearMarkLocation() {
 		auto macp = TES3::WorldController::get()->getMobilePlayer();
 		if (macp->markLocation) {
-			tes3::_delete(macp->markLocation);
+			se::memory::_delete(macp->markLocation);
 			macp->markLocation = nullptr;
 		}
 	}
@@ -5637,7 +5637,7 @@ namespace mwse::lua {
 
 	TES3::Birthsign* findBirthsign(const char* id) {
 		for (auto birthsign : *TES3::DataHandler::get()->nonDynamicData->birthsigns) {
-			if (mwse::string::iequal(id, birthsign->id)) {
+			if (se::string::iequal(id, birthsign->id)) {
 				return birthsign;
 			}
 		}
@@ -5861,7 +5861,7 @@ namespace mwse::lua {
 		}
 
 		//
-		sol::optional<TES3::Vector3> position2;
+		sol::optional<NI::Vector3> position2;
 		float height1, height2;
 
 		// Try to get the first reference's data.
@@ -5919,7 +5919,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'range' parameter provided.");
 		}
 
-		TES3::IteratedList<TES3::MobileActor*> actors;
+		NI::IteratedList<TES3::MobileActor*> actors;
 		auto processManager = TES3::WorldController::get()->mobManager->processManager;
 		processManager->findActorsInProximity(&position.value(), range.value(), &actors);
 

@@ -9,7 +9,7 @@
 #include "TES3Weapon.h"
 
 namespace mwse::lua::event {
-	MobileProjectileActorCollisionEvent::MobileProjectileActorCollisionEvent(TES3::MobileProjectile* projectile, TES3::Reference* targetReference, TES3::Vector3& point, TES3::Vector3& pos, TES3::Vector3& vel) :
+	MobileProjectileActorCollisionEvent::MobileProjectileActorCollisionEvent(TES3::MobileProjectile* projectile, TES3::Reference* targetReference, NI::Vector3& point, NI::Vector3& pos, NI::Vector3& vel) :
 		ObjectFilteredEvent("projectileHitActor", projectile->firingActor->reference),
 		m_Projectile(projectile),
 		m_TargetReference(targetReference),

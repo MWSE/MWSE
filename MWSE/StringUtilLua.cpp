@@ -31,12 +31,12 @@ namespace mwse::lua {
 		state["mwse"]["string"] = state.create_table();
 
 		state["mwse"]["string"]["create"] = [](std::string value) -> int {
-			return mwse::string::store::getOrCreate(value.c_str());
+			return se::string::store::getOrCreate(value.c_str());
 		};
 
 		state["mwse"]["string"]["get"] = [](double value) -> sol::optional<std::string> {
 			try {
-				return { mwse::string::store::get(static_cast<long>(value)).c_str() };
+				return { se::string::store::get(static_cast<long>(value)).c_str() };
 			}
 			catch (std::exception&) {
 				return {};

@@ -2,20 +2,19 @@
 
 #include "TES3Defines.h"
 #include "TES3UIDefines.h"
-
-#include "TES3IteratedList.h"
-#include "TES3Vectors.h"
-
 #include "TES3UIVector.h"
 
 #include "NIDefines.h"
 #include "NICamera.h"
 #include "NIDirectionalLight.h"
-#include "NIRenderedTexture.h"
+#include "NIIteratedList.h"
 #include "NIProperty.h"
+#include "NIRenderedTexture.h"
 #include "NIRenderer.h"
 #include "NISourceTexture.h"
 #include "NITextureEffect.h"
+#include "NIVector2.h"
+#include "NIVector3.h"
 
 namespace TES3 {
 	enum class MusicSituation : int {
@@ -113,9 +112,9 @@ namespace TES3 {
 	struct MouseController {
 		NI::Object* cursors[5];
 		int unknown_0x14;
-		Vector3 position; // 0x18
-		Vector3 minimumPosition; // 0x24
-		Vector3 maximumPosition; // 0x30
+		NI::Vector3 position; // 0x18
+		NI::Vector3 minimumPosition; // 0x24
+		NI::Vector3 maximumPosition; // 0x30
 		NI::Node* cursorRoot; // 0x3C
 		NI::Node* cursorChildRoot; // 0x40
 		int unknown_0x44;
@@ -140,7 +139,7 @@ namespace TES3 {
 #if MWSE_CUSTOM_KILLCOUNTER
 		std::unordered_map<Actor*, int>* counter;
 #else
-		IteratedList<Node*>* killedActors; // 0x8
+		NI::IteratedList<Node*>* killedActors; // 0x8
 #endif
 
 		KillCounter() = delete;
@@ -200,7 +199,7 @@ namespace TES3 {
 			};
 			struct GlyphData {
 				int unknown_0;
-				TES3::Vector2 topLeft, topRight, bottomLeft, bottomRight;
+				NI::Vector2 topLeft, topRight, bottomLeft, bottomRight;
 				float width, height, leftKerning, rightKerning, ascent;
 			};
 
@@ -268,7 +267,7 @@ namespace TES3 {
 		float bloodSplashDurations[6]; // 0x18 // ActiveSplash::maxAge for the used mesh index offset by 1. First and last entries seem unused garbage...
 		NI::Pointer<NI::SourceTexture> bloodTextures[8]; // 0x30
 		NI::Pointer<NI::TexturingProperty> bloodTextureProperties[8]; // 0x50
-		IteratedList<ActiveSplash*>* activeSplashes; // 0x70
+		NI::IteratedList<ActiveSplash*>* activeSplashes; // 0x70
 
 		SplashController() = delete;
 		~SplashController() = delete;
@@ -318,7 +317,7 @@ namespace TES3 {
 		KillCounter * playerKills; // 0x60
 		JournalHTML * journalHTML; // 0x64
 		SplashController * splashController; // 0x68
-		IteratedList<Quest*> * journalController; // 0x6C
+		NI::IteratedList<Quest*> * journalController; // 0x6C
 		MagicInstanceController * magicInstanceController; // 0x70
 		VFXManager * vfxManager; // 0x74
 		int viewWidth; // 0x78
@@ -398,9 +397,9 @@ namespace TES3 {
 		Cell * startingCell; // 0x32C
 		float deadFloatScale; // 0x330
 		int unknown_0x334;
-		IteratedList<GlobalScript*> * globalScripts; // 0x338
-		IteratedList<MobileActor*> * allMobileActors; // 0x33C
-		IteratedList<RechargingItem*> * rechargingItems; // 0x340
+		NI::IteratedList<GlobalScript*> * globalScripts; // 0x338
+		NI::IteratedList<MobileActor*> * allMobileActors; // 0x33C
+		NI::IteratedList<RechargingItem*> * rechargingItems; // 0x340
 		bool showSubtitles; // 0x344
 		int countMusicTracksBattle; // 0x348
 		int countMusicTracksExplore; // 0x34C

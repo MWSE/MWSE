@@ -21,8 +21,8 @@
 
 namespace TES3 {
 
-	Vector3 MobileObject::Collision::getNormal() const {
-		return TES3::Vector3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
+	NI::Vector3 MobileObject::Collision::getNormal() const {
+		return NI::Vector3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
 	}
 
 	const auto TES3_MobileObject_Collision_clone = reinterpret_cast<void(__thiscall*)(MobileObject::Collision*, MobileObject::Collision*)>(0x405450);
@@ -139,18 +139,18 @@ namespace TES3 {
 		vTable.mobileObject->enterLeaveSimulation(this, entering);
 	}
 
-	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x561960);
-	void MobileObject::setFootPoint(const Vector3* point) {
+	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x561960);
+	void MobileObject::setFootPoint(const NI::Vector3* point) {
 		TES3_MobileObject_setFootPoint(this, point);
 	}
 
-	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x55EBA0);
-	void MobileObject::setInstantVelocity(const Vector3* velocity) {
+	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x55EBA0);
+	void MobileObject::setInstantVelocity(const NI::Vector3* velocity) {
 		TES3_MobileObject_setInstantVelocity(this, velocity);
 	}
 
-	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x55E7A0);
-	void MobileObject::updateConstantVelocity(const Vector3* velocity) {
+	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x55E7A0);
+	void MobileObject::updateConstantVelocity(const NI::Vector3* velocity) {
 		TES3_MobileObject_updateConstantVelocity(this, velocity);
 	}
 
@@ -164,8 +164,8 @@ namespace TES3 {
 		TES3_MobileObject_enterLeaveSimulationByDistance(this);
 	}
 
-	const auto TES3_MobileObject_getInventory = reinterpret_cast<IteratedList<ItemStack*> * (__thiscall*)(const MobileObject*)>(0x521620);
-	IteratedList<ItemStack*>* MobileObject::getInventory() const {
+	const auto TES3_MobileObject_getInventory = reinterpret_cast<NI::IteratedList<ItemStack*> * (__thiscall*)(const MobileObject*)>(0x521620);
+	NI::IteratedList<ItemStack*>* MobileObject::getInventory() const {
 		return TES3_MobileObject_getInventory(this);
 	}
 
@@ -189,17 +189,17 @@ namespace TES3 {
 		TES3_MobileObject_removeLight(this);
 	}
 
-	Vector3 MobileObject::getBoundSize() const {
-		return Vector3(boundSize.x, boundSize.y, height);
+	NI::Vector3 MobileObject::getBoundSize() const {
+		return NI::Vector3(boundSize.x, boundSize.y, height);
 	}
 
-	void MobileObject::setBoundSize(const Vector3& value) {
+	void MobileObject::setBoundSize(const NI::Vector3& value) {
 		boundSize.x = value.x;
 		boundSize.y = value.y;
 		height = value.z;
 	}
 
-	Vector3* MobileObject::getImpulseVelocity() {
+	NI::Vector3* MobileObject::getImpulseVelocity() {
 		return &impulseVelocity;
 	}
 
@@ -212,7 +212,7 @@ namespace TES3 {
 		return lightMagicEffectData;
 	}
 
-	Vector3* MobileObject::getPosition() const {
+	NI::Vector3* MobileObject::getPosition() const {
 		// Delegate to reference.
 		return &reference->position;
 	}
@@ -226,7 +226,7 @@ namespace TES3 {
 		setLightEffectDiffuseCol(NI::Color(object));
 	}
 
-	Vector3* MobileObject::getVelocity() {
+	NI::Vector3* MobileObject::getVelocity() {
 		return &velocity;
 	}
 

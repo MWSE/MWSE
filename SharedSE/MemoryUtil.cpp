@@ -293,6 +293,10 @@ namespace se::memory {
 		return true;
 	}
 
+	bool writeAddFlagEnforced(DWORD address, DWORD flags, DWORD addedFlags) {
+		return writeDoubleWordEnforced(address, flags, flags | addedFlags);
+	}
+
 	// WARNING: If passing a function address, always use a non-static function or it will crash.
 	void writePatchCodeUnprotected(DWORD address, const BYTE* patch, DWORD size) {
 #ifdef _DEBUG

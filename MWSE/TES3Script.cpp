@@ -163,7 +163,7 @@ namespace TES3 {
 				{
 					ScriptHeader chunkData = {};
 					tempFile.readChunkData(&chunkData);
-					if (mwse::string::iequal(chunkData.name, header.name)) {
+					if (se::string::iequal(chunkData.name, header.name)) {
 						scriptFound = true;
 					}
 					break;

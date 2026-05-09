@@ -57,8 +57,8 @@ namespace TES3 {
 		return TES3_MagicSourceInstance_getMagnitudeForIndex(this, effectIndex);
 	}
 
-	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, Vector3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
-	void MagicSourceInstance::playSpellVFX(float scale, Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
+	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, NI::Vector3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
+	void MagicSourceInstance::playSpellVFX(float scale, NI::Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
 		TES3_PlaySpellVFX(this, scale, position, attachedReference, offsetZ, effectVisual, effectIndex, isContinuous);
 	}
 

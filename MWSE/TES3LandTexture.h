@@ -2,7 +2,7 @@
 
 #include "TES3Object.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 #include "NIProperty.h"
 #include "NISourceTexture.h"
@@ -21,7 +21,7 @@ namespace TES3 {
 		char texturePath[MAX_PATH]; // 0x34
 		int indexInTexturesList; // 0x138
 		int indexInLTEX; // 0x13C
-		IteratedList<PropertyMap*> * unknown_0x140; // Relates land textures to texture properties?
+		NI::IteratedList<PropertyMap*> * unknown_0x140; // Relates land textures to texture properties?
 
 		LandTexture() = delete;
 		~LandTexture() = delete;

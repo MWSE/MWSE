@@ -7,14 +7,16 @@
 #include "TES3Armor.h"
 #include "TES3Clothing.h"
 #include "TES3CrimeEvent.h"
-#include "TES3Deque.h"
-#include "TES3HashMap.h"
 #include "TES3Inventory.h"
 #include "TES3MagicEffect.h"
 #include "TES3MagicSourceInstance.h"
 #include "TES3MobileObject.h"
 #include "TES3Statistic.h"
-#include "TES3Vectors.h"
+
+#include "NIHashMap.h"
+#include "NIVector3.h"
+
+#include "Deque.h"
 
 namespace TES3 {
 	enum class MobileActorType : char {
@@ -134,12 +136,12 @@ namespace TES3 {
 	};
 
 	struct MobileActor : MobileObject {
-		IteratedList<MobileActor*> listTargetActors; // 0x80
-		IteratedList<MobileActor*> listFriendlyActors; // 0x94
+		NI::IteratedList<MobileActor*> listTargetActors; // 0x80
+		NI::IteratedList<MobileActor*> listFriendlyActors; // 0x94
 		float scanTimer; // 0xA8
 		float scanInterval; // 0xAC
 		float greetTimer; // 0xB0
-		Vector3 unknown_0xB4;
+		NI::Vector3 unknown_0xB4;
 		char unknown_0xC0;
 		char unknown_0xC1; // Undefined.
 		char unknown_0xC2; // Undefined.
@@ -148,14 +150,14 @@ namespace TES3 {
 		AIPlanner * aiPlanner; // 0xC8
 		ActionData actionData; // 0xCC
 		ActionData actionBeforeCombat; // 0x13C
-		Deque<CrimeEvent> committedCrimes; // 0x1AC
+		se::Deque<CrimeEvent> committedCrimes; // 0x1AC
 		int unknown_0x1B8;
 		int unknown_0x1BC;
 		CombatSession * combatSession; // 0x1C0
-		Deque<ActiveMagicEffect> activeMagicEffects; // 0x1C4
+		se::Deque<ActiveMagicEffect> activeMagicEffects; // 0x1C4
 		int unknown_0x1D0;
 		Collision collision_1D4;
-		HashMap<Spell*, double> powers; // 0x214
+		NI::HashMap<Spell*, double> powers; // 0x214
 		char unknown_0x224;
 		signed char prevAIBehaviourState; // 0x225
 		char unknown_0x226;
@@ -173,7 +175,7 @@ namespace TES3 {
 			ActorAnimationController * asActor;
 			PlayerAnimationController * asPlayer;
 		} animationController; // 0x244
-		Deque<CrimeEvent> witnessedCrimes; // 0x248
+		se::Deque<CrimeEvent> witnessedCrimes; // 0x248
 		Statistic attributes[8]; // 0x254
 		Statistic health; // 0x2B4
 		Statistic magicka; // 0x2C0
@@ -207,7 +209,7 @@ namespace TES3 {
 		char unknown_0x39B; // Undefined.
 		void * arrowBone;
 		int unknown_0x3A0;
-		Vector3 unknown_0x3A4;
+		NI::Vector3 unknown_0x3A4;
 
 		MobileActor() = delete;
 		~MobileActor() = delete;
@@ -239,9 +241,9 @@ namespace TES3 {
 		float getFatigueTerm() const;
 
 		float getFacing() const;
-		float getViewToPoint(const Vector3* point) const;
+		float getViewToPoint(const NI::Vector3* point) const;
 		float getViewToPoint_lua(sol::object point) const;
-		float getViewToPointWithFacing(float facing, const Vector3* point) const;
+		float getViewToPointWithFacing(float facing, const NI::Vector3* point) const;
 		float getViewToPointWithFacing_lua(float facing, sol::object point) const;
 		float getViewToActor(const TES3::MobileActor* mobile) const;
 		float getViewToActor_lua(sol::object mobile) const;
@@ -265,7 +267,7 @@ namespace TES3 {
 		float applyDamage_lua(sol::table params);
 		float applyFatigueDamage_lua(float damage, float swing, bool alwaysPlayHitVoice = false);
 		float calcEffectiveDamage_lua(sol::table params);
-		bool doJump(Vector3 velocity, bool applyFatigueCost = true, bool isDefaultJump = false);
+		bool doJump(NI::Vector3 velocity, bool applyFatigueCost = true, bool isDefaultJump = false);
 		bool doJump_lua(sol::optional<sol::table> params);
 
 		bool isAttackingOrCasting() const;
@@ -285,8 +287,8 @@ namespace TES3 {
 		float calculateSwimSpeed();
 		float calculateSwimRunSpeed();
 		float calculateFlySpeed();
-		Vector3 calculateJumpVelocity(Vector2 direction);
-		Vector3 calculateJumpVelocity_lua(sol::optional<sol::table> params);
+		NI::Vector3 calculateJumpVelocity(NI::Vector2 direction);
+		NI::Vector3 calculateJumpVelocity_lua(sol::optional<sol::table> params);
 		void applyPhysicalHit(MobileActor* attacker, MobileActor* defender, float damage, float swing, MobileProjectile* projectile = nullptr, bool alwaysPlayHitVoice = false);
 		void setCurrentMagicFromSpell(Spell* spell);
 		void setCurrentMagicFromSourceCombo(MagicSourceCombo sourceCombo);
@@ -314,7 +316,7 @@ namespace TES3 {
 		bool hasEffectWithActorLighting() const;
 
 		SpellList* getSpellList();
-		IteratedList<Spell*> * getCombatSpellList();
+		NI::IteratedList<Spell*> * getCombatSpellList();
 
 		bool isActive() const;
 		void forceSpellCast(MobileActor * target);

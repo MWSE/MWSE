@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -15,10 +15,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
@@ -100,18 +107,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVector3.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Deque.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)CodePatchUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
@@ -125,7 +132,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionGroup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionSwitch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8TextureData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
@@ -138,6 +148,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILookAtController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix33.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix44.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NINode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.cpp" />
@@ -147,6 +158,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPathController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />
@@ -154,20 +166,25 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISourceTexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIVector3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector4.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)StdString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsUtil.cpp" />
   </ItemGroup>

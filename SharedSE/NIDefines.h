@@ -2,6 +2,7 @@
 
 #include "NIConfig.h"
 #include "NIRTTIDefines.h"
+#include "NIVirtualTableDefines.h"
 
 namespace NI {
 	struct Accumulator;
@@ -33,11 +34,8 @@ namespace NI {
 	struct KeyframeManager;
 	struct Light;
 	struct MaterialProperty;
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-	// In MWSE context, NI::Matrix33 is a `using` alias to TES3::Matrix33 (typedef
-	// bridge in NIMatrix33.h). A forward struct decl here would conflict.
 	struct Matrix33;
-#endif
+	struct Matrix44;
 	struct Node;
 	struct Object;
 	struct ObjectNET;
@@ -85,19 +83,15 @@ namespace NI {
 	struct TextureEffect;
 	struct TexturingProperty;
 	struct TimeController;
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-	// In MWSE context, NI::Transform is a `using` alias to TES3::Transform.
 	struct Transform;
-#endif
 	struct Triangle;
 	struct TriBasedGeometry;
 	struct TriBasedGeometryData;
 	struct TriShape;
 	struct TriShapeData;
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-	// In MWSE context, NI::Vector3 is a `using` alias to TES3::Vector3.
+	struct Vector2;
 	struct Vector3;
-#endif
+	struct Vector4;
 	struct VertexColorProperty;
 	struct WireframeProperty;
 	struct ZBufferProperty;

@@ -2,11 +2,7 @@
 
 #include "NINode.h"
 #include "NIRenderer.h"
-#include "NIVector4.h"
-
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Vectors.h"
-#endif
+#include "NIMatrix44.h"
 
 namespace NI {
 	struct Frustum {
@@ -23,10 +19,10 @@ namespace NI {
 
 	struct Camera : AVObject {
 		// worldToCamera is logically a 4x4 matrix of floats (16 floats / 0x40 bytes).
-		// In MWSE context expose it as TES3::Matrix44 so MWSE-private callers and
+		// In MWSE context expose it as NI::Matrix44 so MWSE-private callers and
 		// sol bindings see the structured type. CSSE keeps the raw float array.
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Matrix44 worldToCamera; // 0x90
+		NI::Matrix44 worldToCamera; // 0x90
 #else
 		float worldToCamera[4][4]; // 0x90
 #endif
@@ -80,7 +76,7 @@ namespace NI {
 		sol::optional<std::tuple<Vector3, Vector3>> windowPointToRay_lua(sol::stack_object);
 
 		// Unlike above, we need to convert the ouput from [0,1] to [width/-2, width/2].
-		sol::optional<TES3::Vector2> worldPointToScreenPoint_lua(sol::stack_object);
+		sol::optional<NI::Vector2> worldPointToScreenPoint_lua(sol::stack_object);
 #endif
 	};
 	static_assert(sizeof(Camera) == 0x1E0, "NI::Camera failed size validation");

@@ -1841,7 +1841,7 @@ namespace mwse::lua {
 	// Event: topicAdded
 	//
 
-	void __fastcall OnAddTopicAtIndex(TES3::IteratedList<TES3::Dialogue*>* topicList, DWORD _UNUSED_, TES3::Dialogue* topic, unsigned int index) {
+	void __fastcall OnAddTopicAtIndex(NI::IteratedList<TES3::Dialogue*>* topicList, DWORD _UNUSED_, TES3::Dialogue* topic, unsigned int index) {
 		// Run overwritten function.
 		topicList->insert(index, topic);
 
@@ -1851,7 +1851,7 @@ namespace mwse::lua {
 		}
 	}
 
-	void __fastcall OnAddTopic(TES3::IteratedList<TES3::Dialogue*>* topicList, DWORD _UNUSED_, TES3::Dialogue* topic) {
+	void __fastcall OnAddTopic(NI::IteratedList<TES3::Dialogue*>* topicList, DWORD _UNUSED_, TES3::Dialogue* topic) {
 		// Run overwritten function.
 		topicList->push_back(topic);
 
@@ -2173,7 +2173,7 @@ namespace mwse::lua {
 	// Events: Leveled list resolving
 	//
 
-	TES3::IteratedList<TES3::ItemStack*>* __fastcall CacheContainerCloseReference(TES3::ContainerInstance* self) {
+	NI::IteratedList<TES3::ItemStack*>* __fastcall CacheContainerCloseReference(TES3::ContainerInstance* self) {
 		mwse::lua::event::LeveledItemPickedEvent::m_Reference = self->getReference();
 		return &self->inventory.itemStacks;
 	}
@@ -2275,10 +2275,10 @@ namespace mwse::lua {
 	//
 
 	// Cached value of the inventory iterator.
-	static TES3::IteratedList<TES3::ItemStack*>* OnCalculateRepairPriceForList_CurrentInventoryList = nullptr;
+	static NI::IteratedList<TES3::ItemStack*>* OnCalculateRepairPriceForList_CurrentInventoryList = nullptr;
 
 	// Store the inventory list that we're looking at when generating the repair list.
-	TES3::IteratedList<TES3::ItemStack*>::Node* __fastcall OnCalculateRepairPriceForList_GetItemList(TES3::IteratedList<TES3::ItemStack*>* inventoryList) {
+	NI::IteratedList<TES3::ItemStack*>::Node* __fastcall OnCalculateRepairPriceForList_GetItemList(NI::IteratedList<TES3::ItemStack*>* inventoryList) {
 		OnCalculateRepairPriceForList_CurrentInventoryList = inventoryList;
 
 		return inventoryList->cached_begin();
@@ -2455,10 +2455,10 @@ namespace mwse::lua {
 	//
 
 	// Cached value of the inventory iterator.
-	static TES3::IteratedList<TES3::Spell*>* OnCalculateSpellPrice_CurrentInventoryList = nullptr;
+	static NI::IteratedList<TES3::Spell*>* OnCalculateSpellPrice_CurrentInventoryList = nullptr;
 
 	// Store the inventory list that we're looking at when generating the repair list.
-	TES3::IteratedList<TES3::Spell*>::Node* __fastcall OnCalculateSpellPriceForList_GetSpellList(TES3::IteratedList<TES3::Spell*>* spellList) {
+	NI::IteratedList<TES3::Spell*>::Node* __fastcall OnCalculateSpellPriceForList_GetSpellList(NI::IteratedList<TES3::Spell*>* spellList) {
 		OnCalculateSpellPrice_CurrentInventoryList = spellList;
 
 		return spellList->cached_begin();
@@ -2541,23 +2541,23 @@ namespace mwse::lua {
 	//
 
 	// The destination list for the merchant.
-	static TES3::IteratedList<TES3::TravelDestination*>* OnCalculateTravelPrice_DestinationList;
+	static NI::IteratedList<TES3::TravelDestination*>* OnCalculateTravelPrice_DestinationList;
 
 	// The player's friendly actor list.
-	static TES3::IteratedList<TES3::MobileActor*>* OnCalculateTravelPrice_CompanionList;
+	static NI::IteratedList<TES3::MobileActor*>* OnCalculateTravelPrice_CompanionList;
 
 	// A custom list of followers close enough to travel with the player.
 	static std::vector<TES3::MobileActor*> OnCalculateTravelPrice_TravelCompanionList;
 
 	// Hook for ensuring that we have the right destination list.
-	TES3::IteratedList<TES3::TravelDestination*>::Node* __fastcall OnCalculateTravelPrice_GetDestinationList(TES3::IteratedList<TES3::TravelDestination*>* iterator) {
+	NI::IteratedList<TES3::TravelDestination*>::Node* __fastcall OnCalculateTravelPrice_GetDestinationList(NI::IteratedList<TES3::TravelDestination*>* iterator) {
 		OnCalculateTravelPrice_DestinationList = iterator;
 
 		return iterator->cached_begin();
 	}
 
 	// Hook for ensuring that we have the right companion list.
-	TES3::IteratedList<TES3::MobileActor*>::Node* __fastcall OnCalculateTravelPrice_GetCompanionList(TES3::IteratedList<TES3::MobileActor*>* iterator) {
+	NI::IteratedList<TES3::MobileActor*>::Node* __fastcall OnCalculateTravelPrice_GetCompanionList(NI::IteratedList<TES3::MobileActor*>* iterator) {
 		OnCalculateTravelPrice_CompanionList = iterator;
 
 		OnCalculateTravelPrice_TravelCompanionList.clear();
@@ -2566,7 +2566,7 @@ namespace mwse::lua {
 	}
 
 	// Hook for checking and adding companions for our custom list so we can report valid companions in the event.
-	float OnCalculateTravelPrice_CheckCompanionDistance(TES3::Vector3* destinationPosition, TES3::Vector3* playerPosition) {
+	float OnCalculateTravelPrice_CheckCompanionDistance(NI::Vector3* destinationPosition, NI::Vector3* playerPosition) {
 		float distance = destinationPosition->distance(playerPosition);
 		if (OnCalculateTravelPrice_CompanionList->size() * 128.0f + 512.0f > distance) {
 			OnCalculateTravelPrice_TravelCompanionList.push_back(OnCalculateTravelPrice_CompanionList->current->data);
@@ -2674,7 +2674,7 @@ namespace mwse::lua {
 	std::optional<std::string> getLowerPath(const std::filesystem::directory_entry& path) {
 		try {
 			auto lowerPath = path.path().string();
-			string::to_lower(lowerPath);
+			se::string::to_lower(lowerPath);
 
 			return lowerPath;
 		}
@@ -2696,7 +2696,7 @@ namespace mwse::lua {
 			const auto& lowerPath = maybeLowerPath.value();
 
 			// We only care about *-metadata.toml files.
-			if (!string::ends_with(lowerPath, "-metadata.toml")) {
+			if (!se::string::ends_with(lowerPath, "-metadata.toml")) {
 				continue;
 			}
 
@@ -2725,7 +2725,7 @@ namespace mwse::lua {
 				}
 
 				// Ensure that keys are lowercased for lookup.
-				string::to_lower(luaKey.value());
+				se::string::to_lower(luaKey.value());
 
 				sol::optional<sol::table> runtime = activeLuaMods[luaKey.value()];
 				if (!runtime) {
@@ -2766,7 +2766,7 @@ namespace mwse::lua {
 		// Do some precomputing for storing and calculating active lua mods.
 		sol::table luaMWSE = luaState["mwse"];
 		sol::table activeLuaMods = luaMWSE["activeLuaMods"];
-		bool isLegacy = !string::equal(scriptFilename, "main.lua");
+		bool isLegacy = !se::string::equal(scriptFilename, "main.lua");
 
 		auto subclassOrder = 0u;
 		for (auto it = std::filesystem::recursive_directory_iterator(path, std::filesystem::directory_options::follow_directory_symlink);
@@ -2793,7 +2793,7 @@ namespace mwse::lua {
 					// Get a version of its path as a key.
 					auto luaModKey = pathString.substr(path.length() + 1, pathString.length() - path.length() - scriptFilename.length() - 2);
 					std::replace(luaModKey.begin(), luaModKey.end(), '\\', '.');
-					string::to_lower(luaModKey);
+					se::string::to_lower(luaModKey);
 
 					// Check for key conflicts.
 					if (activeLuaMods[luaModKey] != sol::nil) {
@@ -2895,7 +2895,7 @@ namespace mwse::lua {
 		return TES3_FilterBarterTile(tile, item);
 	}
 
-	void __fastcall OnFilterContentsTile(TES3::IteratedList<TES3::UI::InventoryTile*>* list, DWORD _UNUSUED_, TES3::UI::InventoryTile* tile) {
+	void __fastcall OnFilterContentsTile(NI::IteratedList<TES3::UI::InventoryTile*>* list, DWORD _UNUSUED_, TES3::UI::InventoryTile* tile) {
 		if (event::FilterContentsMenuEvent::getEventEnabled()) {
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table payload = stateHandle.triggerEvent(new event::FilterContentsMenuEvent(tile, tile->item));
@@ -2912,7 +2912,7 @@ namespace mwse::lua {
 		list->push_back(tile);
 	}
 
-	void __fastcall OnFilterContentsTileForTakeAll(TES3::IteratedList<TES3::UI::InventoryTile*>* list, DWORD _UNUSUED_, TES3::UI::InventoryTile* tile) {
+	void __fastcall OnFilterContentsTileForTakeAll(NI::IteratedList<TES3::UI::InventoryTile*>* list, DWORD _UNUSUED_, TES3::UI::InventoryTile* tile) {
 		if (event::FilterContentsMenuEvent::getEventEnabled()) {
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table payload = stateHandle.triggerEvent(new event::FilterContentsMenuEvent(tile, tile->item));
@@ -3307,7 +3307,7 @@ namespace mwse::lua {
 	// Event: Jump.
 	//
 
-	void __fastcall OnJump(TES3::MobileActor* mobile, TES3::Vector3* velocity) {
+	void __fastcall OnJump(TES3::MobileActor* mobile, NI::Vector3* velocity) {
 		mobile->doJump(*velocity, true, true);
 	}
 
@@ -3573,7 +3573,7 @@ namespace mwse::lua {
 	// Fire an event when item tiles are updated.
 	//
 
-	TES3::IteratedList<TES3::UI::InventoryTile*>::Node* __fastcall GetNextInventoryTileToUpdate(TES3::IteratedList<TES3::UI::InventoryTile*>* iterator) {
+	NI::IteratedList<TES3::UI::InventoryTile*>::Node* __fastcall GetNextInventoryTileToUpdate(NI::IteratedList<TES3::UI::InventoryTile*>* iterator) {
 		if (lua::event::ItemTileUpdatedEvent::getEventEnabled()) {
 			lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new lua::event::ItemTileUpdatedEvent(iterator->current->data));
 		}
@@ -3633,7 +3633,7 @@ namespace mwse::lua {
 		TES3::ItemData::dtor(itemData);
 
 		if (deleting) {
-			tes3::_delete(itemData);
+			se::memory::_delete(itemData);
 		}
 
 		return itemData;
@@ -3673,8 +3673,8 @@ namespace mwse::lua {
 	const size_t patchInlineItemDataCreation_size = 0x1C;
 
 	void __inline GeneratePatchForInlineItemDataCreation(DWORD address) {
-		writePatchCodeUnprotected(address, (BYTE*)&patchInlineItemDataCreation, patchInlineItemDataCreation_size);
-		genCallUnprotected(address + 0x2, reinterpret_cast<DWORD>(&TES3::ItemData::ctor));
+		se::memory::writePatchCodeUnprotected(address, (BYTE*)&patchInlineItemDataCreation, patchInlineItemDataCreation_size);
+		se::memory::genCallUnprotected(address + 0x2, reinterpret_cast<DWORD>(&TES3::ItemData::ctor));
 	}
 
 	// Requires that the pointer is in EBX
@@ -3723,8 +3723,8 @@ namespace mwse::lua {
 	const size_t patchInlineItemDataDestruction_size = 0x27;
 
 	void __inline GeneratePatchForInlineItemDataDestruction(DWORD address) {
-		writePatchCodeUnprotected(address, (BYTE*)&patchInlineItemDataDestruction, patchInlineItemDataDestruction_size);
-		genCallUnprotected(address + 0x4, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
+		se::memory::writePatchCodeUnprotected(address, (BYTE*)&patchInlineItemDataDestruction, patchInlineItemDataDestruction_size);
+		se::memory::genCallUnprotected(address + 0x4, reinterpret_cast<DWORD>(&TES3::ItemData::dtor));
 	}
 
 	//
@@ -3732,11 +3732,11 @@ namespace mwse::lua {
 	//
 
 	// Data we use to keep track of the currently saving item data record.
-	TES3::IteratedList<TES3::ItemStack*>* currentlySavingInventoryIterator = nullptr;
+	NI::IteratedList<TES3::ItemStack*>* currentlySavingInventoryIterator = nullptr;
 	unsigned int currentlySavingInventoryItemDataIndex = 0;
 
 	// Get a hold of the inventory we're looking at.
-	TES3::IteratedList<TES3::ItemStack*>::Node* __fastcall GetFirstSavedItemStack(TES3::IteratedList<TES3::ItemStack*>* iterator) {
+	NI::IteratedList<TES3::ItemStack*>::Node* __fastcall GetFirstSavedItemStack(NI::IteratedList<TES3::ItemStack*>* iterator) {
 		currentlySavingInventoryIterator = iterator;
 		return iterator->cached_begin();
 	}
@@ -4085,7 +4085,7 @@ namespace mwse::lua {
 		}
 	}
 
-	void __cdecl ScriptRelocateReference(TES3::Reference* reference, TES3::Cell* cell, TES3::Vector3* position, float rotation) {
+	void __cdecl ScriptRelocateReference(TES3::Reference* reference, TES3::Cell* cell, NI::Vector3* position, float rotation) {
 		reference->relocate(cell, position, rotation);
 	}
 
@@ -4701,7 +4701,7 @@ namespace mwse::lua {
 	template <typename T, DWORD address>
 	bool OverwriteCopyObjectVirtualCall(TES3::VirtualTableAddress::VirtualTableAddress vTableAddress) {
 		static_assert(std::is_base_of<TES3::Object, T>::value, "Attempt to override virtual table of non-TES3::Object class.");
-		return overrideVirtualTableEnforced(vTableAddress, 0x24, address, reinterpret_cast<DWORD>(&CopyObject<T, address>));
+		return se::memory::overrideVirtualTableEnforced(vTableAddress, 0x24, address, reinterpret_cast<DWORD>(&CopyObject<T, address>));
 	}
 
 	//
@@ -4781,7 +4781,7 @@ namespace mwse::lua {
 		bool success = roll < absorbChance;
 		auto absorbVfx = *vfxAbsorbPtr;
 		if (success && absorbVfx) {
-			sourceInstance->playSpellVFX(1.0f, TES3::Vector3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
+			sourceInstance->playSpellVFX(1.0f, NI::Vector3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
 		}
 
 		return success;
@@ -4949,7 +4949,7 @@ namespace mwse::lua {
 
 		// Also log to mwse.log with stack trace.
 		if (Configuration::LogWarningsWithLuaStack && LuaManager::getInstance().getReadOnlyStateView().stack_top() != 0) {
-			auto trimmedWarning = std::move(string::trim_copy((const char*)lpBuffer));
+			auto trimmedWarning = std::move(se::string::trim_copy((const char*)lpBuffer));
 			log::getLog() << "Morrowind has raised a warning with a lua stack trace: " << trimmedWarning << std::endl;
 			logStackTrace(nullptr);
 		}
@@ -5019,6 +5019,17 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::hook() {
+		using se::memory::genCallEnforced;
+		using se::memory::genJumpEnforced;
+		using se::memory::genJumpUnprotected;
+		using se::memory::overrideVirtualTableEnforced;
+		using se::memory::genNOPUnprotected;
+		using se::memory::writePatchCodeUnprotected;
+		using se::memory::genCallUnprotected;
+		using se::memory::overrideVirtualTable;
+		using se::memory::genPushEnforced;
+		using se::memory::writeByteUnprotected;
+
 		// Open default lua libraries.
 		luaState.open_libraries();
 
@@ -6767,9 +6778,9 @@ namespace mwse::lua {
 		genCallEnforced(0x4FF826, 0x40FA80, *reinterpret_cast<DWORD*>(&startGlobalScriptBySourceID));
 
 		// Event: topicsListUpdated
-		mwse::genCallEnforced(0x5C03A6, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
-		mwse::genCallEnforced(0x5C06D0, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
-		mwse::genCallEnforced(0x5C0AF6, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
+		genCallEnforced(0x5C03A6, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
+		genCallEnforced(0x5C06D0, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
+		genCallEnforced(0x5C0AF6, 0x5BE6C0, reinterpret_cast<DWORD>(TES3::UI::updateTopicsList));
 
 		// UI framework hooks
 		TES3::UI::hook();

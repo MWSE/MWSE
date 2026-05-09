@@ -176,6 +176,9 @@ namespace se::memory {
 		return true;
 	}
 
+	// Modify a value in memory.
+	bool writeAddFlagEnforced(DWORD address, DWORD flags, DWORD addedFlags);
+
 	// Code to write a patch to a code segment. This function unprotects the memory.
 	// WARNING: If passing a function address, always use a non-static function or it will crash.
 	void writePatchCodeUnprotected(DWORD address, const BYTE* patch, DWORD size);

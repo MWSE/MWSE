@@ -1,6 +1,6 @@
-#include "TES3StdString.h"
+#include "StdString.h"
 
-namespace TES3 {
+namespace se {
 	const auto TES3_StdString_ctor = reinterpret_cast<void(__thiscall**)(StdString*)>(0x74617C);
 	const auto TES3_StdString_dtor = reinterpret_cast<void(__thiscall**)(StdString*)>(0x7461C4);
 	const auto TES3_StdString_assign = reinterpret_cast<void(__thiscall**)(StdString*, const char*, size_t)>(0x7461CC);

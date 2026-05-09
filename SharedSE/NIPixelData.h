@@ -46,7 +46,7 @@ namespace NI {
 		unsigned int bytesPerPixel; // 0x40
 		unsigned int revisionID;
 
-		// Implemented only in Morrowind-context builds (requires mwse::tes3::_new<>).
+		// Implemented only in Morrowind-context builds (requires se::memory::_new<>).
 		static Pointer<PixelData> create(unsigned int width, unsigned int height, unsigned int mipMapLevels = 1);
 
 		Pointer<SourceTexture> createSourceTexture();

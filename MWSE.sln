@@ -60,5 +60,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedSE\SharedSE.vcxitems*{50562d0f-55b1-49ea-bdbe-d6922be5957d}*SharedItemsImports = 4
 		SharedSE\SharedSE.vcxitems*{aabd3611-7360-404e-996c-26462e50a8a5}*SharedItemsImports = 9
+		SharedSE\SharedSE.vcxitems*{cf29bc49-506f-4555-8849-5d59f2519d53}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

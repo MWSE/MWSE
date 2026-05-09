@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TES3 {
+namespace se {
 	struct StdString {
 		int unknown_0x0;
 		char * c_str; // 0x4
