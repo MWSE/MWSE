@@ -12,6 +12,7 @@
 #include "NIGeometry.h"
 #include "NIMatrix33.h"
 #include "NINode.h"
+#include "NIPoint3.h"
 #include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
@@ -79,6 +80,187 @@ namespace se::cs::dialog::render_window {
 	}
 
 	using gLandscapeEditDisc = memory::ExternalGlobal<NI::Lines*, 0x6CF4B4>;
+	using gLandscapeEditRadius = memory::ExternalGlobal<int, 0x6CE9CC>;
+	using gCurrentLandData = memory::ExternalGlobal<Land*, 0x6CF7AC>;
+	using gSelectedLandTexture = memory::ExternalGlobal<LandTexture*, 0x6CE9D4>;
+
+	constexpr float LANDSCAPE_BRUSH_SAMPLE_STEP = 128.0f;
+	constexpr int LAND_TEXTURE_TILES_PER_SIDE = 16;
+	constexpr unsigned short LAND_DEFAULT_TEXTURE_INDEX = 0xFFFF;
+
+	struct TexturePaintTileInfo {
+		float landLocalX; // 0x0
+		float landLocalY; // 0x4
+		float blockLocalX; // 0x8
+		float blockLocalY; // 0xC
+		int blockX; // 0x10
+		int blockY; // 0x14
+		int blockIndex; // 0x18
+		float quadLocalX; // 0x1C
+		float quadLocalY; // 0x20
+		int quadX; // 0x24
+		int quadY; // 0x28
+		int textureTileIndex; // 0x2C
+		NI::Point3 closestVertexWorldPosition; // 0x30
+		int closestVertexIndex; // 0x3C
+		int triangleVertexIndices[3]; // 0x40
+		BYTE triangleFlags[2]; // 0x4C
+		BYTE padding_0x4E[2];
+	};
+	static_assert(sizeof(TexturePaintTileInfo) == 0x50, "TexturePaintTileInfo failed size validation");
+	static_assert(offsetof(TexturePaintTileInfo, blockIndex) == 0x18, "TexturePaintTileInfo::blockIndex failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, textureTileIndex) == 0x2C, "TexturePaintTileInfo::textureTileIndex failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, closestVertexWorldPosition) == 0x30, "TexturePaintTileInfo::closestVertexWorldPosition failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, triangleFlags) == 0x4C, "TexturePaintTileInfo::triangleFlags failed offset validation");
+
+	struct TexturePaintTileKey {
+		Land* land = nullptr;
+		int gridX = 0;
+		int gridY = 0;
+		int blockIndex = 0;
+		int textureTileIndex = 0;
+
+		bool operator==(const TexturePaintTileKey& rhs) const {
+			return land == rhs.land
+				&& gridX == rhs.gridX
+				&& gridY == rhs.gridY
+				&& blockIndex == rhs.blockIndex
+				&& textureTileIndex == rhs.textureTileIndex;
+		}
+	};
+
+	struct TexturePaintTileKeyHasher {
+		std::size_t operator()(const TexturePaintTileKey& key) const {
+			auto hash = std::hash<Land*>{}(key.land);
+
+			hash ^= std::hash<int>{}(key.gridX) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.gridY) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.blockIndex) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.textureTileIndex) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+
+			return hash;
+		}
+	};
+
+	struct TexturePaintTarget {
+		TexturePaintTileKey key;
+		TexturePaintTileInfo tileInfo;
+	};
+
+	struct TexturePaintDragState {
+		LandTexture* lastSelectedTexture = nullptr;
+		int lastRadius = 0;
+		std::unordered_set<TexturePaintTileKey, TexturePaintTileKeyHasher> paintedTiles;
+
+		TexturePaintDragState() {
+			paintedTiles.reserve(256);
+		}
+
+		void reset() {
+			lastSelectedTexture = nullptr;
+			lastRadius = 0;
+			paintedTiles.clear();
+		}
+
+		void sync(LandTexture* selectedTexture, int radius) {
+			if (lastSelectedTexture == selectedTexture && lastRadius == radius) {
+				return;
+			}
+
+			reset();
+			lastSelectedTexture = selectedTexture;
+			lastRadius = radius;
+		}
+	};
+
+	TexturePaintDragState texturePaintDragState;
+
+	using LandWorldPosToGridAndLandDataFn = bool(__thiscall*)(DataHandler*, NI::Point3*, LandTexture**);
+	using LandWorldPosToTileInfoFn = bool(__thiscall*)(Land*, TexturePaintTileInfo*, NI::Point3*, bool);
+	using LandApplyTextureByWorldPosFn = void(__thiscall*)(Land*, NI::Point3*);
+	using LandApplyTextureToTileFn = bool(__thiscall*)(Land*, TexturePaintTileInfo*);
+
+	bool isLandscapeTexturePaintModeActive() {
+		using landscape_edit_settings_window::getEditLandscapeColor;
+		using landscape_edit_settings_window::getFlattenLandscapeVertices;
+		using landscape_edit_settings_window::getLandscapeEditingEnabled;
+		using landscape_edit_settings_window::getSoftenLandscapeVertices;
+
+		return getLandscapeEditingEnabled()
+			&& !getEditLandscapeColor()
+			&& !getFlattenLandscapeVertices()
+			&& !getSoftenLandscapeVertices();
+	}
+
+	bool isValidTexturePaintTileInfo(const TexturePaintTileInfo& tileInfo) {
+		const auto blockIndex = tileInfo.blockIndex;
+		const auto textureTileIndex = tileInfo.textureTileIndex;
+
+		return blockIndex >= 0
+			&& blockIndex < LAND_TEXTURE_TILES_PER_SIDE
+			&& textureTileIndex >= 0
+			&& textureTileIndex < LAND_TEXTURE_TILES_PER_SIDE;
+	}
+
+	bool getTexturePaintTarget(
+		NI::Point3& worldPos,
+		LandWorldPosToGridAndLandDataFn worldPosToGridAndLandData,
+		LandWorldPosToTileInfoFn worldPosToTileInfo,
+		TexturePaintTarget& target
+	) {
+		LandTexture* currentTexture = nullptr;
+		if (!worldPosToGridAndLandData(DataHandler::get(), &worldPos, &currentTexture)) {
+			return false;
+		}
+
+		const auto land = gCurrentLandData::get();
+		if (land == nullptr) {
+			return false;
+		}
+
+		TexturePaintTileInfo tileInfo;
+		if (!worldPosToTileInfo(land, &tileInfo, &worldPos, true)) {
+			return false;
+		}
+
+		if (land->sceneNode == nullptr) {
+			return false;
+		}
+
+		// Match Land::applyTextureByWorldPos: snap once, then resolve again from the texture tile center.
+		NI::Point3 tileCenter;
+		tileCenter.x = (static_cast<float>(static_cast<int>(tileInfo.landLocalX * 0.001953125f)) * 512.0f)
+			+ 256.0f
+			+ land->sceneNode->localTranslate.x;
+		tileCenter.y = (static_cast<float>(static_cast<int>(tileInfo.landLocalY * 0.001953125f)) * 512.0f)
+			+ 256.0f
+			+ land->sceneNode->localTranslate.y;
+		tileCenter.z = worldPos.z;
+
+		if (!worldPosToTileInfo(land, &tileInfo, &tileCenter, true)) {
+			return false;
+		}
+
+		if (!isValidTexturePaintTileInfo(tileInfo)) {
+			return false;
+		}
+
+		target.key.land = land;
+		target.key.gridX = land->gridX;
+		target.key.gridY = land->gridY;
+		target.key.blockIndex = tileInfo.blockIndex;
+		target.key.textureTileIndex = tileInfo.textureTileIndex;
+		target.tileInfo = tileInfo;
+		return true;
+	}
+
+	bool texturePaintTargetMatchesExpectedTexture(const TexturePaintTileKey& key, unsigned short expectedTextureIndex) {
+		return key.land->textureIndices[key.blockIndex][key.textureTileIndex] == expectedTextureIndex;
+	}
+
+	void resetTexturePaintDragState() {
+		texturePaintDragState.reset();
+	}
 
 	void updateLandscapeCircleWidget() {
 		const auto widget = gLandscapeEditDisc::get();
@@ -1279,6 +1461,108 @@ namespace se::cs::dialog::render_window {
 		return setSelectTexture(texture);
 	}
 
+	bool __fastcall Patch_ResolveTexturePaintTarget(DataHandler* dataHandler, DWORD _EDX_, NI::Point3* worldPos, LandTexture** currentTexture) {
+		const auto Land__worldPosToGridAndLandData = reinterpret_cast<bool(__thiscall*)(DataHandler*, NI::Point3*, LandTexture**)>(0x4A46C0);
+
+		const auto result = Land__worldPosToGridAndLandData(dataHandler, worldPos, currentTexture);
+		if (gLandscapeEditRadius::get() > 1) {
+			*currentTexture = nullptr;
+		}
+
+		return result;
+	}
+
+	void __fastcall Patch_ApplyTextureWithRadius(Land* land, DWORD _EDX_, NI::Point3* worldPos) {
+		const auto Land__worldPosToGridAndLandData = reinterpret_cast<LandWorldPosToGridAndLandDataFn>(0x4A46C0);
+		const auto Land__worldPosToTileInfo = reinterpret_cast<LandWorldPosToTileInfoFn>(0x511A20);
+		const auto Land__applyTextureByWorldPos = reinterpret_cast<LandApplyTextureByWorldPosFn>(0x5191F0);
+		const auto Land__applyTextureToTile = reinterpret_cast<LandApplyTextureToTileFn>(0x519300);
+		const auto radius = gLandscapeEditRadius::get();
+
+		if (radius <= 1) {
+			Land__applyTextureByWorldPos(land, worldPos);
+			return;
+		}
+
+		const auto selectedTexture = gSelectedLandTexture::get();
+		const auto activeDragCache = isLandscapeTexturePaintModeActive() && selectedTexture != nullptr;
+		if (!activeDragCache) {
+			resetTexturePaintDragState();
+		}
+		else {
+			texturePaintDragState.sync(selectedTexture, radius);
+		}
+
+		const auto extent = float(radius) * LANDSCAPE_BRUSH_SAMPLE_STEP;
+		const auto extentSquared = extent * extent;
+		const auto centerX = worldPos->x;
+		const auto centerY = worldPos->y;
+		const auto expectedTextureIndex = selectedTexture ? static_cast<unsigned short>(selectedTexture->index) : LAND_DEFAULT_TEXTURE_INDEX;
+		auto& dragState = texturePaintDragState;
+		std::unordered_set<TexturePaintTileKey, TexturePaintTileKeyHasher> stampTiles;
+		std::vector<TexturePaintTarget> targets;
+
+		stampTiles.reserve(256);
+		targets.reserve(256);
+
+		for (auto y = centerY - extent; y < centerY + extent; y += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+			for (auto x = centerX - extent; x < centerX + extent; x += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+				const auto dx = centerX - x;
+				const auto dy = centerY - y;
+				if (dx * dx + dy * dy > extentSquared) {
+					continue;
+				}
+
+				NI::Point3 tilePosition;
+				tilePosition.x = x;
+				tilePosition.y = y;
+				tilePosition.z = worldPos->z;
+
+				TexturePaintTarget target;
+				if (!getTexturePaintTarget(tilePosition, Land__worldPosToGridAndLandData, Land__worldPosToTileInfo, target)) {
+					continue;
+				}
+
+				if (!stampTiles.insert(target.key).second) {
+					continue;
+				}
+
+				if (texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+					if (activeDragCache) {
+						dragState.paintedTiles.insert(target.key);
+					}
+					continue;
+				}
+
+				// The drag cache is only a hint; direct land data always wins.
+				if (activeDragCache) {
+					dragState.paintedTiles.erase(target.key);
+				}
+
+				targets.push_back(target);
+			}
+		}
+
+		for (const auto& target : targets) {
+			if (texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+				if (activeDragCache) {
+					dragState.paintedTiles.insert(target.key);
+				}
+				continue;
+			}
+
+			auto tileInfo = target.tileInfo;
+			if (Land__applyTextureToTile(target.key.land, &tileInfo)
+				&& activeDragCache
+				&& texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+				dragState.paintedTiles.insert(target.key);
+			}
+		}
+
+		LandTexture* currentTexture = nullptr;
+		Land__worldPosToGridAndLandData(DataHandler::get(), worldPos, &currentTexture);
+	}
+
 	void alignSelection(bool posX, bool posY, bool posZ, bool rotX, bool rotY, bool rotZ, bool scale) {
 		auto selectionData = SelectionData::get();
 		auto lastTarget = selectionData->getLastTarget();
@@ -2263,6 +2547,8 @@ namespace se::cs::dialog::render_window {
 	void PatchDialogProc_BeforeRMouseButtonDown(DialogProcContext& context) {
 		constexpr auto comboPickLandscapeTexture = MK_CONTROL | MK_RBUTTON;
 		const auto controlState = context.getWParam();
+		resetTexturePaintDragState();
+
 		if ((controlState & comboPickLandscapeTexture) == comboPickLandscapeTexture) {
 			if (PickLandscapeTexture(context.getWindowHandle())) {
 				context.setResult(TRUE);
@@ -2360,6 +2646,8 @@ namespace se::cs::dialog::render_window {
 
 	void PatchDialogProc_AfterRMouseButtonUp(DialogProcContext& context) {
 		using windows::isControlDown;
+
+		resetTexturePaintDragState();
 
 		if (isControlDown()) {
 			grid::hide();
@@ -2688,6 +2976,12 @@ namespace se::cs::dialog::render_window {
 
 		// Patch: Improve multi-reference scaling.
 		genCallEnforced(0x45EE3A, 0x404949, reinterpret_cast<DWORD>(Patch_ReplaceScalingLogic));
+
+		// Patch: Apply landscape texture painting to all tiles in the edit radius.
+		genCallEnforced(0x45E055, 0x401398, reinterpret_cast<DWORD>(Patch_ResolveTexturePaintTarget));
+		genCallEnforced(0x45E0A6, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
+		genCallEnforced(0x45EB5C, 0x401398, reinterpret_cast<DWORD>(Patch_ResolveTexturePaintTarget));
+		genCallEnforced(0x45EBAD, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
 
 		// Patch: Improve drag-move logic.
 		genJumpEnforced(0x401F4B, 0x464B70, reinterpret_cast<DWORD>(Patch_ReplaceDragMovementLogic));
