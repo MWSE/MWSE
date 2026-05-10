@@ -2,7 +2,7 @@
 
 #include "NITimeController.h"
 #include "NIParticleModifier.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct PerParticleData;
@@ -15,7 +15,7 @@ namespace NI {
 		float declinationAngleVariation; // 0x44
 		float planarAngle; // 0x48
 		float planarAngleVariation; // 0x4C
-		Vector3 initialNormal; // 0x50
+		Point3 initialNormal; // 0x50
 		PackedColor initialColor; // 0x5C
 		float initialSize; // 0x60
 		float emitStartTime; // 0x64

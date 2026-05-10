@@ -23,25 +23,25 @@ namespace NI {
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	// Engine-state globals (Morrowind.exe). Direct address access avoids
 	// dragging se::memory::ExternalGlobal into SharedSE.
-	static inline Vector2& gPickDefaultTextureCoords() { return *reinterpret_cast<Vector2*>(0x7DED80); }
+	static inline Point2& gPickDefaultTextureCoords() { return *reinterpret_cast<Point2*>(0x7DED80); }
 	static inline PackedColor& gPickDefaultColor() { return *reinterpret_cast<PackedColor*>(0x7DE814); }
 
-	static bool __cdecl FindIntersectRayWithTriangle(const Vector3* position, const Vector3* direction, const Vector3* vertex1, const Vector3* vertex2, const Vector3* vertex3, bool frontOnly, Vector3* out_intersection, float* out_distance, float* out_weight2, float* out_weight3) {
+	static bool __cdecl FindIntersectRayWithTriangle(const Point3* position, const Point3* direction, const Point3* vertex1, const Point3* vertex2, const Point3* vertex3, bool frontOnly, Point3* out_intersection, float* out_distance, float* out_weight2, float* out_weight3) {
 #if defined(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE) && SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE > 0
-		const auto NI_FindIntersectRayWithTriangle = reinterpret_cast<bool(__cdecl*)(const Vector3*, const Vector3*, const Vector3*, const Vector3*, const Vector3*, bool, Vector3*, float*, float*, float*)>(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE);
+		const auto NI_FindIntersectRayWithTriangle = reinterpret_cast<bool(__cdecl*)(const Point3*, const Point3*, const Point3*, const Point3*, const Point3*, bool, Point3*, float*, float*, float*)>(SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE);
 		return NI_FindIntersectRayWithTriangle(position, direction, vertex1, vertex2, vertex3, frontOnly, out_intersection, out_distance, out_weight2, out_weight3);
 #else
 		throw not_implemented_exception();
 #endif
 	}
 
-	static std::vector<Vector3> deformVertices;
-	static std::vector<Vector3> deformNormals;
+	static std::vector<Point3> deformVertices;
+	static std::vector<Point3> deformNormals;
 #endif
 
-	bool TriBasedGeometry::findIntersections(const Vector3* position, const Vector3* direction, Pick* pick) {
+	bool TriBasedGeometry::findIntersections(const Point3* position, const Point3* direction, Pick* pick) {
 #if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS) && SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS > 0
-		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Vector3*, const Vector3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
+		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Point3*, const Point3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
@@ -108,7 +108,7 @@ namespace NI {
 
 			// Perform our test for the triangle, and calculate the weight to each index.
 			auto distance = std::numeric_limits<float>::infinity();
-			Vector3 intersection;
+			Point3 intersection;
 			float weight2, weight3;
 			if (!FindIntersectRayWithTriangle(&worldScaled, &directionScaled, vertex1, vertex2, vertex3, pick->frontOnly, &intersection, &distance, &weight2, &weight3)) {
 				continue;
@@ -146,7 +146,7 @@ namespace NI {
 
 			// Calculate weighted normals.
 			if (pick->returnNormal) {
-				Vector3 normal = {};
+				Point3 normal = {};
 				if (pick->returnSmoothNormal && normals) {
 					normal = normals[index1] * weight1 + normals[index2] * weight2 + normals[index3] * weight3;
 				}

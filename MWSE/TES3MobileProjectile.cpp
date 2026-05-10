@@ -16,9 +16,9 @@ namespace TES3 {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
 		TES3::Reference* hitReference = hit.colliderRef;
-		NI::Vector3 point = hit.point;
-		NI::Vector3 pos = hit.objectPosAtCollision;
-		NI::Vector3 vel = hit.velocity;
+		NI::Point3 point = hit.point;
+		NI::Point3 pos = hit.objectPosAtCollision;
+		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
 		bool result = TES3_MobileProjectile_onActorCollision(this, collisionIndex);
@@ -37,9 +37,9 @@ namespace TES3 {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
 		TES3::Reference* hitReference = hit.colliderRef;
-		NI::Vector3 point = hit.point;
-		NI::Vector3 pos = hit.objectPosAtCollision;
-		NI::Vector3 vel = hit.velocity;
+		NI::Point3 point = hit.point;
+		NI::Point3 pos = hit.objectPosAtCollision;
+		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
 		bool result = TES3_MobileProjectile_onObjectCollision(this, collisionIndex, flag);
@@ -56,9 +56,9 @@ namespace TES3 {
 	bool MobileProjectile::onTerrainCollision(int collisionIndex) {
 		// Grab the collision data now, it won't be available after calling the main function.
 		const auto& hit = this->arrayCollisionResults[collisionIndex];
-		NI::Vector3 point = hit.point;
-		NI::Vector3 pos = hit.objectPosAtCollision;
-		NI::Vector3 vel = hit.velocity;
+		NI::Point3 point = hit.point;
+		NI::Point3 pos = hit.objectPosAtCollision;
+		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
 		bool result = TES3_MobileProjectile_onTerrainCollision(this, collisionIndex);
@@ -86,7 +86,7 @@ namespace TES3 {
 		return result;
 	}
 
-	NI::Vector3 MobileProjectile::getProjectileVelocity() const {
+	NI::Point3 MobileProjectile::getProjectileVelocity() const {
 		return velocity;
 	}
 

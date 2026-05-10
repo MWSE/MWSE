@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3UIDefines.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace TES3::UI {
 	UI_ID registerID(const char* name);
@@ -30,7 +30,7 @@ namespace TES3::UI {
 	void acquireTextInput(Element* element);
 	void captureMouseDrag(bool capture);
 	void preventInventoryMenuToggle(Element* menu);
-	NI::Vector3 getPaletteColour(Property prop);
+	NI::Point3 getPaletteColour(Property prop);
 
 	bool __cdecl onScrollPaneMousewheel(Element*, Property, int, int, Element*);
 

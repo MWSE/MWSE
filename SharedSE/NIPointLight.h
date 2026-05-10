@@ -17,8 +17,8 @@ namespace NI {
 		static Pointer<PointLight> create();
 
 		float getAttenuationAtDistance(float distance) const;
-		// Point parameter uses NI::Vector3 layout, which is identical to NI::Vector3.
-		float getAttenuationAtPoint(const Vector3* point) const;
+		// Point parameter uses NI::Point3 layout, which is identical to NI::Point3.
+		float getAttenuationAtPoint(const Point3* point) const;
 
 		// Sets attenuation coefficients from Morrowind's per-game-settings globals.
 		// Requires TES3::DataHandler — implemented only in Morrowind-context builds.

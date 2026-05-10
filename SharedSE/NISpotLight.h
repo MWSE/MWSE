@@ -4,7 +4,7 @@
 
 namespace NI {
 	struct SpotLight : PointLight {
-		Vector3 direction; // 0xDC
+		Point3 direction; // 0xDC
 		float spotAngle; // 0xE8
 		float spotExponent; // 0xEC
 	};

@@ -24,7 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
@@ -106,8 +106,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector2.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIVector3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -183,9 +183,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector2.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector3.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIVector4.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StdString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsUtil.cpp" />

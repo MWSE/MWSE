@@ -309,8 +309,8 @@ namespace mwse::tes3 {
 		return TES3_getThreadSafeStringBuffer(reinterpret_cast<char*>(0x7CB478));
 	}
 
-	const auto TES3_testLineOfSight = reinterpret_cast<bool(__cdecl*)(NI::Vector3*, float, NI::Vector3*, float)>(0x53B200);
-	bool testLineOfSight(NI::Vector3* pos1, float height1, NI::Vector3* pos2, float height2) {
+	const auto TES3_testLineOfSight = reinterpret_cast<bool(__cdecl*)(NI::Point3*, float, NI::Point3*, float)>(0x53B200);
+	bool testLineOfSight(NI::Point3* pos1, float height1, NI::Point3* pos2, float height2) {
 		return TES3_testLineOfSight(pos1, height1, pos2, height2);
 	}
 

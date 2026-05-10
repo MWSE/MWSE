@@ -13,8 +13,8 @@
 #include "NIRenderer.h"
 #include "NISourceTexture.h"
 #include "NITextureEffect.h"
-#include "NIVector2.h"
-#include "NIVector3.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class MusicSituation : int {
@@ -112,9 +112,9 @@ namespace TES3 {
 	struct MouseController {
 		NI::Object* cursors[5];
 		int unknown_0x14;
-		NI::Vector3 position; // 0x18
-		NI::Vector3 minimumPosition; // 0x24
-		NI::Vector3 maximumPosition; // 0x30
+		NI::Point3 position; // 0x18
+		NI::Point3 minimumPosition; // 0x24
+		NI::Point3 maximumPosition; // 0x30
 		NI::Node* cursorRoot; // 0x3C
 		NI::Node* cursorChildRoot; // 0x40
 		int unknown_0x44;
@@ -199,7 +199,7 @@ namespace TES3 {
 			};
 			struct GlyphData {
 				int unknown_0;
-				NI::Vector2 topLeft, topRight, bottomLeft, bottomRight;
+				NI::Point2 topLeft, topRight, bottomLeft, bottomRight;
 				float width, height, leftKerning, rightKerning, ascent;
 			};
 

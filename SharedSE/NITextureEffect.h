@@ -3,14 +3,14 @@
 #include "NIDynamicEffect.h"
 #include "NIMatrix33.h"
 #include "NISourceTexture.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct TextureEffect : DynamicEffect {
 		Matrix33 unknown_0xA8;
-		Vector3 unknnown_0xCC;
+		Point3 unknnown_0xCC;
 		Matrix33 unknown_0xD8;
-		Vector3 unknnown_0xFC;
+		Point3 unknnown_0xFC;
 		Pointer<SourceTexture> sourceTexture; // 0x108
 		int unknown_0x10C;
 		int unknown_0x110;

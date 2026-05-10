@@ -39,8 +39,8 @@ namespace se::cs {
 		return Reference_updateRotationMatrixForRaceAndSex(this, &matrix, unknown);
 	}
 
-	bool Reference::createSelectionWidget(NI::Vector3 boundsMin, NI::Vector3 boundsMax) {
-		const auto Reference_createSelectionWidget = reinterpret_cast<bool(__thiscall*)(Reference*, NI::Vector3, NI::Vector3)>(0x540D50);
+	bool Reference::createSelectionWidget(NI::Point3 boundsMin, NI::Point3 boundsMax) {
+		const auto Reference_createSelectionWidget = reinterpret_cast<bool(__thiscall*)(Reference*, NI::Point3, NI::Point3)>(0x540D50);
 
 		if (!Reference_createSelectionWidget(this, boundsMin, boundsMax)) {
 			return false;

@@ -5,7 +5,7 @@
 #include "NIExtraData.h"
 #include "NIHashMap.h"
 #include "NIMatrix33.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	enum struct SequenceState : int {
@@ -38,9 +38,9 @@ namespace NI {
 		char bFirstFrame;
 		float lastTime;
 		NI::Matrix33 m_kLoopScaleRotation;
-		NI::Vector3 m_kLoopTranslation;
+		NI::Point3 m_kLoopTranslation;
 		NI::Matrix33 m_kTempScaleRotation;
-		NI::Vector3 m_kTempTranslation;
+		NI::Point3 m_kTempTranslation;
 
 		void release();
 	};
@@ -50,7 +50,7 @@ namespace NI {
 		NI::HashMap<int, Sequence*> sequences; // 0x34
 		bool cumulative; // 0x44
 		NI::Matrix33 globalScaleRotation; // 0x48
-		NI::Vector3 globalTranslation; // 0x6C
+		NI::Point3 globalTranslation; // 0x6C
 
 		void activateSequence(Sequence*);
 		void deactivateSequence(Sequence*);

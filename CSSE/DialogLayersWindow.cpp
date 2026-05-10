@@ -1260,9 +1260,9 @@ namespace se::cs::dialog::layer_window {
 		OnCellLoaded();
 	}
 
-	static bool __fastcall Patch_CellGridLoad_Wrapper(DataHandler* self, DWORD _EDX_, NI::Vector3* position) {
+	static bool __fastcall Patch_CellGridLoad_Wrapper(DataHandler* self, DWORD _EDX_, NI::Point3* position) {
 		// Call overwritten code.
-		const auto TES3_CS_CellGridLoad = reinterpret_cast<bool(__thiscall*)(DataHandler*, NI::Vector3*)>(0x4A0090);
+		const auto TES3_CS_CellGridLoad = reinterpret_cast<bool(__thiscall*)(DataHandler*, NI::Point3*)>(0x4A0090);
 		const auto returnValue = TES3_CS_CellGridLoad(self, position);
 
 		OnCellLoaded();

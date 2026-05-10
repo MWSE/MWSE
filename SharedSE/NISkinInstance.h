@@ -42,7 +42,7 @@ namespace NI {
 				unsigned short index; // 0x0
 				float weight; // 0x4
 			};
-			Transform transform; // 0x0  (Matrix33 rotation + Vector3 translation + float scale)
+			Transform transform; // 0x0  (Matrix33 rotation + Point3 translation + float scale)
 			SphereBound bounds; // 0x34
 			VertexWeight* weights; // 0x44
 			unsigned short weightCount; // 0x48
@@ -66,7 +66,7 @@ namespace NI {
 		AVObject** bones; // 0x10
 		int unknown_0x14;
 
-		void deform(const Vector3* srcVertices, const Vector3* srcNormals, unsigned int vertexCount, Vector3* dstVertices, Vector3* dstNormals) const;
+		void deform(const Point3* srcVertices, const Point3* srcNormals, unsigned int vertexCount, Point3* dstVertices, Point3* dstNormals) const;
 
 		nonstd::span<AVObject*> getBoneObjects();
 	};

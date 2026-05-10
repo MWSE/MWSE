@@ -4,7 +4,7 @@
 
 namespace NI {
 	struct DirectionalLight : Light {
-		Vector3 direction; // 0xD0
+		Point3 direction; // 0xD0
 	};
 	static_assert(sizeof(DirectionalLight) == 0xDC, "NI::DirectionalLight failed size validation");
 }

@@ -2,7 +2,7 @@
 
 #include "NIColor.h"
 #include "NIQuaternion.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct AnimationKey {
@@ -111,15 +111,15 @@ namespace NI {
 	static_assert(sizeof(AmbiguousRotKeyPtr) == sizeof(void*), "NI::AmbiguousRotKeyPtr failed size validation");
 
 	struct PosKey : AnimationKey {
-		Vector3 value; // 0x4
+		Point3 value; // 0x4
 	};
 	static_assert(sizeof(PosKey) == 0x10, "NI::PosKey failed size validation");
 
 	struct BezPosKey : PosKey {
-		Vector3 inTangent; // 0x10
-		Vector3 outTangent; // 0x1C
-		Vector3 intermediateA; // 0x28
-		Vector3 intermediateB; // 0x34
+		Point3 inTangent; // 0x10
+		Point3 outTangent; // 0x1C
+		Point3 intermediateA; // 0x28
+		Point3 intermediateB; // 0x34
 	};
 	static_assert(sizeof(BezPosKey) == 0x40, "NI::BezPosKey failed size validation");
 
@@ -127,10 +127,10 @@ namespace NI {
 		float tension; // 0x10
 		float continuity; // 0x14
 		float bias; // 0x18
-		Vector3 derivedA; // 0x1C
-		Vector3 derivedB; // 0x28
-		Vector3 intermediateA; // 0x34
-		Vector3 intermediateB; // 0x40
+		Point3 derivedA; // 0x1C
+		Point3 derivedB; // 0x28
+		Point3 intermediateA; // 0x34
+		Point3 intermediateB; // 0x40
 	};
 	static_assert(sizeof(TCBPosKey) == 0x4C, "NI::TCBPosKey failed size validation");
 

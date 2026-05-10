@@ -17,7 +17,7 @@ namespace NI {
 
 	}
 
-	Matrix44::Matrix44(const Vector4& in_m0, const Vector4& in_m1, const Vector4& in_m2, const Vector4& in_m3) :
+	Matrix44::Matrix44(const Point4& in_m0, const Point4& in_m1, const Point4& in_m2, const Point4& in_m3) :
 		m0(in_m0),
 		m1(in_m1),
 		m2(in_m2),

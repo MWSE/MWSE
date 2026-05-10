@@ -3,7 +3,7 @@
 #include <array>
 
 #include "NIDefines.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct PackedColor {
@@ -41,13 +41,13 @@ namespace NI {
 		Color() : r(0.0f), g(0.0f), b(0.0f) {}
 		Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
 		Color(const ColorA& c);
-		Color(const Vector3& vector);
+		Color(const Point3& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		Color(sol::table table);
 		Color(const sol::object& object);
 #endif
 
-		Color& operator=(const Vector3& vector);
+		Color& operator=(const Point3& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		Color& operator=(const sol::table table);
 		Color& operator=(const sol::object& object);
@@ -66,7 +66,7 @@ namespace NI {
 
 		Color copy() const;
 		Color lerp(const Color& to, float transition) const;
-		Vector3 toVector3() const;
+		Point3 toPoint3() const;
 
 		void clamp();
 

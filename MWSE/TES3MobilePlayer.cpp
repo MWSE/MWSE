@@ -253,7 +253,7 @@ namespace TES3 {
 		return BASE_DISTANCE + listFriendlyActors.size() * EXTENSION_PER_FRIENDLY;
 	}
 
-	static NI::Vector3 lastPlayerPosition;
+	static NI::Point3 lastPlayerPosition;
 	static int cameraResetFrames = 0;
 
 	const auto TES3_MobilePlayer_updateScenegraph = reinterpret_cast<void(__thiscall*)(MobilePlayer*)>(0x5679E0);

@@ -15,7 +15,7 @@ namespace NI {
 		void setCollisionActive(bool active);
 
 		void linkObject(Stream* stream);
-		bool findIntersections(NI::Vector3* position, NI::Vector3* direction, Pick* pick);
+		bool findIntersections(NI::Point3* position, NI::Point3* direction, Pick* pick);
 
 		static Pointer<CollisionSwitch> create();
 	};

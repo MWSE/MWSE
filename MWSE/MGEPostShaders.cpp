@@ -3,8 +3,8 @@
 #include "MGEApi.h"
 #include "NIMatrix33.h"
 #include "NIMatrix44.h"
-#include "NIVector2.h"
-#include "NIVector3.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 #include "Log.h"
 
@@ -116,7 +116,7 @@ namespace mge {
 		case '2':
 			{
 				// Float vectors of length 2.
-				NI::Vector2 vec;
+				NI::Point2 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 2)) {
 					return sol::make_object(state, vec);
 				}
@@ -125,7 +125,7 @@ namespace mge {
 		case '3':
 			{
 				// Float vectors of length 3.
-				NI::Vector3 vec;
+				NI::Point3 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 3)) {
 					return sol::make_object(state, vec);
 				}
@@ -134,7 +134,7 @@ namespace mge {
 		case '4':
 			{
 				// Float vectors of length 4.
-				NI::Vector4 vec;
+				NI::Point4 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 4)) {
 					return sol::make_object(state, vec);
 				}
@@ -222,10 +222,10 @@ namespace mge {
 		case '2':
 			{
 				// Float vectors of length 2.
-				NI::Vector2 vec;
+				NI::Point2 vec;
 
-				if (value.is<NI::Vector2>()) {
-					vec = *value.as<NI::Vector2*>();
+				if (value.is<NI::Point2>()) {
+					vec = *value.as<NI::Point2*>();
 					api->shaderSetVector(handle, varName, &vec.x, 2);
 				}
 				else if (value.is<sol::table>()) {
@@ -239,10 +239,10 @@ namespace mge {
 		case '3':
 			{
 				// Float vectors of length 3.
-				NI::Vector3 vec;
+				NI::Point3 vec;
 
-				if (value.is<NI::Vector3>()) {
-					vec = *value.as<NI::Vector3*>();
+				if (value.is<NI::Point3>()) {
+					vec = *value.as<NI::Point3*>();
 					api->shaderSetVector(handle, varName, &vec.x, 3);
 				}
 				else if (value.is<sol::table>()) {
@@ -257,10 +257,10 @@ namespace mge {
 		case '4':
 			{
 				// Float vectors of length 4.
-				NI::Vector4 vec;
+				NI::Point4 vec;
 
-				if (value.is<NI::Vector4>()) {
-					vec = *value.as<NI::Vector4*>();
+				if (value.is<NI::Point4>()) {
+					vec = *value.as<NI::Point4*>();
 					api->shaderSetVector(handle, varName, &vec.x, 4);
 				}
 				else if (value.is<sol::table>()) {
@@ -278,13 +278,13 @@ namespace mge {
 			// Array of vector4s.
 			auto values = value.as<sol::table>();
 			if (values != sol::nil) {
-				size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(NI::Vector4), values.size());
-				NI::Vector4* valueBuffer = reinterpret_cast<NI::Vector4*>(shaderVariableAPIBuffer);
+				size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(NI::Point4), values.size());
+				NI::Point4* valueBuffer = reinterpret_cast<NI::Point4*>(shaderVariableAPIBuffer);
 
 				for (auto i = 0u; i < count; ++i) {
 					sol::object item = values[i + 1];
-					if (item.is<NI::Vector4>()) {
-						valueBuffer[i] = *item.as<NI::Vector4*>();
+					if (item.is<NI::Point4>()) {
+						valueBuffer[i] = *item.as<NI::Point4*>();
 					}
 				}
 				static_cast<mge::MGEAPIv3*>(api)->shaderSetVectorArray(handle, varName, &valueBuffer->x, &count);

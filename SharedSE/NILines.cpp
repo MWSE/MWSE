@@ -4,9 +4,9 @@
 
 namespace NI {
 
-	Lines::Lines(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags) {
+	Lines::Lines(unsigned short vertexCount, Point3* vertices, PackedColor* colors, Point2* textureCoords, bool* lineSegmentFlags) {
 #if defined(SE_NI_LINES_FNADDR_CTOR) && SE_NI_LINES_FNADDR_CTOR > 0
-		const auto NI_Lines_ctor = reinterpret_cast<Lines*(__thiscall*)(Lines*, unsigned short, Vector3*, PackedColor*, Vector2*, bool*)>(SE_NI_LINES_FNADDR_CTOR);
+		const auto NI_Lines_ctor = reinterpret_cast<Lines*(__thiscall*)(Lines*, unsigned short, Point3*, PackedColor*, Point2*, bool*)>(SE_NI_LINES_FNADDR_CTOR);
 		NI_Lines_ctor(this, vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
 #else
 		throw not_implemented_exception();
@@ -24,7 +24,7 @@ namespace NI {
 
 	Pointer<Lines> Lines::create(unsigned short vertexCount, bool useColors, bool useTextureCoords) {
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-		auto vertices = se::memory::_new<Vector3>(vertexCount);
+		auto vertices = se::memory::_new<Point3>(vertexCount);
 		auto lineSegmentFlags = se::memory::_new<bool>(vertexCount);
 
 		PackedColor* colors = nullptr;
@@ -32,24 +32,24 @@ namespace NI {
 			colors = se::memory::_new<PackedColor>(vertexCount);
 		}
 
-		Vector2* textureCoords = nullptr;
+		Point2* textureCoords = nullptr;
 		if (useTextureCoords) {
-			textureCoords = se::memory::_new<Vector2>(vertexCount);
+			textureCoords = se::memory::_new<Point2>(vertexCount);
 		}
 
 		return new Lines(vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
 #else
-		auto vertices = new Vector3[vertexCount];
+		auto vertices = new Point3[vertexCount];
 		auto lineSegmentFlags = new bool[vertexCount];
 
 		PackedColor* colors = useColors ? new PackedColor[vertexCount] : nullptr;
-		Vector2* textureCoords = useTextureCoords ? new Vector2[vertexCount] : nullptr;
+		Point2* textureCoords = useTextureCoords ? new Point2[vertexCount] : nullptr;
 
 		return new Lines(vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
 #endif
 	}
 
-	Pointer<Lines> Lines::create(unsigned short vertexCount, Vector3* vertices, PackedColor* colors, Vector2* textureCoords, bool* lineSegmentFlags) {
+	Pointer<Lines> Lines::create(unsigned short vertexCount, Point3* vertices, PackedColor* colors, Point2* textureCoords, bool* lineSegmentFlags) {
 		return new Lines(vertexCount, vertices, colors, textureCoords, lineSegmentFlags);
 	}
 }

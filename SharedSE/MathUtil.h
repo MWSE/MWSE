@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NiVector3.h"
+#include "NIPoint3.h"
 
 namespace se::math {
 	constexpr auto M_E = 2.71828182845904523536; // e
@@ -32,11 +32,11 @@ namespace se::math {
 
 	void standardizeAngleRadians(float& value);
 	
-	std::tuple<float, NI::Vector3> rayPlaneIntersection(
-		const NI::Vector3& rayOrigin, 
-		const NI::Vector3& rayDirection, 
-		const NI::Vector3& planeOrigin, 
-		const NI::Vector3& planeNormal
+	std::tuple<float, NI::Point3> rayPlaneIntersection(
+		const NI::Point3& rayOrigin, 
+		const NI::Point3& rayDirection, 
+		const NI::Point3& planeOrigin, 
+		const NI::Point3& planeNormal
 	);
 
 	unsigned int roundDownToPowerOfTwo(unsigned int x);

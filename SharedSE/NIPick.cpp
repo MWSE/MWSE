@@ -62,9 +62,9 @@ namespace NI {
 		return record;
 	}
 
-	bool Pick::pickObjects(const Vector3* origin, const Vector3* direction, bool append, float maxDistance) {
+	bool Pick::pickObjects(const Point3* origin, const Point3* direction, bool append, float maxDistance) {
 #if defined(SE_NI_PICK_FNADDR_PICKOBJECTS) && SE_NI_PICK_FNADDR_PICKOBJECTS > 0
-		const auto NI_Pick_pickObjects = reinterpret_cast<bool(__thiscall*)(Pick*, const Vector3*, const Vector3*, bool, float)>(SE_NI_PICK_FNADDR_PICKOBJECTS);
+		const auto NI_Pick_pickObjects = reinterpret_cast<bool(__thiscall*)(Pick*, const Point3*, const Point3*, bool, float)>(SE_NI_PICK_FNADDR_PICKOBJECTS);
 		return NI_Pick_pickObjects(this, origin, direction, append, maxDistance);
 #else
 		throw not_implemented_exception();
@@ -77,7 +77,7 @@ namespace NI {
 		Pointer<SkinInstance> skinInstance;
 	};
 
-	bool Pick::pickObjectsWithSkinDeforms(const Vector3* origin, const Vector3* direction, bool append, float maxDistance) {
+	bool Pick::pickObjectsWithSkinDeforms(const Point3* origin, const Point3* direction, bool append, float maxDistance) {
 		// Data to restore skinned objects to their original state.
 		std::vector<SavedGeometryState> savedGeometryStates;
 

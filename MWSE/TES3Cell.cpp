@@ -66,8 +66,8 @@ namespace TES3 {
 		TES3_Cell_setName(this, name);
 	}
 
-	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, NI::Vector2*, float, const char*)>(0x4E3730);
-	void Cell::addMapNote(NI::Vector2* position, float unknown, const char* text) {
+	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, NI::Point2*, float, const char*)>(0x4E3730);
+	void Cell::addMapNote(NI::Point2* position, float unknown, const char* text) {
 		TES3_Cell_addMapNote(this, position, unknown, text);
 	}
 
@@ -337,7 +337,7 @@ namespace TES3 {
 		return conn;
 	}
 
-	NI::Vector3 PathGrid::Node::getPosition() const {
+	NI::Point3 PathGrid::Node::getPosition() const {
 		// Convert local position to world position.
 		const auto cell = parentGrid->parentCell;
 		const int cellX = 8192 * cell->getGridX(), cellY = 8192 * cell->getGridY();

@@ -15,7 +15,7 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-		static Pointer<TriShapeData> create(unsigned short _vertexCount, Vector3* _vertices, Vector3* _normals, PackedColor* _colors, Vector2* _textureCoords, unsigned short _triangleCount, Triangle* _triangleList, int unused = 0);
+		static Pointer<TriShapeData> create(unsigned short _vertexCount, Point3* _vertices, Point3* _normals, PackedColor* _colors, Point2* _textureCoords, unsigned short _triangleCount, Triangle* _triangleList, int unused = 0);
 		static Pointer<TriShapeData> create(unsigned short vertexCount, bool hasNormals, bool hasColors, unsigned short textureCoordSets, unsigned short triangleCount);
 
 		//

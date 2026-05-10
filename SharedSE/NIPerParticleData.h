@@ -1,11 +1,11 @@
 #pragma once
 
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct PerParticleData {
-		Vector3 velocity; // 0x0
-		Vector3 rotationAxis; // 0xC
+		Point3 velocity; // 0x0
+		Point3 rotationAxis; // 0xC
 		float age; // 0x18
 		float lifeSpan; // 0x1C
 		float lastUpdate; // 0x20

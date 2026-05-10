@@ -2,11 +2,11 @@
 #include "TES3Weather.h"
 
 #include "NIIteratedList.h"
-#include "NIVector2.h"
+#include "NIPoint2.h"
 
 namespace TES3 {
 	struct WeatherBlight : Weather {
-		NI::Vector2 stormOrigin; // 0x318
+		NI::Point2 stormOrigin; // 0x318
 		NI::IteratedList<Spell*> blightDiseases; // 0x320
 		float diseaseChance; // 0x334
 		float diseaseTransitionThreshold; // 0x338

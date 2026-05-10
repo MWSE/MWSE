@@ -56,8 +56,8 @@ namespace se::cs::dialog::render_window {
 			int groupTotal; // 0x4
 			Reference* reference; // 0x8
 			Action action; // 0xC
-			NI::Vector3 unknown_10; // 0x10
-			NI::Vector3 unknown_1C; // 0x1C
+			NI::Point3 unknown_10; // 0x10
+			NI::Point3 unknown_1C; // 0x1C
 			float scale; // 0x28
 			int unknown_2C[7]; // 0x2C
 			Undoable* nextRedo; // 0x48

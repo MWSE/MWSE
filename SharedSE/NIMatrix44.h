@@ -1,16 +1,16 @@
 #pragma once
 
-#include "NIVector4.h"
+#include "NIPoint4.h"
 
 namespace NI {
 	struct Matrix44 {
-		Vector4 m0;
-		Vector4 m1;
-		Vector4 m2;
-		Vector4 m3;
+		Point4 m0;
+		Point4 m1;
+		Point4 m2;
+		Point4 m3;
 
 		Matrix44();
-		Matrix44(const Vector4& m0, const Vector4& m1, const Vector4& m2, const Vector4& m3);
+		Matrix44(const Point4& m0, const Point4& m1, const Point4& m2, const Point4& m3);
 		Matrix44(float m0w, float m0x, float m0y, float m0z, float m1w, float m1x, float m1y, float m1z, float m2w, float m2x, float m2y, float m2z, float m3w, float m3x, float m3y, float m3z);
 
 		//

@@ -31,7 +31,7 @@ namespace TES3 {
 		bool detectPresence(MobileActor* actor, bool ignoreCreatures = true);
 		bool detectByActor(MobileActor* detector, MobileActor* target);
 		bool detectSneak(MobileActor* detector, MobileActor* target, bool unknown = true);
-		void findActorsInProximity(NI::Vector3 * position, float range, NI::IteratedList<MobileActor*>* outputList);
+		void findActorsInProximity(NI::Point3 * position, float range, NI::IteratedList<MobileActor*>* outputList);
 		void checkAlarmRadius(MobileActor* actor, NI::IteratedList<AIPlanner*> * container);
 		void checkPlayerDistance();
 
@@ -68,8 +68,8 @@ namespace TES3 {
 
 	struct MobManager {
 		NI::CollisionGroup * mobCollisionGroup;
-		NI::Vector3 gravity; // 0x4, Initialized to {0, 0, -627.2}.
-		NI::Vector3 terminalVelocity; // Initialized to {0, 0, -4005.5}.
+		NI::Point3 gravity; // 0x4, Initialized to {0, 0, -627.2}.
+		NI::Point3 terminalVelocity; // Initialized to {0, 0, -4005.5}.
 		float dotProductOfMaxClimbableSlope; // Initialized to cos(46 degrees).
 		float maxClimbableSlopeDegrees; // Initialized to 46 degrees.
 		ProcessManager* processManager; // 0x24
@@ -108,9 +108,9 @@ namespace TES3 {
 		void resetConstantVelocities();
 		void clampAllActors();
 
-		NI::Vector3* getGravity();
+		NI::Point3* getGravity();
 		void setGravity(sol::stack_object);
-		NI::Vector3* getTerminalVelocity();
+		NI::Point3* getTerminalVelocity();
 		void setTerminalVelocity(sol::stack_object);
 		float getMaxClimbableSlope();
 		void setMaxClimbableSlope(float value);

@@ -26,14 +26,14 @@ namespace NI {
 	}
 #endif
 
-	Vector3 AVObject::getLocalVelocity() const {
+	Point3 AVObject::getLocalVelocity() const {
 		if (velocities) {
 			return velocities->localVelocity;
 		}
-		return Vector3{ 0, 0, 0 };
+		return Point3{ 0, 0, 0 };
 	}
 
-	void AVObject::setLocalVelocity(Vector3* v) {
+	void AVObject::setLocalVelocity(Point3* v) {
 		if (velocities) {
 			velocities->localVelocity = *v;
 		}
@@ -246,9 +246,9 @@ namespace NI {
 	}
 #endif
 
-	bool AVObject::intersectBounds(const Vector3* position, const Vector3* direction, float* out_result) const {
+	bool AVObject::intersectBounds(const Point3* position, const Point3* direction, float* out_result) const {
 #if defined(SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS) && SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS > 0
-		const auto NI_AVObject_IntersectBounds = reinterpret_cast<bool(__thiscall*)(const AVObject*, const Vector3*, const Vector3*, float*)>(SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS);
+		const auto NI_AVObject_IntersectBounds = reinterpret_cast<bool(__thiscall*)(const AVObject*, const Point3*, const Point3*, float*)>(SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS);
 		return NI_AVObject_IntersectBounds(this, position, direction, out_result);
 #else
 		throw not_implemented_exception();
@@ -256,9 +256,9 @@ namespace NI {
 	}
 
 	void AVObject::calculateBounds(
-		Vector3& outMin,
-		Vector3& outMax,
-		const Vector3& translation,
+		Point3& outMin,
+		Point3& outMax,
+		const Point3& translation,
 		const Matrix33& rotation,
 		const float& scale,
 		const bool accurateSkinned,
@@ -339,7 +339,7 @@ namespace NI {
 		// Optionally apply skin deformations. Note: This is not thread-safe.
 		auto useDeform = accurateSkinned && (asGeometry->skinInstance != nullptr);
 		if (useDeform) {
-			static std::vector<Vector3> deformVertices;
+			static std::vector<Point3> deformVertices;
 			deformVertices.reserve(vertexCount);
 			vertices = deformVertices.data();
 			asGeometry->skinInstance->deform(modelData->vertex, nullptr, vertexCount, vertices, nullptr);
@@ -364,7 +364,7 @@ namespace NI {
 		auto onlyActiveChildren = mwse::lua::getOptionalParam(maybeParams, "onlyActiveChildren", false);
 		auto bb = std::make_shared<BoundingBox>();
 		bb->initialize();
-		calculateBounds(bb->minimum, bb->maximum, NI::Vector3::ZEROES, NI::Matrix33::IDENTITY, 1.0, accuratedSkinned, observeAppCullFlag, onlyActiveChildren);
+		calculateBounds(bb->minimum, bb->maximum, NI::Point3::ZEROES, NI::Matrix33::IDENTITY, 1.0, accuratedSkinned, observeAppCullFlag, onlyActiveChildren);
 		return bb;
 	}
 #endif
@@ -649,7 +649,7 @@ namespace NI {
 
 	// Free functions used by CSSE-side engine patches; harmless dead code in MWSE.
 
-	void __cdecl CalculateBounds(const AVObject* object, Vector3& outMin, Vector3& outMax, const Vector3& translation, const Matrix33& rotation, const float& scale) {
+	void __cdecl CalculateBounds(const AVObject* object, Point3& outMin, Point3& outMax, const Point3& translation, const Matrix33& rotation, const float& scale) {
 		// Note: This function is a copy of AVObject::calculateBounds with hardcoded
 		// false flags. Used by CSSE.cpp engine patch (genJumpEnforced at 0x404467).
 		auto accurateSkinned = false;
@@ -727,7 +727,7 @@ namespace NI {
 		// Optionally apply skin deformations. Note: This is not thread-safe.
 		auto useDeform = accurateSkinned && (asGeometry->skinInstance != nullptr);
 		if (useDeform) {
-			static std::vector<Vector3> deformVertices;
+			static std::vector<Point3> deformVertices;
 			deformVertices.reserve(vertexCount);
 			vertices = deformVertices.data();
 			asGeometry->skinInstance->deform(modelData->vertex, nullptr, vertexCount, vertices, nullptr);
@@ -747,7 +747,7 @@ namespace NI {
 
 #if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
 	// CSSE-only debug helper: vertex-vs-worldvertex sanity check. MWSE's
-	// NI::Transform::operator*(Vector3) is non-const, conflicting with the
+	// NI::Transform::operator*(Point3) is non-const, conflicting with the
 	// `const auto transform` deduction below; gating out of MWSE-mode avoids
 	// having to also fix NI::Transform.
 	void __cdecl VerifyWorldVertices(const NI::AVObject* object) {

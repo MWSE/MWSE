@@ -2566,7 +2566,7 @@ namespace mwse::lua {
 	}
 
 	// Hook for checking and adding companions for our custom list so we can report valid companions in the event.
-	float OnCalculateTravelPrice_CheckCompanionDistance(NI::Vector3* destinationPosition, NI::Vector3* playerPosition) {
+	float OnCalculateTravelPrice_CheckCompanionDistance(NI::Point3* destinationPosition, NI::Point3* playerPosition) {
 		float distance = destinationPosition->distance(playerPosition);
 		if (OnCalculateTravelPrice_CompanionList->size() * 128.0f + 512.0f > distance) {
 			OnCalculateTravelPrice_TravelCompanionList.push_back(OnCalculateTravelPrice_CompanionList->current->data);
@@ -3307,7 +3307,7 @@ namespace mwse::lua {
 	// Event: Jump.
 	//
 
-	void __fastcall OnJump(TES3::MobileActor* mobile, NI::Vector3* velocity) {
+	void __fastcall OnJump(TES3::MobileActor* mobile, NI::Point3* velocity) {
 		mobile->doJump(*velocity, true, true);
 	}
 
@@ -4085,7 +4085,7 @@ namespace mwse::lua {
 		}
 	}
 
-	void __cdecl ScriptRelocateReference(TES3::Reference* reference, TES3::Cell* cell, NI::Vector3* position, float rotation) {
+	void __cdecl ScriptRelocateReference(TES3::Reference* reference, TES3::Cell* cell, NI::Point3* position, float rotation) {
 		reference->relocate(cell, position, rotation);
 	}
 
@@ -4781,7 +4781,7 @@ namespace mwse::lua {
 		bool success = roll < absorbChance;
 		auto absorbVfx = *vfxAbsorbPtr;
 		if (success && absorbVfx) {
-			sourceInstance->playSpellVFX(1.0f, NI::Vector3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
+			sourceInstance->playSpellVFX(1.0f, NI::Point3::ZEROES, hitReference, 0.0f, absorbVfx, effectIndex, 0);
 		}
 
 		return success;

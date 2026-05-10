@@ -824,7 +824,7 @@ namespace TES3 {
 		return TES3_PhysicalObject_getMobile(this);
 	}
 
-	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, NI::Vector3& out_min, NI::Vector3& out_max) {
+	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, NI::Point3& out_min, NI::Point3& out_max) {
 		// We can reuse bounding volumes if one is available.
 		const auto abv = object->modelABV;
 		if (abv && abv->getType() == NI::BoundingVolumeType::Box) {
@@ -843,14 +843,14 @@ namespace TES3 {
 			asNode->update();
 		}
 
-		const NI::Vector3 extent = (out_max - out_min) * 0.5f;
-		const NI::Vector3 center = extent + out_min;
-		auto newABV = NI::BoxBoundingVolume::create(extent, center, NI::Vector3::UNIT_X, NI::Vector3::UNIT_Y, NI::Vector3::UNIT_Z);
+		const NI::Point3 extent = (out_max - out_min) * 0.5f;
+		const NI::Point3 center = extent + out_min;
+		auto newABV = NI::BoxBoundingVolume::create(extent, center, NI::Point3::UNIT_X, NI::Point3::UNIT_Y, NI::Point3::UNIT_Z);
 		object->setModelSpaceABV(newABV);
 	}
 
-	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Vector3*, NI::Vector3*)>(0x4EF1D0);
-	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Vector3*, NI::Vector3*, const NI::Vector3*, const NI::Matrix33*, const float*)>(0x4EF410);
+	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*)>(0x4EF1D0);
+	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*, const NI::Point3*, const NI::Matrix33*, const float*)>(0x4EF410);
 	void PhysicalObject::createBoundingBox() {
 		if (!sceneNode) {
 			return;
@@ -871,8 +871,8 @@ namespace TES3 {
 
 		// Markers always have zeroed bounding boxes.
 		if (getIsLocationMarker()) {
-			boundingBox->minimum = NI::Vector3::ZEROES;
-			boundingBox->maximum = NI::Vector3::ZEROES;
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
 			return;
 		}
 
@@ -882,13 +882,13 @@ namespace TES3 {
 		}
 		else {
 			const auto scale = 1.0f;
-			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, NI::Vector3::ZEROES, NI::Matrix33::IDENTITY, scale, false, false, false);
+			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, NI::Point3::ZEROES, NI::Matrix33::IDENTITY, scale, false, false, false);
 		}
 
 		// If any data ended up uninitialized, we'll also zero it out.
 		if (boundingBox->hasUninitializedData()) {
-			boundingBox->minimum = NI::Vector3::ZEROES;
-			boundingBox->maximum = NI::Vector3::ZEROES;
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
 		}
 
 		// If we are an actor, we need to validate that the bounding box can be used for steps. If it can't, recreate it using vanilla logic.
@@ -901,7 +901,7 @@ namespace TES3 {
 			}
 			else {
 				const auto scale = 1.0f;
-				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &NI::Vector3::ZEROES, &NI::Matrix33::IDENTITY, &scale);
+				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &NI::Point3::ZEROES, &NI::Matrix33::IDENTITY, &scale);
 			}
 		}
 	}

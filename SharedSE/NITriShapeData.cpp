@@ -10,9 +10,9 @@
 #endif
 
 namespace NI {
-	Pointer<TriShapeData> TriShapeData::create(unsigned short _vertexCount, Vector3* _vertices, Vector3* _normals, PackedColor* _colors, Vector2* _textureCoords, unsigned short _triangleCount, Triangle* _triangleList, int unused) {
+	Pointer<TriShapeData> TriShapeData::create(unsigned short _vertexCount, Point3* _vertices, Point3* _normals, PackedColor* _colors, Point2* _textureCoords, unsigned short _triangleCount, Triangle* _triangleList, int unused) {
 #if defined(SE_NI_TRISHAPEDATA_FNADDR_CREATE) && SE_NI_TRISHAPEDATA_FNADDR_CREATE > 0
-		const auto NI_TriShapeData_ctor = reinterpret_cast<void(__thiscall*)(TriShapeData*, unsigned short, Vector3*, Vector3*, PackedColor*, Vector2*, unsigned short, Triangle*, int)>(SE_NI_TRISHAPEDATA_FNADDR_CREATE);
+		const auto NI_TriShapeData_ctor = reinterpret_cast<void(__thiscall*)(TriShapeData*, unsigned short, Point3*, Point3*, PackedColor*, Point2*, unsigned short, Triangle*, int)>(SE_NI_TRISHAPEDATA_FNADDR_CREATE);
 
 		auto ptr = se::memory::_new<TriShapeData>();
 		NI_TriShapeData_ctor(ptr, _vertexCount, _vertices, _normals, _colors, _textureCoords, _triangleCount, _triangleList, unused);
@@ -23,13 +23,13 @@ namespace NI {
 	}
 
 	Pointer<TriShapeData> TriShapeData::create(unsigned short vertexCount, bool hasNormals, bool hasColors, unsigned short textureCoordSets, unsigned short triangleCount) {
-		Vector3* vertices = se::memory::_new<Vector3>(vertexCount);
-		ZeroMemory(vertices, sizeof(Vector3) * vertexCount);
+		Point3* vertices = se::memory::_new<Point3>(vertexCount);
+		ZeroMemory(vertices, sizeof(Point3) * vertexCount);
 
-		Vector3* normals = nullptr;
+		Point3* normals = nullptr;
 		if (hasNormals) {
-			normals = se::memory::_new<Vector3>(vertexCount);
-			ZeroMemory(normals, sizeof(Vector3) * vertexCount);
+			normals = se::memory::_new<Point3>(vertexCount);
+			ZeroMemory(normals, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* colors = nullptr;
@@ -38,11 +38,11 @@ namespace NI {
 			ZeroMemory(colors, sizeof(PackedColor) * vertexCount);
 		}
 
-		Vector2* textureCoords = nullptr;
+		Point2* textureCoords = nullptr;
 		if (textureCoordSets > 0) {
 			size_t textureCoordTotal = textureCoordSets * vertexCount;
-			textureCoords = se::memory::_new<Vector2>(textureCoordTotal);
-			ZeroMemory(textureCoords, sizeof(Vector2) * textureCoordTotal);
+			textureCoords = se::memory::_new<Point2>(textureCoordTotal);
+			ZeroMemory(textureCoords, sizeof(Point2) * textureCoordTotal);
 		}
 
 		Triangle* triangleList = nullptr;
@@ -60,13 +60,13 @@ namespace NI {
 	Pointer<TriShapeData> TriShapeData::copyData(bool copyNormals, bool copyColors, bool copyTextureCoordinates) const {
 		auto vertexCount = getActiveVertexCount();
 
-		Vector3* _vertices = se::memory::_new<Vector3>(vertexCount);
-		memcpy_s(_vertices, sizeof(Vector3) * vertexCount, vertex, sizeof(Vector3) * vertexCount);
+		Point3* _vertices = se::memory::_new<Point3>(vertexCount);
+		memcpy_s(_vertices, sizeof(Point3) * vertexCount, vertex, sizeof(Point3) * vertexCount);
 
-		Vector3* _normals = nullptr;
+		Point3* _normals = nullptr;
 		if (normal && copyNormals) {
-			_normals = se::memory::_new<Vector3>(vertexCount);
-			memcpy_s(_normals, sizeof(Vector3) * vertexCount, normal, sizeof(Vector3) * vertexCount);
+			_normals = se::memory::_new<Point3>(vertexCount);
+			memcpy_s(_normals, sizeof(Point3) * vertexCount, normal, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* _colors = nullptr;
@@ -75,10 +75,10 @@ namespace NI {
 			memcpy_s(_colors, sizeof(PackedColor) * vertexCount, color, sizeof(PackedColor) * vertexCount);
 		}
 
-		Vector2* _textureCoords = nullptr;
+		Point2* _textureCoords = nullptr;
 		if (textureCoords && copyTextureCoordinates) {
-			_textureCoords = se::memory::_new<Vector2>(vertexCount);
-			memcpy_s(_textureCoords, sizeof(Vector2) * vertexCount, textureCoords, sizeof(Vector2) * vertexCount);
+			_textureCoords = se::memory::_new<Point2>(vertexCount);
+			memcpy_s(_textureCoords, sizeof(Point2) * vertexCount, textureCoords, sizeof(Point2) * vertexCount);
 		}
 
 		Triangle* _triangleList = nullptr;
@@ -99,13 +99,13 @@ namespace NI {
 	Pointer<TriShapeData> TriShapeData::copyData(sol::optional<sol::table> filters) const {
 		auto vertexCount = getActiveVertexCount();
 
-		Vector3* _vertices = se::memory::_new<Vector3>(vertexCount);
-		memcpy_s(_vertices, sizeof(Vector3) * vertexCount, vertex, sizeof(Vector3) * vertexCount);
+		Point3* _vertices = se::memory::_new<Point3>(vertexCount);
+		memcpy_s(_vertices, sizeof(Point3) * vertexCount, vertex, sizeof(Point3) * vertexCount);
 
-		Vector3* _normals = nullptr;
+		Point3* _normals = nullptr;
 		if (normal && mwse::lua::getOptionalParam(filters, "normals", true)) {
-			_normals = se::memory::_new<Vector3>(vertexCount);
-			memcpy_s(_normals, sizeof(Vector3) * vertexCount, normal, sizeof(Vector3) * vertexCount);
+			_normals = se::memory::_new<Point3>(vertexCount);
+			memcpy_s(_normals, sizeof(Point3) * vertexCount, normal, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* _colors = nullptr;
@@ -114,11 +114,11 @@ namespace NI {
 			memcpy_s(_colors, sizeof(PackedColor) * vertexCount, color, sizeof(PackedColor) * vertexCount);
 		}
 
-		Vector2* _textureCoords = nullptr;
+		Point2* _textureCoords = nullptr;
 		if (textureCoords && mwse::lua::getOptionalParam(filters, "texCoords", true)) {
 			size_t textureCoordTotal = textureSets * vertexCount;
-			_textureCoords = se::memory::_new<Vector2>(textureCoordTotal);
-			memcpy_s(_textureCoords, sizeof(Vector2) * textureCoordTotal, textureCoords, sizeof(Vector2) * textureCoordTotal);
+			_textureCoords = se::memory::_new<Point2>(textureCoordTotal);
+			memcpy_s(_textureCoords, sizeof(Point2) * textureCoordTotal, textureCoords, sizeof(Point2) * textureCoordTotal);
 		}
 
 		Triangle* _triangleList = nullptr;

@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "NIIteratedList.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include <StdString.h>
 
@@ -34,7 +34,7 @@ namespace TES3 {
 		StdString bountyKey; // 0x8
 
 		// The position of the crime. This will be the position of the victim of an attack/killing or the position of the criminal otherwise.
-		NI::Vector3 position; // 0x18
+		NI::Point3 position; // 0x18
 
 		// Is only valid for crimes of type TES3::CrimeType::Theft or TES3::CrimeType::Pickpocket.
 		int stolenValue; // 0x24

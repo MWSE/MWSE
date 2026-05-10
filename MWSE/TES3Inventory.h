@@ -5,7 +5,7 @@
 #include "NITArray.h"
 
 #include "NIIteratedList.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class QuickKeyType : unsigned int {
@@ -80,7 +80,7 @@ namespace TES3 {
 		ItemData* addItemByReference(MobileActor * mobile, Reference * reference, int * out_count);
 		void removeItemData(Item* item, ItemData* itemData);
 		void removeItemWithData(MobileActor * mobile, Item * item, ItemData * itemData, int count, bool deleteStackData);
-		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Vector3 position, NI::Vector3 orientation, bool ignoreItemData = false);
+		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Point3 position, NI::Point3 orientation, bool ignoreItemData = false);
 		void updateInternalLight(MobileActor* mobile);
 
 		void resolveLeveledLists(MobileActor* mobile = nullptr);

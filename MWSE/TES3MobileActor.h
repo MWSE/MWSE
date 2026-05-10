@@ -14,7 +14,7 @@
 #include "TES3Statistic.h"
 
 #include "NIHashMap.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include "Deque.h"
 
@@ -141,7 +141,7 @@ namespace TES3 {
 		float scanTimer; // 0xA8
 		float scanInterval; // 0xAC
 		float greetTimer; // 0xB0
-		NI::Vector3 unknown_0xB4;
+		NI::Point3 unknown_0xB4;
 		char unknown_0xC0;
 		char unknown_0xC1; // Undefined.
 		char unknown_0xC2; // Undefined.
@@ -209,7 +209,7 @@ namespace TES3 {
 		char unknown_0x39B; // Undefined.
 		void * arrowBone;
 		int unknown_0x3A0;
-		NI::Vector3 unknown_0x3A4;
+		NI::Point3 unknown_0x3A4;
 
 		MobileActor() = delete;
 		~MobileActor() = delete;
@@ -241,9 +241,9 @@ namespace TES3 {
 		float getFatigueTerm() const;
 
 		float getFacing() const;
-		float getViewToPoint(const NI::Vector3* point) const;
+		float getViewToPoint(const NI::Point3* point) const;
 		float getViewToPoint_lua(sol::object point) const;
-		float getViewToPointWithFacing(float facing, const NI::Vector3* point) const;
+		float getViewToPointWithFacing(float facing, const NI::Point3* point) const;
 		float getViewToPointWithFacing_lua(float facing, sol::object point) const;
 		float getViewToActor(const TES3::MobileActor* mobile) const;
 		float getViewToActor_lua(sol::object mobile) const;
@@ -267,7 +267,7 @@ namespace TES3 {
 		float applyDamage_lua(sol::table params);
 		float applyFatigueDamage_lua(float damage, float swing, bool alwaysPlayHitVoice = false);
 		float calcEffectiveDamage_lua(sol::table params);
-		bool doJump(NI::Vector3 velocity, bool applyFatigueCost = true, bool isDefaultJump = false);
+		bool doJump(NI::Point3 velocity, bool applyFatigueCost = true, bool isDefaultJump = false);
 		bool doJump_lua(sol::optional<sol::table> params);
 
 		bool isAttackingOrCasting() const;
@@ -287,8 +287,8 @@ namespace TES3 {
 		float calculateSwimSpeed();
 		float calculateSwimRunSpeed();
 		float calculateFlySpeed();
-		NI::Vector3 calculateJumpVelocity(NI::Vector2 direction);
-		NI::Vector3 calculateJumpVelocity_lua(sol::optional<sol::table> params);
+		NI::Point3 calculateJumpVelocity(NI::Point2 direction);
+		NI::Point3 calculateJumpVelocity_lua(sol::optional<sol::table> params);
 		void applyPhysicalHit(MobileActor* attacker, MobileActor* defender, float damage, float swing, MobileProjectile* projectile = nullptr, bool alwaysPlayHitVoice = false);
 		void setCurrentMagicFromSpell(Spell* spell);
 		void setCurrentMagicFromSourceCombo(MagicSourceCombo sourceCombo);

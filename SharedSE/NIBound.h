@@ -2,7 +2,7 @@
 
 #include "NIDefines.h"
 #include "NIMatrix33.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 // Polymorphic bounding-volume hierarchy used by the NetImmerse engine for
 // occlusion culling, picking, and scene-graph queries. The struct layouts
@@ -10,15 +10,15 @@
 // MWSE-private NIBound.cpp (CSSE does not currently call them, so the
 // declarations exist on the CSSE side as forward API surface only).
 //
-// SphereBound is structurally identical to Bound (Vector3 center + float
+// SphereBound is structurally identical to Bound (Point3 center + float
 // radius, 0x10 bytes) but is a separate C++ type per MWSE-original.
 
 namespace NI {
 	struct Bound {
-		Vector3 center; // 0x0
+		Point3 center; // 0x0
 		float radius; // 0xC
 
-		void computeFromData(unsigned int vertexCount, const Vector3* vertices, unsigned int stride);
+		void computeFromData(unsigned int vertexCount, const Point3* vertices, unsigned int stride);
 	};
 	static_assert(sizeof(Bound) == 0x10, "NI::Bound failed size validation");
 
@@ -61,12 +61,12 @@ namespace NI {
 	};
 
 	struct SphereBound {
-		Vector3 center; // 0x0
+		Point3 center; // 0x0
 		float radius; // 0xC
 
-		bool contains(const Vector3& point) const;
-		Vector3 getClosetPointTo(const Vector3& point) const;
-		Vector3 getFurthestPointFrom(const Vector3& point) const;
+		bool contains(const Point3& point) const;
+		Point3 getClosetPointTo(const Point3& point) const;
+		Point3 getFurthestPointFrom(const Point3& point) const;
 	};
 	static_assert(sizeof(SphereBound) == 0x10, "NI::Bound failed size validation");
 
@@ -74,14 +74,14 @@ namespace NI {
 	};
 
 	struct BoxBound {
-		Vector3 center; // 0x4
+		Point3 center; // 0x4
 		Matrix33 basis; // 0xC
-		Vector3 extent; // 0x30
+		Point3 extent; // 0x30
 	};
 	static_assert(sizeof(BoxBound) == 0x3C, "NI::SphereBV failed size validation");
 
 	struct BoxBoundingVolume : TypedBoundingVolume<BoxBound> {
-		static BoxBoundingVolume* create(const Vector3& extent, const Vector3& center, const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+		static BoxBoundingVolume* create(const Point3& extent, const Point3& center, const Point3& xAxis, const Point3& yAxis, const Point3& zAxis);
 	};
 	static_assert(sizeof(BoxBoundingVolume) == 0x40, "NI::SphereBV failed size validation");
 }

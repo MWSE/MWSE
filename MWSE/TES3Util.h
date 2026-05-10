@@ -48,7 +48,7 @@ namespace mwse::tes3 {
 
 	char* getThreadSafeStringBuffer();
 
-	bool testLineOfSight(NI::Vector3* pos1, float height1, NI::Vector3* pos2, float height2);
+	bool testLineOfSight(NI::Point3* pos1, float height1, NI::Point3* pos2, float height2);
 
 	inline constexpr float& getSimulationTimestamp() {
 		return *reinterpret_cast<float*>(0x7C6708);

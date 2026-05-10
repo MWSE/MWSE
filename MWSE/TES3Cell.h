@@ -23,7 +23,7 @@ namespace TES3 {
 	}
 
 	struct MapNote {
-		NI::Vector3 position; // 0x0
+		NI::Point3 position; // 0x0
 		char * text; // 0xC
 
 		MapNote() = delete;
@@ -45,7 +45,7 @@ namespace TES3 {
 			~Node() = delete;
 
 			sol::object getConnectedNodes_lua(sol::this_state ts) const;
-			NI::Vector3 getPosition() const;
+			NI::Point3 getPosition() const;
 		};
 
 		NI::Pointer<NI::Node> sceneNode; // 0x10
@@ -161,7 +161,7 @@ namespace TES3 {
 
 		void setName(const char* name);
 
-		void addMapNote(NI::Vector2* position, float unknown, const char* text);
+		void addMapNote(NI::Point2* position, float unknown, const char* text);
 
 		void addReference(Reference* reference);
 		void insertReference(Reference* reference);

@@ -74,7 +74,7 @@ namespace NI {
 		return 1.0f / (C + Ld + Qd2);
 	}
 
-	float PointLight::getAttenuationAtPoint(const Vector3* point) const {
+	float PointLight::getAttenuationAtPoint(const Point3* point) const {
 		const auto distance = worldTransform.translation.distance(point);
 		return getAttenuationAtDistance(distance);
 	}

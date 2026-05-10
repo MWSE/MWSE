@@ -69,8 +69,8 @@
 #define SE_NI_AVOBJECT_FNADDR_UPDATEEFFECTS 0x5DB340
 #define SE_NI_AVOBJECT_FNADDR_UPDATEPROPERTIES 0x5DB090
 
-// NI::Matrix33 identity matrix global (CS.exe address not yet known)
-#define SE_NI_MATRIX33_GLOBADDR_IDENTITY 0x0
+// NI::Matrix33 identity matrix global
+#define SE_NI_MATRIX33_GLOBADDR_IDENTITY 0x6D7BDC
 
 // NI::Node
 #define SE_NI_NODE_FNADDR_ATTACHEFFECT 0x5B71D0
@@ -80,25 +80,25 @@
 #define SE_NI_NODE_FNADDR_FINDINTERSECTIONS 0x5B7F10
 #define SE_NI_NODE_FNADDR_LINKOBJECT 0x5B87E0
 
-// NI::CollisionSwitch vTable address (CS.exe address not yet known)
-#define SE_NI_COLLISIONSWITCH_VTBL 0x0
+// NI::CollisionSwitch vTable address
+#define SE_NI_COLLISIONSWITCH_VTBL 0x6790F0
 
-// NI::Particles (CS.exe addresses not yet known)
-#define SE_NI_PARTICLES_VTBL 0x0
+// NI::Particles
+#define SE_NI_PARTICLES_VTBL 0x679C48
 #define SE_NI_PARTICLESDATA_FNADDR_CTOR 0x5C17F0
 
-// NI::AutoNormalParticles (CS.exe addresses not yet known)
-#define SE_NI_AUTONORMALPARTICLES_VTBL 0x0
+// NI::AutoNormalParticles
+#define SE_NI_AUTONORMALPARTICLES_VTBL 0x679D48
 #define SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR 0x5C2C50
 
-// NI::PointLight vTable address (CS.exe address not yet known)
-#define SE_NI_POINTLIGHT_VTBL 0x0
+// NI::PointLight vTable address
+#define SE_NI_POINTLIGHT_VTBL 0x675DCC
 
 // NI::KeyframeData (CS.exe address not yet known)
 #define SE_NI_KEYFRAMEDATA_FNADDR_REPLACESCALEDATA 0x6035C0
 
-// NI::SortAdjustNode vTable address (CS.exe address not yet known)
-#define SE_NI_SORTADJUSTNODE_VTBL 0x0
+// NI::SortAdjustNode vTable address
+#define SE_NI_SORTADJUSTNODE_VTBL 0x67A5C8
 
 // NI::PixelFormat (D3D8-bound; CSSE has no D3D8 link, addresses irrelevant)
 #define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMFORMAT 0x5E8650
@@ -119,13 +119,13 @@
 #define SE_NI_FLOATDATA_FNADDR_GETKEYSIZE 0x61C950
 #define SE_NI_POSDATA_FNADDR_GETKEYSIZE 0x61C920
 
-// NI::BillboardNode (vTable CS.exe address not yet known)
-#define SE_NI_BILLBOARDNODE_VTBL 0x0
+// NI::BillboardNode
+#define SE_NI_BILLBOARDNODE_VTBL 0x679DF8
 #define SE_NI_BILLBOARDNODE_FNADDR_ROTATETOCAMERA 0x5C39F0
 
-// NI::BSAnimationNode / BSParticleNode (BSParticleNode VTBL not yet known)
+// NI::BSAnimationNode / BSParticleNode
 #define SE_NI_BSANIMATIONNODE_FNADDR_CTOR 0x5EBF90
-#define SE_NI_BSPARTICLENODE_VTBL 0x0
+#define SE_NI_BSPARTICLENODE_VTBL 0x67B1C0
 
 // NI::TextureEffect
 #define SE_NI_TEXTUREEFFECT_FNADDR_CTOR 0x5D5050
@@ -142,10 +142,10 @@
 #define SE_NI_COLLISIONGROUP_FNADDR_ADDCOLLIDER 0x0
 #define SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDER 0x0
 
-// NI::SourceTexture engine fns + global (CS.exe addresses not yet known)
+// NI::SourceTexture engine fns + global
 #define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPATH 0x5CFAD0
 #define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x5CFC20
-#define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x0
+#define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x6CB0B8
 
 // NI::UVController engine fn (CS.exe address not yet known)
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x61AF90
@@ -205,8 +205,7 @@
 #define SE_NI_ALPHAPROPERTY_VTBL 0x6732E8
 
 // NI::StencilProperty
-// CS.exe address not yet known.
-#define SE_NI_STENCILPROPERTY_VTBL 0x0
+#define SE_NI_STENCILPROPERTY_VTBL 0x6734F8
 
 // NI::TexturingProperty::Map
 // CS inlines NiTexturingProperty::Map ctors directly into the parent
@@ -217,7 +216,7 @@
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS 0x0
 
 // NI::TexturingProperty::BumpMap
-#define SE_NI_TEXTURINGPROPERTY_BUMPMAP_VTBL 0x0
+#define SE_NI_TEXTURINGPROPERTY_BUMPMAP_VTBL 0x6758A8
 
 // NI::TexturingProperty
 #define SE_NI_TEXTURINGPROPERTY_FNADDR_CTOR 0x5D2F10
@@ -248,9 +247,8 @@
 #define SE_NI_GEOMETRYDATA_FNADDR_LOADBINARY 0x5ED2C0
 
 // NI::PixelData
-// CS.exe addresses not yet known.
 #define SE_NI_PIXELDATA_FNADDR_CTOR_ARGS 0x5C5120
-#define SE_NI_PIXELFORMAT_GLOBADDR_RGBA32 0x0
+#define SE_NI_PIXELFORMAT_GLOBADDR_RGBA32 0x6CBA8C
 
 // NI::StringExtraData
 #define SE_NI_STRINGEXTRADATA_FNADDR_CTOR 0x5D25F0
@@ -312,15 +310,12 @@
 // CS.exe addresses not yet known. CSSE call sites must throw not_implemented_exception
 // when these are 0; otherwise call would jump to whatever happens to live at the
 // Morrowind address in TESConstructionSet.exe.
-// CS has only a no-arg NI::TriBasedGeom::ctor at 0x5E6400; the args
-// overload (passing NiGeometryData* through to NiGeometry::ctor_args)
-// doesn't exist in the editor binary — left as 0x0.
-#define SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA 0x0
+#define SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA 0x5E63B0
 #define SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS 0x5E68B0
 #define SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE 0x5E64F0
 
 // NI::Geometry (base of TriBasedGeometry)
 #define SE_NI_GEOMETRY_FNADDR_LINKOBJECT 0x5E4AF0
 
-// NI::TriShape vTable address (CS.exe address not yet known)
-#define SE_NI_TRISHAPE_VTBL 0x0
+// NI::TriShape vTable address (Object_vTable layout)
+#define SE_NI_TRISHAPE_VTBL 0x67A8F8

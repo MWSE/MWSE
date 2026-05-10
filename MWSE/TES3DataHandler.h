@@ -160,7 +160,7 @@ namespace TES3 {
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);
-		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Vector3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
+		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
 		bool addNewObject(BaseObject*);
 		void deleteObject(BaseObject*);
 		void respawnContainers();
@@ -172,7 +172,7 @@ namespace TES3 {
 
 		MagicEffect * getMagicEffect(int id);
 
-		Reference* createReference(PhysicalObject * object, NI::Vector3 * position, NI::Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+		Reference* createReference(PhysicalObject * object, NI::Point3 * position, NI::Point3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
 
 		void showLocationOnMap(const char* name);
 		void drawCellMapMarker(Cell* cell, int unused = 0);
@@ -373,14 +373,14 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		NI::Vector3 getLastExteriorPosition() const;
+		NI::Point3 getLastExteriorPosition() const;
 		float getLowestZInCurrentCell() const;
 
-		bool getLandHeightAtPosition(const NI::Vector3& position, float* out_height) const;
-		sol::optional<float> getLandHeightAtPosition_lua(const NI::Vector3& position) const;
-		bool getLandNormalAtPosition(const NI::Vector3& position, NI::Vector3& out_normal) const;
-		sol::optional<NI::Vector3> getLandNormalAtPosition_lua(const NI::Vector3& position) const;
-		NI::TriShape* getLandShapeAtPosition(const NI::Vector3& position) const;
+		bool getLandHeightAtPosition(const NI::Point3& position, float* out_height) const;
+		sol::optional<float> getLandHeightAtPosition_lua(const NI::Point3& position) const;
+		bool getLandNormalAtPosition(const NI::Point3& position, NI::Point3& out_normal) const;
+		sol::optional<NI::Point3> getLandNormalAtPosition_lua(const NI::Point3& position) const;
+		NI::TriShape* getLandShapeAtPosition(const NI::Point3& position) const;
 
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
 		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);

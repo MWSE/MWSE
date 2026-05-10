@@ -52,8 +52,8 @@ namespace TES3 {
 		return isDetected;
 	}
 
-	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, NI::Vector3*, float, NI::IteratedList<MobileActor*>*)>(0x5702B0);
-	void ProcessManager::findActorsInProximity(NI::Vector3 * position, float range, NI::IteratedList<MobileActor*>* outputList) {
+	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, NI::Point3*, float, NI::IteratedList<MobileActor*>*)>(0x5702B0);
+	void ProcessManager::findActorsInProximity(NI::Point3 * position, float range, NI::IteratedList<MobileActor*>* outputList) {
 		TES3_ProcessManager_findActorsInProximity(this, position, range, outputList);
 	}
 
@@ -194,7 +194,7 @@ namespace TES3 {
 		TES3_MobManager_clampAllActors(this);
 	}
 
-	NI::Vector3* MobManager::getGravity() {
+	NI::Point3* MobManager::getGravity() {
 		return &gravity;
 	}
 
@@ -202,7 +202,7 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(gravity, value);
 	}
 
-	NI::Vector3* MobManager::getTerminalVelocity() {
+	NI::Point3* MobManager::getTerminalVelocity() {
 		return &terminalVelocity;
 	}
 

@@ -1,6 +1,6 @@
 #include "NIBoundingBox.h"
 
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	BoundingBox::BoundingBox() :
@@ -10,7 +10,7 @@ namespace NI {
 
 	}
 
-	BoundingBox::BoundingBox(const Vector3& min, const Vector3& max) :
+	BoundingBox::BoundingBox(const Point3& min, const Point3& max) :
 		minimum(min),
 		maximum(max)
 	{
@@ -63,20 +63,20 @@ namespace NI {
 		return *this;
 	}
 
-	std::array<Vector3, 8> BoundingBox::vertices() const {
+	std::array<Point3, 8> BoundingBox::vertices() const {
 		return std::array{
-			Vector3(minimum.x, minimum.y, minimum.z),
-			Vector3(minimum.x, minimum.y, maximum.z),
-			Vector3(minimum.x, maximum.y, minimum.z),
-			Vector3(minimum.x, maximum.y, maximum.z),
-			Vector3(maximum.x, maximum.y, minimum.z),
-			Vector3(maximum.x, minimum.y, maximum.z),
-			Vector3(maximum.x, minimum.y, minimum.z),
-			Vector3(maximum.x, maximum.y, maximum.z),
+			Point3(minimum.x, minimum.y, minimum.z),
+			Point3(minimum.x, minimum.y, maximum.z),
+			Point3(minimum.x, maximum.y, minimum.z),
+			Point3(minimum.x, maximum.y, maximum.z),
+			Point3(maximum.x, maximum.y, minimum.z),
+			Point3(maximum.x, minimum.y, maximum.z),
+			Point3(maximum.x, minimum.y, minimum.z),
+			Point3(maximum.x, maximum.y, maximum.z),
 		};
 	}
 
-	void BoundingBox::clampPoint(Vector3& point, const Vector3& origin) const {
+	void BoundingBox::clampPoint(Point3& point, const Point3& origin) const {
 		const auto min = minimum + origin;
 		const auto max = maximum + origin;
 		//const auto min = minimum;
@@ -87,8 +87,8 @@ namespace NI {
 	}
 
 	void BoundingBox::initialize() {
-		minimum = Vector3::MAX;
-		maximum = Vector3::MIN;
+		minimum = Point3::MAX;
+		maximum = Point3::MIN;
 	}
 
 	void BoundingBox::invalidate() {
@@ -101,7 +101,7 @@ namespace NI {
 	}
 
 	bool BoundingBox::hasUninitializedData() const {
-		return minimum.x == Vector3::MAX.x || minimum.y == Vector3::MAX.y || minimum.z == Vector3::MAX.z
-			|| maximum.x == Vector3::MIN.x || maximum.y == Vector3::MIN.y || maximum.z == Vector3::MIN.z;
+		return minimum.x == Point3::MAX.x || minimum.y == Point3::MAX.y || minimum.z == Point3::MAX.z
+			|| maximum.x == Point3::MIN.x || maximum.y == Point3::MIN.y || maximum.z == Point3::MIN.z;
 	}
 }

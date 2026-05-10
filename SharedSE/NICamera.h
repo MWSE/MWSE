@@ -29,17 +29,17 @@ namespace NI {
 		float viewDistance; // 0xD0
 		float twoDivRmL; // 0xD4
 		float twoDivTmB; // 0xD8
-		Vector3 worldDirection; // 0xDC
-		Vector3 worldUp; // 0xE8
-		Vector3 worldRight; // 0xF4
+		Point3 worldDirection; // 0xDC
+		Point3 worldUp; // 0xE8
+		Point3 worldRight; // 0xF4
 		Frustum viewFrustum; // 0x100
-		Vector4 port; // 0x118
+		Point4 port; // 0x118
 		Pointer<Node> scene; // 0x128
 		TArray<ScreenPolygon*> screenPolygons; // 0x12C
 		Pointer<Renderer> renderer; // 0x144
 		TArray<void*> cullingPlanePtrs; // 0x148
 		int countCullingPlanes; // 0x160
-		Vector4 cullingPlanes[6]; // 0x164
+		Point4 cullingPlanes[6]; // 0x164
 		uint32_t usedCullingPlanesBitfield[4]; // 0x1C4
 		void* pointer_0x1D4;
 		int field_0x1D8;
@@ -58,25 +58,25 @@ namespace NI {
 
 		// Engine-dispatch helpers (per-target macros).
 		void swapBuffers();
-		bool LookAtWorldPoint(const Vector3* worldPoint, const Vector3* worldUp);
+		bool LookAtWorldPoint(const Point3* worldPoint, const Point3* worldUp);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void clear_lua(sol::optional<int> flags);
 		void click_lua(sol::optional<bool> something = false);
 
-		std::reference_wrapper<Vector4[6]> getCullingPlanes_lua();
+		std::reference_wrapper<Point4[6]> getCullingPlanes_lua();
 #endif
 
 		// Note: screen coordinates are real from the viewport, and not
-		bool windowPointToRay(int screenX, int screenY, Vector3& out_origin, Vector3& out_direction);
-		bool worldPointToScreenPoint(const Vector3* point, float& out_screenX, float& out_screenY);
+		bool windowPointToRay(int screenX, int screenY, Point3& out_origin, Point3& out_direction);
+		bool worldPointToScreenPoint(const Point3* point, float& out_screenX, float& out_screenY);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		// Unlike above, we need to convert the ouput from [width/-2, width/2] to [0, width] and flip the height.
-		sol::optional<std::tuple<Vector3, Vector3>> windowPointToRay_lua(sol::stack_object);
+		sol::optional<std::tuple<Point3, Point3>> windowPointToRay_lua(sol::stack_object);
 
 		// Unlike above, we need to convert the ouput from [0,1] to [width/-2, width/2].
-		sol::optional<NI::Vector2> worldPointToScreenPoint_lua(sol::stack_object);
+		sol::optional<NI::Point2> worldPointToScreenPoint_lua(sol::stack_object);
 #endif
 	};
 	static_assert(sizeof(Camera) == 0x1E0, "NI::Camera failed size validation");

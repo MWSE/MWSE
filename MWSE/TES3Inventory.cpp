@@ -177,8 +177,8 @@ namespace TES3 {
 		TES3_Inventory_RemoveItemWithData(this, mobile, item, itemData, count, deleteStackData);
 	}
 
-	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, NI::Vector3, NI::Vector3, bool)>(0x49B090);
-	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Vector3 position, NI::Vector3 orientation, bool ignoreItemData) {
+	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, NI::Point3, NI::Point3, bool)>(0x49B090);
+	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Point3 position, NI::Point3 orientation, bool ignoreItemData) {
 		TES3_Inventory_DropItem(this, mobileActor, item, itemData, count, position, orientation, ignoreItemData);
 	}
 

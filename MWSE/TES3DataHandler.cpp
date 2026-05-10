@@ -368,8 +368,8 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFaction(this, id);
 	}
 
-	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Vector3*, bool, int)>(0x4B96F0);
-	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Vector3* position, bool searchForExteriorDoorMarker, int ignored) {
+	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, bool, int)>(0x4B96F0);
+	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int ignored) {
 		return TES3_NonDynamicData_findClosestExteriorReferenceOfObject(this, object, position, searchForExteriorDoorMarker, ignored);
 	}
 
@@ -413,8 +413,8 @@ namespace TES3 {
 		return magicEffects->getEffectObject(id);
 	}
 
-	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Vector3*, NI::Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
-	Reference* NonDynamicData::createReference(PhysicalObject* object, NI::Vector3* position, NI::Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
+	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, NI::Point3*, bool&, Reference*, Cell*)>(0x4C0E80);
+	Reference* NonDynamicData::createReference(PhysicalObject* object, NI::Point3* position, NI::Point3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
 		return TES3_NonDynamicData_createReference(this, object, position, orientation, cellWasCreated, existingReference, cell);
 	}
 
@@ -485,11 +485,11 @@ namespace TES3 {
 		return *reinterpret_cast<TES3::DataHandler**>(0x7C67E0);
 	}
 
-	NI::Vector3 DataHandler::getLastExteriorPosition() const {
+	NI::Point3 DataHandler::getLastExteriorPosition() const {
 		if (currentInteriorCell && lastExteriorCellPositionX != INT_MAX && lastExteriorCellPositionY != INT_MAX) {
 			const auto x = float(lastExteriorCellPositionX * TES3::Cell::exteriorGridWidth);
 			const auto y = float(lastExteriorCellPositionY * TES3::Cell::exteriorGridWidth);
-			return NI::Vector3(x, y, 0.0f);
+			return NI::Point3(x, y, 0.0f);
 		}
 		else {
 			auto macp = TES3::WorldController::get()->getMobilePlayer();
@@ -501,12 +501,12 @@ namespace TES3 {
 		return *reinterpret_cast<float*>(0x7B217C);
 	}
 
-	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Vector3&, float*)>(0x48E410);
-	bool DataHandler::getLandHeightAtPosition(const NI::Vector3& position, float* out_height) const {
+	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, float*)>(0x48E410);
+	bool DataHandler::getLandHeightAtPosition(const NI::Point3& position, float* out_height) const {
 		return TES3_NonDynamicData_getLandHeightAtPosition(this, position, out_height);
 	}
 
-	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const NI::Vector3& position) const {
+	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const NI::Point3& position) const {
 		float result = 0.0f;
 		if (!getLandHeightAtPosition(position, &result)) {
 			return {};
@@ -514,21 +514,21 @@ namespace TES3 {
 		return result;
 	}
 
-	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Vector3&, NI::Vector3&)>(0x48E530);
-	bool DataHandler::getLandNormalAtPosition(const NI::Vector3& position, NI::Vector3& out_normal) const {
+	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, NI::Point3&)>(0x48E530);
+	bool DataHandler::getLandNormalAtPosition(const NI::Point3& position, NI::Point3& out_normal) const {
 		return TES3_NonDynamicData_getLandNormalAtPosition(this, position, out_normal);
 	}
 
-	sol::optional<NI::Vector3> DataHandler::getLandNormalAtPosition_lua(const NI::Vector3& position) const {
-		NI::Vector3 normal;
+	sol::optional<NI::Point3> DataHandler::getLandNormalAtPosition_lua(const NI::Point3& position) const {
+		NI::Point3 normal;
 		if (!getLandNormalAtPosition(position, normal)) {
 			return {};
 		}
 		return normal;
 	}
 
-	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const NI::Vector3&)>(0x48E660);
-	NI::TriShape* DataHandler::getLandShapeAtPosition(const NI::Vector3& position) const {
+	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const NI::Point3&)>(0x48E660);
+	NI::TriShape* DataHandler::getLandShapeAtPosition(const NI::Point3& position) const {
 		return TES3_NonDynamicData_getLandShapeAtPosition(this, position);
 	}
 

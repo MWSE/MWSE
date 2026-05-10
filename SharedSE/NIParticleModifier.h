@@ -2,8 +2,8 @@
 
 #include "NIObject.h"
 #include "NIAnimationData.h"
-#include "NIVector3.h"
-#include "NIVector4.h"
+#include "NIPoint3.h"
+#include "NIPoint4.h"
 
 namespace NI {
 	struct ParticleModifier : Object {
@@ -21,8 +21,8 @@ namespace NI {
 		float decay; // 0x10
 		float force; // 0x14
 		ForceType forceType; // 0x18
-		Vector3 position; // 0x1C
-		Vector3 direction; // 0x28
+		Point3 position; // 0x1C
+		Point3 direction; // 0x28
 	};
 	static_assert(sizeof(Gravity) == 0x34, "NI::Gravity failed size validation");
 
@@ -44,8 +44,8 @@ namespace NI {
 		float start; // 0x1C
 		DecayType decayType; // 0x20
 		SymmetryType symmetryType; // 0x24
-		Vector3 position; // 0x28
-		Vector3 direction; // 0x34
+		Point3 position; // 0x28
+		Point3 direction; // 0x34
 	};
 	static_assert(sizeof(ParticleBomb) == 0x40, "NI::ParticleBomb failed size validation");
 
@@ -62,7 +62,7 @@ namespace NI {
 
 	struct ParticleRotation : ParticleModifier {
 		bool randomInitialAxis; // 0x10
-		Vector3 initialAxis; // 0x14
+		Point3 initialAxis; // 0x14
 		float rotationSpeed; // 0x20
 	};
 	static_assert(sizeof(ParticleRotation) == 0x24, "NI::ParticleRotation failed size validation");
@@ -71,7 +71,7 @@ namespace NI {
 		float restitution; // 0x10
 		bool spawnOnCollide; // 0x14
 		bool dieOnCollide; // 0x15
-		Vector3 collisionPoint; // 0x18
+		Point3 collisionPoint; // 0x18
 		float collisionTime; // 0x24
 	};
 	static_assert(sizeof(ParticleCollider) == 0x28, "NI::ParticleCollider failed size validation");
@@ -79,17 +79,17 @@ namespace NI {
 	struct PlanarCollider : ParticleCollider {
 		float height; // 0x28
 		float width; // 0x2C
-		Vector4 planeEquation; // 0x30
-		Vector3 position; // 0x40
-		Vector3 xAxis; // 0x4C
-		Vector3 yAxis; // 0x58
+		Point4 planeEquation; // 0x30
+		Point3 position; // 0x40
+		Point3 xAxis; // 0x4C
+		Point3 yAxis; // 0x58
 	};
 	static_assert(sizeof(PlanarCollider) == 0x64, "NI::PlanarCollider failed size validation");
 
 	struct SphericalCollider : ParticleCollider {
 		float radius; // 0x28
 		float radiusSquared; // 0x2C
-		Vector3 position; // 0x30
+		Point3 position; // 0x30
 
 		float getRadius() const;
 		void setRadius(float r);

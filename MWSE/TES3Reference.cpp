@@ -117,12 +117,12 @@ namespace TES3 {
 		return TES3_Reference_addItemDataAttachment(this, data);
 	}
 
-	NI::Vector3* Reference::getOrCreateOrientationFromAttachment() {
-		return reinterpret_cast<NI::Vector3* (__thiscall *)(Reference*)>(0x4E5970)(this);
+	NI::Point3* Reference::getOrCreateOrientationFromAttachment() {
+		return reinterpret_cast<NI::Point3* (__thiscall *)(Reference*)>(0x4E5970)(this);
 	}
 
-	NI::Vector3* Reference::getPositionFromAttachment() {
-		return reinterpret_cast<NI::Vector3* (__thiscall *)(Reference*)>(0x4E58D0)(this);
+	NI::Point3* Reference::getPositionFromAttachment() {
+		return reinterpret_cast<NI::Point3* (__thiscall *)(Reference*)>(0x4E58D0)(this);
 	}
 
 	LockAttachmentNode* Reference::getOrCreateLockNode() {
@@ -405,15 +405,15 @@ namespace TES3 {
 
 	void Reference::setPositionFromLua(sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<NI::Vector3*>()) {
-			setPosition(value.as<NI::Vector3*>());
+		if (value.is<NI::Point3*>()) {
+			setPosition(value.as<NI::Point3*>());
 		}
 		// Allow a simple table to be provided.
 		else if (value.get_type() == sol::type::table) {
 			// Get the values from the table.
 			sol::table positionTable = value.as<sol::table>();
 			if (positionTable.size() == 3) {
-				NI::Vector3 pos(positionTable[1], positionTable[2], positionTable[3]);
+				NI::Point3 pos(positionTable[1], positionTable[2], positionTable[3]);
 				setPosition(&pos);
 			}
 		}
@@ -421,13 +421,13 @@ namespace TES3 {
 
 	void Reference::setOrientationFromLua(sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<NI::Vector3*>()) {
-			setOrientation(value.as<NI::Vector3*>());
+		if (value.is<NI::Point3*>()) {
+			setOrientation(value.as<NI::Point3*>());
 		}
 		// Is it a matrix?
 		else if (value.is<NI::Matrix33*>()) {
 			auto matrix = value.as<NI::Matrix33*>();
-			NI::Vector3 euler;
+			NI::Point3 euler;
 			matrix->toEulerZYX(&euler.x, &euler.y, &euler.z);
 			setOrientation(&euler);
 		}
@@ -436,7 +436,7 @@ namespace TES3 {
 			// Get the values from the table.
 			sol::table positionTable = value.as<sol::table>();
 			if (positionTable.size() == 3) {
-				NI::Vector3 ori(positionTable[1], positionTable[2], positionTable[3]);
+				NI::Point3 ori(positionTable[1], positionTable[2], positionTable[3]);
 				setOrientation(&ori);
 			}
 		}
@@ -594,11 +594,11 @@ namespace TES3 {
 		clearIfThis(this, mwse::lua::event::ActivationTargetChangedEvent::ms_PreviousReference);
 	}
 
-	NI::Vector3 * Reference::getPosition() {
+	NI::Point3 * Reference::getPosition() {
 		return &position;
 	}
 
-	void Reference::setPosition(const NI::Vector3 * newPosition) {
+	void Reference::setPosition(const NI::Point3 * newPosition) {
 		// Check if the target position is in a different cell.
 		Cell * relocateCell = nullptr;
 		if (owningCollection.asReferenceList) {
@@ -636,7 +636,7 @@ namespace TES3 {
 		setObjectModified(true);
 	}
 
-	NI::Vector3 * Reference::getOrientation() {
+	NI::Point3 * Reference::getOrientation() {
 		// NPCs and Creatures use the base orientation in the reference struct.
 		ObjectType::ObjectType type = baseObject->objectType;
 		if (type == ObjectType::NPC || type == ObjectType::Creature) {
@@ -647,9 +647,9 @@ namespace TES3 {
 		return getOrCreateOrientationFromAttachment();
 	}
 
-	void Reference::setOrientation(const NI::Vector3 * newOrientation) {
+	void Reference::setOrientation(const NI::Point3 * newOrientation) {
 		// Orientation uses Euler ZYX angles.
-		NI::Vector3 * orientationPackage = getOrientation();
+		NI::Point3 * orientationPackage = getOrientation();
 		*orientationPackage = *newOrientation;
 
 		if (orientationPackage != &orientation) {
@@ -670,22 +670,22 @@ namespace TES3 {
 			return *sceneNode->localRotation;
 		}
 		NI::Matrix33 rotation;
-		NI::Vector3* orientation = getOrientation();
+		NI::Point3* orientation = getOrientation();
 		rotation.fromEulerXYZ(orientation->x, orientation->y, orientation->z);
 		return rotation;
 	}
 
-	NI::Vector3 Reference::getForwardDirectionVector() {
+	NI::Point3 Reference::getForwardDirectionVector() {
 		NI::Matrix33 rotation = getRotationMatrix();
 		return rotation.getForwardVector().normalized();
 	}
 
-	NI::Vector3 Reference::getRightDirectionVector() {
+	NI::Point3 Reference::getRightDirectionVector() {
 		NI::Matrix33 rotation = getRotationMatrix();
 		return rotation.getRightVector().normalized();
 	}
 
-	NI::Vector3 Reference::getUpDirectionVector() {
+	NI::Point3 Reference::getUpDirectionVector() {
 		NI::Matrix33 rotation = getRotationMatrix();
 		return rotation.getUpVector().normalized();
 	}
@@ -695,13 +695,13 @@ namespace TES3 {
 	}
 
 	void Reference::setFacing(float rotation) {
-		NI::Vector3 orientation(0, 0, rotation);
+		NI::Point3 orientation(0, 0, rotation);
 		setOrientation(&orientation);
 	}
 
 	float Reference::getAngleToReference(Reference* reference) {
 		auto rotation = getFacing();
-		NI::Vector3 forward(sinf(rotation), cosf(rotation), 0.0f);
+		NI::Point3 forward(sinf(rotation), cosf(rotation), 0.0f);
 		return (*reference->getPosition() - *getPosition()).angle(&forward);
 	}
 
@@ -711,8 +711,8 @@ namespace TES3 {
 		return cell1->getIsInterior() ? (cell1 == cell2) : (!cell2->getIsInterior());
 	}
 
-	const auto TES3_Reference_setTravelDestination = reinterpret_cast<TravelDestination*(__thiscall*)(Reference*, const NI::Vector3 *, const NI::Vector3*)>(0x4E7B80);
-	TravelDestination * Reference::setTravelDestination(const NI::Vector3 * position, const NI::Vector3 * orientation, Cell * cell) {
+	const auto TES3_Reference_setTravelDestination = reinterpret_cast<TravelDestination*(__thiscall*)(Reference*, const NI::Point3 *, const NI::Point3*)>(0x4E7B80);
+	TravelDestination * Reference::setTravelDestination(const NI::Point3 * position, const NI::Point3 * orientation, Cell * cell) {
 		auto destination = TES3_Reference_setTravelDestination(this, position, orientation);
 		destination->cell = cell;
 		return destination;
@@ -1029,7 +1029,7 @@ namespace TES3 {
 		return &reinterpret_cast<Actor*>(baseObject)->equipment;
 	}
 
-	void __cdecl TES3_game_relocateReference_replacement(Reference* reference, Cell* cell, const NI::Vector3* position, float rotationInDegrees) {
+	void __cdecl TES3_game_relocateReference_replacement(Reference* reference, Cell* cell, const NI::Point3* position, float rotationInDegrees) {
 		// Parameter guards.
 		if (!cell || !position) {
 			return;
@@ -1141,8 +1141,8 @@ namespace TES3 {
 		} while (reference);
 	}
 
-	const auto TES3_game_relocateReference = reinterpret_cast<void(__cdecl*)(Reference*, Cell*, const NI::Vector3*, float)>(0x50EDD0);
-	void Reference::relocate(Cell * cell, const NI::Vector3 * position, float rotation) {
+	const auto TES3_game_relocateReference = reinterpret_cast<void(__cdecl*)(Reference*, Cell*, const NI::Point3*, float)>(0x50EDD0);
+	void Reference::relocate(Cell * cell, const NI::Point3 * position, float rotation) {
 		// Store old cell.
 		const auto oldCell = getCell();
 
@@ -1160,9 +1160,9 @@ namespace TES3 {
 		}
 	}
 
-	void Reference::relocateNoRotation(Cell* cell, const NI::Vector3* position) {
+	void Reference::relocateNoRotation(Cell* cell, const NI::Point3* position) {
 		// Save current rotation and restore it once relocate has finished.
-		NI::Vector3 cachedOrientation = *getOrientation();
+		NI::Point3 cachedOrientation = *getOrientation();
 
 		// The orientation member may not be reliable (SetAngle bug), so calculate it manually.
 		if (sceneNode) {

@@ -17,7 +17,7 @@ namespace NI {
 		// vTable type overwriting.
 		//
 
-		bool findIntersections(const Vector3* position, const Vector3* direction, Pick* pick);
+		bool findIntersections(const Point3* position, const Point3* direction, Pick* pick);
 		Pointer<TriBasedGeometryData> getModelData() const;
 
 		// Inline non-const overload retained for CSSE/inline call sites.

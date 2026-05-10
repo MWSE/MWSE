@@ -47,7 +47,7 @@ namespace NI {
 	// NiColor
 	//
 
-	Color::Color(const Vector3& vector) {
+	Color::Color(const Point3& vector) {
 		r = vector.x;
 		g = vector.y;
 		b = vector.z;
@@ -73,8 +73,8 @@ namespace NI {
 		else if (object.is<ColorA>()) {
 			*this = Color(object.as<ColorA>());
 		}
-		else if (object.is<Vector3>()) {
-			*this = Color(object.as<Vector3>());
+		else if (object.is<Point3>()) {
+			*this = Color(object.as<Point3>());
 		}
 		else if (object.is<sol::table>()) {
 			*this = Color(object.as<sol::table>());
@@ -85,7 +85,7 @@ namespace NI {
 	}
 #endif
 
-	Color& Color::operator=(const Vector3& vector) {
+	Color& Color::operator=(const Point3& vector) {
 		r = vector.x;
 		g = vector.y;
 		b = vector.z;
@@ -107,8 +107,8 @@ namespace NI {
 		else if (object.is<ColorA>()) {
 			*this = Color(object.as<ColorA>());
 		}
-		else if (object.is<Vector3>()) {
-			*this = Color(object.as<Vector3>());
+		else if (object.is<Point3>()) {
+			*this = Color(object.as<Point3>());
 		}
 		else if (object.is<sol::table>()) {
 			*this = Color(object.as<sol::table>());
@@ -153,8 +153,8 @@ namespace NI {
 		return Color(r * transA + to.r * transition, g * transA + to.g * transition, b * transA + to.b * transition);
 	}
 
-	Vector3 Color::toVector3() const {
-		return Vector3(r, g, b);
+	Point3 Color::toPoint3() const {
+		return Point3(r, g, b);
 	}
 
 	void Color::clamp() {

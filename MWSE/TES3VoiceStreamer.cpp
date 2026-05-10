@@ -232,7 +232,7 @@ namespace mwse::patch::voice {
 		// logic match the original (which has its own conventions — including
 		// a deliberately-imprecise "pi" of 3.1400001 — so positional audio
 		// behaves bit-for-bit the same).
-		void __fastcall setSoundBufferPosition_replacement(TES3::AudioController* self, void* /*edx*/, TES3::SoundBuffer* sb, NI::Vector3* position) {
+		void __fastcall setSoundBufferPosition_replacement(TES3::AudioController* self, void* /*edx*/, TES3::SoundBuffer* sb, NI::Point3* position) {
 			if (isPending(sb)) return;
 			if (!sb || !sb->lpSoundBuffer) return; // decode-fail stub
 			if (!self->dsound3DCommitted) return;

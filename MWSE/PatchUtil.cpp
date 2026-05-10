@@ -722,7 +722,7 @@ namespace mwse::patch {
 	// 
 
 	// Mirror image texcoords with negative image scale.
-	void __cdecl PatchUIElementTexcoordWrite(TES3::UI::Element* element, NI::Vector2* texCoords) {
+	void __cdecl PatchUIElementTexcoordWrite(TES3::UI::Element* element, NI::Point2* texCoords) {
 		float left = 0.0f, top = 0.0f, right = 1.0f, bottom = 1.0f;
 
 		if (element->imageScaleX < 0) {

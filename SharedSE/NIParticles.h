@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NITriBasedGeometry.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace NI {
 	struct ParticlesData : TriBasedGeometryData {
@@ -10,7 +10,7 @@ namespace NI {
 		float* sizes; // 0x40
 
 		// Implemented only in Morrowind-context builds (use engine allocator + ctor).
-		static Pointer<ParticlesData> create(unsigned short vertexCount, Vector3* vertices, Vector3* normals, PackedColor* colors);
+		static Pointer<ParticlesData> create(unsigned short vertexCount, Point3* vertices, Point3* normals, PackedColor* colors);
 		static Pointer<ParticlesData> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
 
 		nonstd::span<float> getSizes();
@@ -19,7 +19,7 @@ namespace NI {
 
 	struct AutoNormalParticlesData : ParticlesData {
 		// Implemented only in Morrowind-context builds.
-		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, Vector3* vertices, PackedColor* colors);
+		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, Point3* vertices, PackedColor* colors);
 		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, bool hasColors);
 	};
 	static_assert(sizeof(AutoNormalParticlesData) == 0x44, "NI::AutoNormalParticlesData failed size validation");

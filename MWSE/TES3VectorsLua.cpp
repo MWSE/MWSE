@@ -6,9 +6,9 @@
 #include "NIMatrix44.h"
 #include "NIRange.h"
 #include "NIQuaternion.h"
-#include "NIVector2.h"
-#include "NIVector3.h"
-#include "NIVector4.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
+#include "NIPoint4.h"
 
 namespace mwse::lua {
 	void bindTES3Vectors() {
@@ -27,148 +27,148 @@ namespace mwse::lua {
 			usertypeDefinition["max"] = &NI::Range<int>::max;
 		}
 
-		// Binding for NI::Vector2.
+		// Binding for NI::Point2.
 		{
 			// Start our usertype.
-			auto usertypeDefinition = state.new_usertype<NI::Vector2>("tes3vector2");
-			usertypeDefinition["new"] = sol::constructors<NI::Vector2(), NI::Vector2(float, float)>();
+			auto usertypeDefinition = state.new_usertype<NI::Point2>("tes3vector2");
+			usertypeDefinition["new"] = sol::constructors<NI::Point2(), NI::Point2(float, float)>();
 
 			// Operator overloading.
-			usertypeDefinition[sol::meta_function::addition] = &NI::Vector2::operator+;
-			usertypeDefinition[sol::meta_function::subtraction] = &NI::Vector2::operator-;
+			usertypeDefinition[sol::meta_function::addition] = &NI::Point2::operator+;
+			usertypeDefinition[sol::meta_function::subtraction] = &NI::Point2::operator-;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<NI::Vector2(const NI::Vector2&) const>(&NI::Vector2::operator*),
-				sol::resolve<NI::Vector2(const float) const>(&NI::Vector2::operator*)
+				sol::resolve<NI::Point2(const NI::Point2&) const>(&NI::Point2::operator*),
+				sol::resolve<NI::Point2(const float) const>(&NI::Point2::operator*)
 			);
-			usertypeDefinition[sol::meta_function::division] = &NI::Vector2::operator/;
-			usertypeDefinition[sol::meta_function::length] = &NI::Vector2::length;
-			usertypeDefinition[sol::meta_function::to_string] = &NI::Vector2::toString;
+			usertypeDefinition[sol::meta_function::division] = &NI::Point2::operator/;
+			usertypeDefinition[sol::meta_function::length] = &NI::Point2::length;
+			usertypeDefinition[sol::meta_function::to_string] = &NI::Point2::toString;
 
 			// Allow objects to be serialized to json using their ID.
-			usertypeDefinition["__tojson"] = &NI::Vector2::toJson;
+			usertypeDefinition["__tojson"] = &NI::Point2::toJson;
 
 			// Basic property bindings.
-			usertypeDefinition["x"] = &NI::Vector2::x;
-			usertypeDefinition["y"] = &NI::Vector2::y;
+			usertypeDefinition["x"] = &NI::Point2::x;
+			usertypeDefinition["y"] = &NI::Point2::y;
 
 			// Basic function binding.
-			usertypeDefinition["copy"] = &NI::Vector2::copy;
-			usertypeDefinition["distance"] = &NI::Vector2::distance;
-			usertypeDefinition["distanceChebyshev"] = &NI::Vector2::distanceChebyshev;
-			usertypeDefinition["distanceManhattan"] = &NI::Vector2::distanceManhattan;
-			usertypeDefinition["length"] = &NI::Vector2::length;
-			usertypeDefinition["normalize"] = &NI::Vector2::normalize;
-			usertypeDefinition["normalized"] = &NI::Vector2::normalized;
-			usertypeDefinition["min"] = &NI::Vector2::min;
-			usertypeDefinition["max"] = &NI::Vector2::max;
+			usertypeDefinition["copy"] = &NI::Point2::copy;
+			usertypeDefinition["distance"] = &NI::Point2::distance;
+			usertypeDefinition["distanceChebyshev"] = &NI::Point2::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &NI::Point2::distanceManhattan;
+			usertypeDefinition["length"] = &NI::Point2::length;
+			usertypeDefinition["normalize"] = &NI::Point2::normalize;
+			usertypeDefinition["normalized"] = &NI::Point2::normalized;
+			usertypeDefinition["min"] = &NI::Point2::min;
+			usertypeDefinition["max"] = &NI::Point2::max;
 
 			// Alternate constructors.
-			usertypeDefinition["unitX"] = sol_copy_wrapper(NI::Vector2::UNIT_X);
-			usertypeDefinition["unitY"] = sol_copy_wrapper(NI::Vector2::UNIT_Y);
-			usertypeDefinition["ones"] = sol_copy_wrapper(NI::Vector2::ONES);
-			usertypeDefinition["zeroes"] = sol_copy_wrapper(NI::Vector2::ZEROES);
+			usertypeDefinition["unitX"] = sol_copy_wrapper(NI::Point2::UNIT_X);
+			usertypeDefinition["unitY"] = sol_copy_wrapper(NI::Point2::UNIT_Y);
+			usertypeDefinition["ones"] = sol_copy_wrapper(NI::Point2::ONES);
+			usertypeDefinition["zeroes"] = sol_copy_wrapper(NI::Point2::ZEROES);
 		}
 
-		// Binding for NI::Vector3.
+		// Binding for NI::Point3.
 		{
 			// Start our usertype.
-			auto usertypeDefinition = state.new_usertype<NI::Vector3>("tes3vector3");
-			usertypeDefinition["new"] = sol::constructors<NI::Vector3(), NI::Vector3(float, float, float)>();
+			auto usertypeDefinition = state.new_usertype<NI::Point3>("tes3vector3");
+			usertypeDefinition["new"] = sol::constructors<NI::Point3(), NI::Point3(float, float, float)>();
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::addition] = sol::overload(
-				sol::resolve<NI::Vector3(const NI::Vector3&) const>(&NI::Vector3::operator+),
-				sol::resolve<NI::Vector3(const float) const>(&NI::Vector3::operator+)
+				sol::resolve<NI::Point3(const NI::Point3&) const>(&NI::Point3::operator+),
+				sol::resolve<NI::Point3(const float) const>(&NI::Point3::operator+)
 			);
 			usertypeDefinition[sol::meta_function::subtraction] = sol::overload(
-				sol::resolve<NI::Vector3(const NI::Vector3&) const>(&NI::Vector3::operator-),
-				sol::resolve<NI::Vector3(const float) const>(&NI::Vector3::operator-)
+				sol::resolve<NI::Point3(const NI::Point3&) const>(&NI::Point3::operator-),
+				sol::resolve<NI::Point3(const float) const>(&NI::Point3::operator-)
 			);
-			usertypeDefinition[sol::meta_function::unary_minus] = sol::resolve<NI::Vector3() const>(&NI::Vector3::operator-);;
+			usertypeDefinition[sol::meta_function::unary_minus] = sol::resolve<NI::Point3() const>(&NI::Point3::operator-);;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<NI::Vector3(const NI::Vector3&) const>(&NI::Vector3::operator*),
-				sol::resolve<NI::Vector3(const float) const>(&NI::Vector3::operator*)
+				sol::resolve<NI::Point3(const NI::Point3&) const>(&NI::Point3::operator*),
+				sol::resolve<NI::Point3(const float) const>(&NI::Point3::operator*)
 			);
-			usertypeDefinition[sol::meta_function::division] = &NI::Vector3::operator/;
-			usertypeDefinition[sol::meta_function::length] = &NI::Vector3::length;
-			usertypeDefinition[sol::meta_function::to_string] = &NI::Vector3::toString;
+			usertypeDefinition[sol::meta_function::division] = &NI::Point3::operator/;
+			usertypeDefinition[sol::meta_function::length] = &NI::Point3::length;
+			usertypeDefinition[sol::meta_function::to_string] = &NI::Point3::toString;
 
 			// Allow objects to be serialized to json using their ID.
-			usertypeDefinition["__tojson"] = &NI::Vector3::toJson;
+			usertypeDefinition["__tojson"] = &NI::Point3::toJson;
 
 			// Basic property bindings.
-			usertypeDefinition["x"] = &NI::Vector3::x;
-			usertypeDefinition["y"] = &NI::Vector3::y;
-			usertypeDefinition["z"] = &NI::Vector3::z;
+			usertypeDefinition["x"] = &NI::Point3::x;
+			usertypeDefinition["y"] = &NI::Point3::y;
+			usertypeDefinition["z"] = &NI::Point3::z;
 
 			// These can also be used for RGB.
-			usertypeDefinition["r"] = &NI::Vector3::x;
-			usertypeDefinition["g"] = &NI::Vector3::y;
-			usertypeDefinition["b"] = &NI::Vector3::z;
+			usertypeDefinition["r"] = &NI::Point3::x;
+			usertypeDefinition["g"] = &NI::Point3::y;
+			usertypeDefinition["b"] = &NI::Point3::z;
 
 			// Basic function binding.
-			usertypeDefinition["angle"] = &NI::Vector3::angle;
-			usertypeDefinition["copy"] = &NI::Vector3::copy;
-			usertypeDefinition["cross"] = &NI::Vector3::crossProduct;
-			usertypeDefinition["distance"] = &NI::Vector3::distance;
-			usertypeDefinition["distanceChebyshev"] = &NI::Vector3::distanceChebyshev;
-			usertypeDefinition["distanceManhattan"] = &NI::Vector3::distanceManhattan;
-			usertypeDefinition["distanceXY"] = &NI::Vector3::distanceXY;
-			usertypeDefinition["dot"] = &NI::Vector3::dotProduct;
-			usertypeDefinition["outerProduct"] = &NI::Vector3::outerProduct;
-			usertypeDefinition["heightDifference"] = &NI::Vector3::heightDifference;
-			usertypeDefinition["length"] = &NI::Vector3::length;
-			usertypeDefinition["lerp"] = &NI::Vector3::lerp;
-			usertypeDefinition["negate"] = &NI::Vector3::negate;
-			usertypeDefinition["normalize"] = &NI::Vector3::normalize;
-			usertypeDefinition["normalized"] = &NI::Vector3::normalized;
-			usertypeDefinition["interpolate"] = &NI::Vector3::interpolate;
-			usertypeDefinition["min"] = &NI::Vector3::min;
-			usertypeDefinition["max"] = &NI::Vector3::max;
+			usertypeDefinition["angle"] = &NI::Point3::angle;
+			usertypeDefinition["copy"] = &NI::Point3::copy;
+			usertypeDefinition["cross"] = &NI::Point3::crossProduct;
+			usertypeDefinition["distance"] = &NI::Point3::distance;
+			usertypeDefinition["distanceChebyshev"] = &NI::Point3::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &NI::Point3::distanceManhattan;
+			usertypeDefinition["distanceXY"] = &NI::Point3::distanceXY;
+			usertypeDefinition["dot"] = &NI::Point3::dotProduct;
+			usertypeDefinition["outerProduct"] = &NI::Point3::outerProduct;
+			usertypeDefinition["heightDifference"] = &NI::Point3::heightDifference;
+			usertypeDefinition["length"] = &NI::Point3::length;
+			usertypeDefinition["lerp"] = &NI::Point3::lerp;
+			usertypeDefinition["negate"] = &NI::Point3::negate;
+			usertypeDefinition["normalize"] = &NI::Point3::normalize;
+			usertypeDefinition["normalized"] = &NI::Point3::normalized;
+			usertypeDefinition["interpolate"] = &NI::Point3::interpolate;
+			usertypeDefinition["min"] = &NI::Point3::min;
+			usertypeDefinition["max"] = &NI::Point3::max;
 
 			// Conversion to NI::Color.
-			usertypeDefinition["toColor"] = &NI::Vector3::toNiColor;
+			usertypeDefinition["toColor"] = &NI::Point3::toNiColor;
 
 			// Alternate constructors.
-			usertypeDefinition["unitX"] = sol_copy_wrapper(NI::Vector3::UNIT_X);
-			usertypeDefinition["unitY"] = sol_copy_wrapper(NI::Vector3::UNIT_Y);
-			usertypeDefinition["unitZ"] = sol_copy_wrapper(NI::Vector3::UNIT_Z);
-			usertypeDefinition["ones"] = sol_copy_wrapper(NI::Vector3::ONES);
-			usertypeDefinition["zeroes"] = sol_copy_wrapper(NI::Vector3::ZEROES);
+			usertypeDefinition["unitX"] = sol_copy_wrapper(NI::Point3::UNIT_X);
+			usertypeDefinition["unitY"] = sol_copy_wrapper(NI::Point3::UNIT_Y);
+			usertypeDefinition["unitZ"] = sol_copy_wrapper(NI::Point3::UNIT_Z);
+			usertypeDefinition["ones"] = sol_copy_wrapper(NI::Point3::ONES);
+			usertypeDefinition["zeroes"] = sol_copy_wrapper(NI::Point3::ZEROES);
 		}
 
-		// Binding for NI::Vector4.
+		// Binding for NI::Point4.
 		{
 			// Start our usertype.
-			auto usertypeDefinition = state.new_usertype<NI::Vector4>("tes3vector4");
-			usertypeDefinition["new"] = sol::constructors<NI::Vector4(), NI::Vector4(float, float, float, float)>();
+			auto usertypeDefinition = state.new_usertype<NI::Point4>("tes3vector4");
+			usertypeDefinition["new"] = sol::constructors<NI::Point4(), NI::Point4(float, float, float, float)>();
 
 			// Operator overloading.
-			usertypeDefinition[sol::meta_function::addition] = &NI::Vector4::operator+;
-			usertypeDefinition[sol::meta_function::subtraction] = &NI::Vector4::operator-;
+			usertypeDefinition[sol::meta_function::addition] = &NI::Point4::operator+;
+			usertypeDefinition[sol::meta_function::subtraction] = &NI::Point4::operator-;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<NI::Vector4(const NI::Vector4&) const>(&NI::Vector4::operator*),
-				sol::resolve<NI::Vector4(const float) const>(&NI::Vector4::operator*)
+				sol::resolve<NI::Point4(const NI::Point4&) const>(&NI::Point4::operator*),
+				sol::resolve<NI::Point4(const float) const>(&NI::Point4::operator*)
 			);
-			usertypeDefinition[sol::meta_function::division] = &NI::Vector4::operator/;
-			usertypeDefinition[sol::meta_function::length] = &NI::Vector4::length;
-			usertypeDefinition[sol::meta_function::to_string] = &NI::Vector4::toString;
-			usertypeDefinition["__tojson"] = &NI::Vector4::toJson;
+			usertypeDefinition[sol::meta_function::division] = &NI::Point4::operator/;
+			usertypeDefinition[sol::meta_function::length] = &NI::Point4::length;
+			usertypeDefinition[sol::meta_function::to_string] = &NI::Point4::toString;
+			usertypeDefinition["__tojson"] = &NI::Point4::toJson;
 
 			// Basic property bindings.
-			usertypeDefinition["x"] = &NI::Vector4::x;
-			usertypeDefinition["y"] = &NI::Vector4::y;
-			usertypeDefinition["z"] = &NI::Vector4::z;
-			usertypeDefinition["w"] = &NI::Vector4::w;
+			usertypeDefinition["x"] = &NI::Point4::x;
+			usertypeDefinition["y"] = &NI::Point4::y;
+			usertypeDefinition["z"] = &NI::Point4::z;
+			usertypeDefinition["w"] = &NI::Point4::w;
 
 			// Basic function binding.
-			usertypeDefinition["copy"] = &NI::Vector4::copy;
-			usertypeDefinition["distance"] = &NI::Vector4::distance;
-			usertypeDefinition["distanceChebyshev"] = &NI::Vector4::distanceChebyshev;
-			usertypeDefinition["distanceManhattan"] = &NI::Vector4::distanceManhattan;
-			usertypeDefinition["length"] = &NI::Vector4::length;
-			usertypeDefinition["min"] = &NI::Vector4::min;
-			usertypeDefinition["max"] = &NI::Vector4::max;
+			usertypeDefinition["copy"] = &NI::Point4::copy;
+			usertypeDefinition["distance"] = &NI::Point4::distance;
+			usertypeDefinition["distanceChebyshev"] = &NI::Point4::distanceChebyshev;
+			usertypeDefinition["distanceManhattan"] = &NI::Point4::distanceManhattan;
+			usertypeDefinition["length"] = &NI::Point4::length;
+			usertypeDefinition["min"] = &NI::Point4::min;
+			usertypeDefinition["max"] = &NI::Point4::max;
 		}
 
 		// Binding for NI::BoundingBox.
@@ -201,7 +201,7 @@ namespace mwse::lua {
 			auto usertypeDefinition = state.new_usertype<NI::Matrix33>("tes3matrix33");
 			usertypeDefinition["new"] = sol::constructors<
 				NI::Matrix33(),
-				NI::Matrix33(NI::Vector3*, NI::Vector3*, NI::Vector3*),
+				NI::Matrix33(NI::Point3*, NI::Point3*, NI::Point3*),
 				NI::Matrix33(float, float, float, float, float, float, float, float, float)
 			>();
 
@@ -211,7 +211,7 @@ namespace mwse::lua {
 			usertypeDefinition[sol::meta_function::equal_to] = &NI::Matrix33::operator==;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
 				sol::resolve<NI::Matrix33(const float) const>(&NI::Matrix33::operator*),
-				sol::resolve<NI::Vector3(const NI::Vector3&) const>(&NI::Matrix33::operator*),
+				sol::resolve<NI::Point3(const NI::Point3&) const>(&NI::Matrix33::operator*),
 				sol::resolve<NI::Matrix33(const NI::Matrix33&) const>(&NI::Matrix33::operator*)
 			);
 
@@ -257,7 +257,7 @@ namespace mwse::lua {
 			auto usertypeDefinition = state.new_usertype<NI::Matrix44>("tes3matrix44");
 			usertypeDefinition["new"] = sol::constructors<
 				NI::Matrix44(),
-				NI::Matrix44(const NI::Vector4&, const NI::Vector4&, const NI::Vector4&, const NI::Vector4&),
+				NI::Matrix44(const NI::Point4&, const NI::Point4&, const NI::Point4&, const NI::Point4&),
 				NI::Matrix44(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)
 			>();
 
@@ -294,13 +294,13 @@ namespace mwse::lua {
 			auto usertypeDefinition = state.new_usertype<NI::Transform>("tes3transform");
 			usertypeDefinition["new"] = sol::constructors<
 				NI::Transform(),
-				NI::Transform(const NI::Matrix33& rotation, const NI::Vector3& translation, const float scale)
+				NI::Transform(const NI::Matrix33& rotation, const NI::Point3& translation, const float scale)
 			>();
 
 			// Operator overloading.
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
 				sol::resolve<NI::Transform(const NI::Transform&) const>(&NI::Transform::operator*),
-				sol::resolve<NI::Vector3(const NI::Vector3&) const>(&NI::Transform::operator*)
+				sol::resolve<NI::Point3(const NI::Point3&) const>(&NI::Transform::operator*)
 			);
 
 			// Basic property bindings.

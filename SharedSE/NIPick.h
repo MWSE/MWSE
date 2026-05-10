@@ -6,8 +6,8 @@
 #include "NINode.h"
 
 #include "NIColor.h"
-#include "NIVector2.h"
-#include "NIVector3.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
@@ -69,8 +69,8 @@ namespace NI {
 		Pick();
 		~Pick();
 
-		bool pickObjects(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
-		bool pickObjectsWithSkinDeforms(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
+		bool pickObjects(const Point3* origin, const Point3* direction, bool append = false, float maxDistance = 0.0f);
+		bool pickObjectsWithSkinDeforms(const Point3* origin, const Point3* direction, bool append = false, float maxDistance = 0.0f);
 		void clearResults();
 
 		PickRecord* getFirstUnskinnedResult() const;
@@ -81,12 +81,12 @@ namespace NI {
 	struct PickRecord {
 		Pointer<Geometry> object;
 		Pointer<AVObject> proxyParent;
-		Vector3 intersection;
+		Point3 intersection;
 		float distance;
 		unsigned short triangleIndex;
 		unsigned short vertexIndex[3];
-		Vector2 texture;
-		Vector3 normal;
+		Point2 texture;
+		Point3 normal;
 		PackedColor color;
 
 		static void* operator new(size_t size);

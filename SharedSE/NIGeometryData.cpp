@@ -15,9 +15,9 @@ namespace NI {
 
 	void GeometryData::updateModelBound() {
 		// SphereBound (MWSE branch) and Bound (CSSE branch) share identical
-		// memory layout (Vector3 center + float radius, 0x10 bytes); the
+		// memory layout (Point3 center + float radius, 0x10 bytes); the
 		// engine fn lives on Bound, so reinterpret across the typedef gap.
-		reinterpret_cast<Bound*>(&bounds)->computeFromData(vertexCount, vertex, sizeof(Vector3));
+		reinterpret_cast<Bound*>(&bounds)->computeFromData(vertexCount, vertex, sizeof(Point3));
 	}
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
@@ -28,14 +28,14 @@ namespace NI {
 		return {};
 	}
 
-	nonstd::span<Vector3> GeometryData::getVertices() {
+	nonstd::span<Point3> GeometryData::getVertices() {
 		if (vertex) {
 			return nonstd::span(vertex, vertexCount);
 		}
 		return {};
 	}
 
-	nonstd::span<Vector3> GeometryData::getActiveVertices() {
+	nonstd::span<Point3> GeometryData::getActiveVertices() {
 		const auto count = getActiveVertexCount();
 		if (vertex && count > 0) {
 			return nonstd::span(vertex, count);
@@ -43,21 +43,21 @@ namespace NI {
 		return {};
 	}
 
-	nonstd::span<Vector3> GeometryData::getNormals() {
+	nonstd::span<Point3> GeometryData::getNormals() {
 		if (normal) {
 			return nonstd::span(normal, vertexCount);
 		}
 		return {};
 	}
 
-	nonstd::span<Vector2> GeometryData::getTextureCoordinates() {
+	nonstd::span<Point2> GeometryData::getTextureCoordinates() {
 		if (textureCoords) {
 			return nonstd::span(textureCoords, vertexCount * textureSets);
 		}
 		return {};
 	}
 #else
-	nonstd::span<Vector3> GeometryData::getVertices() const {
+	nonstd::span<Point3> GeometryData::getVertices() const {
 		if (vertex) {
 			return nonstd::span(vertex, vertexCount);
 		}

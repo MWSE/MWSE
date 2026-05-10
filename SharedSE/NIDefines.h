@@ -89,9 +89,9 @@ namespace NI {
 	struct TriBasedGeometryData;
 	struct TriShape;
 	struct TriShapeData;
-	struct Vector2;
-	struct Vector3;
-	struct Vector4;
+	struct Point2;
+	struct Point3;
+	struct Point4;
 	struct VertexColorProperty;
 	struct WireframeProperty;
 	struct ZBufferProperty;

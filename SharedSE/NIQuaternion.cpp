@@ -190,9 +190,9 @@ namespace NI {
 		return slerp(to, float(t));
 	}
 
-	void Quaternion::fromAngleAxis(float angle, const NI::Vector3* axis) {
+	void Quaternion::fromAngleAxis(float angle, const NI::Point3* axis) {
 #if defined(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS) && SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS > 0
-		const auto NI_Quaternion_FromAngleAxis = reinterpret_cast<void(__thiscall*)(Quaternion*, float angle, const NI::Vector3 * axis)>(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS);
+		const auto NI_Quaternion_FromAngleAxis = reinterpret_cast<void(__thiscall*)(Quaternion*, float angle, const NI::Point3 * axis)>(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS);
 
 		NI_Quaternion_FromAngleAxis(this, angle, axis);
 
@@ -203,12 +203,12 @@ namespace NI {
 #endif
 	}
 
-	std::tuple<float, NI::Vector3> Quaternion::toAngleAxis() const {
+	std::tuple<float, NI::Point3> Quaternion::toAngleAxis() const {
 #if defined(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS) && SE_NI_QUATERNION_FNADDR_TOANGLEAXIS > 0
-		const auto NI_Quaternion_ToAngleAxis = reinterpret_cast<void(__thiscall*)(const Quaternion*, float* angle, const NI::Vector3 * axis)>(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS);
+		const auto NI_Quaternion_ToAngleAxis = reinterpret_cast<void(__thiscall*)(const Quaternion*, float* angle, const NI::Point3 * axis)>(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS);
 
 		float angle;
-		NI::Vector3 axis;
+		NI::Point3 axis;
 		NI_Quaternion_ToAngleAxis(this, &angle, &axis);
 		return std::make_tuple(angle, axis);
 #else

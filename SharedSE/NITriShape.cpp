@@ -13,9 +13,9 @@ namespace NI {
 #endif
 	}
 
-	TriShape::TriShape(unsigned short vertexCount, Vector3* vertices, Vector3* normals, Color* colors, Vector2* textureCoords, unsigned short triangleCount, unsigned short* triList, int flags) : TriBasedGeometry(nullptr) {
+	TriShape::TriShape(unsigned short vertexCount, Point3* vertices, Point3* normals, Color* colors, Point2* textureCoords, unsigned short triangleCount, unsigned short* triList, int flags) : TriBasedGeometry(nullptr) {
 #if defined(SE_NI_TRISHAPE_FNADDR_CTOR) && SE_NI_TRISHAPE_FNADDR_CTOR > 0
-		const auto NI_TriShape_ctor = reinterpret_cast<TriShape*(__thiscall*)(TriShape*, unsigned short, Vector3*, Vector3*, Color*, Vector2*, unsigned short, unsigned short*, int)>(SE_NI_TRISHAPE_FNADDR_CTOR);
+		const auto NI_TriShape_ctor = reinterpret_cast<TriShape*(__thiscall*)(TriShape*, unsigned short, Point3*, Point3*, Color*, Point2*, unsigned short, unsigned short*, int)>(SE_NI_TRISHAPE_FNADDR_CTOR);
 		NI_TriShape_ctor(this, vertexCount, vertices, normals, colors, textureCoords, triangleCount, triList, flags);
 #else
 		throw not_implemented_exception();
@@ -33,7 +33,7 @@ namespace NI {
 	}
 
 #if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-	Pointer<TriShape> TriShape::create(unsigned short vertexCount, Vector3* vertices, Vector3* normals, Color* colors, Vector2* textureCoords, unsigned short triangleCount, unsigned short* triList, int flags) {
+	Pointer<TriShape> TriShape::create(unsigned short vertexCount, Point3* vertices, Point3* normals, Color* colors, Point2* textureCoords, unsigned short triangleCount, unsigned short* triList, int flags) {
 		return new TriShape(vertexCount, vertices, normals, colors, textureCoords, triangleCount, triList, flags);
 	}
 #endif
@@ -61,11 +61,11 @@ namespace NI {
 	}
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	nonstd::span<Vector3> TriShape::getVertices() const {
+	nonstd::span<Point3> TriShape::getVertices() const {
 		return getModelData()->getVertices();
 	}
 
-	nonstd::span<Vector3> TriShape::getNormals() const {
+	nonstd::span<Point3> TriShape::getNormals() const {
 		return getModelData()->getNormals();
 	}
 #endif

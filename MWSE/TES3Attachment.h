@@ -5,7 +5,7 @@
 #include "NILight.h"
 
 #include "TES3Item.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	namespace AttachmentType {
@@ -183,8 +183,8 @@ namespace TES3 {
 	//
 
 	struct NewOrientationAttachment : Attachment {
-		NI::Vector3 position;
-		NI::Vector3 orientation;
+		NI::Point3 position;
+		NI::Point3 orientation;
 
 		NewOrientationAttachment() = delete;
 		~NewOrientationAttachment() = delete;

@@ -149,7 +149,7 @@ namespace NI {
 			return false;
 		}
 
-		const auto NI_LightRadiusTest = reinterpret_cast<bool(__cdecl*)(const Node*, const Vector3*, float*)>(SE_NI_FNADDR_LIGHTRADIUSTEST);
+		const auto NI_LightRadiusTest = reinterpret_cast<bool(__cdecl*)(const Node*, const Point3*, float*)>(SE_NI_FNADDR_LIGHTRADIUSTEST);
 		return NI_LightRadiusTest(this, &light->worldTransform.translation, &lightRadius);
 #else
 		throw not_implemented_exception();

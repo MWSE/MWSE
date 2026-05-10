@@ -4,10 +4,10 @@
 
 #include "TES3MobileActor.h"
 #include "TES3Reference.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace mwse::lua::event {
-	JumpEvent::JumpEvent(TES3::MobileActor* mobile, NI::Vector3& velocity, bool applyFatigueCost, bool isDefaultJump) :
+	JumpEvent::JumpEvent(TES3::MobileActor* mobile, NI::Point3& velocity, bool applyFatigueCost, bool isDefaultJump) :
 		ObjectFilteredEvent("jump", mobile->reference),
 		m_MobileActor(mobile),
 		m_Velocity(velocity),

@@ -6,8 +6,8 @@
 #include "TES3DataHandler.h"
 #include "TES3UIDefines.h"
 
-#include "NIVector2.h"
-#include "NIVector3.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 namespace mwse::lua {
 	template <typename T>
@@ -74,8 +74,8 @@ namespace mwse::lua {
 	TES3::Spell* getOptionalParamSpell(sol::optional<sol::table> maybeParams, const char* key);
 	TES3::Dialogue* getOptionalParamDialogue(sol::optional<sol::table> maybeParams, const char* key);
 	TES3::Sound* getOptionalParamSound(sol::optional<sol::table> maybeParams, const char* key);
-	sol::optional<NI::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key);
-	sol::optional<NI::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key);
+	sol::optional<NI::Point2> getOptionalParamPoint2(sol::optional<sol::table> maybeParams, const char* key);
+	sol::optional<NI::Point3> getOptionalParamPoint3(sol::optional<sol::table> maybeParams, const char* key);
 	TES3::Cell* getOptionalParamCell(sol::optional<sol::table> maybeParams, const char* key);
 	bool getOptionalComplexObjectParams(sol::optional<sol::table> params, TES3::Reference*& out_reference, TES3::BaseObject*& out_object, TES3::MobileActor*& out_mobile, const char* referenceKey = "reference", const char* mobileKey = "mobile", const char* objectKey = "object");
 
@@ -83,8 +83,8 @@ namespace mwse::lua {
 	TES3::UI::UI_ID getUIIDFromObject(sol::object object);
 	TES3::UI::UI_ID getOptionalUIID(sol::optional<sol::table> maybeParams, const char* key);
 
-	bool setVectorFromLua(NI::Vector2&, sol::stack_object);
-	bool setVectorFromLua(NI::Vector3&, sol::stack_object);
+	bool setVectorFromLua(NI::Point2&, sol::stack_object);
+	bool setVectorFromLua(NI::Point3&, sol::stack_object);
 
 	// Allow handling a default value as an unsatisfied optional.
 	template <typename T>

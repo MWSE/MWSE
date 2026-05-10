@@ -43,9 +43,9 @@ namespace NI {
 		return static_cast<AutoNormalParticlesData*>(modelData.get());
 	}
 
-	Pointer<ParticlesData> ParticlesData::create(unsigned short _vertexCount, Vector3* _vertices, Vector3* _normals, PackedColor* _colors) {
+	Pointer<ParticlesData> ParticlesData::create(unsigned short _vertexCount, Point3* _vertices, Point3* _normals, PackedColor* _colors) {
 #if defined(SE_NI_PARTICLESDATA_FNADDR_CTOR) && SE_NI_PARTICLESDATA_FNADDR_CTOR > 0 && defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
-		const auto NI_ParticlesData_ctor = reinterpret_cast<void(__thiscall*)(ParticlesData*, unsigned short, Vector3*, Vector3*, PackedColor*)>(SE_NI_PARTICLESDATA_FNADDR_CTOR);
+		const auto NI_ParticlesData_ctor = reinterpret_cast<void(__thiscall*)(ParticlesData*, unsigned short, Point3*, Point3*, PackedColor*)>(SE_NI_PARTICLESDATA_FNADDR_CTOR);
 		auto ptr = se::memory::_new<ParticlesData>();
 		NI_ParticlesData_ctor(ptr, _vertexCount, _vertices, _normals, _colors);
 		return ptr;
@@ -56,13 +56,13 @@ namespace NI {
 
 	Pointer<ParticlesData> ParticlesData::create(unsigned short vertexCount, bool hasNormals, bool hasColors) {
 #if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
-		Vector3* vertices = se::memory::_new<Vector3>(vertexCount);
-		ZeroMemory(vertices, sizeof(Vector3) * vertexCount);
+		Point3* vertices = se::memory::_new<Point3>(vertexCount);
+		ZeroMemory(vertices, sizeof(Point3) * vertexCount);
 
-		Vector3* normals = nullptr;
+		Point3* normals = nullptr;
 		if (hasNormals) {
-			normals = se::memory::_new<Vector3>(vertexCount);
-			ZeroMemory(normals, sizeof(Vector3) * vertexCount);
+			normals = se::memory::_new<Point3>(vertexCount);
+			ZeroMemory(normals, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* colors = nullptr;
@@ -84,9 +84,9 @@ namespace NI {
 		return {};
 	}
 
-	Pointer<AutoNormalParticlesData> AutoNormalParticlesData::create(unsigned short _vertexCount, Vector3* _vertices, PackedColor* _colors) {
+	Pointer<AutoNormalParticlesData> AutoNormalParticlesData::create(unsigned short _vertexCount, Point3* _vertices, PackedColor* _colors) {
 #if defined(SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR) && SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR > 0 && defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
-		const auto NI_AutoNormalParticlesData_ctor = reinterpret_cast<void(__thiscall*)(AutoNormalParticlesData*, unsigned short, Vector3*, PackedColor*)>(SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR);
+		const auto NI_AutoNormalParticlesData_ctor = reinterpret_cast<void(__thiscall*)(AutoNormalParticlesData*, unsigned short, Point3*, PackedColor*)>(SE_NI_AUTONORMALPARTICLESDATA_FNADDR_CTOR);
 		auto ptr = se::memory::_new<AutoNormalParticlesData>();
 		NI_AutoNormalParticlesData_ctor(ptr, _vertexCount, _vertices, _colors);
 		return ptr;
@@ -97,8 +97,8 @@ namespace NI {
 
 	Pointer<AutoNormalParticlesData> AutoNormalParticlesData::create(unsigned short vertexCount, bool hasColors) {
 #if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
-		Vector3* vertices = se::memory::_new<Vector3>(vertexCount);
-		ZeroMemory(vertices, sizeof(Vector3) * vertexCount);
+		Point3* vertices = se::memory::_new<Point3>(vertexCount);
+		ZeroMemory(vertices, sizeof(Point3) * vertexCount);
 
 		PackedColor* colors = nullptr;
 		if (hasColors) {

@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3AnimationData.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include "NIExtraData.h"
 #include "NIProperty.h"
@@ -28,7 +28,7 @@ namespace TES3 {
 		void(__thiscall* syncReferenceRotation)(ActorAnimationController*); // 0xC
 		void(__thiscall* setProperties)(ActorAnimationController*, NI::Node*); // 0x10
 		NI::Matrix33* (__thiscall* getRotation)(ActorAnimationController*, NI::Matrix33*); // 0x14
-		void(__thiscall* getAnimationDelta)(ActorAnimationController*, NI::Vector3*); // 0x18
+		void(__thiscall* getAnimationDelta)(ActorAnimationController*, NI::Point3*); // 0x18
 		void(__thiscall* reset)(ActorAnimationController*); // 0x1C
 	};
 	static_assert(sizeof(ActorAnimationController_VirtualTable) == 0x20, "TES3::ActorAnimationController_VirtualTable failed size validation");

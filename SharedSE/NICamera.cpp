@@ -75,7 +75,7 @@ namespace NI {
 #endif
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	std::reference_wrapper<Vector4[6]> Camera::getCullingPlanes_lua() {
+	std::reference_wrapper<Point4[6]> Camera::getCullingPlanes_lua() {
 		return std::ref(cullingPlanes);
 	}
 #endif
@@ -89,9 +89,9 @@ namespace NI {
 #endif
 	}
 
-	bool Camera::LookAtWorldPoint(const Vector3* worldPoint, const Vector3* worldUp) {
+	bool Camera::LookAtWorldPoint(const Point3* worldPoint, const Point3* worldUp) {
 #if defined(SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT) && SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT > 0
-		const auto NI_Camera_lookAtWorldPoint = reinterpret_cast<bool(__thiscall*)(Camera*, const Vector3*, const Vector3*)>(SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT);
+		const auto NI_Camera_lookAtWorldPoint = reinterpret_cast<bool(__thiscall*)(Camera*, const Point3*, const Point3*)>(SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT);
 		return NI_Camera_lookAtWorldPoint(this, worldPoint, worldUp);
 #else
 		throw not_implemented_exception();
@@ -104,18 +104,18 @@ namespace NI {
 	}
 #endif
 
-	bool Camera::windowPointToRay(int screenX, int screenY, Vector3& out_origin, Vector3& out_direction) {
+	bool Camera::windowPointToRay(int screenX, int screenY, Point3& out_origin, Point3& out_direction) {
 #if defined(SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY) && SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY > 0
-		const auto NI_Camera_windowPointToRay = reinterpret_cast<bool(__thiscall*)(Camera*, int, int, Vector3&, Vector3&)>(SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY);
+		const auto NI_Camera_windowPointToRay = reinterpret_cast<bool(__thiscall*)(Camera*, int, int, Point3&, Point3&)>(SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY);
 		return NI_Camera_windowPointToRay(this, screenX, screenY, out_origin, out_direction);
 #else
 		throw not_implemented_exception();
 #endif
 	}
 
-	bool Camera::worldPointToScreenPoint(const Vector3* point, float& out_screenX, float& out_screenY) {
+	bool Camera::worldPointToScreenPoint(const Point3* point, float& out_screenX, float& out_screenY) {
 #if defined(SE_NI_CAMERA_FNADDR_WORLDPOINTTOSCREENPOINT) && SE_NI_CAMERA_FNADDR_WORLDPOINTTOSCREENPOINT > 0
-		const auto NI_Camera_worldPointToScreenPoint = reinterpret_cast<bool(__thiscall*)(Camera*, const Vector3*, float&, float&)>(SE_NI_CAMERA_FNADDR_WORLDPOINTTOSCREENPOINT);
+		const auto NI_Camera_worldPointToScreenPoint = reinterpret_cast<bool(__thiscall*)(Camera*, const Point3*, float&, float&)>(SE_NI_CAMERA_FNADDR_WORLDPOINTTOSCREENPOINT);
 		return NI_Camera_worldPointToScreenPoint(this, point, out_screenX, out_screenY);
 #else
 		throw not_implemented_exception();
@@ -123,13 +123,13 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	sol::optional<std::tuple<Vector3, Vector3>> Camera::windowPointToRay_lua(sol::stack_object luaPoint) {
-		NI::Vector2 point;
+	sol::optional<std::tuple<Point3, Point3>> Camera::windowPointToRay_lua(sol::stack_object luaPoint) {
+		NI::Point2 point;
 		if (!mwse::lua::setVectorFromLua(point, luaPoint)) {
 			throw std::runtime_error("Could not convert parameter to tes3vector2.");
 		}
 
-		std::tuple<Vector3, Vector3> result = {};
+		std::tuple<Point3, Point3> result = {};
 		auto worldController = TES3::WorldController::get();
 		if (windowPointToRay(int(point.x + worldController->viewWidth / 2), int(worldController->viewHeight / 2 - point.y), std::get<0>(result), std::get<1>(result))) {
 			return result;
@@ -137,8 +137,8 @@ namespace NI {
 		return {};
 	}
 
-	sol::optional<NI::Vector2> Camera::worldPointToScreenPoint_lua(sol::stack_object luaPosition) {
-		Vector3 position;
+	sol::optional<NI::Point2> Camera::worldPointToScreenPoint_lua(sol::stack_object luaPosition) {
+		Point3 position;
 		if (!mwse::lua::setVectorFromLua(position, luaPosition)) {
 			throw std::runtime_error("Could not convert parameter to tes3vector2.");
 		}
@@ -146,7 +146,7 @@ namespace NI {
 		float x, y;
 		if (worldPointToScreenPoint(&position, x, y)) {
 			auto worldController = TES3::WorldController::get();
-			return NI::Vector2((x - 0.5f) * worldController->viewWidth, (y - 0.5f) * worldController->viewHeight);
+			return NI::Point2((x - 0.5f) * worldController->viewWidth, (y - 0.5f) * worldController->viewHeight);
 		}
 		return {};
 	}

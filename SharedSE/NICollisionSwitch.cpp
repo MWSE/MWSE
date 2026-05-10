@@ -46,7 +46,7 @@ namespace NI {
 #endif
 	}
 
-	bool CollisionSwitch::findIntersections(Vector3* position, Vector3* direction, Pick* pick) {
+	bool CollisionSwitch::findIntersections(Point3* position, Point3* direction, Pick* pick) {
 #if defined(SE_NI_NODE_FNADDR_FINDINTERSECTIONS) && SE_NI_NODE_FNADDR_FINDINTERSECTIONS > 0
 		if (pick->observeAppCullFlag && getAppCulled() || !BITMASK_TEST(flags, flagCollision)) {
 			return false;
@@ -63,7 +63,7 @@ namespace NI {
 			return result;
 		}
 		else {
-			const auto NI_Node_FindIntersections = reinterpret_cast<bool(__thiscall*)(Node*, Vector3*, Vector3*, Pick*)>(SE_NI_NODE_FNADDR_FINDINTERSECTIONS);
+			const auto NI_Node_FindIntersections = reinterpret_cast<bool(__thiscall*)(Node*, Point3*, Point3*, Pick*)>(SE_NI_NODE_FNADDR_FINDINTERSECTIONS);
 			return NI_Node_FindIntersections(this, position, direction, pick);
 		}
 #else

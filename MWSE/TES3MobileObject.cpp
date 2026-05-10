@@ -21,8 +21,8 @@
 
 namespace TES3 {
 
-	NI::Vector3 MobileObject::Collision::getNormal() const {
-		return NI::Vector3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
+	NI::Point3 MobileObject::Collision::getNormal() const {
+		return NI::Point3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
 	}
 
 	const auto TES3_MobileObject_Collision_clone = reinterpret_cast<void(__thiscall*)(MobileObject::Collision*, MobileObject::Collision*)>(0x405450);
@@ -139,18 +139,18 @@ namespace TES3 {
 		vTable.mobileObject->enterLeaveSimulation(this, entering);
 	}
 
-	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x561960);
-	void MobileObject::setFootPoint(const NI::Vector3* point) {
+	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x561960);
+	void MobileObject::setFootPoint(const NI::Point3* point) {
 		TES3_MobileObject_setFootPoint(this, point);
 	}
 
-	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x55EBA0);
-	void MobileObject::setInstantVelocity(const NI::Vector3* velocity) {
+	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x55EBA0);
+	void MobileObject::setInstantVelocity(const NI::Point3* velocity) {
 		TES3_MobileObject_setInstantVelocity(this, velocity);
 	}
 
-	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Vector3*)>(0x55E7A0);
-	void MobileObject::updateConstantVelocity(const NI::Vector3* velocity) {
+	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x55E7A0);
+	void MobileObject::updateConstantVelocity(const NI::Point3* velocity) {
 		TES3_MobileObject_updateConstantVelocity(this, velocity);
 	}
 
@@ -189,17 +189,17 @@ namespace TES3 {
 		TES3_MobileObject_removeLight(this);
 	}
 
-	NI::Vector3 MobileObject::getBoundSize() const {
-		return NI::Vector3(boundSize.x, boundSize.y, height);
+	NI::Point3 MobileObject::getBoundSize() const {
+		return NI::Point3(boundSize.x, boundSize.y, height);
 	}
 
-	void MobileObject::setBoundSize(const NI::Vector3& value) {
+	void MobileObject::setBoundSize(const NI::Point3& value) {
 		boundSize.x = value.x;
 		boundSize.y = value.y;
 		height = value.z;
 	}
 
-	NI::Vector3* MobileObject::getImpulseVelocity() {
+	NI::Point3* MobileObject::getImpulseVelocity() {
 		return &impulseVelocity;
 	}
 
@@ -212,7 +212,7 @@ namespace TES3 {
 		return lightMagicEffectData;
 	}
 
-	NI::Vector3* MobileObject::getPosition() const {
+	NI::Point3* MobileObject::getPosition() const {
 		// Delegate to reference.
 		return &reference->position;
 	}
@@ -226,7 +226,7 @@ namespace TES3 {
 		setLightEffectDiffuseCol(NI::Color(object));
 	}
 
-	NI::Vector3* MobileObject::getVelocity() {
+	NI::Point3* MobileObject::getVelocity() {
 		return &velocity;
 	}
 

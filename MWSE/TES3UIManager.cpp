@@ -47,7 +47,7 @@ namespace TES3::UI {
 	const auto TES3_ui_findMenu = reinterpret_cast<Element* (__cdecl*)(UI_ID)>(0x595370);
 	const auto TES3_ui_findHelpLayerMenu = reinterpret_cast<Element* (__cdecl*)(UI_ID)>(0x595A10);
 	const auto TES3_ui_getMenuOnTop = reinterpret_cast<Element* (__cdecl*)()>(0x595290);
-	const auto TES3_ui_getPaletteColour = reinterpret_cast<NI::Vector3& (__cdecl*)(NI::Vector3&, Property)>(0x57F610);
+	const auto TES3_ui_getPaletteColour = reinterpret_cast<NI::Point3& (__cdecl*)(NI::Point3&, Property)>(0x57F610);
 	const auto TES3_ui_onMenuUnfocus = reinterpret_cast<EventCallback>(0x58F790);
 	const auto TES3_ui_ScrollbarArrow_onClick = reinterpret_cast<EventCallback>(0x647A60);
 	const auto TES3_ui_requestMenuModeOn = reinterpret_cast<bool (__cdecl*)(UI_ID)>(0x595230);
@@ -276,8 +276,8 @@ namespace TES3::UI {
 		menu->setProperty(Property::event_unfocus, TES3_ui_onMenuUnfocus);
 	}
 
-	NI::Vector3 getPaletteColour(Property prop) {
-		NI::Vector3 colour;
+	NI::Point3 getPaletteColour(Property prop) {
+		NI::Point3 colour;
 		return TES3_ui_getPaletteColour(colour, prop);
 	}
 

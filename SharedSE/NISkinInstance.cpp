@@ -52,10 +52,10 @@ namespace NI {
 		return {};
 	}
 
-	void SkinInstance::deform(const NI::Vector3* srcVertices, const NI::Vector3* srcNormals, unsigned int vertexCount, NI::Vector3* dstVertices, NI::Vector3* dstNormals) const {
+	void SkinInstance::deform(const NI::Point3* srcVertices, const NI::Point3* srcNormals, unsigned int vertexCount, NI::Point3* dstVertices, NI::Point3* dstNormals) const {
 #if defined(SE_NI_SKININSTANCE_FNADDR_DEFORM) && SE_NI_SKININSTANCE_FNADDR_DEFORM > 0
-		const auto NI_SkinInstance_Deform = reinterpret_cast<void(__thiscall*)(const NI::SkinInstance*, const NI::Vector3*, size_t, const NI::Vector3*, size_t, NI::Vector3*, NI::Vector3*, size_t)>(SE_NI_SKININSTANCE_FNADDR_DEFORM);
-		return NI_SkinInstance_Deform(this, srcVertices, sizeof(Vector3), srcNormals, vertexCount, dstVertices, dstNormals, sizeof(Vector3));
+		const auto NI_SkinInstance_Deform = reinterpret_cast<void(__thiscall*)(const NI::SkinInstance*, const NI::Point3*, size_t, const NI::Point3*, size_t, NI::Point3*, NI::Point3*, size_t)>(SE_NI_SKININSTANCE_FNADDR_DEFORM);
+		return NI_SkinInstance_Deform(this, srcVertices, sizeof(Point3), srcNormals, vertexCount, dstVertices, dstNormals, sizeof(Point3));
 #else
 		throw not_implemented_exception();
 #endif

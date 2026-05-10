@@ -3,12 +3,12 @@
 #include "TES3ActorAnimationController.h"
 
 #include "NIPick.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	struct PlayerAnimationController : ActorAnimationController {
 		NI::Camera * firstPersonHeadCameraNode; // 0xD4 
-		NI::Vector3 cameraOffset; // 0xD8
+		NI::Point3 cameraOffset; // 0xD8
 		NI::Pick * pickData; // 0xE4
 		bool is3rdPerson; // 0xE8
 		unsigned char switchPOVMode; // 0xE9

@@ -10,13 +10,13 @@
 
 namespace NI {
 	struct ObjectVelocities {
-		Vector3 localVelocity;
-		Vector3 worldVelocity;
+		Point3 localVelocity;
+		Point3 worldVelocity;
 	};
 
 	struct AVObject_vTable : Object_vTable {
 		void(__thiscall* updateControllers)(AVObject*, float); // 0x2C
-		void(__thiscall* applyTransform)(AVObject*, Matrix33*, Vector3*, bool); // 0x30
+		void(__thiscall* applyTransform)(AVObject*, Matrix33*, Point3*, bool); // 0x30
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// MWSE-original types this as SphereBound* (the real engine return type).
 		SphereBound* (__thiscall* getWorldBound)(AVObject*); // 0x34
@@ -49,7 +49,7 @@ namespace NI {
 		void(__thiscall* updateCollisionData)(AVObject*); // 0x7C
 		bool(__thiscall* testCollisions)(AVObject*, float, void*, void*); // 0x80
 		int(__thiscall* findCollisions)(AVObject*, float, void*, void*); // 0x84
-		bool(__thiscall* findIntersections)(AVObject*, Vector3*, Vector3*, Pick*); // 0x88
+		bool(__thiscall* findIntersections)(AVObject*, Point3*, Point3*, Pick*); // 0x88
 		void(__thiscall* updateWorldData)(AVObject*); // 0x8C
 		void(__thiscall* updateWorldBound)(AVObject*); // 0x90
 	};
@@ -59,10 +59,10 @@ namespace NI {
 		unsigned short flags; // 0x14
 		short pad_16;
 		Node* parentNode; // 0x18
-		Vector3 worldBoundOrigin; // 0x1C
+		Point3 worldBoundOrigin; // 0x1C
 		float worldBoundRadius; // 0x28
 		Matrix33* localRotation; // 0x2C
-		Vector3 localTranslate; // 0x30
+		Point3 localTranslate; // 0x30
 		float localScale; // 0x3C
 		Transform worldTransform; // 0x40
 		ObjectVelocities* velocities; // 0x74
@@ -87,8 +87,8 @@ namespace NI {
 		SphereBound* getWorldBound();
 #endif
 
-		Vector3 getLocalVelocity() const;
-		void setLocalVelocity(Vector3*);
+		Point3 getLocalVelocity() const;
+		void setLocalVelocity(Point3*);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// MWSE-original: non-const this (matches MWSE-private NIAVObject.cpp impl).
@@ -137,14 +137,14 @@ namespace NI {
 
 		// Ray/sphere intersection test against world-bound. Impl in MWSE-private
 		// NIAVObject.cpp.
-		bool intersectBounds(const Vector3* position, const Vector3* direction, float* out_result) const;
+		bool intersectBounds(const Point3* position, const Point3* direction, float* out_result) const;
 
 		// Member-form bounds calculation. Coexists with the free CalculateBounds()
 		// declared at the bottom of this file.
 		void calculateBounds(
-			Vector3& min,
-			Vector3& max,
-			const Vector3& translation,
+			Point3& min,
+			Point3& max,
+			const Point3& translation,
 			const Matrix33& rotation,
 			const float& scale,
 			const bool accurateSkinned,
@@ -229,7 +229,7 @@ namespace NI {
 	};
 	static_assert(sizeof(AVObject) == 0x90, "NI::AVObject failed size validation");
 
-	void __cdecl CalculateBounds(const AVObject* object, Vector3& out_min, Vector3& out_max, const Vector3& translation, const Matrix33& rotation, const float& scale);
+	void __cdecl CalculateBounds(const AVObject* object, Point3& out_min, Point3& out_max, const Point3& translation, const Matrix33& rotation, const float& scale);
 
 	void __cdecl VerifyWorldVertices(const AVObject* object);
 }

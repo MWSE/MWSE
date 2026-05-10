@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3MobileObject.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include "NIHashMap.h"
 
@@ -76,7 +76,7 @@ namespace TES3 {
 		//
 
 		int getMagnitude(int effectIndex) const;
-		void playSpellVFX(float scale, NI::Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous);
+		void playSpellVFX(float scale, NI::Point3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous);
 		void projectileHit(MobileObject::Collision* collision);
 		bool spellHit(Reference* hitReference, int effectIndex);
 		void onAbsorbedMagic(MobileActor* mact);

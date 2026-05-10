@@ -62,10 +62,10 @@ namespace NI {
 		int unknown_0x2A0;
 		int unknown_0x2A4;
 		int unknown_0x2A8;
-		NI::Vector3 cameraRight; // 0x2AC
-		NI::Vector3 cameraUp; // 0x2B8
-		NI::Vector3 modelCameraRight; // 0x2C4
-		NI::Vector3 modelCameraUp; // 0x2D0
+		NI::Point3 cameraRight; // 0x2AC
+		NI::Point3 cameraUp; // 0x2B8
+		NI::Point3 modelCameraRight; // 0x2C4
+		NI::Point3 modelCameraUp; // 0x2D0
 		int unknown_0x2DC;
 		int unknown_0x2E0;
 		int unknown_0x2E4;

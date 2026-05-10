@@ -50,10 +50,7 @@
 #define SE_NI_OBJECTNET_FNADDR_REMOVEALLEXTRADATA 0x6EA3B0
 #define SE_NI_OBJECTNET_FNADDR_REMOVECONTROLLER 0x6EA450
 #define SE_NI_OBJECTNET_FNADDR_REMOVEEXTRADATA 0x6EA260
-// No standalone NiObjectNET::SetFlag in Morrowind.exe — the flags member
-// lives on NiProperty (Property::SetFlag at 0x405960), not ObjectNET.
-// The decl in SharedSE/NIObjectNET.h is CSSE-only (CS.exe has it at 0x44A130).
-#define SE_NI_OBJECTNET_FNADDR_SETFLAG 0x0
+#define SE_NI_OBJECTNET_FNADDR_SETFLAG 0x405960
 #define SE_NI_OBJECTNET_FNADDR_SETNAME 0x6EA1A0
 
 // NI::AVObject
@@ -172,10 +169,7 @@
 #define SE_NI_DYNAMICEFFECT_FNADDR_ATTACHAFFECTEDNODE 0x6F3790
 #define SE_NI_DYNAMICEFFECT_FNADDR_CTOR 0x6F34E0
 #define SE_NI_DYNAMICEFFECT_FNADDR_DETACHAFFECTEDNODE 0x6F37D0
-// No standalone ClearDynamicEffectNodes in Morrowind.exe — the loop is inlined
-// into NiDynamicEffect::dtor at 0x6F35B0. CSSE has it broken out at 0x402824.
-// MWSE call sites must throw not_implemented_exception or use the dtor path.
-#define SE_NI_FNADDR_CLEARDYNAMICEFFECTNODES 0x0
+#define SE_NI_FNADDR_CLEARDYNAMICEFFECTNODES 0x4D3360
 
 // NI::Property
 #define SE_NI_PROPERTY_FNADDR_CTOR 0x405990

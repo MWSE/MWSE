@@ -12,7 +12,7 @@ namespace TES3 {
 
 	struct VFX {
 		Reference* target; // 0x0
-		NI::Vector3 position; // 0x4
+		NI::Point3 position; // 0x4
 		NI::AVObject* createdFromNode; // 0x10
 		float maxAge; // 0x14
 		float age; // 0x18
@@ -43,7 +43,7 @@ namespace TES3 {
 		float endKeyTime; // 0x10
 		float keyTime; // 0x14
 		float scale; // 0x18
-		NI::Vector3 position; // 0x1C
+		NI::Point3 position; // 0x1C
 		unsigned int sourceInstanceSerial; // 0x28
 		int vfxId; // 0x2C
 		char effectObjectId[32]; // 0x30
@@ -67,7 +67,7 @@ namespace TES3 {
 		VFX* createForEffect(unsigned int serial, PhysicalObject* effect, int animLoopCount, float lifespan, float scale, float verticalOffset);
 
 		VFX* createForReference(unsigned int serial, PhysicalObject* effect, Reference* reference, int animLoopCount, float lifespan, float scale, float verticalOffset);
-		VFX* createAtPosition(unsigned int serial, PhysicalObject* effect, NI::Vector3* position, int animLoopCount, float lifespan, float scale, float verticalOffset);
+		VFX* createAtPosition(unsigned int serial, PhysicalObject* effect, NI::Point3* position, int animLoopCount, float lifespan, float scale, float verticalOffset);
 		VFX* createForAVObject(unsigned int serial, PhysicalObject* effect, NI::AVObject* avObject, int animLoopCount, float lifespan, float scale, float verticalOffset);
 
 		void remove(VFX* vfx);
