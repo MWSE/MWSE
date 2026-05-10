@@ -1,8 +1,36 @@
 #pragma once
 
-#include "NIConfig.h"
-#include "NIRTTIDefines.h"
-#include "NIVirtualTableDefines.h"
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == TRUE
+#include "NIConfig.Morrowind.h"
+#include "NIRTTIDefines.Morrowind.h"
+#include "NIVirtualTableDefines.Morrowind.h"
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == TRUE
+#include "NIConfig.TESConstructionSet.h"
+#include "NIRTTIDefines.TESConstructionSet.h"
+#include "NIVirtualTableDefines.TESConstructionSet.h"
+#else
+static_assert(false, "Invalid target scope. Define an SE_TARGETS_ macro.");
+#endif
+
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == TRUE
+namespace TES3 {
+	struct Reference;
+}
+namespace NI {
+	using GameReferenceType = TES3::Reference;
+}
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == TRUE
+namespace se::cs {
+	struct Reference;
+}
+namespace NI {
+	using GameReferenceType = se::cs::Reference;
+}
+#else
+namespace NI {
+	using GameReferenceType = void;
+}
+#endif
 
 namespace NI {
 	struct Accumulator;

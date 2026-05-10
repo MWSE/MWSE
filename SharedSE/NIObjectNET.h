@@ -46,14 +46,7 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		using GAME_REFERENCE_TYPE = TES3::Reference;
-#elif defined(SE_IS_CS) && SE_IS_CS == 1
-		using GAME_REFERENCE_TYPE = se::cs::Reference;
-#else
-		using GAME_REFERENCE_TYPE = void;
-#endif
-		GAME_REFERENCE_TYPE* getTes3Reference(bool searchParents = false) const;
+		GameReferenceType* getTes3Reference(bool searchParents = false) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;

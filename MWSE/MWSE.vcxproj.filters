@@ -148,9 +148,6 @@
     <Filter Include="Header Files\DataAdapters\TES3\Objects\Actor\Mobile">
       <UniqueIdentifier>{59d80928-ea83-4f60-a382-7f0ca6b86d83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\DataAdapters\NI">
-      <UniqueIdentifier>{2e57bc54-bb63-4607-ad35-701699333f04}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\DataAdapters\NI">
       <UniqueIdentifier>{98977581-dad0-4d3d-a594-bc72a385a24e}</UniqueIdentifier>
     </Filter>
@@ -1164,12 +1161,6 @@
     <ClInclude Include="BitUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NIConfig.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIRTTIDefines.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
-    </ClInclude>
     <ClInclude Include="LuaObjectInvalidatedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1562,9 +1553,6 @@
     </ClInclude>
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
-    <ClInclude Include="NIVirtualTableDefines.h">
-      <Filter>Header Files\DataAdapters\NI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

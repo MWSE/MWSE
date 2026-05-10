@@ -19,9 +19,6 @@
     <Filter Include="Source Files\CS">
       <UniqueIdentifier>{a3c311dc-8df9-4ea2-b9cd-44866c827ffa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\NI">
-      <UniqueIdentifier>{496e3544-4bf7-4e56-805c-1a0a9be077ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Util">
       <UniqueIdentifier>{091f2149-c7ea-4a8b-9b9d-67f366f92981}</UniqueIdentifier>
     </Filter>
@@ -177,12 +174,6 @@
     </ClInclude>
     <ClInclude Include="CSDefines.h">
       <Filter>Header Files\CS</Filter>
-    </ClInclude>
-    <ClInclude Include="NIRTTIDefines.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIConfig.h">
-      <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="CSDialogue.h">
       <Filter>Header Files\CS</Filter>
@@ -474,9 +465,6 @@
     </ClInclude>
     <ClInclude Include="DialogLayersWindow.h">
       <Filter>Header Files\UI\DialogClasses</Filter>
-    </ClInclude>
-    <ClInclude Include="NIVirtualTableDefines.h">
-      <Filter>Header Files\NI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

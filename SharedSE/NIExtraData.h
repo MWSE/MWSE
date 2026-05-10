@@ -2,12 +2,6 @@
 
 #include "NIObject.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Defines.h"
-#elif defined(SE_IS_CS) && SE_IS_CS == 1
-#include "CSDefines.h"
-#endif
-
 namespace NI {
 	struct ExtraData : Object {
 		size_t genericDataLength; // 0x8
@@ -43,14 +37,7 @@ namespace NI {
 	static_assert(sizeof(StringExtraData) == 0x18, "NI::TextKey failed size validation");
 
 	struct Tes3ExtraData : ExtraData {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		using VALUE_TYPE = TES3::Reference;
-#elif defined(SE_IS_CS) && SE_IS_CS == 1
-		using VALUE_TYPE = se::cs::Reference;
-#else
-		using VALUE_TYPE = void;
-#endif
-		VALUE_TYPE* reference; // 0x14
+		GameReferenceType* reference; // 0x14
 	};
 	static_assert(sizeof(Tes3ExtraData) == 0x18, "NI::Tes3ExtraData failed size validation");
 
