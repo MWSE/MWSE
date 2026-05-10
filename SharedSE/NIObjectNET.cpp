@@ -131,8 +131,7 @@ namespace NI {
 		return getStringDataStartingWithValue(value) != nullptr;
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	TES3::Reference* ObjectNET::getTes3Reference(bool searchParents) const {
+	ObjectNET::GAME_REFERENCE_TYPE* ObjectNET::getTes3Reference(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {
 			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
 				return static_cast<Tes3ExtraData*>(ed)->reference;
@@ -145,23 +144,6 @@ namespace NI {
 
 		return nullptr;
 	}
-#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
-	// (intentionally omitted — declaration is also omitted on this target)
-#else
-	se::cs::Reference* ObjectNET::getTes3Reference(bool searchParents) const {
-		for (ExtraData* ed = extraData; ed; ed = ed->next) {
-			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
-				return static_cast<Tes3ExtraData*>(ed)->reference;
-			}
-		}
-
-		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<const AVObject*>(this)->parentNode) {
-			return static_cast<const AVObject*>(this)->parentNode->getTes3Reference(true);
-		}
-
-		return nullptr;
-	}
-#endif
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	TES3::Reference* ObjectNET::getTes3Reference_lua(sol::optional<bool> searchParents) const {

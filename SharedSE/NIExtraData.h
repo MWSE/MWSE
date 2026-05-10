@@ -4,11 +4,7 @@
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
-#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
-// MGE-XE consumes SharedSE for scene-graph access only; it never touches
-// Tes3ExtraData::reference, so the field type below is opaque (void*).
-// No game-class forward decls are needed on this target.
-#else
+#elif defined(SE_IS_CS) && SE_IS_CS == 1
 #include "CSDefines.h"
 #endif
 
@@ -48,12 +44,13 @@ namespace NI {
 
 	struct Tes3ExtraData : ExtraData {
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Reference* reference; // 0x14
-#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
-		void* reference; // 0x14 — opaque on MGE; layout-stable 4-byte pointer.
+		using VALUE_TYPE = TES3::Reference;
+#elif defined(SE_IS_CS) && SE_IS_CS == 1
+		using VALUE_TYPE = se::cs::Reference;
 #else
-		se::cs::Reference* reference;
+		using VALUE_TYPE = void;
 #endif
+		VALUE_TYPE* reference; // 0x14
 	};
 	static_assert(sizeof(Tes3ExtraData) == 0x18, "NI::Tes3ExtraData failed size validation");
 

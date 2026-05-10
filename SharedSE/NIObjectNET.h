@@ -9,10 +9,7 @@
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
-#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
-// MGE-XE doesn't reference TES3:: or se::cs:: game classes; getTes3Reference
-// is omitted on this target (declaration below also gated).
-#else
+#elif defined(SE_IS_CS) && SE_IS_CS == 1
 #include "CSDefines.h"
 #endif
 
@@ -49,18 +46,14 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
-		// Per-target return type: TES3::Reference for MWSE, se::cs::Reference
-		// for CSSE (legitimate target-specific type, not cosmetic drift).
-		// Const-ness is unified (MWSE-canonical). Omitted entirely on MGE,
-		// which has no game-class types to return and never calls into
-		// the MWSE-only NIObjectNET.cpp implementation.
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Reference* getTes3Reference(bool searchParents = false) const;
-#elif defined(SE_IS_MGE) && SE_IS_MGE == 1
-		// (intentionally omitted)
+		using GAME_REFERENCE_TYPE = TES3::Reference;
+#elif defined(SE_IS_CS) && SE_IS_CS == 1
+		using GAME_REFERENCE_TYPE = se::cs::Reference;
 #else
-		se::cs::Reference* getTes3Reference(bool searchParents = false) const;
+		using GAME_REFERENCE_TYPE = void;
 #endif
+		GAME_REFERENCE_TYPE* getTes3Reference(bool searchParents = false) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;

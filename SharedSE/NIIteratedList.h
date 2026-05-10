@@ -12,8 +12,10 @@ namespace NI {
 			Node* next;
 			T data;
 
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 			static void* operator new(size_t size) { return se::memory::_new(size); }
-			static void operator delete(void* block) { return se::memory::_delete(block); }
+			static void operator delete(void* block) { se::memory::_delete(block); }
+#endif
 
 			Node(const Node&) = delete;
 
