@@ -12,7 +12,7 @@
 namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	Pointer<RenderedTexture> RenderedTexture::create(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs) {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == TRUE
 		const auto NI_RenderedTexture_create = reinterpret_cast<RenderedTexture * (__cdecl*)(unsigned int, unsigned int, Renderer*, const Texture::FormatPrefs*)>(0x6DC090);
 		auto renderer = TES3::WorldController::get()->renderer;
 		const auto prefsVal = prefs.value_or(&Texture::FormatPrefs::DEFAULT_LUA_PREFS);

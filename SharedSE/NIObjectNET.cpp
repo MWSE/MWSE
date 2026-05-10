@@ -125,7 +125,7 @@ namespace NI {
 		return getStringDataStartingWithValue(value) != nullptr;
 	}
 
-	ObjectNET::GAME_REFERENCE_TYPE* ObjectNET::getTes3Reference(bool searchParents) const {
+	GameReferenceType* ObjectNET::getTes3Reference(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {
 			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
 				return static_cast<Tes3ExtraData*>(ed)->reference;

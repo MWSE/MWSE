@@ -1,14 +1,21 @@
 #include "NIUtil.h"
 
-constexpr auto NI_global_pick = 0x7D12E8;
-constexpr auto NI_getAssociatedReference = 0x4C3C40;
+#include "ExceptionUtil.h"
 
 namespace NI {
 	Pick* getGlobalPick() {
-		return *reinterpret_cast<Pick**>(NI_global_pick);
+#if defined(SE_NI_GLOBAL_PICK) && SE_NI_GLOBAL_PICK > 0
+		return *reinterpret_cast<Pick**>(SE_NI_GLOBAL_PICK);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
-	TES3::Reference* getAssociatedReference(AVObject* object) {
-		return reinterpret_cast<TES3::Reference*(__cdecl*)(AVObject*)>(NI_getAssociatedReference)(object);
+	GameReferenceType* getAssociatedReference(AVObject* object) {
+#if defined(SE_NI_GETASSOCIATEDREFERENCE) && SE_NI_GETASSOCIATEDREFERENCE > 0
+		return reinterpret_cast<GameReferenceType* (__cdecl*)(AVObject*)>(SE_NI_GETASSOCIATEDREFERENCE)(object);
+#else
+throw not_implemented_exception();
+#endif
 	}
 }

@@ -68,7 +68,7 @@ namespace NI {
 
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == TRUE
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);
 		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const Property*, Stream*)>(0x6E9660);
 #endif

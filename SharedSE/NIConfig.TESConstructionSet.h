@@ -208,10 +208,6 @@
 #define SE_NI_STENCILPROPERTY_VTBL 0x6734F8
 
 // NI::TexturingProperty::Map
-// CS inlines NiTexturingProperty::Map ctors directly into the parent
-// TexturingProperty ctor / Clone / CreateFromStream paths (e.g. sub_5D3150
-// at 0x5D31D0-0x5D3236). No standalone Map ctor functions exist; vtable
-// 0x67A7F4 / off_6758A8 is written inline. Both stay 0x0.
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTOR 0x0
 #define SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS 0x0
 
@@ -258,10 +254,6 @@
 #define SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS 0x6FC710
 
 // NI::TimeController
-// CS.exe address not yet known. CSSE call sites (e.g.
-// SharedSE/NIFlipController.cpp::copy) must throw not_implemented_exception
-// when this is 0; otherwise a call would jump to whatever happens to live at
-// 0x6FC8E0 in TESConstructionSet.exe -- almost certainly wrong.
 #define SE_NI_TIMECONTROLLER_FNADDR_COPY 0x5E97C0
 
 // NI::Camera
@@ -269,9 +261,6 @@
 #define SE_NI_CAMERA_FNADDR_CLICK 0x5BABA0
 #define SE_NI_CAMERA_FNADDR_CTOR 0x5BA5F0
 #define SE_NI_CAMERA_FNADDR_DTOR 0x5BA900
-// LookAtWorldPoint CS counterpart not yet located (MW size 0x3DA didn't
-// match cleanly in the 0x5BA-0x5BD Camera cluster — possibly inlined or
-// renamed in the editor build).
 #define SE_NI_CAMERA_FNADDR_LOOKATWORLDPOINT 0x0
 #define SE_NI_CAMERA_FNADDR_SWAPBUFFERS 0x5BAD20
 #define SE_NI_CAMERA_FNADDR_WINDOWPOINTTORAY 0x5BC680
@@ -286,7 +275,6 @@
 // NI::Stream
 #define SE_NI_STREAM_FNADDR_CTOR 0x5AD3D0
 #define SE_NI_STREAM_FNADDR_DTOR 0x5AD640
-// GETCOPIEDOBJECT is a global pointer (NiObject cloning hash), not a function.
 #define SE_NI_STREAM_FNADDR_GETCOPIEDOBJECT 0x6D7A70
 #define SE_NI_STREAM_FNADDR_GETLINKID 0x5AE020
 #define SE_NI_STREAM_FNADDR_GETLINKOBJECT 0x5ADF30
@@ -307,9 +295,6 @@
 #define SE_NI_BOXBOUNDINGVOLUME_FNADDR_CREATE 0x57B040
 
 // NI::TriBasedGeometry
-// CS.exe addresses not yet known. CSSE call sites must throw not_implemented_exception
-// when these are 0; otherwise call would jump to whatever happens to live at the
-// Morrowind address in TESConstructionSet.exe.
 #define SE_NI_TRIBASEDGEOMETRY_FNADDR_CTORFROMDATA 0x5E63B0
 #define SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS 0x5E68B0
 #define SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE 0x5E64F0

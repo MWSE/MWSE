@@ -10,10 +10,8 @@ namespace se {
 			Node* previous;
 			Node* next;
 
-#if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0 && defined(SE_MEMORY_FNADDR_DELETE) && SE_MEMORY_FNADDR_DELETE > 0
-			static void* operator new(size_t size) { return reinterpret_cast<void* (__cdecl*)(size_t)>(SE_MEMORY_FNADDR_NEW)(size); }
-			static void operator delete(void* block) { reinterpret_cast<void(__cdecl*)(void*)>(SE_MEMORY_FNADDR_DELETE)(block); }
-#endif
+			static void* operator new(size_t size) { return se::memory::_new(size); }
+			static void operator delete(void* block) { se::memory::_delete(size); }
 
 			Node(const Node&) = delete;
 
@@ -154,10 +152,8 @@ namespace se {
 		Node* head;
 		Node* tail;
 
-#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-		static void* operator new(size_t size) { return reinterpret_cast<void* (__cdecl*)(size_t)>(0x727692)(size); }
-		static void operator delete(void* block) { reinterpret_cast<void(__cdecl*)(void*)>(0x727530)(block); }
-#endif
+		static void* operator new(size_t size) { return se::memory::_new(size); }
+		static void operator delete(void* block) { se::memory::_delete(size); }
 
 		StlList() {
 			count = 0;

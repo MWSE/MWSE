@@ -9,5 +9,5 @@ namespace TES3 {
 namespace NI {
 	Pick* getGlobalPick();
 
-	TES3::Reference* getAssociatedReference(AVObject*);
+	GameReferenceType* getAssociatedReference(AVObject*);
 }

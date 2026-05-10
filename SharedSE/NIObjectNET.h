@@ -7,12 +7,6 @@
 #include "NIExtraData.h"
 #include "NITimeController.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Defines.h"
-#elif defined(SE_IS_CS) && SE_IS_CS == 1
-#include "CSDefines.h"
-#endif
-
 namespace NI {
 	struct ObjectNET : Object {
 		char* name; // 0x8
@@ -56,8 +50,12 @@ namespace NI {
 		// Other function addresses.
 		//
 
-		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(ObjectNET*, Stream*)>(0x6EA610);
-		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const ObjectNET*, Stream*)>(0x6EA710);
+#if defined(SE_NI_OBJECTNET_FNADDR_LOADBINARY) && SE_NI_OBJECTNET_FNADDR_LOADBINARY == 1
+		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_LOADBINARY);
+#endif
+#if defined(SE_NI_OBJECTNET_FNADDR_SAVEBINARY) && SE_NI_OBJECTNET_FNADDR_SAVEBINARY == 1
+		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_SAVEBINARY);
+#endif
 
 	};
 	static_assert(sizeof(ObjectNET) == 0x14, "NI::ObjectNET failed size validation");
