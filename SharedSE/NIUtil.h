@@ -2,10 +2,6 @@
 
 #include "NIDefines.h"
 
-namespace TES3 {
-	struct Reference;
-}
-
 namespace NI {
 	Pick* getGlobalPick();
 
