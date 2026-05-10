@@ -593,11 +593,7 @@ namespace NI {
 	}
 #endif
 
-	// Free functions used by CSSE-side engine patches; harmless dead code in MWSE.
-
 	void __cdecl CalculateBounds(const AVObject* object, Point3& outMin, Point3& outMax, const Point3& translation, const Matrix33& rotation, const float& scale) {
-		// Note: This function is a copy of AVObject::calculateBounds with hardcoded
-		// false flags. Used by CSSE.cpp engine patch (genJumpEnforced at 0x404467).
 		auto accurateSkinned = false;
 		auto observeAppCullFlag = false;
 		auto onlyActiveChildren = false;
@@ -691,11 +687,6 @@ namespace NI {
 		}
 	}
 
-#if !defined(SE_IS_MWSE) || SE_IS_MWSE == 0
-	// CSSE-only debug helper: vertex-vs-worldvertex sanity check. MWSE's
-	// NI::Transform::operator*(Point3) is non-const, conflicting with the
-	// `const auto transform` deduction below; gating out of MWSE-mode avoids
-	// having to also fix NI::Transform.
 	void __cdecl VerifyWorldVertices(const NI::AVObject* object) {
 #if _DEBUG
 		// Ignore collision-disabled subgraphs.
@@ -745,7 +736,6 @@ namespace NI {
 		}
 #endif
 	}
-#endif
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

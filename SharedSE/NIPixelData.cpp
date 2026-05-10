@@ -7,6 +7,10 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+#include "Log.h"
+#endif
+
 namespace NI {
 
 	// Create an RGBA-8bpc PixelData via engine ctor.
@@ -122,14 +126,7 @@ namespace NI {
 		CloseHandle(hFile);
 	}
 
-}
-
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-
-#include "Log.h"
-
-namespace NI {
-
 	Pointer<PixelData> PixelData::create_lua(unsigned int width, unsigned int height, sol::optional<unsigned int> mipMapLevels) {
 		return create(width, height, mipMapLevels.value_or(1));
 	}
@@ -219,9 +216,9 @@ namespace NI {
 			throw std::runtime_error("Pixel data does not support 3 or 4-byte pixel values.");
 		}
 	}
-
+#endif
 }
 
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::PixelData)
-
 #endif
