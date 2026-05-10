@@ -42,8 +42,8 @@ namespace NI {
 				unsigned short index; // 0x0
 				float weight; // 0x4
 			};
-			Transform transform; // 0x0  (Matrix33 rotation + Point3 translation + float scale)
-			SphereBound bounds; // 0x34
+			Transform transform; // 0x0
+			Bound bounds; // 0x34
 			VertexWeight* weights; // 0x44
 			unsigned short weightCount; // 0x48
 

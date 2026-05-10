@@ -5,23 +5,23 @@
 namespace NI {
 	struct BSAnimationNode : Node {
 		enum AVObjectFlag : unsigned char {
-			Animated  = 0x20,
+			Animated = 0x20,
 			NotRandom = 0x40,
 		};
 		enum AVObjectFlagBit : unsigned char {
-			AnimatedBit  = 5,
+			AnimatedBit = 5,
 			NotRandomBit = 6,
 		};
 		enum AnimationFlag : unsigned int {
-			FirstTime    = 0x2,
-			Managed      = 0x4,
-			Displayed    = 0x8,
+			FirstTime = 0x2,
+			Managed = 0x4,
+			Displayed = 0x8,
 			AlwaysUpdate = 0x10,
 		};
 		enum AnimationFlagBit : unsigned int {
-			FirstTimeBit    = 1,
-			ManagedBit      = 2,
-			DisplayedBit    = 3,
+			FirstTimeBit = 1,
+			ManagedBit = 2,
+			DisplayedBit = 3,
 			AlwaysUpdateBit = 4,
 		};
 

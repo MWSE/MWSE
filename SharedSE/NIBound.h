@@ -4,21 +4,16 @@
 #include "NIMatrix33.h"
 #include "NIPoint3.h"
 
-// Polymorphic bounding-volume hierarchy used by the NetImmerse engine for
-// occlusion culling, picking, and scene-graph queries. The struct layouts
-// describe the actual engine memory; method implementations live in
-// MWSE-private NIBound.cpp (CSSE does not currently call them, so the
-// declarations exist on the CSSE side as forward API surface only).
-//
-// SphereBound is structurally identical to Bound (Point3 center + float
-// radius, 0x10 bytes) but is a separate C++ type per MWSE-original.
-
 namespace NI {
 	struct Bound {
 		Point3 center; // 0x0
 		float radius; // 0xC
 
 		void computeFromData(unsigned int vertexCount, const Point3* vertices, unsigned int stride);
+
+		bool contains(const Point3& point) const;
+		Point3 getClosetPointTo(const Point3& point) const;
+		Point3 getFurthestPointFrom(const Point3& point) const;
 	};
 	static_assert(sizeof(Bound) == 0x10, "NI::Bound failed size validation");
 
@@ -60,17 +55,12 @@ namespace NI {
 		T bounds; // 0x4
 	};
 
-	struct SphereBound {
+	struct Sphere {
 		Point3 center; // 0x0
 		float radius; // 0xC
-
-		bool contains(const Point3& point) const;
-		Point3 getClosetPointTo(const Point3& point) const;
-		Point3 getFurthestPointFrom(const Point3& point) const;
 	};
-	static_assert(sizeof(SphereBound) == 0x10, "NI::Bound failed size validation");
 
-	struct SphereBoundingVolume : TypedBoundingVolume<SphereBound> {
+	struct SphereBoundingVolume : TypedBoundingVolume<Sphere> {
 	};
 
 	struct BoxBound {

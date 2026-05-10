@@ -8,8 +8,6 @@ namespace NI {
 		unsigned int width; // 0x2C
 		unsigned int height; // 0x30
 
-		// Both methods are implemented only in Morrowind-context builds
-		// (require TES3::WorldController + DX8).
 		bool readback(NI::PixelData* pixelData);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

@@ -15,14 +15,7 @@ namespace NI {
 	struct GeometryData : Object {
 		unsigned short vertexCount; // 0x8
 		unsigned short textureSets; // 0xA
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-original uses SphereBound (defined in NIBound.h's MWSE branch).
-		// Same memory layout as Bound (Point3 center + float radius, 0x10 bytes),
-		// so sizeof(GeometryData) is unaffected by the choice.
-		SphereBound bounds; // 0xC
-#else
 		Bound bounds; // 0xC
-#endif
 		Point3* vertex; // 0x1C
 		Point3* normal; // 0x20
 		PackedColor* color; // 0x24
@@ -41,19 +34,12 @@ namespace NI {
 		// Custom functions.
 		//
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-source-of-truth: non-const accessors returning nonstd::span over
-		// the underlying engine arrays. Implementations live in MWSE-private
-		// NIGeometryData.cpp.
 		nonstd::span<PackedColor> getColors();
 		nonstd::span<Point3> getVertices();
 		nonstd::span<Point3> getActiveVertices();
 		nonstd::span<Point3> getNormals();
 		nonstd::span<Point2> getTextureCoordinates();
-#else
-		// CSSE / standalone: const accessor (matches existing SharedSE impl).
-		nonstd::span<Point3> getVertices() const;
-#endif
+
 		void markAsChanged();
 		void updateModelBound();
 	};

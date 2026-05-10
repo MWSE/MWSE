@@ -9,7 +9,6 @@ namespace NI {
 		unsigned short activeCount; // 0x3C
 		float* sizes; // 0x40
 
-		// Implemented only in Morrowind-context builds (use engine allocator + ctor).
 		static Pointer<ParticlesData> create(unsigned short vertexCount, Point3* vertices, Point3* normals, PackedColor* colors);
 		static Pointer<ParticlesData> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
 
@@ -18,7 +17,6 @@ namespace NI {
 	static_assert(sizeof(ParticlesData) == 0x44, "NI::ParticlesData failed size validation");
 
 	struct AutoNormalParticlesData : ParticlesData {
-		// Implemented only in Morrowind-context builds.
 		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, Point3* vertices, PackedColor* colors);
 		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, bool hasColors);
 	};

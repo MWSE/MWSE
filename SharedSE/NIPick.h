@@ -55,8 +55,6 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-		// MWSE-style engine-allocated factory (uses se::memory::malloc + engine ctor).
-		// MWSE-only: requires SE_MEMORY_FNADDR_MALLOC/FREE which CSSE doesn't provide.
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		static Pick* malloc();
 		void free();
@@ -64,8 +62,6 @@ namespace NI {
 
 		PickRecord* addRecord();
 
-		// Engine ctor/dtor via per-target SE_NI_PICK_FNADDR_CTOR/DTOR macros.
-		// Body throws not_implemented_exception when address is 0x0.
 		Pick();
 		~Pick();
 

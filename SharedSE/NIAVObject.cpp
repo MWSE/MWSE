@@ -18,11 +18,9 @@
 
 namespace NI {
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	SphereBound* AVObject::getWorldBound() {
+	Bound* AVObject::getWorldBound() const {
 		return vTable.asAVObject->getWorldBound(this);
 	}
-#endif
 
 	Point3 AVObject::getLocalVelocity() const {
 		if (velocities) {
@@ -36,39 +34,15 @@ namespace NI {
 			velocities->localVelocity = *v;
 		}
 		else {
-#if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
 			velocities = se::memory::_new<ObjectVelocities>();
 			velocities->localVelocity = *v;
 			velocities->worldVelocity = { 0, 0, 0 };
-#else
-			throw not_implemented_exception();
-#endif
 		}
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	AVObject* AVObject::getObjectByName(const char* name) {
-		return vTable.asAVObject->getObjectByName(this, name);
-	}
-#else
 	AVObject* AVObject::getObjectByName(const char* name) const {
 		return vTable.asAVObject->getObjectByName(this, name);
 	}
-
-	AVObject* AVObject::getObjectByNameAndType(const char* name, uintptr_t rtti, bool allowSubtypes) const {
-		auto result = getObjectByName(name);
-		if (result == nullptr) {
-			return nullptr;
-		}
-
-		if (allowSubtypes) {
-			return result->isInstanceOfType(rtti) ? result : nullptr;
-		}
-		else {
-			return result->isOfType(rtti) ? result : nullptr;
-		}
-	}
-#endif
 
 	AVObject* AVObject::getParentByName(const char* name) const {
 		Node* result = parentNode;
@@ -96,7 +70,7 @@ namespace NI {
 		return parentNode ? parentNode->isAppCulled() : false;
 	}
 
-	bool AVObject::isFrustumCulled(Camera* camera) const {
+	bool AVObject::isFrustumCulled(const Camera* camera) const {
 		for (auto i = 0u; i < 6; i++) {
 			auto plane = camera->cullingPlanes[i];
 			auto distance = (
@@ -371,11 +345,6 @@ namespace NI {
 		return { *localRotation, localTranslate, localScale };
 	}
 
-	// Alias for getLocalTransform() (kept for API compatibility).
-	Transform AVObject::getTransforms() const {
-		return getLocalTransform();
-	}
-
 	float AVObject::getLowestVertexZ() const {
 		constexpr auto FLOAT_MAX = std::numeric_limits<float>::max();
 
@@ -496,127 +465,106 @@ namespace NI {
 		return static_cast<AlphaProperty*>(getProperty(PropertyType::Alpha).get());
 	}
 
+	void AVObject::setAlphaProperty(AlphaProperty* prop) {
+		detachPropertyByType(PropertyType::Alpha);
+		if (prop) {
+			attachProperty(prop);
+		}
+	}
+
 	Pointer<FogProperty> AVObject::getFogProperty() const {
 		return static_cast<FogProperty*>(getProperty(PropertyType::Fog).get());
+	}
+
+	void AVObject::setFogProperty(FogProperty* prop) {
+		detachPropertyByType(PropertyType::Fog);
+		if (prop) {
+			attachProperty(prop);
+		}
 	}
 
 	Pointer<MaterialProperty> AVObject::getMaterialProperty() const {
 		return static_cast<MaterialProperty*>(getProperty(PropertyType::Material).get());
 	}
 
+	void AVObject::setMaterialProperty(MaterialProperty* prop) {
+		detachPropertyByType(PropertyType::Material);
+		if (prop) {
+			attachProperty(prop);
+		}
+	}
+
 	Pointer<StencilProperty> AVObject::getStencilProperty() const {
 		return static_cast<StencilProperty*>(getProperty(PropertyType::Stencil).get());
+	}
+
+	void AVObject::setStencilProperty(StencilProperty* prop) {
+		detachPropertyByType(PropertyType::Stencil);
+		if (prop) {
+			attachProperty(prop);
+		}
 	}
 
 	Pointer<TexturingProperty> AVObject::getTexturingProperty() const {
 		return static_cast<TexturingProperty*>(getProperty(PropertyType::Texturing).get());
 	}
 
+	void AVObject::setTexturingProperty(TexturingProperty* prop) {
+		detachPropertyByType(PropertyType::Texturing);
+		if (prop) {
+			attachProperty(prop);
+		}
+	}
+
 	Pointer<VertexColorProperty> AVObject::getVertexColorProperty() const {
 		return static_cast<VertexColorProperty*>(getProperty(PropertyType::VertexColor).get());
+	}
+
+	void AVObject::setVertexColorProperty(VertexColorProperty* prop) {
+		detachPropertyByType(PropertyType::VertexColor);
+		if (prop) {
+			attachProperty(prop);
+		}
 	}
 
 	Pointer<ZBufferProperty> AVObject::getZBufferProperty() const {
 		return static_cast<ZBufferProperty*>(getProperty(PropertyType::ZBuffer).get());
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	void AVObject::setAlphaProperty(sol::optional<AlphaProperty*> prop) {
-		detachPropertyByType(PropertyType::Alpha);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setFogProperty(sol::optional<FogProperty*> prop) {
-		detachPropertyByType(PropertyType::Fog);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setMaterialProperty(sol::optional<MaterialProperty*> prop) {
-		detachPropertyByType(PropertyType::Material);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setStencilProperty(sol::optional<StencilProperty*> prop) {
-		detachPropertyByType(PropertyType::Stencil);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setTexturingProperty(sol::optional<TexturingProperty*> prop) {
-		detachPropertyByType(PropertyType::Texturing);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setVertexColorProperty(sol::optional<VertexColorProperty*> prop) {
-		detachPropertyByType(PropertyType::VertexColor);
-		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-
-	void AVObject::setZBufferProperty(sol::optional<ZBufferProperty*> prop) {
+	void AVObject::setZBufferProperty(ZBufferProperty* prop) {
 		detachPropertyByType(PropertyType::ZBuffer);
 		if (prop) {
-			attachProperty(prop.value());
-		}
-	}
-#else
-	void AVObject::setAlphaProperty(std::optional<AlphaProperty*> prop) {
-		detachPropertyByType(PropertyType::Alpha);
-		if (prop) {
-			attachProperty(prop.value());
+			attachProperty(prop);
 		}
 	}
 
-	void AVObject::setFogProperty(std::optional<FogProperty*> prop) {
-		detachPropertyByType(PropertyType::Fog);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	void AVObject::setAlphaProperty_lua(sol::optional<AlphaProperty*> prop) {
+		setAlphaProperty(prop.value_or(nullptr));
 	}
 
-	void AVObject::setMaterialProperty(std::optional<MaterialProperty*> prop) {
-		detachPropertyByType(PropertyType::Material);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+	void AVObject::setFogProperty_lua(sol::optional<FogProperty*> prop) {
+		setFogProperty(prop.value_or(nullptr));
 	}
 
-	void AVObject::setStencilProperty(std::optional<StencilProperty*> prop) {
-		detachPropertyByType(PropertyType::Stencil);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+	void AVObject::setMaterialProperty_lua(sol::optional<MaterialProperty*> prop) {
+		setMaterialProperty(prop.value_or(nullptr));
 	}
 
-	void AVObject::setTexturingProperty(std::optional<TexturingProperty*> prop) {
-		detachPropertyByType(PropertyType::Texturing);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+	void AVObject::setStencilProperty_lua(sol::optional<StencilProperty*> prop) {
+		setStencilProperty(prop.value_or(nullptr));
 	}
 
-	void AVObject::setVertexColorProperty(std::optional<VertexColorProperty*> prop) {
-		detachPropertyByType(PropertyType::VertexColor);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+	void AVObject::setTexturingProperty_lua(sol::optional<TexturingProperty*> prop) {
+		setTexturingProperty(prop.value_or(nullptr));
 	}
 
-	void AVObject::setZBufferProperty(std::optional<ZBufferProperty*> prop) {
-		detachPropertyByType(PropertyType::ZBuffer);
-		if (prop) {
-			attachProperty(prop.value());
-		}
+	void AVObject::setVertexColorProperty_lua(sol::optional<VertexColorProperty*> prop) {
+		setVertexColorProperty(prop.value_or(nullptr));
+	}
+
+	void AVObject::setZBufferProperty_lua(sol::optional<ZBufferProperty*> prop) {
+		setZBufferProperty(prop.value_or(nullptr));
 	}
 #endif
 

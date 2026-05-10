@@ -14,7 +14,7 @@ namespace NI {
 
 	struct Gravity : ParticleModifier {
 		enum class ForceType : unsigned int {
-			Planar    = 0,
+			Planar = 0,
 			Spherical = 1,
 		};
 
@@ -28,14 +28,14 @@ namespace NI {
 
 	struct ParticleBomb : ParticleModifier {
 		enum class DecayType : unsigned int {
-			None        = 0,
-			Linear      = 1,
+			None = 0,
+			Linear = 1,
 			Exponential = 2,
 		};
 		enum class SymmetryType : unsigned int {
-			Spherical   = 0,
+			Spherical = 0,
 			Cylindrical = 1,
-			Planar      = 2,
+			Planar = 2,
 		};
 
 		float decay; // 0x10

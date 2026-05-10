@@ -26,8 +26,7 @@ namespace NI {
 		Pointer<TriShapeData> copyData(bool copyNormals = true, bool copyColors = true, bool copyTextureCoordinates = true) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		// Lua-bridge overload (sol::table-driven filters).
-		Pointer<TriShapeData> copyData(sol::optional<sol::table> filters) const;
+		Pointer<TriShapeData> copyData_lua(sol::optional<sol::table> filters) const;
 #endif
 
 		nonstd::span<Triangle> getTriangles();

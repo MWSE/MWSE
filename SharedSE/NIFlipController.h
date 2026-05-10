@@ -19,9 +19,9 @@ namespace NI {
 		void copy(FlipController* to) const;
 
 		static constexpr auto _getTextureAtIndex = reinterpret_cast<Texture*(__thiscall*)(const FlipController*, size_t)>(0x7159D0);
-		static constexpr auto _setTexture        = reinterpret_cast<void(__thiscall*)(FlipController*, Texture*, size_t)>(0x715840);
-		static constexpr auto _updateTimings     = reinterpret_cast<void(__thiscall*)(FlipController*)>(0x7159F0);
-		static constexpr auto _copy              = reinterpret_cast<void(__thiscall*)(const FlipController*, FlipController*)>(0x715D40);
+		static constexpr auto _setTexture = reinterpret_cast<void(__thiscall*)(FlipController*, Texture*, size_t)>(0x715840);
+		static constexpr auto _updateTimings = reinterpret_cast<void(__thiscall*)(FlipController*)>(0x7159F0);
+		static constexpr auto _copy = reinterpret_cast<void(__thiscall*)(const FlipController*, FlipController*)>(0x715D40);
 	};
 	static_assert(sizeof(FlipController) == 0x60, "NI::FlipController failed size validation");
 }

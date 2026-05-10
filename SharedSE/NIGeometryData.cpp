@@ -14,13 +14,9 @@ namespace NI {
 	}
 
 	void GeometryData::updateModelBound() {
-		// SphereBound (MWSE branch) and Bound (CSSE branch) share identical
-		// memory layout (Point3 center + float radius, 0x10 bytes); the
-		// engine fn lives on Bound, so reinterpret across the typedef gap.
-		reinterpret_cast<Bound*>(&bounds)->computeFromData(vertexCount, vertex, sizeof(Point3));
+		bounds.computeFromData(vertexCount, vertex, sizeof(Point3));
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	nonstd::span<PackedColor> GeometryData::getColors() {
 		if (color) {
 			return nonstd::span(color, vertexCount);
@@ -56,14 +52,6 @@ namespace NI {
 		}
 		return {};
 	}
-#else
-	nonstd::span<Point3> GeometryData::getVertices() const {
-		if (vertex) {
-			return nonstd::span(vertex, vertexCount);
-		}
-		return {};
-	}
-#endif
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

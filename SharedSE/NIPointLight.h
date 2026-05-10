@@ -12,24 +12,16 @@ namespace NI {
 		// Custom functions.
 		//
 
-		// Creates a new PointLight using the engine allocator and initializes
-		// attenuation defaults. Implemented only in Morrowind-context builds.
 		static Pointer<PointLight> create();
 
 		float getAttenuationAtDistance(float distance) const;
-		// Point parameter uses NI::Point3 layout, which is identical to NI::Point3.
 		float getAttenuationAtPoint(const Point3* point) const;
 
-		// Sets attenuation coefficients from Morrowind's per-game-settings globals.
-		// Requires TES3::DataHandler — implemented only in Morrowind-context builds.
 		void setAttenuationForRadius(unsigned int radius);
 
-		// Morrowind stores dynamic-cull radius in the specular channel.
 		unsigned int getRadius() const;
 		void setRadius(unsigned int radius);
 
-		// Returns a weight for light-count-overflow sorting.
-		// Requires NI::Node::getLightCount — implemented only in Morrowind-context builds.
 		unsigned int getSortWeight() const;
 	};
 	static_assert(sizeof(PointLight) == 0xDC, "NI::PointLight failed size validation");

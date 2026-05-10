@@ -14,7 +14,7 @@ namespace NI {
 
 	struct TriBasedGeometryData : GeometryData {
 		unsigned short triangleCount; // 0x34
-		unsigned short patchRenderFlags; // 0x36
+		unsigned short patchRenderFlags; // 0x36 // Reused padding space
 
 		//
 		// vTable wrappers.

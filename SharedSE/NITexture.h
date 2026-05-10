@@ -37,17 +37,13 @@ namespace NI {
 			FormatPrefs();
 			FormatPrefs(PixelLayout p, MipFlag m, AlphaFormat a);
 
-			// Per-target engine address resolved via NIConfig.{Morrowind,TESConstructionSet}.h.
 			static constexpr auto DEFAULT_PREFS = reinterpret_cast<FormatPrefs*>(SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-			// Static defaults used by lua bindings; defined in MWSE-private NITexture.cpp.
 			static const FormatPrefs DEFAULT_LUA_PREFS;
 #endif
 		};
 		static_assert(sizeof(Texture::FormatPrefs) == 0xC, "NI::Texture::FormatPrefs failed size validation");
 
-		// Engine renderer-data slot at offset 0x20. Same memory (4-byte pointer) on
-		// both targets; MWSE-original gives it a typed nested struct.
 		struct RendererData {
 			void* vTable;
 			Texture* texture;

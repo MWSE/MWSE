@@ -5,10 +5,6 @@ namespace NI {
 	// NiPackedColor
 	//
 
-	// SharedSE-only float-based and std::array convenience ctors. Used by CSSE
-	// rendering code (DialogRenderWindow, RenderWindowWidgets); take 0.0..1.0
-	// floats and scale to byte range.
-
 	PackedColor::PackedColor(float _r, float _g, float _b, float _a) {
 		r = unsigned char(255.0f * _r);
 		g = unsigned char(255.0f * _g);

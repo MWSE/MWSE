@@ -3494,12 +3494,6 @@
     <ClCompile Include="CrashLogRegistryStack.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-    <ClCompile Include="..\SharedSE\MemoryUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\SharedSE\NIUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MWSE.rc">

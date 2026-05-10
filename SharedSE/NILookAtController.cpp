@@ -15,8 +15,12 @@ namespace NI {
 	}
 
 	void LookAtController::setFlip(bool flip) {
-		if (flip) { flags |= LookAtControllerFlags::FlipAxis; }
-		else       { flags &= ~LookAtControllerFlags::FlipAxis; }
+		if (flip) {
+			flags |= LookAtControllerFlags::FlipAxis;
+		}
+		else {
+			flags &= ~LookAtControllerFlags::FlipAxis;
+		}
 	}
 
 	AVObject* LookAtController::getLookAt() const {

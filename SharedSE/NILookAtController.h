@@ -9,14 +9,14 @@ namespace NI {
 
 		enum LookAtControllerFlags {
 			FlipAxis = 0x10,
-			AxisX    = 0,
-			AxisY    = 0x20,
-			AxisZ    = 0x40,
+			AxisX = 0,
+			AxisY = 0x20,
+			AxisZ = 0x40,
 			AxisMask = 0x60
 		};
 		enum LookAtControllerFlagBit {
 			FlipAxisBit = 4,
-			AxisBit     = 5
+			AxisBit = 5
 		};
 	}
 

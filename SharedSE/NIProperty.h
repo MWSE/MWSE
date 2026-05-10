@@ -69,21 +69,12 @@ namespace NI {
 		void setFlagBitField(unsigned short value, unsigned short mask, unsigned int index);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// Morrowind.exe engine raw functions. Move to per-target macros via
-		// NIConfig in the guard-cleanup pass when CSSE addresses are needed.
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(Property*, Stream*)>(0x6E9610);
 		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const Property*, Stream*)>(0x6E9660);
 #endif
 	};
 	static_assert(sizeof(Property) == 0x18, "NI::Property failed size validation");
 
-	// CSSE pulls in GDI+ via pch.h, which #defines ALPHA_MASK as a
-	// function-like macro: `((ARGB) 0xff << ALPHA_SHIFT)`. Without isolation,
-	// our enum constant ALPHA_MASK gets preprocessor-expanded into garbage.
-	// MWSE's stdafx.h doesn't include GDI+ so this never surfaces there.
-	// Push/undef/pop preserves any downstream code that wants the GDI+ macro.
-#pragma push_macro("ALPHA_MASK")
-#undef ALPHA_MASK
 	struct AlphaProperty : Property {
 		enum {
 			ALPHA_MASK = 0x0001,
@@ -104,7 +95,6 @@ namespace NI {
 		static Pointer<AlphaProperty> create();
 	};
 	static_assert(sizeof(AlphaProperty) == 0x1C, "NI::AlphaProperty failed size validation");
-#pragma pop_macro("ALPHA_MASK")
 
 	struct FogProperty : Property {
 		float density;
@@ -304,35 +294,29 @@ namespace NI {
 		TArray<Map*> maps; // 0x1C
 		int unknown_34; // 0x34
 
-
-		// Engine-dispatch ctor/dtor. Body in SharedSE/NIProperty.cpp throws
-		// not_implemented_exception when the per-target SE_NI_TEXTURINGPROPERTY_FNADDR_*
-		// macros are 0x0.
 		TexturingProperty();
 		~TexturingProperty();
 
-		Map* getBaseMap();
-		Map* getDarkMap();
-		Map* getDetailMap();
-		Map* getGlossMap();
-		Map* getGlowMap();
-		BumpMap* getBumpMap();
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-private NIProperty.cpp uses sol::optional for these setters.
-		void setBaseMap(sol::optional<Map*> map);
-		void setDarkMap(sol::optional<Map*> map);
-		void setDetailMap(sol::optional<Map*> map);
-		void setGlossMap(sol::optional<Map*> map);
-		void setGlowMap(sol::optional<Map*> map);
-		void setBumpMap(sol::optional<BumpMap*> map);
-#else
-		// SharedSE/CSSE: std::optional setters; matches SharedSE/NIProperty.cpp.
-		void setBaseMap(std::optional<Map*> map);
-		void setDarkMap(std::optional<Map*> map);
-		void setDetailMap(std::optional<Map*> map);
-		void setGlossMap(std::optional<Map*> map);
-		void setGlowMap(std::optional<Map*> map);
-		void setBumpMap(std::optional<BumpMap*> map);
+		Map* getBaseMap() const;
+		void setBaseMap(Map* map);
+		Map* getDarkMap() const;
+		void setDarkMap(Map* map);
+		Map* getDetailMap() const;
+		void setDetailMap(Map* map);
+		Map* getGlossMap() const;
+		void setGlossMap(Map* map);
+		Map* getGlowMap() const;
+		void setGlowMap(Map* map);
+		BumpMap* getBumpMap() const;
+		void setBumpMap(BumpMap* map);
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+		void setBaseMap_lua(sol::optional<Map*> map);
+		void setDarkMap_lua(sol::optional<Map*> map);
+		void setDetailMap_lua(sol::optional<Map*> map);
+		void setGlossMap_lua(sol::optional<Map*> map);
+		void setGlowMap_lua(sol::optional<Map*> map);
+		void setBumpMap_lua(sol::optional<BumpMap*> map);
 #endif
 
 		unsigned int getUsedMapCount() const;

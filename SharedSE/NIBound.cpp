@@ -13,27 +13,27 @@ namespace NI {
 #endif
 	}
 
-	BoundingVolumeType BoundingVolume::getType() const {
-		return vtbl->getType(this);
-	}
-
-	bool SphereBound::contains(const Point3& point) const {
+	bool Bound::contains(const Point3& point) const {
 		return center.distance(&point) <= radius;
 	}
 
-	Point3 SphereBound::getClosetPointTo(const Point3& point) const {
+	Point3 Bound::getClosetPointTo(const Point3& point) const {
 		if (contains(point)) {
 			return point;
 		}
 		return center.interpolate(point, radius);
 	}
 
-	Point3 SphereBound::getFurthestPointFrom(const Point3& point) const {
+	Point3 Bound::getFurthestPointFrom(const Point3& point) const {
 		const auto distance = center.distance(&point);
 		if (distance == 0.0f) {
 			return { center.x, center.y + radius, center.z };
 		}
 		return center.interpolate(point, -radius);
+	}
+
+	BoundingVolumeType BoundingVolume::getType() const {
+		return vtbl->getType(this);
 	}
 
 	BoxBoundingVolume* BoxBoundingVolume::create(const Point3& extent, const Point3& center, const Point3& xAxis, const Point3& yAxis, const Point3& zAxis) {

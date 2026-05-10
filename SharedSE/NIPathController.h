@@ -9,21 +9,21 @@ namespace NI {
 
 		enum PathControllerFlags {
 			ConstantVelocityUpdateNeeded = 0x10,
-			OpenCurve                    = 0x20,
-			AllowFlip                    = 0x40,
-			Bank                         = 0x80,
-			ConstantVelocity             = 0x100,
-			Follow                       = 0x200,
-			FlipFollowAxis               = 0x400
+			OpenCurve = 0x20,
+			AllowFlip = 0x40,
+			Bank = 0x80,
+			ConstantVelocity = 0x100,
+			Follow = 0x200,
+			FlipFollowAxis = 0x400
 		};
 		enum PathControllerFlagBit {
 			ConstantVelocityUpdateNeededBit = 4,
-			OpenCurveBit                    = 5,
-			AllowFlipBit                    = 6,
-			BankBit                         = 7,
-			ConstantVelocityBit             = 8,
-			FollowBit                       = 9,
-			FlipFollowAxisBit               = 10
+			OpenCurveBit = 5,
+			AllowFlipBit = 6,
+			BankBit = 7,
+			ConstantVelocityBit = 8,
+			FollowBit = 9,
+			FlipFollowAxisBit = 10
 		};
 	}
 

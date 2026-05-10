@@ -6,9 +6,11 @@
 #include "CSModelLoader.h"
 
 #include "NICamera.h"
+#include "NIGeometry.h"
 #include "NIMatrix33.h"
 #include "NILines.h"
 #include "NILinesData.h"
+#include "NISwitchNode.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
@@ -22,37 +24,37 @@ namespace se::cs::dialog::render_window {
 			return;
 		}
 		{
-			auto object = root->getObjectByNameAndType("axisLines", NI::RTTIStaticPtr::NiSwitchNode);
+			auto object = root->getObjectByNameAndType<NI::SwitchNode>("axisLines", NI::RTTIStaticPtr::NiSwitchNode);
 			if (object) {
-				axisLines = static_cast<NI::SwitchNode*>(object);
+				axisLines = object;
 				axisLines->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("gridRoot", NI::RTTIStaticPtr::NiNode);
+			auto object = root->getObjectByNameAndType<NI::Node>("gridRoot", NI::RTTIStaticPtr::NiNode);
 			if (object) {
-				gridRoot = static_cast<NI::Node*>(object);
+				gridRoot = object;
 				gridRoot->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitPlane", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitPlane", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitPlane = static_cast<NI::Geometry*>(object);
+				debugUnitPlane = object;
 				debugUnitPlane->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitSphere", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitSphere", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitSphere = static_cast<NI::Geometry*>(object);
+				debugUnitSphere = object;
 				debugUnitSphere->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitArrows", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitArrows", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitArrows = static_cast<NI::Geometry*>(object);
+				debugUnitArrows = object;
 				debugUnitArrows->setAppCulled(true);
 			}
 		}

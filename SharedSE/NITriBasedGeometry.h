@@ -5,9 +5,10 @@
 
 namespace NI {
 	struct TriBasedGeometry_vTable : Geometry_vTable {
-
+		void* unknown_0x9C;
+		void* unknown_0xA0;
 	};
-	static_assert(sizeof(TriBasedGeometry_vTable) == 0x9C, "NI::TriBasedGeometry_vTable failed size validation");
+	static_assert(sizeof(TriBasedGeometry_vTable) == 0xA4, "NI::TriBasedGeometry_vTable failed size validation");
 
 	struct TriBasedGeometry : Geometry {
 
@@ -20,7 +21,6 @@ namespace NI {
 		bool findIntersections(const Point3* position, const Point3* direction, Pick* pick);
 		Pointer<TriBasedGeometryData> getModelData() const;
 
-		// Inline non-const overload retained for CSSE/inline call sites.
 		Pointer<TriBasedGeometryData> getModelData() { return static_cast<TriBasedGeometryData*>(modelData.get()); }
 
 	};

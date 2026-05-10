@@ -18,14 +18,7 @@ namespace NI {
 	static_assert(sizeof(Frustum) == 0x18, "NI::Frustum failed size validation");
 
 	struct Camera : AVObject {
-		// worldToCamera is logically a 4x4 matrix of floats (16 floats / 0x40 bytes).
-		// In MWSE context expose it as NI::Matrix44 so MWSE-private callers and
-		// sol bindings see the structured type. CSSE keeps the raw float array.
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		NI::Matrix44 worldToCamera; // 0x90
-#else
-		float worldToCamera[4][4]; // 0x90
-#endif
 		float viewDistance; // 0xD0
 		float twoDivRmL; // 0xD4
 		float twoDivTmB; // 0xD8
@@ -56,7 +49,6 @@ namespace NI {
 
 		void click(bool something = false);
 
-		// Engine-dispatch helpers (per-target macros).
 		void swapBuffers();
 		bool LookAtWorldPoint(const Point3* worldPoint, const Point3* worldUp);
 
@@ -67,15 +59,12 @@ namespace NI {
 		std::reference_wrapper<Point4[6]> getCullingPlanes_lua();
 #endif
 
-		// Note: screen coordinates are real from the viewport, and not
 		bool windowPointToRay(int screenX, int screenY, Point3& out_origin, Point3& out_direction);
 		bool worldPointToScreenPoint(const Point3* point, float& out_screenX, float& out_screenY);
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		// Unlike above, we need to convert the ouput from [width/-2, width/2] to [0, width] and flip the height.
 		sol::optional<std::tuple<Point3, Point3>> windowPointToRay_lua(sol::stack_object);
-
-		// Unlike above, we need to convert the ouput from [0,1] to [width/-2, width/2].
 		sol::optional<NI::Point2> worldPointToScreenPoint_lua(sol::stack_object);
 #endif
 	};

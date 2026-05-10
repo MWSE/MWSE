@@ -2,11 +2,6 @@
 
 #include "NIDefines.h"
 
-// NIObject.h is needed because NIStream contains TArray<Pointer<Object>>
-// members; instantiating the Pointer template requires Object's full
-// definition (refCount access in Pointer::claim/release). MWSE/CSSE
-// pull this in transitively through their PCH; non-PCH consumers (MGE)
-// rely on the explicit include here.
 #include "NIObject.h"
 #include "NIPointer.h"
 #include "NITArray.h"
@@ -78,14 +73,6 @@ namespace NI {
 		//
 
 		std::string readStdString();
-
-		//
-		// Access to this type's raw functions. Per-target macros let CSSE
-		// (or future targets) supply different addresses; the constexprs are
-		// declared unconditionally so MWSE-private callers that reach for
-		// _readString / _writeString / _getLinkObject / _getObjectIndex /
-		// _registerLoader directly continue to compile after redirect.
-		//
 
 #if defined(SE_NI_STREAM_FNADDR_READSTRING) && SE_NI_STREAM_FNADDR_READSTRING > 0
 		static constexpr auto _readString = reinterpret_cast<void(__thiscall*)(Stream*, char**)>(SE_NI_STREAM_FNADDR_READSTRING);

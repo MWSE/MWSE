@@ -96,7 +96,7 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Pointer<TriShapeData> TriShapeData::copyData(sol::optional<sol::table> filters) const {
+	Pointer<TriShapeData> TriShapeData::copyData_lua(sol::optional<sol::table> filters) const {
 		auto vertexCount = getActiveVertexCount();
 
 		Point3* _vertices = se::memory::_new<Point3>(vertexCount);

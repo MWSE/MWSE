@@ -78,12 +78,9 @@ namespace NI {
 		setFlagBitField(7, 0xF, 5);
 		setFlag(false, 9);
 		setFlagBitField(0, 0x7, 10);
-		alphaTestRef = 0;
-#else
-		// Engine setFlag/setFlagBitField unavailable; precomputed equivalent flag pattern.
-		alphaTestRef = 255;
-		flags = 4844;
 #endif
+		alphaTestRef = 255; // Default to 0% alpha threshold
+		flags = 4844; // Default flags for alpha property from NifSkope
 	}
 
 	AlphaProperty::~AlphaProperty() {
@@ -325,161 +322,119 @@ namespace NI {
 #endif
 	}
 
-	TexturingProperty::Map* TexturingProperty::getBaseMap() {
+	TexturingProperty::Map* TexturingProperty::getBaseMap() const {
 		return maps[size_t(MapType::BASE)];
 	}
 
-	TexturingProperty::Map* TexturingProperty::getDarkMap() {
+	void TexturingProperty::setBaseMap(Map* map) {
+		auto currentMap = maps[size_t(MapType::BASE)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::BASE), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::BASE), map);
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getDarkMap() const {
 		return maps[size_t(MapType::DARK)];
 	}
 
-	TexturingProperty::Map* TexturingProperty::getDetailMap() {
+	void TexturingProperty::setDarkMap(Map* map) {
+		auto currentMap = maps[size_t(MapType::DARK)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DARK), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DARK), map);
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getDetailMap() const {
 		return maps[size_t(MapType::DETAIL)];
 	}
 
-	TexturingProperty::Map* TexturingProperty::getGlossMap() {
+	void TexturingProperty::setDetailMap(Map* map) {
+		auto currentMap = maps[size_t(MapType::DETAIL)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::DETAIL), map);
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlossMap() const {
 		return maps[size_t(MapType::GLOSS)];
 	}
 
-	TexturingProperty::Map* TexturingProperty::getGlowMap() {
+	void TexturingProperty::setGlossMap(Map* map) {
+		auto currentMap = maps[size_t(MapType::GLOSS)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOSS), map);
+		}
+	}
+
+	TexturingProperty::Map* TexturingProperty::getGlowMap() const {
 		return maps[size_t(MapType::GLOW)];
 	}
 
-	TexturingProperty::BumpMap* TexturingProperty::getBumpMap() {
+	void TexturingProperty::setGlowMap(Map* map) {
+		auto currentMap = maps[size_t(MapType::GLOW)];
+		if (currentMap) {
+			delete currentMap;
+			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
+		}
+		if (map) {
+			maps.setAtIndex(size_t(MapType::GLOW), map);
+		}
+	}
+
+	TexturingProperty::BumpMap* TexturingProperty::getBumpMap() const {
 		return static_cast<BumpMap*>(maps[size_t(MapType::BUMP)]);
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	void TexturingProperty::setBaseMap(sol::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::BASE)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::BASE), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::BASE), map.value());
-		}
-	}
-
-	void TexturingProperty::setDarkMap(sol::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::DARK)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::DARK), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::DARK), map.value());
-		}
-	}
-
-	void TexturingProperty::setDetailMap(sol::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::DETAIL)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::DETAIL), map.value());
-		}
-	}
-
-	void TexturingProperty::setGlossMap(sol::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::GLOSS)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::GLOSS), map.value());
-		}
-	}
-
-	void TexturingProperty::setGlowMap(sol::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::GLOW)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::GLOW), map.value());
-		}
-	}
-
-	void TexturingProperty::setBumpMap(sol::optional<TexturingProperty::BumpMap*> map) {
+	void TexturingProperty::setBumpMap(TexturingProperty::BumpMap* map) {
 		auto currentMap = maps[size_t(MapType::BUMP)];
 		if (currentMap) {
 			delete currentMap;
 			maps.setAtIndex(size_t(MapType::BUMP), nullptr);
 		}
 		if (map) {
-			maps.setAtIndex(size_t(MapType::BUMP), map.value());
-		}
-	}
-#else
-	void TexturingProperty::setBaseMap(std::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::BASE)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::BASE), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::BASE), map.value());
+			maps.setAtIndex(size_t(MapType::BUMP), map);
 		}
 	}
 
-	void TexturingProperty::setDarkMap(std::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::DARK)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::DARK), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::DARK), map.value());
-		}
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	void TexturingProperty::setBaseMap_lua(sol::optional<Map*> map) {
+		setBaseMap(map.value_or(nullptr));
 	}
 
-	void TexturingProperty::setDetailMap(std::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::DETAIL)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::DETAIL), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::DETAIL), map.value());
-		}
+	void TexturingProperty::setDarkMap_lua(sol::optional<Map*> map) {
+		setDarkMap(map.value_or(nullptr));
 	}
 
-	void TexturingProperty::setGlossMap(std::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::GLOSS)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::GLOSS), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::GLOSS), map.value());
-		}
+	void TexturingProperty::setDetailMap_lua(sol::optional<Map*> map) {
+		setDetailMap(map.value_or(nullptr));
 	}
 
-	void TexturingProperty::setGlowMap(std::optional<Map*> map) {
-		auto currentMap = maps[size_t(MapType::GLOW)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::GLOW), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::GLOW), map.value());
-		}
+	void TexturingProperty::setGlossMap_lua(sol::optional<Map*> map) {
+		setGlossMap(map.value_or(nullptr));
 	}
 
-	void TexturingProperty::setBumpMap(std::optional<TexturingProperty::BumpMap*> map) {
-		auto currentMap = maps[size_t(MapType::BUMP)];
-		if (currentMap) {
-			delete currentMap;
-			maps.setAtIndex(size_t(MapType::BUMP), nullptr);
-		}
-		if (map) {
-			maps.setAtIndex(size_t(MapType::BUMP), map.value());
-		}
+	void TexturingProperty::setGlowMap_lua(sol::optional<Map*> map) {
+		setGlowMap(map.value_or(nullptr));
+	}
+
+	void TexturingProperty::setBumpMap_lua(sol::optional<BumpMap*> map) {
+		setBumpMap(map.value_or(nullptr));
 	}
 #endif
 

@@ -59,7 +59,7 @@ namespace TES3 {
 		int mipmapSkipLevel; // 0x34
 		int presentationInterval; // 0x38
 		float gamma; // 0x3C
-		int unknown_0x40; // IDA marks this as a single byte (`field_40`); kept as int. Actual semantics unknown.
+		int unknown_0x40;
 		int screenX; // 0x44
 		int screenY; // 0x48
 		float renderDistance; // 0x4C
@@ -67,27 +67,22 @@ namespace TES3 {
 		unsigned char volumeVoice; // 0x51
 		unsigned char volumeEffect; // 0x52
 		unsigned char volumeFootsteps; // 0x53
-		int volumeMedia; // 0x54 — TODO: IDA types this as `float mediaVolume` (likely 0.0-1.0 fraction). Verify before flipping.
-		unsigned char soundQuality; // 0x58 — TODO: IDA types this as `int soundQuality3D` (4 bytes). Would subsume the three unknown_0x59/5A/5B bytes below.
-		char unknown_0x59;
-		char unknown_0x5A;
-		char unknown_0x5B;
+		float volumeMedia; // 0x54
+		int soundQuality; // 0x58
 		HWND parentWindowHandle; // 0x5C
 		HWND windowHandle; // 0x60
 		NI::DX8Renderer* renderer; // 0x64
-		NI::Color backgroundColour; // 0x68 (IDA: backgroundColour, NiColor 12 bytes)
-		// 0x74-0x83: IDA describes this 16-byte region as a single `std::map<?,?>` (`map_74`). Currently split into 5 fields below; ABI-equivalent but the std::map view is more semantically accurate.
-		char unknown_0x74;
+		NI::Color backgroundColour; // 0x68
 		char unknown_0x75;
 		void* unknown_0x78;
 		char unknown_0x7C;
 		int unknown_0x80;
 		char resolutionModeStringsVectorTag; // 0x84
-		void* resolutionModeStringsBegin; // 0x88 - pointer to std::string
+		void* resolutionModeStringsBegin; // 0x88
 		void* resolutionModeStringsEnd; // 0x8C
 		void* resolutionModeStringsStorageEnd; // 0x90
 		void* showSceneGraphStruct; // 0x94
-		NI::IteratedList<NI::ObjectNET*>* unknown_0x98; // IDA: pList_98 (TList*) — same shape, exact element type still unconfirmed.
+		NI::IteratedList<NI::ObjectNET*>* unknown_0x98;
 		NI::Pointer<NI::Node> worldRoot; // 0x9C
 		NI::Pointer<NI::Node> worldObjectRoot; // 0xA0
 		NI::Pointer<NI::Node> worldPickObjectRoot; // 0xA4
@@ -97,32 +92,19 @@ namespace TES3 {
 		NI::Pointer<NI::AmbientLight> activationAmbientLight; // 0xB4
 		NI::Pointer<NI::Node> gridString; // 0xB8
 		NI::Pointer<NI::Node> collideString; // 0xBC
-		// 0xC0-0xE0 region: scene-graph debug-overlay slot cluster. The named
-		// neighbors (sgMenuGridText/CollideText/TextureText/sgPointers_debug_animationData/
-		// sgPointer_debug_compassHeading) are NiPointers to NI::Node roots that
-		// developer-mode toggles bind for debug visualization. Console commands
-		// `TPG` (toggle path grid display) and `SSG` (show scene graph) live in
-		// ScriptRecord::execute. The five "unknown" / "sgPointer_*" slots below
-		// (C0, C4, CC, DC, E0) follow the same NiPointer ABI but are never
-		// assigned a non-null value by any shipped engine code path —
-		// initialized to 0 in ctor, released in dtor, never read or written
-		// elsewhere. Likely reserved for debug overlays planned/cut during
-		// development (Path Grid, Travel Lines, Door Notes are the documented
-		// candidates). Kept as live fields because the binary's struct size
-		// must remain 0x110.
-		NI::Pointer<NI::Object> sgPointer_C0; // 0xC0 — reserved debug-overlay slot
-		NI::Pointer<NI::Object> unknown_field_C4; // 0xC4 — reserved debug-overlay slot
+		NI::Pointer<NI::Object> sgPointer_C0; // 0xC0
+		NI::Pointer<NI::Object> unknown_field_C4; // 0xC4
 		NI::Pointer<NI::Node> textureString; // 0xC8
-		NI::Pointer<NI::Object> sgPointer_CC; // 0xCC — reserved debug-overlay slot
-		NI::Pointer<NI::Object> sgPointers_debug_animationData[3]; // 0xD0 — debug animation visualization roots (live but never populated by shipped code)
-		NI::Pointer<NI::Object> unknown_field_DC; // 0xDC — reserved (4th-slot leftover after the 3-element animation array? IDA mis-types this as int; the dtor treats it as NiPointer)
-		NI::Pointer<NI::Object> sgPointer_E0; // 0xE0 — reserved debug-overlay slot
+		NI::Pointer<NI::Object> sgPointer_CC; // 0xCC
+		NI::Pointer<NI::Object> sgPointers_debug_animationData[3]; // 0xD0
+		NI::Pointer<NI::Object> unknown_field_DC; // 0xDC
+		NI::Pointer<NI::Object> sgPointer_E0; // 0xE0
 		NI::Pick* playerTargetPick; // 0xE4
 		Reference* playerTarget; // 0xE8
-		Reference* tooltipTarget; // 0xEC — NOTE: IDA names this `playerTargetPrevFrame` (frame-delta tracker hypothesis). MWSE name kept; semantics worth re-verifying against actual usage.
+		Reference* tooltipTarget; // 0xEC
 		NI::Pointer<NI::FogProperty> fogProperty; // 0xF0
 		int compassHeading; // 0xF4
-		NI::Pointer<NI::Object> sgPointer_debug_compassHeading; // 0xF8 — debug compass visualization root (live but never populated by shipped code)
+		NI::Pointer<NI::Object> sgPointer_debug_compassHeading; // 0xF8
 		NI::Color currentFogColour; // 0xFC
 		LoadScreenManager* loadScreenManager; // 0x108
 		char skipRenderingNextFrame; // 0x10C

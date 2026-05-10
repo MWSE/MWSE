@@ -23,7 +23,6 @@ namespace NI {
 		void clearPixelData();
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		// Cached variant that routes through TES3::DataHandler — implemented only in Morrowind-context builds.
 		static Pointer<SourceTexture> createFromPath_lua(const char* path, sol::optional<bool> useCached);
 #endif
 	};

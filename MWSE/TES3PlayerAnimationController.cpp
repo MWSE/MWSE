@@ -45,8 +45,8 @@ namespace TES3 {
 		const auto worldController = WorldController::get();
 
 		// Save camera transforms for the cameraControl event.
-		previousCameraTransform = worldController->worldCamera.cameraRoot->getTransforms();
-		previousArmCameraTransform = worldController->armCamera.cameraRoot->getTransforms();
+		previousCameraTransform = worldController->worldCamera.cameraRoot->getLocalTransform();
+		previousArmCameraTransform = worldController->armCamera.cameraRoot->getLocalTransform();
 
 		// Call the original function.
 		TES3_PlayerAnimationController_syncRotation(this);

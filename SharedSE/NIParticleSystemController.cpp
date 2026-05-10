@@ -2,7 +2,9 @@
 
 namespace NI {
 	nonstd::span<PerParticleData> ParticleSystemController::getPerParticleData() {
-		if (particleData == nullptr) { return {}; }
+		if (particleData == nullptr) {
+			return {};
+		}
 		return { particleData, particleDataCount };
 	}
 }

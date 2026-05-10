@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 #include "NIDefines.h"
 #include "NIPoint3.h"
 
@@ -12,22 +10,13 @@ namespace NI {
 		unsigned char r; // 0x2
 		unsigned char a; // 0x3
 
-		// MWSE source of truth: inline ctors with a=0 default (matches the
-		// engine memory layout; verified against IDA disassembly of
-		// Morrowind.exe). SharedSE previously had a=255 default which was
-		// incorrect.
 		PackedColor() : r(0), g(0), b(0), a(0) {}
 		PackedColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0)
 			: r(_r), g(_g), b(_b), a(_a) {}
-
-		// SharedSE-only convenience ctors (used by CSSE rendering code).
-		// Float values are in 0.0..1.0 range; alpha defaults to 1.0f (opaque).
-		// Impls in SharedSE/NIColor.cpp.
 		PackedColor(float r, float g, float b, float a = 1.0f);
 		PackedColor(const std::array<unsigned char, 3>& from);
 		PackedColor(const std::array<float, 3>& from);
 
-		// Pure-C++ methods (impls in MWSE-private NIColor.cpp; CSSE doesn't call them).
 		PackedColor operator*(float scalar) const;
 		std::string toString() const;
 	};

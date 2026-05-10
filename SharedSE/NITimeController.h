@@ -68,20 +68,9 @@ namespace NI {
 		unsigned int getCycleType() const;
 		void setCycleType(unsigned int type);
 
-		// Engine function pointer used by FlipController and others. Per-target
-		// address resolved via NIConfig.{Morrowind,TESConstructionSet}.h. The
-		// CSSE address is unknown today (macro = 0x0), so the constexpr is gated
-		// behind `> 0` and call sites must guard for the not-defined case.
 #if defined(SE_NI_TIMECONTROLLER_FNADDR_COPY) && SE_NI_TIMECONTROLLER_FNADDR_COPY > 0
 		static constexpr auto _copy = reinterpret_cast<void(__thiscall*)(const TimeController*, TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_COPY);
 #endif
-
-		//
-		// Access to engine raw functions. Per-target addresses come from
-		// NIConfig.{Morrowind,TESConstructionSet}.h; each constexpr is gated on
-		// its specific FNADDR macro so call sites compile in both targets but
-		// only resolve to a real address where it's known.
-		//
 
 #if defined(SE_NI_TIMECONTROLLER_FNADDR_CTOR) && SE_NI_TIMECONTROLLER_FNADDR_CTOR > 0
 		static constexpr auto _ctor = reinterpret_cast<void(__thiscall*)(TimeController*)>(SE_NI_TIMECONTROLLER_FNADDR_CTOR);

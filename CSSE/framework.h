@@ -112,3 +112,4 @@
 #undef PlaySound
 #undef max
 #undef min
+#undef ALPHA_MASK

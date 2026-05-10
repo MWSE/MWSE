@@ -48,8 +48,6 @@ namespace NI {
 		NI_Geometry_LinkObject(this, stream);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// MWSE-added software-skinning flag patch-up: propagate the flag bit
-		// from the TriShape's own flags into the linked TriBasedGeometryData.
 		if (flags & TriShapeFlags::SoftwareSkinningFlag) {
 			auto data = static_cast<TriBasedGeometryData*>(modelData.get());
 			data->patchRenderFlags |= TriShapeFlags::SoftwareSkinningFlag;
@@ -60,7 +58,6 @@ namespace NI {
 #endif
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 	nonstd::span<Point3> TriShape::getVertices() const {
 		return getModelData()->getVertices();
 	}
@@ -68,7 +65,6 @@ namespace NI {
 	nonstd::span<Point3> TriShape::getNormals() const {
 		return getModelData()->getNormals();
 	}
-#endif
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

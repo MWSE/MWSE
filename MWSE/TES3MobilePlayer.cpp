@@ -266,8 +266,8 @@ namespace TES3 {
 		TES3_MobilePlayer_updateScenegraph(this);
 
 		if (mwse::lua::event::CameraControlEvent::getEventEnabled()) {
-			NI::Transform cameraTransform = cameraRootNode->getTransforms();
-			NI::Transform armCameraTransform = armCameraRootNode->getTransforms();
+			NI::Transform cameraTransform = cameraRootNode->getLocalTransform();
+			NI::Transform armCameraTransform = armCameraRootNode->getLocalTransform();
 			NI::Transform prevCameraTransform = PlayerAnimationController::previousCameraTransform;
 			NI::Transform prevArmCameraTransform = PlayerAnimationController::previousArmCameraTransform;
 

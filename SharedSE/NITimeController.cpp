@@ -5,9 +5,6 @@
 namespace NI {
 	TimeController_vTable::TimeController_vTable() {
 #if defined(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE) && SE_NI_TIMECONTROLLER_VTBL_TEMPLATE > 0
-		// Copy the engine's TimeController vtable layout as a starting template;
-		// derived MWSE controllers (e.g. CopyTransformController) overwrite
-		// individual slots after this base ctor returns.
 		memcpy_s(this, sizeof(TimeController_vTable), reinterpret_cast<void*>(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE), sizeof(TimeController_vTable));
 #else
 		throw not_implemented_exception();

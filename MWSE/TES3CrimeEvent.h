@@ -5,7 +5,7 @@
 #include "NIIteratedList.h"
 #include "NIPoint3.h"
 
-#include <StdString.h>
+#include "StdString.h"
 
 namespace TES3 {
 	using se::StdString;

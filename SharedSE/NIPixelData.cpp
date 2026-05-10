@@ -113,7 +113,7 @@ namespace NI {
 			}
 		}
 
-		if (!WriteFile(hFile, imageData.data(), static_cast<DWORD>(bytesToWrite), &bytesWritten, NULL) || bytesWritten != bytesToWrite) {
+		if (!WriteFile(hFile, imageData.data(), bytesToWrite, &bytesWritten, NULL) || bytesWritten != bytesToWrite) {
 			CloseHandle(hFile);
 			std::filesystem::remove(fileName);
 			throw std::runtime_error("Couldn't write pixel data.");
