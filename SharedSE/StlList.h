@@ -11,7 +11,7 @@ namespace se {
 			Node* next;
 
 			static void* operator new(size_t size) { return se::memory::_new(size); }
-			static void operator delete(void* block) { se::memory::_delete(size); }
+			static void operator delete(void* block) { se::memory::_delete(block); }
 
 			Node(const Node&) = delete;
 
