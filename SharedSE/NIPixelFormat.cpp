@@ -2,8 +2,6 @@
 
 #include "ExceptionUtil.h"
 
-#include <stdexcept>
-
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 namespace NI {
 	PixelFormat::PixelFormat(Format format) {

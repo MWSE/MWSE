@@ -12,8 +12,6 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
-#include <cstring>
-
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #endif

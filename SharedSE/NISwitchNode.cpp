@@ -1,8 +1,5 @@
 #include "NISwitchNode.h"
 
-#include <cstring>
-#include <exception>
-
 namespace NI {
 	int SwitchNode::getSwitchIndex() const {
 		return switchIndex;

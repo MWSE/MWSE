@@ -2,8 +2,6 @@
 
 #include "ExceptionUtil.h"
 
-#include <cstring>
-
 namespace NI {
 	TimeController_vTable::TimeController_vTable() {
 #if defined(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE) && SE_NI_TIMECONTROLLER_VTBL_TEMPLATE > 0

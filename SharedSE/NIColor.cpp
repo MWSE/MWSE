@@ -1,10 +1,5 @@
 #include "NIColor.h"
 
-#include <algorithm>
-#include <iomanip>
-#include <sstream>
-#include <stdexcept>
-
 namespace NI {
 	//
 	// NiPackedColor

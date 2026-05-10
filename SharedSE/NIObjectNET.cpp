@@ -3,13 +3,7 @@
 #include "NIAVObject.h"
 #include "NINode.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Reference.h"
-#endif
-
 #include "ExceptionUtil.h"
-
-#include <cstring>
 
 namespace NI {
 	void ObjectNET::prependController(TimeController* controller) {

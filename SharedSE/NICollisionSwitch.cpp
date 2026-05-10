@@ -4,8 +4,6 @@
 
 #include "ExceptionUtil.h"
 
-#include <cstring>
-
 namespace NI {
 	CollisionSwitch::CollisionSwitch() {
 #if defined(SE_NI_COLLISIONSWITCH_VTBL) && SE_NI_COLLISIONSWITCH_VTBL > 0

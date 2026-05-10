@@ -6,9 +6,6 @@
 
 #include "ExceptionUtil.h"
 
-#include <algorithm>
-#include <vector>
-
 namespace NI {
 
 	Node::Node() {
