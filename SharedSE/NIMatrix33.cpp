@@ -221,14 +221,18 @@ namespace NI {
 #endif
 	}
 
-	void Matrix33::toRotation(float angle, const Point3& axis) {
+	void Matrix33::toRotation(float angle, float x, float y, float z) {
 #if defined(SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ) && SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ > 0
 		const auto NI_Matrix33_toRotationXYZ = reinterpret_cast<void(__thiscall*)(Matrix33*, float, float, float, float)>(SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ);
 
-		NI_Matrix33_toRotationXYZ(this, angle, axis.x, axis.y, axis.z);
+		NI_Matrix33_toRotationXYZ(this, angle, x, y, z);
 #else
 		throw not_implemented_exception();
 #endif
+	}
+
+	void Matrix33::toRotation(float angle, const Point3& axis) {
+		toRotation(angle, axis.x, axis.y, axis.z);
 	}
 
 	bool Matrix33::toRotationDifference(const Point3& a, const Point3& b) {

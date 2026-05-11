@@ -230,7 +230,7 @@ namespace mwse::lua {
 			usertypeDefinition["fromQuaternion"] = &NI::Matrix33::fromQuaternion;
 			usertypeDefinition["reorthogonalize"] = &NI::Matrix33::reorthogonalize;
 			usertypeDefinition["toIdentity"] = &NI::Matrix33::toIdentity;
-			usertypeDefinition["toRotation"] = &NI::Matrix33::toRotation;
+			usertypeDefinition["toRotation"] = sol::resolve<void(float, float, float, float)>(&NI::Matrix33::toRotation);
 			usertypeDefinition["toRotationX"] = &NI::Matrix33::toRotationX;
 			usertypeDefinition["toRotationY"] = &NI::Matrix33::toRotationY;
 			usertypeDefinition["toRotationZ"] = &NI::Matrix33::toRotationZ;
