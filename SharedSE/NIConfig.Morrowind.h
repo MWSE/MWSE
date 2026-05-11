@@ -20,9 +20,6 @@
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONY 0x6E7D60
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONZ 0x6E7DA0
 #define SE_NI_MATRIX33_FNADDR_TRANSPOSE 0x6E8420
-// Despite the macro name (kept for migration-compat), this points at
-// NiQuaternion::ToRotation (quat->matrix). Engine signature is
-// (const Quaternion* this, Matrix33* rotation), NOT (Matrix33*, Quaternion*).
 #define SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION 0x6FBEF0
 
 // NI::Quaternion
