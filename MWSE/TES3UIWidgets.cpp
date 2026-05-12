@@ -341,13 +341,14 @@ namespace TES3::UI {
 	// WidgetScrollPane
 	//
 
-	static UI_ID uiidScrollPaneHScroll, uiidScrollPaneVScroll;
+	static UI_ID uiidScrollPaneHScroll, uiidScrollPaneVScroll, uiidScrollPaneOuterFrame;
 
 	const auto TES3_WidgetScrollPane_getContentPane = reinterpret_cast<TES3::UI::Element*(__cdecl*)(WidgetScrollPane*)>(0x649CA0);
 
 	bool WidgetScrollPane::initProperties() {
 		uiidScrollPaneHScroll = registerID("PartScrollPane_hor_scrollbar");
 		uiidScrollPaneVScroll = registerID("PartScrollPane_vert_scrollbar");
+		uiidScrollPaneOuterFrame = registerID("PartScrollPane_outer_frame");
 		return true;
 	}
 
@@ -385,6 +386,52 @@ namespace TES3::UI {
 
 		const auto TES3_ui_ScrollPaneVert_scrollBarChanged = reinterpret_cast<EventCallback>(0x649870);
 		TES3_ui_ScrollPaneVert_scrollBarChanged(this, Property::null, 0, 0, scroll);
+	}
+
+	bool WidgetScrollPane::scrollIntoView(Element* child) {
+		if (child == nullptr) {
+			return false;
+		}
+
+		auto contentPane = getContentPane();
+		if (contentPane == nullptr) {
+			return false;
+		}
+
+		auto current = child;
+		while (current && current != contentPane) {
+			current = current->parent;
+		}
+
+		if (current != contentPane) {
+			return false;
+		}
+
+		auto outerFrame = findChild(uiidScrollPaneOuterFrame);
+		if (outerFrame == nullptr) {
+			return false;
+		}
+
+		const int viewportBottom = outerFrame->cached_screenY;
+		const int viewportTop = outerFrame->cached_screenY - outerFrame->height;
+		const int childBottom = child->cached_screenY;
+		const int childTop = child->cached_screenY - child->height;
+		const int currentPos = getVerticalPos();
+
+		int targetPos = currentPos;
+		if (childTop < viewportTop) {
+			targetPos += viewportTop - childTop;
+		}
+		else if (childBottom > viewportBottom) {
+			targetPos -= childBottom - viewportBottom;
+		}
+
+		if (targetPos == currentPos) {
+			return false;
+		}
+
+		setVerticalPos(targetPos);
+		return true;
 	}
 
 	bool WidgetScrollPane::getScrollbarVisible() const {
