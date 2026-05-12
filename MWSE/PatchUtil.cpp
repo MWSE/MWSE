@@ -1887,10 +1887,9 @@ namespace mwse::patch {
 		PatchActorDisplayApplyShiftedView(renderer, origin, originalView);
 		NiNode_Display(node, camera);
 		PatchActorDisplayRestoreView(renderer, originalView);
+		PatchActorDisplayRestoreTranslations(translations);
 
 		PatchActorDisplayShiftActive = false;
-
-		PatchActorDisplayRestoreTranslations(translations);
 	}
 
 	//
