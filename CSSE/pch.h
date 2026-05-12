@@ -15,8 +15,8 @@
 #include "resource.h"
 
 // SharedSE defines.
-#define SE_IS_CS TRUE
-#define SE_TARGETS_CS TRUE
+#define SE_IS_CS 1
+#define SE_TARGETS_CS 1
 #define SE_MEMORY_FNADDR_NEW 0x6209F0
 #define SE_MEMORY_FNADDR_DELETE 0x620948
 #define SE_MEMORY_FNADDR_MALLOC 0x0

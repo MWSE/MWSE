@@ -1,7 +1,7 @@
 #pragma once
 
 // Include the headers required by the target application.
-#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == TRUE
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
 	#include "NIConfig.Morrowind.h"
 	#include "NIRTTIDefines.Morrowind.h"
 	#include "NIVirtualTableDefines.Morrowind.h"
@@ -12,10 +12,14 @@
 	namespace NI {
 		using GameReferenceType = TES3::Reference;
 	}
-#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == TRUE
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
 	#include "NIConfig.TESConstructionSet.h"
 	#include "NIRTTIDefines.TESConstructionSet.h"
-	#include "NIVirtualTableDefines.TESConstructionSet.h"
+	// NIVirtualTableDefines.TESConstructionSet.h intentionally not included —
+	// it is a stub (no consumer in SharedSE or CSSE today; only MWSE-only
+	// files reference NI::VirtualTableAddress, and they get the Morrowind
+	// table via the SE_TARGETS_MW branch above). The stub file has a
+	// load-bearing #error guarding accidental inclusion.
 	namespace se::cs {
 		struct Reference;
 	}
