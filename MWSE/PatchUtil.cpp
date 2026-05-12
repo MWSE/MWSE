@@ -6,6 +6,7 @@
 
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
+#include "TES3AnimationData.h"
 #include "TES3AudioController.h"
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
@@ -38,9 +39,12 @@
 #include "TES3WorldController.h"
 
 #include "NIAVObject.h"
+#include "NICamera.h"
 #include "NICollisionSwitch.h"
+#include "NIDX8Renderer.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
+#include "NINode.h"
 #include "NIPick.h"
 #include "NIPointLight.h"
 #include "NISortAdjustNode.h"
@@ -1699,6 +1703,204 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Render actor display branches near the actor root.
+	//
+
+	struct PatchActorDisplayTranslation {
+		NI::AVObject* object;
+		TES3::Vector3 originalTranslation;
+	};
+
+	static bool PatchActorDisplayShiftActive = false;
+
+	static float PatchActorDisplayMaxAbsComponent(const TES3::Vector3& value) {
+		const auto x = std::abs(value.x);
+		const auto y = std::abs(value.y);
+		const auto z = std::abs(value.z);
+		return std::max(x, std::max(y, z));
+	}
+
+	static bool PatchActorDisplayTrackTranslation(std::vector<PatchActorDisplayTranslation>& translations, NI::AVObject* object) {
+		if (!object) {
+			return false;
+		}
+
+		for (const auto& translation : translations) {
+			if (translation.object == object) {
+				return false;
+			}
+		}
+
+		translations.push_back({ object, object->worldTransform.translation });
+		return true;
+	}
+
+	static bool PatchActorDisplayGetRootRelativeTranslation(NI::AVObject* root, NI::AVObject* object, TES3::Vector3& out) {
+		if (!root || !object) {
+			return false;
+		}
+
+		if (root == object) {
+			out = TES3::Vector3::ZEROES;
+			return true;
+		}
+
+		std::vector<NI::AVObject*> chain;
+		for (auto current = object; current && current != root; current = current->parentNode) {
+			chain.push_back(current);
+		}
+
+		if (chain.empty() || chain.back()->parentNode != root) {
+			return false;
+		}
+
+		auto rotation = root->worldTransform.rotation;
+		auto translation = TES3::Vector3::ZEROES;
+		auto scale = root->worldTransform.scale;
+
+		for (auto it = chain.rbegin(); it != chain.rend(); ++it) {
+			const auto child = *it;
+			if (!child->localRotation) {
+				return false;
+			}
+
+			translation = rotation * child->localTranslate * scale + translation;
+
+			auto localRotation = *child->localRotation;
+			if (child->isInstanceOfType(NI::RTTIStaticPtr::BSMirroredNode)) {
+				localRotation = localRotation * -1.0f;
+			}
+
+			rotation = rotation * localRotation;
+			scale *= child->localScale;
+		}
+
+		out = translation;
+		return true;
+	}
+
+	static void PatchActorDisplayRestoreTranslations(const std::vector<PatchActorDisplayTranslation>& translations) {
+		for (const auto& translation : translations) {
+			translation.object->worldTransform.translation = translation.originalTranslation;
+		}
+	}
+
+	static bool PatchActorDisplayGetRelativeTranslation(NI::AVObject* root, NI::AVObject* localRoot, const TES3::Vector3& localRootTranslation, NI::AVObject* object, TES3::Vector3& result) {
+		if (PatchActorDisplayGetRootRelativeTranslation(root, object, result)) {
+			return true;
+		}
+
+		TES3::Vector3 localRootRelativeTranslation;
+		if (PatchActorDisplayGetRootRelativeTranslation(localRoot, object, localRootRelativeTranslation)) {
+			result = localRootTranslation + localRootRelativeTranslation;
+			return true;
+		}
+
+		return false;
+	}
+
+	static void PatchActorDisplayTrackSubtreeTranslations(NI::AVObject* root, NI::AVObject* localRoot, const TES3::Vector3& localRootTranslation, NI::AVObject* object, const TES3::Vector3& origin, std::vector<PatchActorDisplayTranslation>& translations) {
+		if (!object) {
+			return;
+		}
+
+		PatchActorDisplayTrackTranslation(translations, object);
+
+		TES3::Vector3 displayRelativeTranslation;
+		if (PatchActorDisplayGetRelativeTranslation(root, localRoot, localRootTranslation, object, displayRelativeTranslation)) {
+			object->worldTransform.translation = displayRelativeTranslation;
+		}
+		else {
+			object->worldTransform.translation = object->worldTransform.translation - origin;
+		}
+
+		if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			return;
+		}
+
+		auto node = static_cast<NI::Node*>(object);
+		for (auto& child : node->children) {
+			PatchActorDisplayTrackSubtreeTranslations(root, localRoot, localRootTranslation, child, origin, translations);
+		}
+	}
+
+	static void PatchActorDisplayTrackSubtreeTranslations(NI::AVObject* root, NI::AVObject* object, const TES3::Vector3& origin, std::vector<PatchActorDisplayTranslation>& translations) {
+		if (!object) {
+			return;
+		}
+
+		const auto localRootTranslation = object->worldTransform.translation - origin;
+		PatchActorDisplayTrackSubtreeTranslations(root, object, localRootTranslation, object, origin, translations);
+	}
+
+	static void PatchActorDisplayApplyShiftedView(NI::DX8Renderer* renderer, const TES3::Vector3& origin, D3DMATRIX& originalView) {
+		originalView = renderer->viewMatrix;
+
+		auto shiftedView = originalView;
+		shiftedView._41 += origin.x * shiftedView._11 + origin.y * shiftedView._21 + origin.z * shiftedView._31;
+		shiftedView._42 += origin.x * shiftedView._12 + origin.y * shiftedView._22 + origin.z * shiftedView._32;
+		shiftedView._43 += origin.x * shiftedView._13 + origin.y * shiftedView._23 + origin.z * shiftedView._33;
+
+		renderer->viewMatrix = shiftedView;
+		renderer->d3dDevice->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(2), &shiftedView);
+	}
+
+	static void PatchActorDisplayRestoreView(NI::DX8Renderer* renderer, const D3DMATRIX& originalView) {
+		renderer->viewMatrix = originalView;
+		renderer->d3dDevice->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(2), &originalView);
+	}
+
+	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*,NI::Camera*)>(0x6C9190);
+
+	static void __fastcall PatchNiNodeDisplay(NI::Node* node, DWORD _EDX_, NI::Camera* camera) {
+		if (!node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
+			NiNode_Display(node, camera);
+			return;
+		}
+
+		const auto reference = node->getTes3Reference(false);
+		if (!reference || !reference->getAttachedMobileActor()) {
+			NiNode_Display(node, camera);
+			return;
+		}
+
+		const auto animationData = reference->getAttachedAnimationData();
+		auto root = animationData ? animationData->actorNode : nullptr;
+		if (!root) {
+			root = animationData ? animationData->movementRootNode : nullptr;
+		}
+		if (!root) {
+			root = node;
+		}
+
+		const auto origin = root->worldTransform.translation;
+		if (PatchActorDisplayMaxAbsComponent(origin) < 4096.0f) {
+			NiNode_Display(node, camera);
+			return;
+		}
+
+		auto renderer = static_cast<NI::DX8Renderer*>(camera->renderer.get());
+		if (!renderer || !renderer->d3dDevice) {
+			NiNode_Display(node, camera);
+			return;
+		}
+
+		std::vector<PatchActorDisplayTranslation> translations;
+		PatchActorDisplayTrackSubtreeTranslations(root, node, origin, translations);
+
+		PatchActorDisplayShiftActive = true;
+
+		D3DMATRIX originalView;
+		PatchActorDisplayApplyShiftedView(renderer, origin, originalView);
+		NiNode_Display(node, camera);
+		PatchActorDisplayRestoreView(renderer, originalView);
+
+		PatchActorDisplayShiftActive = false;
+
+		PatchActorDisplayRestoreTranslations(translations);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -1770,6 +1972,9 @@ namespace mwse::patch {
 		auto BodyPartManager_updateForReference = &TES3::BodyPartManager::updateForReference;
 		genCallEnforced(0x46444C, 0x473EA0, *reinterpret_cast<DWORD*>(&BodyPartManager_updateForReference));
 		genCallEnforced(0x4DA07C, 0x473EA0, *reinterpret_cast<DWORD*>(&BodyPartManager_updateForReference));
+
+		// Patch: Render actor NiNode display branches near the actor root.
+		overrideVirtualTableEnforced(NI::VirtualTableAddress::NiNode, offsetof(NI::AVObject_vTable, display), 0x6C9190, reinterpret_cast<DWORD>(PatchNiNodeDisplay));
 
 		// Patch: Decrease MO2 load times. Somehow...
 		writeDoubleWordUnprotected(0x7462F4, reinterpret_cast<DWORD>(&_stat32));
