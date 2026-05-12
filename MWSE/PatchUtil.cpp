@@ -1832,12 +1832,12 @@ namespace mwse::patch {
 		shiftedView._43 += origin.x * shiftedView._13 + origin.y * shiftedView._23 + origin.z * shiftedView._33;
 
 		renderer->viewMatrix = shiftedView;
-		renderer->d3dDevice->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(2), &shiftedView);
+		renderer->d3dDevice->SetTransform(D3DTS_VIEW, &shiftedView);
 	}
 
 	static void PatchActorDisplayRestoreView(NI::DX8Renderer* renderer, const D3DMATRIX& originalView) {
 		renderer->viewMatrix = originalView;
-		renderer->d3dDevice->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(2), &originalView);
+		renderer->d3dDevice->SetTransform(D3DTS_VIEW, &originalView);
 	}
 
 	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*,NI::Camera*)>(0x6C9190);
