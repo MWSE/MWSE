@@ -21,9 +21,6 @@
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONY 0x5E1D00
 #define SE_NI_MATRIX33_FNADDR_TOROTATIONZ 0x5E1D40
 #define SE_NI_MATRIX33_FNADDR_TRANSPOSE 0x5E23E0
-// Despite the macro name (kept for migration-compat), this points at
-// NiQuaternion::ToRotation (quat->matrix). Engine signature is
-// (const Quaternion* this, Matrix33* rotation), NOT (Matrix33*, Quaternion*).
 #define SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION 0x5F3F80
 
 // NI::Quaternion
@@ -36,12 +33,7 @@
 #define SE_NI_QUATERNION_FNADDR_SLERP 0x5F3880
 #define SE_NI_QUATERNION_FNADDR_TOANGLEAXIS 0x5F3EB0
 
-// NI::Object — CS names this NI::RefObject; same class semantically.
-// Sizes match MW NiObject::ctor (0x23) / dtor (0x14) exactly. The migration
-// previously had CTOR/DTOR pointing at NiObjectNET's larger versions
-// (0x5B27B0 / 0x5B2860, sizes 0x87 / 0xc7) — calling them on a bare
-// NI::Object allocation (only 8 bytes: vtbl + refcount) would have written
-// past its end and corrupted heap memory.
+// NI::Object
 #define SE_NI_OBJECT_FNADDR_CREATECLONE 0x5DCC70
 #define SE_NI_OBJECT_FNADDR_CTOR 0x5DCC00
 #define SE_NI_OBJECT_FNADDR_DTOR 0x5DCC50
@@ -110,15 +102,7 @@
 // NI::Sequence
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x605C20
 
-// NI::TimeController vTable template. Discovered via decompile of
-// NI::TimeController::ctor at 0x5E9030, which writes &vtbl_sg_NiTimeController
-// (0x67AE38) into this->vtbl. Verified by reading the full 0x48-byte struct:
-// all 18 slots point into the CS code segment, and the loadBinary/linkObject/
-// registerStreamables/saveBinary/isEqual/start/stop/setTarget/computeScaledTime
-// slots match the individual SE_NI_TIMECONTROLLER_FNADDR_* values below.
-#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x67AE38
-
-// NI::AnimationKey global table (CS.exe address not yet known)
+// NI::AnimationKey global tableasdfasdfsadfsadfasdf
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0
 // __cdecl key-data-size helpers (NiFloatKey_static / NiPosKey_static GetDataSize)
 #define SE_NI_FLOATDATA_FNADDR_GETKEYSIZE 0x61C950
@@ -155,10 +139,9 @@
 // NI::UVController engine fn — body is NiUVController::CopyMembers
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x61AF90
 
-// NI::TimeController engine functions
+// NI::TimeController
+#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x67AE38
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x5E9030
-// Actual dtor body — extracted from NI::TimeController::deleting_dtor at
-// 0x5E90E0 which calls sub_5E9100. SharedSE expects single-arg signature.
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x5E9100
 #define SE_NI_TIMECONTROLLER_FNADDR_LOADBINARY 0x5E98D0
 #define SE_NI_TIMECONTROLLER_FNADDR_REGISTERSTREAMABLES 0x5E99B0
@@ -170,6 +153,7 @@
 #define SE_NI_TIMECONTROLLER_FNADDR_STOP 0x5E91D0
 #define SE_NI_TIMECONTROLLER_FNADDR_SETTARGET 0x5E9740
 #define SE_NI_TIMECONTROLLER_FNADDR_COMPUTESCALEDTIME 0x5E9200
+#define SE_NI_TIMECONTROLLER_FNADDR_COPY 0x5E97C0
 
 // NI::KeyframeManager
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x607FD0
@@ -189,16 +173,8 @@
 
 // NI::Property
 #define SE_NI_PROPERTY_FNADDR_CTOR 0x44A170
-// Property::dtor is a thunk-of-thunk that resolves to the ObjectNET dtor
-// body (NI::ObjectNET::dtor at 0x5B2860); 0x4043D6 is the entry point.
 #define SE_NI_PROPERTY_FNADDR_DTOR 0x4043D6
-// NI::Property::setPropertyFlag in CS — same address used for the
-// inherited-via-ObjectNET SetFlag macro above (CS hoisted SetFlag onto
-// the ObjectNET interface; impl lives on Property).
 #define SE_NI_PROPERTY_FNADDR_SETFLAG 0x44A130
-// Cross-referenced from Morrowind's setFlagBitField at 0x408A10 and the CS
-// Property cluster (0x44A0F0..0x44A1F0). Body matches Morrowind's bitfield
-// math: flags = (value<<index) | (flags & ~(mask<<index)).
 #define SE_NI_PROPERTY_FNADDR_SETFLAGBITFIELD 0x44A0F0
 
 // NI::AlphaProperty
@@ -250,16 +226,8 @@
 #define SE_NI_STRINGEXTRADATA_FNADDR_CTOR 0x5D25F0
 #define SE_NI_STRINGEXTRADATA_FNADDR_DTOR 0x5D2D80
 
-// NI::Texture::FormatPrefs default-prefs global (the macro name says FNADDR
-// but this is actually a data address — three contiguous dwords for
-// pixelLayout/mipmapFlags/alphaFormat). Found via the small sibling init
-// stub sub_5CFAB0 immediately preceding NiSourceTexture::CreateFromPath
-// at 0x5CFAD0, which writes {5, 2, 3} to dword_6D775C/60/64 — identical
-// layout to MW's sub_6DE7D0 + NiFormatPrefs_Default at 0x7DE3B4.
+// NI::Texture::FormatPref
 #define SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS 0x6D775C
-
-// NI::TimeController
-#define SE_NI_TIMECONTROLLER_FNADDR_COPY 0x5E97C0
 
 // NI::Camera
 #define SE_NI_CAMERA_FNADDR_CLEAR 0x5BAB70
@@ -296,7 +264,7 @@
 // NI::Bound
 #define SE_NI_BOUND_FNADDR_COMPUTEFROMDATA 0x5B13F0
 
-// NI::BoxBoundingVolume — engine fn is NiBoxBV::ctor_args
+// NI::BoxBoundingVolume
 #define SE_NI_BOXBOUNDINGVOLUME_FNADDR_CREATE 0x57B040
 
 // NI::TriBasedGeometry
@@ -304,8 +272,8 @@
 #define SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS 0x5E68B0
 #define SE_NI_FNADDR_FINDINTERSECTRAYWITHTRIANGLE 0x5E64F0
 
-// NI::Geometry (base of TriBasedGeometry)
+// NI::Geometry
 #define SE_NI_GEOMETRY_FNADDR_LINKOBJECT 0x5E4AF0
 
-// NI::TriShape vTable address (Object_vTable layout)
+// NI::TriShape
 #define SE_NI_TRISHAPE_VTBL 0x67A8F8

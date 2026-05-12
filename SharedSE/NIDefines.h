@@ -15,11 +15,6 @@
 #elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
 	#include "NIConfig.TESConstructionSet.h"
 	#include "NIRTTIDefines.TESConstructionSet.h"
-	// NIVirtualTableDefines.TESConstructionSet.h intentionally not included —
-	// it is a stub (no consumer in SharedSE or CSSE today; only MWSE-only
-	// files reference NI::VirtualTableAddress, and they get the Morrowind
-	// table via the SE_TARGETS_MW branch above). The stub file has a
-	// load-bearing #error guarding accidental inclusion.
 	namespace se::cs {
 		struct Reference;
 	}
