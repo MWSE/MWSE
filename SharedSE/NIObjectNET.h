@@ -50,10 +50,10 @@ namespace NI {
 		// Other function addresses.
 		//
 
-#if defined(SE_NI_OBJECTNET_FNADDR_LOADBINARY) && SE_NI_OBJECTNET_FNADDR_LOADBINARY == 1
+#if defined(SE_NI_OBJECTNET_FNADDR_LOADBINARY) && SE_NI_OBJECTNET_FNADDR_LOADBINARY > 0
 		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_LOADBINARY);
 #endif
-#if defined(SE_NI_OBJECTNET_FNADDR_SAVEBINARY) && SE_NI_OBJECTNET_FNADDR_SAVEBINARY == 1
+#if defined(SE_NI_OBJECTNET_FNADDR_SAVEBINARY) && SE_NI_OBJECTNET_FNADDR_SAVEBINARY > 0
 		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_SAVEBINARY);
 #endif
 
