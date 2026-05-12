@@ -1840,7 +1840,9 @@ namespace mwse::patch {
 		renderer->d3dDevice->SetTransform(D3DTS_VIEW, &originalView);
 	}
 
-	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*,NI::Camera*)>(0x6C9190);
+	constexpr auto PatchNiNodeDisplay_Threshold = static_cast<float>(TES3::Cell::exteriorGridWidth * 20);
+
+	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*, NI::Camera*)>(0x6C9190);
 
 	static void __fastcall PatchNiNodeDisplay(NI::Node* node, DWORD _EDX_, NI::Camera* camera) {
 		if (!Configuration::AntiJitterFix || !node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
@@ -1864,7 +1866,7 @@ namespace mwse::patch {
 		}
 
 		const auto origin = root->worldTransform.translation;
-		if (PatchActorDisplayMaxAbsComponent(origin) < 4096.0f) {
+		if (PatchActorDisplayMaxAbsComponent(origin) < PatchNiNodeDisplay_Threshold) {
 			NiNode_Display(node, camera);
 			return;
 		}
