@@ -102,9 +102,8 @@
 // NI::Sequence
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x605C20
 
-// NI::AnimationKey global tableasdfasdfsadfsadfasdf
+// NI::AnimationKey
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0
-// __cdecl key-data-size helpers (NiFloatKey_static / NiPosKey_static GetDataSize)
 #define SE_NI_FLOATDATA_FNADDR_GETKEYSIZE 0x61C950
 #define SE_NI_POSDATA_FNADDR_GETKEYSIZE 0x61C920
 
@@ -122,11 +121,7 @@
 // NI::RTTI
 #define SE_NI_RTTI_ctor 0x5E9F90
 
-// NI::CollisionGroup engine fns (CS.exe addresses not yet known)
-// NiCollisionGroup is absent from TESConstructionSet.exe — the editor
-// has no runtime collision-group manager (only NiAVObject::Test/Find
-// Collisions and NI::CollisionSwitch are present). Verified by string
-// search ("collisiongroup" → 0 hits) and func name search.
+// NI::CollisionGroup
 #define SE_NI_COLLISIONGROUP_FNADDR_CONTAINSCOLLIDER 0x0
 #define SE_NI_COLLISIONGROUP_FNADDR_ADDCOLLIDER 0x0
 #define SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDER 0x0
@@ -140,7 +135,6 @@
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x61AF90
 
 // NI::TimeController
-#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x67AE38
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x5E9030
 #define SE_NI_TIMECONTROLLER_FNADDR_DTOR 0x5E9100
 #define SE_NI_TIMECONTROLLER_FNADDR_LOADBINARY 0x5E98D0
@@ -158,12 +152,6 @@
 // NI::KeyframeManager
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x607FD0
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x6083B0
-
-// NI light-radius test (CS.exe address not yet known)
-// LightRadiusTest is a Morrowind-runtime helper (game_dynamicLightTestHelper)
-// called only from game_dynamicLightTest. CS has no game-runtime light culling
-// path — verified by string search ("dynamicLight" / "lightRadius" → 0 hits).
-#define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 
 // NI::DynamicEffect
 #define SE_NI_DYNAMICEFFECT_FNADDR_ATTACHAFFECTEDNODE 0x5E5650
@@ -202,6 +190,7 @@
 
 // NI::Light
 #define SE_NI_LIGHT_FNADDR_CTOR 0x5EA4C0
+#define SE_NI_FNADDR_LIGHTRADIUSTEST 0x0
 
 // NI::SkinInstance
 #define SE_NI_SKININSTANCE_FNADDR_DEFORM 0x5F08A0

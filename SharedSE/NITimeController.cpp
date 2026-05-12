@@ -4,11 +4,8 @@
 
 namespace NI {
 	TimeController_vTable::TimeController_vTable() {
-#if defined(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE) && SE_NI_TIMECONTROLLER_VTBL_TEMPLATE > 0
-		memcpy_s(this, sizeof(TimeController_vTable), reinterpret_cast<void*>(SE_NI_TIMECONTROLLER_VTBL_TEMPLATE), sizeof(TimeController_vTable));
-#else
-		throw not_implemented_exception();
-#endif
+		static_assert(VirtualTableAddress::NiTimeController > 0, "No virtual table address defined for NiTimeController");
+		memcpy_s(this, sizeof(TimeController_vTable), reinterpret_cast<void*>(VirtualTableAddress::NiTimeController), sizeof(TimeController_vTable));
 	}
 
 	void TimeController::ctor() {

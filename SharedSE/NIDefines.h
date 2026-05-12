@@ -15,6 +15,7 @@
 #elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
 	#include "NIConfig.TESConstructionSet.h"
 	#include "NIRTTIDefines.TESConstructionSet.h"
+	#include "NIVirtualTableDefines.TESConstructionSet.h"
 	namespace se::cs {
 		struct Reference;
 	}
