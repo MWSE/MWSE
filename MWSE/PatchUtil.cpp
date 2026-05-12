@@ -1843,7 +1843,7 @@ namespace mwse::patch {
 	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*,NI::Camera*)>(0x6C9190);
 
 	static void __fastcall PatchNiNodeDisplay(NI::Node* node, DWORD _EDX_, NI::Camera* camera) {
-		if (!node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
+		if (!Configuration::AntiJitterFix || !node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
 			NiNode_Display(node, camera);
 			return;
 		}

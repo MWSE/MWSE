@@ -90,6 +90,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("antiJitterFix.label"),
+					description = i18n("antiJitterFix.description"),
+					variable = {
+						id = "AntiJitterFix",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("keepAllNetImmerseObjectsAlive.label"),
 					description = i18n("keepAllNetImmerseObjectsAlive.description"),
 					variable = {
