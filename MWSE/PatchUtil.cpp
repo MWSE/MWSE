@@ -1720,19 +1720,8 @@ namespace mwse::patch {
 		return std::max(x, std::max(y, z));
 	}
 
-	static bool PatchActorDisplayTrackTranslation(std::vector<PatchActorDisplayTranslation>& translations, NI::AVObject* object) {
-		if (!object) {
-			return false;
-		}
-
-		for (const auto& translation : translations) {
-			if (translation.object == object) {
-				return false;
-			}
-		}
-
+	static void PatchActorDisplayTrackTranslation(std::vector<PatchActorDisplayTranslation>& translations, NI::AVObject* object) {
 		translations.push_back({ object, object->worldTransform.translation });
-		return true;
 	}
 
 	static bool PatchActorDisplayGetRootRelativeTranslation(NI::AVObject* root, NI::AVObject* object, TES3::Vector3& out) {
@@ -1746,6 +1735,7 @@ namespace mwse::patch {
 		}
 
 		std::vector<NI::AVObject*> chain;
+		chain.reserve(64);
 		for (auto current = object; current && current != root; current = current->parentNode) {
 			chain.push_back(current);
 		}
@@ -1785,34 +1775,13 @@ namespace mwse::patch {
 		}
 	}
 
-	static bool PatchActorDisplayGetRelativeTranslation(NI::AVObject* root, NI::AVObject* localRoot, const TES3::Vector3& localRootTranslation, NI::AVObject* object, TES3::Vector3& result) {
-		if (PatchActorDisplayGetRootRelativeTranslation(root, object, result)) {
-			return true;
-		}
-
-		TES3::Vector3 localRootRelativeTranslation;
-		if (PatchActorDisplayGetRootRelativeTranslation(localRoot, object, localRootRelativeTranslation)) {
-			result = localRootTranslation + localRootRelativeTranslation;
-			return true;
-		}
-
-		return false;
-	}
-
-	static void PatchActorDisplayTrackSubtreeTranslations(NI::AVObject* root, NI::AVObject* localRoot, const TES3::Vector3& localRootTranslation, NI::AVObject* object, const TES3::Vector3& origin, std::vector<PatchActorDisplayTranslation>& translations) {
+	static void PatchActorDisplayTrackSubtreeTranslations(NI::AVObject* object, const TES3::Vector3& displayTranslation, const TES3::Matrix33& displayRotation, float displayScale, std::vector<PatchActorDisplayTranslation>& translations) {
 		if (!object) {
 			return;
 		}
 
 		PatchActorDisplayTrackTranslation(translations, object);
-
-		TES3::Vector3 displayRelativeTranslation;
-		if (PatchActorDisplayGetRelativeTranslation(root, localRoot, localRootTranslation, object, displayRelativeTranslation)) {
-			object->worldTransform.translation = displayRelativeTranslation;
-		}
-		else {
-			object->worldTransform.translation = object->worldTransform.translation - origin;
-		}
+		object->worldTransform.translation = displayTranslation;
 
 		if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
 			return;
@@ -1820,7 +1789,24 @@ namespace mwse::patch {
 
 		auto node = static_cast<NI::Node*>(object);
 		for (auto& child : node->children) {
-			PatchActorDisplayTrackSubtreeTranslations(root, localRoot, localRootTranslation, child, origin, translations);
+			if (!child) {
+				continue;
+			}
+
+			const auto childDisplayTranslation = displayRotation * child->localTranslate * displayScale + displayTranslation;
+			auto childDisplayRotation = child->worldTransform.rotation;
+			auto childDisplayScale = child->worldTransform.scale;
+			if (child->localRotation) {
+				auto childLocalRotation = *child->localRotation;
+				if (child->isInstanceOfType(NI::RTTIStaticPtr::BSMirroredNode)) {
+					childLocalRotation = childLocalRotation * -1.0f;
+				}
+
+				childDisplayRotation = displayRotation * childLocalRotation;
+				childDisplayScale = displayScale * child->localScale;
+			}
+
+			PatchActorDisplayTrackSubtreeTranslations(child, childDisplayTranslation, childDisplayRotation, childDisplayScale, translations);
 		}
 	}
 
@@ -1829,8 +1815,12 @@ namespace mwse::patch {
 			return;
 		}
 
-		const auto localRootTranslation = object->worldTransform.translation - origin;
-		PatchActorDisplayTrackSubtreeTranslations(root, object, localRootTranslation, object, origin, translations);
+		TES3::Vector3 displayTranslation;
+		if (!PatchActorDisplayGetRootRelativeTranslation(root, object, displayTranslation)) {
+			displayTranslation = object->worldTransform.translation - origin;
+		}
+
+		PatchActorDisplayTrackSubtreeTranslations(object, displayTranslation, object->worldTransform.rotation, object->worldTransform.scale, translations);
 	}
 
 	static void PatchActorDisplayApplyShiftedView(NI::DX8Renderer* renderer, const TES3::Vector3& origin, D3DMATRIX& originalView) {
@@ -1886,6 +1876,7 @@ namespace mwse::patch {
 		}
 
 		std::vector<PatchActorDisplayTranslation> translations;
+		translations.reserve(64);
 		PatchActorDisplayTrackSubtreeTranslations(root, node, origin, translations);
 
 		PatchActorDisplayShiftActive = true;
