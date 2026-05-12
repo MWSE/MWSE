@@ -143,7 +143,7 @@ namespace se {
 		size_t count; // 0x8
 
 		static void* operator new(size_t size) { return se::memory::_new(size); }
-		static void operator delete(void* block) { se::memory::_delete(size); }
+		static void operator delete(void* block) { se::memory::_delete(block); }
 
 		Deque() {
 			unknown_0x0 = true;

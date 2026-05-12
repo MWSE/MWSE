@@ -60,7 +60,7 @@
 
 // NI::AVObject
 #define SE_NI_AVOBJECT_FNADDR_ATTACHPROPERTY 0x44CF00
-#define SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE 0x5DADD0
+#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x5DADD0
 #define SE_NI_AVOBJECT_FNADDR_SETFLAG 0x44A130
 #define SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS 0x5DBAD0
 #define SE_NI_AVOBJECT_FNADDR_SETMODELSPACEABV 0x5DB730
@@ -94,7 +94,7 @@
 // NI::PointLight vTable address
 #define SE_NI_POINTLIGHT_VTBL 0x675DCC
 
-// NI::KeyframeData (CS.exe address not yet known)
+// NI::KeyframeData
 #define SE_NI_KEYFRAMEDATA_FNADDR_REPLACESCALEDATA 0x6035C0
 
 // NI::SortAdjustNode vTable address
@@ -107,11 +107,16 @@
 #define SE_NI_PIXELFORMAT_FNADDR_CTOR_FROMBUMPLUMA 0x5E8940
 #define SE_NI_PIXELFORMAT_FNADDR_GETD3DFORMAT 0x594B10
 
-// NI::Sequence (CS.exe address not yet known)
+// NI::Sequence
 #define SE_NI_SEQUENCE_FNADDR_DTOR 0x605C20
 
-// NI::TimeController vTable template (CS.exe address not yet known)
-#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x751200
+// NI::TimeController vTable template. Discovered via decompile of
+// NI::TimeController::ctor at 0x5E9030, which writes &vtbl_sg_NiTimeController
+// (0x67AE38) into this->vtbl. Verified by reading the full 0x48-byte struct:
+// all 18 slots point into the CS code segment, and the loadBinary/linkObject/
+// registerStreamables/saveBinary/isEqual/start/stop/setTarget/computeScaledTime
+// slots match the individual SE_NI_TIMECONTROLLER_FNADDR_* values below.
+#define SE_NI_TIMECONTROLLER_VTBL_TEMPLATE 0x67AE38
 
 // NI::AnimationKey global table (CS.exe address not yet known)
 #define SE_NI_ANIMATIONKEY_GLOBADDR_FILLDERIVEDVALUESFUNCTIONS 0x0
@@ -147,15 +152,10 @@
 #define SE_NI_SOURCETEXTURE_FNADDR_CREATEFROMPIXELDATA 0x5CFC20
 #define SE_NI_SOURCETEXTURE_GLOBADDR_BPRELOAD 0x6CB0B8
 
-// NI::UVController engine fn (CS.exe address not yet known)
+// NI::UVController engine fn — body is NiUVController::CopyMembers
 #define SE_NI_UVCONTROLLER_FNADDR_COPY 0x61AF90
 
-// NI::AVObject engine fn — value cross-referenced from the older lowercase
-// alias SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE (line 54), which is a
-// case-typo carried over for backwards compat.
-#define SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE 0x5DADD0
-
-// NI::TimeController engine functions (CS.exe addresses not yet known)
+// NI::TimeController engine functions
 #define SE_NI_TIMECONTROLLER_FNADDR_CTOR 0x5E9030
 // Actual dtor body — extracted from NI::TimeController::deleting_dtor at
 // 0x5E90E0 which calls sub_5E9100. SharedSE expects single-arg signature.
@@ -171,7 +171,7 @@
 #define SE_NI_TIMECONTROLLER_FNADDR_SETTARGET 0x5E9740
 #define SE_NI_TIMECONTROLLER_FNADDR_COMPUTESCALEDTIME 0x5E9200
 
-// NI::KeyframeManager (CS.exe addresses not yet known)
+// NI::KeyframeManager
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_ACTIVATESEQUENCE 0x607FD0
 #define SE_NI_KEYFRAMEMANAGER_FNADDR_DEACTIVATESEQUENCE 0x6083B0
 
@@ -231,7 +231,7 @@
 #define SE_NI_SKININSTANCE_FNADDR_DEFORM 0x5F08A0
 
 // NI::TriShape
-#define SE_NI_TRISHAPE_FNADDR_CTOR 0x05D6D10
+#define SE_NI_TRISHAPE_FNADDR_CTOR 0x5D6D10
 
 // NI::TriShapeData
 #define SE_NI_TRISHAPEDATA_FNADDR_CREATE 0x5D6260
@@ -250,8 +250,13 @@
 #define SE_NI_STRINGEXTRADATA_FNADDR_CTOR 0x5D25F0
 #define SE_NI_STRINGEXTRADATA_FNADDR_DTOR 0x5D2D80
 
-// NI::Texture
-#define SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS 0x6FC710
+// NI::Texture::FormatPrefs default-prefs global (the macro name says FNADDR
+// but this is actually a data address — three contiguous dwords for
+// pixelLayout/mipmapFlags/alphaFormat). Found via the small sibling init
+// stub sub_5CFAB0 immediately preceding NiSourceTexture::CreateFromPath
+// at 0x5CFAD0, which writes {5, 2, 3} to dword_6D775C/60/64 — identical
+// layout to MW's sub_6DE7D0 + NiFormatPrefs_Default at 0x7DE3B4.
+#define SE_NI_TEXTURE_FNADDR_DEFAULT_PREFS 0x6D775C
 
 // NI::TimeController
 #define SE_NI_TIMECONTROLLER_FNADDR_COPY 0x5E97C0
@@ -291,7 +296,7 @@
 // NI::Bound
 #define SE_NI_BOUND_FNADDR_COMPUTEFROMDATA 0x5B13F0
 
-// NI::BoxBoundingVolume (CS.exe address not yet known)
+// NI::BoxBoundingVolume — engine fn is NiBoxBV::ctor_args
 #define SE_NI_BOXBOUNDINGVOLUME_FNADDR_CREATE 0x57B040
 
 // NI::TriBasedGeometry

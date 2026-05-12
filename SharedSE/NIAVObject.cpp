@@ -191,8 +191,8 @@ namespace NI {
 	}
 
 	Pointer<Property> AVObject::detachPropertyByType(PropertyType type) {
-#if defined(SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE) && SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE > 0
-		const auto NI_AVObject_detachPropertyByType = reinterpret_cast<Pointer<Property>* (__thiscall*)(AVObject*, Pointer<Property>*, PropertyType)>(SE_NI_AVObject_FNADDR_DETACHPROPERTYBYTYPE);
+#if defined(SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE) && SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE > 0
+		const auto NI_AVObject_detachPropertyByType = reinterpret_cast<Pointer<Property>* (__thiscall*)(AVObject*, Pointer<Property>*, PropertyType)>(SE_NI_AVOBJECT_FNADDR_DETACHPROPERTYBYTYPE);
 
 		Pointer<Property> prop;
 		NI_AVObject_detachPropertyByType(this, &prop, type);

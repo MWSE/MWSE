@@ -1,6 +1,6 @@
 #include "CodePatchUtil.h"
 
-#if (defined(SE_IS_MWSE) && SE_IS_MWSE == 1) || defined(SE_IS_MGE) && SE_IS_MGE == 1
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 
 namespace mwse::mcp {
 	FeatureStoreMap_t featureStore;
