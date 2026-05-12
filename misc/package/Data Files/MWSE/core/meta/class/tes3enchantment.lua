@@ -5,7 +5,7 @@
 
 --- An enchantment game object.
 --- @class tes3enchantment : tes3object, tes3baseObject
---- @field autoCalc number Determines if the charge cost for the enchantment is autocalculated.
+--- @field autoCalc boolean Determines if the charge cost for the enchantment is autocalculated.
 --- @field castType tes3.enchantmentType The enchantment's cast type. Maps to [`tes3.enchantmentType`](https://mwse.github.io/MWSE/references/enchantment-types/) constants.
 --- @field chargeCost number The cost of using the enchantment.
 --- @field effects tes3effect[] *Read-only*. An array-style table of the [`tes3effect`](https://mwse.github.io/MWSE/types/tes3effect/) data on the object.
