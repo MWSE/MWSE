@@ -36,3 +36,7 @@ namespace NI {
 	void __cdecl TransformVertices(Point3* vertices, unsigned short vertexCount, const Transform* transform);
 	void __cdecl TransformVertices(Point3* out_vertices, unsigned short vertexCount, const Point3* in_vertices, const Transform* transform);
 }
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::Geometry)
+#endif
