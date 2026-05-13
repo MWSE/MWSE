@@ -38,5 +38,8 @@ namespace mwse::lua {
 		// Effect light helpers.
 		usertypeDefinition["setLightEffectDiffuseColor"] = &TES3::MobileObject::setLightEffectDiffuseCol_lua;
 		usertypeDefinition["setLightEffectFalloff"] = &TES3::MobileObject::setLightEffectFalloff;
+
+		// Support for checking managed lua objects.
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 }

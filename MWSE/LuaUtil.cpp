@@ -93,6 +93,45 @@
 #include "MWSEConfig.h"
 
 namespace mwse::lua {
+	void* getUserdataPointerSlot(lua_State* L, int index) {
+		if (lua_objlen(L, index) < sizeof(void*)) {
+			return nullptr;
+		}
+
+		void* userdata = lua_touserdata(L, index);
+		if (userdata == nullptr) {
+			return nullptr;
+		}
+
+		return sol::detail::align_usertype_pointer(userdata);
+	}
+
+	void clearUserdataPointer(sol::object object) {
+		if (!object.valid() || object.get_type() != sol::type::userdata) {
+			return;
+		}
+
+		lua_State* L = object.lua_state();
+		object.push();
+		if (void* pointerSlot = getUserdataPointerSlot(L, -1)) {
+			*static_cast<void**>(pointerSlot) = nullptr;
+		}
+		lua_pop(L, 1);
+	}
+
+	bool isUserdataPointerValid(sol::object object) {
+		if (!object.valid() || object.get_type() != sol::type::userdata) {
+			return false;
+		}
+
+		lua_State* L = object.lua_state();
+		object.push();
+		const auto pointerSlot = getUserdataPointerSlot(L, -1);
+		const bool valid = pointerSlot && *static_cast<void**>(pointerSlot) != nullptr;
+		lua_pop(L, 1);
+		return valid;
+	}
+
 	template <>
 	std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue) {
 		auto value = std::move(defaultValue);

@@ -105,6 +105,12 @@ event.register(tes3.event.magicEffectAdded, onMagicEffectAdded)
 local function onMagicEffectRemoved(e)
 	log:info("Magic effect %s removed on %s", e.effect, e.target)
 
+	local activeRefEffects = activeEffects[e.target]
+	if (activeRefEffects and activeRefEffects[e.effect.id]) then
+		log:error("Removing effect '%s' from reference '%s' before it was deactivated.", e.effect, e.target)
+		os.exit()
+	end
+
 	local storage = getPersistentTestStorage()
 
 	local refEffects = storage[e.target.id]

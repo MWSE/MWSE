@@ -83,6 +83,9 @@ namespace mwse::lua {
 	TES3::UI::UI_ID getUIIDFromObject(sol::object object);
 	TES3::UI::UI_ID getOptionalUIID(sol::optional<sol::table> maybeParams, const char* key);
 
+	void clearUserdataPointer(sol::object object);
+	bool isUserdataPointerValid(sol::object object);
+
 	bool setVectorFromLua(NI::Point2&, sol::stack_object);
 	bool setVectorFromLua(NI::Point3&, sol::stack_object);
 
