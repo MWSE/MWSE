@@ -921,13 +921,13 @@ namespace TES3 {
 		se::memory::genCallEnforced(0x463BD5, 0x518460, reinterpret_cast<DWORD>(spellEffectEvent));
 
 		// Trigger activation/deactivation events from per-reference state transitions in MagicSourceInstance::process.
-		mwse::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
+		se::memory::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
 
 		// Trigger ended events when stored MagicEffectInstance nodes are removed.
-		mwse::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectRemovedEvent), 0xA);
+		se::memory::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectRemovedEvent), 0xA);
 
 		// Trigger activation events for active effects restored while loading a save.
-		mwse::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectActivatedEvent), 0xA);
+		se::memory::genJumpUnprotected(0x4548E4, reinterpret_cast<DWORD>(PatchLoadedMagicEffectActivatedEvent), 0xA);
 
 		// Trigger any events on spell collision.
 		se::memory::genCallEnforced(0x573775, 0x5175C0, (DWORD)OnSpellProjectileHit);

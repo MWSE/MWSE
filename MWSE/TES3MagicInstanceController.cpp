@@ -39,7 +39,7 @@ namespace TES3 {
 	}
 
 	unsigned int MagicInstanceController::getSerialCount() {
-		return mwse::ExternalGlobal<unsigned int, 0x7CF0FC>::get();
+		return se::memory::ExternalGlobal<unsigned int, 0x7CF0FC>::get();
 	}
 
 	const auto TES3_UI_updateActiveMagicEffectIcons = reinterpret_cast<void(__cdecl*)()>(0x5E2480);
