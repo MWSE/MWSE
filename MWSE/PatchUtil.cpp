@@ -20,6 +20,7 @@
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
 #include "TES3ItemData.h"
+#include "TES3Land.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
 #include "TES3MagicEffectController.h"
@@ -1858,6 +1859,7 @@ namespace mwse::patch {
 	}
 
 	const auto NiNode_Display = reinterpret_cast<void(__thiscall*)(NI::Node*, NI::Camera*)>(0x6C9190);
+	const auto DataHandler_LandscapeData_LoadLandAndUpdateGeom = reinterpret_cast<void(__thiscall*)(void*, TES3::Land*)>(0x4133A0);
 	const auto NiAlphaAccumulator_FinishAccumulating = reinterpret_cast<void(__thiscall*)(NI::Accumulator*)>(0x6CF0E0);
 	const auto NiAlphaAccumulator_RegisterObject = reinterpret_cast<bool(__thiscall*)(NI::Accumulator*, NI::Geometry*)>(0x429B90);
 	const auto NiRenderer_RenderFromClusterAccumulator = reinterpret_cast<void(__thiscall*)(NI::Renderer*, NI::Camera*, NI::AVObject*)>(0x6F51D0);
@@ -1936,25 +1938,6 @@ namespace mwse::patch {
 		PatchActorDisplayShiftActive = false;
 	}
 
-	static bool PatchLandscapeDisplayCanShift(NI::Node* node) {
-		const auto dataHandler = TES3::DataHandler::get();
-		return dataHandler && !dataHandler->currentInteriorCell && node == dataHandler->worldLandscapeRoot;
-	}
-
-	static NI::Point3 PatchLandscapeDisplayGetOrigin() {
-		const auto dataHandler = TES3::DataHandler::get();
-		if (!dataHandler) {
-			return NI::Point3::ZEROES;
-		}
-
-		constexpr auto exteriorGridWidth = static_cast<float>(TES3::Cell::exteriorGridWidth);
-		return NI::Point3(
-			static_cast<float>(dataHandler->centralGridX) * exteriorGridWidth,
-			static_cast<float>(dataHandler->centralGridY) * exteriorGridWidth,
-			0.0f
-		);
-	}
-
 	static void PatchActorDisplayTrackAlphaObject(NI::AVObject* object) {
 		if (!PatchActorDisplayShiftActive || !object) {
 			return;
@@ -2026,14 +2009,71 @@ namespace mwse::patch {
 		return result;
 	}
 
-	static void __fastcall PatchNiNodeDisplay(NI::Node* node, DWORD _EDX_, NI::Camera* camera) {
-		if (!Configuration::AntiJitterFix || !node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
-			NiNode_Display(node, camera);
+	static void PatchLandscapeDisplayOverlapPatchGeometry(NI::TriShape* shape, int patchIndex) {
+		const auto data = shape ? shape->getModelData().get() : nullptr;
+		if (!data || !data->vertex) {
 			return;
 		}
 
-		if (PatchLandscapeDisplayCanShift(node)) {
-			PatchActorDisplayShiftedSubtreeDisplay(node, camera, PatchLandscapeDisplayGetOrigin(), 512);
+		constexpr float overlap = 2.0f;
+		constexpr float patchHalfSize = 1024.0f;
+		constexpr float edgeTolerance = 1.0f;
+		const auto patchX = patchIndex & 3;
+		const auto patchY = patchIndex >> 2;
+
+		for (unsigned short i = 0; i < data->vertexCount; ++i) {
+			auto& vertex = data->vertex[i];
+
+			if (patchX == 0 && vertex.x <= -patchHalfSize + edgeTolerance) {
+				vertex.x -= overlap;
+			}
+			else if (patchX == 3 && vertex.x >= patchHalfSize - edgeTolerance) {
+				vertex.x += overlap;
+			}
+
+			if (patchY == 0 && vertex.y <= -patchHalfSize + edgeTolerance) {
+				vertex.y -= overlap;
+			}
+			else if (patchY == 3 && vertex.y >= patchHalfSize - edgeTolerance) {
+				vertex.y += overlap;
+			}
+		}
+
+		data->updateModelBound();
+		data->markAsChanged();
+		shape->updateWorldVertices();
+		shape->updateWorldBound();
+	}
+
+	static void PatchLandscapeDisplayOverlapCellEdges(TES3::Land* land) {
+		const auto root = land ? land->sceneNode.get() : nullptr;
+		if (!Configuration::AntiJitterFix || !root) {
+			return;
+		}
+
+		for (size_t patchIndex = 0; patchIndex < root->children.size(); ++patchIndex) {
+			const auto patchNode = static_cast<NI::Node*>(root->children[patchIndex].get());
+			if (!patchNode || !patchNode->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+				continue;
+			}
+
+			for (auto& child : patchNode->children) {
+				const auto shape = static_cast<NI::TriShape*>(child.get());
+				if (shape && shape->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
+					PatchLandscapeDisplayOverlapPatchGeometry(shape, static_cast<int>(patchIndex));
+				}
+			}
+		}
+	}
+
+	static void __fastcall PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom(void* landscapeData, DWORD _EDX_, TES3::Land* land) {
+		DataHandler_LandscapeData_LoadLandAndUpdateGeom(landscapeData, land);
+		PatchLandscapeDisplayOverlapCellEdges(land);
+	}
+
+	static void __fastcall PatchNiNodeDisplay(NI::Node* node, DWORD _EDX_, NI::Camera* camera) {
+		if (!Configuration::AntiJitterFix || !node || !camera || !camera->renderer || PatchActorDisplayShiftActive) {
+			NiNode_Display(node, camera);
 			return;
 		}
 
@@ -2150,6 +2190,11 @@ namespace mwse::patch {
 		overrideVirtualTableEnforced(NI::VirtualTableAddress::NiDX8Renderer, offsetof(NI::Renderer_vTable, renderTristrips), 0x6ACFC0, reinterpret_cast<DWORD>(PatchNiDX8RendererRenderTriStrips));
 		genCallEnforced(0x6AED5B, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
 		genCallEnforced(0x6AF0A4, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
+		genCallEnforced(0x412A3D, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
+		genCallEnforced(0x48360A, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
+		genCallEnforced(0x485923, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
+		genCallEnforced(0x48F136, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
+		genCallEnforced(0x48FEF8, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
 
 		// Patch: Decrease MO2 load times. Somehow...
 		writeDoubleWordUnprotected(0x7462F4, reinterpret_cast<DWORD>(&_stat32));
