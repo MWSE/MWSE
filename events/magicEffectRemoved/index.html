@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../magicCasted/">
+        <link rel="prev" href="../magicEffectDeactivated/">
       
       
         <link rel="next" href="../magicEffectsResolved/">
@@ -18012,6 +18012,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -20948,6 +20954,90 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../magicEffectActivated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    magicEffectActivated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../magicEffectAdded/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    magicEffectAdded
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../magicEffectDeactivated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    magicEffectDeactivated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -21026,6 +21116,17 @@
     <span class="md-ellipsis">
       
         Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related events
       
     </span>
   </a>
@@ -23252,6 +23353,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#related-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related events
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -23280,12 +23392,8 @@
     More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-<p>This event triggers when a magic effect has been removed from an actor. This includes:</p>
-<ul>
-<li>magic effects that have been resisted or are part of abilities like racial passives and diseases</li>
-<li>magic effects that are removed when an actor is unloaded</li>
-</ul>
-<p>This event doesn't trigger when an effect expires naturally.</p>
+<p>This event triggers when a magic source removes an active instance for one of its effects.</p>
+<p>For a magic source with multiple effects, this event triggers once for each effect instance that is removed. If the same source effect is active on multiple references, <code>magicEffectAdded</code>, <code>magicEffectActivated</code>, <code>magicEffectDeactivated</code>, and <code>magicEffectRemoved</code> can each trigger once for each affected reference.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">--- @param e magicEffectRemovedEventData</span>
 <span class="kd">local</span> <span class="kr">function</span> <span class="nf">magicEffectRemovedCallback</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 <span class="kr">end</span>
@@ -23293,7 +23401,7 @@
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>This event can be filtered based on the <strong><code>reference</code></strong> event data.</p>
+<p>This event can be filtered based on the <strong><code>source</code></strong> event data.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -23301,36 +23409,34 @@
 </div>
 <h2 id="event-data">Event Data<a class="headerlink" href="#event-data" title="Permanent link">⚓︎</a></h2>
 <ul>
-<li><code>caster</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The caster of the magic source that contained the magic effect. Can be <code>nil</code>.</li>
+<li><code>caster</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The caster of the magic source. Can be <code>nil</code>.</li>
 <li><code>effect</code> (<a href="../../types/tes3effect/">tes3effect</a>): <em>Read-only</em>. The specific effect that triggered the event. This is equal to <code>e.source.effects[e.effectIndex]</code>. Can be <code>nil</code>.</li>
-<li><code>effectIndex</code> (number): <em>Read-only</em>. The index of the effect in the magic source's effects list.</li>
-<li><code>effectInstance</code> (<a href="../../types/tes3magicEffectInstance/">tes3magicEffectInstance</a>): <em>Read-only</em>. The effect instance of the effect.</li>
-<li><code>mobile</code> (<a href="../../types/tes3mobileActor/">tes3mobileActor</a>): <em>Read-only</em>. The mobile actor the magic effect is removed from.</li>
-<li><code>reference</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The reference of the mobile actor the magic effect is removed from.</li>
+<li><code>effectIndex</code> (integer): <em>Read-only</em>. The index of the effect in the magic source's effects list.</li>
+<li><code>effectInstance</code> (<a href="../../types/tes3magicEffectInstance/">tes3magicEffectInstance</a>): <em>Read-only</em>. The unique instance of the magic effect that caused the source effect to be removed.</li>
+<li><code>mobile</code> (<a href="../../types/tes3mobileActor/">tes3mobileActor</a>): <em>Read-only</em>. The mobile actor the magic effect is removed from. Use <code>target.mobile</code> instead.</li>
+<li><code>reference</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The reference of the mobile actor the magic effect is removed from. Use <code>target</code> instead.</li>
 <li><code>source</code> (<a href="../../types/tes3alchemy/">tes3alchemy</a>, <a href="../../types/tes3enchantment/">tes3enchantment</a>, <a href="../../types/tes3spell/">tes3spell</a>): <em>Read-only</em>. The magic source that contains the effect.</li>
 <li><code>sourceInstance</code> (<a href="../../types/tes3magicSourceInstance/">tes3magicSourceInstance</a>): <em>Read-only</em>. The unique instance of the magic source that contains the effect.</li>
-<li><code>target</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The target of the magic source that contained the magic effect. Can be <code>nil</code> if the target was unloaded.</li>
+<li><code>state</code> (<a href="../../references/spell-states/">tes3.spellState</a>): <em>Read-only</em>. The state of the magic effect instance when the event fired.</li>
+<li><code>target</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. The target of the magic effect instance that caused the source effect to be removed.</li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">⚓︎</a></h2>
 <div class="admonition example">
-<p class="admonition-title">Example: Show removed effect</p>
-<p>Show the name of the magic effect and spell/enchantment/alchemy that has been removed from the player.</p>
+<p class="admonition-title">Example: Show Removed Effect</p>
+<p>Show the magic effect and source names when an effect instance is removed on the player.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">local</span> <span class="kr">function</span> <span class="nf">onMagicEffectRemoved</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-    <span class="c1">-- Make sure we are only showing messages for effects that are applied to the player.</span>
-    <span class="kr">if</span> <span class="n">e</span><span class="p">.</span><span class="n">mobile</span> <span class="o">~=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">mobilePlayer</span> <span class="kr">then</span> <span class="kr">return</span> <span class="kr">end</span>
+    <span class="kr">if</span> <span class="n">e</span><span class="p">.</span><span class="n">target</span> <span class="o">~=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">player</span> <span class="kr">then</span> <span class="kr">return</span> <span class="kr">end</span>
 
-    <span class="c1">-- Get the name of the magic effect that has been removed.</span>
     <span class="kd">local</span> <span class="n">effectName</span> <span class="o">=</span> <span class="n">tes3</span><span class="p">.</span><span class="n">getMagicEffect</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">effect</span><span class="p">.</span><span class="n">id</span><span class="p">).</span><span class="n">name</span>
-
-    <span class="c1">-- Get the name of the spell/enchantment/alchemy this magic effect belongs to.</span>
     <span class="kd">local</span> <span class="n">sourceName</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">source</span><span class="p">.</span><span class="n">name</span>
 
-    <span class="c1">-- Show a message containing the effect and spell/enchantment/alchemy names to the player.</span>
-    <span class="n">tes3</span><span class="p">.</span><span class="n">messageBox</span><span class="p">(</span><span class="s2">&quot;Effect &#39;%s&#39; from &#39;%s&#39; has been removed.&quot;</span><span class="p">,</span> <span class="n">effectName</span><span class="p">,</span> <span class="n">sourceName</span><span class="p">)</span>
+    <span class="n">tes3</span><span class="p">.</span><span class="n">messageBox</span><span class="p">(</span><span class="s2">&quot;Effect &#39;%s&#39; from &#39;%s&#39; was removed.&quot;</span><span class="p">,</span> <span class="n">effectName</span><span class="p">,</span> <span class="n">sourceName</span><span class="p">)</span>
 <span class="kr">end</span>
 <span class="n">event</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">tes3</span><span class="p">.</span><span class="n">event</span><span class="p">.</span><span class="n">magicEffectRemoved</span><span class="p">,</span> <span class="n">onMagicEffectRemoved</span><span class="p">)</span>
 </code></pre></div>
 </div>
+<h2 id="related-events">Related events<a class="headerlink" href="#related-events" title="Permanent link">⚓︎</a></h2>
+<p><a class="md-button" href="../magicEffectActivated/">magicEffectActivated</a><a class="md-button" href="../magicEffectAdded/">magicEffectAdded</a><a class="md-button" href="../magicEffectDeactivated/">magicEffectDeactivated</a><a class="md-button" href="../spellTick/">spellTick</a></p>
 
 
 
@@ -23353,7 +23459,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="January 16, 2025 18:02:41 UTC">January 16, 2025 18:02:41</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="May 13, 2026 00:29:23 UTC">May 13, 2026 00:29:23</span>
   </span>
 
     
