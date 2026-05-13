@@ -1910,6 +1910,51 @@ namespace mwse::patch {
 		NiDX8LightManager_SetState(lightManager, effectState, texturingProperty, vertexColorProperty);
 	}
 
+	static void PatchActorDisplayShiftedSubtreeDisplay(NI::Node* node, NI::Camera* camera, const NI::Point3& origin, size_t reserveTranslations) {
+		auto renderer = static_cast<NI::DX8Renderer*>(camera->renderer.get());
+		if (!renderer || !renderer->d3dDevice) {
+			NiNode_Display(node, camera);
+			return;
+		}
+
+		std::vector<PatchActorDisplayTranslation> translations;
+		translations.reserve(reserveTranslations);
+		PatchActorDisplayTrackSubtreeTranslations(node, origin, translations);
+
+		PatchActorDisplayShiftActive = true;
+		PatchActorDisplayCurrentOrigin = origin;
+
+		D3DMATRIX originalView;
+		PatchActorDisplayApplyShiftedView(renderer, origin, originalView);
+		PatchActorDisplayRenderShiftScope renderShift(origin);
+		NiNode_Display(node, camera);
+		PatchActorDisplayRestoreView(renderer, originalView);
+		PatchActorDisplayRestoreTranslations(translations);
+		PatchActorDisplayRestoreLightRevisions();
+
+		PatchActorDisplayCurrentOrigin = NI::Point3::ZEROES;
+		PatchActorDisplayShiftActive = false;
+	}
+
+	static bool PatchLandscapeDisplayCanShift(NI::Node* node) {
+		const auto dataHandler = TES3::DataHandler::get();
+		return dataHandler && !dataHandler->currentInteriorCell && node == dataHandler->worldLandscapeRoot;
+	}
+
+	static NI::Point3 PatchLandscapeDisplayGetOrigin() {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (!dataHandler) {
+			return NI::Point3::ZEROES;
+		}
+
+		constexpr auto exteriorGridWidth = static_cast<float>(TES3::Cell::exteriorGridWidth);
+		return NI::Point3(
+			static_cast<float>(dataHandler->centralGridX) * exteriorGridWidth,
+			static_cast<float>(dataHandler->centralGridY) * exteriorGridWidth,
+			0.0f
+		);
+	}
+
 	static void PatchActorDisplayTrackAlphaObject(NI::AVObject* object) {
 		if (!PatchActorDisplayShiftActive || !object) {
 			return;
@@ -1987,6 +2032,11 @@ namespace mwse::patch {
 			return;
 		}
 
+		if (PatchLandscapeDisplayCanShift(node)) {
+			PatchActorDisplayShiftedSubtreeDisplay(node, camera, PatchLandscapeDisplayGetOrigin(), 512);
+			return;
+		}
+
 		const auto reference = node->getTes3Reference(false);
 		if (!reference || !reference->getAttachedMobileActor()) {
 			NiNode_Display(node, camera);
@@ -2003,29 +2053,7 @@ namespace mwse::patch {
 		}
 
 		const auto origin = root->worldTransform.translation;
-		auto renderer = static_cast<NI::DX8Renderer*>(camera->renderer.get());
-		if (!renderer || !renderer->d3dDevice) {
-			NiNode_Display(node, camera);
-			return;
-		}
-
-		std::vector<PatchActorDisplayTranslation> translations;
-		translations.reserve(64);
-		PatchActorDisplayTrackSubtreeTranslations(node, origin, translations);
-
-		PatchActorDisplayShiftActive = true;
-		PatchActorDisplayCurrentOrigin = origin;
-
-		D3DMATRIX originalView;
-		PatchActorDisplayApplyShiftedView(renderer, origin, originalView);
-		PatchActorDisplayRenderShiftScope renderShift(origin);
-		NiNode_Display(node, camera);
-		PatchActorDisplayRestoreView(renderer, originalView);
-		PatchActorDisplayRestoreTranslations(translations);
-		PatchActorDisplayRestoreLightRevisions();
-
-		PatchActorDisplayCurrentOrigin = NI::Point3::ZEROES;
-		PatchActorDisplayShiftActive = false;
+		PatchActorDisplayShiftedSubtreeDisplay(node, camera, origin, 64);
 	}
 
 	//
