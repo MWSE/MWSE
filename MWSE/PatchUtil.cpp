@@ -1722,18 +1722,29 @@ namespace mwse::patch {
 
 	struct PatchActorDisplayAlphaObject {
 		NI::AVObject* object;
+		NI::AVObject* root;
 		NI::Point3 origin;
 	};
 
 	static bool PatchActorDisplayShiftActive = false;
 	static NI::Point3 PatchActorDisplayCurrentOrigin;
+	static NI::AVObject* PatchActorDisplayCurrentRoot = nullptr;
 	static bool PatchActorDisplayRenderShiftActive = false;
 	static NI::Point3 PatchActorDisplayRenderOrigin;
+	static bool PatchActorDisplayLightCacheDirty = false;
+	static std::vector<NI::AVObject*> PatchActorDisplayShiftedObjects;
 	static std::vector<PatchActorDisplayAlphaObject> PatchActorDisplayAlphaObjects;
 	static std::vector<PatchActorDisplayLightRevision> PatchActorDisplayLightRevisions;
 
 	static void PatchActorDisplayTrackTranslation(std::vector<PatchActorDisplayTranslation>& translations, NI::AVObject* object) {
 		translations.push_back({ object, object->worldTransform.translation });
+
+		for (const auto shiftedObject : PatchActorDisplayShiftedObjects) {
+			if (shiftedObject == object) {
+				return;
+			}
+		}
+		PatchActorDisplayShiftedObjects.push_back(object);
 	}
 
 	static void PatchActorDisplayTrackLightRevision(NI::DynamicEffect* effect) {
@@ -1866,6 +1877,7 @@ namespace mwse::patch {
 	const auto NiDX8Renderer_RenderShape = reinterpret_cast<void(__thiscall*)(NI::DX8Renderer*, NI::TriBasedGeometryData*, NI::SkinInstance*, NI::Transform*, NI::Bound*)>(0x6ACEF0);
 	const auto NiDX8Renderer_RenderTriStrips = reinterpret_cast<void(__thiscall*)(NI::DX8Renderer*, NI::TriBasedGeometryData*, NI::SkinInstance*, NI::Transform*, NI::Bound*)>(0x6ACFC0);
 	const auto NiDX8LightManager_SetState = reinterpret_cast<void(__thiscall*)(void*, void*, void*, void*)>(0x6BB200);
+	const auto NiDX8LightManager_LightEntry_Update = reinterpret_cast<bool(__thiscall*)(void*, NI::DynamicEffect*)>(0x6BAB00);
 
 	struct PatchActorDisplayRenderShiftScope {
 		bool previousActive;
@@ -1904,12 +1916,65 @@ namespace mwse::patch {
 		NiDX8Renderer_RenderTriStrips(renderer, geomData, skinInstance, transform, PatchActorDisplayGetShiftedRenderBound(worldBound, shiftedBound));
 	}
 
-	static void __fastcall PatchNiDX8LightManagerSetState(void* lightManager, DWORD _EDX_, void* effectState, void* texturingProperty, void* vertexColorProperty) {
-		if (PatchActorDisplayRenderShiftActive && lightManager) {
+	static void PatchNiDX8LightManagerInvalidateStateCache(void* lightManager) {
+		if (lightManager) {
 			*reinterpret_cast<void**>(static_cast<char*>(lightManager) + 0x38) = nullptr;
+		}
+	}
+
+	static void __fastcall PatchNiDX8LightManagerSetState(void* lightManager, DWORD _EDX_, void* effectState, void* texturingProperty, void* vertexColorProperty) {
+		if (PatchActorDisplayRenderShiftActive || PatchActorDisplayLightCacheDirty) {
+			PatchNiDX8LightManagerInvalidateStateCache(lightManager);
 		}
 
 		NiDX8LightManager_SetState(lightManager, effectState, texturingProperty, vertexColorProperty);
+
+		if (PatchActorDisplayRenderShiftActive) {
+			PatchNiDX8LightManagerInvalidateStateCache(lightManager);
+			PatchActorDisplayLightCacheDirty = true;
+		}
+		else if (PatchActorDisplayLightCacheDirty) {
+			PatchActorDisplayLightCacheDirty = false;
+		}
+	}
+
+	static bool PatchActorDisplayIsObjectShifted(NI::AVObject* object) {
+		for (const auto shiftedObject : PatchActorDisplayShiftedObjects) {
+			if (shiftedObject == object) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	static void PatchActorDisplayShiftLightEntryPosition(void* lightEntry, NI::DynamicEffect* light) {
+		if (!PatchActorDisplayRenderShiftActive || !lightEntry || !light || PatchActorDisplayIsObjectShifted(light)) {
+			return;
+		}
+
+		const auto type = light->getType();
+		if (type != NI::DynamicEffect::TYPE_POINT_LIGHT && type != NI::DynamicEffect::TYPE_SPOT_LIGHT) {
+			return;
+		}
+
+		auto position = reinterpret_cast<float*>(static_cast<char*>(lightEntry) + 0x34);
+		position[0] -= PatchActorDisplayRenderOrigin.x;
+		position[1] -= PatchActorDisplayRenderOrigin.y;
+		position[2] -= PatchActorDisplayRenderOrigin.z;
+	}
+
+	static bool __fastcall PatchNiDX8LightManagerLightEntryUpdate(void* lightEntry, DWORD _EDX_, NI::DynamicEffect* light) {
+		if (PatchActorDisplayRenderShiftActive && lightEntry && light) {
+			*reinterpret_cast<unsigned int*>(static_cast<char*>(lightEntry) + 0x68) = light->revisionId - 1;
+		}
+
+		const auto result = NiDX8LightManager_LightEntry_Update(lightEntry, light);
+		if (result) {
+			PatchActorDisplayShiftLightEntryPosition(lightEntry, light);
+		}
+
+		return result;
 	}
 
 	static void PatchActorDisplayShiftedSubtreeDisplay(NI::Node* node, NI::Camera* camera, const NI::Point3& origin, size_t reserveTranslations) {
@@ -1921,10 +1986,12 @@ namespace mwse::patch {
 
 		std::vector<PatchActorDisplayTranslation> translations;
 		translations.reserve(reserveTranslations);
+		PatchActorDisplayShiftedObjects.clear();
 		PatchActorDisplayTrackSubtreeTranslations(node, origin, translations);
 
 		PatchActorDisplayShiftActive = true;
 		PatchActorDisplayCurrentOrigin = origin;
+		PatchActorDisplayCurrentRoot = node;
 
 		D3DMATRIX originalView;
 		PatchActorDisplayApplyShiftedView(renderer, origin, originalView);
@@ -1933,7 +2000,9 @@ namespace mwse::patch {
 		PatchActorDisplayRestoreView(renderer, originalView);
 		PatchActorDisplayRestoreTranslations(translations);
 		PatchActorDisplayRestoreLightRevisions();
+		PatchActorDisplayShiftedObjects.clear();
 
+		PatchActorDisplayCurrentRoot = nullptr;
 		PatchActorDisplayCurrentOrigin = NI::Point3::ZEROES;
 		PatchActorDisplayShiftActive = false;
 	}
@@ -1949,7 +2018,7 @@ namespace mwse::patch {
 			}
 		}
 
-		PatchActorDisplayAlphaObjects.push_back({ object, PatchActorDisplayCurrentOrigin });
+		PatchActorDisplayAlphaObjects.push_back({ object, PatchActorDisplayCurrentRoot, PatchActorDisplayCurrentOrigin });
 	}
 
 	static const PatchActorDisplayAlphaObject* PatchActorDisplayFindAlphaObject(NI::AVObject* object) {
@@ -1976,10 +2045,16 @@ namespace mwse::patch {
 		}
 
 		std::vector<PatchActorDisplayTranslation> translations;
-		translations.reserve(4);
-		PatchActorDisplayTrackTranslation(translations, object);
-		object->worldTransform.translation = object->worldTransform.translation - alphaObject->origin;
-		PatchActorDisplayTrackParentDynamicEffects(object, alphaObject->origin, translations);
+		translations.reserve(alphaObject->root ? 64 : 4);
+		PatchActorDisplayShiftedObjects.clear();
+		if (alphaObject->root) {
+			PatchActorDisplayTrackSubtreeTranslations(alphaObject->root, alphaObject->origin, translations);
+		}
+		else {
+			PatchActorDisplayTrackTranslation(translations, object);
+			object->worldTransform.translation = object->worldTransform.translation - alphaObject->origin;
+			PatchActorDisplayTrackParentDynamicEffects(object, alphaObject->origin, translations);
+		}
 
 		D3DMATRIX originalView;
 		PatchActorDisplayApplyShiftedView(dx8Renderer, alphaObject->origin, originalView);
@@ -1989,6 +2064,7 @@ namespace mwse::patch {
 
 		PatchActorDisplayRestoreTranslations(translations);
 		PatchActorDisplayRestoreLightRevisions();
+		PatchActorDisplayShiftedObjects.clear();
 	}
 
 	static void __fastcall PatchNiAlphaAccumulatorFinishAccumulating(NI::Accumulator* accumulator, DWORD _EDX_) {
@@ -2188,8 +2264,13 @@ namespace mwse::patch {
 		genCallEnforced(0x6CF16C, 0x6F51D0, reinterpret_cast<DWORD>(PatchNiRendererRenderFromClusterAccumulator));
 		overrideVirtualTableEnforced(NI::VirtualTableAddress::NiDX8Renderer, offsetof(NI::Renderer_vTable, renderShape), 0x6ACEF0, reinterpret_cast<DWORD>(PatchNiDX8RendererRenderShape));
 		overrideVirtualTableEnforced(NI::VirtualTableAddress::NiDX8Renderer, offsetof(NI::Renderer_vTable, renderTristrips), 0x6ACFC0, reinterpret_cast<DWORD>(PatchNiDX8RendererRenderTriStrips));
+		genCallEnforced(0x6AD204, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
+		genCallEnforced(0x6ADBE8, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
+		genCallEnforced(0x6AE22E, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
 		genCallEnforced(0x6AED5B, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
 		genCallEnforced(0x6AF0A4, 0x6BB200, reinterpret_cast<DWORD>(PatchNiDX8LightManagerSetState));
+		genCallEnforced(0x6BB91A, 0x6BAB00, reinterpret_cast<DWORD>(PatchNiDX8LightManagerLightEntryUpdate));
+		genCallEnforced(0x6BB968, 0x6BAB00, reinterpret_cast<DWORD>(PatchNiDX8LightManagerLightEntryUpdate));
 		genCallEnforced(0x412A3D, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
 		genCallEnforced(0x48360A, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
 		genCallEnforced(0x485923, 0x4133A0, reinterpret_cast<DWORD>(PatchDataHandlerLandscapeDataLoadLandAndUpdateGeom));
