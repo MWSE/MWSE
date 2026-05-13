@@ -3,6 +3,8 @@
 #include "ExceptionUtil.h"
 
 namespace NI {
+	const Quaternion Quaternion::IDENTITY = { 1.0f, 0.0f, 0.0f, 0.0f };
+
 	Quaternion::Quaternion() :
 		w(0.0f),
 		x(0.0f),
@@ -71,8 +73,9 @@ namespace NI {
 	}
 
 	Quaternion Quaternion::exp() const {
-		Quaternion result;
 #if defined(SE_NI_QUATERNION_FNADDR_EXP) && SE_NI_QUATERNION_FNADDR_EXP > 0
+		const auto NI_Quaternion_Exp = reinterpret_cast<Quaternion*(__cdecl*)(Quaternion*, const Quaternion*)>(SE_NI_QUATERNION_FNADDR_EXP);
+		Quaternion result;
 		NI_Quaternion_Exp(&result, this);
 		return result;
 #else
@@ -82,6 +85,7 @@ namespace NI {
 
 	Quaternion Quaternion::log() const {
 #if defined(SE_NI_QUATERNION_FNADDR_LOG) && SE_NI_QUATERNION_FNADDR_LOG > 0
+		const auto NI_Quaternion_Log = reinterpret_cast<Quaternion*(__cdecl*)(Quaternion*, const Quaternion*)>(SE_NI_QUATERNION_FNADDR_LOG);
 		Quaternion result;
 		NI_Quaternion_Log(&result, this);
 		return result;
@@ -186,9 +190,9 @@ namespace NI {
 		return slerp(to, float(t));
 	}
 
-	void Quaternion::fromAngleAxis(float angle, const NI::Vector3* axis) {
+	void Quaternion::fromAngleAxis(float angle, const NI::Point3* axis) {
 #if defined(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS) && SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS > 0
-		const auto NI_Quaternion_FromAngleAxis = reinterpret_cast<void(__thiscall*)(Quaternion*, float angle, const NI::Vector3 * axis)>(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS);
+		const auto NI_Quaternion_FromAngleAxis = reinterpret_cast<void(__thiscall*)(Quaternion*, float angle, const NI::Point3 * axis)>(SE_NI_QUATERNION_FNADDR_FROMANGLEAXIS);
 
 		NI_Quaternion_FromAngleAxis(this, angle, axis);
 
@@ -199,12 +203,12 @@ namespace NI {
 #endif
 	}
 
-	std::tuple<float, NI::Vector3> Quaternion::toAngleAxis() const {
+	std::tuple<float, NI::Point3> Quaternion::toAngleAxis() const {
 #if defined(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS) && SE_NI_QUATERNION_FNADDR_TOANGLEAXIS > 0
-		const auto NI_Quaternion_ToAngleAxis = reinterpret_cast<void(__thiscall*)(const Quaternion*, float* angle, const NI::Vector3 * axis)>(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS);
+		const auto NI_Quaternion_ToAngleAxis = reinterpret_cast<void(__thiscall*)(const Quaternion*, float* angle, const NI::Point3 * axis)>(SE_NI_QUATERNION_FNADDR_TOANGLEAXIS);
 
 		float angle;
-		NI::Vector3 axis;
+		NI::Point3 axis;
 		NI_Quaternion_ToAngleAxis(this, &angle, &axis);
 		return std::make_tuple(angle, axis);
 #else
@@ -226,6 +230,8 @@ namespace NI {
 	}
 
 	NI::Matrix33 Quaternion::toRotation() const {
-		return NI::Matrix33(*this);
+		NI::Matrix33 result;
+		result.fromQuaternion(this);
+		return result;
 	}
 }

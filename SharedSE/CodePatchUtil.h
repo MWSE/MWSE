@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+
 namespace mwse::mcp {
 	namespace feature {
 		enum Feature : long {
@@ -220,3 +222,5 @@ namespace mwse::mcp {
 	// Returns true if MWSE was able to parse features.
 	bool hasFeaturesFound();
 }
+
+#endif // SE_IS_MWSE

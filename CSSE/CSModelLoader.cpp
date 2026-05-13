@@ -17,7 +17,7 @@ namespace se::cs {
 	}
 
 	ModelLoader::NifEntry* ModelLoader::getNifEntry(NI::AVObject* nif) const {
-		for (auto b = 0; b < NIFs->bucketCount; ++b) {
+		for (auto b = 0u; b < NIFs->bucketCount; ++b) {
 			for (auto e = NIFs->buckets[b]; e; e = e->nextNode) {
 				if (e->value->nif == nif) {
 					return e->value;

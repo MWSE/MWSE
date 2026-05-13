@@ -12,8 +12,10 @@ namespace NI {
 			Node* next;
 			T data;
 
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 			static void* operator new(size_t size) { return se::memory::_new(size); }
-			static void operator delete(void* block) { return se::memory::_delete(block); }
+			static void operator delete(void* block) { se::memory::_delete(block); }
+#endif
 
 			Node(const Node&) = delete;
 
@@ -34,6 +36,36 @@ namespace NI {
 				}
 				next = nullptr;
 			}
+		};
+
+		//
+		// Helper class to use RTTI preservation of an iterator.
+		//
+
+		class IteratorPreserver {
+			friend class IteratedList;
+		public:
+			IteratorPreserver(IteratedList<T>* parent) :
+				m_Parent(parent),
+				m_PreviousCurrent(parent->current)
+			{
+
+			}
+
+			IteratorPreserver(const IteratorPreserver& other) {
+				m_Parent = other.m_Parent;
+				m_PreviousCurrent = other.m_PreviousCurrent;
+			}
+
+			~IteratorPreserver() {
+				if (m_Parent) {
+					m_Parent->current = m_PreviousCurrent;
+				}
+			}
+
+		protected:
+			IteratedList<T>* m_Parent;
+			Node* m_PreviousCurrent;
 		};
 
 		//
@@ -163,10 +195,8 @@ namespace NI {
 		Node* tail;
 		Node* current;
 
-#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-		static void* operator new(size_t size) { return reinterpret_cast<void* (__cdecl*)(size_t)>(0x727692)(size); }
-		static void operator delete(void* block) { reinterpret_cast<void(__cdecl*)(void*)>(0x727530)(block); }
-#endif
+		static void* operator new(size_t size) { return se::memory::_new(size); }
+		static void operator delete(void* block) { se::memory::_delete(block); }
 
 		IteratedList() {
 			virtualTable = nullptr;
@@ -305,6 +335,13 @@ namespace NI {
 		Node* cached_next() {
 			current = current->next;
 			return current;
+		}
+
+		// Creates a class that stores the iterator's current state.
+		// When the preserver destructs, the "current" iterator state is restored.
+		// This should only really be used if doing a managed/cached loop on the list that is otherwise const (no elements added/removed).
+		IteratorPreserver makeIteratorPreserver() {
+			return IteratorPreserver(this);
 		}
 
 	};

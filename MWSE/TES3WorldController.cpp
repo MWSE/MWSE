@@ -16,6 +16,7 @@
 
 #include "CodePatchUtil.h"
 #include "MemoryUtil.h"
+#include "MGEApi.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -160,7 +161,7 @@ namespace TES3 {
 
 		// If it isn't in the collection, create a new node and add it.
 		if (node == nullptr) {
-			node = mwse::tes3::_new<KillCounter::Node>();
+			node = se::memory::_new<KillCounter::Node>();
 			node->count = 0;
 			node->actor = actor;
 			killedActors->push_back(node);
@@ -221,7 +222,7 @@ namespace TES3 {
 
 		// If it isn't in the collection, create a new node and add it.
 		if (node == nullptr) {
-			node = mwse::tes3::_new<KillCounter::Node>();
+			node = se::memory::_new<KillCounter::Node>();
 			node->count = 0;
 			node->actor = actor;
 			killedActors->push_back(node);
@@ -408,7 +409,7 @@ namespace TES3 {
 				unsigned int newTextLength = dataLength + textLength;
 				unsigned int newBufferSize = newTextLength + (1024 - newTextLength % 1024);
 
-				data = (char*)mwse::tes3::realloc(data, newBufferSize);
+				data = (char*)se::memory::realloc(data, newBufferSize);
 				dataBufferSize = newBufferSize;
 			}
 			strcat(data, text);

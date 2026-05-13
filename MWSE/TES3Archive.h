@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3HashMap.h"
 #include "TES3Stream.h"
 
 #include "TES3CriticalSection.h"

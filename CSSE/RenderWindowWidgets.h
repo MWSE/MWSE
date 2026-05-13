@@ -26,16 +26,16 @@ namespace se::cs::dialog::render_window {
 		bool isShown();
 
 		void setAxis(WidgetsAxis axis);
-		void setPosition(NI::Vector3& position);
+		void setPosition(NI::Point3& position);
 
 		void showGrid();
 		void hideGrid();
 		bool isGridShown();
 
 		void updateGridGeometry(float radius, int gridSnap);
-		void updateGridPosition(NI::Vector3 position, bool snapX, bool snapY, bool snapZ, int gridSnap);
+		void updateGridPosition(NI::Point3 position, bool snapX, bool snapY, bool snapZ, int gridSnap);
 
 		void updateAngleGuideGeometry(float radius, float angleSnap);
-		void updateAngleGuidePosition(NI::Vector3 position, bool snapX, bool snapY, bool snapZ, int gridSnap);
+		void updateAngleGuidePosition(NI::Point3 position, bool snapX, bool snapY, bool snapZ, int gridSnap);
 	};
 }

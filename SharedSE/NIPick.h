@@ -6,8 +6,12 @@
 #include "NINode.h"
 
 #include "NIColor.h"
-#include "NIVector2.h"
-#include "NIVector3.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "TES3Defines.h"
+#endif
 
 namespace NI {
 	enum class PickType {
@@ -22,7 +26,8 @@ namespace NI {
 
 	enum class PickIntersectType {
 		BOUND_INTERSECT,
-		TRIANGLE_INTERSECT
+		TRIANGLE_INTERSECT,
+		UNKNOWN_2,
 	};
 
 	enum class PickCoordinateType {
@@ -50,11 +55,18 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		static Pick* malloc();
+		void free();
+#endif
+
+		PickRecord* addRecord();
+
 		Pick();
 		~Pick();
 
-		bool pickObjects(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
-		bool pickObjectsWithSkinDeforms(const Vector3* origin, const Vector3* direction, bool append = false, float maxDistance = 0.0f);
+		bool pickObjects(const Point3* origin, const Point3* direction, bool append = false, float maxDistance = 0.0f);
+		bool pickObjectsWithSkinDeforms(const Point3* origin, const Point3* direction, bool append = false, float maxDistance = 0.0f);
 		void clearResults();
 
 		PickRecord* getFirstUnskinnedResult() const;
@@ -63,15 +75,18 @@ namespace NI {
 	static_assert(sizeof(Pick) == 0x38, "NI::Pick failed size validation");
 
 	struct PickRecord {
-		Geometry* object;
-		AVObject* proxyParent;
-		Vector3 intersection;
+		Pointer<Geometry> object;
+		Pointer<AVObject> proxyParent;
+		Point3 intersection;
 		float distance;
 		unsigned short triangleIndex;
 		unsigned short vertexIndex[3];
-		Vector2 texture;
-		Vector3 normal;
+		Point2 texture;
+		Point3 normal;
 		PackedColor color;
+
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
 
 		//
 		// Custom functions.
@@ -80,7 +95,7 @@ namespace NI {
 		std::reference_wrapper<unsigned short[3]> getVertexIndex();
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		Reference* getTES3Reference();
+		TES3::Reference* getTES3Reference();
 #endif
 
 	};

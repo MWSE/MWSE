@@ -25,9 +25,9 @@ namespace TES3 {
 		}
 		else if (function == CompilerFunction::BEGIN) {
 
-			shortVarList = new IteratedList<Variable*>();
-			longVarList = new IteratedList<Variable*>();
-			floatVarList = new IteratedList<Variable*>();
+			shortVarList = new NI::IteratedList<Variable*>();
+			longVarList = new NI::IteratedList<Variable*>();
+			floatVarList = new NI::IteratedList<Variable*>();
 
 			while (compileFunction(function)) {
 				if (compiledScriptLength >= 0x4000) {

@@ -55,8 +55,8 @@ namespace TES3 {
 		TES3_AnimationData_headTracking(this, actorRefr, targetRefr);
 	}
 
-	const auto TES3_AnimationData_updateMovementDelta = reinterpret_cast<bool(__thiscall*)(AnimationData*, float, Vector3*, bool)>(0x470320);
-	void AnimationData::updateMovementDelta(float timing, Vector3 *inout_startingPosition, bool dontUpdatePositionDelta) {
+	const auto TES3_AnimationData_updateMovementDelta = reinterpret_cast<bool(__thiscall*)(AnimationData*, float, NI::Point3*, bool)>(0x470320);
+	void AnimationData::updateMovementDelta(float timing, NI::Point3 *inout_startingPosition, bool dontUpdatePositionDelta) {
 		TES3_AnimationData_updateMovementDelta(this, timing, inout_startingPosition, dontUpdatePositionDelta);
 	}
 
@@ -120,7 +120,7 @@ namespace TES3 {
 		// Fix up movement root if the swap affects the currently playing animation.
 		auto lowerGroup = currentAnimGroup[0];
 		if (lowerGroup == animationGroup1 || lowerGroup == animationGroup2) {
-			Vector3 unused;
+			NI::Point3 unused;
 			updateMovementDelta(timing[0], &unused, true);
 		}
 	}

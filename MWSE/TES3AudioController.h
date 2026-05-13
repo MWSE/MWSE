@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class AudioMixType {
@@ -79,9 +79,9 @@ namespace TES3 {
 		IGraphBuilder * musicGraph; // 0x2A0
 		IBasicAudio * musicAudio; // 0x2A4
 		bool disableAudio; // 0x2A8
-		Vector3 listenerPosition; // 0x2AC
-		Vector3 unknown_0x2B8; // Orientation.
-		Vector3 unknown_0x2C4; // Orientation.
+		NI::Point3 listenerPosition; // 0x2AC
+		NI::Point3 unknown_0x2B8; // Orientation.
+		NI::Point3 unknown_0x2C4; // Orientation.
 		float yawAxis; // 0x2D0 // In radians.
 		float pitchAxisApproximated; // 0x2D4 // In radians.
 

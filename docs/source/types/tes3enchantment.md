@@ -18,7 +18,7 @@ Determines if the charge cost for the enchantment is autocalculated.
 
 **Returns**:
 
-* `result` (number)
+* `result` (boolean)
 
 ***
 

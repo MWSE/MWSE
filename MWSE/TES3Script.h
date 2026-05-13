@@ -22,7 +22,7 @@ namespace TES3 {
 		long * longVarValues; // 0x4
 		float * floatVarValues; // 0x8
 		int unknown_0xC;
-		IteratedList<WeaponHitFlags*> * hitWeapons; // 0x10
+		NI::IteratedList<WeaponHitFlags*> * hitWeapons; // 0x10
 
 		ScriptVariables() = delete;
 		~ScriptVariables() = delete;

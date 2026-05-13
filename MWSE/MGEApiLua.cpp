@@ -2,6 +2,8 @@
 
 #include "TES3Game.h"
 
+#include "NIPoint4.h"
+
 #include "LuaUtil.h"
 
 namespace mge::lua {
@@ -82,14 +84,14 @@ namespace mge::lua {
 		api->cameraSetFoV(fov);
 	}
 
-	TES3::Vector3 CameraConfig::getThirdPersonOffset() {
-		TES3::Vector3 offset;
+	NI::Point3 CameraConfig::getThirdPersonOffset() {
+		NI::Point3 offset;
 		api->cameraThirdPersonGetOffset(&offset.x);
 		return offset;
 	}
 
 	void CameraConfig::setThirdPersonOffset(sol::stack_object param) {
-		TES3::Vector3 offset;
+		NI::Point3 offset;
 		if (!mwse::lua::setVectorFromLua(offset, param)) {
 			throw std::invalid_argument("Provided argument is not convertable to a vector3.");
 		}
@@ -255,8 +257,8 @@ namespace mge::lua {
 	}
 
 	void WeatherConfig::setScattering(sol::optional<sol::table> params) {
-		auto inscatter = mwse::lua::getOptionalParamVector3(params, "inscatter");
-		auto outscatter = mwse::lua::getOptionalParamVector3(params, "outscatter");
+		auto inscatter = mwse::lua::getOptionalParamPoint3(params, "inscatter");
+		auto outscatter = mwse::lua::getOptionalParamPoint3(params, "outscatter");
 
 		if (inscatter && outscatter) {
 			api->weatherScatteringSet(&inscatter.value().x, &outscatter.value().x);
@@ -277,11 +279,11 @@ namespace mge::lua {
 	}
 
 	void WeatherConfig::setSkylightScattering(sol::optional<sol::table> params) {
-		auto skylight_scatter = mwse::lua::getOptionalParamVector3(params, "skylight");
+		auto skylight_scatter = mwse::lua::getOptionalParamPoint3(params, "skylight");
 		auto skylight_mix = mwse::lua::getOptionalParam<float>(params, "mix", 0.44f);
 
 		if (skylight_scatter) {
-			TES3::Vector4 v(skylight_scatter.value().x, skylight_scatter.value().y, skylight_scatter.value().z, skylight_mix);
+			NI::Point4 v(skylight_scatter.value().x, skylight_scatter.value().y, skylight_scatter.value().z, skylight_mix);
 			static_cast<MGEAPIv2*>(api)->weatherScatteringSkylightSet(&v.x);
 		}
 		else {

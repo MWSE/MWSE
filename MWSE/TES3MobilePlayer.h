@@ -2,13 +2,15 @@
 
 #include "TES3Defines.h"
 
+#include "StdString.h"
 #include "TES3MobileNPC.h"
-#include "TES3StdString.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
+	using se::StdString;
+
 	struct MarkData {
-		Vector3 position; // 0x0
+		NI::Point3 position; // 0x0
 		float rotation; // 0xC
 		Cell* cell; // 0x10
 	};
@@ -76,7 +78,7 @@ namespace TES3 {
 		int detectLockRange; // 0x5CC
 		int detectEnchantmentRange; // 0x5D0
 		int detectCreatureRange; // 0x5D4
-		Vector3 restWaitPosition; // 0x5D8
+		NI::Point3 restWaitPosition; // 0x5D8
 		int postAttackHandRecoilTimer; // 0x5E4
 		int levelUpProgress; // 0x5E8
 		int restHoursRemaining; // 0x5EC
@@ -90,9 +92,9 @@ namespace TES3 {
 		char unknown_0x66B; // Undefined.
 		void* unknown_0x66C;
 		Birthsign* birthsign; // 0x670
-		IteratedList<Dialogue*>* dialogueList; // 0x674
+		NI::IteratedList<Dialogue*>* dialogueList; // 0x674
 		MarkData* markLocation; // 0x678
-		Vector3 lastPositionOfFogOfWarUpdate; // 0x67C
+		NI::Point3 lastPositionOfFogOfWarUpdate; // 0x67C
 		float inactivityTime; // 0x684
 		float* humanStatsBackup; // 0x688
 		GlobalVariable* knownWerewolf; // 0x690

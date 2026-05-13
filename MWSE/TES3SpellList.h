@@ -2,13 +2,13 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 #include "TES3Spell.h"
 
 namespace TES3 {
 	struct SpellList {
 		int unknown_0x0;
-		IteratedList<Spell*> list;
+		NI::IteratedList<Spell*> list;
 
 		//
 		// Other related this-call functions.

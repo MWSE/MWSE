@@ -1,4 +1,4 @@
-#include <CrashLogger.h>
+#include "CrashLogger.h"
 
 #pragma comment (lib, "version.lib")
 

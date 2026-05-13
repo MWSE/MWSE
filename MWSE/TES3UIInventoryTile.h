@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3::UI {
 	enum class InventoryTileType : int {
@@ -38,7 +38,7 @@ namespace TES3::UI {
 	struct InventoryTile {
 		Item * item; // 0x0
 		ItemData * itemData; // 0x4
-		IteratedList<InventoryTile_Struct0x8*> * unknown_0x8;
+		NI::IteratedList<InventoryTile_Struct0x8*> * unknown_0x8;
 		int count; // 0xC
 		Element * element; // 0x10
 		char unknown_0x14;

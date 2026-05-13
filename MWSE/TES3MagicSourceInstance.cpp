@@ -57,8 +57,8 @@ namespace TES3 {
 		return TES3_MagicSourceInstance_getMagnitudeForIndex(this, effectIndex);
 	}
 
-	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, Vector3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
-	void MagicSourceInstance::playSpellVFX(float scale, Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
+	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, NI::Point3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
+	void MagicSourceInstance::playSpellVFX(float scale, NI::Point3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
 		TES3_PlaySpellVFX(this, scale, position, attachedReference, offsetZ, effectVisual, effectIndex, isContinuous);
 	}
 
@@ -170,7 +170,7 @@ namespace TES3 {
 			throw std::invalid_argument("Invalid 'scale' parameter. Must be a positive number.");
 		}
 
-		auto position = mwse::lua::getOptionalParamVector3(params, "position");
+		auto position = mwse::lua::getOptionalParamPoint3(params, "position");
 		if (!position) {
 			throw std::invalid_argument("Invalid 'position' parameter. Must be a table[3] or tes3vector3.");
 		}

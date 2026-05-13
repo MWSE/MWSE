@@ -352,8 +352,8 @@ namespace se::cs::dialog::reference_data {
 
 	}
 
-	static NI::Vector3 lastUsedPosition = {};
-	static NI::Vector3 lastUsedRotation = {};
+	static NI::Point3 lastUsedPosition = {};
+	static NI::Point3 lastUsedRotation = {};
 
 	void PatchDialogProc_BeforeCommand_GenericStoreLastPosition(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();

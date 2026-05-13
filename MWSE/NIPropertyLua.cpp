@@ -129,12 +129,12 @@ namespace mwse::lua {
 			usertypeDefinition["maps"] = sol::readonly_property(&NI::TexturingProperty::maps);
 
 			// Convenient access to (non-decal) maps.
-			usertypeDefinition["baseMap"] = sol::property(&NI::TexturingProperty::getBaseMap, &NI::TexturingProperty::setBaseMap);
-			usertypeDefinition["bumpMap"] = sol::property(&NI::TexturingProperty::getBumpMap, &NI::TexturingProperty::setBumpMap);
-			usertypeDefinition["darkMap"] = sol::property(&NI::TexturingProperty::getDarkMap, &NI::TexturingProperty::setDarkMap);
-			usertypeDefinition["detailMap"] = sol::property(&NI::TexturingProperty::getDetailMap, &NI::TexturingProperty::setDetailMap);
-			usertypeDefinition["glossMap"] = sol::property(&NI::TexturingProperty::getGlossMap, &NI::TexturingProperty::setGlossMap);
-			usertypeDefinition["glowMap"] = sol::property(&NI::TexturingProperty::getGlowMap, &NI::TexturingProperty::setGlowMap);
+			usertypeDefinition["baseMap"] = sol::property(&NI::TexturingProperty::getBaseMap, &NI::TexturingProperty::setBaseMap_lua);
+			usertypeDefinition["bumpMap"] = sol::property(&NI::TexturingProperty::getBumpMap, &NI::TexturingProperty::setBumpMap_lua);
+			usertypeDefinition["darkMap"] = sol::property(&NI::TexturingProperty::getDarkMap, &NI::TexturingProperty::setDarkMap_lua);
+			usertypeDefinition["detailMap"] = sol::property(&NI::TexturingProperty::getDetailMap, &NI::TexturingProperty::setDetailMap_lua);
+			usertypeDefinition["glossMap"] = sol::property(&NI::TexturingProperty::getGlossMap, &NI::TexturingProperty::setGlossMap_lua);
+			usertypeDefinition["glowMap"] = sol::property(&NI::TexturingProperty::getGlowMap, &NI::TexturingProperty::setGlowMap_lua);
 
 			// Basic function binding.
 			usertypeDefinition["addDecalMap"] = &NI::TexturingProperty::addDecalMap_lua;

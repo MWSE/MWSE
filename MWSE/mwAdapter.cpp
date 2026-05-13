@@ -9,7 +9,7 @@
 
 namespace mwse::mwAdapter {
 	// House the registers obtained before/to return after hooking a function.
-	static HookContext context;
+	static se::memory::HookContext context;
 
 	// Our virtual machine. It's not really a virtual machine, and all the heavy
 	// lifting is still done by the Morrowind scripting VM.

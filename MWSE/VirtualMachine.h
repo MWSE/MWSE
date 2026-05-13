@@ -12,6 +12,7 @@ using namespace mwse;
 namespace mwse {
 	class VirtualMachine : public VMHookInterface, VMExecuteInterface {
 	public:
+		using HookContext = se::memory::HookContext;
 		VirtualMachine();
 		virtual float executeOperation(OpCode::OpCode_t opcode, HookContext& context, TES3::Script* script);
 		virtual void loadParametersForOperation(OpCode::OpCode_t opcode, HookContext& context, TES3::Script* script);

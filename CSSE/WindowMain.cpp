@@ -16,7 +16,7 @@
 #include "CSScript.h"
 
 #include "NICamera.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include "DialogRenderWindow.h"
 #include "DialogObjectWindow.h"
@@ -466,7 +466,7 @@ namespace se::cs::window::main {
 		if (settings.quickstart.load_cell) {
 			// Load position from settings. We need to shift down by 16,384 units because of the weird offset in the function.
 			const auto& qsPos = settings.quickstart.position;
-			NI::Vector3 position(qsPos[0], qsPos[1], qsPos[2]);
+			NI::Point3 position(qsPos[0], qsPos[1], qsPos[2]);
 			position.z -= 16384.0f;
 
 			// Setup a specific interior cell if needed.
@@ -477,12 +477,12 @@ namespace se::cs::window::main {
 					return result;
 				}
 
-				const auto setToLoadCell = reinterpret_cast<bool(__thiscall*)(DataHandler*, Cell*, NI::Vector3*)>(0x4A1370);
+				const auto setToLoadCell = reinterpret_cast<bool(__thiscall*)(DataHandler*, Cell*, NI::Point3*)>(0x4A1370);
 				setToLoadCell(dataHandler, cell, &position);
 			}
 
 			// Actually do our load.
-			const auto loadCell = reinterpret_cast<bool(__cdecl*)(NI::Vector3*, Reference*)>(0x469B40);
+			const auto loadCell = reinterpret_cast<bool(__cdecl*)(NI::Point3*, Reference*)>(0x469B40);
 			loadCell(&position, nullptr);
 
 			// Setup camera.

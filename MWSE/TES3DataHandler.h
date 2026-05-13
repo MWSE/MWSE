@@ -1,23 +1,23 @@
 #pragma once
 
 #include "TES3Defines.h"
-
+#include "TES3AnimationData.h"
 #include "TES3CriticalSection.h"
-#include "TES3HashMap.h"
 #include "TES3MagicEffect.h"
 #include "TES3Skill.h"
-#include "TES3StlList.h"
-
-#include "TES3AnimationData.h"
 
 #include "NIAVObject.h"
+#include "NIHashMap.h"
 #include "NISourceTexture.h"
+
+#include "StlList.h"
 
 #define MWSE_CUSTOM_EFFECTS true
 #define MWSE_RAISED_FILE_LIMIT true
 #define MWSE_CUSTOM_GLOBALS true
 
 namespace TES3 {
+
 	enum class LoadGameResult {
 		Failure = 0x0,
 		Success = 0x1,
@@ -32,8 +32,8 @@ namespace TES3 {
 	};
 
 	struct MeshData {
-		HashMap<const char*, NI::Node*>* NIFs; // 0x0
-		HashMap<const char*, KeyframeDefinition*>* KFs; // 0x4
+		NI::HashMap<const char*, NI::Node*>* NIFs; // 0x0
+		NI::HashMap<const char*, KeyframeDefinition*>* KFs; // 0x4
 
 		MeshData() = delete;
 		~MeshData() = delete;
@@ -46,7 +46,7 @@ namespace TES3 {
 
 	template <typename OT>
 	struct ObjectMapContainer {
-		HashMap<const char*, OT*>* map;
+		NI::HashMap<const char*, OT*>* map;
 	};
 
 #if MWSE_CUSTOM_GLOBALS
@@ -57,7 +57,7 @@ namespace TES3 {
 			}
 		};
 
-		IteratedList<GlobalVariable*> variables;
+		NI::IteratedList<GlobalVariable*> variables;
 		std::map<std::string_view, GlobalVariable*, icomp> cache;
 
 		//
@@ -79,22 +79,22 @@ namespace TES3 {
 		LinkedObjectList<Spell> * spellsList; // 0x10
 		MeshData * meshData; // 0x14
 		GameSetting ** GMSTs; // 0x18 // Pointer to array of GMST pointers.
-		IteratedList<Race*> * races; // 0x1C
-		IteratedList<LandTexture*> * landTextures; // 0x20
-		IteratedList<Class*> * classes; // 0x24
-		IteratedList<Faction*> * factions; // 0x28
-		IteratedList<Script*> * scripts; // 0x2C
-		IteratedList<Sound*> * sounds; // 0x30
-		IteratedList<SoundGenerator*> * soundGenerators; // 0x34
+		NI::IteratedList<Race*> * races; // 0x1C
+		NI::IteratedList<LandTexture*> * landTextures; // 0x20
+		NI::IteratedList<Class*> * classes; // 0x24
+		NI::IteratedList<Faction*> * factions; // 0x28
+		NI::IteratedList<Script*> * scripts; // 0x2C
+		NI::IteratedList<Sound*> * sounds; // 0x30
+		NI::IteratedList<SoundGenerator*> * soundGenerators; // 0x34
 #if MWSE_CUSTOM_GLOBALS
 		GlobalHashContainer* globals; // 0x38
 #else
-		IteratedList<GlobalVariable*>* globals; // 0x38
+		NI::IteratedList<GlobalVariable*>* globals; // 0x38
 #endif
-		IteratedList<Dialogue*> * dialogues; // 0x3C
-		IteratedList<Region*> * regions; // 0x40
-		IteratedList<Birthsign*> * birthsigns; // 0x44
-		IteratedList<StartScript*> * startScripts; // 0x48
+		NI::IteratedList<Dialogue*> * dialogues; // 0x3C
+		NI::IteratedList<Region*> * regions; // 0x40
+		NI::IteratedList<Birthsign*> * birthsigns; // 0x44
+		NI::IteratedList<StartScript*> * startScripts; // 0x48
 		Skill skills[27]; // 0x4C
 #if MWSE_CUSTOM_EFFECTS
 		MagicEffectController * magicEffects; // 0x5C8  
@@ -107,7 +107,7 @@ namespace TES3 {
 #else
 		MagicEffect magicEffects[143]; // 0x5C8
 #endif
-		StlList<Light*>* lights; // 0x9DB8
+		se::StlList<Light*>* lights; // 0x9DB8
 		AnimationGroup* baseAnimationGroups[4][150]; // 0x9DBC
 		NI::Pointer<NI::Node> baseSkeletons[4]; // 0xA71C
 		KeyframeDefinition* baseAnimations[4]; // 0xA72C
@@ -115,13 +115,13 @@ namespace TES3 {
 		NI::Pointer<NI::Node> baseBeastSkeletons[3]; // 0x0xAE44
 		KeyframeDefinition* baseBeastAnimations[3]; // 0xAE50
 		NI::Pointer<NI::Property> collisionWireframeProperty; // 0xAE5C
-		StlList<GameFile*>* gameFiles; // 0xAE60 
+		se::StlList<GameFile*>* gameFiles; // 0xAE60 
 #ifdef MWSE_RAISED_FILE_LIMIT
 		unsigned char freed_0xAE64[0x400]; // Unused space free for plundering.
 #else
 		GameFile* activeMods[256]; // 0xAE64 // Relocated and resized at 0x5CC.
 #endif
-		StlList<Cell*> * cells; // 0xB264
+		se::StlList<Cell*> * cells; // 0xB264
 		ObjectMapContainer<BaseObject>* allObjectsById; // 0xB268
 		ObjectMapContainer<Dialogue>* allDialoguesById; // 0xB26C
 		char dataFilesPath[MAX_PATH]; // 0xB270
@@ -132,7 +132,7 @@ namespace TES3 {
 		char unknown_0xB378;
 		char unknown_0xB379;
 		bool allSavegameMastersMatchLoadOrder; // 0xB37A
-		IteratedList<BaseObject*>* initiallyLoadedObjects; // 0xB37C
+		NI::IteratedList<BaseObject*>* initiallyLoadedObjects; // 0xB37C
 		NI::Pointer<NI::SourceTexture> mapTexture; // 0xB380
 		Reference * playerSaveGame; // 0xB384
 		CriticalSection criticalSectionSounds; // 0xB388
@@ -160,7 +160,7 @@ namespace TES3 {
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);
-		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, Vector3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
+		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
 		bool addNewObject(BaseObject*);
 		void deleteObject(BaseObject*);
 		void respawnContainers();
@@ -172,7 +172,7 @@ namespace TES3 {
 
 		MagicEffect * getMagicEffect(int id);
 
-		Reference* createReference(PhysicalObject * object, Vector3 * position, Vector3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
+		Reference* createReference(PhysicalObject * object, NI::Point3 * position, NI::Point3 * orientation, bool& cellWasCreated, Reference * existingReference = nullptr, Cell * cell = nullptr);
 
 		void showLocationOnMap(const char* name);
 		void drawCellMapMarker(Cell* cell, int unused = 0);
@@ -189,7 +189,7 @@ namespace TES3 {
 
 		nonstd::span<GameFile*> getActiveMods();
 
-		IteratedList<GlobalVariable*>* getGlobalsList() const;
+		NI::IteratedList<GlobalVariable*>* getGlobalsList() const;
 
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
@@ -285,14 +285,14 @@ namespace TES3 {
 		Cell ** exteriorCellBuffer; // 0xB4
 		int lastExteriorCellPositionX; // 0xB8
 		int lastExteriorCellPositionY; // 0xBC
-		IteratedList<Reference*> collisionReferenceGrid[48][48]; // 0xC0
+		NI::IteratedList<Reference*> collisionReferenceGrid[48][48]; // 0xC0
 		int collision_0xB4C0;
 		int collision_0xB4C4;
 		int collision_0xB4C8;
 		int collision_0xB4CC;
-		IteratedList<SoundEvent*>* soundEvents; // 0xB4D0
-		IteratedList<SoundEvent*>* tempSoundEvents; // 0xB4D4
-		IteratedList<SoundEvent*>* lightSoundEvents; // 0xB4D8
+		NI::IteratedList<SoundEvent*>* soundEvents; // 0xB4D0
+		NI::IteratedList<SoundEvent*>* tempSoundEvents; // 0xB4D4
+		NI::IteratedList<SoundEvent*>* lightSoundEvents; // 0xB4D8
 		bool showActorDrawBounds; // 0xB4DC
 		char unknown_0xB4DD;
 		char unknown_0xB4DE;
@@ -305,7 +305,7 @@ namespace TES3 {
 		char unknown_0xB4E5;
 		char unknown_0xB4E6;
 		char unknown_0xB4E7;
-		HashMap<const char*, NI::Pointer<NI::SourceTexture>>* textures; // 0xB4E8
+		NI::HashMap<const char*, NI::Pointer<NI::SourceTexture>>* textures; // 0xB4E8
 		WaterController* waterController;
 		int unknown_0xB4F0;
 		int unknown_0xB4F4;
@@ -373,14 +373,14 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		Vector3 getLastExteriorPosition() const;
+		NI::Point3 getLastExteriorPosition() const;
 		float getLowestZInCurrentCell() const;
 
-		bool getLandHeightAtPosition(const Vector3& position, float* out_height) const;
-		sol::optional<float> getLandHeightAtPosition_lua(const Vector3& position) const;
-		bool getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const;
-		sol::optional<Vector3> getLandNormalAtPosition_lua(const Vector3& position) const;
-		NI::TriShape* getLandShapeAtPosition(const Vector3& position) const;
+		bool getLandHeightAtPosition(const NI::Point3& position, float* out_height) const;
+		sol::optional<float> getLandHeightAtPosition_lua(const NI::Point3& position) const;
+		bool getLandNormalAtPosition(const NI::Point3& position, NI::Point3& out_normal) const;
+		sol::optional<NI::Point3> getLandNormalAtPosition_lua(const NI::Point3& position) const;
+		NI::TriShape* getLandShapeAtPosition(const NI::Point3& position) const;
 
 		void addSound(Sound* sound, Reference* reference = nullptr, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, bool isVoiceover = false, int unknown = 0);
 		Sound* addSoundById(const char* soundId, Reference* reference = 0, int playbackFlags = 0, unsigned char volume = 250, float pitch = 1.0f, int unknown = 0);

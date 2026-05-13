@@ -1,7 +1,3 @@
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-
 #include "oklab.h"
 #include "types.h"
 

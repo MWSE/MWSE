@@ -12,11 +12,11 @@ namespace mwse::lua {
 		auto& state = stateHandle.getState();
 
 		// Start our usertype.
-		auto usertypeDefinition = state.new_usertype<NI::SphereBound>("niBound"); // Legacy naming defaults to spheres.
+		auto usertypeDefinition = state.new_usertype<NI::Bound>("niBound");
 		usertypeDefinition["new"] = sol::no_constructor;
 
 		// Basic property binding.
-		usertypeDefinition["center"] = &NI::SphereBound::center;
-		usertypeDefinition["radius"] = &NI::SphereBound::radius;
+		usertypeDefinition["center"] = &NI::Bound::center;
+		usertypeDefinition["radius"] = &NI::Bound::radius;
 	}
 }

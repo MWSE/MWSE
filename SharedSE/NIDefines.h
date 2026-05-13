@@ -1,7 +1,30 @@
 #pragma once
 
-#include "NIConfig.h"
-#include "NIRTTIDefines.h"
+// Include the headers required by the target application.
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
+	#include "NIConfig.Morrowind.h"
+	#include "NIRTTIDefines.Morrowind.h"
+	#include "NIVirtualTableDefines.Morrowind.h"
+
+	namespace TES3 {
+		struct Reference;
+	}
+	namespace NI {
+		using GameReferenceType = TES3::Reference;
+	}
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
+	#include "NIConfig.TESConstructionSet.h"
+	#include "NIRTTIDefines.TESConstructionSet.h"
+	#include "NIVirtualTableDefines.TESConstructionSet.h"
+	namespace se::cs {
+		struct Reference;
+	}
+	namespace NI {
+		using GameReferenceType = se::cs::Reference;
+	}
+#else
+	static_assert(false, "Invalid target scope. Define an SE_TARGETS_ macro.");
+#endif
 
 namespace NI {
 	struct Accumulator;
@@ -10,6 +33,11 @@ namespace NI {
 	struct AVObject;
 	struct BinaryStream;
 	struct Bound;
+	struct BoundingVolume;
+	struct BoxBound;
+	struct BoxBoundingVolume;
+	struct BSAnimationNode;
+	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
 	struct CollisionSwitch;
@@ -17,6 +45,7 @@ namespace NI {
 	struct ColorA;
 	struct ColorData;
 	struct DirectionalLight;
+	struct DX8Renderer;
 	struct DynamicEffect;
 	struct ExtraData;
 	struct FogProperty;
@@ -28,6 +57,7 @@ namespace NI {
 	struct Light;
 	struct MaterialProperty;
 	struct Matrix33;
+	struct Matrix44;
 	struct Node;
 	struct Object;
 	struct ObjectNET;
@@ -50,15 +80,19 @@ namespace NI {
 	struct PointLight;
 	struct PosData;
 	struct Property;
+	struct PropertyState;
 	struct Quaternion;
 	struct RenderedTexture;
 	struct Renderer;
 	struct RotatingParticles;
 	struct RotatingParticlesData;
 	struct RTTI;
+	struct ScreenPolygon;
 	struct Sequence;
 	struct SkinInstance;
 	struct SourceTexture;
+	struct SphereBound;
+	struct SphereBoundingVolume;
 	struct SphericalCollider;
 	struct SpotLight;
 	struct StencilProperty;
@@ -72,12 +106,16 @@ namespace NI {
 	struct TexturingProperty;
 	struct TimeController;
 	struct Transform;
+	struct Triangle;
 	struct TriBasedGeometry;
 	struct TriBasedGeometryData;
 	struct TriShape;
 	struct TriShapeData;
-	struct Vector3;
+	struct Point2;
+	struct Point3;
+	struct Point4;
 	struct VertexColorProperty;
+	struct WireframeProperty;
 	struct ZBufferProperty;
 
 	struct AVObject_vTable;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NIDefines.h"
+
 #include "TES3Defines.h"
 
 namespace TES3 {

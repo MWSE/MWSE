@@ -2,13 +2,13 @@
 
 #include "TES3Object.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	struct Quest : BaseObject {
 		char* name; // 0x10
-		IteratedList<Dialogue*> dialogues; // 0x14
-		IteratedList<DialogueInfo*> activeInfos; // 0x28
+		NI::IteratedList<Dialogue*> dialogues; // 0x14
+		NI::IteratedList<DialogueInfo*> activeInfos; // 0x28
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Quest;
 
