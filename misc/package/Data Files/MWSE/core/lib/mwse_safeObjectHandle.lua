@@ -1,86 +1,91 @@
 local this = {}
 
--- A map of tes3objects to their unsafe handle.
-local handles = {}
+local invalidObjectMessage = "safeObjectHandle: This object has been invalidated."
 
---- Remove handles on object invalidated.
---- @param e objectInvalidatedEventData
-local function onObjectInvalidated(e)
-	local handle = handles[e.object]
-	if (handle) then
-		rawset(handle, "_object", nil)
-		handles[e.object] = nil
-	end
+local function isValidObject(object)
+	return object ~= nil and isSafe(object)
 end
-event.register("objectInvalidated", onObjectInvalidated)
 
--- Create a new unsafe reference.
+local function getValidObject(handle)
+	local object = rawget(handle, "_object")
+	assert(isValidObject(object), invalidObjectMessage)
+	return object
+end
+
+-- Create a new safe object handle.
 function this.new(object)
 	if (object == nil) then
 		return nil
 	end
 
-	-- Return a previous handle if applicable.
-	if (handles[object]) then
-		return handles[object]
-	end
-
-	local raw = { _object = object }
-	function raw:valid()
-		local object = rawget(self, "_object")
-		return object ~= nil and not object.deleted
-	end
-	function raw:getObject() return rawget(self, "_object") end
-
-	-- Create a metatable redirect.
-	local handle = setmetatable(raw, this)
-	handles[object] = handle
-
-	return handle
+	return setmetatable({ _object = object }, this)
 end
 
--- Allow this handle to index into the reference, with some checking.
-function this:__index(key)
-	local valueRaw = rawget(self, key)
-	if (valueRaw) then
-		return valueRaw
+function this:valid()
+	return isValidObject(rawget(self, "_object"))
+end
+
+function this:getObject()
+	if (not self:valid()) then
+		return nil
 	end
 
-	local reference = assert(rawget(self, "_object"), "unsafe_object: This object has been invalidated.")
-	local result = reference[key]
+	return rawget(self, "_object")
+end
+
+-- Allow this handle to index into the object, with validity checking.
+function this:__index(key)
+	local handleValue = rawget(this, key)
+	if (handleValue ~= nil) then
+		return handleValue
+	end
+
+	local object = getValidObject(self)
+	local result = object[key]
 	if (type(result) == "function") then
-		return function(self, ...)
-			return result(reference, ...)
+		return function(_, ...)
+			local currentObject = getValidObject(self)
+			return currentObject[key](currentObject, ...)
 		end
 	end
+
 	return result
 end
 
--- Allow this handle to set values of the reference, with some checking.
+-- Allow this handle to set values on the object, with validity checking.
 function this:__newindex(key, value)
-	local reference = assert(rawget(self, "_object"), "unsafe_object: This object has been invalidated.")
-	reference[key] = value
+	local object = getValidObject(self)
+	object[key] = value
 end
 
--- Don't compare against this table. Compare against the reference instead.
+-- Don't compare against this table. Compare against the object instead.
 function this:__eq(value)
-	return rawget(self, "_object") == value
+	local object = rawget(self, "_object")
+	if (not isValidObject(object)) then
+		return value == nil
+	end
+
+	return object == value
 end
 
 -- Add tostring() support.
 function this:__tostring()
-	return tostring(rawget(self, "_object"))
+	local object = rawget(self, "_object")
+	if (not isValidObject(object)) then
+		return "nil"
+	end
+
+	return tostring(object)
 end
 
 -- Add json support.
 function this:__tojson()
-	local reference = rawget(self, "_object")
-	if (reference) then
-		return reference:__tojson()
-	else
+	local object = rawget(self, "_object")
+	if (not isValidObject(object)) then
 		return "null"
 	end
-	return rawget(self, "_object"):__tojson()
+
+	return object:__tojson()
 end
 
 return this

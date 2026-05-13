@@ -371,6 +371,9 @@ namespace TES3 {
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
 
+				// Null the userdata's internal pointer before removing our identity cache.
+				mwse::lua::clearUserdataPointer(it->second);
+
 				// Remove it from the cache.
 				mobileObjectCache.erase(it);
 			}
@@ -381,6 +384,9 @@ namespace TES3 {
 
 	void MobileObject::clearCachedLuaObjects() {
 		mobileObjectCacheMutex.lock();
+		for (auto& item : mobileObjectCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
 		mobileObjectCache.clear();
 		mobileObjectCacheMutex.unlock();
 	}

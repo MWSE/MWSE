@@ -56,7 +56,7 @@ local result = myObject:getObject()
 
 **Returns**:
 
-* `result` ([tes3reference](../types/tes3reference.md))
+* `result` ([tes3baseObject](../types/tes3baseObject.md), nil)
 
 ***
 
