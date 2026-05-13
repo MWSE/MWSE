@@ -3,7 +3,7 @@ local this = {}
 local invalidObjectMessage = "safeObjectHandle: This object has been invalidated."
 
 local function isValidObject(object)
-	return object ~= nil and isSafe(object)
+	return object ~= nil and object:isSafe()
 end
 
 local function getValidObject(handle)

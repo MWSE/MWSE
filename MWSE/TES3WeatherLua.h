@@ -44,6 +44,9 @@ namespace mwse::lua {
 		// Binding for IDs and paths.
 		usertypeDefinition["ambientLoopSoundId"] = sol::property(&TES3::Weather::getAmbientLoopSoundID, &TES3::Weather::setAmbientLoopSoundID);
 		usertypeDefinition["cloudTexture"] = sol::property(&TES3::Weather::getCloudTexturePath, &TES3::Weather::setCloudTexturePath);
+
+		// Support for checking managed lua objects.
+		usertypeDefinition["isSafe"] = &isUserdataPointerValid;
 	}
 
 	void bindTES3Weather();
