@@ -15,6 +15,11 @@ For a magic source with multiple effects, this event triggers once for each effe
 			readOnly = true,
 			description = "The target of the magic effect instance that caused the source effect to be added.",
 		},
+		["effectId"] = {
+			type = "tes3.effect|integer",
+			readOnly = true,
+			description = "The magic effect ID at `e.source.effects[e.effectIndex]`. Maps to values in [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) namespace.",
+		},
 		["source"] = {
 			type = "tes3alchemy|tes3enchantment|tes3spell",
 			readOnly = true,
@@ -46,7 +51,7 @@ For a magic source with multiple effects, this event triggers once for each effe
 			description = "The state of the magic effect instance when the event fired.",
 		},
 	},
-	filter = "source",
+	filter = "effectId",
 	examples = {
 		["showAddedEffect"] = {
 			title = "Show Added Effect",

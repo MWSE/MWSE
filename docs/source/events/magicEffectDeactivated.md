@@ -18,7 +18,7 @@ event.register(tes3.event.magicEffectDeactivated, magicEffectDeactivatedCallback
 ```
 
 !!! tip
-	This event can be filtered based on the **`source`** event data.
+	This event can be filtered based on the **`effectId`** event data.
 
 !!! tip
 	An event can be claimed by setting `e.claim` to `true`, or by returning `false` from the callback. Claiming the event prevents any lower priority callbacks from being called.
@@ -27,6 +27,7 @@ event.register(tes3.event.magicEffectDeactivated, magicEffectDeactivatedCallback
 
 * `caster` ([tes3reference](../types/tes3reference.md)): *Read-only*. The caster of the magic source. Can be `nil`.
 * `effect` ([tes3effect](../types/tes3effect.md)): *Read-only*. The specific effect that triggered the event. This is equal to `e.source.effects[e.effectIndex]`. Can be `nil`.
+* `effectId` ([tes3.effect](../references/magic-effects.md), integer): *Read-only*. The magic effect ID at `e.source.effects[e.effectIndex]`. Maps to values in [`tes3.effect`](https://mwse.github.io/MWSE/references/magic-effects/) namespace.
 * `effectIndex` (integer): *Read-only*. The index of the effect in the magic source's effects list.
 * `effectInstance` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)): *Read-only*. The unique instance of the magic effect that became inactive.
 * `source` ([tes3alchemy](../types/tes3alchemy.md), [tes3enchantment](../types/tes3enchantment.md), [tes3spell](../types/tes3spell.md)): *Read-only*. The magic source that contains the effect.
