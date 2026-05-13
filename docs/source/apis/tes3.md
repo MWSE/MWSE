@@ -3612,7 +3612,7 @@ local safeObjectHandle = tes3.makeSafeObjectHandle(object)
 
 **Parameters**:
 
-* `object` ([tes3reference](../types/tes3reference.md)): An object to make a safe handle for.
+* `object` ([tes3baseObject](../types/tes3baseObject.md)): An object to make a safe handle for.
 
 **Returns**:
 
