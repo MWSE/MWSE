@@ -6,5 +6,5 @@
 --- Returns true if the given MWSE object userdata still refers to a live engine object. This can be used to detect stale borrowed objects after the underlying object has been deleted. Returns false for anything that isn't a valid userdata.
 --- @param object any The object userdata to test.
 --- @return boolean valid No description yet available.
-function isValid(object) end
+function isSafe(object) end
 

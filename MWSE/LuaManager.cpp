@@ -5007,7 +5007,7 @@ namespace mwse::lua {
 
 		// Overwrite the default print function to print to the MWSE log.
 		luaState["print"] = lua_print;
-		luaState["isValid"] = isUserdataPointerValid;
+		luaState["isSafe"] = isUserdataPointerValid;
 
 		// Bind our data types.
 		bindData();
