@@ -35,7 +35,7 @@ namespace mwse::lua {
 		usertypeDefinition["supportsLuaData"] = sol::property(&TES3::BaseObject::getSupportsLuaData);
 
 		// Support for checking managed lua objects.
-		usertypeDefinition["isSafe"] = &isUserdataPointerValid;
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 
 	template <typename T>

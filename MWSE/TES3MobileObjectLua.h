@@ -40,6 +40,6 @@ namespace mwse::lua {
 		usertypeDefinition["setLightEffectFalloff"] = &TES3::MobileObject::setLightEffectFalloff;
 
 		// Support for checking managed lua objects.
-		usertypeDefinition["isSafe"] = &isUserdataPointerValid;
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 }

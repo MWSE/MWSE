@@ -36,6 +36,9 @@
 --- 
 tes3mobileObject = {}
 
+--- Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+function tes3mobileObject:isValid() end
+
 --- Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
 --- @param colour niColor|tes3vector3|table The new diffuse color for the spell light.
 function tes3mobileObject:setLightEffectDiffuseColor(colour) end

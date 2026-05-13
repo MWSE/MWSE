@@ -46,7 +46,7 @@ namespace mwse::lua {
 		usertypeDefinition["cloudTexture"] = sol::property(&TES3::Weather::getCloudTexturePath, &TES3::Weather::setCloudTexturePath);
 
 		// Support for checking managed lua objects.
-		usertypeDefinition["isSafe"] = &isUserdataPointerValid;
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 
 	void bindTES3Weather();
