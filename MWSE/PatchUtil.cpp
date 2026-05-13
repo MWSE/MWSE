@@ -1762,34 +1762,15 @@ namespace mwse::patch {
 		effect->revisionId++;
 	}
 
-	static bool PatchActorDisplayTrackUniqueTranslation(std::vector<PatchActorDisplayTranslation>& translations, NI::AVObject* object) {
-		if (!object) {
-			return false;
-		}
-
-		for (const auto& translation : translations) {
-			if (translation.object == object) {
-				return false;
-			}
-		}
-
-		PatchActorDisplayTrackTranslation(translations, object);
-		return true;
-	}
-
-	static void PatchActorDisplayTrackDynamicEffects(NI::Node* node, const NI::Point3& origin, std::vector<PatchActorDisplayTranslation>& translations) {
+	static void PatchActorDisplayTrackDynamicEffects(NI::Node* node) {
 		for (auto effectNode = &node->effectList; effectNode && effectNode->data; effectNode = effectNode->next) {
-			const auto effect = effectNode->data;
-			if (PatchActorDisplayTrackUniqueTranslation(translations, effect)) {
-				effect->worldTransform.translation = effect->worldTransform.translation - origin;
-				PatchActorDisplayTrackLightRevision(effect);
-			}
+			PatchActorDisplayTrackLightRevision(effectNode->data);
 		}
 	}
 
-	static void PatchActorDisplayTrackParentDynamicEffects(NI::AVObject* object, const NI::Point3& origin, std::vector<PatchActorDisplayTranslation>& translations) {
+	static void PatchActorDisplayTrackParentDynamicEffects(NI::AVObject* object) {
 		for (auto node = object ? object->parentNode : nullptr; node; node = node->parentNode) {
-			PatchActorDisplayTrackDynamicEffects(node, origin, translations);
+			PatchActorDisplayTrackDynamicEffects(node);
 		}
 	}
 
@@ -1819,7 +1800,7 @@ namespace mwse::patch {
 		}
 
 		auto node = static_cast<NI::Node*>(object);
-		PatchActorDisplayTrackDynamicEffects(node, origin, translations);
+		PatchActorDisplayTrackDynamicEffects(node);
 
 		for (auto& child : node->children) {
 			if (!child) {
@@ -2053,7 +2034,7 @@ namespace mwse::patch {
 		else {
 			PatchActorDisplayTrackTranslation(translations, object);
 			object->worldTransform.translation = object->worldTransform.translation - alphaObject->origin;
-			PatchActorDisplayTrackParentDynamicEffects(object, alphaObject->origin, translations);
+			PatchActorDisplayTrackParentDynamicEffects(object);
 		}
 
 		D3DMATRIX originalView;
