@@ -3331,6 +3331,25 @@ namespace mwse::lua {
 		}
 	}
 
+	static sol::table getAllMagicSourceInstances(sol::this_state ts) {
+		const auto worldController = TES3::WorldController::get();
+		const auto magicInstanceController = worldController ? worldController->magicInstanceController : nullptr;
+		if (!magicInstanceController) throw std::runtime_error("Function called prior to game initialization.");
+
+		sol::state_view state = ts;
+		auto results = state.create_table();
+
+		auto index = 1u;
+		const auto maxCount = TES3::MagicInstanceController::getSerialCount();
+		for (auto i = 0u; i <= maxCount; ++i) {
+			const auto instance = magicInstanceController->getInstanceFromSerial(i);
+			if (!instance) continue;
+			results[index++] = instance;
+		}
+
+		return results;
+	}
+
 	TES3::MagicSourceInstance* getMagicSourceInstanceBySerial(sol::table params) {
 		auto serialNumber = getOptionalParam<unsigned int>(params, "serialNumber", UINT32_MAX);
 		if (serialNumber == UINT32_MAX) {
@@ -6457,6 +6476,7 @@ namespace mwse::lua {
 		tes3["getLockLevel"] = getLockLevel;
 		tes3["getMagicEffect"] = getMagicEffect;
 		tes3["getMagicEffectName"] = getMagicEffectName;
+		tes3["getAllMagicSourceInstances"] = getAllMagicSourceInstances;
 		tes3["getMagicSourceInstanceBySerial"] = getMagicSourceInstanceBySerial;
 		tes3["getMobilePlayer"] = getMobilePlayer;
 		tes3["getModList"] = getModList;

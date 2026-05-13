@@ -992,6 +992,10 @@ function tes3.get3rdPersonCameraOffset() end
 --- @return tes3cell[] cells No description yet available.
 function tes3.getActiveCells() end
 
+--- Gets all active magic effect instances.
+--- @return tes3magicSourceInstance[] magicSourceInstances No description yet available.
+function tes3.getAllMagicSourceInstances() end
+
 --- This function fetches a dictionary of the timings of the action keys for a specific animation group on an actor. The actor is required, as different actors can use different animations. The result is a table with action names as keys, and timings as values. The function will return nil if the actor does not have that animation group, or if the actor's animations are not active.
 --- @param params tes3.getAnimationActionTiming.params This table accepts the following values:
 --- 
@@ -4085,6 +4089,9 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.lockPick`
 ---| `tes3.event.magicAbsorb`
 ---| `tes3.event.magicCasted`
+---| `tes3.event.magicEffectActivated`
+---| `tes3.event.magicEffectAdded`
+---| `tes3.event.magicEffectDeactivated`
 ---| `tes3.event.magicEffectRemoved`
 ---| `tes3.event.magicEffectsResolved`
 ---| `tes3.event.magicReflect`
