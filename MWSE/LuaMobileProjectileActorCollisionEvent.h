@@ -3,19 +3,19 @@
 #include "LuaObjectFilteredEvent.h"
 #include "LuaDisableableEvent.h"
 
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace mwse::lua::event {
 	class MobileProjectileActorCollisionEvent : public ObjectFilteredEvent, public DisableableEvent<MobileProjectileActorCollisionEvent> {
 	public:
-		MobileProjectileActorCollisionEvent(TES3::MobileProjectile* projectile, TES3::Reference* targetReference, TES3::Vector3& point, TES3::Vector3& pos, TES3::Vector3& vel);
+		MobileProjectileActorCollisionEvent(TES3::MobileProjectile* projectile, TES3::Reference* targetReference, NI::Point3& point, NI::Point3& pos, NI::Point3& vel);
 		sol::table createEventTable();
 
 	protected:
 		TES3::MobileProjectile* m_Projectile;
 		TES3::Reference* m_TargetReference;
-		TES3::Vector3 m_CollisionPoint;
-		TES3::Vector3 m_Position;
-		TES3::Vector3 m_Velocity;
+		NI::Point3 m_CollisionPoint;
+		NI::Point3 m_Position;
+		NI::Point3 m_Velocity;
 	};
 }

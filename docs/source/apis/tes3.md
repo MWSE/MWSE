@@ -1715,6 +1715,24 @@ local cells = tes3.getActiveCells()
 
 ***
 
+### `tes3.getAllMagicSourceInstances`
+<div class="search_terms" style="display: none">getallmagicsourceinstances, allmagicsourceinstances</div>
+
+Gets all active magic effect instances.
+
+```lua
+local magicSourceInstances = tes3.getAllMagicSourceInstances()
+```
+
+**Parameters**:
+
+
+**Returns**:
+
+* `magicSourceInstances` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)[])
+
+***
+
 ### `tes3.getAnimationActionTiming`
 <div class="search_terms" style="display: none">getanimationactiontiming, animationactiontiming</div>
 

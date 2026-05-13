@@ -3,7 +3,7 @@
 #include "CSDefines.h"
 
 #include "NIIteratedList.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace se::cs::dialog::actor_ai_window {
 	constexpr UINT DIALOG_ID = 154;
@@ -59,7 +59,7 @@ namespace se::cs::dialog::actor_ai_window {
 		NI::IteratedList<void*>* travelDestinations; // 0x18
 		BYTE unknown_0x1C;
 		Cell* returnCell; // 0x20
-		NI::Vector3 returnPosition; // 0x24
+		NI::Point3 returnPosition; // 0x24
 		BYTE unknown_0x30;
 		int unknown_0x34;
 	};

@@ -6,10 +6,10 @@
 
 namespace mwse::lua::event {
 	CameraControlEvent::CameraControlEvent(TES3::PlayerAnimationController* animController,
-		const TES3::Transform& prevCameraTransform,
-		const TES3::Transform& prevArmCameraTransform,
-		const TES3::Transform& cameraTransform,
-		const TES3::Transform& armCameraTransform) :
+		const NI::Transform& prevCameraTransform,
+		const NI::Transform& prevArmCameraTransform,
+		const NI::Transform& cameraTransform,
+		const NI::Transform& armCameraTransform) :
 		GenericEvent("cameraControl"),
 		m_AnimationController(animController),
 		m_PrevCameraTransform(prevCameraTransform),

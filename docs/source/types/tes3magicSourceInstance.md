@@ -347,6 +347,25 @@ local result = myObject:getEffectInstance(index, target)
 
 ***
 
+### `getEffectInstances`
+<div class="search_terms" style="display: none">geteffectinstances, effectinstances</div>
+
+Gets all the magic effect instances for a given effect index. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
+
+```lua
+local result = myObject:getEffectInstances(index)
+```
+
+**Parameters**:
+
+* `index` (number): The index in the effect list to fetch, between `0` and `7`.
+
+**Returns**:
+
+* `result` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)[])
+
+***
+
 ### `getMagnitudeForIndex`
 <div class="search_terms" style="display: none">getmagnitudeforindex, magnitudeforindex</div>
 

@@ -22,10 +22,10 @@ namespace TES3 {
 	//
 
 	void* ItemDataVanilla::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 	void ItemDataVanilla::operator delete(void* address) {
-		mwse::tes3::_delete(address);
+		se::memory::_delete(address);
 	}
 
 	const auto TES3_ItemData_constructor = reinterpret_cast<ItemDataVanilla* (__thiscall*)(ItemDataVanilla*)>(0x4E44B0);
@@ -78,7 +78,7 @@ namespace TES3 {
 	}
 
 	ItemData* ItemData::createForObject(Object* object) {
-		auto itemData = mwse::tes3::_new<ItemData>();
+		auto itemData = se::memory::_new<ItemData>();
 		ItemData::ctor(itemData);
 
 		switch (object->objectType) {

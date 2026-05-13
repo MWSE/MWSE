@@ -32,7 +32,7 @@ namespace mwse {
 
 		bool suppressNull = false;
 		std::string badCodes;
-		std::string result = mwse::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
+		std::string result = se::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
 
 		mwse::log::getLog() << result << std::endl;
 		if (!badCodes.empty()) {

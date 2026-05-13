@@ -111,8 +111,8 @@ namespace mwse {
 
 				// Push the above arrays and other values to the result array.
 				ContainedArray_t& returnArray = mwse::Arrays::getInstance().get(mainArrayId);
-				returnArray.push_back(mwse::string::store::getOrCreate(race->id));
-				returnArray.push_back(mwse::string::store::getOrCreate(race->name));
+				returnArray.push_back(se::string::store::getOrCreate(race->id));
+				returnArray.push_back(se::string::store::getOrCreate(race->name));
 				returnArray.push_back(skillArrayId);
 				returnArray.push_back(attributeArrayId);
 				returnArray.push_back(*reinterpret_cast<long*>(&race->height.male));

@@ -114,7 +114,7 @@ namespace mwse {
 
 		// Some strings might need to be recreated.
 		if (nameContainer != NULL && name.length() > strlen(namePtr)) {
-			namePtr = reinterpret_cast<char*>(tes3::realloc(namePtr, name.length() + 1));
+			namePtr = reinterpret_cast<char*>(se::memory::realloc(namePtr, name.length() + 1));
 			*nameContainer = namePtr;
 		}
 

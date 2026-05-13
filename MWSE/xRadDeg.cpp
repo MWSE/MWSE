@@ -16,7 +16,9 @@ namespace mwse {
 	xRadDeg::xRadDeg() : mwse::InstructionInterface_t(OpCode::xRadDeg) {}
 
 	float xRadDeg::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(static_cast<float>(mwse::Stack::getInstance().popFloat() / math::M_PI * 180.0));
+		const auto radians = mwse::Stack::getInstance().popFloat();
+		const auto degrees = se::math::radiansToDegrees(radians);
+		mwse::Stack::getInstance().pushFloat(degrees);
 		return 0.0f;
 	}
 }

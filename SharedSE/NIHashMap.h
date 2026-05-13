@@ -58,7 +58,7 @@ namespace NI {
 				if (compareKey(key, (*itt)->key)) {
 					auto next = (*itt)->nextNode;
 					deleteKeyValuePair(&(*itt)->keyValuePair);
-					reinterpret_cast<void(__cdecl*)(void*)>(0x727530)(*itt);
+					se::memory::_delete(*itt);
 					*itt = next;
 					return true;
 				}

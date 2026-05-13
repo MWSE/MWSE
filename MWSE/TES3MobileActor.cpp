@@ -51,9 +51,9 @@ namespace TES3 {
 		return unresistedMagnitude;
 	}
 
-	static_assert(offsetof(Deque<ActiveMagicEffect>::Node, data) == 0x8);
+	static_assert(offsetof(se::Deque<ActiveMagicEffect>::Node, data) == 0x8);
 	ActiveMagicEffect* ActiveMagicEffect::getNext_legacy() const {
-		auto node = reinterpret_cast<const Deque<ActiveMagicEffect>::Node*>(DWORD(this) - offsetof(Deque<ActiveMagicEffect>::Node, data));
+		auto node = reinterpret_cast<const se::Deque<ActiveMagicEffect>::Node*>(DWORD(this) - offsetof(se::Deque<ActiveMagicEffect>::Node, data));
 		return &node->next->data;
 	}
 
@@ -233,7 +233,7 @@ namespace TES3 {
 		}
 
 		// Reset orientation that may have been altered post-death by mods.
-		reference->orientation = Vector3();
+		reference->orientation = NI::Point3();
 
 		enterLeaveSimulationByDistance();
 	}
@@ -244,7 +244,7 @@ namespace TES3 {
 		resurrect(resetState, moveToStartingLocation);
 	}
 
-	using gMaxHeadTrackingDistance = mwse::ExternalGlobal<float, 0x7C8784>;
+	using gMaxHeadTrackingDistance = se::memory::ExternalGlobal<float, 0x7C8784>;
 
 	void MobileActor::overrideHeadTrackingThisFrame(Reference* target) {
 		const auto animController = animationController.asActor;
@@ -420,27 +420,27 @@ namespace TES3 {
 		return 0.0f;
 	}
 
-	float MobileActor::getViewToPoint(const Vector3* point) const {
+	float MobileActor::getViewToPoint(const NI::Point3* point) const {
 		return getViewToPointWithFacing(getFacing(), point);
 	}
 
 	float MobileActor::getViewToPoint_lua(sol::object point) const {
-		if (!point.is<const Vector3*>()) {
+		if (!point.is<const NI::Point3*>()) {
 			throw std::invalid_argument("Invalid 'point' parameter.");
 		}
-		return getViewToPoint(point.as<const Vector3*>());
+		return getViewToPoint(point.as<const NI::Point3*>());
 	}
 
-	const auto TES3_MobileActor_getViewToPointWithFacing = reinterpret_cast<float(__thiscall*)(const MobileActor*, float, const Vector3*)>(0x5264C0);
-	float MobileActor::getViewToPointWithFacing(float facing, const Vector3* point) const {
+	const auto TES3_MobileActor_getViewToPointWithFacing = reinterpret_cast<float(__thiscall*)(const MobileActor*, float, const NI::Point3*)>(0x5264C0);
+	float MobileActor::getViewToPointWithFacing(float facing, const NI::Point3* point) const {
 		return TES3_MobileActor_getViewToPointWithFacing(this, facing, point);
 	}
 
 	float MobileActor::getViewToPointWithFacing_lua(float facing, sol::object point) const {
-		if (!point.is<const Vector3*>()) {
+		if (!point.is<const NI::Point3*>()) {
 			throw std::invalid_argument("Invalid 'point' parameter.");
 		}
-		return getViewToPointWithFacing(facing, point.as<const Vector3*>());
+		return getViewToPointWithFacing(facing, point.as<const NI::Point3*>());
 	}
 
 	float MobileActor::getViewToActor(const TES3::MobileActor* mobile) const {
@@ -713,7 +713,7 @@ namespace TES3 {
 		TES3_MobileActor_applyJumpFatigueCost(this);
 	}
 
-	bool MobileActor::doJump(Vector3 velocity, bool applyFatigueCost, bool isDefaultJump) {
+	bool MobileActor::doJump(NI::Point3 velocity, bool applyFatigueCost, bool isDefaultJump) {
 		// Allow the event to override the velocity or block the jump.
 		if (mwse::lua::event::JumpEvent::getEventEnabled()) {
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
@@ -723,13 +723,13 @@ namespace TES3 {
 				if (eventData.get_or("block", false)) {
 					return false;
 				}
-				velocity = mwse::lua::getOptionalParam<Vector3>(eventData, "velocity", velocity);
+				velocity = mwse::lua::getOptionalParam<NI::Point3>(eventData, "velocity", velocity);
 				applyFatigueCost = mwse::lua::getOptionalParam<bool>(eventData, "applyFatigueCost", applyFatigueCost);
 			}
 		}
 
 		// Execute the actual jumping logic.
-		Vector3 zeroVector;
+		NI::Point3 zeroVector;
 		setInstantVelocity(&zeroVector);
 		updateConstantVelocity(&velocity);
 		vTable.mobileActor->setJumping(this, true);
@@ -740,7 +740,7 @@ namespace TES3 {
 	}
 
 	bool MobileActor::doJump_lua(sol::optional<sol::table> params) {
-		sol::optional<Vector3> velocity = mwse::lua::getOptionalParamVector3(params, "velocity");
+		sol::optional<NI::Point3> velocity = mwse::lua::getOptionalParamPoint3(params, "velocity");
 		bool applyFatigueCost = mwse::lua::getOptionalParam(params, "applyFatigueCost", true);
 		bool allowMidairJumping = mwse::lua::getOptionalParam(params, "allowMidairJumping", false);
 		bool isDefaultJump = false;
@@ -753,7 +753,7 @@ namespace TES3 {
 		// Get the default jumping velocity if none has been provided.
 		bool isVelocityValid = velocity.has_value();
 		if (!isVelocityValid) {
-			Vector2 zeroVector;
+			NI::Point2 zeroVector;
 			velocity = calculateJumpVelocity(zeroVector);
 			isDefaultJump = applyFatigueCost && !allowMidairJumping;
 		}
@@ -913,7 +913,7 @@ namespace TES3 {
 		return speed;
 	}
 
-	Vector3 MobileActor::calculateJumpVelocity(Vector2 direction) {
+	NI::Point3 MobileActor::calculateJumpVelocity(NI::Point2 direction) {
 		GameSetting** GMSTs = DataHandler::get()->nonDynamicData->GMSTs;
 		float fJumpEncumbranceBase = GMSTs[TES3::GMST::fJumpEncumbranceBase]->value.asFloat;
 		float fJumpEncumbranceMultiplier = GMSTs[TES3::GMST::fJumpEncumbranceMultiplier]->value.asFloat;
@@ -950,20 +950,20 @@ namespace TES3 {
 		// For now this is solved by letting the caller provide a direction vector.
 		// The code snippet below is the actual logic and velocity that is required to automatically determine the direction.
 		/*if (getMovementFlagWalking() || getMovementFlagRunning()) {
-			Vector3 localVelocity = reference->sceneNode->getLocalVelocity();
-			Vector3 direction = Vector3(localVelocity.x, localVelocity.y, 0).normalized();*/
+			NI::Point3 localVelocity = reference->sceneNode->getLocalVelocity();
+			NI::Point3 direction = NI::Point3(localVelocity.x, localVelocity.y, 0).normalized();*/
 		if (direction.length() > 0) {
 			direction.normalize();
-			return Vector3(direction.x, direction.y, 1.0f) * jumpHeight * 0.707f;
+			return NI::Point3(direction.x, direction.y, 1.0f) * jumpHeight * 0.707f;
 		}
 		else
 		{
-			return Vector3(0.0f, 0.0f, jumpHeight);
+			return NI::Point3(0.0f, 0.0f, jumpHeight);
 		}
 	}
 
-	Vector3 MobileActor::calculateJumpVelocity_lua(sol::optional<sol::table> params) {
-		Vector2 direction = mwse::lua::getOptionalParam<Vector2>(params, "direction", Vector2());
+	NI::Point3 MobileActor::calculateJumpVelocity_lua(sol::optional<sol::table> params) {
+		NI::Point2 direction = mwse::lua::getOptionalParam<NI::Point2>(params, "direction", NI::Point2());
 		return calculateJumpVelocity(direction);
 	}
 
@@ -1093,8 +1093,8 @@ namespace TES3 {
 		return TES3_MobileActor_getSpellList(this);
 	}
 
-	const auto TES3_MobileActor_getCombatSpellList = reinterpret_cast<IteratedList<Spell*> *(__thiscall*)(const MobileActor*)>(0x52B3C0);
-	IteratedList<Spell*> * MobileActor::getCombatSpellList() {
+	const auto TES3_MobileActor_getCombatSpellList = reinterpret_cast<NI::IteratedList<Spell*> *(__thiscall*)(const MobileActor*)>(0x52B3C0);
+	NI::IteratedList<Spell*> * MobileActor::getCombatSpellList() {
 		return TES3_MobileActor_getCombatSpellList(this);
 	}
 

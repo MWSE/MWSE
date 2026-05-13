@@ -3,12 +3,20 @@
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
 
+#include "NIQuaternion.h"
+
 namespace NI {
+	const Matrix33 Matrix33::IDENTITY = {
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
 	Matrix33::Matrix33() : m0(), m1(), m2() {
 
 	}
 
-	Matrix33::Matrix33(const Vector3& outerA, const Vector3& outerB) : Matrix33(
+	Matrix33::Matrix33(const Point3& outerA, const Point3& outerB) : Matrix33(
 		(outerA.x* outerB.x), (outerA.y* outerB.x), (outerA.z* outerB.x),
 		(outerA.x* outerB.y), (outerA.y* outerB.y), (outerA.z* outerB.y),
 		(outerA.x* outerB.z), (outerA.y* outerB.z), (outerA.z* outerB.z)
@@ -16,7 +24,7 @@ namespace NI {
 
 	}
 
-	Matrix33::Matrix33(Vector3* in_m0, Vector3* in_m1, Vector3* in_m2) {
+	Matrix33::Matrix33(Point3* in_m0, Point3* in_m1, Point3* in_m2) {
 		m0 = *in_m0;
 		m1 = *in_m1;
 		m2 = *in_m2;
@@ -36,8 +44,17 @@ namespace NI {
 
 	Matrix33::Matrix33(const Quaternion& quaternion) {
 #if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
-		const auto NI_Matrix33_ctor_fromQuaternion = reinterpret_cast<Matrix33 * (__thiscall*)(Matrix33*, const Quaternion*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
-		return NI_Matrix33_ctor_fromQuaternion(this, &quaternion);
+		const auto NI_Quaternion_toRotation = reinterpret_cast<void(__thiscall*)(const Quaternion*, Matrix33*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
+		NI_Quaternion_toRotation(&quaternion, this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	void Matrix33::fromQuaternion(const Quaternion* quaternion) {
+#if defined(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION) && SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION > 0
+		const auto NI_Quaternion_toRotation = reinterpret_cast<void(__thiscall*)(const Quaternion*, Matrix33*)>(SE_NI_MATRIX33_FNADDR_CTOR_FROMQUATERNION);
+		NI_Quaternion_toRotation(quaternion, this);
 #else
 		throw not_implemented_exception();
 #endif
@@ -45,7 +62,10 @@ namespace NI {
 
 	bool Matrix33::operator==(const Matrix33& matrix) const {
 #if defined(SE_NI_MATRIX33_FNADDR_TESTEQUAL) && SE_NI_MATRIX33_FNADDR_TESTEQUAL > 0
-		const auto NI_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(Matrix33*, const Matrix33*)>(SE_NI_MATRIX33_FNADDR_TESTEQUAL);
+		// `this` is const inside this const-qualified method; the engine's
+		// testEqual does not mutate either operand, so the function-pointer
+		// type takes const Matrix33* on both sides.
+		const auto NI_Matrix33_testEqual = reinterpret_cast<bool(__thiscall*)(const Matrix33*, const Matrix33*)>(SE_NI_MATRIX33_FNADDR_TESTEQUAL);
 		return NI_Matrix33_testEqual(this, &matrix);
 #else
 		return m0 == matrix.m0 && m1 == matrix.m1 && m2 == matrix.m2;
@@ -100,11 +120,11 @@ namespace NI {
 #endif
 	}
 
-	Vector3 Matrix33::operator*(const Vector3& vector) const {
+	Point3 Matrix33::operator*(const Point3& vector) const {
 #if defined(SE_NI_MATRIX33_FNADDR_MULTIPLYVECTOR) && SE_NI_MATRIX33_FNADDR_MULTIPLYVECTOR > 0
-		const auto NI_Matrix33_multiplyVector = reinterpret_cast<Vector3 * (__thiscall*)(const Matrix33*, Vector3*, const Vector3*)>(SE_NI_MATRIX33_FNADDR_MULTIPLYVECTOR);
+		const auto NI_Matrix33_multiplyVector = reinterpret_cast<Point3 * (__thiscall*)(const Matrix33*, Point3*, const Point3*)>(SE_NI_MATRIX33_FNADDR_MULTIPLYVECTOR);
 
-		Vector3 result;
+		Point3 result;
 		NI_Matrix33_multiplyVector(this, &result, &vector);
 		return result;
 #else
@@ -201,17 +221,21 @@ namespace NI {
 #endif
 	}
 
-	void Matrix33::toRotation(float angle, const Vector3& axis) {
+	void Matrix33::toRotation(float angle, float x, float y, float z) {
 #if defined(SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ) && SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ > 0
 		const auto NI_Matrix33_toRotationXYZ = reinterpret_cast<void(__thiscall*)(Matrix33*, float, float, float, float)>(SE_NI_MATRIX33_FNADDR_TOROTATIONXYZ);
 
-		NI_Matrix33_toRotationXYZ(this, angle, axis.x, axis.y, axis.z);
+		NI_Matrix33_toRotationXYZ(this, angle, x, y, z);
 #else
 		throw not_implemented_exception();
 #endif
 	}
 
-	bool Matrix33::toRotationDifference(const Vector3& a, const Vector3& b) {
+	void Matrix33::toRotation(float angle, const Point3& axis) {
+		toRotation(angle, axis.x, axis.y, axis.z);
+	}
+
+	bool Matrix33::toRotationDifference(const Point3& a, const Point3& b) {
 		using se::math::M_PIf;
 
 		auto axis = a.crossProduct(&b);
@@ -297,7 +321,7 @@ namespace NI {
 #endif
 	}
 
-	bool Matrix33::toEulerXYZ(Vector3* vector) const {
+	bool Matrix33::toEulerXYZ(Point3* vector) const {
 		return toEulerXYZ(&vector->x, &vector->y, &vector->z);
 	}
 
@@ -312,14 +336,14 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	std::tuple<Vector3, bool> Matrix33::toEulerXYZ_lua() const {
+	std::tuple<Point3, bool> Matrix33::toEulerXYZ_lua() const {
 		float x, y, z;
 		bool isUnique = toEulerXYZ(&x, &y, &z);
-		return std::make_tuple(Vector3(x, y, z), isUnique);
+		return std::make_tuple(Point3(x, y, z), isUnique);
 	}
 #endif
 
-	bool Matrix33::toEulerZYX(Vector3* vector) const {
+	bool Matrix33::toEulerZYX(Point3* vector) const {
 		return toEulerZYX(&vector->x, &vector->y, &vector->z);
 	}
 
@@ -348,16 +372,47 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	std::tuple<Vector3, bool> Matrix33::toEulerZYX_lua() const {
+	std::tuple<Point3, bool> Matrix33::toEulerZYX_lua() const {
 		float x, y, z = 0.0f;
 		bool isUnique = toEulerZYX(&x, &y, &z);
-		return std::make_tuple(Vector3(x, y, z), isUnique);
+		return std::make_tuple(Point3(x, y, z), isUnique);
 	}
 #endif
 
-	NI::Quaternion Matrix33::toQuaternion() {
+	NI::Quaternion Matrix33::toQuaternion() const {
 		NI::Quaternion result;
 		result.fromRotation(this);
 		return result;
+	}
+
+	Point3 Matrix33::getForwardVector() {
+		return Point3(m0.y, m1.y, m2.y);
+	}
+
+	Point3 Matrix33::getRightVector() {
+		return Point3(m0.x, m1.x, m2.x);
+	}
+
+	Point3 Matrix33::getUpVector() {
+		return Point3(m0.z, m1.z, m2.z);
+	}
+
+	void Matrix33::lookAt(const Point3& direction, const Point3& worldUp) {
+		const auto forward = direction.normalized();
+		auto left = worldUp.crossProduct(&forward);
+		if (left.dotProduct(&left) < se::math::M_NORMALIZE_EPSILON) {
+			left = forward.crossProduct(&Point3::UNIT_NEG_Y);
+		}
+		left.normalize();
+		const auto up = forward.crossProduct(&left);
+		m0.x = -left.x;
+		m1.x = -left.y;
+		m2.x = -left.z;
+		m0.y = forward.x;
+		m1.y = forward.y;
+		m2.y = forward.z;
+		m0.z = up.x;
+		m1.z = up.y;
+		m2.z = up.z;
 	}
 }

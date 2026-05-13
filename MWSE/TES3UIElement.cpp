@@ -1435,7 +1435,7 @@ namespace TES3::UI {
 		auto element = createRect(id, false, randomColor);
 
 		if (!randomColor) {
-			auto color = mwse::lua::getOptionalParamVector3(params, "color");
+			auto color = mwse::lua::getOptionalParamPoint3(params, "color");
 			if (color) {
 				element->colourRed = color.value().x;
 				element->colourGreen = color.value().y;

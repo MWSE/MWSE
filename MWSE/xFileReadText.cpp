@@ -27,7 +27,7 @@ namespace mwse {
 		// Count how many results there should be based on the format string
 		bool stopAtEndOfLine = false;
 		int maxResults = 0;
-		mwse::string::enumerate(format.c_str(), maxResults, stopAtEndOfLine);
+		se::string::enumerate(format.c_str(), maxResults, stopAtEndOfLine);
 		maxResults++;
 
 		// Store results so we can push them on in reverse.
@@ -43,7 +43,7 @@ namespace mwse {
 		}
 
 		// If we did get a string back, secernate and return.
-		mwse::string::secernate(format.c_str(), readString.c_str(), results, maxResults);
+		se::string::secernate(format.c_str(), readString.c_str(), results, maxResults);
 		while (maxResults--) {
 			mwse::Stack::getInstance().pushLong(results[maxResults]);
 		}

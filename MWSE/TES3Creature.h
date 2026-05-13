@@ -4,6 +4,7 @@
 #include "TES3Actor.h"
 
 #include "NINode.h"
+#include "NIRange.h"
 
 namespace TES3 {
 	namespace ActorFlagCreature {
@@ -93,7 +94,7 @@ namespace TES3 {
 		int fatigue; // 0xAC
 		int soul; // 0xB0
 		int skills[3]; // 0xB4
-		Range<int> attacks[3]; // 0xC0
+		NI::Range<int> attacks[3]; // 0xC0
 		int barterGold; // 0xD8
 		SpellList * spellList; // 0xDC
 		void * aiPackageList; // 0xE0
@@ -108,7 +109,7 @@ namespace TES3 {
 
 		std::reference_wrapper<int[8]> getAttributes();
 		std::reference_wrapper<int[3]> getSkills();
-		std::reference_wrapper<Range<int>[3]> getAttacks();
+		std::reference_wrapper<NI::Range<int>[3]> getAttacks();
 
 		int getSoulValue();
 		void setSoulValue(int value);
@@ -136,7 +137,7 @@ namespace TES3 {
 		AIConfig* getBaseAIConfig() const;
 		std::reference_wrapper<int[8]> getBaseAttributes() const;
 		std::reference_wrapper<int[3]> getBaseSkills() const;
-		std::reference_wrapper<Range<int>[3]> getBaseAttacks() const;
+		std::reference_wrapper<NI::Range<int>[3]> getBaseAttacks() const;
 		Creature* getBaseSoundGenerator() const;
 		int getBaseCreatureType() const;
 		SpellList* getBaseSpells() const;

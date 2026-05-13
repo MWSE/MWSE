@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NIDefines.h"
+
 #include "TES3Defines.h"
 
 namespace TES3 {
@@ -39,6 +40,7 @@ namespace TES3 {
 		// Other related static functions.
 		//
 
+		static unsigned int getSerialCount();
 		static void updateActiveMagicEffectIcons();
 	};
 	static_assert(sizeof(MagicInstanceController) == 0x38, "TES3::MagicInstanceController failed size validation");

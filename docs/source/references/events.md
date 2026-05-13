@@ -108,6 +108,7 @@ load                          | `"load"`                          | [`load`](htt
 loaded                        | `"loaded"`                        | [`loaded`](https://mwse.github.io/MWSE/events/loaded)
 lockPick                      | `"lockPick"`                      | [`lockPick`](https://mwse.github.io/MWSE/events/lockPick)
 magicCasted                   | `"magicCasted"`                   | [`magicCasted`](https://mwse.github.io/MWSE/events/magicCasted)
+magicEffectAdded              | `"magicEffectAdded"`              | [`magicEffectAdded`](https://mwse.github.io/MWSE/events/magicEffectAdded)
 magicEffectRemoved            | `"magicEffectRemoved"`            | [`magicEffectRemoved`](https://mwse.github.io/MWSE/events/magicEffectRemoved)
 magicEffectsResolved          | `"magicEffectsResolved"`          | [`magicEffectsResolved`](https://mwse.github.io/MWSE/events/magicEffectsResolved)
 magicSelectionChanged         | `"magicSelectionChanged"`         | [`magicSelectionChanged`](https://mwse.github.io/MWSE/events/magicSelectionChanged)

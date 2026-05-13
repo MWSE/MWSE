@@ -2,7 +2,7 @@
 
 #include "TES3Object.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	enum class DialogueType : unsigned char {
@@ -70,7 +70,7 @@ namespace TES3 {
 	struct Dialogue : BaseObject {
 		char * name; // 0x10
 		DialogueType type; // 0x14
-		IteratedList<DialogueInfo*> info; // 0x18
+		NI::IteratedList<DialogueInfo*> info; // 0x18
 		int journalIndex; // 0x2C
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Dialogue;

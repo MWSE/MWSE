@@ -21,7 +21,7 @@ namespace mwse {
 		bool suppressNull = false;
 		std::string badCodes;
 
-		std::string result = mwse::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
+		std::string result = se::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
 		if (!badCodes.empty()) {
 			mwse::log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
 		}

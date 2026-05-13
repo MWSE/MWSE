@@ -60,8 +60,8 @@ namespace TES3 {
 		return vfx;
 	}
 
-	const auto TES3_VFXManager_createAtPosition = reinterpret_cast<VFX * (__thiscall*)(VFXManager*, unsigned int, PhysicalObject*, Vector3*, int, float, float, float)>(0x468470);
-	VFX* VFXManager::createAtPosition(unsigned int serial, PhysicalObject* effect, Vector3* position, int animLoopCount, float lifespan, float scale, float verticalOffset) {
+	const auto TES3_VFXManager_createAtPosition = reinterpret_cast<VFX * (__thiscall*)(VFXManager*, unsigned int, PhysicalObject*, NI::Point3*, int, float, float, float)>(0x468470);
+	VFX* VFXManager::createAtPosition(unsigned int serial, PhysicalObject* effect, NI::Point3* position, int animLoopCount, float lifespan, float scale, float verticalOffset) {
 		auto vfx = TES3_VFXManager_createAtPosition(this, serial, effect, position, animLoopCount, lifespan, scale, verticalOffset);
 		if (vfx && mwse::lua::event::VFXCreatedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::VFXCreatedEvent(vfx, "position"));

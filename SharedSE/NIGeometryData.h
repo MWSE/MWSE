@@ -2,7 +2,7 @@
 
 #include "NIBound.h"
 #include "NIObject.h"
-#include "NIVector2.h"
+#include "NIPoint2.h"
 
 namespace NI {
 	struct GeometryData_vTable : Object_vTable {
@@ -16,10 +16,10 @@ namespace NI {
 		unsigned short vertexCount; // 0x8
 		unsigned short textureSets; // 0xA
 		Bound bounds; // 0xC
-		Vector3* vertex; // 0x1C
-		Vector3* normal; // 0x20
+		Point3* vertex; // 0x1C
+		Point3* normal; // 0x20
 		PackedColor* color; // 0x24
-		Vector2* textureCoords; // 0x28
+		Point2* textureCoords; // 0x28
 		unsigned int uniqueID; // 0x2C
 		unsigned short revisionID; // 0x30
 		bool unknown_0x32;
@@ -34,9 +34,18 @@ namespace NI {
 		// Custom functions.
 		//
 
-		nonstd::span<Vector3> getVertices() const;
+		nonstd::span<PackedColor> getColors();
+		nonstd::span<Point3> getVertices();
+		nonstd::span<Point3> getActiveVertices();
+		nonstd::span<Point3> getNormals();
+		nonstd::span<Point2> getTextureCoordinates();
+
 		void markAsChanged();
 		void updateModelBound();
 	};
 	static_assert(sizeof(GeometryData) == 0x34, "NI::GeometryData failed size validation");
 }
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::GeometryData)
+#endif

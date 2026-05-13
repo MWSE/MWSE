@@ -77,7 +77,7 @@ void VirtualMachine::setHookContext(HookContext context)
 	this->context = context;
 }
 
-HookContext VirtualMachine::getHookContext()
+se::memory::HookContext VirtualMachine::getHookContext()
 {
 	return this->context;
 }
@@ -532,7 +532,7 @@ mwseString& VirtualMachine::getString(long fromStack)	//ask grant, need a '*' or
 	// Invalid ID. Return an empty string.
 	if (fromStack == 0x0)
 	{
-		return mwse::string::store::create("");
+		return se::string::store::create("");
 	}
 
 	// Small enough to fit in the script as a literal string. Parse it from the script
@@ -550,26 +550,26 @@ mwseString& VirtualMachine::getString(long fromStack)	//ask grant, need a '*' or
 
 		char* string = reinterpret_cast<char*>(scriptstream);
 
-		return mwse::string::store::getOrCreate(string, strlen);
+		return se::string::store::getOrCreate(string, strlen);
 	}
 
 	// If it's not in the script, it might be in storage.
-	else if (mwse::string::store::exists(fromStack))
+	else if (se::string::store::exists(fromStack))
 	{
-		return mwse::string::store::get(fromStack);
+		return se::string::store::get(fromStack);
 	}
 
 	// If it's not in storage, but is probably not a char*, return an empty string and log a message.
 	else if (fromStack < 0x3F0000) {
 		mwse::log::getLog() << "ERROR: Script '" << script->getObjectID() << "' in game file '" << (script->sourceMod != nullptr ? script->sourceMod->filename : "{N/A}") << "' contained garbage string reference! String references cannot be stored across saves." << std::endl;
-		return mwse::string::store::create("");
+		return se::string::store::create("");
 	}
 
 	// Otherwise, assume it's a char*, though we should never hit this case.
 	else
 	{
 		const char* string = reinterpret_cast<char*>(fromStack);
-		return mwse::string::store::getOrCreate(string);
+		return se::string::store::getOrCreate(string);
 	}
 }
 

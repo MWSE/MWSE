@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33122.133
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11723.231 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MWSE", "MWSE\MWSE.vcxproj", "{CF29BC49-506F-4555-8849-5D59F2519D53}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -13,8 +13,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MWSE-Update", "MWSE-Update\MWSE-Update.csproj", "{1656E43D-6595-41FF-BCCA-C26CE9F1793F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lpeg", "deps\lpeg\lpeg.vcxproj", "{98486B79-9258-45CD-B357-36B7CE809788}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MWSE-Tests", "MWSE-Tests\MWSE-Tests.vcxproj", "{21986B2A-9A0A-4630-BE82-A270232159F2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedSE", "SharedSE\SharedSE.vcxitems", "{AABD3611-7360-404E-996C-26462E50A8A5}"
 EndProject
@@ -42,10 +40,6 @@ Global
 		{98486B79-9258-45CD-B357-36B7CE809788}.Debug|x86.Build.0 = Debug|Win32
 		{98486B79-9258-45CD-B357-36B7CE809788}.Release|x86.ActiveCfg = Release|Win32
 		{98486B79-9258-45CD-B357-36B7CE809788}.Release|x86.Build.0 = Release|Win32
-		{21986B2A-9A0A-4630-BE82-A270232159F2}.Debug|x86.ActiveCfg = Debug|Win32
-		{21986B2A-9A0A-4630-BE82-A270232159F2}.Debug|x86.Build.0 = Debug|Win32
-		{21986B2A-9A0A-4630-BE82-A270232159F2}.Release|x86.ActiveCfg = Release|Win32
-		{21986B2A-9A0A-4630-BE82-A270232159F2}.Release|x86.Build.0 = Release|Win32
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Debug|x86.ActiveCfg = Debug|Win32
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Debug|x86.Build.0 = Debug|Win32
 		{50562D0F-55B1-49EA-BDBE-D6922BE5957D}.Release|x86.ActiveCfg = Release|Win32
@@ -60,5 +54,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedSE\SharedSE.vcxitems*{50562d0f-55b1-49ea-bdbe-d6922be5957d}*SharedItemsImports = 4
 		SharedSE\SharedSE.vcxitems*{aabd3611-7360-404e-996c-26462e50a8a5}*SharedItemsImports = 9
+		SharedSE\SharedSE.vcxitems*{cf29bc49-506f-4555-8849-5d59f2519d53}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
