@@ -367,34 +367,47 @@ namespace TES3 {
 		}
 	}
 
+	void __cdecl MagicEffectDispatch(EffectID::EffectID effectId, MagicSourceInstance* sourceInstance, float deltaTime, MagicEffectInstance* effectInstance, int effectIndex);
+
 	__declspec(naked) static void PatchMagicEffectDispatchStateChangeEvents() {
 		__asm {
 			// Preserve fields before the effect dispatch mutates the stack-local MagicEffectInstance.
 			push dword ptr [ebp - 0x84]
 			push dword ptr [ebp - 0x7C]
 
-			// Replaced code: data_mgefDispatchTable[effectId](sourceInstance, deltaTime, effectInstance, effectIndex).
+			// Replaced code: dispatch the effect tick. Route through MWSE's dispatcher so custom
+			// effect ids do not index beyond the vanilla dispatch table.
 			push edi
 			lea edx, [ebp - 0x90]
 			push edx
 			push eax
 			push esi
-			call dword ptr [ecx * 4 + 0x7884B0]
-			add esp, 0x10
+			push ecx
+			call MagicEffectDispatch
+			add esp, 0x14
 
 			// Trigger MWSE events for begin/retire transitions on this individual effect.
-			pop edx
-			pop ecx
-			mov eax, [ebp - 0x7C]
-			push eax
+			pushfd
+			pushad
+
+			mov eax, [esp + 0x24]
+			mov ecx, [esp + 0x28]
+			mov edx, [ebp - 0x7C]
 			push edx
+			push eax
 			push ecx
-			push edi
+			mov eax, [ebp - 0x28]
+			push eax
 			lea ecx, [ebp - 0x90]
 			push ecx
-			push esi
+			mov edx, [ebp - 0x4C]
+			push edx
 			call TriggerMagicEffectStateChangeEvent
 			add esp, 0x18
+
+			popad
+			popfd
+			add esp, 0x8
 
 			// Replaced code: branch based on the post-dispatch state.
 			mov eax, [ebp - 0x7C]
@@ -601,7 +614,7 @@ namespace TES3 {
 	}
 
 	// Rewrite of the enchanting population code to make use of our custom effect collection.
-	const auto TES3_UI_SortEnchantingMenu = reinterpret_cast<void(__stdcall*)()>(0x5C36D0);
+	const auto TES3_UI_SortEnchantingMenu = reinterpret_cast<void(__cdecl*)()>(0x5C36D0);
 	void __cdecl PopulateEnchantingMenu() {
 		auto menuEnchanting = UI::findMenu(*reinterpret_cast<UI::UI_ID*>(0x7D36BC));
 		if (menuEnchanting == nullptr) {
