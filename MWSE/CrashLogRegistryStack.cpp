@@ -33,7 +33,7 @@ namespace CrashLogger {
 			const auto cstr = static_cast<const char*>(object);
 			std::size_t len = 0;
 			for (auto itt = cstr; *itt != '\0'; ++itt) {
-				if (!mwse::string::is_printable(*itt)) {
+				if (!se::string::is_printable(*itt)) {
 					return false;
 				}
 				len++;

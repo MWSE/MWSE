@@ -71,8 +71,8 @@ namespace mwse::lua {
 			usertypeDefinition["lerp"] = &NI::Color::lerp;
 			usertypeDefinition["clamp"] = &NI::Color::clamp;
 
-			// Conversion to TES3::Vector3.
-			usertypeDefinition["toVector3"] = &NI::Color::toVector3;
+			// Conversion to NI::Point3. Legacy naming.
+			usertypeDefinition["toVector3"] = &NI::Color::toPoint3;
 		}
 
 		// NiColorA

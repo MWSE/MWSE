@@ -84,7 +84,7 @@ namespace TES3 {
 			dtor(this);
 		}
 	};
-	static_assert(sizeof(LoadTempMeshNode) == sizeof(TES3::HashMap<char*, NI::Pointer<NI::AVObject>>::Node), "Temp mesh load node size mismatch!");
+	static_assert(sizeof(LoadTempMeshNode) == sizeof(NI::HashMap<char*, NI::Pointer<NI::AVObject>>::Node), "Temp mesh load node size mismatch!");
 
 	NI::Pointer<NI::Node> MeshData::loadMeshUncached(const char* rawPath) {
 		// Allow changing the desired mesh path.
@@ -368,8 +368,8 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFaction(this, id);
 	}
 
-	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, bool, int)>(0x4B96F0);
-	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, Vector3* position, bool searchForExteriorDoorMarker, int ignored) {
+	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, bool, int)>(0x4B96F0);
+	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int ignored) {
 		return TES3_NonDynamicData_findClosestExteriorReferenceOfObject(this, object, position, searchForExteriorDoorMarker, ignored);
 	}
 
@@ -413,8 +413,8 @@ namespace TES3 {
 		return magicEffects->getEffectObject(id);
 	}
 
-	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
-	Reference* NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
+	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, NI::Point3*, bool&, Reference*, Cell*)>(0x4C0E80);
+	Reference* NonDynamicData::createReference(PhysicalObject* object, NI::Point3* position, NI::Point3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
 		return TES3_NonDynamicData_createReference(this, object, position, orientation, cellWasCreated, existingReference, cell);
 	}
 
@@ -454,7 +454,7 @@ namespace TES3 {
 		return nonstd::span(activeMods, activeModCount);
 	}
 
-	IteratedList<GlobalVariable*>* NonDynamicData::getGlobalsList() const {
+	NI::IteratedList<GlobalVariable*>* NonDynamicData::getGlobalsList() const {
 		if (globals == nullptr) {
 			return nullptr;
 		}
@@ -485,11 +485,11 @@ namespace TES3 {
 		return *reinterpret_cast<TES3::DataHandler**>(0x7C67E0);
 	}
 
-	Vector3 DataHandler::getLastExteriorPosition() const {
+	NI::Point3 DataHandler::getLastExteriorPosition() const {
 		if (currentInteriorCell && lastExteriorCellPositionX != INT_MAX && lastExteriorCellPositionY != INT_MAX) {
 			const auto x = float(lastExteriorCellPositionX * TES3::Cell::exteriorGridWidth);
 			const auto y = float(lastExteriorCellPositionY * TES3::Cell::exteriorGridWidth);
-			return Vector3(x, y, 0.0f);
+			return NI::Point3(x, y, 0.0f);
 		}
 		else {
 			auto macp = TES3::WorldController::get()->getMobilePlayer();
@@ -501,12 +501,12 @@ namespace TES3 {
 		return *reinterpret_cast<float*>(0x7B217C);
 	}
 
-	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, float*)>(0x48E410);
-	bool DataHandler::getLandHeightAtPosition(const Vector3& position, float* out_height) const {
+	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, float*)>(0x48E410);
+	bool DataHandler::getLandHeightAtPosition(const NI::Point3& position, float* out_height) const {
 		return TES3_NonDynamicData_getLandHeightAtPosition(this, position, out_height);
 	}
 
-	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const Vector3& position) const {
+	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const NI::Point3& position) const {
 		float result = 0.0f;
 		if (!getLandHeightAtPosition(position, &result)) {
 			return {};
@@ -514,21 +514,21 @@ namespace TES3 {
 		return result;
 	}
 
-	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, Vector3&)>(0x48E530);
-	bool DataHandler::getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const {
+	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, NI::Point3&)>(0x48E530);
+	bool DataHandler::getLandNormalAtPosition(const NI::Point3& position, NI::Point3& out_normal) const {
 		return TES3_NonDynamicData_getLandNormalAtPosition(this, position, out_normal);
 	}
 
-	sol::optional<Vector3> DataHandler::getLandNormalAtPosition_lua(const Vector3& position) const {
-		Vector3 normal;
+	sol::optional<NI::Point3> DataHandler::getLandNormalAtPosition_lua(const NI::Point3& position) const {
+		NI::Point3 normal;
 		if (!getLandNormalAtPosition(position, normal)) {
 			return {};
 		}
 		return normal;
 	}
 
-	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const Vector3&)>(0x48E660);
-	NI::TriShape* DataHandler::getLandShapeAtPosition(const Vector3& position) const {
+	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const NI::Point3&)>(0x48E660);
+	NI::TriShape* DataHandler::getLandShapeAtPosition(const NI::Point3& position) const {
 		return TES3_NonDynamicData_getLandShapeAtPosition(this, position);
 	}
 
@@ -666,8 +666,8 @@ namespace TES3 {
 	}
 
 	std::tuple<int, int> DataHandler::getCellBufferSize() const {
-		using gExteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B48>;
-		using gInteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B10>;
+		using gExteriorCellBufferSize = se::memory::ExternalGlobal<int, 0x7C9B48>;
+		using gInteriorCellBufferSize = se::memory::ExternalGlobal<int, 0x7C9B10>;
 		return { gInteriorCellBufferSize::get(), gExteriorCellBufferSize::get() };
 	}
 

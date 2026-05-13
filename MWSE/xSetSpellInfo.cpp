@@ -76,10 +76,10 @@ namespace mwse {
 
 			// Expand name length if needed.
 			if (spell->name == nullptr) {
-				spell->name = (char*)tes3::_new(32);
+				spell->name = (char*)se::memory::_new(32);
 			}
 			else if (name.length() > strlen(spell->name)) {
-				spell->name = reinterpret_cast<char*>(tes3::realloc(spell->name, 32));
+				spell->name = reinterpret_cast<char*>(se::memory::realloc(spell->name, 32));
 			}
 
 			// Copy name over.

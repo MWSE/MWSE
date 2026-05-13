@@ -36,7 +36,7 @@ namespace mwse {
 					if (type == TES3::ObjectType::NPC) {
 						id = owner->vTable.object->getObjectID(owner);
 						if (varNode->requiredVariable) {
-							rank = mwse::string::store::getOrCreate(varNode->requiredVariable->name);
+							rank = se::string::store::getOrCreate(varNode->requiredVariable->name);
 						}
 					}
 					else if (type == TES3::ObjectType::Faction) {

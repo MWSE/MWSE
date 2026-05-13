@@ -3,8 +3,8 @@
 #include "NIDefines.h"
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
-#include "TES3LinkedObjectsList.h"
+#include "LinkedObjectsList.h"
+#include "NIIteratedList.h"
 
 #include "NINode.h"
 
@@ -19,6 +19,7 @@ int sol_lua_push(sol::types<T>, lua_State* L, const T& obj) { return obj.getOrCr
 int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOrCreateLuaObject(L).push(L); }
 
 namespace TES3 {
+	using se::LinkedObjectList;
 
 	//
 	// Object types. They are char[4], or can be interpreted as a 32-bit integer.
@@ -181,7 +182,7 @@ namespace TES3 {
 		Enchantment* (__thiscall* getEnchantment)(const Object*); // 0xD0
 		Enchantment* (__thiscall* setEnchantment)(Object*, Enchantment*); // 0xD4
 		AIConfig* (__thiscall* getAIConfig)(const Object*); // 0xD8
-		IteratedList<AIConfig>* (__thiscall* getAIConfigsList)(Object*); // 0xDC
+		NI::IteratedList<AIConfig>* (__thiscall* getAIConfigsList)(Object*); // 0xDC
 		void (__thiscall* resolveInternalIDs)(Object*, NonDynamicData*); // 0xE0
 		void* unknown_0xE4;
 		bool (__thiscall* getAutoCalc)(const Object*); // 0xE8
@@ -389,18 +390,18 @@ namespace TES3 {
 	struct PhysicalObjectVirtualTable : ObjectVirtualTable {
 		NI::Node* (__thiscall* cloneNewModelWithBodyParts)(PhysicalObject*, Reference*); // 0x13C
 		bool (__thiscall* reloadBaseModel)(PhysicalObject*, const char*); // 0x140
-		IteratedList<BaseObject*>* (__thiscall* getStolenList)(PhysicalObject*); // 0x144
+		NI::IteratedList<BaseObject*>* (__thiscall* getStolenList)(PhysicalObject*); // 0x144
 	};
 
 	struct PhysicalObject : Object {
-		BoundingBox* boundingBox; // 0x28
+		NI::BoundingBox* boundingBox; // 0x28
 		char* objectID; // 0x2C
 
 		//
 		// Function wrappers for our virtual table.
 		//
 
-		IteratedList<BaseObject*>* getStolenList();
+		NI::IteratedList<BaseObject*>* getStolenList();
 
 		//
 		// Other related this-call functions.
@@ -418,7 +419,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		BoundingBox* getOrCreateBoundingBox();
+		NI::BoundingBox* getOrCreateBoundingBox();
 
 		Reference* getReference() const;
 

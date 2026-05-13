@@ -93,6 +93,10 @@ namespace NI {
 		std::string toString() const;
 		std::string toJson() const;
 
+#if defined(SE_NI_OBJECT_FNADDR_REGISTERSTREAMABLES) && SE_NI_OBJECT_FNADDR_REGISTERSTREAMABLES > 0
+		static constexpr auto _registerStreamables = reinterpret_cast<bool(__thiscall*)(Object*, Stream*)>(SE_NI_OBJECT_FNADDR_REGISTERSTREAMABLES);
+#endif
+
 	};
 	static_assert(sizeof(Object) == 0x8, "NI::Object failed size validation");
 

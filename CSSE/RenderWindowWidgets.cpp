@@ -6,9 +6,11 @@
 #include "CSModelLoader.h"
 
 #include "NICamera.h"
+#include "NIGeometry.h"
 #include "NIMatrix33.h"
 #include "NILines.h"
 #include "NILinesData.h"
+#include "NISwitchNode.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
@@ -22,37 +24,37 @@ namespace se::cs::dialog::render_window {
 			return;
 		}
 		{
-			auto object = root->getObjectByNameAndType("axisLines", NI::RTTIStaticPtr::NiSwitchNode);
+			auto object = root->getObjectByNameAndType<NI::SwitchNode>("axisLines", NI::RTTIStaticPtr::NiSwitchNode);
 			if (object) {
-				axisLines = static_cast<NI::SwitchNode*>(object);
+				axisLines = object;
 				axisLines->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("gridRoot", NI::RTTIStaticPtr::NiNode);
+			auto object = root->getObjectByNameAndType<NI::Node>("gridRoot", NI::RTTIStaticPtr::NiNode);
 			if (object) {
-				gridRoot = static_cast<NI::Node*>(object);
+				gridRoot = object;
 				gridRoot->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitPlane", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitPlane", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitPlane = static_cast<NI::Geometry*>(object);
+				debugUnitPlane = object;
 				debugUnitPlane->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitSphere", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitSphere", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitSphere = static_cast<NI::Geometry*>(object);
+				debugUnitSphere = object;
 				debugUnitSphere->setAppCulled(true);
 			}
 		}
 		{
-			auto object = root->getObjectByNameAndType("unitArrows", NI::RTTIStaticPtr::NiGeometry);
+			auto object = root->getObjectByNameAndType<NI::Geometry>("unitArrows", NI::RTTIStaticPtr::NiGeometry);
 			if (object) {
-				debugUnitArrows = static_cast<NI::Geometry*>(object);
+				debugUnitArrows = object;
 				debugUnitArrows->setAppCulled(true);
 			}
 		}
@@ -84,7 +86,7 @@ namespace se::cs::dialog::render_window {
 		return axisLines && !axisLines->getAppCulled();
 	}
 
-	void WidgetsController::setPosition(NI::Vector3& position) {
+	void WidgetsController::setPosition(NI::Point3& position) {
 		if (axisLines) {
 			axisLines->localTranslate = position;
 			axisLines->update();
@@ -177,7 +179,7 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
-	void WidgetsController::updateGridPosition(NI::Vector3 position, bool snapX, bool snapY, bool snapZ, int gridSnap) {
+	void WidgetsController::updateGridPosition(NI::Point3 position, bool snapX, bool snapY, bool snapZ, int gridSnap) {
 		if (!gridRoot) {
 			return;
 		}
@@ -198,7 +200,7 @@ namespace se::cs::dialog::render_window {
 		// Set rotation
 		// If we're moving on Z axis, align the grid vertically.
 		if (snapZ) {
-			const auto worldUp = NI::Vector3(0, 0, 1);
+			const auto worldUp = NI::Point3(0, 0, 1);
 			auto camera = RenderController::get()->camera;
 
 			auto up = position - camera->worldTransform.translation;
@@ -300,12 +302,12 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
-	void WidgetsController::updateAngleGuidePosition(NI::Vector3 position, bool snapX, bool snapY, bool snapZ, int gridSnap) {
+	void WidgetsController::updateAngleGuidePosition(NI::Point3 position, bool snapX, bool snapY, bool snapZ, int gridSnap) {
 		if (!gridRoot) {
 			return;
 		}
 
-		auto direction = NI::Vector3(0.0, 0.0, 1.0);
+		auto direction = NI::Point3(0.0, 0.0, 1.0);
 		if (snapX) {
 			direction.x = 1.0f;
 		}
@@ -317,7 +319,7 @@ namespace se::cs::dialog::render_window {
 		}
 
 		NI::Matrix33 rotation;
-		rotation.toRotationDifference(NI::Vector3(0, 0, 1), direction);
+		rotation.toRotationDifference(NI::Point3(0, 0, 1), direction);
 		gridRoot->setLocalRotationMatrix(&rotation);
 		gridRoot->localTranslate = position;
 		gridRoot->localScale = 1.0;

@@ -55,7 +55,7 @@ namespace mwse::lua {
 						}
 					}
 				}
-				bool passesPrefix = prefix.empty() ? true : nodeChild->name && mwse::string::starts_with(nodeChild->name, prefix);
+				bool passesPrefix = prefix.empty() ? true : nodeChild->name && se::string::starts_with(nodeChild->name, prefix);
 				if (passesFilter && passesPrefix) {
 					queue.push(nodeChild);
 				}
@@ -77,7 +77,7 @@ namespace mwse::lua {
 					}
 				}
 			}
-			bool passesPrefix = prefix.empty() ? true : child->name && mwse::string::starts_with(child->name, prefix);
+			bool passesPrefix = prefix.empty() ? true : child->name && se::string::starts_with(child->name, prefix);
 			if (passesFilter && passesPrefix) {
 				queue.push(child);
 			}

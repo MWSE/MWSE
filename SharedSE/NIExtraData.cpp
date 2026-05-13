@@ -34,7 +34,7 @@ namespace NI {
 	
 	StringExtraData::~StringExtraData() {
 #if defined(SE_NI_STRINGEXTRADATA_FNADDR_DTOR) && SE_NI_STRINGEXTRADATA_FNADDR_DTOR > 0
-		const auto NI_StringExtraData_dtor = reinterpret_cast<void(__thiscall*)(NI::StringExtraData*)>(0x6E1530);
+		const auto NI_StringExtraData_dtor = reinterpret_cast<void(__thiscall*)(NI::StringExtraData*)>(SE_NI_STRINGEXTRADATA_FNADDR_DTOR);
 		NI_StringExtraData_dtor(this);
 #else
 		throw not_implemented_exception();

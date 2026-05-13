@@ -22,15 +22,15 @@ namespace TES3 {
 		// Operator delete handles the SoundBuffer struct itself.
 		if (lpSound3DBuffer) lpSound3DBuffer->Release();
 		if (lpSoundBuffer) lpSoundBuffer->Release();
-		if (rawAudio) mwse::tes3::_delete(rawAudio);
+		if (rawAudio) se::memory::_delete(rawAudio);
 	}
 
 	void* SoundBuffer::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 
 	void SoundBuffer::operator delete(void* p) {
-		mwse::tes3::free(p);
+		se::memory::free(p);
 	}
 
 	Sound::Sound() {

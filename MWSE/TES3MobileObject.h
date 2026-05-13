@@ -1,12 +1,12 @@
 #pragma once
 
 #include "TES3Defines.h"
+#include "TES3Object.h"
 
 #include "NIDefines.h"
 #include "NINode.h"
-
-#include "TES3Object.h"
-#include "TES3Vectors.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 // Must be added to header files that declare types that can be derived.
 #define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_MOBILEOBJECT(T) \
@@ -125,9 +125,9 @@ namespace TES3 {
 		void (__thiscall* setCollisionActive)(MobileObject*); // 0x34
 		void (__thiscall* clearCollisionActive)(MobileObject*); // 0x38
 		void (__thiscall* setupCollision)(MobileObject*); // 0x3C
-		void (__thiscall* setPosition)(MobileObject*, Vector3*); // 0x40
+		void (__thiscall* setPosition)(MobileObject*, NI::Point3*); // 0x40
 		void (__thiscall* setFacing)(MobileObject*, float); // 0x44
-		Matrix33* (__thiscall* getOrientation)(MobileObject*, Matrix33*); // 0x48
+		NI::Matrix33* (__thiscall* getOrientation)(MobileObject*, NI::Matrix33*); // 0x48
 		void (__thiscall* setReference)(MobileObject*); // 0x4C
 		void (__thiscall* jumpingFalling)(MobileObject*, bool); // 0x50
 		void (__thiscall* setSlopeSliding)(MobileObject*, bool); // 0x54
@@ -140,7 +140,7 @@ namespace TES3 {
 		void (__thiscall* enterLeaveSimulation)(MobileObject*, bool); // 0x70
 		void (__thiscall* setActorFlag8)(MobileObject*, bool); // 0x74
 		void (__thiscall* setActorFlag40)(MobileObject*, bool); // 0x78
-		bool (__thiscall* findDropPointOnCollider)(MobileObject*, float, NI::AVObject*, float*, Vector3*); // 0x7C
+		bool (__thiscall* findDropPointOnCollider)(MobileObject*, float, NI::AVObject*, float*, NI::Point3*); // 0x7C
 		bool (__thiscall* onActorCollision)(MobileProjectile*, int); // 0x80
 		bool (__thiscall* onObjectCollision)(MobileProjectile*, int, bool); // 0x84
 		bool (__thiscall* onTerrainCollision)(MobileProjectile*, int); // 0x88
@@ -178,7 +178,7 @@ namespace TES3 {
 		void (__thiscall* onNewProjectile)(MobileActor*); // 0xF8
 		void (__thiscall* resolveArrowBone)(MobileActor*); // 0xFC
 		void (__thiscall* setArrowBone)(MobileActor*, NI::Node*); // 0x100
-		bool (__thiscall* dropObjectRayTests)(MobileActor*, float, NI::Node*, float*, Vector3*, unsigned char*); // 0x104
+		bool (__thiscall* dropObjectRayTests)(MobileActor*, float, NI::Node*, float*, NI::Point3*, unsigned char*); // 0x104
 	};
 	static_assert(sizeof(MobileActor_vTable) == 0x108, "TES3::MobileActor_vTable failed size validation");
 
@@ -202,9 +202,9 @@ namespace TES3 {
 
 			bool valid; // 0x0
 			float time; // 0x4
-			TES3::Vector3 point; // 0x8
-			TES3::Vector3 objectPosAtCollision; // 0x14
-			TES3::Vector3 velocity; // 0x20
+			NI::Point3 point; // 0x8
+			NI::Point3 objectPosAtCollision; // 0x14
+			NI::Point3 velocity; // 0x20
 			NI::Pointer<NI::Node> colliderRoot; // 0x2C
 			TES3::Reference * colliderRef; // 0x30
 			NI::Pointer<NI::Node> node_34; // 0x34
@@ -218,7 +218,7 @@ namespace TES3 {
 
 			static constexpr float QUANTIZER = 1.0f / 32767.0f;
 
-			Vector3 getNormal() const;
+			NI::Point3 getNormal() const;
 
 			void clone(Collision* from);
 
@@ -251,14 +251,14 @@ namespace TES3 {
 		short unknown_0x26;
 		float collisionDeltaTime; // 0x28
 		float height; // 0x2C
-		Vector2 boundSize; // 0x30
+		NI::Point2 boundSize; // 0x30
 		float simulationDistance; // 0x38
-		Vector3 velocity; // 0x3C
-		Vector3 impulseVelocity; // 0x48
-		Vector3 positionAtLastLightUpdate; // 0x54
+		NI::Point3 velocity; // 0x3C
+		NI::Point3 impulseVelocity; // 0x48
+		NI::Point3 positionAtLastLightUpdate; // 0x54
 		NI::CollisionGroup * collisionGroup; // 0x60
 		float thisFrameDistanceMoved; // 0x64
-		Vector3 thisFrameDeltaPosition; // 0x68
+		NI::Point3 thisFrameDeltaPosition; // 0x68
 		float lastCollidePointZ; // 0x74
 		LightData * lightMagicEffectData; // 0x78
 		unsigned char countCollisionResults; // 0x7C
@@ -288,12 +288,12 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		void setFootPoint(const Vector3* point);
-		void setInstantVelocity(const Vector3* velocity);
-		void updateConstantVelocity(const Vector3* velocity);
+		void setFootPoint(const NI::Point3* point);
+		void setInstantVelocity(const NI::Point3* velocity);
+		void updateConstantVelocity(const NI::Point3* velocity);
 		void resetCollisionGroup();
 		void enterLeaveSimulationByDistance();
-		IteratedList<ItemStack*>* getInventory() const;
+		NI::IteratedList<ItemStack*>* getInventory() const;
 		bool getBasePositionIsUnderwater() const;
 		void setLightEffectFalloff(unsigned int radius);
 		void setLightEffectDiffuseCol(const NI::Color& colour);
@@ -303,15 +303,15 @@ namespace TES3 {
 		// Lua interface functions.
 		//
 
-		Vector3 getBoundSize() const;
-		void setBoundSize(const Vector3&);
-		Vector3* getImpulseVelocity();
+		NI::Point3 getBoundSize() const;
+		void setBoundSize(const NI::Point3&);
+		NI::Point3* getImpulseVelocity();
 		void setImpulseVelocityFromLua(sol::stack_object);
 		LightData* getLightEffectData() const;
-		Vector3* getPosition() const;
+		NI::Point3* getPosition() const;
 		void setPositionFromLua(sol::stack_object);
 		void setLightEffectDiffuseCol_lua(sol::object object);
-		Vector3* getVelocity();
+		NI::Point3* getVelocity();
 		void setVelocityFromLua(sol::stack_object);
 
 		bool getMobileObjectFlag(MobileActorFlag::Flag flag) const;

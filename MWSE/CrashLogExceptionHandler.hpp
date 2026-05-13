@@ -77,9 +77,9 @@ namespace CrashLogger::PDB {
 	inline std::string GetClassNameFromPDB(void* object) {
 		std::string name;
 		GetClassNameFromPDBSEH(object, name);
-		mwse::string::strip_start(name, "vtbl_");
-		mwse::string::strip_start(name, "sg_");
-		mwse::string::strip_end(name, "+0x0");
+		se::string::strip_start(name, "vtbl_");
+		se::string::strip_start(name, "sg_");
+		se::string::strip_end(name, "+0x0");
 		return name;
 	}
 

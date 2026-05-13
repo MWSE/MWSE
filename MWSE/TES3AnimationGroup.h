@@ -2,6 +2,8 @@
 
 #include "TES3Object.h"
 
+#include "TES3Defines.h"
+
 namespace TES3 {
 	struct AnimationGroup : BaseObject {
 		struct SoundGenKey {

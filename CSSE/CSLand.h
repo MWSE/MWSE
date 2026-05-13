@@ -6,7 +6,7 @@
 #include "NIColor.h"
 #include "NINode.h"
 #include "NITriShape.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 namespace se::cs {
 	struct Land : BaseObject {
@@ -18,8 +18,8 @@ namespace se::cs {
 			};
 			T data[17][17];
 		};
-		using VertexBlock = Block<NI::Vector3>;
-		using VertexNormalBlock = Block<NI::Vector3>;
+		using VertexBlock = Block<NI::Point3>;
+		using VertexNormalBlock = Block<NI::Point3>;
 		using VertexColorBlock = Block<NI::PackedColor>;
 
 		NI::Pointer<NI::Node> sceneNode; // 0x10

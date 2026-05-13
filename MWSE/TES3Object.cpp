@@ -49,6 +49,7 @@
 #include "TES3WorldController.h"
 
 #include "NIBound.h"
+#include "NIBoundingBox.h"
 
 #include "TES3UIMenuController.h"
 
@@ -64,11 +65,11 @@
 
 namespace TES3 {
 	void* BaseObject::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 
 	void BaseObject::operator delete(void* address) {
-		mwse::tes3::_delete(address);
+		se::memory::_delete(address);
 	}
 
 	const auto BaseObject_dtor = reinterpret_cast<TES3::BaseObject * (__thiscall*)(TES3::BaseObject*)>(0x4F0CA0);
@@ -799,7 +800,7 @@ namespace TES3 {
 	// PhysicalObject
 	//
 
-	IteratedList<BaseObject*> * PhysicalObject::getStolenList() {
+	NI::IteratedList<BaseObject*> * PhysicalObject::getStolenList() {
 		return vTable.physical->getStolenList(this);
 	}
 
@@ -823,7 +824,7 @@ namespace TES3 {
 		return TES3_PhysicalObject_getMobile(this);
 	}
 
-	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, Vector3& out_min, Vector3& out_max) {
+	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, NI::Point3& out_min, NI::Point3& out_max) {
 		// We can reuse bounding volumes if one is available.
 		const auto abv = object->modelABV;
 		if (abv && abv->getType() == NI::BoundingVolumeType::Box) {
@@ -842,14 +843,14 @@ namespace TES3 {
 			asNode->update();
 		}
 
-		const Vector3 extent = (out_max - out_min) * 0.5f;
-		const Vector3 center = extent + out_min;
-		auto newABV = NI::BoxBoundingVolume::create(extent, center, Vector3::UNIT_X, Vector3::UNIT_Y, Vector3::UNIT_Z);
+		const NI::Point3 extent = (out_max - out_min) * 0.5f;
+		const NI::Point3 center = extent + out_min;
+		auto newABV = NI::BoxBoundingVolume::create(extent, center, NI::Point3::UNIT_X, NI::Point3::UNIT_Y, NI::Point3::UNIT_Z);
 		object->setModelSpaceABV(newABV);
 	}
 
-	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*)>(0x4EF1D0);
-	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, Vector3*, Vector3*, const Vector3*, const Matrix33*, const float*)>(0x4EF410);
+	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*)>(0x4EF1D0);
+	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*, const NI::Point3*, const NI::Matrix33*, const float*)>(0x4EF410);
 	void PhysicalObject::createBoundingBox() {
 		if (!sceneNode) {
 			return;
@@ -863,15 +864,15 @@ namespace TES3 {
 
 		// The game always recreates the bounding box for some reason, rather than reusing memory here.
 		if (boundingBox) {
-			mwse::tes3::_delete(boundingBox);
+			se::memory::_delete(boundingBox);
 		}
-		boundingBox = mwse::tes3::_new<TES3::BoundingBox>();
+		boundingBox = se::memory::_new<NI::BoundingBox>();
 		boundingBox->initialize();
 
 		// Markers always have zeroed bounding boxes.
 		if (getIsLocationMarker()) {
-			boundingBox->minimum = Vector3::ZEROES;
-			boundingBox->maximum = Vector3::ZEROES;
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
 			return;
 		}
 
@@ -881,13 +882,13 @@ namespace TES3 {
 		}
 		else {
 			const auto scale = 1.0f;
-			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, Vector3::ZEROES, Matrix33::IDENTITY, scale, false, false, false);
+			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, NI::Point3::ZEROES, NI::Matrix33::IDENTITY, scale, false, false, false);
 		}
 
 		// If any data ended up uninitialized, we'll also zero it out.
 		if (boundingBox->hasUninitializedData()) {
-			boundingBox->minimum = Vector3::ZEROES;
-			boundingBox->maximum = Vector3::ZEROES;
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
 		}
 
 		// If we are an actor, we need to validate that the bounding box can be used for steps. If it can't, recreate it using vanilla logic.
@@ -900,12 +901,12 @@ namespace TES3 {
 			}
 			else {
 				const auto scale = 1.0f;
-				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &Vector3::ZEROES, &Matrix33::IDENTITY, &scale);
+				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &NI::Point3::ZEROES, &NI::Matrix33::IDENTITY, &scale);
 			}
 		}
 	}
 
-	BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
+	NI::BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
 		if (!boundingBox) {
 			if (sceneNode == nullptr && !loadMesh()) {
 				return nullptr;
