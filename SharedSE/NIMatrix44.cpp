@@ -106,21 +106,9 @@ namespace NI {
 	}
 
 	void Matrix44::toZero() {
-		m0.w = 0.0f;
-		m0.x = 0.0f;
-		m0.y = 0.0f;
-		m0.z = 0.0f;
-		m1.w = 0.0f;
-		m1.x = 0.0f;
-		m1.y = 0.0f;
-		m1.z = 0.0f;
-		m2.w = 0.0f;
-		m2.x = 0.0f;
-		m2.y = 0.0f;
-		m2.z = 0.0f;
-		m3.w = 0.0f;
-		m3.x = 0.0f;
-		m3.y = 0.0f;
-		m3.z = 0.0f;
+		m0 = Point4::ZEROES;
+		m1 = Point4::ZEROES;
+		m2 = Point4::ZEROES;
+		m3 = Point4::ZEROES;
 	}
 }

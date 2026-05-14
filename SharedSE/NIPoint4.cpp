@@ -1,6 +1,8 @@
 #include "NIPoint4.h"
 
 namespace NI {
+	const Point4 Point4::ZEROES = { 0.0f, 0.0f, 0.0f, 0.0f };
+
 	Point4::Point4() :
 		x(0.0f),
 		y(0.0f),

@@ -73,15 +73,7 @@ namespace NI {
 	}
 
 	bool Matrix33::operator!=(const Matrix33& matrix) const {
-		return m0.x != matrix.m0.x
-			|| m0.y != matrix.m0.y
-			|| m0.z != matrix.m0.z
-			|| m1.x != matrix.m1.x
-			|| m1.y != matrix.m1.y
-			|| m1.z != matrix.m1.z
-			|| m2.x != matrix.m2.x
-			|| m2.y != matrix.m2.y
-			|| m2.z != matrix.m2.z;
+		return !operator==(matrix);
 	}
 
 	Matrix33 Matrix33::operator+(const Matrix33& matrix) const {
@@ -170,15 +162,9 @@ namespace NI {
 	}
 
 	void Matrix33::toZero() {
-		m0.x = 0.0f;
-		m0.y = 0.0f;
-		m0.z = 0.0f;
-		m1.x = 0.0f;
-		m1.y = 0.0f;
-		m1.z = 0.0f;
-		m2.x = 0.0f;
-		m2.y = 0.0f;
-		m2.z = 0.0f;
+		m0 = Point3::ZEROES;
+		m1 = Point3::ZEROES;
+		m2 = Point3::ZEROES;
 	}
 
 	void Matrix33::toIdentity() {

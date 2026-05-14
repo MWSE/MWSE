@@ -1,6 +1,7 @@
 #include "NIQuaternion.h"
 
 #include "ExceptionUtil.h"
+#include "MathUtil.h"
 
 namespace NI {
 	const Quaternion Quaternion::IDENTITY = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -111,10 +112,8 @@ namespace NI {
 			z = float(z / length);
 			return true;
 		}
-		else {
-			w = x = y = z = 0.0;
-			return false;
-		}
+		w = x = y = z = 0.0;
+		return false;
 	}
 
 	Quaternion Quaternion::normalized() const {
@@ -132,7 +131,7 @@ namespace NI {
 			half_theta = 0;
 		}
 		else if (dot_product <= -1.0) {
-			half_theta = 3.14159265358979;
+			half_theta = se::math::M_PI;
 		}
 		else {
 			half_theta = std::acos(dot_product);
