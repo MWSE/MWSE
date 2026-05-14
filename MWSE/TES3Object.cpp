@@ -508,14 +508,14 @@ namespace TES3 {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
 			if (it != baseObjectCache.end()) {
-				// Let people know that this object is invalidated.
-				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
-
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
 
 				// Null the userdata's internal pointer before removing our identity cache.
 				mwse::lua::clearUserdataPointer(it->second);
+
+				// Let people know that this object is invalidated.
+				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 
 				// Remove it from the cache.
 				baseObjectCache.erase(it);

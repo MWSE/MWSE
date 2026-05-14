@@ -93,9 +93,9 @@ namespace TES3::UI {
 		if (!uiElementCache.empty()) {
 			auto it = uiElementCache.find(element);
 			if (it != uiElementCache.end()) {
-				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 				mwse::lua::event::clearObjectFilter(it->second);
 				mwse::lua::clearUserdataPointer(it->second);
+				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 				uiElementCache.erase(it);
 			}
 		}
