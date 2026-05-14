@@ -17,9 +17,9 @@ namespace NI {
 	}
 
 	Matrix33::Matrix33(const Point3& outerA, const Point3& outerB) : Matrix33(
-		(outerA.x* outerB.x), (outerA.y* outerB.x), (outerA.z* outerB.x),
-		(outerA.x* outerB.y), (outerA.y* outerB.y), (outerA.z* outerB.y),
-		(outerA.x* outerB.z), (outerA.y* outerB.z), (outerA.z* outerB.z)
+		(outerA.x * outerB.x), (outerA.y * outerB.x), (outerA.z * outerB.x),
+		(outerA.x * outerB.y), (outerA.y * outerB.y), (outerA.z * outerB.y),
+		(outerA.x * outerB.z), (outerA.y * outerB.z), (outerA.z * outerB.z)
 	) {
 
 	}
@@ -385,15 +385,15 @@ namespace NI {
 		return result;
 	}
 
-	Point3 Matrix33::getForwardVector() {
+	Point3 Matrix33::getForwardVector() const {
 		return Point3(m0.y, m1.y, m2.y);
 	}
 
-	Point3 Matrix33::getRightVector() {
+	Point3 Matrix33::getRightVector() const {
 		return Point3(m0.x, m1.x, m2.x);
 	}
 
-	Point3 Matrix33::getUpVector() {
+	Point3 Matrix33::getUpVector() const {
 		return Point3(m0.z, m1.z, m2.z);
 	}
 

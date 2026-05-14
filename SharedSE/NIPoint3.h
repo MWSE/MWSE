@@ -12,16 +12,16 @@ namespace NI {
 
 		Point3();
 		Point3(float x, float y, float z);
-		Point3(NI::Color& color);
+		Point3(const NI::Color& color);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Point3(sol::table table);
-		Point3(sol::object object);
+		Point3(const sol::table& table);
+		Point3(const sol::object& object);
 #endif
 
 		Point3& operator=(const NI::Color& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Point3& operator=(const sol::table table);
-		Point3& operator=(const sol::object object);
+		Point3& operator=(const sol::table& table);
+		Point3& operator=(const sol::object& object);
 #endif
 
 		bool operator==(const Point3& vector) const;
@@ -67,7 +67,7 @@ namespace NI {
 		Point3 interpolate(const Point3&, const float) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		static bool canConvertFrom(sol::table& table);
+		static bool canConvertFrom(const sol::table& table);
 #endif
 
 		const static Point3 UNIT_X;

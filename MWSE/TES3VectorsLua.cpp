@@ -266,8 +266,8 @@ namespace mwse::lua {
 			usertypeDefinition[sol::meta_function::subtraction] = &NI::Matrix44::operator-;
 			usertypeDefinition[sol::meta_function::equal_to] = &NI::Matrix44::operator==;
 			usertypeDefinition[sol::meta_function::multiplication] = sol::overload(
-				sol::resolve<NI::Matrix44(const float)>(&NI::Matrix44::operator*),
-				sol::resolve<NI::Matrix44(const NI::Matrix44&)>(&NI::Matrix44::operator*)
+				sol::resolve<NI::Matrix44(const float) const>(&NI::Matrix44::operator*),
+				sol::resolve<NI::Matrix44(const NI::Matrix44&) const>(&NI::Matrix44::operator*)
 			);
 
 			// Operator overloading.

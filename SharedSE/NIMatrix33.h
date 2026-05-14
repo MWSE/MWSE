@@ -72,9 +72,9 @@ namespace NI {
 
 		NI::Quaternion toQuaternion() const;
 
-		Point3 getForwardVector();
-		Point3 getRightVector();
-		Point3 getUpVector();
+		Point3 getForwardVector() const;
+		Point3 getRightVector() const;
+		Point3 getUpVector() const;
 
 		void lookAt(const Point3& direction, const Point3& worldUp);
 

@@ -8,11 +8,11 @@ namespace NI {
 		Point2();
 		Point2(float x, float y);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Point2(sol::table table);
+		Point2(const sol::table& table);
 #endif
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Point2& operator=(const sol::table table);
+		Point2& operator=(const sol::table& table);
 #endif
 
 		bool operator==(const Point2& vector) const;

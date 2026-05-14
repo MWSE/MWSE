@@ -35,23 +35,23 @@ namespace NI {
 
 	}
 
-	bool Matrix44::operator==(const Matrix44& matrix) {
+	bool Matrix44::operator==(const Matrix44& matrix) const {
 		return m0 == matrix.m0 && m1 == matrix.m1 && m2 == matrix.m2 && m3 == matrix.m3;
 	}
 
-	bool Matrix44::operator!=(const Matrix44& matrix) {
+	bool Matrix44::operator!=(const Matrix44& matrix) const {
 		return m0 != matrix.m0 || m1 != matrix.m1 || m2 != matrix.m2 || m3 != matrix.m3;
 	}
 
-	Matrix44 Matrix44::operator+(const Matrix44& matrix) {
+	Matrix44 Matrix44::operator+(const Matrix44& matrix) const {
 		return Matrix44(m0 + matrix.m0, m1 + matrix.m1, m2 + matrix.m2, m3 + matrix.m3);
 	}
 
-	Matrix44 Matrix44::operator-(const Matrix44& matrix) {
+	Matrix44 Matrix44::operator-(const Matrix44& matrix) const {
 		return Matrix44(m0 - matrix.m0, m1 - matrix.m1, m2 - matrix.m2, m3 - matrix.m3);
 	}
 
-	Matrix44 Matrix44::operator*(const Matrix44& matrix) {
+	Matrix44 Matrix44::operator*(const Matrix44& matrix) const {
 		return Matrix44(
 			m0.w * matrix.m0.w + m0.x * matrix.m1.w + m0.y * matrix.m2.w + m0.z * matrix.m3.w,
 			m0.w * matrix.m0.x + m0.x * matrix.m1.x + m0.y * matrix.m2.x + m0.z * matrix.m3.x,
@@ -75,7 +75,7 @@ namespace NI {
 		);
 	}
 
-	Matrix44 Matrix44::operator*(float scalar) {
+	Matrix44 Matrix44::operator*(float scalar) const {
 		return Matrix44(m0 * scalar, m1 * scalar, m2 * scalar, m3 * scalar);
 	}
 

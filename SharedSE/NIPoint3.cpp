@@ -31,14 +31,14 @@ namespace NI {
 
 	}
 
-	Point3::Point3(NI::Color& color) {
+	Point3::Point3(const NI::Color& color) {
 		x = color.r;
 		y = color.g;
 		z = color.b;
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Point3::Point3(sol::table table) {
+	Point3::Point3(const sol::table& table) {
 		x = table.get_or("x", table.get_or(1, 0.0f));
 		y = table.get_or("y", table.get_or(2, 0.0f));
 		z = table.get_or("z", table.get_or(3, 0.0f));
@@ -46,7 +46,7 @@ namespace NI {
 #endif
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Point3::Point3(sol::object object) {
+	Point3::Point3(const sol::object& object) {
 		if (object.is<NI::Color>()) {
 			*this = NI::Color(object.as<NI::Color>());
 		}
@@ -65,14 +65,14 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Point3& Point3::operator=(const sol::table table) {
+	Point3& Point3::operator=(const sol::table& table) {
 		x = table.get_or("x", table.get_or(1, 0.0f));
 		y = table.get_or("y", table.get_or(2, 0.0f));
 		z = table.get_or("z", table.get_or(3, 0.0f));
 		return *this;
 	}
 
-	Point3& Point3::operator=(const sol::object object) {
+	Point3& Point3::operator=(const sol::object& object) {
 		if (object.is<NI::Color>()) {
 			*this = object.as<NI::Color>();
 		}
@@ -255,7 +255,7 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	bool Point3::canConvertFrom(sol::table& table) {
+	bool Point3::canConvertFrom(const sol::table& table) {
 		sol::optional<float> x = table["x"];
 		if (!x) x = table[1];
 		sol::optional<float> y = table["y"];
