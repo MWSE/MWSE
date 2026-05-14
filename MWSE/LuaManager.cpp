@@ -6820,6 +6820,7 @@ namespace mwse::lua {
 		TES3::BaseObject::clearCachedLuaObjects();
 		TES3::MobileObject::clearCachedLuaObjects();
 		TES3::Weather::clearCachedLuaObjects();
+		TES3::UI::Element::clearCachedLuaObjects();
 		NI::Object::clearCachedLuaObjects();
 	}
 

@@ -643,6 +643,9 @@ function tes3uiElement:getTopLevelMenu() end
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:getTopLevelParent() end
 
+--- Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+function tes3uiElement:isValid() end
+
 --- Restores the menu's position and size information from the Morrowind.ini file. This may only be called on top-level parents.
 --- @return boolean success True if the menu was restored.
 function tes3uiElement:loadMenuPosition() end

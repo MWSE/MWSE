@@ -1290,6 +1290,9 @@ namespace TES3::UI {
 		// Clean up any lua event registration.
 		mwse::lua::cleanupEventRegistrations(self);
 
+		// Invalidate any cached lua userdata for this element.
+		self->clearCachedLuaObject(self);
+
 		// Clean up stale pointers.
 		const auto worldController = TES3::WorldController::get();
 		const auto menuController = worldController ? worldController->menuController : nullptr;

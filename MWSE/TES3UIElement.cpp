@@ -13,6 +13,8 @@
 #include "TES3Object.h"
 
 #include "LuaUtil.h"
+#include "LuaManager.h"
+#include "LuaObjectInvalidatedEvent.h"
 #include "MemoryUtilLua.h"
 #include "TES3Util.h"
 #include "TES3UIManagerLua.h"
@@ -65,6 +67,46 @@ namespace TES3::UI {
 
 	using mwse::lua::valueDefaultAsNil;
 	using mwse::lua::getPropertyFromObject;
+
+	static std::unordered_map<const Element*, sol::object> uiElementCache;
+
+	sol::object Element::getOrCreateLuaObject(lua_State* L) {
+		if (this == nullptr) {
+			return sol::nil;
+		}
+
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+
+		auto cacheHit = uiElementCache.find(this);
+		if (cacheHit != uiElementCache.end()) {
+			return cacheHit->second;
+		}
+
+		L = stateHandle.getState();
+		auto ref = sol::make_object_userdata(L, this);
+		uiElementCache[this] = ref;
+		return ref;
+	}
+
+	void Element::clearCachedLuaObject(const Element* element) {
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		if (!uiElementCache.empty()) {
+			auto it = uiElementCache.find(element);
+			if (it != uiElementCache.end()) {
+				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
+				mwse::lua::event::clearObjectFilter(it->second);
+				mwse::lua::clearUserdataPointer(it->second);
+				uiElementCache.erase(it);
+			}
+		}
+	}
+
+	void Element::clearCachedLuaObjects() {
+		for (auto& item : uiElementCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
+		uiElementCache.clear();
+	}
 
 	//
 	// Widget creation/destruction methods
@@ -1534,4 +1576,15 @@ namespace TES3::UI {
 		}
 	}
 
+}
+
+int sol_lua_push(sol::types<TES3::UI::Element>, lua_State* L, TES3::UI::Element& obj) {
+	return obj.getOrCreateLuaObject(L).push(L);
+}
+
+int sol_lua_push(sol::types<TES3::UI::Element*>, lua_State* L, TES3::UI::Element* obj) {
+	if (obj == nullptr) {
+		return sol::stack::push(L, sol::nil);
+	}
+	return obj->getOrCreateLuaObject(L).push(L);
 }
