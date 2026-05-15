@@ -37,6 +37,7 @@
 tes3mobileObject = {}
 
 --- Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+--- @return boolean valid No description yet available.
 function tes3mobileObject:isValid() end
 
 --- Sets the diffuse color of the mobile's active spell light. If the passed color is black, the active spell light is removed.
