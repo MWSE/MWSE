@@ -33,5 +33,7 @@ namespace NI {
 		float distanceManhattan(const Point4*) const;
 
 		float length() const;
+
+		const static Point4 ZEROES;
 	};
 }

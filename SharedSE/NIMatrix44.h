@@ -17,12 +17,12 @@ namespace NI {
 		// Basic operators.
 		//
 
-		bool operator==(const Matrix44& matrix);
-		bool operator!=(const Matrix44& matrix);
-		Matrix44 operator+(const Matrix44& matrix);
-		Matrix44 operator-(const Matrix44& matrix);
-		Matrix44 operator*(const Matrix44& matrix);
-		Matrix44 operator*(float scalar);
+		bool operator==(const Matrix44& matrix) const;
+		bool operator!=(const Matrix44& matrix) const;
+		Matrix44 operator+(const Matrix44& matrix) const;
+		Matrix44 operator-(const Matrix44& matrix) const;
+		Matrix44 operator*(const Matrix44& matrix) const;
+		Matrix44 operator*(float scalar) const;
 
 		friend std::ostream& operator<<(std::ostream& str, const Matrix44& matrix);
 		std::string toString() const;

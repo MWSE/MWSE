@@ -17,9 +17,9 @@ namespace NI {
 	}
 
 	Matrix33::Matrix33(const Point3& outerA, const Point3& outerB) : Matrix33(
-		(outerA.x* outerB.x), (outerA.y* outerB.x), (outerA.z* outerB.x),
-		(outerA.x* outerB.y), (outerA.y* outerB.y), (outerA.z* outerB.y),
-		(outerA.x* outerB.z), (outerA.y* outerB.z), (outerA.z* outerB.z)
+		(outerA.x * outerB.x), (outerA.y * outerB.x), (outerA.z * outerB.x),
+		(outerA.x * outerB.y), (outerA.y * outerB.y), (outerA.z * outerB.y),
+		(outerA.x * outerB.z), (outerA.y * outerB.z), (outerA.z * outerB.z)
 	) {
 
 	}
@@ -73,15 +73,7 @@ namespace NI {
 	}
 
 	bool Matrix33::operator!=(const Matrix33& matrix) const {
-		return m0.x != matrix.m0.x
-			|| m0.y != matrix.m0.y
-			|| m0.z != matrix.m0.z
-			|| m1.x != matrix.m1.x
-			|| m1.y != matrix.m1.y
-			|| m1.z != matrix.m1.z
-			|| m2.x != matrix.m2.x
-			|| m2.y != matrix.m2.y
-			|| m2.z != matrix.m2.z;
+		return !operator==(matrix);
 	}
 
 	Matrix33 Matrix33::operator+(const Matrix33& matrix) const {
@@ -170,15 +162,9 @@ namespace NI {
 	}
 
 	void Matrix33::toZero() {
-		m0.x = 0.0f;
-		m0.y = 0.0f;
-		m0.z = 0.0f;
-		m1.x = 0.0f;
-		m1.y = 0.0f;
-		m1.z = 0.0f;
-		m2.x = 0.0f;
-		m2.y = 0.0f;
-		m2.z = 0.0f;
+		m0 = Point3::ZEROES;
+		m1 = Point3::ZEROES;
+		m2 = Point3::ZEROES;
 	}
 
 	void Matrix33::toIdentity() {
@@ -385,15 +371,15 @@ namespace NI {
 		return result;
 	}
 
-	Point3 Matrix33::getForwardVector() {
+	Point3 Matrix33::getForwardVector() const {
 		return Point3(m0.y, m1.y, m2.y);
 	}
 
-	Point3 Matrix33::getRightVector() {
+	Point3 Matrix33::getRightVector() const {
 		return Point3(m0.x, m1.x, m2.x);
 	}
 
-	Point3 Matrix33::getUpVector() {
+	Point3 Matrix33::getUpVector() const {
 		return Point3(m0.z, m1.z, m2.z);
 	}
 
