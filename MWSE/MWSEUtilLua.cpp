@@ -37,8 +37,6 @@ namespace mwse::lua {
 	}
 
 	void forceCursorOn() {
-		TES3::WorldController::get()->inputController->mouse->SetCooperativeLevel(GetActiveWindow(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-		TES3::WorldController::get()->inputController->keyboard->SetCooperativeLevel(GetActiveWindow(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 		while (ShowCursor(TRUE) < 0);
 	}
 

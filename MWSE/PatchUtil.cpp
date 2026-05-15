@@ -2387,6 +2387,7 @@ namespace mwse::patch {
 		using se::memory::writeByteUnprotected;
 		using se::memory::genCallUnprotected;
 		using se::memory::genCallEnforced;
+		using se::memory::genPushEnforced;
 
 		// Patch: Be better about showing/hiding the cursor.
 		originalWindowProc = (WNDPROC)SetWindowLongPtr(TES3::WorldController::get()->Win32_hWndParent, GWLP_WNDPROC, (LONG_PTR)PatchWindProc);
@@ -2401,6 +2402,12 @@ namespace mwse::patch {
 			genCallEnforced(0x477E1E, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BC9E1, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BCA33, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
+		}
+
+		// Patch: Use non-exclusive keyboard cooperative levels and allow shell keys.
+		if (Configuration::NonExclusiveKeyboard) {
+			genPushEnforced(0x40627D, BYTE(DISCL_BACKGROUND | DISCL_NONEXCLUSIVE));
+			genPushEnforced(0x406291, BYTE(DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
 		}
 
 		// Patch: Replace the Sleep(100) call inside the background loader's
