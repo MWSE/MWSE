@@ -144,6 +144,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="CSBook.cpp" />
     <ClCompile Include="CSCell.cpp" />
     <ClCompile Include="CSClass.cpp" />
+    <ClCompile Include="CSLand.cpp" />
     <ClCompile Include="CSContainer.cpp" />
     <ClCompile Include="CSCreature.cpp" />
     <ClCompile Include="CSDialogue.cpp" />

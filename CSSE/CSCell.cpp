@@ -39,6 +39,11 @@ namespace se::cs {
 		return landscape;
 	}
 
+	const auto TES3CS_Cell_getOrCreateLandData = reinterpret_cast<Land * (__thiscall*)(Cell*)>(0x539E40);
+	Land* Cell::getOrCreateLand() {
+		return TES3CS_Cell_getOrCreateLandData(this);
+	}
+
 	Region* Cell::getRegion() const {
 		if (getIsOrBehavesAsExterior()) {
 			return region;

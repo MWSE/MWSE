@@ -23,6 +23,11 @@ namespace se::cs {
 		return RecordHandler_getCellByID(this, id);
 	}
 
+	Cell* RecordHandler::getCellByGridPosition(int x, int y) const {
+		const auto RecordHandler_getCellByGridPosition = reinterpret_cast<Cell * (__thiscall*)(const RecordHandler*, int, int)>(0x500960);
+		return RecordHandler_getCellByGridPosition(this, x, y);
+	}
+
 	Reference* RecordHandler::getReference(const PhysicalObject* object) const {
 		const auto RecordHandler_getReference = reinterpret_cast<Reference*(__thiscall*)(const RecordHandler*, const PhysicalObject*)>(0x4042A0);
 		return RecordHandler_getReference(this, object);

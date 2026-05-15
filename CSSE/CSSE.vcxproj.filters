@@ -84,6 +84,9 @@
     <ClCompile Include="CSCell.cpp">
       <Filter>Source Files\CS</Filter>
     </ClCompile>
+    <ClCompile Include="CSLand.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
     <ClCompile Include="PathUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
