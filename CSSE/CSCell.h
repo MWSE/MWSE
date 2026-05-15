@@ -61,6 +61,7 @@ namespace se::cs {
 		int getGridY() const;
 
 		Land* getLand() const;
+		Land* getOrCreateLand();
 		Region* getRegion() const;
 
 		const char* getDisplayName() const;

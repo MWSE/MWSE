@@ -1563,6 +1563,266 @@ namespace se::cs::dialog::render_window {
 		Land__worldPosToGridAndLandData(DataHandler::get(), worldPos, &currentTexture);
 	}
 
+	//
+	// Patch: Iterative vertex color painting with strength + blend modes.
+	//
+
+	enum class VertexColorBlendMode {
+		Mix,
+		Darken,
+		Lighten,
+		Multiply,
+		Screen,
+		Add,
+		Subtract,
+	};
+
+	VertexColorBlendMode getConfiguredBlendMode() {
+		const auto& name = settings.landscape_window.vertex_color_blend_mode;
+		if (name == "Darken") return VertexColorBlendMode::Darken;
+		if (name == "Lighten") return VertexColorBlendMode::Lighten;
+		if (name == "Multiply") return VertexColorBlendMode::Multiply;
+		if (name == "Screen") return VertexColorBlendMode::Screen;
+		if (name == "Add") return VertexColorBlendMode::Add;
+		if (name == "Subtract") return VertexColorBlendMode::Subtract;
+		return VertexColorBlendMode::Mix;
+	}
+
+	unsigned char blendChannel(unsigned char current, unsigned char paint, VertexColorBlendMode mode) {
+		int result;
+		switch (mode) {
+		case VertexColorBlendMode::Darken:
+			result = std::min<int>(current, paint);
+			break;
+		case VertexColorBlendMode::Lighten:
+			result = std::max<int>(current, paint);
+			break;
+		case VertexColorBlendMode::Multiply:
+			result = (int(current) * int(paint)) / 255;
+			break;
+		case VertexColorBlendMode::Screen:
+			result = 255 - ((255 - int(current)) * (255 - int(paint))) / 255;
+			break;
+		case VertexColorBlendMode::Add:
+			result = int(current) + int(paint);
+			break;
+		case VertexColorBlendMode::Subtract:
+			result = int(current) - int(paint);
+			break;
+		case VertexColorBlendMode::Mix:
+		default:
+			result = paint;
+			break;
+		}
+		return static_cast<unsigned char>(std::clamp(result, 0, 255));
+	}
+
+	using gPaintLandModifiedFlag = memory::ExternalGlobal<int, 0x6CE938>;
+
+	bool __fastcall Patch_PaintVertexColors(Land* land, DWORD _EDX_, NI::Point3* worldPos, NI::PackedColor* paintColor) {
+		if (land == nullptr) {
+			return false;
+		}
+
+		LandTileInfo centerInfo;
+		if (!land->worldPosToTileInfo(&centerInfo, worldPos, true)) {
+			return false;
+		}
+
+		const auto strength = std::clamp(settings.landscape_window.vertex_color_strength, 0, 100) / 100.0f;
+		const auto blendMode = getConfiguredBlendMode();
+
+		const auto radius = float(gLandscapeEditRadius::get()) * LANDSCAPE_BRUSH_SAMPLE_STEP;
+		if (radius <= 0.0f) {
+			return false;
+		}
+
+		const float cellMinX = float(land->gridX) * 8192.0f;
+		const float cellMaxX = cellMinX + 8192.0f;
+		const float cellMinY = float(land->gridY) * 8192.0f;
+		const float cellMaxY = cellMinY + 8192.0f;
+
+		const float brushMinX = centerInfo.nearestVertexWorldX - radius;
+		const float brushMaxX = centerInfo.nearestVertexWorldX + radius;
+		const float brushMinY = centerInfo.nearestVertexWorldY - radius;
+		const float brushMaxY = centerInfo.nearestVertexWorldY + radius;
+
+		// Decide which cardinal/diagonal neighbors are needed.
+		// xDir: -1 west, +1 east, 0 none. yDir similar.
+		int xDir = 0;
+		if (brushMinX <= cellMinX) xDir = -1;
+		else if (brushMaxX >= cellMaxX) xDir = 1;
+
+		int yDir = 0;
+		if (brushMinY <= cellMinY) yDir = -1;
+		else if (brushMaxY >= cellMaxY) yDir = 1;
+
+		Land* westLand = nullptr;
+		Land* eastLand = nullptr;
+		Land* southLand = nullptr;
+		Land* northLand = nullptr;
+		Land* swLand = nullptr;
+		Land* seLand = nullptr;
+		Land* nwLand = nullptr;
+		Land* neLand = nullptr;
+
+		const auto recordHandler = DataHandler::get()->recordHandler;
+		const auto getNeighborLand = [&](int dx, int dy) -> Land* {
+			auto cell = recordHandler->getCellByGridPosition(land->gridX + dx, land->gridY + dy);
+			if (cell == nullptr) {
+				return nullptr;
+			}
+			return cell->getOrCreateLand();
+		};
+
+		if (xDir == -1) westLand = getNeighborLand(-1, 0);
+		else if (xDir == 1) eastLand = getNeighborLand(1, 0);
+
+		if (yDir == -1) southLand = getNeighborLand(0, -1);
+		else if (yDir == 1) northLand = getNeighborLand(0, 1);
+
+		if (xDir != 0 && yDir != 0) {
+			if (xDir == -1 && yDir == -1) swLand = getNeighborLand(-1, -1);
+			else if (xDir ==  1 && yDir == -1) seLand = getNeighborLand( 1, -1);
+			else if (xDir == -1 && yDir ==  1) nwLand = getNeighborLand(-1,  1);
+			else if (xDir ==  1 && yDir ==  1) neLand = getNeighborLand( 1,  1);
+		}
+
+		// Touched land set for end-of-pass refresh/dirty handling.
+		Land* touchedLands[4] = { land, nullptr, nullptr, nullptr };
+		int touchedCount = 1;
+		if (xDir == -1 && westLand) touchedLands[touchedCount++] = westLand;
+		else if (xDir == 1 && eastLand) touchedLands[touchedCount++] = eastLand;
+		if (yDir == -1 && southLand) touchedLands[touchedCount++] = southLand;
+		else if (yDir == 1 && northLand) touchedLands[touchedCount++] = northLand;
+		if (xDir != 0 && yDir != 0) {
+			Land* diag = nullptr;
+			if (xDir == -1 && yDir == -1) diag = swLand;
+			else if (xDir ==  1 && yDir == -1) diag = seLand;
+			else if (xDir == -1 && yDir ==  1) diag = nwLand;
+			else if (xDir ==  1 && yDir ==  1) diag = neLand;
+			if (diag) touchedLands[touchedCount++] = diag;
+		}
+
+		const auto centerWorldX = worldPos->x;
+		const auto centerWorldY = worldPos->y;
+
+		// Per-sample land selection cache so we avoid recomputing the same quadrant repeatedly.
+		int lastQuadX = 2;
+		int lastQuadY = 2;
+		Land* sampleLand = land;
+
+		NI::Point3 samplePos;
+		samplePos.z = 0.0f;
+
+		for (float sampleX = brushMinX; sampleX < brushMaxX; sampleX += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+			for (float sampleY = brushMinY; sampleY < brushMaxY; sampleY += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+				// Determine which cell quadrant this sample falls in, mirroring vanilla:
+				//   sample.x < cellMinX -> -1 (west)
+				//   sample.x in [cellMinX, cellMaxX] -> 0 (self)
+				//   sample.x > cellMaxX -> +1 (east)
+				int qx;
+				if (sampleX < cellMinX) qx = -1;
+				else if (sampleX > cellMaxX) qx = 1;
+				else qx = 0;
+
+				int qy;
+				if (sampleY < cellMinY) qy = -1;
+				else if (sampleY > cellMaxY) qy = 1;
+				else qy = 0;
+
+				if (qx != lastQuadX || qy != lastQuadY) {
+					lastQuadX = qx;
+					lastQuadY = qy;
+					if (qx == -1) {
+						if (qy == -1) sampleLand = swLand;
+						else if (qy == 1) sampleLand = nwLand;
+						else sampleLand = westLand;
+					}
+					else if (qx == 1) {
+						if (qy == -1) sampleLand = seLand;
+						else if (qy == 1) sampleLand = neLand;
+						else sampleLand = eastLand;
+					}
+					else {
+						if (qy == -1) sampleLand = southLand;
+						else if (qy == 1) sampleLand = northLand;
+						else sampleLand = land;
+					}
+				}
+
+				if (sampleLand == nullptr) {
+					continue;
+				}
+
+				samplePos.x = sampleX;
+				samplePos.y = sampleY;
+
+				const auto dx = centerWorldX - sampleX;
+				const auto dy = centerWorldY - sampleY;
+				const auto distance = std::sqrt(dx * dx + dy * dy);
+				if (distance > radius) {
+					continue;
+				}
+
+				LandTileInfo sampleInfo;
+				if (!sampleLand->worldPosToTileInfo(&sampleInfo, &samplePos, false)) {
+					continue;
+				}
+
+				NI::PackedColor currentColor;
+				if (!sampleLand->getVertexColorAtTileInfo(&sampleInfo, &currentColor)) {
+					continue;
+				}
+
+				const auto falloff = (radius - distance) / radius;
+				const auto opacity = falloff * strength;
+
+				const auto blendR = blendChannel(currentColor.r, paintColor->r, blendMode);
+				const auto blendG = blendChannel(currentColor.g, paintColor->g, blendMode);
+				const auto blendB = blendChannel(currentColor.b, paintColor->b, blendMode);
+
+				const auto lerpChannel = [opacity](unsigned char current, unsigned char blend) -> unsigned char {
+					const auto value = float(current) + (float(blend) - float(current)) * opacity;
+					return static_cast<unsigned char>(std::clamp(int(value), 0, 255));
+				};
+
+				NI::PackedColor outColor;
+				outColor.r = lerpChannel(currentColor.r, blendR);
+				outColor.g = lerpChannel(currentColor.g, blendG);
+				outColor.b = lerpChannel(currentColor.b, blendB);
+				outColor.a = currentColor.a;
+
+				sampleLand->setVertexColorAtTile(&sampleInfo, &outColor, false);
+			}
+		}
+
+		for (int i = 0; i < touchedCount; ++i) {
+			auto touched = touchedLands[i];
+			if (touched == nullptr) {
+				continue;
+			}
+			touched->refreshGeometry();
+			touched->flags |= 2u;
+			touched->notifyModified();
+		}
+
+		const auto editorLandscapeRoot = DataHandler::get()->editorLandscapeRoot;
+		if (editorLandscapeRoot) {
+			editorLandscapeRoot->updateProperties();
+			editorLandscapeRoot->updateEffects();
+		}
+
+		if (gPaintLandModifiedFlag::get()) {
+			const auto hWnd = gRenderWindowHandle::get();
+			if (hWnd) {
+				SendMessageA(hWnd, 0x409u, 0, 1);
+			}
+		}
+
+		return true;
+	}
+
 	void alignSelection(bool posX, bool posY, bool posZ, bool rotX, bool rotY, bool rotZ, bool scale) {
 		auto selectionData = SelectionData::get();
 		auto lastTarget = selectionData->getLastTarget();
@@ -2982,6 +3242,12 @@ namespace se::cs::dialog::render_window {
 		genCallEnforced(0x45E0A6, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
 		genCallEnforced(0x45EB5C, 0x401398, reinterpret_cast<DWORD>(Patch_ResolveTexturePaintTarget));
 		genCallEnforced(0x45EBAD, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
+
+		// Patch: Iterative vertex color painting with strength + blend modes.
+		genCallEnforced(0x45D132, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45E00F, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45E7D3, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45EB16, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
 
 		// Patch: Improve drag-move logic.
 		genJumpEnforced(0x401F4B, 0x464B70, reinterpret_cast<DWORD>(Patch_ReplaceDragMovementLogic));

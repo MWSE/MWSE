@@ -17,7 +17,11 @@
 
 namespace se::cs::dialog::landscape_edit_settings_window {
 	constexpr auto MIN_WIDTH = 416u + 17u;
-	constexpr auto MIN_HEIGHT = 474u + 14u;
+	constexpr auto MIN_HEIGHT = 474u + 14u + 52u;
+
+	constexpr const char* VERTEX_COLOR_BLEND_MODES[] = {
+		"Mix", "Darken", "Lighten", "Multiply", "Screen", "Add", "Subtract",
+	};
 
 	namespace LandscapeEditFlag {
 		enum LandscapeEditFlag : unsigned int {
@@ -288,6 +292,30 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 				break;
 			}
 			break;
+		case CONTROL_ID_VERTEX_COLOR_STRENGTH_EDIT:
+			switch (code) {
+			case EN_CHANGE: {
+				BOOL translated = FALSE;
+				const auto value = (int)GetDlgItemInt(hWnd, CONTROL_ID_VERTEX_COLOR_STRENGTH_EDIT, &translated, TRUE);
+				if (translated) {
+					settings.landscape_window.vertex_color_strength = std::clamp(value, 0, 100);
+				}
+				break;
+			}
+			}
+			break;
+		case CONTROL_ID_VERTEX_COLOR_BLEND_MODE_COMBO:
+			switch (code) {
+			case CBN_SELCHANGE: {
+				const auto hCombo = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_BLEND_MODE_COMBO);
+				const auto index = (int)SendMessageA(hCombo, CB_GETCURSEL, 0, 0);
+				if (index >= 0 && index < (int)std::size(VERTEX_COLOR_BLEND_MODES)) {
+					settings.landscape_window.vertex_color_blend_mode = VERTEX_COLOR_BLEND_MODES[index];
+				}
+				break;
+			}
+			}
+			break;
 		}
 	}
 
@@ -315,12 +343,40 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 
 		RemoveStyles(hWnd, DS_MODALFRAME | WS_SYSMENU);
 		AddStyles(hWnd, WS_POPUP | WS_CAPTION | WS_SIZEBOX);
-		
+
 		auto hInstance = (HINSTANCE)GetWindowLongA(hWnd, GWLP_HINSTANCE);
 		auto font = SendMessageA(hWnd, WM_GETFONT, FALSE, FALSE);
 
 		auto hDlgShowPreviewTextureButton = CreateWindowExA(NULL, WC_BUTTON, "Show Preview", BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_CHILD | WS_VISIBLE | WS_GROUP, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_SHOW_PREVIEW_TEXTURE_BUTTON, hInstance, NULL);
 		SendMessageA(hDlgShowPreviewTextureButton, WM_SETFONT, font, MAKELPARAM(TRUE, FALSE));
+
+		// Vertex Color: Strength label/edit/spin.
+		auto hStrengthStatic = CreateWindowExA(NULL, WC_STATIC, "Strength %:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_VERTEX_COLOR_STRENGTH_STATIC, hInstance, NULL);
+		SendMessageA(hStrengthStatic, WM_SETFONT, font, MAKELPARAM(TRUE, FALSE));
+
+		auto hStrengthEdit = CreateWindowExA(WS_EX_CLIENTEDGE, WC_EDIT, "", WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_NUMBER | ES_RIGHT, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_VERTEX_COLOR_STRENGTH_EDIT, hInstance, NULL);
+		SendMessageA(hStrengthEdit, WM_SETFONT, font, MAKELPARAM(TRUE, FALSE));
+		SetDlgItemInt(hWnd, CONTROL_ID_VERTEX_COLOR_STRENGTH_EDIT, std::clamp(settings.landscape_window.vertex_color_strength, 0, 100), FALSE);
+
+		auto hStrengthSpin = CreateWindowExA(NULL, UPDOWN_CLASS, "", WS_CHILD | WS_VISIBLE | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_NOTHOUSANDS, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_VERTEX_COLOR_STRENGTH_SPIN, hInstance, NULL);
+		SendMessageA(hStrengthSpin, UDM_SETBUDDY, (WPARAM)hStrengthEdit, 0);
+		SendMessageA(hStrengthSpin, UDM_SETRANGE32, 0, 100);
+		SendMessageA(hStrengthSpin, UDM_SETPOS32, 0, std::clamp(settings.landscape_window.vertex_color_strength, 0, 100));
+
+		// Vertex Color: Blend Mode label/combo.
+		auto hBlendStatic = CreateWindowExA(NULL, WC_STATIC, "Blend Mode:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_VERTEX_COLOR_BLEND_MODE_STATIC, hInstance, NULL);
+		SendMessageA(hBlendStatic, WM_SETFONT, font, MAKELPARAM(TRUE, FALSE));
+
+		auto hBlendCombo = CreateWindowExA(NULL, WC_COMBOBOX, "", WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWNLIST | CBS_HASSTRINGS, 0, 0, 0, 0, hWnd, (HMENU)CONTROL_ID_VERTEX_COLOR_BLEND_MODE_COMBO, hInstance, NULL);
+		SendMessageA(hBlendCombo, WM_SETFONT, font, MAKELPARAM(TRUE, FALSE));
+		int selectedBlendIndex = 0;
+		for (int i = 0; i < (int)std::size(VERTEX_COLOR_BLEND_MODES); ++i) {
+			SendMessageA(hBlendCombo, CB_ADDSTRING, 0, (LPARAM)VERTEX_COLOR_BLEND_MODES[i]);
+			if (settings.landscape_window.vertex_color_blend_mode == VERTEX_COLOR_BLEND_MODES[i]) {
+				selectedBlendIndex = i;
+			}
+		}
+		SendMessageA(hBlendCombo, CB_SETCURSEL, selectedBlendIndex, 0);
 
 		// Hide the preview texture controls
 		if (!settings.landscape_window.show_preview_enabled) {
@@ -372,7 +428,8 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 
 		constexpr auto SECTIONS_MIN_WIDTH = 396;
 		constexpr auto HEIGHT_SECTION_HEIGHT = 80;
-		constexpr auto VERTEX_COLOR_SECTION_HEIGHT = 147;
+		constexpr auto VERTEX_COLOR_SECTION_HEIGHT = 147 + 52;
+		constexpr auto VERTEX_COLOR_STRENGTH_ROW_HEIGHT = 22;
 
 		constexpr auto BUTTON_HEIGHT = 23;
 		constexpr auto BUTTON_WIDTH = 80;
@@ -594,8 +651,40 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 			ResizeCustomColorStatic(hWnd, CONTROL_ID_CUSTOM_COLOR_FIFTEEN_STATIC, currentX, currentY);
 			ResizeCustomColorStatic(hWnd, CONTROL_ID_CUSTOM_COLOR_SIXTEEN_STATIC, currentX, currentY);
 
+			currentY += CUSTOM_COLOR_HEIGHT + BIG_PADDING;
+
+			// Strength + Blend Mode row, between custom-color swatches and the exit button.
+			{
+				constexpr auto STRENGTH_STATIC_WIDTH = 60;
+				constexpr auto STRENGTH_EDIT_WIDTH = 40;
+				constexpr auto BLEND_STATIC_WIDTH = 70;
+				constexpr auto BLEND_COMBO_WIDTH = 110;
+
+				auto rowX = WINDOW_EDGE_PADDING + 16;
+				auto rowY = currentY;
+
+				auto strengthStatic = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_STRENGTH_STATIC);
+				MoveWindow(strengthStatic, rowX, rowY + STATIC_EDIT_OFFSET, STRENGTH_STATIC_WIDTH, STATIC_HEIGHT, FALSE);
+				rowX += STRENGTH_STATIC_WIDTH + 2;
+
+				auto strengthEdit = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_STRENGTH_EDIT);
+				MoveWindow(strengthEdit, rowX, rowY, STRENGTH_EDIT_WIDTH, VERTEX_EDIT_HEIGHT, FALSE);
+				rowX += STRENGTH_EDIT_WIDTH;
+
+				auto strengthSpin = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_STRENGTH_SPIN);
+				MoveWindow(strengthSpin, rowX, rowY, SPIN_WIDTH, SPIN_HEIGHT, FALSE);
+				rowX += SPIN_WIDTH + 18;
+
+				auto blendStatic = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_BLEND_MODE_STATIC);
+				MoveWindow(blendStatic, rowX, rowY + STATIC_EDIT_OFFSET, BLEND_STATIC_WIDTH, STATIC_HEIGHT, FALSE);
+				rowX += BLEND_STATIC_WIDTH + 2;
+
+				auto blendCombo = GetDlgItem(hWnd, CONTROL_ID_VERTEX_COLOR_BLEND_MODE_COMBO);
+				MoveWindow(blendCombo, rowX, rowY, BLEND_COMBO_WIDTH, 200, FALSE);
+			}
+
 			auto exitEditingButton = GetDlgItem(hWnd, CONTROL_ID_EXIT_EDITING_BUTTON);
-			MoveWindow(exitEditingButton, 127, currentY + 31, 164, BUTTON_HEIGHT, FALSE);
+			MoveWindow(exitEditingButton, 127, currentY + VERTEX_COLOR_STRENGTH_ROW_HEIGHT + BIG_PADDING, 164, BUTTON_HEIGHT, FALSE);
 		}
 
 		RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_ERASENOW | RDW_INVALIDATE | RDW_ALLCHILDREN);
