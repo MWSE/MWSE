@@ -25,7 +25,7 @@ namespace {
 				}
 			}
 		}
-		bool passesPrefix = prefix.empty() ? true : object->name && se::string::starts_with(object->name, prefix);
+		bool passesPrefix = prefix.empty() ? true : object->name && se::string::istarts_with(object->name, prefix);
 		return passesFilter && passesPrefix;
 	}
 }

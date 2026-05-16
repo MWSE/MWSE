@@ -33,6 +33,7 @@ namespace se::string {
 	// Returns true if a == b, case insensitive, only compares maxCount characters.
 	bool niequal(std::string_view a, std::string_view b, size_t maxCount);
 
+	bool istarts_with(std::string_view string, std::string_view substring);
 	bool starts_with(const std::string_view& string, const std::string_view& substring);
 	bool ends_with(const std::string_view& string, const std::string_view& substring);
 
