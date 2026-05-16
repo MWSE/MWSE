@@ -8,6 +8,8 @@
 #include "TES3Reference.h"
 
 namespace mwse::lua {
+	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::AVObject* self, sol::optional<sol::table> param);
+
 	// Speed-optimized binding for NI::Object.
 	template <typename T>
 	void setUserdataForNIObject(sol::usertype<T>& usertypeDefinition) {
@@ -83,6 +85,7 @@ namespace mwse::lua {
 		usertypeDefinition["updateEffects"] = &NI::AVObject::updateEffects;
 		usertypeDefinition["updateProperties"] = &NI::AVObject::updateProperties;
 		usertypeDefinition["setFlag"] = &NI::AVObject::setFlag;
+		usertypeDefinition["traverse"] = traverse;
 
 		// Functions that need their results wrapped.
 		usertypeDefinition["getObjectByName"] = &NI::AVObject::getObjectByName;

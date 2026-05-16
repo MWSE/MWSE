@@ -85,6 +85,20 @@ namespace se::string {
 		return std::equal(a.begin(), a.begin() + maxCount, b.begin(), b.begin() + maxCount, ciequal);
 	}
 
+	bool istarts_with(std::string_view string, std::string_view substring) {
+		if (substring.size() > string.size()) {
+			return false;
+		}
+		size_t i = 0;
+		for (auto c : substring) {
+			if (!ciequal(string[i], c)) {
+				return false;
+			}
+			++i;
+		}
+		return true;
+	}
+
 	bool starts_with(const std::string_view& string, const std::string_view& substring) {
 		if (substring.size() >= string.size()) {
 			return false;
