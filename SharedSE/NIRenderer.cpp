@@ -29,6 +29,8 @@ namespace NI {
 
 	PixelData* Renderer::takeScreenshot(const Rect<unsigned int>* bounds) {
 		auto pixelData = vTable.asRenderer->takeScreenshot(this, bounds);
+
+#if defined(SE_IS_MWSE)
 		if (pixelData == nullptr) {
 			return nullptr;
 		}
@@ -44,7 +46,7 @@ namespace NI {
 				std::swap(pixel.r, pixel.b);
 			}
 		}
-
+#endif
 		return pixelData;
 	}
 
