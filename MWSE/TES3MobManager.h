@@ -46,6 +46,7 @@ namespace TES3 {
 
 		sol::table getAllMobileActors(sol::this_state ts);
 		sol::table getAllPlanners(sol::this_state ts);
+		void cleanupActionData(MobileActor* mobileActor);
 	};
 	static_assert(sizeof(ProcessManager) == 0x830, "TES3::ProcessManager failed size validation");
 

@@ -108,6 +108,28 @@ namespace TES3 {
 		return t;
 	}
 
+	void ProcessManager::cleanupActionData(MobileActor* mobileActor) {
+		if (mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProcessManager::cleanupActionData(MobileActor)");
+
+		if (mobilePlayer) {
+			mobilePlayer->actionData.cleanupMobileActor(mobileActor);
+			mobilePlayer->actionBeforeCombat.cleanupMobileActor(mobileActor);
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner && planner->mobileActor) {
+				planner->mobileActor->actionData.cleanupMobileActor(mobileActor);
+				planner->mobileActor->actionBeforeCombat.cleanupMobileActor(mobileActor);
+			}
+		}
+
+		criticalSection.leave();
+	}
+
 	//
 	// ProjectileManager
 	//

@@ -600,6 +600,11 @@ namespace TES3 {
 			worldController->mobManager->projectileManager->cleanupFiringActor(mobile);
 		}
 
+		// Clean up action data on other mobile actors.
+		if (worldController && worldController->mobManager && worldController->mobManager->processManager) {
+			worldController->mobManager->processManager->cleanupActionData(mobile);
+		}
+
 		// Clean up any related magic effects.
 		if (worldController && worldController->magicInstanceController) {
 			worldController->magicInstanceController->cleanupReference(this);
