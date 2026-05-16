@@ -4,13 +4,30 @@
 #include "LuaUtil.h"
 #include "StringUtil.h"
 
+#include "NIAVObject.h"
 #include "NIBillboardNode.h"
 #include "NIDefines.h"
 #include "NINode.h"
 #include "NISortAdjustNode.h"
 
+namespace {
+	bool passesTraverseFilters(const NI::AVObject* object, const std::unordered_set<unsigned int>& typeFilters, std::string_view prefix) {
+		bool passesFilter = typeFilters.empty() ? true : false;
+		if (!passesFilter) {
+			for (const auto type : typeFilters) {
+				if (object->isInstanceOfType((uintptr_t)type)) {
+					passesFilter = true;
+					break;
+				}
+			}
+		}
+		bool passesPrefix = prefix.empty() ? true : object->name && se::string::starts_with(object->name, prefix);
+		return passesFilter && passesPrefix;
+	}
+}
+
 namespace mwse::lua {
-	std::function<NI::Pointer<NI::AVObject>()> traverse(const NI::Node* self, sol::optional<sol::table> param) {
+	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::Node* self, sol::optional<sol::table> param) {
 		bool recursive = getOptionalParam(param, "recursive", true);
 		std::string prefix = getOptionalParam(param, "prefix", std::string(""));
 		std::unordered_set<unsigned int> filters;
@@ -42,49 +59,20 @@ namespace mwse::lua {
 			}
 
 			const auto asNode = static_cast<const NI::Node*>(object);
-			for (auto& nodeChild : asNode->children) {
-				if (!nodeChild) {
-					continue;
-				}
-				bool passesFilter = filters.empty() ? true : false;
-				if (!passesFilter) {
-					for (const auto type : filters) {
-						if (nodeChild->isInstanceOfType((uintptr_t)type)) {
-							passesFilter = true;
-							break;
-						}
-					}
-				}
-				bool passesPrefix = prefix.empty() ? true : nodeChild->name && se::string::starts_with(nodeChild->name, prefix);
-				if (passesFilter && passesPrefix) {
+			for (const auto& nodeChild : asNode->children) {
+				if (passesTraverseFilters(nodeChild, filters, prefix)) {
 					queue.push(nodeChild);
 				}
-
-				traverseChild(nodeChild);
-			}
-			};
-
-		for (auto& child : self->children) {
-			if (!child) {
-				continue;
-			}
-			bool passesFilter = filters.empty() ? true : false;
-			if (!passesFilter) {
-				for (const auto type : filters) {
-					if (child->isInstanceOfType((uintptr_t)type)) {
-						passesFilter = true;
-						break;
-					}
+				if (recursive) {
+					traverseChild(nodeChild);
 				}
 			}
-			bool passesPrefix = prefix.empty() ? true : child->name && se::string::starts_with(child->name, prefix);
-			if (passesFilter && passesPrefix) {
-				queue.push(child);
-			}
-			if (recursive) {
-				traverseChild(child);
-			}
+		};
+
+		if (passesTraverseFilters(self, filters, prefix)) {
+			queue.push(self);
 		}
+		traverseChild(self);
 
 		return [queue]() mutable -> NI::Pointer<NI::AVObject> {
 			if (queue.empty()) {
@@ -93,7 +81,7 @@ namespace mwse::lua {
 			auto ret = queue.front();
 			queue.pop();
 			return ret;
-			};
+		};
 	}
 
 	void bindNINode() {
