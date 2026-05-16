@@ -21,6 +21,7 @@ namespace se::cs::dialog::edit_object_window {
 	constexpr UINT DIALOG_ID_WEAPON = 135;
 
 	// Default IDs.
+	constexpr UINT CONTROL_ID_ICON_FRAME = 1120;
 	constexpr UINT CONTROL_ID_SCRIPT_COMBO = 1226;
 
 	void installPatches();

@@ -49,9 +49,16 @@ namespace se::cs::dialog::edit_alchemy_object_window {
 	}
 
 	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
+		const auto hWnd = context.getWindowHandle();
+
+		// Remove the icon frame so it doesn't look so weird with transparent icons.
+		const auto hIconFrame = GetDlgItem(hWnd, CONTROL_ID_ICON_FRAME);
+		if (hIconFrame) {
+			ShowWindow(hIconFrame, FALSE);
+		}
+
 		// Restore redraws.
 		if constexpr (ENABLE_ALL_OPTIMIZATIONS) {
-			const auto hWnd = context.getWindowHandle();
 			SendDlgItemMessageA(hWnd, CONTROL_ID_EFFECT1_EFFECT_COMBO, WM_SETREDRAW, TRUE, NULL);
 			SendDlgItemMessageA(hWnd, CONTROL_ID_EFFECT1_EFFECT_VAR_COMBO, WM_SETREDRAW, TRUE, NULL);
 			SendDlgItemMessageA(hWnd, CONTROL_ID_EFFECT2_EFFECT_COMBO, WM_SETREDRAW, TRUE, NULL);
