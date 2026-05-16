@@ -39,6 +39,7 @@
 #include "TES3MobManager.h"
 #include "TES3NPC.h"
 #include "TES3PlayerAnimationController.h"
+#include "TES3Script.h"
 #include "TES3WorldController.h"
 #include "TES3VFXManager.h"
 
@@ -604,7 +605,10 @@ namespace TES3 {
 			worldController->cleanupGlobalScriptReferences(this);
 		}
 
+
 		// Clean up static event references.
+		mwse::lua::LuaManager::getInstance().cleanupReference(this);
+		clearIfThis(this, TES3::Script::currentlyExecutingScriptReference);
 		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
 		clearIfThis(this, mwse::lua::event::LeveledItemPickedEvent::m_Reference);
 		clearIfThis(this, mwse::lua::event::ActivationTargetChangedEvent::ms_PreviousReference);
