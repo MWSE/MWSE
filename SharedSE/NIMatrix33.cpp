@@ -30,16 +30,11 @@ namespace NI {
 		m2 = *in_m2;
 	}
 
-	Matrix33::Matrix33(float m0x, float m0y, float m0z, float m1x, float m1y, float m1z, float m2x, float m2y, float m2z) {
-		m0.x = m0x;
-		m0.y = m0y;
-		m0.z = m0z;
-		m1.x = m1x;
-		m1.y = m1y;
-		m1.z = m1z;
-		m2.x = m2x;
-		m2.y = m2y;
-		m2.z = m2z;
+	Matrix33::Matrix33(float m0x, float m0y, float m0z, float m1x, float m1y, float m1z, float m2x, float m2y, float m2z) :
+		m0(m0x, m0y, m0z),
+		m1(m1x, m1y, m1z),
+		m2(m2x, m2y, m2z)
+	{
 	}
 
 	Matrix33::Matrix33(const Quaternion& quaternion) {
@@ -73,7 +68,7 @@ namespace NI {
 	}
 
 	bool Matrix33::operator!=(const Matrix33& matrix) const {
-		return !operator==(matrix);
+		return m0 != matrix.m0 || m1 != matrix.m1 || m2 != matrix.m2;
 	}
 
 	Matrix33 Matrix33::operator+(const Matrix33& matrix) const {
