@@ -572,18 +572,12 @@ namespace TES3 {
 		const auto worldController = TES3::WorldController::get();
 		const auto mobile = getAttachedMobileActor();
 
-		/*
-		* The game will, after this function returns, clean up the following on its own:
-		*	- Moved References
-		*	- Attachment data
-		*	- Scene node/loaded meshes (see below)
-		*	- For the mobile, it cleans up AI planners
-		*/
-
 		// Cleanup Tes3ExtraData potentially dangling pointer.
-		const auto extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
+		NI::Pointer<NI::Tes3ExtraData> extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
 		if (extraData) {
 			extraData->reference = nullptr;
+			sceneNode->removeExtraData(extraData);
+			extraData = nullptr;
 		}
 
 		// Cleanup activation target.
