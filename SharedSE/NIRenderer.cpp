@@ -30,7 +30,7 @@ namespace NI {
 	PixelData* Renderer::takeScreenshot(const Rect<unsigned int>* bounds) {
 		auto pixelData = vTable.asRenderer->takeScreenshot(this, bounds);
 
-#if defined(SE_IS_MWSE)
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		if (pixelData == nullptr) {
 			return nullptr;
 		}
