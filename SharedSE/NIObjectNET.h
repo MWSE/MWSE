@@ -40,6 +40,7 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
+		Tes3ExtraData* getTes3ExtraData(bool searchParents = false) const;
 		GameReferenceType* getTes3Reference(bool searchParents = false) const;
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

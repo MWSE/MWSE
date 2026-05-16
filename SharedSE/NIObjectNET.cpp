@@ -125,18 +125,26 @@ namespace NI {
 		return getStringDataStartingWithValue(value) != nullptr;
 	}
 
-	GameReferenceType* ObjectNET::getTes3Reference(bool searchParents) const {
+	Tes3ExtraData* ObjectNET::getTes3ExtraData(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {
 			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
-				return static_cast<Tes3ExtraData*>(ed)->reference;
+				return static_cast<Tes3ExtraData*>(ed);
 			}
 		}
 
 		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<const AVObject*>(this)->parentNode) {
-			return static_cast<const AVObject*>(this)->parentNode->getTes3Reference(true);
+			return static_cast<const AVObject*>(this)->parentNode->getTes3ExtraData(true);
 		}
 
 		return nullptr;
+	}
+
+	GameReferenceType* ObjectNET::getTes3Reference(bool searchParents) const {
+		const auto extraData = getTes3ExtraData(searchParents);
+		if (!extraData) {
+			return nullptr;
+		}
+		return extraData->reference;
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

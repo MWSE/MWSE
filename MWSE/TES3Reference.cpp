@@ -575,9 +575,15 @@ namespace TES3 {
 		* The game will, after this function returns, clean up the following on its own:
 		*	- Moved References
 		*	- Attachment data
-		*	- Scene node/loaded meshes
+		*	- Scene node/loaded meshes (see below)
 		*	- For the mobile, it cleans up AI planners
 		*/
+
+		// Cleanup Tes3ExtraData potentially dangling pointer.
+		const auto extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
+		if (extraData) {
+			extraData->reference = nullptr;
+		}
 
 		// Cleanup activation target.
 		if (tes3game) {
