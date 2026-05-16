@@ -411,38 +411,50 @@ namespace se::cs::window::main {
 	static std::array<std::string, STATUS_WINDOW_CELL_COUNT> cachedStatusWindowText;
 	static std::optional<std::string> bufferedIndex2Text;
 
-	const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, const char*)>(0x46E680);
+	static LRESULT CALLBACK PatchStatusWindowSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
+		switch (msg) {
+		case SB_SETTEXTA: {
+			const auto index = static_cast<size_t>(LOBYTE(LOWORD(wParam)));
+			const auto text = reinterpret_cast<const char*>(lParam);
 
-	static void UpdateStatusWindow(WPARAM index, const char* text, bool buffer2ndText) {
-		// Invalid array access. Also doesn't make any sense. Also also won't do anything anyway.
-		if (index >= STATUS_WINDOW_CELL_COUNT) {
-			return;
+			if (index >= STATUS_WINDOW_CELL_COUNT) {
+				return 0;
+			}
+
+			auto& previousText = cachedStatusWindowText[index];
+			const std::string_view currentText = text ? text : "";
+			if (se::string::equal(previousText, currentText)) {
+				return 0;
+			}
+			previousText = currentText;
+
+			if (index == 2) {
+				bufferedIndex2Text = text;
+				return 0;
+			}
+			else if (bufferedIndex2Text.has_value()) {
+				DefSubclassProc(hWnd, msg, MAKEWPARAM(2, 0), (LPARAM)bufferedIndex2Text.value().c_str());
+				bufferedIndex2Text.reset();
+			}
+		}
 		}
 
-		// Only update the 2nd status text when another text has updated.
-		if (index == 2 && buffer2ndText) {
-			bufferedIndex2Text = text;
-			return;
-		}
-
-		// Make sure the text is actually going to change.
-		auto& previousText = cachedStatusWindowText[index];
-		if (se::string::equal(previousText, text)) {
-			return;
-		}
-		previousText = text;
-
-		TES3CS_UpdateStatusMessage(index, text);
-
-		// If we have any buffered 2nd-cell text, we can update it now.
-		if (bufferedIndex2Text) {
-			UpdateStatusWindow(2, bufferedIndex2Text.value().c_str(), false);
-			bufferedIndex2Text.reset();
-		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
-	static void __cdecl PatchThrottleMessageUpdate(WPARAM index, const char* text) {
-		UpdateStatusWindow(index, text, true);
+	using CS_StatusBar = memory::ExternalGlobal<HWND, 0x6CE974>;
+
+	const auto TES3CS_CreateStatusBar = reinterpret_cast<void(__cdecl*)(HWND)>(0x46E630);
+	static void __cdecl PatchCreateStatusBar(HWND hParent) {
+		TES3CS_CreateStatusBar(hParent);
+		const auto statusBar = CS_StatusBar::get();
+
+		// Subclass the window to optimize displays.
+		SetWindowSubclass(statusBar, PatchStatusWindowSubclassProc, NULL, 0);
+
+		// Make better use of horizontal space.
+		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
+		SendMessage(statusBar, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
 	}
 
 	//
@@ -1043,18 +1055,6 @@ namespace se::cs::window::main {
 		}
 	}
 
-	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
-		const auto hWnd = context.getWindowHandle();
-		auto statusWindow = FindWindowEx(hWnd, NULL, "msctls_statusbar32", NULL);
-
-		if (!statusWindow) {
-			return;
-		}
-
-		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
-		SendMessage(statusWindow, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
-	}
-
 	void PatchDialogProc_BeforeInitMenuPopup(DialogProcContext& context) {
 		auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
 		dialog::layer_window::refreshLayersMenuItem(viewMenu);
@@ -1100,9 +1100,6 @@ namespace se::cs::window::main {
 		case WM_SAVE:
 			PatchDialogProc_AfterSave(context);
 			break;
-		case WM_FINISH_INITIALIZATION:
-			PatchDialogProc_AfterInitialize(context);
-			break;
 		}
 
 		return context.getResult();
@@ -1119,7 +1116,7 @@ namespace se::cs::window::main {
 		}
 
 		// Patch: Throttle UI status updates.
-		genJumpEnforced(0x404881, 0x46E680, reinterpret_cast<DWORD>(PatchThrottleMessageUpdate));
+		genJumpEnforced(0x401848, 0x46E630, reinterpret_cast<DWORD>(PatchCreateStatusBar));
 
 		// Patch: Enable QuickStart cell loading.
 		genCallEnforced(0x447B78, 0x4033FF, reinterpret_cast<DWORD>(PatchEnableQuickStartCellLoading));
