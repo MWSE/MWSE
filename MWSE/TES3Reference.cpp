@@ -603,6 +603,7 @@ namespace TES3 {
 		// Clean up action data on other mobile actors.
 		if (worldController && worldController->mobManager && worldController->mobManager->processManager) {
 			worldController->mobManager->processManager->cleanupActionData(mobile);
+			worldController->mobManager->processManager->cleanupAIPackages(this, mobile);
 		}
 
 		// Clean up any related magic effects.

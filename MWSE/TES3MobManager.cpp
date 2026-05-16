@@ -130,6 +130,26 @@ namespace TES3 {
 		criticalSection.leave();
 	}
 
+	void ProcessManager::cleanupAIPackages(Reference* reference, MobileActor* mobileActor) {
+		if (reference == nullptr && mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProcessManager::cleanupAIPackages");
+
+		if (mobilePlayer && mobilePlayer->aiPlanner) {
+			mobilePlayer->aiPlanner->cleanupAIPackages(reference, mobileActor);
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner) {
+				planner->cleanupAIPackages(reference, mobileActor);
+			}
+		}
+
+		criticalSection.leave();
+	}
+
 	//
 	// ProjectileManager
 	//

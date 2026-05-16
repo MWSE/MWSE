@@ -40,6 +40,41 @@ namespace TES3 {
 		TES3_AIPackage_setTargetActorAsFriendIfActive(this, target);
 	}
 
+	void AIPackage::cleanupReference(Reference* reference, MobileActor* mobileActor) {
+		if (mobileActor) {
+			if (targetActor == mobileActor) {
+				targetActor = nullptr;
+				done = true;
+			}
+			if (owningActor == mobileActor) {
+				owningActor = nullptr;
+			}
+		}
+
+		if (reference == nullptr) {
+			return;
+		}
+
+		switch (packageType) {
+		case AIPackageType::Wander: {
+			auto package = static_cast<AIPackageWander*>(this);
+			if (package->activationTarget == reference) {
+				package->activationTarget = nullptr;
+				done = true;
+			}
+			break;
+		}
+		case AIPackageType::Activate: {
+			auto package = static_cast<AIPackageActivate*>(this);
+			if (package->activateTarget == reference) {
+				package->activateTarget = nullptr;
+				done = true;
+			}
+			break;
+		}
+		}
+	}
+
 	sol::object AIPackage::getOrCreateLuaObject(lua_State* L) const {
 		if (this == nullptr) {
 			return sol::nil;
@@ -102,6 +137,17 @@ namespace TES3 {
 			return AIPackageType::Activate;
 		}
 		return AIPackageType::Wander;
+	}
+
+	void AIPackageConfig::cleanupReference(Reference* reference) {
+		if (reference == nullptr || type != AIPackageConfigType::Activate) {
+			return;
+		}
+
+		auto config = static_cast<AIPackageActivate::Config*>(this);
+		if (config->target == reference) {
+			config->target = nullptr;
+		}
 	}
 
 	AIPackageTravel::Config::Config() {

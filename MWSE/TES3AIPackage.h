@@ -91,6 +91,8 @@ namespace TES3 {
 		// Custom functions
 		//
 
+		void cleanupReference(Reference* reference, MobileActor* mobileActor);
+
 		// Allow dynamic recasting to derived types.
 		sol::object getOrCreateLuaObject(lua_State* L) const;
 
@@ -108,6 +110,7 @@ namespace TES3 {
 
 		// Helper function.
 		AIPackageType toPackageType() const;
+		void cleanupReference(Reference* reference);
 	};
 	static_assert(sizeof(AIPackageConfig) == 0x4, "TES3::AIPackageConfig failed size validation");
 
