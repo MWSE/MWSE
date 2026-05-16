@@ -435,7 +435,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Effect& Effect::operator=(const sol::table table) {
+	Effect& Effect::operator=(const sol::table& table) {
 		effectID = table.get_or("id", EffectID::None);
 		skillID = table.get_or("skill", SkillID::Invalid);
 		attributeID = table.get_or("attribute", Attribute::Invalid);
@@ -447,7 +447,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Effect& Effect::operator=(const sol::object object) {
+	Effect& Effect::operator=(const sol::object& object) {
 		if (object.is<Effect>()) {
 			*this = object.as<Effect>();
 		}

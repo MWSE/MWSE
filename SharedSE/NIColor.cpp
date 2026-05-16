@@ -51,7 +51,7 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Color::Color(sol::table table) {
+	Color::Color(const sol::table& table) {
 		r = table.get_or("r", table.get_or(1, 0.0f));
 		g = table.get_or("g", table.get_or(2, 0.0f));
 		b = table.get_or("b", table.get_or(3, 0.0f));
@@ -84,7 +84,7 @@ namespace NI {
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-	Color& Color::operator=(const sol::table table) {
+	Color& Color::operator=(const sol::table& table) {
 		r = table.get_or("r", table.get_or(1, 0.0f));
 		g = table.get_or("g", table.get_or(2, 0.0f));
 		b = table.get_or("b", table.get_or(3, 0.0f));
