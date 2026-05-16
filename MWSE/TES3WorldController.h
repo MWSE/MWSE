@@ -433,6 +433,7 @@ namespace TES3 {
 		void startGlobalScriptBySourceID(Script* script, unsigned int sourceID);
 		_declspec(dllexport) void stopGlobalScript(Script* script);
 		_declspec(dllexport) bool isGlobalScriptRunning(const Script* script) const;
+		void cleanupGlobalScriptReferences(Reference* reference);
 
 		_declspec(dllexport) unsigned short getDaysInMonth(int);
 		_declspec(dllexport) unsigned short getCumulativeDaysForMonth(int month);

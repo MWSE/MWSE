@@ -595,7 +595,14 @@ namespace TES3 {
 		}
 
 		// Clean up any related magic effects.
-		worldController->magicInstanceController->cleanupReference(this);
+		if (worldController && worldController->magicInstanceController) {
+			worldController->magicInstanceController->cleanupReference(this);
+		}
+
+		// Clean up global scripts for the reference.
+		if (worldController) {
+			worldController->cleanupGlobalScriptReferences(this);
+		}
 
 		// Clean up static event references.
 		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
