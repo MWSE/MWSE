@@ -137,6 +137,20 @@ namespace TES3 {
 		criticalSection.leave();
 	}
 
+	void ProjectileManager::cleanupFiringActor(MobileActor* mobileActor) {
+		if (mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProjectileManager::cleanupFiringActor");
+		for (const auto projectile : activeProjectiles) {
+			if (projectile->firingActor == mobileActor) {
+				projectile->firingActor = nullptr;
+			}
+		}
+		criticalSection.leave();
+	}
+
 	const auto TES3_MobManager_addMob = reinterpret_cast<void(__thiscall*)(MobManager*, Reference*)>(0x5636A0);
 	void MobManager::addMob(Reference * reference) {
 		TES3_MobManager_addMob(this, reference);

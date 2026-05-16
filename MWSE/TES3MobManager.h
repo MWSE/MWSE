@@ -63,6 +63,7 @@ namespace TES3 {
 
 		void resolveCollisions(float deltaTime);
 		void removeProjectilesFiredByActor(MobileActor* mobileActor, bool includeSpellProjectiles);
+		void cleanupFiringActor(MobileActor* mobileActor);
 	};
 	static_assert(sizeof(ProjectileManager) == 0x3C, "TES3::ProjectileManager failed size validation");
 

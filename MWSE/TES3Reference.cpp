@@ -595,6 +595,11 @@ namespace TES3 {
 			clearIfThis(this, tes3game->tooltipTarget);
 		}
 
+		// Clean up active projectiles fired by this mobile.
+		if (mobile && worldController && worldController->mobManager && worldController->mobManager->projectileManager) {
+			worldController->mobManager->projectileManager->cleanupFiringActor(mobile);
+		}
+
 		// Clean up any related magic effects.
 		if (worldController && worldController->magicInstanceController) {
 			worldController->magicInstanceController->cleanupReference(this);
