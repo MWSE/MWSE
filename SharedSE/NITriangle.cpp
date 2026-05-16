@@ -16,7 +16,7 @@ namespace NI {
 		*this = table;
 	}
 
-	Triangle& Triangle::operator=(const sol::table table) {
+	Triangle& Triangle::operator=(const sol::table& table) {
 		for (auto i = 0; i < 3; ++i) {
 			vertices[i] = table.get_or(i + 1, 0);
 		}

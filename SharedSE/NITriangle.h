@@ -9,7 +9,7 @@ namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		Triangle(const sol::table table);
 
-		Triangle& operator=(const sol::table table);
+		Triangle& operator=(const sol::table& table);
 #endif
 
 		std::reference_wrapper<unsigned short[3]> getVertices();

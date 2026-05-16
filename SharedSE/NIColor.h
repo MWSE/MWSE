@@ -32,13 +32,13 @@ namespace NI {
 		Color(const ColorA& c);
 		Color(const Point3& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Color(sol::table table);
+		Color(const sol::table& table);
 		Color(const sol::object& object);
 #endif
 
 		Color& operator=(const Point3& vector);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-		Color& operator=(const sol::table table);
+		Color& operator=(const sol::table& table);
 		Color& operator=(const sol::object& object);
 #endif
 
