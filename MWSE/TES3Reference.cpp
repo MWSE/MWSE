@@ -594,6 +594,9 @@ namespace TES3 {
 			clearIfThis(this, tes3game->tooltipTarget);
 		}
 
+		// Clean up any related magic effects.
+		worldController->magicInstanceController->cleanupReference(this);
+
 		// Clean up static event references.
 		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
 		clearIfThis(this, mwse::lua::event::LeveledItemPickedEvent::m_Reference);
