@@ -1370,17 +1370,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#actor-editing-windows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Actor Editing Windows
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cell-view" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1414,6 +1403,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#object-editing-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Editing Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#path-grid-window" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1440,6 +1440,17 @@
     <span class="md-ellipsis">
       
         Render Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-edit-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script Edit Window
       
     </span>
   </a>
@@ -23621,17 +23632,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#actor-editing-windows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Actor Editing Windows
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cell-view" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -23665,6 +23665,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#object-editing-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Editing Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#path-grid-window" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -23691,6 +23702,17 @@
     <span class="md-ellipsis">
       
         Render Window
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-edit-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script Edit Window
       
     </span>
   </a>
@@ -23797,6 +23819,7 @@
 <li>Symbolically linked files now list and load correctly.</li>
 <li>By default both dds and tga texture files are selectable in texture selection dialogs.</li>
 <li>Attempts to open the CS .hlp file now instead redirect to the <a href="https://tes3cs.pages.dev/">Morrowind Modding Wiki mirror</a> of the document.</li>
+<li>Serialization improvements for reference scales. If a reference is scaled to 1.0 from another value, it will serialize.</li>
 </ul>
 <h4 id="testing-from-the-construction-set">Testing from the Construction Set<a class="headerlink" href="#testing-from-the-construction-set" title="Permanent link">⚓︎</a></h4>
 <p>Both Morrowind and OpenMW can be launched from the CS with a specified environment. Two new buttons have been added to the toolbar, the first with Morrowind's icon, and the second with OpenMW's icon.</p>
@@ -23835,11 +23858,6 @@
 <li>The status bars at the bottom of the construction set have been widened. They should always have enough room to show the relevent information.</li>
 <li>The status bars now also show the scale of the selected object.</li>
 </ul>
-<h3 id="actor-editing-windows">Actor Editing Windows<a class="headerlink" href="#actor-editing-windows" title="Permanent link">⚓︎</a></h3>
-<ul>
-<li>The AI window opens more quickly.</li>
-<li>Clicking on the return button in the AI window when no cell has been loaded no longer crashes the CS.</li>
-</ul>
 <h3 id="cell-view">Cell View<a class="headerlink" href="#cell-view" title="Permanent link">⚓︎</a></h3>
 <ul>
 <li>Significantly improved UI responsiveness.</li>
@@ -23873,7 +23891,7 @@
 <ul>
 <li>Significantly improved UI responsiveness.</li>
 <li>The tab style has been changed to be more button-like. This prevents tabs from moving around.</li>
-<li>Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, or book text fragments.<ul>
+<li>Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, effects, or book text fragments.<ul>
 <li>Regex search options and case-sensitive search options can be enabled in the config file.</li>
 </ul>
 </li>
@@ -23886,9 +23904,22 @@
 <li>Modified objects are highlighted with a light green background.</li>
 <li>Deleted objects are highlighted with a light red background.</li>
 <li>The spell list lists the range of the spell.</li>
+<li>The NPC list now shows fight and training values.</li>
 <li>The creature list now shows the soul value of creatures.</li>
 <li>The leveled item/leveled creature lists now show the chance of no spawn.</li>
-<li>Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under <code>tools.csse.deprecated</code>. Objects matching these IDs (case insensitive) will not be displayed in the Object Window.</li>
+<li>Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under <code>tools.csse.deprecated</code>. Objects matching these IDs (case insensitive) will not be displayed in the Object Window, or can be shown with a grey background.</li>
+<li>Pressing F1 opens the Use Report menu of the selected object.</li>
+</ul>
+<h3 id="object-editing-window">Object Editing Window<a class="headerlink" href="#object-editing-window" title="Permanent link">⚓︎</a></h3>
+<ul>
+<li>Icon texture rendering fixes, including better uncompressed texture support and alpha blending.</li>
+<li>Clicking on the icon is equivalent to clicking on the inventory texture button.</li>
+</ul>
+<h4 id="actor-editing-windows">Actor Editing Windows<a class="headerlink" href="#actor-editing-windows" title="Permanent link">⚓︎</a></h4>
+<ul>
+<li>The AI window opens more quickly.</li>
+<li>Clicking on the return button in the AI window when no cell has been loaded no longer crashes the CS.</li>
+<li>Deprecated heads and hairs are not shown.</li>
 </ul>
 <h3 id="path-grid-window">Path Grid Window<a class="headerlink" href="#path-grid-window" title="Permanent link">⚓︎</a></h3>
 <ul>
@@ -23925,14 +23956,21 @@
 <li>Using F2 with a reference selected will bring up the window to edit that reference. Holding shift will bring up the window to edit the base object instead.</li>
 <li>Ctrl+H now opens the Search &amp; Replace window.</li>
 <li>Ctrl+F2 with a door selected will focus the associated door marker. The same can be done on a door marker, to select the door that leads to it.</li>
+<li>Added new layer menu (View &gt; Layers Window). Objects can be added to various layers, and those layers can be hidden/shown/tinted. Hotkeys are available. Click the help button on the window for usage information.</li>
 </ul>
 <p>The following changes to the rendering window apply when landscape editing:</p>
 <ul>
+<li>Multi-tile landscape texture painting.</li>
+<li>Configurable vertex color blend modes and brush strength.</li>
 <li>The <code>F</code> and <code>S</code> keys can now be used to enter flatten and smooth vertices modes.</li>
 <li>The <code>[</code> and <code>]</code> keys can be used to decrement/increment the terrain editing radius.</li>
 <li>The terrain editing disc is no longer hidden when hiding objects (Shift+C).</li>
 <li>The terrain editing disc is colored based on the current editing mode. These colors are configurable.</li>
 <li>You can use control+right mouse button to sample the texture at the cursor's position. This will select the matching texture under the cursor automatically in the landscape editing menu.</li>
+</ul>
+<h3 id="script-edit-window">Script Edit Window<a class="headerlink" href="#script-edit-window" title="Permanent link">⚓︎</a></h3>
+<ul>
+<li>Attempting to compile a script with <code>MWSE_BUILD</code> global variable access will automatically create it. MWSE will set this variable, so scripts can check to see if MWSE is used.</li>
 </ul>
 <h3 id="search-replace-window">Search &amp; Replace Window<a class="headerlink" href="#search-replace-window" title="Permanent link">⚓︎</a></h3>
 <ul>
@@ -23971,7 +24009,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="January 15, 2025 00:40:41 UTC">January 15, 2025 00:40:41</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="May 17, 2026 19:18:08 UTC">May 17, 2026 19:18:08</span>
   </span>
 
     
