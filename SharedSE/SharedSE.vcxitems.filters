@@ -189,6 +189,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NISortAdjustNode.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
