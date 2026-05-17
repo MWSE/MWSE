@@ -47,6 +47,24 @@ namespace TES3 {
 	}
 #pragma optimize( "", on )
 
+	void MobileObject::cleanupCollisionReference(Reference* reference) {
+		if (reference == nullptr || arrayCollisionResults == nullptr) {
+			return;
+		}
+
+		for (int i = 0; i < countCollisionResults; ++i) {
+			auto& collision = arrayCollisionResults[i];
+			if (collision.colliderRef == reference) {
+				collision.valid = false;
+				collision.colliderRoot = nullptr;
+				collision.colliderRef = nullptr;
+				collision.node_34 = nullptr;
+				collision.collisionType = Collision::CollisionType::None;
+				collision.processingState = 0;
+			}
+		}
+	}
+
 	void MobileObject::setFacing(float facingInRadians) {
 		vTable.mobileObject->setFacing(this, facingInRadians);
 	}

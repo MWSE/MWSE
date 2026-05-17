@@ -44,6 +44,15 @@ namespace NI {
 		return vTable.asAVObject->getObjectByName(this, name);
 	}
 
+	Node* AVObject::findRootCollisionNode() const {
+#if defined(SE_NI_AVOBJECT_FNADDR_FINDROOTCOLLISIONNODE) && SE_NI_AVOBJECT_FNADDR_FINDROOTCOLLISIONNODE > 0
+		const auto NI_AVObject_findRootCollisionNode = reinterpret_cast<Node*(__cdecl*)(const AVObject*)>(SE_NI_AVOBJECT_FNADDR_FINDROOTCOLLISIONNODE);
+		return NI_AVObject_findRootCollisionNode(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 	AVObject* AVObject::getParentByName(const char* name) const {
 		Node* result = parentNode;
 		while (result != nullptr) {

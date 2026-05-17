@@ -29,4 +29,22 @@ namespace NI {
 		throw not_implemented_exception();
 #endif
 	}
+
+	void CollisionGroup::removeCollidee(AVObject* obj) {
+#if defined(SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDEE) && SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDEE > 0
+		const auto NI_CollisionGroup_removeCollidee = reinterpret_cast<void(__thiscall*)(CollisionGroup*, AVObject*)>(SE_NI_COLLISIONGROUP_FNADDR_REMOVECOLLIDEE);
+		NI_CollisionGroup_removeCollidee(this, obj);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	void CollisionGroup::removeAll() {
+#if defined(SE_NI_COLLISIONGROUP_FNADDR_REMOVEALL) && SE_NI_COLLISIONGROUP_FNADDR_REMOVEALL > 0
+		const auto NI_CollisionGroup_removeAll = reinterpret_cast<void(__thiscall*)(CollisionGroup*)>(SE_NI_COLLISIONGROUP_FNADDR_REMOVEALL);
+		NI_CollisionGroup_removeAll(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
 }

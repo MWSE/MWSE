@@ -572,14 +572,6 @@ namespace TES3 {
 		const auto worldController = TES3::WorldController::get();
 		const auto mobile = getAttachedMobileActor();
 
-		// Cleanup Tes3ExtraData potentially dangling pointer.
-		NI::Pointer<NI::Tes3ExtraData> extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
-		if (extraData) {
-			extraData->reference = nullptr;
-			sceneNode->removeExtraData(extraData);
-			extraData = nullptr;
-		}
-
 		// Cleanup activation target.
 		if (tes3game) {
 			if (tes3game->playerTarget == this) {
@@ -587,6 +579,13 @@ namespace TES3 {
 				tes3game->setPlayerTarget(nullptr);
 			}
 			clearIfThis(this, tes3game->tooltipTarget);
+		}
+
+		// Clean up collision data that points at this reference.
+		if (worldController && worldController->mobManager) {
+			if (worldController->mobManager->processManager) {
+				worldController->mobManager->processManager->cleanupCollisionReferences(this);
+			}
 		}
 
 		// Clean up active projectiles fired by this mobile.
@@ -610,6 +609,13 @@ namespace TES3 {
 			worldController->cleanupGlobalScriptReferences(this);
 		}
 
+		// Cleanup Tes3ExtraData potentially dangling pointer.
+		NI::Pointer<NI::Tes3ExtraData> extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
+		if (extraData) {
+			extraData->reference = nullptr;
+			sceneNode->removeExtraData(extraData);
+			extraData = nullptr;
+		}
 
 		// Clean up static event references.
 		mwse::lua::LuaManager::getInstance().cleanupReference(this);

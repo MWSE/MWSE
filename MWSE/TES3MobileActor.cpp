@@ -75,6 +75,29 @@ namespace TES3 {
 		return effectInstance ? effectInstance->isSummon() : false;
 	}
 
+	void MobileActor::cleanupCollisionReference(Reference* reference) {
+		MobileObject::cleanupCollisionReference(reference);
+
+		if (collidingReference == reference) {
+			collidingReference = nullptr;
+		}
+
+		for (auto& collidingReference : moreCollidingReferences) {
+			if (collidingReference == reference) {
+				collidingReference = nullptr;
+			}
+		}
+
+		if (collision_1D4.colliderRef == reference) {
+			collision_1D4.valid = false;
+			collision_1D4.colliderRoot = nullptr;
+			collision_1D4.colliderRef = nullptr;
+			collision_1D4.node_34 = nullptr;
+			collision_1D4.collisionType = Collision::CollisionType::None;
+			collision_1D4.processingState = 0;
+		}
+	}
+
 	ActiveMagicEffect* ActiveMagicEffectLua::getFirst_legacy() const {
 		return &mobile->activeMagicEffects.front();
 	}

@@ -32,6 +32,8 @@ namespace NI {
 		bool containsCollider(AVObject* obj);
 		void addCollider(AVObject* obj);
 		void removeCollider(AVObject* obj);
+		void removeCollidee(AVObject* obj);
+		void removeAll();
 	};
 	static_assert(sizeof(CollisionGroup) == 0x30, "NI::CollisionGroup failed size validation");
 }

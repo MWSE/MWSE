@@ -150,6 +150,43 @@ namespace TES3 {
 		criticalSection.leave();
 	}
 
+	void ProcessManager::cleanupCollisionReferences(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		const auto rootCollisionNode = reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr;
+		criticalSection.enter("MWSE:ProcessManager::cleanupCollisionReferences");
+
+		if (mobilePlayer) {
+			mobilePlayer->cleanupCollisionReference(reference);
+			if (mobilePlayer->collisionGroup) {
+				if (mobilePlayer->reference == reference) {
+					mobilePlayer->collisionGroup->removeAll();
+				}
+				else if (rootCollisionNode) {
+					mobilePlayer->collisionGroup->removeCollidee(rootCollisionNode);
+				}
+			}
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner && planner->mobileActor) {
+				planner->mobileActor->cleanupCollisionReference(reference);
+				if (planner->mobileActor->collisionGroup) {
+					if (planner->mobileActor->reference == reference) {
+						planner->mobileActor->collisionGroup->removeAll();
+					}
+					else if (rootCollisionNode) {
+						planner->mobileActor->collisionGroup->removeCollidee(rootCollisionNode);
+					}
+				}
+			}
+		}
+
+		criticalSection.leave();
+	}
+
 	//
 	// ProjectileManager
 	//
@@ -188,6 +225,24 @@ namespace TES3 {
 		for (const auto projectile : activeProjectiles) {
 			if (projectile->firingActor == mobileActor) {
 				projectile->firingActor = nullptr;
+			}
+		}
+		criticalSection.leave();
+	}
+
+	void ProjectileManager::cleanupCollisionReferences(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		const auto rootCollisionNode = reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr;
+		criticalSection.enter("MWSE:ProjectileManager::cleanupCollisionReferences");
+		for (auto projectile : activeProjectiles) {
+			if (projectile) {
+				projectile->cleanupCollisionReference(reference);
+				if (projectile->collisionGroup && rootCollisionNode) {
+					projectile->collisionGroup->removeCollidee(rootCollisionNode);
+				}
 			}
 		}
 		criticalSection.leave();

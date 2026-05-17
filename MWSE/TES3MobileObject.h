@@ -313,6 +313,7 @@ namespace TES3 {
 		void setLightEffectDiffuseCol_lua(sol::object object);
 		NI::Point3* getVelocity();
 		void setVelocityFromLua(sol::stack_object);
+		void cleanupCollisionReference(Reference* reference);
 
 		bool getMobileObjectFlag(MobileActorFlag::Flag flag) const;
 		void setMobileObjectFlag(MobileActorFlag::Flag flag, bool set);

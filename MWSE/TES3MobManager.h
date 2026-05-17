@@ -48,6 +48,7 @@ namespace TES3 {
 		sol::table getAllPlanners(sol::this_state ts);
 		void cleanupActionData(MobileActor* mobileActor);
 		void cleanupAIPackages(Reference* reference, MobileActor* mobileActor);
+		void cleanupCollisionReferences(Reference* reference);
 	};
 	static_assert(sizeof(ProcessManager) == 0x830, "TES3::ProcessManager failed size validation");
 
@@ -66,6 +67,7 @@ namespace TES3 {
 		void resolveCollisions(float deltaTime);
 		void removeProjectilesFiredByActor(MobileActor* mobileActor, bool includeSpellProjectiles);
 		void cleanupFiringActor(MobileActor* mobileActor);
+		void cleanupCollisionReferences(Reference* reference);
 	};
 	static_assert(sizeof(ProjectileManager) == 0x3C, "TES3::ProjectileManager failed size validation");
 
