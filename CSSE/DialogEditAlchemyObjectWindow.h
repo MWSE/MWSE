@@ -6,6 +6,8 @@ namespace se::cs::dialog::edit_alchemy_object_window {
 
 	// Default IDs.
 	constexpr UINT CONTROL_ID_ADD_ART_FILE_BUTTON = 1043;
+	constexpr UINT CONTROL_ID_INVENTORY_TEXTURE_BUTTON = 1044;
+	constexpr UINT CONTROL_ID_ICON_TEXTURE = 1058;
 	constexpr UINT CONTROL_ID_ICON_FRAME = 1120;
 	constexpr UINT CONTROL_ID_AUTO_CALCULATE_VALUE_BUTTON = 1215;
 	constexpr UINT CONTROL_ID_BLOCKED_BUTTON = 1684;
