@@ -1,0 +1,15 @@
+return {
+	["noCondition"] = 0,
+	["function"] = 1,
+	["globalVariable"] = 2,
+	["localVariable"] = 3,
+	["journalIndex"] = 4,
+	["itemCount"] = 5,
+	["deadActor"] = 6,
+	["notId"] = 7,
+	["notFaction"] = 8,
+	["notClass"] = 9,
+	["notRace"] = 10,
+	["notCell"] = 11,
+	["notLocal"] = 12,
+}

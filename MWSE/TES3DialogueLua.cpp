@@ -74,6 +74,8 @@ namespace mwse::lua {
 			usertypeDefinition["npcRank"] = sol::readonly_property(&TES3::DialogueInfo::npcRank);
 			usertypeDefinition["npcSex"] = sol::readonly_property(&TES3::DialogueInfo::npcSex);
 			usertypeDefinition["pcRank"] = sol::readonly_property(&TES3::DialogueInfo::pcRank);
+			usertypeDefinition["scriptText"] = sol::readonly_property(&TES3::DialogueInfo::getResultScriptText_lua);
+			usertypeDefinition["soundPath"] = sol::readonly_property(&TES3::DialogueInfo::getSoundPath_lua);
 			usertypeDefinition["type"] = sol::readonly_property(&TES3::DialogueInfo::type);
 
 			// Filter functions.
@@ -82,6 +84,7 @@ namespace mwse::lua {
 			usertypeDefinition["npcClass"] = sol::property(&TES3::DialogueInfo::getFilterNPCClass);
 			usertypeDefinition["npcFaction"] = sol::property(&TES3::DialogueInfo::getFilterNPCFaction);
 			usertypeDefinition["cell"] = sol::property(&TES3::DialogueInfo::getFilterNPCCell);
+			usertypeDefinition["conditionals"] = sol::readonly_property(&TES3::DialogueInfo::getConditionals_lua);
 			usertypeDefinition["pcFaction"] = sol::property(&TES3::DialogueInfo::getFilterPCFaction);
 
 			// Load link access.

@@ -3712,6 +3712,127 @@ tes3.damageSource = require("tes3.damageSource")
 ---| `tes3.damageSource.shield`
 ---| `tes3.damageSource.suffocation`
 
+tes3.dialogueConditionalComparator = require("tes3.dialogueConditionalComparator")
+
+--- @alias tes3.dialogueConditionalComparator
+---| `tes3.dialogueConditionalComparator.equal`
+---| `tes3.dialogueConditionalComparator.greater`
+---| `tes3.dialogueConditionalComparator.greaterEqual`
+---| `tes3.dialogueConditionalComparator.less`
+---| `tes3.dialogueConditionalComparator.lessEqual`
+---| `tes3.dialogueConditionalComparator.notEqual`
+
+tes3.dialogueConditionalConstantType = require("tes3.dialogueConditionalConstantType")
+
+--- @alias tes3.dialogueConditionalConstantType
+---| `tes3.dialogueConditionalConstantType.cell`
+---| `tes3.dialogueConditionalConstantType.class`
+---| `tes3.dialogueConditionalConstantType.deadActor`
+---| `tes3.dialogueConditionalConstantType.faction`
+---| `tes3.dialogueConditionalConstantType.item`
+---| `tes3.dialogueConditionalConstantType.journal`
+---| `tes3.dialogueConditionalConstantType.none`
+---| `tes3.dialogueConditionalConstantType.notId`
+---| `tes3.dialogueConditionalConstantType.race`
+---| `tes3.dialogueConditionalConstantType.variableFloat`
+---| `tes3.dialogueConditionalConstantType.variableInt`
+---| `tes3.dialogueConditionalConstantType.variableShort`
+
+tes3.dialogueConditionalFunction = require("tes3.dialogueConditionalFunction")
+
+--- @alias tes3.dialogueConditionalFunction
+---| `tes3.dialogueConditionalFunction.alarm`
+---| `tes3.dialogueConditionalFunction.alarmed`
+---| `tes3.dialogueConditionalFunction.attacked`
+---| `tes3.dialogueConditionalFunction.choice`
+---| `tes3.dialogueConditionalFunction.creatureTarget`
+---| `tes3.dialogueConditionalFunction.detected`
+---| `tes3.dialogueConditionalFunction.factionRankDifference`
+---| `tes3.dialogueConditionalFunction.fight`
+---| `tes3.dialogueConditionalFunction.flee`
+---| `tes3.dialogueConditionalFunction.friendHit`
+---| `tes3.dialogueConditionalFunction.healthPercent`
+---| `tes3.dialogueConditionalFunction.hello`
+---| `tes3.dialogueConditionalFunction.level`
+---| `tes3.dialogueConditionalFunction.pcAcrobatics`
+---| `tes3.dialogueConditionalFunction.pcAgility`
+---| `tes3.dialogueConditionalFunction.pcAlchemy`
+---| `tes3.dialogueConditionalFunction.pcAlteration`
+---| `tes3.dialogueConditionalFunction.pcArmorer`
+---| `tes3.dialogueConditionalFunction.pcAthletics`
+---| `tes3.dialogueConditionalFunction.pcAxe`
+---| `tes3.dialogueConditionalFunction.pcBlightDisease`
+---| `tes3.dialogueConditionalFunction.pcBlock`
+---| `tes3.dialogueConditionalFunction.pcBluntWeapon`
+---| `tes3.dialogueConditionalFunction.pcClothingModifier`
+---| `tes3.dialogueConditionalFunction.pcCommonDisease`
+---| `tes3.dialogueConditionalFunction.pcConjuration`
+---| `tes3.dialogueConditionalFunction.pcCorprus`
+---| `tes3.dialogueConditionalFunction.pcCrimeLevel`
+---| `tes3.dialogueConditionalFunction.pcDestruction`
+---| `tes3.dialogueConditionalFunction.pcEnchant`
+---| `tes3.dialogueConditionalFunction.pcEndurance`
+---| `tes3.dialogueConditionalFunction.pcExpelled`
+---| `tes3.dialogueConditionalFunction.pcFatigue`
+---| `tes3.dialogueConditionalFunction.pcHandToHand`
+---| `tes3.dialogueConditionalFunction.pcHealth`
+---| `tes3.dialogueConditionalFunction.pcHealthPercent`
+---| `tes3.dialogueConditionalFunction.pcHeavyArmor`
+---| `tes3.dialogueConditionalFunction.pcIllusion`
+---| `tes3.dialogueConditionalFunction.pcIntelligence`
+---| `tes3.dialogueConditionalFunction.pcLevel`
+---| `tes3.dialogueConditionalFunction.pcLightArmor`
+---| `tes3.dialogueConditionalFunction.pcLongBlade`
+---| `tes3.dialogueConditionalFunction.pcLuck`
+---| `tes3.dialogueConditionalFunction.pcMagicka`
+---| `tes3.dialogueConditionalFunction.pcMarksman`
+---| `tes3.dialogueConditionalFunction.pcMediumArmor`
+---| `tes3.dialogueConditionalFunction.pcMercantile`
+---| `tes3.dialogueConditionalFunction.pcMysticism`
+---| `tes3.dialogueConditionalFunction.pcPersonality`
+---| `tes3.dialogueConditionalFunction.pcReputation`
+---| `tes3.dialogueConditionalFunction.pcRestoration`
+---| `tes3.dialogueConditionalFunction.pcSecurity`
+---| `tes3.dialogueConditionalFunction.pcSex`
+---| `tes3.dialogueConditionalFunction.pcShortBlade`
+---| `tes3.dialogueConditionalFunction.pcSneak`
+---| `tes3.dialogueConditionalFunction.pcSpear`
+---| `tes3.dialogueConditionalFunction.pcSpeechcraft`
+---| `tes3.dialogueConditionalFunction.pcSpeed`
+---| `tes3.dialogueConditionalFunction.pcStrength`
+---| `tes3.dialogueConditionalFunction.pcUnarmored`
+---| `tes3.dialogueConditionalFunction.pcVampire`
+---| `tes3.dialogueConditionalFunction.pcWerewolfKills`
+---| `tes3.dialogueConditionalFunction.pcWillpower`
+---| `tes3.dialogueConditionalFunction.rankRequirement`
+---| `tes3.dialogueConditionalFunction.reactionHigh`
+---| `tes3.dialogueConditionalFunction.reactionLow`
+---| `tes3.dialogueConditionalFunction.reputation`
+---| `tes3.dialogueConditionalFunction.sameFaction`
+---| `tes3.dialogueConditionalFunction.sameRace`
+---| `tes3.dialogueConditionalFunction.sameSex`
+---| `tes3.dialogueConditionalFunction.shouldAttack`
+---| `tes3.dialogueConditionalFunction.talkedToPC`
+---| `tes3.dialogueConditionalFunction.weather`
+---| `tes3.dialogueConditionalFunction.werewolf`
+
+tes3.dialogueConditionalType = require("tes3.dialogueConditionalType")
+
+--- @alias tes3.dialogueConditionalType
+---| `tes3.dialogueConditionalType.deadActor`
+---| `tes3.dialogueConditionalType.function`
+---| `tes3.dialogueConditionalType.globalVariable`
+---| `tes3.dialogueConditionalType.itemCount`
+---| `tes3.dialogueConditionalType.journalIndex`
+---| `tes3.dialogueConditionalType.localVariable`
+---| `tes3.dialogueConditionalType.noCondition`
+---| `tes3.dialogueConditionalType.notCell`
+---| `tes3.dialogueConditionalType.notClass`
+---| `tes3.dialogueConditionalType.notFaction`
+---| `tes3.dialogueConditionalType.notId`
+---| `tes3.dialogueConditionalType.notLocal`
+---| `tes3.dialogueConditionalType.notRace`
+
 tes3.dialogueFilterContext = require("tes3.dialogueFilterContext")
 
 --- @alias tes3.dialogueFilterContext

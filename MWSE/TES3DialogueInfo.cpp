@@ -9,6 +9,7 @@
 #include "TES3DataHandler.h"
 #include "TES3DialogueFilterContext.h"
 #include "TES3Faction.h"
+#include "TES3GameFile.h"
 #include "TES3MobileCreature.h"
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
@@ -270,13 +271,109 @@ namespace TES3 {
 		}
 	}
 
-	const char* DialogueInfo::getSoundPath() {
+	const char* DialogueInfo::getSoundPath() const {
 		for (auto node = conditions; node; node = node->next) {
 			if (node->tag == DialogueInfoFilterType::SoundPath) {
 				return node->soundPath;
 			}
 		}
 		return nullptr;
+	}
+
+	sol::optional<std::string> DialogueInfo::getSoundPath_lua() const {
+		if (const auto soundPath = getSoundPath()) {
+			return { soundPath };
+		}
+
+		return {};
+	}
+
+	sol::optional<std::string> DialogueInfo::getResultScriptText_lua() const {
+		if (sourceMod == nullptr || espFileOffset == 0 || !BIT_TEST(objectFlags, ObjectFlag::HasResultTextBit)) {
+			return {};
+		}
+
+		GameFile tempFile = GameFile(sourceMod->path, sourceMod->filename);
+		tempFile.collectActiveMods();
+		if (!tempFile.reopen()) {
+			return {};
+		}
+
+		if (!tempFile.setFilePointer(espFileOffset) || tempFile.getFirstSubrecord() != ObjectType::DialogueInfo) {
+			return {};
+		}
+
+		while (auto subrecordType = tempFile.getNextSubrecord()) {
+			if (subrecordType == 'MANB') {
+				std::string result = {};
+				result.resize(tempFile.currentChunkHeader.size);
+				tempFile.readChunkData(result.data(), tempFile.currentChunkHeader.size);
+				return { std::move(result) };
+			}
+
+			if (!tempFile.hasMoreRecords()) {
+				break;
+			}
+		}
+
+		return {};
+	}
+
+	sol::table DialogueInfo::getConditionals_lua() const {
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		auto& state = stateHandle.getState();
+		auto result = state.create_table();
+
+		int tableIndex = 1;
+		for (auto node = conditions; node; node = node->next) {
+			if (node->tag < DialogueInfoFilterType::Conditional0 || node->tag > DialogueInfoFilterType::Conditional5 || node->conditional == nullptr) {
+				continue;
+			}
+
+			const auto conditionIndex = static_cast<int>(node->tag) - static_cast<int>(DialogueInfoFilterType::Conditional0) + 1;
+			const auto conditional = node->conditional;
+			auto conditionData = state.create_table_with(
+				"index", conditionIndex,
+				"type", static_cast<int>(conditional->type),
+				"operator", static_cast<int>(conditional->compareOperator),
+				"value", conditional->compareValue
+			);
+
+			if (conditional->constantType != DialogueConditionalConstantType::None) {
+				conditionData["constantType"] = static_cast<int>(static_cast<unsigned char>(conditional->constantType));
+			}
+
+			switch (conditional->type) {
+			case DialogueConditionalType::Function:
+				conditionData["functionId"] = static_cast<int>(conditional->function);
+				break;
+			case DialogueConditionalType::LocalVar:
+			case DialogueConditionalType::NotLocal:
+				if (conditional->localVarName) {
+					conditionData["variable"] = conditional->localVarName;
+				}
+				break;
+			case DialogueConditionalType::GlobalVar:
+			case DialogueConditionalType::JournalIndex:
+			case DialogueConditionalType::ItemCount:
+			case DialogueConditionalType::DeadActor:
+			case DialogueConditionalType::NotID:
+			case DialogueConditionalType::NotFaction:
+			case DialogueConditionalType::NotClass:
+			case DialogueConditionalType::NotRace:
+			case DialogueConditionalType::NotCell:
+				if (conditional->object) {
+					conditionData["object"] = conditional->object;
+				}
+				break;
+			default:
+				break;
+			}
+
+			result[tableIndex++] = conditionData;
+		}
+
+		return result;
 	}
 
 	sol::optional<std::string> DialogueInfo::getID() {

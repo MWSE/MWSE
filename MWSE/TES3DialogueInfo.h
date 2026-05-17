@@ -126,7 +126,10 @@ namespace TES3 {
 		static char* getLastLoadedScript();
 		static void setLastLoadedScript(const char* text);
 
-		const char* getSoundPath();
+		const char* getSoundPath() const;
+		sol::optional<std::string> getSoundPath_lua() const;
+		sol::optional<std::string> getResultScriptText_lua() const;
+		sol::table getConditionals_lua() const;
 
 		//
 		// Custom functions.

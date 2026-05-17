@@ -7,6 +7,7 @@
 --- @class tes3dialogueInfo : tes3baseObject
 --- @field actor tes3actor|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance *Read-only*. The speaker's actor that the info is filtered for.
 --- @field cell tes3cell *Read-only*. The speaker's current cell that the info is filtered for.
+--- @field conditionals table<integer, table> *Read-only*. The dialogue conditional filters attached to this info. Each entry is a table with a 1-based `index`, `type` (`tes3.dialogueConditionalType`), `operator` (`tes3.dialogueConditionalComparator`), numeric `value`, optional `constantType` (`tes3.dialogueConditionalConstantType`), and one of `functionId` (`tes3.dialogueConditionalFunction`), `object`, or `variable` depending on the conditional kind.
 --- @field disposition number The minimum disposition that the info is filtered for. For journal-based dialogues, this is the same as the `journalIndex` property, which should be used instead.
 --- @field firstHeardFrom tes3actor|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3npc|tes3npcInstance The actor that the player first heard the info from.
 --- @field isQuestFinished boolean|nil Quick access to the "quest finished" flag. For dialogues that aren't journal-based, this will be `nil`.
@@ -20,6 +21,8 @@
 --- @field npcSex number *Read-only*. The speaker's sex that the info is filtered for.
 --- @field pcFaction number *Read-only*. The player's joined faction that the info is filtered for.
 --- @field pcRank number *Read-only*. The player's rank required rank in the speaker's faction.
+--- @field scriptText string|nil *Read-only*. The Morrowind result script text stored on this dialogue info, if present. This is loaded from the source plugin on demand and requires file IO.
+--- @field soundPath string|nil *Read-only*. The dialogue sound-path filter, if present.
 --- @field text string *Read-only*. String contents for the info. This is not kept in memory, and must be loaded from files for each call.
 --- @field type tes3.dialogueType *Read-only*. The type of the info. Maps to values in [`tes3.dialogueType`](https://mwse.github.io/MWSE/references/dialogue-types/) namespace.
 tes3dialogueInfo = {}

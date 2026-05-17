@@ -44,6 +44,17 @@ The blocked state of the object.
 
 ***
 
+### `conditionals`
+<div class="search_terms" style="display: none">conditionals</div>
+
+*Read-only*. The dialogue conditional filters attached to this info. Each entry is a table with a 1-based `index`, `type` (`tes3.dialogueConditionalType`), `operator` (`tes3.dialogueConditionalComparator`), numeric `value`, optional `constantType` (`tes3.dialogueConditionalConstantType`), and one of `functionId` (`tes3.dialogueConditionalFunction`), `object`, or `variable` depending on the conditional kind.
+
+**Returns**:
+
+* `result` (table&lt;integer, table&gt;)
+
+***
+
 ### `deleted`
 <div class="search_terms" style="display: none">deleted</div>
 
@@ -261,6 +272,28 @@ The persistent flag of the object.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `scriptText`
+<div class="search_terms" style="display: none">scripttext</div>
+
+*Read-only*. The Morrowind result script text stored on this dialogue info, if present. This is loaded from the source plugin on demand and requires file IO.
+
+**Returns**:
+
+* `result` (string, nil)
+
+***
+
+### `soundPath`
+<div class="search_terms" style="display: none">soundpath</div>
+
+*Read-only*. The dialogue sound-path filter, if present.
+
+**Returns**:
+
+* `result` (string, nil)
 
 ***
 
