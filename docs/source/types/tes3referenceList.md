@@ -118,7 +118,7 @@ A collection for references, holding a cell and a linked list of references cont
 
 **Returns**:
 
-* `result` ([tes3reference](../types/tes3reference.md))
+* `result` (number)
 
 ***
 
