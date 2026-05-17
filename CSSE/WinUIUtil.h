@@ -36,10 +36,13 @@ namespace se::cs::winui {
 
 	void SetDialogFocus(HWND hWnd, int controlId);
 
+	bool HasStyle(HWND hWnd, DWORD style);
 	LONG GetStyle(HWND hWnd);
 	void SetStyle(HWND hWnd, LONG lStyle);
 	void AddStyles(HWND hWnd, LONG lStyle);
 	void RemoveStyles(HWND hWnd, LONG lStyle);
+
+	bool IsDisabled(HWND hWnd);
 
 	std::string GetWindowTextA(HWND hWnd);
 	std::optional<int> GetDlgItemSignedInt(HWND hWnd, UINT nIDDlgItem);

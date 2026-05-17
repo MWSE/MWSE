@@ -10,7 +10,10 @@ namespace se::cs {
 		TextureRenderer(const char* path) = delete;
 		~TextureRenderer() = delete;
 
+		TextureRenderer* loadFromPath(const char* path);
 		void drawItem(DRAWITEMSTRUCT* drawItem) const;
+		void copyBitmapDataForAlphaBlend(void* destinationBits) const;
+		bool tryLoadUncompressedDds(const char* path);
 
 		static void installPatches();
 	};
