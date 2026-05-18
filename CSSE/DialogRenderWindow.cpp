@@ -3146,12 +3146,6 @@ namespace se::cs::dialog::render_window {
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x45A3F0);
 
-		// The Render Window is drawn by DirectX. Letting Windows erase the dialog
-		// background exposes a white frame during exterior grid recentering.
-		if (msg == WM_ERASEBKGND) {
-			return 1;
-		}
-
 		switch (msg) {
 		case WM_MOUSEMOVE:
 			PatchDialogProc_BeforeMouseMove(context);
@@ -3180,6 +3174,10 @@ namespace se::cs::dialog::render_window {
 		case WM_TIMER:
 			PatchDialogProc_BeforeTimer(context);
 			break;
+		case WM_ERASEBKGND:
+			// The Render Window is drawn by DirectX. Letting Windows erase the dialog
+			// background exposes a white frame during exterior grid recentering.
+			return 1;
 		}
 
 		// Call original function, or return early if we already have a result.
