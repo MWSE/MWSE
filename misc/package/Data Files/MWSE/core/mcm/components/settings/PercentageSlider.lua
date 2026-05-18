@@ -14,6 +14,7 @@ local Parent = require("mcm.components.settings.Slider")
 
 --- @class mwseMCMPercentageSlider
 local PercentageSlider = Parent:new()
+PercentageSlider.__index = PercentageSlider
 
 PercentageSlider.min = 0.0
 PercentageSlider.max = 1.0

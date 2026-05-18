@@ -11,6 +11,7 @@ local Setting = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMColorPickerButton
 local PickerButton = Parent:new()
+PickerButton.__index = PickerButton
 
 --- @param newValue mwseColorATable
 function PickerButton:setVariableValue(newValue)

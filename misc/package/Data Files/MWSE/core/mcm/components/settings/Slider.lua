@@ -27,6 +27,8 @@ local Parent = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMSlider
 local Slider = Parent:new()
+Slider.__index = Slider
+
 Slider.min = 0
 Slider.decimalPlaces = 0
 Slider.max = 100
