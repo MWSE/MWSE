@@ -1,3 +1,4 @@
+#pragma once
 
 inline int ExceptionFilter(unsigned int code) {
 	return EXCEPTION_EXECUTE_HANDLER;

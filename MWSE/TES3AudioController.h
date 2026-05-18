@@ -139,7 +139,7 @@ namespace TES3 {
 		double getMusicPosition() const;
 		void setMusicPosition(double position);
 
-		double getMusicFileDuration(std::string_view& path);
+		double getMusicFileDuration(std::string_view path);
 
 		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
 

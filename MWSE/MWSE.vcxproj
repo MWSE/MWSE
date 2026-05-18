@@ -1195,7 +1195,7 @@
       <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1224,7 +1224,7 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
       <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

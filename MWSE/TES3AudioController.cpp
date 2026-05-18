@@ -308,7 +308,7 @@ namespace TES3 {
 		positioning->Release();
 	}
 
-	double AudioController::getMusicFileDuration(std::string_view& path) {
+	double AudioController::getMusicFileDuration(std::string_view path) {
 		if (!std::filesystem::exists(path)) {
 			throw std::invalid_argument("No music file exists at path.");
 		}
