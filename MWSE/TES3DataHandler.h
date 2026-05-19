@@ -194,6 +194,7 @@ namespace TES3 {
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
 		bool objectExists(const std::string_view& id);
+		void clearCellByNameCache(const Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>

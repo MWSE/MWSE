@@ -399,9 +399,38 @@ namespace TES3 {
 		return getCellByGrid(cellX, cellY);
 	}
 
-	const auto TES3_NonDynamicData_getCellByName = reinterpret_cast<Cell * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA9B0);
+	static std::unordered_map<std::string, Cell*> cellByNameCache;
+
+	static std::string normalizeCellName(const char* name) {
+		std::string normalized = name;
+		std::transform(normalized.begin(), normalized.end(), normalized.begin(), [](unsigned char c) {
+			return static_cast<char>(std::tolower(c));
+			});
+		return normalized;
+	}
+
 	Cell* NonDynamicData::getCellByName(const char* name) {
-		return TES3_NonDynamicData_getCellByName(this, name);
+		if (name == nullptr) {
+			return nullptr;
+		}
+
+		const auto normalizedName = normalizeCellName(name);
+		const auto cacheHit = cellByNameCache.find(normalizedName);
+		if (cacheHit != cellByNameCache.end()) {
+			return cacheHit->second;
+		}
+
+		if (cells != nullptr) {
+			for (const auto cell : *cells) {
+				const auto cellID = cell ? cell->getObjectID() : nullptr;
+				if (cellID != nullptr && _stricmp(cellID, name) == 0) {
+					cellByNameCache.emplace(normalizedName, cell);
+					return cell;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	const auto TES3_NonDynamicData_getRegionById = reinterpret_cast<Region * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA610);
@@ -475,6 +504,19 @@ namespace TES3 {
 
 	bool NonDynamicData::objectExists(const std::string_view& id) {
 		return resolveObject(id.data()) != nullptr;
+	}
+
+	void NonDynamicData::clearCellByNameCache(const Cell* cell) {
+		if (cell == nullptr) {
+			return;
+		}
+
+		const auto objectID = cell->getObjectID();
+		if (objectID == nullptr) {
+			return;
+		}
+
+		cellByNameCache.erase(normalizeCellName(objectID));
 	}
 
 	//

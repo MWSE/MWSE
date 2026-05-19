@@ -74,7 +74,13 @@ namespace TES3 {
 
 	const auto BaseObject_dtor = reinterpret_cast<TES3::BaseObject * (__thiscall*)(TES3::BaseObject*)>(0x4F0CA0);
 	void BaseObject::dtor() {
+		const auto dataHandler = TES3::DataHandler::get();
+
 		clearCachedLuaObject(this);
+
+		if (objectType == ObjectType::Cell) {
+			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
+		}
 
 		if (UI::MenuInputController::lastTooltipObject == this) {
 			UI::MenuInputController::lastTooltipObject = nullptr;
@@ -508,6 +514,7 @@ namespace TES3 {
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);

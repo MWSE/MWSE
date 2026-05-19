@@ -1750,6 +1750,14 @@ namespace mwse::patch {
 	static void __stdcall PatchBackgroundLoadSleep(DWORD) {
 		Sleep(Configuration::BackgroundLoadPollIntervalMs);
 	}
+	
+	//
+	// Patch: Implement map-based lookup of cells by ID.
+	//
+
+	static TES3::Cell* __fastcall PatchRecordsHandlerGetCellByName(TES3::NonDynamicData* self, DWORD, const char* name) {
+		return self->getCellByName(name);
+	}
 
 	//
 	// Install all the patches.
@@ -1820,6 +1828,9 @@ namespace mwse::patch {
 		genCallUnprotected(0x4869DB, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x48F489, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x4904D0, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+
+		// Patch: Cache cell lookups by ID.
+		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
 
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
