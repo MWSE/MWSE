@@ -266,6 +266,7 @@ namespace TES3 {
 
 		bool getDisabled() const;
 		bool getDeleted() const;
+		void setDeleted(bool deleted);
 
 		bool getPersistent() const;
 		void setPersistent(bool value);

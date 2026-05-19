@@ -239,6 +239,10 @@ namespace TES3 {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::DeleteBit);
 	}
 
+	void BaseObject::setDeleted(bool deleted) {
+		BIT_SET(objectFlags, TES3::ObjectFlag::DeleteBit, deleted);
+	}
+
 	bool BaseObject::getPersistent() const {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::PersistentBit);
 	}

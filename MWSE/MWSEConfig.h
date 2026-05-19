@@ -20,6 +20,7 @@ namespace mwse {
 		static bool NonExclusiveKeyboard;
 		static bool ReplaceLightSorting;
 		static bool CreateFullMinidumps;
+		static bool TestExperimentalFeature;
 		static UINT BackgroundLoadPollIntervalMs;
 		static UINT BuildNumber;
 

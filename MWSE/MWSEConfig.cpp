@@ -24,6 +24,7 @@ namespace mwse {
 	bool Configuration::ReplaceLightSorting = true;
 	bool Configuration::CreateFullMinidumps = false;
 	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
+	bool Configuration::TestExperimentalFeature = true;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -76,6 +77,7 @@ namespace mwse {
 		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(CreateFullMinidumps)
 		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
+		DECLARE_CONFIG(TestExperimentalFeature)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }
