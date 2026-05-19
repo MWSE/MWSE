@@ -1600,6 +1600,58 @@ namespace mwse::patch {
 		TES3::UI::updateLoadingMenu(percentLoaded);
 	}
 
+	static void __fastcall PatchMergeDialogueInfo(TES3::Dialogue* self, DWORD _, TES3::DialogueInfo* info, bool alwaysAddInfo) {
+		const auto previousId = (info->loadLinkNode && info->loadLinkNode->previous) ? info->loadLinkNode->previous : "";
+		if (previousId[0] == '\0') {
+			self->info.push_front(info);
+			return;
+		}
+
+		if (alwaysAddInfo || self->info.empty()) {
+			self->info.push_back(info);
+			return;
+		}
+
+		auto insertBefore = self->info.end();
+		for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
+			const auto currentLoadLinkNode = (*it)->loadLinkNode;
+			const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
+			if (currentInfoName && se::string::equal(previousId, currentInfoName)) {
+				insertBefore = it.base();
+				break;
+			}
+		}
+
+		self->info.insert(insertBefore, info);
+	}
+
+	static void __fastcall PatchMergeDialogues(TES3::Dialogue* self, DWORD _, TES3::Dialogue* other) {
+		if (other->type > TES3::DialogueType::MAX_VALUE) {
+			return;
+		}
+
+		const auto myName = self->name ? self->name : "";
+		const auto otherName = other->name ? other->name : "";
+
+		if (self->type != other->type) {
+			tes3::logAndShowError("Dialogue \"%s\" type \"%s\" tried to become type \"%s\".\r\n",
+				myName,
+				self->getFilterTypeName(),
+				other->getFilterTypeName());
+		}
+		self->type = other->type;
+
+		self->setDeleted(other->getDeleted());
+
+		if (!se::string::iequal(myName, otherName)) {
+			tes3::setDataString(&self->name, otherName);
+		}
+
+		for (auto& info : other->info) {
+			PatchMergeDialogueInfo(self, NULL, info, false);
+		}
+	}
+
 	//
 	// Patch: Be better about showing/hiding the cursor.
 	//
@@ -1697,62 +1749,6 @@ namespace mwse::patch {
 	// the MCM slider can be tweaked live without restarting the game.
 	static void __stdcall PatchBackgroundLoadSleep(DWORD) {
 		Sleep(Configuration::BackgroundLoadPollIntervalMs);
-	}
-
-	//
-	// Patch: Improve startup performance when loading dialogues.
-	//
-
-	static void __fastcall PatchMergeDialogueInfo(TES3::Dialogue* self, DWORD _, TES3::DialogueInfo* info, bool alwaysAddInfo) {
-		const auto previousId = (info->loadLinkNode && info->loadLinkNode->previous) ? info->loadLinkNode->previous : "";
-		if (previousId[0] == '\0') {
-			self->info.push_front(info);
-			return;
-		}
-
-		if (alwaysAddInfo || self->info.empty()) {
-			self->info.push_back(info);
-			return;
-		}
-
-		auto insertBefore = self->info.end();
-		for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
-			const auto currentLoadLinkNode = (*it)->loadLinkNode;
-			const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
-			if (currentInfoName && se::string::equal(previousId, currentInfoName)) {
-				insertBefore = it.base();
-				break;
-			}
-		}
-
-		self->info.insert(insertBefore, info);
-	}
-
-	static void __fastcall PatchMergeDialogues(TES3::Dialogue* self, DWORD _, TES3::Dialogue* other) {
-		if (other->type > TES3::DialogueType::MAX_VALUE) {
-			return;
-		}
-
-		const auto myName = self->name ? self->name : "";
-		const auto otherName = other->name ? other->name : "";
-
-		if (self->type != other->type) {
-			tes3::logAndShowError("Dialogue \"%s\" type \"%s\" tried to become type \"%s\".\r\n",
-				myName,
-				self->getFilterTypeName(),
-				other->getFilterTypeName());
-		}
-		self->type = other->type;
-
-		self->setDeleted(other->getDeleted());
-
-		if (!se::string::iequal(myName, otherName)) {
-			tes3::setDataString(&self->name, otherName);
-		}
-
-		for (auto& info : other->info) {
-			PatchMergeDialogueInfo(self, NULL, info, false);
-		}
 	}
 
 	//
@@ -2412,6 +2408,9 @@ namespace mwse::patch {
 		// Patch: Improve performance of initial game load.
 		genCallEnforced(0x4BB84E, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
 		genCallEnforced(0x4BC85C, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+		genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(PatchMergeDialogues));
+		genCallEnforced(0x4B2828, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
+		genCallEnforced(0x4BFB6E, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
 
 #if false
 		// Patch: Update dynamic lights to implement custom light sorting.
@@ -2489,12 +2488,6 @@ namespace mwse::patch {
 			se::memory::writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
-		}
-
-		if (Configuration::TestExperimentalFeature) {
-			genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(PatchMergeDialogues));
-			genCallEnforced(0x4B2828, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
-			genCallEnforced(0x4BFB6E, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
 		}
 	}
 
