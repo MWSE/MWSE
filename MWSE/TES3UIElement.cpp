@@ -1578,10 +1578,6 @@ namespace TES3::UI {
 
 }
 
-int sol_lua_push(sol::types<TES3::UI::Element>, lua_State* L, TES3::UI::Element& obj) {
-	return obj.getOrCreateLuaObject(L).push(L);
-}
-
 int sol_lua_push(sol::types<TES3::UI::Element*>, lua_State* L, TES3::UI::Element* obj) {
 	if (obj == nullptr) {
 		return sol::stack::push(L, sol::nil);
