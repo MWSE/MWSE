@@ -2042,6 +2042,53 @@ namespace mwse::patch {
 		// Patch: Cache cell lookups by ID.
 		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
 
+		// Patch: Implement map-based lookup of references.
+		auto Reference_ctor = &TES3::Reference::ctor;
+		genCallEnforced(0x466539, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x491234, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4913B0, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x49A4E4, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4B8E13, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4B8EAB, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4C0F03, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4C1381, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4C15D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DD26B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DD422, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DD9D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DDACF, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DDCC5, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DE482, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DE49E, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4DFE12, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x50982B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x509987, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x509AEA, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x509C3F, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x50A189, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x566140, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x570FA9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x6351F7, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genCallEnforced(0x4A43A5, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4F8FBB, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FA93D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FA9FD, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FABB2, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FC158, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD05D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD1ED, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD2F0, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FDC36, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FDF93, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FE07A, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FF24C, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x5008E6, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x491E04, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
+		genCallEnforced(0x50C2BC, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
+		genCallEnforced(0x48EEC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x48EFDE, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x4C5AC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
 		overrideVirtualTableEnforced(0x7501E0, offsetof(NI::Object_vTable, loadBinary), 0x6DA410, *reinterpret_cast<DWORD*>(&NiLinesData_loadBinary));
@@ -2712,54 +2759,6 @@ namespace mwse::patch {
 		}
 
 		if (Configuration::TestExperimentalFeature) {
-			auto Reference_ctor = &TES3::Reference::ctor;
-			genCallEnforced(0x466539, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x491234, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4913B0, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x49A4E4, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4B8E13, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4B8EAB, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4C0F03, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4C1381, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4C15D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DD26B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DD422, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DD9D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DDACF, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DDCC5, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DE482, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DE49E, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x4DFE12, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x50982B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x509987, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x509AEA, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x509C3F, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x50A189, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x566140, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x570FA9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-			genCallEnforced(0x6351F7, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-
-			genCallEnforced(0x4A43A5, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4F8FBB, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FA93D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FA9FD, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FABB2, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FC158, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FD05D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FD1ED, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FD2F0, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FDC36, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FDF93, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FE07A, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x4FF24C, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-			genCallEnforced(0x5008E6, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
-
-			genCallEnforced(0x491E04, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
-			genCallEnforced(0x50C2BC, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
-
-			genCallEnforced(0x48EEC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
-			genCallEnforced(0x48EFDE, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
-			genCallEnforced(0x4C5AC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
 		}
 	}
 
