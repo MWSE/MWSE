@@ -255,6 +255,9 @@ namespace TES3 {
 		BaseObject * getBaseObject();
 		BaseObject const* getBaseObject() const;
 
+		bool isPhysicalObject() const;
+		PhysicalObject* asPhysicalObject();
+		const PhysicalObject* asPhysicalObject() const;
 		bool isActor() const;
 		bool isMobileCapableActor() const;
 		bool isItem() const;
@@ -423,6 +426,12 @@ namespace TES3 {
 		NI::BoundingBox* getOrCreateBoundingBox();
 
 		Reference* getReference() const;
+		const std::vector<Reference*>& getReferences() const;
+
+		static void trackReferenceForLookup(Reference* reference);
+		static void untrackReferenceForLookup(Reference* reference);
+		static void markReferencesLookupDirty();
+		static void clearReferencesLookup();
 
 	};
 	static_assert(sizeof(PhysicalObject) == 0x30, "TES3::PhysicalObject failed size validation");

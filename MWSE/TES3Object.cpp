@@ -163,6 +163,10 @@ namespace TES3 {
 			object = static_cast<const Reference*>(object)->baseObject;
 		}
 
+		if (object == nullptr) {
+			return nullptr;
+		}
+
 		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
 			object = static_cast<const Actor*>(object)->getBaseActor();
 		}
@@ -170,11 +174,59 @@ namespace TES3 {
 		return object;
 	}
 
+	bool BaseObject::isPhysicalObject() const {
+		const auto baseObject = getBaseObject();
+		if (baseObject == nullptr) {
+			return nullptr;
+		}
+
+		switch (baseObject->objectType) {
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Alchemy:
+		case TES3::ObjectType::Ammo:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
+		case TES3::ObjectType::Door:
+		case TES3::ObjectType::Ingredient:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::Light:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Misc:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
+		case TES3::ObjectType::Static:
+		case TES3::ObjectType::Weapon:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	PhysicalObject* BaseObject::asPhysicalObject() {
+		if (!isPhysicalObject()) return nullptr;
+		return static_cast<PhysicalObject*>(this);
+	}
+
+	const PhysicalObject* BaseObject::asPhysicalObject() const {
+		if (!isPhysicalObject()) return nullptr;
+		return static_cast<const PhysicalObject*>(this);
+	}
+
 	bool BaseObject::isActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Container:
 		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
 		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -184,7 +236,9 @@ namespace TES3 {
 	bool BaseObject::isMobileCapableActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
 		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -948,6 +1002,135 @@ namespace TES3 {
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
+	}
+
+	static std::vector<Reference*> allReferences;
+	static std::unordered_set<Reference*> trackedReferences;
+	static std::unordered_map<const PhysicalObject*, std::vector<Reference*>> referencesByObject;
+	static const std::vector<Reference*> emptyReferences;
+	static bool referencesByObjectInitialized = false;
+	static bool referencesByObjectDirty = false;
+
+	static const PhysicalObject* getReferencesLookupKey(const BaseObject* object) {
+		const auto baseObject = object ? object->getBaseObject() : nullptr;
+		if (baseObject == nullptr || baseObject->objectType == ObjectType::Reference) {
+			return nullptr;
+		}
+
+		return static_cast<const PhysicalObject*>(baseObject);
+	}
+
+	static const PhysicalObject* getReferencesLookupKey(const Reference* reference) {
+		return getReferencesLookupKey(static_cast<const BaseObject*>(reference));
+	}
+
+	static void addReferenceToLookupImpl(Reference* reference) {
+		const auto key = getReferencesLookupKey(reference);
+		if (key == nullptr) {
+			return;
+		}
+
+		auto& references = referencesByObject[key];
+		if (std::find(references.begin(), references.end(), reference) == references.end()) {
+			references.push_back(reference);
+		}
+	}
+
+	static void addCellReferencesToLookup(const Cell* cell) {
+		if (cell == nullptr) {
+			return;
+		}
+
+		for (const auto reference : cell->actors) {
+			PhysicalObject::trackReferenceForLookup(reference);
+			addReferenceToLookupImpl(reference);
+		}
+		for (const auto reference : cell->persistentRefs) {
+			PhysicalObject::trackReferenceForLookup(reference);
+			addReferenceToLookupImpl(reference);
+		}
+		for (const auto reference : cell->temporaryRefs) {
+			PhysicalObject::trackReferenceForLookup(reference);
+			addReferenceToLookupImpl(reference);
+		}
+	}
+
+	static void addKnownCellReferencesToAllReferences() {
+		const auto dataHandler = DataHandler::get();
+		const auto nonDynamicData = dataHandler ? dataHandler->nonDynamicData : nullptr;
+		if (nonDynamicData == nullptr || nonDynamicData->cells == nullptr) {
+			return;
+		}
+
+		for (const auto cell : *nonDynamicData->cells) {
+			addCellReferencesToLookup(cell);
+		}
+	}
+
+	static void buildReferencesLookup() {
+		if (referencesByObjectInitialized && !referencesByObjectDirty) {
+			return;
+		}
+
+		referencesByObject.clear();
+		addKnownCellReferencesToAllReferences();
+
+		for (const auto reference : allReferences) {
+			addReferenceToLookupImpl(reference);
+		}
+
+		referencesByObjectInitialized = true;
+		referencesByObjectDirty = false;
+	}
+
+	const std::vector<Reference*>& PhysicalObject::getReferences() const {
+		buildReferencesLookup();
+
+		const auto key = getReferencesLookupKey(this);
+		if (key == nullptr) {
+			return emptyReferences;
+		}
+
+		const auto referencesIt = referencesByObject.find(key);
+		return referencesIt == referencesByObject.end() ? emptyReferences : referencesIt->second;
+	}
+
+	void PhysicalObject::trackReferenceForLookup(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		if (trackedReferences.insert(reference).second) {
+			allReferences.push_back(reference);
+			referencesByObjectDirty = true;
+		}
+	}
+
+	void PhysicalObject::untrackReferenceForLookup(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		if (trackedReferences.erase(reference)) {
+			const auto referenceIt = std::find(allReferences.begin(), allReferences.end(), reference);
+			if (referenceIt != allReferences.end()) {
+				allReferences.erase(referenceIt);
+			}
+
+			referencesByObjectDirty = true;
+		}
+	}
+
+	void PhysicalObject::markReferencesLookupDirty() {
+		referencesByObjectDirty = true;
+	}
+
+	void PhysicalObject::clearReferencesLookup() {
+		referencesByObjectInitialized = false;
+		referencesByObjectDirty = false;
+		allReferences.clear();
+		trackedReferences.clear();
+		referencesByObject.clear();
 	}
 }
 
