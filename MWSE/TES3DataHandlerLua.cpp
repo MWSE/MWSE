@@ -70,7 +70,7 @@ namespace mwse::lua {
 			usertypeDefinition["deleteObject"] = &TES3::NonDynamicData::deleteObject;
 			usertypeDefinition["drawCellMapMarker"] = &TES3::NonDynamicData::drawCellMapMarker;
 			usertypeDefinition["findDialogue"] = &TES3::NonDynamicData::findDialogue;
-			usertypeDefinition["findFirstCloneOfActor"] = &TES3::NonDynamicData::findFirstCloneOfActor;
+			usertypeDefinition["findFirstInstanceOfObjectId"] = &TES3::NonDynamicData::findFirstInstanceOfObjectId;
 			usertypeDefinition["findGlobalVariable"] = &TES3::NonDynamicData::findGlobalVariable;
 			usertypeDefinition["findScript"] = &TES3::NonDynamicData::findScriptByName;
 			usertypeDefinition["findSound"] = &TES3::NonDynamicData::findSound;
@@ -81,8 +81,9 @@ namespace mwse::lua {
 			// Provide legacy access to magic effects table.
 			usertypeDefinition["magicEffects"] = sol::readonly_property(&TES3::NonDynamicData::getMagicEffects_lua);
 
-			// Deprecated functions. TODO: Remove before 2.1 final.
+			// Deprecated functions.
 			usertypeDefinition["findDialogInfo"] = &TES3::NonDynamicData::findDialogue; // Badly named. Actually gives DIAL, not INFO.
+			usertypeDefinition["findFirstCloneOfActor"] = &TES3::NonDynamicData::findFirstInstanceOfObjectId;
 		}
 
 		// Binding for TES3::DataHandler::ExteriorCellData

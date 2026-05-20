@@ -382,11 +382,6 @@ namespace TES3 {
 		return findFirstReferenceOfObjectInWorld(object->asPhysicalObject(), false);
 	}
 
-	const auto TES3_NonDynamicData_findFirstCloneOfActor = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, const char*)>(0x4B8F50);
-	Reference* NonDynamicData::findFirstCloneOfActor(const char* baseId) {
-		return TES3_NonDynamicData_findFirstCloneOfActor(this, baseId);
-	}
-
 	const auto TES3_NonDynamicData_resolveReferenceBySourceID = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, unsigned int)>(0x4B9180);
 	Reference* NonDynamicData::resolveReferenceBySourceID(unsigned int id) {
 		return TES3_NonDynamicData_resolveReferenceBySourceID(this, id);

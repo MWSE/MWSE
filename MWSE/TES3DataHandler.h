@@ -151,7 +151,6 @@ namespace TES3 {
 		BaseObject* resolveObject(const char*);
 		Reference* findFirstInstanceOfObjectId(const char* id);
 		Reference* findEntityInWorld(BaseObject* object);
-		Reference* findFirstCloneOfActor(const char*);
 		Reference* resolveReferenceBySourceID(unsigned int);
 		Spell* getSpellById(const char*);
 		Script* findScriptByName(const char*);
