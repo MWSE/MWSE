@@ -1765,100 +1765,25 @@ namespace mwse::patch {
 	// Patch: Implement map-based lookup of references.
 	//
 
-	static bool shouldTryInstanceCloneId(const TES3::BaseObject* object) {
-		if (object == nullptr) {
-			return false;
-		}
-
-		const auto baseObject = object->getBaseObject();
-		if (baseObject == nullptr) {
-			return false;
-		}
-
-		return baseObject->objectType == TES3::ObjectType::Creature
-			|| baseObject->objectType == TES3::ObjectType::Container
-			|| baseObject->objectType == TES3::ObjectType::NPC;
-	}
-
-	static TES3::Reference* findFirstReferenceOfObjectInWorld(const TES3::PhysicalObject* object, bool skipDeleted) {
-		if (object == nullptr) {
-			return nullptr;
-		}
-
-		TES3::Reference* firstDeleted = nullptr;
-		for (const auto reference : object->getReferences()) {
-			if (reference == nullptr) {
-				continue;
-			}
-
-			if (reference->getCell() == nullptr) {
-				continue;
-			}
-
-			if (!reference->getDeleted()) {
-				return reference;
-			}
-
-			if (!skipDeleted && firstDeleted == nullptr) {
-				firstDeleted = reference;
-			}
-		}
-
-		return firstDeleted;
-	}
-
-	const auto TES3_RecordsHandler_findFirstInstanceOfObjectId = reinterpret_cast<TES3::Reference*(__thiscall*)(TES3::NonDynamicData*, const char*)>(0x4B8F50);
-
 	static void validateRecordsHandlerReferenceLookupResult(const TES3::Reference* result, const TES3::Reference* expected) {
-		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
-			if (result != expected) {
-				assert(false);
-			}
+		if (result != expected) {
+			log::getLog() << "[MWSE] Reference lookup regression! Set a breakpoint to debug." << std::endl;
 		}
 	}
 
-	static TES3::Reference* FindFirstInstanceOfObjectIdUsingReferenceLookup(TES3::NonDynamicData* self, const char* id) {
-		if (self == nullptr || id == nullptr) {
-			return nullptr;
-		}
-
-		const auto object = self->resolveObject(id);
-		if (object == nullptr) {
-			return nullptr;
-		}
-
-		const auto physicalObject = object->asPhysicalObject();
-		if (physicalObject == nullptr) {
-			return nullptr;
-		}
-
-		auto result = findFirstReferenceOfObjectInWorld(physicalObject, false);
-		if ((result == nullptr || result->getDeleted()) && shouldTryInstanceCloneId(object)) {
-			const auto cloneId = std::string(id) + "00000000";
-			const auto cloneBaseObject = self->resolveObject(cloneId.c_str());
-			if (cloneBaseObject == nullptr) {
-				return nullptr;
-			}
-			const auto cloneResult = findFirstReferenceOfObjectInWorld(cloneBaseObject->asPhysicalObject(), false);
-			if (cloneResult) {
-				return cloneResult;
-			}
-		}
-
-		return result;
-	}
-
+	const auto TES3_RecordsHandler_findFirstInstanceOfObjectId = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, const char*)>(0x4B8F50);
 	static TES3::Reference* __fastcall PatchRecordsHandlerFindFirstInstanceOfObjectId(TES3::NonDynamicData* self, DWORD, const char* id) {
-		const auto result = FindFirstInstanceOfObjectIdUsingReferenceLookup(self, id);
+		const auto result = self->findFirstInstanceOfObjectId(id);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
-			validateRecordsHandlerReferenceLookupResult(result, TES3_RecordsHandler_findFirstInstanceOfObjectId(self, id));
+			const auto vanillaResult = TES3_RecordsHandler_findFirstInstanceOfObjectId(self, id);
+			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
 		}
 		return result;
 	}
 
 	const auto TES3_RecordsHandler_findEntityInWorld = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, TES3::BaseObject*)>(0x4B90F0);
 	static TES3::Reference* __fastcall PatchRecordsHandlerFindEntityInWorld(TES3::NonDynamicData* self, DWORD, TES3::BaseObject* object) {
-		const auto result = findFirstReferenceOfObjectInWorld(object->asPhysicalObject(), false);
+		const auto result = self->findEntityInWorld(object);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
 			const auto vanillaResult = TES3_RecordsHandler_findEntityInWorld(self, object);
 			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
@@ -1866,102 +1791,9 @@ namespace mwse::patch {
 		return result;
 	}
 
-	static TES3::Reference* findFirstReferenceOfObjectInCell(TES3::PhysicalObject* object, const TES3::Cell* cell, bool skipDeleted) {
-		if (object == nullptr || cell == nullptr) {
-			return nullptr;
-		}
-
-		for (const auto reference : object->getReferences()) {
-			if (reference == nullptr || reference->getCell() != cell) {
-				continue;
-			}
-
-			if (!skipDeleted || !reference->getDeleted()) {
-				return reference;
-			}
-		}
-
-		return nullptr;
-	}
-
-	static int getExteriorGridSearchOrder(int referenceGridX, int referenceGridY, int searchGridX, int searchGridY) {
-		const auto dx = referenceGridX - searchGridX;
-		const auto dy = referenceGridY - searchGridY;
-		const auto ring = std::max(std::abs(dx), std::abs(dy));
-		if (ring == 0) {
-			return 0;
-		}
-
-		if (dy == -ring && dx < ring) {
-			return dx + ring;
-		}
-		if (dx == ring && dy < ring) {
-			return 2 * ring + dy + ring;
-		}
-		if (dy == ring && dx > -ring) {
-			return 4 * ring + ring - dx;
-		}
-		return 6 * ring + ring - dy;
-	}
-
-	static TES3::Reference* FindClosestReferenceOfObjectUsingReferenceLookup(TES3::NonDynamicData*, TES3::BaseObject* object, NI::Point3* position, bool isExterior, int maxGridSearchRadius) {
-		const auto physicalObject = object->asPhysicalObject();
-		if (physicalObject == nullptr) {
-			return nullptr;
-		}
-
-		const auto dataHandler = TES3::DataHandler::get();
-		const auto currentInteriorCell = dataHandler ? dataHandler->currentInteriorCell : nullptr;
-		if (!isExterior && currentInteriorCell == nullptr) {
-			isExterior = true;
-		}
-		else if (!isExterior) {
-			return findFirstReferenceOfObjectInCell(physicalObject, currentInteriorCell, true);
-		}
-
-		
-		const auto searchGridX = position ? TES3::Cell::toGridCoord(position->x) : 0;
-		const auto searchGridY = position ? TES3::Cell::toGridCoord(position->y) : 0;
-
-		TES3::Reference* closest = nullptr;
-		auto closestGridDistance = std::numeric_limits<int>::max();
-		auto closestGridSearchOrder = std::numeric_limits<int>::max();
-
-		for (const auto reference : physicalObject->getReferences()) {
-			if (reference == nullptr || reference->getDeleted()) {
-				continue;
-			}
-
-			const auto cell = reference->getCell();
-			if (cell == nullptr) {
-				continue;
-			}
-
-			if (cell->getIsInterior()) {
-				continue;
-			}
-
-			const auto gridX = cell->getGridX();
-			const auto gridY = cell->getGridY();
-			const auto gridDistance = std::max(std::abs(gridX - searchGridX), std::abs(gridY - searchGridY));
-			if (maxGridSearchRadius >= 0 && gridDistance > maxGridSearchRadius) {
-				continue;
-			}
-
-			const auto gridSearchOrder = getExteriorGridSearchOrder(gridX, gridY, searchGridX, searchGridY);
-			if (closest == nullptr || gridDistance < closestGridDistance || (gridDistance == closestGridDistance && gridSearchOrder < closestGridSearchOrder)) {
-				closest = reference;
-				closestGridDistance = gridDistance;
-				closestGridSearchOrder = gridSearchOrder;
-			}
-		}
-
-		return closest;
-	}
-
 	const auto TES3_RecordsHandler_findClosestReferenceOfObject = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, TES3::BaseObject*, NI::Point3*, bool, int)>(0x4B96F0);
 	static TES3::Reference* __fastcall PatchRecordsHandlerFindClosestReferenceOfObject(TES3::NonDynamicData* self, DWORD, TES3::BaseObject* object, NI::Point3* position, bool isExterior, int maxGridSearchRadius) {
-		const auto result = FindClosestReferenceOfObjectUsingReferenceLookup(self, object, position, isExterior, maxGridSearchRadius);
+		const auto result = self->findClosestExteriorReferenceOfObject(object ? object->asPhysicalObject() : nullptr, position, isExterior, maxGridSearchRadius);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
 			const auto vanillaResult = TES3_RecordsHandler_findClosestReferenceOfObject(self, object, position, isExterior, maxGridSearchRadius);
 			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
@@ -2758,6 +2590,7 @@ namespace mwse::patch {
 			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
 		}
 
+		// Developer block for testing in-development patches.
 		if (Configuration::TestExperimentalFeature) {
 		}
 	}

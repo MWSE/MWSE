@@ -305,6 +305,83 @@ namespace TES3 {
 		return TES3_NonDynamicData_resolveObject(this, id);
 	}
 
+	static bool shouldTryInstanceCloneId(const BaseObject* object) {
+		if (object == nullptr) {
+			return false;
+		}
+
+		const auto baseObject = object->getBaseObject();
+		if (baseObject == nullptr) {
+			return false;
+		}
+
+		return baseObject->objectType == ObjectType::Creature
+			|| baseObject->objectType == ObjectType::Container
+			|| baseObject->objectType == ObjectType::NPC;
+	}
+
+	static Reference* findFirstReferenceOfObjectInWorld(const PhysicalObject* object, bool skipDeleted) {
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		Reference* firstDeleted = nullptr;
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getCell() == nullptr) {
+				continue;
+			}
+
+			if (!reference->getDeleted()) {
+				return reference;
+			}
+
+			if (!skipDeleted && firstDeleted == nullptr) {
+				firstDeleted = reference;
+			}
+		}
+
+		return firstDeleted;
+	}
+
+	Reference* NonDynamicData::findFirstInstanceOfObjectId(const char* id) {
+		if (id == nullptr) {
+			return nullptr;
+		}
+
+		const auto object = resolveObject(id);
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		const auto physicalObject = object->asPhysicalObject();
+		if (physicalObject == nullptr) {
+			return nullptr;
+		}
+
+		auto result = findFirstReferenceOfObjectInWorld(physicalObject, false);
+		if ((result == nullptr || result->getDeleted()) && shouldTryInstanceCloneId(object)) {
+			const auto cloneId = std::string(id) + "00000000";
+			const auto cloneObject = resolveObject(cloneId.c_str());
+			if (cloneObject == nullptr) {
+				return nullptr;
+			}
+
+			if (const auto cloneResult = findFirstReferenceOfObjectInWorld(cloneObject->asPhysicalObject(), false)) {
+				return cloneResult;
+			}
+		}
+
+		return result;
+	}
+
+	Reference* NonDynamicData::findEntityInWorld(BaseObject* object) {
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		return findFirstReferenceOfObjectInWorld(object->asPhysicalObject(), false);
+	}
+
 	const auto TES3_NonDynamicData_findFirstCloneOfActor = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, const char*)>(0x4B8F50);
 	Reference* NonDynamicData::findFirstCloneOfActor(const char* baseId) {
 		return TES3_NonDynamicData_findFirstCloneOfActor(this, baseId);
@@ -372,9 +449,90 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFaction(this, id);
 	}
 
-	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, bool, int)>(0x4B96F0);
+	static Reference* findFirstReferenceOfObjectInCell(PhysicalObject* object, const Cell* cell, bool skipDeleted) {
+		if (object == nullptr || cell == nullptr) {
+			return nullptr;
+		}
+
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getCell() != cell) {
+				continue;
+			}
+
+			if (skipDeleted && reference->getDeleted()) {
+				continue;
+			}
+
+			return reference;
+		}
+
+		return nullptr;
+	}
+
+	static int getExteriorGridSearchOrder(int referenceGridX, int referenceGridY, int searchGridX, int searchGridY) {
+		const auto dx = referenceGridX - searchGridX;
+		const auto dy = referenceGridY - searchGridY;
+		const auto ring = std::max(std::abs(dx), std::abs(dy));
+		if (ring == 0) {
+			return 0;
+		}
+
+		if (dy == -ring && dx < ring) {
+			return dx + ring;
+		}
+		if (dx == ring && dy < ring) {
+			return 2 * ring + dy + ring;
+		}
+		if (dy == ring && dx > -ring) {
+			return 4 * ring + ring - dx;
+		}
+		return 6 * ring + ring - dy;
+	}
+
 	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int ignored) {
-		return TES3_NonDynamicData_findClosestExteriorReferenceOfObject(this, object, position, searchForExteriorDoorMarker, ignored);
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		const auto dataHandler = DataHandler::get();
+		const auto currentInteriorCell = dataHandler ? dataHandler->currentInteriorCell : nullptr;
+		if (!searchForExteriorDoorMarker && currentInteriorCell != nullptr) {
+			return findFirstReferenceOfObjectInCell(object, currentInteriorCell, true);
+		}
+
+		const auto searchGridX = position ? Cell::toGridCoord(position->x) : 0;
+		const auto searchGridY = position ? Cell::toGridCoord(position->y) : 0;
+
+		Reference* closest = nullptr;
+		auto closestGridDistance = std::numeric_limits<int>::max();
+		auto closestGridSearchOrder = std::numeric_limits<int>::max();
+
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getDeleted()) {
+				continue;
+			}
+
+			const auto cell = reference->getCell();
+			if (cell == nullptr || cell->getIsInterior()) {
+				continue;
+			}
+
+			const auto gridX = cell->getGridX();
+			const auto gridY = cell->getGridY();
+			const auto gridDistance = std::max(std::abs(gridX - searchGridX), std::abs(gridY - searchGridY));
+			if (ignored >= 0 && gridDistance > ignored) {
+				continue;
+			}
+
+			const auto gridSearchOrder = getExteriorGridSearchOrder(gridX, gridY, searchGridX, searchGridY);
+			if (closest == nullptr || gridDistance < closestGridDistance || (gridDistance == closestGridDistance && gridSearchOrder < closestGridSearchOrder)) {
+				closest = reference;
+				closestGridDistance = gridDistance;
+				closestGridSearchOrder = gridSearchOrder;
+			}
+		}
+
+		return closest;
 	}
 
 	const auto TES3_NonDynamicData_addNewObject = reinterpret_cast<signed char(__thiscall*)(NonDynamicData*, BaseObject*)>(0x4B8980);
