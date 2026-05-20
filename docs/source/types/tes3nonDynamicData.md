@@ -311,25 +311,6 @@ local result = myObject:findDialogue(id)
 
 ***
 
-### `findFirstCloneOfActor`
-<div class="search_terms" style="display: none">findfirstcloneofactor, firstcloneofactor</div>
-
-Locates the first reference for a given object ID.
-
-```lua
-local result = myObject:findFirstCloneOfActor(id)
-```
-
-**Parameters**:
-
-* `id` (string)
-
-**Returns**:
-
-* `result` ([tes3reference](../types/tes3reference.md))
-
-***
-
 ### `findGlobalVariable`
 <div class="search_terms" style="display: none">findglobalvariable, globalvariable</div>
 
