@@ -2589,10 +2589,6 @@ namespace mwse::patch {
 			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
 		}
-
-		// Developer block for testing in-development patches.
-		if (Configuration::TestExperimentalFeature) {
-		}
 	}
 
 	void installPostInitializationPatches() {

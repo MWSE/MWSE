@@ -1012,16 +1012,16 @@ namespace TES3 {
 	static bool referencesByObjectDirty = false;
 
 	static const PhysicalObject* getReferencesLookupKey(const BaseObject* object) {
-		const auto baseObject = object ? object->getBaseObject() : nullptr;
-		if (baseObject == nullptr || baseObject->objectType == ObjectType::Reference) {
+		if (object == nullptr) {
 			return nullptr;
 		}
 
-		return static_cast<const PhysicalObject*>(baseObject);
-	}
+		const auto baseObject = object->getBaseObject();
+		if (baseObject == nullptr) {
+			return nullptr;
+		}
 
-	static const PhysicalObject* getReferencesLookupKey(const Reference* reference) {
-		return getReferencesLookupKey(static_cast<const BaseObject*>(reference));
+		return baseObject->asPhysicalObject();
 	}
 
 	static void addReferenceToLookupImpl(Reference* reference) {
@@ -1092,7 +1092,11 @@ namespace TES3 {
 		}
 
 		const auto referencesIt = referencesByObject.find(key);
-		return referencesIt == referencesByObject.end() ? emptyReferences : referencesIt->second;
+		if (referencesIt == referencesByObject.end()) {
+			return emptyReferences;
+		}
+
+		return referencesIt->second;
 	}
 
 	void PhysicalObject::trackReferenceForLookup(Reference* reference) {
