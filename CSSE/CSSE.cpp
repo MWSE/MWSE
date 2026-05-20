@@ -8,6 +8,7 @@
 #include "CSGameSetting.h"
 #include "CSPhysicalObject.h"
 #include "CSRecordHandler.h"
+#include "CSReference.h"
 
 #include "NIAVObject.h"
 #include "NICamera.h"
@@ -544,6 +545,41 @@ namespace se::cs {
 			return WinHelpA(hWndMain, lpszHelp, uCommand, dwData);
 		}
 
+		//
+		// Patch: Allow saving references with a scale of 1.0, if the scale was changed by the user.
+		//
+
+		const auto CS_Object_SetScale = reinterpret_cast<void(__thiscall*)(Object*, float, bool)>(0x4049BC);
+
+		void __fastcall PatchReferenceSetScale(Reference* reference, DWORD _, float scale, bool clamp) {
+			const auto oldScale = reference->getScale();
+			CS_Object_SetScale(reference, scale, clamp);
+			const auto newScale = reference->getScale();
+			if (newScale == 1.0f && oldScale != newScale) {
+				reference->flags |= ObjectFlag::ScaleModifiedToOne;
+			}
+		}
+
+		bool __fastcall shouldSaveReferenceScale(Reference* reference) {
+			return reference->getScale() != 1.0f || (reference->flags & ObjectFlag::ScaleModifiedToOne) != 0;
+		}
+
+		__declspec(naked) void PatchSaveReferenceScaleCheck() {
+			__asm {
+				mov ecx, ebp
+				call shouldSaveReferenceScale
+				test al, al
+				jnz serializeScale
+
+				mov eax, 0x53893C
+				jmp eax
+
+				serializeScale :
+				mov eax, 0x53891A
+					jmp eax
+			}
+		}
+
 	}
 
 	CSSE application;
@@ -689,6 +725,10 @@ namespace se::cs {
 
 		// Patch: Redirect away from the help file, which is no longer supported by Windows.
 		writeDoubleWordUnprotected(0x6D9ECC, reinterpret_cast<DWORD>(&patch::OverrideWinHelpA));
+
+		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
+		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
+		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
 
 		// Install all our sectioned patches.
 		window::main::installPatches();
