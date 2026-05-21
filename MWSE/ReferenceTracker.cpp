@@ -291,11 +291,51 @@ namespace mwse {
 		}
 	}
 
-	void ReferenceTracker::markReferencesLookupDirty(const TES3::BaseObject* object) {
+	void ReferenceTracker::markReferencesLookupDirty(const TES3::PhysicalObject* object) {
 		if (object == nullptr) {
 			return;
 		}
 
 		markReferenceLookupKeyDirty(object);
+	}
+
+	static void invalidateCell(const TES3::Cell* cell) {
+		const auto itt = referenceLookupCellOrder.find(cell);
+		if (itt == referenceLookupCellOrder.end()) {
+			return;
+		}
+
+		referenceLookupCellOrder.erase(itt);
+	}
+
+	static void invalidatePhysicalObject(const TES3::PhysicalObject* object) {
+		if (object == nullptr) {
+			return;
+		}
+
+		const auto itt = referenceDataByObject.find(object);
+		if (itt == referenceDataByObject.end()) {
+			return;
+		}
+
+		referenceDataByObject.erase(itt);
+	}
+
+	void ReferenceTracker::invalidateObject(TES3::BaseObject* object) {
+		if (object->objectType == TES3::ObjectType::Cell) {
+			invalidateCell(static_cast<const TES3::Cell*>(object));
+			return;
+		}
+
+		if (object->objectType == TES3::ObjectType::Reference) {
+			untrackReferenceForLookup(static_cast<TES3::Reference*>(object));
+			return;
+		}
+
+		const auto asPhysical = object->asPhysicalObject();
+		if (asPhysical) {
+			invalidatePhysicalObject(asPhysical);
+			return;
+		}
 	}
 }

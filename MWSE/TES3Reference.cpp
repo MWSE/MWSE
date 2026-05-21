@@ -59,15 +59,13 @@ namespace TES3 {
 		dtor();
 	}
 
-	const auto TES3_Reference_ctor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E4510);
+	const auto TES3_Reference_ctor = reinterpret_cast<Reference*(__thiscall*)(Reference*)>(0x4E4510);
 	Reference* Reference::ctor() {
-		TES3_Reference_ctor(this);
-		return this;
+		return TES3_Reference_ctor(this);
 	}
 
 	const auto TES3_Reference_dtor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E45C0);
 	void Reference::dtor() {
-		ReferenceTracker::untrackReferenceForLookup(this);
 		cleanupAssociatedData();
 
 		TES3_Reference_dtor(this);

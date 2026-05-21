@@ -79,6 +79,7 @@ namespace TES3 {
 		const auto dataHandler = TES3::DataHandler::get();
 
 		clearCachedLuaObject(this);
+		mwse::ReferenceTracker::invalidateObject(this);
 
 		if (objectType == ObjectType::Cell) {
 			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
@@ -1007,7 +1008,7 @@ namespace TES3 {
 	}
 
 	const std::vector<Reference*>& PhysicalObject::getReferences() const {
-		return ReferenceTracker::getReferences(this);
+		return mwse::ReferenceTracker::getReferences(this);
 	}
 }
 
