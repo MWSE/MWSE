@@ -223,6 +223,14 @@ namespace TES3 {
 		return ResponseType::Invalid;
 	}
 
+	const char* Dialogue::getFilterTypeName() const {
+		if (type > DialogueType::MAX_VALUE) {
+			return nullptr;
+		}
+		const auto TES3_DialogueFilterTypes = reinterpret_cast<const char**>(0x793200);
+		return TES3_DialogueFilterTypes[DWORD(type)];
+	}
+
 	const auto TES3_getDialogue = reinterpret_cast<Dialogue* (__cdecl*)(int, int)>(0x4B2C00);
 	Dialogue* Dialogue::getDialogue(int type, int page) {
 		return TES3_getDialogue(type, page);

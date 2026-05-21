@@ -45,7 +45,7 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		void ctor();
+		Reference* ctor();
 		void dtor();
 
 		void activate(Reference* activator, int unknown = 1);

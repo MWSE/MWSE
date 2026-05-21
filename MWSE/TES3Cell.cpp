@@ -48,6 +48,11 @@ namespace TES3 {
 
 	const auto TES3_Cell_setGridX = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DB9E0);
 	void Cell::setGridX(int x) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setGridX(this, x);
 	}
 
@@ -58,11 +63,21 @@ namespace TES3 {
 
 	const auto TES3_Cell_setGridY = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DBA00);
 	void Cell::setGridY(int y) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setGridY(this, y);
 	}
 
 	const auto TES3_Cell_setName = reinterpret_cast<void(__thiscall *)(Cell*, const char*)>(0x4E25E0);
 	void Cell::setName(const char* name) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setName(this, name);
 	}
 

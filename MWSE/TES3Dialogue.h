@@ -10,7 +10,9 @@ namespace TES3 {
 		Voice,
 		Greeting,
 		Persuasion,
-		Journal
+		Journal,
+
+		MAX_VALUE = Journal,
 	};
 
 	enum class VoiceType : int {
@@ -136,6 +138,8 @@ namespace TES3 {
 		VoiceType getVoiceType() const;
 		GreetingType getGreetingType() const;
 		ResponseType getResponseType() const;
+
+		const char* getFilterTypeName() const;
 
 		//
 		// Other related static functions.
