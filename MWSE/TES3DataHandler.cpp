@@ -33,6 +33,8 @@
 
 #include "MWSEConfig.h"
 
+#include "ReferenceTracker.h"
+
 namespace TES3 {
 
 	Cell* DataHandler::previousVisitedCell = nullptr;
@@ -465,6 +467,72 @@ namespace TES3 {
 		return nullptr;
 	}
 
+	static Reference* findClosestInteriorReferenceOfObjectInList(const ReferenceList& references, PhysicalObject* object, std::vector<Cell*>& linkedInteriorCells, std::unordered_set<const Cell*>& visitedCells, std::optional<NI::Point3>& linkedExteriorPosition) {
+		for (const auto reference : references) {
+			if (reference == nullptr) {
+				continue;
+			}
+
+			const auto key = mwse::ReferenceTracker::getLookupKey(reference);
+			if (key == nullptr) {
+				continue;
+			}
+
+			if (key == object) {
+				return reference;
+			}
+
+			if (reference->baseObject->objectType != ObjectType::Door) {
+				continue;
+			}
+
+			const auto travelDestination = reference->getAttachedTravelDestination();
+			const auto destinationCell = travelDestination ? travelDestination->cell : nullptr;
+			if (destinationCell == nullptr) {
+				continue;
+			}
+
+			if (destinationCell->getIsInterior()) {
+				if (visitedCells.find(destinationCell) == visitedCells.end()) {
+					linkedInteriorCells.push_back(destinationCell);
+				}
+				continue;
+			}
+
+			if (!linkedExteriorPosition.has_value() && travelDestination->destination != nullptr) {
+				linkedExteriorPosition = travelDestination->destination->position;
+			}
+		}
+
+		return nullptr;
+	}
+
+	static Reference* findClosestInteriorReferenceOfObject(PhysicalObject* object, Cell* cell, std::unordered_set<const Cell*>& visitedCells, std::optional<NI::Point3>& linkedExteriorPosition) {
+		if (object == nullptr || cell == nullptr || !visitedCells.insert(cell).second) {
+			return nullptr;
+		}
+
+		std::vector<Cell*> linkedInteriorCells;
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->persistentRefs, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->temporaryRefs, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->actors, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+
+		for (const auto linkedCell : linkedInteriorCells) {
+			const auto result = findClosestInteriorReferenceOfObject(object, linkedCell, visitedCells, linkedExteriorPosition);
+			if (result != nullptr) {
+				return result;
+			}
+		}
+
+		return nullptr;
+	}
+
 	static int getExteriorGridSearchOrder(int referenceGridX, int referenceGridY, int searchGridX, int searchGridY) {
 		const auto dx = referenceGridX - searchGridX;
 		const auto dy = referenceGridY - searchGridY;
@@ -485,7 +553,7 @@ namespace TES3 {
 		return 6 * ring + ring - dy;
 	}
 
-	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int ignored) {
+	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int maxGridSearchRadius) {
 		if (object == nullptr) {
 			return nullptr;
 		}
@@ -493,7 +561,17 @@ namespace TES3 {
 		const auto dataHandler = DataHandler::get();
 		const auto currentInteriorCell = dataHandler ? dataHandler->currentInteriorCell : nullptr;
 		if (!searchForExteriorDoorMarker && currentInteriorCell != nullptr) {
-			return findFirstReferenceOfObjectInCell(object, currentInteriorCell, true);
+			std::unordered_set<const Cell*> visitedCells;
+			std::optional<NI::Point3> linkedExteriorPosition;
+			const auto result = findClosestInteriorReferenceOfObject(object, currentInteriorCell, visitedCells, linkedExteriorPosition);
+			if (result != nullptr) {
+				return result;
+			}
+			if (!linkedExteriorPosition.has_value()) {
+				return nullptr;
+			}
+
+			return findClosestExteriorReferenceOfObject(object, &linkedExteriorPosition.value(), true, -1);
 		}
 
 		const auto searchGridX = position ? Cell::toGridCoord(position->x) : 0;
@@ -516,7 +594,7 @@ namespace TES3 {
 			const auto gridX = cell->getGridX();
 			const auto gridY = cell->getGridY();
 			const auto gridDistance = std::max(std::abs(gridX - searchGridX), std::abs(gridY - searchGridY));
-			if (ignored >= 0 && gridDistance > ignored) {
+			if (maxGridSearchRadius >= 0 && gridDistance > maxGridSearchRadius) {
 				continue;
 			}
 

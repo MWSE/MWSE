@@ -161,7 +161,7 @@ namespace TES3 {
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);
-		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
+		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int maxGridSearchRadius = -1);
 		bool addNewObject(BaseObject*);
 		void deleteObject(BaseObject*);
 		void respawnContainers();

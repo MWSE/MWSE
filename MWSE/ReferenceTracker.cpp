@@ -40,7 +40,8 @@ namespace mwse {
 		}
 
 		// Enter ID(s) here to track misbehavior.
-		return _stricmp(id, "TR_FM_Naureen") == 0;
+		return _stricmp(id, "DivineMarker") == 0
+			|| _stricmp(id, "TempleMarker") == 0;
 	}
 
 	static bool shouldLogReferenceLookupReference(const TES3::Reference* reference) {
@@ -51,21 +52,8 @@ namespace mwse {
 		return shouldLogReferenceLookupObject(reference->getBaseObject());
 	}
 
-	static const TES3::PhysicalObject* getLookupKey(const TES3::BaseObject* object) {
-		if (object == nullptr) {
-			return nullptr;
-		}
-
-		const auto baseObject = object->getBaseObject();
-		if (baseObject == nullptr) {
-			return nullptr;
-		}
-
-		return baseObject->asPhysicalObject();
-	}
-
 	static bool addReferenceToLookupImpl(TES3::Reference* reference) {
-		const auto key = getLookupKey(reference);
+		const auto key = ReferenceTracker::getLookupKey(reference);
 		if (shouldLogReferenceLookupReference(reference)) {
 			mwse::log::getLog()
 				<< "[MWSE] Reference lookup index: ref=" << reference
@@ -95,7 +83,7 @@ namespace mwse {
 	}
 
 	static void markReferenceLookupKeyDirty(const TES3::BaseObject* object) {
-		const auto key = getLookupKey(object);
+		const auto key = ReferenceTracker::getLookupKey(object);
 		if (key != nullptr) {
 			referenceDataByObject[key].dirtyLookup = true;
 		}
@@ -341,5 +329,18 @@ namespace mwse {
 			invalidatePhysicalObject(asPhysical);
 			return;
 		}
+	}
+
+	const TES3::PhysicalObject* ReferenceTracker::getLookupKey(const TES3::BaseObject* object) {
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		const auto baseObject = object->getBaseObject();
+		if (baseObject == nullptr) {
+			return nullptr;
+		}
+
+		return baseObject->asPhysicalObject();
 	}
 }
