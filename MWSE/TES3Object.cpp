@@ -81,7 +81,7 @@ namespace TES3 {
 		clearCachedLuaObject(this);
 		mwse::ReferenceTracker::invalidateObject(this);
 
-		if (objectType == ObjectType::Cell) {
+		if (objectType == ObjectType::Cell && dataHandler && dataHandler->nonDynamicData) {
 			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
 		}
 
@@ -178,9 +178,13 @@ namespace TES3 {
 	}
 
 	bool BaseObject::isPhysicalObject() const {
-		const auto baseObject = getBaseObject();
-		if (baseObject == nullptr) {
-			return false;
+		if (this == nullptr) {
+			return nullptr;
+		}
+
+		auto baseObject = this;
+		if (isActor() && static_cast<const Actor*>(this)->isClone()) {
+			baseObject = static_cast<const Actor*>(this)->getBaseActor();
 		}
 
 		switch (baseObject->objectType) {
@@ -189,6 +193,7 @@ namespace TES3 {
 		case TES3::ObjectType::Ammo:
 		case TES3::ObjectType::Apparatus:
 		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Bodypart:
 		case TES3::ObjectType::Book:
 		case TES3::ObjectType::Clothing:
 		case TES3::ObjectType::Container:

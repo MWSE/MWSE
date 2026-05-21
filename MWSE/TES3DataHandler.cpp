@@ -468,6 +468,7 @@ namespace TES3 {
 	}
 
 	static Reference* findClosestInteriorReferenceOfObjectInList(const ReferenceList& references, PhysicalObject* object, std::vector<Cell*>& linkedInteriorCells, std::unordered_set<const Cell*>& visitedCells, std::optional<NI::Point3>& linkedExteriorPosition) {
+		const auto targetKey = mwse::ReferenceTracker::getLookupKey(object);
 		for (const auto reference : references) {
 			if (reference == nullptr) {
 				continue;
@@ -478,7 +479,7 @@ namespace TES3 {
 				continue;
 			}
 
-			if (key == object) {
+			if (key == targetKey) {
 				return reference;
 			}
 

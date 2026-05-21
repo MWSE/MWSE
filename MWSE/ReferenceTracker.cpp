@@ -25,7 +25,7 @@ namespace mwse {
 			return object ? object->getObjectID() : nullptr;
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
-			return "<invalid>";
+			return nullptr;
 		}
 	}
 
@@ -35,7 +35,7 @@ namespace mwse {
 		}
 
 		const auto id = getReferenceLookupLogId(object);
-		if (id == nullptr || id == reinterpret_cast<const char*>("<invalid>")) {
+		if (id == nullptr) {
 			return false;
 		}
 
@@ -140,6 +140,10 @@ namespace mwse {
 	}
 
 	static bool isReferenceBeforeInCurrentList(const TES3::Reference* lhs, const TES3::Reference* rhs) {
+		if (lhs == rhs) {
+			return false;
+		}
+
 		const auto list = lhs ? lhs->owningCollection.asReferenceList : nullptr;
 		if (list == nullptr || list != (rhs ? rhs->owningCollection.asReferenceList : nullptr)) {
 			return lhs < rhs;

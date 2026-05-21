@@ -1619,7 +1619,7 @@ namespace mwse::patch {
 		for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
 			const auto currentLoadLinkNode = (*it)->loadLinkNode;
 			const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
-			if (currentInfoName && se::string::equal(previousId, currentInfoName)) {
+			if (currentInfoName && se::string::iequal(previousId, currentInfoName)) {
 				insertBefore = it.base();
 				break;
 			}
@@ -1648,7 +1648,7 @@ namespace mwse::patch {
 			self->setDeleted(true);
 		}
 
-		if (!se::string::iequal(myName, otherName)) {
+		if (!se::string::equal(myName, otherName)) {
 			tes3::setDataString(&self->name, otherName);
 		}
 

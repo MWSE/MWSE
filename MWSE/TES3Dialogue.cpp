@@ -224,7 +224,10 @@ namespace TES3 {
 	}
 
 	const char* Dialogue::getFilterTypeName() const {
-		const auto TES3_DialogueFilterTypes = *reinterpret_cast<const char***>(0x793200);
+		if (type > DialogueType::MAX_VALUE) {
+			return nullptr;
+		}
+		const auto TES3_DialogueFilterTypes = reinterpret_cast<const char**>(0x793200);
 		return TES3_DialogueFilterTypes[DWORD(type)];
 	}
 
