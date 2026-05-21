@@ -429,10 +429,6 @@ namespace TES3 {
 		Reference* getReference() const;
 		const std::vector<Reference*>& getReferences() const;
 
-		static void trackReferenceForLookup(Reference* reference);
-		static void untrackReferenceForLookup(Reference* reference);
-		static void markReferencesLookupDirty(const BaseObject* object);
-
 	};
 	static_assert(sizeof(PhysicalObject) == 0x30, "TES3::PhysicalObject failed size validation");
 }

@@ -13,6 +13,7 @@
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
 #include "LuaReferenceSceneNodeCreatedEvent.h"
+#include "ReferenceTracker.h"
 
 #include "MemoryUtil.h"
 
@@ -66,7 +67,7 @@ namespace TES3 {
 
 	const auto TES3_Reference_dtor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E45C0);
 	void Reference::dtor() {
-		PhysicalObject::untrackReferenceForLookup(this);
+		ReferenceTracker::untrackReferenceForLookup(this);
 		cleanupAssociatedData();
 
 		TES3_Reference_dtor(this);

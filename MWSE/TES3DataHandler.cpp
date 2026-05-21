@@ -538,10 +538,6 @@ namespace TES3 {
 
 	const auto TES3_NonDynamicData_deleteObject = reinterpret_cast<void(__thiscall*)(NonDynamicData*, BaseObject*)>(0x4B8B20);
 	void NonDynamicData::deleteObject(BaseObject* object) {
-		if (object && object->objectType != ObjectType::Reference) {
-			PhysicalObject::markReferencesLookupDirty(object);
-		}
-
 		TES3_NonDynamicData_deleteObject(this, object);
 	}
 

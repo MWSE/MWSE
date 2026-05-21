@@ -1563,6 +1563,9 @@
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
+    <ClInclude Include="ReferenceTracker.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3499,6 +3502,9 @@
     </ClCompile>
     <ClCompile Include="CrashLogRegistryStack.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
+    </ClCompile>
+    <ClCompile Include="ReferenceTracker.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

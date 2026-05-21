@@ -37,6 +37,7 @@
 #include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
 #include "TES3WorldController.h"
+#include "ReferenceTracker.h"
 
 #include "NIAVObject.h"
 #include "NICollisionSwitch.h"
@@ -1896,7 +1897,7 @@ namespace mwse::patch {
 
 		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
 			const auto id = item->getObjectID();
-			TES3::PhysicalObject::trackReferenceForLookup(static_cast<TES3::Reference*>(item));
+			ReferenceTracker::trackReferenceForLookup(static_cast<TES3::Reference*>(item));
 		}
 
 		return item;
@@ -1905,7 +1906,7 @@ namespace mwse::patch {
 	static void __fastcall PatchEntityListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
 		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
 			const auto id = item->getObjectID();
-			TES3::PhysicalObject::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
+			ReferenceTracker::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
 		}
 
 		if (item == self->head) {
