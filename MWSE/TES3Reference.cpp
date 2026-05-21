@@ -61,7 +61,6 @@ namespace TES3 {
 	const auto TES3_Reference_ctor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E4510);
 	Reference* Reference::ctor() {
 		TES3_Reference_ctor(this);
-		PhysicalObject::trackReferenceForLookup(this);
 		return this;
 	}
 

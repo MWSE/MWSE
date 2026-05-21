@@ -302,6 +302,7 @@ namespace TES3 {
 	struct Object : BaseObject {
 		NI::Pointer<NI::Node> sceneNode; // 0x10
 		union {
+			LinkedObjectList<Object>* asGenericList;
 			LinkedObjectList<Spell>* asSpellList;
 			ReferenceList* asReferenceList;
 		} owningCollection; // 0x14
@@ -430,8 +431,7 @@ namespace TES3 {
 
 		static void trackReferenceForLookup(Reference* reference);
 		static void untrackReferenceForLookup(Reference* reference);
-		static void markReferencesLookupDirty();
-		static void clearReferencesLookup();
+		static void markReferencesLookupDirty(const BaseObject* object);
 
 	};
 	static_assert(sizeof(PhysicalObject) == 0x30, "TES3::PhysicalObject failed size validation");

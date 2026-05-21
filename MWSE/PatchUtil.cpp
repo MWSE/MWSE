@@ -1765,9 +1765,54 @@ namespace mwse::patch {
 	// Patch: Implement map-based lookup of references.
 	//
 
-	static void validateRecordsHandlerReferenceLookupResult(const TES3::Reference* result, const TES3::Reference* expected) {
+	static const char* getReferenceLookupLogId(const TES3::BaseObject* object) {
+		__try {
+			const auto id =  object ? object->getObjectID() : "<nullptr>";
+			return id ? id : "<invalid>";
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return "<exception>";
+		}
+	}
+
+	static TES3::Cell* getReferenceLookupLogCell(const TES3::Reference* reference) {
+		__try {
+			return reference ? reference->getCell() : nullptr;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return nullptr;
+		}
+	}
+
+	static std::string getReferenceLookupLogCellName(const TES3::Reference* reference) {
+		const auto cell = getReferenceLookupLogCell(reference);
+		if (cell == nullptr) {
+			return "<nullptr>";
+		}
+
+		return cell->getEditorName();
+	}
+
+	static void logReferenceLookupResultDetails(const char* label, const TES3::Reference* reference) {
+		const auto cell = getReferenceLookupLogCell(reference);
+		log::getLog()
+			<< "  " << label << ": ref=" << reference
+			<< " id=" << getReferenceLookupLogId(reference)
+			<< " cell=" << cell
+			<< " cellName=" << getReferenceLookupLogCellName(reference)
+			<< " sourceID=" << (reference ? reference->sourceID : 0)
+			<< " targetID=" << (reference ? reference->targetID : 0)
+			<< std::endl;
+	}
+
+	static void validateRecordsHandlerReferenceLookupResult(const char* id, const TES3::Reference* result, const TES3::Reference* expected) {
 		if (result != expected) {
-			log::getLog() << "[MWSE] Reference lookup regression! Set a breakpoint to debug." << std::endl;
+			log::getLog() << "[MWSE] Reference lookup regression! Set a breakpoint to debug." << std::endl
+				<< "  ID: " << (id ? id : "<invalid>") << std::endl
+				<< "  Result: " << getReferenceLookupLogId(result) << std::endl
+				<< "  Expected: " << getReferenceLookupLogId(expected) << std::endl;
+			logReferenceLookupResultDetails("Result details", result);
+			logReferenceLookupResultDetails("Expected details", expected);
 		}
 	}
 
@@ -1776,7 +1821,7 @@ namespace mwse::patch {
 		const auto result = self->findFirstInstanceOfObjectId(id);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
 			const auto vanillaResult = TES3_RecordsHandler_findFirstInstanceOfObjectId(self, id);
-			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
+			validateRecordsHandlerReferenceLookupResult(id, result, vanillaResult);
 		}
 		return result;
 	}
@@ -1786,7 +1831,7 @@ namespace mwse::patch {
 		const auto result = self->findEntityInWorld(object);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
 			const auto vanillaResult = TES3_RecordsHandler_findEntityInWorld(self, object);
-			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
+			validateRecordsHandlerReferenceLookupResult(object->getObjectID(), result, vanillaResult);
 		}
 		return result;
 	}
@@ -1796,9 +1841,88 @@ namespace mwse::patch {
 		const auto result = self->findClosestExteriorReferenceOfObject(object ? object->asPhysicalObject() : nullptr, position, isExterior, maxGridSearchRadius);
 		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
 			const auto vanillaResult = TES3_RecordsHandler_findClosestReferenceOfObject(self, object, position, isExterior, maxGridSearchRadius);
-			validateRecordsHandlerReferenceLookupResult(result, vanillaResult);
+			validateRecordsHandlerReferenceLookupResult(object ? object->getObjectID() : nullptr, result, vanillaResult);
 		}
 		return result;
+	}
+
+	static bool isCellReferenceList(se::LinkedObjectList<TES3::Object>* list) {
+		__try {
+			const auto referenceList = reinterpret_cast<TES3::ReferenceList*>(list);
+			const auto cell = referenceList->cell;
+			if (cell == nullptr) {
+				return false;
+			}
+
+			if (cell->objectType != TES3::ObjectType::Cell) {
+				return false;
+			}
+
+			if (referenceList != &cell->actors
+				&& referenceList != &cell->persistentRefs
+				&& referenceList != &cell->temporaryRefs) {
+				return false;
+			}
+
+			return true;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return false;
+		}
+	}
+
+	static TES3::Object* __fastcall PatchEntityListInsertAfter(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* insertAfter, TES3::Object* item) {
+		item->previousInCollection = insertAfter;
+		if (insertAfter) {
+			item->nextInCollection = insertAfter->nextInCollection;
+			if (insertAfter->nextInCollection) {
+				insertAfter->nextInCollection->previousInCollection = item;
+			}
+			insertAfter->nextInCollection = item;
+		}
+		else {
+			item->nextInCollection = nullptr;
+		}
+
+		if (!item->nextInCollection) {
+			self->tail = item;
+		}
+		if (!item->previousInCollection) {
+			self->head = item;
+		}
+
+		++self->count;
+		item->owningCollection.asGenericList = self;
+
+		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
+			const auto id = item->getObjectID();
+			TES3::PhysicalObject::trackReferenceForLookup(static_cast<TES3::Reference*>(item));
+		}
+
+		return item;
+	}
+
+	static void __fastcall PatchEntityListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
+		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
+			const auto id = item->getObjectID();
+			TES3::PhysicalObject::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
+		}
+
+		if (item == self->head) {
+			self->head = item->nextInCollection;
+		}
+		if (item == self->tail) {
+			self->tail = item->previousInCollection;
+		}
+		if (item->previousInCollection) {
+			item->previousInCollection->nextInCollection = item->nextInCollection;
+		}
+		if (item->nextInCollection) {
+			item->nextInCollection->previousInCollection = item->previousInCollection;
+		}
+
+		item->owningCollection.asReferenceList = nullptr;
+		--self->count;
 	}
 
 	//
@@ -1875,32 +1999,8 @@ namespace mwse::patch {
 		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
 
 		// Patch: Implement map-based lookup of references.
-		auto Reference_ctor = &TES3::Reference::ctor;
-		genCallEnforced(0x466539, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x491234, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4913B0, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x49A4E4, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4B8E13, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4B8EAB, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4C0F03, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4C1381, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4C15D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DD26B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DD422, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DD9D9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DDACF, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DDCC5, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DE482, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DE49E, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x4DFE12, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x50982B, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x509987, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x509AEA, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x509C3F, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x50A189, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x566140, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x570FA9, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
-		genCallEnforced(0x6351F7, 0x4E4510, *reinterpret_cast<DWORD*>(&Reference_ctor));
+		genJumpUnprotected(0x4F19F0, reinterpret_cast<DWORD>(PatchEntityListInsertAfter), 0x5);
+		genJumpUnprotected(0x4F19A0, reinterpret_cast<DWORD>(PatchEntityListRemove), 0x5);
 		genCallEnforced(0x4A43A5, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
 		genCallEnforced(0x4F8FBB, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
 		genCallEnforced(0x4FA93D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));

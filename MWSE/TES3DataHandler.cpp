@@ -220,9 +220,7 @@ namespace TES3 {
 		float* pLowestZInCurrentCell = reinterpret_cast<float*>(0x7B217C);
 		float previousLowestZInCurrentCell = *pLowestZInCurrentCell;
 
-		PhysicalObject::clearReferencesLookup();
 		bool loaded = TES3_NonDynamicData_loadGameInGame(this, eventFileName.c_str());
-		PhysicalObject::markReferencesLookupDirty();
 
 		// Bugfix: In interior, restore previous lowestZInCurrentCell if has been reset.
 		if (loaded && TES3::DataHandler::get()->currentInteriorCell != nullptr) {
@@ -273,9 +271,7 @@ namespace TES3 {
 			eventFileName += ".ess";
 		}
 
-		PhysicalObject::clearReferencesLookup();
 		bool loaded = TES3_NonDynamicData_loadGameMainMenu(this, eventFileName.c_str());
-		PhysicalObject::markReferencesLookupDirty();
 
 		// Pass a follow-up event if we successfully loaded and clear timers.
 		if (loaded) {
@@ -359,14 +355,19 @@ namespace TES3 {
 		}
 
 		auto result = findFirstReferenceOfObjectInWorld(physicalObject, false);
-		if ((result == nullptr || result->getDeleted()) && shouldTryInstanceCloneId(object)) {
+		if (result && !result->getDeleted()) {
+			return result;
+		}
+
+		if (shouldTryInstanceCloneId(object)) {
 			const auto cloneId = std::string(id) + "00000000";
 			const auto cloneObject = resolveObject(cloneId.c_str());
 			if (cloneObject == nullptr) {
-				return nullptr;
+				return result;
 			}
 
-			if (const auto cloneResult = findFirstReferenceOfObjectInWorld(cloneObject->asPhysicalObject(), false)) {
+			const auto cloneResult = findFirstReferenceOfObjectInWorld(cloneObject->asPhysicalObject(), false);
+			if (cloneResult) {
 				return cloneResult;
 			}
 		}
@@ -538,7 +539,7 @@ namespace TES3 {
 	const auto TES3_NonDynamicData_deleteObject = reinterpret_cast<void(__thiscall*)(NonDynamicData*, BaseObject*)>(0x4B8B20);
 	void NonDynamicData::deleteObject(BaseObject* object) {
 		if (object && object->objectType != ObjectType::Reference) {
-			PhysicalObject::markReferencesLookupDirty();
+			PhysicalObject::markReferencesLookupDirty(object);
 		}
 
 		TES3_NonDynamicData_deleteObject(this, object);
