@@ -191,7 +191,11 @@ namespace mwse {
 		}
 
 		const auto dataIt = referenceDataByObject.find(key);
-		if (dataIt == referenceDataByObject.end() || !dataIt->second.dirtyLookup) {
+		if (dataIt == referenceDataByObject.end()) {
+			return;
+		}
+
+		if (!dataIt->second.dirtyLookup) {
 			return;
 		}
 
