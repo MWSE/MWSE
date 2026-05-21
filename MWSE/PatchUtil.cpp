@@ -1898,7 +1898,6 @@ namespace mwse::patch {
 		item->owningCollection.asGenericList = self;
 
 		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
-			const auto id = item->getObjectID();
 			ReferenceTracker::trackReferenceForLookup(static_cast<TES3::Reference*>(item));
 		}
 
@@ -1907,7 +1906,6 @@ namespace mwse::patch {
 
 	static void __fastcall PatchEntityListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
 		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
-			const auto id = item->getObjectID();
 			ReferenceTracker::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
 		}
 

@@ -180,7 +180,7 @@ namespace TES3 {
 	bool BaseObject::isPhysicalObject() const {
 		const auto baseObject = getBaseObject();
 		if (baseObject == nullptr) {
-			return nullptr;
+			return false;
 		}
 
 		switch (baseObject->objectType) {
