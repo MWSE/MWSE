@@ -1641,10 +1641,12 @@ namespace mwse::patch {
 				myName,
 				self->getFilterTypeName(),
 				other->getFilterTypeName());
+			return;
 		}
-		self->type = other->type;
 
-		self->setDeleted(other->getDeleted());
+		if (other->getDeleted()) {
+			self->setDeleted(true);
+		}
 
 		if (!se::string::iequal(myName, otherName)) {
 			tes3::setDataString(&self->name, otherName);
