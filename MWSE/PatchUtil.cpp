@@ -1603,29 +1603,49 @@ namespace mwse::patch {
 		TES3::UI::updateLoadingMenu(percentLoaded);
 	}
 
+	static void __fastcall PatchDialogueInfoDestructorCleanup(TES3::DialogueInfo* info, DWORD _) {
+		info->removeFromLoadIDCache();
+		const auto TES3_DialogueInfo_dtor = reinterpret_cast<void(__thiscall*)(TES3::DialogueInfo*)>(0x4AE8A0);
+		TES3_DialogueInfo_dtor(info);
+	}
+
 	static void __fastcall PatchMergeDialogueInfo(TES3::Dialogue* self, DWORD _, TES3::DialogueInfo* info, bool alwaysAddInfo) {
 		const auto previousId = (info->loadLinkNode && info->loadLinkNode->previous) ? info->loadLinkNode->previous : "";
 		if (previousId[0] == '\0') {
 			self->info.push_front(info);
+			self->cacheInfoByLoadID(info);
 			return;
 		}
 
 		if (alwaysAddInfo || self->info.empty()) {
 			self->info.push_back(info);
+			self->cacheInfoByLoadID(info);
 			return;
 		}
 
 		auto insertBefore = self->info.end();
-		for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
-			const auto currentLoadLinkNode = (*it)->loadLinkNode;
-			const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
-			if (currentInfoName && se::string::iequal(previousId, currentInfoName)) {
-				insertBefore = it.base();
-				break;
+		if (const auto previousInfo = self->findInfoByLoadID(previousId)) {
+			for (auto it = self->info.begin(); it != self->info.end(); ++it) {
+				if (*it == previousInfo) {
+					insertBefore = it;
+					++insertBefore;
+					break;
+				}
+			}
+		}
+		else {
+			for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
+				const auto currentLoadLinkNode = (*it)->loadLinkNode;
+				const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
+				if (currentInfoName && se::string::iequal(previousId, currentInfoName)) {
+					insertBefore = it.base();
+					break;
+				}
 			}
 		}
 
 		self->info.insert(insertBefore, info);
+		self->cacheInfoByLoadID(info);
 	}
 
 	static void __fastcall PatchMergeDialogues(TES3::Dialogue* self, DWORD _, TES3::Dialogue* other) {
@@ -2632,6 +2652,11 @@ namespace mwse::patch {
 		genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(PatchMergeDialogues));
 		genCallEnforced(0x4B2828, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
 		genCallEnforced(0x4BFB6E, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
+		auto dialogueFindInfoByLoadID = &TES3::Dialogue::findInfoByLoadID;
+		genCallEnforced(0x431F77, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4BF8AE, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4BFA40, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4AE883, 0x4AE8A0, reinterpret_cast<DWORD>(PatchDialogueInfoDestructorCleanup));
 
 #if false
 		// Patch: Update dynamic lights to implement custom light sorting.
