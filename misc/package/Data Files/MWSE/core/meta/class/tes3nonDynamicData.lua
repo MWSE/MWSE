@@ -52,6 +52,11 @@ function tes3nonDynamicData:findDialogInfo(id) end
 --- @return tes3dialogue result No description yet available.
 function tes3nonDynamicData:findDialogue(id) end
 
+--- Locates the first reference for a given object ID.
+--- @param id string No description yet available.
+--- @return tes3reference result No description yet available.
+function tes3nonDynamicData:findFirstCloneOfActor(id) end
+
 --- Locates a global variable for a given ID.
 --- @param id string No description yet available.
 --- @return tes3globalVariable result No description yet available.

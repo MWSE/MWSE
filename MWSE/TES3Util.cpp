@@ -44,7 +44,7 @@ namespace mwse::tes3 {
 		}
 		else {
 			if (dataHandler) {
-				return dataHandler->nonDynamicData->findFirstInstanceOfObjectId(id);
+				return dataHandler->nonDynamicData->findFirstCloneOfActor(id);
 			}
 		}
 

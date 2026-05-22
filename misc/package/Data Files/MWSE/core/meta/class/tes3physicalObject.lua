@@ -6,4 +6,3 @@
 --- Almost anything that can be represented in the Construction Set is based on this structure.
 --- @class tes3physicalObject : tes3object, tes3baseObject
 --- @field boundingBox tes3boundingBox The bounding box for the object.
---- @field referenceList tes3reference[] A list of all loaded references that currently use the object.

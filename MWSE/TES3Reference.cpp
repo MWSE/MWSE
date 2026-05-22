@@ -13,7 +13,6 @@
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
 #include "LuaReferenceSceneNodeCreatedEvent.h"
-#include "ReferenceTracker.h"
 
 #include "MemoryUtil.h"
 
@@ -59,9 +58,9 @@ namespace TES3 {
 		dtor();
 	}
 
-	const auto TES3_Reference_ctor = reinterpret_cast<Reference*(__thiscall*)(Reference*)>(0x4E4510);
-	Reference* Reference::ctor() {
-		return TES3_Reference_ctor(this);
+	const auto TES3_Reference_ctor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E4510);
+	void Reference::ctor() {
+		TES3_Reference_ctor(this);
 	}
 
 	const auto TES3_Reference_dtor = reinterpret_cast<void(__thiscall*)(Reference*)>(0x4E45C0);

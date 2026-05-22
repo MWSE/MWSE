@@ -104,7 +104,14 @@ TES3::Reference* VirtualMachine::getReference()
 
 TES3::Reference* VirtualMachine::getReference(const char* id)
 {
-	return tes3::getReference(id);
+	bool isplayer = !_stricmp(id, "player") || !_stricmp(id, "playersavegame");
+	if (isplayer) {
+		return TES3::WorldController::get()->getMobilePlayer()->reference;
+	}
+	else
+	{
+		return TES3::DataHandler::get()->nonDynamicData->findFirstCloneOfActor(id);
+	}
 }
 
 void VirtualMachine::setReference(TES3::Reference* reference)

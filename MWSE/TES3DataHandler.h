@@ -149,8 +149,7 @@ namespace TES3 {
 		LoadGameResult loadGameMainMenu(const char* fileName);
 
 		BaseObject* resolveObject(const char*);
-		Reference* findFirstInstanceOfObjectId(const char* id);
-		Reference* findEntityInWorld(BaseObject* object);
+		Reference* findFirstCloneOfActor(const char*);
 		Reference* resolveReferenceBySourceID(unsigned int);
 		Spell* getSpellById(const char*);
 		Script* findScriptByName(const char*);
@@ -161,7 +160,7 @@ namespace TES3 {
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);
-		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int maxGridSearchRadius = -1);
+		Reference* findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker = false, int ignored = -1);
 		bool addNewObject(BaseObject*);
 		void deleteObject(BaseObject*);
 		void respawnContainers();
@@ -195,7 +194,6 @@ namespace TES3 {
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
 		bool objectExists(const std::string_view& id);
-		void clearCellByNameCache(const Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>

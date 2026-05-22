@@ -255,9 +255,6 @@ namespace TES3 {
 		BaseObject * getBaseObject();
 		BaseObject const* getBaseObject() const;
 
-		bool isPhysicalObject() const;
-		PhysicalObject* asPhysicalObject();
-		const PhysicalObject* asPhysicalObject() const;
 		bool isActor() const;
 		bool isMobileCapableActor() const;
 		bool isItem() const;
@@ -269,7 +266,6 @@ namespace TES3 {
 
 		bool getDisabled() const;
 		bool getDeleted() const;
-		void setDeleted(bool deleted);
 
 		bool getPersistent() const;
 		void setPersistent(bool value);
@@ -302,7 +298,6 @@ namespace TES3 {
 	struct Object : BaseObject {
 		NI::Pointer<NI::Node> sceneNode; // 0x10
 		union {
-			LinkedObjectList<Object>* asGenericList;
 			LinkedObjectList<Spell>* asSpellList;
 			ReferenceList* asReferenceList;
 		} owningCollection; // 0x14
@@ -427,7 +422,6 @@ namespace TES3 {
 		NI::BoundingBox* getOrCreateBoundingBox();
 
 		Reference* getReference() const;
-		const std::vector<Reference*>& getReferences() const;
 
 	};
 	static_assert(sizeof(PhysicalObject) == 0x30, "TES3::PhysicalObject failed size validation");

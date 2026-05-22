@@ -15,7 +15,6 @@
 #include "TES3Clothing.h"
 #include "TES3Container.h"
 #include "TES3Creature.h"
-#include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
 #include "TES3DialogueInfo.h"
 #include "TES3Door.h"
@@ -38,7 +37,6 @@
 #include "TES3Quest.h"
 #include "TES3Race.h"
 #include "TES3Reference.h"
-#include "ReferenceTracker.h"
 #include "TES3Region.h"
 #include "TES3RepairTool.h"
 #include "TES3Script.h"
@@ -76,14 +74,7 @@ namespace TES3 {
 
 	const auto BaseObject_dtor = reinterpret_cast<TES3::BaseObject * (__thiscall*)(TES3::BaseObject*)>(0x4F0CA0);
 	void BaseObject::dtor() {
-		const auto dataHandler = TES3::DataHandler::get();
-
 		clearCachedLuaObject(this);
-		mwse::ReferenceTracker::invalidateObject(this);
-
-		if (objectType == ObjectType::Cell && dataHandler && dataHandler->nonDynamicData) {
-			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
-		}
 
 		if (UI::MenuInputController::lastTooltipObject == this) {
 			UI::MenuInputController::lastTooltipObject = nullptr;
@@ -166,10 +157,6 @@ namespace TES3 {
 			object = static_cast<const Reference*>(object)->baseObject;
 		}
 
-		if (object == nullptr) {
-			return nullptr;
-		}
-
 		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
 			object = static_cast<const Actor*>(object)->getBaseActor();
 		}
@@ -177,55 +164,11 @@ namespace TES3 {
 		return object;
 	}
 
-	bool BaseObject::isPhysicalObject() const {
-		switch (objectType) {
-		case TES3::ObjectType::Activator:
-		case TES3::ObjectType::Alchemy:
-		case TES3::ObjectType::Ammo:
-		case TES3::ObjectType::Apparatus:
-		case TES3::ObjectType::Armor:
-		case TES3::ObjectType::Bodypart:
-		case TES3::ObjectType::Book:
-		case TES3::ObjectType::Clothing:
-		case TES3::ObjectType::Container:
-		case TES3::ObjectType::Creature:
-		case TES3::ObjectType::CreatureClone:
-		case TES3::ObjectType::Door:
-		case TES3::ObjectType::Ingredient:
-		case TES3::ObjectType::LeveledCreature:
-		case TES3::ObjectType::LeveledItem:
-		case TES3::ObjectType::Light:
-		case TES3::ObjectType::Lockpick:
-		case TES3::ObjectType::Misc:
-		case TES3::ObjectType::NPC:
-		case TES3::ObjectType::NPCClone:
-		case TES3::ObjectType::Probe:
-		case TES3::ObjectType::Repair:
-		case TES3::ObjectType::Static:
-		case TES3::ObjectType::Weapon:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	PhysicalObject* BaseObject::asPhysicalObject() {
-		if (!isPhysicalObject()) return nullptr;
-		return static_cast<PhysicalObject*>(this);
-	}
-
-	const PhysicalObject* BaseObject::asPhysicalObject() const {
-		if (!isPhysicalObject()) return nullptr;
-		return static_cast<const PhysicalObject*>(this);
-	}
-
 	bool BaseObject::isActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Container:
 		case TES3::ObjectType::Creature:
-		case TES3::ObjectType::CreatureClone:
 		case TES3::ObjectType::NPC:
-		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -235,9 +178,7 @@ namespace TES3 {
 	bool BaseObject::isMobileCapableActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Creature:
-		case TES3::ObjectType::CreatureClone:
 		case TES3::ObjectType::NPC:
-		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -296,10 +237,6 @@ namespace TES3 {
 
 	bool BaseObject::getDeleted() const {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::DeleteBit);
-	}
-
-	void BaseObject::setDeleted(bool deleted) {
-		BIT_SET(objectFlags, TES3::ObjectFlag::DeleteBit, deleted);
 	}
 
 	bool BaseObject::getPersistent() const {
@@ -567,7 +504,6 @@ namespace TES3 {
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
@@ -1001,10 +937,6 @@ namespace TES3 {
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
-	}
-
-	const std::vector<Reference*>& PhysicalObject::getReferences() const {
-		return mwse::ReferenceTracker::getReferences(this);
 	}
 }
 

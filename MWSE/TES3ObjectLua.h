@@ -69,6 +69,5 @@ namespace mwse::lua {
 		usertypeDefinition["mobile"] = sol::readonly_property(&TES3::PhysicalObject::getMobile);
 		usertypeDefinition["reference"] = sol::readonly_property(&TES3::PhysicalObject::getReference);
 		usertypeDefinition["stolenList"] = sol::readonly_property(&TES3::PhysicalObject::getStolenList);
-		usertypeDefinition["referenceList"] = sol::readonly_property(&TES3::PhysicalObject::getReferences);
 	}
 }
