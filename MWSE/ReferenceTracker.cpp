@@ -7,6 +7,7 @@
 #include "TES3Reference.h"
 
 #include "Log.h"
+#include "StringUtil.h"
 
 namespace mwse {
 	struct ReferenceTrackingData {
@@ -41,8 +42,7 @@ namespace mwse {
 		}
 
 		// Enter ID(s) here to track misbehavior.
-		return _stricmp(id, "DivineMarker") == 0
-			|| _stricmp(id, "TempleMarker") == 0;
+		return se::string::cicontains(id, "tl_mineguard1");
 	}
 
 	static bool shouldLogReferenceLookupReference(const TES3::Reference* reference) {
@@ -81,6 +81,21 @@ namespace mwse {
 		}
 
 		return false;
+	}
+
+	static void removeReferenceFromLookupImpl(TES3::Reference* reference, const TES3::PhysicalObject* key) {
+		if (reference == nullptr || key == nullptr) {
+			return;
+		}
+
+		const auto referencesIt = referenceDataByObject.find(key);
+		if (referencesIt == referenceDataByObject.end()) {
+			return;
+		}
+
+		auto& references = referencesIt->second.references;
+		references.erase(std::remove(references.begin(), references.end(), reference), references.end());
+		referencesIt->second.dirtyLookup = true;
 	}
 
 	static void markReferenceLookupKeyDirty(const TES3::BaseObject* object) {
@@ -283,13 +298,7 @@ namespace mwse {
 		const auto key = getLookupKey(reference);
 		markReferenceLookupKeyDirty(reference);
 		if (trackedReferences.erase(reference)) {
-			if (key != nullptr) {
-				const auto referencesIt = referenceDataByObject.find(key);
-				if (referencesIt != referenceDataByObject.end()) {
-					auto& references = referencesIt->second.references;
-					references.erase(std::remove(references.begin(), references.end(), reference), references.end());
-				}
-			}
+			removeReferenceFromLookupImpl(reference, key);
 
 			if (shouldLogReferenceLookupReference(reference)) {
 				mwse::log::getLog()
@@ -300,6 +309,44 @@ namespace mwse {
 					<< " trackedReferences=" << trackedReferences.size()
 					<< std::endl;
 			}
+		}
+	}
+
+	void ReferenceTracker::rekeyReference(TES3::Reference* reference, const TES3::PhysicalObject* previousLookupKey) {
+		Lock lock;
+		if (reference == nullptr) {
+			return;
+		}
+
+		const auto currentLookupKey = getLookupKey(reference);
+		if (previousLookupKey == currentLookupKey) {
+			if (currentLookupKey != nullptr) {
+				markReferenceLookupKeyDirty(currentLookupKey);
+			}
+			return;
+		}
+
+		removeReferenceFromLookupImpl(reference, previousLookupKey);
+
+		if (currentLookupKey == nullptr) {
+			trackedReferences.erase(reference);
+		}
+		else {
+			trackedReferences.insert(reference);
+			addReferenceToLookupImpl(reference);
+			markReferenceLookupKeyDirty(currentLookupKey);
+		}
+
+		if (shouldLogReferenceLookupReference(reference)) {
+			mwse::log::getLog()
+				<< "[MWSE] Reference lookup rekeyed: ref=" << reference
+				<< " refId=" << (getReferenceLookupLogId(reference) ? getReferenceLookupLogId(reference) : "<no id>")
+				<< " previousKey=" << previousLookupKey
+				<< " previousKeyId=" << (getReferenceLookupLogId(previousLookupKey) ? getReferenceLookupLogId(previousLookupKey) : "<no id>")
+				<< " currentKey=" << currentLookupKey
+				<< " currentKeyId=" << (getReferenceLookupLogId(currentLookupKey) ? getReferenceLookupLogId(currentLookupKey) : "<no id>")
+				<< " trackedReferences=" << trackedReferences.size()
+				<< std::endl;
 		}
 	}
 

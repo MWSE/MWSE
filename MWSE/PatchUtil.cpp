@@ -1926,6 +1926,14 @@ namespace mwse::patch {
 		--self->count;
 	}
 
+	const auto TES3_Cell_static_loadReference = reinterpret_cast<bool(__cdecl*)(TES3::Reference*, TES3::GameFile*, bool, bool, TES3::Cell*)>(0x4DE380);
+	static bool __cdecl PatchCellLoadReference(TES3::Reference* reference, TES3::GameFile* gameFile, bool mustBePersistent, bool insertNew, TES3::Cell* cell) {
+		const auto previousLookupKey = ReferenceTracker::getLookupKey(reference);
+		const auto result = TES3_Cell_static_loadReference(reference, gameFile, mustBePersistent, insertNew, cell);
+		ReferenceTracker::rekeyReference(reference, previousLookupKey);
+		return result;
+	}
+
 	//
 	// Install all the patches.
 	//
@@ -2021,6 +2029,13 @@ namespace mwse::patch {
 		genCallEnforced(0x48EEC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
 		genCallEnforced(0x48EFDE, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
 		genCallEnforced(0x4C5AC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x4C01C4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DD38C, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DD45E, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DDB0B, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DDBD3, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DE2B4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4E0D04, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
