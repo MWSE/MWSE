@@ -319,6 +319,7 @@ namespace TES3 {
 	}
 
 	static Reference* findFirstReferenceOfObjectInWorld(const PhysicalObject* object, bool skipDeleted) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
 		if (object == nullptr) {
 			return nullptr;
 		}
@@ -448,6 +449,7 @@ namespace TES3 {
 	}
 
 	static Reference* findFirstReferenceOfObjectInCell(PhysicalObject* object, const Cell* cell, bool skipDeleted) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
 		if (object == nullptr || cell == nullptr) {
 			return nullptr;
 		}
@@ -555,6 +557,7 @@ namespace TES3 {
 	}
 
 	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int maxGridSearchRadius) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
 		if (object == nullptr) {
 			return nullptr;
 		}

@@ -7,6 +7,12 @@ namespace mwse {
 	public:
 		ReferenceTracker() = delete;
 
+		class Lock {
+		public:
+			Lock();
+			~Lock();
+		};
+
 		static const std::vector<TES3::Reference*>& getReferences(const TES3::PhysicalObject* object);
 
 		static void trackReferenceForLookup(TES3::Reference* reference);

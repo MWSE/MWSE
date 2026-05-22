@@ -18,6 +18,7 @@ namespace mwse {
 	static std::unordered_map<const TES3::PhysicalObject*, ReferenceTrackingData> referenceDataByObject;
 	static std::unordered_map<const TES3::Cell*, size_t> referenceLookupCellOrder;
 	static const std::vector<TES3::Reference*> emptyReferences;
+	static std::recursive_mutex referenceTrackerMutex;
 	constexpr auto LOG_REFERENCE_TRACKING = false;
 
 	static const char* getReferenceLookupLogId(const TES3::BaseObject* object) {
@@ -83,6 +84,7 @@ namespace mwse {
 	}
 
 	static void markReferenceLookupKeyDirty(const TES3::BaseObject* object) {
+		ReferenceTracker::Lock lock;
 		const auto key = ReferenceTracker::getLookupKey(object);
 		if (key != nullptr) {
 			referenceDataByObject[key].dirtyLookup = true;
@@ -90,6 +92,7 @@ namespace mwse {
 	}
 
 	static void rebuildReferenceLookupCellOrder() {
+		ReferenceTracker::Lock lock;
 		referenceLookupCellOrder.clear();
 		const auto dataHandler = TES3::DataHandler::get();
 		const auto nonDynamicData = dataHandler ? dataHandler->nonDynamicData : nullptr;
@@ -107,6 +110,7 @@ namespace mwse {
 	}
 
 	static size_t getReferenceLookupCellOrder(const TES3::Cell* cell) {
+		ReferenceTracker::Lock lock;
 		if (cell == nullptr) {
 			return std::numeric_limits<size_t>::max();
 		}
@@ -178,6 +182,7 @@ namespace mwse {
 	}
 
 	static void sortReferencesLookupForKey(const TES3::PhysicalObject* key) {
+		ReferenceTracker::Lock lock;
 		if (key == nullptr) {
 			return;
 		}
@@ -203,7 +208,16 @@ namespace mwse {
 		dataIt->second.dirtyLookup = false;
 	}
 
+	ReferenceTracker::Lock::Lock() {
+		referenceTrackerMutex.lock();
+	}
+
+	ReferenceTracker::Lock::~Lock() {
+		referenceTrackerMutex.unlock();
+	}
+
 	const std::vector<TES3::Reference*>& ReferenceTracker::getReferences(const TES3::PhysicalObject* object) {
+		Lock lock;
 		const auto key = getLookupKey(object);
 		sortReferencesLookupForKey(key);
 
@@ -240,6 +254,7 @@ namespace mwse {
 	}
 
 	void ReferenceTracker::trackReferenceForLookup(TES3::Reference* reference) {
+		Lock lock;
 		if (reference == nullptr) {
 			return;
 		}
@@ -260,6 +275,7 @@ namespace mwse {
 	}
 
 	void ReferenceTracker::untrackReferenceForLookup(TES3::Reference* reference) {
+		Lock lock;
 		if (reference == nullptr) {
 			return;
 		}
@@ -318,6 +334,11 @@ namespace mwse {
 	}
 
 	void ReferenceTracker::invalidateObject(TES3::BaseObject* object) {
+		Lock lock;
+		if (object == nullptr) {
+			return;
+		}
+
 		if (object->objectType == TES3::ObjectType::Cell) {
 			invalidateCell(static_cast<const TES3::Cell*>(object));
 			return;
