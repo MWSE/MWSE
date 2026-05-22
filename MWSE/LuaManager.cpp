@@ -4482,21 +4482,6 @@ namespace mwse::lua {
 	}
 
 	//
-	// Patch: Don't show warnings for empty, deleted dialogues
-	//
-
-	void __fastcall LoadOverDialogue(TES3::Dialogue* self, DWORD _EDX_, TES3::Dialogue* from) {
-		// Ignore type changes entirely for deleted data.
-		if (self->name == nullptr && from->name == nullptr && self->type != from->type && self->getDeleted() && from->getDeleted()) {
-			return;
-		}
-
-		// Call overwritten code.
-		const auto TES3_Dialogue_LoadOver = reinterpret_cast<void(__thiscall*)(TES3::Dialogue*, TES3::Dialogue*)>(0x4B2790);
-		TES3_Dialogue_LoadOver(self, from);
-	}
-
-	//
 	// Patch: Modifiable physical hit detection cone and weapon reach;
 	//
 
@@ -6198,9 +6183,6 @@ namespace mwse::lua {
 
 		genCallEnforced(0x4ED826, 0x477400, reinterpret_cast<DWORD>(PatchModelLoaderErrorReport));
 		genCallEnforced(0x51AEEE, 0x694460, reinterpret_cast<DWORD>(PatchStreamLoaderErrorReport));
-
-		// Patch: Remove pointless warning when mod makers add a new journal entry after adding a new topic.
-		genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(LoadOverDialogue));
 
 		// Event: CrimeWitnessed
 		genCallEnforced(0x521DB2, 0x522040, reinterpret_cast<DWORD>(OnProcessCrimes));

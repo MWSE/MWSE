@@ -1633,6 +1633,11 @@ namespace mwse::patch {
 			return;
 		}
 
+		// Changed behavior: Don't show warnings for empty, deleted dialogues
+		if (self->name == nullptr && other->name == nullptr && self->type != other->type && self->getDeleted() && other->getDeleted()) {
+			return;
+		}
+
 		const auto myName = self->name ? self->name : "";
 		const auto otherName = other->name ? other->name : "";
 
