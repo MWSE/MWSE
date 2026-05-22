@@ -178,16 +178,7 @@ namespace TES3 {
 	}
 
 	bool BaseObject::isPhysicalObject() const {
-		if (this == nullptr) {
-			return nullptr;
-		}
-
-		auto baseObject = this;
-		if (isActor() && static_cast<const Actor*>(this)->isClone()) {
-			baseObject = static_cast<const Actor*>(this)->getBaseActor();
-		}
-
-		switch (baseObject->objectType) {
+		switch (objectType) {
 		case TES3::ObjectType::Activator:
 		case TES3::ObjectType::Alchemy:
 		case TES3::ObjectType::Ammo:
