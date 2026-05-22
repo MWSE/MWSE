@@ -19,6 +19,7 @@ namespace mwse {
 		static void untrackReferenceForLookup(TES3::Reference* reference);
 		static void rekeyReference(TES3::Reference* reference, const TES3::PhysicalObject* previousLookupKey);
 		static void markReferencesLookupDirty(const TES3::PhysicalObject* object);
+		static bool validate();
 
 		static void invalidateObject(TES3::BaseObject* object);
 

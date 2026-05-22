@@ -358,6 +358,104 @@ namespace mwse {
 		markReferenceLookupKeyDirty(object);
 	}
 
+	bool ReferenceTracker::validate() {
+		Lock lock;
+		bool valid = true;
+
+		auto& log = mwse::log::getLog();
+		const auto reportFailure = [&](const auto& message) {
+			log << "[MWSE] ReferenceTracker validation failed: " << message << std::endl;
+			valid = false;
+		};
+
+		const auto dataHandler = TES3::DataHandler::get();
+		const auto nonDynamicData = dataHandler ? dataHandler->nonDynamicData : nullptr;
+		const auto cells = nonDynamicData ? nonDynamicData->cells : nullptr;
+		if (cells == nullptr) {
+			reportFailure("NonDynamicData::cells is null");
+		}
+		else {
+			rebuildReferenceLookupCellOrder();
+			size_t cellIndex = 0;
+			for (const auto cell : *cells) {
+				if (cell == nullptr) {
+					++cellIndex;
+					continue;
+				}
+
+				const auto orderIt = referenceLookupCellOrder.find(cell);
+				if (orderIt == referenceLookupCellOrder.end()) {
+					log << "[MWSE] ReferenceTracker validation failed: cell missing from referenceLookupCellOrder"
+						<< " cell=" << cell << "(" << cell->getEditorName() << ")"
+						<< " actualOrder=" << cellIndex
+						<< std::endl;
+					valid = false;
+				}
+				else if (orderIt->second != cellIndex) {
+					log << "[MWSE] ReferenceTracker validation failed: cell order mismatch"
+						<< " cell=" << cell
+						<< " expectedOrder=" << cellIndex
+						<< " trackedOrder=" << orderIt->second
+						<< std::endl;
+					valid = false;
+				}
+
+				const auto validateReferenceList = [&](const TES3::ReferenceList* referenceList, const char* listName) {
+					if (referenceList == nullptr) {
+						reportFailure(std::string("null reference list encountered for ") + listName);
+						return;
+					}
+
+					for (const auto reference : *referenceList) {
+						if (reference == nullptr) {
+							continue;
+						}
+
+						if (trackedReferences.find(reference) == trackedReferences.end()) {
+							log << "[MWSE] ReferenceTracker validation failed: untracked reference found in cell"
+								<< " cell=" << cell
+								<< " list=" << listName
+								<< " reference=" << reference
+								<< std::endl;
+							valid = false;
+						}
+					}
+				};
+
+				validateReferenceList(&cell->actors, "actors");
+				validateReferenceList(&cell->persistentRefs, "persistentRefs");
+				validateReferenceList(&cell->temporaryRefs, "temporaryRefs");
+
+				++cellIndex;
+			}
+		}
+
+		for (const auto& [key, data] : referenceDataByObject) {
+			for (const auto reference : data.references) {
+				if (reference == nullptr) {
+					log << "[MWSE] ReferenceTracker validation failed: null reference stored in referenceDataByObject"
+						<< " key=" << key
+						<< std::endl;
+					valid = false;
+					continue;
+				}
+
+				const auto lookupKey = getLookupKey(reference);
+				if (lookupKey != key) {
+					log << "[MWSE] ReferenceTracker validation failed: reference lookup key mismatch"
+						<< " reference=" << reference
+						<< " storedKey=" << key
+						<< " lookupKey=" << lookupKey
+						<< " baseObject=" << reference->baseObject
+						<< std::endl;
+					valid = false;
+				}
+			}
+		}
+
+		return valid;
+	}
+
 	static void invalidateCell(const TES3::Cell* cell) {
 		const auto itt = referenceLookupCellOrder.find(cell);
 		if (itt == referenceLookupCellOrder.end()) {
