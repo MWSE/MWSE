@@ -35,7 +35,7 @@ namespace TES3 {
 		}
 
 		// Pretend that nothing was found if the game isn't in focus.
-		if (mwse::Configuration::RunInBackground && GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+		if (mwse::Configuration::RunInBackground && GetForegroundWindow() != TES3::WorldController::get()->Win32_hWndParent) {
 			*out_dik = 0;
 			return 0;
 		}
@@ -88,6 +88,13 @@ namespace TES3 {
 
 	bool InputController::isMouseButtonReleasedThisFrame(unsigned char button) const {
 		return !(mouseState.rgbButtons[button] & 0x80) && (previousMouseState.rgbButtons[button] & 0x80);
+	}
+
+	void InputController::clearTransientInputState() {
+		memset(keyboardState, 0, sizeof(keyboardState));
+		memset(previousKeyboardState, 0, sizeof(previousKeyboardState));
+		memset(&mouseState, 0, sizeof(mouseState));
+		memset(&previousMouseState, 0, sizeof(previousMouseState));
 	}
 
 	bool InputController::isAltDown() const {

@@ -1145,7 +1145,7 @@ namespace mwse::lua {
 
 	void __fastcall OnKeyReadState(TES3::InputController* inputController) {
 		// If we're using the run in background patch, add a check here.
-		if (Configuration::RunInBackground && GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+		if (Configuration::RunInBackground && GetForegroundWindow() != TES3::WorldController::get()->Win32_hWndParent) {
 			return;
 		}
 

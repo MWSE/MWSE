@@ -253,31 +253,35 @@ namespace mwse::patch {
 	// Patch: Make Morrowind believe that it is always the front window in the main gameplay loop block.
 	//
 
-	static HWND lastActiveWindow = 0;
-	HWND __stdcall PatchGetMorrowindMainWindow() {
-		auto worldController = TES3::WorldController::get();
-		auto mainWindowHandle = worldController->Win32_hWndParent;
+	static HWND lastForegroundWindow = 0;
+	HWND __stdcall PatchGetActiveWindowForMainLoop() {
+		const auto worldController = TES3::WorldController::get();
+		const auto mainWindowHandle = worldController->Win32_hWndParent;
 
-		// Check to see if we've become inactive.
-		auto activeWindow = GetActiveWindow();
-		if (activeWindow != mainWindowHandle && activeWindow != lastActiveWindow) {
-			// Reset mouse deltas so it stops moving.
+		const auto foregroundWindow = GetForegroundWindow();
+		if (foregroundWindow != mainWindowHandle && foregroundWindow != lastForegroundWindow) {
 			auto inputController = worldController->inputController;
-			inputController->mouseState.lX = 0;
-			inputController->mouseState.lY = 0;
-			inputController->mouseState.lZ = 0;
-
-			memset(inputController->keyboardState, 0, sizeof(inputController->keyboardState));
-			memset(inputController->previousKeyboardState, 0, sizeof(inputController->previousKeyboardState));
+			if (inputController) {
+				inputController->clearTransientInputState();
+				if (inputController->mouse) {
+					inputController->mouse->Unacquire();
+				}
+				if (inputController->keyboard) {
+					inputController->keyboard->Unacquire();
+				}
+			}
 		}
 
-		lastActiveWindow = activeWindow;
+		lastForegroundWindow = foregroundWindow;
 
-		return mainWindowHandle;
+		if (Configuration::RunInBackground) {
+			return mainWindowHandle;
+		}
+		return GetActiveWindow();
 	}
 
 	void __fastcall PatchGetMorrowindMainWindow_NoBackgroundInput(TES3::InputController* inputController) {
-		if (GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+		if (GetForegroundWindow() != TES3::WorldController::get()->Win32_hWndParent) {
 			return;
 		}
 
@@ -1665,11 +1669,23 @@ namespace mwse::patch {
 	using gCursorShown = se::memory::ExternalGlobal<bool, 0x776D0C>;
 	static bool showCursorFlag = true;
 
-	static void SetCursorShown(HWND hWnd, bool shown) {
-		if (gCursorShown::get() == shown) {
+	static void SetShowCursorState(bool shown, bool force = false) {
+		if (!force && showCursorFlag == shown) {
 			return;
 		}
+
+		if (shown) {
+			while (ShowCursor(TRUE) < 0);
+		}
+		else {
+			while (ShowCursor(FALSE) >= 0);
+		}
+		showCursorFlag = shown;
+	}
+
+	static void SetCursorShown(HWND hWnd, bool shown, bool forceShow = false) {
 		gCursorShown::set(shown);
+		SetShowCursorState(shown, forceShow && shown);
 
 		const auto worldController = TES3::WorldController::get();
 		if (!worldController) {
@@ -1681,34 +1697,22 @@ namespace mwse::patch {
 			return;
 		}
 
-		// Only call ShowCursor if needed.
-		if (showCursorFlag != shown) {
-			ShowCursor(shown);
-			showCursorFlag = shown;
-		}
-
 		// Sync mouse state.
-		DIMOUSESTATE2 mouseState = {};
-		const auto mouseStateR = inputController->mouse->GetDeviceState(sizeof(mouseState), &mouseState);
-		const auto mouseAcquired = (mouseStateR == DIERR_INPUTLOST || mouseStateR == DIERR_NOTACQUIRED);
-		if (shown != mouseAcquired) {
+		if (inputController->mouse) {
 			if (shown) {
 				inputController->mouse->Unacquire();
 			}
-			else {
+			else if (GetForegroundWindow() == hWnd) {
 				inputController->mouse->Acquire();
 			}
 		}
 
 		// Sync keyboard state.
-		BYTE keyboardState[256] = {};
-		const auto keyboardStateR = inputController->keyboard->GetDeviceState(sizeof(keyboardState), &keyboardState);
-		const auto keyboardAcquired = (keyboardStateR == DIERR_INPUTLOST || keyboardStateR == DIERR_NOTACQUIRED);
-		if (shown != keyboardAcquired) {
+		if (inputController->keyboard) {
 			if (shown) {
 				inputController->keyboard->Unacquire();
 			}
-			else {
+			else if (GetForegroundWindow() == hWnd) {
 				inputController->keyboard->Acquire();
 			}
 		}
@@ -1720,7 +1724,7 @@ namespace mwse::patch {
 		const auto result = context.getResult();
 		auto shouldShow = result != HTCLIENT;
 
-		SetCursorShown(hWnd, shouldShow);
+		SetCursorShown(hWnd, shouldShow || GetForegroundWindow() != hWnd);
 	}
 
 	static LRESULT __stdcall PatchWindProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -1728,13 +1732,16 @@ namespace mwse::patch {
 
 		switch (msg) {
 		case WM_ACTIVATE:
-			SetCursorShown(hWnd, context.getLOWParam() != WA_INACTIVE);
+			SetCursorShown(hWnd, context.getLOWParam() == WA_INACTIVE, true);
+			break;
+		case WM_ACTIVATEAPP:
+			SetCursorShown(hWnd, !wParam, true);
 			break;
 		case WM_SETFOCUS:
 			SetCursorShown(hWnd, false);
 			break;
 		case WM_KILLFOCUS:
-			SetCursorShown(hWnd, true);
+			SetCursorShown(hWnd, true, true);
 			break;
 		case WM_NCHITTEST:
 			PatchWindProc_CursorHitTest(context);
@@ -2649,10 +2656,12 @@ namespace mwse::patch {
 		// Patch: Be better about showing/hiding the cursor.
 		originalWindowProc = (WNDPROC)SetWindowLongPtr(TES3::WorldController::get()->Win32_hWndParent, GWLP_WNDPROC, (LONG_PTR)PatchWindProc);
 
+		// Patch: Reset input state when focus changes outside Morrowind, even if it happened while paused in a debugger.
+		genCallUnprotected(0x41AB7D, reinterpret_cast<DWORD>(PatchGetActiveWindowForMainLoop), 0x6);
+
 		// Patch: The window is never out of focus.
 		if (Configuration::RunInBackground) {
 			writeByteUnprotected(0x416BC3 + 0x2 + 0x4, 1);
-			genCallUnprotected(0x41AB7D, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow), 0x6);
 			genCallEnforced(0x425313, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x4772CE, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x47798C, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
