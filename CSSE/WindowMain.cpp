@@ -421,6 +421,11 @@ namespace se::cs::window::main {
 				return 0;
 			}
 
+			if (index != 2 && bufferedIndex2Text.has_value()) {
+				DefSubclassProc(hWnd, msg, MAKEWPARAM(2, 0), (LPARAM)bufferedIndex2Text.value().c_str());
+				bufferedIndex2Text.reset();
+			}
+
 			auto& previousText = cachedStatusWindowText[index];
 			const std::string_view currentText = text ? text : "";
 			if (se::string::equal(previousText, currentText)) {
@@ -431,10 +436,6 @@ namespace se::cs::window::main {
 			if (index == 2) {
 				bufferedIndex2Text = text;
 				return 0;
-			}
-			else if (bufferedIndex2Text.has_value()) {
-				DefSubclassProc(hWnd, msg, MAKEWPARAM(2, 0), (LPARAM)bufferedIndex2Text.value().c_str());
-				bufferedIndex2Text.reset();
 			}
 		}
 		}

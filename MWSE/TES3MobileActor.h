@@ -368,6 +368,7 @@ namespace TES3 {
 		void removeFiredProjectiles(bool includeSpellProjectiles);
 		void resurrect(bool resetState, bool moveToStartingLocation);
 		void resurrect_lua(sol::table params);
+		void cleanupCollisionReference(Reference* reference);
 		void overrideHeadTrackingThisFrame(Reference* target);
 
 		ActorAnimationController* getAnimationController() const;

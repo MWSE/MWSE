@@ -107,9 +107,14 @@ namespace TES3 {
 		TES3_MagicSourceInstance_process(this, deltaTime);
 	}
 
-	const auto TES3_MagicSourceInstance_retire = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, Reference*)>(0x512940);
+	const auto TES3_MagicSourceInstance_retire = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*)>(0x5127E0);
+	void MagicSourceInstance::retire() {
+		TES3_MagicSourceInstance_retire(this);
+	}
+
+	const auto TES3_MagicSourceInstance_retireEffectsOnReference = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, Reference*)>(0x512940);
 	void MagicSourceInstance::retire(Reference* reference) {
-		TES3_MagicSourceInstance_retire(this, reference);
+		TES3_MagicSourceInstance_retireEffectsOnReference(this, reference);
 	}
 
 	Object* MagicSourceInstance::getSourceObject() const {

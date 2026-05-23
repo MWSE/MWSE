@@ -17,6 +17,8 @@
 #include "TES3Script.h"
 #include "TES3WorldController.h"
 
+#include "ReferenceTracker.h"
+
 namespace mwse::lua {
 	void crash() {
 		// You're not my manager!
@@ -73,6 +75,8 @@ namespace mwse::lua {
 #else
 		lua_mwse["debugBuild"] = false;
 #endif
+
+		lua_mwse["validateReferenceTracker"] = ReferenceTracker::validate;
 
 		// Basic function binding.
 		lua_mwse["breakpoint"] = breakpoint;

@@ -3165,7 +3165,14 @@ namespace mwse::lua {
 			TES3::MagicSourceCombo sourceCombo(spell);
 			auto magicInstanceController = TES3::WorldController::get()->magicInstanceController;
 			auto serial = magicInstanceController->activateSpell(reference, nullptr, &sourceCombo);
+			if (serial == 0) {
+				return false;
+			}
+
 			auto spellInstance = magicInstanceController->getInstanceFromSerial(serial);
+			if (spellInstance == nullptr) {
+				return false;
+			}
 
 			if (alwaysSucceeds) {
 				spellInstance->overrideCastChance = 100.0f;

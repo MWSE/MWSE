@@ -231,6 +231,17 @@ The quality of the object, with how much of a bonus it has.
 
 ***
 
+### `referenceList`
+<div class="search_terms" style="display: none">referencelist</div>
+
+A list of all loaded references that currently use the object.
+
+**Returns**:
+
+* `result` ([tes3reference](../types/tes3reference.md)[])
+
+***
+
 ### `scale`
 <div class="search_terms" style="display: none">scale</div>
 

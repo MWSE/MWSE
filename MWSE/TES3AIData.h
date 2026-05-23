@@ -25,6 +25,7 @@ namespace TES3 {
 		bool allowRestingNear();
 
 		void assignMobileActor(MobileActor* mobile);
+		void cleanupAIPackages(Reference* reference, MobileActor* mobileActor);
 
 		//
 		// Custom functions.

@@ -87,6 +87,9 @@ namespace TES3 {
 		bool collectActiveMods(bool showMasterErrors = false);
 		bool load(int unknown1 = 0, bool unknown2 = false);
 		bool loadByPath(const char* path, const char* filename, int unknown1 = 0, bool unknown2 = false);
+		unsigned int readFirstChunk();
+		unsigned int readNextChunk();
+		bool nextForm(int flag = 1);
 		bool setFilePointer(unsigned int offset);
 		bool reopen(int mode = 0, bool writable = false);
 		bool close();
@@ -117,6 +120,7 @@ namespace TES3 {
 		const char* getCellName() const;
 		float getDaysPassed() const;
 		const char* getPlayerName() const;
+		bool getFlag20() const;
 
 		nonstd::span<GameFile*> getMasters();
 

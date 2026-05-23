@@ -10,6 +10,7 @@
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
 #include "TES3Reference.h"
+#include "TES3Script.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 #include "TES3WeatherController.h"
@@ -558,6 +559,18 @@ namespace TES3 {
 	const auto TES3_WorldController_isGlobalScriptRunning = reinterpret_cast<bool(__thiscall*)(const WorldController*, const Script*)>(0x40FB90);
 	bool WorldController::isGlobalScriptRunning(const Script* script) const {
 		return TES3_WorldController_isGlobalScriptRunning(this, script);
+	}
+
+	void WorldController::cleanupGlobalScriptReferences(Reference* reference) {
+		if (reference == nullptr || globalScripts == nullptr) {
+			return;
+		}
+
+		for (const auto globalScript : *globalScripts) {
+			if (globalScript && globalScript->reference == reference) {
+				globalScript->reference = nullptr;
+			}
+		}
 	}
 
 	const auto TES3_Data_daysInMonth = reinterpret_cast<unsigned short*>(0x775E40);

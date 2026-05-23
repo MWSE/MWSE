@@ -1145,7 +1145,7 @@ namespace mwse::lua {
 
 	void __fastcall OnKeyReadState(TES3::InputController* inputController) {
 		// If we're using the run in background patch, add a check here.
-		if (Configuration::RunInBackground && GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+		if (Configuration::RunInBackground && GetForegroundWindow() != TES3::WorldController::get()->Win32_hWndParent) {
 			return;
 		}
 
@@ -4482,21 +4482,6 @@ namespace mwse::lua {
 	}
 
 	//
-	// Patch: Don't show warnings for empty, deleted dialogues
-	//
-
-	void __fastcall LoadOverDialogue(TES3::Dialogue* self, DWORD _EDX_, TES3::Dialogue* from) {
-		// Ignore type changes entirely for deleted data.
-		if (self->name == nullptr && from->name == nullptr && self->type != from->type && self->getDeleted() && from->getDeleted()) {
-			return;
-		}
-
-		// Call overwritten code.
-		const auto TES3_Dialogue_LoadOver = reinterpret_cast<void(__thiscall*)(TES3::Dialogue*, TES3::Dialogue*)>(0x4B2790);
-		TES3_Dialogue_LoadOver(self, from);
-	}
-
-	//
 	// Patch: Modifiable physical hit detection cone and weapon reach;
 	//
 
@@ -6199,9 +6184,6 @@ namespace mwse::lua {
 		genCallEnforced(0x4ED826, 0x477400, reinterpret_cast<DWORD>(PatchModelLoaderErrorReport));
 		genCallEnforced(0x51AEEE, 0x694460, reinterpret_cast<DWORD>(PatchStreamLoaderErrorReport));
 
-		// Patch: Remove pointless warning when mod makers add a new journal entry after adding a new topic.
-		genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(LoadOverDialogue));
-
 		// Event: CrimeWitnessed
 		genCallEnforced(0x521DB2, 0x522040, reinterpret_cast<DWORD>(OnProcessCrimes));
 		genCallEnforced(0x53184A, 0x51F580, reinterpret_cast<DWORD>(OnCrimeWitnessedEnd));
@@ -6838,6 +6820,31 @@ namespace mwse::lua {
 
 	void LuaManager::setCurrentReference(TES3::Reference* reference) {
 		currentReference = reference;
+	}
+
+	void clearIfThis(const TES3::Reference* self, TES3::Reference*& ptr) {
+		if (ptr == self) {
+			ptr = nullptr;
+		}
+	}
+
+	void LuaManager::cleanupReference(TES3::Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		clearIfThis(reference, currentReference);
+		clearIfThis(reference, OnItemDroppedExterior_LastCreatedReference);
+
+		for (auto iter = saveLoadReferenceMap.begin(); iter != saveLoadReferenceMap.end(); ) {
+			clearIfThis(reference, iter->second);
+			if (iter->second == nullptr) {
+				iter = saveLoadReferenceMap.erase(iter);
+			}
+			else {
+				++iter;
+			}
+		}
 	}
 
 	sol::object LuaManager::triggerEvent(event::BaseEvent* baseEvent) {
