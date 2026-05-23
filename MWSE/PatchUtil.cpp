@@ -2062,6 +2062,27 @@ namespace mwse::patch {
 		genCallEnforced(0x4DE2B4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 		genCallEnforced(0x4E0D04, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 
+		// Patch: Improve performance of script reloading.
+		{
+			auto Script_ctor = &TES3::Script::ctor;
+			genCallEnforced(0x40E95B, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			genCallEnforced(0x40E963, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			genCallEnforced(0x4C0842, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			writeValueEnforced<BYTE>(0x4C0824, 0x70, sizeof(TES3::Script));
+			auto Script_loadRecordSpecific = &TES3::Script::loadRecordSpecific;
+			overrideVirtualTableEnforced(0x74A990, 0x4, 0x4FF700, *reinterpret_cast<DWORD*>(&Script_loadRecordSpecific));
+			auto Script_reloadScript = &TES3::Script::reloadScript;
+			genCallEnforced(0x4C78A3, 0x4FF9D0, *reinterpret_cast<DWORD*>(&Script_reloadScript));
+
+			// MCP adds a second script for the compiler. We need to patch that as a special case.
+			if (writeValueEnforced<BYTE>(0x50E593, 0x70, sizeof(TES3::Script))) {
+				writeValueEnforced<BYTE>(0x40E93F, 0xE0, sizeof(TES3::Script) * 2);
+			}
+			else {
+				writeValueEnforced<BYTE>(0x40E93F, 0x70, sizeof(TES3::Script));
+			}
+		}
+
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
 		overrideVirtualTableEnforced(0x7501E0, offsetof(NI::Object_vTable, loadBinary), 0x6DA410, *reinterpret_cast<DWORD*>(&NiLinesData_loadBinary));

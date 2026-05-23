@@ -64,12 +64,17 @@ namespace TES3 {
 		BYTE * machineCode; // 0x58
 		ScriptVariables varValues; // 0x5C
 
+		// Extended object fields.
+		size_t espFileOffset;
+
 		Script() = delete;
 		~Script() = delete;
 
 		//
 		// Other related this-call functions.
 		//
+
+		Script* ctor();
 
 		float executeScriptOpCode(unsigned int opCode, char charParam, BaseObject * objectParam);
 
@@ -84,6 +89,8 @@ namespace TES3 {
 
 		void execute(Reference* reference, ScriptVariables* data, DialogueInfo* info, Reference* reference2);
 		void setToCompiledResult(ScriptHeader* header, void* byteCode, const char* varNames, bool resolveParams = true);
+		void resetEventsAndVars();
+		bool loadRecordSpecific(GameFile* gameFile);
 
 		//
 		// Custom functions.
@@ -95,6 +102,7 @@ namespace TES3 {
 
 		sol::table getLocalVars_lua(sol::this_state ts, sol::optional<bool> useLocals = false);
 		std::shared_ptr<mwse::lua::ScriptContext> createContext();
+		bool reloadScript();
 
 		unsigned int getShortVariableCount() const;
 		unsigned int getLongVariableCount() const;
@@ -108,7 +116,7 @@ namespace TES3 {
 		static Reference* currentlyExecutingScriptReference;
 
 	};
-	static_assert(sizeof(Script) == 0x70, "TES3::Script failed size validation");
+	static_assert(sizeof(Script) == 0x74, "TES3::Script failed size validation");
 }
 
 MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(TES3::Script)
