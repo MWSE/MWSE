@@ -1550,7 +1550,7 @@ namespace se::cs {
 		ValueType getType() const;
 		GameSetting* getSetting() const;
 
-		static nonstd::span<GameSettingInitializer> get();
+		static std::span<GameSettingInitializer> get();
 	};
 	static_assert(sizeof(GameSettingInitializer) == 0x14, "GameSettingInitializer failed size validation");
 

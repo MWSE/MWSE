@@ -27,7 +27,7 @@ namespace NI {
 		ColorKey** keys; // 0xC
 		AnimationKey::KeyType keyType; // 0x10
 
-		nonstd::span<ColorKey*> getKeys() const;
+		std::span<ColorKey*> getKeys() const;
 	};
 	static_assert(sizeof(ColorData) == 0x14, "NI::ColorData failed size validation");
 }

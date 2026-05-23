@@ -44,10 +44,10 @@ namespace TES3 {
 		return TES3_MagicSourceCombo_getSourceEffects(this);
 	}
 
-	nonstd::span<Effect> MagicSourceCombo::getEffectSpan() const {
+	std::span<Effect> MagicSourceCombo::getEffectSpan() const {
 		auto result = TES3_MagicSourceCombo_getSourceEffects(this);
 		if (result) {
-			return nonstd::span(result, 8);
+			return std::span(result, 8);
 		}
 		return {};
 	}
@@ -125,7 +125,7 @@ namespace TES3 {
 		return sourceCombo.sourceType;
 	}
 
-	nonstd::span<Effect> MagicSourceInstance::getSourceEffects() const {
+	std::span<Effect> MagicSourceInstance::getSourceEffects() const {
 		return sourceCombo.getEffectSpan();
 	}
 

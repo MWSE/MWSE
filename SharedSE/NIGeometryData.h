@@ -34,11 +34,11 @@ namespace NI {
 		// Custom functions.
 		//
 
-		nonstd::span<PackedColor> getColors();
-		nonstd::span<Point3> getVertices();
-		nonstd::span<Point3> getActiveVertices();
-		nonstd::span<Point3> getNormals();
-		nonstd::span<Point2> getTextureCoordinates();
+		std::span<PackedColor> getColors();
+		std::span<Point3> getVertices();
+		std::span<Point3> getActiveVertices();
+		std::span<Point3> getNormals();
+		std::span<Point2> getTextureCoordinates();
 
 		void markAsChanged();
 		void updateModelBound();

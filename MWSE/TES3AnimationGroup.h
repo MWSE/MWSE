@@ -29,9 +29,9 @@ namespace TES3 {
 		AnimationGroup() = delete;
 		~AnimationGroup() = delete;
 
-		nonstd::span<int> getActionFrames();
-		nonstd::span<float> getActionTimings();
-		nonstd::span<SoundGenKey> getSoundGenKeys();
+		std::span<int> getActionFrames();
+		std::span<float> getActionTimings();
+		std::span<SoundGenKey> getSoundGenKeys();
 	};
 	static_assert(sizeof(AnimationGroup) == 0x2C, "TES3::AnimationGroup failed size validation");
 	static_assert(sizeof(AnimationGroup::SoundGenKey) == 0x14, "TES3::AnimationGroup::SoundGenKey failed size validation");

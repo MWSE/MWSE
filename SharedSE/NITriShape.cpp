@@ -58,11 +58,11 @@ namespace NI {
 #endif
 	}
 
-	nonstd::span<Point3> TriShape::getVertices() const {
+	std::span<Point3> TriShape::getVertices() const {
 		return getModelData()->getVertices();
 	}
 
-	nonstd::span<Point3> TriShape::getNormals() const {
+	std::span<Point3> TriShape::getNormals() const {
 		return getModelData()->getNormals();
 	}
 }

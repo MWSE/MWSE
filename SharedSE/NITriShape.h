@@ -42,8 +42,8 @@ namespace NI {
 		static Pointer<TriShape> create(unsigned short vertexCount, Point3* vertices, Point3* normals, Color* colors, Point2* textureCoords, unsigned short triangleCount, unsigned short* triList, int flags);
 #endif
 
-		nonstd::span<Point3> getVertices() const;
-		nonstd::span<Point3> getNormals() const;
+		std::span<Point3> getVertices() const;
+		std::span<Point3> getNormals() const;
 
 	};
 	static_assert(sizeof(TriShape) == 0xAC, "NI::TriShape failed size validation");

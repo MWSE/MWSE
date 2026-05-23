@@ -43,7 +43,7 @@ namespace TES3 {
 		//
 
 		Effect * getSourceEffects() const;
-		nonstd::span<Effect> getEffectSpan() const;
+		std::span<Effect> getEffectSpan() const;
 
 	};
 	static_assert(sizeof(MagicSourceCombo) == 0x8, "TES3::MagicSourceCombo failed size validation");
@@ -91,7 +91,7 @@ namespace TES3 {
 
 		Object* getSourceObject() const;
 		MagicSourceType getSourceType() const;
-		nonstd::span<Effect> getSourceEffects() const;
+		std::span<Effect> getSourceEffects() const;
 		MagicEffectInstance* getEffectInstance(int effectIndex, const Reference* reference) const;
 		std::vector<MagicEffectInstance*> getAllEffectInstances(int effectIndex) const;
 

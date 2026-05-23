@@ -98,8 +98,8 @@ namespace TES3 {
 		return &slots[slot];
 	}
 	
-	nonstd::span<QuickKey, 9> QuickKey::getQuickKeys() {
-		return nonstd::span<QuickKey, 9>(reinterpret_cast<TES3::QuickKey*>(0x7D56B0), 9);
+	std::span<QuickKey, 9> QuickKey::getQuickKeys() {
+		return std::span<QuickKey, 9>(reinterpret_cast<TES3::QuickKey*>(0x7D56B0), 9);
 	}
 
 	//

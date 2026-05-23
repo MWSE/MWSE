@@ -8,9 +8,9 @@
 #include "ExceptionUtil.h"
 
 namespace NI {
-	nonstd::span<BYTE> ExtraData::getGenericData() {
+	std::span<BYTE> ExtraData::getGenericData() {
 		if (genericData) {
-			return nonstd::span((BYTE*)genericData, genericDataLength);
+			return std::span((BYTE*)genericData, genericDataLength);
 		}
 		return {};
 	}
@@ -66,9 +66,9 @@ namespace NI {
 #endif
 	}
 
-	nonstd::span<TextKey> TextKeyExtraData::getKeys() const {
+	std::span<TextKey> TextKeyExtraData::getKeys() const {
 		if (key) {
-			return nonstd::span(key, keyCount);
+			return std::span(key, keyCount);
 		}
 		return {};
 	}

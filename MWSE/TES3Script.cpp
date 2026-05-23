@@ -268,8 +268,8 @@ namespace TES3 {
 		return {};
 	}
 
-	nonstd::span<BYTE> Script::getByteCode() const {
-		return nonstd::span<BYTE>(machineCode, header.dataSize);
+	std::span<BYTE> Script::getByteCode() const {
+		return std::span<BYTE>(machineCode, header.dataSize);
 	}
 
 	static TES3::ScriptCompiler scriptRecompiler;

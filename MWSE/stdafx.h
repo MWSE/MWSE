@@ -21,6 +21,7 @@
 #include <random>
 #include <regex>
 #include <set>
+#include <span>
 #include <sstream>
 #include <stddef.h>
 #include <stdexcept>
@@ -44,11 +45,6 @@
 #include <psapi.h>
 #include <dbghelp.h>
 #include <d3d8.h>
-
-// 3rd party library: span-lite
-// URL: https://github.com/martinmoene/span-lite
-#define span_CONFIG_SELECT_SPAN span_SPAN_NONSTD
-#include <nonstd/span.hpp>
 
 // 3rd party library: fmt
 #define FMT_HEADER_ONLY

@@ -97,7 +97,7 @@ namespace TES3 {
 		//
 
 		sol::optional<std::string> getScriptText() const;
-		nonstd::span<BYTE> getByteCode() const;
+		std::span<BYTE> getByteCode() const;
 		bool recompile(const char* text);
 
 		sol::table getLocalVars_lua(sol::this_state ts, sol::optional<bool> useLocals = false);

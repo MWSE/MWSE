@@ -11,13 +11,13 @@ namespace NI {
 		switch (rotationType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			return sol::make_object(L, nonstd::span(rotationKeys.asRotKey, rotationKeyCount));
+			return sol::make_object(L, std::span(rotationKeys.asRotKey, rotationKeyCount));
 		case AnimationKey::KeyType::Bezier:
-			return sol::make_object(L, nonstd::span(rotationKeys.asBezRotKey, rotationKeyCount));
+			return sol::make_object(L, std::span(rotationKeys.asBezRotKey, rotationKeyCount));
 		case AnimationKey::KeyType::TCB:
-			return sol::make_object(L, nonstd::span(rotationKeys.asTCBRotKey, rotationKeyCount));
+			return sol::make_object(L, std::span(rotationKeys.asTCBRotKey, rotationKeyCount));
 		case AnimationKey::KeyType::Euler:
-			return sol::make_object(L, nonstd::span(rotationKeys.asEulerRotKey, rotationKeyCount));
+			return sol::make_object(L, std::span(rotationKeys.asEulerRotKey, rotationKeyCount));
 		default:
 			throw std::runtime_error("Invalid rotation content type found. Report to MWSE developers.");
 		}
@@ -28,11 +28,11 @@ namespace NI {
 		switch (positionType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			return sol::make_object(L, nonstd::span(positionKeys.asPosKey, positionKeyCount));
+			return sol::make_object(L, std::span(positionKeys.asPosKey, positionKeyCount));
 		case AnimationKey::KeyType::Bezier:
-			return sol::make_object(L, nonstd::span(positionKeys.asBezPosKey, positionKeyCount));
+			return sol::make_object(L, std::span(positionKeys.asBezPosKey, positionKeyCount));
 		case AnimationKey::KeyType::TCB:
-			return sol::make_object(L, nonstd::span(positionKeys.asTCBPosKey, positionKeyCount));
+			return sol::make_object(L, std::span(positionKeys.asTCBPosKey, positionKeyCount));
 		default:
 			throw std::runtime_error("Invalid position content type found. Report to MWSE developers.");
 		}
@@ -43,11 +43,11 @@ namespace NI {
 		switch (scaleType) {
 		case AnimationKey::KeyType::NoInterp:
 		case AnimationKey::KeyType::Linear:
-			return sol::make_object(L, nonstd::span(scaleKeys.asFloatKey, scaleKeyCount));
+			return sol::make_object(L, std::span(scaleKeys.asFloatKey, scaleKeyCount));
 		case AnimationKey::KeyType::Bezier:
-			return sol::make_object(L, nonstd::span(scaleKeys.asBezFloatKey, scaleKeyCount));
+			return sol::make_object(L, std::span(scaleKeys.asBezFloatKey, scaleKeyCount));
 		case AnimationKey::KeyType::TCB:
-			return sol::make_object(L, nonstd::span(scaleKeys.asTCBFloatKey, scaleKeyCount));
+			return sol::make_object(L, std::span(scaleKeys.asTCBFloatKey, scaleKeyCount));
 		default:
 			throw std::runtime_error("Invalid scale content type found. Report to MWSE developers.");
 		}
