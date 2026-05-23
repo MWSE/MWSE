@@ -391,6 +391,7 @@
     <ClInclude Include="TES3NPC.h" />
     <ClInclude Include="TES3NPCLua.h" />
     <ClInclude Include="TES3Object.h" />
+    <ClInclude Include="ReferenceTracker.h" />
     <ClInclude Include="TES3Probe.h" />
     <ClInclude Include="TES3ProbeLua.h" />
     <ClInclude Include="TES3Race.h" />
@@ -840,6 +841,7 @@
     <ClCompile Include="TES3NPC.cpp" />
     <ClCompile Include="TES3NPCLua.cpp" />
     <ClCompile Include="TES3Object.cpp" />
+    <ClCompile Include="ReferenceTracker.cpp" />
     <ClCompile Include="TES3ProbeLua.cpp" />
     <ClCompile Include="TES3RaceLua.cpp" />
     <ClCompile Include="TES3Reference.cpp" />

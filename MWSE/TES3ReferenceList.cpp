@@ -12,6 +12,6 @@ namespace TES3 {
 
 	const auto TES3_ReferenceList_remove = reinterpret_cast<void(__thiscall*)(ReferenceList*, Reference*)>(0x4F19A0);
 	void ReferenceList::remove(Reference* ref) {
-
+		TES3_ReferenceList_remove(this, ref);
 	}
 }

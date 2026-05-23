@@ -10,7 +10,9 @@ namespace TES3 {
 		Voice,
 		Greeting,
 		Persuasion,
-		Journal
+		Journal,
+
+		MAX_VALUE = Journal,
 	};
 
 	enum class VoiceType : int {
@@ -119,6 +121,9 @@ namespace TES3 {
 		};
 
 		DialogueInfo* getJournalInfoForIndex(int index) const;
+		void clearInfoLoadIDCache();
+		DialogueInfo* findInfoByLoadID(const char* infoID) const;
+		void cacheInfoByLoadID(DialogueInfo* info);
 		DialogueInfo* getFilteredInfo(Actor* actor, Reference* reference, bool flag);
 		DialogueInfo* getFilteredInfoWithContext(Actor* actor, Reference* reference, bool flag, GetFilteredInfoContext context);
 
@@ -136,6 +141,8 @@ namespace TES3 {
 		VoiceType getVoiceType() const;
 		GreetingType getGreetingType() const;
 		ResponseType getResponseType() const;
+
+		const char* getFilterTypeName() const;
 
 		//
 		// Other related static functions.
