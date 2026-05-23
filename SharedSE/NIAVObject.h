@@ -71,6 +71,7 @@ namespace NI {
 		void setLocalVelocity(Point3*);
 
 		AVObject* getObjectByName(const char*) const;
+		Node* findRootCollisionNode() const;
 
 		template <typename T>
 		T* getObjectByNameAndType(const char* name) const {

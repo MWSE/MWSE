@@ -39,6 +39,7 @@
 #include "TES3MobManager.h"
 #include "TES3NPC.h"
 #include "TES3PlayerAnimationController.h"
+#include "TES3Script.h"
 #include "TES3WorldController.h"
 #include "TES3VFXManager.h"
 
@@ -571,20 +572,6 @@ namespace TES3 {
 		const auto worldController = TES3::WorldController::get();
 		const auto mobile = getAttachedMobileActor();
 
-		/*
-		* The game will, after this function returns, clean up the following on its own:
-		*	- Moved References
-		*	- Attachment data
-		*	- Scene node/loaded meshes (see below)
-		*	- For the mobile, it cleans up AI planners
-		*/
-
-		// Cleanup Tes3ExtraData potentially dangling pointer.
-		const auto extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
-		if (extraData) {
-			extraData->reference = nullptr;
-		}
-
 		// Cleanup activation target.
 		if (tes3game) {
 			if (tes3game->playerTarget == this) {
@@ -594,7 +581,45 @@ namespace TES3 {
 			clearIfThis(this, tes3game->tooltipTarget);
 		}
 
+		// Clean up collision data that points at this reference.
+		if (worldController && worldController->mobManager) {
+			if (worldController->mobManager->processManager) {
+				worldController->mobManager->processManager->cleanupCollisionReferences(this);
+			}
+		}
+
+		// Clean up active projectiles fired by this mobile.
+		if (mobile && worldController && worldController->mobManager && worldController->mobManager->projectileManager) {
+			worldController->mobManager->projectileManager->cleanupFiringActor(mobile);
+		}
+
+		// Clean up action data on other mobile actors.
+		if (worldController && worldController->mobManager && worldController->mobManager->processManager) {
+			worldController->mobManager->processManager->cleanupActionData(mobile);
+			worldController->mobManager->processManager->cleanupAIPackages(this, mobile);
+		}
+
+		// Clean up any related magic effects.
+		if (worldController && worldController->magicInstanceController) {
+			worldController->magicInstanceController->cleanupReference(this);
+		}
+
+		// Clean up global scripts for the reference.
+		if (worldController) {
+			worldController->cleanupGlobalScriptReferences(this);
+		}
+
+		// Cleanup Tes3ExtraData potentially dangling pointer.
+		NI::Pointer<NI::Tes3ExtraData> extraData = sceneNode ? sceneNode->getTes3ExtraData() : nullptr;
+		if (extraData) {
+			extraData->reference = nullptr;
+			sceneNode->removeExtraData(extraData);
+			extraData = nullptr;
+		}
+
 		// Clean up static event references.
+		mwse::lua::LuaManager::getInstance().cleanupReference(this);
+		clearIfThis(this, TES3::Script::currentlyExecutingScriptReference);
 		clearIfThis(this, mwse::lua::event::LeveledCreaturePickedEvent::m_LastLeveledSourceReference);
 		clearIfThis(this, mwse::lua::event::LeveledItemPickedEvent::m_Reference);
 		clearIfThis(this, mwse::lua::event::ActivationTargetChangedEvent::ms_PreviousReference);

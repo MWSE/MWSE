@@ -10,7 +10,7 @@
 
 namespace mwse::lua::event {
 	MobileProjectileActorCollisionEvent::MobileProjectileActorCollisionEvent(TES3::MobileProjectile* projectile, TES3::Reference* targetReference, NI::Point3& point, NI::Point3& pos, NI::Point3& vel) :
-		ObjectFilteredEvent("projectileHitActor", projectile->firingActor->reference),
+		ObjectFilteredEvent("projectileHitActor", projectile->firingActor ? projectile->firingActor->reference : nullptr),
 		m_Projectile(projectile),
 		m_TargetReference(targetReference),
 		m_CollisionPoint(point),

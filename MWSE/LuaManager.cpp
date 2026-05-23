@@ -6840,6 +6840,31 @@ namespace mwse::lua {
 		currentReference = reference;
 	}
 
+	void clearIfThis(const TES3::Reference* self, TES3::Reference*& ptr) {
+		if (ptr == self) {
+			ptr = nullptr;
+		}
+	}
+
+	void LuaManager::cleanupReference(TES3::Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		clearIfThis(reference, currentReference);
+		clearIfThis(reference, OnItemDroppedExterior_LastCreatedReference);
+
+		for (auto iter = saveLoadReferenceMap.begin(); iter != saveLoadReferenceMap.end(); ) {
+			clearIfThis(reference, iter->second);
+			if (iter->second == nullptr) {
+				iter = saveLoadReferenceMap.erase(iter);
+			}
+			else {
+				++iter;
+			}
+		}
+	}
+
 	sol::object LuaManager::triggerEvent(event::BaseEvent* baseEvent) {
 		const auto stateHandle = getThreadSafeStateHandle();
 

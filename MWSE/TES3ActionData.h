@@ -75,6 +75,12 @@ namespace TES3 {
 		ActionData() = delete;
 		~ActionData() = delete;
 
+		//
+		// Custom functions.
+		//
+
+		void cleanupMobileActor(MobileActor* mobileActor);
+
 	};
 	static_assert(sizeof(ActionData) == 0x70, "TES3::ActionData failed size validation");
 }

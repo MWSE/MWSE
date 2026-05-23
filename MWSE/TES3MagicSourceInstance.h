@@ -82,6 +82,7 @@ namespace TES3 {
 		void onAbsorbedMagic(MobileActor* mact);
 
 		void process(float deltaTime);
+		void retire();
 		void retire(TES3::Reference* reference);
 
 		//
