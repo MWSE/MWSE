@@ -272,19 +272,9 @@ end
 -- Extend base API: table
 -------------------------------------------------
 
--- Add LuaJIT extensions.
-require("table.clear")
-require("table.new")
-
 --- @param t table
 --- @return number result
-function table.size(t)
-	local count = 0
-	for _ in pairs(t) do
-		count = count + 1
-	end
-	return count
-end
+table.size = assert(table.nkeys)
 
 --- @param t table
 --- @param deepCheck? boolean
@@ -296,12 +286,10 @@ function table.empty(t, deepCheck)
 				return false
 			end
 		end
+		return true
 	else
-		for _ in pairs(t) do
-			return false
-		end
+		return table.isempty(t)
 	end
-	return true
 end
 
 --- @generic keyType
@@ -583,6 +571,9 @@ function table.shuffle(t, n)
 		t[i], t[j] = t[j], t[i]
 	end
 end
+
+-- Other Resty APIs.
+assert(table.isarray)
 
 
 -------------------------------------------------
