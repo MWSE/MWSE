@@ -20,14 +20,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // This file was generated with a script.
-// Generated 2020-10-03 21:34:25.034794 UTC
-// This header was generated with sol v3.2.1 (revision 48eea7b5)
+// Generated 2026-01-23 23:28:11.759874 UTC
+// This header was generated with sol v3.5.0 (revision 2e3103c9)
 // https://github.com/ThePhD/sol2
 
-#ifndef SOL_SINGLE_CONFIG_HPP
-#define SOL_SINGLE_CONFIG_HPP
+#ifndef SOL_SINGLE_SOL_CONFIG_HPP
+#define SOL_SINGLE_SOL_CONFIG_HPP
 
-// Configuration options available at https://sol2.readthedocs.io/en/latest/safety.html
+// beginning of sol/config.hpp
 
 // Enable LUAJIT support
 #define SOL_LUAJIT 1
@@ -41,4 +41,6 @@
 // It's _not_ wanted to propagate exceptions through Lua
 #define SOL_EXCEPTIONS_SAFE_PROPAGATION 0
 
-#endif // SOL_SINGLE_CONFIG_HPP
+// end of sol/config.hpp
+
+#endif // SOL_SINGLE_SOL_CONFIG_HPP
