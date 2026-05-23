@@ -38,8 +38,8 @@ Contributing to MWSE requires a copy of [Visual Studio 2022](https://www.visuals
 [LuaJIT](https://luajit.org/) needs to be compiled once, and is included in the project. To compile, use **Tools > Visual Studio Command Prompt** and run the following:
 
 ```bat
-cd deps\LuaJIT\src
-msvcbuild.bat
+cd deps\luajit2\src
+msvcbuild.bat lua52compat
 ```
 
 ### Configuration
