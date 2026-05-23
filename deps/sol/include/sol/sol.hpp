@@ -20,8 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // This file was generated with a script.
-// Generated 2026-05-23 08:13:13.677118 UTC
-// This header was generated with sol v3.5.0 (revision a5a08d13)
+// Generated 2026-05-23 09:08:04.653094 UTC
+// This header was generated with sol v3.5.0 (revision 77de1022)
 // https://github.com/ThePhD/sol2
 
 #ifndef SOL_SINGLE_INCLUDE_SOL_HPP
@@ -24239,51 +24239,49 @@ namespace sol { namespace u_detail {
 
 		template <bool is_new_index = false, bool base_walking = false, bool from_named_metatable = false, typename... Bases>
 		static inline int self_index_call(types<Bases...>, lua_State* L, usertype_storage_base& self) {
-			if constexpr (!from_named_metatable || !is_new_index) {
-				type k_type = stack::get<type>(L, 2);
-				if (k_type == type::string) {
-					index_call_storage* target = nullptr;
-					string_view k = stack::get<string_view>(L, 2);
-					{
-						auto it = self.string_keys.find(k);
-						if (it != self.string_keys.cend()) {
-							target = &it->second;
-						}
-					}
-					if (target != nullptr) {
-						// let the target decide what to do, unless it's named...
-						if constexpr (is_new_index) {
-							return (target->new_index)(L, target->binding_data);
-						}
-						else {
-							return (target->index)(L, target->binding_data);
-						}
+			type k_type = stack::get<type>(L, 2);
+			if (k_type == type::string) {
+				index_call_storage* target = nullptr;
+				string_view k = stack::get<string_view>(L, 2);
+				{
+					auto it = self.string_keys.find(k);
+					if (it != self.string_keys.cend()) {
+						target = &it->second;
 					}
 				}
-				else if (k_type != type::lua_nil && k_type != type::none) {
-					stateless_reference* target = nullptr;
-					{
-						stack_reference k = stack::get<stack_reference>(L, 2);
-#if __cpp_lib_generic_unordered_lookup >= 201811L
-						auto it = self.auxiliary_keys.find(k);
-#else
-						auto it = self.auxiliary_keys.find(basic_reference(k));
-#endif
-						if (it != self.auxiliary_keys.cend()) {
-							target = &it->second;
-						}
+				if (target != nullptr) {
+					// let the target decide what to do, unless it's named...
+					if constexpr (is_new_index) {
+						return (target->new_index)(L, target->binding_data);
 					}
-					if (target != nullptr) {
-						if constexpr (is_new_index) {
-							// set value and return
-							target->reset(L, 3);
-							return 0;
-						}
-						else {
-							// push target to return
-							// what we found
-							return stack::push(L, *target);
-						}
+					else {
+						return (target->index)(L, target->binding_data);
+					}
+				}
+			}
+			else if (k_type != type::lua_nil && k_type != type::none) {
+				stateless_reference* target = nullptr;
+				{
+					stack_reference k = stack::get<stack_reference>(L, 2);
+#if __cpp_lib_generic_unordered_lookup >= 201811L
+					auto it = self.auxiliary_keys.find(k);
+#else
+					auto it = self.auxiliary_keys.find(basic_reference(k));
+#endif
+					if (it != self.auxiliary_keys.cend()) {
+						target = &it->second;
+					}
+				}
+				if (target != nullptr) {
+					if constexpr (is_new_index) {
+						// set value and return
+						target->reset(L, 3);
+						return 0;
+					}
+					else {
+						// push target to return
+						// what we found
+						return stack::push(L, *target);
 					}
 				}
 			}
