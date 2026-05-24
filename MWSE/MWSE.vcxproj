@@ -1169,6 +1169,7 @@
   <PropertyGroup Label="BuildDate">
     <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
     <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
+    <BuildDateHeaderTemp>$(BuildDateHeader).tmp</BuildDateHeaderTemp>
     <BuildDateHeaderContents>#pragma once
 
 #define MWSE_BUILD_DATE $(BuildDate)
@@ -1194,7 +1195,8 @@
     <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.txt" Exclude="$(LuaJitSourceDir)luajit_relver.txt" />
   </ItemGroup>
   <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
-    <WriteLinesToFile File="$(BuildDateHeader)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+    <WriteLinesToFile File="$(BuildDateHeaderTemp)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$header = '$(BuildDateHeader)'; $tmp = '$(BuildDateHeaderTemp)'; $desired = [System.IO.File]::ReadAllText($tmp); if (Test-Path -LiteralPath $header) { $current = [System.IO.File]::ReadAllText($header); if ($current -eq $desired) { Remove-Item -LiteralPath $tmp; exit 0 } }; Move-Item -LiteralPath $tmp -Destination $header -Force&quot;" />
   </Target>
   <Target Name="BuildLuaJit" BeforeTargets="ClCompile" Inputs="@(LuaJitBuildInputs)" Outputs="$(LuaJitOutputs)">
     <Exec WorkingDirectory="$(LuaJitSourceDir)" Command="call &quot;$(LuaJitBuildScript)&quot; $(LuaJitBuildParams)" />
