@@ -11,6 +11,7 @@ namespace mwse {
 	bool Configuration::KeepAllNetImmerseObjectsAlive = false;
 	bool Configuration::RunInBackground = false;
 	bool Configuration::PatchNiFlipController = true;
+	bool Configuration::AntiJitterFix = true;
 	bool Configuration::LetterboxMovies = false;
 	bool Configuration::EnableLogColors = false;
 	bool Configuration::EnableLogLineNumbers = false;
@@ -63,6 +64,7 @@ namespace mwse {
 		DECLARE_CONFIG(KeepAllNetImmerseObjectsAlive)
 		DECLARE_CONFIG(RunInBackground)
 		DECLARE_CONFIG(PatchNiFlipController)
+		DECLARE_CONFIG(AntiJitterFix)
 		DECLARE_CONFIG(LetterboxMovies)
 		DECLARE_CONFIG(EnableLogColors)
 		DECLARE_CONFIG(EnableLogLineNumbers)

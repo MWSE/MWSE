@@ -247,22 +247,7 @@ namespace NI {
 		int unknown_0x5D4;
 		int unknown_0x5D8;
 		int unknown_0x5DC;
-		int unknown_0x5E0;
-		int unknown_0x5E4;
-		int unknown_0x5E8;
-		int unknown_0x5EC;
-		int unknown_0x5F0;
-		int unknown_0x5F4;
-		int unknown_0x5F8;
-		int unknown_0x5FC;
-		int unknown_0x600;
-		int unknown_0x604;
-		int unknown_0x608;
-		int unknown_0x60C;
-		int unknown_0x610;
-		int unknown_0x614;
-		int unknown_0x618;
-		int unknown_0x61C;
+		D3DMATRIX viewMatrix; // 0x5E0
 		int unknown_0x620;
 		int unknown_0x624;
 		int unknown_0x628;
