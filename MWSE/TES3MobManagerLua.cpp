@@ -43,6 +43,9 @@ namespace mwse::lua {
 
 			// Basic property binding.
 			usertypeDefinition["projectiles"] = sol::readonly_property(&TES3::ProjectileManager::activeProjectiles);
+
+			// Static variable binding.
+			usertypeDefinition["currentlyCollidingProjectile"] = sol::var(std::ref(TES3::ProjectileManager::ms_CurrentlyCollidingProjectile));
 		}
 
 		// Binding for TES3::MobManager.

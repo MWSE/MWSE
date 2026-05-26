@@ -68,6 +68,8 @@ namespace TES3 {
 		void removeProjectilesFiredByActor(MobileActor* mobileActor, bool includeSpellProjectiles);
 		void cleanupFiringActor(MobileActor* mobileActor);
 		void cleanupCollisionReferences(Reference* reference);
+
+		static MobileProjectile* ms_CurrentlyCollidingProjectile;
 	};
 	static_assert(sizeof(ProjectileManager) == 0x3C, "TES3::ProjectileManager failed size validation");
 

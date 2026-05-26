@@ -191,6 +191,8 @@ namespace TES3 {
 	// ProjectileManager
 	//
 
+	MobileProjectile* ProjectileManager::ms_CurrentlyCollidingProjectile = nullptr;
+
 	const auto TES3_ProjectileManager_resolveCollisions = reinterpret_cast<void(__thiscall*)(ProjectileManager*, float)>(0x5753A0);
 	void ProjectileManager::resolveCollisions(float deltaTime) {
 		// Explode flagged spell projectiles.

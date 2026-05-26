@@ -10,6 +10,17 @@ A game structure which holds all active projectiles.
 
 ## Properties
 
+### `currentlyCollidingProjectile`
+<div class="search_terms" style="display: none">currentlycollidingprojectile</div>
+
+*Read-only*. The projectile that is currently colliding.
+
+**Returns**:
+
+* `result` ([tes3mobileProjectile](../types/tes3mobileProjectile.md))
+
+***
+
 ### `projectiles`
 <div class="search_terms" style="display: none">projectiles</div>
 
