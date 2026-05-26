@@ -837,6 +837,18 @@
     <ClInclude Include="LuaMobileObjectWaterImpactEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaMobileSpellProjectileActorCollisionEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMobileSpellProjectileObjectCollisionEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMobileSpellProjectileTerrainCollisionEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaMobileSpellProjectileWaterCollisionEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaGenericUiPreEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -2685,6 +2697,18 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaMobileObjectWaterImpactEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMobileSpellProjectileActorCollisionEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMobileSpellProjectileObjectCollisionEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMobileSpellProjectileTerrainCollisionEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaMobileSpellProjectileWaterCollisionEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaGenericUiPreEvent.cpp">

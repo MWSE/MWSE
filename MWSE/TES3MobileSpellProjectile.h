@@ -21,6 +21,11 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		bool onActorCollision(int collisionIndex);
+		bool onStaticCollision(int collisionIndex, bool isAvoidNode);
+		bool onTerrainCollision(int collisionIndex);
+		bool onWaterCollision(int collisionIndex);
+
 		MagicSourceInstance* getInstance();
 		void explode();
 		void explodeDeferred();

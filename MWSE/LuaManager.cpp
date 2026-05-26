@@ -58,6 +58,7 @@
 #include "TES3MobileCreature.h"
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
+#include "TES3MobileSpellProjectile.h"
 #include "TES3MobManager.h"
 #include "TES3NPC.h"
 #include "TES3PlayerAnimationController.h"
@@ -5227,54 +5228,65 @@ namespace mwse::lua {
 		auto mobileObjectCollideTerrain = &TES3::MobileObject::onTerrainCollision;
 		auto mobileObjectCollideWater = &TES3::MobileObject::onWaterCollision;
 		auto mobileObjectCollideActivator = &TES3::MobileObject::onActivatorCollision;
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, 0x80, 0x5615A0, *reinterpret_cast<DWORD*>(&mobileObjectCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, 0x84, 0x5615C0, *reinterpret_cast<DWORD*>(&mobileObjectCollidObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, 0x88, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, 0x8C, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, 0x90, 0x561600, *reinterpret_cast<DWORD*>(&mobileObjectCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x5615A0, *reinterpret_cast<DWORD*>(&mobileObjectCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x5615C0, *reinterpret_cast<DWORD*>(&mobileObjectCollidObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileObject, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x561600, *reinterpret_cast<DWORD*>(&mobileObjectCollideActivator));
 
 		// Collision events: Mobile Actor
 		auto mobileActorCollideActor = &TES3::MobileActor::onActorCollision;
 		auto mobileActorCollidObject = &TES3::MobileActor::onObjectCollision;
 		auto mobileActorCollideTerrain = &TES3::MobileActor::onTerrainCollision;
 		auto mobileActorCollideActivator = &TES3::MobileActor::onActivatorCollision;
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, 0x80, 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, 0x84, 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, 0x88, 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, 0x8C, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, 0x90, 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileActor, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
 
 		// Collision events: Mobile Creature
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, 0x80, 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, 0x84, 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, 0x88, 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, 0x8C, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, 0x90, 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileCreature, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
 
 		// Collision events: Mobile NPC
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, 0x80, 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, 0x84, 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, 0x88, 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, 0x8C, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, 0x90, 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileNPC, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
 
 		// Collision events: Mobile Player
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, 0x80, 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, 0x84, 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, 0x88, 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, 0x8C, 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, 0x90, 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x5234A0, *reinterpret_cast<DWORD*>(&mobileActorCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x5233B0, *reinterpret_cast<DWORD*>(&mobileActorCollidObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x523310, *reinterpret_cast<DWORD*>(&mobileActorCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x5615E0, *reinterpret_cast<DWORD*>(&mobileObjectCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobilePlayer, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x523590, *reinterpret_cast<DWORD*>(&mobileActorCollideActivator));
 
 		// Collision events: Mobile Projectile
 		auto mobileProjectileCollideActor = &TES3::MobileProjectile::onActorCollision;
 		auto mobileProjectileCollideObject = &TES3::MobileProjectile::onObjectCollision;
 		auto mobileProjectileCollideTerrain = &TES3::MobileProjectile::onTerrainCollision;
 		auto mobileProjectileCollideWater = &TES3::MobileProjectile::onWaterCollision;
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, 0x80, 0x573860, *reinterpret_cast<DWORD*>(&mobileProjectileCollideActor));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, 0x84, 0x573820, *reinterpret_cast<DWORD*>(&mobileProjectileCollideObject));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, 0x88, 0x5737F0, *reinterpret_cast<DWORD*>(&mobileProjectileCollideTerrain));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, 0x8C, 0x573790, *reinterpret_cast<DWORD*>(&mobileProjectileCollideWater));
-		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, 0x90, 0x561600, *reinterpret_cast<DWORD*>(&mobileObjectCollideActivator));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x573860, *reinterpret_cast<DWORD*>(&mobileProjectileCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x573820, *reinterpret_cast<DWORD*>(&mobileProjectileCollideObject));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x5737F0, *reinterpret_cast<DWORD*>(&mobileProjectileCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x573790, *reinterpret_cast<DWORD*>(&mobileProjectileCollideWater));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::MobileProjectile, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x561600, *reinterpret_cast<DWORD*>(&mobileObjectCollideActivator));
+
+		// Collision events: Mobile Spell Projectile
+		auto mobileSpellProjectileCollideActor = &TES3::MobileSpellProjectile::onActorCollision;
+		auto mobileSpellProjectileCollideStatic = &TES3::MobileSpellProjectile::onStaticCollision;
+		auto mobileSpellProjectileCollideTerrain = &TES3::MobileSpellProjectile::onTerrainCollision;
+		auto mobileSpellProjectileCollideWater = &TES3::MobileSpellProjectile::onWaterCollision;
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::SpellProjectile, offsetof(TES3::MobileObject_vTable, onActorCollision), 0x574C20, *reinterpret_cast<DWORD*>(&mobileSpellProjectileCollideActor));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::SpellProjectile, offsetof(TES3::MobileObject_vTable, onObjectCollision), 0x574EB0, *reinterpret_cast<DWORD*>(&mobileSpellProjectileCollideStatic));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::SpellProjectile, offsetof(TES3::MobileObject_vTable, onTerrainCollision), 0x574E40, *reinterpret_cast<DWORD*>(&mobileSpellProjectileCollideTerrain));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::SpellProjectile, offsetof(TES3::MobileObject_vTable, onWaterCollision), 0x574DA0, *reinterpret_cast<DWORD*>(&mobileSpellProjectileCollideWater));
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::SpellProjectile, offsetof(TES3::MobileObject_vTable, onActivatorCollision), 0x561600, *reinterpret_cast<DWORD*>(&mobileObjectCollideActivator));
 
 		// Event: Mobile Projectile Expire
 		genCallEnforced(0x57548A, 0x5637F0, reinterpret_cast<DWORD>(OnProjectileExpire));

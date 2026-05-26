@@ -167,6 +167,10 @@
     <ClInclude Include="LuaMobileObjectDeactivatedEvent.h" />
     <ClInclude Include="LuaMobileObjectCollisionEvent.h" />
     <ClInclude Include="LuaMobileObjectWaterImpactEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileActorCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileObjectCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileTerrainCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileWaterCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileActorCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileObjectCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileTerrainCollisionEvent.h" />
@@ -591,6 +595,10 @@
     <ClCompile Include="LuaMobileObjectActivatedEvent.cpp" />
     <ClCompile Include="LuaMobileObjectDeactivatedEvent.cpp" />
     <ClCompile Include="LuaMobileObjectWaterImpactEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileActorCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileObjectCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileTerrainCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileWaterCollisionEvent.cpp" />
     <ClCompile Include="LuaMobileProjectileActorCollisionEvent.cpp" />
     <ClCompile Include="LuaManager.cpp" />
     <ClCompile Include="LuaMobileObjectCollisionEvent.cpp" />

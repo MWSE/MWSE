@@ -112,6 +112,10 @@
 #include "LuaMobileObjectCollisionEvent.h"
 #include "LuaMobileObjectDeactivatedEvent.h"
 #include "LuaMobileObjectWaterImpactEvent.h"
+#include "LuaMobileSpellProjectileActorCollisionEvent.h"
+#include "LuaMobileSpellProjectileObjectCollisionEvent.h"
+#include "LuaMobileSpellProjectileTerrainCollisionEvent.h"
+#include "LuaMobileSpellProjectileWaterCollisionEvent.h"
 #include "LuaMobileProjectileActorCollisionEvent.h"
 #include "LuaMobileProjectileObjectCollisionEvent.h"
 #include "LuaMobileProjectileTerrainCollisionEvent.h"
@@ -319,6 +323,10 @@ namespace mwse::lua::event {
 		usertypeDefinition["projectileHitActor"] = sol::property(&MobileProjectileActorCollisionEvent::getEventEnabled, &MobileProjectileActorCollisionEvent::setEventEnabled);
 		usertypeDefinition["projectileHitObject"] = sol::property(&MobileProjectileObjectCollisionEvent::getEventEnabled, &MobileProjectileObjectCollisionEvent::setEventEnabled);
 		usertypeDefinition["projectileHitTerrain"] = sol::property(&MobileProjectileTerrainCollisionEvent::getEventEnabled, &MobileProjectileTerrainCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitActor"] = sol::property(&MobileSpellProjectileActorCollisionEvent::getEventEnabled, &MobileSpellProjectileActorCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitObject"] = sol::property(&MobileSpellProjectileObjectCollisionEvent::getEventEnabled, &MobileSpellProjectileObjectCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitTerrain"] = sol::property(&MobileSpellProjectileTerrainCollisionEvent::getEventEnabled, &MobileSpellProjectileTerrainCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitWater"] = sol::property(&MobileSpellProjectileWaterCollisionEvent::getEventEnabled, &MobileSpellProjectileWaterCollisionEvent::setEventEnabled);
 		usertypeDefinition["referenceActivated"] = sol::property(&ReferenceActivatedEvent::getEventEnabled, &ReferenceActivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceDeactivated"] = sol::property(&ReferenceDeactivatedEvent::getEventEnabled, &ReferenceDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceSceneNodeCreated"] = sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled);
