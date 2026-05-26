@@ -199,8 +199,8 @@ namespace TES3 {
 		return TES3_TES3File_getFlag20(this);
 	}
 
-	nonstd::span<GameFile*> GameFile::getMasters() {
-		return nonstd::span(arrayMasters, masterNames->size());
+	std::span<GameFile*> GameFile::getMasters() {
+		return std::span(arrayMasters, masterNames->size());
 	}
 
 }

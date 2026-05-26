@@ -95,11 +95,6 @@ namespace mwse::patch {
 	}
 
 	template <typename T>
-	void safePrintObjectToLog(const char* title, const T* object) {
-		safePrintObject(title, object, log::getLog());
-	}
-
-	template <typename T>
 	void safePrintObject(const char* title, const T* object, std::ostream& ss) {
 		if (object) {
 			auto id = SafeGetObjectId(object);
@@ -112,6 +107,11 @@ namespace mwse::patch {
 		else {
 			ss << "  " << title << ": nullptr\n";
 		}
+	}
+
+	template <typename T>
+	void safePrintObjectToLog(const char* title, const T* object) {
+		safePrintObject(title, object, log::getLog());
 	}
 
 	//

@@ -32,7 +32,7 @@ namespace TES3 {
 		void clear();
 
 		static QuickKey* getQuickKey(unsigned int slot);
-		static nonstd::span<QuickKey, 9> getQuickKeys();
+		static std::span<QuickKey, 9> getQuickKeys();
 	};
 	static_assert(sizeof(QuickKey) == 0x10, "TES3::QuickKey failed size validation");
 

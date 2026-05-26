@@ -719,8 +719,8 @@ namespace TES3 {
 		return std::ref(skills);
 	}
 
-	nonstd::span<GameFile*> NonDynamicData::getActiveMods() {
-		return nonstd::span(activeMods, activeModCount);
+	std::span<GameFile*> NonDynamicData::getActiveMods() {
+		return std::span(activeMods, activeModCount);
 	}
 
 	NI::IteratedList<GlobalVariable*>* NonDynamicData::getGlobalsList() const {

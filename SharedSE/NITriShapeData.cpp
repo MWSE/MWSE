@@ -136,7 +136,7 @@ namespace NI {
 	}
 #endif
 
-	nonstd::span<Triangle> TriShapeData::getTriangles() {
+	std::span<Triangle> TriShapeData::getTriangles() {
 		if (triangleList) {
 			return { triangleList, getActiveTriangleCount() };
 		}

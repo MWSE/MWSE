@@ -160,6 +160,11 @@ function table.getset(t, key, defaultValue) end
 --- @return { [valueType]: keyType } result No description yet available.
 function table.invert(t) end
 
+--- Returns `true` when the given Lua table is a pure array-like Lua table, or `false` otherwise.
+--- @param t table No description yet available.
+--- @return boolean result No description yet available.
+function table.isarray(t) end
+
 --- Returns an array-style table of all keys in the given table, t. Optionally, it will sort the returned table.
 --- @generic keyType
 --- @param t { [keyType]: unknown } The table to get keys for.

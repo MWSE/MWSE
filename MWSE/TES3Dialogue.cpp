@@ -28,16 +28,16 @@ namespace TES3 {
 	// DialogueName
 	//
 
-	nonstd::span<DialogueName> DialogueName::getVoices() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x793248), (size_t)VoiceType::COUNT);
+	std::span<DialogueName> DialogueName::getVoices() {
+		return std::span(reinterpret_cast<DialogueName*>(0x793248), (size_t)VoiceType::COUNT);
 	}
 
-	nonstd::span<DialogueName> DialogueName::getGreetings() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x793280), (size_t)GreetingType::COUNT);
+	std::span<DialogueName> DialogueName::getGreetings() {
+		return std::span(reinterpret_cast<DialogueName*>(0x793280), (size_t)GreetingType::COUNT);
 	}
 
-	nonstd::span<DialogueName> DialogueName::getResponses() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x7932D0), (size_t)ResponseType::COUNT);
+	std::span<DialogueName> DialogueName::getResponses() {
+		return std::span(reinterpret_cast<DialogueName*>(0x7932D0), (size_t)ResponseType::COUNT);
 	}
 
 	//

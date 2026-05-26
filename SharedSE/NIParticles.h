@@ -12,7 +12,7 @@ namespace NI {
 		static Pointer<ParticlesData> create(unsigned short vertexCount, Point3* vertices, Point3* normals, PackedColor* colors);
 		static Pointer<ParticlesData> create(unsigned short vertexCount, bool hasNormals, bool hasColors);
 
-		nonstd::span<float> getSizes();
+		std::span<float> getSizes();
 	};
 	static_assert(sizeof(ParticlesData) == 0x44, "NI::ParticlesData failed size validation");
 
@@ -25,7 +25,7 @@ namespace NI {
 	struct RotatingParticlesData : ParticlesData {
 		Quaternion* rotations; // 0x44
 
-		nonstd::span<NI::Quaternion> getRotations();
+		std::span<NI::Quaternion> getRotations();
 	};
 	static_assert(sizeof(RotatingParticlesData) == 0x48, "NI::RotatingParticlesData failed size validation");
 

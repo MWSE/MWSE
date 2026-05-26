@@ -1,5 +1,7 @@
 #include "NIGeometryData.h"
 
+#include "NIColor.h"
+
 namespace NI {
 	unsigned short GeometryData::getActiveVertexCount() const {
 		return vTable.asGeometryData->getActiveVertexCount(this);
@@ -17,38 +19,38 @@ namespace NI {
 		bounds.computeFromData(vertexCount, vertex, sizeof(Point3));
 	}
 
-	nonstd::span<PackedColor> GeometryData::getColors() {
+	std::span<PackedColor> GeometryData::getColors() {
 		if (color) {
-			return nonstd::span(color, vertexCount);
+			return std::span(color, vertexCount);
 		}
 		return {};
 	}
 
-	nonstd::span<Point3> GeometryData::getVertices() {
+	std::span<Point3> GeometryData::getVertices() {
 		if (vertex) {
-			return nonstd::span(vertex, vertexCount);
+			return std::span(vertex, vertexCount);
 		}
 		return {};
 	}
 
-	nonstd::span<Point3> GeometryData::getActiveVertices() {
+	std::span<Point3> GeometryData::getActiveVertices() {
 		const auto count = getActiveVertexCount();
 		if (vertex && count > 0) {
-			return nonstd::span(vertex, count);
+			return std::span(vertex, count);
 		}
 		return {};
 	}
 
-	nonstd::span<Point3> GeometryData::getNormals() {
+	std::span<Point3> GeometryData::getNormals() {
 		if (normal) {
-			return nonstd::span(normal, vertexCount);
+			return std::span(normal, vertexCount);
 		}
 		return {};
 	}
 
-	nonstd::span<Point2> GeometryData::getTextureCoordinates() {
+	std::span<Point2> GeometryData::getTextureCoordinates() {
 		if (textureCoords) {
-			return nonstd::span(textureCoords, vertexCount * textureSets);
+			return std::span(textureCoords, vertexCount * textureSets);
 		}
 		return {};
 	}

@@ -372,7 +372,7 @@ namespace mwse::lua {
 
 				// Were we given a table?
 				if (maybeValue.get_type() == sol::type::table && NI::Point3::canConvertFrom(maybeValue.as<sol::table>())) {
-					return maybeValue.as<sol::table>();
+					return NI::Point3(maybeValue.as<sol::table>());
 				}
 			}
 		}

@@ -1,15 +1,15 @@
 #include "TES3AnimationGroup.h"
 
 namespace TES3 {
-	nonstd::span<int> AnimationGroup::getActionFrames() {
+	std::span<int> AnimationGroup::getActionFrames() {
 		return { actionFrames, actionCount };
 	}
 
-	nonstd::span<float> AnimationGroup::getActionTimings() {
+	std::span<float> AnimationGroup::getActionTimings() {
 		return { actionTimings, actionCount };
 	}
 
-	nonstd::span<AnimationGroup::SoundGenKey> AnimationGroup::getSoundGenKeys() {
+	std::span<AnimationGroup::SoundGenKey> AnimationGroup::getSoundGenKeys() {
 		return { soundGenKeys, soundGenCount };
 	}
 }

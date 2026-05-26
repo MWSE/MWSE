@@ -3,6 +3,8 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
+#include "NIQuaternion.h"
+
 namespace NI {
 	Particles::Particles(ParticlesData* data) : TriBasedGeometry(data) {
 #if defined(SE_NI_PARTICLES_VTBL) && SE_NI_PARTICLES_VTBL > 0
@@ -77,9 +79,9 @@ namespace NI {
 #endif
 	}
 
-	nonstd::span<float> ParticlesData::getSizes() {
+	std::span<float> ParticlesData::getSizes() {
 		if (sizes) {
-			return nonstd::span(sizes, vertexCount);
+			return std::span(sizes, vertexCount);
 		}
 		return {};
 	}
@@ -112,9 +114,9 @@ namespace NI {
 #endif
 	}
 
-	nonstd::span<NI::Quaternion> RotatingParticlesData::getRotations() {
+	std::span<NI::Quaternion> RotatingParticlesData::getRotations() {
 		if (rotations) {
-			return nonstd::span(rotations, vertexCount);
+			return std::span(rotations, vertexCount);
 		}
 		return {};
 	}

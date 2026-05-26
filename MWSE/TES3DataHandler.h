@@ -188,7 +188,7 @@ namespace TES3 {
 
 		std::reference_wrapper<Skill[27]> getSkills();
 
-		nonstd::span<GameFile*> getActiveMods();
+		std::span<GameFile*> getActiveMods();
 
 		NI::IteratedList<GlobalVariable*>* getGlobalsList() const;
 

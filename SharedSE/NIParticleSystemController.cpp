@@ -1,7 +1,9 @@
 #include "NIParticleSystemController.h"
 
+#include "NIPerParticleData.h"
+
 namespace NI {
-	nonstd::span<PerParticleData> ParticleSystemController::getPerParticleData() {
+	std::span<PerParticleData> ParticleSystemController::getPerParticleData() {
 		if (particleData == nullptr) {
 			return {};
 		}

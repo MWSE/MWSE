@@ -122,7 +122,7 @@ namespace TES3 {
 		const char* getPlayerName() const;
 		bool getFlag20() const;
 
-		nonstd::span<GameFile*> getMasters();
+		std::span<GameFile*> getMasters();
 
 	};
 	static_assert(sizeof(GameFile) == 0x574, "TES3::GameFile failed size validation");

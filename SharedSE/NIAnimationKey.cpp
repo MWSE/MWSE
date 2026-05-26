@@ -55,13 +55,13 @@ namespace NI {
 				switch (keyTypes[i]) {
 				case AnimationKey::KeyType::NoInterp:
 				case AnimationKey::KeyType::Linear:
-					table[i + 1] = nonstd::span(keys[i].asFloatKey, numKeys[i]);
+					table[i + 1] = std::span(keys[i].asFloatKey, numKeys[i]);
 					break;
 				case AnimationKey::KeyType::Bezier:
-					table[i + 1] = nonstd::span(keys[i].asBezFloatKey, numKeys[i]);
+					table[i + 1] = std::span(keys[i].asBezFloatKey, numKeys[i]);
 					break;
 				case AnimationKey::KeyType::TCB:
-					table[i + 1] = nonstd::span(keys[i].asTCBFloatKey, numKeys[i]);
+					table[i + 1] = std::span(keys[i].asTCBFloatKey, numKeys[i]);
 					break;
 				default:
 					throw std::runtime_error("Invalid euler rotation key type found. Report to MWSE developers.");

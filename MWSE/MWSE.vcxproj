@@ -1174,7 +1174,7 @@
     <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
+  <PropertyGroup Label="BuildDate">
     <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
     <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
     <BuildDateHeaderTemp>$(BuildDateHeader).tmp</BuildDateHeaderTemp>
@@ -1183,21 +1183,46 @@
 #define MWSE_BUILD_DATE $(BuildDate)
 </BuildDateHeaderContents>
   </PropertyGroup>
+  <PropertyGroup Label="LuaJIT">
+    <LuaJitDir>$(SolutionDir)deps\luajit2\</LuaJitDir>
+    <LuaJitSourceDir>$(LuaJitDir)src\</LuaJitSourceDir>
+    <LuaJitBuildScript>$(LuaJitSourceDir)msvcbuild.bat</LuaJitBuildScript>
+    <LuaJitBuildParams>lua52compat</LuaJitBuildParams>
+    <LuaJitOutputs>$(LuaJitSourceDir)lua51.lib;$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb</LuaJitOutputs>
+  </PropertyGroup>
+  <ItemGroup>
+    <LuaJitBuildInputs Include="$(LuaJitDir).relver" />
+    <LuaJitBuildInputs Include="$(LuaJitDir)dynasm\*.lua" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)Makefile" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)Makefile.dep" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.bat" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.c" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.dasc" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.h" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.lua" Exclude="$(LuaJitSourceDir)jit\vmdef.lua" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.txt" Exclude="$(LuaJitSourceDir)luajit_relver.txt" />
+  </ItemGroup>
   <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
     <WriteLinesToFile File="$(BuildDateHeaderTemp)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$header = '$(BuildDateHeader)'; $tmp = '$(BuildDateHeaderTemp)'; $desired = [System.IO.File]::ReadAllText($tmp); if (Test-Path -LiteralPath $header) { $current = [System.IO.File]::ReadAllText($header); if ($current -eq $desired) { Remove-Item -LiteralPath $tmp; exit 0 } }; Move-Item -LiteralPath $tmp -Destination $header -Force&quot;" />
   </Target>
+  <Target Name="BuildLuaJit" BeforeTargets="ClCompile" Inputs="@(LuaJitBuildInputs)" Outputs="$(LuaJitOutputs)">
+    <Exec WorkingDirectory="$(LuaJitSourceDir)" Command="call &quot;$(LuaJitBuildScript)&quot; $(LuaJitBuildParams)" />
+  </Target>
+  <Target Name="CopyLuaJitArtifacts" AfterTargets="BuildLuaJit" Inputs="$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb" Outputs="$(OutDir)lua51.dll;$(OutDir)lua51.pdb">
+    <Copy SourceFiles="$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb" DestinationFolder="$(OutDir)" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -1208,7 +1233,7 @@
       <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1223,7 +1248,8 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>copy /y "$(TargetDir)MWSE.dll" "$(MorrowindDir)MWSE.dll"
-copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
+copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"
+copy /y "$(TargetDir)lua51.dll" "$(MorrowindDir)lua51.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -1237,7 +1263,7 @@ copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
       <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

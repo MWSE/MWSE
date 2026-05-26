@@ -59,6 +59,7 @@
 #include <random>
 #include <regex>
 #include <set>
+#include <span>
 #include <sstream>
 #include <stack>
 #include <stddef.h>
@@ -85,10 +86,6 @@
 #include <psapi.h>
 #include <dbghelp.h>
 #include <d3d8.h>
-
-// 3rd party library: span-lite
-// URL: https://github.com/martinmoene/span-lite
-#include <nonstd/span.hpp>
 
 // 3rd party library: toml11
 #define TOML11_PRESERVE_COMMENTS_BY_DEFAULT

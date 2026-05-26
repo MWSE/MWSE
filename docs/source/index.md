@@ -33,14 +33,6 @@ Contributing to MWSE requires a copy of [Visual Studio 2022](https://www.visuals
 - Individual Components:
 	- C++ MFC (only required for Construction Set Extender development)
 
-#### LuaJIT
-
-[LuaJIT](https://luajit.org/) needs to be compiled once, and is included in the project. To compile, use **Tools > Visual Studio Command Prompt** and run the following:
-
-```bat
-cd deps\LuaJIT\src
-msvcbuild.bat
-```
 
 ### Configuration
 

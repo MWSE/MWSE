@@ -29,7 +29,7 @@ namespace NI {
 		Pointer<TriShapeData> copyData_lua(sol::optional<sol::table> filters) const;
 #endif
 
-		nonstd::span<Triangle> getTriangles();
+		std::span<Triangle> getTriangles();
 
 	};
 	static_assert(sizeof(TriShapeData) == 0x48, "NI::TriShapeData failed size validation");

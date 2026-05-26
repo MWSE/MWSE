@@ -75,8 +75,8 @@ namespace TES3 {
 
 		sol::optional<unsigned int> findFileIndex_lua(const char* path);
 
-		nonstd::span<OffsetSizeData> getFileOffsetSizeDataSpan() const;
-		nonstd::span<CaseInsensitiveFileHash> getFileHashesSpan() const;
+		std::span<OffsetSizeData> getFileOffsetSizeDataSpan() const;
+		std::span<CaseInsensitiveFileHash> getFileHashesSpan() const;
 	};
 	static_assert(sizeof(Archive) >= 0x178, "TES3::Archive failed size validation");
 	static_assert(sizeof(Archive::CaseInsensitiveFileHash) >= 0x8, "TES3::Archive::FileHash failed size validation");

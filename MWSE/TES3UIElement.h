@@ -14,7 +14,6 @@ namespace TES3::UI {
 	struct Element;
 }
 
-int sol_lua_push(sol::types<TES3::UI::Element>, lua_State* L, TES3::UI::Element& obj);
 int sol_lua_push(sol::types<TES3::UI::Element*>, lua_State* L, TES3::UI::Element* obj);
 
 namespace TES3::UI {

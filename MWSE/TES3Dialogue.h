@@ -64,9 +64,9 @@ namespace TES3 {
 		Dialogue* dialogue; // 0x0
 		const char* name; // 0x4
 
-		static nonstd::span<DialogueName> getVoices();
-		static nonstd::span<DialogueName> getGreetings();
-		static nonstd::span<DialogueName> getResponses();
+		static std::span<DialogueName> getVoices();
+		static std::span<DialogueName> getGreetings();
+		static std::span<DialogueName> getResponses();
 	};
 
 	struct Dialogue : BaseObject {

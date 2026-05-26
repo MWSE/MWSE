@@ -69,11 +69,11 @@ namespace TES3 {
 		return {};
 	}
 
-	nonstd::span<Archive::OffsetSizeData> Archive::getFileOffsetSizeDataSpan() const {
-		return nonstd::span(fileOffsetSizeData, fileCount);
+	std::span<Archive::OffsetSizeData> Archive::getFileOffsetSizeDataSpan() const {
+		return std::span(fileOffsetSizeData, fileCount);
 	}
 
-	nonstd::span<Archive::CaseInsensitiveFileHash> Archive::getFileHashesSpan() const {
-		return nonstd::span(fileHashes, fileCount);
+	std::span<Archive::CaseInsensitiveFileHash> Archive::getFileHashesSpan() const {
+		return std::span(fileHashes, fileCount);
 	}
 }

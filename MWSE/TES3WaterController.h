@@ -62,7 +62,7 @@ namespace TES3 {
 		//
 
 		std::reference_wrapper<float[3]> getRippleAlphas();
-		nonstd::span<Ripple> getRipples();
+		std::span<Ripple> getRipples();
 
 	};
 	static_assert(sizeof(WaterController) == 0xC8, "TES3::WaterController failed size validation");

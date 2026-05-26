@@ -19,7 +19,7 @@ namespace NI {
 	unsigned int PosData::getKeyDataSize() const { throw not_implemented_exception(); }
 #endif
 
-	nonstd::span<ColorKey*> ColorData::getKeys() const {
-		return nonstd::span(keys, keyCount);
+	std::span<ColorKey*> ColorData::getKeys() const {
+		return std::span(keys, keyCount);
 	}
 }
