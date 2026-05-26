@@ -1564,16 +1564,16 @@
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="LuaMobileSpellProjectileActorCollisionEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="LuaMobileSpellProjectileObjectCollisionEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="LuaMobileSpellProjectileTerrainCollisionEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="LuaMobileSpellProjectileWaterCollisionEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
