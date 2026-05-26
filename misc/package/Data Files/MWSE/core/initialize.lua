@@ -274,7 +274,14 @@ end
 
 --- @param t table
 --- @return number result
-table.size = assert(table.nkeys)
+function table.size(t)
+	local tType = type(t)
+	if (tType == "table") then
+		return table.nkeys(t)
+	else
+		return #t
+	end
+end
 
 --- @param t table
 --- @param deepCheck? boolean
@@ -286,10 +293,12 @@ function table.empty(t, deepCheck)
 				return false
 			end
 		end
-		return true
 	else
-		return table.isempty(t)
+		for _ in pairs(t) do
+			return false
+		end
 	end
+	return true
 end
 
 --- @generic keyType
