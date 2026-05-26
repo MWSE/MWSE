@@ -9,6 +9,7 @@
 #include "LuaMobileObjectCollisionEvent.h"
 
 #include "TES3Reference.h"
+#include "TES3MobManager.h"
 
 namespace TES3 {
 	const auto TES3_MobileProjectile_onActorCollision = reinterpret_cast<bool(__thiscall*)(MobileProjectile*, int)>(0x573860);
@@ -21,7 +22,10 @@ namespace TES3 {
 		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
+		auto projectileSwap = this;
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 		bool result = TES3_MobileProjectile_onActorCollision(this, collisionIndex);
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 
 		// Fire off our hit event.
 		//! TODO: Make this into projectileHitMobile event with backup projectileHitActor for backwards compatibility.
@@ -42,7 +46,10 @@ namespace TES3 {
 		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
+		auto projectileSwap = this;
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 		bool result = TES3_MobileProjectile_onObjectCollision(this, collisionIndex, flag);
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 
 		// Fire off our hit event.
 		if (mwse::lua::event::MobileProjectileObjectCollisionEvent::getEventEnabled()) {
@@ -61,12 +68,16 @@ namespace TES3 {
 		NI::Point3 vel = hit.velocity;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
+		auto projectileSwap = this;
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 		bool result = TES3_MobileProjectile_onTerrainCollision(this, collisionIndex);
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 
 		// Fire off our hit event.
 		if (mwse::lua::event::MobileProjectileTerrainCollisionEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::MobileProjectileTerrainCollisionEvent(this, point, pos, vel));
 		}
+
 		return result;
 	}
 
@@ -76,7 +87,10 @@ namespace TES3 {
 		TES3::Reference* hitReference = this->arrayCollisionResults[collisionIndex].colliderRef;
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
+		auto projectileSwap = this;
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 		bool result = TES3_MobileProjectile_onWaterCollision(this, collisionIndex);
+		std::swap(projectileSwap, ProjectileManager::ms_CurrentlyCollidingProjectile);
 
 		// Fire off our hit event.
 		if (mwse::lua::event::MobileObjectCollisionEvent::getEventEnabled()) {
