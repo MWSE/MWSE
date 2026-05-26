@@ -4146,6 +4146,10 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.spellCastedFailure`
 ---| `tes3.event.spellCreated`
 ---| `tes3.event.spellMagickaUse`
+---| `tes3.event.spellProjectileHitActor`
+---| `tes3.event.spellProjectileHitObject`
+---| `tes3.event.spellProjectileHitTerrain`
+---| `tes3.event.spellProjectileHitWater`
 ---| `tes3.event.spellResist`
 ---| `tes3.event.spellResisted`
 ---| `tes3.event.spellTick`
