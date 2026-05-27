@@ -8,9 +8,9 @@
 #include "ExceptionUtil.h"
 
 namespace NI {
-	nonstd::span<BYTE> ExtraData::getGenericData() {
+	std::span<BYTE> ExtraData::getGenericData() {
 		if (genericData) {
-			return nonstd::span((BYTE*)genericData, genericDataLength);
+			return std::span((BYTE*)genericData, genericDataLength);
 		}
 		return {};
 	}
@@ -34,7 +34,7 @@ namespace NI {
 	
 	StringExtraData::~StringExtraData() {
 #if defined(SE_NI_STRINGEXTRADATA_FNADDR_DTOR) && SE_NI_STRINGEXTRADATA_FNADDR_DTOR > 0
-		const auto NI_StringExtraData_dtor = reinterpret_cast<void(__thiscall*)(NI::StringExtraData*)>(0x6E1530);
+		const auto NI_StringExtraData_dtor = reinterpret_cast<void(__thiscall*)(NI::StringExtraData*)>(SE_NI_STRINGEXTRADATA_FNADDR_DTOR);
 		NI_StringExtraData_dtor(this);
 #else
 		throw not_implemented_exception();
@@ -66,9 +66,9 @@ namespace NI {
 #endif
 	}
 
-	nonstd::span<TextKey> TextKeyExtraData::getKeys() const {
+	std::span<TextKey> TextKeyExtraData::getKeys() const {
 		if (key) {
-			return nonstd::span(key, keyCount);
+			return std::span(key, keyCount);
 		}
 		return {};
 	}

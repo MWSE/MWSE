@@ -163,6 +163,7 @@ namespace TES3 {
 		bool isMouseButtonDown(unsigned char button) const;
 		bool isMouseButtonPressedThisFrame(unsigned char button) const;
 		bool isMouseButtonReleasedThisFrame(unsigned char button) const;
+		void clearTransientInputState();
 
 		bool isAltDown() const;
 		bool isCapsLockActive() const;

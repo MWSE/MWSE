@@ -45,10 +45,13 @@ build/dist/
 /misc/package/Data Files/MWSE/.luacheckrc
 /misc/package/Data Files/MWSE/.luacompleterc
 /packages/
-misc/package/Data Files/MWSE/core/lpeg.dll
+/misc/package/Data Files/MWSE/core/lib/lpeg.dll
 /docs/site/
 #Keep the lua deps for building docs
 !/autocomplete/lua/**.*
 #Keep definitions for debug library extensions
 !/autocomplete/definitions/global/**
 /SharedSE/MWSE.User.props
+
+# Local SharedSE-unification audit working dir (not for commit)
+.audit/

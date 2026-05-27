@@ -86,10 +86,10 @@ namespace mwse::lua::event {
 					auto text = child->getText();
 					if (text) {
 						auto ndd = TES3::DataHandler::get()->nonDynamicData;
-						if (mwse::string::equal(text, ndd->GMSTs[TES3::GMST::sRangeTouch]->value.asString)) {
+						if (se::string::equal(text, ndd->GMSTs[TES3::GMST::sRangeTouch]->value.asString)) {
 							effectData["range"] = TES3::EffectRange::Touch;
 						}
-						else if (mwse::string::equal(text, ndd->GMSTs[TES3::GMST::sRangeTarget]->value.asString)) {
+						else if (se::string::equal(text, ndd->GMSTs[TES3::GMST::sRangeTarget]->value.asString)) {
 							effectData["range"] = TES3::EffectRange::Target;
 						}
 						else {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="LuaJIT">
+    <LuaJitDir>$(SolutionDir)deps\luajit2\</LuaJitDir>
+    <LuaJitSourceDir>$(LuaJitDir)src\</LuaJitSourceDir>
+    <LuaJitBuildScript>$(LuaJitSourceDir)msvcbuild.bat</LuaJitBuildScript>
+    <LuaJitBuildParams>lua52compat</LuaJitBuildParams>
+    <LuaJitOutputs>$(LuaJitSourceDir)lua51.lib;$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb</LuaJitOutputs>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LuaJitBuildInputs Include="$(LuaJitDir).relver" />
+    <LuaJitBuildInputs Include="$(LuaJitDir)dynasm\*.lua" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)Makefile" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)Makefile.dep" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.bat" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.c" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.dasc" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.h" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.lua" Exclude="$(LuaJitSourceDir)jit\vmdef.lua" />
+    <LuaJitBuildInputs Include="$(LuaJitSourceDir)**\*.txt" Exclude="$(LuaJitSourceDir)luajit_relver.txt" />
+  </ItemGroup>
+
+  <Target Name="BuildLuaJit" BeforeTargets="ClCompile;Link" Inputs="@(LuaJitBuildInputs)" Outputs="$(LuaJitOutputs)">
+    <Exec WorkingDirectory="$(LuaJitSourceDir)" Command="call &quot;$(LuaJitBuildScript)&quot; $(LuaJitBuildParams)" />
+  </Target>
+
+  <Target Name="CopyLuaJitArtifacts" AfterTargets="BuildLuaJit" Inputs="$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb" Outputs="$(OutDir)lua51.dll;$(OutDir)lua51.pdb">
+    <Copy SourceFiles="$(LuaJitSourceDir)lua51.dll;$(LuaJitSourceDir)lua51.pdb" DestinationFolder="$(OutDir)" />
+  </Target>
+</Project>

@@ -21,6 +21,7 @@
 #include <random>
 #include <regex>
 #include <set>
+#include <span>
 #include <sstream>
 #include <stddef.h>
 #include <stdexcept>
@@ -44,11 +45,6 @@
 #include <psapi.h>
 #include <dbghelp.h>
 #include <d3d8.h>
-
-// 3rd party library: span-lite
-// URL: https://github.com/martinmoene/span-lite
-#define span_CONFIG_SELECT_SPAN span_SPAN_NONSTD
-#include <nonstd/span.hpp>
 
 // 3rd party library: fmt
 #define FMT_HEADER_ONLY
@@ -77,3 +73,13 @@
 #undef far
 #undef near
 #undef PlaySound
+
+#define SE_IS_MWSE 1
+#define SE_TARGETS_MW 1
+#define SE_USE_LUA 1
+
+#define SE_MEMORY_FNADDR_NEW 0x727692
+#define SE_MEMORY_FNADDR_DELETE 0x727530
+#define SE_MEMORY_FNADDR_MALLOC 0x727738
+#define SE_MEMORY_FNADDR_FREE 0x727732
+#define SE_MEMORY_FNADDR_REALLOC 0x746288

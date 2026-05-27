@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	namespace CompilerSource {
@@ -41,9 +41,9 @@ namespace TES3 {
 		char ** longVarNames; // 0x4
 		char ** floatVarNames; // 0x8
 		ScriptHeader scriptHeader; // 0xC
-		IteratedList<Variable*>* shortVarList; // 0x40
-		IteratedList<Variable*>* longVarList; // 0x44
-		IteratedList<Variable*>* floatVarList; // 0x48
+		NI::IteratedList<Variable*>* shortVarList; // 0x40
+		NI::IteratedList<Variable*>* longVarList; // 0x44
+		NI::IteratedList<Variable*>* floatVarList; // 0x48
 		char * scriptLineBuffer; // 0x4C
 		int currentLine;
 		int compiledScriptLength; // 0x54

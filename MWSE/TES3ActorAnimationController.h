@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3AnimationData.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 #include "NIExtraData.h"
 #include "NIProperty.h"
@@ -27,8 +27,8 @@ namespace TES3 {
 		void(__thiscall* updateProceduralAnim)(ActorAnimationController*); // 0x8
 		void(__thiscall* syncReferenceRotation)(ActorAnimationController*); // 0xC
 		void(__thiscall* setProperties)(ActorAnimationController*, NI::Node*); // 0x10
-		Matrix33* (__thiscall* getRotation)(ActorAnimationController*, Matrix33*); // 0x14
-		void(__thiscall* getAnimationDelta)(ActorAnimationController*, Vector3*); // 0x18
+		NI::Matrix33* (__thiscall* getRotation)(ActorAnimationController*, NI::Matrix33*); // 0x14
+		void(__thiscall* getAnimationDelta)(ActorAnimationController*, NI::Point3*); // 0x18
 		void(__thiscall* reset)(ActorAnimationController*); // 0x1C
 	};
 	static_assert(sizeof(ActorAnimationController_VirtualTable) == 0x20, "TES3::ActorAnimationController_VirtualTable failed size validation");
@@ -66,8 +66,8 @@ namespace TES3 {
 		NI::Pointer<NI::AlphaProperty> alphaProperty; // 0x40
 		NI::Pointer<NI::MaterialProperty> materialProperty; // 0x44
 		NI::Pointer<NI::VertexColorProperty> vertexColorProperty; // 0x48
-		Matrix33 groundPlaneRotation; // 0x4C
-		Matrix33 verticalRotation; // 0x70
+		NI::Matrix33 groundPlaneRotation; // 0x4C
+		NI::Matrix33 verticalRotation; // 0x70
 		int unknown_0x94;
 		unsigned char animGroupMovement; // 0x98
 		unsigned char animGroupIdle; // 0x99

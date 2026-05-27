@@ -5,7 +5,7 @@ namespace NI {
 		this->toIdentity();
 	}
 
-	Transform::Transform(const Matrix33& rotation, const Vector3& translation, const float scale) :
+	Transform::Transform(const Matrix33& rotation, const Point3& translation, const float scale) :
 		rotation(rotation),
 		translation(translation),
 		scale(scale)
@@ -20,7 +20,7 @@ namespace NI {
 		};
 	}
 
-	Vector3 Transform::operator*(const Vector3& vector) const {
+	Point3 Transform::operator*(const Point3& vector) const {
 		return rotation * vector * scale + translation;
 	}
 
@@ -49,9 +49,7 @@ namespace NI {
 
 	void Transform::toIdentity() {
 		rotation.toIdentity();
-		translation.x = 0.0f;
-		translation.y = 0.0f;
-		translation.z = 0.0f;
+		translation = Point3::ZEROES;
 		scale = 1.0f;
 	}
 }

@@ -209,6 +209,17 @@ The previous object in parent collection's list.
 
 ***
 
+### `referenceList`
+<div class="search_terms" style="display: none">referencelist</div>
+
+A list of all loaded references that currently use the object.
+
+**Returns**:
+
+* `result` ([tes3reference](../types/tes3reference.md)[])
+
+***
+
 ### `scale`
 <div class="search_terms" style="display: none">scale</div>
 
@@ -322,6 +333,21 @@ local result = myObject:insert(entry, level)
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `isValid`
+<div class="search_terms" style="display: none">isvalid, valid</div>
+
+Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+
+```lua
+local valid = myObject:isValid()
+```
+
+**Returns**:
+
+* `valid` (boolean)
 
 ***
 

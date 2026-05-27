@@ -3,8 +3,9 @@
 #include "TES3Defines.h"
 #include "NIDefines.h"
 
-#include "TES3IteratedList.h"
-#include "TES3Vectors.h"
+#include "NIIteratedList.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 #include "NINode.h"
 
@@ -49,8 +50,8 @@ namespace TES3 {
 				void(__thiscall* update)(Particle*, float, float); // 0xC
 			};
 			VirtualTable* vtbl;
-			Vector3 position; // 0x4
-			Vector3 velocity; // 0x10
+			NI::Point3 position; // 0x4
+			NI::Point3 velocity; // 0x10
 			WeatherController* weatherController; // 0x1C
 			NI::Pointer<NI::Node> parentNode; // 0x20
 			float remainingLifetime; // 0x24
@@ -94,14 +95,14 @@ namespace TES3 {
 		NI::Pointer<NI::TriShape> sgTriCloudsNext; // 0x84
 		NI::Pointer<NI::TriShape> shTriSunBase; // 0x88
 		NI::Pointer<NI::TriShape> sgTriSunGlare; // 0x8C
-		Vector3 currentSkyColor; // 0x90
-		Vector3 currentFogColor; // 0x9C
+		NI::Point3 currentSkyColor; // 0x90
+		NI::Point3 currentFogColor; // 0x9C
 		NI::Pick* pickSunglare; // 0xA8
 		NI::Pointer<NI::DirectionalLight> sgSkyLight; // 0xAC
 		int unknown_0xB0;
 		int unknown_0xB4;
-		Vector3 windVelocityCurrWeather; // 0xB8
-		Vector3 windVelocityNextWeather; // 0xC4
+		NI::Point3 windVelocityCurrWeather; // 0xB8
+		NI::Point3 windVelocityNextWeather; // 0xC4
 		float smoothedSunglareVis; // 0xD0
 		float sunglareFaderMax; // 0xD4
 		float sunglareFaderAngleMax; // 0xD8
@@ -131,8 +132,8 @@ namespace TES3 {
 		float starsFadingDuration; // 0x138
 		int activeRainParticles; // 0x13C
 		int activeSnowParticles; // 0x140
-		IteratedList<Particle*> listActiveParticles; // 0x144
-		IteratedList<Particle*> listInactiveParticles; // 0x158
+		NI::IteratedList<Particle*> listActiveParticles; // 0x144
+		NI::IteratedList<Particle*> listInactiveParticles; // 0x158
 		float hoursBetweenWeatherChanges; // 0x16C
 		float transitionScalar; // 0x170
 		float hoursRemaining; // 0x174
@@ -141,7 +142,7 @@ namespace TES3 {
 		float snowFallSpeedScale; // 0x180
 		float snowHighKill; // 0x184
 		float snowLowKill; // 0x188
-		Vector3 sunTransitConstants; // 0x18C
+		NI::Point3 sunTransitConstants; // 0x18C
 		bool inactivateWeather; // 0x198
 		bool underwaterPitchbendState; // 0x199
 		bool rainRipples; // 0x19A
@@ -152,13 +153,13 @@ namespace TES3 {
 		float underwaterSunsetFog; // 0x1A8
 		float underwaterNightFog; // 0x1AC
 		float underwaterIndoorFog; // 0x1B0
-		Vector3 underwaterCol; // 0x1B4
+		NI::Point3 underwaterCol; // 0x1B4
 		float underwaterColWeight; // 0x1C0
-		Vector3 sunglareFaderCol; // 0x1C4
+		NI::Point3 sunglareFaderCol; // 0x1C4
 		Region* lastActiveRegion; // 0x1D0
 		DataHandler* dataHandler; // 0x1D4
 		Sound* soundUnderwater; // 0x1D8
-		Vector3 skyDomePosition; // 0x1DC
+		NI::Point3 skyDomePosition; // 0x1DC
 		int sunGlareRayTestLoadBalancer; // 0x1E8
 		bool isSunOccluded; // 0x1EC
 #if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
@@ -192,13 +193,13 @@ namespace TES3 {
 		void setRainCulled(bool culled) const;
 		void setSnowCulled(bool culled) const;
 		void setBlizzardCulled(bool culled) const;
-		void updateStormCloud(NI::Node* stormCloud, float transitionScalar, const Vector2& stormOrigin, float stormThreshold) const;
+		void updateStormCloud(NI::Node* stormCloud, float transitionScalar, const NI::Point2& stormOrigin, float stormThreshold) const;
 		void updateNodeMaterialAlpha(NI::Node* node, float alpha) const;
 		int getActiveParticleCount(int type) const;
 		bool spawnParticle(int type, float radius, float heightMin, float heightMax);
 		void updateTick(NI::FogProperty* fogProperty, float deltaTime, bool skyVisible, float gameHour);
 		float lerpE0() const;
-		Vector3* lerpE4(Vector3* out_result) const;
+		NI::Point3* lerpE4(NI::Point3* out_result) const;
 
 		void setCurrentWeather(int weatherId);
 		void clearCurrentWeather();

@@ -59,6 +59,7 @@ Prefer to learn from videos? Danae has made [a non-exhaustive summary video of t
 * Symbolically linked files now list and load correctly.
 * By default both dds and tga texture files are selectable in texture selection dialogs.
 * Attempts to open the CS .hlp file now instead redirect to the [Morrowind Modding Wiki mirror](https://tes3cs.pages.dev/) of the document.
+* Serialization improvements for reference scales. If a reference is scaled to 1.0 from another value, it will serialize.
 
 #### Testing from the Construction Set
 
@@ -110,11 +111,6 @@ chargenstate = -1.0
 * The status bars at the bottom of the construction set have been widened. They should always have enough room to show the relevent information.
 * The status bars now also show the scale of the selected object.
 
-### Actor Editing Windows
-
-* The AI window opens more quickly.
-* Clicking on the return button in the AI window when no cell has been loaded no longer crashes the CS.
-
 ### Cell View
 
 * Significantly improved UI responsiveness.
@@ -144,7 +140,7 @@ chargenstate = -1.0
 
 * Significantly improved UI responsiveness.
 * The tab style has been changed to be more button-like. This prevents tabs from moving around.
-* Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, or book text fragments.
+* Added a footer to the window, with a new filter input. This input can be focused by using CTRL+F while the Object Window is active. This can be used to filter objects by a matching id, name, icon, model, enchantment, script, effects, or book text fragments.
 	* Regex search options and case-sensitive search options can be enabled in the config file.
 * The footer also supports a toggle button to only show modified objects.
 * The data rendering and behavior has been completely rewritten. Strings and alignment is more consistent. New columns can be added.
@@ -153,9 +149,22 @@ chargenstate = -1.0
 * Modified objects are highlighted with a light green background.
 * Deleted objects are highlighted with a light red background.
 * The spell list lists the range of the spell.
+* The NPC list now shows fight and training values.
 * The creature list now shows the soul value of creatures.
 * The leveled item/leveled creature lists now show the chance of no spawn.
-* Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under `tools.csse.deprecated`. Objects matching these IDs (case insensitive) will not be displayed in the Object Window.
+* Objects can be marked as deprecated in a content file's metadata file. An array of IDs can be provided under `tools.csse.deprecated`. Objects matching these IDs (case insensitive) will not be displayed in the Object Window, or can be shown with a grey background.
+* Pressing F1 opens the Use Report menu of the selected object.
+
+### Object Editing Window
+
+* Icon texture rendering fixes, including better uncompressed texture support and alpha blending.
+* Clicking on the icon is equivalent to clicking on the inventory texture button.
+
+#### Actor Editing Windows
+
+* The AI window opens more quickly.
+* Clicking on the return button in the AI window when no cell has been loaded no longer crashes the CS.
+* Deprecated heads and hairs are not shown.
 
 ### Path Grid Window
 
@@ -190,14 +199,21 @@ chargenstate = -1.0
 * Using F2 with a reference selected will bring up the window to edit that reference. Holding shift will bring up the window to edit the base object instead.
 * Ctrl+H now opens the Search & Replace window.
 * Ctrl+F2 with a door selected will focus the associated door marker. The same can be done on a door marker, to select the door that leads to it.
+* Added new layer menu (View > Layers Window). Objects can be added to various layers, and those layers can be hidden/shown/tinted. Hotkeys are available. Click the help button on the window for usage information.
 
 The following changes to the rendering window apply when landscape editing:
 
+* Multi-tile landscape texture painting.
+* Configurable vertex color blend modes and brush strength.
 * The `F` and `S` keys can now be used to enter flatten and smooth vertices modes.
 * The `[` and `]` keys can be used to decrement/increment the terrain editing radius.
 * The terrain editing disc is no longer hidden when hiding objects (Shift+C).
 * The terrain editing disc is colored based on the current editing mode. These colors are configurable.
 * You can use control+right mouse button to sample the texture at the cursor's position. This will select the matching texture under the cursor automatically in the landscape editing menu.
+
+### Script Edit Window
+
+* Attempting to compile a script with `MWSE_BUILD` global variable access will automatically create it. MWSE will set this variable, so scripts can check to see if MWSE is used.
 
 ### Search & Replace Window
 

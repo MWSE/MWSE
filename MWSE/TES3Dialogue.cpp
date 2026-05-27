@@ -13,22 +13,31 @@
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
 
+#include "StringUtil.h"
+
 namespace TES3 {
+	namespace {
+		using DialogueInfoLoadIdMap = std::unordered_map<Dialogue*, std::unordered_map<std::string, DialogueInfo*>>;
+		using DialogueInfoLoadIdReverseMap = std::unordered_map<DialogueInfo*, std::pair<Dialogue*, std::string>>;
+
+		static DialogueInfoLoadIdMap g_DialogueInfoLoadIdMap;
+		static DialogueInfoLoadIdReverseMap g_DialogueInfoLoadIdReverseMap;
+	}
 
 	//
 	// DialogueName
 	//
 
-	nonstd::span<DialogueName> DialogueName::getVoices() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x793248), (size_t)VoiceType::COUNT);
+	std::span<DialogueName> DialogueName::getVoices() {
+		return std::span(reinterpret_cast<DialogueName*>(0x793248), (size_t)VoiceType::COUNT);
 	}
 
-	nonstd::span<DialogueName> DialogueName::getGreetings() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x793280), (size_t)GreetingType::COUNT);
+	std::span<DialogueName> DialogueName::getGreetings() {
+		return std::span(reinterpret_cast<DialogueName*>(0x793280), (size_t)GreetingType::COUNT);
 	}
 
-	nonstd::span<DialogueName> DialogueName::getResponses() {
-		return nonstd::span(reinterpret_cast<DialogueName*>(0x7932D0), (size_t)ResponseType::COUNT);
+	std::span<DialogueName> DialogueName::getResponses() {
+		return std::span(reinterpret_cast<DialogueName*>(0x7932D0), (size_t)ResponseType::COUNT);
 	}
 
 	//
@@ -121,6 +130,90 @@ namespace TES3 {
 		}
 
 		return nullptr;
+	}
+
+	void Dialogue::clearInfoLoadIDCache() {
+		const auto dialogue = const_cast<Dialogue*>(this);
+		const auto dialogueIt = g_DialogueInfoLoadIdMap.find(dialogue);
+		if (dialogueIt == g_DialogueInfoLoadIdMap.end()) {
+			return;
+		}
+
+		for (const auto& [loadID, info] : dialogueIt->second) {
+			const auto reverseIt = g_DialogueInfoLoadIdReverseMap.find(info);
+			if (reverseIt != g_DialogueInfoLoadIdReverseMap.end() && reverseIt->second.first == dialogue && reverseIt->second.second == loadID) {
+				g_DialogueInfoLoadIdReverseMap.erase(reverseIt);
+			}
+		}
+
+		g_DialogueInfoLoadIdMap.erase(dialogueIt);
+	}
+
+	DialogueInfo* Dialogue::findInfoByLoadID(const char* infoID) const {
+		if (infoID == nullptr || infoID[0] == '\0') {
+			return nullptr;
+		}
+
+		auto normalizedInfoID = std::string(infoID);
+
+		const auto dialogueIt = g_DialogueInfoLoadIdMap.find(const_cast<Dialogue*>(this));
+		if (dialogueIt != g_DialogueInfoLoadIdMap.end()) {
+			const auto infoIt = dialogueIt->second.find(normalizedInfoID);
+			if (infoIt != dialogueIt->second.end()) {
+				return infoIt->second;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void Dialogue::cacheInfoByLoadID(DialogueInfo* info) {
+		if (info == nullptr) {
+			return;
+		}
+
+		if (info->loadLinkNode == nullptr || info->loadLinkNode->name == nullptr) {
+			return;
+		}
+
+		auto loadID = std::string(info->loadLinkNode->name);
+		const auto dialogue = this;
+
+		const auto reverseIt = g_DialogueInfoLoadIdReverseMap.find(info);
+		if (reverseIt != g_DialogueInfoLoadIdReverseMap.end()) {
+			const auto previousDialogue = reverseIt->second.first;
+			const auto previousLoadID = reverseIt->second.second;
+
+			const auto previousDialogueIt = g_DialogueInfoLoadIdMap.find(previousDialogue);
+			if (previousDialogueIt != g_DialogueInfoLoadIdMap.end()) {
+				previousDialogueIt->second.erase(previousLoadID);
+				if (previousDialogueIt->second.empty()) {
+					g_DialogueInfoLoadIdMap.erase(previousDialogueIt);
+				}
+			}
+		}
+
+		g_DialogueInfoLoadIdMap[dialogue][loadID] = info;
+		g_DialogueInfoLoadIdReverseMap[info] = { dialogue, std::move(loadID) };
+	}
+
+	void DialogueInfo::removeFromLoadIDCache() {
+		const auto reverseIt = g_DialogueInfoLoadIdReverseMap.find(this);
+		if (reverseIt == g_DialogueInfoLoadIdReverseMap.end()) {
+			return;
+		}
+
+		const auto dialogue = reverseIt->second.first;
+		const auto loadID = reverseIt->second.second;
+		const auto dialogueIt = g_DialogueInfoLoadIdMap.find(dialogue);
+		if (dialogueIt != g_DialogueInfoLoadIdMap.end()) {
+			dialogueIt->second.erase(loadID);
+			if (dialogueIt->second.empty()) {
+				g_DialogueInfoLoadIdMap.erase(dialogueIt);
+			}
+		}
+
+		g_DialogueInfoLoadIdReverseMap.erase(reverseIt);
 	}
 
 	const auto TES3_Dialogue_getFilteredInfo = reinterpret_cast<DialogueInfo * (__thiscall*)(Dialogue*, Actor*, Reference*, bool)>(0x4B29E0);
@@ -221,6 +314,14 @@ namespace TES3 {
 			}
 		}
 		return ResponseType::Invalid;
+	}
+
+	const char* Dialogue::getFilterTypeName() const {
+		if (type > DialogueType::MAX_VALUE) {
+			return nullptr;
+		}
+		const auto TES3_DialogueFilterTypes = reinterpret_cast<const char**>(0x793200);
+		return TES3_DialogueFilterTypes[DWORD(type)];
 	}
 
 	const auto TES3_getDialogue = reinterpret_cast<Dialogue* (__cdecl*)(int, int)>(0x4B2C00);

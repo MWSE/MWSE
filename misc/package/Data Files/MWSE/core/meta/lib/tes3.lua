@@ -404,9 +404,9 @@ function tes3.addTopic(params) end
 --- 
 --- `simulate?`: fun(e: tes3weatherSimulateEventData) — *Optional*. A function called every frame while the weather is active.
 --- 
---- `transition?`: fun(e: tes3weatherTransitionEventData) — *Optional*. A function called when the weather transitions in.
+--- `transition?`: fun(e: tes3weatherTransitionEventData) — *Optional*. A function called when the weather transitions in. The ambient loop is automatically given a new 
 --- 
---- `unload?`: fun(e: tes3weatherUnloadEventData) — *Optional*. A function called when the weather is unloaded.
+--- `unload?`: fun(e: tes3weatherUnloadEventData) — *Optional*. A function called when the weather is unloaded. The soundAmbientLoop is handled automatically.
 --- @return tes3weatherCustom weather No description yet available.
 function tes3.addWeather(params) end
 
@@ -452,8 +452,8 @@ function tes3.addWeather(params) end
 --- @field supportsBlightCloud? boolean *Default*: `false`. If true, this weather can support blight clouds.
 --- @field supportsBlizzard? boolean *Default*: `false`. If true, this weather can support blizzard effects.
 --- @field simulate? fun(e: tes3weatherSimulateEventData) *Optional*. A function called every frame while the weather is active.
---- @field transition? fun(e: tes3weatherTransitionEventData) *Optional*. A function called when the weather transitions in.
---- @field unload? fun(e: tes3weatherUnloadEventData) *Optional*. A function called when the weather is unloaded.
+--- @field transition? fun(e: tes3weatherTransitionEventData) *Optional*. A function called when the weather transitions in. The ambient loop is automatically given a new 
+--- @field unload? fun(e: tes3weatherUnloadEventData) *Optional*. A function called when the weather is unloaded. The soundAmbientLoop is handled automatically.
 
 --- Changes the volume of a sound that is playing on a given reference.
 --- @param params tes3.adjustSoundVolume.params This table accepts the following values:
@@ -1127,6 +1127,10 @@ function tes3.get3rdPersonCameraOffset() end
 --- Returns a table of active cells. If indoors, the table will have only one entry. If outdoors, the 9 surrounding cells will be provided.
 --- @return tes3cell[] cells No description yet available.
 function tes3.getActiveCells() end
+
+--- Gets all active magic effect instances.
+--- @return tes3magicSourceInstance[] magicSourceInstances No description yet available.
+function tes3.getAllMagicSourceInstances() end
 
 --- This function fetches a dictionary of the timings of the action keys for a specific animation group on an actor. The actor is required, as different actors can use different animations. The result is a table with action names as keys, and timings as values. The function will return nil if the actor does not have that animation group, or if the actor's animations are not active.
 --- @param params tes3.getAnimationActionTiming.params This table accepts the following values:
@@ -1908,7 +1912,7 @@ function tes3.loopTArray(tarray) end
 --- Returns a safe handle for the object. To get the object use `:getObject()`. To check if it still exists use `:valid()`.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3makesafeobjecthandle).
---- @param object tes3reference An object to make a safe handle for.
+--- @param object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3baseObject|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3land|tes3landTexture|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3pathGrid|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3repairTool|tes3script|tes3skill|tes3sound|tes3soundGenerator|tes3spell|tes3startScript|tes3static|tes3weapon An object to make a safe handle for.
 --- @return mwseSafeObjectHandle safeObjectHandle No description yet available.
 function tes3.makeSafeObjectHandle(object) end
 
@@ -4221,6 +4225,9 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.lockPick`
 ---| `tes3.event.magicAbsorb`
 ---| `tes3.event.magicCasted`
+---| `tes3.event.magicEffectActivated`
+---| `tes3.event.magicEffectAdded`
+---| `tes3.event.magicEffectDeactivated`
 ---| `tes3.event.magicEffectRemoved`
 ---| `tes3.event.magicEffectsResolved`
 ---| `tes3.event.magicReflect`
@@ -4275,6 +4282,10 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.spellCastedFailure`
 ---| `tes3.event.spellCreated`
 ---| `tes3.event.spellMagickaUse`
+---| `tes3.event.spellProjectileHitActor`
+---| `tes3.event.spellProjectileHitObject`
+---| `tes3.event.spellProjectileHitTerrain`
+---| `tes3.event.spellProjectileHitWater`
 ---| `tes3.event.spellResist`
 ---| `tes3.event.spellResisted`
 ---| `tes3.event.spellTick`

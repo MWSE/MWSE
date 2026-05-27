@@ -8,6 +8,8 @@ return {
 	["runInBackground.description"] = "By default Morrowind skips most game logic when not in focus. When using windowed mode (including borderless fullscreen), this feature allows Morrowind to continue running. Enabling this can also help to increase stability, due to how Morrowind handles some audio threads.",
 	["playAudioInBackground.label"] = "Play audio in background?",
 	["playAudioInBackground.description"] = "By default, Morrowind does not use global audio playback, meaning that audio stops playing when the window is not in focus. Turning this on allows audio to work in the background.",
+	["nonExclusiveKeyboard.label"] = "Use non-exclusive keyboard?",
+	["nonExclusiveKeyboard.description"] = "If enabled, MWSE will use non-exclusive cooperative levels for keyboard input and allow shell keys. This restores Windows key functionality. It also prevents the windowed application from being pushed to the far background when alt-tabbing.",
 	["letterboxMovies.label"] = "Letterbox movies?",
 	["letterboxMovies.description"] = "Morrowind stretches movies to fill the whole window by default. This option will instead render movies with black bars to either side, centering the movie in the window.",
 	["patchNiFlipController.label"] = "Fix NiFlipController cloning?",

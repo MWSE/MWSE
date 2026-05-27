@@ -1,5 +1,6 @@
 #pragma once
 #include "CrashLogUtilities.hpp"
+#include "CrashLogFormatter.hpp"
 
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"

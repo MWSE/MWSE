@@ -38,7 +38,7 @@ namespace TES3 {
 		return rippleAlphas;
 	}
 
-	nonstd::span<WaterController::Ripple> WaterController::getRipples() {
+	std::span<WaterController::Ripple> WaterController::getRipples() {
 		if (ripples == nullptr) {
 			return {};
 		}

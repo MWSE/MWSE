@@ -52,13 +52,13 @@ namespace TES3 {
 		return isDetected;
 	}
 
-	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, Vector3*, float, IteratedList<MobileActor*>*)>(0x5702B0);
-	void ProcessManager::findActorsInProximity(Vector3 * position, float range, IteratedList<MobileActor*>* outputList) {
+	const auto TES3_ProcessManager_findActorsInProximity = reinterpret_cast<void(__thiscall*)(ProcessManager*, NI::Point3*, float, NI::IteratedList<MobileActor*>*)>(0x5702B0);
+	void ProcessManager::findActorsInProximity(NI::Point3 * position, float range, NI::IteratedList<MobileActor*>* outputList) {
 		TES3_ProcessManager_findActorsInProximity(this, position, range, outputList);
 	}
 
-	const auto TES3_ProcessManager_checkAlarmRadius = reinterpret_cast<void(__thiscall*)(ProcessManager*, MobileActor*, IteratedList<AIPlanner*>*)>(0x5704B0);
-	void ProcessManager::checkAlarmRadius(MobileActor * actor, IteratedList<AIPlanner*> * container) {
+	const auto TES3_ProcessManager_checkAlarmRadius = reinterpret_cast<void(__thiscall*)(ProcessManager*, MobileActor*, NI::IteratedList<AIPlanner*>*)>(0x5704B0);
+	void ProcessManager::checkAlarmRadius(MobileActor * actor, NI::IteratedList<AIPlanner*> * container) {
 		TES3_ProcessManager_checkAlarmRadius(this, actor, container);
 	}
 
@@ -108,9 +108,90 @@ namespace TES3 {
 		return t;
 	}
 
+	void ProcessManager::cleanupActionData(MobileActor* mobileActor) {
+		if (mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProcessManager::cleanupActionData(MobileActor)");
+
+		if (mobilePlayer) {
+			mobilePlayer->actionData.cleanupMobileActor(mobileActor);
+			mobilePlayer->actionBeforeCombat.cleanupMobileActor(mobileActor);
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner && planner->mobileActor) {
+				planner->mobileActor->actionData.cleanupMobileActor(mobileActor);
+				planner->mobileActor->actionBeforeCombat.cleanupMobileActor(mobileActor);
+			}
+		}
+
+		criticalSection.leave();
+	}
+
+	void ProcessManager::cleanupAIPackages(Reference* reference, MobileActor* mobileActor) {
+		if (reference == nullptr && mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProcessManager::cleanupAIPackages");
+
+		if (mobilePlayer && mobilePlayer->aiPlanner) {
+			mobilePlayer->aiPlanner->cleanupAIPackages(reference, mobileActor);
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner) {
+				planner->cleanupAIPackages(reference, mobileActor);
+			}
+		}
+
+		criticalSection.leave();
+	}
+
+	void ProcessManager::cleanupCollisionReferences(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		const auto rootCollisionNode = reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr;
+		criticalSection.enter("MWSE:ProcessManager::cleanupCollisionReferences");
+
+		if (mobilePlayer) {
+			mobilePlayer->cleanupCollisionReference(reference);
+			if (mobilePlayer->collisionGroup) {
+				if (mobilePlayer->reference == reference) {
+					mobilePlayer->collisionGroup->removeAll();
+				}
+				else if (rootCollisionNode) {
+					mobilePlayer->collisionGroup->removeCollidee(rootCollisionNode);
+				}
+			}
+		}
+
+		for (auto planner : aiPlanners) {
+			if (planner && planner->mobileActor) {
+				planner->mobileActor->cleanupCollisionReference(reference);
+				if (planner->mobileActor->collisionGroup) {
+					if (planner->mobileActor->reference == reference) {
+						planner->mobileActor->collisionGroup->removeAll();
+					}
+					else if (rootCollisionNode) {
+						planner->mobileActor->collisionGroup->removeCollidee(rootCollisionNode);
+					}
+				}
+			}
+		}
+
+		criticalSection.leave();
+	}
+
 	//
 	// ProjectileManager
 	//
+
+	MobileProjectile* ProjectileManager::ms_CurrentlyCollidingProjectile = nullptr;
 
 	const auto TES3_ProjectileManager_resolveCollisions = reinterpret_cast<void(__thiscall*)(ProjectileManager*, float)>(0x5753A0);
 	void ProjectileManager::resolveCollisions(float deltaTime) {
@@ -132,6 +213,38 @@ namespace TES3 {
 			if (projectile->firingActor == mobileActor && (includeSpellProjectiles || projectile->objectType == ObjectType::MobileProjectile)) {
 				projectile->enterLeaveSimulation(false);
 				projectile->flagExpire = true;
+			}
+		}
+		criticalSection.leave();
+	}
+
+	void ProjectileManager::cleanupFiringActor(MobileActor* mobileActor) {
+		if (mobileActor == nullptr) {
+			return;
+		}
+
+		criticalSection.enter("MWSE:ProjectileManager::cleanupFiringActor");
+		for (const auto projectile : activeProjectiles) {
+			if (projectile->firingActor == mobileActor) {
+				projectile->firingActor = nullptr;
+			}
+		}
+		criticalSection.leave();
+	}
+
+	void ProjectileManager::cleanupCollisionReferences(Reference* reference) {
+		if (reference == nullptr) {
+			return;
+		}
+
+		const auto rootCollisionNode = reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr;
+		criticalSection.enter("MWSE:ProjectileManager::cleanupCollisionReferences");
+		for (auto projectile : activeProjectiles) {
+			if (projectile) {
+				projectile->cleanupCollisionReference(reference);
+				if (projectile->collisionGroup && rootCollisionNode) {
+					projectile->collisionGroup->removeCollidee(rootCollisionNode);
+				}
 			}
 		}
 		criticalSection.leave();
@@ -194,7 +307,7 @@ namespace TES3 {
 		TES3_MobManager_clampAllActors(this);
 	}
 
-	Vector3* MobManager::getGravity() {
+	NI::Point3* MobManager::getGravity() {
 		return &gravity;
 	}
 
@@ -202,7 +315,7 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(gravity, value);
 	}
 
-	Vector3* MobManager::getTerminalVelocity() {
+	NI::Point3* MobManager::getTerminalVelocity() {
 		return &terminalVelocity;
 	}
 
@@ -216,6 +329,6 @@ namespace TES3 {
 
 	void MobManager::setMaxClimbableSlope(float value) {
 		maxClimbableSlopeDegrees = value;
-		dotProductOfMaxClimbableSlope = cos(static_cast<float>(maxClimbableSlopeDegrees * mwse::math::M_PI / 180.0));
+		dotProductOfMaxClimbableSlope = cos(static_cast<float>(maxClimbableSlopeDegrees * se::math::M_PI / 180.0));
 	}
 }

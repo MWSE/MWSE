@@ -91,3 +91,22 @@ Updates the scrollbar slider and scrollbar limits after adding or removing eleme
 myObject:contentsChanged()
 ```
 
+***
+
+### `scrollIntoView`
+<div class="search_terms" style="display: none">scrollintoview</div>
+
+Scrolls the pane vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
+
+```lua
+local result = myObject:scrollIntoView(child)
+```
+
+**Parameters**:
+
+* `child` ([tes3uiElement](../types/tes3uiElement.md)): A descendant element of the scroll pane's content element. Nested descendants are supported.
+
+**Returns**:
+
+* `result` (boolean)
+

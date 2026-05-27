@@ -50,19 +50,19 @@ struct TES3MACHINE : public VIRTUALMACHINE {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		return mwse::tes3::malloc(size);
+		return se::memory::malloc(size);
 	}
 	void Free(void* to_free) {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		mwse::tes3::free(to_free);
+		se::memory::free(to_free);
 	}
 	void* Realloc(void* to_realloc, size_t size) {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		return mwse::tes3::realloc(to_realloc, size);
+		return se::memory::realloc(to_realloc, size);
 	}
 	void CheckForSkillUp(long skill_id);
 	TES3::MobilePlayer* GetMacpRecord();

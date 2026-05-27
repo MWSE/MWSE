@@ -4,8 +4,8 @@
 
 #include "NITArray.h"
 
-#include "TES3IteratedList.h"
-#include "TES3Vectors.h"
+#include "NIIteratedList.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class QuickKeyType : unsigned int {
@@ -32,7 +32,7 @@ namespace TES3 {
 		void clear();
 
 		static QuickKey* getQuickKey(unsigned int slot);
-		static nonstd::span<QuickKey, 9> getQuickKeys();
+		static std::span<QuickKey, 9> getQuickKeys();
 	};
 	static_assert(sizeof(QuickKey) == 0x10, "TES3::QuickKey failed size validation");
 
@@ -66,7 +66,7 @@ namespace TES3 {
 
 	struct Inventory {
 		unsigned int flags; // 0x0
-		IteratedList<ItemStack*> itemStacks; // 0x4
+		NI::IteratedList<ItemStack*> itemStacks; // 0x4
 		Light * internalLight; // 0x18
 
 		//
@@ -80,7 +80,7 @@ namespace TES3 {
 		ItemData* addItemByReference(MobileActor * mobile, Reference * reference, int * out_count);
 		void removeItemData(Item* item, ItemData* itemData);
 		void removeItemWithData(MobileActor * mobile, Item * item, ItemData * itemData, int count, bool deleteStackData);
-		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData = false);
+		void dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Point3 position, NI::Point3 orientation, bool ignoreItemData = false);
 		void updateInternalLight(MobileActor* mobile);
 
 		void resolveLeveledLists(MobileActor* mobile = nullptr);

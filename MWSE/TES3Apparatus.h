@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3Item.h"
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	enum class ApparatusType {
@@ -14,7 +14,7 @@ namespace TES3 {
 	};
 
 	struct Apparatus : Item {
-		IteratedList<TES3::BaseObject*> stolenList; // 0x30
+		NI::IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char model[32]; // 0x44
 		char name[32]; // 0x64
 		Script * script;

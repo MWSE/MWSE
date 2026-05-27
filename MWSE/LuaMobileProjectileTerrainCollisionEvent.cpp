@@ -9,8 +9,8 @@
 #include "TES3Weapon.h"
 
 namespace mwse::lua::event {
-	MobileProjectileTerrainCollisionEvent::MobileProjectileTerrainCollisionEvent(TES3::MobileProjectile* projectile, TES3::Vector3& point, TES3::Vector3& pos, TES3::Vector3& vel) :
-		ObjectFilteredEvent("projectileHitTerrain", projectile->firingActor->reference),
+	MobileProjectileTerrainCollisionEvent::MobileProjectileTerrainCollisionEvent(TES3::MobileProjectile* projectile, NI::Point3& point, NI::Point3& pos, NI::Point3& vel) :
+		ObjectFilteredEvent("projectileHitTerrain", projectile->firingActor ? projectile->firingActor->reference : nullptr),
 		m_Projectile(projectile),
 		m_CollisionPoint(point),
 		m_Position(pos),

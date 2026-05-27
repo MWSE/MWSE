@@ -1,5 +1,7 @@
 #include "TES3Weather.h"
 
+#include "NIMatrix33.h"
+
 #include "TES3DataHandler.h"
 #include "TES3Sound.h"
 #include "TES3Util.h"
@@ -19,6 +21,7 @@
 #include "TES3WorldController.h"
 
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -436,9 +439,9 @@ namespace TES3 {
 		return 1.0f;
 	}
 
-	float Weather::calculateNextWindSpeed(float windSpeed, float windJitterScalar, const Vector3& previousVelocity) {
+	float Weather::calculateNextWindSpeed(float windSpeed, float windJitterScalar, const NI::Point3& previousVelocity) {
 		const auto cappedScaledWindSpeed = std::min(windSpeed * 8.0f, 70.0f);
-		auto nextWindSpeed = previousVelocity == Vector3::ZEROES ? cappedScaledWindSpeed : previousVelocity.length();
+		auto nextWindSpeed = previousVelocity == NI::Point3::ZEROES ? cappedScaledWindSpeed : previousVelocity.length();
 		if (nextWindSpeed == 0.0f) {
 			nextWindSpeed = cappedScaledWindSpeed;
 		}
@@ -460,7 +463,7 @@ namespace TES3 {
 		auto& velocity = isCurrentWeather ? controller->windVelocityCurrWeather : controller->windVelocityNextWeather;
 		const auto nextWindSpeed = calculateNextWindSpeed(windSpeed, getWindJitter(), velocity);
 
-		Matrix33 cloudRotation;
+		NI::Matrix33 cloudRotation;
 		cloudRotation.toRotation(0.0f, 0.0f, 0.0f, 1.0f);
 		if (isCurrentWeather && controller->sgTriCloudsCurrent) {
 			controller->sgTriCloudsCurrent->setLocalRotationMatrix(&cloudRotation);
@@ -682,11 +685,14 @@ namespace TES3 {
 			// Clear any events that make use of this object.
 			auto it = weatherObjectCache.find(object);
 			if (it != weatherObjectCache.end()) {
-				// Let people know that this object is invalidated.
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
-
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
+
+				// Null the userdata's internal pointer before removing our identity cache.
+				mwse::lua::clearUserdataPointer(it->second);
+
+				// Let people know that this object is invalidated.
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 
 				// Remove it from the cache.
 				weatherObjectCache.erase(it);
@@ -698,6 +704,9 @@ namespace TES3 {
 
 	void Weather::clearCachedLuaObjects() {
 		weatherObjectCacheMutex.lock();
+		for (auto& item : weatherObjectCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
 		weatherObjectCache.clear();
 		weatherObjectCacheMutex.unlock();
 	}

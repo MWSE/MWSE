@@ -1,13 +1,9 @@
 #include "NIObjectNET.h"
 
+#include "NIAVObject.h"
 #include "NINode.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Reference.h"
-#endif
-
 #include "ExceptionUtil.h"
-#include "StringUtil.h"
 
 namespace NI {
 	void ObjectNET::prependController(TimeController* controller) {
@@ -94,7 +90,7 @@ namespace NI {
 		ExtraData* extra = extraData;
 		while (extra) {
 			if (extra->isInstanceOfType(NI::RTTIStaticPtr::NiStringExtraData) && static_cast<NI::StringExtraData*>(extra)->string) {
-				if (se::string::iequal(value, static_cast<NI::StringExtraData*>(extra)->string)) {
+				if (_stricmp(value, static_cast<NI::StringExtraData*>(extra)->string) == 0) {
 					return reinterpret_cast<NI::StringExtraData*>(extra);
 				}
 			}
@@ -116,7 +112,7 @@ namespace NI {
 		ExtraData* extra = extraData;
 		while (extra) {
 			if (extra->isInstanceOfType(NI::RTTIStaticPtr::NiStringExtraData) && static_cast<NI::StringExtraData*>(extra)->string) {
-				if (se::string::niequal(value, static_cast<NI::StringExtraData*>(extra)->string, maxCount)) {
+				if (_strnicmp(value, static_cast<NI::StringExtraData*>(extra)->string, maxCount) == 0) {
 					return reinterpret_cast<NI::StringExtraData*>(extra);
 				}
 			}
@@ -129,37 +125,31 @@ namespace NI {
 		return getStringDataStartingWithValue(value) != nullptr;
 	}
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	TES3::Reference* ObjectNET::getTes3Reference(bool searchParents) {
+	Tes3ExtraData* ObjectNET::getTes3ExtraData(bool searchParents) const {
 		for (ExtraData* ed = extraData; ed; ed = ed->next) {
 			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
-				return static_cast<Tes3ExtraData*>(ed)->reference;
+				return static_cast<Tes3ExtraData*>(ed);
 			}
 		}
 
-		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<AVObject*>(this)->parentNode) {
-			return static_cast<AVObject*>(this)->parentNode->getTes3Reference(true);
+		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<const AVObject*>(this)->parentNode) {
+			return static_cast<const AVObject*>(this)->parentNode->getTes3ExtraData(true);
 		}
 
 		return nullptr;
 	}
 
-	TES3::Reference* ObjectNET::getTes3Reference_lua(sol::optional<bool> searchParents) {
+	GameReferenceType* ObjectNET::getTes3Reference(bool searchParents) const {
+		const auto extraData = getTes3ExtraData(searchParents);
+		if (!extraData) {
+			return nullptr;
+		}
+		return extraData->reference;
+	}
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+	TES3::Reference* ObjectNET::getTes3Reference_lua(sol::optional<bool> searchParents) const {
 		return getTes3Reference(searchParents.value_or(false));
-	}
-#else
-	se::cs::Reference* ObjectNET::getTes3Reference(bool searchParents) {
-		for (ExtraData* ed = extraData; ed; ed = ed->next) {
-			if (ed->isOfType(RTTIStaticPtr::TES3ObjectExtraData)) {
-				return static_cast<Tes3ExtraData*>(ed)->reference;
-			}
-		}
-
-		if (searchParents && isInstanceOfType(RTTIStaticPtr::NiAVObject) && static_cast<AVObject*>(this)->parentNode) {
-			return static_cast<AVObject*>(this)->parentNode->getTes3Reference(true);
-	}
-
-		return nullptr;
 	}
 #endif
 }
@@ -167,4 +157,3 @@ namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::ObjectNET)
 #endif
-

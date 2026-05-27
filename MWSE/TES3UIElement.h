@@ -11,6 +11,12 @@
 #include "NISourceTexture.h"
 
 namespace TES3::UI {
+	struct Element;
+}
+
+int sol_lua_push(sol::types<TES3::UI::Element*>, lua_State* L, TES3::UI::Element* obj);
+
+namespace TES3::UI {
 	struct Element {
 		char tag; // 0x0
 		String name; // 0x4
@@ -190,6 +196,10 @@ namespace TES3::UI {
 		//
 
 		bool isValid() const;
+
+		sol::object getOrCreateLuaObject(lua_State* L);
+		static void clearCachedLuaObject(const Element* element);
+		static void clearCachedLuaObjects();
 
 		const char* getName() const;
 

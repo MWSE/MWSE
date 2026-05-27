@@ -21,6 +21,7 @@
 #include "TES3WorldController.h"
 
 #include "NIBSAnimationNode.h"
+#include "NIMatrix33.h"
 #include "NIProperty.h"
 #include "NIRenderer.h"
 #include "NISourceTexture.h"
@@ -38,7 +39,7 @@
 #include "TES3UIManager.h"
 
 namespace TES3 {
-	typedef mwse::ExternalGlobal<bool, 0x785FAC> g_fillSnowParticleVolume;
+	typedef se::memory::ExternalGlobal<bool, 0x785FAC> g_fillSnowParticleVolume;
 
 	static void __fastcall Patch_WeatherController_SwitchWeather_WithEvent(WeatherController* wc, DWORD _EDX_, int weatherId, float startingTransition);
 
@@ -130,8 +131,8 @@ namespace TES3 {
 			return;
 		}
 
-		windVelocityCurrWeather = Vector3::ZEROES;
-		windVelocityNextWeather = Vector3::ZEROES;
+		windVelocityCurrWeather = NI::Point3::ZEROES;
+		windVelocityNextWeather = NI::Point3::ZEROES;
 
 		if (currentWeather == nullptr) {
 			switchWeather(weatherId, 1.0f);
@@ -298,20 +299,20 @@ namespace TES3 {
 		}
 	}
 
-	void WeatherController::updateStormCloud(NI::Node* stormCloud, float transitionScalar, const Vector2& stormOrigin, float stormThreshold) const {
+	void WeatherController::updateStormCloud(NI::Node* stormCloud, float transitionScalar, const NI::Point2& stormOrigin, float stormThreshold) const {
 		if (!stormCloud) {
 			return;
 		}
 
 		const auto worldController = TES3::WorldController::get();
 		const auto camera = worldController ? worldController->worldCamera.getCamera() : nullptr;
-		const auto cameraPosition = camera ? camera->worldBoundOrigin : Vector3::ZEROES;
-		Vector2 stormVector(cameraPosition.x - stormOrigin.x, cameraPosition.y - stormOrigin.y);
+		const auto cameraPosition = camera ? camera->worldBoundOrigin : NI::Point3::ZEROES;
+		NI::Point2 stormVector(cameraPosition.x - stormOrigin.x, cameraPosition.y - stormOrigin.y);
 		if (!stormVector.normalize()) {
-			stormVector = Vector2::ZEROES;
+			stormVector = NI::Point2::ZEROES;
 		}
 
-		Matrix33 ashRotation;
+		NI::Matrix33 ashRotation;
 		ashRotation.toRotationZ(-std::atan2(stormVector.x, stormVector.y));
 		stormCloud->setLocalRotationMatrix(&ashRotation);
 
@@ -409,7 +410,7 @@ namespace TES3 {
 
 	float WeatherController::lerpE0() const {
 		if (currentWeather && currentWeather->supportsParticleLerp() && nextWeather && nextWeather->supportsParticleLerp()) {
-			return mwse::math::lerp(currentWeather->unknown_0xE0, nextWeather->unknown_0xE0, transitionScalar);
+			return std::lerp(currentWeather->unknown_0xE0, nextWeather->unknown_0xE0, transitionScalar);
 		}
 		else if (currentWeather && currentWeather->supportsParticleLerp()) {
 			return currentWeather->unknown_0xE0;
@@ -419,7 +420,7 @@ namespace TES3 {
 		}
 	}
 
-	Vector3* WeatherController::lerpE4(Vector3* out_result) const {
+	NI::Point3* WeatherController::lerpE4(NI::Point3* out_result) const {
 		if (currentWeather && currentWeather->supportsParticleLerp() && nextWeather && nextWeather->supportsParticleLerp()) {
 			*out_result = currentWeather->unknown_0xE4.lerp(nextWeather->unknown_0xE4, transitionScalar);
 			return out_result;
@@ -685,9 +686,9 @@ namespace TES3 {
 		}
 
 		// Rotate the night sky.
-		Matrix33 rotation;
+		NI::Matrix33 rotation;
 		rotation.toRotation(
-			std::fmod(worldController->gvarDaysPassed->value, 4.0f) * 0.25f * mwse::math::M_2_PI + gameHour * (1.0f / 24.0f) * mwse::math::M_PI_2,
+			std::fmod(worldController->gvarDaysPassed->value, 4.0f) * 0.25f * se::math::M_2_PI + gameHour * (1.0f / 24.0f) * se::math::M_PI_2,
 			0.0f,
 			0.0f,
 			1.0f
@@ -703,8 +704,8 @@ namespace TES3 {
 		}
 
 		if (transitionScalar >= 1.0f) {
-			windVelocityNextWeather = Vector3::ZEROES;
-			windVelocityCurrWeather = Vector3::ZEROES;
+			windVelocityNextWeather = NI::Point3::ZEROES;
+			windVelocityCurrWeather = NI::Point3::ZEROES;
 
 			if (nextWeather) {
 				if (currentWeather) {
@@ -951,7 +952,7 @@ namespace TES3 {
 	void WeatherController::installPatches() {
 #if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
 		// Change size of constructor.
-		mwse::writeValueEnforced<DWORD>(0x417EF6 + 0x1, 0x1F0, sizeof(WeatherController));
+		se::memory::writeValueEnforced<DWORD>(0x417EF6 + 0x1, 0x1F0, sizeof(WeatherController));
 
 		// Setup custom weather vtable.
 		ZeroMemory(&WeatherCustom::VirtualTable, sizeof(WeatherCustom::VirtualTable));
@@ -959,114 +960,114 @@ namespace TES3 {
 		auto WeatherCustom_simulate = &WeatherCustom::vtbl_simulate;
 		auto WeatherCustom_transition = &WeatherCustom::vtbl_transition;
 		auto WeatherCustom_unload = &WeatherCustom::vtbl_unload;
-		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, deleting), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_delete));
-		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, simulate), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_simulate));
-		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, transition), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_transition));
-		mwse::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, unload), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_unload));
+		se::memory::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, deleting), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_delete));
+		se::memory::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, simulate), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_simulate));
+		se::memory::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, transition), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_transition));
+		se::memory::overrideVirtualTableEnforced(DWORD(&WeatherCustom::VirtualTable), offsetof(Weather_vTable, unload), 0x0, *reinterpret_cast<DWORD*>(&WeatherCustom_unload));
 
 		// Hook the rewritten built-in weather vtables.
 		auto WeatherCloudy_simulate = &WeatherCloudy::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherCloudy, offsetof(Weather_vTable, simulate), 0x447B80, *reinterpret_cast<DWORD*>(&WeatherCloudy_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherCloudy, offsetof(Weather_vTable, simulate), 0x447B80, *reinterpret_cast<DWORD*>(&WeatherCloudy_simulate));
 		auto WeatherFoggy_simulate = &WeatherFoggy::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherFog, offsetof(Weather_vTable, simulate), 0x448990, *reinterpret_cast<DWORD*>(&WeatherFoggy_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherFog, offsetof(Weather_vTable, simulate), 0x448990, *reinterpret_cast<DWORD*>(&WeatherFoggy_simulate));
 		auto WeatherOvercast_simulate = &WeatherOvercast::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherOvercast, offsetof(Weather_vTable, simulate), 0x449850, *reinterpret_cast<DWORD*>(&WeatherOvercast_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherOvercast, offsetof(Weather_vTable, simulate), 0x449850, *reinterpret_cast<DWORD*>(&WeatherOvercast_simulate));
 		auto WeatherAsh_simulate = &WeatherAsh::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherAshstorm, offsetof(Weather_vTable, simulate), 0x44DDB0, *reinterpret_cast<DWORD*>(&WeatherAsh_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherAshstorm, offsetof(Weather_vTable, simulate), 0x44DDB0, *reinterpret_cast<DWORD*>(&WeatherAsh_simulate));
 		auto WeatherBlight_simulate = &WeatherBlight::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlight, offsetof(Weather_vTable, simulate), 0x44EFB0, *reinterpret_cast<DWORD*>(&WeatherBlight_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlight, offsetof(Weather_vTable, simulate), 0x44EFB0, *reinterpret_cast<DWORD*>(&WeatherBlight_simulate));
 		auto WeatherSnow_simulate = &WeatherSnow::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherSnow, offsetof(Weather_vTable, simulate), 0x4502A0, *reinterpret_cast<DWORD*>(&WeatherSnow_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherSnow, offsetof(Weather_vTable, simulate), 0x4502A0, *reinterpret_cast<DWORD*>(&WeatherSnow_simulate));
 		auto WeatherBlizzard_simulate = &WeatherBlizzard::simulate;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlizzard, offsetof(Weather_vTable, simulate), 0x451380, *reinterpret_cast<DWORD*>(&WeatherBlizzard_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherBlizzard, offsetof(Weather_vTable, simulate), 0x451380, *reinterpret_cast<DWORD*>(&WeatherBlizzard_simulate));
 		auto WeatherRain_simulate = &WeatherRain::simulate;
 		auto WeatherRain_transition = &WeatherRain::transition;
 		auto WeatherRain_unload = &WeatherRain::unload;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, simulate), 0x44AB50, *reinterpret_cast<DWORD*>(&WeatherRain_simulate));
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, unload), 0x44A7F0, *reinterpret_cast<DWORD*>(&WeatherRain_unload));
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, transition), 0x44A840, *reinterpret_cast<DWORD*>(&WeatherRain_transition));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, simulate), 0x44AB50, *reinterpret_cast<DWORD*>(&WeatherRain_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, unload), 0x44A7F0, *reinterpret_cast<DWORD*>(&WeatherRain_unload));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherRain, offsetof(Weather_vTable, transition), 0x44A840, *reinterpret_cast<DWORD*>(&WeatherRain_transition));
 		auto WeatherThunder_simulate = &WeatherThunder::simulate;
 		auto WeatherThunder_transition = &WeatherThunder::transition;
 		auto WeatherThunder_unload = &WeatherThunder::unload;
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, simulate), 0x44C760, *reinterpret_cast<DWORD*>(&WeatherThunder_simulate));
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, unload), 0x44C2C0, *reinterpret_cast<DWORD*>(&WeatherThunder_unload));
-		mwse::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, transition), 0x44C360, *reinterpret_cast<DWORD*>(&WeatherThunder_transition));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, simulate), 0x44C760, *reinterpret_cast<DWORD*>(&WeatherThunder_simulate));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, unload), 0x44C2C0, *reinterpret_cast<DWORD*>(&WeatherThunder_unload));
+		se::memory::overrideVirtualTableEnforced(VirtualTableAddress::WeatherStorm, offsetof(Weather_vTable, transition), 0x44C360, *reinterpret_cast<DWORD*>(&WeatherThunder_transition));
 
 		// Fixup constructor.
 		const auto WeatherController_ctor = &WeatherController::ctor;
-		mwse::genCallEnforced(0x417F17, DWORD(TES3_WeatherController_ctor), *reinterpret_cast<const DWORD*>(&WeatherController_ctor));
+		se::memory::genCallEnforced(0x417F17, DWORD(TES3_WeatherController_ctor), *reinterpret_cast<const DWORD*>(&WeatherController_ctor));
 
 		// Fixup destructor.
 		const auto WeatherController_dtor = &WeatherController::dtor;
-		mwse::genCallEnforced(0x40E0CB, DWORD(TES3_WeatherController_dtor), *reinterpret_cast<const DWORD*>(&WeatherController_dtor));
+		se::memory::genCallEnforced(0x40E0CB, DWORD(TES3_WeatherController_dtor), *reinterpret_cast<const DWORD*>(&WeatherController_dtor));
 
 		// Replace function: switchWeather
 		const auto WeatherController_switchWeather = &WeatherController::switchWeather;
-		mwse::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x441AA7, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
-		mwse::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x4BE166, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
-		mwse::genCallEnforced(0x4BE19A, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
+		se::memory::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x441AA7, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
+		se::memory::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x4BE166, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
+		se::memory::genCallEnforced(0x4BE19A, 0x441C40, *reinterpret_cast<const DWORD*>(&WeatherController_switchWeather));
 
 		// Replace function: transition
 		const auto WeatherController_transition = &WeatherController::transition;
-		mwse::genCallEnforced(0x41034D, 0x441A10, *reinterpret_cast<const DWORD*>(&WeatherController_transition));
-		mwse::genCallEnforced(0x441D13, 0x441A10, *reinterpret_cast<const DWORD*>(&WeatherController_transition));
+		se::memory::genCallEnforced(0x41034D, 0x441A10, *reinterpret_cast<const DWORD*>(&WeatherController_transition));
+		se::memory::genCallEnforced(0x441D13, 0x441A10, *reinterpret_cast<const DWORD*>(&WeatherController_transition));
 
 		// Replace function: onInactivateWeather
 		const auto WeatherController_onInactivateWeather = &WeatherController::onInactivateWeather;
-		mwse::genCallEnforced(0x410245, 0x4415E0, *reinterpret_cast<const DWORD*>(&WeatherController_onInactivateWeather));
+		se::memory::genCallEnforced(0x410245, 0x4415E0, *reinterpret_cast<const DWORD*>(&WeatherController_onInactivateWeather));
 
 		// Replace function: isStormy
 		const auto WeatherController_isStormy = &WeatherController::isStormy;
-		mwse::genCallEnforced(0x43B9E5, 0x452DC0, *reinterpret_cast<const DWORD*>(&WeatherController_isStormy));
+		se::memory::genCallEnforced(0x43B9E5, 0x452DC0, *reinterpret_cast<const DWORD*>(&WeatherController_isStormy));
 
 		// Replace function: updateParticles
 		const auto WeatherController_updateParticles = &WeatherController::updateParticles;
-		mwse::genCallEnforced(0x43BA00, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x43BA1B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x440D20, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x440D37, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x44117B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x4411E5, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x44139C, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x4413B3, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
-		mwse::genCallEnforced(0x44141F, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x43BA00, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x43BA1B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x440D20, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x440D37, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x44117B, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x4411E5, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x44139C, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x4413B3, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
+		se::memory::genCallEnforced(0x44141F, 0x452AE0, *reinterpret_cast<const DWORD*>(&WeatherController_updateParticles));
 
 		// Replace function: updateTick
 		const auto WeatherController_updateTick = &WeatherController::updateTick;
-		mwse::genCallEnforced(0x4103CC, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
-		mwse::genCallEnforced(0x41050E, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
+		se::memory::genCallEnforced(0x4103CC, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
+		se::memory::genCallEnforced(0x41050E, 0x440C80, *reinterpret_cast<const DWORD*>(&WeatherController_updateTick));
 
 		// Replace function: lerpE0
 		const auto WeatherController_lerpE0 = &WeatherController::lerpE0;
-		mwse::genCallEnforced(0x451FF1, 0x442460, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE0));
-		mwse::genCallEnforced(0x452890, 0x442460, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE0));
+		se::memory::genCallEnforced(0x451FF1, 0x442460, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE0));
+		se::memory::genCallEnforced(0x452890, 0x442460, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE0));
 
 		// Replace function: lerpE4
 		const auto WeatherController_lerpE4 = &WeatherController::lerpE4;
-		mwse::genCallEnforced(0x451FB8, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
-		mwse::genCallEnforced(0x451FCC, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
-		mwse::genCallEnforced(0x451FE3, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
-		mwse::genCallEnforced(0x45285A, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
-		mwse::genCallEnforced(0x45286E, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
-		mwse::genCallEnforced(0x452882, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x451FB8, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x451FCC, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x451FE3, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x45285A, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x45286E, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
+		se::memory::genCallEnforced(0x452882, 0x442350, *reinterpret_cast<const DWORD*>(&WeatherController_lerpE4));
 
 		// Patch mwscript: ChangeWeather
-		mwse::genNOPUnprotected(0x50C361, 0x50C370 - 0x50C361);
+		se::memory::genNOPUnprotected(0x50C361, 0x50C370 - 0x50C361);
 		bool (Region::*Region_setCurrentWeather)(int) = &Region::setCurrentWeather;
-		mwse::genCallEnforced(0x50C373, 0x4812F0, *reinterpret_cast<const DWORD*>(&Region_setCurrentWeather));
+		se::memory::genCallEnforced(0x50C373, 0x4812F0, *reinterpret_cast<const DWORD*>(&Region_setCurrentWeather));
 
 		// Patch mwscript: GetCurrentWeather
-		mwse::genCallEnforced(0x50C410, 0x4424E0, reinterpret_cast<DWORD>(Patch_GetCurrentWeather));
+		se::memory::genCallEnforced(0x50C410, 0x4424E0, reinterpret_cast<DWORD>(Patch_GetCurrentWeather));
 #else
 		const auto WeatherController_switchWeather = &WeatherController::switchWeather;
-		mwse::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
-		mwse::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x410368, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x441084, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x45CE2D, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
+		se::memory::genCallEnforced(0x45D211, 0x441C40, reinterpret_cast<const DWORD>(Patch_WeatherController_SwitchWeather_WithEvent));
 #endif
 	}
 

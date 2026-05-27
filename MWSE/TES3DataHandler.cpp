@@ -33,6 +33,8 @@
 
 #include "MWSEConfig.h"
 
+#include "ReferenceTracker.h"
+
 namespace TES3 {
 
 	Cell* DataHandler::previousVisitedCell = nullptr;
@@ -84,7 +86,7 @@ namespace TES3 {
 			dtor(this);
 		}
 	};
-	static_assert(sizeof(LoadTempMeshNode) == sizeof(TES3::HashMap<char*, NI::Pointer<NI::AVObject>>::Node), "Temp mesh load node size mismatch!");
+	static_assert(sizeof(LoadTempMeshNode) == sizeof(NI::HashMap<char*, NI::Pointer<NI::AVObject>>::Node), "Temp mesh load node size mismatch!");
 
 	NI::Pointer<NI::Node> MeshData::loadMeshUncached(const char* rawPath) {
 		// Allow changing the desired mesh path.
@@ -301,9 +303,87 @@ namespace TES3 {
 		return TES3_NonDynamicData_resolveObject(this, id);
 	}
 
-	const auto TES3_NonDynamicData_findFirstCloneOfActor = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, const char*)>(0x4B8F50);
-	Reference* NonDynamicData::findFirstCloneOfActor(const char* baseId) {
-		return TES3_NonDynamicData_findFirstCloneOfActor(this, baseId);
+	static bool shouldTryInstanceCloneId(const BaseObject* object) {
+		if (object == nullptr) {
+			return false;
+		}
+
+		const auto baseObject = object->getBaseObject();
+		if (baseObject == nullptr) {
+			return false;
+		}
+
+		return baseObject->objectType == ObjectType::Creature
+			|| baseObject->objectType == ObjectType::Container
+			|| baseObject->objectType == ObjectType::NPC;
+	}
+
+	static Reference* findFirstReferenceOfObjectInWorld(const PhysicalObject* object, bool skipDeleted) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		Reference* firstDeleted = nullptr;
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getCell() == nullptr) {
+				continue;
+			}
+
+			if (!reference->getDeleted()) {
+				return reference;
+			}
+
+			if (!skipDeleted && firstDeleted == nullptr) {
+				firstDeleted = reference;
+			}
+		}
+
+		return firstDeleted;
+	}
+
+	Reference* NonDynamicData::findFirstInstanceOfObjectId(const char* id) {
+		if (id == nullptr) {
+			return nullptr;
+		}
+
+		const auto object = resolveObject(id);
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		const auto physicalObject = object->asPhysicalObject();
+		if (physicalObject == nullptr) {
+			return nullptr;
+		}
+
+		auto result = findFirstReferenceOfObjectInWorld(physicalObject, false);
+		if (result && !result->getDeleted()) {
+			return result;
+		}
+
+		if (shouldTryInstanceCloneId(object)) {
+			const auto cloneId = std::string(id) + "00000000";
+			const auto cloneObject = resolveObject(cloneId.c_str());
+			if (cloneObject == nullptr) {
+				return result;
+			}
+
+			const auto cloneResult = findFirstReferenceOfObjectInWorld(cloneObject->asPhysicalObject(), false);
+			if (cloneResult) {
+				return cloneResult;
+			}
+		}
+
+		return result;
+	}
+
+	Reference* NonDynamicData::findEntityInWorld(BaseObject* object) {
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		return findFirstReferenceOfObjectInWorld(object->asPhysicalObject(), false);
 	}
 
 	const auto TES3_NonDynamicData_resolveReferenceBySourceID = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, unsigned int)>(0x4B9180);
@@ -368,9 +448,169 @@ namespace TES3 {
 		return TES3_NonDynamicData_findFaction(this, id);
 	}
 
-	const auto TES3_NonDynamicData_findClosestExteriorReferenceOfObject = reinterpret_cast<Reference * (__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, bool, int)>(0x4B96F0);
-	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, Vector3* position, bool searchForExteriorDoorMarker, int ignored) {
-		return TES3_NonDynamicData_findClosestExteriorReferenceOfObject(this, object, position, searchForExteriorDoorMarker, ignored);
+	static Reference* findFirstReferenceOfObjectInCell(PhysicalObject* object, const Cell* cell, bool skipDeleted) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
+		if (object == nullptr || cell == nullptr) {
+			return nullptr;
+		}
+
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getCell() != cell) {
+				continue;
+			}
+
+			if (skipDeleted && reference->getDeleted()) {
+				continue;
+			}
+
+			return reference;
+		}
+
+		return nullptr;
+	}
+
+	static Reference* findClosestInteriorReferenceOfObjectInList(const ReferenceList& references, PhysicalObject* object, std::vector<Cell*>& linkedInteriorCells, std::unordered_set<const Cell*>& visitedCells, std::optional<NI::Point3>& linkedExteriorPosition) {
+		const auto targetKey = mwse::ReferenceTracker::getLookupKey(object);
+		for (const auto reference : references) {
+			if (reference == nullptr) {
+				continue;
+			}
+
+			const auto key = mwse::ReferenceTracker::getLookupKey(reference);
+			if (key == nullptr) {
+				continue;
+			}
+
+			if (key == targetKey) {
+				return reference;
+			}
+
+			if (reference->baseObject->objectType != ObjectType::Door) {
+				continue;
+			}
+
+			const auto travelDestination = reference->getAttachedTravelDestination();
+			const auto destinationCell = travelDestination ? travelDestination->cell : nullptr;
+			if (destinationCell == nullptr) {
+				continue;
+			}
+
+			if (destinationCell->getIsInterior()) {
+				if (visitedCells.find(destinationCell) == visitedCells.end()) {
+					linkedInteriorCells.push_back(destinationCell);
+				}
+				continue;
+			}
+
+			if (!linkedExteriorPosition.has_value() && travelDestination->destination != nullptr) {
+				linkedExteriorPosition = travelDestination->destination->position;
+			}
+		}
+
+		return nullptr;
+	}
+
+	static Reference* findClosestInteriorReferenceOfObject(PhysicalObject* object, Cell* cell, std::unordered_set<const Cell*>& visitedCells, std::optional<NI::Point3>& linkedExteriorPosition) {
+		if (object == nullptr || cell == nullptr || !visitedCells.insert(cell).second) {
+			return nullptr;
+		}
+
+		std::vector<Cell*> linkedInteriorCells;
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->persistentRefs, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->temporaryRefs, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+		if (const auto result = findClosestInteriorReferenceOfObjectInList(cell->actors, object, linkedInteriorCells, visitedCells, linkedExteriorPosition)) {
+			return result;
+		}
+
+		for (const auto linkedCell : linkedInteriorCells) {
+			const auto result = findClosestInteriorReferenceOfObject(object, linkedCell, visitedCells, linkedExteriorPosition);
+			if (result != nullptr) {
+				return result;
+			}
+		}
+
+		return nullptr;
+	}
+
+	static int getExteriorGridSearchOrder(int referenceGridX, int referenceGridY, int searchGridX, int searchGridY) {
+		const auto dx = referenceGridX - searchGridX;
+		const auto dy = referenceGridY - searchGridY;
+		const auto ring = std::max(std::abs(dx), std::abs(dy));
+		if (ring == 0) {
+			return 0;
+		}
+
+		if (dy == -ring && dx < ring) {
+			return dx + ring;
+		}
+		if (dx == ring && dy < ring) {
+			return 2 * ring + dy + ring;
+		}
+		if (dy == ring && dx > -ring) {
+			return 4 * ring + ring - dx;
+		}
+		return 6 * ring + ring - dy;
+	}
+
+	Reference* NonDynamicData::findClosestExteriorReferenceOfObject(PhysicalObject* object, NI::Point3* position, bool searchForExteriorDoorMarker, int maxGridSearchRadius) {
+		const mwse::ReferenceTracker::Lock referenceLookupLock;
+		if (object == nullptr) {
+			return nullptr;
+		}
+
+		const auto dataHandler = DataHandler::get();
+		const auto currentInteriorCell = dataHandler ? dataHandler->currentInteriorCell : nullptr;
+		if (!searchForExteriorDoorMarker && currentInteriorCell != nullptr) {
+			std::unordered_set<const Cell*> visitedCells;
+			std::optional<NI::Point3> linkedExteriorPosition;
+			const auto result = findClosestInteriorReferenceOfObject(object, currentInteriorCell, visitedCells, linkedExteriorPosition);
+			if (result != nullptr) {
+				return result;
+			}
+			if (!linkedExteriorPosition.has_value()) {
+				return nullptr;
+			}
+
+			return findClosestExteriorReferenceOfObject(object, &linkedExteriorPosition.value(), true, -1);
+		}
+
+		const auto searchGridX = position ? Cell::toGridCoord(position->x) : 0;
+		const auto searchGridY = position ? Cell::toGridCoord(position->y) : 0;
+
+		Reference* closest = nullptr;
+		auto closestGridDistance = std::numeric_limits<int>::max();
+		auto closestGridSearchOrder = std::numeric_limits<int>::max();
+
+		for (const auto reference : object->getReferences()) {
+			if (reference == nullptr || reference->getDeleted()) {
+				continue;
+			}
+
+			const auto cell = reference->getCell();
+			if (cell == nullptr || cell->getIsInterior()) {
+				continue;
+			}
+
+			const auto gridX = cell->getGridX();
+			const auto gridY = cell->getGridY();
+			const auto gridDistance = std::max(std::abs(gridX - searchGridX), std::abs(gridY - searchGridY));
+			if (maxGridSearchRadius >= 0 && gridDistance > maxGridSearchRadius) {
+				continue;
+			}
+
+			const auto gridSearchOrder = getExteriorGridSearchOrder(gridX, gridY, searchGridX, searchGridY);
+			if (closest == nullptr || gridDistance < closestGridDistance || (gridDistance == closestGridDistance && gridSearchOrder < closestGridSearchOrder)) {
+				closest = reference;
+				closestGridDistance = gridDistance;
+				closestGridSearchOrder = gridSearchOrder;
+			}
+		}
+
+		return closest;
 	}
 
 	const auto TES3_NonDynamicData_addNewObject = reinterpret_cast<signed char(__thiscall*)(NonDynamicData*, BaseObject*)>(0x4B8980);
@@ -399,9 +639,38 @@ namespace TES3 {
 		return getCellByGrid(cellX, cellY);
 	}
 
-	const auto TES3_NonDynamicData_getCellByName = reinterpret_cast<Cell * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA9B0);
+	static std::unordered_map<std::string, Cell*> cellByNameCache;
+
+	static std::string normalizeCellName(const char* name) {
+		std::string normalized = name;
+		std::transform(normalized.begin(), normalized.end(), normalized.begin(), [](unsigned char c) {
+			return static_cast<char>(std::tolower(c));
+			});
+		return normalized;
+	}
+
 	Cell* NonDynamicData::getCellByName(const char* name) {
-		return TES3_NonDynamicData_getCellByName(this, name);
+		if (name == nullptr) {
+			return nullptr;
+		}
+
+		const auto normalizedName = normalizeCellName(name);
+		const auto cacheHit = cellByNameCache.find(normalizedName);
+		if (cacheHit != cellByNameCache.end()) {
+			return cacheHit->second;
+		}
+
+		if (cells != nullptr) {
+			for (const auto cell : *cells) {
+				const auto cellID = cell ? cell->getObjectID() : nullptr;
+				if (cellID != nullptr && _stricmp(cellID, name) == 0) {
+					cellByNameCache.emplace(normalizedName, cell);
+					return cell;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	const auto TES3_NonDynamicData_getRegionById = reinterpret_cast<Region * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA610);
@@ -413,8 +682,8 @@ namespace TES3 {
 		return magicEffects->getEffectObject(id);
 	}
 
-	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, Vector3*, Vector3*, bool&, Reference*, Cell*)>(0x4C0E80);
-	Reference* NonDynamicData::createReference(PhysicalObject* object, Vector3* position, Vector3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
+	const auto TES3_NonDynamicData_createReference = reinterpret_cast<Reference*(__thiscall*)(NonDynamicData*, PhysicalObject*, NI::Point3*, NI::Point3*, bool&, Reference*, Cell*)>(0x4C0E80);
+	Reference* NonDynamicData::createReference(PhysicalObject* object, NI::Point3* position, NI::Point3* orientation, bool& cellWasCreated, Reference* existingReference, Cell* cell) {
 		return TES3_NonDynamicData_createReference(this, object, position, orientation, cellWasCreated, existingReference, cell);
 	}
 
@@ -450,11 +719,11 @@ namespace TES3 {
 		return std::ref(skills);
 	}
 
-	nonstd::span<GameFile*> NonDynamicData::getActiveMods() {
-		return nonstd::span(activeMods, activeModCount);
+	std::span<GameFile*> NonDynamicData::getActiveMods() {
+		return std::span(activeMods, activeModCount);
 	}
 
-	IteratedList<GlobalVariable*>* NonDynamicData::getGlobalsList() const {
+	NI::IteratedList<GlobalVariable*>* NonDynamicData::getGlobalsList() const {
 		if (globals == nullptr) {
 			return nullptr;
 		}
@@ -477,6 +746,19 @@ namespace TES3 {
 		return resolveObject(id.data()) != nullptr;
 	}
 
+	void NonDynamicData::clearCellByNameCache(const Cell* cell) {
+		if (cell == nullptr) {
+			return;
+		}
+
+		const auto objectID = cell->getObjectID();
+		if (objectID == nullptr) {
+			return;
+		}
+
+		cellByNameCache.erase(normalizeCellName(objectID));
+	}
+
 	//
 	// DataHandler
 	//
@@ -485,11 +767,11 @@ namespace TES3 {
 		return *reinterpret_cast<TES3::DataHandler**>(0x7C67E0);
 	}
 
-	Vector3 DataHandler::getLastExteriorPosition() const {
+	NI::Point3 DataHandler::getLastExteriorPosition() const {
 		if (currentInteriorCell && lastExteriorCellPositionX != INT_MAX && lastExteriorCellPositionY != INT_MAX) {
 			const auto x = float(lastExteriorCellPositionX * TES3::Cell::exteriorGridWidth);
 			const auto y = float(lastExteriorCellPositionY * TES3::Cell::exteriorGridWidth);
-			return Vector3(x, y, 0.0f);
+			return NI::Point3(x, y, 0.0f);
 		}
 		else {
 			auto macp = TES3::WorldController::get()->getMobilePlayer();
@@ -501,12 +783,12 @@ namespace TES3 {
 		return *reinterpret_cast<float*>(0x7B217C);
 	}
 
-	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, float*)>(0x48E410);
-	bool DataHandler::getLandHeightAtPosition(const Vector3& position, float* out_height) const {
+	const auto TES3_NonDynamicData_getLandHeightAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, float*)>(0x48E410);
+	bool DataHandler::getLandHeightAtPosition(const NI::Point3& position, float* out_height) const {
 		return TES3_NonDynamicData_getLandHeightAtPosition(this, position, out_height);
 	}
 
-	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const Vector3& position) const {
+	sol::optional<float> DataHandler::getLandHeightAtPosition_lua(const NI::Point3& position) const {
 		float result = 0.0f;
 		if (!getLandHeightAtPosition(position, &result)) {
 			return {};
@@ -514,21 +796,21 @@ namespace TES3 {
 		return result;
 	}
 
-	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const Vector3&, Vector3&)>(0x48E530);
-	bool DataHandler::getLandNormalAtPosition(const Vector3& position, Vector3& out_normal) const {
+	const auto TES3_NonDynamicData_getLandNormalAtPosition = reinterpret_cast<bool(__thiscall*)(const DataHandler*, const NI::Point3&, NI::Point3&)>(0x48E530);
+	bool DataHandler::getLandNormalAtPosition(const NI::Point3& position, NI::Point3& out_normal) const {
 		return TES3_NonDynamicData_getLandNormalAtPosition(this, position, out_normal);
 	}
 
-	sol::optional<Vector3> DataHandler::getLandNormalAtPosition_lua(const Vector3& position) const {
-		Vector3 normal;
+	sol::optional<NI::Point3> DataHandler::getLandNormalAtPosition_lua(const NI::Point3& position) const {
+		NI::Point3 normal;
 		if (!getLandNormalAtPosition(position, normal)) {
 			return {};
 		}
 		return normal;
 	}
 
-	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const Vector3&)>(0x48E660);
-	NI::TriShape* DataHandler::getLandShapeAtPosition(const Vector3& position) const {
+	const auto TES3_NonDynamicData_getLandShapeAtPosition = reinterpret_cast<NI::TriShape * (__thiscall*)(const DataHandler*, const NI::Point3&)>(0x48E660);
+	NI::TriShape* DataHandler::getLandShapeAtPosition(const NI::Point3& position) const {
 		return TES3_NonDynamicData_getLandShapeAtPosition(this, position);
 	}
 
@@ -666,8 +948,8 @@ namespace TES3 {
 	}
 
 	std::tuple<int, int> DataHandler::getCellBufferSize() const {
-		using gExteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B48>;
-		using gInteriorCellBufferSize = mwse::ExternalGlobal<int, 0x7C9B10>;
+		using gExteriorCellBufferSize = se::memory::ExternalGlobal<int, 0x7C9B48>;
+		using gInteriorCellBufferSize = se::memory::ExternalGlobal<int, 0x7C9B10>;
 		return { gInteriorCellBufferSize::get(), gExteriorCellBufferSize::get() };
 	}
 

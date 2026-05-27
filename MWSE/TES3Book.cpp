@@ -32,11 +32,11 @@ namespace TES3 {
 				if (newText) {
 					// Create our new buffer.
 					auto length = strlen(newText.value());
-					auto buffer = reinterpret_cast<char*>(mwse::tes3::_new(length + 1));
+					auto buffer = reinterpret_cast<char*>(se::memory::_new(length + 1));
 
 					// Delete the previous buffer and replace it with this one.
 					if (*BOOK_TEXT_CACHE) {
-						mwse::tes3::_delete(*BOOK_TEXT_CACHE);
+						se::memory::_delete(*BOOK_TEXT_CACHE);
 					}
 					*BOOK_TEXT_CACHE = buffer;
 

@@ -84,7 +84,7 @@ namespace TES3 {
 		return std::ref(skills);
 	}
 
-	std::reference_wrapper<Range<int>[3]> Creature::getAttacks() {
+	std::reference_wrapper<NI::Range<int>[3]> Creature::getAttacks() {
 		return std::ref(attacks);
 	}
 
@@ -123,7 +123,7 @@ namespace TES3 {
 		return baseCreature->getSkills();
 	}
 
-	std::reference_wrapper<Range<int>[3]> CreatureInstance::getBaseAttacks() const {
+	std::reference_wrapper<NI::Range<int>[3]> CreatureInstance::getBaseAttacks() const {
 		return baseCreature->getAttacks();
 	}
 

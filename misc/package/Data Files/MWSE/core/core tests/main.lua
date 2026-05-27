@@ -12,6 +12,8 @@ if (table.empty(tests)) then
 		"events",
 		"logging",
 		"mwseLoadConfig",
+		"magicEffectActivation",
+		"projectileCollisions",
 	}
 end
 

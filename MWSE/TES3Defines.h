@@ -33,7 +33,6 @@ namespace TES3 {
 	struct BodyPart;
 	struct BodyPartManager;
 	struct Book;
-	struct BoundingBox;
 	struct Cell;
 	struct Class;
 	struct Clothing;
@@ -89,7 +88,6 @@ namespace TES3 {
 	struct MagicSourceCombo;
 	struct MagicSourceInstance;
 	struct MapNote;
-	struct Matrix33;
 	struct Misc;
 	struct MobManager;
 	struct MobileActor;
@@ -140,11 +138,7 @@ namespace TES3 {
 	struct StartScript;
 	struct Static;
 	struct Statistic;
-	struct Transform;
 	struct TravelDestination;
-	struct Vector2;
-	struct Vector3;
-	struct Vector4;
 	struct VFX;
 	struct VFXManager;
 	struct WaterController;

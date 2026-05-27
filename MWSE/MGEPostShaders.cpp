@@ -1,7 +1,10 @@
 #include "MGEPostShaders.h"
 
 #include "MGEApi.h"
-#include "TES3Vectors.h"
+#include "NIMatrix33.h"
+#include "NIMatrix44.h"
+#include "NIPoint2.h"
+#include "NIPoint3.h"
 
 #include "Log.h"
 
@@ -113,7 +116,7 @@ namespace mge {
 		case '2':
 			{
 				// Float vectors of length 2.
-				TES3::Vector2 vec;
+				NI::Point2 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 2)) {
 					return sol::make_object(state, vec);
 				}
@@ -122,7 +125,7 @@ namespace mge {
 		case '3':
 			{
 				// Float vectors of length 3.
-				TES3::Vector3 vec;
+				NI::Point3 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 3)) {
 					return sol::make_object(state, vec);
 				}
@@ -131,7 +134,7 @@ namespace mge {
 		case '4':
 			{
 				// Float vectors of length 4.
-				TES3::Vector4 vec;
+				NI::Point4 vec;
 				if (api->shaderGetVector(handle, varName, &vec.x, 4)) {
 					return sol::make_object(state, vec);
 				}
@@ -140,7 +143,7 @@ namespace mge {
 		case 'm':
 			{
 				// 4x4 matrix.
-				TES3::Matrix44 mat;
+				NI::Matrix44 mat;
 				if (api->shaderGetMatrix(handle, varName, &mat.m0.x)) {
 					return sol::make_object(state, mat);
 				}
@@ -219,10 +222,10 @@ namespace mge {
 		case '2':
 			{
 				// Float vectors of length 2.
-				TES3::Vector2 vec;
+				NI::Point2 vec;
 
-				if (value.is<TES3::Vector2>()) {
-					vec = *value.as<TES3::Vector2*>();
+				if (value.is<NI::Point2>()) {
+					vec = *value.as<NI::Point2*>();
 					api->shaderSetVector(handle, varName, &vec.x, 2);
 				}
 				else if (value.is<sol::table>()) {
@@ -236,10 +239,10 @@ namespace mge {
 		case '3':
 			{
 				// Float vectors of length 3.
-				TES3::Vector3 vec;
+				NI::Point3 vec;
 
-				if (value.is<TES3::Vector3>()) {
-					vec = *value.as<TES3::Vector3*>();
+				if (value.is<NI::Point3>()) {
+					vec = *value.as<NI::Point3*>();
 					api->shaderSetVector(handle, varName, &vec.x, 3);
 				}
 				else if (value.is<sol::table>()) {
@@ -254,10 +257,10 @@ namespace mge {
 		case '4':
 			{
 				// Float vectors of length 4.
-				TES3::Vector4 vec;
+				NI::Point4 vec;
 
-				if (value.is<TES3::Vector4>()) {
-					vec = *value.as<TES3::Vector4*>();
+				if (value.is<NI::Point4>()) {
+					vec = *value.as<NI::Point4*>();
 					api->shaderSetVector(handle, varName, &vec.x, 4);
 				}
 				else if (value.is<sol::table>()) {
@@ -275,13 +278,13 @@ namespace mge {
 			// Array of vector4s.
 			auto values = value.as<sol::table>();
 			if (values != sol::nil) {
-				size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(TES3::Vector4), values.size());
-				TES3::Vector4* valueBuffer = reinterpret_cast<TES3::Vector4*>(shaderVariableAPIBuffer);
+				size_t count = std::min(sizeof(shaderVariableAPIBuffer) / sizeof(NI::Point4), values.size());
+				NI::Point4* valueBuffer = reinterpret_cast<NI::Point4*>(shaderVariableAPIBuffer);
 
 				for (auto i = 0u; i < count; ++i) {
 					sol::object item = values[i + 1];
-					if (item.is<TES3::Vector4>()) {
-						valueBuffer[i] = *item.as<TES3::Vector4*>();
+					if (item.is<NI::Point4>()) {
+						valueBuffer[i] = *item.as<NI::Point4*>();
 					}
 				}
 				static_cast<mge::MGEAPIv3*>(api)->shaderSetVectorArray(handle, varName, &valueBuffer->x, &count);
@@ -291,13 +294,13 @@ namespace mge {
 		case 'm':
 			{
 				// 4x4 matrix.
-				if (value.is<TES3::Matrix44>()) {
-					TES3::Matrix44 mat = *value.as<TES3::Matrix44*>();
+				if (value.is<NI::Matrix44>()) {
+					NI::Matrix44 mat = *value.as<NI::Matrix44*>();
 					api->shaderSetMatrix(handle, varName, &mat.m0.x);
 				}
-				else if (value.is<TES3::Matrix33*>()) {
-					auto mat33 = *value.as<TES3::Matrix33*>();
-					TES3::Matrix44 mat(mat33.m0.x, mat33.m0.y, mat33.m0.z, 0,
+				else if (value.is<NI::Matrix33*>()) {
+					auto mat33 = *value.as<NI::Matrix33*>();
+					NI::Matrix44 mat(mat33.m0.x, mat33.m0.y, mat33.m0.z, 0,
 						mat33.m1.x, mat33.m1.y, mat33.m1.z, 0,
 						mat33.m2.x, mat33.m2.y, mat33.m2.z, 0,
 						0, 0, 0, 1);

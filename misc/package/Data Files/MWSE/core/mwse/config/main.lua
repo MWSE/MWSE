@@ -60,6 +60,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("nonExclusiveKeyboard.label"),
+					description = i18n("nonExclusiveKeyboard.description"),
+					variable = {
+						id = "NonExclusiveKeyboard",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("letterboxMovies.label"),
 					description = i18n("letterboxMovies.description"),
 					variable = {

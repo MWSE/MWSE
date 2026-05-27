@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 #include "NIDefines.h"
 #include "NIAmbientLight.h"
@@ -67,26 +67,22 @@ namespace TES3 {
 		unsigned char volumeVoice; // 0x51
 		unsigned char volumeEffect; // 0x52
 		unsigned char volumeFootsteps; // 0x53
-		int volumeMedia; // 0x54
-		unsigned char soundQuality; // 0x58
-		char unknown_0x59;
-		char unknown_0x5A;
-		char unknown_0x5B;
+		float volumeMedia; // 0x54
+		int soundQuality; // 0x58
 		HWND parentWindowHandle; // 0x5C
 		HWND windowHandle; // 0x60
 		NI::DX8Renderer* renderer; // 0x64
-		NI::Color unknown_0x68; // 0x68
-		char unknown_0x74;
+		NI::Color backgroundColour; // 0x68
 		char unknown_0x75;
 		void* unknown_0x78;
 		char unknown_0x7C;
 		int unknown_0x80;
 		char resolutionModeStringsVectorTag; // 0x84
-		void* resolutionModeStringsBegin; // 0x88 - pointer to std::string
+		void* resolutionModeStringsBegin; // 0x88
 		void* resolutionModeStringsEnd; // 0x8C
 		void* resolutionModeStringsStorageEnd; // 0x90
 		void* showSceneGraphStruct; // 0x94
-		IteratedList<NI::ObjectNET*>* unknown_0x98;
+		NI::IteratedList<NI::ObjectNET*>* unknown_0x98;
 		NI::Pointer<NI::Node> worldRoot; // 0x9C
 		NI::Pointer<NI::Node> worldObjectRoot; // 0xA0
 		NI::Pointer<NI::Node> worldPickObjectRoot; // 0xA4
@@ -96,19 +92,19 @@ namespace TES3 {
 		NI::Pointer<NI::AmbientLight> activationAmbientLight; // 0xB4
 		NI::Pointer<NI::Node> gridString; // 0xB8
 		NI::Pointer<NI::Node> collideString; // 0xBC
-		void* unknown_0xC0;
-		void* unknown_0xC4;
+		NI::Pointer<NI::Object> sgPointer_C0; // 0xC0
+		NI::Pointer<NI::Object> unknown_field_C4; // 0xC4
 		NI::Pointer<NI::Node> textureString; // 0xC8
-		void* unknown_0xCC;
-		void* unknown_0xD0[3]; // SG nodes?
-		void* unknown_0xDC;
-		void* unknown_0xE0;
+		NI::Pointer<NI::Object> sgPointer_CC; // 0xCC
+		NI::Pointer<NI::Object> sgPointers_debug_animationData[3]; // 0xD0
+		NI::Pointer<NI::Object> unknown_field_DC; // 0xDC
+		NI::Pointer<NI::Object> sgPointer_E0; // 0xE0
 		NI::Pick* playerTargetPick; // 0xE4
 		Reference* playerTarget; // 0xE8
 		Reference* tooltipTarget; // 0xEC
 		NI::Pointer<NI::FogProperty> fogProperty; // 0xF0
 		int compassHeading; // 0xF4
-		void* unknown_0xF8;
+		NI::Pointer<NI::Object> sgPointer_debug_compassHeading; // 0xF8
 		NI::Color currentFogColour; // 0xFC
 		LoadScreenManager* loadScreenManager; // 0x108
 		char skipRenderingNextFrame; // 0x10C

@@ -22,7 +22,7 @@ namespace mwse {
 
 	float xSpellList::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get our next node.
-		auto node = reinterpret_cast<TES3::IteratedList<TES3::Spell*>::Node*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(mwse::Stack::getInstance().popLong());
 
 		// Arguments we will be returning.
 		long spellCount = 0;

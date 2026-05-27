@@ -2,6 +2,7 @@
 
 #include "NIDefines.h"
 
+#include "NIAccumulator.h"
 #include "NIObject.h"
 #include "NIProperty.h"
 #include "NIRect.h"

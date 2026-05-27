@@ -39,40 +39,38 @@
 
 // Standard template libraries.
 #include <algorithm>
+#include <charconv>
+#include <chrono>
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iomanip>
+#include <ios>
 #include <iostream>
+#include <istream>
 #include <list>
 #include <map>
 #include <mutex>
 #include <numeric>
+#include <optional>
 #include <ostream>
 #include <queue>
 #include <random>
+#include <regex>
+#include <set>
+#include <span>
 #include <sstream>
 #include <stack>
 #include <stddef.h>
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <future>
-#include <optional>
-#include <regex>
-
-// Required Windows APIs.
-#include <mmsystem.h>
-#include <wtypes.h>
-#include <psapi.h>
-#include <dbghelp.h>
-#include <d3d.h>
-#include <commctrl.h>
-#include <Windowsx.h>
 
 // Required C includes.
 #include <cmath>
@@ -80,9 +78,14 @@
 #include <cstring>
 #include <ctime>
 
-// 3rd party library: span-lite
-// URL: https://github.com/martinmoene/span-lite
-#include <nonstd/span.hpp>
+// Required Windows APIs.
+#include <windows.h>
+#include <windowsx.h>
+#include <wtypes.h>
+#include <mmsystem.h>
+#include <psapi.h>
+#include <dbghelp.h>
+#include <d3d8.h>
 
 // 3rd party library: toml11
 #define TOML11_PRESERVE_COMMENTS_BY_DEFAULT
@@ -96,7 +99,9 @@
 #include <dsound.h>
 
 // Core lua binding library.
-//#include <sol/sol.hpp>
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+#include <sol/sol.hpp>
+#endif
 
 // Undefine anything we don't care about otherwise.
 #undef far
@@ -104,3 +109,4 @@
 #undef PlaySound
 #undef max
 #undef min
+#undef ALPHA_MASK

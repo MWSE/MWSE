@@ -12,6 +12,7 @@
 #include "NIGeometry.h"
 #include "NIMatrix33.h"
 #include "NINode.h"
+#include "NIPoint3.h"
 #include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
@@ -59,8 +60,8 @@ namespace se::cs::dialog::render_window {
 
 	using gSnapGrid = memory::ExternalGlobal<int, 0x6CE9A8>;
 	using gSnapAngleInDegrees = memory::ExternalGlobal<int, 0x6CE9AC>;
-	using gCumulativeRotationValues = memory::ExternalGlobal<NI::Vector3, 0x6CF760>;
-	using gPreviousCumulativeRotationValues = memory::ExternalGlobal<NI::Vector3, 0x6CF4A8>;
+	using gCumulativeRotationValues = memory::ExternalGlobal<NI::Point3, 0x6CF760>;
+	using gPreviousCumulativeRotationValues = memory::ExternalGlobal<NI::Point3, 0x6CF4A8>;
 
 	using gRenderWindowPick = memory::ExternalGlobal<NI::Pick, 0x6CF528>;
 
@@ -79,6 +80,187 @@ namespace se::cs::dialog::render_window {
 	}
 
 	using gLandscapeEditDisc = memory::ExternalGlobal<NI::Lines*, 0x6CF4B4>;
+	using gLandscapeEditRadius = memory::ExternalGlobal<int, 0x6CE9CC>;
+	using gCurrentLandData = memory::ExternalGlobal<Land*, 0x6CF7AC>;
+	using gSelectedLandTexture = memory::ExternalGlobal<LandTexture*, 0x6CE9D4>;
+
+	constexpr float LANDSCAPE_BRUSH_SAMPLE_STEP = 128.0f;
+	constexpr int LAND_TEXTURE_TILES_PER_SIDE = 16;
+	constexpr unsigned short LAND_DEFAULT_TEXTURE_INDEX = 0xFFFF;
+
+	struct TexturePaintTileInfo {
+		float landLocalX; // 0x0
+		float landLocalY; // 0x4
+		float blockLocalX; // 0x8
+		float blockLocalY; // 0xC
+		int blockX; // 0x10
+		int blockY; // 0x14
+		int blockIndex; // 0x18
+		float quadLocalX; // 0x1C
+		float quadLocalY; // 0x20
+		int quadX; // 0x24
+		int quadY; // 0x28
+		int textureTileIndex; // 0x2C
+		NI::Point3 closestVertexWorldPosition; // 0x30
+		int closestVertexIndex; // 0x3C
+		int triangleVertexIndices[3]; // 0x40
+		BYTE triangleFlags[2]; // 0x4C
+		BYTE padding_0x4E[2];
+	};
+	static_assert(sizeof(TexturePaintTileInfo) == 0x50, "TexturePaintTileInfo failed size validation");
+	static_assert(offsetof(TexturePaintTileInfo, blockIndex) == 0x18, "TexturePaintTileInfo::blockIndex failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, textureTileIndex) == 0x2C, "TexturePaintTileInfo::textureTileIndex failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, closestVertexWorldPosition) == 0x30, "TexturePaintTileInfo::closestVertexWorldPosition failed offset validation");
+	static_assert(offsetof(TexturePaintTileInfo, triangleFlags) == 0x4C, "TexturePaintTileInfo::triangleFlags failed offset validation");
+
+	struct TexturePaintTileKey {
+		Land* land = nullptr;
+		int gridX = 0;
+		int gridY = 0;
+		int blockIndex = 0;
+		int textureTileIndex = 0;
+
+		bool operator==(const TexturePaintTileKey& rhs) const {
+			return land == rhs.land
+				&& gridX == rhs.gridX
+				&& gridY == rhs.gridY
+				&& blockIndex == rhs.blockIndex
+				&& textureTileIndex == rhs.textureTileIndex;
+		}
+	};
+
+	struct TexturePaintTileKeyHasher {
+		std::size_t operator()(const TexturePaintTileKey& key) const {
+			auto hash = std::hash<Land*>{}(key.land);
+
+			hash ^= std::hash<int>{}(key.gridX) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.gridY) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.blockIndex) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			hash ^= std::hash<int>{}(key.textureTileIndex) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+
+			return hash;
+		}
+	};
+
+	struct TexturePaintTarget {
+		TexturePaintTileKey key;
+		TexturePaintTileInfo tileInfo;
+	};
+
+	struct TexturePaintDragState {
+		LandTexture* lastSelectedTexture = nullptr;
+		int lastRadius = 0;
+		std::unordered_set<TexturePaintTileKey, TexturePaintTileKeyHasher> paintedTiles;
+
+		TexturePaintDragState() {
+			paintedTiles.reserve(256);
+		}
+
+		void reset() {
+			lastSelectedTexture = nullptr;
+			lastRadius = 0;
+			paintedTiles.clear();
+		}
+
+		void sync(LandTexture* selectedTexture, int radius) {
+			if (lastSelectedTexture == selectedTexture && lastRadius == radius) {
+				return;
+			}
+
+			reset();
+			lastSelectedTexture = selectedTexture;
+			lastRadius = radius;
+		}
+	};
+
+	TexturePaintDragState texturePaintDragState;
+
+	using LandWorldPosToGridAndLandDataFn = bool(__thiscall*)(DataHandler*, NI::Point3*, LandTexture**);
+	using LandWorldPosToTileInfoFn = bool(__thiscall*)(Land*, TexturePaintTileInfo*, NI::Point3*, bool);
+	using LandApplyTextureByWorldPosFn = void(__thiscall*)(Land*, NI::Point3*);
+	using LandApplyTextureToTileFn = bool(__thiscall*)(Land*, TexturePaintTileInfo*);
+
+	bool isLandscapeTexturePaintModeActive() {
+		using landscape_edit_settings_window::getEditLandscapeColor;
+		using landscape_edit_settings_window::getFlattenLandscapeVertices;
+		using landscape_edit_settings_window::getLandscapeEditingEnabled;
+		using landscape_edit_settings_window::getSoftenLandscapeVertices;
+
+		return getLandscapeEditingEnabled()
+			&& !getEditLandscapeColor()
+			&& !getFlattenLandscapeVertices()
+			&& !getSoftenLandscapeVertices();
+	}
+
+	bool isValidTexturePaintTileInfo(const TexturePaintTileInfo& tileInfo) {
+		const auto blockIndex = tileInfo.blockIndex;
+		const auto textureTileIndex = tileInfo.textureTileIndex;
+
+		return blockIndex >= 0
+			&& blockIndex < LAND_TEXTURE_TILES_PER_SIDE
+			&& textureTileIndex >= 0
+			&& textureTileIndex < LAND_TEXTURE_TILES_PER_SIDE;
+	}
+
+	bool getTexturePaintTarget(
+		NI::Point3& worldPos,
+		LandWorldPosToGridAndLandDataFn worldPosToGridAndLandData,
+		LandWorldPosToTileInfoFn worldPosToTileInfo,
+		TexturePaintTarget& target
+	) {
+		LandTexture* currentTexture = nullptr;
+		if (!worldPosToGridAndLandData(DataHandler::get(), &worldPos, &currentTexture)) {
+			return false;
+		}
+
+		const auto land = gCurrentLandData::get();
+		if (land == nullptr) {
+			return false;
+		}
+
+		TexturePaintTileInfo tileInfo;
+		if (!worldPosToTileInfo(land, &tileInfo, &worldPos, true)) {
+			return false;
+		}
+
+		if (land->sceneNode == nullptr) {
+			return false;
+		}
+
+		// Match Land::applyTextureByWorldPos: snap once, then resolve again from the texture tile center.
+		NI::Point3 tileCenter;
+		tileCenter.x = (static_cast<float>(static_cast<int>(tileInfo.landLocalX * 0.001953125f)) * 512.0f)
+			+ 256.0f
+			+ land->sceneNode->localTranslate.x;
+		tileCenter.y = (static_cast<float>(static_cast<int>(tileInfo.landLocalY * 0.001953125f)) * 512.0f)
+			+ 256.0f
+			+ land->sceneNode->localTranslate.y;
+		tileCenter.z = worldPos.z;
+
+		if (!worldPosToTileInfo(land, &tileInfo, &tileCenter, true)) {
+			return false;
+		}
+
+		if (!isValidTexturePaintTileInfo(tileInfo)) {
+			return false;
+		}
+
+		target.key.land = land;
+		target.key.gridX = land->gridX;
+		target.key.gridY = land->gridY;
+		target.key.blockIndex = tileInfo.blockIndex;
+		target.key.textureTileIndex = tileInfo.textureTileIndex;
+		target.tileInfo = tileInfo;
+		return true;
+	}
+
+	bool texturePaintTargetMatchesExpectedTexture(const TexturePaintTileKey& key, unsigned short expectedTextureIndex) {
+		return key.land->textureIndices[key.blockIndex][key.textureTileIndex] == expectedTextureIndex;
+	}
+
+	void resetTexturePaintDragState() {
+		texturePaintDragState.reset();
+	}
 
 	void updateLandscapeCircleWidget() {
 		const auto widget = gLandscapeEditDisc::get();
@@ -189,7 +371,7 @@ namespace se::cs::dialog::render_window {
 		int mipmapSkipLevel; // 0x34
 		int presentationInterval; // 0x38
 		float gamma; // 0x3C
-		NI::Vector3 unknown_0x40;
+		NI::Point3 unknown_0x40;
 		NI::Pointer<NI::Node> node; // 0x4C
 		NI::Renderer* renderer; // 0x50
 		int unknown_0x54;
@@ -223,13 +405,13 @@ namespace se::cs::dialog::render_window {
 	float getHoveredSurfaceDistance() {
 		auto camera = RenderController::get()->camera;
 
-		NI::Vector3 origin;
-		NI::Vector3 direction;
+		NI::Point3 origin;
+		NI::Point3 direction;
 		if (!camera->windowPointToRay(lastCursorPosX, lastCursorPosY, origin, direction)) {
 			return 0.0;
 		}
 
-		NI::Vector3 intersection;
+		NI::Point3 intersection;
 		float zDistObject = 0.0f;
 		float zDistLandscape = 0.0f;
 
@@ -259,9 +441,9 @@ namespace se::cs::dialog::render_window {
 
 	struct CameraPanContext {
 		POINT initialCursorPosition;
-		NI::Vector3 initialPosition;
-		NI::Vector3 panDDX;
-		NI::Vector3 panDDY;
+		NI::Point3 initialPosition;
+		NI::Point3 panDDX;
+		NI::Point3 panDDY;
 
 		bool setup() {
 			auto camera = RenderController::get()->camera;
@@ -324,7 +506,7 @@ namespace se::cs::dialog::render_window {
 				}
 
 				// Calculate the vector from initial mouse position to current.
-				NI::Vector3 difference = (
+				NI::Point3 difference = (
 					context.panDDX * (float)(cursorPos.x - context.initialCursorPosition.x) +
 					context.panDDY * (float)(cursorPos.y - context.initialCursorPosition.y)
 				);
@@ -402,7 +584,7 @@ namespace se::cs::dialog::render_window {
 
 		// Treat cumulativeRot as rotation vector (axis * angle)
 		float rawAngle = cumulativeRot.length();
-		NI::Vector3 axis(0.0f, 0.0f, 1.0f);  // Default to Z axis
+		NI::Point3 axis(0.0f, 0.0f, 1.0f);  // Default to Z axis
 
 		if (rawAngle > 0.0001f) {
 			axis = cumulativeRot / rawAngle;
@@ -442,7 +624,7 @@ namespace se::cs::dialog::render_window {
 				auto newRotation = userRotation * oldRotation;
 
 				// Extract Euler angles for reference orientation storage.
-				NI::Vector3 orientation;
+				NI::Point3 orientation;
 				{
 					orientation.y = asin(-newRotation.m0.z);
 					if (cos(orientation.y) != 0) {
@@ -559,7 +741,7 @@ namespace se::cs::dialog::render_window {
 
 	void __cdecl Patch_FixDropToSurface_GetLowVertices(const NI::AVObject* object, float nearToZ) {
 		constexpr auto NEAR_THRESHOLD = 1.0f;
-		const auto gNearVertexArray = *reinterpret_cast<NI::TArray<NI::Vector3*>**>(0x6CF7C4);
+		const auto gNearVertexArray = *reinterpret_cast<NI::TArray<NI::Point3*>**>(0x6CF7C4);
 
 		auto processChild = [&](const NI::AVObject* child) {
 			if (!child) {
@@ -611,7 +793,7 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
-	bool __fastcall Patch_FixDropToSurface_PickObjects(NI::Pick* pick, DWORD _EDX_, NI::Vector3* origin, NI::Vector3* direction, bool append, float maxDistance) {
+	bool __fastcall Patch_FixDropToSurface_PickObjects(NI::Pick* pick, DWORD _EDX_, NI::Point3* origin, NI::Point3* direction, bool append, float maxDistance) {
 		// Perform pick with skin deforms instead.
 		return pick->pickObjectsWithSkinDeforms(origin, direction, append, maxDistance);
 	}
@@ -660,8 +842,8 @@ namespace se::cs::dialog::render_window {
 		auto reference = selectionData->firstTarget->reference;
 		reference->sceneNode->setAppCulled(true);
 
-		NI::Vector3 origin;
-		NI::Vector3 direction;
+		NI::Point3 origin;
+		NI::Point3 direction;
 		if (rendererController->camera->windowPointToRay(lastCursorPosX, lastCursorPosY, origin, direction)) {
 			direction.normalize();
 
@@ -678,26 +860,26 @@ namespace se::cs::dialog::render_window {
 					reference->setAsEdited();
 
 					// Set position.
-					NI::Vector3 offset;
+					NI::Point3 offset;
 					const auto scale = reference->getScale();
 					switch (refSnappingAxis) {
 					case SnappingAxis::POSITIVE_X:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.x) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.x) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_X:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.x) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.x) * scale;
 						break;
 					case SnappingAxis::POSITIVE_Y:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.y) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.y) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_Y:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.y) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.y) * scale;
 						break;
 					case SnappingAxis::POSITIVE_Z:
-						offset = firstResult->normal * std::abs(object->boundingBox.min.z) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.minimum.z) * scale;
 						break;
 					case SnappingAxis::NEGATIVE_Z:
-						offset = firstResult->normal * std::abs(object->boundingBox.max.z) * scale;
+						offset = firstResult->normal * std::abs(object->boundingBox.maximum.z) * scale;
 						break;
 					}
 
@@ -709,7 +891,7 @@ namespace se::cs::dialog::render_window {
 
 					// Set rotation.
 					if (object->canRotateOnAllAxes()) {
-						NI::Vector3 orientation;
+						NI::Point3 orientation;
 						switch (refSnappingAxis) {
 						case SnappingAxis::POSITIVE_X:
 						case SnappingAxis::NEGATIVE_X:
@@ -785,8 +967,8 @@ namespace se::cs::dialog::render_window {
 	}
 
 	struct MovementContext {
-		NI::Vector3 basePosition;
-		NI::Vector3 cursorOffset;
+		NI::Point3 basePosition;
+		NI::Point3 cursorOffset;
 	};
 	static auto movementContext = std::optional<MovementContext>();
 
@@ -813,8 +995,8 @@ namespace se::cs::dialog::render_window {
 		}
 
 		// Calculate raycast origin/direction from cursor.
-		NI::Vector3 rayOrigin;
-		NI::Vector3 rayDirection;
+		NI::Point3 rayOrigin;
+		NI::Point3 rayDirection;
 		auto camera = RenderController::get()->camera;
 		if (!camera->windowPointToRay(lastCursorPosX, lastCursorPosY, rayOrigin, rayDirection)) {
 			return 0;
@@ -825,7 +1007,7 @@ namespace se::cs::dialog::render_window {
 		
 		// Calculate the plane that we will raycast against.
 		auto planeOrigin = selectionData->bound.center;
-		auto planeNormal = NI::Vector3(0, 0, 1);
+		auto planeNormal = NI::Point3(0, 0, 1);
 
 		// Preserve the cursor offset and starting position.
 		if (!movementContext.has_value()) {
@@ -837,7 +1019,7 @@ namespace se::cs::dialog::render_window {
 			}
 			else {
 				context.basePosition = planeOrigin;
-				context.cursorOffset = NI::Vector3();
+				context.cursorOffset = NI::Point3();
 			}
 			movementContext = std::move(context);
 		}
@@ -979,8 +1161,8 @@ namespace se::cs::dialog::render_window {
 	//
 
 	Reference* __cdecl Patch_FixPickAgainstSkinnedObjects(SceneGraphController* sgController, RenderController* renderController, int screenX, int screenY) {
-		NI::Vector3 origin;
-		NI::Vector3 direction;
+		NI::Point3 origin;
+		NI::Point3 direction;
 		if (!renderController->camera->windowPointToRay(screenX, screenY, origin, direction)) {
 			return nullptr;
 		}
@@ -1200,8 +1382,8 @@ namespace se::cs::dialog::render_window {
 		auto rendererController = RenderController::get();
 		auto sceneGraphController = SceneGraphController::get();
 
-		NI::Vector3 origin;
-		NI::Vector3 direction;
+		NI::Point3 origin;
+		NI::Point3 direction;
 		if (!rendererController->camera->windowPointToRay(lastCursorPosX, lastCursorPosY, origin, direction)) {
 			return nullptr;
 		}
@@ -1277,6 +1459,368 @@ namespace se::cs::dialog::render_window {
 		}
 
 		return setSelectTexture(texture);
+	}
+
+	bool __fastcall Patch_ResolveTexturePaintTarget(DataHandler* dataHandler, DWORD _EDX_, NI::Point3* worldPos, LandTexture** currentTexture) {
+		const auto Land__worldPosToGridAndLandData = reinterpret_cast<bool(__thiscall*)(DataHandler*, NI::Point3*, LandTexture**)>(0x4A46C0);
+
+		const auto result = Land__worldPosToGridAndLandData(dataHandler, worldPos, currentTexture);
+		if (gLandscapeEditRadius::get() > 1) {
+			*currentTexture = nullptr;
+		}
+
+		return result;
+	}
+
+	void __fastcall Patch_ApplyTextureWithRadius(Land* land, DWORD _EDX_, NI::Point3* worldPos) {
+		const auto Land__worldPosToGridAndLandData = reinterpret_cast<LandWorldPosToGridAndLandDataFn>(0x4A46C0);
+		const auto Land__worldPosToTileInfo = reinterpret_cast<LandWorldPosToTileInfoFn>(0x511A20);
+		const auto Land__applyTextureByWorldPos = reinterpret_cast<LandApplyTextureByWorldPosFn>(0x5191F0);
+		const auto Land__applyTextureToTile = reinterpret_cast<LandApplyTextureToTileFn>(0x519300);
+		const auto radius = gLandscapeEditRadius::get();
+
+		if (radius <= 1) {
+			Land__applyTextureByWorldPos(land, worldPos);
+			return;
+		}
+
+		const auto selectedTexture = gSelectedLandTexture::get();
+		const auto activeDragCache = isLandscapeTexturePaintModeActive() && selectedTexture != nullptr;
+		if (!activeDragCache) {
+			resetTexturePaintDragState();
+		}
+		else {
+			texturePaintDragState.sync(selectedTexture, radius);
+		}
+
+		const auto extent = float(radius) * LANDSCAPE_BRUSH_SAMPLE_STEP;
+		const auto extentSquared = extent * extent;
+		const auto centerX = worldPos->x;
+		const auto centerY = worldPos->y;
+		const auto expectedTextureIndex = selectedTexture ? static_cast<unsigned short>(selectedTexture->index) : LAND_DEFAULT_TEXTURE_INDEX;
+		auto& dragState = texturePaintDragState;
+		std::unordered_set<TexturePaintTileKey, TexturePaintTileKeyHasher> stampTiles;
+		std::vector<TexturePaintTarget> targets;
+
+		stampTiles.reserve(256);
+		targets.reserve(256);
+
+		for (auto y = centerY - extent; y < centerY + extent; y += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+			for (auto x = centerX - extent; x < centerX + extent; x += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+				const auto dx = centerX - x;
+				const auto dy = centerY - y;
+				if (dx * dx + dy * dy > extentSquared) {
+					continue;
+				}
+
+				NI::Point3 tilePosition;
+				tilePosition.x = x;
+				tilePosition.y = y;
+				tilePosition.z = worldPos->z;
+
+				TexturePaintTarget target;
+				if (!getTexturePaintTarget(tilePosition, Land__worldPosToGridAndLandData, Land__worldPosToTileInfo, target)) {
+					continue;
+				}
+
+				if (!stampTiles.insert(target.key).second) {
+					continue;
+				}
+
+				if (texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+					if (activeDragCache) {
+						dragState.paintedTiles.insert(target.key);
+					}
+					continue;
+				}
+
+				// The drag cache is only a hint; direct land data always wins.
+				if (activeDragCache) {
+					dragState.paintedTiles.erase(target.key);
+				}
+
+				targets.push_back(target);
+			}
+		}
+
+		for (const auto& target : targets) {
+			if (texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+				if (activeDragCache) {
+					dragState.paintedTiles.insert(target.key);
+				}
+				continue;
+			}
+
+			auto tileInfo = target.tileInfo;
+			if (Land__applyTextureToTile(target.key.land, &tileInfo)
+				&& activeDragCache
+				&& texturePaintTargetMatchesExpectedTexture(target.key, expectedTextureIndex)) {
+				dragState.paintedTiles.insert(target.key);
+			}
+		}
+
+		LandTexture* currentTexture = nullptr;
+		Land__worldPosToGridAndLandData(DataHandler::get(), worldPos, &currentTexture);
+	}
+
+	//
+	// Patch: Iterative vertex color painting with strength + blend modes.
+	//
+
+	enum class VertexColorBlendMode {
+		Mix,
+		Darken,
+		Lighten,
+		Multiply,
+		Screen,
+		Add,
+		Subtract,
+	};
+
+	VertexColorBlendMode getConfiguredBlendMode() {
+		const auto& name = settings.landscape_window.vertex_color_blend_mode;
+		if (name == "Darken") return VertexColorBlendMode::Darken;
+		if (name == "Lighten") return VertexColorBlendMode::Lighten;
+		if (name == "Multiply") return VertexColorBlendMode::Multiply;
+		if (name == "Screen") return VertexColorBlendMode::Screen;
+		if (name == "Add") return VertexColorBlendMode::Add;
+		if (name == "Subtract") return VertexColorBlendMode::Subtract;
+		return VertexColorBlendMode::Mix;
+	}
+
+	unsigned char blendChannel(unsigned char current, unsigned char paint, VertexColorBlendMode mode) {
+		int result;
+		switch (mode) {
+		case VertexColorBlendMode::Darken:
+			result = std::min<int>(current, paint);
+			break;
+		case VertexColorBlendMode::Lighten:
+			result = std::max<int>(current, paint);
+			break;
+		case VertexColorBlendMode::Multiply:
+			result = (int(current) * int(paint)) / 255;
+			break;
+		case VertexColorBlendMode::Screen:
+			result = 255 - ((255 - int(current)) * (255 - int(paint))) / 255;
+			break;
+		case VertexColorBlendMode::Add:
+			result = int(current) + int(paint);
+			break;
+		case VertexColorBlendMode::Subtract:
+			result = int(current) - int(paint);
+			break;
+		case VertexColorBlendMode::Mix:
+		default:
+			result = paint;
+			break;
+		}
+		return static_cast<unsigned char>(std::clamp(result, 0, 255));
+	}
+
+	using gPaintLandModifiedFlag = memory::ExternalGlobal<int, 0x6CE938>;
+
+	bool __fastcall Patch_PaintVertexColors(Land* land, DWORD _EDX_, NI::Point3* worldPos, NI::PackedColor* paintColor) {
+		if (land == nullptr) {
+			return false;
+		}
+
+		LandTileInfo centerInfo;
+		if (!land->worldPosToTileInfo(&centerInfo, worldPos, true)) {
+			return false;
+		}
+
+		const auto strength = std::clamp(settings.landscape_window.vertex_color_strength, 0, 100) / 100.0f;
+		const auto blendMode = getConfiguredBlendMode();
+
+		const auto radius = float(gLandscapeEditRadius::get()) * LANDSCAPE_BRUSH_SAMPLE_STEP;
+		if (radius <= 0.0f) {
+			return false;
+		}
+
+		const float cellMinX = float(land->gridX) * 8192.0f;
+		const float cellMaxX = cellMinX + 8192.0f;
+		const float cellMinY = float(land->gridY) * 8192.0f;
+		const float cellMaxY = cellMinY + 8192.0f;
+
+		const float brushMinX = centerInfo.nearestVertexWorldX - radius;
+		const float brushMaxX = centerInfo.nearestVertexWorldX + radius;
+		const float brushMinY = centerInfo.nearestVertexWorldY - radius;
+		const float brushMaxY = centerInfo.nearestVertexWorldY + radius;
+
+		// Decide which cardinal/diagonal neighbors are needed.
+		// xDir: -1 west, +1 east, 0 none. yDir similar.
+		int xDir = 0;
+		if (brushMinX <= cellMinX) xDir = -1;
+		else if (brushMaxX >= cellMaxX) xDir = 1;
+
+		int yDir = 0;
+		if (brushMinY <= cellMinY) yDir = -1;
+		else if (brushMaxY >= cellMaxY) yDir = 1;
+
+		Land* westLand = nullptr;
+		Land* eastLand = nullptr;
+		Land* southLand = nullptr;
+		Land* northLand = nullptr;
+		Land* swLand = nullptr;
+		Land* seLand = nullptr;
+		Land* nwLand = nullptr;
+		Land* neLand = nullptr;
+
+		const auto recordHandler = DataHandler::get()->recordHandler;
+		const auto getNeighborLand = [&](int dx, int dy) -> Land* {
+			auto cell = recordHandler->getCellByGridPosition(land->gridX + dx, land->gridY + dy);
+			if (cell == nullptr) {
+				return nullptr;
+			}
+			return cell->getOrCreateLand();
+		};
+
+		if (xDir == -1) westLand = getNeighborLand(-1, 0);
+		else if (xDir == 1) eastLand = getNeighborLand(1, 0);
+
+		if (yDir == -1) southLand = getNeighborLand(0, -1);
+		else if (yDir == 1) northLand = getNeighborLand(0, 1);
+
+		if (xDir != 0 && yDir != 0) {
+			if (xDir == -1 && yDir == -1) swLand = getNeighborLand(-1, -1);
+			else if (xDir ==  1 && yDir == -1) seLand = getNeighborLand( 1, -1);
+			else if (xDir == -1 && yDir ==  1) nwLand = getNeighborLand(-1,  1);
+			else if (xDir ==  1 && yDir ==  1) neLand = getNeighborLand( 1,  1);
+		}
+
+		// Touched land set for end-of-pass refresh/dirty handling.
+		Land* touchedLands[4] = { land, nullptr, nullptr, nullptr };
+		int touchedCount = 1;
+		if (xDir == -1 && westLand) touchedLands[touchedCount++] = westLand;
+		else if (xDir == 1 && eastLand) touchedLands[touchedCount++] = eastLand;
+		if (yDir == -1 && southLand) touchedLands[touchedCount++] = southLand;
+		else if (yDir == 1 && northLand) touchedLands[touchedCount++] = northLand;
+		if (xDir != 0 && yDir != 0) {
+			Land* diag = nullptr;
+			if (xDir == -1 && yDir == -1) diag = swLand;
+			else if (xDir ==  1 && yDir == -1) diag = seLand;
+			else if (xDir == -1 && yDir ==  1) diag = nwLand;
+			else if (xDir ==  1 && yDir ==  1) diag = neLand;
+			if (diag) touchedLands[touchedCount++] = diag;
+		}
+
+		const auto centerWorldX = worldPos->x;
+		const auto centerWorldY = worldPos->y;
+
+		// Per-sample land selection cache so we avoid recomputing the same quadrant repeatedly.
+		int lastQuadX = 2;
+		int lastQuadY = 2;
+		Land* sampleLand = land;
+
+		NI::Point3 samplePos;
+		samplePos.z = 0.0f;
+
+		for (float sampleX = brushMinX; sampleX < brushMaxX; sampleX += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+			for (float sampleY = brushMinY; sampleY < brushMaxY; sampleY += LANDSCAPE_BRUSH_SAMPLE_STEP) {
+				// Determine which cell quadrant this sample falls in, mirroring vanilla:
+				//   sample.x < cellMinX -> -1 (west)
+				//   sample.x in [cellMinX, cellMaxX] -> 0 (self)
+				//   sample.x > cellMaxX -> +1 (east)
+				int qx;
+				if (sampleX < cellMinX) qx = -1;
+				else if (sampleX > cellMaxX) qx = 1;
+				else qx = 0;
+
+				int qy;
+				if (sampleY < cellMinY) qy = -1;
+				else if (sampleY > cellMaxY) qy = 1;
+				else qy = 0;
+
+				if (qx != lastQuadX || qy != lastQuadY) {
+					lastQuadX = qx;
+					lastQuadY = qy;
+					if (qx == -1) {
+						if (qy == -1) sampleLand = swLand;
+						else if (qy == 1) sampleLand = nwLand;
+						else sampleLand = westLand;
+					}
+					else if (qx == 1) {
+						if (qy == -1) sampleLand = seLand;
+						else if (qy == 1) sampleLand = neLand;
+						else sampleLand = eastLand;
+					}
+					else {
+						if (qy == -1) sampleLand = southLand;
+						else if (qy == 1) sampleLand = northLand;
+						else sampleLand = land;
+					}
+				}
+
+				if (sampleLand == nullptr) {
+					continue;
+				}
+
+				samplePos.x = sampleX;
+				samplePos.y = sampleY;
+
+				const auto dx = centerWorldX - sampleX;
+				const auto dy = centerWorldY - sampleY;
+				const auto distance = std::sqrt(dx * dx + dy * dy);
+				if (distance > radius) {
+					continue;
+				}
+
+				LandTileInfo sampleInfo;
+				if (!sampleLand->worldPosToTileInfo(&sampleInfo, &samplePos, false)) {
+					continue;
+				}
+
+				NI::PackedColor currentColor;
+				if (!sampleLand->getVertexColorAtTileInfo(&sampleInfo, &currentColor)) {
+					continue;
+				}
+
+				const auto falloff = (radius - distance) / radius;
+				const auto opacity = falloff * strength;
+
+				const auto blendR = blendChannel(currentColor.r, paintColor->r, blendMode);
+				const auto blendG = blendChannel(currentColor.g, paintColor->g, blendMode);
+				const auto blendB = blendChannel(currentColor.b, paintColor->b, blendMode);
+
+				const auto lerpChannel = [opacity](unsigned char current, unsigned char blend) -> unsigned char {
+					const auto value = float(current) + (float(blend) - float(current)) * opacity;
+					return static_cast<unsigned char>(std::clamp(int(value), 0, 255));
+				};
+
+				NI::PackedColor outColor;
+				outColor.r = lerpChannel(currentColor.r, blendR);
+				outColor.g = lerpChannel(currentColor.g, blendG);
+				outColor.b = lerpChannel(currentColor.b, blendB);
+				outColor.a = currentColor.a;
+
+				sampleLand->setVertexColorAtTile(&sampleInfo, &outColor, false);
+			}
+		}
+
+		for (int i = 0; i < touchedCount; ++i) {
+			auto touched = touchedLands[i];
+			if (touched == nullptr) {
+				continue;
+			}
+			touched->refreshGeometry();
+			touched->flags |= 2u;
+			touched->notifyModified();
+		}
+
+		const auto editorLandscapeRoot = DataHandler::get()->editorLandscapeRoot;
+		if (editorLandscapeRoot) {
+			editorLandscapeRoot->updateProperties();
+			editorLandscapeRoot->updateEffects();
+		}
+
+		if (gPaintLandModifiedFlag::get()) {
+			const auto hWnd = gRenderWindowHandle::get();
+			if (hWnd) {
+				SendMessageA(hWnd, 0x409u, 0, 1);
+			}
+		}
+
+		return true;
 	}
 
 	void alignSelection(bool posX, bool posY, bool posZ, bool rotX, bool rotY, bool rotZ, bool scale) {
@@ -1447,7 +1991,7 @@ namespace se::cs::dialog::render_window {
 			quickstart.position[2] = renderController->camera->worldTransform.translation.z;
 
 			// Store camera orientation as euler angle.
-			NI::Vector3 orientationVector;
+			NI::Point3 orientationVector;
 			renderController->node->getLocalRotationMatrix()->toEulerXYZ(&orientationVector);
 			quickstart.orientation[0] = orientationVector.x;
 			quickstart.orientation[1] = orientationVector.y;
@@ -2263,6 +2807,8 @@ namespace se::cs::dialog::render_window {
 	void PatchDialogProc_BeforeRMouseButtonDown(DialogProcContext& context) {
 		constexpr auto comboPickLandscapeTexture = MK_CONTROL | MK_RBUTTON;
 		const auto controlState = context.getWParam();
+		resetTexturePaintDragState();
+
 		if ((controlState & comboPickLandscapeTexture) == comboPickLandscapeTexture) {
 			if (PickLandscapeTexture(context.getWindowHandle())) {
 				context.setResult(TRUE);
@@ -2361,15 +2907,17 @@ namespace se::cs::dialog::render_window {
 	void PatchDialogProc_AfterRMouseButtonUp(DialogProcContext& context) {
 		using windows::isControlDown;
 
+		resetTexturePaintDragState();
+
 		if (isControlDown()) {
 			grid::hide();
 		}
 	}
 
 	void focusReference(const Reference* reference) {
-		const auto CS_DataHandler_403A8F = reinterpret_cast<void(__thiscall*)(DataHandler*, Cell*, const NI::Vector3*)>(0x403A8F);
-		const auto CS_DataHandler_4034B8 = reinterpret_cast<void(__thiscall*)(DataHandler*, const NI::Vector3*)>(0x4034B8);
-		const auto CS_SendCommandToLoadCell = reinterpret_cast<void(__cdecl*)(const NI::Vector3*, const Reference*)>(0x403A12);
+		const auto CS_DataHandler_403A8F = reinterpret_cast<void(__thiscall*)(DataHandler*, Cell*, const NI::Point3*)>(0x403A8F);
+		const auto CS_DataHandler_4034B8 = reinterpret_cast<void(__thiscall*)(DataHandler*, const NI::Point3*)>(0x4034B8);
+		const auto CS_SendCommandToLoadCell = reinterpret_cast<void(__cdecl*)(const NI::Point3*, const Reference*)>(0x403A12);
 
 		const auto dataHandler = DataHandler::get();
 		const auto cell = reference->getCell();
@@ -2626,6 +3174,10 @@ namespace se::cs::dialog::render_window {
 		case WM_TIMER:
 			PatchDialogProc_BeforeTimer(context);
 			break;
+		case WM_ERASEBKGND:
+			// The Render Window is drawn by DirectX. Letting Windows erase the dialog
+			// background exposes a white frame during exterior grid recentering.
+			return 1;
 		}
 
 		// Call original function, or return early if we already have a result.
@@ -2688,6 +3240,18 @@ namespace se::cs::dialog::render_window {
 
 		// Patch: Improve multi-reference scaling.
 		genCallEnforced(0x45EE3A, 0x404949, reinterpret_cast<DWORD>(Patch_ReplaceScalingLogic));
+
+		// Patch: Apply landscape texture painting to all tiles in the edit radius.
+		genCallEnforced(0x45E055, 0x401398, reinterpret_cast<DWORD>(Patch_ResolveTexturePaintTarget));
+		genCallEnforced(0x45E0A6, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
+		genCallEnforced(0x45EB5C, 0x401398, reinterpret_cast<DWORD>(Patch_ResolveTexturePaintTarget));
+		genCallEnforced(0x45EBAD, 0x404903, reinterpret_cast<DWORD>(Patch_ApplyTextureWithRadius));
+
+		// Patch: Iterative vertex color painting with strength + blend modes.
+		genCallEnforced(0x45D132, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45E00F, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45E7D3, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
+		genCallEnforced(0x45EB16, 0x401753, reinterpret_cast<DWORD>(Patch_PaintVertexColors));
 
 		// Patch: Improve drag-move logic.
 		genJumpEnforced(0x401F4B, 0x464B70, reinterpret_cast<DWORD>(Patch_ReplaceDragMovementLogic));

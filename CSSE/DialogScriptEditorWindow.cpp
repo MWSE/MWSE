@@ -1,7 +1,5 @@
 #include "DialogScriptEditorWindow.h"
 
-#include <Richedit.h>
-
 #include "MemoryUtil.h"
 #include "StringUtil.h"
 #include "WinUIUtil.h"

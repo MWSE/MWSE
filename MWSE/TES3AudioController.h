@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class AudioMixType {
@@ -79,9 +79,9 @@ namespace TES3 {
 		IGraphBuilder * musicGraph; // 0x2A0
 		IBasicAudio * musicAudio; // 0x2A4
 		bool disableAudio; // 0x2A8
-		Vector3 listenerPosition; // 0x2AC
-		Vector3 unknown_0x2B8; // Orientation.
-		Vector3 unknown_0x2C4; // Orientation.
+		NI::Point3 listenerPosition; // 0x2AC
+		NI::Point3 unknown_0x2B8; // Orientation.
+		NI::Point3 unknown_0x2C4; // Orientation.
 		float yawAxis; // 0x2D0 // In radians.
 		float pitchAxisApproximated; // 0x2D4 // In radians.
 
@@ -103,6 +103,8 @@ namespace TES3 {
 		//
 		// Custom functions.
 		//
+
+		void stopSoundBuffer(const SoundBuffer* buffer) const;
 
 		bool getAudioFlag(AudioFlag::Flag flag) const;
 		void setAudioFlag(AudioFlag::Flag flag, bool set);
@@ -137,7 +139,7 @@ namespace TES3 {
 		double getMusicPosition() const;
 		void setMusicPosition(double position);
 
-		double getMusicFileDuration(std::string_view& path);
+		double getMusicFileDuration(std::string_view path);
 
 		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
 

@@ -116,6 +116,7 @@ namespace TES3::UI {
 		void setHorizontalPos(int value);
 		int getVerticalPos() const;
 		void setVerticalPos(int value);
+		bool scrollIntoView(Element* child);
 		bool getScrollbarVisible() const;
 		void setScrollbarVisible(bool value);
 		TES3::UI::Element * getContentPane();

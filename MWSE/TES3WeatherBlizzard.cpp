@@ -3,6 +3,7 @@
 #include "TES3WeatherController.h"
 
 #include "MathUtil.h"
+#include "NIMatrix33.h"
 
 namespace TES3 {
 	void WeatherBlizzard::simulate(float transitionScalar, float deltaTime) {
@@ -14,8 +15,8 @@ namespace TES3 {
 			return;
 		}
 
-		Matrix33 rotation;
-		rotation.toRotationZ(mwse::math::M_PI * 1.5f);
+		NI::Matrix33 rotation;
+		rotation.toRotationZ(se::math::M_PI * 1.5f);
 		if (controller->sgBlizzard) {
 			controller->sgBlizzard->setLocalRotationMatrix(&rotation);
 		}

@@ -11,10 +11,10 @@
 #include "LuaCameraControlEvent.h"
 
 namespace TES3 {
-	TES3::Transform PlayerAnimationController::previousCameraTransform;
-	TES3::Transform PlayerAnimationController::previousArmCameraTransform;
+	NI::Transform PlayerAnimationController::previousCameraTransform;
+	NI::Transform PlayerAnimationController::previousArmCameraTransform;
 
-	using gVanityCameraAngle = mwse::ExternalGlobal<float, 0x7D00C8>;
+	using gVanityCameraAngle = se::memory::ExternalGlobal<float, 0x7D00C8>;
 
 	bool PlayerAnimationController::force1stPerson() {
 		if (is3rdPerson) {
@@ -45,8 +45,8 @@ namespace TES3 {
 		const auto worldController = WorldController::get();
 
 		// Save camera transforms for the cameraControl event.
-		previousCameraTransform = worldController->worldCamera.cameraRoot->getTransforms();
-		previousArmCameraTransform = worldController->armCamera.cameraRoot->getTransforms();
+		previousCameraTransform = worldController->worldCamera.cameraRoot->getLocalTransform();
+		previousArmCameraTransform = worldController->armCamera.cameraRoot->getLocalTransform();
 
 		// Call the original function.
 		TES3_PlayerAnimationController_syncRotation(this);

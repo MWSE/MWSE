@@ -3,7 +3,7 @@
 #include "NIObject.h"
 
 #include "NIBound.h"
-#include "NINode.h"
+#include "NITransform.h"
 #include "NITriangle.h"
 
 namespace NI {
@@ -23,15 +23,15 @@ namespace NI {
 			unsigned short numBonesPerVertex; // 0x24
 			void* bufferData; // 0x28
 
-			nonstd::span<unsigned short> getBones();
-			nonstd::span<unsigned short> getStripLengths();
-			nonstd::span<Triangle> getTriangles();
-			nonstd::span<unsigned short> getVertices();
+			std::span<unsigned short> getBones();
+			std::span<unsigned short> getStripLengths();
+			std::span<Triangle> getTriangles();
+			std::span<unsigned short> getVertices();
 		};
 		unsigned int partitionCount; // 0x8
 		Partition* partitions; // 0xC
 
-		nonstd::span<Partition> getPartitions();
+		std::span<Partition> getPartitions();
 	};
 	static_assert(sizeof(SkinPartition) == 0x10, "NI::SkinPartition failed size validation");
 	static_assert(sizeof(SkinPartition::Partition) == 0x2C, "NI::SkinPartition::Partition failed size validation");
@@ -42,23 +42,19 @@ namespace NI {
 				unsigned short index; // 0x0
 				float weight; // 0x4
 			};
-			Matrix33 rotation; // 0x0
-			Vector3 translation; // 0x24
-			float scale; // 0x30
+			Transform transform; // 0x0
 			Bound bounds; // 0x34
-			VertexWeight* weights; // 0x48
+			VertexWeight* weights; // 0x44
 			unsigned short weightCount; // 0x48
 
-			nonstd::span<VertexWeight> getWeights();
+			std::span<VertexWeight> getWeights();
 		};
 		Pointer<SkinPartition> partition; // 0x8
-		Matrix33 rotation; // 0xC
-		Vector3 translation; // 0x30
-		float scale; // 0x3C
+		Transform transform; // 0xC
 		unsigned int numBones; // 0x40
 		BoneData* boneData; // 0x44
 
-		nonstd::span<BoneData> getBones();
+		std::span<BoneData> getBones();
 	};
 	static_assert(sizeof(SkinData) == 0x48, "NI::SkinData failed size validation");
 	static_assert(sizeof(SkinData::BoneData) == 0x4C, "NI::SkinData::BoneData failed size validation");
@@ -66,13 +62,13 @@ namespace NI {
 
 	struct SkinInstance : Object {
 		Pointer<SkinData> skinData; // 0x8
-		Pointer<Node> rootParent; // 0xC
+		AVObject* rootParent; // 0xC
 		AVObject** bones; // 0x10
 		int unknown_0x14;
 
-		void deform(const NI::Vector3* srcVertices, const NI::Vector3* srcNormals, unsigned int vertexCount, NI::Vector3* dstVertices, NI::Vector3* dstNormals) const;
+		void deform(const Point3* srcVertices, const Point3* srcNormals, unsigned int vertexCount, Point3* dstVertices, Point3* dstNormals) const;
 
-		nonstd::span<AVObject*> getBoneObjects();
+		std::span<AVObject*> getBoneObjects();
 	};
 	static_assert(sizeof(SkinInstance) == 0x18, "NI::SkinInstance failed size validation");
 }

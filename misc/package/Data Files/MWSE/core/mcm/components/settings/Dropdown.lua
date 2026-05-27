@@ -59,7 +59,7 @@ function Dropdown:selectOption(option)
 	self.selectedOption = option
 	self.variable.value = option.value
 	self.elements.textBox.text = option.label
-
+	self.elements.dropdownParent:getTopLevelMenu():updateLayout()
 	if option.callback then
 		option.callback(self)
 	end
@@ -89,7 +89,6 @@ function Dropdown:createDropdown()
 
 			listItem:register(tes3.uiEvent.mouseClick, function()
 				self:selectOption(option)
-				dropdown:getTopLevelMenu():updateLayout()
 			end)
 		end
 		self.elements.dropdown = dropdown
@@ -97,7 +96,7 @@ function Dropdown:createDropdown()
 
 		-- Show the setting description when picking an option
 		self:registerMouseOverElements(dropdown.children)
-		self:registerMouseOverElements({dropdown})
+		self:registerMouseOverElements({ dropdown })
 
 		-- Destroy dropdown
 	else

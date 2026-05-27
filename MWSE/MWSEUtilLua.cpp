@@ -17,6 +17,8 @@
 #include "TES3Script.h"
 #include "TES3WorldController.h"
 
+#include "ReferenceTracker.h"
+
 namespace mwse::lua {
 	void crash() {
 		// You're not my manager!
@@ -37,8 +39,6 @@ namespace mwse::lua {
 	}
 
 	void forceCursorOn() {
-		TES3::WorldController::get()->inputController->mouse->SetCooperativeLevel(GetActiveWindow(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-		TES3::WorldController::get()->inputController->keyboard->SetCooperativeLevel(GetActiveWindow(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 		while (ShowCursor(TRUE) < 0);
 	}
 
@@ -75,6 +75,8 @@ namespace mwse::lua {
 #else
 		lua_mwse["debugBuild"] = false;
 #endif
+
+		lua_mwse["validateReferenceTracker"] = ReferenceTracker::validate;
 
 		// Basic function binding.
 		lua_mwse["breakpoint"] = breakpoint;

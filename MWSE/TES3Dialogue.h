@@ -2,7 +2,7 @@
 
 #include "TES3Object.h"
 
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	enum class DialogueType : unsigned char {
@@ -10,7 +10,9 @@ namespace TES3 {
 		Voice,
 		Greeting,
 		Persuasion,
-		Journal
+		Journal,
+
+		MAX_VALUE = Journal,
 	};
 
 	enum class VoiceType : int {
@@ -62,15 +64,15 @@ namespace TES3 {
 		Dialogue* dialogue; // 0x0
 		const char* name; // 0x4
 
-		static nonstd::span<DialogueName> getVoices();
-		static nonstd::span<DialogueName> getGreetings();
-		static nonstd::span<DialogueName> getResponses();
+		static std::span<DialogueName> getVoices();
+		static std::span<DialogueName> getGreetings();
+		static std::span<DialogueName> getResponses();
 	};
 
 	struct Dialogue : BaseObject {
 		char * name; // 0x10
 		DialogueType type; // 0x14
-		IteratedList<DialogueInfo*> info; // 0x18
+		NI::IteratedList<DialogueInfo*> info; // 0x18
 		int journalIndex; // 0x2C
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Dialogue;
@@ -119,6 +121,9 @@ namespace TES3 {
 		};
 
 		DialogueInfo* getJournalInfoForIndex(int index) const;
+		void clearInfoLoadIDCache();
+		DialogueInfo* findInfoByLoadID(const char* infoID) const;
+		void cacheInfoByLoadID(DialogueInfo* info);
 		DialogueInfo* getFilteredInfo(Actor* actor, Reference* reference, bool flag);
 		DialogueInfo* getFilteredInfoWithContext(Actor* actor, Reference* reference, bool flag, GetFilteredInfoContext context);
 
@@ -136,6 +141,8 @@ namespace TES3 {
 		VoiceType getVoiceType() const;
 		GreetingType getGreetingType() const;
 		ResponseType getResponseType() const;
+
+		const char* getFilterTypeName() const;
 
 		//
 		// Other related static functions.

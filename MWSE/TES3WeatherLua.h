@@ -56,6 +56,9 @@ namespace mwse::lua {
 		usertypeDefinition["updateLoopSound"] = &TES3::Weather::updateLoopSound_lua;
 		usertypeDefinition["updatePrecipitationParticles"] = &TES3::Weather::updatePrecipitationParticles;
 		usertypeDefinition["updateSound"] = &TES3::Weather::updateSound;
+
+		// Support for checking managed lua objects.
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 
 	void bindTES3Weather();

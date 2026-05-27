@@ -96,6 +96,7 @@ namespace se::cs {
 		size_t getCellCount() const;
 		Cell* getCellByIndex(size_t index) const;
 		Cell* getCellByID(const char* id) const;
+		Cell* getCellByGridPosition(int x, int y) const;
 
 		Reference* getReference(const PhysicalObject* object) const;
 

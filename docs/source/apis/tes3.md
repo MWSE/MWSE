@@ -581,8 +581,8 @@ local weather = tes3.addWeather({ id = ..., key = ..., name = ..., ambientDayCol
 	* `supportsBlightCloud` (boolean): *Default*: `false`. If true, this weather can support blight clouds.
 	* `supportsBlizzard` (boolean): *Default*: `false`. If true, this weather can support blizzard effects.
 	* `simulate` (fun(e: [tes3weatherSimulateEventData](../types/tes3weatherSimulateEventData.md))): *Optional*. A function called every frame while the weather is active.
-	* `transition` (fun(e: [tes3weatherTransitionEventData](../types/tes3weatherTransitionEventData.md))): *Optional*. A function called when the weather transitions in.
-	* `unload` (fun(e: [tes3weatherUnloadEventData](../types/tes3weatherUnloadEventData.md))): *Optional*. A function called when the weather is unloaded.
+	* `transition` (fun(e: [tes3weatherTransitionEventData](../types/tes3weatherTransitionEventData.md))): *Optional*. A function called when the weather transitions in. The ambient loop is automatically given a new 
+	* `unload` (fun(e: [tes3weatherUnloadEventData](../types/tes3weatherUnloadEventData.md))): *Optional*. A function called when the weather is unloaded. The soundAmbientLoop is handled automatically.
 
 **Returns**:
 
@@ -1773,6 +1773,24 @@ local cells = tes3.getActiveCells()
 **Returns**:
 
 * `cells` ([tes3cell](../types/tes3cell.md)[])
+
+***
+
+### `tes3.getAllMagicSourceInstances`
+<div class="search_terms" style="display: none">getallmagicsourceinstances, allmagicsourceinstances</div>
+
+Gets all active magic effect instances.
+
+```lua
+local magicSourceInstances = tes3.getAllMagicSourceInstances()
+```
+
+**Parameters**:
+
+
+**Returns**:
+
+* `magicSourceInstances` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md)[])
 
 ***
 
@@ -3655,7 +3673,7 @@ local safeObjectHandle = tes3.makeSafeObjectHandle(object)
 
 **Parameters**:
 
-* `object` ([tes3reference](../types/tes3reference.md)): An object to make a safe handle for.
+* `object` ([tes3baseObject](../types/tes3baseObject.md)): An object to make a safe handle for.
 
 **Returns**:
 

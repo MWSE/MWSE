@@ -2,8 +2,8 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
-#include "TES3StlList.h"
+#include "NIIteratedList.h"
+#include "StlList.h"
 
 namespace TES3 {
 	struct GameFile {
@@ -57,13 +57,13 @@ namespace TES3 {
 		unsigned int countRecords; // 0x4D4
 		int flags_4D8;
 		int loadIndex; // 0x4DC
-		StlList<const char*>* masterNames; // 0x4E0
-		StlList<unsigned int>* masterFileSizes; // 0x4E4
+		se::StlList<const char*>* masterNames; // 0x4E0
+		se::StlList<unsigned int>* masterFileSizes; // 0x4E4
 		GameFile** arrayMasters; // 0x4E8
 		unsigned int highestFormID; // 0x4EC
 		GMDT gmdt; // 0x4F0
 		void* sgSaveImage; // 0x56C
-		IteratedList<void*>* list_570;
+		NI::IteratedList<void*>* list_570;
 
 		//
 		// Other related this-call functions.
@@ -87,6 +87,9 @@ namespace TES3 {
 		bool collectActiveMods(bool showMasterErrors = false);
 		bool load(int unknown1 = 0, bool unknown2 = false);
 		bool loadByPath(const char* path, const char* filename, int unknown1 = 0, bool unknown2 = false);
+		unsigned int readFirstChunk();
+		unsigned int readNextChunk();
+		bool nextForm(int flag = 1);
 		bool setFilePointer(unsigned int offset);
 		bool reopen(int mode = 0, bool writable = false);
 		bool close();
@@ -117,8 +120,9 @@ namespace TES3 {
 		const char* getCellName() const;
 		float getDaysPassed() const;
 		const char* getPlayerName() const;
+		bool getFlag20() const;
 
-		nonstd::span<GameFile*> getMasters();
+		std::span<GameFile*> getMasters();
 
 	};
 	static_assert(sizeof(GameFile) == 0x574, "TES3::GameFile failed size validation");

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	struct AIPlanner {
@@ -25,6 +25,7 @@ namespace TES3 {
 		bool allowRestingNear();
 
 		void assignMobileActor(MobileActor* mobile);
+		void cleanupAIPackages(Reference* reference, MobileActor* mobileActor);
 
 		//
 		// Custom functions.

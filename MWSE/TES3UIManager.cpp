@@ -47,7 +47,7 @@ namespace TES3::UI {
 	const auto TES3_ui_findMenu = reinterpret_cast<Element* (__cdecl*)(UI_ID)>(0x595370);
 	const auto TES3_ui_findHelpLayerMenu = reinterpret_cast<Element* (__cdecl*)(UI_ID)>(0x595A10);
 	const auto TES3_ui_getMenuOnTop = reinterpret_cast<Element* (__cdecl*)()>(0x595290);
-	const auto TES3_ui_getPaletteColour = reinterpret_cast<Vector3& (__cdecl*)(Vector3&, Property)>(0x57F610);
+	const auto TES3_ui_getPaletteColour = reinterpret_cast<NI::Point3& (__cdecl*)(NI::Point3&, Property)>(0x57F610);
 	const auto TES3_ui_onMenuUnfocus = reinterpret_cast<EventCallback>(0x58F790);
 	const auto TES3_ui_ScrollbarArrow_onClick = reinterpret_cast<EventCallback>(0x647A60);
 	const auto TES3_ui_requestMenuModeOn = reinterpret_cast<bool (__cdecl*)(UI_ID)>(0x595230);
@@ -276,8 +276,8 @@ namespace TES3::UI {
 		menu->setProperty(Property::event_unfocus, TES3_ui_onMenuUnfocus);
 	}
 
-	Vector3 getPaletteColour(Property prop) {
-		Vector3 colour;
+	NI::Point3 getPaletteColour(Property prop) {
+		NI::Point3 colour;
 		return TES3_ui_getPaletteColour(colour, prop);
 	}
 
@@ -374,7 +374,7 @@ namespace TES3::UI {
 
 
 	Cell* getCellHoveredOnMap() {
-		return mwse::ExternalGlobal<Cell*, 0x7D4644>::get();
+		return se::memory::ExternalGlobal<Cell*, 0x7D4644>::get();
 	}
 
 	Element* getCursor() {
@@ -1238,7 +1238,7 @@ namespace TES3::UI {
 
 	void pushNewUIID(DWORD address, const char* name) {
 		DWORD id = registerID(name);
-		mwse::genPushEnforced(address, id);
+		se::memory::genPushEnforced(address, id);
 	}
 
 
@@ -1290,6 +1290,9 @@ namespace TES3::UI {
 		// Clean up any lua event registration.
 		mwse::lua::cleanupEventRegistrations(self);
 
+		// Invalidate any cached lua userdata for this element.
+		self->clearCachedLuaObject(self);
+
 		// Clean up stale pointers.
 		const auto worldController = TES3::WorldController::get();
 		const auto menuController = worldController ? worldController->menuController : nullptr;
@@ -1328,41 +1331,41 @@ namespace TES3::UI {
 	void hook() {
 		// Patch mousewheel event dispatch to not redirect to the top-level element,
 		// allowing mousewheel to apply to more than the first scrollpane in a menu.
-		mwse::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelUp, (BYTE*)&patchDispatchMousewheelUp, patchDispatchMousewheelUp_size);
-		mwse::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelDown, (BYTE*)&patchDispatchMousewheelDown, patchDispatchMousewheelDown_size);
+		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelUp, (BYTE*)&patchDispatchMousewheelUp, patchDispatchMousewheelUp_size);
+		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelDown, (BYTE*)&patchDispatchMousewheelDown, patchDispatchMousewheelDown_size);
 
 		// Patch UI layout engine to reflow wrapped text content on size changes.
 		auto patch = &Element::patchUpdateLayout_propagateFlow;
-		mwse::genCallEnforced(0x585E1E, 0x584850, *reinterpret_cast<DWORD*>(&patch));
-		mwse::genCallEnforced(0x5863AE, 0x584850, *reinterpret_cast<DWORD*>(&patch));
+		se::memory::genCallEnforced(0x585E1E, 0x584850, *reinterpret_cast<DWORD*>(&patch));
+		se::memory::genCallEnforced(0x5863AE, 0x584850, *reinterpret_cast<DWORD*>(&patch));
 
 		// Patch item selection no items message to allow callbacks and changed text.
-		mwse::genCallEnforced(0x5D37CF, 0x5F90C0, reinterpret_cast<DWORD>(messagePlayerForNoValidItems));
+		se::memory::genCallEnforced(0x5D37CF, 0x5F90C0, reinterpret_cast<DWORD>(messagePlayerForNoValidItems));
 
 		// Patch quick keys magic select menu to allow general purpose use.
-		mwse::genCallEnforced(0x5E7648, 0x6084E0, reinterpret_cast<DWORD>(onMagicSelect));
-		mwse::genCallEnforced(0x5E76DC, 0x6084E0, reinterpret_cast<DWORD>(onMagicSelect));
-		mwse::writeValueEnforced<DWORD>(0x5E7103+1, 0x5E8040, reinterpret_cast<DWORD>(onMagicSelectCancel));
+		se::memory::genCallEnforced(0x5E7648, 0x6084E0, reinterpret_cast<DWORD>(onMagicSelect));
+		se::memory::genCallEnforced(0x5E76DC, 0x6084E0, reinterpret_cast<DWORD>(onMagicSelect));
+		se::memory::writeValueEnforced<DWORD>(0x5E7103+1, 0x5E8040, reinterpret_cast<DWORD>(onMagicSelectCancel));
 
 		// Patch element resetting to clear up any custom event handlers.
-		mwse::genCallEnforced(0x578517, 0x581440, reinterpret_cast<DWORD>(patchElementDeletion), 0x578528 - 0x578517);
+		se::memory::genCallEnforced(0x578517, 0x581440, reinterpret_cast<DWORD>(patchElementDeletion), 0x578528 - 0x578517);
 
 		// Patch SpellmakingMenu to allow service actor overrides.
-		mwse::genCallEnforced(0x5BF5AD, 0x621450, reinterpret_cast<DWORD>(showSpellmakingMenu));
-		mwse::genCallEnforced(0x622337, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
-		mwse::genCallEnforced(0x6229C5, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
-		mwse::genCallEnforced(0x6229D4, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
-		mwse::genCallEnforced(0x6229C0, 0x52B480, reinterpret_cast<DWORD>(patchSpellmakingMenuRemoveNoCost));
-		mwse::genCallEnforced(0x621CBB, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
-		mwse::genCallEnforced(0x622DAA, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
-		mwse::writeValueEnforced<BYTE>(0x62295A, 0x75, 0x7D);
+		se::memory::genCallEnforced(0x5BF5AD, 0x621450, reinterpret_cast<DWORD>(showSpellmakingMenu));
+		se::memory::genCallEnforced(0x622337, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
+		se::memory::genCallEnforced(0x6229C5, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
+		se::memory::genCallEnforced(0x6229D4, 0x5BFEA0, reinterpret_cast<DWORD>(getSpellmakingServiceActor));
+		se::memory::genCallEnforced(0x6229C0, 0x52B480, reinterpret_cast<DWORD>(patchSpellmakingMenuRemoveNoCost));
+		se::memory::genCallEnforced(0x621CBB, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
+		se::memory::genCallEnforced(0x622DAA, 0x595370, reinterpret_cast<DWORD>(patchSpellmakingMenuExitMenuModeIfNoDialogMenu));
+		se::memory::writeValueEnforced<BYTE>(0x62295A, 0x75, 0x7D);
 		
 		// Patch inventory item tooltip to get accurate item count from the tile, which was failing on split item stacks.
-		mwse::writeValueEnforced<DWORD>(0x5CC0A9+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
-		mwse::writeValueEnforced<DWORD>(0x5CCC6F+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
+		se::memory::writeValueEnforced<DWORD>(0x5CC0A9+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
+		se::memory::writeValueEnforced<DWORD>(0x5CCC6F+1, 0x5CDF90, reinterpret_cast<DWORD>(onInventoryTileTooltip));
 
 		// Patch input elements to allow focus/unfocus events.
-		mwse::genCallEnforced(0x58E1E2, 0x58E8A0, reinterpret_cast<DWORD>(patchKeyboardInput));
+		se::memory::genCallEnforced(0x58E1E2, 0x58E8A0, reinterpret_cast<DWORD>(patchKeyboardInput));
 
 		// Provide some UI IDs for elements that don't have them:
 		// Tooltips (HelpMenu)

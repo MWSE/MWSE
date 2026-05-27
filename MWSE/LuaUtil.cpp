@@ -72,7 +72,7 @@
 #include "TES3Spell.h"
 #include "TES3Static.h"
 #include "TES3UIElement.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 #include "TES3Weapon.h"
 #include "TES3Weather.h"
 #include "TES3WeatherAsh.h"
@@ -93,6 +93,45 @@
 #include "MWSEConfig.h"
 
 namespace mwse::lua {
+	void* getUserdataPointerSlot(lua_State* L, int index) {
+		if (lua_objlen(L, index) < sizeof(void*)) {
+			return nullptr;
+		}
+
+		void* userdata = lua_touserdata(L, index);
+		if (userdata == nullptr) {
+			return nullptr;
+		}
+
+		return sol::detail::align_usertype_pointer(userdata);
+	}
+
+	void clearUserdataPointer(sol::object object) {
+		if (!object.valid() || object.get_type() != sol::type::userdata) {
+			return;
+		}
+
+		lua_State* L = object.lua_state();
+		object.push();
+		if (void* pointerSlot = getUserdataPointerSlot(L, -1)) {
+			*static_cast<void**>(pointerSlot) = nullptr;
+		}
+		lua_pop(L, 1);
+	}
+
+	bool isUserdataPointerValid(sol::object object) {
+		if (!object.valid() || object.get_type() != sol::type::userdata) {
+			return false;
+		}
+
+		lua_State* L = object.lua_state();
+		object.push();
+		const auto pointerSlot = getUserdataPointerSlot(L, -1);
+		const bool valid = pointerSlot && *static_cast<void**>(pointerSlot) != nullptr;
+		lua_pop(L, 1);
+		return valid;
+	}
+
 	template <>
 	std::string getOptionalParam(sol::optional<sol::table> maybeParams, const char* key, std::string defaultValue) {
 		auto value = std::move(defaultValue);
@@ -298,18 +337,18 @@ namespace mwse::lua {
 		return value;
 	}
 
-	sol::optional<TES3::Vector2> getOptionalParamVector2(sol::optional<sol::table> maybeParams, const char* key) {
+	sol::optional<NI::Point2> getOptionalParamPoint2(sol::optional<sol::table> maybeParams, const char* key) {
 		if (maybeParams) {
 			sol::table params = maybeParams.value();
 			sol::object maybeValue = params[key];
 			if (maybeValue.valid()) {
 				// Were we given a real vector?
-				if (maybeValue.is<TES3::Vector2>()) {
-					return maybeValue.as<TES3::Vector2>();
+				if (maybeValue.is<NI::Point2>()) {
+					return maybeValue.as<NI::Point2>();
 				}
 				// Were we given a vector3 for some reason?
-				else if (maybeValue.is<TES3::Vector3>()) {
-					return TES3::Vector2(maybeValue.as<TES3::Vector2&>().x, maybeValue.as<TES3::Vector2&>().y);
+				else if (maybeValue.is<NI::Point3>()) {
+					return NI::Point2(maybeValue.as<NI::Point2&>().x, maybeValue.as<NI::Point2&>().y);
 				}
 				// Were we given a table?
 				else if (maybeValue.get_type() == sol::type::table) {
@@ -321,19 +360,19 @@ namespace mwse::lua {
 		return {};
 	}
 
-	sol::optional<TES3::Vector3> getOptionalParamVector3(sol::optional<sol::table> maybeParams, const char* key) {
+	sol::optional<NI::Point3> getOptionalParamPoint3(sol::optional<sol::table> maybeParams, const char* key) {
 		if (maybeParams) {
 			sol::table params = maybeParams.value();
 			sol::object maybeValue = params[key];
 			if (maybeValue.valid()) {
 				// Were we given a real vector?
-				if (maybeValue.is<TES3::Vector3*>()) {
-					return *maybeValue.as<TES3::Vector3*>();
+				if (maybeValue.is<NI::Point3*>()) {
+					return *maybeValue.as<NI::Point3*>();
 				}
 
 				// Were we given a table?
-				if (maybeValue.get_type() == sol::type::table && TES3::Vector3::canConvertFrom(maybeValue.as<sol::table>())) {
-					return maybeValue.as<sol::table>();
+				if (maybeValue.get_type() == sol::type::table && NI::Point3::canConvertFrom(maybeValue.as<sol::table>())) {
+					return NI::Point3(maybeValue.as<sol::table>());
 				}
 			}
 		}
@@ -455,10 +494,10 @@ namespace mwse::lua {
 		return TES3_UI_ID_NULL;
 	}
 
-	bool setVectorFromLua(TES3::Vector2& vector, sol::stack_object value) {
+	bool setVectorFromLua(NI::Point2& vector, sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<TES3::Vector2>()) {
-			vector = value.as<TES3::Vector2&>();
+		if (value.is<NI::Point2>()) {
+			vector = value.as<NI::Point2&>();
 			return true;
 		}
 		// Allow a simple table to be provided.
@@ -470,10 +509,10 @@ namespace mwse::lua {
 		return false;
 	}
 
-	bool setVectorFromLua(TES3::Vector3& vector, sol::stack_object value) {
+	bool setVectorFromLua(NI::Point3& vector, sol::stack_object value) {
 		// Is it a vector?
-		if (value.is<TES3::Vector3*>()) {
-			vector = value.as<TES3::Vector3&>();
+		if (value.is<NI::Point3*>()) {
+			vector = value.as<NI::Point3&>();
 			return true;
 		}
 		// Allow a simple table to be provided.

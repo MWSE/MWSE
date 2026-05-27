@@ -5,4 +5,5 @@
 
 --- A game structure which holds all active projectiles.
 --- @class tes3projectileManager
+--- @field currentlyCollidingProjectile tes3mobileProjectile|tes3mobileSpellProjectile *Read-only*. The projectile that is currently colliding.
 --- @field projectiles tes3mobileProjectile[]|tes3mobileSpellProjectile[] *Read-only*. A list of all currently active projectiles ([tes3mobileProjectile](https://mwse.github.io/MWSE/types/tes3mobileProjectile/)).

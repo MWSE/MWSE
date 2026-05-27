@@ -98,6 +98,9 @@
 #include "LuaLoadGameEvent.h"
 #include "LuaMagicAbsorbEvent.h"
 #include "LuaMagicCastedEvent.h"
+#include "LuaMagicEffectActivatedEvent.h"
+#include "LuaMagicEffectAddedEvent.h"
+#include "LuaMagicEffectDeactivatedEvent.h"
 #include "LuaMagicEffectRemovedEvent.h"
 #include "LuaMagicReflectedEvent.h"
 #include "LuaMagicReflectEvent.h"
@@ -109,6 +112,10 @@
 #include "LuaMobileObjectCollisionEvent.h"
 #include "LuaMobileObjectDeactivatedEvent.h"
 #include "LuaMobileObjectWaterImpactEvent.h"
+#include "LuaMobileSpellProjectileActorCollisionEvent.h"
+#include "LuaMobileSpellProjectileObjectCollisionEvent.h"
+#include "LuaMobileSpellProjectileTerrainCollisionEvent.h"
+#include "LuaMobileSpellProjectileWaterCollisionEvent.h"
 #include "LuaMobileProjectileActorCollisionEvent.h"
 #include "LuaMobileProjectileObjectCollisionEvent.h"
 #include "LuaMobileProjectileTerrainCollisionEvent.h"
@@ -281,6 +288,9 @@ namespace mwse::lua::event {
 		usertypeDefinition["lockPick"] = sol::property(&PickLockEvent::getEventEnabled, &PickLockEvent::setEventEnabled);
 		usertypeDefinition["magicAbsorb"] = sol::property(&MagicAbsorbEvent::getEventEnabled, &MagicAbsorbEvent::setEventEnabled);
 		usertypeDefinition["magicCasted"] = sol::property(&MagicCastedEvent::getEventEnabled, &MagicCastedEvent::setEventEnabled);
+		usertypeDefinition["magicEffectActivated"] = sol::property(&MagicEffectActivatedEvent::getEventEnabled, &MagicEffectActivatedEvent::setEventEnabled);
+		usertypeDefinition["magicEffectAdded"] = sol::property(&MagicEffectAddedEvent::getEventEnabled, &MagicEffectAddedEvent::setEventEnabled);
+		usertypeDefinition["magicEffectDeactivated"] = sol::property(&MagicEffectDeactivatedEvent::getEventEnabled, &MagicEffectDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["magicEffectRemoved"] = sol::property(&MagicEffectRemovedEvent::getEventEnabled, &MagicEffectRemovedEvent::setEventEnabled);
 		usertypeDefinition["magicReflect"] = sol::property(&MagicReflectEvent::getEventEnabled, &MagicReflectEvent::setEventEnabled);
 		usertypeDefinition["magicReflected"] = sol::property(&MagicReflectedEvent::getEventEnabled, &MagicReflectedEvent::setEventEnabled);
@@ -314,6 +324,10 @@ namespace mwse::lua::event {
 		usertypeDefinition["projectileHitActor"] = sol::property(&MobileProjectileActorCollisionEvent::getEventEnabled, &MobileProjectileActorCollisionEvent::setEventEnabled);
 		usertypeDefinition["projectileHitObject"] = sol::property(&MobileProjectileObjectCollisionEvent::getEventEnabled, &MobileProjectileObjectCollisionEvent::setEventEnabled);
 		usertypeDefinition["projectileHitTerrain"] = sol::property(&MobileProjectileTerrainCollisionEvent::getEventEnabled, &MobileProjectileTerrainCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitActor"] = sol::property(&MobileSpellProjectileActorCollisionEvent::getEventEnabled, &MobileSpellProjectileActorCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitObject"] = sol::property(&MobileSpellProjectileObjectCollisionEvent::getEventEnabled, &MobileSpellProjectileObjectCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitTerrain"] = sol::property(&MobileSpellProjectileTerrainCollisionEvent::getEventEnabled, &MobileSpellProjectileTerrainCollisionEvent::setEventEnabled);
+		usertypeDefinition["spellProjectileHitWater"] = sol::property(&MobileSpellProjectileWaterCollisionEvent::getEventEnabled, &MobileSpellProjectileWaterCollisionEvent::setEventEnabled);
 		usertypeDefinition["referenceActivated"] = sol::property(&ReferenceActivatedEvent::getEventEnabled, &ReferenceActivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceDeactivated"] = sol::property(&ReferenceDeactivatedEvent::getEventEnabled, &ReferenceDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceSceneNodeCreated"] = sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled);

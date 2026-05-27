@@ -2,9 +2,11 @@
 
 #include "TES3Weather.h"
 
+#include "NIPoint2.h"
+
 namespace TES3 {
 	struct WeatherAsh : Weather {
-		Vector2 stormOrigin; // 0x318
+		NI::Point2 stormOrigin; // 0x318
 		float stormThreshold; // 0x320
 
 		WeatherAsh() = delete;

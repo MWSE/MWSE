@@ -367,8 +367,8 @@ namespace TES3 {
 		Effect(const sol::table& from);
 
 		Effect& operator=(const Effect& vector);
-		Effect& operator=(const sol::table table);
-		Effect& operator=(const sol::object object);
+		Effect& operator=(const sol::table& table);
+		Effect& operator=(const sol::object& object);
 
 		bool operator==(const Effect& vector) const;
 		bool operator!=(const Effect& vector) const;
