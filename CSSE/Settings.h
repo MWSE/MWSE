@@ -167,6 +167,7 @@ namespace se::cs {
 			std::array<float, 3> edit_circle_color_vertex = { 1.0f, 1.0f, 0.0f };
 
 			bool show_preview_enabled = false;
+			bool radius_aware_texture_painting_enabled = true;
 
 			int vertex_color_strength = 100;
 			std::string vertex_color_blend_mode = "Mix";
