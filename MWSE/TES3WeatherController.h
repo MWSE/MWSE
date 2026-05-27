@@ -163,7 +163,7 @@ namespace TES3 {
 		int sunGlareRayTestLoadBalancer; // 0x1E8
 		bool isSunOccluded; // 0x1EC
 #if defined(MWSE_CUSTOM_WEATHERS) && MWSE_CUSTOM_WEATHERS == TRUE
-		Weather* arrayWeathers[MAX_WEATHER_COUNT];
+		Weather* arrayWeathers[MAX_WEATHER_COUNT]; // 0x1F0
 #endif
 
 		WeatherController() = delete;
