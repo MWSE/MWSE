@@ -73,8 +73,8 @@
     <ClInclude Include="MGEUtilLua.h" />
     <ClInclude Include="NICollisionGroupLua.h" />
     <ClInclude Include="NIQuaternionLua.h" />
-    <ClInclude Include="NiRenderedTextureLua.h" />
-    <ClInclude Include="NiRendererLua.h" />
+    <ClInclude Include="NIRenderedTextureLua.h" />
+    <ClInclude Include="NIRendererLua.h" />
     <ClInclude Include="TES3AnimationDataLua.h" />
     <ClInclude Include="TES3ArchiveLua.h" />
     <ClInclude Include="TES3CutscenePlayer.h" />
@@ -683,10 +683,10 @@
     <ClCompile Include="NIGeometryDataLua.cpp" />
     <ClCompile Include="NIParticlesLua.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
-    <ClCompile Include="NiRenderedTextureLua.cpp" />
+    <ClCompile Include="NIRenderedTextureLua.cpp" />
     <ClCompile Include="NIRendererLua.cpp" />
     <ClCompile Include="NISkinInstanceLua.cpp" />
-    <ClCompile Include="NiTextureEffectLua.cpp" />
+    <ClCompile Include="NITextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

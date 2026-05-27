@@ -1446,10 +1446,10 @@
     <ClInclude Include="LuaRepairEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="NiRendererLua.h">
+    <ClInclude Include="NIRendererLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
-    <ClInclude Include="NiRenderedTextureLua.h">
+    <ClInclude Include="NIRenderedTextureLua.h">
       <Filter>Header Files\Lua\Bindings\NI</Filter>
     </ClInclude>
     <ClInclude Include="LuaCameraControlEvent.h">
@@ -3113,7 +3113,7 @@
     <ClCompile Include="NIDynamicEffectLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NiTextureEffectLua.cpp">
+    <ClCompile Include="NITextureEffectLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3MobManagerLua.cpp">
@@ -3404,7 +3404,7 @@
     <ClCompile Include="NIRendererLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
-    <ClCompile Include="NiRenderedTextureLua.cpp">
+    <ClCompile Include="NIRenderedTextureLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
     <ClCompile Include="LuaCameraControlEvent.cpp">
@@ -3461,7 +3461,7 @@
     <ClCompile Include="LuaKeyframesLoadedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
-    <ClCompile Include="NiLinesLua.cpp">
+    <ClCompile Include="NILinesLua.cpp">
       <Filter>Source Files\Lua\Bindings\NI</Filter>
     </ClCompile>
     <ClCompile Include="TES3AnimationGroupLua.cpp">
