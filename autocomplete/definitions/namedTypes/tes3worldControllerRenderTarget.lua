@@ -1,5 +1,5 @@
 return {
 	type = "class",
-	description = [[]],
+	description = [[A struct used to store render target data for the map and inventory doll.]],
 	inherits = "tes3worldControllerRenderCamera"
 }

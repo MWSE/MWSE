@@ -44,6 +44,7 @@ namespace mwse::lua {
 
 		// Returns a thread-locking reference to the sol2 lua state.
 		ThreadedStateHandle getThreadSafeStateHandle();
+		bool canLockLuaThread();
 
 		const sol::state_view& getReadOnlyStateView();
 
@@ -58,6 +59,7 @@ namespace mwse::lua {
 		void setCurrentScript(TES3::Script*);
 		TES3::Reference* getCurrentReference();
 		void setCurrentReference(TES3::Reference*);
+		void cleanupReference(TES3::Reference* reference);
 
 		// Handle our button pressed callbacks. There can only be one at a time.
 		void setButtonPressedCallback(sol::optional<sol::protected_function>);

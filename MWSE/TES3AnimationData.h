@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 #include "TES3AnimationGroup.h"
 
 #include "NIDefines.h"
@@ -23,7 +23,7 @@ namespace TES3 {
 
 		NI::Node* actorNode; // 0x0
 		NI::Node* movementRootNode; // 0x4
-		TES3::Vector3 positionDeltaMovementRoot; // 0x8
+		NI::Point3 positionDeltaMovementRoot; // 0x8
 		NI::Node* spine1Node; // 0x14
 		NI::Node* spine2Node; // 0x18
 		float spineAngle; // 0x1C
@@ -74,7 +74,7 @@ namespace TES3 {
 		void playAnimationGroupForSection(AnimGroupID animationGroup, int bodySection, int startFlag = 0, int loopCount = -1);
 		void setHeadNode(NI::Node* head);
 		bool setSourceKeyframes(KeyframeDefinition* kfData, int sourceIndex, bool isBiped);
-		void updateMovementDelta(float timing, Vector3* inout_startingPosition, bool dontUpdatePositionDelta);
+		void updateMovementDelta(float timing, NI::Point3* inout_startingPosition, bool dontUpdatePositionDelta);
 		void headTracking(Reference* actorRefr, Reference* targetRefr);
 
 		//
@@ -137,6 +137,7 @@ namespace TES3 {
 		void playAnimationGroupForSection(AnimGroupID groupId, int bodySection, int startFlag = 0, int loopCount = -1);
 		void playNamedAnimationGroup(std::string_view name, int bodySection, int startFlag = 0, int loopCount = -1);
 		bool setSourceKeyframes(KeyframeDefinition* kfData, int sourceIndex, bool isBiped);
+		void updateMovementDelta(float timing, NI::Point3* inout_startingPosition, bool dontUpdatePositionDelta);
 
 		//
 		// Custom functions.

@@ -77,17 +77,20 @@ namespace CrashLogger::PDB {
 	inline std::string GetClassNameFromPDB(void* object) {
 		std::string name;
 		GetClassNameFromPDBSEH(object, name);
-		mwse::string::strip_start(name, "vtbl_");
-		mwse::string::strip_start(name, "sg_");
-		mwse::string::strip_end(name, "+0x0");
+		se::string::strip_start(name, "vtbl_");
+		se::string::strip_start(name, "sg_");
+		se::string::strip_end(name, "+0x0");
 		return name;
 	}
 
+#pragma warning(push)
+#pragma warning(disable: 4200)
 	struct RTTIType {
 		void* typeInfo;
 		UINT32 pad;
 		char name[];
 	};
+#pragma warning(pop)
 
 	struct RTTILocator {
 		UINT32		sig, offset, cdOffset;

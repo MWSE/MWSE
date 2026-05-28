@@ -51,7 +51,7 @@ namespace mwse {
 					currCharge = varNode->charge;
 				}
 				else {
-					currCharge = maxCharge;
+					currCharge = static_cast<float>(maxCharge);
 				}
 			}
 			else {

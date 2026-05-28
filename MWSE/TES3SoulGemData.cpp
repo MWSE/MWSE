@@ -48,7 +48,7 @@ namespace TES3 {
 			return item->getSoulGemCapacity();
 		}
 		else {
-			return value * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSoulGemMult]->value.asFloat;
+			return static_cast<int>(value * TES3::DataHandler::get()->nonDynamicData->GMSTs[TES3::GMST::fSoulGemMult]->value.asFloat);
 		}
 	}
 }

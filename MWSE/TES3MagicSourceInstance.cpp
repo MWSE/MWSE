@@ -44,10 +44,10 @@ namespace TES3 {
 		return TES3_MagicSourceCombo_getSourceEffects(this);
 	}
 
-	nonstd::span<Effect> MagicSourceCombo::getEffectSpan() const {
+	std::span<Effect> MagicSourceCombo::getEffectSpan() const {
 		auto result = TES3_MagicSourceCombo_getSourceEffects(this);
 		if (result) {
-			return nonstd::span(result, 8);
+			return std::span(result, 8);
 		}
 		return {};
 	}
@@ -57,8 +57,8 @@ namespace TES3 {
 		return TES3_MagicSourceInstance_getMagnitudeForIndex(this, effectIndex);
 	}
 
-	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, Vector3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
-	void MagicSourceInstance::playSpellVFX(float scale, Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
+	const auto TES3_PlaySpellVFX = reinterpret_cast<void(__cdecl *)(MagicSourceInstance *, float, NI::Point3, Reference*, float, PhysicalObject*, int, int)>(0x515D60);
+	void MagicSourceInstance::playSpellVFX(float scale, NI::Point3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous) {
 		TES3_PlaySpellVFX(this, scale, position, attachedReference, offsetZ, effectVisual, effectIndex, isContinuous);
 	}
 
@@ -107,9 +107,14 @@ namespace TES3 {
 		TES3_MagicSourceInstance_process(this, deltaTime);
 	}
 
-	const auto TES3_MagicSourceInstance_retire = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, Reference*)>(0x512940);
+	const auto TES3_MagicSourceInstance_retire = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*)>(0x5127E0);
+	void MagicSourceInstance::retire() {
+		TES3_MagicSourceInstance_retire(this);
+	}
+
+	const auto TES3_MagicSourceInstance_retireEffectsOnReference = reinterpret_cast<void(__thiscall*)(MagicSourceInstance*, Reference*)>(0x512940);
 	void MagicSourceInstance::retire(Reference* reference) {
-		TES3_MagicSourceInstance_retire(this, reference);
+		TES3_MagicSourceInstance_retireEffectsOnReference(this, reference);
 	}
 
 	Object* MagicSourceInstance::getSourceObject() const {
@@ -120,11 +125,11 @@ namespace TES3 {
 		return sourceCombo.sourceType;
 	}
 
-	nonstd::span<Effect> MagicSourceInstance::getSourceEffects() const {
+	std::span<Effect> MagicSourceInstance::getSourceEffects() const {
 		return sourceCombo.getEffectSpan();
 	}
 
-	MagicEffectInstance * MagicSourceInstance::getEffectInstance(int effectIndex, const Reference* reference) {
+	MagicEffectInstance * MagicSourceInstance::getEffectInstance(int effectIndex, const Reference* reference) const {
 		if (effectIndex < 0 || effectIndex > 7) {
 			throw std::invalid_argument("Invalid 'effectIndex' parameter. Must be a number between 0 and 7.");
 		}
@@ -140,6 +145,25 @@ namespace TES3 {
 		return nullptr;
 	}
 
+	std::vector<MagicEffectInstance*> MagicSourceInstance::getAllEffectInstances(int effectIndex) const {
+		if (effectIndex < 0 || effectIndex > 7) {
+			throw std::invalid_argument("Invalid 'effectIndex' parameter. Must be a number between 0 and 7.");
+		}
+
+		std::vector<MagicEffectInstance*> results;
+
+		const auto& hashMap = effects[effectIndex];
+		for (auto i = 0u; i < hashMap.bucketCount; ++i) {
+			auto node = hashMap.buckets[i];
+			while (node) {
+				results.push_back(&node->value);
+				node = node->nextNode;
+			}
+		}
+
+		return results;
+	}
+
 	void MagicSourceInstance::playSpellVFX_lua(sol::table params) {
 		int effectIndex = mwse::lua::getOptionalParam<int>(params, "effectIndex", -1);
 		if (effectIndex < 0 || effectIndex > 7) {
@@ -151,7 +175,7 @@ namespace TES3 {
 			throw std::invalid_argument("Invalid 'scale' parameter. Must be a positive number.");
 		}
 
-		auto position = mwse::lua::getOptionalParamVector3(params, "position");
+		auto position = mwse::lua::getOptionalParamPoint3(params, "position");
 		if (!position) {
 			throw std::invalid_argument("Invalid 'position' parameter. Must be a table[3] or tes3vector3.");
 		}

@@ -5,14 +5,14 @@
 namespace NI {
 	struct Transform {
 		Matrix33 rotation;
-		Vector3 translation;
+		Point3 translation;
 		float scale;
 
 		Transform();
-		Transform(const Matrix33& rotation, const Vector3& translation, const float scale);
+		Transform(const Matrix33& rotation, const Point3& translation, const float scale);
 
 		Transform operator*(const Transform& transform) const;
-		Vector3 operator*(const Vector3& transform) const;
+		Point3 operator*(const Point3& transform) const;
 
 		bool invert(Transform* out) const;
 		std::tuple<Transform, bool> invert() const;

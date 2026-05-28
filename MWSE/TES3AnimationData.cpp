@@ -69,9 +69,13 @@ namespace TES3 {
 		return TES3_AnimationData_setSourceKeyframes(this, kfData, sourceIndex, isBiped);
 	}
 
-	const auto TES3_AnimationData_updateMovementDelta = reinterpret_cast<bool(__thiscall*)(AnimationDataVanilla*, float, Vector3*, bool)>(0x470320);
-	void AnimationDataVanilla::updateMovementDelta(float timing, Vector3 *inout_startingPosition, bool dontUpdatePositionDelta) {
+	const auto TES3_AnimationData_updateMovementDelta = reinterpret_cast<bool(__thiscall*)(AnimationDataVanilla*, float, NI::Point3*, bool)>(0x470320);
+	void AnimationDataVanilla::updateMovementDelta(float timing, NI::Point3* inout_startingPosition, bool dontUpdatePositionDelta) {
 		TES3_AnimationData_updateMovementDelta(this, timing, inout_startingPosition, dontUpdatePositionDelta);
+	}
+
+	void AnimationData::updateMovementDelta(float timing, NI::Point3* inout_startingPosition, bool dontUpdatePositionDelta) {
+		AnimationDataVanilla::updateMovementDelta(timing, inout_startingPosition, dontUpdatePositionDelta);
 	}
 
 	const auto TES3_AnimationData_headTracking = reinterpret_cast<void(__thiscall*)(AnimationDataVanilla*, Reference*, Reference*)>(0x46F910);
@@ -164,7 +168,7 @@ namespace TES3 {
 		// Fix up movement root if the swap affects the currently playing animation.
 		auto lowerGroup = currentAnimGroups[0];
 		if (lowerGroup == animationGroup1 || lowerGroup == animationGroup2) {
-			Vector3 unused;
+			NI::Point3 unused;
 			updateMovementDelta(timings[0], &unused, true);
 		}
 	}
@@ -180,7 +184,7 @@ namespace TES3 {
 		// Update current animation speed if currently casting.
 		if (currentAnimGroups[1] == AnimGroupID::SpellCast) {
 			// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-			weaponSpeed = speed + FLT_MIN;
+			weaponSpeed = speed + std::numeric_limits<float>::min();
 		}
 	}
 
@@ -329,7 +333,7 @@ namespace TES3 {
 				}
 				for (int i = removeIndex; i < seq->objectNames.endIndex; ++i) {
 					// mwse::log::getLog() << "[AnimLoader] Discarding unmatched bone '" << seq->objectNames.at(i) << "' from " << actorNode->getName() << std::endl;
-					mwse::tes3::_delete(seq->objectNames.at(i));
+					se::memory::_delete(seq->objectNames.at(i));
 					seq->objectNames.at(i) = nullptr;
 					seq->controllers.at(i) = nullptr;
 				}
@@ -359,7 +363,7 @@ namespace TES3 {
 
 		// Clear existing soundgens.
 		if (animGroupSoundGens[i]) {
-			mwse::tes3::_delete(animGroupSoundGens[i]);
+			se::memory::_delete(animGroupSoundGens[i]);
 		}
 		animGroupSoundGens[i] = nullptr;
 
@@ -367,7 +371,7 @@ namespace TES3 {
 		auto soundGenCount = animGroup->soundGenCount;
 		animGroupSoundGenCounts[i] = soundGenCount;
 		if (soundGenCount > 0) {
-			auto soundGenArray = mwse::tes3::_new<AnimationGroup::SoundGenKey*>(soundGenCount);
+			auto soundGenArray = se::memory::_new<AnimationGroup::SoundGenKey*>(soundGenCount);
 			for (int i = 0; i < soundGenCount; ++i) {
 				soundGenArray[i] = animGroup->soundGenKeys + i;
 			}
@@ -546,7 +550,7 @@ namespace TES3 {
 		}
 
 		// Update movement root so that the actor isn't shifted on the animation change.
-		TES3::Vector3 unused;
+		NI::Point3 unused;
 		updateMovementDelta(timings[0], &unused, true);
 	}
 
@@ -1042,7 +1046,7 @@ namespace TES3 {
 
 	void __fastcall setAnimSpeedOnCast(TES3::AnimationData* animData) {
 		// Ensure non-zero weaponSpeed to bypass the actor controller resetting the value on zero.
-		animData->weaponSpeed = animData->getCastSpeed() + FLT_MIN;
+		animData->weaponSpeed = animData->getCastSpeed() + std::numeric_limits<float>::min();
 	}
 
 	float __fastcall updateWorldDataBeforeScale(TES3::Reference* reference) {
@@ -1051,13 +1055,13 @@ namespace TES3 {
 	}
 
 	void AnimationData::patch() {
-		using mwse::genCallEnforced;
-		using mwse::genCallUnprotected;
-		using mwse::genNOPUnprotected;
-		using mwse::writeByteUnprotected;
-		using mwse::writeBytesUnprotected;
-		using mwse::writeDoubleWordUnprotected;
-		using mwse::writePatchCodeUnprotected;
+		using se::memory::genCallEnforced;
+		using se::memory::genCallUnprotected;
+		using se::memory::genNOPUnprotected;
+		using se::memory::writeByteUnprotected;
+		using se::memory::writeBytesUnprotected;
+		using se::memory::writeDoubleWordUnprotected;
+		using se::memory::writePatchCodeUnprotected;
 
 		// Override AnimationData creation with MWSE extended struct.
 		auto AnimationDataExtended_ctor = &AnimationData::ctor;

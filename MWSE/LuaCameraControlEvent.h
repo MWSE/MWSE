@@ -4,23 +4,24 @@
 #include "LuaDisableableEvent.h"
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+
+#include "NITransform.h"
 
 namespace mwse::lua::event {
 	class CameraControlEvent : public GenericEvent, public DisableableEvent<CameraControlEvent> {
 	public:
 		CameraControlEvent(TES3::PlayerAnimationController* animController,
-			const TES3::Transform& prevCameraTransform,
-			const TES3::Transform& prevArmCameraTransform,
-			const TES3::Transform& cameraTransform,
-			const TES3::Transform& armCameraTransform);
+			const NI::Transform& prevCameraTransform,
+			const NI::Transform& prevArmCameraTransform,
+			const NI::Transform& cameraTransform,
+			const NI::Transform& armCameraTransform);
 		sol::table createEventTable();
 
 	protected:
 		TES3::PlayerAnimationController* m_AnimationController;
-		TES3::Transform m_PrevCameraTransform;
-		TES3::Transform m_PrevArmCameraTransform;
-		TES3::Transform m_CameraTransform;
-		TES3::Transform m_ArmCameraTransform;
+		NI::Transform m_PrevCameraTransform;
+		NI::Transform m_PrevArmCameraTransform;
+		NI::Transform m_CameraTransform;
+		NI::Transform m_ArmCameraTransform;
 	};
 }

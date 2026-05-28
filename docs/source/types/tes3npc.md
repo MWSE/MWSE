@@ -92,7 +92,7 @@ Barter gold is reset on talking to an actor if fBarterGoldResetDelay hours have 
 ### `baseDisposition`
 <div class="search_terms" style="display: none">basedisposition</div>
 
-The actor's base disposition.
+The actor's base disposition as read from the esm/esp file(s), before any modifiers are applied.
 
 **Returns**:
 
@@ -485,6 +485,17 @@ The previous object in parent collection's list.
 
 ***
 
+### `referenceList`
+<div class="search_terms" style="display: none">referencelist</div>
+
+A list of all loaded references that currently use the object.
+
+**Returns**:
+
+* `result` ([tes3reference](../types/tes3reference.md)[])
+
+***
+
 ### `reputation`
 <div class="search_terms" style="display: none">reputation</div>
 
@@ -687,6 +698,21 @@ local result = myObject:hasItemEquipped(item, itemData)
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `isValid`
+<div class="search_terms" style="display: none">isvalid, valid</div>
+
+Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+
+```lua
+local valid = myObject:isValid()
+```
+
+**Returns**:
+
+* `valid` (boolean)
 
 ***
 

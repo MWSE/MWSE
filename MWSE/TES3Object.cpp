@@ -15,6 +15,7 @@
 #include "TES3Clothing.h"
 #include "TES3Container.h"
 #include "TES3Creature.h"
+#include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
 #include "TES3DialogueInfo.h"
 #include "TES3Door.h"
@@ -37,6 +38,7 @@
 #include "TES3Quest.h"
 #include "TES3Race.h"
 #include "TES3Reference.h"
+#include "ReferenceTracker.h"
 #include "TES3Region.h"
 #include "TES3RepairTool.h"
 #include "TES3Script.h"
@@ -47,6 +49,9 @@
 #include "TES3Static.h"
 #include "TES3Weapon.h"
 #include "TES3WorldController.h"
+
+#include "NIBound.h"
+#include "NIBoundingBox.h"
 
 #include "TES3UIMenuController.h"
 
@@ -62,16 +67,23 @@
 
 namespace TES3 {
 	void* BaseObject::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 
 	void BaseObject::operator delete(void* address) {
-		mwse::tes3::_delete(address);
+		se::memory::_delete(address);
 	}
 
 	const auto BaseObject_dtor = reinterpret_cast<TES3::BaseObject * (__thiscall*)(TES3::BaseObject*)>(0x4F0CA0);
 	void BaseObject::dtor() {
+		const auto dataHandler = TES3::DataHandler::get();
+
 		clearCachedLuaObject(this);
+		mwse::ReferenceTracker::invalidateObject(this);
+
+		if (objectType == ObjectType::Cell && dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
+		}
 
 		if (UI::MenuInputController::lastTooltipObject == this) {
 			UI::MenuInputController::lastTooltipObject = nullptr;
@@ -154,6 +166,10 @@ namespace TES3 {
 			object = static_cast<const Reference*>(object)->baseObject;
 		}
 
+		if (object == nullptr) {
+			return nullptr;
+		}
+
 		if (object->isActor() && static_cast<const Actor*>(object)->isClone()) {
 			object = static_cast<const Actor*>(object)->getBaseActor();
 		}
@@ -161,11 +177,67 @@ namespace TES3 {
 		return object;
 	}
 
+	bool BaseObject::isPhysicalObject() const {
+		switch (objectType) {
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Alchemy:
+		case TES3::ObjectType::Ammo:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
+		case TES3::ObjectType::Door:
+		case TES3::ObjectType::Ingredient:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::Light:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Misc:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
+		case TES3::ObjectType::Static:
+		case TES3::ObjectType::Weapon:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	PhysicalObject* BaseObject::asPhysicalObject() {
+		if (!isPhysicalObject()) return nullptr;
+		return static_cast<PhysicalObject*>(this);
+	}
+
+	const PhysicalObject* BaseObject::asPhysicalObject() const {
+		if (!isPhysicalObject()) return nullptr;
+		return static_cast<const PhysicalObject*>(this);
+	}
+
 	bool BaseObject::isActor() const {
 		switch (objectType) {
 		case TES3::ObjectType::Container:
 		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
 		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	bool BaseObject::isMobileCapableActor() const {
+		switch (objectType) {
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -226,6 +298,10 @@ namespace TES3 {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::DeleteBit);
 	}
 
+	void BaseObject::setDeleted(bool deleted) {
+		BIT_SET(objectFlags, TES3::ObjectFlag::DeleteBit, deleted);
+	}
+
 	bool BaseObject::getPersistent() const {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::PersistentBit);
 	}
@@ -240,6 +316,22 @@ namespace TES3 {
 
 	void BaseObject::setBlocked(bool value) {
 		BIT_SET(objectFlags, TES3::ObjectFlag::BlockedBit, value);
+	}
+
+	bool BaseObject::getUpdatesCollisionGroups() const {
+		const auto baseObject = getBaseObject();
+
+		switch (baseObject->objectType) {
+		case ObjectType::Activator:
+		case ObjectType::Container:
+		case ObjectType::Door:
+		case ObjectType::Land:
+		case ObjectType::Static:
+			return true;
+		case ObjectType::Light:
+			return !static_cast<const Light*>(this)->getCanCarry();
+		}
+		return false;
 	}
 
 	bool BaseObject::getSupportsLuaData() const {
@@ -475,15 +567,19 @@ namespace TES3 {
 
 	void BaseObject::clearCachedLuaObject(const BaseObject* object) {
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+
 		if (!baseObjectCache.empty()) {
 			// Clear any events that make use of this object.
 			auto it = baseObjectCache.find(object);
 			if (it != baseObjectCache.end()) {
-				// Let people know that this object is invalidated.
-				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
-
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
+
+				// Null the userdata's internal pointer before removing our identity cache.
+				mwse::lua::clearUserdataPointer(it->second);
+
+				// Let people know that this object is invalidated.
+				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 
 				// Remove it from the cache.
 				baseObjectCache.erase(it);
@@ -493,6 +589,9 @@ namespace TES3 {
 
 	void BaseObject::clearCachedLuaObjects() {
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		for (auto& item : baseObjectCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
 		baseObjectCache.clear();
 	}
 
@@ -726,7 +825,7 @@ namespace TES3 {
 		return object;
 	}
 
-	ReferenceList* Object::getOwningCollection() {
+	ReferenceList* Object::getOwningCollection() const {
 		return owningCollection.asReferenceList;
 	}
 
@@ -771,7 +870,7 @@ namespace TES3 {
 	// PhysicalObject
 	//
 
-	IteratedList<BaseObject*> * PhysicalObject::getStolenList() {
+	NI::IteratedList<BaseObject*> * PhysicalObject::getStolenList() {
 		return vTable.physical->getStolenList(this);
 	}
 
@@ -795,12 +894,89 @@ namespace TES3 {
 		return TES3_PhysicalObject_getMobile(this);
 	}
 
-	const auto TES3_PhysicalObject_createBoundingBox = reinterpret_cast<void(__thiscall*)(PhysicalObject*)>(0x4EEFC0);
-	void PhysicalObject::createBoundingBox() {
-		TES3_PhysicalObject_createBoundingBox(this);
+	static void __cdecl PatchedSetBBoxFromBoxBV(NI::AVObject* object, NI::Point3& out_min, NI::Point3& out_max) {
+		// We can reuse bounding volumes if one is available.
+		const auto abv = object->modelABV;
+		if (abv && abv->getType() == NI::BoundingVolumeType::Box) {
+			const auto boxABV = static_cast<const NI::BoxBoundingVolume*>(abv);
+
+			out_min = boxABV->bounds.center - boxABV->bounds.extent;
+			out_max = boxABV->bounds.center + boxABV->bounds.extent;
+			return;
+		}
+
+		object->calculateBounds(out_min, out_max, object->localTranslate, *object->localRotation, object->localScale, false, false, false);
+
+		if (object && object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			auto asNode = static_cast<NI::Node*>(object);
+			asNode->detachAllChildren();
+			asNode->update();
+		}
+
+		const NI::Point3 extent = (out_max - out_min) * 0.5f;
+		const NI::Point3 center = extent + out_min;
+		auto newABV = NI::BoxBoundingVolume::create(extent, center, NI::Point3::UNIT_X, NI::Point3::UNIT_Y, NI::Point3::UNIT_Z);
+		object->setModelSpaceABV(newABV);
 	}
 
-	BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
+	const auto TES3_VanillaSetBBoxFromBoxBV = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*)>(0x4EF1D0);
+	const auto TES3_VanillaSetBBoxFromGeomRecursive = reinterpret_cast<void(__cdecl*)(NI::AVObject*, NI::Point3*, NI::Point3*, const NI::Point3*, const NI::Matrix33*, const float*)>(0x4EF410);
+	void PhysicalObject::createBoundingBox() {
+		if (!sceneNode) {
+			return;
+		}
+
+		// Meshes can have custom bounding volumes we need to respect.
+		const auto boundingBoxVolume = sceneNode->getObjectByName("Bounding Box");
+		if (boundingBoxVolume) {
+			boundingBoxVolume->setAppCulled(true);
+		}
+
+		// The game always recreates the bounding box for some reason, rather than reusing memory here.
+		if (boundingBox) {
+			se::memory::_delete(boundingBox);
+		}
+		boundingBox = se::memory::_new<NI::BoundingBox>();
+		boundingBox->initialize();
+
+		// Markers always have zeroed bounding boxes.
+		if (getIsLocationMarker()) {
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
+			return;
+		}
+
+		// Use the updated calculation functions.
+		if (boundingBoxVolume) {
+			PatchedSetBBoxFromBoxBV(boundingBoxVolume, boundingBox->minimum, boundingBox->maximum);
+		}
+		else {
+			const auto scale = 1.0f;
+			sceneNode->calculateBounds(boundingBox->minimum, boundingBox->maximum, NI::Point3::ZEROES, NI::Matrix33::IDENTITY, scale, false, false, false);
+		}
+
+		// If any data ended up uninitialized, we'll also zero it out.
+		if (boundingBox->hasUninitializedData()) {
+			boundingBox->minimum = NI::Point3::ZEROES;
+			boundingBox->maximum = NI::Point3::ZEROES;
+		}
+
+		// If we are an actor, we need to validate that the bounding box can be used for steps. If it can't, recreate it using vanilla logic.
+		// This improves compatibility with older mods with broken meshes, such as "Cave Drips" by R-Zero.
+		const auto height = std::fabsf(boundingBox->maximum.z - boundingBox->minimum.z);
+		if (isMobileCapableActor() && height <= 32.0f) {
+			boundingBox->initialize();
+			if (boundingBoxVolume) {
+				TES3_VanillaSetBBoxFromBoxBV(boundingBoxVolume, &boundingBox->minimum, &boundingBox->maximum);
+			}
+			else {
+				const auto scale = 1.0f;
+				TES3_VanillaSetBBoxFromGeomRecursive(sceneNode, &boundingBox->minimum, &boundingBox->maximum, &NI::Point3::ZEROES, &NI::Matrix33::IDENTITY, &scale);
+			}
+		}
+	}
+
+	NI::BoundingBox* PhysicalObject::getOrCreateBoundingBox() {
 		if (!boundingBox) {
 			if (sceneNode == nullptr && !loadMesh()) {
 				return nullptr;
@@ -825,6 +1001,10 @@ namespace TES3 {
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {}
 		return nullptr;
+	}
+
+	const std::vector<Reference*>& PhysicalObject::getReferences() const {
+		return mwse::ReferenceTracker::getReferences(this);
 	}
 }
 

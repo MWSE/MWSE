@@ -2,9 +2,10 @@
 
 #include "TES3Defines.h"
 
-#include "TES3HashMap.h"
 #include "TES3MobileObject.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
+
+#include "NIHashMap.h"
 
 namespace TES3 {
 	enum class SpellEffectState {
@@ -42,7 +43,7 @@ namespace TES3 {
 		//
 
 		Effect * getSourceEffects() const;
-		nonstd::span<Effect> getEffectSpan() const;
+		std::span<Effect> getEffectSpan() const;
 
 	};
 	static_assert(sizeof(MagicSourceCombo) == 0x8, "TES3::MagicSourceCombo failed size validation");
@@ -51,7 +52,7 @@ namespace TES3 {
 		float overrideCastChance; // 0x10
 		Reference * target; // 0x14
 		bool bypassResistances; // 0x18
-		HashMap<const char*, MagicEffectInstance> effects[8]; // 0x1C, key is the objectID
+		NI::HashMap<const char*, MagicEffectInstance> effects[8]; // 0x1C, key is the objectID
 		MobileProjectile * magicProjectile; // 0x9C
 		MagicSourceCombo sourceCombo; // 0xA0
 		unsigned int serialNumber; // 0xA8
@@ -75,12 +76,13 @@ namespace TES3 {
 		//
 
 		int getMagnitude(int effectIndex) const;
-		void playSpellVFX(float scale, Vector3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous);
+		void playSpellVFX(float scale, NI::Point3 position, Reference* attachedReference, float offsetZ, PhysicalObject* effectVisual, int effectIndex, int isContinuous);
 		void projectileHit(MobileObject::Collision* collision);
 		bool spellHit(Reference* hitReference, int effectIndex);
 		void onAbsorbedMagic(MobileActor* mact);
 
 		void process(float deltaTime);
+		void retire();
 		void retire(TES3::Reference* reference);
 
 		//
@@ -89,8 +91,9 @@ namespace TES3 {
 
 		Object* getSourceObject() const;
 		MagicSourceType getSourceType() const;
-		nonstd::span<Effect> getSourceEffects() const;
-		MagicEffectInstance* getEffectInstance(int effectIndex, const Reference* reference);
+		std::span<Effect> getSourceEffects() const;
+		MagicEffectInstance* getEffectInstance(int effectIndex, const Reference* reference) const;
+		std::vector<MagicEffectInstance*> getAllEffectInstances(int effectIndex) const;
 
 		void playSpellVFX_lua(sol::table params);
 

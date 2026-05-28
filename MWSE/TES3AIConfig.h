@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Attachment.h"
-#include "TES3IteratedList.h"
+#include "NIIteratedList.h"
 
 namespace TES3 {
 	struct AIConfig {
@@ -11,7 +11,7 @@ namespace TES3 {
 		unsigned char alarm; // 0x4
 		char unknown_0x5[3];
 		unsigned int merchantFlags; // 0x8
-		IteratedList<TravelDestination*> * travelDestinations; // 0xC
+		NI::IteratedList<TravelDestination*> * travelDestinations; // 0xC
 
 		AIConfig();
 		~AIConfig();

@@ -33,7 +33,7 @@ namespace TES3 {
 
 	const auto TES3_Cell_constructor = reinterpret_cast<Cell*(__thiscall *)(Cell*)>(0x4DB500);
 	Cell * Cell::create() {
-		return TES3_Cell_constructor(mwse::tes3::_new<Cell>());
+		return TES3_Cell_constructor(se::memory::_new<Cell>());
 	}
 
 	const auto TES3_Cell_getFirstObjectOfType = reinterpret_cast<Reference*(__thiscall *)(const Cell*, int, unsigned char)>(0x4DBEF0);
@@ -48,6 +48,11 @@ namespace TES3 {
 
 	const auto TES3_Cell_setGridX = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DB9E0);
 	void Cell::setGridX(int x) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setGridX(this, x);
 	}
 
@@ -58,16 +63,26 @@ namespace TES3 {
 
 	const auto TES3_Cell_setGridY = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DBA00);
 	void Cell::setGridY(int y) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setGridY(this, y);
 	}
 
 	const auto TES3_Cell_setName = reinterpret_cast<void(__thiscall *)(Cell*, const char*)>(0x4E25E0);
 	void Cell::setName(const char* name) {
+		const auto dataHandler = TES3::DataHandler::get();
+		if (dataHandler && dataHandler->nonDynamicData) {
+			dataHandler->nonDynamicData->clearCellByNameCache(this);
+		}
+
 		TES3_Cell_setName(this, name);
 	}
 
-	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, Vector2*, float, const char*)>(0x4E3730);
-	void Cell::addMapNote(Vector2* position, float unknown, const char* text) {
+	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, NI::Point2*, float, const char*)>(0x4E3730);
+	void Cell::addMapNote(NI::Point2* position, float unknown, const char* text) {
 		TES3_Cell_addMapNote(this, position, unknown, text);
 	}
 
@@ -123,7 +138,7 @@ namespace TES3 {
 
 	std::optional<float> Cell::getWaterLevel() const {
 		if (getIsOrBehavesAsExterior()) {
-			return 0.0;
+			return 0.0f;
 		}
 		else if (getHasWater()) {
 			return waterLevelOrRegion.waterLevel;
@@ -337,7 +352,7 @@ namespace TES3 {
 		return conn;
 	}
 
-	Vector3 PathGrid::Node::getPosition() const {
+	NI::Point3 PathGrid::Node::getPosition() const {
 		// Convert local position to world position.
 		const auto cell = parentGrid->parentCell;
 		const int cellX = 8192 * cell->getGridX(), cellY = 8192 * cell->getGridY();

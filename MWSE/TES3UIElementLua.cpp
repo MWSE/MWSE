@@ -36,6 +36,9 @@ namespace mwse::lua {
 		// Allow elements to be serialized to json using their ID/name.
 		usertypeDefinition["__tojson"] = &Element::toJson;
 
+		// Support for checking managed lua objects.
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
+
 		// Read-only property bindings.
 		usertypeDefinition["children"] = sol::readonly_property(&Element::getChildren_lua);
 		usertypeDefinition["contentType"] = sol::readonly_property(&Element::getContentTypeString);

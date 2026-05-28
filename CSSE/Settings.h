@@ -155,7 +155,7 @@ namespace se::cs {
 			int x_position = 0;
 			int y_position = 71;
 
-			WindowSize size = { 436, 483 };
+			WindowSize size = { 436, 509 };
 
 			ColumnSettings column_id = { 175u };
 			ColumnSettings column_used = { 37u };
@@ -167,6 +167,10 @@ namespace se::cs {
 			std::array<float, 3> edit_circle_color_vertex = { 1.0f, 1.0f, 0.0f };
 
 			bool show_preview_enabled = false;
+			bool radius_aware_texture_painting_enabled = true;
+
+			int vertex_color_strength = 100;
+			std::string vertex_color_blend_mode = "Mix";
 
 			void from_toml(const toml::value& v);
 			toml::value into_toml() const;

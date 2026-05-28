@@ -6,10 +6,21 @@
 	More information: https://github.com/MWSE/MWSE/tree/master/docs
 -->
 
-
+A struct used to store render target data for the map and inventory doll.
 
 This type inherits the following: [tes3worldControllerRenderCamera](../types/tes3worldControllerRenderCamera.md).
 ## Properties
+
+### `alphaProperty`
+<div class="search_terms" style="display: none">alphaproperty</div>
+
+The render target's alpha property.
+
+**Returns**:
+
+* `result` ([niAlphaProperty](../types/niAlphaProperty.md), nil)
+
+***
 
 ### `cameraData`
 <div class="search_terms" style="display: none">cameradata</div>
@@ -33,6 +44,39 @@ This type inherits the following: [tes3worldControllerRenderCamera](../types/tes
 
 ***
 
+### `directionalLight`
+<div class="search_terms" style="display: none">directionallight</div>
+
+The render target's directional light.
+
+**Returns**:
+
+* `result` ([niDirectionalLight](../types/niDirectionalLight.md), nil)
+
+***
+
+### `readbackTexture`
+<div class="search_terms" style="display: none">readbacktexture</div>
+
+The render target's base readback texture.
+
+**Returns**:
+
+* `result` ([niSourceTexture](../types/niSourceTexture.md), nil)
+
+***
+
+### `renderedTexture`
+<div class="search_terms" style="display: none">renderedtexture</div>
+
+The render target's rendered texture.
+
+**Returns**:
+
+* `result` ([niRenderedTexture](../types/niRenderedTexture.md), nil)
+
+***
+
 ### `renderer`
 <div class="search_terms" style="display: none">renderer</div>
 
@@ -44,6 +88,28 @@ This type inherits the following: [tes3worldControllerRenderCamera](../types/tes
 
 ***
 
+### `rendererHeight`
+<div class="search_terms" style="display: none">rendererheight</div>
+
+The height of the render.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `rendererWidth`
+<div class="search_terms" style="display: none">rendererwidth</div>
+
+The width of the render.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `root`
 <div class="search_terms" style="display: none">root</div>
 
@@ -52,4 +118,48 @@ This type inherits the following: [tes3worldControllerRenderCamera](../types/tes
 **Returns**:
 
 * `result` ([niNode](../types/niNode.md))
+
+***
+
+### `targetHeight`
+<div class="search_terms" style="display: none">targetheight</div>
+
+The height of the render target.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `targetWidth`
+<div class="search_terms" style="display: none">targetwidth</div>
+
+The width of the render target.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `vertexColorProperty`
+<div class="search_terms" style="display: none">vertexcolorproperty</div>
+
+The render target's vertex color property.
+
+**Returns**:
+
+* `result` ([niVertexColorProperty](../types/niVertexColorProperty.md), nil)
+
+***
+
+### `zBufferProperty`
+<div class="search_terms" style="display: none">zbufferproperty</div>
+
+The render target's Z-buffer property.
+
+**Returns**:
+
+* `result` ([niZBufferProperty](../types/niZBufferProperty.md), nil)
 

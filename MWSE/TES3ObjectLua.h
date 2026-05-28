@@ -33,6 +33,9 @@ namespace mwse::lua {
 		usertypeDefinition["sourceless"] = sol::property(&TES3::BaseObject::getSourceless, &TES3::BaseObject::setSourceless);
 		usertypeDefinition["supportsActivate"] = sol::readonly_property(&TES3::BaseObject::supportsActivate);
 		usertypeDefinition["supportsLuaData"] = sol::property(&TES3::BaseObject::getSupportsLuaData);
+
+		// Support for checking managed lua objects.
+		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 
 	template <typename T>
@@ -66,5 +69,6 @@ namespace mwse::lua {
 		usertypeDefinition["mobile"] = sol::readonly_property(&TES3::PhysicalObject::getMobile);
 		usertypeDefinition["reference"] = sol::readonly_property(&TES3::PhysicalObject::getReference);
 		usertypeDefinition["stolenList"] = sol::readonly_property(&TES3::PhysicalObject::getStolenList);
+		usertypeDefinition["referenceList"] = sol::readonly_property(&TES3::PhysicalObject::getReferences);
 	}
 }

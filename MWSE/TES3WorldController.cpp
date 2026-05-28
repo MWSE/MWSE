@@ -10,12 +10,14 @@
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
 #include "TES3Reference.h"
+#include "TES3Script.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 #include "TES3WeatherController.h"
 
 #include "CodePatchUtil.h"
 #include "MemoryUtil.h"
+#include "MGEApi.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -160,7 +162,7 @@ namespace TES3 {
 
 		// If it isn't in the collection, create a new node and add it.
 		if (node == nullptr) {
-			node = mwse::tes3::_new<KillCounter::Node>();
+			node = se::memory::_new<KillCounter::Node>();
 			node->count = 0;
 			node->actor = actor;
 			killedActors->push_back(node);
@@ -221,7 +223,7 @@ namespace TES3 {
 
 		// If it isn't in the collection, create a new node and add it.
 		if (node == nullptr) {
-			node = mwse::tes3::_new<KillCounter::Node>();
+			node = se::memory::_new<KillCounter::Node>();
 			node->count = 0;
 			node->actor = actor;
 			killedActors->push_back(node);
@@ -382,10 +384,10 @@ namespace TES3 {
 		std::stringstream output;
 
 		// Build header.
-		int day = worldController->gvarDay->value;
-		const char* month = worldController->getNameForMonth(worldController->gvarMonth->value);
+		int day = static_cast<int>(worldController->gvarDay->value);
+		const char* month = worldController->getNameForMonth(static_cast<int>(worldController->gvarMonth->value));
 		const char* gmstDay = ndd->GMSTs[GMST::sDay]->value.asString;
-		int daysPassed = worldController->gvarDaysPassed->value;
+		int daysPassed = static_cast<int>(worldController->gvarDaysPassed->value);
 		output << "<FONT COLOR=\"9F0000\">";
 		output << day << " " << month;
 		output << " (" << gmstDay << " " << daysPassed << ")";
@@ -408,7 +410,7 @@ namespace TES3 {
 				unsigned int newTextLength = dataLength + textLength;
 				unsigned int newBufferSize = newTextLength + (1024 - newTextLength % 1024);
 
-				data = (char*)mwse::tes3::realloc(data, newBufferSize);
+				data = (char*)se::memory::realloc(data, newBufferSize);
 				dataBufferSize = newBufferSize;
 			}
 			strcat(data, text);
@@ -557,6 +559,18 @@ namespace TES3 {
 	const auto TES3_WorldController_isGlobalScriptRunning = reinterpret_cast<bool(__thiscall*)(const WorldController*, const Script*)>(0x40FB90);
 	bool WorldController::isGlobalScriptRunning(const Script* script) const {
 		return TES3_WorldController_isGlobalScriptRunning(this, script);
+	}
+
+	void WorldController::cleanupGlobalScriptReferences(Reference* reference) {
+		if (reference == nullptr || globalScripts == nullptr) {
+			return;
+		}
+
+		for (const auto globalScript : *globalScripts) {
+			if (globalScript && globalScript->reference == reference) {
+				globalScript->reference = nullptr;
+			}
+		}
 	}
 
 	const auto TES3_Data_daysInMonth = reinterpret_cast<unsigned short*>(0x775E40);
@@ -719,10 +733,10 @@ namespace TES3 {
 		bool respawnContainers = false;
 		while (gvarGameHour->value >= 24.0f) {
 			// Drop these values to integers to be later set back to the global values.
-			int day = gvarDay->value;
-			int daysPassed = gvarDaysPassed->value;
-			int month = gvarMonth->value;
-			int year = gvarYear->value;
+			int day = static_cast<int>(gvarDay->value);
+			int daysPassed = static_cast<int>(gvarDaysPassed->value);
+			int month = static_cast<int>(gvarMonth->value);
+			int year = static_cast<int>(gvarYear->value);
 
 			// Increment day count, reduce game hour by 24.
 			day++;
@@ -747,13 +761,13 @@ namespace TES3 {
 			// Do we need to respawn containers?
 			// mcp::ContainerRespawnTimescale modifies respawn cycle to use days.
 			if (advanceRespawn || mwse::mcp::getFeatureEnabled(mwse::mcp::feature::ContainerRespawnTimescale)) {
-				int monthsToRespawn = --gvarMonthsToRespawn->value;
+				int monthsToRespawn = static_cast<int>(--gvarMonthsToRespawn->value);
 				if (monthsToRespawn <= 0) {
 					respawnContainers = true;
-					gvarMonthsToRespawn->value = ndd->GMSTs[TES3::GMST::iMonthsToRespawn]->value.asLong;
+					gvarMonthsToRespawn->value = static_cast<float>(ndd->GMSTs[TES3::GMST::iMonthsToRespawn]->value.asLong);
 				}
 				else {
-					gvarMonthsToRespawn->value = monthsToRespawn;
+					gvarMonthsToRespawn->value = static_cast<float>(monthsToRespawn);
 				}
 			}
 
@@ -764,10 +778,10 @@ namespace TES3 {
 			}
 
 			// Update global variables.
-			gvarDay->value = day;
-			gvarDaysPassed->value = daysPassed;
-			gvarMonth->value = month;
-			gvarYear->value = year;
+			gvarDay->value = static_cast<float>(day);
+			gvarDaysPassed->value = static_cast<float>(daysPassed);
+			gvarMonth->value = static_cast<float>(month);
+			gvarYear->value = static_cast<float>(year);
 		}
 
 		if (respawnContainers) {

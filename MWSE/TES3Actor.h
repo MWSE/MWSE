@@ -7,6 +7,8 @@
 #include "TES3Inventory.h"
 #include "TES3Object.h"
 
+#include "NIIteratedList.h"
+
 namespace TES3 {
 	namespace ActorFlag {
 		typedef unsigned int value_type;
@@ -39,7 +41,7 @@ namespace TES3 {
 		unsigned int actorFlags; // 0x34
 		int cloneCount; // 0x38
 		Inventory inventory; // 0x3C
-		IteratedList<EquipmentStack*> equipment; // 0x58
+		NI::IteratedList<EquipmentStack*> equipment; // 0x58
 
 		//
 		// Function wrappers for our virtual table.

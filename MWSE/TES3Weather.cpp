@@ -15,6 +15,7 @@
 #include "TES3WeatherThunder.h"
 
 #include "LuaManager.h"
+#include "LuaUtil.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -147,11 +148,14 @@ namespace TES3 {
 			// Clear any events that make use of this object.
 			auto it = weatherObjectCache.find(object);
 			if (it != weatherObjectCache.end()) {
-				// Let people know that this object is invalidated.
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
-
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
+
+				// Null the userdata's internal pointer before removing our identity cache.
+				mwse::lua::clearUserdataPointer(it->second);
+
+				// Let people know that this object is invalidated.
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 
 				// Remove it from the cache.
 				weatherObjectCache.erase(it);
@@ -163,6 +167,9 @@ namespace TES3 {
 
 	void Weather::clearCachedLuaObjects() {
 		weatherObjectCacheMutex.lock();
+		for (auto& item : weatherObjectCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
 		weatherObjectCache.clear();
 		weatherObjectCacheMutex.unlock();
 	}

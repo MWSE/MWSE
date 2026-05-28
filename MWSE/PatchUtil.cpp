@@ -14,6 +14,7 @@
 #include "TES3CutscenePlayer.h"
 #include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
+#include "TES3DialogueInfo.h"
 #include "TES3Game.h"
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
@@ -34,8 +35,11 @@
 #include "TES3UIInventoryTile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
+#include "TES3VoiceStreamer.h"
 #include "TES3WorldController.h"
+#include "ReferenceTracker.h"
 
+#include "NIAVObject.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -65,9 +69,11 @@ namespace mwse::patch {
 #ifndef _DEBUG
 	// Release builds.
 	constexpr auto INSTALL_MINIDUMP_HOOK = true;
+	constexpr auto VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP = false;
 #else
 	// Debug builds.
 	constexpr auto INSTALL_MINIDUMP_HOOK = false;
+	constexpr auto VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP = true;
 #endif
 
 	const char* SafeGetObjectId(const TES3::BaseObject* object) {
@@ -89,11 +95,6 @@ namespace mwse::patch {
 	}
 
 	template <typename T>
-	void safePrintObjectToLog(const char* title, const T* object) {
-		safePrintObject(title, object, log::getLog());
-	}
-
-	template <typename T>
 	void safePrintObject(const char* title, const T* object, std::ostream& ss) {
 		if (object) {
 			auto id = SafeGetObjectId(object);
@@ -106,6 +107,11 @@ namespace mwse::patch {
 		else {
 			ss << "  " << title << ": nullptr\n";
 		}
+	}
+
+	template <typename T>
+	void safePrintObjectToLog(const char* title, const T* object) {
+		safePrintObject(title, object, log::getLog());
 	}
 
 	//
@@ -143,7 +149,7 @@ namespace mwse::patch {
 
 	void* __fastcall PatchScriptOpDisableCollision(TES3::Reference* reference) {
 		// Force update collision.
-		if (PatchScriptOpDisable_ForceCollisionUpdate) {
+		if (PatchScriptOpDisable_ForceCollisionUpdate && reference->getUpdatesCollisionGroups()) {
 			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
 		}
 
@@ -247,50 +253,39 @@ namespace mwse::patch {
 	// Patch: Make Morrowind believe that it is always the front window in the main gameplay loop block.
 	//
 
-	static HWND lastActiveWindow = 0;
-	HWND __stdcall PatchGetMorrowindMainWindow() {
-		auto worldController = TES3::WorldController::get();
-		auto mainWindowHandle = worldController->Win32_hWndParent;
+	static HWND lastForegroundWindow = 0;
+	HWND __stdcall PatchGetActiveWindowForMainLoop() {
+		const auto worldController = TES3::WorldController::get();
+		const auto mainWindowHandle = worldController->Win32_hWndParent;
 
-		// Check to see if we've become inactive.
-		auto activeWindow = GetActiveWindow();
-		if (activeWindow != mainWindowHandle && activeWindow != lastActiveWindow) {
-			// Reset mouse deltas so it stops moving.
+		const auto foregroundWindow = GetForegroundWindow();
+		if (foregroundWindow != mainWindowHandle && foregroundWindow != lastForegroundWindow) {
 			auto inputController = worldController->inputController;
-			inputController->mouseState.lX = 0;
-			inputController->mouseState.lY = 0;
-			inputController->mouseState.lZ = 0;
-
-			memset(inputController->keyboardState, 0, sizeof(inputController->keyboardState));
-			memset(inputController->previousKeyboardState, 0, sizeof(inputController->previousKeyboardState));
+			if (inputController) {
+				inputController->clearTransientInputState();
+				if (inputController->mouse) {
+					inputController->mouse->Unacquire();
+				}
+				if (inputController->keyboard) {
+					inputController->keyboard->Unacquire();
+				}
+			}
 		}
 
-		lastActiveWindow = activeWindow;
+		lastForegroundWindow = foregroundWindow;
 
-		return mainWindowHandle;
+		if (Configuration::RunInBackground) {
+			return mainWindowHandle;
+		}
+		return GetActiveWindow();
 	}
 
 	void __fastcall PatchGetMorrowindMainWindow_NoBackgroundInput(TES3::InputController* inputController) {
-		if (GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
+		if (GetForegroundWindow() != TES3::WorldController::get()->Win32_hWndParent) {
 			return;
 		}
 
 		inputController->readKeyState();
-	}
-
-	int __fastcall PatchGetMorrowindMainWindow_NoBufferReading(TES3::InputController* inputController, DWORD _EDX_, DWORD* key) {
-		if (GetActiveWindow() != TES3::WorldController::get()->Win32_hWndParent) {
-			// Read in the input so it doesn't get buffered when we alt-tab back in.
-			inputController->readButtonPressed(key);
-
-			// But pretend that nothing was found.
-			*key = 0;
-			return 0;
-		}
-
-		auto result = inputController->readButtonPressed(key);
-		TES3::UI::MenuInputController::lastKeyPressDIK = result ? *key : 0xFF;
-		return result;
 	}
 
 	//
@@ -298,7 +293,7 @@ namespace mwse::patch {
 	//
 
 	auto __fastcall DataHandlerCreateGlobalsContainer(void* garbage) {
-		mwse::tes3::_delete(garbage);
+		se::memory::_delete(garbage);
 		return new TES3::GlobalHashContainer();
 	}
 
@@ -533,7 +528,7 @@ namespace mwse::patch {
 	void __fastcall PatchCopyEnchantment(TES3::Item* item, DWORD _EDX_, const TES3::Item* from) {
 		// Free existing enchantment ID string if available.
 		if (item->getEnchantment() && !item->getLinksResolved()) {
-			tes3::free(item->getEnchantment());
+			se::memory::free(item->getEnchantment());
 		}
 		item->setEnchantment(nullptr);
 
@@ -549,7 +544,7 @@ namespace mwse::patch {
 				// Make a copy of the enchantment's ID.
 				fromEnchantment.enchantment = from->getEnchantment();
 				const auto enchantmentIDLength = strnlen_s(fromEnchantment.id, 32) + 1;
-				toEnchantment.id = reinterpret_cast<char*>(tes3::malloc(enchantmentIDLength));
+				toEnchantment.id = reinterpret_cast<char*>(se::memory::malloc(enchantmentIDLength));
 				strncpy_s(toEnchantment.id, enchantmentIDLength, fromEnchantment.id, enchantmentIDLength);
 				item->setEnchantment(toEnchantment.enchantment);
 			}
@@ -735,7 +730,7 @@ namespace mwse::patch {
 	// 
 
 	// Mirror image texcoords with negative image scale.
-	void __cdecl PatchUIElementTexcoordWrite(TES3::UI::Element* element, TES3::Vector2* texCoords) {
+	void __cdecl PatchUIElementTexcoordWrite(TES3::UI::Element* element, NI::Point2* texCoords) {
 		float left = 0.0f, top = 0.0f, right = 1.0f, bottom = 1.0f;
 
 		if (element->imageScaleX < 0) {
@@ -1056,7 +1051,7 @@ namespace mwse::patch {
 			log::getLog() << "[MWSE] Warning: Pathgrid in cell '" << pathGrid->parentCell->getEditorName() <<
 				"' has mismatching path node count. nodeCount=" << pathGrid->nodeCount << ", node data count=" << pathGrid->nodes.count << std::endl;
 
-			pathGrid->nodeCount = pathGrid->nodes.count;
+			pathGrid->nodeCount = static_cast<unsigned short>(pathGrid->nodes.count);
 		}
 
 		// Perform overwritten code.
@@ -1255,6 +1250,69 @@ namespace mwse::patch {
 	const size_t PatchNIDX8Renderer_RenderShape_size = 0x8;
 
 	//
+	// Patch: Fix NiDX8TexturePass::setCTPipelineState always setting the base map
+	// texture coordinate index to 0 instead of reading it from the NIF property.
+	//
+	// Bug at 0x6B42AC: `mov [edi+28h], ebp` hardcodes ebp (=0) into
+	// NiDX8TextureStage::sourceTexcoordIndex (+0x28) for stage[0]. Every other
+	// map type (detail, glow, dark, decal, bump, gloss) correctly reads
+	// NiTexturingProperty::Map::texCoordSet (+0x10) and clamps it to
+	// [0, textureSetCount-1]. The base map skips that read entirely.
+	//
+	// Fix: a 5-byte CALL replaces the buggy 3-byte mov plus the first 2 bytes of
+	// the following `mov [edi+48h], ebp`. A single NOP covers the leftover byte
+	// at 0x6B42B1. The hook reads baseMap->texCoordSet, clamps it, writes it to
+	// stage[0].sourceTexcoordIndex, and replicates the clobbered [edi+48h]=0 write.
+	//
+	// Stack layout on entry (ecx/thiscall frame of 0x6B41B0):
+	//   sub esp,38h + push ebx/ebp/esi/edi → 0x48 total frame
+	//   [esp+0x2C] = NiTexturingProperty*  (var_1C in IDA; caller saved to stack)
+	//   [esp+0x58] = textureSetCount       (arg_10, 5th explicit parameter)
+	// After the CALL at 0x6B42AC pushes a return address (+4):
+	//   [esp+0x30] = NiTexturingProperty*
+	//   [esp+0x5C] = textureSetCount
+	//
+	// NiTexturingProperty::TArray<Map*> maps is at prop+0x1C.
+	// TArray.storage (pointer to element array) is at TArray+0x4 → prop+0x20.
+	// maps.storage[0] is the base Map*; Map::texCoordSet is at Map+0x10.
+	//
+	__declspec(naked) void PatchNiDX8TexturePass_BaseMapTexcoord() {
+		__asm {
+			// edi = NiDX8TextureStage* (stage[0], always valid at this call site)
+			// ebp = 0
+
+			// --- Fix: read baseMap->texCoordSet and clamp ---
+			mov  eax, [esp+0x30]    // eax = NiTexturingProperty* (caller's var_1C)
+			mov  eax, [eax+0x20]    // eax = maps.storage pointer (TArray.storage at prop+0x20)
+			mov  eax, [eax]         // eax = maps.storage[0] = baseMap*
+			test eax, eax
+			jz   use_zero           // baseMap == nullptr → default to 0
+
+			mov  eax, [eax+0x10]    // eax = baseMap->texCoordSet
+
+			// Clamp: if texCoordSet >= textureSetCount, use textureSetCount-1
+			mov  ecx, [esp+0x5C]    // ecx = textureSetCount (caller's arg_10)
+			test ecx, ecx
+			jz   use_zero           // textureSetCount == 0 → clamp to 0
+			cmp  eax, ecx
+			jb   write_index        // texCoordSet < textureSetCount → no clamp needed
+			lea  eax, [ecx-1]       // eax = textureSetCount - 1
+			jmp  write_index
+
+		use_zero:
+			xor  eax, eax
+
+		write_index:
+			mov  [edi+0x28], eax    // stage[0].sourceTexcoordIndex = texCoordSet
+
+			// --- Replicate clobbered instruction: mov [edi+48h], ebp (= 0) ---
+			mov  [edi+0x48], ebp
+
+			ret
+		}
+	}
+
+	//
 	// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
 	//
 
@@ -1326,7 +1384,30 @@ namespace mwse::patch {
 
 	template <DWORD effectTickFunc>
 	inline static void WritePatchMagicEffect_RequireMobile(TES3::EffectID::EffectID effectId) {
-		writeDoubleWordEnforced(0x7884B0 + (effectId * 4), effectTickFunc, reinterpret_cast<DWORD>(PatchMagicEffect_RequireMobile<effectTickFunc>));
+		se::memory::writeDoubleWordEnforced(0x7884B0 + (effectId * 4), effectTickFunc, reinterpret_cast<DWORD>(PatchMagicEffect_RequireMobile<effectTickFunc>));
+	}
+
+	//
+	// Patch: Ensure that losing Stunted Magicka doesn't remove the flag permanently.
+	//
+
+	static void __cdecl PatchMagicEffectStuntedMagicka(TES3::MagicSourceInstance* sourceInstance, float deltaTime, TES3::MagicEffectInstance* effectInstance, int effectIndex) {
+		auto mobile = effectInstance->target->getAttachedMobileActor();
+		if (mobile == nullptr) {
+			return;
+		}
+
+		const auto magicEffectController = TES3::DataHandler::get()->nonDynamicData->magicEffects;
+		const auto appliesOnce = TES3::MagicEffectController::getEffectFlag(TES3::EffectID::StuntedMagicka, TES3::EffectFlag::AppliedOnceBit);
+		unsigned int attributeVariant = 0;
+		TES3::MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, appliesOnce, &attributeVariant, 0x7886F0, TES3::EffectAttribute::NonResistable, nullptr);
+		if (attributeVariant == 0) {
+			return;
+		}
+
+		// Re-flag stunted magicka bit based on any other effects.
+		const auto stillStunted = mobile->isAffectedByEffect(TES3::EffectID::StuntedMagicka);
+		mobile->setMobileActorFlag(TES3::MobileActorFlag::StuntedMagicka, stillStunted);
 	}
 
 	//
@@ -1370,7 +1451,7 @@ namespace mwse::patch {
 	void DoPatchSafeGetObjectType() {
 		constexpr DWORD patchAddresses[] = { 0x41106E, 0x41CB71, 0x41CBA8, 0x41CBBA, 0x41CC93, 0x41CD68, 0x41CD80, 0x41D7A3, 0x41F59F, 0x42103B, 0x421373, 0x455165, 0x45517A, 0x4551B9, 0x45FA0E, 0x45FA22, 0x45FA3A, 0x45FAA9, 0x45FBC9, 0x45FBDD, 0x45FBF5, 0x45FC62, 0x45FC99, 0x45FD79, 0x45FE80, 0x4607A0, 0x4607B4, 0x4608E1, 0x4608F5, 0x460941, 0x463416, 0x464D25, 0x464D67, 0x464DC0, 0x464E4D, 0x464EB4, 0x4657D6, 0x465802, 0x465907, 0x465E2D, 0x465E45, 0x465FA2, 0x465FAF, 0x4666E7, 0x4667EB, 0x46F59C, 0x46FBA1, 0x46FBD4, 0x472F15, 0x47319A, 0x473263, 0x473334, 0x47367C, 0x47369B, 0x473787, 0x47393F, 0x4739A0, 0x473CCE, 0x473D84, 0x473DC5, 0x473E21, 0x473F7B, 0x474021, 0x474174, 0x474238, 0x484C62, 0x484DC2, 0x484ED0, 0x485FFD, 0x486365, 0x486433, 0x488B2F, 0x48B16E, 0x48B20C, 0x48B233, 0x48B253, 0x48B2E8, 0x48B4B1, 0x48B548, 0x48B712, 0x48B73A, 0x48B764, 0x48B86B, 0x48BA9C, 0x48BCBF, 0x48BD64, 0x48BFB3, 0x48C089, 0x48C2D4, 0x48C3D2, 0x48C463, 0x4951E5, 0x49526F, 0x495335, 0x495380, 0x4954BE, 0x4954F5, 0x495561, 0x4955A6, 0x4956AE, 0x495811, 0x495854, 0x4958F1, 0x49595C, 0x4959B7, 0x495A50, 0x495AF0, 0x495B6D, 0x495BC9, 0x495C0B, 0x495C67, 0x495CB6, 0x495D22, 0x495DE2, 0x495E9C, 0x495F20, 0x495F97, 0x495FCE, 0x496096, 0x4960FB, 0x496123, 0x49617B, 0x4961D7, 0x496219, 0x4962C8, 0x496314, 0x4964ED, 0x496515, 0x49655B, 0x49672A, 0x4968C1, 0x496E1D, 0x496E7D, 0x496EC8, 0x496F18, 0x496F58, 0x497030, 0x497BEB, 0x497D37, 0x497E72, 0x49817A, 0x498598, 0x498764, 0x499182, 0x49938C, 0x4999CE, 0x499ABF, 0x499AD1, 0x499AE3, 0x499CB3, 0x499D7D, 0x49A1BD, 0x49A5A2, 0x49A5F9, 0x49A758, 0x49A7D8, 0x49A7EA, 0x49A8AD, 0x49A8BA, 0x49AA36, 0x49AA48, 0x49ABE8, 0x49ABFA, 0x49ACAF, 0x49ACC1, 0x49B51C, 0x49B595, 0x49B640, 0x49B6BD, 0x49B793, 0x49D1BB, 0x49DC83, 0x49E8BE, 0x49E8CC, 0x49EA7E, 0x49EB4E, 0x49EC91, 0x49EFA8, 0x49FD2B, 0x4A01EB, 0x4A0BFE, 0x4A171B, 0x4A24EB, 0x4A359E, 0x4A407B, 0x4A4A8B, 0x4A525E, 0x4A526C, 0x4A56BB, 0x4A5C7B, 0x4A61BB, 0x4A67AB, 0x4A6C7B, 0x4A716B, 0x4A74DB, 0x4AB36B, 0x4AC78E, 0x4AC79C, 0x4AC88B, 0x4ACAD6, 0x4B01BD, 0x4B01DC, 0x4B02FE, 0x4B0851, 0x4B0C16, 0x4B0C5D, 0x4B0CA4, 0x4B0CE9, 0x4B0ED0, 0x4B1076, 0x4B119F, 0x4B15D0, 0x4B1636, 0x4B166B, 0x4B172E, 0x4B1E68, 0x4B5B44, 0x4B5BD4, 0x4B5CF9, 0x4B5D50, 0x4B5DC6, 0x4B5DEF, 0x4B5E22, 0x4B5E49, 0x4B606D, 0x4B6076, 0x4B8880, 0x4B8ADD, 0x4B9007, 0x4B92E2, 0x4B9520, 0x4B9A9D, 0x4B9D79, 0x4B9D98, 0x4B9E0A, 0x4B9FEC, 0x4BA03C, 0x4BA0B8, 0x4BA108, 0x4BA183, 0x4BA1A6, 0x4BA489, 0x4BA946, 0x4BA95A, 0x4BAEAB, 0x4BAF53, 0x4BB7E8, 0x4BB9F1, 0x4BBDFE, 0x4BBE1E, 0x4BBE2B, 0x4BBE3B, 0x4C0BE7, 0x4C0BF1, 0x4C0C49, 0x4C0C70, 0x4C1188, 0x4C18FB, 0x4C1A4A, 0x4C1E6F, 0x4C2096, 0x4C21A5, 0x4C37ED, 0x4C3B28, 0x4C3BEB, 0x4C3CCF, 0x4C3D29, 0x4C55CE, 0x4C5744, 0x4C5960, 0x4C5B68, 0x4C604C, 0x4C6408, 0x4C6817, 0x4C6C0C, 0x4C71E1, 0x4C722B, 0x4C73DD, 0x4C74F3, 0x4C79E7, 0x4C7E83, 0x4C848B, 0x4C84A6, 0x4CF9A0, 0x4D0DC3, 0x4D212B, 0x4D280E, 0x4D2847, 0x4D2C7D, 0x4D2CE5, 0x4D2D80, 0x4D332E, 0x4D734B, 0x4D8A27, 0x4D987E, 0x4D988C, 0x4D9AE4, 0x4D9CF2, 0x4D9DA5, 0x4D9DDE, 0x4DA00F, 0x4DA0A2, 0x4DBBE6, 0x4DBD77, 0x4DBF2C, 0x4DBF82, 0x4DBFE7, 0x4DC046, 0x4DC1B2, 0x4DC2E9, 0x4DC81B, 0x4DDD7B, 0x4DDE1C, 0x4DDEAA, 0x4DDEF2, 0x4DE077, 0x4DE081, 0x4DE08B, 0x4DE944, 0x4DEB23, 0x4DEC21, 0x4DF596, 0x4DF84F, 0x4E0D48, 0x4E12FC, 0x4E1646, 0x4E1683, 0x4E173A, 0x4E17E4, 0x4E19C1, 0x4E1A46, 0x4E2B0F, 0x4E491A, 0x4E4928, 0x4E4936, 0x4E497F, 0x4E4AD9, 0x4E4DCC, 0x4E5687, 0x4E5786, 0x4E633D, 0x4E6E83, 0x4E7136, 0x4E7199, 0x4E77A3, 0x4E79CF, 0x4E7E0F, 0x4E7E21, 0x4E7E33, 0x4E7E9F, 0x4E7EFC, 0x4E7F60, 0x4E813B, 0x4E839A, 0x4E8503, 0x4E85C5, 0x4E85DB, 0x4E86CA, 0x4E8BC6, 0x4E8C94, 0x4E8D62, 0x4E8F9C, 0x4E90B9, 0x4E91D2, 0x4E9452, 0x4E9710, 0x4E9754, 0x4E994A, 0x4E9981, 0x4E9A8A, 0x4EAF5E, 0x4EB0ED, 0x4EB16D, 0x4EB183, 0x4EB199, 0x4EB1CD, 0x4EB62D, 0x4EB816, 0x4EBB16, 0x4EBB28, 0x4EBE4F, 0x4EBEA5, 0x4F260B, 0x4F27BF, 0x4F7229, 0x4F7468, 0x4F9FF1, 0x4FA0A6, 0x4FA0B4, 0x4FA0C2, 0x4FA22C, 0x4FA2DF, 0x4FE0BE, 0x4FE0CC, 0x4FE0E8, 0x4FE0F6, 0x4FE110, 0x4FE252, 0x4FE2AD, 0x4FE2BB, 0x4FE2C9, 0x4FE346, 0x4FE39B, 0x4FECD6, 0x4FECE4, 0x4FED04, 0x4FED12, 0x4FED30, 0x5057F2, 0x506753, 0x507303, 0x507323, 0x50733F, 0x507764, 0x5077BA, 0x508054, 0x5080B0, 0x50856E, 0x5085D5, 0x5086B6, 0x508741, 0x50893D, 0x50899D, 0x508A1A, 0x508A75, 0x508ACB, 0x508B23, 0x508CB5, 0x508CC8, 0x508D5A, 0x50904B, 0x509627, 0x509664, 0x509707, 0x5098EF, 0x509A52, 0x50A4CF, 0x50A5FD, 0x50A722, 0x50A858, 0x50A910, 0x50A9C8, 0x50AA32, 0x50AAD3, 0x50ABD0, 0x50BA30, 0x50BC8B, 0x50BE1C, 0x50BE88, 0x50BF8C, 0x50C196, 0x50C233, 0x50C248, 0x50C256, 0x50C643, 0x50EC97, 0x50ECC4, 0x50ED38, 0x50EFC6, 0x50F03E, 0x5116C0, 0x51248A, 0x512498, 0x51385A, 0x51415C, 0x514A22, 0x514D7B, 0x514FD1, 0x515052, 0x51522F, 0x5155D0, 0x51572B, 0x515DDB, 0x5165F7, 0x516E41, 0x517890, 0x51793C, 0x5179A9, 0x517C13, 0x518ADE, 0x518B6B, 0x518BC1, 0x5206EA, 0x520744, 0x520896, 0x5208F0, 0x5234C9, 0x525092, 0x527F5F, 0x528082, 0x52B241, 0x52B333, 0x52C078, 0x52C0AF, 0x52C1A5, 0x52C1B9, 0x52C844, 0x52CCD7, 0x52CDB4, 0x52CDC2, 0x52CDD0, 0x52CDDE, 0x52CDEC, 0x52CEE8, 0x533691, 0x533F61, 0x53753A, 0x53767E, 0x537ACF, 0x53836F, 0x53843E, 0x53AFF7, 0x53DEEA, 0x54C9D7, 0x54CB05, 0x54D342, 0x54FF4C, 0x550EB6, 0x551B06, 0x55A52B, 0x55F120, 0x55F219, 0x55F4E3, 0x55F5D8, 0x5634FD, 0x563755, 0x563819, 0x565FC4, 0x5677C9, 0x5699DF, 0x569A96, 0x569ACD, 0x569B9F, 0x56B1C2, 0x56B1D0, 0x56B1DE, 0x56B1EC, 0x56B233, 0x56B241, 0x56B2B6, 0x56B2C8, 0x56B2D6, 0x56B2E4, 0x56B32F, 0x56B33D, 0x56B3FF, 0x56B40D, 0x56B41B, 0x56B429, 0x56B470, 0x56B47E, 0x56B4F1, 0x56B503, 0x56B511, 0x56B51F, 0x56B56A, 0x56B578, 0x56C149, 0x56C208, 0x56C375, 0x56C42C, 0x56F05D, 0x573435, 0x5738F1, 0x5743B7, 0x574C92, 0x58FD49, 0x58FEA7, 0x590449, 0x590DFB, 0x590E5E, 0x590E73, 0x590E85, 0x590E97, 0x590EA9, 0x590EBB, 0x590EC9, 0x590ED7, 0x590EE5, 0x590EF3, 0x590F01, 0x590F0F, 0x590F1D, 0x590F2B, 0x590F3D, 0x590FE0, 0x5910B6, 0x591637, 0x5916C9, 0x5917FE, 0x591EB1, 0x592B54, 0x595749, 0x59575A, 0x59A16F, 0x59A19F, 0x59A1CF, 0x59A1FF, 0x59A22F, 0x59ACA8, 0x59D1A9, 0x5A3C98, 0x5A3CBF, 0x5A3CE6, 0x5A4704, 0x5A5492, 0x5A5F10, 0x5A63FF, 0x5A6414, 0x5B447B, 0x5B4489, 0x5B44DA, 0x5B4719, 0x5B5002, 0x5B502C, 0x5B5067, 0x5B51DD, 0x5B5409, 0x5B54CD, 0x5B56E8, 0x5B59DF, 0x5B5C6D, 0x5B5E06, 0x5B6012, 0x5B6028, 0x5B7224, 0x5B76C5, 0x5B7A8E, 0x5B7CA5, 0x5B7CD6, 0x5B7DCE, 0x5B7DE7, 0x5BF3CC, 0x5C47FD, 0x5C497A, 0x5C4A1E, 0x5C4AC5, 0x5C55DA, 0x5C615A, 0x5C6171, 0x5C61B2, 0x5C6B4E, 0x5CA998, 0x5CA9BF, 0x5CA9E6, 0x5CB836, 0x5CC782, 0x5CD901, 0x5CE309, 0x5D095E, 0x5D098F, 0x5D142B, 0x5D36B9, 0x5D36C7, 0x5D36D5, 0x5D3790, 0x5D3865, 0x5D3A5E, 0x5D3C61, 0x5D4069, 0x5D4505, 0x5D450F, 0x5D461F, 0x5D4628, 0x5D463B, 0x5D4644, 0x5E0090, 0x5E00D5, 0x5E0738, 0x5E212A, 0x5E2198, 0x5E31AA, 0x5E31EF, 0x5E38BE, 0x5E4355, 0x5ED061, 0x5ED073, 0x5ED0A0, 0x5ED0E4, 0x5ED0F6, 0x5ED123, 0x5ED157, 0x5F72E9, 0x5F72FA, 0x5FE2DE, 0x608759, 0x608AA7, 0x60AFF8, 0x60D7A7, 0x60D8F8, 0x60E365, 0x61527E, 0x615290, 0x631A50, 0x631A5C, 0x631B70, 0x631B7A, 0x631B91, 0x631B9B, 0x631CB8, 0x631CC4, 0x631DF8, 0x631E02, 0x631E1B, 0x631E25, 0x63261D, 0x633413, 0x6335FA, 0x63365D, 0x633740, 0x63384E, 0x633888, 0x633914, 0x6339A5, 0x633C98, 0x633CC1, 0x633D53, 0x633DB6, 0x635373, 0x6EA072, 0x6EA08C, 0x6EA097, 0x6EA0BA, 0x6EA1B3, 0x6EA721, 0x6EA794, 0x6EA7A0, 0x6EA7AB, 0x6EA7B7, 0x6EA7CB, 0x6EA7D7, 0x6EA7DF, 0x6EA8D8 };
 		for (auto address : patchAddresses) {
-			genCallEnforced(address, 0x4EE8B0, reinterpret_cast<DWORD>(PatchSafeGetObjectType));
+			se::memory::genCallEnforced(address, 0x4EE8B0, reinterpret_cast<DWORD>(PatchSafeGetObjectType));
 		}
 	}
 
@@ -1379,12 +1460,12 @@ namespace mwse::patch {
 	//
 
 	inline static void WritePatchKeyCharacter(unsigned int key, char character) {
-		writeByteUnprotected(0x775148 + key, character); // US, Unshifted
-		writeByteUnprotected(0x775248 + key, character); // US, Shifted
-		writeValueEnforced<char>(0x775348 + key, 0, character); // DE, Unshifted
-		writeValueEnforced<char>(0x775448 + key, 0, character); // DE, Shifted
-		writeValueEnforced<char>(0x775548 + key, 0, character); // FR, Unshifted
-		writeValueEnforced<char>(0x775648 + key, 0, character); // FR, Shifted
+		se::memory::writeByteUnprotected(0x775148 + key, character); // US, Unshifted
+		se::memory::writeByteUnprotected(0x775248 + key, character); // US, Shifted
+		se::memory::writeValueEnforced<char>(0x775348 + key, 0, character); // DE, Unshifted
+		se::memory::writeValueEnforced<char>(0x775448 + key, 0, character); // DE, Shifted
+		se::memory::writeValueEnforced<char>(0x775548 + key, 0, character); // FR, Unshifted
+		se::memory::writeValueEnforced<char>(0x775648 + key, 0, character); // FR, Shifted
 	}
 
 	static void PatchExpandKeyboardCharacterTranslations() {
@@ -1478,10 +1559,430 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Improve performance of initial game load.
+	//
+
+	static void __cdecl PatchDialogueSorting() {
+		const auto dataHandler = TES3::DataHandler::get();
+		const auto dialogues = dataHandler->nonDynamicData->dialogues;
+		if (dialogues->empty()) {
+			return;
+		}
+
+		// Create a sorter structure that caches the length of the topic so we don't have to constantly calculate it.
+		struct DialogueLengthCache {
+			TES3::Dialogue* dialogue;
+			size_t length;
+
+			DialogueLengthCache(TES3::Dialogue* d) {
+				dialogue = d;
+				length = strlen(d->name ? d->name : "");
+			}
+		};
+		struct {
+			bool operator()(const DialogueLengthCache& a, const DialogueLengthCache& b) {
+				return a.length > b.length;
+			}
+		} dialogueLengthSorter;
+
+		// Clone the dialogues in an array, then sort the array.
+		// TODO: We should improve our TList implementation to support sorting.
+		std::vector<DialogueLengthCache> sortedDialogues;
+		sortedDialogues.reserve(dialogues->size());
+		for (const auto& dialogue : *dialogues) {
+			sortedDialogues.push_back(dialogue);
+		}
+		std::sort(sortedDialogues.begin(), sortedDialogues.end(), dialogueLengthSorter);
+
+		// Clone the sorted data back into the TList, without any allocations.
+		auto itt = dialogues->head;
+		for (auto i = 0u; i < sortedDialogues.size(); ++i) {
+			itt->data = sortedDialogues[i].dialogue;
+			itt = itt->next;
+		}
+
+		// Update load progress all at once. This doesn't take a significant amount of time.
+		dataHandler->incrementLoadedRecords(dialogues->size());
+		const auto percentLoaded = dataHandler->getTotalLoadedRecordsFraction() * 100.0f;
+		TES3::UI::updateLoadingMenu(percentLoaded);
+	}
+
+	static void __fastcall PatchDialogueInfoDestructorCleanup(TES3::DialogueInfo* info, DWORD _) {
+		info->removeFromLoadIDCache();
+		const auto TES3_DialogueInfo_dtor = reinterpret_cast<void(__thiscall*)(TES3::DialogueInfo*)>(0x4AE8A0);
+		TES3_DialogueInfo_dtor(info);
+	}
+
+	static void __fastcall PatchMergeDialogueInfo(TES3::Dialogue* self, DWORD _, TES3::DialogueInfo* info, bool alwaysAddInfo) {
+		const auto previousId = (info->loadLinkNode && info->loadLinkNode->previous) ? info->loadLinkNode->previous : "";
+		if (previousId[0] == '\0') {
+			self->info.push_front(info);
+			self->cacheInfoByLoadID(info);
+			return;
+		}
+
+		if (alwaysAddInfo || self->info.empty()) {
+			self->info.push_back(info);
+			self->cacheInfoByLoadID(info);
+			return;
+		}
+
+		auto insertBefore = self->info.end();
+		if (const auto previousInfo = self->findInfoByLoadID(previousId)) {
+			for (auto it = self->info.begin(); it != self->info.end(); ++it) {
+				if (*it == previousInfo) {
+					insertBefore = it;
+					++insertBefore;
+					break;
+				}
+			}
+		}
+		else {
+			for (auto it = self->info.rbegin(); it != self->info.rend(); ++it) {
+				const auto currentLoadLinkNode = (*it)->loadLinkNode;
+				const auto currentInfoName = currentLoadLinkNode ? currentLoadLinkNode->name : "";
+				if (currentInfoName && se::string::iequal(previousId, currentInfoName)) {
+					insertBefore = it.base();
+					break;
+				}
+			}
+		}
+
+		self->info.insert(insertBefore, info);
+		self->cacheInfoByLoadID(info);
+	}
+
+	static void __fastcall PatchMergeDialogues(TES3::Dialogue* self, DWORD _, TES3::Dialogue* other) {
+		if (other->type > TES3::DialogueType::MAX_VALUE) {
+			return;
+		}
+
+		// Changed behavior: Don't show warnings for empty, deleted dialogues
+		if (self->name == nullptr && other->name == nullptr && self->type != other->type && self->getDeleted() && other->getDeleted()) {
+			return;
+		}
+
+		const auto myName = self->name ? self->name : "";
+		const auto otherName = other->name ? other->name : "";
+
+		if (self->type != other->type) {
+			tes3::logAndShowError("Dialogue \"%s\" type \"%s\" tried to become type \"%s\".\r\n",
+				myName,
+				self->getFilterTypeName(),
+				other->getFilterTypeName());
+			return;
+		}
+
+		if (other->getDeleted()) {
+			self->setDeleted(true);
+		}
+
+		if (!se::string::equal(myName, otherName)) {
+			tes3::setDataString(&self->name, otherName);
+		}
+
+		for (auto& info : other->info) {
+			PatchMergeDialogueInfo(self, NULL, info, false);
+		}
+	}
+
+	//
+	// Patch: Be better about showing/hiding the cursor.
+	//
+
+	static WNDPROC originalWindowProc = nullptr;
+	using gCursorShown = se::memory::ExternalGlobal<bool, 0x776D0C>;
+	static bool showCursorFlag = true;
+
+	static void SetShowCursorState(bool shown, bool force = false) {
+		if (!force && showCursorFlag == shown) {
+			return;
+		}
+
+		if (shown) {
+			while (ShowCursor(TRUE) < 0);
+		}
+		else {
+			while (ShowCursor(FALSE) >= 0);
+		}
+		showCursorFlag = shown;
+	}
+
+	static void SetCursorShown(HWND hWnd, bool shown, bool forceShow = false) {
+		gCursorShown::set(shown);
+		SetShowCursorState(shown, forceShow && shown);
+
+		const auto worldController = TES3::WorldController::get();
+		if (!worldController) {
+			return;
+		}
+
+		const auto inputController = worldController->inputController;
+		if (!inputController) {
+			return;
+		}
+
+		// Sync mouse state.
+		if (inputController->mouse) {
+			if (shown) {
+				inputController->mouse->Unacquire();
+			}
+			else if (GetForegroundWindow() == hWnd) {
+				inputController->mouse->Acquire();
+			}
+		}
+
+		// Sync keyboard state.
+		if (inputController->keyboard) {
+			if (shown) {
+				inputController->keyboard->Unacquire();
+			}
+			else if (GetForegroundWindow() == hWnd) {
+				inputController->keyboard->Acquire();
+			}
+		}
+	}
+
+	static void PatchWindProc_CursorHitTest(se::windows::DialogProcContext& context) {
+		context.callOriginalFunction();
+		const auto hWnd = context.getWindowHandle();
+		const auto result = context.getResult();
+		auto shouldShow = result != HTCLIENT;
+
+		SetCursorShown(hWnd, shouldShow || GetForegroundWindow() != hWnd);
+	}
+
+	static LRESULT __stdcall PatchWindProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+		se::windows::DialogProcContext context(hWnd, msg, wParam, lParam, (DWORD)originalWindowProc);
+
+		switch (msg) {
+		case WM_ACTIVATE:
+			SetCursorShown(hWnd, context.getLOWParam() == WA_INACTIVE, true);
+			break;
+		case WM_ACTIVATEAPP:
+			SetCursorShown(hWnd, !wParam, true);
+			break;
+		case WM_SETFOCUS:
+			SetCursorShown(hWnd, false);
+			break;
+		case WM_KILLFOCUS:
+			SetCursorShown(hWnd, true, true);
+			break;
+		case WM_NCHITTEST:
+			PatchWindProc_CursorHitTest(context);
+			break;
+		}
+
+		if (!context.hasResult()) {
+			context.callOriginalFunction();
+		}
+
+		return context.getResult();
+	}
+
+	// Replacement for the Sleep() call inside DataHandler::sub_48F5F0's
+	// background-load polling loop. Ignores the value originally pushed by the
+	// call site and re-reads the configured interval on every invocation, so
+	// the MCM slider can be tweaked live without restarting the game.
+	static void __stdcall PatchBackgroundLoadSleep(DWORD) {
+		Sleep(Configuration::BackgroundLoadPollIntervalMs);
+	}
+	
+	//
+	// Patch: Implement map-based lookup of cells by ID.
+	//
+
+	static TES3::Cell* __fastcall PatchRecordsHandlerGetCellByName(TES3::NonDynamicData* self, DWORD, const char* name) {
+		return self->getCellByName(name);
+	}
+
+	//
+	// Patch: Implement map-based lookup of references.
+	//
+
+	static const char* getReferenceLookupLogId(const TES3::BaseObject* object) {
+		__try {
+			const auto id =  object ? object->getObjectID() : "<nullptr>";
+			return id ? id : "<invalid>";
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return "<exception>";
+		}
+	}
+
+	static TES3::Cell* getReferenceLookupLogCell(const TES3::Reference* reference) {
+		__try {
+			return reference ? reference->getCell() : nullptr;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return nullptr;
+		}
+	}
+
+	static std::string getReferenceLookupLogCellName(const TES3::Reference* reference) {
+		const auto cell = getReferenceLookupLogCell(reference);
+		if (cell == nullptr) {
+			return "<nullptr>";
+		}
+
+		return cell->getEditorName();
+	}
+
+	static void logReferenceLookupResultDetails(const char* label, const TES3::Reference* reference) {
+		const auto cell = getReferenceLookupLogCell(reference);
+		log::getLog()
+			<< "  " << label << ": ref=" << reference
+			<< " id=" << getReferenceLookupLogId(reference)
+			<< " cell=" << cell
+			<< " cellName=" << getReferenceLookupLogCellName(reference)
+			<< " sourceID=" << (reference ? reference->sourceID : 0)
+			<< " targetID=" << (reference ? reference->targetID : 0)
+			<< std::endl;
+	}
+
+	static void validateRecordsHandlerReferenceLookupResult(const char* id, const TES3::Reference* result, const TES3::Reference* expected) {
+		if (result != expected) {
+			log::getLog() << "[MWSE] Reference lookup regression! Set a breakpoint to debug." << std::endl
+				<< "  ID: " << (id ? id : "<invalid>") << std::endl
+				<< "  Result: " << getReferenceLookupLogId(result) << std::endl
+				<< "  Expected: " << getReferenceLookupLogId(expected) << std::endl;
+			logReferenceLookupResultDetails("Result details", result);
+			logReferenceLookupResultDetails("Expected details", expected);
+		}
+	}
+
+	const auto TES3_RecordsHandler_findFirstInstanceOfObjectId = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, const char*)>(0x4B8F50);
+	static TES3::Reference* __fastcall PatchRecordsHandlerFindFirstInstanceOfObjectId(TES3::NonDynamicData* self, DWORD, const char* id) {
+		const auto result = self->findFirstInstanceOfObjectId(id);
+		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
+			const auto vanillaResult = TES3_RecordsHandler_findFirstInstanceOfObjectId(self, id);
+			validateRecordsHandlerReferenceLookupResult(id, result, vanillaResult);
+		}
+		return result;
+	}
+
+	const auto TES3_RecordsHandler_findEntityInWorld = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, TES3::BaseObject*)>(0x4B90F0);
+	static TES3::Reference* __fastcall PatchRecordsHandlerFindEntityInWorld(TES3::NonDynamicData* self, DWORD, TES3::BaseObject* object) {
+		const auto result = self->findEntityInWorld(object);
+		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
+			const auto vanillaResult = TES3_RecordsHandler_findEntityInWorld(self, object);
+			validateRecordsHandlerReferenceLookupResult(object->getObjectID(), result, vanillaResult);
+		}
+		return result;
+	}
+
+	const auto TES3_RecordsHandler_findClosestReferenceOfObject = reinterpret_cast<TES3::Reference * (__thiscall*)(TES3::NonDynamicData*, TES3::BaseObject*, NI::Point3*, bool, int)>(0x4B96F0);
+	static TES3::Reference* __fastcall PatchRecordsHandlerFindClosestReferenceOfObject(TES3::NonDynamicData* self, DWORD, TES3::BaseObject* object, NI::Point3* position, bool isExterior, int maxGridSearchRadius) {
+		const auto result = self->findClosestExteriorReferenceOfObject(object ? object->asPhysicalObject() : nullptr, position, isExterior, maxGridSearchRadius);
+		if constexpr (VALIDATE_RECORDS_HANDLER_REFERENCE_LOOKUP) {
+			const auto vanillaResult = TES3_RecordsHandler_findClosestReferenceOfObject(self, object, position, isExterior, maxGridSearchRadius);
+			validateRecordsHandlerReferenceLookupResult(object ? object->getObjectID() : nullptr, result, vanillaResult);
+		}
+		return result;
+	}
+
+	static bool isCellReferenceList(se::LinkedObjectList<TES3::Object>* list) {
+		__try {
+			const auto referenceList = reinterpret_cast<TES3::ReferenceList*>(list);
+			const auto cell = referenceList->cell;
+			if (cell == nullptr) {
+				return false;
+			}
+
+			if (cell->objectType != TES3::ObjectType::Cell) {
+				return false;
+			}
+
+			if (referenceList != &cell->actors
+				&& referenceList != &cell->persistentRefs
+				&& referenceList != &cell->temporaryRefs) {
+				return false;
+			}
+
+			return true;
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {
+			return false;
+		}
+	}
+
+	static TES3::Object* __fastcall PatchEntityListInsertAfter(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* insertAfter, TES3::Object* item) {
+		item->previousInCollection = insertAfter;
+		if (insertAfter) {
+			item->nextInCollection = insertAfter->nextInCollection;
+			if (insertAfter->nextInCollection) {
+				insertAfter->nextInCollection->previousInCollection = item;
+			}
+			insertAfter->nextInCollection = item;
+		}
+		else {
+			item->nextInCollection = nullptr;
+		}
+
+		if (!item->nextInCollection) {
+			self->tail = item;
+		}
+		if (!item->previousInCollection) {
+			self->head = item;
+		}
+
+		++self->count;
+		item->owningCollection.asGenericList = self;
+
+		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
+			ReferenceTracker::trackReferenceForLookup(static_cast<TES3::Reference*>(item));
+		}
+
+		return item;
+	}
+
+	static void __fastcall PatchEntityListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
+		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
+			ReferenceTracker::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
+		}
+
+		if (item == self->head) {
+			self->head = item->nextInCollection;
+		}
+		if (item == self->tail) {
+			self->tail = item->previousInCollection;
+		}
+		if (item->previousInCollection) {
+			item->previousInCollection->nextInCollection = item->nextInCollection;
+		}
+		if (item->nextInCollection) {
+			item->nextInCollection->previousInCollection = item->previousInCollection;
+		}
+
+		item->owningCollection.asReferenceList = nullptr;
+		--self->count;
+	}
+
+	const auto TES3_Cell_static_loadReference = reinterpret_cast<bool(__cdecl*)(TES3::Reference*, TES3::GameFile*, bool, bool, TES3::Cell*)>(0x4DE380);
+	static bool __cdecl PatchCellLoadReference(TES3::Reference* reference, TES3::GameFile* gameFile, bool mustBePersistent, bool insertNew, TES3::Cell* cell) {
+		const auto previousLookupKey = ReferenceTracker::getLookupKey(reference);
+		const auto result = TES3_Cell_static_loadReference(reference, gameFile, mustBePersistent, insertNew, cell);
+		ReferenceTracker::rekeyReference(reference, previousLookupKey);
+		return result;
+	}
+
+	//
 	// Install all the patches.
 	//
 
 	void installPatches() {
+		using se::memory::genCallEnforced;
+		using se::memory::genCallUnprotected;
+		using se::memory::overrideVirtualTableEnforced;
+		using se::memory::writeDoubleWordUnprotected;
+		using se::memory::writeValueEnforced;
+		using se::memory::genJumpEnforced;
+		using se::memory::genJumpUnprotected;
+		using se::memory::genNOPUnprotected;
+		using se::memory::writePatchCodeUnprotected;
+		using se::memory::writeBytesUnprotected;
+		using se::memory::writeDoubleWordEnforced;
+
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
 		genCallUnprotected(0x5090DB, reinterpret_cast<DWORD>(PatchScriptOpDisable), 0x9);
@@ -1534,6 +2035,60 @@ namespace mwse::patch {
 		genCallUnprotected(0x4869DB, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x48F489, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x4904D0, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+
+		// Patch: Cache cell lookups by ID.
+		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
+
+		// Patch: Implement map-based lookup of references.
+		genJumpUnprotected(0x4F19F0, reinterpret_cast<DWORD>(PatchEntityListInsertAfter), 0x5);
+		genJumpUnprotected(0x4F19A0, reinterpret_cast<DWORD>(PatchEntityListRemove), 0x5);
+		genCallEnforced(0x4A43A5, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4F8FBB, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FA93D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FA9FD, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FABB2, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FC158, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD05D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD1ED, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FD2F0, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FDC36, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FDF93, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FE07A, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x4FF24C, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x5008E6, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
+		genCallEnforced(0x491E04, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
+		genCallEnforced(0x50C2BC, 0x4B90F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindEntityInWorld));
+		genCallEnforced(0x48EEC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x48EFDE, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x4C5AC7, 0x4B96F0, reinterpret_cast<DWORD>(PatchRecordsHandlerFindClosestReferenceOfObject));
+		genCallEnforced(0x4C01C4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DD38C, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DD45E, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DDB0B, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DDBD3, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4DE2B4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+		genCallEnforced(0x4E0D04, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+
+		// Patch: Improve performance of script reloading.
+		{
+			auto Script_ctor = &TES3::Script::ctor;
+			genCallEnforced(0x40E95B, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			genCallEnforced(0x40E963, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			genCallEnforced(0x4C0842, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
+			writeValueEnforced<BYTE>(0x4C0824, 0x70, sizeof(TES3::Script));
+			auto Script_loadRecordSpecific = &TES3::Script::loadRecordSpecific;
+			overrideVirtualTableEnforced(0x74A990, 0x4, 0x4FF700, *reinterpret_cast<DWORD*>(&Script_loadRecordSpecific));
+			auto Script_reloadScript = &TES3::Script::reloadScript;
+			genCallEnforced(0x4C78A3, 0x4FF9D0, *reinterpret_cast<DWORD*>(&Script_reloadScript));
+
+			// MCP adds a second script for the compiler. We need to patch that as a special case.
+			if (writeValueEnforced<BYTE>(0x50E593, 0x70, sizeof(TES3::Script))) {
+				writeValueEnforced<BYTE>(0x40E93F, 0xE0, sizeof(TES3::Script) * 2);
+			}
+			else {
+				writeValueEnforced<BYTE>(0x40E93F, 0x70, sizeof(TES3::Script));
+			}
+		}
 
 		// Patch: Fix NiLinesData binary loading.
 		auto NiLinesData_loadBinary = &NI::LinesData::loadBinary;
@@ -1934,6 +2489,11 @@ namespace mwse::patch {
 		writePatchCodeUnprotected(0x6ACF1F, (BYTE*)&PatchNIDX8Renderer_RenderShape, PatchNIDX8Renderer_RenderShape_size);
 		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriShape_vTable, NI::TriShape_vTable::linkObject), 0x6E56D0, *reinterpret_cast<DWORD*>(&TriShape_linkObject));
 
+		// Patch: Fix base map texture coordinate index hardcoded to 0 in NiDX8TexturePass::setCTPipelineState.
+		// 0x6B42AC: `mov [edi+28h], ebp` — replace with CALL + NOP the leftover byte at 0x6B42B1.
+		genNOPUnprotected(0x6B42B1, 1);
+		genCallUnprotected(0x6B42AC, reinterpret_cast<DWORD>(PatchNiDX8TexturePass_BaseMapTexcoord));
+
 		// Patch: Fix cure spells incorrectly triggering MagicEffectState_Ending for magic that hasn't taken effect yet.
 		genCallUnprotected(0x4559B2, reinterpret_cast<DWORD>(PatchRemoveMagicsByEffect), 0x8);
 
@@ -2080,13 +2640,15 @@ namespace mwse::patch {
 		WritePatchMagicEffect_RequireMobile<0x464280>(TES3::EffectID::Vampirism);
 		WritePatchMagicEffect_RequireMobile<0x4640D0>(TES3::EffectID::SummonCenturionSphere);
 		WritePatchMagicEffect_RequireMobile<0x464BB0>(TES3::EffectID::SunDamage);
-		WritePatchMagicEffect_RequireMobile<0x464F20>(TES3::EffectID::StuntedMagicka);
 		WritePatchMagicEffect_RequireMobile<0x464100>(TES3::EffectID::SummonFabricant);
 		WritePatchMagicEffect_RequireMobile<0x464130>(TES3::EffectID::SummonWolf);
 		WritePatchMagicEffect_RequireMobile<0x464160>(TES3::EffectID::SummonBear);
 		WritePatchMagicEffect_RequireMobile<0x464190>(TES3::EffectID::SummonBoneWolf);
 		WritePatchMagicEffect_RequireMobile<0x4641C0>(TES3::EffectID::Summon04);
 		WritePatchMagicEffect_RequireMobile<0x4641F0>(TES3::EffectID::Summon05);
+
+		// Other magic effect patches.
+		writeDoubleWordEnforced(0x7884B0 + (TES3::EffectID::StuntedMagicka * 4), 0x464F20, reinterpret_cast<DWORD>(PatchMagicEffectStuntedMagicka));
 
 		// Patch: Suppress sGeneralMastPlugMismatchMsg message.
 		genCallUnprotected(0x477512, reinterpret_cast<DWORD>(GetCachedYesToAll), 0x477518 - 0x477512);
@@ -2112,6 +2674,18 @@ namespace mwse::patch {
 		// Patch: Prevent quickslot failures from stale inventory data.
 		genCallEnforced(0x608608, 0x633E80, reinterpret_cast<DWORD>(PatchFindInventoryTileWithForcedRefreshForPlayer));
 
+		// Patch: Improve performance of initial game load.
+		genCallEnforced(0x4BB84E, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+		genCallEnforced(0x4BC85C, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
+		genCallEnforced(0x4BE98C, 0x4B2790, reinterpret_cast<DWORD>(PatchMergeDialogues));
+		genCallEnforced(0x4B2828, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
+		genCallEnforced(0x4BFB6E, 0x4B2840, reinterpret_cast<DWORD>(PatchMergeDialogueInfo));
+		auto dialogueFindInfoByLoadID = &TES3::Dialogue::findInfoByLoadID;
+		genCallEnforced(0x431F77, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4BF8AE, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4BFA40, 0x4B2920, *reinterpret_cast<DWORD*>(&dialogueFindInfoByLoadID));
+		genCallEnforced(0x4AE883, 0x4AE8A0, reinterpret_cast<DWORD>(PatchDialogueInfoDestructorCleanup));
+
 #if false
 		// Patch: Update dynamic lights to implement custom light sorting.
 		genCallEnforced(0x485B60, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
@@ -2121,22 +2695,59 @@ namespace mwse::patch {
 		genCallEnforced(0x4D2F10, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 		genCallEnforced(0x4D3350, 0x4D2F40, reinterpret_cast<DWORD>(PatchDynamicLightingTest));
 #endif
+
+		// Patch: Fix NiSwitchNode::UpdateWorldBound malfunctioning when using UpdateOnlyActive and a switchIndex of 0.
+		writeValueEnforced<BYTE>(0x6D85B6, 0x7E, 0x7C);
+
+		// Patch: Fix bound calculation.
+		auto PhysicalObject_createBoundingBox = &TES3::PhysicalObject::createBoundingBox;
+		genCallEnforced(0x49572E, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x495785, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4D2324, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EF99F, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+		genCallEnforced(0x4EFE70, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+
+		// Patch: Store last read key state.
+		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
+		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 	}
 
 	void installPostLuaPatches() {
+		using se::memory::writeByteUnprotected;
+		using se::memory::genCallUnprotected;
+		using se::memory::genCallEnforced;
+		using se::memory::genPushEnforced;
+
+		// Patch: Be better about showing/hiding the cursor.
+		originalWindowProc = (WNDPROC)SetWindowLongPtr(TES3::WorldController::get()->Win32_hWndParent, GWLP_WNDPROC, (LONG_PTR)PatchWindProc);
+
+		// Patch: Reset input state when focus changes outside Morrowind, even if it happened while paused in a debugger.
+		genCallUnprotected(0x41AB7D, reinterpret_cast<DWORD>(PatchGetActiveWindowForMainLoop), 0x6);
+
 		// Patch: The window is never out of focus.
 		if (Configuration::RunInBackground) {
 			writeByteUnprotected(0x416BC3 + 0x2 + 0x4, 1);
-			genCallUnprotected(0x41AB7D, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow), 0x6);
 			genCallEnforced(0x425313, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x4772CE, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x47798C, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x477E1E, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BC9E1, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
 			genCallEnforced(0x5BCA33, 0x4065E0, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBackgroundInput));
-			genCallEnforced(0x58E8C6, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
-			genCallEnforced(0x5BCA1D, 0x406950, reinterpret_cast<DWORD>(PatchGetMorrowindMainWindow_NoBufferReading));
 		}
+
+		// Patch: Use non-exclusive keyboard cooperative levels and allow shell keys.
+		if (Configuration::NonExclusiveKeyboard) {
+			genPushEnforced(0x40627D, BYTE(DISCL_BACKGROUND | DISCL_NONEXCLUSIVE));
+			genPushEnforced(0x406291, BYTE(DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
+		}
+
+		// Patch: Replace the Sleep(100) call inside the background loader's
+		// progress-show polling loop with a wrapper that reads
+		// Configuration::BackgroundLoadPollIntervalMs at every call. The site
+		// is a 6-byte `FF 15 [IAT_Sleep]` indirect call at 0x48F88E; the
+		// preceding `push 64h` is left in place and ignored by the wrapper.
+		genCallUnprotected(0x48F88E, reinterpret_cast<DWORD>(PatchBackgroundLoadSleep), 0x6);
 
 		// Patch: Fix NiFlipController losing its affectedMap on clone.
 		if (Configuration::PatchNiFlipController) {
@@ -2148,11 +2759,11 @@ namespace mwse::patch {
 		if (Configuration::UseGlobalAudio) {
 			constexpr auto DS_FLAGS_DEFAULT = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
 			constexpr auto DS_FLAGS_3D = DS_FLAGS_DEFAULT | DSBCAPS_CTRL3D | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_MUTE3DATMAXDISTANCE;
-			writeAddFlagEnforced(0x401FEA + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
-			writeAddFlagEnforced(0x401FE1 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
-			writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
-			writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
-			writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
+			se::memory::writeAddFlagEnforced(0x401FEA + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
+			se::memory::writeAddFlagEnforced(0x401FE1 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
+			se::memory::writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
+			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
+			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
 		}
 	}
 
@@ -2160,9 +2771,21 @@ namespace mwse::patch {
 		// Patch: Give threads descriptions.
 		const auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler) {
-			windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
-			windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
+			se::windows::SetThreadDescription(dataHandler->mainThread, L"GameMainThread");
+			se::windows::SetThreadDescription(dataHandler->backgroundThread, L"GameBackgroundThread");
 		}
+
+		// Patch: Async voiceover loading. Eliminates the main-thread MP3 decode
+		// spike when NPCs greet the player. Installed here (rather than in
+		// installPatches) so DataHandler::get() is valid when the worker thread
+		// first acquires criticalSectionAudioEvents.
+		voice::install();
+	}
+
+	void uninstallPatches() {
+		// Patch: Async voiceover loading — stop the worker before the engine
+		// starts tearing down DSound / DataHandler.
+		voice::shutdown();
 	}
 
 	//
@@ -2278,13 +2901,17 @@ namespace mwse::patch {
 			mci.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)miniDumpCallback;
 			mci.CallbackParam = 0;
 
-			auto mdt = (MINIDUMP_TYPE)(MiniDumpWithDataSegs |
+			auto mdt = MiniDumpWithDataSegs |
 				MiniDumpWithHandleData |
 				MiniDumpWithFullMemoryInfo |
 				MiniDumpWithThreadInfo |
-				MiniDumpWithUnloadedModules);
+				MiniDumpWithUnloadedModules;
 
-			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, &mci);
+			if (Configuration::CreateFullMinidumps) {
+				mdt |= MiniDumpWithFullMemory | MiniDumpWithIndirectlyReferencedMemory;
+			}
+
+			auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, static_cast<MINIDUMP_TYPE>(mdt), (pep != 0) ? &mdei : 0, 0, &mci);
 
 			if (!rv) {
 				log::getLog() << "MiniDump creation failed. Error: 0x" << std::hex << GetLastError() << std::endl;

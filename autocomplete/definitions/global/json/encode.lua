@@ -8,7 +8,7 @@ return {
 	link = "http://dkolf.de/src/dkjson-lua.fsl/wiki?name=Documentation",
 	arguments = {
 		{ name = "object", type = "table" },
-		{ name = "state", type = "table?" },
+		{ name = "state", type = "jsonConfig", optional = true },
 	},
 	valuetype = "string",
 }

@@ -3,8 +3,8 @@
 #include "NIDefines.h"
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
-#include "TES3LinkedObjectsList.h"
+#include "LinkedObjectsList.h"
+#include "NIIteratedList.h"
 
 #include "NINode.h"
 
@@ -19,6 +19,7 @@ int sol_lua_push(sol::types<T>, lua_State* L, const T& obj) { return obj.getOrCr
 int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOrCreateLuaObject(L).push(L); }
 
 namespace TES3 {
+	using se::LinkedObjectList;
 
 	//
 	// Object types. They are char[4], or can be interpreted as a 32-bit integer.
@@ -181,7 +182,7 @@ namespace TES3 {
 		Enchantment* (__thiscall* getEnchantment)(const Object*); // 0xD0
 		Enchantment* (__thiscall* setEnchantment)(Object*, Enchantment*); // 0xD4
 		AIConfig* (__thiscall* getAIConfig)(const Object*); // 0xD8
-		IteratedList<AIConfig>* (__thiscall* getAIConfigsList)(Object*); // 0xDC
+		NI::IteratedList<AIConfig>* (__thiscall* getAIConfigsList)(Object*); // 0xDC
 		void (__thiscall* resolveInternalIDs)(Object*, NonDynamicData*); // 0xE0
 		void* unknown_0xE4;
 		bool (__thiscall* getAutoCalc)(const Object*); // 0xE8
@@ -254,7 +255,11 @@ namespace TES3 {
 		BaseObject * getBaseObject();
 		BaseObject const* getBaseObject() const;
 
+		bool isPhysicalObject() const;
+		PhysicalObject* asPhysicalObject();
+		const PhysicalObject* asPhysicalObject() const;
 		bool isActor() const;
+		bool isMobileCapableActor() const;
 		bool isItem() const;
 		bool isWeaponOrAmmo() const;
 		const char* getSourceFilename() const;
@@ -264,12 +269,15 @@ namespace TES3 {
 
 		bool getDisabled() const;
 		bool getDeleted() const;
+		void setDeleted(bool deleted);
 
 		bool getPersistent() const;
 		void setPersistent(bool value);
 
 		bool getBlocked() const;
 		void setBlocked(bool value);
+
+		bool getUpdatesCollisionGroups() const;
 
 		bool getSupportsLuaData() const;
 
@@ -294,6 +302,7 @@ namespace TES3 {
 	struct Object : BaseObject {
 		NI::Pointer<NI::Node> sceneNode; // 0x10
 		union {
+			LinkedObjectList<Object>* asGenericList;
 			LinkedObjectList<Spell>* asSpellList;
 			ReferenceList* asReferenceList;
 		} owningCollection; // 0x14
@@ -374,7 +383,7 @@ namespace TES3 {
 		static void finishCreateCopy_lua(Object* created, sol::optional<sol::table> params);
 
 		Object* skipDeletedObjects();
-		ReferenceList* getOwningCollection();
+		ReferenceList* getOwningCollection() const;
 
 		void setScale_lua(float scale);
 
@@ -386,18 +395,18 @@ namespace TES3 {
 	struct PhysicalObjectVirtualTable : ObjectVirtualTable {
 		NI::Node* (__thiscall* cloneNewModelWithBodyParts)(PhysicalObject*, Reference*); // 0x13C
 		bool (__thiscall* reloadBaseModel)(PhysicalObject*, const char*); // 0x140
-		IteratedList<BaseObject*>* (__thiscall* getStolenList)(PhysicalObject*); // 0x144
+		NI::IteratedList<BaseObject*>* (__thiscall* getStolenList)(PhysicalObject*); // 0x144
 	};
 
 	struct PhysicalObject : Object {
-		BoundingBox* boundingBox; // 0x28
+		NI::BoundingBox* boundingBox; // 0x28
 		char* objectID; // 0x2C
 
 		//
 		// Function wrappers for our virtual table.
 		//
 
-		IteratedList<BaseObject*>* getStolenList();
+		NI::IteratedList<BaseObject*>* getStolenList();
 
 		//
 		// Other related this-call functions.
@@ -415,9 +424,10 @@ namespace TES3 {
 		// Custom functions.
 		//
 
-		BoundingBox* getOrCreateBoundingBox();
+		NI::BoundingBox* getOrCreateBoundingBox();
 
 		Reference* getReference() const;
+		const std::vector<Reference*>& getReferences() const;
 
 	};
 	static_assert(sizeof(PhysicalObject) == 0x30, "TES3::PhysicalObject failed size validation");

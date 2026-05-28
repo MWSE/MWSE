@@ -2,12 +2,6 @@
 
 #include "NIObject.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Defines.h"
-#else
-#include "CSDefines.h"
-#endif
-
 namespace NI {
 	struct ExtraData : Object {
 		size_t genericDataLength; // 0x8
@@ -18,7 +12,7 @@ namespace NI {
 		// Custom functions.
 		//
 
-		nonstd::span<BYTE> getGenericData();
+		std::span<BYTE> getGenericData();
 
 		ExtraData* getNext() const;
 		void setNext(ExtraData* next);
@@ -43,11 +37,7 @@ namespace NI {
 	static_assert(sizeof(StringExtraData) == 0x18, "NI::TextKey failed size validation");
 
 	struct Tes3ExtraData : ExtraData {
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Reference* reference; // 0x14
-#else
-		se::cs::Reference* reference;
-#endif
+		GameReferenceType* reference; // 0x14
 	};
 	static_assert(sizeof(Tes3ExtraData) == 0x18, "NI::Tes3ExtraData failed size validation");
 
@@ -73,7 +63,7 @@ namespace NI {
 		// Custom functions.
 		//
 
-		nonstd::span<TextKey> getKeys() const;
+		std::span<TextKey> getKeys() const;
 
 	};
 	static_assert(sizeof(TextKeyExtraData) == 0x1C, "NI::TextKeyExtraData failed size validation");

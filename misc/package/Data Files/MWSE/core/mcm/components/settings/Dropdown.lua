@@ -59,7 +59,7 @@ function Dropdown:selectOption(option)
 	self.selectedOption = option
 	self.variable.value = option.value
 	self.elements.textBox.text = option.label
-
+	self.elements.dropdownParent:getTopLevelMenu():updateLayout()
 	if option.callback then
 		option.callback(self)
 	end
@@ -89,7 +89,6 @@ function Dropdown:createDropdown()
 
 			listItem:register(tes3.uiEvent.mouseClick, function()
 				self:selectOption(option)
-				dropdown:getTopLevelMenu():updateLayout()
 			end)
 		end
 		self.elements.dropdown = dropdown
@@ -97,7 +96,7 @@ function Dropdown:createDropdown()
 
 		-- Show the setting description when picking an option
 		self:registerMouseOverElements(dropdown.children)
-		self:registerMouseOverElements({dropdown})
+		self:registerMouseOverElements({ dropdown })
 
 		-- Destroy dropdown
 	else
@@ -166,6 +165,23 @@ function Dropdown:convertToLabelValue(variableValue)
 	-- Find the matching option and return its label.
 	local option = self:getOption(variableValue)
 	return option and option.label
+end
+
+---@param searchText string The text to search for. Will be lowercased if `caseSensitive == false`.
+---@param caseSensitive boolean Whether the search is case-sensitive or not.
+---@return boolean
+function Dropdown:searchTextMatches(searchText, caseSensitive)
+	if Parent.searchTextMatches(self, searchText, caseSensitive) then
+		return true
+	end
+
+	for _, option in ipairs(self.options) do
+		local label = caseSensitive and option.label or option.label:lower()
+		if label:find(searchText, 1, true) then
+			return true
+		end
+	end
+	return false
 end
 
 

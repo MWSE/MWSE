@@ -1,8 +1,8 @@
 #include "NINodeLua.h"
 
 #include "LuaManager.h"
-#include "LuaUtil.h"
 
+#include "NIAVObject.h"
 #include "NIBillboardNode.h"
 #include "NINode.h"
 #include "NISortAdjustNode.h"

@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BitUtil.h" />
-    <ClInclude Include="BSAnimationManager.h" />
     <ClInclude Include="LuaAnimationTriggerEvent.h" />
     <ClInclude Include="CrashLogExceptionHandler.hpp" />
     <ClInclude Include="CrashLogFormatter.hpp" />
@@ -25,6 +24,7 @@
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
     <ClInclude Include="LuaKeyframesParsedEvent.h" />
+    <ClInclude Include="LuaMagicAbsorbEvent.h" />
     <ClInclude Include="LuaMagicReflectedEvent.h" />
     <ClInclude Include="LuaMagicReflectEvent.h" />
     <ClInclude Include="LuaMagicSelectionChangedEvent.h" />
@@ -38,14 +38,8 @@
     <ClInclude Include="LuaStartGlobalScriptEvent.h" />
     <ClInclude Include="LuaUiSkillTooltipEvent.h" />
     <ClInclude Include="LuaUpdateBodyPartsForItemEvent.h" />
-    <ClInclude Include="NIAccumulator.h" />
-    <ClInclude Include="NIAnimationData.h" />
-    <ClInclude Include="NIAnimationKey.h" />
     <ClInclude Include="NIBoundingVolumeLua.h" />
     <ClInclude Include="NIBSAnimationNodeLua.h" />
-    <ClInclude Include="NIPathController.h" />
-    <ClInclude Include="NISortAdjustNode.h" />
-    <ClInclude Include="NITriShapeDynamicData.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
     <ClInclude Include="TES3CrimeLua.h" />
     <ClInclude Include="TES3DialogueFilterContext.h" />
@@ -54,6 +48,7 @@
     <ClInclude Include="LuaActiveMagicEffectIconsUpdatedEvent.h" />
     <ClInclude Include="LuaAttackHitEvent.h" />
     <ClInclude Include="LuaCalcBlockChanceEvent.h" />
+    <ClInclude Include="LuaCalcEnchantingSpellPointCostEvent.h" />
     <ClInclude Include="LuaCalcEnchantmentPriceEvent.h" />
     <ClInclude Include="LuaCameraControlEvent.h" />
     <ClInclude Include="LuaConsoleReferenceChangedEvent.h" />
@@ -65,12 +60,13 @@
     <ClInclude Include="LuaEquipmentReevaluatedEvent.h" />
     <ClInclude Include="LuaKeybindTestedEvent.h" />
     <ClInclude Include="LuaKeyframesLoadEvent.h" />
+    <ClInclude Include="LuaMagicEffectAddedEvent.h" />
+    <ClInclude Include="LuaMagicEffectDeactivatedEvent.h" />
     <ClInclude Include="LuaMagicEffectRemovedEvent.h" />
     <ClInclude Include="LuaMeshLoadEvent.h" />
     <ClInclude Include="LuaRepairEvent.h" />
     <ClInclude Include="LuaSpellResistedEvent.h" />
     <ClInclude Include="LuaVFXCreatedEvent.h" />
-    <ClInclude Include="MathUtil.h" />
     <ClInclude Include="MGEApi.h" />
     <ClInclude Include="MGEApiLua.h" />
     <ClInclude Include="MGEMacroFunctionDefs.h" />
@@ -78,13 +74,9 @@
     <ClInclude Include="MGEPostShadersLua.h" />
     <ClInclude Include="MGEUtilLua.h" />
     <ClInclude Include="NICollisionGroupLua.h" />
-    <ClInclude Include="NICopyTransformController.h" />
-    <ClInclude Include="NIDX8TextureData.h" />
-    <ClInclude Include="NIQuaternion.h" />
     <ClInclude Include="NIQuaternionLua.h" />
-    <ClInclude Include="NiRenderedTextureLua.h" />
-    <ClInclude Include="NiRendererLua.h" />
-    <ClInclude Include="NIScreenPolygon.h" />
+    <ClInclude Include="NIRenderedTextureLua.h" />
+    <ClInclude Include="NIRendererLua.h" />
     <ClInclude Include="TES3AnimationDataLua.h" />
     <ClInclude Include="TES3ArchiveLua.h" />
     <ClInclude Include="TES3CutscenePlayer.h" />
@@ -101,8 +93,6 @@
     <ClInclude Include="LuaInfoLinkResolveEvent.h" />
     <ClInclude Include="LuaPotionBrewSkillCheckEvent.h" />
     <ClInclude Include="LuaSpellMagickaUseEvent.h" />
-    <ClInclude Include="NIBillboardNode.h" />
-    <ClInclude Include="NIBSAnimationNode.h" />
     <ClInclude Include="LuaBarterOfferEvent.h" />
     <ClInclude Include="LuaBodyPartAssignedEvent.h" />
     <ClInclude Include="LuaCalcHitArmorPieceEvent.h" />
@@ -126,7 +116,6 @@
     <ClInclude Include="LuaAddTopicEvent.h" />
     <ClInclude Include="LuaCalcRepairPriceEvent.h" />
     <ClInclude Include="LuaCalcRestInterruptEvent.h" />
-    <ClInclude Include="CodePatchUtil.h" />
     <ClInclude Include="LuaActivateEvent.h" />
     <ClInclude Include="LuaAttackEvent.h" />
     <ClInclude Include="LuaBaseEvent.h" />
@@ -173,12 +162,17 @@
     <ClInclude Include="LuaLoadedGameEvent.h" />
     <ClInclude Include="LuaLoadGameEvent.h" />
     <ClInclude Include="LuaMagicCastedEvent.h" />
+    <ClInclude Include="LuaMagicEffectActivatedEvent.h" />
     <ClInclude Include="LuaMenuStateEvent.h" />
     <ClInclude Include="LuaMeshLoadedEvent.h" />
     <ClInclude Include="LuaMobileObjectActivatedEvent.h" />
     <ClInclude Include="LuaMobileObjectDeactivatedEvent.h" />
     <ClInclude Include="LuaMobileObjectCollisionEvent.h" />
     <ClInclude Include="LuaMobileObjectWaterImpactEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileActorCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileObjectCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileTerrainCollisionEvent.h" />
+    <ClInclude Include="LuaMobileSpellProjectileWaterCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileActorCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileObjectCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileTerrainCollisionEvent.h" />
@@ -229,42 +223,12 @@
     <ClInclude Include="LuaWeatherTransitionStartedEvent.h" />
     <ClInclude Include="MWSEConfig.h" />
     <ClInclude Include="MWSEUtilLua.h" />
-    <ClInclude Include="NIBinaryStream.h" />
-    <ClInclude Include="NIBound.h" />
-    <ClInclude Include="NICollisionGroup.h" />
-    <ClInclude Include="NIDX8Renderer.h" />
-    <ClInclude Include="NIExtraData.h" />
     <ClInclude Include="NIExtraDataLua.h" />
-    <ClInclude Include="NIFlipController.h" />
-    <ClInclude Include="NIGeometry.h" />
-    <ClInclude Include="NIGeometryData.h" />
     <ClInclude Include="NIGeometryDataLua.h" />
-    <ClInclude Include="NIKeyframeController.h" />
-    <ClInclude Include="NIKeyframeManager.h" />
-    <ClInclude Include="NILines.h" />
-    <ClInclude Include="NILinesData.h" />
-    <ClInclude Include="NILookAtController.h" />
-    <ClInclude Include="NIParticleModifier.h" />
-    <ClInclude Include="NIParticles.h" />
     <ClInclude Include="NIParticlesLua.h" />
-    <ClInclude Include="NIParticleSystemController.h" />
-    <ClInclude Include="NIPerParticleData.h" />
-    <ClInclude Include="NIRect.h" />
-    <ClInclude Include="NIRenderedTexture.h" />
-    <ClInclude Include="NIRenderer.h" />
-    <ClInclude Include="NISkinInstance.h" />
     <ClInclude Include="NISkinInstanceLua.h" />
-    <ClInclude Include="NITArray.h" />
-    <ClInclude Include="NITextureEffect.h" />
     <ClInclude Include="NITextureEffectLua.h" />
     <ClInclude Include="NITextureLua.h" />
-    <ClInclude Include="NITriangle.h" />
-    <ClInclude Include="NITriBasedGeometry.h" />
-    <ClInclude Include="NITriBasedGeometryData.h" />
-    <ClInclude Include="NITriShapeData.h" />
-    <ClInclude Include="NIUVController.h" />
-    <ClInclude Include="NIUVData.h" />
-    <ClInclude Include="NIViewer.h" />
     <ClInclude Include="LuaPotionBrewFailedEvent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TES3ActorAnimationControllerLua.h" />
@@ -274,38 +238,16 @@
     <ClInclude Include="TES3BirthsignLua.h" />
     <ClInclude Include="TES3BodyPartManager.h" />
     <ClInclude Include="TES3CriticalSection.h" />
-    <ClInclude Include="TES3Deque.h" />
     <ClInclude Include="TES3GoldData.h" />
-    <ClInclude Include="TES3HashMap.h" />
-    <ClInclude Include="TES3IteratedList.h" />
-    <ClInclude Include="TES3LinkedObjectsList.h" />
     <ClInclude Include="TES3MagicEffectController.h" />
     <ClInclude Include="MemoryUtilLua.h" />
-    <ClInclude Include="NIAmbientLight.h" />
-    <ClInclude Include="NICollisionSwitch.h" />
     <ClInclude Include="NICollisionSwitchLua.h" />
-    <ClInclude Include="NIColor.h" />
     <ClInclude Include="NIColorLua.h" />
-    <ClInclude Include="NIDirectionalLight.h" />
-    <ClInclude Include="NIDynamicEffect.h" />
     <ClInclude Include="NIDynamicEffectLua.h" />
-    <ClInclude Include="NILight.h" />
     <ClInclude Include="NILightLua.h" />
-    <ClInclude Include="NILinkedList.h" />
-    <ClInclude Include="NIPixelData.h" />
     <ClInclude Include="NIPixelDataLua.h" />
-    <ClInclude Include="NIPixelFormat.h" />
-    <ClInclude Include="NIPointLight.h" />
-    <ClInclude Include="NIProperty.h" />
     <ClInclude Include="NIPropertyLua.h" />
-    <ClInclude Include="NISourceTexture.h" />
     <ClInclude Include="NISourceTextureLua.h" />
-    <ClInclude Include="NISpotLight.h" />
-    <ClInclude Include="NITexture.h" />
-    <ClInclude Include="NITriShape.h" />
-    <ClInclude Include="NIPointer.h" />
-    <ClInclude Include="NIStream.h" />
-    <ClInclude Include="NITimeController.h" />
     <ClInclude Include="NITimeControllerLua.h" />
     <ClInclude Include="NILinesLua.h" />
     <ClInclude Include="NITriShapeLua.h" />
@@ -334,31 +276,17 @@
     <ClInclude Include="TES3ScriptCompiler.h" />
     <ClInclude Include="TES3SoulGemData.h" />
     <ClInclude Include="TES3MagicInstanceController.h" />
-    <ClInclude Include="TES3StdString.h" />
-    <ClInclude Include="TES3StlList.h" />
     <ClInclude Include="TES3Stream.h" />
     <ClInclude Include="TES3UIDefines.h" />
     <ClInclude Include="LuaManager.h" />
     <ClInclude Include="LuaScript.h" />
     <ClInclude Include="LuaTimer.h" />
     <ClInclude Include="LuaUtil.h" />
-    <ClInclude Include="MemoryUtil.h" />
-    <ClInclude Include="NIAVObject.h" />
-    <ClInclude Include="NICamera.h" />
     <ClInclude Include="NICameraLua.h" />
-    <ClInclude Include="NIDefines.h" />
-    <ClInclude Include="NINode.h" />
     <ClInclude Include="NINodeLua.h" />
-    <ClInclude Include="NIObject.h" />
     <ClInclude Include="NIObjectLua.h" />
-    <ClInclude Include="NIObjectNET.h" />
-    <ClInclude Include="NIPick.h" />
     <ClInclude Include="NIPickLua.h" />
-    <ClInclude Include="NIRTTI.h" />
-    <ClInclude Include="NISwitchNode.h" />
     <ClInclude Include="NISwitchNodeLua.h" />
-    <ClInclude Include="NITransform.h" />
-    <ClInclude Include="NIUtil.h" />
     <ClInclude Include="PatchUtil.h" />
     <ClInclude Include="ScriptUtilLua.h" />
     <ClInclude Include="TES3ActorLua.h" />
@@ -415,7 +343,6 @@
     <ClInclude Include="ScriptUtil.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="MgeTes3Machine.h" />
-    <ClInclude Include="StringUtil.h" />
     <ClInclude Include="TES3ActionData.h" />
     <ClInclude Include="TES3Actor.h" />
     <ClInclude Include="TES3AIBehavior.h" />
@@ -470,6 +397,7 @@
     <ClInclude Include="TES3NPC.h" />
     <ClInclude Include="TES3NPCLua.h" />
     <ClInclude Include="TES3Object.h" />
+    <ClInclude Include="ReferenceTracker.h" />
     <ClInclude Include="TES3Probe.h" />
     <ClInclude Include="TES3ProbeLua.h" />
     <ClInclude Include="TES3Race.h" />
@@ -515,7 +443,6 @@
     <ClInclude Include="TES3UIWidgets.h" />
     <ClInclude Include="TES3Util.h" />
     <ClInclude Include="TES3UtilLua.h" />
-    <ClInclude Include="TES3Vectors.h" />
     <ClInclude Include="TES3VectorsLua.h" />
     <ClInclude Include="TES3VFXManagerLua.h" />
     <ClInclude Include="TES3WaterController.h" />
@@ -544,15 +471,14 @@
     <ClInclude Include="UIUtil.h" />
     <ClInclude Include="UTF8Convert.h" />
     <ClInclude Include="TES3VFXManager.h" />
+    <ClInclude Include="TES3VoiceStreamer.h" />
     <ClInclude Include="VirtualMachine.h" />
     <ClInclude Include="VMExecuteInterface.h" />
     <ClInclude Include="VMHookInterface.h" />
-    <ClInclude Include="WindowsUtil.h" />
     <ClInclude Include="yamlloader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArrayUtil.cpp" />
-    <ClCompile Include="CodePatchUtil.cpp" />
     <ClCompile Include="CrashLogCallTrace.cpp" />
     <ClCompile Include="CrashLogDevice.cpp" />
     <ClCompile Include="CrashLogLabelsMWSE.cpp" />
@@ -576,6 +502,7 @@
     <ClCompile Include="LuaButtonPressedEvent.cpp" />
     <ClCompile Include="LuaCalcArmorRatingEvent.cpp" />
     <ClCompile Include="LuaCalcBlockChanceEvent.cpp" />
+    <ClCompile Include="LuaCalcEnchantingSpellPointCostEvent.cpp" />
     <ClCompile Include="LuaCalcChargenStatsEvent.cpp" />
     <ClCompile Include="LuaCalcEnchantmentPriceEvent.cpp" />
     <ClCompile Include="LuaCalcHitArmorPieceEvent.cpp" />
@@ -658,7 +585,11 @@
     <ClCompile Include="LuaLoadedGameEvent.cpp" />
     <ClCompile Include="LuaLoadGameEvent.cpp" />
     <ClCompile Include="LuaMagicCastedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectAddedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectDeactivatedEvent.cpp" />
+    <ClCompile Include="LuaMagicEffectActivatedEvent.cpp" />
     <ClCompile Include="LuaMagicEffectRemovedEvent.cpp" />
+    <ClCompile Include="LuaMagicAbsorbEvent.cpp" />
     <ClCompile Include="LuaMagicReflectedEvent.cpp" />
     <ClCompile Include="LuaMagicReflectEvent.cpp" />
     <ClCompile Include="LuaMagicSelectionChangedEvent.cpp" />
@@ -668,6 +599,10 @@
     <ClCompile Include="LuaMobileObjectActivatedEvent.cpp" />
     <ClCompile Include="LuaMobileObjectDeactivatedEvent.cpp" />
     <ClCompile Include="LuaMobileObjectWaterImpactEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileActorCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileObjectCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileTerrainCollisionEvent.cpp" />
+    <ClCompile Include="LuaMobileSpellProjectileWaterCollisionEvent.cpp" />
     <ClCompile Include="LuaMobileProjectileActorCollisionEvent.cpp" />
     <ClCompile Include="LuaManager.cpp" />
     <ClCompile Include="LuaMobileObjectCollisionEvent.cpp" />
@@ -744,67 +679,24 @@
     <ClCompile Include="MGEUtilLua.cpp" />
     <ClCompile Include="MWSEConfig.cpp" />
     <ClCompile Include="MWSEUtilLua.cpp" />
-    <ClCompile Include="NIAmbientLight.cpp" />
-    <ClCompile Include="NIAnimationKey.cpp" />
-    <ClCompile Include="NIBillboardNode.cpp" />
-    <ClCompile Include="NIBinaryStream.cpp" />
-    <ClCompile Include="NIBound.cpp" />
     <ClCompile Include="NIBoundingVolumeLua.cpp" />
-    <ClCompile Include="NIBSAnimationNode.cpp" />
     <ClCompile Include="NIBSAnimationNodeLua.cpp" />
-    <ClCompile Include="NICamera.cpp" />
-    <ClCompile Include="NICollisionGroup.cpp" />
     <ClCompile Include="NICollisionGroupLua.cpp" />
-    <ClCompile Include="NICollisionSwitch.cpp" />
-    <ClCompile Include="NICopyTransformController.cpp" />
-    <ClCompile Include="NIDirectionalLight.cpp" />
-    <ClCompile Include="NIDX8Renderer.cpp" />
-    <ClCompile Include="NIDX8TextureData.cpp" />
     <ClCompile Include="NIDynamicEffectLua.cpp" />
-    <ClCompile Include="NIExtraData.cpp" />
     <ClCompile Include="NIExtraDataLua.cpp" />
-    <ClCompile Include="NIFlipController.cpp" />
-    <ClCompile Include="NIAnimationData.cpp" />
-    <ClCompile Include="NIGeometry.cpp" />
-    <ClCompile Include="NIGeometryData.cpp" />
     <ClCompile Include="NIGeometryDataLua.cpp" />
-    <ClCompile Include="NIKeyframeController.cpp" />
-    <ClCompile Include="NIKeyframeManager.cpp" />
-    <ClCompile Include="NILookAtController.cpp" />
-    <ClCompile Include="NIParticleModifier.cpp" />
-    <ClCompile Include="NIParticles.cpp" />
     <ClCompile Include="NIParticlesLua.cpp" />
-    <ClCompile Include="NIParticleSystemController.cpp" />
-    <ClCompile Include="NIPathController.cpp" />
-    <ClCompile Include="NIProperty.cpp" />
-    <ClCompile Include="NIQuaternion.cpp" />
     <ClCompile Include="NIQuaternionLua.cpp" />
-    <ClCompile Include="NIRenderedTexture.cpp" />
-    <ClCompile Include="NiRenderedTextureLua.cpp" />
-    <ClCompile Include="NIRenderer.cpp" />
+    <ClCompile Include="NIRenderedTextureLua.cpp" />
     <ClCompile Include="NIRendererLua.cpp" />
-    <ClCompile Include="NISkinInstance.cpp" />
     <ClCompile Include="NISkinInstanceLua.cpp" />
-    <ClCompile Include="NISortAdjustNode.cpp" />
-    <ClCompile Include="NISpotLight.cpp" />
-    <ClCompile Include="NISwitchNode.cpp" />
-    <ClCompile Include="NIRTTI.cpp" />
-    <ClCompile Include="NITextureEffect.cpp" />
-    <ClCompile Include="NiTextureEffectLua.cpp" />
+    <ClCompile Include="NITextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
-    <ClCompile Include="NITimeController.cpp" />
-    <ClCompile Include="NITriangle.cpp" />
-    <ClCompile Include="NITriBasedGeometry.cpp" />
-    <ClCompile Include="NITriBasedGeometryData.cpp" />
-    <ClCompile Include="NILines.cpp" />
-    <ClCompile Include="NILinesData.cpp" />
-    <ClCompile Include="NITriShape.cpp" />
-    <ClCompile Include="NITriShapeData.cpp" />
-    <ClCompile Include="NIUVController.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TES3ActionData.cpp" />
     <ClCompile Include="TES3Activator.cpp" />
     <ClCompile Include="TES3ActorAnimationControllerLua.cpp" />
     <ClCompile Include="TES3AnimationDataLua.cpp" />
@@ -832,38 +724,23 @@
     <ClCompile Include="TES3LoadScreenManager.cpp" />
     <ClCompile Include="TES3Lockpick.cpp" />
     <ClCompile Include="TES3MagicEffectController.cpp" />
-    <ClCompile Include="MemoryUtil.cpp" />
     <ClCompile Include="MemoryUtilLua.cpp" />
     <ClCompile Include="MgeVirtualMachine.cpp" />
     <ClCompile Include="MgeTes3Machine.cpp" />
-    <ClCompile Include="NIAVObject.cpp" />
     <ClCompile Include="NICameraLua.cpp" />
     <ClCompile Include="NICollisionSwitchLua.cpp" />
-    <ClCompile Include="NIColor.cpp" />
     <ClCompile Include="NIColorLua.cpp" />
-    <ClCompile Include="NIDynamicEffect.cpp" />
-    <ClCompile Include="NILight.cpp" />
     <ClCompile Include="NILightLua.cpp" />
-    <ClCompile Include="NINode.cpp" />
     <ClCompile Include="NINodeLua.cpp" />
-    <ClCompile Include="NIObject.cpp" />
     <ClCompile Include="NIObjectLua.cpp" />
-    <ClCompile Include="NIObjectNET.cpp" />
-    <ClCompile Include="NIPick.cpp" />
     <ClCompile Include="NIPickLua.cpp" />
-    <ClCompile Include="NIPixelData.cpp" />
     <ClCompile Include="NIPixelDataLua.cpp" />
-    <ClCompile Include="NIPointLight.cpp" />
     <ClCompile Include="NIPropertyLua.cpp" />
-    <ClCompile Include="NISourceTexture.cpp" />
     <ClCompile Include="NISourceTextureLua.cpp" />
-    <ClCompile Include="NIStream.cpp" />
     <ClCompile Include="NISwitchNodeLua.cpp" />
-    <ClCompile Include="NITexture.cpp" />
     <ClCompile Include="NITimeControllerLua.cpp" />
     <ClCompile Include="NILinesLua.cpp" />
     <ClCompile Include="NITriShapeLua.cpp" />
-    <ClCompile Include="NIUtil.cpp" />
     <ClCompile Include="PatchUtil.cpp" />
     <ClCompile Include="RngUtil.cpp" />
     <ClCompile Include="ScriptUtil.cpp" />
@@ -910,7 +787,6 @@
     <ClCompile Include="TES3SoundGenerator.cpp" />
     <ClCompile Include="TES3MagicInstanceController.cpp" />
     <ClCompile Include="TES3Static.cpp" />
-    <ClCompile Include="TES3StdString.cpp" />
     <ClCompile Include="TES3AttachmentLua.cpp" />
     <ClCompile Include="TES3CrimeEvent.cpp" />
     <ClCompile Include="TES3MobManager.cpp" />
@@ -977,6 +853,7 @@
     <ClCompile Include="TES3NPC.cpp" />
     <ClCompile Include="TES3NPCLua.cpp" />
     <ClCompile Include="TES3Object.cpp" />
+    <ClCompile Include="ReferenceTracker.cpp" />
     <ClCompile Include="TES3ProbeLua.cpp" />
     <ClCompile Include="TES3RaceLua.cpp" />
     <ClCompile Include="TES3Reference.cpp" />
@@ -1009,10 +886,10 @@
     <ClCompile Include="TES3UIWidgets.cpp" />
     <ClCompile Include="TES3UIWidgetsLua.cpp" />
     <ClCompile Include="TES3UtilLua.cpp" />
-    <ClCompile Include="TES3Vectors.cpp" />
     <ClCompile Include="TES3VectorsLua.cpp" />
     <ClCompile Include="TES3VFXManager.cpp" />
     <ClCompile Include="TES3VFXManagerLua.cpp" />
+    <ClCompile Include="TES3VoiceStreamer.cpp" />
     <ClCompile Include="TES3WaterController.cpp" />
     <ClCompile Include="TES3WaterControllerLua.cpp" />
     <ClCompile Include="TES3Weapon.cpp" />
@@ -1028,10 +905,8 @@
     <ClCompile Include="TES3WorldControllerLua.cpp" />
     <ClCompile Include="UIUtil.cpp" />
     <ClCompile Include="UTF8Convert.cpp" />
-    <ClCompile Include="WindowsUtil.cpp" />
     <ClCompile Include="xLuaRunScript.cpp" />
     <ClCompile Include="xMyRef.cpp" />
-    <ClCompile Include="StringUtil.cpp" />
     <ClCompile Include="TES3Util.cpp" />
     <ClCompile Include="xActivate.cpp" />
     <ClCompile Include="xAddEffect.cpp" />
@@ -1290,6 +1165,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\SharedSE\SharedSE.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -1302,17 +1178,31 @@
     <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="BuildDate">
+    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+    <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
+    <BuildDateHeaderTemp>$(BuildDateHeader).tmp</BuildDateHeaderTemp>
+    <BuildDateHeaderContents>#pragma once
+
+#define MWSE_BUILD_DATE $(BuildDate)
+</BuildDateHeaderContents>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)SharedSE\LuaJIT.targets" />
+  <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
+    <WriteLinesToFile File="$(BuildDateHeaderTemp)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$header = '$(BuildDateHeader)'; $tmp = '$(BuildDateHeaderTemp)'; $desired = [System.IO.File]::ReadAllText($tmp); if (Test-Path -LiteralPath $header) { $current = [System.IO.File]::ReadAllText($header); if ($current -eq $desired) { Remove-Item -LiteralPath $tmp; exit 0 } }; Move-Item -LiteralPath $tmp -Destination $header -Force&quot;" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -1320,13 +1210,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;C:\Users\brand\Desktop\GameDev\MW\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1338,16 +1228,9 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>copy /y "$(TargetDir)MWSE.dll" "$(MorrowindDir)MWSE.dll"
-copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
+copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"
+copy /y "$(TargetDir)lua51.dll" "$(MorrowindDir)lua51.dll"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
-echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -1357,13 +1240,13 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;MWSE_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>C:\Users\brand\Desktop\GameDev\MW\fmt\include;C:\Users\brand\Desktop\GameDev\MW\MWSE\MWSE\CrashLogger;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1379,14 +1262,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <Command>copy /y "$(TargetDir)MWSE.dll" "$(MorrowindDir)MWSE.dll"
 copy /y "$(TargetDir)MWSE.pdb" "$(MorrowindDir)MWSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; "$(ProjectDir)."/BuildDate.h
-echo. &gt;&gt; "$(ProjectDir)."/BuildDate.h
-echo #define MWSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; "$(ProjectDir)."/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; "$(ProjectDir)."/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,6 +10,7 @@
 #include "LuaKeyframesParsedEvent.h"
 
 #include "StringUtil.h"
+#include "MemoryUtil.h"
 
 #include "Log.h"
 
@@ -25,7 +26,7 @@ namespace TES3 {
 		// Extra setup for the new anim parser.
 		patchedRootTravelSpeed = 0;
 		if (actionCount > 0) {
-			actionTimings = mwse::tes3::_new<float>(actionCount);
+			actionTimings = se::memory::_new<float>(actionCount);
 			memset(actionTimings, 0, sizeof(float) * actionCount);
 		}
 
@@ -74,15 +75,15 @@ namespace TES3 {
 		return AnimGroupActionClass(actionClass);
 	}
 
-	nonstd::span<int> AnimationGroup::getActionFrames() {
+	std::span<int> AnimationGroup::getActionFrames() {
 		return { actionFrames, actionCount };
 	}
 
-	nonstd::span<float> AnimationGroup::getActionTimings() {
+	std::span<float> AnimationGroup::getActionTimings() {
 		return { actionTimings, actionCount };
 	}
 
-	nonstd::span<AnimationGroup::SoundGenKey> AnimationGroup::getSoundGenKeys() {
+	std::span<AnimationGroup::SoundGenKey> AnimationGroup::getSoundGenKeys() {
 		return { soundGenKeys, soundGenCount };
 	}
 
@@ -315,10 +316,10 @@ namespace TES3 {
 		std::optional<float> previousTextKey;
 		for (const auto& entry : entries) {
 			// Dispatch based on key name.
-			if (mwse::string::iequal(entry.key, "Sound") || mwse::string::iequal(entry.key, "SoundGen")) {
+			if (se::string::iequal(entry.key, "Sound") || se::string::iequal(entry.key, "SoundGen")) {
 				parseNoteSound(entry.time, entry.key, entry.value);
 			}
-			else if (mwse::string::iequal(entry.key, "LuaEvent")) {
+			else if (se::string::iequal(entry.key, "LuaEvent")) {
 				parseNoteLuaEvent(entry.time, entry.key, entry.value);
 			}
 			else {
@@ -386,7 +387,7 @@ namespace TES3 {
 			if (itt != kfData->namedGroups.end()) {
 				matchedGroupId = itt->second->groupId;
 			}
-			else if (mwse::string::istarts_with(noteValue, "AsGroup ")) {
+			else if (se::string::istarts_with(noteValue, "AsGroup ")) {
 				// Check for behave-as-group assignment key. Named anims without AsGroup default to Idle9, set above.
 				string asGroup = textAsLowercase(noteValue.substr(8));
 				iterAnimName = mapAnimationNames.find(asGroup);
@@ -399,7 +400,7 @@ namespace TES3 {
 					activeAnimGroups.clear();
 
 					// Construct new anim group.
-					newGroup = mwse::tes3::_new<AnimationGroup>();
+					newGroup = se::memory::_new<AnimationGroup>();
 					newGroup->ctor(int(matchedGroupId));
 					activeAnimGroups.emplace_back(newGroup);
 				}
@@ -414,7 +415,7 @@ namespace TES3 {
 			auto actionText = TES3_animActionTextByActionClass[8 * actionIndex + int(actionClass)];
 
 			// Note this is a prefix match. e.g. actionText could be "Stop."
-			if (mwse::string::istarts_with(noteValue, actionText)) {
+			if (se::string::istarts_with(noteValue, actionText)) {
 				// Find if the animation group exists already. Check active anim groups first, then all groups.
 				// Activate group if not already active.
 				AnimationGroup* animGroup = nullptr;
@@ -454,7 +455,7 @@ namespace TES3 {
 					activeAnimGroups.erase(iterErase, activeAnimGroups.end());
 
 					// Construct new anim group.
-					newGroup = mwse::tes3::_new<AnimationGroup>();
+					newGroup = se::memory::_new<AnimationGroup>();
 					newGroup->ctor(int(matchedGroupId));
 					activeAnimGroups.emplace_back(newGroup);
 					animGroup = newGroup;
@@ -539,11 +540,11 @@ namespace TES3 {
 			pitchParam = float(std::atof(&*param2));
 		}
 
-		if (mwse::string::iequal(noteKey, "SoundGen")) {
+		if (se::string::iequal(noteKey, "SoundGen")) {
 			// Convert soundgens to sounds based on creature.
 			auto iterSoundGenName = std::find_if(
 				TES3_soundGenGenericNames, TES3_soundGenGenericNamesEnd,
-				[&](const char* x) { return mwse::string::istarts_with(noteValue, x); }
+				[&](const char* x) { return se::string::istarts_with(noteValue, x); }
 			);
 			if (iterSoundGenName != TES3_soundGenGenericNamesEnd) {
 				int index = iterSoundGenName - TES3_soundGenGenericNames;
@@ -620,9 +621,9 @@ namespace TES3 {
 			std::swap(rootController->target, target);
 			rootController->setActive(true);
 			rootController->update(loopStartTime);
-			Vector3 startPoint = root.localTranslate;
+			NI::Point3 startPoint = root.localTranslate;
 			rootController->update(loopEndTime);
-			Vector3 movement = root.localTranslate - startPoint;
+			NI::Point3 movement = root.localTranslate - startPoint;
 			rootController->setActive(false);
 
 			// Note that movement is measured in the XY plane.

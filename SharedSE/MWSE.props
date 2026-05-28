@@ -4,6 +4,9 @@
   <PropertyGroup Label="UserMacros">
     <MorrowindDir>$(SolutionDir)..\</MorrowindDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(APPVEYOR_BUILD_NUMBER)' != ''">
+    <AppVeyorBuildNumberPreprocessorDefinition>APPVEYOR_BUILD_NUMBER=$(APPVEYOR_BUILD_NUMBER);</AppVeyorBuildNumberPreprocessorDefinition>
+  </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>

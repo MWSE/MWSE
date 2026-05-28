@@ -25,6 +25,7 @@ event.register(tes3.event.repair, repairCallback)
 * `itemData` ([tes3itemData](../types/tes3itemData.md)): *Read-only*. The item data relevant to the repaired item.
 * `repairAmount` (number): The amount of condition that will be restored to the item.
 * `repairer` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The actor performing the repair. Note that this is currently always the player, but this may change in future updates.
+* `roll` (number): The roll, an integer between 0 and 99, used to determine how successful the attempt was. The `repairAmount` is calculated by this value. If `roll` is greater or equal to `chance`, the repair will be a failure.
 * `tool` ([tes3repairTool](../types/tes3repairTool.md)): *Read-only*. The repair tool being used.
 * `toolData` ([tes3itemData](../types/tes3itemData.md)): *Read-only*. The item data relevant to repair tool.
 

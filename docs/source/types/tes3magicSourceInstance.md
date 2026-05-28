@@ -347,6 +347,25 @@ local result = myObject:getEffectInstance(index, target)
 
 ***
 
+### `getEffectInstances`
+<div class="search_terms" style="display: none">geteffectinstances, effectinstances</div>
+
+Gets all the magic effect instances for a given effect index. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
+
+```lua
+local result = myObject:getEffectInstances(index)
+```
+
+**Parameters**:
+
+* `index` (number): The index in the effect list to fetch, between `0` and `7`.
+
+**Returns**:
+
+* `result` ([tes3magicEffectInstance](../types/tes3magicEffectInstance.md)[])
+
+***
+
 ### `getMagnitudeForIndex`
 <div class="search_terms" style="display: none">getmagnitudeforindex, magnitudeforindex</div>
 
@@ -363,6 +382,21 @@ local result = myObject:getMagnitudeForIndex(index)
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `isValid`
+<div class="search_terms" style="display: none">isvalid, valid</div>
+
+Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+
+```lua
+local valid = myObject:isValid()
+```
+
+**Returns**:
+
+* `valid` (boolean)
 
 ***
 

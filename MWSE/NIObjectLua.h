@@ -8,6 +8,8 @@
 #include "TES3Reference.h"
 
 namespace mwse::lua {
+	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::AVObject* self, sol::optional<sol::table> param);
+
 	// Speed-optimized binding for NI::Object.
 	template <typename T>
 	void setUserdataForNIObject(sol::usertype<T>& usertypeDefinition) {
@@ -83,6 +85,7 @@ namespace mwse::lua {
 		usertypeDefinition["updateEffects"] = &NI::AVObject::updateEffects;
 		usertypeDefinition["updateProperties"] = &NI::AVObject::updateProperties;
 		usertypeDefinition["setFlag"] = &NI::AVObject::setFlag;
+		usertypeDefinition["traverse"] = traverse;
 
 		// Functions that need their results wrapped.
 		usertypeDefinition["getObjectByName"] = &NI::AVObject::getObjectByName;
@@ -103,13 +106,13 @@ namespace mwse::lua {
 		usertypeDefinition["isFrustumCulled"] = &NI::AVObject::isFrustumCulled;
 
 		// Friendly access to properties.
-		usertypeDefinition["alphaProperty"] = sol::property(&NI::AVObject::getAlphaProperty, &NI::AVObject::setAlphaProperty);
-		usertypeDefinition["fogProperty"] = sol::property(&NI::AVObject::getFogProperty, &NI::AVObject::setFogProperty);
-		usertypeDefinition["materialProperty"] = sol::property(&NI::AVObject::getMaterialProperty, &NI::AVObject::setMaterialProperty);
-		usertypeDefinition["stencilProperty"] = sol::property(&NI::AVObject::getStencilProperty, &NI::AVObject::setStencilProperty);
-		usertypeDefinition["texturingProperty"] = sol::property(&NI::AVObject::getTexturingProperty, &NI::AVObject::setTexturingProperty);
-		usertypeDefinition["vertexColorProperty"] = sol::property(&NI::AVObject::getVertexColorProperty, &NI::AVObject::setVertexColorProperty);
-		usertypeDefinition["zBufferProperty"] = sol::property(&NI::AVObject::getZBufferProperty, &NI::AVObject::setZBufferProperty);
+		usertypeDefinition["alphaProperty"] = sol::property(&NI::AVObject::getAlphaProperty, &NI::AVObject::setAlphaProperty_lua);
+		usertypeDefinition["fogProperty"] = sol::property(&NI::AVObject::getFogProperty, &NI::AVObject::setFogProperty_lua);
+		usertypeDefinition["materialProperty"] = sol::property(&NI::AVObject::getMaterialProperty, &NI::AVObject::setMaterialProperty_lua);
+		usertypeDefinition["stencilProperty"] = sol::property(&NI::AVObject::getStencilProperty, &NI::AVObject::setStencilProperty_lua);
+		usertypeDefinition["texturingProperty"] = sol::property(&NI::AVObject::getTexturingProperty, &NI::AVObject::setTexturingProperty_lua);
+		usertypeDefinition["vertexColorProperty"] = sol::property(&NI::AVObject::getVertexColorProperty, &NI::AVObject::setVertexColorProperty_lua);
+		usertypeDefinition["zBufferProperty"] = sol::property(&NI::AVObject::getZBufferProperty, &NI::AVObject::setZBufferProperty_lua);
 
 		// Legacy access. TODO: Remove.
 		usertypeDefinition["propegatePositionChange"] = &NI::AVObject::update_lua;

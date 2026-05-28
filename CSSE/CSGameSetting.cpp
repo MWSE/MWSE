@@ -30,9 +30,9 @@ namespace se::cs {
 		return DataHandler::get()->recordHandler->gameSettingsHandler->gameSettings[getIndex()];
 	}
 
-	nonstd::span<GameSettingInitializer> GameSettingInitializer::get() {
+	std::span<GameSettingInitializer> GameSettingInitializer::get() {
 		const auto initializers = reinterpret_cast<GameSettingInitializer*>(0x6A8128);
-		return nonstd::span(initializers, GMST::COUNT);
+		return std::span(initializers, GMST::COUNT);
 	}
 
 	//

@@ -36,9 +36,9 @@ namespace mwse {
 		spellsList->erase_value(spell);
 
 		// Delete the spell from memory.
-		tes3::free(spell->name);
-		tes3::free(spell->objectID);
-		tes3::free(spell);
+		se::memory::free(spell->name);
+		se::memory::free(spell->objectID);
+		se::memory::free(spell);
 
 		/*
 			TODO: Calling AddSpell on a deleted spell does not cause an error. There

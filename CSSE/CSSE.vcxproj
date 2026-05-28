@@ -52,30 +52,43 @@
     <Import Project="$(SolutionDir)\SharedSE\MWSE.User.props" Condition="exists('$(SolutionDir)\SharedSE\MWSE.User.props')" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+    <BuildDateHeader>$(ProjectDir)BuildDate.h</BuildDateHeader>
+    <BuildDateHeaderTemp>$(BuildDateHeader).tmp</BuildDateHeaderTemp>
+    <BuildDateHeaderContents>#pragma once
+
+#define CSSE_BUILD_DATE $(BuildDate)
+</BuildDateHeaderContents>
+  </PropertyGroup>
+  <Target Name="GenerateBuildDateHeader" BeforeTargets="ClCompile">
+    <WriteLinesToFile File="$(BuildDateHeaderTemp)" Lines="$(BuildDateHeaderContents)" Overwrite="true" Encoding="ASCII" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$header = '$(BuildDateHeader)'; $tmp = '$(BuildDateHeaderTemp)'; $desired = [System.IO.File]::ReadAllText($tmp); if (Test-Path -LiteralPath $header) { $current = [System.IO.File]::ReadAllText($header); if ($current -eq $desired) { Remove-Item -LiteralPath $tmp; exit 0 } }; Move-Item -LiteralPath $tmp -Destination $header -Force&quot;" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\span-lite;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CSSE_EXPORTS;WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);CSSE_EXPORTS;WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -90,14 +103,6 @@
       <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
 copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define CSSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -106,17 +111,17 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CSSE_EXPORTS;WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(AppVeyorBuildNumberPreprocessorDefinition);CSSE_EXPORTS;WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -131,14 +136,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
       <Command>copy /y "$(TargetDir)CSSE.dll" "$(MorrowindDir)CSSE.dll"
 copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>set buildTime=
-for /f "skip=1 delims=" %%x in ('wmic os get localdatetime') do if not defined buildTime set buildTime=%%x
-echo #pragma once &gt; $(ProjectDir)/BuildDate.h
-echo. &gt;&gt; $(ProjectDir)/BuildDate.h
-echo #define CSSE_BUILD_DATE %buildTime:~0,8% &gt;&gt; $(ProjectDir)/BuildDate.h
-if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_BUILD_NUMBER% &gt;&gt; $(ProjectDir)/BuildDate.h)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CDataBoundPropertyGridProperty.cpp" />
@@ -149,6 +146,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="CSBook.cpp" />
     <ClCompile Include="CSCell.cpp" />
     <ClCompile Include="CSClass.cpp" />
+    <ClCompile Include="CSLand.cpp" />
     <ClCompile Include="CSContainer.cpp" />
     <ClCompile Include="CSCreature.cpp" />
     <ClCompile Include="CSDialogue.cpp" />
@@ -179,6 +177,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="DialogEditObjectWindow.cpp" />
     <ClCompile Include="DialogEditSpellObjectWindow.cpp" />
     <ClCompile Include="DialogLandscapeEditSettingsWindow.cpp" />
+    <ClCompile Include="DialogLayersWindow.cpp" />
     <ClCompile Include="DialogPathGridWindow.cpp" />
     <ClCompile Include="DialogPreviewWindow.cpp" />
     <ClCompile Include="DialogProcContext.cpp" />
@@ -206,7 +205,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClCompile Include="LogUtil.cpp" />
     <ClCompile Include="MetadataUtil.cpp" />
     <ClCompile Include="ModMetadata.cpp" />
-    <ClCompile Include="NILinesData.cpp" />
     <ClCompile Include="ObjectWindowTabData.cpp" />
     <ClCompile Include="PathUtil.cpp" />
     <ClCompile Include="pch.cpp">
@@ -243,6 +241,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
+    <ClInclude Include="DialogLayersWindow.h" />
     <ClInclude Include="DialogPathGridWindow.h" />
     <ClInclude Include="DialogProcContext.h" />
     <ClInclude Include="DialogUseReportWindow.h" />
@@ -320,9 +319,6 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ClInclude Include="EditBasicExtended.h" />
     <ClInclude Include="CSBaseObject.h" />
     <ClInclude Include="LogUtil.h" />
-    <ClInclude Include="NIConfig.h" />
-    <ClInclude Include="NILinesData.h" />
-    <ClInclude Include="NIRTTIDefines.h" />
     <ClInclude Include="ObjectWindowTabData.h" />
     <ClInclude Include="RenderWindowSceneGraphController.h" />
     <ClInclude Include="RenderWindowSelectionData.h" />
@@ -337,6 +333,7 @@ if defined APPVEYOR_BUILD_NUMBER (echo #define APPVEYOR_BUILD_NUMBER %APPVEYOR_B
     <ResourceCompile Include="CSSE.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="layer_toolbar.bmp" />
     <Image Include="main_toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

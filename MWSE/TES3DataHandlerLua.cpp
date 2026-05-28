@@ -70,7 +70,6 @@ namespace mwse::lua {
 			usertypeDefinition["deleteObject"] = &TES3::NonDynamicData::deleteObject;
 			usertypeDefinition["drawCellMapMarker"] = &TES3::NonDynamicData::drawCellMapMarker;
 			usertypeDefinition["findDialogue"] = &TES3::NonDynamicData::findDialogue;
-			usertypeDefinition["findFirstCloneOfActor"] = &TES3::NonDynamicData::findFirstCloneOfActor;
 			usertypeDefinition["findGlobalVariable"] = &TES3::NonDynamicData::findGlobalVariable;
 			usertypeDefinition["findScript"] = &TES3::NonDynamicData::findScriptByName;
 			usertypeDefinition["findSound"] = &TES3::NonDynamicData::findSound;
@@ -81,7 +80,7 @@ namespace mwse::lua {
 			// Provide legacy access to magic effects table.
 			usertypeDefinition["magicEffects"] = sol::readonly_property(&TES3::NonDynamicData::getMagicEffects_lua);
 
-			// Deprecated functions. TODO: Remove before 2.1 final.
+			// Deprecated functions.
 			usertypeDefinition["findDialogInfo"] = &TES3::NonDynamicData::findDialogue; // Badly named. Actually gives DIAL, not INFO.
 		}
 
@@ -127,6 +126,9 @@ namespace mwse::lua {
 
 			// Basic function binding.
 			usertypeDefinition["getCellBufferSizes"] = &TES3::DataHandler::getCellBufferSize;
+			usertypeDefinition["getLandHeightAtPosition"] = &TES3::DataHandler::getLandHeightAtPosition_lua;
+			usertypeDefinition["getLandShapeAtPosition"] = &TES3::DataHandler::getLandShapeAtPosition;
+			usertypeDefinition["getLandNormalAtPosition"] = &TES3::DataHandler::getLandNormalAtPosition_lua;
 			usertypeDefinition["updateCollisionGroupsForActiveCells"] = &TES3::DataHandler::updateCollisionGroupsForActiveCells;
 			usertypeDefinition["updateLightingForExteriorCells"] = &TES3::DataHandler::updateLightingForExteriorCells;
 

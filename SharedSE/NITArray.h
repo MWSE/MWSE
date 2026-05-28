@@ -101,10 +101,10 @@ namespace NI {
 		constexpr const_iterator end() const noexcept { return &storage[storageCount]; }
 		constexpr const_iterator cend() const noexcept { return end(); }
 
-		constexpr reverse_iterator rbegin() noexcept { std::make_reverse_iterator(end()); }
+		constexpr reverse_iterator rbegin() noexcept { return std::make_reverse_iterator(end()); }
 		constexpr const_reverse_iterator rbegin() const noexcept { return std::make_reverse_iterator(end()); }
 		constexpr const_reverse_iterator crbegin() const noexcept { return std::make_reverse_iterator(end()); }
-		constexpr reverse_iterator rend() noexcept { std::make_reverse_iterator(begin()); }
+		constexpr reverse_iterator rend() noexcept { return std::make_reverse_iterator(begin()); }
 		constexpr const_reverse_iterator rend() const noexcept { return std::make_reverse_iterator(begin()); }
 		constexpr const_reverse_iterator crend() const noexcept { return std::make_reverse_iterator(begin()); }
 
@@ -118,8 +118,10 @@ namespace NI {
 		size_type filledCount; // 0x10 // Number of filled slots.
 		size_type growByCount; // 0x14 // Number of slots to increase storage by.
 
+#if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 		static void* operator new(size_type size) { return se::memory::_new(size); }
 		static void operator delete(void* block) { se::memory::_delete(block); }
+#endif
 
 		TArray(size_type size = 1) {
 			storageCount = size;
@@ -127,7 +129,7 @@ namespace NI {
 			endIndex = 0;
 			filledCount = 0;
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
-			storage = se::memory::_new<T>(4);
+			storage = se::memory::_new<T>(size);
 #else
 			storage = new T[size];
 #endif
@@ -355,6 +357,25 @@ namespace NI {
 			}
 			setAtIndex(index, value);
 			return index;
+		}
+
+		int getFirstEmptyIndex() const {
+			for (auto i = 0u; i < endIndex; ++i) {
+				if (!storage[i]) {
+					return i;
+				}
+			}
+			return endIndex;
+		}
+
+		void addToFirstEmptyIndex(const_reference value) {
+			if (!value) {
+				return;
+			}
+
+			const auto index = getFirstEmptyIndex();
+			growToFit(index);
+			setAtIndex(index, value);
 		}
 
 		size_type getFilledCount() const { return filledCount; }

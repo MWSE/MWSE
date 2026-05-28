@@ -28,7 +28,7 @@ end
 
 function Info:update()
 	if self.variable and self.variable.value then
-		self.text = tostring(self.variable.value)
+		self.text = tostring(self:convertToLabelValue(self.variable.value))
 	end
 end
 -- UI METHODS

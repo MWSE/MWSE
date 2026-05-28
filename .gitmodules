@@ -1,0 +1,4 @@
+[submodule "deps/luajit2"]
+	path = deps/luajit2
+	url = https://github.com/DreamWeave-MP/luajit2.git
+	branch = v2.1-agentzh

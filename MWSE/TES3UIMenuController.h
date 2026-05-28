@@ -47,7 +47,6 @@ namespace TES3::UI {
 		static ItemData* lastTooltipItemData;
 		static int lastTooltipCount;
 		static Element* lastTooltipSource;
-		static int lastKeyPressDIK;
 
 		MenuInputController() = delete;
 		~MenuInputController() = delete;

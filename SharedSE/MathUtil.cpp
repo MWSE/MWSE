@@ -1,7 +1,7 @@
 #pragma intrinsic(_BitScanReverse)
 
 #include "MathUtil.h"
-#include "NiVector3.h"
+#include "NIPoint3.h"
 
 namespace se::math {
 	void standardizeAngleRadians(float& value) {
@@ -13,11 +13,11 @@ namespace se::math {
 		}
 	}
 
-	std::tuple<float, NI::Vector3> rayPlaneIntersection(
-		const NI::Vector3& rayOrigin, 
-		const NI::Vector3& rayDirection, 
-		const NI::Vector3& planeOrigin, 
-		const NI::Vector3& planeNormal
+	std::tuple<float, NI::Point3> rayPlaneIntersection(
+		const NI::Point3& rayOrigin, 
+		const NI::Point3& rayDirection, 
+		const NI::Point3& planeOrigin, 
+		const NI::Point3& planeNormal
 	) {
 		// Note: This implementation intentionally allows intersections on either side of the plane.
 		auto projectionDist = rayDirection.dotProduct(&planeNormal);

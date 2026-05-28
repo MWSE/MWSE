@@ -3,6 +3,14 @@
 #include "CSDefines.h"
 
 namespace se::cs {
+	namespace ObjectFlag {
+		typedef unsigned int value_type;
+
+		enum Flag : value_type {
+			ScaleModifiedToOne = 0x8000
+		};
+	}
+
 	struct BaseObject_VirtualTable {
 		void(__thiscall* destructor)(BaseObject*, signed char); // 0x0
 		int(__thiscall* loadObjectSpecific)(BaseObject*, GameFile*); // 0x4
@@ -31,6 +39,7 @@ namespace se::cs {
 		bool getModified() const;
 		void setModified(bool modified);
 		bool getDeleted() const;
+		void setDeleted(bool deleted);
 		bool getPersists() const;
 		bool getBlocked() const;
 

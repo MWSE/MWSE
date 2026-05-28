@@ -5,8 +5,8 @@ namespace se::cs {
 		unsigned int unknown_0x0;
 		unsigned int unknown_0x4;
 		void* ioObject;
-		char fileName[260]; // 0xC
-		char filePath[260]; // 0x110
+		char fileName[MAX_PATH]; // 0xC
+		char filePath[MAX_PATH]; // 0x110
 		int unknown_0x214;
 		int unknown_0x218;
 		int unknown_0x21C;

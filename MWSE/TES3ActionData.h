@@ -3,7 +3,7 @@
 #include "TES3Defines.h"
 
 #include "TES3AnimationGroup.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class AttackAnimationState : signed char {
@@ -67,14 +67,20 @@ namespace TES3 {
 		char padding_0x31[3];
 		MobileProjectile * nockedProjectile; // 0x34
 		short countAIPackages; // 0x38
-		Vector3 unknown_0x3C;
-		Vector3 unknown_0x48;
-		Vector3 lastPositionBeforeCombat; // 0x54
-		Vector3 walkDestination; // 0x60
+		NI::Point3 unknown_0x3C;
+		NI::Point3 unknown_0x48;
+		NI::Point3 lastPositionBeforeCombat; // 0x54
+		NI::Point3 walkDestination; // 0x60
 		float lastWitnessedCrimeTimestamp; // 0x6C
 
 		ActionData() = delete;
 		~ActionData() = delete;
+
+		//
+		// Custom functions.
+		//
+
+		void cleanupMobileActor(MobileActor* mobileActor);
 
 	};
 	static_assert(sizeof(ActionData) == 0x70, "TES3::ActionData failed size validation");

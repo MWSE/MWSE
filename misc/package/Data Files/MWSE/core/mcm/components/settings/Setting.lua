@@ -105,4 +105,34 @@ function Setting:getMouseOverText()
 	)
 end
 
+
+---@param searchText string The text being searched, in lowercase
+---@param caseSensitive boolean
+---@return boolean
+function Setting:searchTextMatches(searchText, caseSensitive)
+	if Parent.searchTextMatches(self, searchText, caseSensitive) then
+		return true
+	end
+
+	-- Search variable text and defaultSetting text
+	if self.variable then
+		local value = self.variable.value
+		local default = self.variable.defaultSetting
+		-- Only search `default`if it exists and is different from `value`.
+		if default ~= value then
+			local defaultText = tostring(self:convertToLabelValue(default))
+			defaultText = caseSensitive and defaultText or defaultText:lower()
+			if defaultText:find(searchText, 1, true) then
+				return true
+			end
+		end
+
+		local valueText = tostring(self:convertToLabelValue(value))
+		valueText = caseSensitive and valueText or valueText:lower()
+		return valueText:find(searchText, 1, true) ~= nil
+	end
+
+	return false
+end
+
 return Setting

@@ -23,7 +23,7 @@ TES3::Game* __fastcall OnGameStructCreated(TES3::Game* game) {
 	mwse::patch::installPatches();
 
 	// Install NetImmerse extensions.
-	auto registered = *reinterpret_cast<TES3::HashMap<int, int>**>(0x7DDE5C);
+	auto registered = *reinterpret_cast<NI::HashMap<int, int>**>(0x7DDE5C);
 	NI::Stream::registerLoader(NI::CopyTransformController::CopyTransformController_Name, &NI::CopyTransformController::loader);
 
 	// Call overloaded function.
@@ -168,10 +168,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		}
 
 		// Install patches.
-		mwse::genCallEnforced(0x417169, 0x417280, reinterpret_cast<DWORD>(OnGameStructCreated));
+		se::memory::genCallEnforced(0x417169, 0x417280, reinterpret_cast<DWORD>(OnGameStructCreated));
 
 		// Delay our lua hook until later, to ensure that Mod Organizer's VFS is hooked up.
-		if (!mwse::genCallEnforced(0x417195, 0x417880, reinterpret_cast<DWORD>(OnGameStructInitialized))) {
+		if (!se::memory::genCallEnforced(0x417195, 0x417880, reinterpret_cast<DWORD>(OnGameStructInitialized))) {
 			mwse::log::getLog() << "Could not hook MWSE-Lua initialization point!" << std::endl;
 			exit(1);
 		}
@@ -184,6 +184,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		// Do thread-specific cleanup.
 		break;
 	case DLL_PROCESS_DETACH:
+		// Tear down patches that need orderly shutdown before the engine
+		// starts unloading DSound / DataHandler.
+		mwse::patch::uninstallPatches();
+
 		// Unhook Lua interface.
 		mwse::lua::LuaManager::getInstance().cleanup();
 		break;

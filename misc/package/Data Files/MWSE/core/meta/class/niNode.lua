@@ -25,8 +25,21 @@ function niNode:attachChild(child, useFirstAvailable) end
 function niNode:attachEffect(effect) end
 
 --- Calculates and creates a bounding box for the object. The existing bounding box, if any, will not be used, a fresh one will always be calculated.
+--- @param args? niNode.createBoundingBox.args This table accepts the following values:
+--- 
+--- `accurateSkinned?`: boolean — *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+--- 
+--- `observeAppCullFlag?`: boolean — *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+--- 
+--- `onlyActiveChildren?`: boolean — *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 --- @return tes3boundingBox boundingBox The newly created bounding box.
-function niNode:createBoundingBox() end
+function niNode:createBoundingBox(args) end
+
+---Table parameter definitions for `niNode.createBoundingBox`.
+--- @class niNode.createBoundingBox.args
+--- @field accurateSkinned? boolean *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+--- @field observeAppCullFlag? boolean *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+--- @field onlyActiveChildren? boolean *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 
 --- Detaches all children from the children list of the node.
 function niNode:detachAllChildren() end
@@ -52,4 +65,23 @@ function niNode:detachEffect(effect) end
 --- @param type ni.dynamicEffectType Use the values from [`ni.dynamicEffectType`](https://mwse.github.io/MWSE/references/ni/dynamic-effect-types/) table.
 --- @return niAmbientLight|niDirectionalLight|niDynamicEffect|niPointLight|niSpotLight|niTextureEffect|nil effect No description yet available.
 function niNode:getEffect(type) end
+
+--- Performs a DFS walk over the node's child tree.
+---
+--- [Examples available in online documentation](https://mwse.github.io/MWSE/types/niNode/#traverse).
+--- @param args? niNode.traverse.args This table accepts the following values:
+--- 
+--- `type?`: ni.type|ni.type[]|integer — *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+--- 
+--- `prefix?`: string — *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+--- 
+--- `recursive?`: boolean — *Default*: `true`. If true, the method also walk over the nested nodes.
+--- @return fun(): niAVObject iterator No description yet available.
+function niNode:traverse(args) end
+
+---Table parameter definitions for `niNode.traverse`.
+--- @class niNode.traverse.args
+--- @field type? ni.type|ni.type[]|integer *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+--- @field prefix? string *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+--- @field recursive? boolean *Default*: `true`. If true, the method also walk over the nested nodes.
 

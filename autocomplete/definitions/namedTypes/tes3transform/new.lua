@@ -1,5 +1,5 @@
 return {
-	type = "method",
+	type = "function",
 	description = [[Creates a new instance of this type.]],
 	arguments = {
 		{ name = "rotation", optional = true, type = "tes3matrix33" },

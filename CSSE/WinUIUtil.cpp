@@ -115,6 +115,10 @@ namespace se::cs::winui {
 		SendMessageA(hWnd, WM_NEXTDLGCTL, (WPARAM)hDlgControl, TRUE);
 	}
 
+	bool HasStyle(HWND hWnd, DWORD style) {
+		return (GetStyle(hWnd) & style) == style;
+	}
+
 	LONG GetStyle(HWND hWnd) {
 		return GetWindowLongA(hWnd, GWL_STYLE);
 	}
@@ -129,6 +133,10 @@ namespace se::cs::winui {
 
 	void RemoveStyles(HWND hWnd, LONG lStyle) {
 		SetWindowLongA(hWnd, GWL_STYLE, GetWindowLongA(hWnd, GWL_STYLE) & ~lStyle);
+	}
+
+	bool IsDisabled(HWND hWnd) {
+		return HasStyle(hWnd, WS_DISABLED);
 	}
 
 	std::string GetWindowTextA(HWND hWnd) {

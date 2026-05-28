@@ -25,6 +25,12 @@ return {
 	["Middle mouse button"] = "Middle mouse button",
 	["Mouse %s"] = "Mouse %%s",
 	["SET %s KEYBIND"] = "SET %%s KEYBIND",
+	["KeybindMenu.buttonText"] = "Keybinds",
+	["KeybindMenu.name"] = "Configure Keybinds",
+	["KeybindMenu.description"] = "This page lets you view and modify keybindings added by the configuration menus of your installed mods.\n\n\z
+		Note: This page will only display keybindings added by mods that use MCM Templates to create MCM KeyBinders. \z
+		This covers the vast majority of mods that add custom keybindings, but there may be a few outliers here and there.\z
+		",
 	["SET NEW KEYBIND"] = "SET NEW KEYBIND",
 	["Press any key to set the bind or ESC to cancel."] = "Press any key to set the bind or ESC to cancel.",
 	["Unbound action"] = "Unbound action",

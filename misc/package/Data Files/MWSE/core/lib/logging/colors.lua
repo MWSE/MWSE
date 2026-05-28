@@ -56,7 +56,9 @@ local function escapeKeys(str)
 	local number
 	for word in str:gmatch("%w+") do
 		number = keys[word]
-		assert(number, "Unknown key: " .. word)
+		if not number then
+			error("Unknown key: " .. word)
+		end
 		table.insert(buffer, escapeNumber(number))
 	end
 

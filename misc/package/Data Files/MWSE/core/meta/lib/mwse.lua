@@ -105,7 +105,7 @@ function mwse.registerModConfig(name, package) end
 --- Saves a config table to Data Files\\MWSE\\config\\{fileName}.json. The config is converted to JSON during saving.
 --- @param fileName string Usually named after your mod.
 --- @param config table The config table to save.
---- @param jsonOptions? table *Optional*. Encoding options. These get passed to the `dkjson` encoder.
+--- @param jsonOptions? jsonConfig *Optional*. Encoding options. These get passed to the `dkjson` encoder.
 function mwse.saveConfig(fileName, config, jsonOptions) end
 
 --- Converts an uppercase, 4-character string into a TES3 object type.

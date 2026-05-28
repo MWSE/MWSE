@@ -51,9 +51,9 @@ function ParagraphField:makeComponent(parentBlock)
 
 	self.elements.border = border
 	self.elements.inputField = inputField
-	local scrollPane = inputField:findChild(tes3ui.registerID("PartParagraphInput_scroll_pane"))
-	local textFrame = inputField:findChild(tes3ui.registerID("PartScrollPane_outer_frame"))
-	local textInput = inputField:findChild(tes3ui.registerID("PartParagraphInput_text_input"))
+	local scrollPane = inputField:findChild(tes3ui.registerID("PartParagraphInput_scroll_pane")) --[[@as tes3uiElement]]
+	local textFrame = inputField:findChild(tes3ui.registerID("PartScrollPane_outer_frame")) --[[@as tes3uiElement]]
+	local textInput = inputField:findChild(tes3ui.registerID("PartParagraphInput_text_input")) --[[@as tes3uiElement]]
 	self.elements.textFrame = textFrame
 	self.elements.scrollPane = scrollPane
 	self.elements.textInput = textInput

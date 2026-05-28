@@ -59,12 +59,12 @@ namespace mwse {
 		}
 
 		void pushString(const std::string& value) {
-			pushLong(mwse::string::store::getOrCreate(value));
+			pushLong(se::string::store::getOrCreate(value));
 		}
 
 		void pushString(const char* value) {
 			if (value) {
-				pushLong(mwse::string::store::getOrCreate(value));
+				pushLong(se::string::store::getOrCreate(value));
 			}
 			else {
 				pushLong(0);

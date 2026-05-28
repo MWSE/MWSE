@@ -589,11 +589,11 @@ The element's text. Text input can be read by accessing this property.
 ### `texture`
 <div class="search_terms" style="display: none">texture</div>
 
-The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2.
+The underlying texture for the element. This assumes that the element is of an element type. Setting this value will change the element to an image type. Texture dimensions must be powers of 2. Setting this value manually will clear the texture path from the element.
 
 **Returns**:
 
-* `result` ([niSourceTexture](../types/niSourceTexture.md))
+* `result` ([niTexture](../types/niTexture.md))
 
 ***
 
@@ -1520,6 +1520,21 @@ local result = myObject:getTopLevelMenu()
 **Returns**:
 
 * `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `isValid`
+<div class="search_terms" style="display: none">isvalid, valid</div>
+
+Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+
+```lua
+local valid = myObject:isValid()
+```
+
+**Returns**:
+
+* `valid` (boolean)
 
 ***
 

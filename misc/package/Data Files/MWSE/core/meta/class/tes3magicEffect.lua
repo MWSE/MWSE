@@ -25,6 +25,7 @@
 --- @field castVisualEffect tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3bodyPart|tes3book|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3door|tes3ingredient|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3misc|tes3npc|tes3npcInstance|tes3physicalObject|tes3probe|tes3repairTool|tes3static|tes3weapon The visual played when a spell with this effect is cast.
 --- @field description string Player-facing description of the effect.
 --- @field flags number Raw access to the numerical representation of flags. Typically shouldn't be used.
+--- @field hasActorLighting boolean If true, the spell will count as a light spell. This can matter when calculating lights on mobiles.
 --- @field hasContinuousVFX boolean Access to the base flag that determines if this effect's VFX continuously plays for the full duration of the spell, rather than occuring once on hit.
 --- @field hasNoDuration boolean Access to the base flag that determines if this effect doesn't use a duration.
 --- @field hasNoMagnitude boolean Access to the base flag that determines if this effect doesn't make use of its magnitude.

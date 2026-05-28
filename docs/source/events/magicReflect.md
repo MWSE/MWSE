@@ -25,6 +25,7 @@ event.register(tes3.event.magicReflect, magicReflectCallback)
 
 ## Event Data
 
+* `effectIndex` (number): *Read-only*. The index of the spell effect being tested.
 * `mobile` ([tes3mobileActor](../types/tes3mobileActor.md)): *Read-only*. The mobile actor that may reflect the spell.
 * `reflectChance` (number): The % chance that the magic is reflected. May be modified.
 * `reflectEffect` ([tes3activeMagicEffect](../types/tes3activeMagicEffect.md)): *Read-only*. The specific reflect effect being tested. This is a `tes3activeMagicEffect` instead of a more common magic instance. You can lookup the magic source instance or effect instance with `tes3activeMagicEffect` accessors.

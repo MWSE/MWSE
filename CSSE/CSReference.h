@@ -60,26 +60,26 @@ namespace se::cs {
 	struct Reference : Object {
 		struct ReferenceData {
 			PhysicalObject* baseObject; // 0x0
-			NI::Vector3 orientationNonAttached; // 0x4
-			NI::Vector3 unknown_0x10; // Position-related.
-			NI::Vector3 yetAnotherOrientation; // 0x1C
-			NI::Vector3 position; // 0x28
-			NI::Vector3 undoPosition; // 0x34
+			NI::Point3 orientationNonAttached; // 0x4
+			NI::Point3 unknown_0x10; // Position-related.
+			NI::Point3 yetAnotherOrientation; // 0x1C
+			NI::Point3 position; // 0x28
+			NI::Point3 undoPosition; // 0x34
 		};
 		union {
 			ReferenceData referenceData; // 0x28
 			struct {
 				PhysicalObject* baseObject; // 0x28
-				NI::Vector3 orientationNonAttached; //0x2C
-				NI::Vector3 unknown_0x10; // 0x38
-				NI::Vector3 yetAnotherOrientation; // 0x44
-				NI::Vector3 position; // 0x50
-				NI::Vector3 undoPosition; // 0x5C
+				NI::Point3 orientationNonAttached; //0x2C
+				NI::Point3 unknown_0x10; // 0x38
+				NI::Point3 yetAnotherOrientation; // 0x44
+				NI::Point3 position; // 0x50
+				NI::Point3 undoPosition; // 0x5C
 			};
 		};
 		Attachment* firstAttachment; // 0x68
-		int unknown_0x6C;
-		int unknown_0x70;
+		int sourceID;
+		int targetID; // Master index?
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
 		Attachment* getAttachment(Attachment::Type type) const;
@@ -92,11 +92,13 @@ namespace se::cs {
 
 		void updateRotationMatrixForRaceAndSex(NI::Matrix33& matrix, bool unknown = false) const;
 
-		bool createSelectionWidget(NI::Vector3 boundsMin, NI::Vector3 boundsMax);
+		bool createSelectionWidget(NI::Point3 boundsMin, NI::Point3 boundsMax);
 		void setSelectionWidgetEnabled(int flag);
 		bool hasActiveSelectionWidget() const;
 
 		Cell* getCell() const;
+
+		std::string getUniqueID() const;
 	};
 	static_assert(sizeof(Reference) == 0x78, "TES3::Reference failed size validation");
 }

@@ -7,12 +7,6 @@
 #include "NIExtraData.h"
 #include "NITimeController.h"
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "TES3Defines.h"
-#else
-#include "CSDefines.h"
-#endif
-
 namespace NI {
 	struct ObjectNET : Object {
 		char* name; // 0x8
@@ -46,19 +40,23 @@ namespace NI {
 		Pointer<StringExtraData> getStringDataStartingWithValue(const char* value) const;
 		bool hasStringDataStartingWithValue(const char* value) const;
 
-#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		TES3::Reference* getTes3Reference(bool searchParents = false);
-		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false);
-#else
-		se::cs::Reference* getTes3Reference(bool searchParents = false);
+		Tes3ExtraData* getTes3ExtraData(bool searchParents = false) const;
+		GameReferenceType* getTes3Reference(bool searchParents = false) const;
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+		TES3::Reference* getTes3Reference_lua(sol::optional<bool> searchParents = false) const;
 #endif
 
 		//
 		// Other function addresses.
 		//
 
-		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(ObjectNET*, Stream*)>(0x6EA610);
-		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const ObjectNET*, Stream*)>(0x6EA710);
+#if defined(SE_NI_OBJECTNET_FNADDR_LOADBINARY) && SE_NI_OBJECTNET_FNADDR_LOADBINARY > 0
+		static constexpr auto _loadBinary = reinterpret_cast<void(__thiscall*)(ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_LOADBINARY);
+#endif
+#if defined(SE_NI_OBJECTNET_FNADDR_SAVEBINARY) && SE_NI_OBJECTNET_FNADDR_SAVEBINARY > 0
+		static constexpr auto _saveBinary = reinterpret_cast<void(__thiscall*)(const ObjectNET*, Stream*)>(SE_NI_OBJECTNET_FNADDR_SAVEBINARY);
+#endif
 
 	};
 	static_assert(sizeof(ObjectNET) == 0x14, "NI::ObjectNET failed size validation");

@@ -8,7 +8,7 @@
 
 namespace mwse::tes3 {
 	TES3::Reference* getReference(const char* id);
-	TES3::Reference* getReference(const std::string& id);
+	TES3::Reference* getReference(std::string_view id);
 
 	void setDataString(char** string, const char* contents, bool allowEmpty = false);
 
@@ -48,7 +48,7 @@ namespace mwse::tes3 {
 
 	char* getThreadSafeStringBuffer();
 
-	bool testLineOfSight(TES3::Vector3* pos1, float height1, TES3::Vector3* pos2, float height2);
+	bool testLineOfSight(NI::Point3* pos1, float height1, NI::Point3* pos2, float height2);
 
 	inline constexpr float& getSimulationTimestamp() {
 		return *reinterpret_cast<float*>(0x7C6708);

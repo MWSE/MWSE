@@ -64,7 +64,7 @@ function tes3.addClothingSlot(params) end
 --- 
 --- `itemData?`: tes3itemData — *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
 --- 
---- `soul?`: tes3creature|tes3npc — *Optional*. For creating filled soul gems.
+--- `soul?`: tes3creature|tes3npc|string — *Optional*. For creating filled soul gems.
 --- 
 --- `count?`: number — *Default*: `1`. The maximum number of items to add.
 --- 
@@ -89,7 +89,7 @@ function tes3.addItem(params) end
 --- @field reference tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string Who to give items to.
 --- @field item tes3alchemy|tes3apparatus|tes3armor|tes3book|tes3clothing|tes3ingredient|tes3item|tes3light|tes3lockpick|tes3misc|tes3probe|tes3repairTool|tes3weapon|tes3leveledItem|string The item to add. If a leveled item is passed, it will be resolved and added.
 --- @field itemData? tes3itemData *Optional*. The item data for the item. The owner, if set, will be cleared. Note that this may be deleted from memory then ignored if it has no other special information associated with it (i.e., it is fully repaired/charged, has no soul, and contains empty lua data).
---- @field soul? tes3creature|tes3npc *Optional*. For creating filled soul gems.
+--- @field soul? tes3creature|tes3npc|string *Optional*. For creating filled soul gems.
 --- @field count? number *Default*: `1`. The maximum number of items to add.
 --- @field playSound? boolean *Default*: `true`. If `false`, the up/down sound for the item won't be played. This only applies if `reference` is the player.
 --- @field showMessage? boolean *Default*: `false`. If `true`, a message box notifying the player will be shown. This only applies if `reference` is the player.
@@ -454,7 +454,7 @@ function tes3.calculateChargeUse(params) end
 --- 
 --- `merchant`: tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer — The merchant to use for calculating the price.
 --- 
---- `bartering?`: boolean — *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
+--- `bartering?`: boolean — *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcSpellPrice](https://mwse.github.io/MWSE/events/calcSpellPrice) event will be triggered.
 --- 
 --- `repairing?`: boolean — *Default*: `false`. If `true`, a [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
 --- 
@@ -475,7 +475,7 @@ function tes3.calculatePrice(params) end
 --- @field buying? boolean *Default*: `true`. If `true`, uses the logic for buying a service/item. This is exclusive with `selling`.
 --- @field selling? boolean *Default*: `false`. If `true`, uses the logic for selling an item. This is exclusive with `buying`.
 --- @field merchant tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer The merchant to use for calculating the price.
---- @field bartering? boolean *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
+--- @field bartering? boolean *Default*: `false`. If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcSpellPrice](https://mwse.github.io/MWSE/events/calcSpellPrice) event will be triggered.
 --- @field repairing? boolean *Default*: `false`. If `true`, a [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered.
 --- @field training? boolean *Default*: `false`. If `true`, a [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event will be triggered, passing the given `skill` ID.
 --- @field count? number *Default*: `1`. If `bartering`, the count passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) event.
@@ -689,6 +689,8 @@ function tes3.createObject(params) end
 --- `cell?`: tes3cell|string|table — *Optional*. The cell to create the reference in. This is only needed for interior cells.
 --- 
 --- `scale?`: number — *Default*: `1`. A scale for the reference.
+--- 
+--- `updateCollisionGroups?`: boolean — *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 --- @return tes3reference newReference No description yet available.
 function tes3.createReference(params) end
 
@@ -699,6 +701,7 @@ function tes3.createReference(params) end
 --- @field orientation tes3vector3|number[] The new orientation for the created reference.
 --- @field cell? tes3cell|string|table *Optional*. The cell to create the reference in. This is only needed for interior cells.
 --- @field scale? number *Default*: `1`. A scale for the reference.
+--- @field updateCollisionGroups? boolean *Default*: `true`. Only applies to activators, statics, containers, and lights that can't be carried. If false, collision will not be updated. Collision will need to be manually updated by calling `tes3.dataHandler:updateCollisionGroupsForActiveCells()`.
 
 --- Creates an arbitrary and automatically tracked visual effect. The visual effect can be an `object` (VFX objects can be found in the statics section of the constuction set), or a `magicEffectId`. You must specify one of a `reference`, `position`, or `avObject` to attach it to.
 --- 
@@ -988,6 +991,10 @@ function tes3.get3rdPersonCameraOffset() end
 --- Returns a table of active cells. If indoors, the table will have only one entry. If outdoors, the 9 surrounding cells will be provided.
 --- @return tes3cell[] cells No description yet available.
 function tes3.getActiveCells() end
+
+--- Gets all active magic effect instances.
+--- @return tes3magicSourceInstance[] magicSourceInstances No description yet available.
+function tes3.getAllMagicSourceInstances() end
 
 --- This function fetches a dictionary of the timings of the action keys for a specific animation group on an actor. The actor is required, as different actors can use different animations. The result is a table with action names as keys, and timings as values. The function will return nil if the actor does not have that animation group, or if the actor's animations are not active.
 --- @param params tes3.getAnimationActionTiming.params This table accepts the following values:
@@ -1636,7 +1643,12 @@ function tes3.is3rdPerson() end
 
 --- This function performs a check whether the provided reference is affected by a certain object or magic effect.
 --- 
---- Note `reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+--- !!! info
+--- 	`reference.object.spells:contains(spellID)` will give the same output as this function for abilities, diseases, and curses, because having them in your spell list also makes them affect you.
+--- 
+--- !!! tip
+--- 	Soul trap effect is only active on the actor during the frame of the actor's death, if the player has a valid soul gem.
+--- 
 --- @param params tes3.isAffectedBy.params This table accepts the following values:
 --- 
 --- `reference`: tes3reference|tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|string — No description yet available.
@@ -1764,7 +1776,7 @@ function tes3.loopTArray(tarray) end
 --- Returns a safe handle for the object. To get the object use `:getObject()`. To check if it still exists use `:valid()`.
 ---
 --- [Examples available in online documentation](https://mwse.github.io/MWSE/apis/tes3/#tes3makesafeobjecthandle).
---- @param object tes3reference An object to make a safe handle for.
+--- @param object tes3activator|tes3alchemy|tes3apparatus|tes3armor|tes3baseObject|tes3birthsign|tes3bodyPart|tes3book|tes3cell|tes3class|tes3clothing|tes3container|tes3containerInstance|tes3creature|tes3creatureInstance|tes3dialogue|tes3dialogueInfo|tes3door|tes3enchantment|tes3faction|tes3gameSetting|tes3globalVariable|tes3ingredient|tes3land|tes3landTexture|tes3leveledCreature|tes3leveledItem|tes3light|tes3lockpick|tes3magicSourceInstance|tes3misc|tes3npc|tes3npcInstance|tes3pathGrid|tes3probe|tes3quest|tes3race|tes3reference|tes3region|tes3repairTool|tes3script|tes3skill|tes3sound|tes3soundGenerator|tes3spell|tes3startScript|tes3static|tes3weapon An object to make a safe handle for.
 --- @return mwseSafeObjectHandle safeObjectHandle No description yet available.
 function tes3.makeSafeObjectHandle(object) end
 
@@ -2030,9 +2042,9 @@ function tes3.pushKey(keyCode) end
 function tes3.random(seed) end
 
 --- Performs a ray test and returns various information related to the result(s). The ray test works by effectively shooting out a line, starting at `position` and pointing towards `direction`, and then checking to see which objects intersect that line.
---- 	
+--- 
 --- Here is an overview of how some commonly used parameters will alter how `tes3.rayTest` checks for collisions:
---- 	
+--- 
 --- 1. `root`: Things that aren't a `child` of the specified `root` will be skipped. If `root` is not provided, then nothing will be skipped by this process.
 --- 2. `ignore`: Objects in this array will be skipped.
 --- 3. `maxDistance`: If specified, only objects within the specified distance will be checked.
@@ -2043,7 +2055,7 @@ function tes3.random(seed) end
 --- 	The following suggestions will help to minimize the performance impact of calls to `tes3.rayTest`.
 --- 
 --- 	1. Set a `maxDistance`.
---- 	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looing for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
+--- 	2. Filter objects by using the `root` parameter. This will make the algorithm **much** faster, and can make it behave more predictably as well. If you're only checking for interactable objects (containers/actors/plants/etc), use `worldPickRoot`. If you're looking for static, non-interable objects, use `worldObjectRoot`. You could even pass a smaller subset of the scene graph with a different `NiNode` you aquired yourself.
 --- 	3. Try to keep a cached copy of the array used for the `ignore` parameter (if possible).
 --- 	4. Keep maximum size of objects reasonable, and try to limit triangle counts.
 --- 
@@ -3994,6 +4006,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.calcBarterPrice`
 ---| `tes3.event.calcBlockChance`
 ---| `tes3.event.calcChargenStats`
+---| `tes3.event.calcEnchantingSpellPointCost`
 ---| `tes3.event.calcEnchantmentPrice`
 ---| `tes3.event.calcFlySpeed`
 ---| `tes3.event.calcHitChance`
@@ -4074,7 +4087,11 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.load`
 ---| `tes3.event.loaded`
 ---| `tes3.event.lockPick`
+---| `tes3.event.magicAbsorb`
 ---| `tes3.event.magicCasted`
+---| `tes3.event.magicEffectActivated`
+---| `tes3.event.magicEffectAdded`
+---| `tes3.event.magicEffectDeactivated`
 ---| `tes3.event.magicEffectRemoved`
 ---| `tes3.event.magicEffectsResolved`
 ---| `tes3.event.magicReflect`
@@ -4129,6 +4146,10 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.spellCastedFailure`
 ---| `tes3.event.spellCreated`
 ---| `tes3.event.spellMagickaUse`
+---| `tes3.event.spellProjectileHitActor`
+---| `tes3.event.spellProjectileHitObject`
+---| `tes3.event.spellProjectileHitTerrain`
+---| `tes3.event.spellProjectileHitWater`
 ---| `tes3.event.spellResist`
 ---| `tes3.event.spellResisted`
 ---| `tes3.event.spellTick`

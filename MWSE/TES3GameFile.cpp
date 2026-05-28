@@ -90,6 +90,21 @@ namespace TES3 {
 		return TES3_TES3File_loadByPath(this, path, filename, unknown1, unknown2);
 	}
 
+	const auto TES3_TES3File_readFirstChunk = reinterpret_cast<unsigned int(__thiscall*)(GameFile*)>(0x4B6750);
+	unsigned int GameFile::readFirstChunk() {
+		return TES3_TES3File_readFirstChunk(this);
+	}
+
+	const auto TES3_TES3File_readNextChunk = reinterpret_cast<unsigned int(__thiscall*)(GameFile*)>(0x4B67C0);
+	unsigned int GameFile::readNextChunk() {
+		return TES3_TES3File_readNextChunk(this);
+	}
+
+	const auto TES3_TES3File_nextForm = reinterpret_cast<bool(__thiscall*)(GameFile*, int)>(0x4B6380);
+	bool GameFile::nextForm(int flag) {
+		return TES3_TES3File_nextForm(this, flag);
+	}
+
 	bool GameFile::setFilePointer(unsigned int offset) {
 		return TES3_TES3File_setFilePointer(this, offset);
 	}
@@ -179,8 +194,13 @@ namespace TES3 {
 		return gmdt.playerName;
 	}
 
-	nonstd::span<GameFile*> GameFile::getMasters() {
-		return nonstd::span(arrayMasters, masterNames->size());
+	bool GameFile::getFlag20() const {
+		const auto TES3_TES3File_getFlag20 = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x4B6200);
+		return TES3_TES3File_getFlag20(this);
+	}
+
+	std::span<GameFile*> GameFile::getMasters() {
+		return std::span(arrayMasters, masterNames->size());
 	}
 
 }

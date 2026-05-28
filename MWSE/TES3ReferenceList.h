@@ -9,7 +9,8 @@ namespace TES3 {
 		Cell * cell;
 
 		ReferenceList() = delete;
-		~ReferenceList() = delete;
+		// Destructible for template interoperability; instances remain engine-owned.
+		~ReferenceList() = default;
 
 		//
 		// Other related this-call functions.

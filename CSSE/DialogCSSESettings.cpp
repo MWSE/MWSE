@@ -69,6 +69,10 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	groupRenderWindow->AddSubItem(new CDataBoundPropertyGridProperty("Use Group Scaling", &se::cs::settings.render_window.use_group_scaling, "If true, all selected objects will be scaled together, and move appropriately to keep consistent spacing. The CS by default scales items independently and keep them in-place."));
 	m_PropertyGrid.AddProperty(groupRenderWindow);
 
+	auto groupLandscapeWindow = new CMFCPropertyGridProperty("Landscape Window");
+	groupLandscapeWindow->AddSubItem(new CDataBoundPropertyGridProperty("Radius-Aware Texture Painting", &se::cs::settings.landscape_window.radius_aware_texture_painting_enabled, "If true, texture painting applies across the landscape edit radius. If false, texture painting uses the Construction Set's vanilla single-tile behavior."));
+	m_PropertyGrid.AddProperty(groupLandscapeWindow);
+
 	/*
 	auto groupScriptEditor = new CMFCPropertyGridProperty("Script Editor");
 	groupScriptEditor->AddSubItem(new CMFCPropertyGridFontProperty("Font", &se::cs::settings.script_editor.font_face, CF_SCREENFONTS, "The font to use."));

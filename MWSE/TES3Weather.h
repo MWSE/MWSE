@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 // Must be added to header files that declare Ni types that can be derived.
 #define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_WEATHER(T) \
@@ -29,25 +29,25 @@ namespace TES3 {
 		float transitionDelta; // 0x8
 		float glareView; // 0xC
 		WeatherController * controller; // 0x10
-		Vector3 ambientSunriseCol; // 0x14
-		Vector3 ambientDayCol; // 0x20
-		Vector3 ambientSunsetCol; // 0x2C
-		Vector3 ambientNightCol; // 0x38
-		Vector3 fogSunriseCol; // 0x44
-		Vector3 fogDayCol; // 0x50
-		Vector3 fogSunsetCol; // 0x5C
-		Vector3 fogNightCol; // 0x68
-		Vector3 skySunriseCol; // 0x74
-		Vector3 skyDayCol; // 0x80
-		Vector3 skySunsetCol; // 0x8C
-		Vector3 skyNightCol; // 0x98
-		Vector3 sunSunriseCol; // 0xA4
-		Vector3 sunDayCol; // 0xB0
-		Vector3 sunSunsetCol; // 0xBC
-		Vector3 sunNightCol; // 0xC8
-		Vector3 sundiscSunsetCol; // 0xD4
+		NI::Point3 ambientSunriseCol; // 0x14
+		NI::Point3 ambientDayCol; // 0x20
+		NI::Point3 ambientSunsetCol; // 0x2C
+		NI::Point3 ambientNightCol; // 0x38
+		NI::Point3 fogSunriseCol; // 0x44
+		NI::Point3 fogDayCol; // 0x50
+		NI::Point3 fogSunsetCol; // 0x5C
+		NI::Point3 fogNightCol; // 0x68
+		NI::Point3 skySunriseCol; // 0x74
+		NI::Point3 skyDayCol; // 0x80
+		NI::Point3 skySunsetCol; // 0x8C
+		NI::Point3 skyNightCol; // 0x98
+		NI::Point3 sunSunriseCol; // 0xA4
+		NI::Point3 sunDayCol; // 0xB0
+		NI::Point3 sunSunsetCol; // 0xBC
+		NI::Point3 sunNightCol; // 0xC8
+		NI::Point3 sundiscSunsetCol; // 0xD4
 		float unknown_0xE0;
-		Vector3 unknown_0xE4;
+		NI::Point3 unknown_0xE4;
 		float cloudsMaxPercent; // 0xF0
 		float landFogDayDepth; // 0xF4
 		float landFogNightDepth; // 0xF8

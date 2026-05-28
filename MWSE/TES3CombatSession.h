@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "TES3Deque.h"
+#include "Deque.h"
 
 namespace TES3 {
 	namespace CombatSessionNextAction {
@@ -41,7 +41,7 @@ namespace TES3 {
 		int nextAction; // 0x28
 		float spellPriority; // 0x2C
 		float alchemyPriority; // 0x30
-		Deque<Spell*> spells; // 0x34
+		se::Deque<Spell*> spells; // 0x34
 		float combatDelayTimer; // 0x40
 		float combatDelayNextHitTime; // 0x44
 		signed char potionUseFlag; // 0x48

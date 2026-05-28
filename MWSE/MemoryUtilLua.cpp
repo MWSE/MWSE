@@ -74,7 +74,7 @@ namespace mwse::lua {
 			}
 		}
 
-		FunctionDefinition& definition = definitionItt->second;
+		const auto& definition = definitionItt->second;
 
 		if (definition.thisCall) {
 			luaFunctionArguments.push_back(definition.thisCallConverter(ecx));
@@ -104,7 +104,7 @@ namespace mwse::lua {
 			}
 		}
 
-		return &definition;
+		return &definitionItt->second;
 	}
 
 	// Actual dispatching function
@@ -248,7 +248,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'address' parameter provided.");
 		}
 
-		return mwse::getCallAddress(address.value());
+		return se::memory::getCallAddress(address.value());
 	}
 
 	sol::object readValue(sol::table params, sol::this_state ts) {
@@ -283,7 +283,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'byte' parameter provided.");
 		}
 
-		writeByteUnprotected(address.value(), byte.value());
+		se::memory::writeByteUnprotected(address.value(), byte.value());
 		return true;
 	}
 
@@ -310,7 +310,7 @@ namespace mwse::lua {
 			}
 		}
 
-		writeBytesUnprotected(address.value(), data, byteCount);
+		se::memory::writeBytesUnprotected(address.value(), data, byteCount);
 
 		delete[] data;
 
@@ -332,16 +332,16 @@ namespace mwse::lua {
 		sol::object newCall = params["call"];
 		if (newCall.is<DWORD>()) {
 			if (previousCall) {
-				return genCallEnforced(address.value(), previousCall.value(), newCall.as<DWORD>(), length);
+				return se::memory::genCallEnforced(address.value(), previousCall.value(), newCall.as<DWORD>(), length);
 			}
 			else {
-				genCallUnprotected(address.value(), newCall.as<DWORD>(), length);
+				se::memory::genCallUnprotected(address.value(), newCall.as<DWORD>(), length);
 				return true;
 			}
 		}
 		else if (newCall.is<sol::protected_function>()) {
 			// Backup what we used to call to.
-			auto definitionAddress = mwse::getCallAddress(address.value());
+			auto definitionAddress = se::memory::getCallAddress(address.value());
 			if (definitionAddress != NULL) {
 				existingFunctionCalls[address.value()] = definitionAddress;
 			}
@@ -413,11 +413,11 @@ namespace mwse::lua {
 					throw std::invalid_argument("No overload could be mapped for the given argument count.");
 				}
 
-				genCallUnprotected(address.value(), overwritingFunction, length);
+				se::memory::genCallUnprotected(address.value(), overwritingFunction, length);
 			}
 			else {
 				functionDefinitions[address.value()] = {};
-				genCallUnprotected(address.value(), reinterpret_cast<DWORD>(callGenericLuaFunction_fastcall_0arg), length);
+				se::memory::genCallUnprotected(address.value(), reinterpret_cast<DWORD>(callGenericLuaFunction_fastcall_0arg), length);
 			}
 
 			// Make sure we can look back up our lua function from this address.
@@ -437,7 +437,7 @@ namespace mwse::lua {
 
 		sol::optional<DWORD> length = params["length"];
 
-		return genNOPUnprotected(address.value(), length.value_or(1U));
+		return se::memory::genNOPUnprotected(address.value(), length.value_or(1U));
 	}
 
 	template <typename T>
@@ -585,7 +585,7 @@ namespace mwse::lua {
 		// Special lower level usertype binding.
 		//
 
-		// TES3::IteratedList<TES3::EquipmentStack*>
+		// NI::IteratedList<TES3::EquipmentStack*>
 		{
 			auto usertypeDefinition = state.new_usertype<LegacyIteratedList<TES3::EquipmentStack*>>("tes3equipmentStackIterator");
 			usertypeDefinition["current"] = &LegacyIteratedList<TES3::EquipmentStack*>::current;
@@ -594,7 +594,7 @@ namespace mwse::lua {
 			usertypeDefinition["tail"] = &LegacyIteratedList<TES3::EquipmentStack*>::tail;
 		}
 
-		// TES3::IteratedList<TES3::EquipmentStack*>::Node
+		// NI::IteratedList<TES3::EquipmentStack*>::Node
 		{
 			auto usertypeDefinition = state.new_usertype<LegacyIteratedList<TES3::EquipmentStack*>::Node>("tes3equipmentStackIteratorNode");
 			usertypeDefinition["nodeData"] = &LegacyIteratedList<TES3::EquipmentStack*>::Node::data;

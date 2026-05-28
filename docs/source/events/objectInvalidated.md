@@ -20,5 +20,5 @@ event.register(tes3.event.objectInvalidated, objectInvalidatedCallback)
 
 ## Event Data
 
-* `object` ([tes3baseObject](../types/tes3baseObject.md)): *Read-only*. The object being invalidated. Can be a tes3reference.
+* `object` ([tes3baseObject](../types/tes3baseObject.md), [tes3mobileObject](../types/tes3mobileObject.md), [tes3uiElement](../types/tes3uiElement.md), [niObject](../types/niObject.md)): *Read-only*. The object being invalidated. This is a stale pointer late in its deconstruction, and should not be used to do any logic or rely on any internal information.
 

@@ -50,29 +50,29 @@ struct TES3MACHINE : public VIRTUALMACHINE {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		return mwse::tes3::malloc(size);
+		return se::memory::malloc(size);
 	}
 	void Free(void* to_free) {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		mwse::tes3::free(to_free);
+		se::memory::free(to_free);
 	}
 	void* Realloc(void* to_realloc, size_t size) {
 		if constexpr (DEBUG_MGE_VM) {
 			mwse::log::getLog() << __FUNCTION__ << std::endl;
 		}
-		return mwse::tes3::realloc(to_realloc, size);
+		return se::memory::realloc(to_realloc, size);
 	}
 	void CheckForSkillUp(long skill_id);
 	TES3::MobilePlayer* GetMacpRecord();
 	long GetRandomLong(long min, long max);
 	float GetRandomFloat(float min, float max);
-	long CreateArray(std::string const& caller);
-	long GetArrayValue(std::string const& caller, long const id, long const index);
-	long SetArrayValue(std::string const& caller, long const id, long const index, long const value);
-	long GetArraySize(std::string const& caller, long const id);
-	long ClearArray(std::string const& caller, long const id);
+	long CreateArray(std::string_view caller);
+	long GetArrayValue(std::string_view caller, long const id, long const index);
+	long SetArrayValue(std::string_view caller, long const id, long const index, long const value);
+	long GetArraySize(std::string_view caller, long const id);
+	long ClearArray(std::string_view caller, long const id);
 	std::vector<std::vector<long> >& arrays();
 
 private:

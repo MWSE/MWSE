@@ -183,7 +183,7 @@ float TES3MACHINE::GetRandomFloat(float min, float max) {
 	return dist(rng_);
 }
 
-long TES3MACHINE::CreateArray(std::string const& caller) {
+long TES3MACHINE::CreateArray(std::string_view caller) {
 	if constexpr (DEBUG_MGE_VM) {
 		mwse::log::getLog() << __FUNCTION__ << std::endl;
 	}
@@ -202,15 +202,15 @@ long TES3MACHINE::CreateArray(std::string const& caller) {
 	return id;
 }
 
-long TES3MACHINE::GetArrayValue(std::string const& caller, long const id, long const index) {
+long TES3MACHINE::GetArrayValue(std::string_view caller, long const id, long const index) {
 	if constexpr (DEBUG_MGE_VM) {
 		mwse::log::getLog() << __FUNCTION__ << std::endl;
 	}
 
 	long value = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		std::vector<long> const& a = arrays_[id - 1];
-		if (index >= 0 && index < a.size()) {
+		if (index >= 0 && (unsigned long)index < a.size()) {
 			value = a[index];
 		}
 		else {
@@ -228,16 +228,16 @@ long TES3MACHINE::GetArrayValue(std::string const& caller, long const id, long c
 	return value;
 }
 
-long TES3MACHINE::SetArrayValue(std::string const& caller, long const id, long const index, long const value) {
+long TES3MACHINE::SetArrayValue(std::string_view caller, long const id, long const index, long const value) {
 	if constexpr (DEBUG_MGE_VM) {
 		mwse::log::getLog() << __FUNCTION__ << std::endl;
 	}
 
 	long success = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		if (index >= 0) {
 			std::vector<long>& a = arrays_[id - 1];
-			if (index + 1 > a.size()) {
+			if ((unsigned long)index + 1 > a.size()) {
 				a.resize(index + 1);
 			}
 			a[index] = value;
@@ -258,13 +258,13 @@ long TES3MACHINE::SetArrayValue(std::string const& caller, long const id, long c
 	return success;
 }
 
-long TES3MACHINE::GetArraySize(std::string const& caller, long const id) {
+long TES3MACHINE::GetArraySize(std::string_view caller, long const id) {
 	if constexpr (DEBUG_MGE_VM) {
 		mwse::log::getLog() << __FUNCTION__ << std::endl;
 	}
 
 	long size = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		size = arrays_[id - 1].size();
 	}
 	else {
@@ -276,13 +276,13 @@ long TES3MACHINE::GetArraySize(std::string const& caller, long const id) {
 	return size;
 }
 
-long TES3MACHINE::ClearArray(std::string const& caller, long const id) {
+long TES3MACHINE::ClearArray(std::string_view caller, long const id) {
 	if constexpr (DEBUG_MGE_VM) {
 		mwse::log::getLog() << __FUNCTION__ << std::endl;
 	}
 
 	long success = 0;
-	if (id > 0 && id <= arrays_.size()) {
+	if (id > 0 && (unsigned long)id <= arrays_.size()) {
 		arrays_[id - 1].clear();
 		success = 1;
 	}

@@ -16,10 +16,11 @@
 #include "CSScript.h"
 
 #include "NICamera.h"
-#include "NIVector3.h"
+#include "NIPoint3.h"
 
 #include "DialogRenderWindow.h"
 #include "DialogObjectWindow.h"
+#include "DialogLayersWindow.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowWidgets.h"
@@ -29,6 +30,7 @@
 
 #include "MathUtil.h"
 #include "PathUtil.h"
+#include "StringUtil.h"
 
 #include "CSSE.h"
 #include "resource.h"
@@ -36,6 +38,9 @@
 #include "DialogProcContext.h"
 
 namespace se::cs::window::main {
+
+	constexpr auto LOG_STARTUP_PERFORMANCE_RESULTS = false;
+	const auto initializationTimer = std::chrono::high_resolution_clock::now();
 
 	struct ObjectEditLParam {
 		ObjectType::ObjectType objectType; // 0x0
@@ -402,21 +407,55 @@ namespace se::cs::window::main {
 	// Patch: Throttle UI status updates.
 	//
 
-	static auto last2ndClassUpdateTime = std::chrono::milliseconds::zero();
-	const auto TES3CS_UpdateStatusMessage = reinterpret_cast<void(__cdecl*)(WPARAM, LPARAM)>(0x46E680);
-	void __cdecl PatchThrottleMessageUpdate(WPARAM type, LPARAM lParam) {
-		if (type == 2) {
-			const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch());
-			const auto msSinceLastUpdate = now - last2ndClassUpdateTime;
-			if (msSinceLastUpdate.count() < 20) {
-				return;
+	constexpr auto STATUS_WINDOW_CELL_COUNT = 5u;
+	static std::array<std::string, STATUS_WINDOW_CELL_COUNT> cachedStatusWindowText;
+	static std::optional<std::string> bufferedIndex2Text;
+
+	static LRESULT CALLBACK PatchStatusWindowSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
+		switch (msg) {
+		case SB_SETTEXTA: {
+			const auto index = static_cast<size_t>(LOBYTE(LOWORD(wParam)));
+			const auto text = reinterpret_cast<const char*>(lParam);
+
+			if (index >= STATUS_WINDOW_CELL_COUNT) {
+				return 0;
 			}
-			last2ndClassUpdateTime = now;
+
+			if (index != 2 && bufferedIndex2Text.has_value()) {
+				DefSubclassProc(hWnd, msg, MAKEWPARAM(2, 0), (LPARAM)bufferedIndex2Text.value().c_str());
+				bufferedIndex2Text.reset();
+			}
+
+			auto& previousText = cachedStatusWindowText[index];
+			const std::string_view currentText = text ? text : "";
+			if (se::string::equal(previousText, currentText)) {
+				return 0;
+			}
+			previousText = currentText;
+
+			if (index == 2) {
+				bufferedIndex2Text = text;
+				return 0;
+			}
 		}
-		else {
-			last2ndClassUpdateTime = std::chrono::milliseconds::zero();
 		}
-		TES3CS_UpdateStatusMessage(type, lParam);
+
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	using CS_StatusBar = memory::ExternalGlobal<HWND, 0x6CE974>;
+
+	const auto TES3CS_CreateStatusBar = reinterpret_cast<void(__cdecl*)(HWND)>(0x46E630);
+	static void __cdecl PatchCreateStatusBar(HWND hParent) {
+		TES3CS_CreateStatusBar(hParent);
+		const auto statusBar = CS_StatusBar::get();
+
+		// Subclass the window to optimize displays.
+		SetWindowSubclass(statusBar, PatchStatusWindowSubclassProc, NULL, 0);
+
+		// Make better use of horizontal space.
+		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
+		SendMessage(statusBar, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
 	}
 
 	//
@@ -440,7 +479,7 @@ namespace se::cs::window::main {
 		if (settings.quickstart.load_cell) {
 			// Load position from settings. We need to shift down by 16,384 units because of the weird offset in the function.
 			const auto& qsPos = settings.quickstart.position;
-			NI::Vector3 position(qsPos[0], qsPos[1], qsPos[2]);
+			NI::Point3 position(qsPos[0], qsPos[1], qsPos[2]);
 			position.z -= 16384.0f;
 
 			// Setup a specific interior cell if needed.
@@ -451,12 +490,12 @@ namespace se::cs::window::main {
 					return result;
 				}
 
-				const auto setToLoadCell = reinterpret_cast<bool(__thiscall*)(DataHandler*, Cell*, NI::Vector3*)>(0x4A1370);
+				const auto setToLoadCell = reinterpret_cast<bool(__thiscall*)(DataHandler*, Cell*, NI::Point3*)>(0x4A1370);
 				setToLoadCell(dataHandler, cell, &position);
 			}
 
 			// Actually do our load.
-			const auto loadCell = reinterpret_cast<bool(__cdecl*)(NI::Vector3*, Reference*)>(0x469B40);
+			const auto loadCell = reinterpret_cast<bool(__cdecl*)(NI::Point3*, Reference*)>(0x469B40);
 			loadCell(&position, nullptr);
 
 			// Setup camera.
@@ -465,6 +504,12 @@ namespace se::cs::window::main {
 			rotationMatrix.fromEulerXYZ(qsRot[0], qsRot[1], qsRot[2]);
 			renderController->node->setLocalRotationMatrix(&rotationMatrix);
 			renderController->node->update();
+
+			// Finish measure of initialization time.
+			if constexpr (LOG_STARTUP_PERFORMANCE_RESULTS) {
+				const auto timeToInitialize = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - initializationTimer);
+				log::stream << "Total main window startup time: " << timeToInitialize.count() << "ms" << std::endl;
+			}
 		}
 
 		isQuickStarting = false;
@@ -588,6 +633,9 @@ namespace se::cs::window::main {
 		case MENU_ID_CSSE_ABOUT:
 			showAboutDialog(hWnd);
 			break;
+		case MENU_ID_VIEW_LAYERS_WINDOW:
+			dialog::layer_window::toggleLayersWindow(IsIconic(dialog::layer_window::hLayersWnd));
+			break;
 		}
 	}
 
@@ -602,7 +650,7 @@ namespace se::cs::window::main {
 	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInMorrowind_SelectSave(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
-		TCHAR szFile[260] = {};
+		TCHAR szFile[MAX_PATH] = {};
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hWnd;
 		ofn.lpstrFile = szFile;
@@ -705,7 +753,7 @@ namespace se::cs::window::main {
 	void PatchDialogProc_BeforeNotify_TooltipRightClick_TestInOpenMW_SelectSave(DialogProcContext& context) {
 		const auto hWnd = context.getWindowHandle();
 		OPENFILENAME ofn = {};
-		TCHAR szFile[260] = {};
+		TCHAR szFile[MAX_PATH] = {};
 		ofn.lStructSize = sizeof(ofn);
 		ofn.hwndOwner = hWnd;
 		ofn.lpstrFile = szFile;
@@ -916,6 +964,12 @@ namespace se::cs::window::main {
 		newExtenderMenu.hSubMenu = createExtenderMenu();
 		newExtenderMenu.dwTypeData = (char*)"C&SSE";
 		InsertMenuItemA(menu, 6, TRUE, &newExtenderMenu);
+
+		// Add Layers Window to the View menu.
+		auto viewMenu = GetSubMenu(menu, 2);
+		if (viewMenu) {
+			InsertMenuA(viewMenu, 3, MF_BYPOSITION | MF_STRING, MENU_ID_VIEW_LAYERS_WINDOW, "&Layers Window");
+		}
 	}
 
 	void PatchDialogProc_AfterCreate_DoBaseToolbarExtensions(DialogProcContext& context) {
@@ -981,6 +1035,11 @@ namespace se::cs::window::main {
 			PatchDialogProc_AfterCommand_TestInOpenMW(context);
 			break;
 		}
+
+		if (dialog::layer_window::hLayersWnd) {
+			auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+			dialog::layer_window::forceToggleLayersWindow(viewMenu);
+		}
 	}
 
 	void PatchDialogProc_AfterSave(DialogProcContext& context) {
@@ -997,16 +1056,9 @@ namespace se::cs::window::main {
 		}
 	}
 
-	void PatchDialogProc_AfterInitialize(DialogProcContext& context) {
-		const auto hWnd = context.getWindowHandle();
-		auto statusWindow = FindWindowEx(hWnd, NULL, "msctls_statusbar32", NULL);
-
-		if (!statusWindow) {
-			return;
-		}
-
-		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
-		SendMessage(statusWindow, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
+	void PatchDialogProc_BeforeInitMenuPopup(DialogProcContext& context) {
+		auto viewMenu = GetSubMenu(GetMenu(context.getWindowHandle()), 2);
+		dialog::layer_window::refreshLayersMenuItem(viewMenu);
 	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -1014,6 +1066,9 @@ namespace se::cs::window::main {
 
 		// Handle pre-patches.
 		switch (msg) {
+		case WM_INITMENUPOPUP:
+			PatchDialogProc_BeforeInitMenuPopup(context);
+			break;
 		case WM_COMMAND:
 			PatchDialogProc_BeforeCommand(context);
 			break;
@@ -1046,9 +1101,6 @@ namespace se::cs::window::main {
 		case WM_SAVE:
 			PatchDialogProc_AfterSave(context);
 			break;
-		case WM_FINISH_INITIALIZATION:
-			PatchDialogProc_AfterInitialize(context);
-			break;
 		}
 
 		return context.getResult();
@@ -1059,8 +1111,13 @@ namespace se::cs::window::main {
 		using memory::genCallEnforced;
 		using memory::genCallUnprotected;
 
+		// If we're profiling, suppress message windows.
+		if (LOG_STARTUP_PERFORMANCE_RESULTS) {
+			memory::ExternalGlobal<bool, 0x6D0B6D>::set(true);
+		}
+
 		// Patch: Throttle UI status updates.
-		genJumpEnforced(0x404881, 0x46E680, reinterpret_cast<DWORD>(PatchThrottleMessageUpdate));
+		genJumpEnforced(0x401848, 0x46E630, reinterpret_cast<DWORD>(PatchCreateStatusBar));
 
 		// Patch: Enable QuickStart cell loading.
 		genCallEnforced(0x447B78, 0x4033FF, reinterpret_cast<DWORD>(PatchEnableQuickStartCellLoading));

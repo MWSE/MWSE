@@ -1,7 +1,7 @@
 #include "NIGeometry.h"
 
 namespace NI {
-	GeometryData* Geometry::getModelData() const {
+	Pointer<GeometryData> Geometry::getModelData() const {
 		return modelData;
 	}
 
@@ -13,7 +13,7 @@ namespace NI {
 		updateDeforms(worldVertices, worldNormals);
 	}
 
-	void Geometry::updateDeforms(Vector3* out_vertices, Vector3* out_normals) {
+	void Geometry::updateDeforms(Point3* out_vertices, Point3* out_normals) {
 		if (skinInstance == nullptr) {
 			return;
 		}
@@ -26,13 +26,17 @@ namespace NI {
 		TransformVertices(out_vertices, modelData->getActiveVertexCount(), &worldTransform);
 	}
 
-	void __cdecl TransformVertices(Vector3* vertices, unsigned short vertexCount, const Transform* transform) {
+	void __cdecl TransformVertices(Point3* vertices, unsigned short vertexCount, const Transform* transform) {
 		TransformVertices(vertices, vertexCount, vertices, transform);
 	}
 
-	void __cdecl TransformVertices(Vector3* out_vertices, unsigned short vertexCount, const Vector3* in_vertices, const Transform* transform) {
+	void __cdecl TransformVertices(Point3* out_vertices, unsigned short vertexCount, const Point3* in_vertices, const Transform* transform) {
 		for (auto i = 0u; i < vertexCount; ++i) {
 			out_vertices[i] = (transform->rotation * transform->scale * in_vertices[i]) + transform->translation;
 		}
 	}
 }
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+MWSE_SOL_CUSTOMIZED_PUSHER_DEFINE_NI(NI::Geometry)
+#endif

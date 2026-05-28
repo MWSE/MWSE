@@ -73,7 +73,7 @@ namespace se::cs {
 		StlList<Cell*>* cells; // 0xAFB8
 		int unknown_0xAFBC;
 		int unknown_0xAFC0;
-		char unknown_0xAFC4[260];
+		char unknown_0xAFC4[MAX_PATH];
 		BYTE unknown_0xB0C8;
 		BYTE unknown_0xB0C9;
 		BYTE unknown_0xB0CA;
@@ -96,6 +96,7 @@ namespace se::cs {
 		size_t getCellCount() const;
 		Cell* getCellByIndex(size_t index) const;
 		Cell* getCellByID(const char* id) const;
+		Cell* getCellByGridPosition(int x, int y) const;
 
 		Reference* getReference(const PhysicalObject* object) const;
 

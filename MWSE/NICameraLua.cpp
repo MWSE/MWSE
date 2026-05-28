@@ -4,6 +4,7 @@
 #include "LuaManager.h"
 
 #include "NICamera.h"
+#include "NIPoint2.h"
 
 namespace mwse::lua {
 	void bindNICamera() {
@@ -22,7 +23,7 @@ namespace mwse::lua {
 		// Basic property binding.
 		usertypeDefinition["lodAdjust"] = &NI::Camera::LODAdjust;
 		usertypeDefinition["port"] = &NI::Camera::port;
-		usertypeDefinition["renderer"] = sol::readonly_property(&NI::Camera::renderer);
+		usertypeDefinition["renderer"] = &NI::Camera::renderer;
 		usertypeDefinition["scene"] = &NI::Camera::scene;
 		usertypeDefinition["viewDistance"] = &NI::Camera::viewDistance;
 		usertypeDefinition["worldDirection"] = &NI::Camera::worldDirection;

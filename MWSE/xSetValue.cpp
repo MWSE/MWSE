@@ -76,7 +76,7 @@ namespace mwse {
 			break;
 		case TES3::ObjectType::Clothing:
 			// Clothing has the same offset as armor, but it's a short rather than a long.
-			reinterpret_cast<TES3::Clothing*>(record)->value = value;
+			reinterpret_cast<TES3::Clothing*>(record)->value = static_cast<unsigned short>(value);
 			setValue = true;
 			break;
 		case TES3::ObjectType::Apparatus:

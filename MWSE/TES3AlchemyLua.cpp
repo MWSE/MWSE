@@ -50,8 +50,8 @@ namespace mwse::lua {
 
 		// Get other simple values.
 		alchemy->objectFlags = getOptionalParam<unsigned int>(params, "objectFlags", alchemy->objectFlags);
-		alchemy->weight = getOptionalParam<double>(params, "weight", alchemy->weight);
-		alchemy->value = getOptionalParam<double>(params, "value", alchemy->value);
+		alchemy->weight = getOptionalParam<float>(params, "weight", alchemy->weight);
+		alchemy->value = getOptionalParam<unsigned short>(params, "value", alchemy->value);
 		alchemy->flags = getOptionalParam<unsigned short>(params, "flags", alchemy->flags);
 
 		// Flag the object as modified.

@@ -247,7 +247,7 @@ print(self.formatter(self, logRecord, ...))
 The `formatter` is responsible for piecing together all of its arguments to generate a coherent (and helpful) logging message. It receives the following parameters:
 
 - `self`: The `mwseLogger` that issued the logging statement.
-- `logRecord`: A [`mwseLogger.Record`](../types/mwseLogger.Record.md) created by the logging statement. This is basically just a table that, among other things, stores:
+- `logRecord`: A [`mwseLogger.Record`](../types/mwseLoggerRecord.md) created by the logging statement. This is basically just a table that, among other things, stores:
 	- The line number that the log message originated from. This is only available if the relevant MWSE setting is enabled.
 	- The `mwseLogger.logLevel` of the log statement. (e.g., this will be `logLevel.debug` if the log statement was created by the `Logger:debug` method.)
 	- A timestamp that marks when the logging call was issued. This is only available if the logger in question had `log.includeTimestamp == true`.

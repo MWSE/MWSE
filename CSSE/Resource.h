@@ -11,12 +11,13 @@
 #define IDC_BUILD_INFO_STATIC           1003
 #define IDC_SETTINGS_GRID               1004
 #define IDB_MAIN_TOOLBAR                1007
+#define IDB_TOOLBAR_STRIP               1008
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        1008
+#define _APS_NEXT_RESOURCE_VALUE        1009
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           1000

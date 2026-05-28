@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "TES3Vectors.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	enum class AudioMixType {
@@ -65,8 +65,8 @@ namespace TES3 {
 		IDirectSound3DListener * primary3DListener; // 0x14
 		unsigned char soundQuality3D; // 0x18
 		DSCAPS capabilities; // 0x1C
-		char nextMusicFilePath[260]; // 0x7C
-		char currentMusicFilePath[260]; // 0x180
+		char nextMusicFilePath[MAX_PATH]; // 0x7C
+		char currentMusicFilePath[MAX_PATH]; // 0x180
 		int timestampBeginFade; // 0x284
 		int timestampNextTrackStart; // 0x288
 		float volumeNextTrack; // 0x28C
@@ -79,9 +79,9 @@ namespace TES3 {
 		IGraphBuilder * musicGraph; // 0x2A0
 		IBasicAudio * musicAudio; // 0x2A4
 		bool disableAudio; // 0x2A8
-		Vector3 listenerPosition; // 0x2AC
-		Vector3 unknown_0x2B8; // Orientation.
-		Vector3 unknown_0x2C4; // Orientation.
+		NI::Point3 listenerPosition; // 0x2AC
+		NI::Point3 unknown_0x2B8; // Orientation.
+		NI::Point3 unknown_0x2C4; // Orientation.
 		float yawAxis; // 0x2D0 // In radians.
 		float pitchAxisApproximated; // 0x2D4 // In radians.
 
@@ -96,9 +96,15 @@ namespace TES3 {
 		void pauseMusic();
 		void unpauseMusic();
 
+		SoundBuffer* loadSoundFile(const char* filename, bool isPointSource);
+		void playSoundBuffer(SoundBuffer* soundBuffer, int flags);
+		int setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance);
+
 		//
 		// Custom functions.
 		//
+
+		void stopSoundBuffer(const SoundBuffer* buffer) const;
 
 		bool getAudioFlag(AudioFlag::Flag flag) const;
 		void setAudioFlag(AudioFlag::Flag flag, bool set);
@@ -125,6 +131,7 @@ namespace TES3 {
 		void setNextMusicFilePath(const char* path);
 
 		float getMixVolume(AudioMixType mixType) const;
+		unsigned char getMixVolumeRaw(AudioMixType mixType) const;
 
 		float getMusicVolume() const;
 
@@ -132,7 +139,7 @@ namespace TES3 {
 		double getMusicPosition() const;
 		void setMusicPosition(double position);
 
-		double getMusicFileDuration(std::string_view& path);
+		double getMusicFileDuration(std::string_view path);
 
 		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
 

@@ -16,9 +16,9 @@ namespace mwse {
 	xDegRad::xDegRad() : mwse::InstructionInterface_t(OpCode::xDegRad) {}
 
 	float xDegRad::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float param = mwse::Stack::getInstance().popFloat();
-
-		mwse::Stack::getInstance().pushFloat(param * math::M_PI / 180.0);
+		const auto degrees = mwse::Stack::getInstance().popFloat();
+		const auto radians = se::math::degreesToRadians(degrees);
+		mwse::Stack::getInstance().pushFloat(radians);
 		return 0.0f;
 	}
 }

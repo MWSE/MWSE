@@ -210,6 +210,17 @@ Raw access to the numerical representation of flags. Typically shouldn't be used
 
 ***
 
+### `hasActorLighting`
+<div class="search_terms" style="display: none">hasactorlighting, actorlighting</div>
+
+If true, the spell will count as a light spell. This can matter when calculating lights on mobiles.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `hasContinuousVFX`
 <div class="search_terms" style="display: none">hascontinuousvfx, continuousvfx</div>
 

@@ -151,6 +151,7 @@ namespace TES3 {
 		sol::optional<bool> isQuestRestart() const;
 
 		Dialogue* findDialogue() const;
+		void removeFromLoadIDCache();
 
 		std::string toJson();
 

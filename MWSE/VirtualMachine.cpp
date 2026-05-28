@@ -77,7 +77,7 @@ void VirtualMachine::setHookContext(HookContext context)
 	this->context = context;
 }
 
-HookContext VirtualMachine::getHookContext()
+se::memory::HookContext VirtualMachine::getHookContext()
 {
 	return this->context;
 }
@@ -104,14 +104,7 @@ TES3::Reference* VirtualMachine::getReference()
 
 TES3::Reference* VirtualMachine::getReference(const char* id)
 {
-	bool isplayer = !_stricmp(id, "player") || !_stricmp(id, "playersavegame");
-	if (isplayer) {
-		return TES3::WorldController::get()->getMobilePlayer()->reference;
-	}
-	else
-	{
-		return TES3::DataHandler::get()->nonDynamicData->findFirstCloneOfActor(id);
-	}
+	return tes3::getReference(id);
 }
 
 void VirtualMachine::setReference(TES3::Reference* reference)
@@ -178,7 +171,7 @@ long VirtualMachine::getLongVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setLongVariable(int index, long value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->header.longCount) {
+	if ((size_t)index >= script->header.longCount) {
 		return;
 	}
 	localVariables->longVarValues[index] = value;
@@ -208,7 +201,7 @@ void VirtualMachine::setLongVariable(int index, long value, TES3::Reference& ref
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->header.longCount) {
+	if ((size_t)index >= script->header.longCount) {
 		return;
 	}
 	localVariables->longVarValues[index] = value;
@@ -245,7 +238,7 @@ short VirtualMachine::getShortVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setShortVariable(int index, short value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->header.shortCount) {
+	if ((size_t)index >= script->header.shortCount) {
 		return;
 	}
 	localVariables->shortVarValues[index] = value;
@@ -275,7 +268,7 @@ void VirtualMachine::setShortVariable(int index, short value, TES3::Reference& r
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->header.shortCount) {
+	if ((size_t)index >= script->header.shortCount) {
 		return;
 	}
 	localVariables->shortVarValues[index] = value;
@@ -312,7 +305,7 @@ float VirtualMachine::getFloatVariable(int index, TES3::Reference& reference)
 void VirtualMachine::setFloatVariable(int index, float value)
 {
 	auto localVariables = *(reinterpret_cast<TES3::ScriptVariables**>(TES3_LOCALVARIABLES_IMAGE));
-	if (index >= script->header.floatCount) {
+	if ((size_t)index >= script->header.floatCount) {
 		return;
 	}
 	localVariables->floatVarValues[index] = value;
@@ -342,7 +335,7 @@ void VirtualMachine::setFloatVariable(int index, float value, TES3::Reference& r
 
 	TES3::Script* script = attachment->script;
 	TES3::ScriptVariables* localVariables = attachment->scriptData;
-	if (index >= script->header.floatCount) {
+	if ((size_t)index >= script->header.floatCount) {
 		return;
 	}
 	localVariables->floatVarValues[index] = value;
@@ -382,7 +375,7 @@ void VirtualMachine::setLongGlobal(const char* id, long value)
 		return;
 	}
 
-	globalVar->value = value;
+	globalVar->value = static_cast<float>(value);
 }
 
 short VirtualMachine::getShortGlobal(const char* id)
@@ -532,7 +525,7 @@ mwseString& VirtualMachine::getString(long fromStack)	//ask grant, need a '*' or
 	// Invalid ID. Return an empty string.
 	if (fromStack == 0x0)
 	{
-		return mwse::string::store::create("");
+		return se::string::store::create("");
 	}
 
 	// Small enough to fit in the script as a literal string. Parse it from the script
@@ -550,26 +543,26 @@ mwseString& VirtualMachine::getString(long fromStack)	//ask grant, need a '*' or
 
 		char* string = reinterpret_cast<char*>(scriptstream);
 
-		return mwse::string::store::getOrCreate(string, strlen);
+		return se::string::store::getOrCreate(string, strlen);
 	}
 
 	// If it's not in the script, it might be in storage.
-	else if (mwse::string::store::exists(fromStack))
+	else if (se::string::store::exists(fromStack))
 	{
-		return mwse::string::store::get(fromStack);
+		return se::string::store::get(fromStack);
 	}
 
 	// If it's not in storage, but is probably not a char*, return an empty string and log a message.
 	else if (fromStack < 0x3F0000) {
 		mwse::log::getLog() << "ERROR: Script '" << script->getObjectID() << "' in game file '" << (script->sourceMod != nullptr ? script->sourceMod->filename : "{N/A}") << "' contained garbage string reference! String references cannot be stored across saves." << std::endl;
-		return mwse::string::store::create("");
+		return se::string::store::create("");
 	}
 
 	// Otherwise, assume it's a char*, though we should never hit this case.
 	else
 	{
 		const char* string = reinterpret_cast<char*>(fromStack);
-		return mwse::string::store::getOrCreate(string);
+		return se::string::store::getOrCreate(string);
 	}
 }
 
@@ -583,17 +576,17 @@ void VirtualMachine::dumpScriptVariables()
 	mwse::log::getLog() << __FUNCTION__ << " - Variable dump for '" << script->header.name << "'" << std::endl;
 
 	mwse::log::getLog() << "  Longs (" << script->header.longCount << "):" << std::endl;
-	for (int i = 0; i < script->header.longCount; ++i) {
+	for (auto i = 0u; i < script->header.longCount; ++i) {
 		mwse::log::getLog() << "    " << script->longVarNamePointers[i] << " = " << std::dec << script->varValues.longVarValues[i] << std::endl;
 	}
 
 	mwse::log::getLog() << "  Floats (" << script->header.floatCount << "):" << std::endl;
-	for (int i = 0; i < script->header.floatCount; ++i) {
+	for (auto i = 0u; i < script->header.floatCount; ++i) {
 		mwse::log::getLog() << "    " << script->floatVarNamePointers[i] << " = " << std::dec << script->varValues.floatVarValues[i] << std::endl;
 	}
 
 	mwse::log::getLog() << "  Shorts (" << script->header.shortCount << "):" << std::endl;
-	for (int i = 0; i < script->header.shortCount; ++i) {
+	for (auto i = 0u; i < script->header.shortCount; ++i) {
 		mwse::log::getLog() << "    " << script->shortVarNamePointers[i] << " = " << std::dec << script->varValues.shortVarValues[i] << std::endl;
 	}
 }

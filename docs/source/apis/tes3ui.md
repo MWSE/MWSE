@@ -197,7 +197,7 @@ local result = tes3ui.createTooltipMenu({ object = ..., itemData = ..., spell = 
 * `params` (table): *Optional*.
 	* `object` ([tes3object](../types/tes3object.md), string): *Optional*. The object to create a tooltip for.
 	* `itemData` ([tes3itemData](../types/tes3itemData.md)): *Optional*. The itemData for the object, if providing an object.
-	* `spell` ([tes3spell](../types/tes3spell.md)): *Optional*. The spell to create a tooltip for.
+	* `spell` ([tes3spell](../types/tes3spell.md), string): *Optional*. The spell to create a tooltip for.
 	* `skill` ([tes3skill](../types/tes3skill.md)): *Optional*. The skill to create a tooltip for.
 
 **Returns**:
@@ -289,6 +289,21 @@ Forces the game to update the inventory tile GUI elements. Unlike tes3ui.updateI
 ```lua
 tes3ui.forcePlayerInventoryUpdate()
 ```
+
+***
+
+### `tes3ui.getCellHoveredOnMap`
+<div class="search_terms" style="display: none">getcellhoveredonmap, cellhoveredonmap</div>
+
+Returns the cell currently being hovered over on the map menu. Note that this currently only supports cells which have a map marker, though this may change in the future.
+
+```lua
+local result = tes3ui.getCellHoveredOnMap()
+```
+
+**Returns**:
+
+* `result` ([tes3cell](../types/tes3cell.md), nil)
 
 ***
 

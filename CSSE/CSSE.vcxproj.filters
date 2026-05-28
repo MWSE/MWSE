@@ -19,9 +19,6 @@
     <Filter Include="Source Files\CS">
       <UniqueIdentifier>{a3c311dc-8df9-4ea2-b9cd-44866c827ffa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\NI">
-      <UniqueIdentifier>{496e3544-4bf7-4e56-805c-1a0a9be077ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Util">
       <UniqueIdentifier>{091f2149-c7ea-4a8b-9b9d-67f366f92981}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     <ClCompile Include="CSCell.cpp">
       <Filter>Source Files\CS</Filter>
     </ClCompile>
+    <ClCompile Include="CSLand.cpp">
+      <Filter>Source Files\CS</Filter>
+    </ClCompile>
     <ClCompile Include="PathUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
@@ -150,6 +150,9 @@
     <ClCompile Include="CSGlobalVariable.cpp">
       <Filter>Source Files\CS</Filter>
     </ClCompile>
+    <ClCompile Include="DialogLayersWindow.cpp">
+      <Filter>Source Files\UI\DialogClasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CSSE.def">
@@ -174,12 +177,6 @@
     </ClInclude>
     <ClInclude Include="CSDefines.h">
       <Filter>Header Files\CS</Filter>
-    </ClInclude>
-    <ClInclude Include="NIRTTIDefines.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="NIConfig.h">
-      <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="CSDialogue.h">
       <Filter>Header Files\CS</Filter>
@@ -343,9 +340,6 @@
     <ClInclude Include="DialogTextSearchWindow.h">
       <Filter>Header Files\UI\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="NILinesData.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="RenderWindowWidgets.h">
       <Filter>Header Files\UI\Controllers</Filter>
     </ClInclude>
@@ -472,6 +466,9 @@
     <ClInclude Include="CSFile.h">
       <Filter>Header Files\CS</Filter>
     </ClInclude>
+    <ClInclude Include="DialogLayersWindow.h">
+      <Filter>Header Files\UI\DialogClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -582,9 +579,6 @@
     <ClCompile Include="CSDialogueInfo.cpp">
       <Filter>Source Files\CS</Filter>
     </ClCompile>
-    <ClCompile Include="NILinesData.cpp">
-      <Filter>Source Files\NI</Filter>
-    </ClCompile>
     <ClCompile Include="RenderWindowWidgets.cpp">
       <Filter>Source Files\UI\Controllers</Filter>
     </ClCompile>
@@ -641,6 +635,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="main_toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="layer_toolbar.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

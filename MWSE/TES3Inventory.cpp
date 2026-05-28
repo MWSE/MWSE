@@ -3,10 +3,16 @@
 #include "TES3Util.h"
 #include "LuaUtil.h"
 
+#include "NIPointLight.h"
+
 #include "TES3Actor.h"
+#include "TES3DataHandler.h"
 #include "TES3Enchantment.h"
 #include "TES3LeveledList.h"
 #include "TES3Item.h"
+#include "TES3Light.h"
+#include "TES3MagicEffectController.h"
+#include "TES3MobileObject.h"
 #include "TES3MobileActor.h"
 #include "TES3Spell.h"
 #include "TES3Reference.h"
@@ -92,8 +98,8 @@ namespace TES3 {
 		return &slots[slot];
 	}
 	
-	nonstd::span<QuickKey, 9> QuickKey::getQuickKeys() {
-		return nonstd::span<QuickKey, 9>(reinterpret_cast<TES3::QuickKey*>(0x7D56B0), 9);
+	std::span<QuickKey, 9> QuickKey::getQuickKeys() {
+		return std::span<QuickKey, 9>(reinterpret_cast<TES3::QuickKey*>(0x7D56B0), 9);
 	}
 
 	//
@@ -101,11 +107,11 @@ namespace TES3 {
 	//
 
 	void* EquipmentStack::operator new(size_t size) {
-		return mwse::tes3::_new(size);
+		return se::memory::_new(size);
 	}
 
 	void EquipmentStack::operator delete(void* block) {
-		mwse::tes3::_delete(block);
+		se::memory::_delete(block);
 	}
 
 	EquipmentStack::EquipmentStack() {
@@ -171,9 +177,38 @@ namespace TES3 {
 		TES3_Inventory_RemoveItemWithData(this, mobile, item, itemData, count, deleteStackData);
 	}
 
-	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, Vector3, Vector3, bool)>(0x49B090);
-	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, Vector3 position, Vector3 orientation, bool ignoreItemData) {
+	const auto TES3_Inventory_DropItem = reinterpret_cast<void(__thiscall*)(Inventory*, MobileActor*, Item *, ItemData *, int, NI::Point3, NI::Point3, bool)>(0x49B090);
+	void Inventory::dropItem(MobileActor* mobileActor, Item * item, ItemData * itemData, int count, NI::Point3 position, NI::Point3 orientation, bool ignoreItemData) {
 		TES3_Inventory_DropItem(this, mobileActor, item, itemData, count, position, orientation, ignoreItemData);
+	}
+
+	void Inventory::updateInternalLight(MobileActor* mobile) {
+		if (mobile && mobile->hasEffectWithActorLighting()) {
+			return;
+		}
+
+		if (mobile) {
+			mobile->removeLight();
+		}
+
+		for (auto itemStack : itemStacks) {
+			if (itemStack == nullptr || itemStack->object == nullptr || itemStack->object->objectType != ObjectType::Light) {
+				continue;
+			}
+
+			const auto light = static_cast<Light*>(itemStack->object);
+			if (light->getCanCarry()) {
+				continue;
+			}
+
+			light->setupLightForMobile(mobile);
+			internalLight = light;
+		}
+
+		if (mobile && mobile->lightMagicEffectData && mobile->lightMagicEffectData->light) {
+			mobile->lightMagicEffectData->light->update(0.0f, true, true);
+			mobile->actorFlags &= ~0x80; // TODO: Name and create helper functions for this flag.
+		}
 	}
 
 	// Note: A custom call to TES3_Inventory_resolveLeveledLists is made in LuaManager.cpp.

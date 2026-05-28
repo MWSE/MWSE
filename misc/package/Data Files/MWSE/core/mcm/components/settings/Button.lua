@@ -84,4 +84,19 @@ function Button:createContentsContainer(parentBlock)
 	end
 end
 
+---@param searchText string The text to search for. Will be lowercased if `caseSensitive == false`.
+---@param caseSensitive boolean Whether the search is case-sensitive or not.
+---@return boolean
+function Button:searchTextMatches(searchText, caseSensitive)
+	if Parent.searchTextMatches(self, searchText, caseSensitive) then
+		return true
+	end
+	-- Handle the special case in which there's no variable.
+	if not self.variable then
+		local text = caseSensitive and self.buttonText or self.buttonText:lower()
+		return text:find(searchText, 1, true) ~= nil
+	end
+	return false
+end
+
 return Button

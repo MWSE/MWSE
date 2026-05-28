@@ -1,6 +1,7 @@
 
 #include "TES3AudioController.h"
 
+#include "TES3Sound.h"
 #include "TES3WorldController.h"
 
 #include "LuaManager.h"
@@ -45,6 +46,29 @@ namespace TES3 {
 	const auto TES3_AudioController_unpauseMusic = reinterpret_cast<void(__thiscall*)(AudioController*)>(0x4035E0);
 	void AudioController::unpauseMusic() {
 		TES3_AudioController_unpauseMusic(this);
+	}
+
+	const auto TES3_AudioController_loadSoundFile = reinterpret_cast<SoundBuffer*(__thiscall*)(AudioController*, const char*, bool)>(0x401DB0);
+	SoundBuffer* AudioController::loadSoundFile(const char* filename, bool isPointSource) {
+		return TES3_AudioController_loadSoundFile(this, filename, isPointSource);
+	}
+
+	const auto TES3_AudioController_playSoundBuffer = reinterpret_cast<void(__thiscall*)(AudioController*, SoundBuffer*, int)>(0x402820);
+	void AudioController::playSoundBuffer(SoundBuffer* soundBuffer, int flags) {
+		TES3_AudioController_playSoundBuffer(this, soundBuffer, flags);
+	}
+
+	const auto TES3_AudioController_setSoundBufferMinMaxDistance = reinterpret_cast<int(__thiscall*)(AudioController*, SoundBuffer*, float, float)>(0x402AC0);
+	int AudioController::setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance) {
+		return TES3_AudioController_setSoundBufferMinMaxDistance(this, soundBuffer, minDistance, maxDistance);
+	}
+
+	void AudioController::stopSoundBuffer(const SoundBuffer* buffer) const {
+		if (!buffer || !buffer->lpSoundBuffer) {
+			return;
+		}
+
+		buffer->lpSoundBuffer->Stop();
 	}
 
 	bool AudioController::getAudioFlag(AudioFlag::Flag flag) const {
@@ -143,6 +167,10 @@ namespace TES3 {
 		return volume;
 	}
 
+	unsigned char AudioController::getMixVolumeRaw(AudioMixType mixType) const {
+		return static_cast<unsigned char>(getMixVolume(mixType) * 250);
+	}
+
 	float AudioController::getNormalizedMasterVolume() const {
 		return 0.004f * volumeMaster;
 	}
@@ -187,7 +215,7 @@ namespace TES3 {
 
 	void AudioController::setCurrentMusicFilePath(const char* path) {
 		size_t newLength = strlen(path) + 1;
-		if (newLength > 260) {
+		if (newLength > MAX_PATH) {
 			throw std::invalid_argument("Given path is longer than 260 characters.");
 		}
 
@@ -200,7 +228,7 @@ namespace TES3 {
 
 	void AudioController::setNextMusicFilePath(const char* path) {
 		size_t newLength = strlen(path) + 1;
-		if (newLength > 260) {
+		if (newLength > MAX_PATH) {
 			throw std::invalid_argument("Given path is longer than 260 characters.");
 		}
 
@@ -280,7 +308,7 @@ namespace TES3 {
 		positioning->Release();
 	}
 
-	double AudioController::getMusicFileDuration(std::string_view& path) {
+	double AudioController::getMusicFileDuration(std::string_view path) {
 		if (!std::filesystem::exists(path)) {
 			throw std::invalid_argument("No music file exists at path.");
 		}

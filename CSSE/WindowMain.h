@@ -34,6 +34,7 @@ namespace se::cs::window::main {
 	constexpr UINT MENU_ID_CSSE_SETTINGS = 0x4000;
 	constexpr UINT MENU_ID_CSSE_TEST_ENVIRONMENT = 0x4001;
 	constexpr UINT MENU_ID_CSSE_ABOUT = 0x4002;
+	constexpr UINT MENU_ID_VIEW_LAYERS_WINDOW = 0x4003;
 
 	// Global variables.
 	using hInstance = memory::ExternalGlobal<HINSTANCE, 0x6CE930>;

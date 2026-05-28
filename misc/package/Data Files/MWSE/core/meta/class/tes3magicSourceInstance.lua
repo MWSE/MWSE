@@ -28,6 +28,11 @@ tes3magicSourceInstance = {}
 --- @return tes3magicEffectInstance result No description yet available.
 function tes3magicSourceInstance:getEffectInstance(index, target) end
 
+--- Gets all the magic effect instances for a given effect index. Effect instances may not all be active on a target, due to reflect, absorption, dispels, different durations and other factors.
+--- @param index number The index in the effect list to fetch, between `0` and `7`.
+--- @return tes3magicEffectInstance[] result No description yet available.
+function tes3magicSourceInstance:getEffectInstances(index) end
+
 --- Gets the magnitude from the casting source for a given effect index.
 --- @param index number The index in the effect list to fetch, between `0` and `7`.
 --- @return number result No description yet available.

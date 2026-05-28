@@ -34,5 +34,5 @@ event.register(tes3.event.absorbedMagic, absorbedMagicCallback)
 
 ## Related events
 
-[spellResist](./spellResist.md){ .md-button }[spellResisted](./spellResisted.md){ .md-button }
+[magicAbsorb](./magicAbsorb.md){ .md-button }[spellResist](./spellResist.md){ .md-button }[spellResisted](./spellResisted.md){ .md-button }
 

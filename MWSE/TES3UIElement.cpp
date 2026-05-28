@@ -13,6 +13,8 @@
 #include "TES3Object.h"
 
 #include "LuaUtil.h"
+#include "LuaManager.h"
+#include "LuaObjectInvalidatedEvent.h"
 #include "MemoryUtilLua.h"
 #include "TES3Util.h"
 #include "TES3UIManagerLua.h"
@@ -65,6 +67,46 @@ namespace TES3::UI {
 
 	using mwse::lua::valueDefaultAsNil;
 	using mwse::lua::getPropertyFromObject;
+
+	static std::unordered_map<const Element*, sol::object> uiElementCache;
+
+	sol::object Element::getOrCreateLuaObject(lua_State* L) {
+		if (this == nullptr) {
+			return sol::nil;
+		}
+
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+
+		auto cacheHit = uiElementCache.find(this);
+		if (cacheHit != uiElementCache.end()) {
+			return cacheHit->second;
+		}
+
+		L = stateHandle.getState();
+		auto ref = sol::make_object_userdata(L, this);
+		uiElementCache[this] = ref;
+		return ref;
+	}
+
+	void Element::clearCachedLuaObject(const Element* element) {
+		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+		if (!uiElementCache.empty()) {
+			auto it = uiElementCache.find(element);
+			if (it != uiElementCache.end()) {
+				mwse::lua::event::clearObjectFilter(it->second);
+				mwse::lua::clearUserdataPointer(it->second);
+				stateHandle.triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
+				uiElementCache.erase(it);
+			}
+		}
+	}
+
+	void Element::clearCachedLuaObjects() {
+		for (auto& item : uiElementCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
+		uiElementCache.clear();
+	}
 
 	//
 	// Widget creation/destruction methods
@@ -960,13 +1002,23 @@ namespace TES3::UI {
 		flagContentChanged = true;
 	}
 
-	NI::Pointer<NI::SourceTexture> Element::getTexture() const {
+	NI::Pointer<NI::Texture> Element::getTexture() const {
 		return texture;
 	}
 
-	void Element::setTexture(NI::Pointer<NI::SourceTexture> value) {
+	void Element::setTexture(NI::Texture* value) {
+		setIcon("");
 		texture = value;
 		contentType = Property::image;
+		if (sceneNode && !sceneNode->children.empty()) {
+			const auto texturingProperty = sceneNode->children.at(0)->getTexturingProperty();
+			if (texturingProperty) {
+				const auto baseMap = texturingProperty->getBaseMap();
+				if (baseMap) {
+					baseMap->texture = value;
+				}
+			}
+		}
 		flagContentChanged = true;
 	}
 
@@ -1425,7 +1477,7 @@ namespace TES3::UI {
 		auto element = createRect(id, false, randomColor);
 
 		if (!randomColor) {
-			auto color = mwse::lua::getOptionalParamVector3(params, "color");
+			auto color = mwse::lua::getOptionalParamPoint3(params, "color");
 			if (color) {
 				element->colourRed = color.value().x;
 				element->colourGreen = color.value().y;
@@ -1524,4 +1576,11 @@ namespace TES3::UI {
 		}
 	}
 
+}
+
+int sol_lua_push(sol::types<TES3::UI::Element*>, lua_State* L, TES3::UI::Element* obj) {
+	if (obj == nullptr) {
+		return sol::stack::push(L, sol::nil);
+	}
+	return obj->getOrCreateLuaObject(L).push(L);
 }

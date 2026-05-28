@@ -17,7 +17,10 @@ namespace mwse {
 		static bool UseSkinnedAccurateActivationRaytests;
 		static bool SuppressUselessWarnings;
 		static bool UseGlobalAudio;
+		static bool NonExclusiveKeyboard;
 		static bool ReplaceLightSorting;
+		static bool CreateFullMinidumps;
+		static UINT BackgroundLoadPollIntervalMs;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

@@ -21,7 +21,6 @@ namespace TES3::UI {
 	ItemData* MenuInputController::lastTooltipItemData = nullptr;
 	int MenuInputController::lastTooltipCount = 0;
 	Element* MenuInputController::lastTooltipSource = nullptr;
-	int MenuInputController::lastKeyPressDIK = 0xFF;
 
 	const auto TES3_MenuInputController_flushBufferedTextEvents = reinterpret_cast<void(__thiscall*)(MenuInputController*)>(0x58E9C0);
 	void MenuInputController::flushBufferedTextEvents() {
@@ -79,7 +78,7 @@ namespace TES3::UI {
 		}
 
 		// This only matters if the menu already exists and is showing.
-		static const TES3::UI::UI_ID mainHelpLayerMenu = 0x8105;
+		constexpr UI_ID mainHelpLayerMenu = static_cast<UI_ID>(0x8105);
 		auto helpMenu = TES3::UI::findHelpLayerMenu(mainHelpLayerMenu);
 		if (helpMenu == nullptr || helpMenu->visible == false) {
 			return;

@@ -29,6 +29,13 @@ testSuite:failTest("Test logger.new name parameter error checking", function()
 	logger.new({ name = 1 }) --- @diagnostic disable-line: assign-type-mismatch
 end, "[Logger] No name provided.")
 
+-- Test backwards compatibility:
+-- * logger.getLogger
+-- * logger:doLog
+-- * logger:setLogLevel
+-- * logger.logLevel reading
+
+--- @diagnostic disable: deprecated
 testSuite:test("Test logger.getLogger", function()
 	local log = logger.getLogger(loggerName)
 
@@ -65,12 +72,13 @@ testSuite:test("Test logger:setLogLevel", function()
 end)
 
 testSuite:test("Test reading logger.logLevel", function()
-	log:setLogLevel("INFO")
+	log:setLevel("INFO")
 	testSuite:expect(log.logLevel).toBe("INFO")
 
-	log:setLogLevel("DEBUG")
+	log:setLevel("DEBUG")
 	testSuite:expect(log.logLevel).toBe("DEBUG")
 end)
+--- @diagnostic enable: deprecated
 
 testSuite:test("Test logger:setOutputFile", function()
 	testSuite:expect(log.outputFile).toBe(nil)
@@ -88,12 +96,12 @@ testSuite:test("Test logger:setOutputFile", function()
 end)
 
 
---- @param logLevel mwseLoggerLogLevel
+--- @param level mwseLogger.logLevel
 --- @param color string
 --- @param ... any?
-local function defaultFormatter(logLevel, color, ...)
+local function defaultFormatter(level, color, ...)
 	local fmtArgs = {}
-	
+
 	local i, n = 1, select("#", ...)
 	--[[Format each of the arguments.
 		- Functions: will be called using the appropriate number of arguments.
@@ -128,7 +136,7 @@ local function defaultFormatter(logLevel, color, ...)
 	local str
 	-- Only call `string.format` if there's more than one argument.
 	-- This helps to avoid errors caused by users writing strings that they don't
-	-- expect will be formatted. 
+	-- expect will be formatted.
 	-- e.g., `log:debug("progress: 50%")`
 	if #fmtArgs > 1 then
 		str = string.format(table.unpack(fmtArgs))
@@ -138,9 +146,9 @@ local function defaultFormatter(logLevel, color, ...)
 
 	local header
 	if  mwse.getConfig("EnableLogColors") then
-		logLevel = ansicolors(string.format("%%{%s}%s", color, logLevel))
+		level = ansicolors(string.format("%%{%s}%s", color, level))
 	end
-	return string.format("[%s | %s | %s] %s", log.name, log.filePath, logLevel, str)
+	return string.format("[%s | %s | %s] %s", log.name, log.filePath, level, str)
 end
 
 
@@ -209,7 +217,7 @@ testSuite:test("Test logging", function()
 
 	testSuite:test("Test each logging method", function()
 		mwseConfig["EnableLogColors"] = true
-		log:setLogLevel("TRACE")
+		log:setLevel(mwse.logLevel.trace)
 
 		args = { "TRACE", "bright white", "Fruit %s", "pie" }
 		log:trace(unpack(args, 3))

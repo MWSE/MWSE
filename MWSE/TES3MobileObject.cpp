@@ -1,5 +1,7 @@
 #include "TES3MobileObject.h"
 
+#include "NIColor.h"
+
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
@@ -19,8 +21,8 @@
 
 namespace TES3 {
 
-	Vector3 MobileObject::Collision::getNormal() const {
-		return TES3::Vector3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
+	NI::Point3 MobileObject::Collision::getNormal() const {
+		return NI::Point3(quantizedNormal[0] * QUANTIZER, quantizedNormal[1] * QUANTIZER, quantizedNormal[2] * QUANTIZER);
 	}
 
 	const auto TES3_MobileObject_Collision_clone = reinterpret_cast<void(__thiscall*)(MobileObject::Collision*, MobileObject::Collision*)>(0x405450);
@@ -44,6 +46,24 @@ namespace TES3 {
 		}
 	}
 #pragma optimize( "", on )
+
+	void MobileObject::cleanupCollisionReference(Reference* reference) {
+		if (reference == nullptr || arrayCollisionResults == nullptr) {
+			return;
+		}
+
+		for (int i = 0; i < countCollisionResults; ++i) {
+			auto& collision = arrayCollisionResults[i];
+			if (collision.colliderRef == reference) {
+				collision.valid = false;
+				collision.colliderRoot = nullptr;
+				collision.colliderRef = nullptr;
+				collision.node_34 = nullptr;
+				collision.collisionType = Collision::CollisionType::None;
+				collision.processingState = 0;
+			}
+		}
+	}
 
 	void MobileObject::setFacing(float facingInRadians) {
 		vTable.mobileObject->setFacing(this, facingInRadians);
@@ -137,18 +157,18 @@ namespace TES3 {
 		vTable.mobileObject->enterLeaveSimulation(this, entering);
 	}
 
-	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x561960);
-	void MobileObject::setFootPoint(const Vector3* point) {
+	const auto TES3_MobileObject_setFootPoint = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x561960);
+	void MobileObject::setFootPoint(const NI::Point3* point) {
 		TES3_MobileObject_setFootPoint(this, point);
 	}
 
-	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x55EBA0);
-	void MobileObject::setInstantVelocity(const Vector3* velocity) {
+	const auto TES3_MobileObject_setInstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x55EBA0);
+	void MobileObject::setInstantVelocity(const NI::Point3* velocity) {
 		TES3_MobileObject_setInstantVelocity(this, velocity);
 	}
 
-	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const Vector3*)>(0x55E7A0);
-	void MobileObject::updateConstantVelocity(const Vector3* velocity) {
+	const auto TES3_MobileObject_updateConstantVelocity = reinterpret_cast<void(__thiscall*)(MobileObject*, const NI::Point3*)>(0x55E7A0);
+	void MobileObject::updateConstantVelocity(const NI::Point3* velocity) {
 		TES3_MobileObject_updateConstantVelocity(this, velocity);
 	}
 
@@ -162,8 +182,8 @@ namespace TES3 {
 		TES3_MobileObject_enterLeaveSimulationByDistance(this);
 	}
 
-	const auto TES3_MobileObject_getInventory = reinterpret_cast<IteratedList<ItemStack*> * (__thiscall*)(const MobileObject*)>(0x521620);
-	IteratedList<ItemStack*>* MobileObject::getInventory() const {
+	const auto TES3_MobileObject_getInventory = reinterpret_cast<NI::IteratedList<ItemStack*> * (__thiscall*)(const MobileObject*)>(0x521620);
+	NI::IteratedList<ItemStack*>* MobileObject::getInventory() const {
 		return TES3_MobileObject_getInventory(this);
 	}
 
@@ -172,17 +192,32 @@ namespace TES3 {
 		return TES3_MobileObject_getBasePositionIsUnderwater(this);
 	}
 
-	Vector3 MobileObject::getBoundSize() const {
-		return Vector3(boundSize.x, boundSize.y, height);
+	const auto TES3_MobileObject_setLightEffectFalloff = reinterpret_cast<void(__thiscall*)(MobileObject*, unsigned int)>(0x562490);
+	void MobileObject::setLightEffectFalloff(unsigned int radius) {
+		TES3_MobileObject_setLightEffectFalloff(this, radius);
 	}
 
-	void MobileObject::setBoundSize(const Vector3& value) {
+	const auto TES3_MobileObject_setLightEffectDiffuseCol = reinterpret_cast<void(__thiscall*)(MobileObject*, NI::Color)>(0x562350);
+	void MobileObject::setLightEffectDiffuseCol(const NI::Color& colour) {
+		TES3_MobileObject_setLightEffectDiffuseCol(this, colour);
+	}
+
+	const auto TES3_MobileObject_removeLight = reinterpret_cast<void(__thiscall*)(MobileObject*)>(0x562510);
+	void MobileObject::removeLight() {
+		TES3_MobileObject_removeLight(this);
+	}
+
+	NI::Point3 MobileObject::getBoundSize() const {
+		return NI::Point3(boundSize.x, boundSize.y, height);
+	}
+
+	void MobileObject::setBoundSize(const NI::Point3& value) {
 		boundSize.x = value.x;
 		boundSize.y = value.y;
 		height = value.z;
 	}
 
-	Vector3* MobileObject::getImpulseVelocity() {
+	NI::Point3* MobileObject::getImpulseVelocity() {
 		return &impulseVelocity;
 	}
 
@@ -191,7 +226,11 @@ namespace TES3 {
 		mwse::lua::setVectorFromLua(impulseVelocity, value);
 	}
 
-	Vector3* MobileObject::getPosition() const {
+	MobileObject::LightData* MobileObject::getLightEffectData() const {
+		return lightMagicEffectData;
+	}
+
+	NI::Point3* MobileObject::getPosition() const {
 		// Delegate to reference.
 		return &reference->position;
 	}
@@ -201,7 +240,11 @@ namespace TES3 {
 		reference->setPositionFromLua(value);
 	}
 
-	Vector3* MobileObject::getVelocity() {
+	void MobileObject::setLightEffectDiffuseCol_lua(sol::object object) {
+		setLightEffectDiffuseCol(NI::Color(object));
+	}
+
+	NI::Point3* MobileObject::getVelocity() {
 		return &velocity;
 	}
 
@@ -251,6 +294,14 @@ namespace TES3 {
 		}
 
 		return results;
+	}
+
+	bool MobileObject::getLightingValidFlag() const {
+		return getMobileObjectFlag(MobileActorFlag::LightingValid);
+	}
+
+	void MobileObject::setLightingValidFlag(bool value) {
+		setMobileObjectFlag(MobileActorFlag::LightingValid, value);
 	}
 
 	bool MobileObject::getMobToMobCollision() const {
@@ -332,11 +383,14 @@ namespace TES3 {
 			// Clear any events that make use of this object.
 			auto it = mobileObjectCache.find(object);
 			if (it != mobileObjectCache.end()) {
-				// Let people know that this object is invalidated.
-				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
-
 				// Clear any events that make use of this object.
 				mwse::lua::event::clearObjectFilter(it->second);
+
+				// Null the userdata's internal pointer before removing our identity cache.
+				mwse::lua::clearUserdataPointer(it->second);
+
+				// Let people know that this object is invalidated.
+				mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::ObjectInvalidatedEvent(it->second));
 
 				// Remove it from the cache.
 				mobileObjectCache.erase(it);
@@ -348,6 +402,9 @@ namespace TES3 {
 
 	void MobileObject::clearCachedLuaObjects() {
 		mobileObjectCacheMutex.lock();
+		for (auto& item : mobileObjectCache) {
+			mwse::lua::clearUserdataPointer(item.second);
+		}
 		mobileObjectCache.clear();
 		mobileObjectCacheMutex.unlock();
 	}

@@ -345,6 +345,19 @@ namespace TES3 {
 		return DataHandler::get()->nonDynamicData->magicEffects->effectExtendedData[id];
 	}
 
+	bool MagicEffect::getHasActorLighting() const {
+		if (id == EffectID::Light) {
+			return true;
+		}
+
+		const auto extendedData = getExtendedData();
+		if (extendedData && extendedData->hasActorLighting) {
+			return true;
+		}
+
+		return false;
+	}
+
 
 	//
 	// MagicEffectExtendedData
@@ -352,6 +365,7 @@ namespace TES3 {
 
 	MagicEffectExtendedData::MagicEffectExtendedData() {
 		name = "Unnamed Effect";
+		hasActorLighting = false;
 	}
 
 	bool MagicEffectExtendedData::hasName() const {
@@ -421,7 +435,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Effect& Effect::operator=(const sol::table table) {
+	Effect& Effect::operator=(const sol::table& table) {
 		effectID = table.get_or("id", EffectID::None);
 		skillID = table.get_or("skill", SkillID::Invalid);
 		attributeID = table.get_or("attribute", Attribute::Invalid);
@@ -433,7 +447,7 @@ namespace TES3 {
 		return *this;
 	}
 
-	Effect& Effect::operator=(const sol::object object) {
+	Effect& Effect::operator=(const sol::object& object) {
 		if (object.is<Effect>()) {
 			*this = object.as<Effect>();
 		}
@@ -470,7 +484,7 @@ namespace TES3 {
 
 	const auto TES3_Effect_calculateCost = reinterpret_cast<double(__cdecl*)(const Effect*)>(0x4AA700);
 	float Effect::calculateCost() const {
-		return TES3_Effect_calculateCost(this);
+		return static_cast<float>(TES3_Effect_calculateCost(this));
 	}
 
 	MagicEffect* Effect::getEffectData() const {

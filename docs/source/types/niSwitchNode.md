@@ -555,8 +555,15 @@ myObject:copyTransforms(source)
 Calculates and creates a bounding box for the object. The existing bounding box, if any, will not be used, a fresh one will always be calculated.
 
 ```lua
-local boundingBox = myObject:createBoundingBox()
+local boundingBox = myObject:createBoundingBox({ accurateSkinned = ..., observeAppCullFlag = ..., onlyActiveChildren = ... })
 ```
+
+**Parameters**:
+
+* `args` (table): *Optional*.
+	* `accurateSkinned` (boolean): *Default*: `false`. If true, [`niSkinInstance`](http://mwse.github.io/MWSE/types/niSkinInstance/?h=niskininstan) deformations will be applied before calculating the bounding box. This has an additional performance cost
+	* `observeAppCullFlag` (boolean): *Default*: `false`. If true, objects that have the [`appCulled`](http://mwse.github.io/MWSE/types/niAVObject/#appculled) flag set will be ignored.
+	* `onlyActiveChildren` (boolean): *Default*: `false`. If true, only the [`active children`](https://mwse.github.io/MWSE/types/niSwitchNode/#getactivechild) will be processed.
 
 **Returns**:
 
@@ -1071,6 +1078,39 @@ myObject:setFlag(state, index)
 
 * `state` (boolean)
 * `index` (number)
+
+***
+
+### `traverse`
+<div class="search_terms" style="display: none">traverse</div>
+
+Performs a DFS walk over the node's child tree.
+
+```lua
+local iterator = myObject:traverse({ type = ..., prefix = ..., recursive = ... })
+```
+
+**Parameters**:
+
+* `args` (table): *Optional*.
+	* `type` ([ni.type](../references/ni/types.md), [ni.type](../references/ni/types.md)[], integer): *Optional*. If provided, only NI objects of provided type are yielded. Can be a single type, or an array of multiple types.
+	* `prefix` (string): *Optional*. If provided, only NI objects with a name matching the prefix are yielded.
+	* `recursive` (boolean): *Default*: `true`. If true, the method also walk over the nested nodes.
+
+**Returns**:
+
+* `iterator` (fun(): [niAVObject](../types/niAVObject.md))
+
+??? example "Example: Usage"
+
+	```lua
+	local root = tes3.player.sceneNode
+	
+	for node in root:traverse({ type = ni.type.NiTriShape, prefix = "tri c_m_shoe" }) do
+		assert(node.scale == 1)
+	end
+
+	```
 
 ***
 

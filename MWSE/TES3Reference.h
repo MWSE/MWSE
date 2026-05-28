@@ -4,16 +4,16 @@
 
 #include "TES3Defines.h"
 #include "TES3Attachment.h"
-#include "TES3Vectors.h"
 
 #include "NILight.h"
+#include "NIPoint3.h"
 
 namespace TES3 {
 	struct Reference : Object {
 		struct ReferenceData {
 			PhysicalObject* baseObject; // 0x0
-			Vector3 orientation; // 0x4
-			Vector3 position; // 0x10
+			NI::Point3 orientation; // 0x4
+			NI::Point3 position; // 0x10
 			Attachment* attachments; // 0x1C
 			unsigned int sourceID; // 0x20
 			unsigned int targetID; // 0x24
@@ -23,8 +23,8 @@ namespace TES3 {
 			ReferenceData referenceData; // 0x28
 			struct {
 				PhysicalObject* baseObject; // 0x28
-				Vector3 orientation; // 0x2c
-				Vector3 position; // 0x38
+				NI::Point3 orientation; // 0x2c
+				NI::Point3 position; // 0x38
 				Attachment* attachments; // 0x44
 				unsigned int sourceID; // 0x48
 				unsigned int targetID; // 0x4C
@@ -45,7 +45,7 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		void ctor();
+		Reference* ctor();
 		void dtor();
 
 		void activate(Reference* activator, int unknown = 1);
@@ -56,8 +56,8 @@ namespace TES3 {
 		Reference * getActionReference();
 
 		ItemDataAttachment* addItemDataAttachment(ItemData*);
-		Vector3* getOrCreateOrientationFromAttachment();
-		Vector3* getPositionFromAttachment();
+		NI::Point3* getOrCreateOrientationFromAttachment();
+		NI::Point3* getPositionFromAttachment();
 		LockAttachmentNode* getOrCreateLockNode();
 		Reference* getLeveledBaseReference();
 		ScriptVariables * getScriptVariables();
@@ -68,7 +68,7 @@ namespace TES3 {
 		void detachDynamicLightFromAffectedNodes();
 		void deleteDynamicLightAttachment(sol::optional<bool> removeLightFromParent = false);
 
-		void setModelPath(const char* path);
+		void setModelPath(const char* path, bool temporary = false);
 		void reloadAnimation(const char* path);
 		bool updateBipedParts();
 
@@ -91,11 +91,13 @@ namespace TES3 {
 		void setReferenceActive(bool skipDeleted = true);
 		void setReferenceInactive(bool skipDeleted = true);
 
-		Vector3* getPosition();
-		void setPosition(const Vector3 * newPosition);
+		void handleUpdate(bool deletion, bool updateCollisions = true);
 
-		Vector3* getOrientation();
-		void setOrientation(const Vector3 * newOrientation);
+		NI::Point3* getPosition();
+		void setPosition(const NI::Point3 * newPosition);
+
+		NI::Point3* getOrientation();
+		void setOrientation(const NI::Point3 * newOrientation);
 
 		float getFacing();
 		void setFacing(float facing);
@@ -103,20 +105,20 @@ namespace TES3 {
 		float getAngleToReference(Reference* reference);
 		bool isInSameWorldspace(const Reference* other) const;
 
-		Matrix33 getRotationMatrix();
-		Vector3 getForwardDirectionVector();
-		Vector3 getRightDirectionVector();
-		Vector3 getUpDirectionVector();
+		NI::Matrix33 getRotationMatrix();
+		NI::Point3 getForwardDirectionVector();
+		NI::Point3 getRightDirectionVector();
+		NI::Point3 getUpDirectionVector();
 
-		TravelDestination * setTravelDestination(const Vector3 * position, const Vector3 * orientation, Cell * cell = nullptr);
+		TravelDestination * setTravelDestination(const NI::Point3 * position, const NI::Point3 * orientation, Cell * cell = nullptr);
 
-		Matrix33* updateSceneMatrix(Matrix33* matrix, bool eulerXYZ = false);
+		NI::Matrix33* updateSceneMatrix(NI::Matrix33* matrix, bool eulerXYZ = false);
 
 		Inventory * getInventory() const;
-		IteratedList<EquipmentStack*> * getEquipment();
+		NI::IteratedList<EquipmentStack*> * getEquipment();
 
-		void relocate(Cell * cell, const Vector3 * position, float rotation);
-		void relocateNoRotation(Cell* cell, const Vector3* position);
+		void relocate(Cell * cell, const NI::Point3 * position, float rotation);
+		void relocateNoRotation(Cell* cell, const NI::Point3* position);
 		bool clone();
 		bool onCloseInventory();
 
@@ -130,14 +132,14 @@ namespace TES3 {
 		ItemData* getAttachedItemData() const;
 		void setAttachedItemData(ItemData * itemData);
 		ItemData* getOrCreateAttachedItemData();
-		LockAttachmentNode* getAttachedLockNode();
+		LockAttachmentNode* getAttachedLockNode() const;
 		AnimationData* getAttachedAnimationData() const;
-		BodyPartManager* getAttachedBodyPartManager() ;
+		BodyPartManager* getAttachedBodyPartManager() const;
 		TravelDestination* getAttachedTravelDestination() const;
 
-		LightAttachmentNode* getAttachedDynamicLight();
+		LightAttachmentNode* getAttachedDynamicLight() const;
 		LightAttachmentNode* getOrCreateAttachedDynamicLight_lua(sol::optional<NI::PointLight*> light, sol::optional<float> value);
-		NI::Pointer<NI::Light> getAttachedNiLight();
+		NI::Pointer<NI::Light> getAttachedNiLight() const;
 
 		bool isLeveledSpawn();
 
@@ -149,7 +151,7 @@ namespace TES3 {
 
 		void attemptUnlockDisarm(MobileNPC * disarmer, Item * tool, ItemData * itemData = nullptr);
 
-		int getStackSize();
+		int getStackSize() const;
 		void setStackSize(int count);
 		
 		bool hasValidBaseObject() const;
@@ -176,7 +178,7 @@ namespace TES3 {
 		void setOrientationFromLua(sol::stack_object value);
 
 		// Return a table of name-keyed attachments for this object.
-		sol::table getAttachments_lua(sol::this_state ts);
+		sol::table getAttachments_lua(sol::this_state ts) const;
 
 		bool getSupportsLuaData() const;
 		sol::table getLuaTable();

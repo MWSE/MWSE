@@ -361,6 +361,25 @@ local result = table.invert(t)
 
 ***
 
+### `table.isarray`
+<div class="search_terms" style="display: none">isarray, array</div>
+
+Returns `true` when the given Lua table is a pure array-like Lua table, or `false` otherwise.
+
+```lua
+local result = table.isarray(t)
+```
+
+**Parameters**:
+
+* `t` (table)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `table.keys`
 <div class="search_terms" style="display: none">keys</div>
 

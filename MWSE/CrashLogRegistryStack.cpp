@@ -33,7 +33,7 @@ namespace CrashLogger {
 			const auto cstr = static_cast<const char*>(object);
 			std::size_t len = 0;
 			for (auto itt = cstr; *itt != '\0'; ++itt) {
-				if (!mwse::string::is_printable(*itt)) {
+				if (!se::string::is_printable(*itt)) {
 					return false;
 				}
 				len++;
@@ -173,7 +173,7 @@ namespace CrashLogger::Stack {
 					line << fmt::format(" {:2X} | 0x{:08X} | ", i, espi);
 					if (memoize.find(espi) == memoize.end()) {
 						if (!str.empty()) line << str;
-						memoize.emplace(espi, i);
+						memoize.emplace(espi, static_cast<UINT8>(i));
 					}
 					else {
 						line << fmt::format("Identical to {:2X}", memoize[espi]);

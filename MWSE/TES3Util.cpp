@@ -44,24 +44,24 @@ namespace mwse::tes3 {
 		}
 		else {
 			if (dataHandler) {
-				return dataHandler->nonDynamicData->findFirstCloneOfActor(id);
+				return dataHandler->nonDynamicData->findFirstInstanceOfObjectId(id);
 			}
 		}
 
 		return nullptr;
 	}
 
-	TES3::Reference* getReference(const std::string& id) {
-		return getReference(id.c_str());
+	TES3::Reference* getReference(std::string_view id) {
+		return getReference(id.data());
 	}
 
 	const auto TES3_general_setStringSlot = reinterpret_cast<void(__cdecl*)(char**, const char*)>(0x47B410);
 	void setDataString(char** container, const char* string, bool allowEmpty) {
 		if (allowEmpty && string && string[0] == '\0') {
 			if (*container) {
-				_delete(*container);
+				se::memory::_delete(*container);
 			}
-			*container = _new<char>(1);
+			*container = se::memory::_new<char>(1);
 			**container = '\0';
 		}
 		else {
@@ -107,13 +107,13 @@ namespace mwse::tes3 {
 
 		// Set basic effect data.
 		TES3::Effect& effect = effects[index];
-		effect.effectID = effectId;
+		effect.effectID = static_cast<short>(effectId);
 		effect.rangeType = effectRange;
 		effect.radius = area;
 
 		// Set skill.
 		if (flags & TES3::EffectFlag::TargetSkill) {
-			effect.skillID = skillAttributeId;
+			effect.skillID = static_cast<TES3::SkillID::SkillID>(skillAttributeId);
 		}
 		else {
 			effect.skillID = TES3::SkillID::Invalid;
@@ -121,7 +121,7 @@ namespace mwse::tes3 {
 
 		// Set attribute.
 		if (flags & TES3::EffectFlag::TargetAttribute) {
-			effect.attributeID = skillAttributeId;
+			effect.attributeID = static_cast<TES3::Attribute::Attribute>(skillAttributeId);
 		}
 		else {
 			effect.attributeID = TES3::Attribute::Invalid;
@@ -309,8 +309,8 @@ namespace mwse::tes3 {
 		return TES3_getThreadSafeStringBuffer(reinterpret_cast<char*>(0x7CB478));
 	}
 
-	const auto TES3_testLineOfSight = reinterpret_cast<bool(__cdecl*)(TES3::Vector3*, float, TES3::Vector3*, float)>(0x53B200);
-	bool testLineOfSight(TES3::Vector3* pos1, float height1, TES3::Vector3* pos2, float height2) {
+	const auto TES3_testLineOfSight = reinterpret_cast<bool(__cdecl*)(NI::Point3*, float, NI::Point3*, float)>(0x53B200);
+	bool testLineOfSight(NI::Point3* pos1, float height1, NI::Point3* pos2, float height2) {
 		return TES3_testLineOfSight(pos1, height1, pos2, height2);
 	}
 

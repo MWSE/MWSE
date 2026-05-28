@@ -239,13 +239,13 @@ namespace TES3 {
 
 	void DialogueInfo::setLastLoadedText(const char* text) {
 		if (TES3_DialogueInfo_lastLoadedText) {
-			mwse::tes3::_delete(TES3_DialogueInfo_lastLoadedText);
+			se::memory::_delete(TES3_DialogueInfo_lastLoadedText);
 			TES3_DialogueInfo_lastLoadedText = nullptr;
 		}
 
 		if (text) {
 			auto length = strlen(text);
-			TES3_DialogueInfo_lastLoadedText = reinterpret_cast<char*>(mwse::tes3::_new(length + 1));
+			TES3_DialogueInfo_lastLoadedText = reinterpret_cast<char*>(se::memory::_new(length + 1));
 			TES3_DialogueInfo_lastLoadedText[length] = '\0';
 			strcpy(TES3_DialogueInfo_lastLoadedText, text);
 		}
@@ -258,13 +258,13 @@ namespace TES3 {
 
 	void DialogueInfo::setLastLoadedScript(const char* text) {
 		if (TES3_DialogueInfo_lastLoadedScript) {
-			mwse::tes3::_delete(TES3_DialogueInfo_lastLoadedScript);
+			se::memory::_delete(TES3_DialogueInfo_lastLoadedScript);
 			TES3_DialogueInfo_lastLoadedScript = nullptr;
 		}
 
 		if (text) {
 			auto length = strlen(text);
-			TES3_DialogueInfo_lastLoadedScript = reinterpret_cast<char*>(mwse::tes3::_new(length + 1));
+			TES3_DialogueInfo_lastLoadedScript = reinterpret_cast<char*>(se::memory::_new(length + 1));
 			TES3_DialogueInfo_lastLoadedScript[length] = '\0';
 			strcpy(TES3_DialogueInfo_lastLoadedScript, text);
 		}

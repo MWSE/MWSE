@@ -10,7 +10,7 @@ return {
 			{ name = "buying", type = "boolean", optional = true, default = true, description = "If `true`, uses the logic for buying a service/item. This is exclusive with `selling`." },
 			{ name = "selling", type = "boolean", optional = true, default = false, description = "If `true`, uses the logic for selling an item. This is exclusive with `buying`." },
 			{ name = "merchant", type = "tes3mobileActor", description = "The merchant to use for calculating the price." },
-			{ name = "bartering", type = "boolean", optional = true, default = false, description = "If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered." },
+			{ name = "bartering", type = "boolean", optional = true, default = false, description = "If `true`, a [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) or [calcSpellPrice](https://mwse.github.io/MWSE/events/calcSpellPrice) event will be triggered." },
 			{ name = "repairing", type = "boolean", optional = true, default = false, description = "If `true`, a [calcRepairPrice](https://mwse.github.io/MWSE/events/calcRepairPrice) event will be triggered." },
 			{ name = "training", type = "boolean", optional = true, default = false, description = "If `true`, a [calcTrainingPrice](https://mwse.github.io/MWSE/events/calcTrainingPrice) event will be triggered, passing the given `skill` ID." },
 			{ name = "count", type = "number", optional = true, default = 1, description = "If `bartering`, the count passed to the [calcBarterPrice](https://mwse.github.io/MWSE/events/calcBarterPrice) event." },

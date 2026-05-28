@@ -39,8 +39,8 @@ namespace se::cs {
 		return Reference_updateRotationMatrixForRaceAndSex(this, &matrix, unknown);
 	}
 
-	bool Reference::createSelectionWidget(NI::Vector3 boundsMin, NI::Vector3 boundsMax) {
-		const auto Reference_createSelectionWidget = reinterpret_cast<bool(__thiscall*)(Reference*, NI::Vector3, NI::Vector3)>(0x540D50);
+	bool Reference::createSelectionWidget(NI::Point3 boundsMin, NI::Point3 boundsMax) {
+		const auto Reference_createSelectionWidget = reinterpret_cast<bool(__thiscall*)(Reference*, NI::Point3, NI::Point3)>(0x540D50);
 
 		if (!Reference_createSelectionWidget(this, boundsMin, boundsMax)) {
 			return false;
@@ -71,8 +71,15 @@ namespace se::cs {
 		return selectionWidget->parentNode == sceneNode;
 	}
 
+
 	Cell* Reference::getCell() const {
 		const auto Reference_getCell = reinterpret_cast<Cell*(__thiscall*)(const Reference*)>(0x401B0E);
 		return Reference_getCell(this);
+	}
+
+	// Super cursed, but targetID is not set for newly created objects
+	std::string Reference::getUniqueID() const {
+		auto stringID = getObjectID() + position.toString() + orientationNonAttached.toString();
+		return stringID;
 	}
 }

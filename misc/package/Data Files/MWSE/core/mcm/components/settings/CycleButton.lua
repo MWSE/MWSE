@@ -32,7 +32,7 @@ function CycleButton:makeComponent(parentBlock)
 		widget.value = self.variable.value
 	end
 
-	button:registerAfter("valueChanged", function(e)
+	button:registerAfter(tes3.uiEvent.valueChanged, function(e)
 		self.variable.value = e.source.widget.value
 		self:update()
 	end)

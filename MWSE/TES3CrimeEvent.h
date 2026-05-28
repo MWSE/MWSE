@@ -2,11 +2,14 @@
 
 #include "TES3Defines.h"
 
-#include "TES3IteratedList.h"
-#include "TES3StdString.h"
-#include "TES3Vectors.h"
+#include "NIIteratedList.h"
+#include "NIPoint3.h"
+
+#include "StdString.h"
 
 namespace TES3 {
+	using se::StdString;
+
 	namespace CrimeType {
 		enum CrimeType {
 			Attack = 1, // Attacked NPCs or creatures
@@ -31,7 +34,7 @@ namespace TES3 {
 		StdString bountyKey; // 0x8
 
 		// The position of the crime. This will be the position of the victim of an attack/killing or the position of the criminal otherwise.
-		Vector3 position; // 0x18
+		NI::Point3 position; // 0x18
 
 		// Is only valid for crimes of type TES3::CrimeType::Theft or TES3::CrimeType::Pickpocket.
 		int stolenValue; // 0x24
@@ -52,7 +55,7 @@ namespace TES3 {
 		Faction* victimFaction; // 0x30
 
 		// Contains a list of AIPlanners that were able to detect the criminal through ProcessManager::checkAlarmRadius.
-		IteratedList<AIPlanner*>* witnesses; // 0x34
+		NI::IteratedList<AIPlanner*>* witnesses; // 0x34
 
 		// Is only valid for crimes of type TES3::CrimeType::Theft or TES3::CrimeType::Pickpocket.
 		Actor* stolenFrom;

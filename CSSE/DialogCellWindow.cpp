@@ -44,14 +44,14 @@ namespace se::cs::dialog::cell_window {
 	}
 
 	void __cdecl PatchSpeedUpCellObjectViewDialog(HWND hWnd, const ReferenceList* references) {
-		if (references == &gActiveEditCell::get()->unknown_0x40) {
+		if (references == &gActiveEditCell::get()->cellObjRefs) {
 			SendMessageA(hWnd, WM_SETREDRAW, FALSE, NULL);
 		}
 
 		const auto CS_addAllToRefsListView = reinterpret_cast<void(__cdecl*)(HWND, const ReferenceList*)>(0x40E5B0);
 		CS_addAllToRefsListView(hWnd, references);
 
-		if (references == &gActiveEditCell::get()->unknown_0x30) {
+		if (references == &gActiveEditCell::get()->cellNpcRefs) {
 			SendMessageA(hWnd, WM_SETREDRAW, TRUE, NULL);
 		}
 	}
@@ -106,8 +106,8 @@ namespace se::cs::dialog::cell_window {
 
 		SendMessageA(refsListView, LVM_DELETEALLITEMS, 0, 0);
 		if (cell) {
-			CS_AddAllToRefsListView(refsListView, &cell->unknown_0x40);
-			CS_AddAllToRefsListView(refsListView, &cell->unknown_0x30);
+			CS_AddAllToRefsListView(refsListView, &cell->cellObjRefs);
+			CS_AddAllToRefsListView(refsListView, &cell->cellNpcRefs);
 		}
 
 		SendMessageA(refsListView, WM_SETREDRAW, TRUE, NULL);

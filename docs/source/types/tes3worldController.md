@@ -68,7 +68,7 @@ A value in the range [0, 1]. The (relative) maximum distance setting for AI simu
 ### `characterRenderTarget`
 <div class="search_terms" style="display: none">characterrendertarget</div>
 
-*Read-only*. 
+*Read-only*. The inventory paperdoll render target.
 
 **Returns**:
 
