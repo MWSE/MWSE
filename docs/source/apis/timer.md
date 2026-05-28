@@ -73,7 +73,7 @@ local timer = timer.delayOneFrame(callback, type)
 **Parameters**:
 
 * `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md))): The callback function that will execute when the timer expires.
-* `type` (integer): *Default*: ``timer.simulate``. Type of the timer. This value can be `timer.simulate`, `timer.game` or `timer.real`.
+* `type` (integer, mwseTimer.type): *Default*: ``timer.simulate``. Type of the timer. This value can be `timer.simulate`, `timer.game` or `timer.real`.
 
 **Returns**:
 
@@ -188,7 +188,7 @@ local timer = timer.start({ type = ..., duration = ..., callback = ..., iteratio
 **Parameters**:
 
 * `params` (table)
-	* `type` (integer): *Default*: ``timer.simulate``. Type of the timer. This value can be `timer.simulate`, `timer.game` or `timer.real`.
+	* `type` (integer, mwseTimer.type): *Default*: ``timer.simulate``. Type of the timer. This value can be `timer.simulate`, `timer.game` or `timer.real`.
 	* `duration` (number): Duration of the timer. The method of time passing depends on the timer type.
 	* `callback` (fun(e: [mwseTimerCallbackData](../types/mwseTimerCallbackData.md)), string): The callback function that will execute when the timer expires. If starting a registered timer, this needs to be the `name` string passed to `timer.register`.
 	* `iterations` (integer): *Default*: `1`. The number of iterations to run. Use `-1` for infinite looping.
