@@ -278,6 +278,8 @@
     <ClInclude Include="TES3UIDefines.h" />
     <ClInclude Include="LuaManager.h" />
     <ClInclude Include="LuaScript.h" />
+    <ClInclude Include="LuaScriptExecuteEvent.h" />
+    <ClInclude Include="LuaScriptExecutedEvent.h" />
     <ClInclude Include="LuaTimer.h" />
     <ClInclude Include="LuaUtil.h" />
     <ClInclude Include="NICameraLua.h" />
@@ -637,6 +639,8 @@
     <ClCompile Include="LuaRestInterruptEvent.cpp" />
     <ClCompile Include="LuaSavedGameEvent.cpp" />
     <ClCompile Include="LuaSaveGameEvent.cpp" />
+    <ClCompile Include="LuaScriptExecuteEvent.cpp" />
+    <ClCompile Include="LuaScriptExecutedEvent.cpp" />
     <ClCompile Include="LuaScript.cpp" />
     <ClCompile Include="LuaShowRestWaitMenuEvent.cpp" />
     <ClCompile Include="LuaSimulateEvent.cpp" />

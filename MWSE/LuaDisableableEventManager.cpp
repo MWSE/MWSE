@@ -155,6 +155,8 @@
 #include "LuaSkillExerciseEvent.h"
 #include "LuaSkillRaisedEvent.h"
 #include "LuaSoundObjectPlayEvent.h"
+#include "LuaScriptExecuteEvent.h"
+#include "LuaScriptExecutedEvent.h"
 #include "LuaSpellCastedEvent.h"
 #include "LuaSpellCastEvent.h"
 #include "LuaSpellCreatedEvent.h"
@@ -335,6 +337,8 @@ namespace mwse::lua::event {
 		usertypeDefinition["restInterrupt"] = sol::property(&RestInterruptEvent::getEventEnabled, &RestInterruptEvent::setEventEnabled);
 		usertypeDefinition["save"] = sol::property(&SaveGameEvent::getEventEnabled, &SaveGameEvent::setEventEnabled);
 		usertypeDefinition["saved"] = sol::property(&SavedGameEvent::getEventEnabled, &SavedGameEvent::setEventEnabled);
+		usertypeDefinition["scriptExecute"] = sol::property(&ScriptExecuteEvent::getEventEnabled, &ScriptExecuteEvent::setEventEnabled);
+		usertypeDefinition["scriptExecuted"] = sol::property(&ScriptExecutedEvent::getEventEnabled, &ScriptExecutedEvent::setEventEnabled);
 		usertypeDefinition["shieldBlocked"] = sol::property(&ShieldBlockedEvent::getEventEnabled, &ShieldBlockedEvent::setEventEnabled);
 		usertypeDefinition["simulate"] = sol::property(&SimulateEvent::getEventEnabled, &SimulateEvent::setEventEnabled);
 		usertypeDefinition["simulated"] = sol::property(&SimulatedEvent::getEventEnabled, &SimulatedEvent::setEventEnabled);

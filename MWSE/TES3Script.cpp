@@ -1,5 +1,8 @@
 ﻿#include "TES3Script.h"
 
+#include "LuaManager.h"
+#include "LuaScriptExecuteEvent.h"
+#include "LuaScriptExecutedEvent.h"
 #include "TES3ScriptLua.h"
 
 #include "TES3GameFile.h"
@@ -153,7 +156,27 @@ namespace TES3 {
 	void Script::execute(Reference* reference, ScriptVariables* data, DialogueInfo* info, Reference* reference2) {
 		currentlyExecutingScript = this;
 		currentlyExecutingScriptReference = reference;
+
+		if (mwse::lua::event::ScriptExecuteEvent::getEventEnabled()) {
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			sol::object response = stateHandle.triggerEvent(new mwse::lua::event::ScriptExecuteEvent(this, reference, data, info, reference2));
+			if (response.get_type() == sol::type::table) {
+				sol::table eventData = response;
+				if (eventData.get_or("block", false)) {
+					currentlyExecutingScript = nullptr;
+					currentlyExecutingScriptReference = nullptr;
+					return;
+				}
+			}
+		}
+
 		TES3_Script_execute(this, reference, data, info, reference2);
+
+		if (mwse::lua::event::ScriptExecutedEvent::getEventEnabled()) {
+			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+			stateHandle.triggerEvent(new mwse::lua::event::ScriptExecutedEvent(this, reference, data, info, reference2));
+		}
+
 		currentlyExecutingScript = nullptr;
 		currentlyExecutingScriptReference = nullptr;
 	}

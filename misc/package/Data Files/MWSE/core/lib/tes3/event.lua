@@ -148,6 +148,8 @@ return {
 	["restInterrupt"] = "restInterrupt",
 	["save"] = "save",
 	["saved"] = "saved",
+	["scriptExecute"] = "scriptExecute",
+	["scriptExecuted"] = "scriptExecuted",
 	["shieldBlocked"] = "shieldBlocked",
 	["simulate"] = "simulate",
 	["simulated"] = "simulated",

@@ -399,6 +399,12 @@
     <ClInclude Include="LuaScript.h">
       <Filter>Header Files\Lua</Filter>
     </ClInclude>
+    <ClInclude Include="LuaScriptExecuteEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaScriptExecutedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="DynamicLuaObject.h">
       <Filter>Header Files\Lua</Filter>
     </ClInclude>
@@ -2655,6 +2661,12 @@
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaSaveGameEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaScriptExecuteEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaScriptExecutedEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
     <ClCompile Include="LuaSavedGameEvent.cpp">
