@@ -939,6 +939,9 @@
     <ClInclude Include="LuaWeatherCycledEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaWeatherSelectEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaWeatherChangedImmediateEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1559,6 +1562,9 @@
     </ClInclude>
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="TES3WeatherCustom.h">
+      <Filter>Header Files\DataAdapters\TES3\Weather</Filter>
     </ClInclude>
     <ClInclude Include="ReferenceTracker.h">
       <Filter>Header Files\Utility</Filter>
@@ -2813,6 +2819,9 @@
     <ClCompile Include="LuaWeatherCycledEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaWeatherSelectEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaWeatherChangedImmediateEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3138,6 +3147,27 @@
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3WeatherThunder.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherCloudy.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherAsh.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherBlight.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherFoggy.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherOvercast.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherSnow.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherBlizzard.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="LuaScript.cpp">
@@ -3509,6 +3539,9 @@
     <ClCompile Include="MGEApi.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
+    <ClCompile Include="MWSEInterface.cpp">
+      <Filter>Source Files\MGE Interface</Filter>
+    </ClCompile>
     <ClCompile Include="CrashLogCallTrace.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
@@ -3528,6 +3561,9 @@
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="TES3ActionData.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3WeatherCustom.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
   </ItemGroup>

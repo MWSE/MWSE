@@ -55,6 +55,17 @@ The blocked state of the object.
 
 ***
 
+### `frequency`
+<div class="search_terms" style="display: none">frequency</div>
+
+The sound the underlying sound buffer uses. This is typically changed to alter sounds underwater.
+
+**Returns**:
+
+* `result` (number, nil)
+
+***
+
 ### `id`
 <div class="search_terms" style="display: none">id</div>
 
