@@ -3539,6 +3539,9 @@
     <ClCompile Include="MGEApi.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
+    <ClCompile Include="MWSEInterface.cpp">
+      <Filter>Source Files\MGE Interface</Filter>
+    </ClCompile>
     <ClCompile Include="CrashLogCallTrace.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>

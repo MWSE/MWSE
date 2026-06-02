@@ -204,6 +204,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MWSEInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVController.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>

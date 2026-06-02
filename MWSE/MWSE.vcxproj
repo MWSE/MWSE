@@ -673,6 +673,7 @@
     <ClCompile Include="LuaWeatherTransitionStartedEvent.cpp" />
     <ClCompile Include="MGEApi.cpp" />
     <ClCompile Include="MGEApiLua.cpp" />
+    <ClCompile Include="MWSEInterface.cpp" />
     <ClCompile Include="MGEPostShaders.cpp" />
     <ClCompile Include="MGEPostShadersLua.cpp" />
     <ClCompile Include="MGEUtilLua.cpp" />

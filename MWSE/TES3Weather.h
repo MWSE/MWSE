@@ -86,6 +86,7 @@ namespace TES3 {
 
 		bool isConsideredWeather(int id) const;
 		bool isCustomWeather() const;
+		bool getHasFog() const;
 		bool supportsParticleLerp() const;
 		static constexpr auto IMPOSSIBLE_THRESHOLD = std::numeric_limits<float>::max();
 		bool getSupportsPrecipitationType(int type) const;
@@ -99,6 +100,7 @@ namespace TES3 {
 		float getSnowflakesMax() const;
 		float getPrecipitationMax() const;
 		float getPrecipitationMax(int type) const;
+		float getRippleFactor() const;
 		float getRelevance() const;
 		bool getSupportsRain() const;
 		bool getSupportsAshCloud() const;

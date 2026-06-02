@@ -20,6 +20,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MWSEInterface.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />

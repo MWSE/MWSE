@@ -179,6 +179,18 @@ namespace TES3 {
 		return index != WEATHER_ID_INVALID && index >= VANILLA_MAX_WEATHER_COUNT;
 	}
 
+	bool Weather::getHasFog() const {
+		switch (index) {
+		case WeatherType::Clear:
+		case WeatherType::Cloudy:
+			return false;
+		}
+
+		// TODO: Custom weather support.
+
+		return true;
+	}
+
 	bool Weather::supportsParticleLerp() const {
 		return index == WeatherType::Rain
 			|| index == WeatherType::Thunder
@@ -339,6 +351,21 @@ namespace TES3 {
 		}
 
 		return 0.0f;
+	}
+
+	float Weather::getRippleFactor() const {
+		switch (index) {
+		case WeatherType::Rain:
+		case WeatherType::Snow:
+		case WeatherType::Blizzard:
+			return 1.0f;
+		case WeatherType::Thunder:
+			return 1.5f;
+		}
+
+		// TODO: Custom weather support.
+
+		return -1.5f;
 	}
 
 	float Weather::getRelevance() const {
