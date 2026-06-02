@@ -1465,7 +1465,7 @@ namespace se::cs::dialog::render_window {
 		const auto Land__worldPosToGridAndLandData = reinterpret_cast<bool(__thiscall*)(DataHandler*, NI::Point3*, LandTexture**)>(0x4A46C0);
 
 		const auto result = Land__worldPosToGridAndLandData(dataHandler, worldPos, currentTexture);
-		if (gLandscapeEditRadius::get() > 1) {
+		if (settings.landscape_window.radius_aware_texture_painting_enabled && gLandscapeEditRadius::get() > 1) {
 			*currentTexture = nullptr;
 		}
 
@@ -1479,7 +1479,8 @@ namespace se::cs::dialog::render_window {
 		const auto Land__applyTextureToTile = reinterpret_cast<LandApplyTextureToTileFn>(0x519300);
 		const auto radius = gLandscapeEditRadius::get();
 
-		if (radius <= 1) {
+		if (!settings.landscape_window.radius_aware_texture_painting_enabled || radius <= 1) {
+			resetTexturePaintDragState();
 			Land__applyTextureByWorldPos(land, worldPos);
 			return;
 		}

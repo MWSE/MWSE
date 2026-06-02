@@ -302,6 +302,9 @@ namespace NI {
 					next.m_Node = node->next;
 					node->next->previous = node->previous;
 				}
+				else {
+					next.m_Node = sentinel();
+				}
 				node->previous = nullptr;
 				node->next = nullptr;
 				delete position.m_Node;

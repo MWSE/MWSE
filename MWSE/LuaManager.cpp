@@ -4955,7 +4955,8 @@ namespace mwse::lua {
 			game->setGamma(1.0f);
 		}
 
-		_exit(code.value_or(1));
+		TerminateProcess(GetCurrentProcess(), static_cast<UINT>(code.value_or(1)));
+		abort();
 	}
 
 	void LuaManager::hook() {

@@ -340,6 +340,7 @@ namespace se::cs {
 		edit_circle_color_vertex = toml::find_or(v, "edit_circle_color_vertex", edit_circle_color_vertex);
 
 		show_preview_enabled = toml::find_or(v, "show_preview_enabled", show_preview_enabled);
+		radius_aware_texture_painting_enabled = toml::find_or(v, "radius_aware_texture_painting_enabled", radius_aware_texture_painting_enabled);
 
 		vertex_color_strength = std::clamp(toml::find_or(v, "vertex_color_strength", vertex_color_strength), 0, 100);
 		vertex_color_blend_mode = toml::find_or(v, "vertex_color_blend_mode", vertex_color_blend_mode);
@@ -359,6 +360,7 @@ namespace se::cs {
 				{ "column_filename", column_filename },
 
 				{ "show_preview_enabled", show_preview_enabled},
+				{ "radius_aware_texture_painting_enabled", radius_aware_texture_painting_enabled },
 
 				{ "vertex_color_strength", vertex_color_strength },
 				{ "vertex_color_blend_mode", vertex_color_blend_mode },
