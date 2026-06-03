@@ -28,6 +28,7 @@
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
+#include "TES3PathPlanner.h"
 #include "TES3Reference.h"
 #include "TES3Script.h"
 #include "TES3Sound.h"
@@ -2306,6 +2307,15 @@ namespace mwse::patch {
 		// Patch: Fix crash in NPC wander and flee logic when trying to pick a random node from a pathgrid with 0 nodes.
 		genCallEnforced(0x5339D8, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 		genCallEnforced(0x549E76, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
+
+		// Patch: Route path building through MWSE so the planner can be modified without replacing every caller.
+		auto PathPlanner_buildPath = &TES3::PathPlanner::buildPath;
+		genCallEnforced(0x52FF36, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
+		genCallEnforced(0x5302AE, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
+		genCallEnforced(0x533E4A, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
+		genCallEnforced(0x5346CF, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
+		genCallEnforced(0x53510D, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
+		genCallEnforced(0x570096, 0x545100, *reinterpret_cast<DWORD*>(&PathPlanner_buildPath));
 
 		// Patch: UI element image mirroring on negative image scale.
 		writePatchCodeUnprotected(0x57DE02, (BYTE*)&PatchUIUpdateLayoutImageContent1, PatchUIUpdateLayoutImageContent1_size);

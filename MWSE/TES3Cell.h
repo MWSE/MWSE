@@ -45,6 +45,7 @@ namespace TES3 {
 			~Node() = delete;
 
 			sol::object getConnectedNodes_lua(sol::this_state ts) const;
+			NI::Point3 getLocalPosition() const;
 			NI::Point3 getPosition() const;
 		};
 

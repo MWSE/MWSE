@@ -352,6 +352,10 @@ namespace TES3 {
 		return conn;
 	}
 
+	NI::Point3 PathGrid::Node::getLocalPosition() const {
+		return { float(relativeX), float(relativeY), float(relativeZ) };
+	}
+
 	NI::Point3 PathGrid::Node::getPosition() const {
 		// Convert local position to world position.
 		const auto cell = parentGrid->parentCell;

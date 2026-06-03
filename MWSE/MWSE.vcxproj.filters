@@ -594,6 +594,9 @@
     <ClInclude Include="TES3MobileActor.h">
       <Filter>Header Files\DataAdapters\TES3\Objects\Actor\Mobile</Filter>
     </ClInclude>
+    <ClInclude Include="TES3PathPlanner.h">
+      <Filter>Header Files\DataAdapters\TES3\Worldspace</Filter>
+    </ClInclude>
     <ClInclude Include="TES3MobileCreature.h">
       <Filter>Header Files\DataAdapters\TES3\Objects\Actor\Mobile</Filter>
     </ClInclude>
@@ -2448,6 +2451,9 @@
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="TES3MobileActor.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="TES3PathPlanner.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
     <ClCompile Include="xLuaRunScript.cpp">

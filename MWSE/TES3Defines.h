@@ -110,6 +110,7 @@ namespace TES3 {
 	struct Object;
 	struct ObjectVirtualTable;
 	struct OwnershipAttachmentNode;
+	struct PathGrid;
 	struct PhysicalObject;
 	struct PhysicalObjectVirtualTable;
 	struct PlayerAnimationController;

@@ -389,6 +389,7 @@
     <ClInclude Include="TES3MobileActor.h" />
     <ClInclude Include="TES3MagicEffect.h" />
     <ClInclude Include="TES3Misc.h" />
+    <ClInclude Include="TES3PathPlanner.h" />
     <ClInclude Include="TES3MobilePlayerLua.h" />
     <ClInclude Include="TES3MobileProjectile.h" />
     <ClInclude Include="TES3MobileProjectileLua.h" />
@@ -839,6 +840,7 @@
     <ClCompile Include="TES3LockpickLua.cpp" />
     <ClCompile Include="TES3MagicEffectLua.cpp" />
     <ClCompile Include="TES3MiscLua.cpp" />
+    <ClCompile Include="TES3PathPlanner.cpp" />
     <ClCompile Include="TES3MobileActor.cpp" />
     <ClCompile Include="TES3MobileCreature.cpp" />
     <ClCompile Include="TES3MobileCreatureLua.cpp" />
