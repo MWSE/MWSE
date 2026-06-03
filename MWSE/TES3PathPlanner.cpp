@@ -3,6 +3,8 @@
 #include "TES3Cell.h"
 #include "TES3Util.h"
 
+#include "MWSEConfig.h"
+
 namespace TES3 {
 	namespace {
 		constexpr auto MaxAttachmentDistance = 1024.0f;
@@ -12,13 +14,19 @@ namespace TES3 {
 			SearchNode* parent;
 			int gCost;
 			int fCost;
+			int component;
 			bool closed;
 			bool opened;
 		};
 
 		struct ReachableNodeCandidate {
 			PathGrid::Node* pathGridNode;
-			int cost;
+			int score;
+			int component;
+		};
+
+		struct PathSearchResult {
+			std::vector<PathGrid::Node*> pathNodes;
 		};
 
 		int calculateExteriorWrapOffset(int coordinate) {
@@ -63,41 +71,198 @@ namespace TES3 {
 			return &*it;
 		}
 
-		PathGrid::Node* findClosestReachableNode(const PathPlanner* planner, const std::vector<PathGrid::Node*>& nodes, const NI::Point3& point) {
+		void resetSearchNodes(std::vector<SearchNode>& searchNodes) {
+			for (auto& node : searchNodes) {
+				node.parent = nullptr;
+				node.gCost = INT_MAX;
+				node.fCost = INT_MAX;
+				node.closed = false;
+				node.opened = false;
+			}
+		}
+
+		void markConnectedComponents(std::vector<SearchNode>& searchNodes) {
+			auto nextComponent = 0;
+			for (auto& root : searchNodes) {
+				if (root.component >= 0) {
+					continue;
+				}
+
+				std::vector<SearchNode*> stack;
+				stack.push_back(&root);
+				root.component = nextComponent;
+
+				while (!stack.empty()) {
+					const auto current = stack.back();
+					stack.pop_back();
+
+					if (!current->pathGridNode->connectedNodes) {
+						continue;
+					}
+
+					for (auto connectedNodePointer : *current->pathGridNode->connectedNodes) {
+						if (!connectedNodePointer || !*connectedNodePointer) {
+							continue;
+						}
+
+						auto connected = findSearchNode(searchNodes, *connectedNodePointer);
+						if (connected && connected->component < 0) {
+							connected->component = nextComponent;
+							stack.push_back(connected);
+						}
+					}
+				}
+
+				++nextComponent;
+			}
+		}
+
+		int getAttachmentScore(const NI::Point3& point, const NI::Point3& nodePosition) {
+			return int(point.distanceManhattan(&nodePosition) + point.heightDifference(&nodePosition));
+		}
+
+		std::vector<ReachableNodeCandidate> findReachableNodeCandidates(
+			const PathPlanner* planner,
+			std::vector<SearchNode>& searchNodes,
+			const std::vector<PathGrid::Node*>& nodes,
+			const NI::Point3& point
+		) {
+			std::vector<ReachableNodeCandidate> candidates;
+			PathGrid::Node* exactPathGridNode = nullptr;
+
 			const auto exactIt = std::find_if(nodes.begin(), nodes.end(),
 				[&point](const auto node) {
 					return node->getLocalPosition() == point;
 				}
 			);
 			if (exactIt != nodes.end()) {
-				return *exactIt;
+				exactPathGridNode = *exactIt;
+				if (const auto searchNode = findSearchNode(searchNodes, exactPathGridNode)) {
+					candidates.push_back({ exactPathGridNode, 0, searchNode->component });
+				}
 			}
 
-			std::vector<ReachableNodeCandidate> candidates;
 			candidates.reserve(nodes.size());
-			for (auto node : nodes) {
-				auto nodePosition = node->getLocalPosition();
-				candidates.push_back({ node, int(point.distanceManhattan(&nodePosition)) });
-			}
-
-			std::sort(candidates.begin(), candidates.end(), [](const auto& lhs, const auto& rhs) {
-				return lhs.cost < rhs.cost;
-				});
-
 			auto worldPoint = toWorldPoint(planner, point);
-			for (const auto& candidate : candidates) {
-				auto candidatePosition = candidate.pathGridNode->getLocalPosition();
-				if (point.distance(&candidatePosition) > MaxAttachmentDistance) {
+			for (auto node : nodes) {
+				if (node == exactPathGridNode) {
 					continue;
 				}
 
-				auto worldCandidatePosition = toWorldPoint(planner, candidatePosition);
-				if (mwse::tes3::testLineOfSight(&worldPoint, 64.0f, &worldCandidatePosition, 64.0f)) {
-					return candidate.pathGridNode;
+				auto nodePosition = node->getLocalPosition();
+				if (point.distance(&nodePosition) > MaxAttachmentDistance) {
+					continue;
+				}
+
+				auto worldNodePosition = toWorldPoint(planner, nodePosition);
+				if (!mwse::tes3::testLineOfSight(&worldPoint, 64.0f, &worldNodePosition, 64.0f)) {
+					continue;
+				}
+
+				if (const auto searchNode = findSearchNode(searchNodes, node)) {
+					candidates.push_back({ node, getAttachmentScore(point, nodePosition), searchNode->component });
 				}
 			}
 
-			return nullptr;
+			std::sort(candidates.begin(), candidates.end(),
+				[](const auto& lhs, const auto& rhs) {
+					return lhs.score < rhs.score;
+				}
+			);
+
+			candidates.erase(std::unique(candidates.begin(), candidates.end(),
+				[](const auto& lhs, const auto& rhs) {
+					return lhs.pathGridNode == rhs.pathGridNode;
+				}
+			), candidates.end());
+
+			constexpr auto MaxCandidateCount = 8;
+			if (candidates.size() > MaxCandidateCount) {
+				candidates.resize(MaxCandidateCount);
+			}
+
+			return candidates;
+		}
+
+		std::optional<PathSearchResult> findPath(
+			std::vector<SearchNode>& searchNodes,
+			PathGrid::Node* startPathGridNode,
+			PathGrid::Node* destinationPathGridNode
+		) {
+			resetSearchNodes(searchNodes);
+
+			const auto startNode = findSearchNode(searchNodes, startPathGridNode);
+			const auto destinationNode = findSearchNode(searchNodes, destinationPathGridNode);
+			if (!startNode || !destinationNode) {
+				return std::nullopt;
+			}
+
+			const auto destinationNodePosition = destinationPathGridNode->getLocalPosition();
+			auto startNodePosition = startPathGridNode->getLocalPosition();
+			startNode->gCost = 0;
+			startNode->fCost = int(startNodePosition.distanceManhattan(&destinationNodePosition));
+			startNode->opened = true;
+
+			while (true) {
+				SearchNode* current = nullptr;
+				auto currentCost = INT_MAX;
+
+				for (auto& node : searchNodes) {
+					if (node.opened && !node.closed && node.fCost < currentCost) {
+						currentCost = node.fCost;
+						current = &node;
+					}
+				}
+
+				if (!current) {
+					return std::nullopt;
+				}
+
+				if (current == destinationNode) {
+					break;
+				}
+
+				current->closed = true;
+
+				if (!current->pathGridNode->connectedNodes) {
+					continue;
+				}
+
+				for (auto connectedNodePointer : *current->pathGridNode->connectedNodes) {
+					if (!connectedNodePointer || !*connectedNodePointer) {
+						continue;
+					}
+
+					auto connected = findSearchNode(searchNodes, *connectedNodePointer);
+					if (!connected || connected->closed) {
+						continue;
+					}
+
+					const auto connectedPosition = connected->pathGridNode->getLocalPosition();
+					const auto tentativeGCost = current->gCost + 1;
+
+					if (!connected->opened || tentativeGCost < connected->gCost) {
+						connected->parent = current;
+						connected->gCost = tentativeGCost;
+						connected->fCost = tentativeGCost + int(connectedPosition.distanceManhattan(&destinationNodePosition));
+						connected->opened = true;
+					}
+				}
+			}
+
+			std::vector<PathGrid::Node*> pathNodes;
+			for (auto node = destinationNode; node; node = node->parent) {
+				pathNodes.push_back(node->pathGridNode);
+				if (node == startNode) {
+					break;
+				}
+			}
+
+			if (pathNodes.empty() || pathNodes.back() != startPathGridNode) {
+				return std::nullopt;
+			}
+
+			return PathSearchResult{ pathNodes };
 		}
 	}
 
@@ -138,91 +303,45 @@ namespace TES3 {
 		startNode.flags = (startNode.flags & ~0xFF) | 1;
 		goalNode.position = localDestination;
 
-		const auto startPathGridNode = findClosestReachableNode(this, nodes, localStart);
-		const auto destinationPathGridNode = findClosestReachableNode(this, nodes, localDestination);
-
-		if (!startPathGridNode || !destinationPathGridNode) {
-			return false;
-		}
-
 		std::vector<SearchNode> searchNodes;
 		searchNodes.reserve(nodes.size());
 		for (auto node : nodes) {
-			searchNodes.push_back({ node, nullptr, INT_MAX, INT_MAX, false, false });
+			searchNodes.push_back({ node, nullptr, INT_MAX, INT_MAX, -1, false, false });
 		}
+		markConnectedComponents(searchNodes);
 
-		const auto startNode = findSearchNode(searchNodes, startPathGridNode);
-		const auto destinationNode = findSearchNode(searchNodes, destinationPathGridNode);
-		const auto destinationNodePosition = destinationPathGridNode->getLocalPosition();
-		auto startNodePosition = startPathGridNode->getLocalPosition();
-		startNode->gCost = 0;
-		startNode->fCost = int(startNodePosition.distanceManhattan(&destinationNodePosition));
-		startNode->opened = true;
-
-		while (true) {
-			SearchNode* current = nullptr;
-			auto currentCost = INT_MAX;
-
-			for (auto& node : searchNodes) {
-				if (node.opened && !node.closed && node.fCost < currentCost) {
-					currentCost = node.fCost;
-					current = &node;
-				}
-			}
-
-			if (!current) {
-				return false;
-			}
-
-			if (current == destinationNode) {
-				break;
-			}
-
-			current->closed = true;
-
-			if (!current->pathGridNode->connectedNodes) {
-				continue;
-			}
-
-			for (auto connectedNodePointer : *current->pathGridNode->connectedNodes) {
-				if (!connectedNodePointer || !*connectedNodePointer) {
-					continue;
-				}
-
-				auto connected = findSearchNode(searchNodes, *connectedNodePointer);
-				if (!connected || connected->closed) {
-					continue;
-				}
-
-				const auto connectedPosition = connected->pathGridNode->getLocalPosition();
-				const auto tentativeGCost = current->gCost + 1;
-
-				if (!connected->opened || tentativeGCost < connected->gCost) {
-					connected->parent = current;
-					connected->gCost = tentativeGCost;
-					connected->fCost = tentativeGCost + int(connectedPosition.distanceManhattan(&destinationNodePosition));
-					connected->opened = true;
-				}
-			}
-		}
-
-		std::vector<PathGrid::Node*> pathNodes;
-		for (auto node = destinationNode; node; node = node->parent) {
-			pathNodes.push_back(node->pathGridNode);
-			if (node == startNode) {
-				break;
-			}
-		}
-
-		if (pathNodes.empty() || pathNodes.back() != startPathGridNode) {
+		const auto startCandidates = findReachableNodeCandidates(this, searchNodes, nodes, localStart);
+		const auto destinationCandidates = findReachableNodeCandidates(this, searchNodes, nodes, localDestination);
+		if (startCandidates.empty() || destinationCandidates.empty()) {
 			return false;
 		}
 
-		for (auto it = pathNodes.rbegin(); it != pathNodes.rend(); ++it) {
-			if (*it == startPathGridNode) {
-				continue;
+		std::optional<PathSearchResult> selectedPath;
+		for (const auto& destinationCandidate : destinationCandidates) {
+			for (const auto& startCandidate : startCandidates) {
+				if (startCandidate.component != destinationCandidate.component) {
+					continue;
+				}
+
+				auto path = findPath(searchNodes, startCandidate.pathGridNode, destinationCandidate.pathGridNode);
+				if (!path) {
+					continue;
+				}
+
+				selectedPath = path;
+				break;
 			}
 
+			if (selectedPath) {
+				break;
+			}
+		}
+
+		if (!selectedPath) {
+			return false;
+		}
+
+		for (auto it = selectedPath->pathNodes.rbegin(); it != selectedPath->pathNodes.rend(); ++it) {
 			pathList.push_back(toWorldPoint(this, (*it)->getLocalPosition()));
 		}
 
