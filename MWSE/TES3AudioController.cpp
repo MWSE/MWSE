@@ -1,6 +1,8 @@
 
 #include "TES3AudioController.h"
 
+#include "TES3DataHandler.h"
+#include "TES3GameSetting.h"
 #include "TES3Sound.h"
 #include "TES3WorldController.h"
 
@@ -54,7 +56,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_AudioController_playSoundBuffer = reinterpret_cast<void(__thiscall*)(AudioController*, SoundBuffer*, int)>(0x402820);
-	void AudioController::playSoundBuffer(SoundBuffer* soundBuffer, int flags) {
+	void AudioController::playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags) {
 		TES3_AudioController_playSoundBuffer(this, soundBuffer, flags);
 	}
 
@@ -63,7 +65,30 @@ namespace TES3 {
 		return TES3_AudioController_setSoundBufferMinMaxDistance(this, soundBuffer, minDistance, maxDistance);
 	}
 
-	void AudioController::stopSoundBuffer(const SoundBuffer* buffer) const {
+	const auto TES3_AudioController_isDirectSoundAvailable = reinterpret_cast<bool(__thiscall*)(const AudioController*)>(0x401DA0);
+	bool AudioController::isDirectSoundAvailable() const {
+		return TES3_AudioController_isDirectSoundAvailable(this);
+	}
+
+	bool AudioController::playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags, uint8_t volume, float pitch, bool isNot3D) {
+		if (!soundBuffer || !soundBuffer->lpSoundBuffer) {
+			return false;
+		}
+
+		if (volume == 253) {
+			volume = volumeMaster;
+		}
+
+		setSoundBufferCurrentPosition(soundBuffer, 0.01f);
+		setSoundBufferVolume(soundBuffer, volume);
+		setSoundBufferFrequency(soundBuffer, pitch);
+		commitDeferredSettings();
+		playSoundBuffer(soundBuffer, flags);
+
+		return true;
+	}
+
+	void AudioController::stopSoundBuffer(SoundBuffer* buffer) const {
 		if (!buffer || !buffer->lpSoundBuffer) {
 			return;
 		}
@@ -351,14 +376,86 @@ namespace TES3 {
 		changeMusicTrack(filename, crossfade.value_or(1000), volume.value_or(1.0f));
 	}
 
+	DWORD AudioController::getSoundBufferStatus(SoundBuffer* soundBuffer) const {
+		if (!soundBuffer || !soundBuffer->lpSoundBuffer) {
+			return 0;
+		}
+
+		DWORD status = 0u;
+		soundBuffer->lpSoundBuffer->GetStatus(&status);
+		return status;
+	}
+
+	bool AudioController::getSoundBufferIsPlaying(SoundBuffer* soundBuffer) const {
+		return (getSoundBufferStatus(soundBuffer) & DSBSTATUS_PLAYING) != 0;
+	}
+
+	void AudioController::setSoundBuffer3DParams(SoundBuffer* soundBuffer, bool isPointSource) {
+		if (!soundBuffer) {
+			return;
+		}
+
+		if (!isDirectSoundAvailable()) {
+			return;
+		}
+
+		if (isPointSource) {
+			auto minDistance = DataHandler::get()->getGameSettingFloat(GMST::fAudioDefaultMinDistance);
+			auto maxDistance = DataHandler::get()->getGameSettingFloat(GMST::fAudioDefaultMaxDistance);
+
+			if (soundBuffer->minDistance != 0 || soundBuffer->maxDistance != 0) {
+				std::memcpy(&minDistance, &soundBuffer->minDistance, sizeof(float));
+				std::memcpy(&maxDistance, &soundBuffer->maxDistance, sizeof(float));
+			}
+
+			minDistance *= DataHandler::get()->getGameSettingFloat(GMST::fAudioMinDistanceMult);
+			maxDistance *= DataHandler::get()->getGameSettingFloat(GMST::fAudioMaxDistanceMult);
+			if (minDistance > maxDistance) {
+				maxDistance = minDistance;
+			}
+
+			setSoundBufferMinMaxDistance(soundBuffer, minDistance, maxDistance);
+		}
+
+		setSoundBufferVolume(soundBuffer, soundBuffer->volume);
+	}
+
 	const auto TES3_AdjustLoopingSoundsVolume = reinterpret_cast<void(__cdecl*)()>(0x5A1E10);
 	void __cdecl AudioController::adjustLoopingSoundsVolume() {
 		TES3_AdjustLoopingSoundsVolume();
 	}
 
-	const auto TES3_AudioController_SetSoundBufferVolume = reinterpret_cast<void(__thiscall*)(AudioController*, SoundBuffer*, unsigned char)>(0x4029F0);
-	void AudioController::setSoundBufferVolume(SoundBuffer* soundBuffer, unsigned char volume) {
+	const auto TES3_AudioController_commitDeferredSettings = reinterpret_cast<void(__thiscall*)(AudioController*)>(0x403250);
+	void AudioController::commitDeferredSettings() {
+		TES3_AudioController_commitDeferredSettings(this);
+	}
+
+	const auto TES3_AudioController_SetSoundBufferVolume = reinterpret_cast<void(__thiscall*)(const AudioController*, SoundBuffer*, unsigned char)>(0x4029F0);
+	void AudioController::setSoundBufferVolume(SoundBuffer* soundBuffer, unsigned char volume) const {
 		TES3_AudioController_SetSoundBufferVolume(this, soundBuffer, volume);
+	}
+
+	const auto TES3_AudioController_SetSoundBufferCurrentPosition = reinterpret_cast<void(__thiscall*)(const AudioController*, SoundBuffer*, float)>(0x4029A0);
+	void AudioController::setSoundBufferCurrentPosition(SoundBuffer* soundBuffer, float position) const {
+		TES3_AudioController_SetSoundBufferCurrentPosition(this, soundBuffer, position);
+	}
+
+	void AudioController::setSoundBufferFrequency(SoundBuffer* soundBuffer, float frequency) const {
+		if (!soundBuffer) {
+			return;
+		}
+
+		const auto samplesPerSecond = soundBuffer->bufferDescription.lpwfxFormat->nSamplesPerSec;
+		if (samplesPerSecond < 100u || samplesPerSecond > 100000u) {
+			return;
+		}
+
+		const auto freq = static_cast<DWORD>(samplesPerSecond * frequency);
+		if (freq <= 100u || freq >= 100000u) {
+			return;
+		}
+
+		soundBuffer->lpSoundBuffer->SetFrequency(freq);
 	}
 
 }
