@@ -2029,7 +2029,7 @@ namespace mwse::patch {
 	}
 
 	static void __stdcall PatchWaterSoundSetLoopVolumeMCP(TES3::SoundBuffer* _, int volume) {
-		if (!waterSoundBuffer) {
+		if (!waterSoundBuffer || !waterSoundBuffer->lpSoundBuffer) {
 			return;
 		}
 
