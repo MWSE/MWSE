@@ -266,7 +266,12 @@ namespace TES3 {
 		}
 	}
 
+	const auto TES3_PathPlanner_buildPath = reinterpret_cast<bool(__thiscall*)(PathPlanner*, int, int, int, int, int, int)>(0x545100);
 	bool PathPlanner::buildPath(int startX, int startY, int startZ, int destinationX, int destinationY, int destinationZ) {
+		if (!mwse::Configuration::UseNewPathfinding) {
+			return TES3_PathPlanner_buildPath(this, startX, startY, startZ, destinationX, destinationY, destinationZ);
+		}
+
 		clearSearchStateAndPath();
 
 		if (!pathGrid || pathGrid->nodeCount == 0) {

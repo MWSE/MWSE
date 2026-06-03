@@ -21,6 +21,7 @@ namespace mwse {
 		static bool ReplaceLightSorting;
 		static bool CreateFullMinidumps;
 		static UINT BackgroundLoadPollIntervalMs;
+		static bool UseNewPathfinding;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();
