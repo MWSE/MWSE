@@ -193,6 +193,22 @@ namespace TES3 {
 		audio->setSoundBufferVolume(soundBuffer, (unsigned char)finalVolume);
 	}
 
+	SoundBuffer* Sound::createSoundBuffer(bool isPointSource) const {
+		const auto ac = WorldController::get()->audioController;
+		if (!ac->isDirectSoundAvailable()) {
+			return nullptr;
+		}
+
+		char buffer[MAX_PATH] = {};
+		sprintf(buffer, "data files\\sound\\%s", filename);
+		
+		if (minDistance == 255 || maxDistance == 255) {
+			isPointSource = false;
+		}
+
+		return ac->loadSoundFile(buffer, isPointSource);
+	}
+
 	std::string Sound::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3sound:" << id << "\"";

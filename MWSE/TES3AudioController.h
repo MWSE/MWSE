@@ -97,14 +97,18 @@ namespace TES3 {
 		void unpauseMusic();
 
 		SoundBuffer* loadSoundFile(const char* filename, bool isPointSource);
-		void playSoundBuffer(SoundBuffer* soundBuffer, int flags);
+		void playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags);
+		void setSoundBufferCurrentPosition(SoundBuffer* soundBuffer, float position) const;
 		int setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance);
+
+		bool isDirectSoundAvailable() const;
 
 		//
 		// Custom functions.
 		//
 
-		void stopSoundBuffer(const SoundBuffer* buffer) const;
+		bool playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags, uint8_t volume, float pitch, bool isNot3D);
+		void stopSoundBuffer(SoundBuffer* buffer) const;
 
 		bool getAudioFlag(AudioFlag::Flag flag) const;
 		void setAudioFlag(AudioFlag::Flag flag, bool set);
@@ -143,8 +147,16 @@ namespace TES3 {
 
 		void changeMusicTrack_lua(const char* filename, sol::optional<int> crossfade, sol::optional<float> volume);
 
+		DWORD getSoundBufferStatus(SoundBuffer* soundBuffer) const;
+		bool getSoundBufferIsPlaying(SoundBuffer* soundBuffer) const;
+
+		void setSoundBuffer3DParams(SoundBuffer* soundBuffer, bool isPointSource);
+
 		static void __cdecl adjustLoopingSoundsVolume();
-		void setSoundBufferVolume(SoundBuffer* soundBuffer, unsigned char volume);
+		void commitDeferredSettings();
+		void setSoundBufferVolume(SoundBuffer* soundBuffer, unsigned char volume) const;
+
+		void setSoundBufferFrequency(SoundBuffer* soundBuffer, float frequency) const;
 
 		//
 		// Wrapper functions to expose volumes in a consistent format.

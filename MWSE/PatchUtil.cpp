@@ -1967,6 +1967,77 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Ensure exclusive sound buffer for water audio.
+	//
+
+	static TES3::Sound* waterSound = nullptr;
+	static TES3::SoundBuffer* waterSoundBuffer = nullptr;
+
+	static void PatchWaterSoundInstantiate(TES3::Sound* sound) {
+		if (waterSound == sound && waterSoundBuffer) {
+			return;
+		}
+
+		if (waterSoundBuffer) {
+			delete waterSoundBuffer;
+			waterSoundBuffer = nullptr;
+		}
+
+		waterSound = sound;
+		waterSoundBuffer = sound->createSoundBuffer(false);
+	}
+
+	static void __fastcall PatchWaterSoundSet3DParams(TES3::Sound* sound, DWORD, bool isPointSource) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		ac->setSoundBuffer3DParams(waterSoundBuffer, isPointSource);
+	}
+
+	static bool __fastcall PatchWaterSoundIsPlaying(TES3::Sound* sound) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		return ac->getSoundBufferIsPlaying(waterSoundBuffer);
+	}
+
+	static void __fastcall PatchWaterSoundPlay(TES3::Sound* sound, DWORD, DWORD flags, uint8_t volume, float pitch, bool isNot3D) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		ac->playSoundBuffer(waterSoundBuffer, flags, volume, pitch, isNot3D);
+	}
+
+	static void __fastcall PatchWaterSoundStop(TES3::Sound* sound) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		if (!ac->getSoundBufferIsPlaying(waterSoundBuffer)) {
+			return;
+		}
+		PatchWaterSoundInstantiate(sound);
+		ac->stopSoundBuffer(waterSoundBuffer);
+	}
+
+	static void __fastcall PatchWaterSoundSetFrequency(TES3::AudioController* ac, DWORD, TES3::SoundBuffer* _, float frequency) {
+		ac->setSoundBufferFrequency(waterSoundBuffer, frequency);
+	}
+
+	static void __fastcall PatchWaterSoundSetLoopVolume(TES3::SoundBuffer* _, DWORD, int volume) {
+		if (!waterSoundBuffer) {
+			return;
+		}
+
+		const auto newVolume = static_cast<uint8_t>(waterSound->volume * float(volume) / 250.0f);
+		const auto ac = TES3::WorldController::get()->audioController;
+		ac->setSoundBufferVolume(waterSoundBuffer, newVolume);
+	}
+
+	static void __stdcall PatchWaterSoundSetLoopVolumeMCP(TES3::SoundBuffer* _, int volume) {
+		if (!waterSoundBuffer || !waterSoundBuffer->lpSoundBuffer) {
+			return;
+		}
+
+		volume = std::clamp(volume, -10000, 0);
+		waterSoundBuffer->lpSoundBuffer->SetVolume(volume);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2711,6 +2782,19 @@ namespace mwse::patch {
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
+
+		// Patch: Ensure exclusive sound buffer for water audio.
+		genCallEnforced(0x48A861, 0x5107E0, reinterpret_cast<DWORD>(PatchWaterSoundSet3DParams));
+		genCallEnforced(0x48A86C, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A89F, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A8EE, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A8D0, 0x510A40, reinterpret_cast<DWORD>(PatchWaterSoundPlay));
+		genCallEnforced(0x48A892, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
+		genCallEnforced(0x48A9C8, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
+		genNOPUnprotected(0x48A8DB, 0x48A8EE - 0x48A8DB);
+		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
+		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
+		genCallEnforced(0x48A989, 0x402B42, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolumeMCP));
 	}
 
 	void installPostLuaPatches() {
