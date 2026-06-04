@@ -71,6 +71,101 @@ local result = myObject:getContentsBlock()
 
 ***
 
+### `getTab`
+<div class="search_terms" style="display: none">gettab, tab</div>
+
+Gets the tab selector button with the given ID.
+
+```lua
+local tab = myObject:getTab(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+**Returns**:
+
+* `tab` ([tes3uiElement](../types/tes3uiElement.md), nil)
+
+***
+
+### `getTabContents`
+<div class="search_terms" style="display: none">gettabcontents, tabcontents</div>
+
+Gets the contents block for the tab with the given ID.
+
+```lua
+local contents = myObject:getTabContents(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+**Returns**:
+
+* `contents` ([tes3uiElement](../types/tes3uiElement.md), nil)
+
+***
+
+### `getTabDisabled`
+<div class="search_terms" style="display: none">gettabdisabled, tabdisabled</div>
+
+Gets whether the tab with the given ID is disabled.
+
+```lua
+local result = myObject:getTabDisabled(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `getTabHidden`
+<div class="search_terms" style="display: none">gettabhidden, tabhidden</div>
+
+Gets whether the tab with the given ID is hidden.
+
+```lua
+local result = myObject:getTabHidden(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `getTabPosition`
+<div class="search_terms" style="display: none">gettabposition, tabposition</div>
+
+Gets the one-based position of the tab with the given ID.
+
+```lua
+local position = myObject:getTabPosition(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+**Returns**:
+
+* `position` (number, nil)
+
+***
+
 ### `getTabsBlock`
 <div class="search_terms" style="display: none">gettabsblock, tabsblock</div>
 
@@ -83,4 +178,89 @@ local result = myObject:getTabsBlock()
 **Returns**:
 
 * `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
+### `nextTab`
+<div class="search_terms" style="display: none">nexttab</div>
+
+Changes the currently selected tab to the next available one. If on the last tab, it will cycle back around to the first.
+
+```lua
+myObject:nextTab()
+```
+
+***
+
+### `previousTab`
+<div class="search_terms" style="display: none">previoustab</div>
+
+Changes the currently selected tab to the previous available one. If on the first tab, it will cycle back around to the last.
+
+```lua
+myObject:previousTab()
+```
+
+***
+
+### `removeTab`
+<div class="search_terms" style="display: none">removetab, tab</div>
+
+Removes the tab with the given ID and destroys its associated contents block. If the removed tab was selected, the next available tab will be selected.
+
+```lua
+myObject:removeTab(id)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+
+***
+
+### `setTabDisabled`
+<div class="search_terms" style="display: none">settabdisabled, tabdisabled</div>
+
+Sets whether the tab with the given ID is disabled. If the selected tab is disabled, the next available tab will be selected.
+
+```lua
+myObject:setTabDisabled(id, disabled)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+* `disabled` (boolean): If true, the tab will be disabled.
+
+***
+
+### `setTabHidden`
+<div class="search_terms" style="display: none">settabhidden, tabhidden</div>
+
+Sets whether the tab with the given ID is hidden. If the selected tab is hidden, the next available tab will be selected.
+
+```lua
+myObject:setTabHidden(id, hidden)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+* `hidden` (boolean): If true, the tab will be hidden.
+
+***
+
+### `setTabPosition`
+<div class="search_terms" style="display: none">settabposition, tabposition</div>
+
+Moves the tab with the given ID to a new one-based position. The associated contents block will be moved to the same position.
+
+```lua
+myObject:setTabPosition(id, position)
+```
+
+**Parameters**:
+
+* `id` (string): The unique identifier for the tab.
+* `position` (number): The one-based position to move the tab to.
 

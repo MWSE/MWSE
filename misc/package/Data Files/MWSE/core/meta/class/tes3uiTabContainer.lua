@@ -26,7 +26,57 @@ function tes3uiTabContainer:addTab(params) end
 --- @return tes3uiElement result No description yet available.
 function tes3uiTabContainer:getContentsBlock() end
 
+--- Gets the tab selector button with the given ID.
+--- @param id string The unique identifier for the tab.
+--- @return tes3uiElement|nil tab No description yet available.
+function tes3uiTabContainer:getTab(id) end
+
+--- Gets the contents block for the tab with the given ID.
+--- @param id string The unique identifier for the tab.
+--- @return tes3uiElement|nil contents No description yet available.
+function tes3uiTabContainer:getTabContents(id) end
+
+--- Gets whether the tab with the given ID is disabled.
+--- @param id string The unique identifier for the tab.
+--- @return boolean result No description yet available.
+function tes3uiTabContainer:getTabDisabled(id) end
+
+--- Gets whether the tab with the given ID is hidden.
+--- @param id string The unique identifier for the tab.
+--- @return boolean result No description yet available.
+function tes3uiTabContainer:getTabHidden(id) end
+
+--- Gets the one-based position of the tab with the given ID.
+--- @param id string The unique identifier for the tab.
+--- @return number|nil position No description yet available.
+function tes3uiTabContainer:getTabPosition(id) end
+
 --- Gets the block that contains the tab buttons used for this container. Should be used with care.
 --- @return tes3uiElement result No description yet available.
 function tes3uiTabContainer:getTabsBlock() end
+
+--- Changes the currently selected tab to the next available one. If on the last tab, it will cycle back around to the first.
+function tes3uiTabContainer:nextTab() end
+
+--- Changes the currently selected tab to the previous available one. If on the first tab, it will cycle back around to the last.
+function tes3uiTabContainer:previousTab() end
+
+--- Removes the tab with the given ID and destroys its associated contents block. If the removed tab was selected, the next available tab will be selected.
+--- @param id string The unique identifier for the tab.
+function tes3uiTabContainer:removeTab(id) end
+
+--- Sets whether the tab with the given ID is disabled. If the selected tab is disabled, the next available tab will be selected.
+--- @param id string The unique identifier for the tab.
+--- @param disabled boolean If true, the tab will be disabled.
+function tes3uiTabContainer:setTabDisabled(id, disabled) end
+
+--- Sets whether the tab with the given ID is hidden. If the selected tab is hidden, the next available tab will be selected.
+--- @param id string The unique identifier for the tab.
+--- @param hidden boolean If true, the tab will be hidden.
+function tes3uiTabContainer:setTabHidden(id, hidden) end
+
+--- Moves the tab with the given ID to a new one-based position. The associated contents block will be moved to the same position.
+--- @param id string The unique identifier for the tab.
+--- @param position number The one-based position to move the tab to.
+function tes3uiTabContainer:setTabPosition(id, position) end
 
