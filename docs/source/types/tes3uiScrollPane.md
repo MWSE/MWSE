@@ -33,6 +33,17 @@ Access back to the element this widget interface is for.
 
 ***
 
+### `horizontalScrollBar`
+<div class="search_terms" style="display: none">horizontalscrollbar</div>
+
+*Read-only*. The horizontal scroll bar element of this pane.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `positionX`
 <div class="search_terms" style="display: none">positionx</div>
 
@@ -77,6 +88,17 @@ If `true`, the scrollbar will be visible.
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `verticalScrollBar`
+<div class="search_terms" style="display: none">verticalscrollbar</div>
+
+*Read-only*. The vertical scroll bar element of this pane.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
 
 ***
 

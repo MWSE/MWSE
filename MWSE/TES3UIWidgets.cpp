@@ -343,7 +343,7 @@ namespace TES3::UI {
 
 	static UI_ID uiidScrollPaneHScroll, uiidScrollPaneVScroll, uiidScrollPaneOuterFrame;
 
-	const auto TES3_WidgetScrollPane_getContentPane = reinterpret_cast<TES3::UI::Element*(__cdecl*)(WidgetScrollPane*)>(0x649CA0);
+	const auto TES3_WidgetScrollPane_getContentPane = reinterpret_cast<TES3::UI::Element*(__cdecl*)(const WidgetScrollPane*)>(0x649CA0);
 
 	bool WidgetScrollPane::initProperties() {
 		uiidScrollPaneHScroll = registerID("PartScrollPane_hor_scrollbar");
@@ -363,12 +363,12 @@ namespace TES3::UI {
 	}
 
 	int WidgetScrollPane::getHorizontalPos() const {
-		auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneHScroll));
+		auto scroll = WidgetScrollBar::fromElement(getHorizontalScrollBar());
 		return scroll->getCurrent();
 	}
 
 	void WidgetScrollPane::setHorizontalPos(int value) {
-		auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneHScroll));
+		auto scroll = WidgetScrollBar::fromElement(getHorizontalScrollBar());
 		scroll->setCurrent(value);
 
 		const auto TES3_ui_ScrollPaneHorz_scrollBarChanged = reinterpret_cast<EventCallback>(0x649A20);
@@ -376,12 +376,12 @@ namespace TES3::UI {
 	}
 
 	int WidgetScrollPane::getVerticalPos() const {
-		auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneVScroll));
+		auto scroll = WidgetScrollBar::fromElement(getVerticalScrollBar());
 		return scroll->getCurrent();
 	}
 
 	void WidgetScrollPane::setVerticalPos(int value) {
-		auto scroll = WidgetScrollBar::fromElement(findChild(uiidScrollPaneVScroll));
+		auto scroll = WidgetScrollBar::fromElement(getVerticalScrollBar());
 		scroll->setCurrent(value);
 
 		const auto TES3_ui_ScrollPaneVert_scrollBarChanged = reinterpret_cast<EventCallback>(0x649870);
@@ -435,8 +435,8 @@ namespace TES3::UI {
 	}
 
 	bool WidgetScrollPane::getScrollbarVisible() const {
-		auto scrollH = findChild(uiidScrollPaneHScroll);
-		auto scrollV = findChild(uiidScrollPaneVScroll);
+		auto scrollH = getHorizontalScrollBar();
+		auto scrollV = getVerticalScrollBar();
 
 		if (scrollH) {
 			return scrollH->visible;
@@ -446,9 +446,10 @@ namespace TES3::UI {
 		}
 		return false;
 	}
+
 	void WidgetScrollPane::setScrollbarVisible(bool value) {
-		auto scrollH = findChild(uiidScrollPaneHScroll);
-		auto scrollV = findChild(uiidScrollPaneVScroll);
+		auto scrollH = getHorizontalScrollBar();
+		auto scrollV = getVerticalScrollBar();
 
 		if (scrollH) {
 			scrollH->setVisible(value);
@@ -458,8 +459,16 @@ namespace TES3::UI {
 		}
 	}
 
-	TES3::UI::Element * WidgetScrollPane::getContentPane() {
+	TES3::UI::Element * WidgetScrollPane::getContentPane() const {
 		return TES3_WidgetScrollPane_getContentPane(this);
+	}
+
+	TES3::UI::Element* WidgetScrollPane::getHorizontalScrollBar() const {
+		return findChild(uiidScrollPaneHScroll);
+	}
+
+	TES3::UI::Element* WidgetScrollPane::getVerticalScrollBar() const {
+		return findChild(uiidScrollPaneVScroll);
 	}
 
 	void WidgetScrollPane::contentPaneChanged() {
