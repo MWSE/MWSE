@@ -2733,7 +2733,7 @@ namespace mwse::lua {
 			std::unordered_set<unsigned int> instancesToRetire;
 
 			for (const auto& effect : mobile->activeMagicEffects) {
-				if (instancesToRetire.find(effect.magicInstanceSerial) != instancesToRetire.end()) {
+				if (instancesToRetire.contains(effect.magicInstanceSerial)) {
 					continue;
 				}
 

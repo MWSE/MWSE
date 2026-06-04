@@ -496,7 +496,7 @@ namespace TES3 {
 			}
 
 			if (destinationCell->getIsInterior()) {
-				if (visitedCells.find(destinationCell) == visitedCells.end()) {
+				if (!visitedCells.contains(destinationCell)) {
 					linkedInteriorCells.push_back(destinationCell);
 				}
 				continue;

@@ -121,7 +121,7 @@ namespace se::cs::dialog::layer_window {
 		auto objIt = perCellReferences.find(objCell);
 		if (objIt != perCellReferences.end()) {
 			auto cellRefs = &objIt->second;
-			if (cellRefs->find(objRef) != cellRefs->end()) {
+			if (cellRefs->contains(objRef)) {
 				updateObject(objRef, true);
 				isRemoved = true;
 				cellRefs->erase(objRef);
@@ -147,10 +147,10 @@ namespace se::cs::dialog::layer_window {
 		auto objCell = objRef ? objRef->getCell() : nullptr;
 		if (!objCell) return;
 
-		if (perCellReferences.find(objCell) == perCellReferences.end()) return;
+		if (!perCellReferences.contains(objCell)) return;
 
 		auto& cellRefs = perCellReferences[objCell];
-		if (cellRefs.find(objRef) == cellRefs.end()) return;
+		if (!cellRefs.contains(objRef)) return;
 
 		auto node = objRef ? objRef->sceneNode : nullptr;
 		if (!node) return;
@@ -374,7 +374,7 @@ namespace se::cs::dialog::layer_window {
 
 	size_t getNextLayerId() {
 		size_t nextId = 0;
-		while (g_LayersIdMap.find(nextId) != g_LayersIdMap.end()) {
+		while (g_LayersIdMap.contains(nextId)) {
 			++nextId;
 		}
 
@@ -496,8 +496,7 @@ namespace se::cs::dialog::layer_window {
 		auto cellList = recordHandler->cells;
 
 		// Populate layer data with actual object references
-		for (auto cellIt = cellList->begin(); cellIt != cellList->end(); ++cellIt) {
-			Cell* cell = *cellIt;
+		for (auto cell : *cellList) {
 			if (!cell) continue;
 
 			std::string currentCellId = cell->getEditorId(); // will fail to be restored if cell was renamed
@@ -551,7 +550,7 @@ namespace se::cs::dialog::layer_window {
 		}
 
 		// if layer id 0 is missing, recreate default layer
-		if (g_LayersIdMap.find(0) == g_LayersIdMap.end()) {
+		if (!g_LayersIdMap.contains(0)) {
 			auto hiddenLayer = new LayerData();
 			hiddenLayer->id = HIDDEN_LAYER_ID;
 			hiddenLayer->layerName = new std::string("Hidden");

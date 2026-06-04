@@ -25,7 +25,7 @@ namespace se::cs::metadata {
 		const auto recordHandler = DataHandler::get()->recordHandler;
 		for (const auto& gameFile : *recordHandler->availableDataFiles) {
 			// Skip any that are already loaded.
-			if (gameFileMap.find(gameFile) != gameFileMap.end()) {
+			if (gameFileMap.contains(gameFile)) {
 				continue;
 			}
 
@@ -109,6 +109,6 @@ namespace se::cs::metadata {
 			return false;
 		}
 		string::to_lower(id);
-		return deprecatedIds.find(id) != deprecatedIds.end();
+		return deprecatedIds.contains(id);
 	}
 }
