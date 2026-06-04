@@ -1,6 +1,7 @@
 #include "TES3Reference.h"
 
 #include "LuaManager.h"
+#include "LuaScopedEventSuppressor.h"
 #include "LuaUtil.h"
 
 #include "LuaActivateEvent.h"
@@ -9,6 +10,8 @@
 #include "LuaDisarmTrapEvent.h"
 #include "LuaLeveledCreaturePickedEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
+#include "LuaMobileObjectActivatedEvent.h"
+#include "LuaMobileObjectDeactivatedEvent.h"
 #include "LuaPickLockEvent.h"
 #include "LuaReferenceActivatedEvent.h"
 #include "LuaReferenceDeactivatedEvent.h"
@@ -323,6 +326,13 @@ namespace TES3 {
 
 	void Reference::reloadAnimation(const char* path) {
 		auto parentNode = sceneNode->parentNode;
+
+		// Users may want to call `loadAnimation` inside `mobileActivated` events, after which
+		// the `resetVisualNode` and `enterLeaveSimulation` calls below would trigger another 
+		// `mobileActivated` event, causing an infinite loop. Suppress the event temporarily 
+		// to prevent that.
+		using namespace mwse::lua::event;
+		ScopedEventSuppressor<MobileObjectActivatedEvent, MobileObjectDeactivatedEvent> suppressMobileSimulationEvents;
 
 		resetVisualNode();
 		auto node = getSceneGraphNode();
