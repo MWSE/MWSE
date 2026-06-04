@@ -441,3 +441,20 @@ myObject:setFlag(state, index)
 * `state` (boolean)
 * `index` (number)
 
+***
+
+## Functions
+
+### `new`
+<div class="search_terms" style="display: none">new</div>
+
+Creates a new basic niMaterialProperty.
+
+```lua
+local property = niMaterialProperty.new()
+```
+
+**Returns**:
+
+* `property` ([niMaterialProperty](../types/niMaterialProperty.md))
+

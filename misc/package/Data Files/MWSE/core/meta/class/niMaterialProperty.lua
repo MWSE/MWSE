@@ -13,6 +13,10 @@
 --- @field specular niColor The specular material color. Setting this value also marks the material as changed, so that renderer knows that it needs to update its copies of the material settings.
 niMaterialProperty = {}
 
+--- Creates a new basic niMaterialProperty.
+--- @return niMaterialProperty property No description yet available.
+function niMaterialProperty.new() end
+
 --- This marks the material as changed, so that the renderer knows that it needs to update the copies of the material settings.
 function niMaterialProperty:incrementRevisionId() end
 
