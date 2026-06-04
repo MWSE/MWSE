@@ -16,7 +16,7 @@ tes3uiScrollPane = {}
 --- Updates the scrollbar slider and scrollbar limits after adding or removing elements to the content container. Because content size depends on layout, this must be run after calling `updateLayout` on the widget element. Only required if the content size changes.
 function tes3uiScrollPane:contentsChanged() end
 
---- Scrolls the pane vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
+--- Scrolls the pane horizontally or vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
 --- @param child tes3uiElement A descendant element of the scroll pane's content element. Nested descendants are supported.
 --- @return boolean result No description yet available.
 function tes3uiScrollPane:scrollIntoView(child) end

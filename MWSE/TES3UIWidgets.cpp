@@ -412,26 +412,51 @@ namespace TES3::UI {
 			return false;
 		}
 
-		const int viewportBottom = outerFrame->cached_screenY;
-		const int viewportTop = outerFrame->cached_screenY - outerFrame->height;
-		const int childBottom = child->cached_screenY;
-		const int childTop = child->cached_screenY - child->height;
-		const int currentPos = getVerticalPos();
+		bool scrolled = false;
 
-		int targetPos = currentPos;
-		if (childTop < viewportTop) {
-			targetPos += viewportTop - childTop;
-		}
-		else if (childBottom > viewportBottom) {
-			targetPos -= childBottom - viewportBottom;
+		if (auto scrollH = getHorizontalScrollBar()) {
+			const int viewportLeft = outerFrame->cached_screenX;
+			const int viewportRight = outerFrame->cached_screenX + outerFrame->width;
+			const int childLeft = child->cached_screenX;
+			const int childRight = child->cached_screenX + child->width;
+			const int currentPos = WidgetScrollBar::fromElement(scrollH)->getCurrent();
+
+			int targetPos = currentPos;
+			if (childLeft < viewportLeft) {
+				targetPos -= viewportLeft - childLeft;
+			}
+			else if (childRight > viewportRight) {
+				targetPos += childRight - viewportRight;
+			}
+
+			if (targetPos != currentPos) {
+				setHorizontalPos(targetPos);
+				scrolled = true;
+			}
 		}
 
-		if (targetPos == currentPos) {
-			return false;
+		if (auto scrollV = getVerticalScrollBar()) {
+			const int viewportBottom = outerFrame->cached_screenY;
+			const int viewportTop = outerFrame->cached_screenY - outerFrame->height;
+			const int childBottom = child->cached_screenY;
+			const int childTop = child->cached_screenY - child->height;
+			const int currentPos = WidgetScrollBar::fromElement(scrollV)->getCurrent();
+
+			int targetPos = currentPos;
+			if (childTop < viewportTop) {
+				targetPos += viewportTop - childTop;
+			}
+			else if (childBottom > viewportBottom) {
+				targetPos -= childBottom - viewportBottom;
+			}
+
+			if (targetPos != currentPos) {
+				setVerticalPos(targetPos);
+				scrolled = true;
+			}
 		}
 
-		setVerticalPos(targetPos);
-		return true;
+		return scrolled;
 	}
 
 	bool WidgetScrollPane::getScrollbarVisible() const {

@@ -118,7 +118,7 @@ myObject:contentsChanged()
 ### `scrollIntoView`
 <div class="search_terms" style="display: none">scrollintoview</div>
 
-Scrolls the pane vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
+Scrolls the pane horizontally or vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
 
 ```lua
 local result = myObject:scrollIntoView(child)
