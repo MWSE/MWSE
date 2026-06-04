@@ -487,12 +487,15 @@ function tes3uiElement:createSliderVertical(params) end
 --- @param params tes3uiElement.createTabContainer.params This table accepts the following values:
 --- 
 --- `id?`: string|number — *Optional*. An identifier to help find this element later.
+--- 
+--- `showArrows?`: boolean — *Default*: `false`. If set, displays left and right arrows on either side of the tab list. This can help when navigating many tabs.
 --- @return tes3uiElement result No description yet available.
 function tes3uiElement:createTabContainer(params) end
 
 ---Table parameter definitions for `tes3uiElement.createTabContainer`.
 --- @class tes3uiElement.createTabContainer.params
 --- @field id? string|number *Optional*. An identifier to help find this element later.
+--- @field showArrows? boolean *Default*: `false`. If set, displays left and right arrows on either side of the tab list. This can help when navigating many tabs.
 
 --- Creates a single line text input element. To receive input the keyboard must be captured with `tes3ui.acquireTextInput(element)`. Read the input with the `text` property. Write an initial value to display by setting the `text` property; that value will be cleared on the first keypress.
 --- 

@@ -1127,13 +1127,14 @@ local result = myObject:createSliderVertical({ id = ..., current = ..., max = ..
 Creates a collection of elements meant to represent a tab-based interface. With the widget of this element, tabs can be added with `:addTab`, which will contain the content element of that tab. When the user clicks on each tab, other tab content panes will be hidden, in favor of the one associated with the clicked tab. See [`tes3uiTabContainer`](https://mwse.github.io/MWSE/types/tes3uiTabContainer/) for a what the widget provides.
 
 ```lua
-local result = myObject:createTabContainer({ id = ... })
+local result = myObject:createTabContainer({ id = ..., showArrows = ... })
 ```
 
 **Parameters**:
 
 * `params` (table)
 	* `id` (string, number): *Optional*. An identifier to help find this element later.
+	* `showArrows` (boolean): *Default*: `false`. If set, displays left and right arrows on either side of the tab list. This can help when navigating many tabs.
 
 **Returns**:
 
