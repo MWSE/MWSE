@@ -17,11 +17,10 @@ namespace TES3 {
 	}
 
 	SoundBuffer::~SoundBuffer() {
-		// Mirrors the engine's inline destruction in ReleaseSoundBuffer (0x4027E0):
-		// release any DSound COM objects, free the rawAudio peak-envelope buffer.
-		// Operator delete handles the SoundBuffer struct itself.
 		if (lpSound3DBuffer) lpSound3DBuffer->Release();
+		lpSound3DBuffer = nullptr;
 		if (lpSoundBuffer) lpSoundBuffer->Release();
+		lpSoundBuffer = nullptr;
 		if (rawAudio) se::memory::_delete(rawAudio);
 	}
 
@@ -30,7 +29,7 @@ namespace TES3 {
 	}
 
 	void SoundBuffer::operator delete(void* p) {
-		se::memory::free(p);
+		se::memory::_delete(p);
 	}
 
 	Sound::Sound() {
