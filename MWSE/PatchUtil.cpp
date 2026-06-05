@@ -2014,6 +2014,14 @@ namespace mwse::patch {
 		ac->stopSoundBuffer(waterSoundBuffer);
 	}
 
+	static void __fastcall PatchWaterSoundReset(TES3::Sound* sound, DWORD, int) {
+		if (waterSoundBuffer) {
+			delete waterSoundBuffer;
+			waterSoundBuffer = nullptr;
+		}
+		waterSound = nullptr;
+	}
+
 	static void __fastcall PatchWaterSoundSetFrequency(TES3::AudioController* ac, DWORD, TES3::SoundBuffer* _, float frequency) {
 		ac->setSoundBufferFrequency(waterSoundBuffer, frequency);
 	}
@@ -2791,6 +2799,8 @@ namespace mwse::patch {
 		genCallEnforced(0x48A8D0, 0x510A40, reinterpret_cast<DWORD>(PatchWaterSoundPlay));
 		genCallEnforced(0x48A892, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
 		genCallEnforced(0x48A9C8, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
+		genCallEnforced(0x48C7A9, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset));
+		genCallEnforced(0x745F72, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset)); // MCP-183
 		genNOPUnprotected(0x48A8DB, 0x48A8EE - 0x48A8DB);
 		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
 		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
