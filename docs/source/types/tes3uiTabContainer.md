@@ -203,6 +203,17 @@ myObject:previousTab()
 
 ***
 
+### `removeAllTabs`
+<div class="search_terms" style="display: none">removealltabs, alltabs</div>
+
+Removes all tabs and destroys their associated contents blocks.
+
+```lua
+myObject:removeAllTabs()
+```
+
+***
+
 ### `removeTab`
 <div class="search_terms" style="display: none">removetab, tab</div>
 

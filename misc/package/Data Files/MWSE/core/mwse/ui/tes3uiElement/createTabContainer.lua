@@ -370,6 +370,24 @@ function metatable:removeTab(id)
 	end
 end
 
+function metatable:removeAllTabs()
+	local changed = self.currentTab ~= nil
+	for _, content in ipairs(self:getContentsBlock().children) do
+		if (content.visible) then
+			content:triggerEvent(tes3.uiEvent.tabUnfocus)
+		end
+	end
+
+	self:getTabsBlock():destroyChildren()
+	self:getContentsBlock():destroyChildren()
+	self.rawdata.currentTab = nil
+
+	self.element:updateLayout()
+	if (changed) then
+		self.element:triggerEvent(tes3.uiEvent.valueChanged)
+	end
+end
+
 function metatable:getTabPosition(id)
 	local tab = getTab(self, id)
 	if not tab then

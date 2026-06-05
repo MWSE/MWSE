@@ -61,6 +61,9 @@ function tes3uiTabContainer:nextTab() end
 --- Changes the currently selected tab to the previous available one. If on the first tab, it will cycle back around to the last.
 function tes3uiTabContainer:previousTab() end
 
+--- Removes all tabs and destroys their associated contents blocks.
+function tes3uiTabContainer:removeAllTabs() end
+
 --- Removes the tab with the given ID and destroys its associated contents block. If the removed tab was selected, the next available tab will be selected.
 --- @param id string The unique identifier for the tab.
 function tes3uiTabContainer:removeTab(id) end
