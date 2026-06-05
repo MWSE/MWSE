@@ -31,6 +31,8 @@
 #include "TES3WorldController.h"
 #include "TES3MobManager.h"
 
+#include "NiBSAnimationManager.h"
+
 #include "MWSEConfig.h"
 
 #include "ReferenceTracker.h"
@@ -965,6 +967,43 @@ namespace TES3 {
 
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {
 		return std::ref(exteriorCellData);
+	}
+
+	void DataHandler::rebuildActiveCellManagerBoundsUnderRoot(NI::Node* root) {
+		if (root == nullptr) {
+			return;
+		}
+
+		auto* storage = root->children.storage;
+		auto endIndex = root->children.getEndIndex();
+
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child == nullptr) {
+				continue;
+			}
+
+			if (!NI::BSAnimationManager::isExactType(child)) {
+				continue;
+			}
+
+			auto* manager = static_cast<NI::BSAnimationManager*>(child);
+			manager->vTable.asAVObject->updateWorldBound(manager);
+		}
+
+		root->vTable.asAVObject->updateWorldBound(root);
+	}
+
+	bool DataHandler::rebuildActiveCellManagerBounds() {
+		const auto isBackgroundThreadRunning = *reinterpret_cast<volatile const bool*>(&backgroundThreadRunning);
+		if (isBackgroundThreadRunning) {
+			return false;
+		}
+
+		rebuildActiveCellManagerBoundsUnderRoot(worldObjectRoot);
+		rebuildActiveCellManagerBoundsUnderRoot(worldPickObjectRoot);
+
+		return true;
 	}
 
 	long DataHandler::getGameSettingLong(int id) const {

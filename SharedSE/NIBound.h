@@ -11,6 +11,41 @@ namespace NI {
 
 		void computeFromData(unsigned int vertexCount, const Point3* vertices, unsigned int stride);
 
+		// A recreation of NiBound::Merge, but in our own code so the compiler can optimize.
+		// Force inline because compiler being dumb, and that's the whole point of all this.
+		void __forceinline merge(const Bound& other) {
+			float dx = center.x - other.center.x;
+			float dy = center.y - other.center.y;
+			float dz = center.z - other.center.z;
+			float distSq = dx * dx + dy * dy + dz * dz;
+
+			float radiusDiff = other.radius - radius;
+			float radiusDiffSq = radiusDiff * radiusDiff;
+
+			// NaN check to match vanilla behavior
+			if (distSq != distSq || radiusDiff != radiusDiff) {
+				return;
+			}
+
+			if (radiusDiffSq >= distSq) {
+				if (radiusDiff >= 0.0f) {
+					*this = other;
+				}
+				return;
+			}
+
+			// Confirmed in IDA that the compiler wasn't doing this optimization itself.
+			// `sqrtf` lowered to an out-of-line call, and clobbered volatile registers.
+			float dist = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(distSq))); // sqrtf(distSq)
+			if (dist > 1e-6f) {
+				float factor = (dist - radiusDiff) / (2.0f * dist);
+				center.x = other.center.x + dx * factor;
+				center.y = other.center.y + dy * factor;
+				center.z = other.center.z + dz * factor;
+			}
+			radius = (radius + other.radius + dist) * 0.5f;
+		}
+
 		bool contains(const Point3& point) const;
 		Point3 getClosetPointTo(const Point3& point) const;
 		Point3 getFurthestPointFrom(const Point3& point) const;

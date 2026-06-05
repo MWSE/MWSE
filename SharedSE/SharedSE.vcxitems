@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BSAnimationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NiBSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
@@ -128,6 +128,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NiBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.cpp" />

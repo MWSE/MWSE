@@ -50,6 +50,7 @@
 #include "NiTriShape.h"
 #include "NiTriShapeData.h"
 #include "NIUVController.h"
+#include "NiBSAnimationManager.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -819,44 +820,8 @@ namespace mwse::patch {
 	// Patch: Optimize NiBound::Merge.
 	//
 
-	// A recreation of NiBound::Merge, but in our own code so the compiler can optimize.
-	// Force inline because compiler being dumb, and that's the whole point of all this.
-
-	static __forceinline void mergeBound(NI::Bound* bound, const NI::Bound* other) {
-		float dx = bound->center.x - other->center.x;
-		float dy = bound->center.y - other->center.y;
-		float dz = bound->center.z - other->center.z;
-		float distSq = dx * dx + dy * dy + dz * dz;
-
-		float radiusDiff = other->radius - bound->radius;
-		float radiusDiffSq = radiusDiff * radiusDiff;
-
-		// NaN check to match vanilla behavior
-		if (distSq != distSq || radiusDiff != radiusDiff) {
-			return;
-		}
-
-		if (radiusDiffSq >= distSq) {
-			if (radiusDiff >= 0.0f) {
-				*bound = *other;
-			}
-			return;
-		}
-
-		// Confirmed in IDA that the compiler wasn't doing this optimization itself.
-		// `sqrtf` lowered to an out-of-line call, and clobbered volatile registers.
-		float dist = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(distSq))); // sqrtf(distSq)
-		if (dist > 1e-6f) {
-			float factor = (dist - radiusDiff) / (2.0f * dist);
-			bound->center.x = other->center.x + dx * factor;
-			bound->center.y = other->center.y + dy * factor;
-			bound->center.z = other->center.z + dz * factor;
-		}
-		bound->radius = (bound->radius + other->radius + dist) * 0.5f;
-	}
-
 	void __fastcall PatchNiBoundMerge(NI::Bound* bound, DWORD _, const NI::Bound* other) {
-		mergeBound(bound, other);
+		bound->merge(*other);
 	}
 
 	//
@@ -875,7 +840,7 @@ namespace mwse::patch {
 		NI::Bound accumulator = *others->storage[0];
 
 		for (size_t i = 1; i < others->getEndIndex(); ++i) {
-			mergeBound(&accumulator, others->storage[i]);
+			accumulator.merge(*others->storage[i]);
 		}
 
 		*bound = accumulator;
@@ -886,7 +851,7 @@ namespace mwse::patch {
 	// Why: The majority of calls to NiBound::Merge originate from NiNode.
 	//
 
-	static __forceinline NI::Bound* getWorldBound(NI::AVObject* object) {
+	static NI::Bound* getWorldBound(NI::AVObject* object) {
 		return reinterpret_cast<NI::Bound*>(&object->worldBoundOrigin);
 	}
 
@@ -920,11 +885,11 @@ namespace mwse::patch {
 		accumulator.center = node->worldTransform.translation;
 		accumulator.radius = 0.01f;
 
-		// This loop is all our own code, and `mergeBound` is forced to inline.
+		// This loop is all our own code, `accumulator.merge` is forced inline.
 		for (size_t i = 0; i < endIndex; ++i) {
 			auto* child = static_cast<NI::AVObject*>(storage[i]);
 			if (child) {
-				mergeBound(&accumulator, getWorldBound(child));
+				accumulator.merge(*getWorldBound(child));
 			}
 		}
 
@@ -937,6 +902,46 @@ namespace mwse::patch {
 		}
 		else {
 			node->flags &= ~NiNodeFlags_ContainsRenderableGeom;
+		}
+	}
+
+	void __fastcall PatchNiBSAnimationManagerAttachChild(NI::BSAnimationManager* manager, DWORD _EDX_, NI::AVObject* child, bool useFirstAvailable) {
+		const auto NI_Node_AttachChild = reinterpret_cast<void(__thiscall*)(NI::Node*, NI::AVObject*, bool)>(SE_NI_NODE_FNADDR_ATTACHCHILD);
+		NI_Node_AttachChild(manager, child, useFirstAvailable);
+
+		if (child != nullptr) {
+			manager->growWorldBoundFromChild(child);
+		}
+	}
+
+	NI::Pointer<NI::AVObject>* __fastcall PatchNiBSAnimationManagerSetChildAt(NI::BSAnimationManager* manager, DWORD _EDX_, NI::Pointer<NI::AVObject>* outPreviousChild, unsigned int index, NI::AVObject* child) {
+		const auto NI_Node_SetChildAt = reinterpret_cast<NI::Pointer<NI::AVObject>* (__thiscall*)(NI::Node*, NI::Pointer<NI::AVObject>*, unsigned int, NI::AVObject*)>(SE_NI_NODE_FNADDR_SETCHILDAT);
+		NI_Node_SetChildAt(manager, outPreviousChild, index, child);
+
+		if (child != nullptr) {
+			manager->growWorldBoundFromChild(child);
+		}
+
+		return outPreviousChild;
+	}
+
+	void __fastcall PatchNiAVObjectUpdate(NI::AVObject* object, DWORD _EDX_, float fTime, bool updateControllers, bool updateChildren) {
+		object->vTable.asAVObject->updateDownwardPass(object, fTime, updateControllers, updateChildren);
+
+		auto* changedBranch = object;
+		auto* ancestor = object->parentNode;
+		while (ancestor != nullptr) {
+			auto* nextParent = ancestor->parentNode;
+			if (NI::BSAnimationManager::isExactType(ancestor)) {
+				auto* manager = static_cast<NI::BSAnimationManager*>(ancestor);
+				manager->growWorldBoundFromChild(changedBranch);
+			}
+			else {
+				ancestor->vTable.asAVObject->updateWorldBound(ancestor);
+			}
+
+			changedBranch = ancestor;
+			ancestor = nextParent;
 		}
 	}
 
@@ -2933,9 +2938,14 @@ namespace mwse::patch {
 		writeDoubleWordEnforced(0x74FA58, 0x6C8C90, updateWorldBound); // NiNode
 		writeDoubleWordEnforced(0x74FFC0, 0x6C8C90, updateWorldBound); // NiBSPNode
 		writeDoubleWordEnforced(0x750610, 0x6C8C90, updateWorldBound); // NiSortAdjustNode
-		writeDoubleWordEnforced(0x750C68, 0x6C8C90, updateWorldBound); // BSAnimationManager
-		writeDoubleWordEnforced(0x750DF8, 0x6C8C90, updateWorldBound); // BSAnimationNode
-		writeDoubleWordEnforced(0x7511C0, 0x6C8C90, updateWorldBound); // BSParticleNode
+		writeDoubleWordEnforced(0x750C68, 0x6C8C90, updateWorldBound); // NiBSAnimationManager
+		writeDoubleWordEnforced(0x750DF8, 0x6C8C90, updateWorldBound); // NiBSAnimationNode
+		writeDoubleWordEnforced(0x7511C0, 0x6C8C90, updateWorldBound); // NiBSParticleNode
+
+		// Patch: Make scene graph bounds updates incremental for NiBSAnimationManager.
+		genJumpUnprotected(0x6EB000, reinterpret_cast<DWORD>(PatchNiAVObjectUpdate), 0x5);
+		writeDoubleWordEnforced(0x750C6C, 0x6C8410, reinterpret_cast<DWORD>(PatchNiBSAnimationManagerAttachChild));
+		writeDoubleWordEnforced(0x750C78, 0x6C8780, reinterpret_cast<DWORD>(PatchNiBSAnimationManagerSetChildAt));
 
 		// Patch: Store last read key state.
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
