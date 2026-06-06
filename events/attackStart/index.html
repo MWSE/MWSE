@@ -23585,6 +23585,10 @@
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
+<p>This event supports blocking by setting <code>e.block</code> to <code>true</code> or returning <code>false</code>. Blocking the event prevents vanilla behavior from happening. For example, blocking an <code>equip</code> event prevents the item from being equipped.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>An event can be claimed by setting <code>e.claim</code> to <code>true</code>, or by returning <code>false</code> from the callback. Claiming the event prevents any lower priority callbacks from being called.</p>
 </div>
 <h2 id="event-data">Event Data<a class="headerlink" href="#event-data" title="Permanent link">⚓︎</a></h2>
@@ -23595,6 +23599,21 @@
 <li><code>reference</code> (<a href="../../types/tes3reference/">tes3reference</a>): <em>Read-only</em>. A shortcut to the reference that is attacking.</li>
 </ul>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">⚓︎</a></h2>
+<div class="admonition example">
+<p class="admonition-title">Example: Blocking an attack from starting</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- In this example, we prevent the player</span>
+<span class="c1">-- from starting any attacks.</span>
+
+<span class="c1">---@param e attackStartEventData</span>
+<span class="kd">local</span> <span class="kr">function</span> <span class="nf">onAttackStart</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">e</span><span class="p">.</span><span class="n">reference</span> <span class="o">==</span> <span class="n">tes3</span><span class="p">.</span><span class="n">player</span> <span class="kr">then</span>
+        <span class="kr">return</span> <span class="kc">false</span>
+    <span class="kr">end</span>
+<span class="kr">end</span>
+
+<span class="n">event</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">tes3</span><span class="p">.</span><span class="n">event</span><span class="p">.</span><span class="n">attackStart</span><span class="p">,</span> <span class="n">onAttackStart</span><span class="p">)</span>
+</code></pre></div>
+</div>
 <div class="admonition example">
 <p class="admonition-title">Example: Changing axe attack direction</p>
 <div class="highlight"><pre><span></span><code><span class="c1">-- In this example, we force the attack</span>
@@ -23641,7 +23660,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="October 21, 2023 21:35:41 UTC">October 21, 2023 21:35:41</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="June 6, 2026 20:13:51 UTC">June 6, 2026 20:13:51</span>
   </span>
 
     
