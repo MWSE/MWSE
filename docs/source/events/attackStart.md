@@ -21,6 +21,9 @@ event.register(tes3.event.attackStart, attackStartCallback)
 	This event can be filtered based on the **`reference`** event data.
 
 !!! tip
+	This event supports blocking by setting `e.block` to `true` or returning `false`. Blocking the event prevents vanilla behavior from happening. For example, blocking an `equip` event prevents the item from being equipped.
+
+!!! tip
 	An event can be claimed by setting `e.claim` to `true`, or by returning `false` from the callback. Claiming the event prevents any lower priority callbacks from being called.
 
 ## Event Data
@@ -31,6 +34,24 @@ event.register(tes3.event.attackStart, attackStartCallback)
 * `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. A shortcut to the reference that is attacking.
 
 ## Examples
+
+!!! example "Example: Blocking an attack from starting"
+
+	```lua
+	
+	-- In this example, we prevent the player
+	-- from starting any attacks.
+	
+	---@param e attackStartEventData
+	local function onAttackStart(e)
+		if e.reference == tes3.player then
+			return false
+		end
+	end
+	
+	event.register(tes3.event.attackStart, onAttackStart)
+
+	```
 
 !!! example "Example: Changing axe attack direction"
 
