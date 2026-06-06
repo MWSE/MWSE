@@ -47,6 +47,101 @@ namespace TES3 {
 	}
 
 	//
+	// WorldControllerRenderTarget
+	//
+
+	const auto TES3_WorldControllerRenderTarget_lockRenderTarget = reinterpret_cast<D3DLOCKED_RECT*(__thiscall*)(WorldControllerRenderTarget*, NI::Texture*)>(0x42F3F0);
+	D3DLOCKED_RECT* WorldControllerRenderTarget::lockRenderTarget(NI::Texture* texture) {
+		return TES3_WorldControllerRenderTarget_lockRenderTarget(this, texture);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_unlockRenderTarget = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, D3DLOCKED_RECT*, int)>(0x42F620);
+	void WorldControllerRenderTarget::unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag) {
+		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::RenderedTexture*, float, float)>(0x42FE20);
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::RenderedTexture* texture, float worldX, float worldY) {
+		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
+	}
+
+	// Fog-of-war pixel cache (see header). Per-compositor-pass cache, keyed by fog tile texture.
+	namespace {
+		struct FogTileCacheEntry {
+			NI::RenderedTexture* texture;
+			unsigned char pixels[64 * 64];  // the sampled channel (offset +1) for the 64x64 fog tile
+		};
+		bool sFogCacheActive = false;
+		int sFogCacheCount = 0;
+		FogTileCacheEntry sFogCache[16];  // loaded ring never exceeds this; overflow degrades to "covered"
+
+		FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::RenderedTexture* texture) {
+			for (int i = 0; i < sFogCacheCount; ++i) {
+				if (sFogCache[i].texture == texture) {
+					return &sFogCache[i];
+				}
+			}
+			if (sFogCacheCount >= 16) {
+				return nullptr;
+			}
+			// Keep the texture alive across the lock (mirrors the engine's defensive ++/-- guard).
+			texture->refCount += 1;
+			D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
+			if (!rect || !rect->pBits) {
+				texture->release();
+				return nullptr;
+			}
+			FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+			entry->texture = texture;
+			const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
+			const int pitch = rect->Pitch;
+			for (int y = 0; y < 64; ++y) {
+				for (int x = 0; x < 64; ++x) {
+					entry->pixels[y * 64 + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
+				}
+			}
+			renderTarget->unlockRenderTarget(rect, 0);
+			++sFogCacheCount;
+			return entry;
+		}
+	}
+
+	void WorldControllerRenderTarget::beginFogCache() {
+		sFogCacheActive = true;
+		sFogCacheCount = 0;
+	}
+
+	void WorldControllerRenderTarget::endFogCache() {
+		sFogCacheActive = false;
+		sFogCacheCount = 0;
+	}
+
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::RenderedTexture* texture, float worldX, float worldY) {
+		if (!sFogCacheActive) {
+			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
+		}
+		const int px = static_cast<int>(static_cast<double>(worldX) * 64.0);
+		const int py = static_cast<int>(static_cast<double>(worldY) * 64.0);
+		if (static_cast<unsigned int>(px) > 64 || static_cast<unsigned int>(py) > 64) {
+			if (texture) {
+				texture->release();  // vanilla OOB path consumes one reference
+			}
+			return 0;
+		}
+		unsigned char result = 0;
+		if (texture) {
+			const FogTileCacheEntry* entry = fogCacheFindOrLoad(this, texture);
+			if (entry) {
+				const int cx = px < 64 ? px : 63;  // engine reads index 64 (OOB); clamp safely
+				const int cy = py < 64 ? py : 63;
+				result = entry->pixels[cy * 64 + cx];
+			}
+			// vanilla success path is net-zero on refCount -> nothing to do
+		}
+		return result;
+	}
+
+	//
 	// KillCounter
 	//
 

@@ -106,6 +106,20 @@ namespace TES3 {
 
 		WorldControllerRenderTarget() = delete;
 		~WorldControllerRenderTarget() = delete;
+
+		D3DLOCKED_RECT* lockRenderTarget(NI::Texture* texture);
+		void unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag);
+		unsigned char getFogOfWarPixel(NI::RenderedTexture* texture, float worldX, float worldY);
+
+		// Fog-of-war pixel cache. getFogOfWarPixel locks a 64x64 GPU render target to read a single
+		// byte, and the local-map compositor calls it once per door (~500-700 per cell-cross) - a
+		// ~40 ms stall on the cross frame. The fog is immutable within one compositor pass, so cache
+		// each tile once and serve all door queries from the copy. beginFogCache/endFogCache bracket
+		// the compositor; getFogOfWarPixelCached replaces getFogOfWarPixel at its call sites and uses
+		// the cache while active (falling back to getFogOfWarPixel otherwise).
+		unsigned char getFogOfWarPixelCached(NI::RenderedTexture* texture, float worldX, float worldY);
+		static void beginFogCache();
+		static void endFogCache();
 	};
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
 

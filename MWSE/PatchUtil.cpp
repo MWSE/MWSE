@@ -33,6 +33,7 @@
 #include "TES3Sound.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
+#include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
@@ -2167,6 +2168,44 @@ namespace mwse::patch {
 	}
 
 	//
+	// Map fog-of-war pixel cache install.
+	//
+	// The cache itself lives on TES3::WorldControllerRenderTarget. Here we only install the hooks:
+	//  - bracket the local-map compositor (ui_MenuMap_updateMapRender, 0x5E99C0) at its four entry
+	//    sites so the cache is active for the duration of each pass, and
+	//  - replace getFogOfWarPixel (0x42FE20) at its two call sites (inside
+	//    isPositionUncoveredByFogOfWar) with the cached variant.
+	//
+
+	// Hook target for getFogOfWarPixel. __fastcall(self, edx, ...) matches the engine __thiscall.
+	unsigned char __fastcall MapFogPixelCacheHook(TES3::WorldControllerRenderTarget* renderTarget, void*, NI::RenderedTexture* texture, float worldX, float worldY) {
+		return renderTarget->getFogOfWarPixelCached(texture, worldX, worldY);
+	}
+
+	// Hook target that brackets the compositor so the fog cache is active while it runs.
+	const auto TES3_ui_MenuMap_updateMapRender = reinterpret_cast<void(__cdecl*)()>(0x5E99C0);
+	void __cdecl MapCompositorWithFogCache() {
+		TES3::WorldControllerRenderTarget::beginFogCache();
+		TES3_ui_MenuMap_updateMapRender();
+		TES3::WorldControllerRenderTarget::endFogCache();
+	}
+
+	void installMapFogPixelCache() {
+		using se::memory::genCallEnforced;
+		using se::memory::genJumpEnforced;
+
+		const DWORD compositor = reinterpret_cast<DWORD>(&MapCompositorWithFogCache);
+		genJumpEnforced(0x420415, 0x5E99C0, compositor);  // MapController::updateMapRender tail-jmp (cell-cross)
+		genCallEnforced(0x5E9757, 0x5E99C0, compositor);  // ui_showMapMenu (map open)
+		genCallEnforced(0x5F0BF2, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onOK
+		genCallEnforced(0x5F0D32, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onDeleteNote
+
+		const DWORD fogPixel = reinterpret_cast<DWORD>(&MapFogPixelCacheHook);
+		genCallEnforced(0x5EE104, 0x42FE20, fogPixel);    // isPositionUncoveredByFogOfWar (path 1)
+		genCallEnforced(0x5EE286, 0x42FE20, fogPixel);    // isPositionUncoveredByFogOfWar (path 2)
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2182,6 +2221,9 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
+
+		// Map fog-of-war pixel cache: removes the per-door GPU render-target lock stutter on cell-cross.
+		installMapFogPixelCache();
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
