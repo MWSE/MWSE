@@ -2098,6 +2098,15 @@ namespace mwse::patch {
 	static bool __cdecl PatchCellLoadReference(TES3::Reference* reference, TES3::GameFile* gameFile, bool mustBePersistent, bool insertNew, TES3::Cell* cell) {
 		const auto previousLookupKey = ReferenceTracker::getLookupKey(reference);
 		const auto result = TES3_Cell_static_loadReference(reference, gameFile, mustBePersistent, insertNew, cell);
+		if (
+			cell
+			&& reference->baseObject
+			&& reference->baseObject->isMobileCapableActor()
+			&& reference->owningCollection.asReferenceList == &cell->temporaryRefs
+		) {
+			cell->temporaryRefs.remove(reference);
+			cell->actors.insertAtEnd(reference);
+		}
 		ReferenceTracker::rekeyReference(reference, previousLookupKey);
 		return result;
 	}
