@@ -831,6 +831,11 @@ namespace mwse::patch {
 		float radiusDiff = other->radius - bound->radius;
 		float radiusDiffSq = radiusDiff * radiusDiff;
 
+		// NaN check to match vanilla behavior
+		if (distSq != distSq || radiusDiff != radiusDiff) {
+			return;
+		}
+
 		if (radiusDiffSq >= distSq) {
 			if (radiusDiff >= 0.0f) {
 				*bound = *other;
@@ -2920,7 +2925,7 @@ namespace mwse::patch {
 		// NiLODNode instead run their own updateWorldBound that calls 0x6C8C90,
 		// so we redirect that internal call site (0x6D85F2) as well.
 		auto updateWorldBound = reinterpret_cast<DWORD>(PatchNiNodeUpdateWorldBound);
-		genCallEnforced(0x6D85F2, 0x6C8C90, updateWorldBound);
+		genJumpEnforced(0x6D85F2, 0x6C8C90, updateWorldBound);
 		writeDoubleWordEnforced(0x74771C, 0x6C8C90, updateWorldBound); // BSMirroredNode
 		writeDoubleWordEnforced(0x74A75C, 0x6C8C90, updateWorldBound); // RootCollisionNode
 		writeDoubleWordEnforced(0x74F400, 0x6C8C90, updateWorldBound); // AvoidNode
