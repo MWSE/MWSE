@@ -441,7 +441,7 @@ namespace CrashLogger::Warnings {
 			std::string line;
 			while (std::getline(warnings, line)) {
 				if (line.empty()) continue;
-				if (seenLines.find(line) == seenLines.end()) {
+				if (!seenLines.contains(line)) {
 					output << line << std::endl;
 					seenLines.insert(line);
 				}

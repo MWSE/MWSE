@@ -182,8 +182,7 @@ namespace mwse::tes3 {
 		}
 
 		if (objectOrReference->objectType == TES3::ObjectType::Misc) {
-			auto searchResult = customSoulGems.find(reinterpret_cast<const TES3::Misc*>(objectOrReference));
-			if (searchResult != customSoulGems.end()) {
+			if (customSoulGems.contains(reinterpret_cast<const TES3::Misc*>(objectOrReference))) {
 				return true;
 			}
 		}

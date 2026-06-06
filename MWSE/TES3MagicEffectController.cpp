@@ -67,7 +67,7 @@ namespace TES3 {
 		const auto effect = effectObjects[id];
 		if (effect == nullptr) {
 			// Warn only once per effect ID.
-			if (warnedMagicEffectIds.find(id) == warnedMagicEffectIds.end()) {
+			if (!warnedMagicEffectIds.contains(id)) {
 				mwse::log::getLog() << "Invalid effect ID " << id << " encountered. Spoofing substitute. Uninstalling mods that add custom effects can lead to unexpected behavior and crashes." << std::endl;
 				warnedMagicEffectIds.insert(id);
 			}

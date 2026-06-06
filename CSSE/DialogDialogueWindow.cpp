@@ -214,7 +214,7 @@ namespace se::cs::dialog::dialogue_window {
 		std::string lowercased = object->getObjectID();
 		string::to_lower(lowercased);
 
-		if (insertedCells.find(lowercased) == insertedCells.end()) {
+		if (!insertedCells.contains(lowercased)) {
 			auto r = SendMessageA(hWnd, CB_ADDSTRING, NULL, (LPARAM)object->getObjectID());
 			SendMessageA(hWnd, CB_SETITEMDATA, r, (LPARAM)object);
 			insertedCells.insert(std::move(lowercased));
