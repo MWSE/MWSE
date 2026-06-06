@@ -38,6 +38,7 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <intrin.h>
 
 // Required Windows APIs.
 #include <windows.h>

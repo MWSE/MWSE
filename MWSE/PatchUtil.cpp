@@ -40,6 +40,7 @@
 #include "ReferenceTracker.h"
 
 #include "NIAVObject.h"
+#include "NIBound.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -812,6 +813,126 @@ namespace mwse::patch {
 	NI::Object* __fastcall PatchNISortAdjustNodeCloneAccumulator(NI::Accumulator* accumulator) {
 		// Only call createClone if accumulator exists.
 		return accumulator ? accumulator->vTable.asObject->createClone(accumulator) : nullptr;
+	}
+
+	//
+	// Patch: Optimize NiBound::Merge.
+	//
+
+	// A recreation of NiBound::Merge, but in our own code so the compiler can optimize.
+	// Force inline because compiler being dumb, and that's the whole point of all this.
+
+	static __forceinline void mergeBound(NI::Bound* bound, const NI::Bound* other) {
+		float dx = bound->center.x - other->center.x;
+		float dy = bound->center.y - other->center.y;
+		float dz = bound->center.z - other->center.z;
+		float distSq = dx * dx + dy * dy + dz * dz;
+
+		float radiusDiff = other->radius - bound->radius;
+		float radiusDiffSq = radiusDiff * radiusDiff;
+
+		if (radiusDiffSq >= distSq) {
+			if (radiusDiff >= 0.0f) {
+				*bound = *other;
+			}
+			return;
+		}
+
+		// Confirmed in IDA that the compiler wasn't doing this optimization itself.
+		// `sqrtf` lowered to an out-of-line call, and clobbered volatile registers.
+		float dist = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(distSq))); // sqrtf(distSq)
+		if (dist > 1e-6f) {
+			float factor = (dist - radiusDiff) / (2.0f * dist);
+			bound->center.x = other->center.x + dx * factor;
+			bound->center.y = other->center.y + dy * factor;
+			bound->center.z = other->center.z + dz * factor;
+		}
+		bound->radius = (bound->radius + other->radius + dist) * 0.5f;
+	}
+
+	void __fastcall PatchNiBoundMerge(NI::Bound* bound, DWORD _, const NI::Bound* other) {
+		mergeBound(bound, other);
+	}
+
+	//
+	// Patch: Optimize NiBound::ComputeMinimalBound.
+	//
+
+	void __fastcall PatchNiBoundComputeMinimalBound(NI::Bound* bound, DWORD _, NI::TArray<const NI::Bound*>* others) {
+		// Vanilla dereferences storage[0] unconditionally. For us that
+		// is UB if the compiler can ever prove an empty array was here.
+		if (others->getEndIndex() == 0) {
+			return;
+		}
+
+		// We use a local accumulator here to avoid pointer aliasing.
+		// Allows the compiler to accumulate directly into registers.
+		NI::Bound accumulator = *others->storage[0];
+
+		for (size_t i = 1; i < others->getEndIndex(); ++i) {
+			mergeBound(&accumulator, others->storage[i]);
+		}
+
+		*bound = accumulator;
+	}
+
+	//
+	// Patch: Manually specialize NiNode::UpdateWorldBound implementation.
+	// Why: The majority of calls to NiBound::Merge originate from NiNode.
+	//
+
+	static __forceinline NI::Bound* getWorldBound(NI::AVObject* object) {
+		return reinterpret_cast<NI::Bound*>(&object->worldBoundOrigin);
+	}
+
+	void __fastcall PatchNiNodeUpdateWorldBound(NI::AVObject* node) {
+		auto* niNode = static_cast<NI::Node*>(node);
+		auto* bound = getWorldBound(node);
+
+		auto* storage = niNode->children.storage;
+		auto endIndex = niNode->children.getEndIndex();
+
+		// The original vanilla function has only one loop here, but we split it
+		// intentionally because `isVisualObject` is an optimization barrier due
+		// to being both dynamic dispatch and a call to foreign code in another
+		// binary.
+
+		// This loop can also break early, and in vast majority of cases it will
+		// break on the 1st or 2nd iteration because most nodes do have visuals.
+
+		bool hasVisual = false;
+
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child && child->vTable.asAVObject->isVisualObject(child)) {
+				hasVisual = true;
+				break;
+			}
+		}
+
+		// Local accumulator to avoid aliasing and keep the bound in registers.
+		NI::Bound accumulator;
+		accumulator.center = node->worldTransform.translation;
+		accumulator.radius = 0.01f;
+
+		// This loop is all our own code, and `mergeBound` is forced to inline.
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child) {
+				mergeBound(&accumulator, getWorldBound(child));
+			}
+		}
+
+		*bound = accumulator;
+
+		const auto NiNodeFlags_ContainsRenderableGeom = 0x8;
+
+		if (hasVisual) {
+			node->flags |= NiNodeFlags_ContainsRenderableGeom;
+		}
+		else {
+			node->flags &= ~NiNodeFlags_ContainsRenderableGeom;
+		}
 	}
 
 	//
@@ -2785,6 +2906,31 @@ namespace mwse::patch {
 		genCallEnforced(0x4D2324, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
 		genCallEnforced(0x4EF99F, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
 		genCallEnforced(0x4EFE70, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
+
+		// Patch: Optimize NiBound::Merge and NiBound::ComputeMinimalBound.
+		genCallEnforced(0x6C8BF7, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x6C8CEE, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x6D152B, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x71746A, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x709EBB, 0x6F2610, reinterpret_cast<DWORD>(PatchNiBoundComputeMinimalBound));
+
+		// Patch: Optimize UpdateWorldBound so mergeBound can be inlined.
+		// These are all vtables whose updateWorldBound slot is the shared
+		// NiNode::UpdateWorldBound. NiSwitchNode, NiFltAnimationNode, and
+		// NiLODNode instead run their own updateWorldBound that calls 0x6C8C90,
+		// so we redirect that internal call site (0x6D85F2) as well.
+		auto updateWorldBound = reinterpret_cast<DWORD>(PatchNiNodeUpdateWorldBound);
+		genCallEnforced(0x6D85F2, 0x6C8C90, updateWorldBound);
+		writeDoubleWordEnforced(0x74771C, 0x6C8C90, updateWorldBound); // BSMirroredNode
+		writeDoubleWordEnforced(0x74A75C, 0x6C8C90, updateWorldBound); // RootCollisionNode
+		writeDoubleWordEnforced(0x74F400, 0x6C8C90, updateWorldBound); // AvoidNode
+		writeDoubleWordEnforced(0x74F4A8, 0x6C8C90, updateWorldBound); // NiCollisionSwitch
+		writeDoubleWordEnforced(0x74FA58, 0x6C8C90, updateWorldBound); // NiNode
+		writeDoubleWordEnforced(0x74FFC0, 0x6C8C90, updateWorldBound); // NiBSPNode
+		writeDoubleWordEnforced(0x750610, 0x6C8C90, updateWorldBound); // NiSortAdjustNode
+		writeDoubleWordEnforced(0x750C68, 0x6C8C90, updateWorldBound); // BSAnimationManager
+		writeDoubleWordEnforced(0x750DF8, 0x6C8C90, updateWorldBound); // BSAnimationNode
+		writeDoubleWordEnforced(0x7511C0, 0x6C8C90, updateWorldBound); // BSParticleNode
 
 		// Patch: Store last read key state.
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
