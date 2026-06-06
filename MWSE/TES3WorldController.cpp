@@ -120,9 +120,9 @@ namespace TES3 {
 		if (!sFogCacheActive) {
 			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
 		}
-		const int px = static_cast<int>(static_cast<double>(worldX) * 64.0);
-		const int py = static_cast<int>(static_cast<double>(worldY) * 64.0);
-		if (static_cast<unsigned int>(px) > 64 || static_cast<unsigned int>(py) > 64) {
+		const unsigned int px = static_cast<unsigned int>(static_cast<double>(worldX) * 64.0);
+		const unsigned int py = static_cast<unsigned int>(static_cast<double>(worldY) * 64.0);
+		if (px > 64 || py > 64) {
 			if (texture) {
 				texture->release();  // vanilla OOB path consumes one reference
 			}
@@ -132,8 +132,8 @@ namespace TES3 {
 		if (texture) {
 			const FogTileCacheEntry* entry = fogCacheFindOrLoad(this, texture);
 			if (entry) {
-				const int cx = px < 64 ? px : 63;  // engine reads index 64 (OOB); clamp safely
-				const int cy = py < 64 ? py : 63;
+				const unsigned int cx = px < 64 ? px : 63;  // engine reads index 64 (OOB); clamp safely
+				const unsigned int cy = py < 64 ? py : 63;
 				result = entry->pixels[cy * 64 + cx];
 			}
 			// vanilla success path is net-zero on refCount -> nothing to do
