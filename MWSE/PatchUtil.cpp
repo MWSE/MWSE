@@ -2167,6 +2167,20 @@ namespace mwse::patch {
 	}
 
 	//
+	// Lever 2: relight only the cells changed by a cross.
+	//
+	// Replaces updateCellThreadLoader's full-grid relight (updateLightingForExteriorCells, 0x485C50)
+	// with DataHandler::relightExteriorCellsAfterCross, which relights only the light-application pairs
+	// that touch a newly-loaded cell (the other ~28 of 49 pairs are unchanged across a 1-cell cross).
+	// See DataHandler::relightExteriorCellsAfterCross for the correctness argument. Other callers of the
+	// full relight (full reloads, etc.) are untouched - only the walking-cross call site is replaced.
+
+	void installRelightChangedCells() {
+		auto relight = &TES3::DataHandler::relightExteriorCellsAfterCross;
+		se::memory::genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&relight)); // updateCellThreadLoader -> updateAllLights
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2182,6 +2196,9 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
+
+		// Lever 2: relight only the cells changed by a cross.
+		installRelightChangedCells();
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
