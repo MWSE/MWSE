@@ -915,6 +915,93 @@ namespace TES3 {
 		TES3_DataHandler_updateLightingForExteriorCells(this);
 	}
 
+	const auto TES3_DataHandler_updateLightsBetweenCells = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*, TES3::Cell*, TES3::Cell*)>(0x485A70);
+	void DataHandler::updateLightsBetweenCells(Cell* cell, Cell* otherCell) {
+		// Apply every light ref in `cell` onto `otherCell`'s geometry (or onto `cell` itself when
+		// otherCell == cell). The engine's full grid relight calls this for all 49 cell->neighbour pairs.
+		TES3_DataHandler_updateLightsBetweenCells(this, cell, otherCell);
+	}
+
+	// Cell-cross relight optimization ("Lever 2"). updateLightingForExteriorCells relights the whole
+	// 3x3 grid on every exterior cross: for each loaded cell it cleans its lights then re-applies them
+	// to its Moore neighbourhood via updateLightsBetweenCells. Profiling showed ~88% of that cost is the
+	// point-light application, and that 28 of the 49 (cell->neighbour) application pairs lie entirely
+	// within the 6 retained cells - neither endpoint changed across a 1-cell cross, so they re-apply an
+	// identical result. This relights only the pairs that touch a newly-loaded cell.
+	//
+	// Correctness: the dropped column/row is self-cleaning - ExteriorCellData::unload runs
+	// Reference::detachDynamicLightFromAffectedNodes on its lights (detaching them from the retained
+	// geometry they lit) BEFORE this runs - so retained cells need no relight for the unload. Retained
+	// cells' lights are left applied, which is exactly the state the full relight would rebuild for them;
+	// only the new cells are cleaned and (re)applied, and the new cells additionally receive their
+	// neighbours' lights. The final lighting state matches the full relight.
+	//
+	// The newly-loaded cells are the leading edge, identified from the central-grid delta since the
+	// previous cross. Anything that is not a clean 1-step cross (first cross after a load, teleport, or
+	// a >1-cell jump) falls back to the engine's full relight.
+	void DataHandler::relightExteriorCellsAfterCross() {
+		static int prevCenterX = 0x7FFFFFFF, prevCenterY = 0x7FFFFFFF;  // 0x7FFFFFFF = no prior cross recorded
+
+		const int cx = centralGridX, cy = centralGridY;
+		const int dx = cx - prevCenterX, dy = cy - prevCenterY;
+		const bool incremental = prevCenterX != 0x7FFFFFFF && prevCenterY != 0x7FFFFFFF
+			&& (dx != 0 || dy != 0) && dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1;
+		prevCenterX = cx;
+		prevCenterY = cy;
+		if (!incremental) {
+			updateLightingForExteriorCells();  // first cross / teleport / >1-cell jump: full relight
+			return;
+		}
+
+		// Leading edge: a column at gridX = cx +/- 1 and/or a row at gridY = cy +/- 1 (both for a diagonal).
+		const int newGridX = (dx > 0) ? cx + 1 : (dx < 0) ? cx - 1 : 0x7FFFFFFF;
+		const int newGridY = (dy > 0) ? cy + 1 : (dy < 0) ? cy - 1 : 0x7FFFFFFF;
+
+		Cell* cells[9] = {};
+		bool isNew[9] = {};
+		for (int i = 0; i < 9; ++i) {
+			auto* ecd = exteriorCellData[i];
+			if (!ecd || ecd->loadingFlags != 1 || !ecd->cell) {
+				continue;
+			}
+			cells[i] = ecd->cell;
+			isNew[i] = (dx != 0 && cells[i]->getGridX() == newGridX) || (dy != 0 && cells[i]->getGridY() == newGridY);
+		}
+
+		// Clean only the new cells' lights; retained cells keep their already-valid applied state.
+		for (int i = 0; i < 9; ++i) {
+			if (!isNew[i]) {
+				continue;
+			}
+			for (auto ref : cells[i]->actors) ref->detachDynamicLightFromAffectedNodes();
+			for (auto ref : cells[i]->persistentRefs) ref->detachDynamicLightFromAffectedNodes();
+			for (auto ref : cells[i]->temporaryRefs) ref->detachDynamicLightFromAffectedNodes();
+		}
+
+		// Re-apply only the (cell -> neighbour) pairs that touch a new cell. The grid is row-major over
+		// a 3x3 block (index = row * 3 + col); neighbours are the in-bounds Moore neighbourhood incl. self.
+		for (int i = 0; i < 9; ++i) {
+			if (!cells[i]) {
+				continue;
+			}
+			const int col = i % 3, row = i / 3;
+			for (int r = row - 1; r <= row + 1; ++r) {
+				if (r < 0 || r > 2) {
+					continue;
+				}
+				for (int c = col - 1; c <= col + 1; ++c) {
+					if (c < 0 || c > 2) {
+						continue;
+					}
+					const int j = r * 3 + c;
+					if (cells[j] && (isNew[i] || isNew[j])) {
+						updateLightsBetweenCells(cells[i], cells[j]);
+					}
+				}
+			}
+		}
+	}
+
 	const auto TES3_DataHandler_setDynamicLightingForReference = reinterpret_cast<void(__thiscall*)(DataHandler*, Reference*)>(0x485B00);
 	void DataHandler::setDynamicLightingForReference(Reference* reference) {
 		TES3_DataHandler_setDynamicLightingForReference(this, reference);

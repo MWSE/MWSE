@@ -398,6 +398,8 @@ namespace TES3 {
 
 		void updateLightingForReference(Reference * reference);
 		void updateLightingForExteriorCells();
+		void updateLightsBetweenCells(Cell* cell, Cell* otherCell);
+		void relightExteriorCellsAfterCross();
 		void setDynamicLightingForReference(Reference* reference);
 
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
