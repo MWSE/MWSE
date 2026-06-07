@@ -2283,6 +2283,68 @@ namespace mwse::patch {
 	}
 
 	//
+	// Cell-cross actor teardown optimizations.
+	//
+	// On an exterior cell-cross the dominant main-thread cost is tearing down the departing cells' actors
+	// (and setting up the arriving ones). Two behavior-preserving fixes, both validated against the
+	// decompilation and in-game (see moreFPS/docs/engineering-notes/cell-cross-mob-teardown-anatomy.md):
+	//
+	// 1) De-dup. MobManager::removeMob tears an actor down via MACT::enterLeaveSimulation(0), then - for
+	//    CREA/NPC - again via markActorCorpse -> AIPlanner::enterLeaveSimulation(0). So the heavy teardown
+	//    runs twice per actor. The first call clears MobileActorFlags::ActiveInSimulation (0x4); guard the
+	//    redundant second call so that "leaving an already-left actor" is a no-op (the corpse timestamp and
+	//    AI-planner removal in markActorCorpse still run; only the duplicate teardown is skipped).
+	//
+	// 2) Hoist via memoization. MobileObject::resetCollisionGroup - the bulk of the teardown, and also run
+	//    on actor spawn and per-frame physics - calls sg_findRootCollisionNode (a recursive skeleton DFS)
+	//    once per active AI planner with a loop-invariant argument, doing the same full walk N times. It is
+	//    a pure function, so memoize consecutive same-arg calls: the DFS collapses from N-per-actor to
+	//    1-per-actor. The cache is reset at resetCollisionGroup's opening RemoveAll, scoping it to one call.
+
+	namespace {
+		const auto TES3_AIPlanner_enterLeaveSimulation = reinterpret_cast<void(__thiscall*)(void*, int)>(0x565350);
+		const auto TES3_sg_findRootCollisionNode = reinterpret_cast<void*(__cdecl*)(void*)>(0x6A3080);
+		const auto TES3_NiCollisionGroup_removeAll = reinterpret_cast<void(__thiscall*)(void*)>(0x6FD680);
+		void* sRootSearchArg = nullptr;
+		void* sRootSearchResult = nullptr;
+	}
+
+	// (1) Guard markActorCorpse's redundant AIPlanner::enterLeaveSimulation. aiPlanner->mobileActor is at
+	// +0x4; MobileActor::actorFlags at +0x10; MobileActorFlags::ActiveInSimulation = 0x4.
+	void __fastcall ActorTeardown_DedupLeaveSimulation(void* aiPlanner, void*, int active) {
+		if (active == 0 && aiPlanner) {
+			void* mobileActor = *reinterpret_cast<void**>(reinterpret_cast<char*>(aiPlanner) + 0x4);
+			if (mobileActor && (*reinterpret_cast<unsigned int*>(reinterpret_cast<char*>(mobileActor) + 0x10) & 0x4) == 0) {
+				return;  // already left simulation - the teardown already ran; skip the redundant pass
+			}
+		}
+		TES3_AIPlanner_enterLeaveSimulation(aiPlanner, active);
+	}
+
+	// (2a) Reset the memo cache at resetCollisionGroup's opening RemoveAll, scoping memoization to one call.
+	void __fastcall ActorTeardown_ResetRootSearchCache(void* group, void*) {
+		sRootSearchArg = nullptr;
+		TES3_NiCollisionGroup_removeAll(group);
+	}
+	// (2b) Memoize the loop-invariant, pure root-collision-node search.
+	void* __cdecl ActorTeardown_MemoizedRootSearch(void* sceneNode) {
+		if (sceneNode == sRootSearchArg) {
+			return sRootSearchResult;
+		}
+		void* result = TES3_sg_findRootCollisionNode(sceneNode);
+		sRootSearchArg = sceneNode;
+		sRootSearchResult = result;
+		return result;
+	}
+
+	void installCellCrossActorTeardown() {
+		using se::memory::genCallEnforced;
+		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardown_DedupLeaveSimulation));  // (1) de-dup
+		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardown_ResetRootSearchCache));  // (2a) memo cache reset (RemoveAll)
+		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardown_MemoizedRootSearch));    // (2b) memoized DFS
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2307,6 +2369,10 @@ namespace mwse::patch {
 
 		// Lever 2: relight only the cells changed by a cross.
 		installRelightChangedCells();
+
+		// Lever 3: optimize the cell-cross actor teardown (de-dup the double leave-simulation + memoize the
+		// loop-invariant collision root-node search).
+		installCellCrossActorTeardown();
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
