@@ -2167,6 +2167,69 @@ namespace mwse::patch {
 	}
 
 	//
+	// Map-tile scene-update hoist (cell-cross optimization, "Lever 1").
+	//
+	// On an exterior cell-cross the engine renders the local/world map by calling
+	// renderCellMapTile (0x41FEA0) once per ring tile (6-9x per cross). Each call re-runs
+	// UpdateProperties + UpdateEffects on the SAME map render-target root and Update() on the
+	// SAME MapController::nodeLand - none of which depend on the per-tile cell argument; only
+	// the camera moves between tiles. Verified against the decompilation: renderTargetRootNode
+	// = worldController->mapRenderTarget.sgRoot and this->nodeLand are both cross-invariant, so
+	// running those three traversals once per cross (instead of per tile) is pixel-exact. The
+	// per-tile camera Update/LookAt stay untouched.
+	//
+	// A batch is bracketed around updateCellThreadLoader (0x486620, the walking-cross handler).
+	// While the batch is active, the first tile that actually renders runs each traversal and
+	// marks it done; later tiles skip it. The "done" flags are only set after the traversal
+	// actually runs, so a cache-hit tile that early-returns inside renderCellMapTile (before the
+	// update sites) does not consume the batch. Outside a cross (purgeTextures, interior map
+	// render) the batch is inactive and every traversal runs as vanilla.
+
+	namespace {
+		bool sHoistBatchActive = false, sHoistDoneProps = false, sHoistDoneFx = false, sHoistDoneLand = false;
+		const auto TES3_hoist_updateCellThreadLoader = reinterpret_cast<void(__thiscall*)(void*, void*)>(0x486620);
+		const auto TES3_hoist_avUpdate = reinterpret_cast<void(__thiscall*)(void*, float, int, int)>(0x6EB000);  // NiAVObject::Update
+		const auto TES3_hoist_updProps = reinterpret_cast<void(__thiscall*)(void*)>(0x6EB0E0);                   // NiAVObject::UpdateProperties
+		const auto TES3_hoist_updFx = reinterpret_cast<void(__thiscall*)(void*)>(0x6EB380);                      // NiAVObject::UpdateEffects
+	}
+
+	// Bracket the walking-cross handler: start a batch, reset the per-traversal "done" flags, run
+	// the cross, end the batch. uctl is not re-entrant (its three call sites are distinct paths).
+	void __fastcall HoistUpdateCellThreadLoader(void* dh, void*, void* position) {
+		sHoistBatchActive = true;
+		sHoistDoneProps = sHoistDoneFx = sHoistDoneLand = false;
+		TES3_hoist_updateCellThreadLoader(dh, position);
+		sHoistBatchActive = false;
+	}
+	// renderCellMapTile site 0x420089: UpdateProperties(renderTargetRoot) - hoisted to once per cross.
+	void __fastcall HoistUpdProps(void* node, void*) {
+		if (sHoistBatchActive && sHoistDoneProps) return;
+		TES3_hoist_updProps(node); sHoistDoneProps = true;
+	}
+	// renderCellMapTile site 0x420090: UpdateEffects(renderTargetRoot) - hoisted to once per cross.
+	void __fastcall HoistUpdFx(void* node, void*) {
+		if (sHoistBatchActive && sHoistDoneFx) return;
+		TES3_hoist_updFx(node); sHoistDoneFx = true;
+	}
+	// renderCellMapTile site 0x42009E: Update(nodeLand) - hoisted to once per cross. The two camera
+	// Update sites (0x420064/0x420082) and LookAt (0x420075) are intentionally left per-tile.
+	void __fastcall HoistLandUpdate(void* node, void*, float a, int b, int c) {
+		if (sHoistBatchActive && sHoistDoneLand) return;
+		TES3_hoist_avUpdate(node, a, b, c); sHoistDoneLand = true;
+	}
+
+	void installMapSceneUpdateHoist() {
+		using se::memory::genCallEnforced;
+		const DWORD uctl = reinterpret_cast<DWORD>(&HoistUpdateCellThreadLoader);
+		genCallEnforced(0x41B771, 0x486620, uctl); // mainLoop (per-frame; THE walking cross)
+		genCallEnforced(0x485731, 0x486620, uctl); // sub_485680 (interior->exterior)
+		genCallEnforced(0x48915D, 0x486620, uctl); // cellChangeToInterior
+		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&HoistUpdProps));   // UpdateProperties(renderTargetRoot)
+		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&HoistUpdFx));      // UpdateEffects(renderTargetRoot)
+		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&HoistLandUpdate)); // Update(nodeLand)
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2182,6 +2245,9 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
+
+		// Lever 1: hoist the redundant per-tile map scene-graph updates to once per cross.
+		installMapSceneUpdateHoist();
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
