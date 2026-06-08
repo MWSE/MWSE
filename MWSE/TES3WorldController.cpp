@@ -87,8 +87,10 @@ namespace TES3 {
 			return nullptr;
 		}
 		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
-		if (!rect || !rect->pBits) {
-			texture->release();
+		if (!rect) {
+			return nullptr;
+		} else if (!rect->pBits) {
+			renderTarget->unlockRenderTarget(rect, 0);
 			return nullptr;
 		}
 		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
