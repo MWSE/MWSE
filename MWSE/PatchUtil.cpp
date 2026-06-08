@@ -2193,15 +2193,15 @@ namespace mwse::patch {
 	static bool sHoistDoneProps = false;
 	static bool sHoistDoneFx = false;
 	static bool sHoistDoneLand = false;
-	static const auto TES3_DataHandler_updateCellThreadLoader = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*, NI::Point3*)>(0x486620);
 
-	static void __fastcall HoistUpdateCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
+	static int __fastcall HoistUpdateCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
 		sHoistBatchActive = true;
 		sHoistDoneProps = false;
 		sHoistDoneFx = false;
 		sHoistDoneLand = false;
-		TES3_DataHandler_updateCellThreadLoader(dataHandler, position);
+		const int result = dataHandler->updateCellThreadLoader(position);
 		sHoistBatchActive = false;
+		return result;
 	}
 	static void __fastcall HoistUpdateProperties(NI::AVObject* node) {
 		if (sHoistBatchActive && sHoistDoneProps) {
@@ -2217,11 +2217,11 @@ namespace mwse::patch {
 		node->updateEffects();
 		sHoistDoneFx = true;
 	}
-	static void __fastcall HoistLandUpdate(NI::AVObject* node, DWORD _EDX_, float updateTime, int updateControllers, int updateChildren) {
+	static void __fastcall HoistLandUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, bool updateControllers, bool updateChildren) {
 		if (sHoistBatchActive && sHoistDoneLand) {
 			return;
 		}
-		node->update(updateTime, updateControllers != 0, updateChildren != 0);
+		node->update(fTime, updateControllers, updateChildren);
 		sHoistDoneLand = true;
 	}
 
@@ -2230,8 +2230,8 @@ namespace mwse::patch {
 	static NI::AVObject* sRootSearchArg = nullptr;
 	static NI::Node* sRootSearchResult = nullptr;
 
-	static void __fastcall ActorTeardownDedupLeaveSimulation(TES3::AIPlanner* aiPlanner, DWORD _EDX_, int active) {
-		if (active == 0 && aiPlanner) {
+	static void __fastcall ActorTeardownDedupLeaveSimulation(TES3::AIPlanner* aiPlanner, DWORD _EDX_, bool active) {
+		if (!active && aiPlanner) {
 			TES3::MobileActor* mobileActor = aiPlanner->mobileActor;
 			if (mobileActor && !mobileActor->getMobileActorFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
 				return;

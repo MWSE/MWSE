@@ -910,6 +910,11 @@ namespace TES3 {
 		TES3_DataHandler_updateLightingForReference(this, reference);
 	}
 
+	const auto TES3_DataHandler_updateCellThreadLoader = reinterpret_cast<int(__thiscall*)(DataHandler*, NI::Point3*)>(0x486620);
+	int DataHandler::updateCellThreadLoader(NI::Point3* position) {
+		return TES3_DataHandler_updateCellThreadLoader(this, position);
+	}
+
 	const auto TES3_DataHandler_updateLightingForExteriorCells = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*)>(0x485C50);
 	void DataHandler::updateLightingForExteriorCells() {
 		TES3_DataHandler_updateLightingForExteriorCells(this);

@@ -397,6 +397,7 @@ namespace TES3 {
 		void setActorCollisionBoxesDisplay(bool showActorDrawBounds, bool showWireframe);
 
 		void updateLightingForReference(Reference * reference);
+		int updateCellThreadLoader(NI::Point3* position);
 		void updateLightingForExteriorCells();
 		void updateLightsBetweenCells(Cell* cell, Cell* otherCell);
 		void relightExteriorCellsAfterCross();
