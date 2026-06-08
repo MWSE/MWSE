@@ -260,14 +260,25 @@ namespace TES3 {
 		};
 	}
 
+	enum class ExteriorDataLoadingState : uint8_t {
+		Unloaded = 0,
+		Loaded = 1,
+		CachedOrPending = 2,
+		BackgroundLoading = 3,
+		BackgroundLoadedPendingCommit = 4,
+		Unloading = 5,
+	};
+
 	struct DataHandler {
 		struct ExteriorCellData {
-			unsigned char loadingFlags;
+			ExteriorDataLoadingState state;
 			Cell * cell;
 			void * landRenderData;
 
 			ExteriorCellData() = delete;
 			~ExteriorCellData() = delete;
+
+			bool isFullyLoaded() const;
 		};
 
 		NonDynamicData * nonDynamicData; // 0x0

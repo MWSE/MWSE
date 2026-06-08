@@ -760,6 +760,22 @@ namespace TES3 {
 	}
 
 	//
+	// DataHandler::ExteriorCellData
+	//
+
+	bool DataHandler::ExteriorCellData::isFullyLoaded() const {
+		if (!cell) {
+			return false;
+		}
+
+		if (state != ExteriorDataLoadingState::Loaded) {
+			return false;
+		}
+
+		return true;
+	}
+
+	//
 	// DataHandler
 	//
 
@@ -953,7 +969,7 @@ namespace TES3 {
 		bool isNew[9] = {};
 		for (int i = 0; i < 9; ++i) {
 			auto* ecd = exteriorCellData[i];
-			if (!ecd || ecd->loadingFlags != ExteriorCellDataLoaded || !ecd->cell) {
+			if (!ecd || !ecd->isFullyLoaded()) {
 				continue;
 			}
 			cells[i] = ecd->cell;

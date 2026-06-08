@@ -319,7 +319,7 @@ namespace TES3::UI {
 		else {
 			for (size_t i = 0; i < 9; ++i) {
 				auto cellDataPointer = dataHandler->exteriorCellData[i];
-				if (cellDataPointer && cellDataPointer->loadingFlags >= 1 && cellDataPointer->cell->pathGrid) {
+				if (cellDataPointer && cellDataPointer->isFullyLoaded() && cellDataPointer->cell->pathGrid) {
 					const auto pathGrid = cellDataPointer->cell->pathGrid;
 					if (pathGrid) {
 						if (show) {
