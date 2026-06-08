@@ -957,11 +957,13 @@ namespace TES3 {
 		const int newGridX = (dx > 0) ? cx + 1 : (dx < 0) ? cx - 1 : 0x7FFFFFFF;
 		const int newGridY = (dy > 0) ? cy + 1 : (dy < 0) ? cy - 1 : 0x7FFFFFFF;
 
+		constexpr unsigned char ExteriorCellDataLoaded = 1;  // loadingFlags value for a fully-loaded exterior cell
+
 		Cell* cells[9] = {};
 		bool isNew[9] = {};
 		for (int i = 0; i < 9; ++i) {
 			auto* ecd = exteriorCellData[i];
-			if (!ecd || ecd->loadingFlags != 1 || !ecd->cell) {
+			if (!ecd || ecd->loadingFlags != ExteriorCellDataLoaded || !ecd->cell) {
 				continue;
 			}
 			cells[i] = ecd->cell;

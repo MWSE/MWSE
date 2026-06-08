@@ -19,12 +19,14 @@
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
+#include "TES3AIData.h"
 #include "TES3ItemData.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
 #include "TES3MagicEffectController.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3Misc.h"
+#include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
@@ -42,6 +44,7 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
+#include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -2227,9 +2230,6 @@ namespace mwse::patch {
 	namespace {
 		bool sHoistBatchActive = false, sHoistDoneProps = false, sHoistDoneFx = false, sHoistDoneLand = false;
 		const auto TES3_hoist_updateCellThreadLoader = reinterpret_cast<void(__thiscall*)(void*, void*)>(0x486620);
-		const auto TES3_hoist_avUpdate = reinterpret_cast<void(__thiscall*)(void*, float, int, int)>(0x6EB000);  // NiAVObject::Update
-		const auto TES3_hoist_updProps = reinterpret_cast<void(__thiscall*)(void*)>(0x6EB0E0);                   // NiAVObject::UpdateProperties
-		const auto TES3_hoist_updFx = reinterpret_cast<void(__thiscall*)(void*)>(0x6EB380);                      // NiAVObject::UpdateEffects
 	}
 
 	// Bracket the walking-cross handler: start a batch, reset the per-traversal "done" flags, run
@@ -2241,20 +2241,20 @@ namespace mwse::patch {
 		sHoistBatchActive = false;
 	}
 	// renderCellMapTile site 0x420089: UpdateProperties(renderTargetRoot) - hoisted to once per cross.
-	void __fastcall HoistUpdProps(void* node, void*) {
+	void __fastcall HoistUpdProps(NI::AVObject* node, void*) {
 		if (sHoistBatchActive && sHoistDoneProps) return;
-		TES3_hoist_updProps(node); sHoistDoneProps = true;
+		node->updateProperties(); sHoistDoneProps = true;
 	}
 	// renderCellMapTile site 0x420090: UpdateEffects(renderTargetRoot) - hoisted to once per cross.
-	void __fastcall HoistUpdFx(void* node, void*) {
+	void __fastcall HoistUpdFx(NI::AVObject* node, void*) {
 		if (sHoistBatchActive && sHoistDoneFx) return;
-		TES3_hoist_updFx(node); sHoistDoneFx = true;
+		node->updateEffects(); sHoistDoneFx = true;
 	}
 	// renderCellMapTile site 0x42009E: Update(nodeLand) - hoisted to once per cross. The two camera
 	// Update sites (0x420064/0x420082) and LookAt (0x420075) are intentionally left per-tile.
-	void __fastcall HoistLandUpdate(void* node, void*, float a, int b, int c) {
+	void __fastcall HoistLandUpdate(NI::AVObject* node, void*, float a, int b, int c) {
 		if (sHoistBatchActive && sHoistDoneLand) return;
-		TES3_hoist_avUpdate(node, a, b, c); sHoistDoneLand = true;
+		node->update(a, b != 0, c != 0); sHoistDoneLand = true;
 	}
 
 	void installMapSceneUpdateHoist() {
@@ -2302,36 +2302,33 @@ namespace mwse::patch {
 	//    1-per-actor. The cache is reset at resetCollisionGroup's opening RemoveAll, scoping it to one call.
 
 	namespace {
-		const auto TES3_AIPlanner_enterLeaveSimulation = reinterpret_cast<void(__thiscall*)(void*, int)>(0x565350);
-		const auto TES3_sg_findRootCollisionNode = reinterpret_cast<void*(__cdecl*)(void*)>(0x6A3080);
-		const auto TES3_NiCollisionGroup_removeAll = reinterpret_cast<void(__thiscall*)(void*)>(0x6FD680);
-		void* sRootSearchArg = nullptr;
-		void* sRootSearchResult = nullptr;
+		NI::AVObject* sRootSearchArg = nullptr;
+		NI::Node* sRootSearchResult = nullptr;
 	}
 
-	// (1) Guard markActorCorpse's redundant AIPlanner::enterLeaveSimulation. aiPlanner->mobileActor is at
-	// +0x4; MobileActor::actorFlags at +0x10; MobileActorFlags::ActiveInSimulation = 0x4.
-	void __fastcall ActorTeardown_DedupLeaveSimulation(void* aiPlanner, void*, int active) {
+	// (1) Guard markActorCorpse's redundant AIPlanner::enterLeaveSimulation: if the actor has already left
+	// simulation (the first teardown cleared ActiveInSimulation), skip the redundant second pass.
+	void __fastcall ActorTeardown_DedupLeaveSimulation(TES3::AIPlanner* aiPlanner, void*, int active) {
 		if (active == 0 && aiPlanner) {
-			void* mobileActor = *reinterpret_cast<void**>(reinterpret_cast<char*>(aiPlanner) + 0x4);
-			if (mobileActor && (*reinterpret_cast<unsigned int*>(reinterpret_cast<char*>(mobileActor) + 0x10) & 0x4) == 0) {
+			TES3::MobileActor* mobileActor = aiPlanner->mobileActor;
+			if (mobileActor && !mobileActor->getMobileActorFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
 				return;  // already left simulation - the teardown already ran; skip the redundant pass
 			}
 		}
-		TES3_AIPlanner_enterLeaveSimulation(aiPlanner, active);
+		aiPlanner->enterLeaveSimulation(active);
 	}
 
 	// (2a) Reset the memo cache at resetCollisionGroup's opening RemoveAll, scoping memoization to one call.
-	void __fastcall ActorTeardown_ResetRootSearchCache(void* group, void*) {
+	void __fastcall ActorTeardown_ResetRootSearchCache(NI::CollisionGroup* group, void*) {
 		sRootSearchArg = nullptr;
-		TES3_NiCollisionGroup_removeAll(group);
+		group->removeAll();
 	}
 	// (2b) Memoize the loop-invariant, pure root-collision-node search.
-	void* __cdecl ActorTeardown_MemoizedRootSearch(void* sceneNode) {
+	NI::Node* __cdecl ActorTeardown_MemoizedRootSearch(NI::AVObject* sceneNode) {
 		if (sceneNode == sRootSearchArg) {
 			return sRootSearchResult;
 		}
-		void* result = TES3_sg_findRootCollisionNode(sceneNode);
+		NI::Node* result = sceneNode->findRootCollisionNode();
 		sRootSearchArg = sceneNode;
 		sRootSearchResult = result;
 		return result;
