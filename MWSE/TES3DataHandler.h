@@ -419,6 +419,9 @@ namespace TES3 {
 
 		std::reference_wrapper<ExteriorCellData* [9]> getExteriorCellData_lua();
 
+		void rebuildActiveCellManagerBoundsUnderRoot(NI::Node* root);
+		bool rebuildActiveCellManagerBounds();
+
 		long getGameSettingLong(int id) const;
 		float getGameSettingFloat(int id) const;
 		const char* getGameSettingString(int id) const;

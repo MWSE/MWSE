@@ -4,8 +4,8 @@ namespace NI::VirtualTableAddress {
 	enum VirtualTableAddress : unsigned int {
 		AvoidNode = 0x74F370,
 		BrickNiExtraData = 0x74B418,
-		BSAnimationManager = 0x750BD8,
-		BSAnimationNode = 0x750D68,
+		NiBSAnimationManager = 0x750BD8,
+		NiBSAnimationNode = 0x750D68,
 		BSMirroredNode = 0x74768C,
 		HashMapLight = 0x74F6E8,
 		NiAccumulator = 0x74697C,
