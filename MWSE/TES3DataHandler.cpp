@@ -945,13 +945,18 @@ namespace TES3 {
 	// only the light-application pairs that touch a newly-loaded cell (the retained cells re-apply an
 	// identical result and the dropped row self-cleans on unload), else fall back to the full relight.
 	void DataHandler::relightExteriorCellsAfterCross() {
-		constexpr int InvalidGridCoord = 0x7FFFFFFF;  // sentinel: no prior cross / no leading edge on an axis
-		static int prevCenterX = InvalidGridCoord, prevCenterY = InvalidGridCoord;
+		constexpr auto InvalidGridCoord = 0x7FFFFFFF;  // sentinel: no prior cross / no leading edge on an axis
+		static auto prevCenterX = InvalidGridCoord;
+		static auto prevCenterY = InvalidGridCoord;
 
-		const int cx = centralGridX, cy = centralGridY;
-		const int dx = cx - prevCenterX, dy = cy - prevCenterY;
-		const bool incremental = prevCenterX != InvalidGridCoord && prevCenterY != InvalidGridCoord
-			&& (dx != 0 || dy != 0) && dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1;
+		const auto cx = centralGridX;
+		const auto cy = centralGridY;
+		const auto dx = cx - prevCenterX;
+		const auto dy = cy - prevCenterY;
+		const auto hasPreviousCenter = prevCenterX != InvalidGridCoord && prevCenterY != InvalidGridCoord;
+		const auto movedNearby = dx || dy;
+		const auto movedIncrementally = std::abs(dx) <= 1 && std::abs(dy) <= 1;
+		const auto incremental = hasPreviousCenter && movedNearby && movedIncrementally;
 		prevCenterX = cx;
 		prevCenterY = cy;
 		if (!incremental) {
@@ -960,14 +965,12 @@ namespace TES3 {
 		}
 
 		// Leading edge: a column at gridX = cx +/- 1 and/or a row at gridY = cy +/- 1 (both for a diagonal).
-		const int newGridX = (dx > 0) ? cx + 1 : (dx < 0) ? cx - 1 : InvalidGridCoord;
-		const int newGridY = (dy > 0) ? cy + 1 : (dy < 0) ? cy - 1 : InvalidGridCoord;
-
-		constexpr unsigned char ExteriorCellDataLoaded = 1;  // loadingFlags value for a fully-loaded exterior cell
+		const auto newGridX = dx ? cx + dx : InvalidGridCoord;
+		const auto newGridY = dy ? cy + dy : InvalidGridCoord;
 
 		Cell* cells[9] = {};
 		bool isNew[9] = {};
-		for (int i = 0; i < 9; ++i) {
+		for (auto i = 0u; i < 9u; ++i) {
 			auto* ecd = exteriorCellData[i];
 			if (!ecd || !ecd->isFullyLoaded()) {
 				continue;
@@ -977,7 +980,7 @@ namespace TES3 {
 		}
 
 		// Clean only the new cells' lights; retained cells keep their already-valid applied state.
-		for (int i = 0; i < 9; ++i) {
+		for (auto i = 0u; i < 9u; ++i) {
 			if (!isNew[i]) {
 				continue;
 			}
@@ -988,7 +991,7 @@ namespace TES3 {
 
 		// Re-apply only the (cell -> neighbour) pairs that touch a new cell. The grid is row-major over
 		// a 3x3 block (index = row * 3 + col); neighbours are the in-bounds Moore neighbourhood incl. self.
-		for (int i = 0; i < 9; ++i) {
+		for (auto i = 0; i < 9; ++i) {
 			if (!cells[i]) {
 				continue;
 			}
