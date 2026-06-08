@@ -21,8 +21,8 @@ A structure the data handler uses to track loaded exterior cell data.
 
 ***
 
-### `loadingFlags`
-<div class="search_terms" style="display: none">loadingflags</div>
+### `state`
+<div class="search_terms" style="display: none">state</div>
 
 *Read-only*. Direct access to cell load flags. Shouldn't be accessed directly.
 
