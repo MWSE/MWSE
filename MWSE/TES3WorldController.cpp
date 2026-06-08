@@ -50,8 +50,8 @@ namespace TES3 {
 	// WorldControllerRenderTarget
 	//
 
-	const auto TES3_WorldControllerRenderTarget_lockRenderTarget = reinterpret_cast<D3DLOCKED_RECT*(__thiscall*)(WorldControllerRenderTarget*, NI::Texture*)>(0x42F3F0);
-	D3DLOCKED_RECT* WorldControllerRenderTarget::lockRenderTarget(NI::Texture* texture) {
+	const auto TES3_WorldControllerRenderTarget_lockRenderTarget = reinterpret_cast<D3DLOCKED_RECT*(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::Texture>)>(0x42F3F0);
+	D3DLOCKED_RECT* WorldControllerRenderTarget::lockRenderTarget(NI::Pointer<NI::Texture> texture) {
 		return TES3_WorldControllerRenderTarget_lockRenderTarget(this, texture);
 	}
 
@@ -60,25 +60,25 @@ namespace TES3 {
 		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
 	}
 
-	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::RenderedTexture*, float, float)>(0x42FE20);
-	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::RenderedTexture* texture, float worldX, float worldY) {
+	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::RenderedTexture>, float, float)>(0x42FE20);
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
 	}
 
 	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
-	static constexpr unsigned int FogTileResolution = 64;
-	static constexpr int FogCacheCapacity = 16;
+	static constexpr auto FogTileResolution = 64u;
+	static constexpr auto FogCacheCapacity = 16u;
 
 	struct FogTileCacheEntry {
-		NI::RenderedTexture* texture;
-		unsigned char pixels[FogTileResolution * FogTileResolution];
+		NI::Pointer<NI::RenderedTexture> texture = nullptr;
+		unsigned char pixels[FogTileResolution * FogTileResolution] = {};
 	};
-	static bool sFogCacheActive = false;
-	static int sFogCacheCount = 0;
-	static FogTileCacheEntry sFogCache[FogCacheCapacity];
+	static auto sFogCacheActive = false;
+	static auto sFogCacheCount = 0u;
+	static FogTileCacheEntry sFogCache[FogCacheCapacity] = {};
 
-	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::RenderedTexture* texture) {
-		for (int i = 0; i < sFogCacheCount; ++i) {
+	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::Pointer<NI::RenderedTexture> texture) {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
 			if (sFogCache[i].texture == texture) {
 				return &sFogCache[i];
 			}
@@ -86,8 +86,6 @@ namespace TES3 {
 		if (sFogCacheCount >= FogCacheCapacity) {
 			return nullptr;
 		}
-		// Keep the texture alive across the lock (mirrors the engine's defensive ++/-- guard).
-		texture->refCount += 1;
 		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
 		if (!rect || !rect->pBits) {
 			texture->release();
@@ -108,25 +106,28 @@ namespace TES3 {
 	}
 
 	void WorldControllerRenderTarget::beginFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
 		sFogCacheActive = true;
 		sFogCacheCount = 0;
 	}
 
 	void WorldControllerRenderTarget::endFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
 		sFogCacheActive = false;
 		sFogCacheCount = 0;
 	}
 
-	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::RenderedTexture* texture, float worldX, float worldY) {
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
 		if (!sFogCacheActive) {
 			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
 		}
-		const unsigned int px = static_cast<unsigned int>(static_cast<double>(worldX) * FogTileResolution);
-		const unsigned int py = static_cast<unsigned int>(static_cast<double>(worldY) * FogTileResolution);
+		const auto px = static_cast<unsigned int>(static_cast<double>(worldX) * FogTileResolution);
+		const auto py = static_cast<unsigned int>(static_cast<double>(worldY) * FogTileResolution);
 		if (px > FogTileResolution || py > FogTileResolution) {
-			if (texture) {
-				texture->release();  // vanilla OOB path consumes one reference
-			}
 			return 0;
 		}
 		unsigned char result = 0;
@@ -137,7 +138,6 @@ namespace TES3 {
 				const unsigned int cy = py < FogTileResolution ? py : FogTileResolution - 1;
 				result = entry->pixels[cy * FogTileResolution + cx];
 			}
-			// vanilla success path is net-zero on refCount -> nothing to do
 		}
 		return result;
 	}
