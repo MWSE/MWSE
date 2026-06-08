@@ -917,32 +917,14 @@ namespace TES3 {
 
 	const auto TES3_DataHandler_updateLightsBetweenCells = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*, TES3::Cell*, TES3::Cell*)>(0x485A70);
 	void DataHandler::updateLightsBetweenCells(Cell* cell, Cell* otherCell) {
-		// Apply every light ref in `cell` onto `otherCell`'s geometry (or onto `cell` itself when
-		// otherCell == cell). The engine's full grid relight calls this for all 49 cell->neighbour pairs.
 		TES3_DataHandler_updateLightsBetweenCells(this, cell, otherCell);
 	}
 
-	// Cell-cross relight optimization ("Lever 2"). updateLightingForExteriorCells relights the whole
-	// 3x3 grid on every exterior cross: for each loaded cell it cleans its lights then re-applies them
-	// to its Moore neighbourhood via updateLightsBetweenCells. Profiling showed ~88% of that cost is the
-	// point-light application, and that 28 of the 49 (cell->neighbour) application pairs lie entirely
-	// within the 6 retained cells - neither endpoint changed across a 1-cell cross, so they re-apply an
-	// identical result. This relights only the pairs that touch a newly-loaded cell.
-	//
-	// Correctness: the dropped column/row is self-cleaning - ExteriorCellData::unload runs
-	// Reference::detachDynamicLightFromAffectedNodes on its lights (detaching them from the retained
-	// geometry they lit) BEFORE this runs - so retained cells need no relight for the unload. Retained
-	// cells' lights are left applied, which is exactly the state the full relight would rebuild for them;
-	// only the new cells are cleaned and (re)applied, and the new cells additionally receive their
-	// neighbours' lights. The final lighting state matches the full relight.
-	//
-	// The newly-loaded cells are the leading edge, identified from the central-grid delta since the
-	// previous cross. Anything that is not a clean 1-step cross (first cross after a load, teleport, or
-	// a >1-cell jump) falls back to the engine's full relight.
+	// Incremental replacement for updateLightingForExteriorCells: on a clean 1-step exterior cross, relight
+	// only the light-application pairs that touch a newly-loaded cell (the retained cells re-apply an
+	// identical result and the dropped row self-cleans on unload), else fall back to the full relight.
 	void DataHandler::relightExteriorCellsAfterCross() {
-		// An impossible grid coordinate (INT_MAX), used as a sentinel both for "no prior cross recorded"
-		// and for "no leading edge on this axis" - it can never equal a real cell's gridX/gridY.
-		constexpr int InvalidGridCoord = 0x7FFFFFFF;
+		constexpr int InvalidGridCoord = 0x7FFFFFFF;  // sentinel: no prior cross / no leading edge on an axis
 		static int prevCenterX = InvalidGridCoord, prevCenterY = InvalidGridCoord;
 
 		const int cx = centralGridX, cy = centralGridY;

@@ -46,6 +46,7 @@
 #include "NIBound.h"
 #include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
+#include "NIPoint3.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
@@ -2170,175 +2171,86 @@ namespace mwse::patch {
 		waterSoundBuffer->lpSoundBuffer->SetVolume(volume);
 	}
 
-	//
-	// Map fog-of-war pixel cache install.
-	//
-	// The cache itself lives on TES3::WorldControllerRenderTarget. Here we only install the hooks:
-	//  - bracket the local-map compositor (ui_MenuMap_updateMapRender, 0x5E99C0) at its four entry
-	//    sites so the cache is active for the duration of each pass, and
-	//  - replace getFogOfWarPixel (0x42FE20) at its two call sites (inside
-	//    isPositionUncoveredByFogOfWar) with the cached variant.
-	//
+	// Cell-cross optimization hook targets. Installed under "Patch: Exterior cell crossing optimization".
 
-	// Hook target for getFogOfWarPixel. __fastcall(self, edx, ...) matches the engine __thiscall.
-	unsigned char __fastcall MapFogPixelCacheHook(TES3::WorldControllerRenderTarget* renderTarget, void*, NI::RenderedTexture* texture, float worldX, float worldY) {
+	// getFogOfWarPixel cached variant: serve from a per-compositor-pass copy instead of a per-door GPU lock.
+	static unsigned char __fastcall MapFogPixelCacheHook(TES3::WorldControllerRenderTarget* renderTarget, DWORD _EDX_, NI::RenderedTexture* texture, float worldX, float worldY) {
 		return renderTarget->getFogOfWarPixelCached(texture, worldX, worldY);
 	}
 
-	// Hook target that brackets the compositor so the fog cache is active while it runs.
-	const auto TES3_ui_MenuMap_updateMapRender = reinterpret_cast<void(__cdecl*)()>(0x5E99C0);
-	void __cdecl MapCompositorWithFogCache() {
+	// Bracket the local-map compositor so the fog cache is active while it runs.
+	static const auto TES3_ui_MenuMap_updateMapRender = reinterpret_cast<void(__cdecl*)()>(0x5E99C0);
+	static void __cdecl MapCompositorWithFogCache() {
 		TES3::WorldControllerRenderTarget::beginFogCache();
 		TES3_ui_MenuMap_updateMapRender();
 		TES3::WorldControllerRenderTarget::endFogCache();
 	}
 
-	void installMapFogPixelCache() {
-		using se::memory::genCallEnforced;
-		using se::memory::genJumpEnforced;
+	// Map scene-update hoist: renderCellMapTile re-runs UpdateProperties/UpdateEffects on the same map
+	// render-target root and Update on the same nodeLand once per ring tile; a batch bracketed around
+	// updateCellThreadLoader runs each traversal once per cross instead.
+	static bool sHoistBatchActive = false;
+	static bool sHoistDoneProps = false;
+	static bool sHoistDoneFx = false;
+	static bool sHoistDoneLand = false;
+	static const auto TES3_DataHandler_updateCellThreadLoader = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*, NI::Point3*)>(0x486620);
 
-		const DWORD compositor = reinterpret_cast<DWORD>(&MapCompositorWithFogCache);
-		genJumpEnforced(0x420415, 0x5E99C0, compositor);  // MapController::updateMapRender tail-jmp (cell-cross)
-		genCallEnforced(0x5E9757, 0x5E99C0, compositor);  // ui_showMapMenu (map open)
-		genCallEnforced(0x5F0BF2, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onOK
-		genCallEnforced(0x5F0D32, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onDeleteNote
-
-		const DWORD fogPixel = reinterpret_cast<DWORD>(&MapFogPixelCacheHook);
-		genCallEnforced(0x5EE104, 0x42FE20, fogPixel);    // isPositionUncoveredByFogOfWar (path 1)
-		genCallEnforced(0x5EE286, 0x42FE20, fogPixel);    // isPositionUncoveredByFogOfWar (path 2)
-	}
-
-	//
-	// Map-tile scene-update hoist (cell-cross optimization, "Lever 1").
-	//
-	// On an exterior cell-cross the engine renders the local/world map by calling
-	// renderCellMapTile (0x41FEA0) once per ring tile (6-9x per cross). Each call re-runs
-	// UpdateProperties + UpdateEffects on the SAME map render-target root and Update() on the
-	// SAME MapController::nodeLand - none of which depend on the per-tile cell argument; only
-	// the camera moves between tiles. Verified against the decompilation: renderTargetRootNode
-	// = worldController->mapRenderTarget.sgRoot and this->nodeLand are both cross-invariant, so
-	// running those three traversals once per cross (instead of per tile) is pixel-exact. The
-	// per-tile camera Update/LookAt stay untouched.
-	//
-	// A batch is bracketed around updateCellThreadLoader (0x486620, the walking-cross handler).
-	// While the batch is active, the first tile that actually renders runs each traversal and
-	// marks it done; later tiles skip it. The "done" flags are only set after the traversal
-	// actually runs, so a cache-hit tile that early-returns inside renderCellMapTile (before the
-	// update sites) does not consume the batch. Outside a cross (purgeTextures, interior map
-	// render) the batch is inactive and every traversal runs as vanilla.
-
-	namespace {
-		bool sHoistBatchActive = false, sHoistDoneProps = false, sHoistDoneFx = false, sHoistDoneLand = false;
-		const auto TES3_hoist_updateCellThreadLoader = reinterpret_cast<void(__thiscall*)(void*, void*)>(0x486620);
-	}
-
-	// Bracket the walking-cross handler: start a batch, reset the per-traversal "done" flags, run
-	// the cross, end the batch. uctl is not re-entrant (its three call sites are distinct paths).
-	void __fastcall HoistUpdateCellThreadLoader(void* dh, void*, void* position) {
+	static void __fastcall HoistUpdateCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
 		sHoistBatchActive = true;
-		sHoistDoneProps = sHoistDoneFx = sHoistDoneLand = false;
-		TES3_hoist_updateCellThreadLoader(dh, position);
+		sHoistDoneProps = false;
+		sHoistDoneFx = false;
+		sHoistDoneLand = false;
+		TES3_DataHandler_updateCellThreadLoader(dataHandler, position);
 		sHoistBatchActive = false;
 	}
-	// renderCellMapTile site 0x420089: UpdateProperties(renderTargetRoot) - hoisted to once per cross.
-	void __fastcall HoistUpdProps(NI::AVObject* node, void*) {
-		if (sHoistBatchActive && sHoistDoneProps) return;
-		node->updateProperties(); sHoistDoneProps = true;
+	static void __fastcall HoistUpdateProperties(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneProps) {
+			return;
+		}
+		node->updateProperties();
+		sHoistDoneProps = true;
 	}
-	// renderCellMapTile site 0x420090: UpdateEffects(renderTargetRoot) - hoisted to once per cross.
-	void __fastcall HoistUpdFx(NI::AVObject* node, void*) {
-		if (sHoistBatchActive && sHoistDoneFx) return;
-		node->updateEffects(); sHoistDoneFx = true;
+	static void __fastcall HoistUpdateEffects(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneFx) {
+			return;
+		}
+		node->updateEffects();
+		sHoistDoneFx = true;
 	}
-	// renderCellMapTile site 0x42009E: Update(nodeLand) - hoisted to once per cross. The two camera
-	// Update sites (0x420064/0x420082) and LookAt (0x420075) are intentionally left per-tile.
-	void __fastcall HoistLandUpdate(NI::AVObject* node, void*, float a, int b, int c) {
-		if (sHoistBatchActive && sHoistDoneLand) return;
-		node->update(a, b != 0, c != 0); sHoistDoneLand = true;
-	}
-
-	void installMapSceneUpdateHoist() {
-		using se::memory::genCallEnforced;
-		const DWORD uctl = reinterpret_cast<DWORD>(&HoistUpdateCellThreadLoader);
-		genCallEnforced(0x41B771, 0x486620, uctl); // mainLoop (per-frame; THE walking cross)
-		genCallEnforced(0x485731, 0x486620, uctl); // sub_485680 (interior->exterior)
-		genCallEnforced(0x48915D, 0x486620, uctl); // cellChangeToInterior
-		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&HoistUpdProps));   // UpdateProperties(renderTargetRoot)
-		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&HoistUpdFx));      // UpdateEffects(renderTargetRoot)
-		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&HoistLandUpdate)); // Update(nodeLand)
+	static void __fastcall HoistLandUpdate(NI::AVObject* node, DWORD _EDX_, float updateTime, int updateControllers, int updateChildren) {
+		if (sHoistBatchActive && sHoistDoneLand) {
+			return;
+		}
+		node->update(updateTime, updateControllers != 0, updateChildren != 0);
+		sHoistDoneLand = true;
 	}
 
-	//
-	// Lever 2: relight only the cells changed by a cross.
-	//
-	// Replaces updateCellThreadLoader's full-grid relight (updateLightingForExteriorCells, 0x485C50)
-	// with DataHandler::relightExteriorCellsAfterCross, which relights only the light-application pairs
-	// that touch a newly-loaded cell (the other ~28 of 49 pairs are unchanged across a 1-cell cross).
-	// See DataHandler::relightExteriorCellsAfterCross for the correctness argument. Other callers of the
-	// full relight (full reloads, etc.) are untouched - only the walking-cross call site is replaced.
+	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
+	// already left simulation, and memoize resetCollisionGroup's loop-invariant root-collision-node search.
+	static NI::AVObject* sRootSearchArg = nullptr;
+	static NI::Node* sRootSearchResult = nullptr;
 
-	void installRelightChangedCells() {
-		auto relight = &TES3::DataHandler::relightExteriorCellsAfterCross;
-		se::memory::genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&relight)); // updateCellThreadLoader -> updateAllLights
-	}
-
-	//
-	// Cell-cross actor teardown optimizations.
-	//
-	// On an exterior cell-cross the dominant main-thread cost is tearing down the departing cells' actors
-	// (and setting up the arriving ones). Two behavior-preserving fixes, both validated against the
-	// decompilation and in-game (see moreFPS/docs/engineering-notes/cell-cross-mob-teardown-anatomy.md):
-	//
-	// 1) De-dup. MobManager::removeMob tears an actor down via MACT::enterLeaveSimulation(0), then - for
-	//    CREA/NPC - again via markActorCorpse -> AIPlanner::enterLeaveSimulation(0). So the heavy teardown
-	//    runs twice per actor. The first call clears MobileActorFlags::ActiveInSimulation (0x4); guard the
-	//    redundant second call so that "leaving an already-left actor" is a no-op (the corpse timestamp and
-	//    AI-planner removal in markActorCorpse still run; only the duplicate teardown is skipped).
-	//
-	// 2) Hoist via memoization. MobileObject::resetCollisionGroup - the bulk of the teardown, and also run
-	//    on actor spawn and per-frame physics - calls sg_findRootCollisionNode (a recursive skeleton DFS)
-	//    once per active AI planner with a loop-invariant argument, doing the same full walk N times. It is
-	//    a pure function, so memoize consecutive same-arg calls: the DFS collapses from N-per-actor to
-	//    1-per-actor. The cache is reset at resetCollisionGroup's opening RemoveAll, scoping it to one call.
-
-	namespace {
-		NI::AVObject* sRootSearchArg = nullptr;
-		NI::Node* sRootSearchResult = nullptr;
-	}
-
-	// (1) Guard markActorCorpse's redundant AIPlanner::enterLeaveSimulation: if the actor has already left
-	// simulation (the first teardown cleared ActiveInSimulation), skip the redundant second pass.
-	void __fastcall ActorTeardown_DedupLeaveSimulation(TES3::AIPlanner* aiPlanner, void*, int active) {
+	static void __fastcall ActorTeardownDedupLeaveSimulation(TES3::AIPlanner* aiPlanner, DWORD _EDX_, int active) {
 		if (active == 0 && aiPlanner) {
 			TES3::MobileActor* mobileActor = aiPlanner->mobileActor;
 			if (mobileActor && !mobileActor->getMobileActorFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
-				return;  // already left simulation - the teardown already ran; skip the redundant pass
+				return;
 			}
 		}
 		aiPlanner->enterLeaveSimulation(active);
 	}
 
-	// (2a) Reset the memo cache at resetCollisionGroup's opening RemoveAll, scoping memoization to one call.
-	void __fastcall ActorTeardown_ResetRootSearchCache(NI::CollisionGroup* group, void*) {
+	static void __fastcall ActorTeardownResetRootSearchCache(NI::CollisionGroup* group) {
 		sRootSearchArg = nullptr;
 		group->removeAll();
 	}
-	// (2b) Memoize the loop-invariant, pure root-collision-node search.
-	NI::Node* __cdecl ActorTeardown_MemoizedRootSearch(NI::AVObject* sceneNode) {
+	static NI::Node* __cdecl ActorTeardownMemoizedRootSearch(NI::AVObject* sceneNode) {
 		if (sceneNode == sRootSearchArg) {
 			return sRootSearchResult;
 		}
-		NI::Node* result = sceneNode->findRootCollisionNode();
+		sRootSearchResult = sceneNode->findRootCollisionNode();
 		sRootSearchArg = sceneNode;
-		sRootSearchResult = result;
-		return result;
-	}
-
-	void installCellCrossActorTeardown() {
-		using se::memory::genCallEnforced;
-		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardown_DedupLeaveSimulation));  // (1) de-dup
-		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardown_ResetRootSearchCache));  // (2a) memo cache reset (RemoveAll)
-		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardown_MemoizedRootSearch));    // (2b) memoized DFS
+		return sRootSearchResult;
 	}
 
 	//
@@ -2357,19 +2269,6 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
-
-		// Map fog-of-war pixel cache: removes the per-door GPU render-target lock stutter on cell-cross.
-		installMapFogPixelCache();
-
-		// Lever 1: hoist the redundant per-tile map scene-graph updates to once per cross.
-		installMapSceneUpdateHoist();
-
-		// Lever 2: relight only the cells changed by a cross.
-		installRelightChangedCells();
-
-		// Lever 3: optimize the cell-cross actor teardown (de-dup the double leave-simulation + memoize the
-		// loop-invariant collision root-node search).
-		installCellCrossActorTeardown();
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
@@ -3139,6 +3038,27 @@ namespace mwse::patch {
 		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
 		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
 		genCallEnforced(0x48A989, 0x402B42, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolumeMCP));
+
+		// Patch: Exterior cell crossing optimization (map fog-of-war pixel cache, map scene-update hoist,
+		// incremental relight, actor-teardown de-dup/memoize).
+		const DWORD compositor = reinterpret_cast<DWORD>(&MapCompositorWithFogCache);
+		genJumpEnforced(0x420415, 0x5E99C0, compositor);  // MapController::updateMapRender tail-jmp
+		genCallEnforced(0x5E9757, 0x5E99C0, compositor);  // ui_showMapMenu
+		genCallEnforced(0x5F0BF2, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onOK
+		genCallEnforced(0x5F0D32, 0x5E99C0, compositor);  // ui_MenuMapNoteEdit_onDeleteNote
+		genCallEnforced(0x5EE104, 0x42FE20, reinterpret_cast<DWORD>(&MapFogPixelCacheHook));  // isPositionUncoveredByFogOfWar
+		genCallEnforced(0x5EE286, 0x42FE20, reinterpret_cast<DWORD>(&MapFogPixelCacheHook));
+		genCallEnforced(0x41B771, 0x486620, reinterpret_cast<DWORD>(&HoistUpdateCellThreadLoader));  // mainLoop
+		genCallEnforced(0x485731, 0x486620, reinterpret_cast<DWORD>(&HoistUpdateCellThreadLoader));  // sub_485680
+		genCallEnforced(0x48915D, 0x486620, reinterpret_cast<DWORD>(&HoistUpdateCellThreadLoader));  // cellChangeToInterior
+		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&HoistUpdateProperties));
+		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&HoistUpdateEffects));
+		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&HoistLandUpdate));
+		auto relight = &TES3::DataHandler::relightExteriorCellsAfterCross;
+		genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&relight));  // updateCellThreadLoader -> updateAllLights
+		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardownDedupLeaveSimulation));
+		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardownResetRootSearchCache));
+		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardownMemoizedRootSearch));
 	}
 
 	void installPostLuaPatches() {

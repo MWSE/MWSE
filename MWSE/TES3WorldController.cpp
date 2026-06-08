@@ -65,48 +65,46 @@ namespace TES3 {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
 	}
 
-	// Fog-of-war pixel cache (see header). Per-compositor-pass cache, keyed by fog tile texture.
-	namespace {
-		constexpr unsigned int FogTileResolution = 64;  // fog-of-war tiles are 64x64 pixels
-		constexpr int FogCacheCapacity = 16;            // max fog tiles cached per compositor pass (the loaded ring)
+	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
+	static constexpr unsigned int FogTileResolution = 64;
+	static constexpr int FogCacheCapacity = 16;
 
-		struct FogTileCacheEntry {
-			NI::RenderedTexture* texture;
-			unsigned char pixels[FogTileResolution * FogTileResolution];  // the sampled channel (offset +1) per tile
-		};
-		bool sFogCacheActive = false;
-		int sFogCacheCount = 0;
-		FogTileCacheEntry sFogCache[FogCacheCapacity];  // overflow degrades to "covered"
+	struct FogTileCacheEntry {
+		NI::RenderedTexture* texture;
+		unsigned char pixels[FogTileResolution * FogTileResolution];
+	};
+	static bool sFogCacheActive = false;
+	static int sFogCacheCount = 0;
+	static FogTileCacheEntry sFogCache[FogCacheCapacity];
 
-		FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::RenderedTexture* texture) {
-			for (int i = 0; i < sFogCacheCount; ++i) {
-				if (sFogCache[i].texture == texture) {
-					return &sFogCache[i];
-				}
+	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::RenderedTexture* texture) {
+		for (int i = 0; i < sFogCacheCount; ++i) {
+			if (sFogCache[i].texture == texture) {
+				return &sFogCache[i];
 			}
-			if (sFogCacheCount >= FogCacheCapacity) {
-				return nullptr;
-			}
-			// Keep the texture alive across the lock (mirrors the engine's defensive ++/-- guard).
-			texture->refCount += 1;
-			D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
-			if (!rect || !rect->pBits) {
-				texture->release();
-				return nullptr;
-			}
-			FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
-			entry->texture = texture;
-			const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
-			const int pitch = rect->Pitch;
-			for (unsigned int y = 0; y < FogTileResolution; ++y) {
-				for (unsigned int x = 0; x < FogTileResolution; ++x) {
-					entry->pixels[y * FogTileResolution + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
-				}
-			}
-			renderTarget->unlockRenderTarget(rect, 0);
-			++sFogCacheCount;
-			return entry;
 		}
+		if (sFogCacheCount >= FogCacheCapacity) {
+			return nullptr;
+		}
+		// Keep the texture alive across the lock (mirrors the engine's defensive ++/-- guard).
+		texture->refCount += 1;
+		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
+		if (!rect || !rect->pBits) {
+			texture->release();
+			return nullptr;
+		}
+		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+		entry->texture = texture;
+		const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
+		const int pitch = rect->Pitch;
+		for (unsigned int y = 0; y < FogTileResolution; ++y) {
+			for (unsigned int x = 0; x < FogTileResolution; ++x) {
+				entry->pixels[y * FogTileResolution + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
+			}
+		}
+		renderTarget->unlockRenderTarget(rect, 0);
+		++sFogCacheCount;
+		return entry;
 	}
 
 	void WorldControllerRenderTarget::beginFogCache() {
