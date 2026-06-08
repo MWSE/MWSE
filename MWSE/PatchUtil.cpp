@@ -19,12 +19,14 @@
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
+#include "TES3AIData.h"
 #include "TES3ItemData.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
 #include "TES3MagicEffectController.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3Misc.h"
+#include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
@@ -33,6 +35,7 @@
 #include "TES3Sound.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
+#include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
@@ -41,7 +44,9 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
+#include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
+#include "NIPoint3.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
@@ -2177,6 +2182,91 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Optimize map rendering when crossing cell borders
+	// 
+	// renderCellMapTile re-runs UpdateProperties/UpdateEffects on the same map render-target root and Update on the
+	// same nodeLand once per ring tile; a batch bracketed around updateCellThreadLoader runs each traversal once per
+	// cross instead.
+	//
+
+	// Bracket the local-map compositor so the fog cache is active while it runs.
+	static const auto TES3_ui_MenuMap_updateMapRender = reinterpret_cast<void(__cdecl*)()>(0x5E99C0);
+	static void __cdecl PatchOptimizeMapUpdates_UpdateMapRenderCached() {
+		TES3::WorldControllerRenderTarget::beginFogCache();
+		TES3_ui_MenuMap_updateMapRender();
+		TES3::WorldControllerRenderTarget::endFogCache();
+	}
+
+	static bool sHoistBatchActive = false;
+	static bool sHoistDoneProps = false;
+	static bool sHoistDoneFx = false;
+	static bool sHoistDoneLand = false;
+
+	static int __fastcall PatchOptimizeMapUpdates_WrapCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
+		sHoistBatchActive = true;
+		sHoistDoneProps = false;
+		sHoistDoneFx = false;
+		sHoistDoneLand = false;
+		const int result = dataHandler->updateCellThreadLoader(position);
+		sHoistBatchActive = false;
+		return result;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdateProperties(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneProps) {
+			return;
+		}
+		node->updateProperties();
+		sHoistDoneProps = true;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdateEffects(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneFx) {
+			return;
+		}
+		node->updateEffects();
+		sHoistDoneFx = true;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, int updateControllers, int updateChildren) {
+		if (sHoistBatchActive && sHoistDoneLand) {
+			return;
+		}
+		node->update(fTime, updateControllers, updateChildren);
+		sHoistDoneLand = true;
+	}
+
+	//
+	// Patch: Optimize relighting of actors during cell transition.
+	// 
+	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
+	// already left simulation, and memoize resetCollisionGroup's loop-invariant root-collision-node search.
+	//
+
+	static NI::AVObject* sRootSearchArg = nullptr;
+	static NI::Node* sRootSearchResult = nullptr;
+
+	static void __fastcall ActorTeardownDedupLeaveSimulation(TES3::AIPlanner* aiPlanner, DWORD _EDX_, bool active) {
+		if (!active && aiPlanner) {
+			TES3::MobileActor* mobileActor = aiPlanner->mobileActor;
+			if (mobileActor && !mobileActor->getMobileActorFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
+				return;
+			}
+		}
+		aiPlanner->enterLeaveSimulation(active);
+	}
+
+	static void __fastcall ActorTeardownResetRootSearchCache(NI::CollisionGroup* group) {
+		sRootSearchArg = nullptr;
+		group->removeAll();
+	}
+	static NI::Node* __cdecl ActorTeardownMemoizedRootSearch(NI::AVObject* sceneNode) {
+		if (sceneNode == sRootSearchArg) {
+			return sRootSearchResult;
+		}
+		sRootSearchResult = sceneNode->findRootCollisionNode();
+		sRootSearchArg = sceneNode;
+		return sRootSearchResult;
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2966,6 +3056,28 @@ namespace mwse::patch {
 		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
 		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
 		genCallEnforced(0x48A989, 0x402B42, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolumeMCP));
+
+		// Patch: Optimize map rendering when crossing cell borders.
+		genJumpEnforced(0x420415, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // MapController::updateMapRender tail-jmp
+		genCallEnforced(0x5E9757, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_showMapMenu
+		genCallEnforced(0x5F0BF2, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_MenuMapNoteEdit_onOK
+		genCallEnforced(0x5F0D32, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_MenuMapNoteEdit_onDeleteNote
+		auto WorldControllerRenderTarget_getFogOfWarPixelCached = &TES3::WorldControllerRenderTarget::getFogOfWarPixelCached;
+		genCallEnforced(0x5EE104, 0x42FE20, *reinterpret_cast<DWORD*>(&WorldControllerRenderTarget_getFogOfWarPixelCached)); // isPositionUncoveredByFogOfWar
+		genCallEnforced(0x5EE286, 0x42FE20, *reinterpret_cast<DWORD*>(&WorldControllerRenderTarget_getFogOfWarPixelCached));
+		genCallEnforced(0x41B771, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // mainLoop
+		genCallEnforced(0x485731, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // sub_485680
+		genCallEnforced(0x48915D, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // cellChangeToInterior
+		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateProperties));
+		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
+		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
+
+		// Patch: Optimize relighting of actors during cell transition.
+		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
+		genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&DataHandler_relightExteriorCellsAfterCross)); // updateCellThreadLoader -> updateAllLights
+		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardownDedupLeaveSimulation));
+		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardownResetRootSearchCache));
+		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardownMemoizedRootSearch));
 	}
 
 	void installPostLuaPatches() {

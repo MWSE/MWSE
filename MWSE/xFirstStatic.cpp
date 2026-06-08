@@ -28,7 +28,7 @@ namespace mwse {
 		}
 		else {
 			auto cellPointer = dataHandler->exteriorCellData[TES3::CellGrid::Center];
-			if (cellPointer->loadingFlags >= 1) {
+			if (cellPointer->isFullyLoaded()) {
 				// Get the start of the list for the center cell. We'll check that it's valid later.
 				reference = static_cast<TES3::Reference*>(cellPointer->cell->persistentRefs.head->skipDeletedObjects());
 				int exteriorCount = 0;
@@ -38,15 +38,12 @@ namespace mwse {
 					}
 
 					cellPointer = dataHandler->exteriorCellData[i];
-					if (cellPointer->loadingFlags >= 1) {
+					if (cellPointer->isFullyLoaded()) {
 						TES3::Reference* tempReference = static_cast<TES3::Reference*>(cellPointer->cell->persistentRefs.head->skipDeletedObjects());
 						if (tempReference != NULL) {
 							mwse::tes3::exteriorRefs[exteriorCount] = tempReference;
 							exteriorCount++;
 						}
-					}
-					else {
-						mwse::log::getLog() << "xFirstStatic: Exterior flags is " << cellPointer->loadingFlags << ". Skipping exterior " << i << "." << std::endl;
 					}
 				}
 

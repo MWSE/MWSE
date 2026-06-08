@@ -12,6 +12,11 @@ namespace NI {
 			claim(pointer);
 		}
 
+		template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
+		Pointer(const Pointer<U>& pointer) {
+			claim(pointer.get());
+		}
+
 		~Pointer() {
 			release();
 		}
@@ -50,6 +55,14 @@ namespace NI {
 		Pointer<T>& operator=(T* pointer) {
 			if (m_Pointer != pointer) {
 				claim(pointer);
+			}
+			return *this;
+		}
+
+		template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
+		Pointer<T>& operator=(const Pointer<U>& pointer) {
+			if (m_Pointer != pointer.get()) {
+				claim(pointer.get());
 			}
 			return *this;
 		}

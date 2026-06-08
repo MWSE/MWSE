@@ -47,6 +47,104 @@ namespace TES3 {
 	}
 
 	//
+	// WorldControllerRenderTarget
+	//
+
+	const auto TES3_WorldControllerRenderTarget_lockRenderTarget = reinterpret_cast<D3DLOCKED_RECT*(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::Texture>)>(0x42F3F0);
+	D3DLOCKED_RECT* WorldControllerRenderTarget::lockRenderTarget(NI::Pointer<NI::Texture> texture) {
+		return TES3_WorldControllerRenderTarget_lockRenderTarget(this, texture);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_unlockRenderTarget = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, D3DLOCKED_RECT*, int)>(0x42F620);
+	void WorldControllerRenderTarget::unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag) {
+		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::RenderedTexture>, float, float)>(0x42FE20);
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
+		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
+	}
+
+	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
+	static constexpr auto FogTileResolution = 64u;
+	static constexpr auto FogCacheCapacity = 16u;
+
+	struct FogTileCacheEntry {
+		NI::Pointer<NI::RenderedTexture> texture = nullptr;
+		unsigned char pixels[FogTileResolution * FogTileResolution] = {};
+	};
+	static auto sFogCacheActive = false;
+	static auto sFogCacheCount = 0u;
+	static FogTileCacheEntry sFogCache[FogCacheCapacity] = {};
+
+	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::Pointer<NI::RenderedTexture> texture) {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			if (sFogCache[i].texture == texture) {
+				return &sFogCache[i];
+			}
+		}
+		if (sFogCacheCount >= FogCacheCapacity) {
+			return nullptr;
+		}
+		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
+		if (!rect) {
+			return nullptr;
+		} else if (!rect->pBits) {
+			renderTarget->unlockRenderTarget(rect, 0);
+			return nullptr;
+		}
+		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+		entry->texture = texture;
+		const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
+		const int pitch = rect->Pitch;
+		for (unsigned int y = 0; y < FogTileResolution; ++y) {
+			for (unsigned int x = 0; x < FogTileResolution; ++x) {
+				entry->pixels[y * FogTileResolution + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
+			}
+		}
+		renderTarget->unlockRenderTarget(rect, 0);
+		++sFogCacheCount;
+		return entry;
+	}
+
+	void WorldControllerRenderTarget::beginFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
+		sFogCacheActive = true;
+		sFogCacheCount = 0;
+	}
+
+	void WorldControllerRenderTarget::endFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
+		sFogCacheActive = false;
+		sFogCacheCount = 0;
+	}
+
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
+		if (!sFogCacheActive) {
+			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
+		}
+		const auto px = static_cast<unsigned int>(static_cast<double>(worldX) * FogTileResolution);
+		const auto py = static_cast<unsigned int>(static_cast<double>(worldY) * FogTileResolution);
+		if (px > FogTileResolution || py > FogTileResolution) {
+			return 0;
+		}
+		unsigned char result = 0;
+		if (texture) {
+			const FogTileCacheEntry* entry = fogCacheFindOrLoad(this, texture);
+			if (entry) {
+				const unsigned int cx = px < FogTileResolution ? px : FogTileResolution - 1;  // engine reads index 64 (OOB); clamp safely
+				const unsigned int cy = py < FogTileResolution ? py : FogTileResolution - 1;
+				result = entry->pixels[cy * FogTileResolution + cx];
+			}
+		}
+		return result;
+	}
+
+	//
 	// KillCounter
 	//
 

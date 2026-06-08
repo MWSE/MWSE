@@ -2386,7 +2386,7 @@ namespace mwse::lua {
 			int exteriorCount = 0;
 			for (size_t i = 0; i < 9; ++i) {
 				auto cellDataPointer = dataHandler->exteriorCellData[i];
-				if (cellDataPointer && cellDataPointer->loadingFlags >= 1) {
+				if (cellDataPointer && cellDataPointer->isFullyLoaded()) {
 					exteriorCount++;
 					result[exteriorCount] = cellDataPointer->cell;
 				}
