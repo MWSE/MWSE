@@ -67,13 +67,16 @@ namespace TES3 {
 
 	// Fog-of-war pixel cache (see header). Per-compositor-pass cache, keyed by fog tile texture.
 	namespace {
+		constexpr unsigned int FogTileResolution = 64;  // fog-of-war tiles are 64x64 pixels
+		constexpr int FogCacheCapacity = 16;            // max fog tiles cached per compositor pass (the loaded ring)
+
 		struct FogTileCacheEntry {
 			NI::RenderedTexture* texture;
-			unsigned char pixels[64 * 64];  // the sampled channel (offset +1) for the 64x64 fog tile
+			unsigned char pixels[FogTileResolution * FogTileResolution];  // the sampled channel (offset +1) per tile
 		};
 		bool sFogCacheActive = false;
 		int sFogCacheCount = 0;
-		FogTileCacheEntry sFogCache[16];  // loaded ring never exceeds this; overflow degrades to "covered"
+		FogTileCacheEntry sFogCache[FogCacheCapacity];  // overflow degrades to "covered"
 
 		FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::RenderedTexture* texture) {
 			for (int i = 0; i < sFogCacheCount; ++i) {
@@ -81,7 +84,7 @@ namespace TES3 {
 					return &sFogCache[i];
 				}
 			}
-			if (sFogCacheCount >= 16) {
+			if (sFogCacheCount >= FogCacheCapacity) {
 				return nullptr;
 			}
 			// Keep the texture alive across the lock (mirrors the engine's defensive ++/-- guard).
@@ -95,9 +98,9 @@ namespace TES3 {
 			entry->texture = texture;
 			const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
 			const int pitch = rect->Pitch;
-			for (int y = 0; y < 64; ++y) {
-				for (int x = 0; x < 64; ++x) {
-					entry->pixels[y * 64 + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
+			for (unsigned int y = 0; y < FogTileResolution; ++y) {
+				for (unsigned int x = 0; x < FogTileResolution; ++x) {
+					entry->pixels[y * FogTileResolution + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
 				}
 			}
 			renderTarget->unlockRenderTarget(rect, 0);
@@ -120,9 +123,9 @@ namespace TES3 {
 		if (!sFogCacheActive) {
 			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
 		}
-		const unsigned int px = static_cast<unsigned int>(static_cast<double>(worldX) * 64.0);
-		const unsigned int py = static_cast<unsigned int>(static_cast<double>(worldY) * 64.0);
-		if (px > 64 || py > 64) {
+		const unsigned int px = static_cast<unsigned int>(static_cast<double>(worldX) * FogTileResolution);
+		const unsigned int py = static_cast<unsigned int>(static_cast<double>(worldY) * FogTileResolution);
+		if (px > FogTileResolution || py > FogTileResolution) {
 			if (texture) {
 				texture->release();  // vanilla OOB path consumes one reference
 			}
@@ -132,9 +135,9 @@ namespace TES3 {
 		if (texture) {
 			const FogTileCacheEntry* entry = fogCacheFindOrLoad(this, texture);
 			if (entry) {
-				const unsigned int cx = px < 64 ? px : 63;  // engine reads index 64 (OOB); clamp safely
-				const unsigned int cy = py < 64 ? py : 63;
-				result = entry->pixels[cy * 64 + cx];
+				const unsigned int cx = px < FogTileResolution ? px : FogTileResolution - 1;  // engine reads index 64 (OOB); clamp safely
+				const unsigned int cy = py < FogTileResolution ? py : FogTileResolution - 1;
+				result = entry->pixels[cy * FogTileResolution + cx];
 			}
 			// vanilla success path is net-zero on refCount -> nothing to do
 		}

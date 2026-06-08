@@ -940,11 +940,14 @@ namespace TES3 {
 	// previous cross. Anything that is not a clean 1-step cross (first cross after a load, teleport, or
 	// a >1-cell jump) falls back to the engine's full relight.
 	void DataHandler::relightExteriorCellsAfterCross() {
-		static int prevCenterX = 0x7FFFFFFF, prevCenterY = 0x7FFFFFFF;  // 0x7FFFFFFF = no prior cross recorded
+		// An impossible grid coordinate (INT_MAX), used as a sentinel both for "no prior cross recorded"
+		// and for "no leading edge on this axis" - it can never equal a real cell's gridX/gridY.
+		constexpr int InvalidGridCoord = 0x7FFFFFFF;
+		static int prevCenterX = InvalidGridCoord, prevCenterY = InvalidGridCoord;
 
 		const int cx = centralGridX, cy = centralGridY;
 		const int dx = cx - prevCenterX, dy = cy - prevCenterY;
-		const bool incremental = prevCenterX != 0x7FFFFFFF && prevCenterY != 0x7FFFFFFF
+		const bool incremental = prevCenterX != InvalidGridCoord && prevCenterY != InvalidGridCoord
 			&& (dx != 0 || dy != 0) && dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1;
 		prevCenterX = cx;
 		prevCenterY = cy;
@@ -954,8 +957,8 @@ namespace TES3 {
 		}
 
 		// Leading edge: a column at gridX = cx +/- 1 and/or a row at gridY = cy +/- 1 (both for a diagonal).
-		const int newGridX = (dx > 0) ? cx + 1 : (dx < 0) ? cx - 1 : 0x7FFFFFFF;
-		const int newGridY = (dy > 0) ? cy + 1 : (dy < 0) ? cy - 1 : 0x7FFFFFFF;
+		const int newGridX = (dx > 0) ? cx + 1 : (dx < 0) ? cx - 1 : InvalidGridCoord;
+		const int newGridY = (dy > 0) ? cy + 1 : (dy < 0) ? cy - 1 : InvalidGridCoord;
 
 		constexpr unsigned char ExteriorCellDataLoaded = 1;  // loadingFlags value for a fully-loaded exterior cell
 
