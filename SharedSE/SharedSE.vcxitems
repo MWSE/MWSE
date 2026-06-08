@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NiBSAnimationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
@@ -128,7 +128,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)NiBSAnimationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.cpp" />

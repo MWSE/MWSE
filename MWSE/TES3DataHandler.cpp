@@ -31,7 +31,7 @@
 #include "TES3WorldController.h"
 #include "TES3MobManager.h"
 
-#include "NiBSAnimationManager.h"
+#include "NIBSAnimationManager.h"
 
 #include "MWSEConfig.h"
 

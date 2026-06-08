@@ -1,4 +1,4 @@
-#include "NiBSAnimationManager.h"
+#include "NIBSAnimationManager.h"
 
 #include "NIBound.h"
 

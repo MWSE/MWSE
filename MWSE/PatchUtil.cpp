@@ -52,10 +52,10 @@
 #include "NIPick.h"
 #include "NIPointLight.h"
 #include "NISortAdjustNode.h"
-#include "NiTriShape.h"
-#include "NiTriShapeData.h"
+#include "NITriShape.h"
+#include "NITriShapeData.h"
 #include "NIUVController.h"
-#include "NiBSAnimationManager.h"
+#include "NIBSAnimationManager.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
