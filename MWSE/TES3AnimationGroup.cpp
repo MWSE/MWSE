@@ -315,6 +315,18 @@ namespace TES3 {
 
 		std::optional<float> previousTextKey;
 		for (const auto& entry : entries) {
+			// Remove expiring groups when the timestamp advances, before processing the new entry.
+			// Expiry is deferred until then so that all other notes sharing the end key's timestamp still apply.
+			if (previousTextKey && previousTextKey.value() != entry.time) {
+				const auto inExpiredGroups = [&](const AnimationGroup* g) {
+					return std::find(expireGroups.begin(), expireGroups.end(), g) != expireGroups.end();
+				};
+				auto iterErase = std::remove_if(activeAnimGroups.begin(), activeAnimGroups.end(), inExpiredGroups);
+				activeAnimGroups.erase(iterErase, activeAnimGroups.end());
+				expireGroups.clear();
+			}
+			previousTextKey = entry.time;
+
 			// Dispatch based on key name.
 			if (se::string::iequal(entry.key, "Sound") || se::string::iequal(entry.key, "SoundGen")) {
 				parseNoteSound(entry.time, entry.key, entry.value);
@@ -325,17 +337,6 @@ namespace TES3 {
 			else {
 				parseNoteAction(entry.time, entry.key, entry.value);
 			}
-
-			// Remove expiring groups after all other notes in the key have been applied.
-			if (previousTextKey && previousTextKey.value() != entry.time) {
-				const auto inExpiredGroups = [&](const AnimationGroup* g) {
-					return std::find(expireGroups.begin(), expireGroups.end(), g) != expireGroups.end();
-				};
-				auto iterErase = std::remove_if(activeAnimGroups.begin(), activeAnimGroups.end(), inExpiredGroups);
-				activeAnimGroups.erase(iterErase, activeAnimGroups.end());
-				expireGroups.clear();
-			}
-			previousTextKey = entry.time;
 		}
 
 		// Calculate root movement and count groups.
