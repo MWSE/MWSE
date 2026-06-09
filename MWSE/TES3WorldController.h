@@ -106,6 +106,16 @@ namespace TES3 {
 
 		WorldControllerRenderTarget() = delete;
 		~WorldControllerRenderTarget() = delete;
+
+		D3DLOCKED_RECT* lockRenderTarget(NI::Pointer<NI::Texture> texture);
+		void unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag);
+		unsigned char getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
+
+		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a per-compositor-pass
+		// copy (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
+		unsigned char getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
+		static void beginFogCache();
+		static void endFogCache();
 	};
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
 

@@ -14,7 +14,7 @@ namespace NI::VirtualTableAddress {
 		NiBltSource = 0x679F00,
 		NiBSAnimationManager = 0x67AF18,
 		NiBSAnimationNode = 0x67AFC8,
-		NiBSMirroredNode = 0x673414,
+		BSMirroredNode = 0x673414,
 		NiBSPArrayController = 0x67BBB8,
 		NiBSParticleNode = 0x67B1C0,
 		NiBSPNode = 0x679F38,

@@ -8,7 +8,7 @@
 #include "NIDefines.h"
 #include "NIRTTI.h"
 #include "NITriShape.h"
-#include "NiTriShapeData.h"
+#include "NITriShapeData.h"
 
 namespace mwse::lua {
 	void bindNITriShape() {

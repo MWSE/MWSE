@@ -119,38 +119,43 @@ namespace NI {
 		float alpha;
 		unsigned int revisionID;
 
+		MaterialProperty();
+		~MaterialProperty();
+
 		//
 		// Custom functions.
 		//
 
-		Color getAmbient();
+		static Pointer<MaterialProperty> create();
+
+		Color getAmbient() const;
 		void setAmbient(Color& value);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void setAmbient_lua(sol::object value);
 #endif
 
-		Color getDiffuse();
+		Color getDiffuse() const;
 		void setDiffuse(Color& value);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void setDiffuse_lua(sol::object value);
 #endif
 
-		Color getSpecular();
+		Color getSpecular() const;
 		void setSpecular(Color& value);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void setSpecular_lua(sol::object value);
 #endif
 
-		Color getEmissive();
+		Color getEmissive() const;
 		void setEmissive(Color& value);
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		void setEmissive_lua(sol::object value);
 #endif
 
-		float getShininess();
+		float getShininess() const;
 		void setShininess(float value);
 
-		float getAlpha();
+		float getAlpha() const;
 		void setAlpha(float value);
 
 		void incrementRevisionId();

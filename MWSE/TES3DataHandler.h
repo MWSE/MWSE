@@ -263,14 +263,25 @@ namespace TES3 {
 		};
 	}
 
+	enum class ExteriorDataLoadingState : uint8_t {
+		Unloaded = 0,
+		Loaded = 1,
+		CachedOrPending = 2,
+		BackgroundLoading = 3,
+		BackgroundLoadedPendingCommit = 4,
+		Unloading = 5,
+	};
+
 	struct DataHandler {
 		struct ExteriorCellData {
-			unsigned char loadingFlags;
+			ExteriorDataLoadingState state;
 			Cell * cell;
 			void * landRenderData;
 
 			ExteriorCellData() = delete;
 			~ExteriorCellData() = delete;
+
+			bool isFullyLoaded() const;
 		};
 
 		NonDynamicData * nonDynamicData; // 0x0
@@ -400,7 +411,10 @@ namespace TES3 {
 		void setActorCollisionBoxesDisplay(bool showActorDrawBounds, bool showWireframe);
 
 		void updateLightingForReference(Reference * reference);
+		int updateCellThreadLoader(NI::Point3* position);
 		void updateLightingForExteriorCells();
+		void updateLightsBetweenCells(Cell* cell, Cell* otherCell);
+		void relightExteriorCellsAfterCross();
 		void setDynamicLightingForReference(Reference* reference);
 
 		void updateCollisionGroupsForActiveCells(bool force = true, bool isResettingData = false, bool resetCollisionGroups = true);
@@ -421,6 +435,9 @@ namespace TES3 {
 		//
 
 		std::reference_wrapper<ExteriorCellData* [9]> getExteriorCellData_lua();
+
+		void rebuildActiveCellManagerBoundsUnderRoot(NI::Node* root);
+		bool rebuildActiveCellManagerBounds();
 
 		long getGameSettingLong(int id) const;
 		float getGameSettingFloat(int id) const;

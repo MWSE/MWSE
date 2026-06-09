@@ -290,6 +290,7 @@ These effects build off of the [standard magic effects](./magic-effects.md). If 
 | flawedSummonDaedroth         | 7800      | [OOAB Grazelands](https://www.nexusmods.com/morrowind/mods/49075)                               |
 | ss20SoulManipulation         | 8113      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173)  |
 | ss20ManipulateSouls          | 8114      | [Pimp My Shrine - The Daedric Legend of Vernaccus](https://www.nexusmods.com/morrowind/mods/49173)  |
+| mistyStep                    | 8377      | [Misty Step](https://www.nexusmods.com/morrowind/mods/58883)                                 |
 | selfRepair                   | 8500      | [DRIP - Dynamic Randomised Item Properties](https://www.nexusmods.com/morrowind/mods/51242)  |
 | identify                     | 9599      | [Unidentified Items (JosephMcKean Edit)](https://www.nexusmods.com/morrowind/mods/53161)            |
 | npcSoulTrap                  | 10000     | [Seph's NPC Soul Trapping](https://www.nexusmods.com/morrowind/mods/50744)                          |

@@ -563,7 +563,7 @@ namespace se::cs::window::main {
 		// Flag any game files as marked to load.
 		for (auto itt = recordHandler->availableDataFiles->head; itt; itt = itt->next) {
 			auto gameFile = itt->data;
-			if (toLoadSet.find(gameFile->fileName) != toLoadSet.end()) {
+			if (toLoadSet.contains(gameFile->fileName)) {
 				gameFile->setToLoadFlag(true);
 			}
 		}

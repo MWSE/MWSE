@@ -171,7 +171,7 @@ namespace CrashLogger::Stack {
 				if (i <= 0x8 || (!str.empty() && memoize.find(espi) == memoize.end())) {
 					std::stringstream line;
 					line << fmt::format(" {:2X} | 0x{:08X} | ", i, espi);
-					if (memoize.find(espi) == memoize.end()) {
+					if (!memoize.contains(espi)) {
 						if (!str.empty()) line << str;
 						memoize.emplace(espi, static_cast<UINT8>(i));
 					}

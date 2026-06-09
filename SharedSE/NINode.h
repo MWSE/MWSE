@@ -53,9 +53,9 @@ namespace NI {
 
 	struct Node_vTable : AVObject_vTable {
 		void(__thiscall* attachChild)(Node*, AVObject*, bool); // 0x94
-		void(__thiscall* detachChild)(Node*, Pointer<AVObject>*, AVObject*); // 0x98
-		void(__thiscall* detachChildAt)(Node*, Pointer<AVObject>*, unsigned int); // 0x9C
-		void(__thiscall* setChildAt)(Node*, Pointer<AVObject>*, unsigned int, AVObject*); // 0xA0
+		Pointer<AVObject>* (__thiscall* detachChild)(Node*, Pointer<AVObject>*, AVObject*); // 0x98
+		Pointer<AVObject>* (__thiscall* detachChildAt)(Node*, Pointer<AVObject>*, unsigned int); // 0x9C
+		Pointer<AVObject>* (__thiscall* setChildAt)(Node*, Pointer<AVObject>*, unsigned int, AVObject*); // 0xA0
 		void(__thiscall* updateUpwardPass)(Node*); // 0xA4
 	};
 	static_assert(sizeof(Node_vTable) == 0xA8, "NI::Node's vtable failed size validation");

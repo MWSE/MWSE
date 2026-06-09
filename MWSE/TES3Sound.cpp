@@ -17,11 +17,10 @@ namespace TES3 {
 	}
 
 	SoundBuffer::~SoundBuffer() {
-		// Mirrors the engine's inline destruction in ReleaseSoundBuffer (0x4027E0):
-		// release any DSound COM objects, free the rawAudio peak-envelope buffer.
-		// Operator delete handles the SoundBuffer struct itself.
 		if (lpSound3DBuffer) lpSound3DBuffer->Release();
+		lpSound3DBuffer = nullptr;
 		if (lpSoundBuffer) lpSoundBuffer->Release();
+		lpSoundBuffer = nullptr;
 		if (rawAudio) se::memory::_delete(rawAudio);
 	}
 
@@ -30,7 +29,7 @@ namespace TES3 {
 	}
 
 	void SoundBuffer::operator delete(void* p) {
-		se::memory::free(p);
+		se::memory::_delete(p);
 	}
 
 	Sound::Sound() {
@@ -191,6 +190,22 @@ namespace TES3 {
 		auto finalVolume = float(audio->volumeMaster) * float(audio->volumeEffects) * float(volume) / (250.0f*255.0f);
 		finalVolume = std::min(250.0f, finalVolume);
 		audio->setSoundBufferVolume(soundBuffer, (unsigned char)finalVolume);
+	}
+
+	SoundBuffer* Sound::createSoundBuffer(bool isPointSource) const {
+		const auto ac = WorldController::get()->audioController;
+		if (!ac->isDirectSoundAvailable()) {
+			return nullptr;
+		}
+
+		char buffer[MAX_PATH] = {};
+		sprintf(buffer, "data files\\sound\\%s", filename);
+		
+		if (minDistance == 255 || maxDistance == 255) {
+			isPointSource = false;
+		}
+
+		return ac->loadSoundFile(buffer, isPointSource);
 	}
 
 	std::string Sound::toJson() const {

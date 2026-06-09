@@ -240,7 +240,7 @@ namespace TES3 {
 
 	void Cell::setCellActive() {
 		// Skip if the cell is already active.
-		if (activeCells.find(this) != activeCells.end()) {
+		if (getCellActive()) {
 			return;
 		}
 
@@ -259,7 +259,7 @@ namespace TES3 {
 	}
 
 	void Cell::setCellInactive() {
-		if (activeCells.find(this) == activeCells.end()) {
+		if (!getCellActive()) {
 			return;
 		}
 
@@ -278,7 +278,7 @@ namespace TES3 {
 	}
 
 	bool Cell::getCellActive() const {
-		return activeCells.find(this) != activeCells.end();
+		return activeCells.contains(this);
 	}
 
 	bool Cell::getHasCellMarker() const {

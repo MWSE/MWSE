@@ -26,6 +26,7 @@ namespace TES3 {
 
 		void assignMobileActor(MobileActor* mobile);
 		void cleanupAIPackages(Reference* reference, MobileActor* mobileActor);
+		void enterLeaveSimulation(bool active);
 
 		//
 		// Custom functions.

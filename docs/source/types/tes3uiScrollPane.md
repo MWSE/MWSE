@@ -33,6 +33,17 @@ Access back to the element this widget interface is for.
 
 ***
 
+### `horizontalScrollBar`
+<div class="search_terms" style="display: none">horizontalscrollbar</div>
+
+*Read-only*. The horizontal scroll bar element of this pane.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ### `positionX`
 <div class="search_terms" style="display: none">positionx</div>
 
@@ -80,6 +91,17 @@ If `true`, the scrollbar will be visible.
 
 ***
 
+### `verticalScrollBar`
+<div class="search_terms" style="display: none">verticalscrollbar</div>
+
+*Read-only*. The vertical scroll bar element of this pane.
+
+**Returns**:
+
+* `result` ([tes3uiElement](../types/tes3uiElement.md))
+
+***
+
 ## Methods
 
 ### `contentsChanged`
@@ -96,7 +118,7 @@ myObject:contentsChanged()
 ### `scrollIntoView`
 <div class="search_terms" style="display: none">scrollintoview</div>
 
-Scrolls the pane vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
+Scrolls the pane horizontally or vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
 
 ```lua
 local result = myObject:scrollIntoView(child)

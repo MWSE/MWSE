@@ -58,7 +58,7 @@ namespace mwse::lua {
 
 		std::queue<NI::Pointer<NI::AVObject>> queue;
 		std::function<void(const NI::AVObject*)> traverseChild = [&](const NI::AVObject* object) {
-			if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			if (!object || !object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
 				return;
 			}
 

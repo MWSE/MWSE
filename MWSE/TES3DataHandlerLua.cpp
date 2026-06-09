@@ -92,7 +92,7 @@ namespace mwse::lua {
 
 			// Basic property binding.
 			usertypeDefinition["cell"] = sol::readonly_property(&TES3::DataHandler::ExteriorCellData::cell);
-			usertypeDefinition["loadingFlags"] = sol::readonly_property(&TES3::DataHandler::ExteriorCellData::loadingFlags);
+			usertypeDefinition["state"] = sol::readonly_property(&TES3::DataHandler::ExteriorCellData::state);
 		}
 
 		// Binding for TES3::DataHandler

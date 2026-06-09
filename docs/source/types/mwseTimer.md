@@ -61,7 +61,7 @@ Arbitrary json-serializable data stored in the timer. This defaults to `nil`, bu
 
 **Returns**:
 
-* `result` (integer)
+* `result` (integer, mwseTimer.state)
 
 ***
 

@@ -100,8 +100,8 @@ namespace mwse::lua {
 
 			// Quick access to the pane contents.
 			usertypeDefinition["contentPane"] = sol::readonly_property(&WidgetScrollPane::getContentPane);
-
-
+			usertypeDefinition["horizontalScrollBar"] = sol::readonly_property(&WidgetScrollPane::getHorizontalScrollBar);
+			usertypeDefinition["verticalScrollBar"] = sol::readonly_property(&WidgetScrollPane::getVerticalScrollBar);
 		}
 
 		//

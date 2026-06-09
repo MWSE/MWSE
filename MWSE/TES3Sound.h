@@ -105,6 +105,8 @@ namespace TES3 {
 		void setVolume(float volume);
 		void adjustPlayingSoundVolume(unsigned char volume);
 
+		SoundBuffer* createSoundBuffer(bool isPointSource) const;
+
 		std::string toJson() const;
 		bool play_lua(sol::optional<sol::table> params);
 

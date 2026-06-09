@@ -78,8 +78,8 @@ namespace CrashLogger::Labels {
 		// Derived from NI::Object
 		Push(NI::VirtualTableAddress::AvoidNode, As<NI::Object>);
 		Push(NI::VirtualTableAddress::BrickNiExtraData, As<NI::Object>);
-		Push(NI::VirtualTableAddress::BSAnimationManager, As<NI::Object>);
-		Push(NI::VirtualTableAddress::BSAnimationNode, As<NI::Object>);
+		Push(NI::VirtualTableAddress::NiBSAnimationManager, As<NI::Object>);
+		Push(NI::VirtualTableAddress::NiBSAnimationNode, As<NI::Object>);
 		Push(NI::VirtualTableAddress::BSMirroredNode, As<NI::Object>);
 		Push(NI::VirtualTableAddress::HashMapLight, As<NI::Object>);
 		Push(NI::VirtualTableAddress::NiAccumulator, As<NI::Object>);

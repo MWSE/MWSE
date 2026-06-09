@@ -437,6 +437,7 @@ end
 --- @field deprecated boolean Allows marking definitions as deprecated. Those definitions aren't written to the web documentation.
 --- @field examples table<string, exampleTable>|nil A table containing the examples. Keys are the example's name/path to the example file.
 --- @field libs package[]|nil For libraries with sub-namespaces such as mwse.mcm, etc., this array contians the nested namespaces.
+--- @field aliases table<string, string[]>|nil A table of alias groups for enum-like value sets.
 
 -- This corresponds to a documentation file with the [`"value"` type](https://github.com/MWSE/MWSE/blob/master/docs/type-definitions-guide.md#value-definitions).
 ---@class packageValue : package

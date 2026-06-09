@@ -119,7 +119,9 @@ namespace TES3::UI {
 		bool scrollIntoView(Element* child);
 		bool getScrollbarVisible() const;
 		void setScrollbarVisible(bool value);
-		TES3::UI::Element * getContentPane();
+		TES3::UI::Element* getContentPane() const;
+		TES3::UI::Element* getHorizontalScrollBar() const;
+		TES3::UI::Element* getVerticalScrollBar() const;
 		void contentPaneChanged();
 
 		WidgetScrollPane() = delete;

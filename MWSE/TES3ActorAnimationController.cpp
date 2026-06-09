@@ -93,6 +93,11 @@ namespace TES3 {
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::table eventData = stateHandle.triggerEvent(new mwse::lua::event::AttackStartEvent(mobileActor, attack, speed.value()));
 			if (eventData.valid()) {
+				// Check if the event was blocked.
+				if (eventData.get_or("block", false)) {
+					return;
+				}
+
 				// Replace attack type only if original is slash, chop, or thrust.
 				PhysicalAttackType newAttack = eventData["attackType"];
 				if (attack >= PhysicalAttackType::Slash && attack <= PhysicalAttackType::Thrust

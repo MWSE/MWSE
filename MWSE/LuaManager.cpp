@@ -762,6 +762,7 @@ namespace mwse::lua {
 	//
 
 	bool lastMenuMode = true;
+	bool cellManagerBoundsRebuildPending = false;
 	void __fastcall EnterFrame(TES3::WorldController* worldController, DWORD _UNUSED_) {
 		// Run the function before raising our event.
 		worldController->mainLoopBeforeInput();
@@ -787,10 +788,18 @@ namespace mwse::lua {
 		// Has our cell changed?
 		auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler->currentCell != TES3::DataHandler::previousVisitedCell) {
+			// Tighten cell-manager bounds to fit the newly loaded cell. If the background loader is still active then
+			// we defer until the next frame. Bounds do stay conservatively correct meanwhile, just potentially larger.
+			// This deferred path could only ever happen in new-game and save-load at the time of writing this comment.
+			cellManagerBoundsRebuildPending = !dataHandler->rebuildActiveCellManagerBounds();
+
 			if (event::CellChangedEvent::getEventEnabled()) {
 				luaManager.getThreadSafeStateHandle().triggerEvent(new event::CellChangedEvent(dataHandler->currentCell, TES3::DataHandler::previousVisitedCell));
 			}
 			TES3::DataHandler::previousVisitedCell = dataHandler->currentCell;
+		}
+		else if (cellManagerBoundsRebuildPending) {
+			cellManagerBoundsRebuildPending = !dataHandler->rebuildActiveCellManagerBounds();
 		}
 
 		// Send off our enterFrame event always.

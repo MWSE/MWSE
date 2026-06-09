@@ -18,6 +18,11 @@ namespace TES3 {
 		TES3_AIPlanner_assignMobileActor(this, mobile);
 	}
 
+	const auto TES3_AIPlanner_enterLeaveSimulation = reinterpret_cast<void(__thiscall*)(AIPlanner*, bool)>(0x565350);
+	void AIPlanner::enterLeaveSimulation(bool active) {
+		TES3_AIPlanner_enterLeaveSimulation(this, active);
+	}
+
 	void AIPlanner::cleanupAIPackages(Reference* reference, MobileActor* mobileActor) {
 		if (currentPackageConfig) {
 			currentPackageConfig->cleanupReference(reference);

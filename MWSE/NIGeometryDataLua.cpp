@@ -6,7 +6,7 @@
 #include "NIGeometryData.h"
 #include "NIRTTI.h"
 #include "NILinesData.h"
-#include "NiTriBasedGeometryData.h"
+#include "NITriBasedGeometryData.h"
 #include "NITriShapeData.h"
 
 namespace mwse::lua {
