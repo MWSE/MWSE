@@ -44,6 +44,17 @@ Access to the actor's animation data.
 
 ***
 
+### `animGroupAttack`
+<div class="search_terms" style="display: none">animgroupattack</div>
+
+The actor's weapon attack or casting animation. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) table.
+
+**Returns**:
+
+* `result` ([tes3.animationGroup](../references/animation-groups.md))
+
+***
+
 ### `animGroupIdle`
 <div class="search_terms" style="display: none">animgroupidle</div>
 

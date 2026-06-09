@@ -8,6 +8,7 @@
 --- @field actionCount number *Read-only*. The number of action note keys.
 --- @field actionFrames number[] *Read-only*. The action frame numbers array. The available action indexes depend on the purpose of the animation group.
 --- @field actionTimings number[] *Read-only*. The action frame timings array. The available action indexes depend on the purpose of the animation group.
+--- @field approxRootTravelSpeed number *Read-only*. The rounded root node travel speed for this animation group. This is the base movement speed in units/sec of the animation. The speed may be 0, which means the animation rate does not scale with move speed.
 --- @field groupId number *Read-only*. The animation group ID. Useful when iterating through groups using nextGroup.
 --- @field nextGroup tes3animationGroup *Read-only*. The next animation group in this keyframe data.
 --- @field soundGenCount number *Read-only*. The number of soundgen note keys.

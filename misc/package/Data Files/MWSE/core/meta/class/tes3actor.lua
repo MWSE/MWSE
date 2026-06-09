@@ -15,6 +15,7 @@
 --- @field cloneCount number *Read-only*. For base objects this is the number of clones that exist of this actor. For instances this is the ordinal number of the instance.
 --- @field equipment tes3equipmentStack[] *Read-only*. The items currently equipped to the actor.
 --- @field inventory tes3inventory|tes3itemStack[] *Read-only*. The items currently carried by the actor.
+--- @field keyframes tes3keyframeDefinition *Read-only*. Access to the actor's keyframe definition.
 tes3actor = {}
 
 --- Returns the combined value of all the items worn by the actor.

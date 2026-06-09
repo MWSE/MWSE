@@ -43,6 +43,17 @@ A game object that stores animation group data from loaded keyframe data. This i
 
 ***
 
+### `approxRootTravelSpeed`
+<div class="search_terms" style="display: none">approxroottravelspeed</div>
+
+*Read-only*. The rounded root node travel speed for this animation group. This is the base movement speed in units/sec of the animation. The speed may be 0, which means the animation rate does not scale with move speed.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `groupId`
 <div class="search_terms" style="display: none">groupid</div>
 

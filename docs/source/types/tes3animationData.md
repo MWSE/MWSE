@@ -23,6 +23,17 @@ Easy access to the actor's scene node.
 
 ***
 
+### `animationDefinitions`
+<div class="search_terms" style="display: none">animationdefinitions</div>
+
+*Read-only*. An array of custom keyframe definitions.
+
+**Returns**:
+
+* `result` ([tes3keyframeDefinition](../types/tes3keyframeDefinition.md)[])
+
+***
+
 ### `animationGroups`
 <div class="search_terms" style="display: none">animationgroups</div>
 
@@ -31,17 +42,6 @@ Easy access to the actor's scene node.
 **Returns**:
 
 * `result` ([tes3animationGroup](../types/tes3animationGroup.md)[])
-
-***
-
-### `animGroupLayerIndices`
-<div class="search_terms" style="display: none">animgrouplayerindices</div>
-
-*Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
-
-**Returns**:
-
-* `result` (number[])
 
 ***
 
@@ -56,10 +56,21 @@ Easy access to the actor's scene node.
 
 ***
 
-### `approxRootTravelDistances`
-<div class="search_terms" style="display: none">approxroottraveldistances</div>
+### `animGroupSourceIndices`
+<div class="search_terms" style="display: none">animgroupsourceindices</div>
 
-*Read-only*. The approximate root node travel distance over a cycle for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+*Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+
+**Returns**:
+
+* `result` (number[])
+
+***
+
+### `approxRootTravelSpeeds`
+<div class="search_terms" style="display: none">approxroottravelspeeds</div>
+
+*Read-only*. The rounded root node travel speed for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. This is the base movement speed in units/sec of the animation. The speed may be 0, which means the animation rate does not scale with move speed. As this is a Lua array access, you will need to add one to the enum index.
 
 **Returns**:
 
@@ -113,17 +124,6 @@ It functions slightly differently to the other animation speed multipliers. It i
 
 ***
 
-### `currentAnimGroupLayers`
-<div class="search_terms" style="display: none">currentanimgrouplayers</div>
-
-*Read-only*. The layer index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
-
-**Returns**:
-
-* `result` (number[])
-
-***
-
 ### `currentAnimGroups`
 <div class="search_terms" style="display: none">currentanimgroups</div>
 
@@ -148,6 +148,17 @@ It functions slightly differently to the other animation speed multipliers. It i
 	)
 
 	```
+
+***
+
+### `currentAnimGroupSources`
+<div class="search_terms" style="display: none">currentanimgroupsources</div>
+
+*Read-only*. The source index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
+
+**Returns**:
+
+* `result` (number[])
 
 ***
 
@@ -228,10 +239,10 @@ The timing offset of the head morph controller. Used to select either blinking o
 
 ***
 
-### `keyframeLayers`
-<div class="search_terms" style="display: none">keyframelayers</div>
+### `keyframeSources`
+<div class="search_terms" style="display: none">keyframesources</div>
 
-*Read-only*. 
+*Read-only*. The sequence groups of each animation source applied to this actor. The first three entries are the vanilla animation sources, and any additional entries are custom animation sources. Each sequence group holds the sequences for the lower, upper, and left arm body sections.
 
 **Returns**:
 
@@ -315,10 +326,21 @@ Easy access to the actor's "MRT" movement root node.
 
 ***
 
-### `nextLoopCounts`
-<div class="search_terms" style="display: none">nextloopcounts</div>
+### `nextAnimGroup`
+<div class="search_terms" style="display: none">nextanimgroup</div>
 
+The next animation group queued to play after the current animation has finished. This is applied to all body sections that don't have higher priority animations.
 
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `nextLoopCount`
+<div class="search_terms" style="display: none">nextloopcount</div>
+
+The loop count of the next animation queued to play after the current animation has finished. This is applied to all body sections that don't have higher priority animations.
 
 **Returns**:
 
@@ -445,7 +467,7 @@ local result = myObject:getReference()
 ### `playAnimationGroup`
 <div class="search_terms" style="display: none">playanimationgroup</div>
 
-This method plays an animation group on the related actor, invoking `playGroup` event.
+This method plays an animation group on the related actor, invoking the `playGroup` event.
 
 ```lua
 myObject:playAnimationGroup(animationGroup, startFlag, loopCount)
@@ -459,19 +481,19 @@ myObject:playAnimationGroup(animationGroup, startFlag, loopCount)
 
 ***
 
-### `playAnimationGroupForIndex`
-<div class="search_terms" style="display: none">playanimationgroupforindex</div>
+### `playAnimationGroupForSection`
+<div class="search_terms" style="display: none">playanimationgroupforsection</div>
 
-This method plays an animation group on the provided body section of related actor, invoking `playGroup` event.
+This method plays an animation group on the provided body section of related actor, invoking the `playGroup` event.
 
 ```lua
-myObject:playAnimationGroupForIndex(animationGroup, triIndex, startFlag, loopCount)
+myObject:playAnimationGroupForSection(animationGroup, section, startFlag, loopCount)
 ```
 
 **Parameters**:
 
 * `animationGroup` ([tes3.animationGroup](../references/animation-groups.md)): The animation group to play. A value from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
-* `triIndex` ([tes3.animationBodySection](../references/animation-body-sections.md)): The body section on which to play the animation. A value from [`tes3.animationBodySection`](https://mwse.github.io/MWSE/references/animation-body-sections/) namespace.
+* `section` ([tes3.animationBodySection](../references/animation-body-sections.md)): The body section on which to play the animation. A value from [`tes3.animationBodySection`](https://mwse.github.io/MWSE/references/animation-body-sections/) namespace.
 * `startFlag` ([tes3.animationStartFlag](../references/animation-start-flags.md)): A flag for starting the group with, using [`tes3.animationStartFlag`](https://mwse.github.io/MWSE/references/animation-start-flags/) constants.
 * `loopCount` (number): If provided, the animation will repeat its loop section a given number of times. To make an animation play through once, set loopCount = 0, while -1 is used for infinite looping.
 
@@ -503,7 +525,7 @@ local success = myObject:setOverrideLayerKeyframes(kfData)
 
 **Parameters**:
 
-* `kfData` (tes3keyframeDefinition): 
+* `kfData` ([tes3keyframeDefinition](../types/tes3keyframeDefinition.md)): 
 
 **Returns**:
 

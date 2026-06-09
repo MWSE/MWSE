@@ -3993,6 +3993,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.activeMagicEffectIconsUpdated`
 ---| `tes3.event.addSound`
 ---| `tes3.event.addTempSound`
+---| `tes3.event.animationTrigger`
 ---| `tes3.event.attack`
 ---| `tes3.event.attackHit`
 ---| `tes3.event.attackStart`
@@ -4081,6 +4082,8 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.keyUp`
 ---| `tes3.event.keybindTested`
 ---| `tes3.event.keyframesLoad`
+---| `tes3.event.keyframesLoaded`
+---| `tes3.event.keyframesParsed`
 ---| `tes3.event.levelUp`
 ---| `tes3.event.leveledCreaturePicked`
 ---| `tes3.event.leveledItemPicked`

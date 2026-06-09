@@ -8,18 +8,19 @@
 --- Animations are divided into three layers. The layer 0 is the base layer containing all the base animations for every humanoid in the game, including the player (when in third person). These animations come from `base_anim.nif`. Layer 1 is for female animations. Any animations present in `base_anim_female.nif` override their male counterparts for humanoid races. For beast races, layer 1 animations come from `base_anim_kna.nif`. Layer 2 are the custom animations assigned to the actor.
 --- @class tes3animationData
 --- @field actorNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode Easy access to the actor's scene node.
+--- @field animationDefinitions tes3keyframeDefinition[] *Read-only*. An array of custom keyframe definitions.
 --- @field animationGroups tes3animationGroup[] *Read-only*. An array of animation group objects applying to this actor, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
---- @field animGroupLayerIndices number[] *Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
 --- @field animGroupSoundGenCounts number[] *Read-only*. The number of sound generators for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
---- @field approxRootTravelDistances number[] *Read-only*. The approximate root node travel distance over a cycle for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+--- @field animGroupSourceIndices number[] *Read-only*. The layer from which each of the actor's animation groups come. Indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. As this is a Lua array access, you will need to add one to the enum index.
+--- @field approxRootTravelSpeeds number[] *Read-only*. The rounded root node travel speed for each of the animation groups, indexed by the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. This is the base movement speed in units/sec of the animation. The speed may be 0, which means the animation rate does not scale with move speed. As this is a Lua array access, you will need to add one to the enum index.
 --- @field blinkMorphEndTime number Blink animation end time for `headMorphTiming`. Timing is specific to the current head model.
 --- @field blinkMorphStartTime number Blink animation start time for `headMorphTiming`. Timing is specific to the current head model.
 --- @field castSpeed number The animation speed multiplier for the spell casting animation. This is a feature added by MWSE.
 --- 
 --- It functions slightly differently to the other animation speed multipliers. It is not reset by the AI like the movement and weapon speeds. Therefore, it can be set before a spell is cast, as well as during casting. The speed will affect all further casting by the actor.
 --- @field currentActionIndices number[] *Read-only*. The action index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index. The meaning of an action index depends on the specific animation group.
---- @field currentAnimGroupLayers number[] *Read-only*. The layer index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 --- @field currentAnimGroups tes3.animationGroup[] *Read-only*. The currently playing [animation group](https://mwse.github.io/MWSE/references/animation-groups/), on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
+--- @field currentAnimGroupSources number[] *Read-only*. The source index of the currently playing animation on each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 --- @field currentSoundGenIndices number[] *Read-only*. The index of the currently used sound generator for each of the [body sections](https://mwse.github.io/MWSE/references/animation-body-sections/). As this is a Lua array access, you will need to add one to the enum index.
 --- @field deltaTime number The time in seconds since the last update.
 --- @field flags number 
@@ -27,7 +28,7 @@
 --- @field headGeometry niAutoNormalParticles|niGeometry|niParticles|niRotatingParticles|niTriShape 
 --- @field headMorphTiming number The timing offset of the head morph controller. Used to select either blinking or lipsync animations. Actively updated by the animation system during blinking or voiceovers. Timing is specific to the current head model.
 --- @field headNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
---- @field keyframeLayers tes3animationDataSequenceGroup[] *Read-only*. 
+--- @field keyframeSources tes3animationDataSequenceGroup[] *Read-only*. The sequence groups of each animation source applied to this actor. The first three entries are the vanilla animation sources, and any additional entries are custom animation sources. Each sequence group holds the sequences for the lower, upper, and left arm body sections.
 --- @field lipsyncLevel number This value indicates whether the NPC is speaking or not. The table below describes the relationship.
 --- 
 --- Value      | Behavior
@@ -39,7 +40,8 @@
 --- @field manager niKeyframeManager 
 --- @field movementRootNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode Easy access to the actor's "MRT" movement root node.
 --- @field movementSpeed number *Read-only*. The animation speed multiplier of movement animations. This includes walking, running, crouching, swimming, turning, jumping and other movement related animations.
---- @field nextLoopCounts number 
+--- @field nextAnimGroup number The next animation group queued to play after the current animation has finished. This is applied to all body sections that don't have higher priority animations.
+--- @field nextLoopCount number The loop count of the next animation queued to play after the current animation has finished. This is applied to all body sections that don't have higher priority animations.
 --- @field positionDeltaMovementRoot tes3vector3 Tracks the change from the last frame of the "MRT" child node that controls animation driven movement.
 --- @field spine1Node niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
 --- @field spine2Node niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
@@ -55,18 +57,18 @@ tes3animationData = {}
 --- @return tes3reference result No description yet available.
 function tes3animationData:getReference() end
 
---- This method plays an animation group on the related actor, invoking `playGroup` event.
+--- This method plays an animation group on the related actor, invoking the `playGroup` event.
 --- @param animationGroup tes3.animationGroup The animation group to play. A value from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
 --- @param startFlag tes3.animationStartFlag A flag for starting the group with, using [`tes3.animationStartFlag`](https://mwse.github.io/MWSE/references/animation-start-flags/) constants.
 --- @param loopCount number If provided, the animation will repeat its loop section a given number of times. To make an animation play through once, set loopCount = 0, while -1 is used for infinite looping.
 function tes3animationData:playAnimationGroup(animationGroup, startFlag, loopCount) end
 
---- This method plays an animation group on the provided body section of related actor, invoking `playGroup` event.
+--- This method plays an animation group on the provided body section of related actor, invoking the `playGroup` event.
 --- @param animationGroup tes3.animationGroup The animation group to play. A value from [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
---- @param triIndex tes3.animationBodySection The body section on which to play the animation. A value from [`tes3.animationBodySection`](https://mwse.github.io/MWSE/references/animation-body-sections/) namespace.
+--- @param section tes3.animationBodySection The body section on which to play the animation. A value from [`tes3.animationBodySection`](https://mwse.github.io/MWSE/references/animation-body-sections/) namespace.
 --- @param startFlag tes3.animationStartFlag A flag for starting the group with, using [`tes3.animationStartFlag`](https://mwse.github.io/MWSE/references/animation-start-flags/) constants.
 --- @param loopCount number If provided, the animation will repeat its loop section a given number of times. To make an animation play through once, set loopCount = 0, while -1 is used for infinite looping.
-function tes3animationData:playAnimationGroupForIndex(animationGroup, triIndex, startFlag, loopCount) end
+function tes3animationData:playAnimationGroupForSection(animationGroup, section, startFlag, loopCount) end
 
 --- 
 --- @param head niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 

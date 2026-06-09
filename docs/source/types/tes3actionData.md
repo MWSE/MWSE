@@ -102,8 +102,8 @@ The animation group for the current action.
 
 ***
 
-### `animGroupStunEffect`
-<div class="search_terms" style="display: none">animgroupstuneffect</div>
+### `animGroupNextStun`
+<div class="search_terms" style="display: none">animgroupnextstun</div>
 
 The animation group for when stunned.
 
@@ -154,17 +154,6 @@ A state index that indicates an actor's blocking state. It is zero when not bloc
 **Returns**:
 
 * `result` (number)
-
-***
-
-### `currentAnimationGroup`
-<div class="search_terms" style="display: none">currentanimationgroup</div>
-
-Actor's current animation group. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
-
-**Returns**:
-
-* `result` ([tes3.animationGroup](../references/animation-groups.md))
 
 ***
 

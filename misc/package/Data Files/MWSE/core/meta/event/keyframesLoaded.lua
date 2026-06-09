@@ -6,6 +6,7 @@
 --- This event is triggered when a keyframes file is loaded.
 --- @class keyframesLoadedEventData
 --- @field claim boolean If set to `true`, any lower-priority event callbacks will be skipped. Returning `false` will set this to `true`.
+--- @field keyframe tes3keyframeDefinition The loaded keyframe definition.
 --- @field path string The path to the keyframes file, relative to Data Files\Meshes.
 --- @field sequenceName string The name of the associated NiSequence object.
 --- @field textKeys niTextKeyExtraData? Convience access to the sequence text keys, or `nil` if it has none.
