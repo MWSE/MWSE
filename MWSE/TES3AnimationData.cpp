@@ -149,14 +149,22 @@ namespace TES3 {
 		// Fix up timing and sequence activation if the swap affects the currently playing animation.
 		for (int i = 0; i < BodySectionCount; ++i) {
 			auto group = int(currentAnimGroups[i]);
-			auto sequenceGroup = &this->customSources[i].lower;
 
 			if (group == g1 || group == g2) {
 				// Ensure correct sequence is activated.
-				if (currentAnimGroupSources[i] != animGroupSourceIndices[group]) {
-					manager->deactivateSequence(sequenceGroup[currentAnimGroupSources[i]]);
-					manager->activateSequence(sequenceGroup[animGroupSourceIndices[group]]);
-					currentAnimGroupSources[i] = animGroupSourceIndices[group];
+				int prevSource = currentAnimGroupSources[i], newSource = animGroupSourceIndices[group];
+				if (prevSource != newSource) {
+					if (prevSource != -1) {
+						auto prevSeq = customSources[prevSource].at(i);
+						if (prevSeq) {
+							manager->deactivateSequence(prevSeq);
+						}
+					}
+					auto newSeq = customSources[newSource].at(i);
+					if (newSeq) {
+						manager->activateSequence(newSeq);
+					}
+					currentAnimGroupSources[i] = newSource;
 				}
 
 				// Reset timing to the start of the current action.
