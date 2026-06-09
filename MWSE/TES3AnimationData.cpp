@@ -647,8 +647,13 @@ namespace TES3 {
 		int sourceIndex = customAnimDefinitions.size();
 		bool isBiped = customSources[BaseAnimSourceIndex].upper != nullptr;
 
+		if (!setSourceKeyframes(kfData, sourceIndex, isBiped)) {
+			// Setup can only fail before any sequences are created. Remove the slots it appended.
+			customAnimDefinitions.pop_back();
+			customSources.pop_back();
+			return false;
+		}
 		kfData->refCount++;
-		setSourceKeyframes(kfData, sourceIndex, isBiped);
 
 		// Named anims are indexed separately, using namedGroups as a lookup table.
 		for (auto& namedGroup : kfData->namedGroups) {
