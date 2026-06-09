@@ -789,6 +789,8 @@ namespace TES3 {
 	static constexpr auto CUSTOM_SOURCES_OFFSET_C = offsetof(AnimationData, customSources);
 #define CUSTOM_SOURCES_OFFSET 0x7E4
 #endif
+	// The inline asm below cannot use CUSTOM_SOURCES_OFFSET_C directly. Guard against layout drift.
+	static_assert(CUSTOM_SOURCES_OFFSET == CUSTOM_SOURCES_OFFSET_C, "CUSTOM_SOURCES_OFFSET does not match the layout of AnimationData::customSources.");
 
 	__declspec(naked) NI::Sequence* addData_getLowerGroup() {
 		__asm {
