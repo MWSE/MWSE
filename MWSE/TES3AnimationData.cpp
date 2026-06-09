@@ -1121,6 +1121,21 @@ namespace TES3 {
 		// Override parser call in KeyframeDefinition ctor.
 		writePatchCodeUnprotected(0x4EDC87, reinterpret_cast<BYTE*>(&patchKeyframeDefinitionCallParser), patchKeyframeDefinitionCallParser_size);
 
+		// Override KeyframeDefinition destruction to clean up extended members.
+		auto KeyframeDefinitionExtended_dtor = &KeyframeDefinition::dtor;
+		genCallEnforced(0x4F021F, 0x4EDCD0, *reinterpret_cast<DWORD*>(&KeyframeDefinitionExtended_dtor)); // AnimatedObject::dtor
+		genCallEnforced(0x4F05AD, 0x4EDCD0, *reinterpret_cast<DWORD*>(&KeyframeDefinitionExtended_dtor)); // AnimatedObject::loadModel
+		// The remaining engine teardown paths inline the vanilla dtor logic instead of calling it.
+		// Redirect their final delete of the keyframe definition to also clean up extended members.
+		const auto KeyframeDefinition_deleteAfterInlinedDtor = reinterpret_cast<DWORD>(&KeyframeDefinition::deleteAfterInlinedDtor);
+		genCallEnforced(0x4EE550, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // ModelLoader::releaseByFilePath
+		genCallEnforced(0x4EE800, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // ModelLoader::releaseKeyframes
+		genCallEnforced(0x4F03B5, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // AnimatedObject::freeAnimData
+		genCallEnforced(0x4F04EB, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // AnimatedObject::loadModel
+		genCallEnforced(0x4F073D, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // AnimatedObject::reloadBaseModel
+		genCallEnforced(0x4F0A3F, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // AnimatedObject::releaseClone
+		genCallEnforced(0x4F0B88, 0x727530, KeyframeDefinition_deleteAfterInlinedDtor); // AnimatedObject::replaceVisualNode
+
 		// Extend AnimationGroup dtor to clean up memory.
 		auto AnimationGroup_dtor = &AnimationGroup::dtor;
 		genCallEnforced(0x492863, 0x492880, *reinterpret_cast<DWORD*>(&AnimationGroup_dtor));

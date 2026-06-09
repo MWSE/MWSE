@@ -268,6 +268,8 @@ namespace TES3 {
 
 		KeyframeDefinition* ctor(const char* nifPath, const char* name);
 		void dtor();
+		void destroyNamedGroups();
+		static void __cdecl deleteAfterInlinedDtor(KeyframeDefinition* kfData);
 
 		static std::string toCanonicalName(std::string_view name);
 		static int __cdecl parseSeqTextKeysToAnimGroups(NI::Sequence* sequence, const char* meshPath, KeyframeDefinition* kfData);

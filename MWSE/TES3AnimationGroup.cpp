@@ -178,10 +178,26 @@ namespace TES3 {
 	const auto TES3_KeyframeDefinitionVanilla_dtor = reinterpret_cast<void (__thiscall*)(KeyframeDefinitionVanilla*)>(0x4EDCD0);
 	void KeyframeDefinition::dtor() {
 		// Clean up new members.
-		namedGroups.~decltype(namedGroups)();
+		destroyNamedGroups();
 
 		// Call base class dtor.
 		TES3_KeyframeDefinitionVanilla_dtor(this);
+	}
+
+	void KeyframeDefinition::destroyNamedGroups() {
+		// Named groups are not part of the animationGroups chain, which the base dtor frees.
+		for (auto& [name, group] : namedGroups) {
+			group->dtor();
+			se::memory::_delete(group);
+		}
+		namedGroups.~decltype(namedGroups)();
+	}
+
+	void __cdecl KeyframeDefinition::deleteAfterInlinedDtor(KeyframeDefinition* kfData) {
+		// Replaces the final delete on engine teardown paths that inline the vanilla dtor logic
+		// instead of calling it. Only the extended members still need cleaning up here.
+		kfData->destroyNamedGroups();
+		se::memory::_delete(kfData);
 	}
 
 	/// <summary>
