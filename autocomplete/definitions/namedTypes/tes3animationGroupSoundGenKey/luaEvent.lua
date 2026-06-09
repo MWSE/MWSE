@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The sound played at this sound generator key.]],
+	description = [[The lua event fired at this sound generator key. `nil` if the key holds a sound instead.]],
 	valuetype = "tes3animationGroupLuaEvent|nil",
 }
