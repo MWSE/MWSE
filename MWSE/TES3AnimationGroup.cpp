@@ -116,7 +116,8 @@ namespace TES3 {
 	}
 
 	void AnimationGroup::SoundGenKey::freeLuaEvent() {
-		if (!event) {
+		// The union may hold a regular sound, which must not be released as an event.
+		if (!hasLuaEvent()) {
 			return;
 		}
 
@@ -135,6 +136,8 @@ namespace TES3 {
 	}
 
 	void AnimationGroup::SoundGenKey::setSound(Sound* sound) {
+		// Release any lua event before overwriting the union.
+		freeLuaEvent();
 		this->sound = sound;
 	}
 
@@ -146,9 +149,12 @@ namespace TES3 {
 	}
 
 	void AnimationGroup::SoundGenKey::setLuaEvent(LuaEvent* e) {
-		if (event && event != e) {
-			freeLuaEvent();
+		if (e == getLuaEvent()) {
+			return;
 		}
+
+		// Release any lua event before overwriting the union.
+		freeLuaEvent();
 		event = e;
 		if (event) {
 			event->refCount++;
