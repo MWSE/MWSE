@@ -289,6 +289,8 @@ namespace TES3 {
 		}
 		
 		// Destruction of new members.
+		temporarySwitchedGroups.~vector();
+		namedGroups.~unordered_map();
 		customAnimDefinitions.~vector();
 		customSources.~vector();
 
