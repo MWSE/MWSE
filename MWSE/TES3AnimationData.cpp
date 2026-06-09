@@ -501,6 +501,13 @@ namespace TES3 {
 		}
 	}
 
+	void AnimationData::playAnimationGroup(AnimGroupID animationGroup, int startFlag, int loopCount) {
+		// Route through the derived section wrapper so that temporary switches are reverted.
+		playAnimationGroupForSection(animationGroup, 0, startFlag, loopCount);
+		playAnimationGroupForSection(animationGroup, 1, startFlag, loopCount);
+		playAnimationGroupForSection(animationGroup, 2, startFlag, loopCount);
+	}
+
 	void AnimationData::playAnimationGroupForSection(AnimGroupID groupId, int bodySection, int startFlag, int loopCount) {
 		// Prevent out-of-bounds array access.
 		if (bodySection < 0 || bodySection > 2) {

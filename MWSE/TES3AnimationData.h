@@ -134,6 +134,7 @@ namespace TES3 {
 		void dtor();
 
 		void mergeAnimGroups(AnimationGroup* animGroup, int sourceIndex);
+		void playAnimationGroup(AnimGroupID animationGroup, int startFlag = 0, int loopCount = -1);
 		void playAnimationGroupForSection(AnimGroupID groupId, int bodySection, int startFlag = 0, int loopCount = -1);
 		void playNamedAnimationGroup(std::string_view name, int bodySection, int startFlag = 0, int loopCount = -1);
 		bool setSourceKeyframes(KeyframeDefinition* kfData, int sourceIndex, bool isBiped);
