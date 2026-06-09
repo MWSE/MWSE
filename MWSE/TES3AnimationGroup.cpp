@@ -523,29 +523,34 @@ namespace TES3 {
 
 		// Sounds and soundgens can have volume and pitch parameters.
 		// Sound ids can have spaces in them, but spaces are also parameter separators.
-		// The parser first checks for ',' and if it exists accepts spaces in the value, else falls back to ' '.
-		auto param1 = std::find(noteValue.begin(), noteValue.end(), ',');
-		if (param1 == noteValue.end()) {
-			param1 = std::find(noteValue.begin(), noteValue.end(), ' ');
+		// The parser first checks for ',' and if it exists accepts spaces in the id, else falls back to ' '.
+		auto separator1 = noteValue.find(',');
+		if (separator1 == string_view::npos) {
+			separator1 = noteValue.find(' ');
 		}
-		if (param1 != noteValue.end()) {
-			while (*param1 == ' ') { ++param1; }
-			volumeParam = float(std::atof(&*param1));
-		}
-		auto param2 = std::find(param1, noteValue.end(), ',');
-		if (param2 == noteValue.end()) {
-			param2 = std::find(param1, noteValue.end(), ' ');
-		}
-		if (param2 != noteValue.end()) {
-			while (*param2 == ' ') { ++param2; }
-			pitchParam = float(std::atof(&*param2));
+		string_view soundId = noteValue.substr(0, separator1);
+
+		if (separator1 != string_view::npos) {
+			// Volume follows the first separator, pitch follows a second one. As in vanilla, a separator
+			// with no value yields a parameter of 0. atof reads from the null-terminated source note.
+			auto params = noteValue.substr(separator1 + 1);
+			auto volumeBegin = std::min(params.find_first_not_of(' '), params.size());
+			volumeParam = float(std::atof(params.data() + volumeBegin));
+
+			auto separator2 = params.find(',', volumeBegin);
+			if (separator2 == string_view::npos) {
+				separator2 = params.find(' ', volumeBegin);
+			}
+			if (separator2 != string_view::npos) {
+				pitchParam = float(std::atof(params.data() + separator2 + 1));
+			}
 		}
 
 		if (se::string::iequal(noteKey, "SoundGen")) {
 			// Convert soundgens to sounds based on creature.
 			auto iterSoundGenName = std::find_if(
 				TES3_soundGenGenericNames, TES3_soundGenGenericNamesEnd,
-				[&](const char* x) { return se::string::istarts_with(noteValue, x); }
+				[&](const char* x) { return se::string::iequal(soundId, x); }
 			);
 			if (iterSoundGenName != TES3_soundGenGenericNamesEnd) {
 				int index = iterSoundGenName - TES3_soundGenGenericNames;
@@ -553,7 +558,7 @@ namespace TES3 {
 			}
 		}
 		else { // noteKey is "Sound"
-			string id{ noteValue };
+			string id{ soundId };
 			matchedSound = records->findSound(id.c_str());
 		}
 
