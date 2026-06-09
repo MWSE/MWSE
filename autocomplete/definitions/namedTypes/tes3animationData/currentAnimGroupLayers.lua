@@ -1,7 +1,7 @@
 return {
 	type = "value",
 	readOnly = true,
-	description = [[Use `currentAnimGroupLayers` instead.]],
+	description = [[Use `currentAnimGroupSources` instead.]],
 	valuetype = "number[]",
 	deprecated = true,
 }

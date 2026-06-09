@@ -44,7 +44,7 @@ namespace mwse::lua {
 			usertypeDefinition["blinkMorphEndTime"] = sol::readonly_property(&TES3::AnimationData::blinkMorphEndTime);
 			usertypeDefinition["blinkMorphStartTime"] = sol::readonly_property(&TES3::AnimationData::blinkMorphStartTime);
 			usertypeDefinition["castSpeed"] = sol::property(&TES3::AnimationData::getCastSpeed, &TES3::AnimationData::setCastSpeed);
-			usertypeDefinition["currentAnimGroupLayers"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroupSources);
+			usertypeDefinition["currentAnimGroupSources"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroupSources);
 			usertypeDefinition["currentAnimGroups"] = sol::readonly_property(&TES3::AnimationData::getCurrentAnimGroups);
 			usertypeDefinition["currentActionIndices"] = sol::readonly_property(&TES3::AnimationData::getCurrentActionIndices);
 			usertypeDefinition["currentSoundGenIndices"] = sol::readonly_property(&TES3::AnimationData::getCurrentSoundGenIndices);
