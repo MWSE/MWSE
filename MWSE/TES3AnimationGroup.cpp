@@ -586,16 +586,22 @@ namespace TES3 {
 		string_view eventParam;
 
 		// Decode event name and parameter. The parameter is the first text after a space.
-		auto iterSep = std::find(noteValue.begin(), noteValue.end(), ' ');
-		string_view eventName{ &*noteValue.begin(), (size_t)std::distance(noteValue.begin(), iterSep) };
+		auto separatorAt = noteValue.find(' ');
+		string_view eventName = noteValue.substr(0, separatorAt);
 
-		if (iterSep != noteValue.end()) {
-			auto iterParam = iterSep;
-			while (*iterParam == ' ') { ++iterParam; }
-			eventParam = { &*iterParam, (size_t)std::distance(iterParam, noteValue.end()) };
+		if (separatorAt != string_view::npos) {
+			auto paramAt = noteValue.find_first_not_of(' ', separatorAt);
+			if (paramAt != string_view::npos) {
+				eventParam = noteValue.substr(paramAt);
+			}
 		}
 
 		if (eventName.empty()) {
+			return;
+		}
+
+		// Events are owned by the groups they are placed in. Without an active group the event would leak.
+		if (activeAnimGroups.empty()) {
 			return;
 		}
 
