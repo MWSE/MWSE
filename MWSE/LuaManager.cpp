@@ -2668,7 +2668,7 @@ namespace mwse::lua {
 			const auto& lowerPath = maybeLowerPath.value();
 
 			// We only care about *-metadata.toml files.
-			if (!se::string::ends_with(lowerPath, "-metadata.toml")) {
+			if (!lowerPath.ends_with("-metadata.toml")) {
 				continue;
 			}
 
