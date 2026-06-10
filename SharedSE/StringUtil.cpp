@@ -99,20 +99,6 @@ namespace se::string {
 		return true;
 	}
 
-	bool starts_with(const std::string_view& string, const std::string_view& substring) {
-		if (substring.size() >= string.size()) {
-			return false;
-		}
-		return string.compare(0, substring.size(), substring) == 0;
-	}
-
-	bool ends_with(const std::string_view& string, const std::string_view& substring) {
-		if (substring.size() >= string.size()) {
-			return false;
-		}
-		return string.compare(string.size() - substring.size(), substring.size(), substring) == 0;
-	}
-
 	bool contains(const std::string_view& haystack, const std::string_view& needle) {
 		if (needle.empty()) {
 			return true;
@@ -143,13 +129,13 @@ namespace se::string {
 	//
 
 	void strip_start(std::string& string, const std::string_view& substring) {
-		if (starts_with(string, substring)) {
+		if (string.starts_with(substring)) {
 			string.erase(0, substring.length());
 		}
 	}
 
 	void strip_end(std::string& string, const std::string_view& substring) {
-		if (ends_with(string, substring)) {
+		if (string.ends_with(substring)) {
 			string.erase(string.length() - substring.length());
 		}
 	}
@@ -206,7 +192,7 @@ namespace se::string {
 		}
 
 		bool exists(const long id) {
-			return store.find(id) != store.end();
+			return store.contains(id);
 		}
 
 		bool exists(const char* value) {
