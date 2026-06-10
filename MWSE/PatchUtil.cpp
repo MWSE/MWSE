@@ -2106,6 +2106,13 @@ namespace mwse::patch {
 		) {
 			cell->temporaryRefs.remove(reference);
 			cell->actors.insertAtEnd(reference);
+			const auto objectId = reference->baseObject->getObjectID();
+			mwse::log::getLog() << fmt::format(
+				"[MWSE] Warning: Loaded actor '{}' from the temporary references list of cell '{}' in '{}'.",
+				objectId ? objectId : "<invalid>",
+				cell->getEditorName(),
+				gameFile ? gameFile->getFilename() : "<unknown>"
+			) << std::endl;
 		}
 		ReferenceTracker::rekeyReference(reference, previousLookupKey);
 		return result;
