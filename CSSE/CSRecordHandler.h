@@ -117,12 +117,4 @@ namespace se::cs {
 	};
 	static_assert(sizeof(RecordHandler) == 0xB0F8, "RecordHandler failed size validation");
 	static_assert(sizeof(RecordHandler::GameSettingsContainer) == 0x17D4, "RecordHandler::GameSettingsContainer failed size validation");
-
-	struct CreateReferenceParams {
-		PhysicalObject* baseObject;
-		NI::Point3* position;
-		NI::Point3* orientation;
-		bool* cellWasCreated;
-	};
-	static_assert(sizeof(CreateReferenceParams) == 0x10, "CreateReferenceParams failed size validation");
 }

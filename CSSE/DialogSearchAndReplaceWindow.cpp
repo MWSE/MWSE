@@ -70,8 +70,8 @@ namespace se::cs::dialog::search_and_replace_window {
 		return context.getResult();
 	}
 
-	Reference* __fastcall PatchCreateReference(RecordHandler* recordHandler, DWORD _EDX_, CreateReferenceParams params, Reference* existingReference, Cell* cell) {
-		auto reference = recordHandler->createReference(params.baseObject, params.position, params.orientation, params.cellWasCreated, existingReference, cell);
+	Reference* __fastcall PatchCreateReference(RecordHandler* recordHandler, DWORD _EDX_, PhysicalObject* baseObject, NI::Point3* position, NI::Point3* orientation, bool* cellWasCreated, Reference* existingReference, Cell* cell) {
+		auto reference = recordHandler->createReference(baseObject, position, orientation, cellWasCreated, existingReference, cell);
 
 		if (reference && existingReference && cell) {
 			cell->reclassifyReference(reference);
