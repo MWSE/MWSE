@@ -5,12 +5,9 @@
 
 namespace se::math {
 	void standardizeAngleRadians(float& value) {
-		while (value > M_2PIf) {
-			value -= M_2PIf;
-		}
-		while (value < 0.0f) {
+		value = fmod(value, M_2PIf);
+		if (value < 0.0f)
 			value += M_2PIf;
-		}
 	}
 
 	std::tuple<float, NI::Point3> rayPlaneIntersection(
