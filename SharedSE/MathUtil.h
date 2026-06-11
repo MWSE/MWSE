@@ -15,11 +15,11 @@ namespace se::math {
 	constexpr auto M_NORMALIZE_EPSILON = 1e-6f; // Epsilon for NiVector normalization.
 
 	inline float radiansToDegrees(float radians) {
-		return float(radians * 180.0f / std::numbers::pi_v<float>);
+		return radians * 180.0f / std::numbers::pi_v<float>;
 	}
 
 	inline float degreesToRadians(float degrees) {
-		return float(degrees * std::numbers::pi_v<float> / 180.0f);
+		return degrees * std::numbers::pi_v<float> / 180.0f;
 	}
 
 	// Recalculates rotation to always be between [0, 2pi].
