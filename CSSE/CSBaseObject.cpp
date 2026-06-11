@@ -43,6 +43,18 @@ namespace se::cs {
 		return (flags & 0x2000);
 	}
 
+	bool BaseObject::isMobileCapableActor() const {
+		switch (objectType) {
+		case ObjectType::Creature:
+		case ObjectType::CreatureClone:
+		case ObjectType::NPC:
+		case ObjectType::NPCClone:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	void BaseObject::setFlag80(bool set) {
 		const auto BaseObject_setFlag80 = reinterpret_cast<void(__thiscall*)(BaseObject*, bool)>(0x4019E7);
 		BaseObject_setFlag80(this, set);

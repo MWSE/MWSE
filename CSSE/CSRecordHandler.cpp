@@ -108,4 +108,9 @@ namespace se::cs {
 		const auto RecordHandler_getAvailableGameFileByIndex = reinterpret_cast<GameFile * (__thiscall*)(const RecordHandler*, size_t)>(0x501140);
 		return RecordHandler_getAvailableGameFileByIndex(this, index);
 	}
+
+	Reference* RecordHandler::createReference(PhysicalObject* baseObject, NI::Point3* position, NI::Point3* orientation, bool* cellWasCreated, Reference* existingReference, Cell* cell) {
+		const auto RecordHandler_createReference = reinterpret_cast<Reference * (__thiscall*)(RecordHandler*, PhysicalObject*, NI::Point3*, NI::Point3*, bool*, Reference*, Cell*)>(0x506C80);
+		return RecordHandler_createReference(this, baseObject, position, orientation, cellWasCreated, existingReference, cell);
+	}
 }
