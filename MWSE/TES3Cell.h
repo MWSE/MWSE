@@ -101,7 +101,8 @@ namespace TES3 {
 			int unknown_0x0;
 			int unknown_0x4;
 			int unknown_0x8;
-			int unknown_0xC;
+			unsigned short coverageMask; // 0xC
+			unsigned short unknown_0xE; // 0xE
 			int unknown_0x10;
 			NI::Pointer<NI::SourceTexture> texture; // 0x14
 
