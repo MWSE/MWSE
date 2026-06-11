@@ -2233,9 +2233,63 @@ namespace mwse::patch {
 		sHoistDoneLand = true;
 	}
 
+	// Defer the local-map geometry borrow to the first cell-cross tile that actually renders, and skip the
+	// matching restore when nothing was borrowed. This drops the world-water-plane restore traversal on backtrack crosses, where every tile is already cached and none render.
+	static const auto TES3_MapController_borrowMapGeometry = reinterpret_cast<void(__thiscall*)(TES3::MapController*)>(0x420DB0);
+	static const auto TES3_MapController_restoreMapGeometry = reinterpret_cast<void(__thiscall*)(TES3::MapController*)>(0x421100);
+	static const auto TES3_MapController_renderCellMapTile = reinterpret_cast<TES3::Cell::MappingVisuals* (__thiscall*)(TES3::MapController*, int, int, TES3::Cell*, NI::Point3, float, TES3::Cell::MappingVisuals*)>(0x41FEA0);
+	static const auto TES3_MapController_renderInteriorMap = reinterpret_cast<void(__thiscall*)(TES3::MapController*, TES3::Cell*)>(0x41F680);
+	static const unsigned char* const data_localMapTileCoverageMask = reinterpret_cast<const unsigned char*>(0x777748);
+
+	static TES3::MapController* sMapBorrowController = nullptr;
+	static bool sMapGeometryBorrowed = false;
+
+	static bool PatchDeferMapBorrow_WillRenderTile(TES3::Cell* cell, int tileY, int tileX) {
+		if (cell == nullptr) {
+			return false;
+		}
+		if (cell->getIsInterior() || tileY < 0 || tileY > 2 || tileX < 0 || tileX > 2) {
+			return true;
+		}
+		const auto* mappingVisuals = cell->mappingVisuals;
+		if (mappingVisuals == nullptr) {
+			return true;
+		}
+		const unsigned short mask = data_localMapTileCoverageMask[3 * tileY + tileX];
+		return static_cast<unsigned short>(mappingVisuals->coverageMask & mask) != mask;
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnBorrow(TES3::MapController* mapController, DWORD _EDX_) {
+		sMapBorrowController = mapController;
+		sMapGeometryBorrowed = false;
+	}
+
+	static TES3::Cell::MappingVisuals* __fastcall PatchDeferMapBorrow_OnRenderTile(TES3::MapController* mapController, DWORD _EDX_, int tileY, int tileX, TES3::Cell* cell, NI::Point3 worldPos, float northMarkerOrientation, TES3::Cell::MappingVisuals* accumulator) {
+		if (!sMapGeometryBorrowed && PatchDeferMapBorrow_WillRenderTile(cell, tileY, tileX)) {
+			TES3_MapController_borrowMapGeometry(sMapBorrowController ? sMapBorrowController : mapController);
+			sMapGeometryBorrowed = true;
+		}
+		return TES3_MapController_renderCellMapTile(mapController, tileY, tileX, cell, worldPos, northMarkerOrientation, accumulator);
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnRenderInteriorMap(TES3::MapController* mapController, DWORD _EDX_, TES3::Cell* cell) {
+		if (!sMapGeometryBorrowed) {
+			TES3_MapController_borrowMapGeometry(sMapBorrowController ? sMapBorrowController : mapController);
+			sMapGeometryBorrowed = true;
+		}
+		TES3_MapController_renderInteriorMap(mapController, cell);
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnRestore(TES3::MapController* mapController, DWORD _EDX_) {
+		if (sMapGeometryBorrowed) {
+			TES3_MapController_restoreMapGeometry(mapController);
+			sMapGeometryBorrowed = false;
+		}
+	}
+
 	//
 	// Patch: Optimize relighting of actors during cell transition.
-	// 
+	//
 	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
 	// already left simulation, and memoize resetCollisionGroup's loop-invariant root-collision-node search.
 	//
@@ -3071,6 +3125,16 @@ namespace mwse::patch {
 		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateProperties));
 		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
 		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
+
+		// Patch: Skip the local-map borrow/restore on cell-crosses where no tile renders.
+		genCallEnforced(0x486B09, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+		genCallEnforced(0x486F5B, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+		genCallEnforced(0x486F0F, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+		genCallEnforced(0x486F99, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+		genCallEnforced(0x486F72, 0x41F680, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderInteriorMap));
+		for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
+			genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderTile));
+		}
 
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
