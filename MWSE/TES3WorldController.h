@@ -119,6 +119,28 @@ namespace TES3 {
 	};
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
 
+	struct MapController {
+		char localMapTileVector[0x10]; // 0x0
+		unsigned short tileCountY; // 0x10
+		unsigned short tileCountX; // 0x12
+		int unknown_0x14;
+		void* unknown_0x18;
+		float northMarkerRotationDegrees; // 0x1C
+		NI::Node* nodePick; // 0x20
+		NI::Node* nodeObjects; // 0x24
+		NI::Node* nodeLand; // 0x28
+		NI::Node* nodeWater; // 0x2C
+		NI::Node* waterNodeParent; // 0x30
+		char cachedPickNodeCulled; // 0x34
+		char cachedObjectsNodeCulled; // 0x35
+		char cachedLandNodeCulled; // 0x36
+		char cachedWaterNodeCulled; // 0x37
+
+		MapController() = delete;
+		~MapController() = delete;
+	};
+	static_assert(sizeof(MapController) == 0x38, "TES3::MapController failed size validation");
+
 	struct MouseController {
 		NI::Object* cursors[5];
 		int unknown_0x14;
@@ -385,7 +407,7 @@ namespace TES3 {
 		WorldControllerRenderTarget mapRenderTarget; // 0x22C
 		WorldControllerRenderCamera shadowCamera; // 0x2B0
 		void * shadowManager; // 0x2DC
-		void * mapController; // 0x2E0
+		MapController * mapController; // 0x2E0
 		UI::MenuController * menuController; // 0x2E4
 		InventoryData * inventoryData; // 0x2E8
 		Sound * soundWeaponSwish; // 0x2EC
