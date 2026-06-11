@@ -3094,6 +3094,14 @@ namespace mwse::patch {
 		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardownDedupLeaveSimulation));
 		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardownResetRootSearchCache));
 		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardownMemoizedRootSearch));
+
+		// Patch: Optimize renderer hash map lookups. Use `NiDX8RendererHashBuckets` buckets instead of 37.
+		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.
+		writeDoubleWordEnforced(0x6A9AED, 37, NiDX8RendererHashBuckets); // mov ebp, 25h
+		writeDoubleWordEnforced(0x6A9AF2, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (geometry buffers)
+		writeDoubleWordEnforced(0x6A9B38, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (skin partitions)
+		writeDoubleWordEnforced(0x6A9B7E, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered textures)
+		writeDoubleWordEnforced(0x6A9BC4, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered cubemaps)
 	}
 
 	void installPostLuaPatches() {
