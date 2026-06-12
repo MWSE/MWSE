@@ -93,10 +93,12 @@ namespace se::cs::darkmode {
 	using AllowDarkModeForAppFn = bool(WINAPI*)(BOOL);
 	using SetPreferredAppModeFn = PreferredAppMode(WINAPI*)(PreferredAppMode);
 	using FlushMenuThemesFn = void(WINAPI*)();
+	using OpenNcThemeDataFn = HTHEME(WINAPI*)(HWND, LPCWSTR);
 
 	static RefreshImmersiveColorPolicyStateFn refreshImmersiveColorPolicyState = nullptr;
 	static AllowDarkModeForWindowFn allowDarkModeForWindow = nullptr;
 	static FlushMenuThemesFn flushMenuThemes = nullptr;
+	static OpenNcThemeDataFn openNcThemeData = nullptr;
 
 	static bool loadAndEnableDarkModeAPIs(DWORD buildNumber) {
 		const auto uxtheme = LoadLibraryExW(L"uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -107,9 +109,10 @@ namespace se::cs::darkmode {
 		refreshImmersiveColorPolicyState = reinterpret_cast<RefreshImmersiveColorPolicyStateFn>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(104)));
 		allowDarkModeForWindow = reinterpret_cast<AllowDarkModeForWindowFn>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(133)));
 		flushMenuThemes = reinterpret_cast<FlushMenuThemesFn>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(136)));
+		openNcThemeData = reinterpret_cast<OpenNcThemeDataFn>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(49)));
 		const auto ordinal135 = GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
 
-		if (allowDarkModeForWindow == nullptr || ordinal135 == nullptr) {
+		if (allowDarkModeForWindow == nullptr || openNcThemeData == nullptr || ordinal135 == nullptr) {
 			return false;
 		}
 
@@ -129,6 +132,69 @@ namespace se::cs::darkmode {
 		}
 
 		return true;
+	}
+
+	struct DelayImportDescriptor {
+		DWORD attributes;
+		DWORD dllName;
+		DWORD moduleHandle;
+		DWORD importAddressTable;
+		DWORD importNameTable;
+		DWORD boundImportAddressTable;
+		DWORD unloadImportAddressTable;
+		DWORD timeStamp;
+	};
+
+	static HTHEME WINAPI openNcThemeDataHook(HWND hWnd, LPCWSTR classList) {
+		if (classList && wcscmp(classList, L"ScrollBar") == 0) {
+			return openNcThemeData(nullptr, L"Explorer::ScrollBar");
+		}
+		return openNcThemeData(hWnd, classList);
+	}
+
+	static bool hookComctl32ScrollBarTheme() {
+		const auto module = LoadLibraryExW(L"comctl32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		if (module == nullptr) {
+			return false;
+		}
+
+		const auto base = reinterpret_cast<BYTE*>(module);
+		const auto dosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(base);
+		const auto ntHeaders = reinterpret_cast<IMAGE_NT_HEADERS*>(base + dosHeader->e_lfanew);
+		const auto& directory = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
+		if (directory.VirtualAddress == 0) {
+			return false;
+		}
+
+		const auto descriptors = reinterpret_cast<DelayImportDescriptor*>(base + directory.VirtualAddress);
+		for (auto descriptor = descriptors; descriptor->dllName != 0; ++descriptor) {
+			const auto usesRvas = (descriptor->attributes & 1) != 0;
+			const auto resolveAddress = [base, usesRvas](DWORD address) {
+				return usesRvas ? base + address : reinterpret_cast<BYTE*>(address);
+			};
+			const auto dllName = reinterpret_cast<const char*>(resolveAddress(descriptor->dllName));
+			if (_stricmp(dllName, "uxtheme.dll") != 0) {
+				continue;
+			}
+
+			auto importAddress = reinterpret_cast<IMAGE_THUNK_DATA*>(resolveAddress(descriptor->importAddressTable));
+			auto importName = reinterpret_cast<IMAGE_THUNK_DATA*>(resolveAddress(descriptor->importNameTable));
+			for (; importName->u1.AddressOfData != 0; ++importAddress, ++importName) {
+				if (!IMAGE_SNAP_BY_ORDINAL(importName->u1.Ordinal) || IMAGE_ORDINAL(importName->u1.Ordinal) != 49) {
+					continue;
+				}
+
+				DWORD oldProtect = 0;
+				if (!VirtualProtect(&importAddress->u1.Function, sizeof(importAddress->u1.Function), PAGE_READWRITE, &oldProtect)) {
+					return false;
+				}
+				importAddress->u1.Function = reinterpret_cast<ULONG_PTR>(openNcThemeDataHook);
+				VirtualProtect(&importAddress->u1.Function, sizeof(importAddress->u1.Function), oldProtect, &oldProtect);
+				FlushInstructionCache(GetCurrentProcess(), &importAddress->u1.Function, sizeof(importAddress->u1.Function));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static void allowDarkAndSetTheme(HWND hWnd, const wchar_t* theme) {
@@ -1754,6 +1820,10 @@ namespace se::cs::darkmode {
 		if (!loadAndEnableDarkModeAPIs(buildNumber)) {
 			log::stream << "Dark mode: disabled, uxtheme dark mode exports unavailable." << std::endl;
 			return;
+		}
+
+		if (!hookComctl32ScrollBarTheme()) {
+			log::stream << "Dark mode: could not install non-client scrollbar theme hook." << std::endl;
 		}
 
 		createDrawingResources();
