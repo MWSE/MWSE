@@ -32,6 +32,7 @@
 #include "RenderWindowSelectionData.h"
 #include "RenderWindowWidgets.h"
 #include "Settings.h"
+#include "DarkMode.h"
 
 #include "DialogLandscapeEditSettingsWindow.h"
 #include "DialogLayersWindow.h"
@@ -3178,6 +3179,14 @@ namespace se::cs::dialog::render_window {
 		case WM_ERASEBKGND:
 			// The Render Window is drawn by DirectX. Letting Windows erase the dialog
 			// background exposes a white frame during exterior grid recentering.
+			if (darkmode::isActive()) {
+				RECT clientRect;
+				GetClientRect(hWnd, &clientRect);
+
+				const auto hdc = reinterpret_cast<HDC>(wParam);
+				SetDCBrushColor(hdc, darkmode::palette::workspace);
+				FillRect(hdc, &clientRect, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+			}
 			return 1;
 		}
 
