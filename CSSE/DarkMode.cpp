@@ -724,10 +724,17 @@ namespace se::cs::darkmode {
 					return onHeaderCustomDraw(reinterpret_cast<NMCUSTOMDRAW*>(lParam));
 				}
 				switch (hdr->code) {
-				case HDN_ITEMCHANGING:
-				case HDN_ITEMCHANGED:
-				case HDN_TRACK:
-				case HDN_ENDTRACK:
+				// The comctl32 v6 header notifies in Unicode, regardless of
+				// this module's ANSI build.
+				case HDN_ITEMCHANGINGA:
+				case HDN_ITEMCHANGINGW:
+				case HDN_ITEMCHANGEDA:
+				case HDN_ITEMCHANGEDW:
+				case HDN_TRACKA:
+				case HDN_TRACKW:
+				case HDN_ENDTRACKA:
+				case HDN_ENDTRACKW:
+					InvalidateRect(hdr->hwndFrom, nullptr, TRUE);
 					InvalidateRect(hWnd, nullptr, TRUE);
 					break;
 				}
