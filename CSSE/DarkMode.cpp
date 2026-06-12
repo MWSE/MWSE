@@ -569,6 +569,33 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
+	static void refreshComboListTheme(HWND hWnd) {
+		allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+		SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+		RedrawWindow(hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME);
+	}
+
+	static LRESULT CALLBACK comboListSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_CREATE: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			refreshComboListTheme(hWnd);
+			return result;
+		}
+		case WM_SHOWWINDOW: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			if (wParam) {
+				refreshComboListTheme(hWnd);
+			}
+			return result;
+		}
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, comboListSubclassProc, SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
 	//
 	// List views: dark scrollbars and colors, plus custom drawn headers.
 	//
@@ -1022,7 +1049,10 @@ namespace se::cs::darkmode {
 			return;
 		}
 		if (_stricmp(className, "ComboLBox") == 0) {
-			SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer"));
+			// Combo scrollbars are non-client and may be added only when the
+			// popup opens, so establish dark mode before WM_NCCREATE as well.
+			allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+			SetWindowSubclass(hWnd, comboListSubclassProc, SUBCLASS_ID, 0);
 			return;
 		}
 
