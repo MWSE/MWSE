@@ -2310,6 +2310,12 @@ namespace mwse::patch {
 
 		static void(__thiscall* sChainTickClock)(TES3::WorldController*) = nullptr;
 
+		// Deferred compositor: the cross marks it pending; it runs once in the tick drain, after the
+		// tile completions, when the GPU queue has drained. Rapid crosses coalesce into one run.
+		static const auto TES3_MapController_updateMapRenderEngine = reinterpret_cast<void(__thiscall*)(TES3::MapController*)>(0x420400);
+		static bool sCompositorPending = false;
+		static int sCompositorAge = 0;
+
 		static bool isTestingCells() {
 			// DataHandler.flagTestingCells (-createmaps mode); not yet typed in MWSE.
 			return *(reinterpret_cast<const char*>(TES3::DataHandler::get()) + 0xB4DD) != 0;
@@ -2537,10 +2543,22 @@ namespace mwse::patch {
 			TES3_RecordsHandler_mapDrawCell(recordsHandler, cell);
 		}
 
+		static void __fastcall OnDeferCompositor(TES3::MapController* mapController, DWORD _EDX_) {
+			sCompositorPending = true;
+			sCompositorAge = 0;
+		}
+
 		static void __fastcall OnTickClock(TES3::WorldController* worldController, DWORD _EDX_) {
 			for (auto& pending : sPending) {
 				if (pending.cell && ++pending.age >= 3) {
 					completeOne(pending);
+				}
+			}
+			if (sCompositorPending && ++sCompositorAge >= 3) {
+				sCompositorPending = false;
+				auto mapController = worldController->mapController;
+				if (mapController) {
+					TES3_MapController_updateMapRenderEngine(mapController);
 				}
 			}
 			sChainTickClock(worldController);
@@ -3450,6 +3468,8 @@ namespace mwse::patch {
 		// GPU->CPU readback and the world-map paint off the cross frame.
 		genCallEnforced(0x4E32FE, 0x4C81C0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnMapDrawCell));
 		genCallEnforced(0x4854CD, 0x41DFB0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnReleaseAllMapTextures));
+		genCallEnforced(0x486F1F, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
+		genCallEnforced(0x486FA9, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
 		for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
 			genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnRenderCellMapTile));
 		}
