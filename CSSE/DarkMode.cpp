@@ -645,7 +645,7 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
-	static void applyRichEditColors(HWND hWnd) {
+	static void applyRichEditColors(HWND hWnd, bool recolorAll = false) {
 		SendMessageA(hWnd, EM_SETBKGNDCOLOR, FALSE, palette::surface);
 
 		CHARFORMATA format = {};
@@ -653,6 +653,9 @@ namespace se::cs::darkmode {
 		format.dwMask = CFM_COLOR;
 		format.crTextColor = palette::text;
 		SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, reinterpret_cast<LPARAM>(&format));
+		if (recolorAll) {
+			SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&format));
+		}
 	}
 
 	static LRESULT CALLBACK richEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
@@ -664,10 +667,15 @@ namespace se::cs::darkmode {
 			applyRichEditColors(hWnd);
 			return result;
 		}
+		case WM_SETTEXT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			applyRichEditColors(hWnd, true);
+			return result;
+		}
 		case WM_ENABLE: {
 			// Disabled rich edits revert to a system-color background.
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
-			applyRichEditColors(hWnd);
+			applyRichEditColors(hWnd, true);
 			return result;
 		}
 		case WM_PAINT:
