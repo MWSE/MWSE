@@ -165,6 +165,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="CSRace.cpp" />
     <ClCompile Include="CSSpell.cpp" />
     <ClCompile Include="CSWeapon.cpp" />
+    <ClCompile Include="DarkMode.cpp" />
     <ClCompile Include="DialogAboutCSSE.cpp" />
     <ClCompile Include="DialogActorAIWindow.cpp" />
     <ClCompile Include="DialogCSSESettings.cpp" />
@@ -223,6 +224,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="CSSE.def" />
+    <None Include="res\comctl32v6.manifest" />
     <None Include="res\CSSE.rc2" />
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +240,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="CSRace.h" />
     <ClInclude Include="CSRegion.h" />
     <ClInclude Include="CSSE.h" />
+    <ClInclude Include="DarkMode.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />

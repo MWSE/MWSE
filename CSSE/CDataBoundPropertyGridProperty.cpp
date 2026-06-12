@@ -20,6 +20,12 @@ CDataBoundPropertyGridProperty::CDataBoundPropertyGridProperty(const CString& st
 
 }
 
+CDataBoundPropertyGridProperty::CDataBoundPropertyGridProperty(const CString& strName, std::string* bpData, LPCTSTR lpszDescr, LPCTSTR lpszEditMask, LPCTSTR lpszEditTemplate, LPCTSTR lpszValidChars) :
+	CDataBoundPropertyGridProperty(strName, COleVariant(bpData->c_str()), lpszDescr, (DWORD_PTR)bpData, lpszEditMask, lpszEditTemplate, lpszValidChars)
+{
+
+}
+
 CDataBoundPropertyGridProperty::CDataBoundPropertyGridProperty(const CString& strName, const COleVariant& varValue, LPCTSTR lpszDescr, DWORD_PTR dwData, LPCTSTR lpszEditMask, LPCTSTR lpszEditTemplate, LPCTSTR lpszValidChars) :
 	CMFCPropertyGridProperty(strName, varValue, lpszDescr, dwData, lpszEditMask, lpszEditTemplate, lpszValidChars)
 {
@@ -52,6 +58,9 @@ BOOL CDataBoundPropertyGridProperty::OnUpdateValue() {
 		break;
 	case VT_R8:
 		*reinterpret_cast<double*>(data) = value.dblVal;
+		break;
+	case VT_BSTR:
+		*reinterpret_cast<std::string*>(data) = (LPCSTR)CString(value.bstrVal);
 		break;
 	}
 

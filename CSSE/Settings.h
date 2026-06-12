@@ -177,10 +177,20 @@ namespace se::cs {
 		} landscape_window;
 
 		struct ColorTheme {
+			// "light", "dark", or "auto". Anything else is treated as light.
+			// Applied at startup; changing it requires restarting the CS.
+			std::string mode = "light";
+
 			std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
 			std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
 			std::array<unsigned char, 3> highlight_modified_new_object_color = { 215, 240, 255 };
 			std::array<unsigned char, 3> highlight_deprecated_object_color = { 225, 225, 225 };
+
+			// Highlight colors used instead of the above when dark mode is active.
+			std::array<unsigned char, 3> dark_highlight_deleted_object_color = { 84, 40, 40 };
+			std::array<unsigned char, 3> dark_highlight_modified_from_master_color = { 36, 74, 38 };
+			std::array<unsigned char, 3> dark_highlight_modified_new_object_color = { 32, 62, 96 };
+			std::array<unsigned char, 3> dark_highlight_deprecated_object_color = { 70, 70, 70 };
 
 			unsigned int highlight_deleted_object_packed_color = 0xFFFFFF;
 			unsigned int highlight_modified_from_master_packed_color = 0xFFFFFF;

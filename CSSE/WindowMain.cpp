@@ -1,5 +1,6 @@
 #include "WindowMain.h"
 
+#include "DarkMode.h"
 #include "LogUtil.h"
 #include "MemoryUtil.h"
 #include "WinUIUtil.h"
@@ -525,7 +526,15 @@ namespace se::cs::window::main {
 		hBMInst = application.m_hInstance;
 		wBMID = IDB_MAIN_TOOLBAR;
 
-		return CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		// The toolbar's classic etched top divider draws with light system
+		// colors that cannot be themed.
+		if (darkmode::isActive()) {
+			ws |= CCS_NODIVIDER;
+		}
+
+		const auto toolbar = CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		darkmode::remapToolbarImages(toolbar, hBMInst, IDB_MAIN_TOOLBAR, dxBitmap, dyBitmap);
+		return toolbar;
 	}
 
 	//

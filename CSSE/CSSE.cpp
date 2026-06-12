@@ -36,6 +36,7 @@
 
 #include "TextureRenderer.h"
 
+#include "DarkMode.h"
 #include "MemoryUtil.h"
 #include "PathUtil.h"
 #include "StringUtil.h"
@@ -408,12 +409,21 @@ namespace se::cs {
 		}
 
 		int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+			// Dark mode must be set up before WinMain creates any window.
+			darkmode::initialize();
+
+			const auto winMain = reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x4049B7);
+#ifdef _DEBUG
+			// Skip the minidump handler so the debugger catches crashes.
+			return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+#else
 			__try {
-				return reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x4049B7)(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+				return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 			}
 			__except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 				return 0;
 			}
+#endif
 		}
 
 		//
@@ -644,10 +654,8 @@ namespace se::cs {
 		using memory::writeValueEnforced;
 		using memory::overrideVirtualTableEnforced;
 
-		// Patch: Collect crash dumps.
-#ifndef _DEBUG
+		// Patch: Collect crash dumps (release only) and initialize dark mode at WinMain entry.
 		genCallEnforced(0x620DF9, 0x4049B7, reinterpret_cast<DWORD>(patch::onWinMain));
-#endif
 
 		// Get the vanilla masters so we suppress errors from them.
 		genCallEnforced(0x50194E, 0x4041C4, reinterpret_cast<DWORD>(patch::findVanillaMasters));

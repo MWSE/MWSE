@@ -12,6 +12,7 @@
 #define IDC_SETTINGS_GRID               1004
 #define IDB_MAIN_TOOLBAR                1007
 #define IDB_TOOLBAR_STRIP               1008
+#define IDR_COMCTL32_V6_MANIFEST        124
 
 // Next default values for new objects
 // 
