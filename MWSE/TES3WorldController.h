@@ -113,11 +113,14 @@ namespace TES3 {
 		void readbackRenderedTexture(D3DLOCKED_RECT* lockedRect);
 		unsigned char getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
 
-		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a per-compositor-pass
-		// copy (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
+		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a CPU copy of each
+		// fog tile (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
+		// Entries persist across passes and are invalidated when fog is drawn to their tile.
 		unsigned char getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
 		static void beginFogCache();
 		static void endFogCache();
+		static void invalidateFogCacheTexture(NI::RenderedTexture* texture);
+		static void clearFogCache();
 	};
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
 

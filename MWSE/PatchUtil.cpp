@@ -2584,6 +2584,7 @@ namespace mwse::patch {
 			}
 			sCapsChecked = false;
 			sUnsupported = false;
+			TES3::WorldControllerRenderTarget::clearFogCache();
 			TES3_MapController_releaseAllTextures(mapController);
 		}
 	}
@@ -2593,6 +2594,21 @@ namespace mwse::patch {
 			TES3_MapController_restoreMapGeometry(mapController);
 			sMapGeometryBorrowed = false;
 		}
+	}
+
+	//
+	// Patch: Persist the fog-of-war pixel cache across compositor passes.
+	//
+	// Every fog draw funnels through updateFogOfWarVertexBuffer, so invalidating the drawn tile's cache
+	// entry there keeps the cache exact while persisting it across passes - the GPU lock then runs only
+	// when a queried tile's fog actually changed.
+	//
+
+	static const auto TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer = reinterpret_cast<int(__thiscall*)(TES3::WorldControllerRenderTarget*, NI::RenderedTexture*, int, short, float)>(0x42FA50);
+
+	static int __fastcall PatchPersistentFogCache_OnFogDraw(TES3::WorldControllerRenderTarget* renderTarget, DWORD _EDX_, NI::RenderedTexture* texture, int fowX, short fowY, float radius) {
+		TES3::WorldControllerRenderTarget::invalidateFogCacheTexture(texture);
+		return TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer(renderTarget, texture, fowX, fowY, radius);
 	}
 
 	//
@@ -3440,6 +3456,11 @@ namespace mwse::patch {
 		genCallEnforced(0x486F0F, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
 		genCallEnforced(0x486F99, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
 		genCallEnforced(0x486F72, 0x41F680, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderInteriorMap));
+
+		// Patch: Persist the fog-of-war pixel cache across compositor passes (invalidate on fog draw).
+		for (DWORD site : { 0x42082Cu, 0x4208C2u, 0x420A7Fu, 0x420BB9u, 0x420CC8u, 0x421CE4u, 0x42FD7Cu }) {
+			genCallEnforced(site, 0x42FA50, reinterpret_cast<DWORD>(&PatchPersistentFogCache_OnFogDraw));
+		}
 
 		// Patch: Render local-map tiles into per-tile render targets, displayed directly; defer the
 		// GPU->CPU readback and the world-map paint off the cross frame.
