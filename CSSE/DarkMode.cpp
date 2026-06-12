@@ -436,6 +436,7 @@ namespace se::cs::darkmode {
 	static LRESULT CALLBACK dialogSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
 		const bool isMainEditorWindow = dwRefData == 1;
 		const bool isPlainDarkWindow = dwRefData == 2;
+		const bool isUser32Dialog = dwRefData == 3;
 		const bool hasMenuBar = GetMenu(hWnd) != nullptr;
 
 		switch (msg) {
@@ -489,11 +490,28 @@ namespace se::cs::darkmode {
 		case WM_ERASEBKGND:
 			// The main editor window erases with COLOR_APPWORKSPACE; dialogs
 			// erase through WM_CTLCOLORDLG and need no help here.
-			if (isMainEditorWindow || isPlainDarkWindow) {
+			if (isMainEditorWindow || isPlainDarkWindow || isUser32Dialog) {
 				RECT clientRect = {};
 				GetClientRect(hWnd, &clientRect);
 				FillRect(reinterpret_cast<HDC>(wParam), &clientRect, isMainEditorWindow ? workspaceBrush : backgroundBrush);
 				return 1;
+			}
+			break;
+		case WM_PAINT:
+			if (isUser32Dialog) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				FillRect(hdc, &paint.rcPaint, backgroundBrush);
+				EndPaint(hWnd, &paint);
+				return 0;
+			}
+			break;
+		case WM_PRINTCLIENT:
+			if (isUser32Dialog) {
+				RECT clientRect = {};
+				GetClientRect(hWnd, &clientRect);
+				FillRect(reinterpret_cast<HDC>(wParam), &clientRect, backgroundBrush);
+				return 0;
 			}
 			break;
 		case WM_TIMER:
@@ -1220,12 +1238,14 @@ namespace se::cs::darkmode {
 		return false;
 	}
 
-	// Theme editor, CSSE, and common dialogs. Common file and color dialogs use
-	// standard controls that inherit the same dark handling as editor dialogs.
+	// Theme editor, CSSE, and common dialogs. USER32 owns system-provided
+	// dialogs such as message boxes opened by the editor.
 	static bool isOwnDialog(const CREATESTRUCTA* createStruct) {
-		return createStruct->hInstance == GetModuleHandleA(nullptr)
+		return createStruct->hInstance == nullptr
+			|| createStruct->hInstance == GetModuleHandleA(nullptr)
 			|| createStruct->hInstance == application.m_hInstance
-			|| createStruct->hInstance == GetModuleHandleA("comdlg32.dll");
+			|| createStruct->hInstance == GetModuleHandleA("comdlg32.dll")
+			|| createStruct->hInstance == GetModuleHandleA("user32.dll");
 	}
 
 	static bool hasDarkenedAncestor(HWND hWnd) {
@@ -1254,8 +1274,9 @@ namespace se::cs::darkmode {
 
 		if (isDialogClass(className)) {
 			if (isOwnDialog(createStruct)) {
-				const auto subclassed = SetWindowSubclass(hWnd, dialogSubclassProc, SUBCLASS_ID, 0);
-				logDispatch(hWnd, className, "dialog", subclassed);
+				const auto isUser32Dialog = createStruct->hInstance == GetModuleHandleA("user32.dll");
+				const auto subclassed = SetWindowSubclass(hWnd, dialogSubclassProc, SUBCLASS_ID, isUser32Dialog ? 3 : 0);
+				logDispatch(hWnd, className, isUser32Dialog ? "USER32 dialog" : "dialog", subclassed);
 			}
 			else {
 				logDispatch(hWnd, className, "skipped (external dialog)", true);
