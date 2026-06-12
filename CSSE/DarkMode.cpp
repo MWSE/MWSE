@@ -273,7 +273,7 @@ namespace se::cs::darkmode {
 			RECT clientRect = {};
 			GetClientRect(hWnd, &clientRect);
 			FillRect(hdc, &clientRect, controlBrush);
-			return CDRF_NOTIFYITEMDRAW;
+			return CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
 		}
 		case CDDS_ITEMPREPAINT: {
 			auto itemRect = customDraw->rc;
@@ -300,6 +300,23 @@ namespace se::cs::darkmode {
 			SelectObject(hdc, previousFont);
 
 			return CDRF_SKIPDEFAULT;
+		}
+		case CDDS_POSTPAINT: {
+			RECT clientRect = {};
+			GetClientRect(hWnd, &clientRect);
+
+			const auto columnCount = Header_GetItemCount(hWnd);
+			if (columnCount <= 0) {
+				FillRect(hdc, &clientRect, controlBrush);
+				return CDRF_DODEFAULT;
+			}
+
+			RECT lastItemRect = {};
+			if (Header_GetItemRect(hWnd, columnCount - 1, &lastItemRect) && lastItemRect.right < clientRect.right) {
+				RECT trailingRect = { lastItemRect.right, clientRect.top, clientRect.right, clientRect.bottom };
+				FillRect(hdc, &trailingRect, controlBrush);
+			}
+			return CDRF_DODEFAULT;
 		}
 		}
 		return CDRF_DODEFAULT;
