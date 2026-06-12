@@ -179,7 +179,7 @@ namespace se::cs {
 		struct ColorTheme {
 			// "light", "dark", or "auto". Anything else is treated as light.
 			// Applied at startup; changing it requires restarting the CS.
-			std::string mode = "light";
+			std::string mode = "auto";
 
 			std::array<unsigned char, 3> highlight_deleted_object_color = { 255, 235, 235 };
 			std::array<unsigned char, 3> highlight_modified_from_master_color = { 235, 255, 235 };
