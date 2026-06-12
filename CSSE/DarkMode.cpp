@@ -705,6 +705,17 @@ namespace se::cs::darkmode {
 		return (GetWindowLongA(hWnd, GWL_STYLE) & BS_TYPEMASK) == BS_GROUPBOX;
 	}
 
+	static bool isD3DDriverTypeButton(HWND hWnd) {
+		const auto id = GetDlgCtrlID(hWnd);
+		if (id != 1002 && id != 1003) {
+			return false;
+		}
+
+		char title[128] = {};
+		GetWindowTextA(GetParent(hWnd), title, sizeof(title));
+		return strcmp(title, "TES3 Direct3D Driver Selection") == 0;
+	}
+
 	static void paintGroupBox(HWND hWnd, HDC hdc) {
 		RECT clientRect = {};
 		GetClientRect(hWnd, &clientRect);
@@ -744,7 +755,12 @@ namespace se::cs::darkmode {
 		case WM_CREATE: {
 			// Let the control finish initializing before theming it.
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
-			allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+			if (isD3DDriverTypeButton(hWnd)) {
+				SetWindowTheme(hWnd, L"", L"");
+			}
+			else {
+				allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+			}
 			return result;
 		}
 		case WM_PAINT: {
