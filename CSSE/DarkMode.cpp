@@ -1297,6 +1297,224 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
+	//
+	// Scroll bar controls. Unlike non-client scroll bars, the stand-alone
+	// scroll bar control ignores the DarkMode_Explorer theme, so the settings
+	// grid's scroll bar is fully custom drawn and custom tracked. Mouse input
+	// is not forwarded to the control, because the native tracking loop
+	// paints the light scroll bar directly to the screen.
+	//
+
+	static constexpr UINT_PTR SCROLLBAR_REPEAT_TIMER = SUBCLASS_ID + 2;
+
+	// Tracking state for the scroll bar holding mouse capture. Only one
+	// window can hold capture at a time.
+	static int scrollBarThumbGrabOffset = -1;
+	static WORD scrollBarRepeatCode = 0;
+
+	struct ScrollBarLayout {
+		SCROLLINFO info = { sizeof(SCROLLINFO), SIF_POS | SIF_PAGE | SIF_RANGE };
+		RECT upArrow = {};
+		RECT downArrow = {};
+		RECT track = {};
+		RECT thumb = {};
+		bool scrollable = false;
+	};
+
+	static ScrollBarLayout getScrollBarLayout(HWND hWnd) {
+		ScrollBarLayout layout;
+		GetScrollInfo(hWnd, SB_CTL, &layout.info);
+
+		RECT client = {};
+		GetClientRect(hWnd, &client);
+		auto arrowHeight = GetSystemMetrics(SM_CYVSCROLL);
+		if (arrowHeight * 2 > client.bottom - client.top) {
+			arrowHeight = (client.bottom - client.top) / 2;
+		}
+		layout.upArrow = { client.left, client.top, client.right, client.top + arrowHeight };
+		layout.downArrow = { client.left, client.bottom - arrowHeight, client.right, client.bottom };
+		layout.track = { client.left, layout.upArrow.bottom, client.right, layout.downArrow.top };
+
+		const auto& info = layout.info;
+		const auto page = static_cast<int>(info.nPage);
+		const auto range = info.nMax - info.nMin + 1;
+		const auto trackHeight = layout.track.bottom - layout.track.top;
+		if (page <= 0 || range <= page || trackHeight <= 0) {
+			return layout;
+		}
+		layout.scrollable = true;
+
+		auto thumbHeight = MulDiv(trackHeight, page, range);
+		if (thumbHeight < 8) {
+			thumbHeight = 8;
+		}
+		if (thumbHeight > trackHeight) {
+			thumbHeight = trackHeight;
+		}
+
+		const auto scrollRange = info.nMax - page + 1 - info.nMin;
+		const auto thumbTop = layout.track.top + MulDiv(info.nPos - info.nMin, trackHeight - thumbHeight, scrollRange > 0 ? scrollRange : 1);
+		layout.thumb = { client.left, thumbTop, client.right, thumbTop + thumbHeight };
+		return layout;
+	}
+
+	static void paintScrollBarArrow(HDC hdc, const RECT& rect, bool pointsUp, bool enabled) {
+		auto halfWidth = (rect.right - rect.left) / 5;
+		if (halfWidth < 2) {
+			halfWidth = 2;
+		}
+		const auto halfHeight = (halfWidth + 1) / 2;
+		const auto centerX = (rect.left + rect.right) / 2;
+		const auto centerY = (rect.top + rect.bottom) / 2;
+		const auto baseY = pointsUp ? centerY + halfHeight : centerY - halfHeight;
+		const auto apexY = pointsUp ? centerY - halfHeight : centerY + halfHeight;
+		const POINT points[3] = {
+			{ centerX - halfWidth, baseY },
+			{ centerX + halfWidth, baseY },
+			{ centerX, apexY },
+		};
+
+		const auto color = enabled ? palette::text : palette::textDisabled;
+		const auto previousPen = SelectObject(hdc, GetStockObject(DC_PEN));
+		const auto previousBrush = SelectObject(hdc, GetStockObject(DC_BRUSH));
+		SetDCPenColor(hdc, color);
+		SetDCBrushColor(hdc, color);
+		Polygon(hdc, points, 3);
+		SelectObject(hdc, previousBrush);
+		SelectObject(hdc, previousPen);
+	}
+
+	static void paintScrollBar(HWND hWnd, HDC hdc) {
+		const auto layout = getScrollBarLayout(hWnd);
+
+		RECT client = {};
+		GetClientRect(hWnd, &client);
+		FillRect(hdc, &client, surfaceBrush);
+
+		paintScrollBarArrow(hdc, layout.upArrow, true, layout.scrollable);
+		paintScrollBarArrow(hdc, layout.downArrow, false, layout.scrollable);
+
+		if (layout.scrollable) {
+			FillRect(hdc, &layout.thumb, controlHotBrush);
+		}
+	}
+
+	static void sendScrollCommand(HWND hWnd, WORD code, WORD position = 0) {
+		SendMessageA(GetParent(hWnd), WM_VSCROLL, MAKEWPARAM(code, position), reinterpret_cast<LPARAM>(hWnd));
+	}
+
+	static LRESULT CALLBACK scrollBarSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_PAINT: {
+			PAINTSTRUCT paint = {};
+			const auto hdc = BeginPaint(hWnd, &paint);
+			paintScrollBar(hWnd, hdc);
+			EndPaint(hWnd, &paint);
+			return 0;
+		}
+		case WM_ERASEBKGND:
+			return 1;
+		// State changes repaint without the default handling's redraw, which
+		// can draw the light scroll bar directly.
+		case SBM_SETPOS: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, FALSE);
+			InvalidateRect(hWnd, nullptr, FALSE);
+			return result;
+		}
+		case SBM_SETSCROLLINFO: {
+			const auto result = DefSubclassProc(hWnd, msg, FALSE, lParam);
+			InvalidateRect(hWnd, nullptr, FALSE);
+			return result;
+		}
+		case SBM_SETRANGEREDRAW: {
+			const auto result = DefSubclassProc(hWnd, SBM_SETRANGE, wParam, lParam);
+			InvalidateRect(hWnd, nullptr, FALSE);
+			return result;
+		}
+		case SBM_ENABLE_ARROWS: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			InvalidateRect(hWnd, nullptr, FALSE);
+			return result;
+		}
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONDBLCLK: {
+			const auto layout = getScrollBarLayout(hWnd);
+			if (!layout.scrollable) {
+				return 0;
+			}
+			const POINT point = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			SetCapture(hWnd);
+			if (PtInRect(&layout.thumb, point)) {
+				scrollBarThumbGrabOffset = point.y - layout.thumb.top;
+			}
+			else {
+				if (point.y < layout.upArrow.bottom) {
+					scrollBarRepeatCode = SB_LINEUP;
+				}
+				else if (point.y >= layout.downArrow.top) {
+					scrollBarRepeatCode = SB_LINEDOWN;
+				}
+				else {
+					scrollBarRepeatCode = (point.y < layout.thumb.top) ? SB_PAGEUP : SB_PAGEDOWN;
+				}
+				sendScrollCommand(hWnd, scrollBarRepeatCode);
+				SetTimer(hWnd, SCROLLBAR_REPEAT_TIMER, 350, nullptr);
+			}
+			return 0;
+		}
+		case WM_MOUSEMOVE:
+			if (GetCapture() == hWnd && scrollBarThumbGrabOffset >= 0) {
+				const auto layout = getScrollBarLayout(hWnd);
+				const auto slack = (layout.track.bottom - layout.track.top) - (layout.thumb.bottom - layout.thumb.top);
+				if (layout.scrollable && slack > 0) {
+					const auto& info = layout.info;
+					const auto scrollRange = info.nMax - static_cast<int>(info.nPage) + 1 - info.nMin;
+					const auto offset = GET_Y_LPARAM(lParam) - scrollBarThumbGrabOffset - layout.track.top;
+					auto position = info.nMin + MulDiv(offset, scrollRange, slack);
+					if (position < info.nMin) {
+						position = info.nMin;
+					}
+					if (position > info.nMin + scrollRange) {
+						position = info.nMin + scrollRange;
+					}
+					if (position != info.nPos) {
+						sendScrollCommand(hWnd, SB_THUMBTRACK, static_cast<WORD>(position));
+					}
+				}
+			}
+			return 0;
+		case WM_LBUTTONUP:
+			if (GetCapture() == hWnd) {
+				ReleaseCapture();
+			}
+			return 0;
+		case WM_CAPTURECHANGED:
+			if (scrollBarThumbGrabOffset >= 0) {
+				scrollBarThumbGrabOffset = -1;
+				sendScrollCommand(hWnd, SB_ENDSCROLL);
+			}
+			KillTimer(hWnd, SCROLLBAR_REPEAT_TIMER);
+			break;
+		case WM_TIMER:
+			if (wParam == SCROLLBAR_REPEAT_TIMER) {
+				if (GetCapture() == hWnd) {
+					sendScrollCommand(hWnd, scrollBarRepeatCode);
+					SetTimer(hWnd, SCROLLBAR_REPEAT_TIMER, 60, nullptr);
+				}
+				else {
+					KillTimer(hWnd, SCROLLBAR_REPEAT_TIMER);
+				}
+				return 0;
+			}
+			break;
+		case WM_NCDESTROY:
+			KillTimer(hWnd, SCROLLBAR_REPEAT_TIMER);
+			RemoveWindowSubclass(hWnd, scrollBarSubclassProc, SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
 	void themePropertyGrid(HWND hWndGrid, HWND hWndHeader, HWND hWndScrollBar) {
 		if (!active) {
 			return;
@@ -1312,9 +1530,8 @@ namespace se::cs::darkmode {
 			InvalidateRect(hWndHeader, nullptr, TRUE);
 		}
 		if (hWndScrollBar) {
-			allowDarkAndSetTheme(hWndScrollBar, L"DarkMode_Explorer");
-			SetWindowPos(hWndScrollBar, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-			RedrawWindow(hWndScrollBar, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME);
+			SetWindowSubclass(hWndScrollBar, scrollBarSubclassProc, SUBCLASS_ID, 0);
+			InvalidateRect(hWndScrollBar, nullptr, TRUE);
 		}
 	}
 
