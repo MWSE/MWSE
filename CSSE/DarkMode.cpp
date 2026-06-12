@@ -425,7 +425,8 @@ namespace se::cs::darkmode {
 	//
 
 	static LRESULT CALLBACK dialogSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
-		const bool isMainEditorWindow = dwRefData != 0;
+		const bool isMainEditorWindow = dwRefData == 1;
+		const bool isPlainDarkWindow = dwRefData == 2;
 		const bool hasMenuBar = GetMenu(hWnd) != nullptr;
 
 		switch (msg) {
@@ -465,10 +466,10 @@ namespace se::cs::darkmode {
 		case WM_ERASEBKGND:
 			// The main editor window erases with COLOR_APPWORKSPACE; dialogs
 			// erase through WM_CTLCOLORDLG and need no help here.
-			if (isMainEditorWindow) {
+			if (isMainEditorWindow || isPlainDarkWindow) {
 				RECT clientRect = {};
 				GetClientRect(hWnd, &clientRect);
-				FillRect(reinterpret_cast<HDC>(wParam), &clientRect, workspaceBrush);
+				FillRect(reinterpret_cast<HDC>(wParam), &clientRect, isMainEditorWindow ? workspaceBrush : backgroundBrush);
 				return 1;
 			}
 			break;
@@ -941,6 +942,11 @@ namespace se::cs::darkmode {
 		if (_stricmp(className, "TES3 Editor Class") == 0) {
 			const auto subclassed = SetWindowSubclass(hWnd, dialogSubclassProc, SUBCLASS_ID, 1);
 			logDispatch(hWnd, className, "main editor window", subclassed);
+			return;
+		}
+		if (_stricmp(className, "CSSE_LayersWindow") == 0) {
+			const auto subclassed = SetWindowSubclass(hWnd, dialogSubclassProc, SUBCLASS_ID, 2);
+			logDispatch(hWnd, className, "layers window", subclassed);
 			return;
 		}
 
