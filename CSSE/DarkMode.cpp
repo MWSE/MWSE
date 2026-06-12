@@ -972,7 +972,7 @@ namespace se::cs::darkmode {
 		else if (_stricmp(className, "ComboBox") == 0) {
 			logDispatch(hWnd, className, "combo box", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_CFD")));
 		}
-		else if (_stricmp(className, "Edit") == 0 || _stricmp(className, "ListBox") == 0 || _stricmp(className, "ScrollBar") == 0) {
+		else if (_stricmp(className, "Edit") == 0 || _stricmp(className, "ListBox") == 0 || _stricmp(className, "ScrollBar") == 0 || _stricmp(className, UPDOWN_CLASSA) == 0) {
 			logDispatch(hWnd, className, "themed control", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer")));
 		}
 		else if (_stricmp(className, STATUSCLASSNAMEA) == 0) {
