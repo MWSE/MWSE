@@ -75,7 +75,9 @@ namespace TES3 {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
 	}
 
-	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
+	// Fog-of-war pixel cache: a CPU copy of each fog tile, keyed by texture. Entries persist across
+	// compositor passes; a tile's entry is invalidated when fog is drawn to it, so the GPU lock runs
+	// only when a queried tile's fog actually changed.
 	static constexpr auto FogTileResolution = 64u;
 	static constexpr auto FogCacheCapacity = 16u;
 
@@ -84,17 +86,23 @@ namespace TES3 {
 		unsigned char pixels[FogTileResolution * FogTileResolution] = {};
 	};
 	static auto sFogCacheActive = false;
-	static auto sFogCacheCount = 0u;
+	static auto sFogCacheNextEvict = 0u;
 	static FogTileCacheEntry sFogCache[FogCacheCapacity] = {};
 
 	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::Pointer<NI::RenderedTexture> texture) {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
+		FogTileCacheEntry* freeEntry = nullptr;
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
 			if (sFogCache[i].texture == texture) {
 				return &sFogCache[i];
 			}
+			if (freeEntry == nullptr && sFogCache[i].texture == nullptr) {
+				freeEntry = &sFogCache[i];
+			}
 		}
-		if (sFogCacheCount >= FogCacheCapacity) {
-			return nullptr;
+		if (freeEntry == nullptr) {
+			freeEntry = &sFogCache[sFogCacheNextEvict];
+			sFogCacheNextEvict = (sFogCacheNextEvict + 1u) % FogCacheCapacity;
+			*freeEntry = {};
 		}
 		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
 		if (!rect) {
@@ -103,7 +111,7 @@ namespace TES3 {
 			renderTarget->unlockRenderTarget(rect, 0);
 			return nullptr;
 		}
-		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+		FogTileCacheEntry* entry = freeEntry;
 		entry->texture = texture;
 		const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
 		const int pitch = rect->Pitch;
@@ -113,24 +121,31 @@ namespace TES3 {
 			}
 		}
 		renderTarget->unlockRenderTarget(rect, 0);
-		++sFogCacheCount;
 		return entry;
 	}
 
 	void WorldControllerRenderTarget::beginFogCache() {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
-			sFogCache[i] = {};
-		}
 		sFogCacheActive = true;
-		sFogCacheCount = 0;
 	}
 
 	void WorldControllerRenderTarget::endFogCache() {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
+		sFogCacheActive = false;
+	}
+
+	void WorldControllerRenderTarget::invalidateFogCacheTexture(NI::RenderedTexture* texture) {
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
+			if (sFogCache[i].texture == texture) {
+				sFogCache[i] = {};
+				return;
+			}
+		}
+	}
+
+	void WorldControllerRenderTarget::clearFogCache() {
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
 			sFogCache[i] = {};
 		}
-		sFogCacheActive = false;
-		sFogCacheCount = 0;
+		sFogCacheNextEvict = 0;
 	}
 
 	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
