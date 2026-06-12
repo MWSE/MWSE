@@ -426,6 +426,7 @@ namespace se::cs::darkmode {
 
 	static LRESULT CALLBACK dialogSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
 		const bool isMainEditorWindow = dwRefData != 0;
+		const bool hasMenuBar = GetMenu(hWnd) != nullptr;
 
 		switch (msg) {
 		case WM_CREATE:
@@ -483,20 +484,20 @@ namespace se::cs::darkmode {
 			break;
 		}
 		case WM_UAHDRAWMENU:
-			if (isMainEditorWindow) {
+			if (hasMenuBar) {
 				onUAHDrawMenuBar(hWnd, reinterpret_cast<UAHMenu*>(lParam));
 				return TRUE;
 			}
 			break;
 		case WM_UAHDRAWMENUITEM:
-			if (isMainEditorWindow) {
+			if (hasMenuBar) {
 				onUAHDrawMenuBarItem(hWnd, reinterpret_cast<UAHDrawMenuItem*>(lParam));
 				return TRUE;
 			}
 			break;
 		case WM_NCPAINT:
 		case WM_NCACTIVATE:
-			if (isMainEditorWindow) {
+			if (hasMenuBar) {
 				const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 				paintMenuBarFrameLines(hWnd);
 				return result;
@@ -601,21 +602,44 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
+	static void applyRichEditColors(HWND hWnd) {
+		SendMessageA(hWnd, EM_SETBKGNDCOLOR, FALSE, palette::surface);
+
+		CHARFORMATA format = {};
+		format.cbSize = sizeof(format);
+		format.dwMask = CFM_COLOR;
+		format.crTextColor = palette::text;
+		SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, reinterpret_cast<LPARAM>(&format));
+	}
+
 	static LRESULT CALLBACK richEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
 		switch (msg) {
 		case WM_CREATE: {
 			// Let the control finish initializing before theming it.
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
-			SendMessageA(hWnd, EM_SETBKGNDCOLOR, FALSE, palette::surface);
-
-			CHARFORMATA format = {};
-			format.cbSize = sizeof(format);
-			format.dwMask = CFM_COLOR;
-			format.crTextColor = palette::text;
-			SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, reinterpret_cast<LPARAM>(&format));
+			applyRichEditColors(hWnd);
 			return result;
 		}
+		case WM_ENABLE: {
+			// Disabled rich edits revert to a system-color background.
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			applyRichEditColors(hWnd);
+			return result;
+		}
+		case WM_PAINT:
+			// The script editor starts with an empty disabled rich edit, which
+			// ignores EM_SETBKGNDCOLOR and paints with COLOR_3DFACE.
+			if (!IsWindowEnabled(hWnd) && GetWindowTextLengthA(hWnd) == 0) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				RECT clientRect = {};
+				GetClientRect(hWnd, &clientRect);
+				FillRect(hdc, &clientRect, surfaceBrush);
+				EndPaint(hWnd, &paint);
+				return 0;
+			}
+			break;
 		case WM_NCPAINT: {
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			paintDarkClientEdge(hWnd);
