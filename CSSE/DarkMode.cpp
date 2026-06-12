@@ -582,6 +582,7 @@ namespace se::cs::darkmode {
 			ListView_SetBkColor(hWnd, palette::surface);
 			ListView_SetTextBkColor(hWnd, palette::surface);
 			ListView_SetTextColor(hWnd, palette::text);
+			ListView_SetExtendedListViewStyleEx(hWnd, LVS_EX_GRIDLINES, 0);
 			return result;
 		}
 		case LVM_SETEXTENDEDLISTVIEWSTYLE:
@@ -594,8 +595,18 @@ namespace se::cs::darkmode {
 			break;
 		case WM_NOTIFY: {
 			const auto hdr = reinterpret_cast<NMHDR*>(lParam);
-			if (hdr->code == NM_CUSTOMDRAW && hdr->hwndFrom == ListView_GetHeader(hWnd)) {
-				return onHeaderCustomDraw(reinterpret_cast<NMCUSTOMDRAW*>(lParam));
+			if (hdr->hwndFrom == ListView_GetHeader(hWnd)) {
+				if (hdr->code == NM_CUSTOMDRAW) {
+					return onHeaderCustomDraw(reinterpret_cast<NMCUSTOMDRAW*>(lParam));
+				}
+				switch (hdr->code) {
+				case HDN_ITEMCHANGING:
+				case HDN_ITEMCHANGED:
+				case HDN_TRACK:
+				case HDN_ENDTRACK:
+					InvalidateRect(hWnd, nullptr, TRUE);
+					break;
+				}
 			}
 			break;
 		}
