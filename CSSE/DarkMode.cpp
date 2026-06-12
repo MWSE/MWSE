@@ -949,6 +949,10 @@ namespace se::cs::darkmode {
 			SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer"));
 			return;
 		}
+		if (_stricmp(className, "ComboLBox") == 0) {
+			SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer"));
+			return;
+		}
 
 		// Everything below is a child control; only theme it when it lives in a
 		// window we have darkened.
