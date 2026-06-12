@@ -895,12 +895,12 @@ namespace se::cs::darkmode {
 		return false;
 	}
 
-	// Only theme dialogs whose templates belong to the editor or to CSSE. This
-	// excludes common file dialogs and message boxes, which contain controls we
-	// cannot fully theme.
+	// Theme editor, CSSE, and common dialogs. Common file and color dialogs use
+	// standard controls that inherit the same dark handling as editor dialogs.
 	static bool isOwnDialog(const CREATESTRUCTA* createStruct) {
 		return createStruct->hInstance == GetModuleHandleA(nullptr)
-			|| createStruct->hInstance == application.m_hInstance;
+			|| createStruct->hInstance == application.m_hInstance
+			|| createStruct->hInstance == GetModuleHandleA("comdlg32.dll");
 	}
 
 	static bool hasDarkenedAncestor(HWND hWnd) {
