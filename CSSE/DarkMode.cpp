@@ -424,12 +424,30 @@ namespace se::cs::darkmode {
 	// window classes cloned from #32770.
 	//
 
+	static bool isRegionPainterDialog(HWND hWnd) {
+		char title[128] = {};
+		GetWindowTextA(hWnd, title, sizeof(title));
+		return strcmp(title, "Region Painter") == 0;
+	}
+
+	static LRESULT CALLBACK regionPainterCanvasSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR);
+	static constexpr UINT_PTR REGION_PAINTER_READY_TIMER = SUBCLASS_ID + 1;
+
 	static LRESULT CALLBACK dialogSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
 		const bool isMainEditorWindow = dwRefData == 1;
 		const bool isPlainDarkWindow = dwRefData == 2;
 		const bool hasMenuBar = GetMenu(hWnd) != nullptr;
 
 		switch (msg) {
+		case WM_INITDIALOG: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			if (isRegionPainterDialog(hWnd)) {
+				const auto canvas = GetDlgItem(hWnd, 101);
+				SetWindowSubclass(canvas, regionPainterCanvasSubclassProc, SUBCLASS_ID, 0);
+				SetTimer(hWnd, REGION_PAINTER_READY_TIMER, 1, nullptr);
+			}
+			return result;
+		}
 		case WM_CREATE:
 			SetPropA(hWnd, PROP_DARKENED, reinterpret_cast<HANDLE>(1));
 			if (allowDarkModeForWindow) {
@@ -478,6 +496,13 @@ namespace se::cs::darkmode {
 				return 1;
 			}
 			break;
+		case WM_TIMER:
+			if (wParam == REGION_PAINTER_READY_TIMER) {
+				KillTimer(hWnd, REGION_PAINTER_READY_TIMER);
+				SendMessageA(GetDlgItem(hWnd, 101), WM_PAINT, 0, 0);
+				return 0;
+			}
+			break;
 		case WM_NOTIFY: {
 			const auto hdr = reinterpret_cast<NMHDR*>(lParam);
 			if (hdr->code == NM_CUSTOMDRAW) {
@@ -510,11 +535,28 @@ namespace se::cs::darkmode {
 			}
 			break;
 		case WM_NCDESTROY:
+			KillTimer(hWnd, REGION_PAINTER_READY_TIMER);
 			RemovePropA(hWnd, PROP_DARKENED);
 			RemoveWindowSubclass(hWnd, dialogSubclassProc, SUBCLASS_ID);
 			break;
 		}
 
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	static LRESULT CALLBACK regionPainterCanvasSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_PAINT:
+			// The editor renders this control from its parent dialog procedure.
+			// Suppress SS_BLACKRECT's later default paint, which overwrites it.
+			SendMessageA(GetParent(hWnd), WM_PAINT, 0, 0);
+			return 0;
+		case WM_ERASEBKGND:
+			return 1;
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, regionPainterCanvasSubclassProc, SUBCLASS_ID);
+			break;
+		}
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
@@ -600,7 +642,53 @@ namespace se::cs::darkmode {
 	// List views: dark scrollbars and colors, plus custom drawn headers.
 	//
 
-	static LRESULT CALLBACK listViewSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+	static bool isRegionPainterPalette(HWND hWnd) {
+		if (GetDlgCtrlID(hWnd) != 1678) {
+			return false;
+		}
+
+		return isRegionPainterDialog(GetParent(hWnd));
+	}
+
+	static void makeLegacyImageListOpaque(HIMAGELIST imageList) {
+		IMAGEINFO imageInfo = {};
+		if (!imageList || !ImageList_GetImageInfo(imageList, 0, &imageInfo)) {
+			return;
+		}
+
+		BITMAP bitmap = {};
+		if (GetObjectA(imageInfo.hbmImage, sizeof(bitmap), &bitmap) != sizeof(bitmap) || bitmap.bmBitsPixel != 32) {
+			return;
+		}
+
+		BITMAPINFO bitmapInfo = {};
+		bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
+		bitmapInfo.bmiHeader.biWidth = bitmap.bmWidth;
+		bitmapInfo.bmiHeader.biHeight = -bitmap.bmHeight;
+		bitmapInfo.bmiHeader.biPlanes = 1;
+		bitmapInfo.bmiHeader.biBitCount = 32;
+		bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+		std::vector<DWORD> pixels(bitmap.bmWidth * bitmap.bmHeight);
+		const auto hdc = GetDC(nullptr);
+		const auto scanLines = GetDIBits(hdc, imageInfo.hbmImage, 0, bitmap.bmHeight, pixels.data(), &bitmapInfo, DIB_RGB_COLORS);
+		if (scanLines == bitmap.bmHeight) {
+			const auto hasAlpha = std::any_of(pixels.begin(), pixels.end(), [](DWORD pixel) {
+				return (pixel & 0xFF000000) != 0;
+			});
+			if (!hasAlpha) {
+				for (auto& pixel : pixels) {
+					pixel |= 0xFF000000;
+				}
+				SetDIBits(hdc, imageInfo.hbmImage, 0, bitmap.bmHeight, pixels.data(), &bitmapInfo, DIB_RGB_COLORS);
+			}
+		}
+		ReleaseDC(nullptr, hdc);
+	}
+
+	static LRESULT CALLBACK listViewSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
+		const bool isRegionPalette = dwRefData == 1;
+
 		switch (msg) {
 		case WM_CREATE: {
 			// Let the control finish initializing before theming it.
@@ -609,16 +697,25 @@ namespace se::cs::darkmode {
 			ListView_SetBkColor(hWnd, palette::surface);
 			ListView_SetTextBkColor(hWnd, palette::surface);
 			ListView_SetTextColor(hWnd, palette::text);
-			ListView_SetExtendedListViewStyleEx(hWnd, LVS_EX_GRIDLINES, 0);
+			if (!isRegionPalette) {
+				ListView_SetExtendedListViewStyleEx(hWnd, LVS_EX_GRIDLINES, 0);
+			}
 			return result;
 		}
 		case LVM_SETEXTENDEDLISTVIEWSTYLE:
 			// Grid lines are drawn with light system colors that cannot be
 			// themed; suppress them.
-			if (wParam != 0) {
-				wParam |= LVS_EX_GRIDLINES;
+			if (!isRegionPalette) {
+				if (wParam != 0) {
+					wParam |= LVS_EX_GRIDLINES;
+				}
+				lParam &= ~LVS_EX_GRIDLINES;
 			}
-			lParam &= ~LVS_EX_GRIDLINES;
+			break;
+		case LVM_SETIMAGELIST:
+			if (isRegionPalette && wParam == LVSIL_SMALL) {
+				makeLegacyImageListOpaque(reinterpret_cast<HIMAGELIST>(lParam));
+			}
 			break;
 		case WM_NOTIFY: {
 			const auto hdr = reinterpret_cast<NMHDR*>(lParam);
@@ -1064,7 +1161,8 @@ namespace se::cs::darkmode {
 		}
 
 		if (_stricmp(className, WC_LISTVIEWA) == 0) {
-			logDispatch(hWnd, className, "list view", SetWindowSubclass(hWnd, listViewSubclassProc, SUBCLASS_ID, 0));
+			const auto regionPalette = isRegionPainterPalette(hWnd);
+			logDispatch(hWnd, className, "list view", SetWindowSubclass(hWnd, listViewSubclassProc, SUBCLASS_ID, regionPalette));
 		}
 		else if (_stricmp(className, WC_TREEVIEWA) == 0) {
 			logDispatch(hWnd, className, "tree view", SetWindowSubclass(hWnd, treeViewSubclassProc, SUBCLASS_ID, 0));
