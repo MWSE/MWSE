@@ -1085,6 +1085,11 @@ namespace se::cs::darkmode {
 		return (GetWindowLongA(hWnd, GWL_STYLE) & BS_TYPEMASK) == BS_GROUPBOX;
 	}
 
+	static bool isRadioButton(HWND hWnd) {
+		const auto type = GetWindowLongA(hWnd, GWL_STYLE) & BS_TYPEMASK;
+		return type == BS_RADIOBUTTON || type == BS_AUTORADIOBUTTON;
+	}
+
 	static bool isD3DDriverTypeButton(HWND hWnd) {
 		const auto id = GetDlgCtrlID(hWnd);
 		if (id != 1002 && id != 1003) {
@@ -1130,6 +1135,74 @@ namespace se::cs::darkmode {
 		SelectObject(hdc, previousFont);
 	}
 
+	static void paintRadioButton(HWND hWnd, HDC hdc) {
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, backgroundBrush);
+
+		const auto enabled = IsWindowEnabled(hWnd) != FALSE;
+		const auto buttonState = static_cast<UINT>(SendMessageA(hWnd, BM_GETSTATE, 0, 0));
+		const auto checked = SendMessageA(hWnd, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
+		const auto hot = (buttonState & BST_HOT) != 0;
+		const auto pressed = (buttonState & BST_PUSHED) != 0;
+
+		// BP_RADIOBUTTON states are unchecked normal/hot/pressed/disabled,
+		// followed by checked normal/hot/pressed/disabled.
+		auto themeState = !enabled ? 4 : pressed ? 3 : hot ? 2 : 1;
+		if (checked) {
+			themeState += 4;
+		}
+
+		SIZE glyphSize = { GetSystemMetrics(SM_CXMENUCHECK), GetSystemMetrics(SM_CYMENUCHECK) };
+		const auto theme = OpenThemeData(hWnd, L"Button");
+		if (theme) {
+			GetThemePartSize(theme, hdc, 2, themeState, nullptr, TS_DRAW, &glyphSize);
+		}
+
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		const auto leftText = (style & BS_LEFTTEXT) != 0;
+		RECT glyphRect = {
+			leftText ? clientRect.right - glyphSize.cx : clientRect.left,
+			clientRect.top + (clientRect.bottom - clientRect.top - glyphSize.cy) / 2,
+			leftText ? clientRect.right : clientRect.left + glyphSize.cx,
+			0,
+		};
+		glyphRect.bottom = glyphRect.top + glyphSize.cy;
+
+		if (theme) {
+			DrawThemeBackground(theme, hdc, 2, themeState, &glyphRect, nullptr);
+			CloseThemeData(theme);
+		}
+		else {
+			DrawFrameControl(hdc, &glyphRect, DFC_BUTTON, DFCS_BUTTONRADIO
+				| (checked ? DFCS_CHECKED : 0)
+				| (!enabled ? DFCS_INACTIVE : 0)
+				| (pressed ? DFCS_PUSHED : 0));
+		}
+
+		char text[260] = {};
+		GetWindowTextA(hWnd, text, sizeof(text));
+		RECT textRect = clientRect;
+		if (leftText) {
+			textRect.right = glyphRect.left - 4;
+		}
+		else {
+			textRect.left = glyphRect.right + 4;
+		}
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, enabled ? palette::text : palette::textDisabled);
+		auto drawFlags = DT_VCENTER | DT_SINGLELINE;
+		drawFlags |= leftText ? DT_RIGHT : DT_LEFT;
+		DrawTextA(hdc, text, -1, &textRect, drawFlags);
+		SelectObject(hdc, previousFont);
+
+		if (buttonState & BST_FOCUS) {
+			DrawFocusRect(hdc, &textRect);
+		}
+	}
+
 	static LRESULT CALLBACK buttonSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
 		switch (msg) {
 		case WM_CREATE: {
@@ -1144,17 +1217,27 @@ namespace se::cs::darkmode {
 			return result;
 		}
 		case WM_PAINT: {
-			if (!isGroupBox(hWnd)) {
-				break;
+			if (isRadioButton(hWnd)) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				paintRadioButton(hWnd, hdc);
+				EndPaint(hWnd, &paint);
+				return 0;
 			}
-			PAINTSTRUCT paint = {};
-			const auto hdc = BeginPaint(hWnd, &paint);
-			paintGroupBox(hWnd, hdc);
-			EndPaint(hWnd, &paint);
-			return 0;
+			else if (isGroupBox(hWnd)) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				paintGroupBox(hWnd, hdc);
+				EndPaint(hWnd, &paint);
+				return 0;
+			}
+			break;
 		}
 		case WM_ENABLE:
-			if (isGroupBox(hWnd)) {
+		case BM_SETCHECK:
+		case BM_SETSTATE:
+		case BM_SETSTYLE:
+			if (isGroupBox(hWnd) || isRadioButton(hWnd)) {
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 			break;
