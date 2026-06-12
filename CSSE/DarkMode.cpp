@@ -419,6 +419,31 @@ namespace se::cs::darkmode {
 		}
 	}
 
+	static bool drawMfcLink(const DRAWITEMSTRUCT* item) {
+		char className[64] = {};
+		GetClassNameA(item->hwndItem, className, sizeof(className));
+		if (_stricmp(className, "MfcLink") != 0) {
+			return false;
+		}
+
+		char text[512] = {};
+		GetWindowTextA(item->hwndItem, text, sizeof(text));
+
+		FillRect(item->hDC, &item->rcItem, backgroundBrush);
+		const auto previousFont = SelectObject(item->hDC, getMessageFont(item->hwndItem));
+		SetBkMode(item->hDC, TRANSPARENT);
+		SetTextColor(item->hDC, item->itemState & ODS_DISABLED ? palette::textDisabled : RGB(0x4C, 0xA0, 0xFF));
+
+		auto textRect = item->rcItem;
+		DrawTextA(item->hDC, text, -1, &textRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+		if (item->itemState & ODS_FOCUS) {
+			DrawFocusRect(item->hDC, &item->rcItem);
+		}
+
+		SelectObject(item->hDC, previousFont);
+		return true;
+	}
+
 	//
 	// Dialog windows, including the main editor window and the record edit
 	// window classes cloned from #32770.
@@ -532,6 +557,11 @@ namespace se::cs::darkmode {
 			}
 			break;
 		}
+		case WM_DRAWITEM:
+			if (drawMfcLink(reinterpret_cast<DRAWITEMSTRUCT*>(lParam))) {
+				return TRUE;
+			}
+			break;
 		case WM_UAHDRAWMENU:
 			if (hasMenuBar) {
 				onUAHDrawMenuBar(hWnd, reinterpret_cast<UAHMenu*>(lParam));
