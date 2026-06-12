@@ -917,6 +917,51 @@ namespace se::cs::darkmode {
 	}
 
 	//
+	// Statics. Border styles (the color swatches and preview frames in the
+	// cell, lighting, and preview windows) draw light 3D non-client edges
+	// that cannot be themed; repaint the border rings in the dark border
+	// color. Borderless statics are unaffected.
+	//
+
+	static void paintDarkStaticBorder(HWND hWnd) {
+		RECT windowRect = {};
+		GetWindowRect(hWnd, &windowRect);
+		POINT clientOrigin = {};
+		ClientToScreen(hWnd, &clientOrigin);
+
+		const auto frame = clientOrigin.y - windowRect.top;
+		if (frame <= 0) {
+			return;
+		}
+
+		const auto hdc = GetWindowDC(hWnd);
+		if (hdc == nullptr) {
+			return;
+		}
+
+		OffsetRect(&windowRect, -windowRect.left, -windowRect.top);
+		for (auto i = 0; i < frame; ++i) {
+			FrameRect(hdc, &windowRect, borderBrush);
+			InflateRect(&windowRect, -1, -1);
+		}
+		ReleaseDC(hWnd, hdc);
+	}
+
+	static LRESULT CALLBACK staticSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_NCPAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			paintDarkStaticBorder(hWnd);
+			return result;
+		}
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, staticSubclassProc, SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	//
 	// Buttons. Push buttons, check boxes, and radio buttons render correctly
 	// with the DarkMode_Explorer theme, but themed group boxes draw their label
 	// text black, so those are painted manually.
@@ -1270,6 +1315,9 @@ namespace se::cs::darkmode {
 		}
 		else if (_stricmp(className, "Edit") == 0 || _stricmp(className, "ListBox") == 0 || _stricmp(className, "ScrollBar") == 0 || _stricmp(className, UPDOWN_CLASSA) == 0) {
 			logDispatch(hWnd, className, "themed control", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer")));
+		}
+		else if (_stricmp(className, "Static") == 0) {
+			logDispatch(hWnd, className, "static", SetWindowSubclass(hWnd, staticSubclassProc, SUBCLASS_ID, 0));
 		}
 		else if (_stricmp(className, STATUSCLASSNAMEA) == 0) {
 			logDispatch(hWnd, className, "status bar", SetWindowSubclass(hWnd, statusBarSubclassProc, SUBCLASS_ID, 0));
