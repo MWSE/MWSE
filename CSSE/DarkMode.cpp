@@ -438,6 +438,11 @@ namespace se::cs::darkmode {
 			if (!(GetWindowLongA(hWnd, GWL_STYLE) & WS_CHILD)) {
 				applyDarkTitleBar(hWnd);
 			}
+			if (GetWindowLongA(hWnd, GWL_STYLE) & (WS_HSCROLL | WS_VSCROLL)) {
+				const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+				allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+				return result;
+			}
 			break;
 		case WM_CTLCOLORDLG:
 		case WM_CTLCOLORSTATIC:
@@ -510,6 +515,32 @@ namespace se::cs::darkmode {
 			break;
 		}
 
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	static LRESULT CALLBACK toolbarSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_CREATE: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+			return result;
+		}
+		case WM_CTLCOLORSTATIC: {
+			const auto hdc = reinterpret_cast<HDC>(wParam);
+			SetTextColor(hdc, palette::text);
+			SetBkColor(hdc, palette::control);
+			return reinterpret_cast<LRESULT>(controlBrush);
+		}
+		case WM_ERASEBKGND: {
+			RECT clientRect = {};
+			GetClientRect(hWnd, &clientRect);
+			FillRect(reinterpret_cast<HDC>(wParam), &clientRect, controlBrush);
+			return 1;
+		}
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, toolbarSubclassProc, SUBCLASS_ID);
+			break;
+		}
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
@@ -981,6 +1012,10 @@ namespace se::cs::darkmode {
 		}
 		else if (_stricmp(className, "ComboBox") == 0) {
 			logDispatch(hWnd, className, "combo box", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_CFD")));
+		}
+		else if (_stricmp(className, TOOLBARCLASSNAMEA) == 0) {
+			createStruct->style |= CCS_NODIVIDER;
+			logDispatch(hWnd, className, "toolbar", SetWindowSubclass(hWnd, toolbarSubclassProc, SUBCLASS_ID, 0));
 		}
 		else if (_stricmp(className, "Edit") == 0 || _stricmp(className, "ListBox") == 0 || _stricmp(className, "ScrollBar") == 0 || _stricmp(className, UPDOWN_CLASSA) == 0) {
 			logDispatch(hWnd, className, "themed control", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_Explorer")));
