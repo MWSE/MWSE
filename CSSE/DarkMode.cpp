@@ -560,11 +560,38 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
+	// Toolbars without CCS_NODIVIDER reserve the top edge of their non-client
+	// area for a classic etched divider drawn with light system colors.
+	static void paintDarkToolbarDivider(HWND hWnd) {
+		if (GetWindowLongA(hWnd, GWL_STYLE) & CCS_NODIVIDER) {
+			return;
+		}
+
+		const auto hdc = GetWindowDC(hWnd);
+		if (hdc == nullptr) {
+			return;
+		}
+
+		RECT rect = {};
+		GetWindowRect(hWnd, &rect);
+		rect.right -= rect.left;
+		rect.left = 0;
+		rect.top = 0;
+		rect.bottom = GetSystemMetrics(SM_CYEDGE);
+		FillRect(hdc, &rect, controlBrush);
+		ReleaseDC(hWnd, hdc);
+	}
+
 	static LRESULT CALLBACK toolbarSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
 		switch (msg) {
 		case WM_CREATE: {
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
+			return result;
+		}
+		case WM_NCPAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			paintDarkToolbarDivider(hWnd);
 			return result;
 		}
 		case WM_CTLCOLORSTATIC: {
@@ -1184,7 +1211,6 @@ namespace se::cs::darkmode {
 			logDispatch(hWnd, className, "combo box", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_CFD")));
 		}
 		else if (_stricmp(className, TOOLBARCLASSNAMEA) == 0) {
-			createStruct->style |= CCS_NODIVIDER;
 			logDispatch(hWnd, className, "toolbar", SetWindowSubclass(hWnd, toolbarSubclassProc, SUBCLASS_ID, 0));
 		}
 		else if (_stricmp(className, "Edit") == 0 || _stricmp(className, "ListBox") == 0 || _stricmp(className, "ScrollBar") == 0 || _stricmp(className, UPDOWN_CLASSA) == 0) {
