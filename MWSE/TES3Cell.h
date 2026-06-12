@@ -98,9 +98,9 @@ namespace TES3 {
 			~SourceMod() = delete;
 		};
 		struct MappingVisuals {
-			int unknown_0x0;
-			int unknown_0x4;
-			int unknown_0x8;
+			void* pixels; // 0x0
+			float positionX; // 0x4
+			float positionY; // 0x8
 			unsigned short coverageMask; // 0xC
 			unsigned short unknown_0xE; // 0xE
 			int unknown_0x10;
@@ -108,6 +108,8 @@ namespace TES3 {
 
 			MappingVisuals() = delete;
 			~MappingVisuals() = delete;
+
+			static MappingVisuals* create(float positionX, float positionY, unsigned short coverageMask);
 		};
 
 		char * name; // 0x10
@@ -199,6 +201,9 @@ namespace TES3 {
 
 		bool getIsInterior() const;
 		void setIsInterior(bool value);
+
+		bool refreshMapTileFromCache(int tileY, int tileX);
+		void maybeDeleteMappingVisuals(int keepData);
 
 		bool getSleepingIsIllegal() const;
 		void setSleepingIsIllegal(bool value);
