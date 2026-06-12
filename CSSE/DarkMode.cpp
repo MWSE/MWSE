@@ -1106,6 +1106,11 @@ namespace se::cs::darkmode {
 			return;
 		}
 
+		if (hWndGrid) {
+			allowDarkAndSetTheme(hWndGrid, L"DarkMode_Explorer");
+			SetWindowPos(hWndGrid, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+			RedrawWindow(hWndGrid, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME);
+		}
 		if (hWndHeader) {
 			SetWindowSubclass(hWndHeader, propertyGridHeaderSubclassProc, SUBCLASS_ID, 0);
 			InvalidateRect(hWndHeader, nullptr, TRUE);
