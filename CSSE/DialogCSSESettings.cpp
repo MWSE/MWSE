@@ -32,6 +32,12 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	if (se::cs::darkmode::isActive()) {
 		using namespace se::cs::darkmode::palette;
 		m_PropertyGrid.SetCustomColors(background, text, control, text, background, text, border);
+		const auto scrollBar = m_PropertyGrid.GetScrollBarCtrl(SB_VERT);
+		se::cs::darkmode::themePropertyGrid(
+			m_PropertyGrid.GetSafeHwnd(),
+			m_PropertyGrid.GetHeaderCtrl().GetSafeHwnd(),
+			scrollBar ? scrollBar->GetSafeHwnd() : nullptr
+		);
 	}
 
 	m_PropertyGrid.AddProperty(new CDataBoundPropertyGridProperty("Enabled", &se::cs::settings.enabled, "This can be used to prevent CSSE from loading at startup. You will need to manually re-enable it in the config file."));

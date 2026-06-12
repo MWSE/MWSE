@@ -26,4 +26,8 @@ namespace se::cs::darkmode {
 	// masked out, so icons composite correctly over the dark toolbar fill. No-op
 	// when dark mode is inactive.
 	void remapToolbarImages(HWND hWndToolbar, HINSTANCE hImageInstance, UINT bitmapId, int imageWidth, int imageHeight);
+
+	// Applies dark painting to an MFC property grid's header and child scrollbar.
+	// No-op when dark mode is inactive.
+	void themePropertyGrid(HWND hWndGrid, HWND hWndHeader, HWND hWndScrollBar);
 }

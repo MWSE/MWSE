@@ -1002,6 +1002,76 @@ namespace se::cs::darkmode {
 	// Toolbar images.
 	//
 
+	static void paintPropertyGridHeader(HWND hWnd, HDC hdc) {
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, controlBrush);
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, palette::text);
+
+		const auto itemCount = Header_GetItemCount(hWnd);
+		for (int i = 0; i < itemCount; ++i) {
+			RECT itemRect = {};
+			if (!Header_GetItemRect(hWnd, i, &itemRect)) {
+				continue;
+			}
+
+			FillRect(hdc, &itemRect, controlBrush);
+			FrameRect(hdc, &itemRect, borderBrush);
+
+			char text[260] = {};
+			HDITEMA item = {};
+			item.mask = HDI_TEXT | HDI_FORMAT;
+			item.pszText = text;
+			item.cchTextMax = sizeof(text);
+			Header_GetItem(hWnd, i, &item);
+
+			itemRect.left += 5;
+			itemRect.right -= 5;
+			auto flags = DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX;
+			flags |= (item.fmt & HDF_RIGHT) ? DT_RIGHT : (item.fmt & HDF_CENTER) ? DT_CENTER : DT_LEFT;
+			DrawTextA(hdc, text, -1, &itemRect, flags);
+		}
+
+		SelectObject(hdc, previousFont);
+	}
+
+	static LRESULT CALLBACK propertyGridHeaderSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_PAINT: {
+			PAINTSTRUCT paint = {};
+			const auto hdc = BeginPaint(hWnd, &paint);
+			paintPropertyGridHeader(hWnd, hdc);
+			EndPaint(hWnd, &paint);
+			return 0;
+		}
+		case WM_ERASEBKGND:
+			return 1;
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, propertyGridHeaderSubclassProc, SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	void themePropertyGrid(HWND hWndGrid, HWND hWndHeader, HWND hWndScrollBar) {
+		if (!active) {
+			return;
+		}
+
+		if (hWndHeader) {
+			SetWindowSubclass(hWndHeader, propertyGridHeaderSubclassProc, SUBCLASS_ID, 0);
+			InvalidateRect(hWndHeader, nullptr, TRUE);
+		}
+		if (hWndScrollBar) {
+			allowDarkAndSetTheme(hWndScrollBar, L"DarkMode_Explorer");
+			SetWindowPos(hWndScrollBar, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+			RedrawWindow(hWndScrollBar, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME);
+		}
+	}
+
 	void remapToolbarImages(HWND hWndToolbar, HINSTANCE hImageInstance, UINT bitmapId, int imageWidth, int imageHeight) {
 		if (!active || hWndToolbar == nullptr) {
 			return;
