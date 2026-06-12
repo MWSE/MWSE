@@ -60,6 +60,16 @@ namespace TES3 {
 		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
 	}
 
+	const auto TES3_WorldControllerRenderTarget_setSceneNode = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, NI::Node*)>(0x42ED30);
+	void WorldControllerRenderTarget::setSceneNode(NI::Node* sceneRoot) {
+		TES3_WorldControllerRenderTarget_setSceneNode(this, sceneRoot);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_readbackRenderedTexture = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, D3DLOCKED_RECT*)>(0x42F830);
+	void WorldControllerRenderTarget::readbackRenderedTexture(D3DLOCKED_RECT* lockedRect) {
+		TES3_WorldControllerRenderTarget_readbackRenderedTexture(this, lockedRect);
+	}
+
 	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::RenderedTexture>, float, float)>(0x42FE20);
 	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);

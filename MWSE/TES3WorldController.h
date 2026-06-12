@@ -109,6 +109,8 @@ namespace TES3 {
 
 		D3DLOCKED_RECT* lockRenderTarget(NI::Pointer<NI::Texture> texture);
 		void unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag);
+		void setSceneNode(NI::Node* sceneRoot);
+		void readbackRenderedTexture(D3DLOCKED_RECT* lockedRect);
 		unsigned char getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
 
 		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a per-compositor-pass
