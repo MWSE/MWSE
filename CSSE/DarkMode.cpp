@@ -713,6 +713,58 @@ namespace se::cs::darkmode {
 		ReleaseDC(nullptr, hdc);
 	}
 
+	static bool isDataFilesList(HWND hWnd) {
+		if (GetDlgCtrlID(hWnd) != 1056) {
+			return false;
+		}
+
+		char title[64] = {};
+		GetWindowTextA(GetParent(hWnd), title, sizeof(title));
+		return strcmp(title, "Data Files") == 0;
+	}
+
+	// The data files list marks rows with check box icons whose strokes are
+	// pure black, invisible on the dark list surface. Recolor the black
+	// strokes to the theme text color, leaving colored pixels alone.
+	static void recolorImageListBlackGlyphs(HIMAGELIST imageList) {
+		IMAGEINFO imageInfo = {};
+		if (!imageList || !ImageList_GetImageInfo(imageList, 0, &imageInfo) || imageInfo.hbmMask == nullptr) {
+			return;
+		}
+
+		BITMAP bitmap = {};
+		if (GetObjectA(imageInfo.hbmImage, sizeof(bitmap), &bitmap) != sizeof(bitmap)) {
+			return;
+		}
+
+		BITMAPINFO bitmapInfo = {};
+		bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
+		bitmapInfo.bmiHeader.biWidth = bitmap.bmWidth;
+		bitmapInfo.bmiHeader.biHeight = -bitmap.bmHeight;
+		bitmapInfo.bmiHeader.biPlanes = 1;
+		bitmapInfo.bmiHeader.biBitCount = 32;
+		bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+		std::vector<DWORD> pixels(bitmap.bmWidth * bitmap.bmHeight);
+		std::vector<DWORD> maskPixels(pixels.size());
+		const auto hdc = GetDC(nullptr);
+		const auto imageLines = GetDIBits(hdc, imageInfo.hbmImage, 0, bitmap.bmHeight, pixels.data(), &bitmapInfo, DIB_RGB_COLORS);
+		const auto maskLines = GetDIBits(hdc, imageInfo.hbmMask, 0, bitmap.bmHeight, maskPixels.data(), &bitmapInfo, DIB_RGB_COLORS);
+		if (imageLines == bitmap.bmHeight && maskLines == bitmap.bmHeight) {
+			const DWORD stroke = (GetRValue(palette::text) << 16) | (GetGValue(palette::text) << 8) | GetBValue(palette::text);
+			for (size_t i = 0; i < pixels.size(); ++i) {
+				// Mask black = opaque; transparent pixels must stay black so
+				// the masked blit does not tint the background.
+				const bool opaque = (maskPixels[i] & 0xFFFFFF) == 0;
+				if (opaque && (pixels[i] & 0xFFFFFF) == 0) {
+					pixels[i] = stroke;
+				}
+			}
+			SetDIBits(hdc, imageInfo.hbmImage, 0, bitmap.bmHeight, pixels.data(), &bitmapInfo, DIB_RGB_COLORS);
+		}
+		ReleaseDC(nullptr, hdc);
+	}
+
 	static LRESULT CALLBACK listViewSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
 		const bool isRegionPalette = dwRefData == 1;
 
@@ -742,6 +794,9 @@ namespace se::cs::darkmode {
 		case LVM_SETIMAGELIST:
 			if (isRegionPalette && wParam == LVSIL_SMALL) {
 				makeLegacyImageListOpaque(reinterpret_cast<HIMAGELIST>(lParam));
+			}
+			else if (wParam == LVSIL_SMALL && isDataFilesList(hWnd)) {
+				recolorImageListBlackGlyphs(reinterpret_cast<HIMAGELIST>(lParam));
 			}
 			break;
 		case WM_NOTIFY: {
