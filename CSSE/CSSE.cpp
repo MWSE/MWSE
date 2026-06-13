@@ -37,6 +37,7 @@
 #include "TextureRenderer.h"
 
 #include "DarkMode.h"
+#include "IconOverride.h"
 #include "MemoryUtil.h"
 #include "PathUtil.h"
 #include "StringUtil.h"
@@ -411,6 +412,7 @@ namespace se::cs {
 		int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 			// Dark mode must be set up before WinMain creates any window.
 			darkmode::initialize();
+			iconoverride::initialize();
 
 			const auto winMain = reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x4049B7);
 #ifdef _DEBUG

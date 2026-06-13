@@ -1,6 +1,7 @@
 #include "DarkMode.h"
 
 #include "CSSE.h"
+#include "IconOverride.h"
 #include "LogUtil.h"
 #include "Settings.h"
 
@@ -909,7 +910,7 @@ namespace se::cs::darkmode {
 			if (isRegionPalette && wParam == LVSIL_SMALL) {
 				makeLegacyImageListOpaque(reinterpret_cast<HIMAGELIST>(lParam));
 			}
-			else if (wParam == LVSIL_SMALL && isDataFilesList(hWnd)) {
+			else if (wParam == LVSIL_SMALL && isDataFilesList(hWnd) && !iconoverride::hasDataFilesCheckOverrides()) {
 				recolorImageListBlackGlyphs(reinterpret_cast<HIMAGELIST>(lParam));
 			}
 			break;
@@ -1843,7 +1844,11 @@ namespace se::cs::darkmode {
 			return;
 		}
 
-		const auto bitmap = reinterpret_cast<HBITMAP>(LoadImageA(hImageInstance, MAKEINTRESOURCEA(bitmapId), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+		bool hasAlpha = false;
+		auto bitmap = iconoverride::loadBitmapOverride(hImageInstance, bitmapId, hasAlpha);
+		if (bitmap == nullptr) {
+			bitmap = reinterpret_cast<HBITMAP>(LoadImageA(hImageInstance, MAKEINTRESOURCEA(bitmapId), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+		}
 		if (bitmap == nullptr) {
 			return;
 		}
@@ -1865,8 +1870,13 @@ namespace se::cs::darkmode {
 			return;
 		}
 
-		const auto imageList = ImageList_Create(imageWidth, imageHeight, ILC_COLOR32 | ILC_MASK, imageCount, 0);
-		ImageList_AddMasked(imageList, bitmap, RGB(192, 192, 192));
+		const auto imageList = ImageList_Create(imageWidth, imageHeight, hasAlpha ? ILC_COLOR32 : (ILC_COLOR32 | ILC_MASK), imageCount, 0);
+		if (hasAlpha) {
+			ImageList_Add(imageList, bitmap, nullptr);
+		}
+		else {
+			ImageList_AddMasked(imageList, bitmap, RGB(192, 192, 192));
+		}
 		DeleteObject(bitmap);
 
 		const auto previous = reinterpret_cast<HIMAGELIST>(SendMessageA(hWndToolbar, TB_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(imageList)));

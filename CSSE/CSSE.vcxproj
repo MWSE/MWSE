@@ -167,6 +167,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="CSWeapon.cpp" />
     <ClCompile Include="DarkMode.cpp" />
     <ClCompile Include="DialogAboutCSSE.cpp" />
+    <ClCompile Include="IconOverride.cpp" />
     <ClCompile Include="DialogActorAIWindow.cpp" />
     <ClCompile Include="DialogCSSESettings.cpp" />
     <ClCompile Include="DialogEditAlchemyObjectWindow.cpp" />
@@ -242,6 +243,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="CSSE.h" />
     <ClInclude Include="DarkMode.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
+    <ClInclude Include="IconOverride.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
     <ClInclude Include="DialogLayersWindow.h" />

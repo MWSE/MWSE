@@ -156,6 +156,9 @@
     <ClCompile Include="DarkMode.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="IconOverride.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CSSE.def">
@@ -230,6 +233,9 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="DarkMode.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IconOverride.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="CSLight.h">
