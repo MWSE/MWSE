@@ -41,6 +41,7 @@ namespace se::cs::darkmode {
 	static HBRUSH controlHotBrush = nullptr;
 	static HBRUSH borderBrush = nullptr;
 	static HPEN borderPen = nullptr;
+	static HPEN selectionHotBorderPen = nullptr;
 
 	static void createDrawingResources() {
 		backgroundBrush = CreateSolidBrush(palette::background);
@@ -50,6 +51,7 @@ namespace se::cs::darkmode {
 		controlHotBrush = CreateSolidBrush(palette::controlHot);
 		borderBrush = CreateSolidBrush(palette::border);
 		borderPen = CreatePen(PS_SOLID, 1, palette::border);
+		selectionHotBorderPen = CreatePen(PS_SOLID, 1, palette::selectionHotBorder);
 	}
 
 	//
@@ -904,6 +906,45 @@ namespace se::cs::darkmode {
 		ReleaseDC(nullptr, hdc);
 	}
 
+	// The DarkMode_Explorer theme draws a dark/black border around a selected
+	// row while the mouse hovers it (the LISS_HOTSELECTED state), which reads
+	// poorly against the blue selection fill. Repaint that border in a light
+	// color. Only the hovered, selected row is affected; every other state is
+	// left to the theme.
+	static void paintHoveredSelectionBorder(HWND hWnd) {
+		if (!IsWindowEnabled(hWnd)) {
+			return;
+		}
+
+		POINT cursor = {};
+		GetCursorPos(&cursor);
+		ScreenToClient(hWnd, &cursor);
+
+		LVHITTESTINFO hit = {};
+		hit.pt = cursor;
+		const int item = ListView_SubItemHitTest(hWnd, &hit);
+		if (item < 0 || !(ListView_GetItemState(hWnd, item, LVIS_SELECTED) & LVIS_SELECTED)) {
+			return;
+		}
+
+		RECT rect = {};
+		if (!ListView_GetItemRect(hWnd, item, &rect, LVIR_BOUNDS)) {
+			return;
+		}
+		InflateRect(&rect, -1, -1);
+
+		const auto hdc = GetDC(hWnd);
+		if (hdc == nullptr) {
+			return;
+		}
+		const auto previousPen = SelectObject(hdc, selectionHotBorderPen);
+		const auto previousBrush = SelectObject(hdc, GetStockObject(NULL_BRUSH));
+		RoundRect(hdc, rect.left, rect.top, rect.right, rect.bottom, 4, 4);
+		SelectObject(hdc, previousBrush);
+		SelectObject(hdc, previousPen);
+		ReleaseDC(hWnd, hdc);
+	}
+
 	static LRESULT CALLBACK listViewSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR dwRefData) {
 		const bool isRegionPalette = dwRefData == 1;
 
@@ -962,6 +1003,11 @@ namespace se::cs::darkmode {
 				}
 			}
 			break;
+		}
+		case WM_PAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			paintHoveredSelectionBorder(hWnd);
+			return result;
 		}
 		case WM_ERASEBKGND:
 			// A disabled list view fills its background with a light system
