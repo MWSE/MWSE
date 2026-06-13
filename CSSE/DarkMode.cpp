@@ -327,6 +327,25 @@ namespace se::cs::darkmode {
 	}
 
 	//
+	// Disabled list view item custom draw, handled by the parent dialog's
+	// subclass. A disabled list view paints its item rows (and the selection
+	// highlight on the focused row) with light system colors, ignoring the
+	// LVM_SET*COLOR values; force the dark palette instead. Only applied while
+	// the control is disabled so the editor's own row highlighting is untouched.
+	//
+	static LRESULT onDisabledListViewItemCustomDraw(NMLVCUSTOMDRAW* customDraw) {
+		switch (customDraw->nmcd.dwDrawStage) {
+		case CDDS_PREPAINT:
+			return CDRF_NOTIFYITEMDRAW;
+		case CDDS_ITEMPREPAINT:
+			customDraw->clrText = palette::textDisabled;
+			customDraw->clrTextBk = palette::surface;
+			return CDRF_NEWFONT;
+		}
+		return CDRF_DODEFAULT;
+	}
+
+	//
 	// Header custom draw, handled by the parent list view's subclass.
 	//
 
@@ -620,6 +639,11 @@ namespace se::cs::darkmode {
 				GetClassNameA(hdr->hwndFrom, className, sizeof(className));
 				if (_stricmp(className, TOOLBARCLASSNAMEA) == 0) {
 					return onToolbarCustomDraw(reinterpret_cast<NMTBCUSTOMDRAW*>(lParam));
+				}
+				// Forward to the editor's own handler while enabled so its row
+				// highlighting still works; only override the disabled state.
+				if (_stricmp(className, WC_LISTVIEWA) == 0 && !IsWindowEnabled(hdr->hwndFrom)) {
+					return onDisabledListViewItemCustomDraw(reinterpret_cast<NMLVCUSTOMDRAW*>(lParam));
 				}
 			}
 			break;
@@ -939,6 +963,22 @@ namespace se::cs::darkmode {
 			}
 			break;
 		}
+		case WM_ERASEBKGND:
+			// A disabled list view fills its background with a light system
+			// color instead of the bk color set via LVM_SETBKCOLOR (e.g. the
+			// "Blocked" inventory lists in the record dialogs). Paint the
+			// surface color ourselves so they stay dark.
+			if (!IsWindowEnabled(hWnd)) {
+				RECT clientRect = {};
+				GetClientRect(hWnd, &clientRect);
+				FillRect(reinterpret_cast<HDC>(wParam), &clientRect, surfaceBrush);
+				return TRUE;
+			}
+			break;
+		case WM_ENABLE:
+			// Repaint so the disabled-background override above takes effect.
+			InvalidateRect(hWnd, nullptr, TRUE);
+			break;
 		case WM_NCPAINT: {
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			paintDarkClientEdge(hWnd);
