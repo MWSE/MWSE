@@ -891,6 +891,11 @@ namespace se::cs::darkmode {
 			ListView_SetBkColor(hWnd, palette::surface);
 			ListView_SetTextBkColor(hWnd, palette::surface);
 			ListView_SetTextColor(hWnd, palette::text);
+			// Match the classic control: commit column widths when tracking ends.
+			const auto header = ListView_GetHeader(hWnd);
+			if (header) {
+				SetWindowLongA(header, GWL_STYLE, GetWindowLongA(header, GWL_STYLE) & ~HDS_FULLDRAG);
+			}
 			if (!isRegionPalette) {
 				ListView_SetExtendedListViewStyleEx(hWnd, LVS_EX_GRIDLINES, 0);
 			}
@@ -923,16 +928,12 @@ namespace se::cs::darkmode {
 				switch (hdr->code) {
 				// The comctl32 v6 header notifies in Unicode, regardless of
 				// this module's ANSI build.
-				case HDN_ITEMCHANGINGA:
-				case HDN_ITEMCHANGINGW:
 				case HDN_ITEMCHANGEDA:
 				case HDN_ITEMCHANGEDW:
-				case HDN_TRACKA:
-				case HDN_TRACKW:
 				case HDN_ENDTRACKA:
 				case HDN_ENDTRACKW:
-					InvalidateRect(hdr->hwndFrom, nullptr, TRUE);
-					InvalidateRect(hWnd, nullptr, TRUE);
+					InvalidateRect(hdr->hwndFrom, nullptr, FALSE);
+					InvalidateRect(hWnd, nullptr, FALSE);
 					break;
 				}
 			}
