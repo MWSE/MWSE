@@ -9,7 +9,7 @@ namespace se::cs::darkmode {
 		constexpr COLORREF surface = RGB(0x19, 0x19, 0x19);
 		constexpr COLORREF control = RGB(0x3C, 0x3C, 0x3C);
 		constexpr COLORREF controlHot = RGB(0x55, 0x55, 0x55);
-		constexpr COLORREF text = RGB(0xE0, 0xE0, 0xE0);
+		constexpr COLORREF text = RGB(0xC0, 0xC0, 0xC0);
 		constexpr COLORREF textDisabled = RGB(0x83, 0x83, 0x83);
 		constexpr COLORREF border = RGB(0x64, 0x64, 0x64);
 	}
