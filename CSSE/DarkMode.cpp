@@ -393,7 +393,7 @@ namespace se::cs::darkmode {
 			FillRect(hdc, &itemRect, (customDraw->uItemState & CDIS_SELECTED) ? controlHotBrush : controlBrush);
 
 			// Right edge separator.
-			RECT separator = { itemRect.right - 1, itemRect.top, itemRect.right, itemRect.bottom };
+			RECT separator = { itemRect.right - 2, itemRect.top, itemRect.right - 1, itemRect.bottom };
 			FillRect(hdc, &separator, borderBrush);
 
 			const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
