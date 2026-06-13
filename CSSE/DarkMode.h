@@ -6,7 +6,7 @@ namespace se::cs::darkmode {
 	namespace palette {
 		constexpr COLORREF background = RGB(0x2B, 0x2B, 0x2B);
 		constexpr COLORREF workspace = RGB(0x14, 0x14, 0x14);
-		constexpr COLORREF surface = RGB(0x19, 0x19, 0x19);
+		constexpr COLORREF surface = RGB(0x17, 0x17, 0x17);
 		constexpr COLORREF control = RGB(0x3C, 0x3C, 0x3C);
 		constexpr COLORREF controlHot = RGB(0x55, 0x55, 0x55);
 		constexpr COLORREF text = RGB(0xC0, 0xC0, 0xC0);
