@@ -12,6 +12,7 @@ namespace se::cs::darkmode {
 		constexpr COLORREF text = RGB(0xC0, 0xC0, 0xC0);
 		constexpr COLORREF textDisabled = RGB(0x83, 0x83, 0x83);
 		constexpr COLORREF border = RGB(0x64, 0x64, 0x64);
+		constexpr COLORREF clientEdge = RGB(0x48, 0x48, 0x48);
 		constexpr COLORREF selectionHotBorder = RGB(0xD8, 0xD8, 0xD8);
 	}
 

@@ -40,6 +40,7 @@ namespace se::cs::darkmode {
 	static HBRUSH controlBrush = nullptr;
 	static HBRUSH controlHotBrush = nullptr;
 	static HBRUSH borderBrush = nullptr;
+	static HBRUSH clientEdgeBrush = nullptr;
 	static HPEN borderPen = nullptr;
 	static HPEN selectionHotBorderPen = nullptr;
 
@@ -50,6 +51,7 @@ namespace se::cs::darkmode {
 		controlBrush = CreateSolidBrush(palette::control);
 		controlHotBrush = CreateSolidBrush(palette::controlHot);
 		borderBrush = CreateSolidBrush(palette::border);
+		clientEdgeBrush = CreateSolidBrush(palette::clientEdge);
 		borderPen = CreatePen(PS_SOLID, 1, palette::border);
 		selectionHotBorderPen = CreatePen(PS_SOLID, 1, palette::selectionHotBorder);
 	}
@@ -291,10 +293,15 @@ namespace se::cs::darkmode {
 		return font ? font : reinterpret_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT));
 	}
 
-	// Replaces the light 3D sunken edge that WS_EX_CLIENTEDGE controls draw in
-	// their non-client area. Called after default WM_NCPAINT handling.
+	// Replaces the light 3D sunken edge / border that WS_EX_CLIENTEDGE and
+	// WS_BORDER controls draw in their non-client area with a single dark frame:
+	// the outermost ring in the border color, every inner ring (including the
+	// light WS_BORDER line the theme leaves behind) filled dark.
+	// Called after default WM_NCPAINT handling.
 	static void paintDarkClientEdge(HWND hWnd) {
-		if (!(GetWindowLongA(hWnd, GWL_EXSTYLE) & WS_EX_CLIENTEDGE)) {
+		const auto exStyle = GetWindowLongA(hWnd, GWL_EXSTYLE);
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		if (!(exStyle & WS_EX_CLIENTEDGE) && !(style & WS_BORDER)) {
 			return;
 		}
 
@@ -303,12 +310,22 @@ namespace se::cs::darkmode {
 			return;
 		}
 
-		RECT rect = {};
-		GetWindowRect(hWnd, &rect);
-		OffsetRect(&rect, -rect.left, -rect.top);
-		FrameRect(hdc, &rect, borderBrush);
-		InflateRect(&rect, -1, -1);
-		FrameRect(hdc, &rect, surfaceBrush);
+		RECT windowRect = {};
+		GetWindowRect(hWnd, &windowRect);
+
+		// Thickness of the non-client border (left edge; symmetric here).
+		POINT clientOrigin = { 0, 0 };
+		ClientToScreen(hWnd, &clientOrigin);
+		int thickness = clientOrigin.x - windowRect.left;
+		if (thickness < 1) {
+			thickness = 1;
+		}
+
+		RECT rect = { 0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top };
+		for (int ring = 0; ring < thickness; ++ring) {
+			FrameRect(hdc, &rect, (ring == 0) ? clientEdgeBrush : surfaceBrush);
+			InflateRect(&rect, -1, -1);
+		}
 		ReleaseDC(hWnd, hdc);
 	}
 
@@ -1178,6 +1195,14 @@ namespace se::cs::darkmode {
 		return type == BS_RADIOBUTTON || type == BS_AUTORADIOBUTTON;
 	}
 
+	static bool isPushButton(HWND hWnd) {
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		const auto type = style & BS_TYPEMASK;
+		// BS_PUSHLIKE checkboxes/radios (e.g. the "Show modified only" toggles)
+		// render as buttons even though they are checkbox-typed.
+		return type == BS_PUSHBUTTON || type == BS_DEFPUSHBUTTON || (style & BS_PUSHLIKE) != 0;
+	}
+
 	static bool isD3DDriverTypeButton(HWND hWnd) {
 		const auto id = GetDlgCtrlID(hWnd);
 		if (id != 1002 && id != 1003) {
@@ -1291,6 +1316,53 @@ namespace se::cs::darkmode {
 		}
 	}
 
+	// Push buttons are drawn by the theme, which renders their caption in a
+	// bright white. Draw the themed button background ourselves and follow it
+	// with the dimmed palette text, matching the tabs/radios/group boxes.
+	static void paintPushButton(HWND hWnd, HDC hdc) {
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, backgroundBrush);
+
+		const auto enabled = IsWindowEnabled(hWnd) != FALSE;
+		const auto buttonState = static_cast<UINT>(SendMessageA(hWnd, BM_GETSTATE, 0, 0));
+		const auto hot = (buttonState & BST_HOT) != 0;
+		const auto pressed = (buttonState & BST_PUSHED) != 0;
+		// A checked BS_PUSHLIKE toggle button draws sunken, like a pressed button.
+		const auto checked = SendMessageA(hWnd, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
+		const auto isDefault = (GetWindowLongA(hWnd, GWL_STYLE) & BS_TYPEMASK) == BS_DEFPUSHBUTTON;
+
+		// BP_PUSHBUTTON states: normal/hot/pressed/disabled/defaulted.
+		const int themeState = !enabled ? 4 : (pressed || checked) ? 3 : hot ? 2 : isDefault ? 5 : 1;
+
+		RECT contentRect = clientRect;
+		const auto theme = OpenThemeData(hWnd, L"Button");
+		if (theme) {
+			DrawThemeBackground(theme, hdc, 1, themeState, &clientRect, nullptr);
+			GetThemeBackgroundContentRect(theme, hdc, 1, themeState, &clientRect, &contentRect);
+			CloseThemeData(theme);
+		}
+		else {
+			DrawFrameControl(hdc, &clientRect, DFC_BUTTON, DFCS_BUTTONPUSH
+				| (!enabled ? DFCS_INACTIVE : 0)
+				| (pressed ? DFCS_PUSHED : 0));
+		}
+
+		char text[260] = {};
+		GetWindowTextA(hWnd, text, sizeof(text));
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, enabled ? palette::text : palette::textDisabled);
+		DrawTextA(hdc, text, -1, &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+		SelectObject(hdc, previousFont);
+
+		if (buttonState & BST_FOCUS) {
+			InflateRect(&contentRect, -1, -1);
+			DrawFocusRect(hdc, &contentRect);
+		}
+	}
+
 	static LRESULT CALLBACK buttonSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
 		switch (msg) {
 		case WM_CREATE: {
@@ -1319,13 +1391,20 @@ namespace se::cs::darkmode {
 				EndPaint(hWnd, &paint);
 				return 0;
 			}
+			else if (isPushButton(hWnd) && !isD3DDriverTypeButton(hWnd)) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				paintPushButton(hWnd, hdc);
+				EndPaint(hWnd, &paint);
+				return 0;
+			}
 			break;
 		}
 		case WM_ENABLE:
 		case BM_SETCHECK:
 		case BM_SETSTATE:
 		case BM_SETSTYLE:
-			if (isGroupBox(hWnd) || isRadioButton(hWnd)) {
+			if (isGroupBox(hWnd) || isRadioButton(hWnd) || isPushButton(hWnd)) {
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 			break;
