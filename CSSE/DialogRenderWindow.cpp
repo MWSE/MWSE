@@ -2886,6 +2886,38 @@ namespace se::cs::dialog::render_window {
 		}
 	}
 
+	//
+	// Patch: Defer the render window's D3D device reset until a resize drag ends.
+	//
+
+	static bool isResizingRenderWindow = false;
+
+	void PatchDialogProc_BeforeEnterSizeMove(DialogProcContext& context) {
+		isResizingRenderWindow = true;
+	}
+
+	void PatchDialogProc_BeforeSize(DialogProcContext& context) {
+		// Skip the vanilla device reset + scene graph update while a drag is in progress.
+		if (isResizingRenderWindow) {
+			context.setResult(0);
+		}
+	}
+
+	void PatchDialogProc_BeforeExitSizeMove(DialogProcContext& context) {
+		if (!isResizingRenderWindow) {
+			return;
+		}
+		isResizingRenderWindow = false;
+
+		// Resend WM_SIZE with the final client dimensions.
+		RECT clientRect;
+		if (GetClientRect(context.getWindowHandle(), &clientRect)) {
+			const auto width = clientRect.right - clientRect.left;
+			const auto height = clientRect.bottom - clientRect.top;
+			SendMessageA(context.getWindowHandle(), WM_SIZE, SIZE_RESTORED, MAKELPARAM(width, height));
+		}
+	}
+
 	void PatchDialogProc_AfterLMouseButtonUp(DialogProcContext& context) {
 		grid::hide();
 
@@ -3175,6 +3207,15 @@ namespace se::cs::dialog::render_window {
 			break;
 		case WM_TIMER:
 			PatchDialogProc_BeforeTimer(context);
+			break;
+		case WM_ENTERSIZEMOVE:
+			PatchDialogProc_BeforeEnterSizeMove(context);
+			break;
+		case WM_SIZE:
+			PatchDialogProc_BeforeSize(context);
+			break;
+		case WM_EXITSIZEMOVE:
+			PatchDialogProc_BeforeExitSizeMove(context);
 			break;
 		case WM_ERASEBKGND:
 			// The Render Window is drawn by DirectX. Letting Windows erase the dialog
