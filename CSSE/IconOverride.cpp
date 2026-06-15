@@ -349,15 +349,7 @@ namespace se::cs::iconoverride {
 				GetObjectA(bitmap, sizeof(info), &info);
 				const int width = cx > 0 ? cx : static_cast<int>(info.bmWidth);
 				const int count = std::max(1, static_cast<int>(info.bmWidth) / std::max(1, width));
-				const auto imageList = ImageList_Create(width, info.bmHeight, hasAlpha ? ILC_COLOR32 : (ILC_COLOR32 | ILC_MASK), count, cGrow);
-				if (imageList) {
-					if (hasAlpha) {
-						ImageList_Add(imageList, bitmap, nullptr);
-					}
-					else {
-						ImageList_AddMasked(imageList, bitmap, crMask);
-					}
-				}
+				const auto imageList = darkmode::buildImageList(bitmap, width, info.bmHeight, count, cGrow, hasAlpha, crMask);
 				DeleteObject(bitmap);
 				if (imageList) {
 					return imageList;

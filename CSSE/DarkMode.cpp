@@ -245,6 +245,51 @@ namespace se::cs::darkmode {
 	}
 
 	//
+	// comctl32 v6 image lists.
+	//
+	// CSSE's static comctl32 imports resolve at DLL-load time, before the v6
+	// activation context exists, so they bind to comctl32 v5.82 — whose image
+	// lists ignore the per-pixel alpha channel. A premultiplied 32bpp image then
+	// composites as opaque, drawing its transparent pixels as black. Resolve the
+	// v6 entry points explicitly (the activation context is active on the main
+	// thread for the process lifetime, so this loads the side-by-side v6 module)
+	// and build every dark-mode image list through them. Create/Destroy are
+	// version-agnostic; only Add (which marks the image as alpha) and the
+	// control's own Draw need to come from v6.
+	static decltype(&ImageList_Create) imageListCreateV6 = nullptr;
+	static decltype(&ImageList_Add) imageListAddV6 = nullptr;
+	static decltype(&ImageList_AddMasked) imageListAddMaskedV6 = nullptr;
+
+	static void resolveImageListV6() {
+		const auto comctl = LoadLibraryW(L"comctl32.dll");
+		if (comctl == nullptr) {
+			return;
+		}
+		imageListCreateV6 = reinterpret_cast<decltype(&ImageList_Create)>(GetProcAddress(comctl, "ImageList_Create"));
+		imageListAddV6 = reinterpret_cast<decltype(&ImageList_Add)>(GetProcAddress(comctl, "ImageList_Add"));
+		imageListAddMaskedV6 = reinterpret_cast<decltype(&ImageList_AddMasked)>(GetProcAddress(comctl, "ImageList_AddMasked"));
+	}
+
+	HIMAGELIST buildImageList(HBITMAP bitmap, int imageWidth, int imageHeight, int imageCount, int grow, bool hasAlpha, COLORREF maskColor) {
+		// Fall back to the v5.82 imports if v6 resolution failed; masked strips
+		// still draw correctly, only alpha strips depend on v6.
+		const auto create = imageListCreateV6 ? imageListCreateV6 : &ImageList_Create;
+		const auto imageList = create(imageWidth, imageHeight, hasAlpha ? ILC_COLOR32 : (ILC_COLOR32 | ILC_MASK), imageCount, grow);
+		if (imageList == nullptr) {
+			return nullptr;
+		}
+		if (hasAlpha) {
+			const auto add = imageListAddV6 ? imageListAddV6 : &ImageList_Add;
+			add(imageList, bitmap, nullptr);
+		}
+		else {
+			const auto addMasked = imageListAddMaskedV6 ? imageListAddMaskedV6 : &ImageList_AddMasked;
+			addMasked(imageList, bitmap, maskColor);
+		}
+		return imageList;
+	}
+
+	//
 	// Theme mode resolution.
 	//
 
@@ -2036,13 +2081,7 @@ namespace se::cs::darkmode {
 			return;
 		}
 
-		const auto imageList = ImageList_Create(imageWidth, imageHeight, hasAlpha ? ILC_COLOR32 : (ILC_COLOR32 | ILC_MASK), imageCount, 0);
-		if (hasAlpha) {
-			ImageList_Add(imageList, bitmap, nullptr);
-		}
-		else {
-			ImageList_AddMasked(imageList, bitmap, RGB(192, 192, 192));
-		}
+		const auto imageList = buildImageList(bitmap, imageWidth, imageHeight, imageCount, 0, hasAlpha, RGB(192, 192, 192));
 		DeleteObject(bitmap);
 
 		const auto previous = reinterpret_cast<HIMAGELIST>(SendMessageA(hWndToolbar, TB_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(imageList)));
@@ -2075,6 +2114,10 @@ namespace se::cs::darkmode {
 			log::stream << "Dark mode: disabled, could not activate comctl32 v6." << std::endl;
 			return;
 		}
+
+		// Resolve the v6 image-list entry points now that its activation context
+		// is active, so alpha icon strips composite correctly.
+		resolveImageListV6();
 
 		if (!loadAndEnableDarkModeAPIs(buildNumber)) {
 			log::stream << "Dark mode: disabled, uxtheme dark mode exports unavailable." << std::endl;

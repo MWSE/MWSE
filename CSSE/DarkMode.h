@@ -29,6 +29,14 @@ namespace se::cs::darkmode {
 	// when dark mode is inactive.
 	void remapToolbarImages(HWND hWndToolbar, HINSTANCE hImageInstance, UINT bitmapId, int imageWidth, int imageHeight);
 
+	// Builds a comctl32 v6 image list from a single-row strip bitmap (imageCount
+	// cells of imageWidth). When hasAlpha the bitmap is added as a premultiplied
+	// 32bpp image with per-pixel alpha; otherwise maskColor is keyed out. Built
+	// through v6 so alpha is honored — CSSE's static comctl32 imports bind to
+	// v5.82, whose image lists composite alpha images opaquely (transparent
+	// pixels go black). Returns nullptr on failure.
+	HIMAGELIST buildImageList(HBITMAP bitmap, int imageWidth, int imageHeight, int imageCount, int grow, bool hasAlpha, COLORREF maskColor);
+
 	// Applies dark painting to an MFC property grid's header and child scrollbar.
 	// No-op when dark mode is inactive.
 	void themePropertyGrid(HWND hWndGrid, HWND hWndHeader, HWND hWndScrollBar);
