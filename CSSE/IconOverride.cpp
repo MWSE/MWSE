@@ -381,7 +381,7 @@ namespace se::cs::iconoverride {
 			return;
 		}
 
-		overrideDirectory = path::getDataFilesPath() / "MWSE" / "csse" / "icons" / "dark";
+		overrideDirectory = path::getDataFilesPath() / "MWSE" / "core" / "csse" / "icons" / "dark";
 		std::error_code ec;
 		overridesAvailable = fs::is_directory(overrideDirectory, ec);
 		if (overridesAvailable) {

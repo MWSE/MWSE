@@ -11,7 +11,7 @@ namespace se::cs::iconoverride {
 	bool hasDataFilesCheckOverrides();
 
 	// Redirects the CS import table so icons and bitmaps can be overridden by
-	// loose files under Data Files\MWSE\csse\icons\dark. Must run after
+	// loose files under Data Files\MWSE\core\csse\icons\dark. Must run after
 	// darkmode::initialize() and before WinMain; no-op when dark mode is
 	// inactive, keeping light mode byte-identical to vanilla.
 	void initialize();
