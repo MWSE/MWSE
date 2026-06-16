@@ -841,6 +841,134 @@ namespace se::cs::darkmode {
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
 	}
 
+	static bool isDropDownListCombo(HWND hWnd) {
+		return (GetWindowLongA(hWnd, GWL_STYLE) & CBS_DROPDOWNLIST) == CBS_DROPDOWNLIST;
+	}
+
+	static bool getComboItemRect(HWND hWnd, RECT& itemRect) {
+		COMBOBOXINFO info = { sizeof(info) };
+		if (!GetComboBoxInfo(hWnd, &info)) {
+			return false;
+		}
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		itemRect = info.rcItem;
+		return IntersectRect(&itemRect, &itemRect, &clientRect) != FALSE;
+	}
+
+	static void paintComboBoxText(HWND hWnd, HDC hdc) {
+		RECT itemRect = {};
+		if (!getComboItemRect(hWnd, itemRect)) {
+			return;
+		}
+
+		FillRect(hdc, &itemRect, surfaceBrush);
+
+		std::vector<char> text;
+		const auto selected = static_cast<int>(SendMessageA(hWnd, CB_GETCURSEL, 0, 0));
+		if (selected != CB_ERR) {
+			const auto length = static_cast<int>(SendMessageA(hWnd, CB_GETLBTEXTLEN, selected, 0));
+			if (length > 0) {
+				text.resize(length + 1);
+				if (SendMessageA(hWnd, CB_GETLBTEXT, selected, reinterpret_cast<LPARAM>(text.data())) == CB_ERR) {
+					text.clear();
+				}
+			}
+		}
+
+		char windowText[260] = {};
+		const char* displayText = text.empty() ? windowText : text.data();
+		if (text.empty()) {
+			GetWindowTextA(hWnd, windowText, sizeof(windowText));
+		}
+
+		itemRect.left += 3;
+		itemRect.right -= 3;
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, IsWindowEnabled(hWnd) ? palette::text : palette::textDisabled);
+		DrawTextA(hdc, displayText, -1, &itemRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+		SelectObject(hdc, previousFont);
+
+	}
+
+	static void paintComboBoxFrame(HWND hWnd, HDC hdc) {
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+
+		COMBOBOXINFO info = { sizeof(info) };
+		if (GetComboBoxInfo(hWnd, &info)) {
+			RECT itemFrame = info.rcItem;
+			InflateRect(&itemFrame, 1, 1);
+			if (IntersectRect(&itemFrame, &itemFrame, &clientRect)) {
+				FrameRect(hdc, &itemFrame, surfaceBrush);
+			}
+
+			if (!(info.stateButton & STATE_SYSTEM_INVISIBLE)) {
+				RECT buttonRect = info.rcButton;
+				if (IntersectRect(&buttonRect, &buttonRect, &clientRect)) {
+					FrameRect(hdc, &buttonRect, clientEdgeBrush);
+				}
+			}
+		}
+
+		FrameRect(hdc, &clientRect, clientEdgeBrush);
+	}
+
+	static LRESULT CALLBACK comboBoxSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_CREATE: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			allowDarkAndSetTheme(hWnd, L"DarkMode_CFD");
+			return result;
+		}
+		case WM_CTLCOLORLISTBOX:
+		case WM_CTLCOLOREDIT: {
+			// Combo internals send these to the combo itself, bypassing the
+			// dialog brush-preservation path.
+			const auto hdc = reinterpret_cast<HDC>(wParam);
+			SetTextColor(hdc, IsWindowEnabled(hWnd) ? palette::text : palette::textDisabled);
+			SetBkColor(hdc, palette::surface);
+			return reinterpret_cast<LRESULT>(surfaceBrush);
+		}
+		case WM_PAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			const auto hdc = GetDC(hWnd);
+			if (hdc) {
+				if (isDropDownListCombo(hWnd)) {
+					paintComboBoxText(hWnd, hdc);
+				}
+				paintComboBoxFrame(hWnd, hdc);
+				ReleaseDC(hWnd, hdc);
+			}
+			return result;
+		}
+		case WM_NCPAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			paintDarkClientEdge(hWnd);
+			return result;
+		}
+		case WM_ENABLE:
+		case WM_SETFOCUS:
+		case WM_KILLFOCUS:
+		case WM_SETTEXT:
+		case CB_SETCURSEL:
+		case CB_SELECTSTRING: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			if (isDropDownListCombo(hWnd)) {
+				InvalidateRect(hWnd, nullptr, FALSE);
+			}
+			return result;
+		}
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, comboBoxSubclassProc, SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
 	static void refreshComboListTheme(HWND hWnd) {
 		allowDarkAndSetTheme(hWnd, L"DarkMode_Explorer");
 		SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
@@ -1226,9 +1354,9 @@ namespace se::cs::darkmode {
 	}
 
 	//
-	// Buttons. Push buttons, check boxes, and radio buttons render correctly
-	// with the DarkMode_Explorer theme, but themed group boxes draw their label
-	// text black, so those are painted manually.
+	// Buttons. The dark theme supplies usable glyphs/backgrounds, but some
+	// captions ignore the palette text color, so those variants are painted
+	// manually.
 	//
 
 	static bool isGroupBox(HWND hWnd) {
@@ -1238,6 +1366,12 @@ namespace se::cs::darkmode {
 	static bool isRadioButton(HWND hWnd) {
 		const auto type = GetWindowLongA(hWnd, GWL_STYLE) & BS_TYPEMASK;
 		return type == BS_RADIOBUTTON || type == BS_AUTORADIOBUTTON;
+	}
+
+	static bool isCheckBox(HWND hWnd) {
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		const auto type = style & BS_TYPEMASK;
+		return (style & BS_PUSHLIKE) == 0 && (type == BS_CHECKBOX || type == BS_AUTOCHECKBOX || type == BS_3STATE || type == BS_AUTO3STATE);
 	}
 
 	static bool isPushButton(HWND hWnd) {
@@ -1361,6 +1495,80 @@ namespace se::cs::darkmode {
 		}
 	}
 
+	static void paintCheckBox(HWND hWnd, HDC hdc) {
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, backgroundBrush);
+
+		const auto enabled = IsWindowEnabled(hWnd) != FALSE;
+		const auto buttonState = static_cast<UINT>(SendMessageA(hWnd, BM_GETSTATE, 0, 0));
+		const auto checkState = SendMessageA(hWnd, BM_GETCHECK, 0, 0);
+		const auto checked = checkState == BST_CHECKED;
+		const auto mixed = checkState == BST_INDETERMINATE;
+		const auto hot = (buttonState & BST_HOT) != 0;
+		const auto pressed = (buttonState & BST_PUSHED) != 0;
+
+		// BP_CHECKBOX states are unchecked normal/hot/pressed/disabled,
+		// checked normal/hot/pressed/disabled, then mixed normal/hot/pressed/disabled.
+		auto themeState = !enabled ? 4 : pressed ? 3 : hot ? 2 : 1;
+		if (checked) {
+			themeState += 4;
+		}
+		else if (mixed) {
+			themeState += 8;
+		}
+
+		SIZE glyphSize = { GetSystemMetrics(SM_CXMENUCHECK), GetSystemMetrics(SM_CYMENUCHECK) };
+		const auto theme = OpenThemeData(hWnd, L"Button");
+		if (theme) {
+			GetThemePartSize(theme, hdc, 3, themeState, nullptr, TS_DRAW, &glyphSize);
+		}
+
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		const auto leftText = (style & BS_LEFTTEXT) != 0;
+		RECT glyphRect = {
+			leftText ? clientRect.right - glyphSize.cx : clientRect.left,
+			clientRect.top + (clientRect.bottom - clientRect.top - glyphSize.cy) / 2,
+			leftText ? clientRect.right : clientRect.left + glyphSize.cx,
+			0,
+		};
+		glyphRect.bottom = glyphRect.top + glyphSize.cy;
+
+		if (theme) {
+			DrawThemeBackground(theme, hdc, 3, themeState, &glyphRect, nullptr);
+			CloseThemeData(theme);
+		}
+		else {
+			DrawFrameControl(hdc, &glyphRect, DFC_BUTTON, DFCS_BUTTONCHECK
+				| (mixed ? DFCS_BUTTON3STATE : 0)
+				| ((checked || mixed) ? DFCS_CHECKED : 0)
+				| (!enabled ? DFCS_INACTIVE : 0)
+				| (pressed ? DFCS_PUSHED : 0));
+		}
+
+		char text[260] = {};
+		GetWindowTextA(hWnd, text, sizeof(text));
+		RECT textRect = clientRect;
+		if (leftText) {
+			textRect.right = glyphRect.left - 4;
+		}
+		else {
+			textRect.left = glyphRect.right + 4;
+		}
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, enabled ? palette::text : palette::textDisabled);
+		auto drawFlags = DT_VCENTER | DT_SINGLELINE;
+		drawFlags |= leftText ? DT_RIGHT : DT_LEFT;
+		DrawTextA(hdc, text, -1, &textRect, drawFlags);
+		SelectObject(hdc, previousFont);
+
+		if (buttonState & BST_FOCUS) {
+			DrawFocusRect(hdc, &textRect);
+		}
+	}
+
 	// Push buttons are drawn by the theme, which renders their caption in a
 	// bright white. Draw the themed button background ourselves and follow it
 	// with the dimmed palette text, matching the tabs/radios/group boxes.
@@ -1443,13 +1651,20 @@ namespace se::cs::darkmode {
 				EndPaint(hWnd, &paint);
 				return 0;
 			}
+			else if (isCheckBox(hWnd)) {
+				PAINTSTRUCT paint = {};
+				const auto hdc = BeginPaint(hWnd, &paint);
+				paintCheckBox(hWnd, hdc);
+				EndPaint(hWnd, &paint);
+				return 0;
+			}
 			break;
 		}
 		case WM_ENABLE:
 		case BM_SETCHECK:
 		case BM_SETSTATE:
 		case BM_SETSTYLE:
-			if (isGroupBox(hWnd) || isRadioButton(hWnd) || isPushButton(hWnd)) {
+			if (isGroupBox(hWnd) || isRadioButton(hWnd) || isPushButton(hWnd) || isCheckBox(hWnd)) {
 				InvalidateRect(hWnd, nullptr, TRUE);
 			}
 			break;
@@ -1720,7 +1935,7 @@ namespace se::cs::darkmode {
 			logDispatch(hWnd, className, "button", SetWindowSubclass(hWnd, buttonSubclassProc, SUBCLASS_ID, 0));
 		}
 		else if (_stricmp(className, "ComboBox") == 0) {
-			logDispatch(hWnd, className, "combo box", SetWindowSubclass(hWnd, themeOnCreateSubclassProc, SUBCLASS_ID, reinterpret_cast<DWORD_PTR>(L"DarkMode_CFD")));
+			logDispatch(hWnd, className, "combo box", SetWindowSubclass(hWnd, comboBoxSubclassProc, SUBCLASS_ID, 0));
 		}
 		else if (_stricmp(className, TOOLBARCLASSNAMEA) == 0) {
 			logDispatch(hWnd, className, "toolbar", SetWindowSubclass(hWnd, toolbarSubclassProc, SUBCLASS_ID, 0));
