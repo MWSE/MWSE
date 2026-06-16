@@ -1339,8 +1339,75 @@ namespace se::cs::darkmode {
 		ReleaseDC(hWnd, hdc);
 	}
 
+	static bool isTextStatic(HWND hWnd) {
+		switch (GetWindowLongA(hWnd, GWL_STYLE) & SS_TYPEMASK) {
+		case SS_LEFT:
+		case SS_CENTER:
+		case SS_RIGHT:
+		case SS_SIMPLE:
+		case SS_LEFTNOWORDWRAP:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	// Disabled static text is otherwise drawn embossed (a COLOR_3DHILIGHT ghost
+	// offset by 1px), which glares against the dark background. Repaint it flat.
+	static void paintDisabledStaticText(HWND hWnd) {
+		PAINTSTRUCT paint = {};
+		const auto hdc = BeginPaint(hWnd, &paint);
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, backgroundBrush);
+
+		const auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		const auto type = style & SS_TYPEMASK;
+
+		auto flags = (type == SS_CENTER) ? DT_CENTER : (type == SS_RIGHT) ? DT_RIGHT : DT_LEFT;
+		flags |= (type == SS_SIMPLE || type == SS_LEFTNOWORDWRAP) ? DT_SINGLELINE : DT_WORDBREAK;
+		if (style & SS_NOPREFIX) {
+			flags |= DT_NOPREFIX;
+		}
+		else if (SendMessageA(hWnd, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) {
+			flags |= DT_HIDEPREFIX;
+		}
+		if (style & SS_CENTERIMAGE) {
+			flags |= DT_SINGLELINE | DT_VCENTER;
+		}
+		switch (style & SS_ELLIPSISMASK) {
+		case SS_ENDELLIPSIS:
+			flags |= DT_SINGLELINE | DT_END_ELLIPSIS;
+			break;
+		case SS_PATHELLIPSIS:
+			flags |= DT_SINGLELINE | DT_PATH_ELLIPSIS;
+			break;
+		case SS_WORDELLIPSIS:
+			flags |= DT_SINGLELINE | DT_WORD_ELLIPSIS;
+			break;
+		}
+
+		char text[260] = {};
+		GetWindowTextA(hWnd, text, sizeof(text));
+
+		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+		SetBkMode(hdc, TRANSPARENT);
+		SetTextColor(hdc, palette::textDisabled);
+		DrawTextA(hdc, text, -1, &clientRect, flags);
+		SelectObject(hdc, previousFont);
+
+		EndPaint(hWnd, &paint);
+	}
+
 	static LRESULT CALLBACK staticSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
 		switch (msg) {
+		case WM_PAINT:
+			if (!IsWindowEnabled(hWnd) && isTextStatic(hWnd)) {
+				paintDisabledStaticText(hWnd);
+				return 0;
+			}
+			break;
 		case WM_NCPAINT: {
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			paintDarkStaticBorder(hWnd);
