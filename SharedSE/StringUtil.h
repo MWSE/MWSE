@@ -52,9 +52,9 @@ namespace se::string {
 	}
 
 	static inline std::string from_wstring(const std::wstring& wstr) {
-		std::vector<char> buf(wstr.size());
+		std::string buf(wstr.size(), '\0');
 		std::use_facet<std::ctype<wchar_t>>(std::locale{}).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
-		return std::string(buf.data(), buf.size());
+		return buf;
 	}
 
 	static inline void ltrim(std::string& s) {
