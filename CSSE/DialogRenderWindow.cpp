@@ -3172,15 +3172,411 @@ namespace se::cs::dialog::render_window {
 		updateLandscapeCircleWidget();
 	}
 
+#pragma comment(lib, "ole32.lib")
+
+	// Window message 0x407 is the engine's "place dragged objects" handler: the native
+	// Object Window sends it to the render window to commit a drag-drop placement, and
+	// we reuse the same flow for external drops.
 	namespace CustomWindowMessage {
+		constexpr UINT PlaceDroppedObjects = 0x407u;
 		constexpr UINT SetCameraPosition = 0x40Eu;
 		constexpr UINT RefreshLandscapeEditDisc = 0x417u;
 	}
+
+	// External drag-and-drop payload limits.
+	constexpr SIZE_T MAX_DROP_PAYLOAD_BYTES = 64 * 1024; // Largest accepted clipboard payload (64 KB).
+	constexpr size_t MAX_DROP_OBJECTS = 256;             // Most objects accepted in a single drop.
+	constexpr size_t MAX_EDITOR_ID_LENGTH = 256;         // Longest accepted editor ID.
+
+	static HWND g_registeredDropHwnd = nullptr;
+	static bool g_oleInitialized = false;
+
+	static bool isNativePlacementAvailable() {
+		using landscape_edit_settings_window::getLandscapeEditingEnabled;
+		return !getLandscapeEditingEnabled()                   // (landscape editing)
+			&& !memory::ExternalGlobal<bool, 0x6CF790>::get()  // (reference picking)
+			&& !memory::ExternalGlobal<bool, 0x6CF791>::get()  // (path grid editing)
+			&& !memory::ExternalGlobal<bool, 0x6CF797>::get(); // (preview mode)
+	}
+
+	static bool isPlaceable(BaseObject* obj) {
+		switch (obj->objectType) {
+		case ObjectType::Activator:
+		case ObjectType::Apparatus:
+		case ObjectType::Armor:
+		case ObjectType::Bodypart:
+		case ObjectType::Book:
+		case ObjectType::Clothing:
+		case ObjectType::Container:
+		case ObjectType::Door:
+		case ObjectType::Ingredient:
+		case ObjectType::Light:
+		case ObjectType::Lockpick:
+		case ObjectType::Misc:
+		case ObjectType::Probe:
+		case ObjectType::Repair:
+		case ObjectType::Static:
+		case ObjectType::Weapon:
+		case ObjectType::NPC:
+		case ObjectType::Creature:
+		case ObjectType::LeveledCreature:
+		case ObjectType::Alchemy:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	class RenderWindowDropTarget : public IDropTarget {
+	private:
+		HWND m_hWnd = nullptr;
+		ULONG m_refCount = 1;
+		std::vector<std::string> m_cachedIds;
+		bool m_dragAccepted = false;
+
+		RenderWindowDropTarget() = default;
+		~RenderWindowDropTarget() = default;
+
+		RenderWindowDropTarget(const RenderWindowDropTarget&) = delete;
+		RenderWindowDropTarget& operator=(const RenderWindowDropTarget&) = delete;
+
+		size_t parseHeaderOffset(const std::string& html, const std::string& key) {
+			size_t keyPos = html.find(key);
+			if (keyPos == std::string::npos) return 0;
+			size_t valStart = keyPos + key.size();
+			while (valStart < html.size() && (html[valStart] == ':' || html[valStart] == ' ' || html[valStart] == '\t')) {
+				valStart++;
+			}
+			size_t valEnd = valStart;
+			while (valEnd < html.size() && html[valEnd] >= '0' && html[valEnd] <= '9') {
+				valEnd++;
+			}
+			if (valStart == valEnd) return 0;
+			try {
+				return static_cast<size_t>(std::stoull(html.substr(valStart, valEnd - valStart)));
+			} catch (...) {
+				return 0;
+			}
+		}
+
+		bool parseDataObject(IDataObject* pDataObj, std::vector<std::string>& outIds) {
+			outIds.clear();
+
+			// Try CF_UNICODETEXT
+			FORMATETC fmtText = { CF_UNICODETEXT, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+			STGMEDIUM mediumText = { 0 };
+			if (SUCCEEDED(pDataObj->GetData(&fmtText, &mediumText))) {
+				if (mediumText.tymed == TYMED_HGLOBAL && mediumText.hGlobal) {
+					SIZE_T bytesSize = GlobalSize(mediumText.hGlobal);
+					// Reject payloads larger than the accepted maximum.
+					if (bytesSize > 0 && bytesSize <= MAX_DROP_PAYLOAD_BYTES) {
+						const wchar_t* pWStr = static_cast<const wchar_t*>(GlobalLock(mediumText.hGlobal));
+						if (pWStr) {
+							SIZE_T maxSize = bytesSize / sizeof(wchar_t);
+							SIZE_T size = 0;
+							while (size < maxSize && pWStr[size] != L'\0') {
+								size++;
+							}
+							std::wstring payload(pWStr, size);
+							GlobalUnlock(mediumText.hGlobal);
+
+							parseUnicodeText(payload, outIds);
+						}
+					}
+				}
+				ReleaseStgMedium(&mediumText);
+			}
+
+			// Try HTML Format
+			if (outIds.empty()) {
+				static UINT cfHtml = RegisterClipboardFormatA("HTML Format");
+				FORMATETC fmtHtml = { (CLIPFORMAT)cfHtml, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+				STGMEDIUM mediumHtml = { 0 };
+				if (SUCCEEDED(pDataObj->GetData(&fmtHtml, &mediumHtml))) {
+					if (mediumHtml.tymed == TYMED_HGLOBAL && mediumHtml.hGlobal) {
+						SIZE_T bytesSize = GlobalSize(mediumHtml.hGlobal);
+						// Reject payloads larger than the accepted maximum.
+						if (bytesSize > 0 && bytesSize <= MAX_DROP_PAYLOAD_BYTES) {
+							const char* pStr = static_cast<const char*>(GlobalLock(mediumHtml.hGlobal));
+							if (pStr) {
+								std::string payload(pStr, bytesSize);
+								GlobalUnlock(mediumHtml.hGlobal);
+
+								parseHtmlFormat(payload, outIds);
+							}
+						}
+					}
+					ReleaseStgMedium(&mediumHtml);
+				}
+			}
+
+			// De-duplicate and filter
+			if (!outIds.empty()) {
+				std::vector<std::string> uniqueIds;
+				for (const auto& id : outIds) {
+					if (std::find(uniqueIds.begin(), uniqueIds.end(), id) == uniqueIds.end()) {
+						uniqueIds.push_back(id);
+					}
+				}
+				outIds.clear();
+
+				const auto recordHandler = DataHandler::get() ? DataHandler::get()->recordHandler : nullptr;
+				if (recordHandler) {
+					for (const auto& id : uniqueIds) {
+						BaseObject* obj = recordHandler->getObjectByID(id.c_str());
+						// Filter out deleted objects to prevent native "Object has been deleted" modals
+						if (obj && isPlaceable(obj) && !obj->getDeleted()) {
+							outIds.push_back(id);
+						}
+					}
+				}
+			}
+
+			return !outIds.empty();
+		}
+
+		void parseUnicodeText(const std::wstring& text, std::vector<std::string>& outIds) {
+			size_t objectCount = 0;
+			std::wstring_view sv(text);
+			size_t pos = 0;
+			while (pos < sv.size() && objectCount < MAX_DROP_OBJECTS) {
+				size_t nextLine = sv.find_first_of(L"\r\n", pos);
+				std::wstring_view line = sv.substr(pos, nextLine == std::wstring::npos ? std::wstring::npos : nextLine - pos);
+
+				size_t start = line.find_first_not_of(L" \t");
+				if (start != std::wstring_view::npos) {
+					size_t end = line.find_last_not_of(L" \t");
+					line = line.substr(start, end - start + 1);
+				} else {
+					line = std::wstring_view();
+				}
+
+				if (!line.empty()) {
+					std::wstring_view prefix = L"cs-object:";
+					if (line.size() >= prefix.size() && line.compare(0, prefix.size(), prefix) == 0) {
+						std::wstring_view idW = line.substr(prefix.size());
+						size_t idStart = idW.find_first_not_of(L" \t");
+						if (idStart != std::wstring_view::npos) {
+							size_t idEnd = idW.find_last_not_of(L" \t");
+							idW = idW.substr(idStart, idEnd - idStart + 1);
+						} else {
+							idW = std::wstring_view();
+						}
+
+						if (!idW.empty()) {
+							BOOL usedDefaultChar = FALSE;
+							int sizeNeeded = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, idW.data(), (int)idW.size(), nullptr, 0, nullptr, nullptr);
+							if (sizeNeeded > 0) {
+								std::string id(sizeNeeded, '\0');
+								WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, idW.data(), (int)idW.size(), &id[0], sizeNeeded, nullptr, &usedDefaultChar);
+
+								// Reject lossy conversions. WC_NO_BEST_FIT_CHARS makes best-fit
+								// substitutions (e.g. full-width to ASCII) set usedDefaultChar.
+								if (!usedDefaultChar && id.size() < MAX_EDITOR_ID_LENGTH) {
+									outIds.push_back(id);
+									objectCount++;
+								}
+							}
+						}
+					}
+				}
+
+				if (nextLine == std::wstring::npos) {
+					break;
+				}
+				pos = sv.find_first_not_of(L"\r\n", nextLine);
+			}
+		}
+
+		void parseHtmlFormat(const std::string& html, std::vector<std::string>& outIds) {
+			size_t startFrag = parseHeaderOffset(html, "StartFragment");
+			size_t endFrag = parseHeaderOffset(html, "EndFragment");
+			if (startFrag == 0 || endFrag == 0 || startFrag >= html.size() || endFrag > html.size() || startFrag >= endFrag) {
+				return;
+			}
+
+			std::string_view fragment(html.data() + startFrag, endFrag - startFrag);
+
+			size_t objectCount = 0;
+			size_t pos = 0;
+			std::string attr = "data-cs-object=\"";
+			while (objectCount < MAX_DROP_OBJECTS) {
+				size_t attrPos = fragment.find(attr, pos);
+				if (attrPos == std::string_view::npos) {
+					break;
+				}
+				size_t valStart = attrPos + attr.size();
+				size_t valEnd = fragment.find('"', valStart);
+				if (valEnd == std::string_view::npos) {
+					break;
+				}
+
+				std::string_view id = fragment.substr(valStart, valEnd - valStart);
+				size_t s = id.find_first_not_of(" \t\r\n");
+				if (s != std::string_view::npos) {
+					size_t e = id.find_last_not_of(" \t\r\n");
+					id = id.substr(s, e - s + 1);
+				} else {
+					id = std::string_view();
+				}
+
+				if (!id.empty() && id.size() < MAX_EDITOR_ID_LENGTH) {
+					outIds.push_back(std::string(id));
+					objectCount++;
+				}
+				pos = valEnd + 1;
+			}
+		}
+
+	public:
+		static RenderWindowDropTarget& get() {
+			static RenderWindowDropTarget instance;
+			return instance;
+		}
+
+		void setWindow(HWND hWnd) {
+			m_hWnd = hWnd;
+		}
+
+		// IUnknown methods
+		STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override {
+			if (!ppvObject) return E_POINTER;
+			if (riid == __uuidof(IUnknown) || riid == __uuidof(IDropTarget)) {
+				*ppvObject = static_cast<IDropTarget*>(this);
+				AddRef();
+				return S_OK;
+			}
+			*ppvObject = nullptr;
+			return E_NOINTERFACE;
+		}
+
+		STDMETHODIMP_(ULONG) AddRef() override {
+			return InterlockedIncrement(&m_refCount);
+		}
+
+		STDMETHODIMP_(ULONG) Release() override {
+			return InterlockedDecrement(&m_refCount);
+		}
+
+		// IDropTarget methods
+		STDMETHODIMP DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+			m_cachedIds.clear();
+			m_dragAccepted = false;
+
+			if (!pdwEffect) return E_POINTER;
+
+			if (!(*pdwEffect & DROPEFFECT_COPY)) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			if (parseDataObject(pDataObj, m_cachedIds)) {
+				m_dragAccepted = true;
+				*pdwEffect = DROPEFFECT_COPY;
+			} else {
+				*pdwEffect = DROPEFFECT_NONE;
+			}
+			return S_OK;
+		}
+
+		STDMETHODIMP DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+			if (!pdwEffect) return E_POINTER;
+
+			if (m_dragAccepted && (*pdwEffect & DROPEFFECT_COPY)) {
+				*pdwEffect = DROPEFFECT_COPY;
+			} else {
+				*pdwEffect = DROPEFFECT_NONE;
+			}
+			return S_OK;
+		}
+
+		STDMETHODIMP DragLeave() override {
+			m_cachedIds.clear();
+			m_dragAccepted = false;
+			return S_OK;
+		}
+
+		STDMETHODIMP Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override {
+			if (!pdwEffect) return E_POINTER;
+
+			if (!(*pdwEffect & DROPEFFECT_COPY)) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			std::vector<std::string> ids = m_cachedIds;
+			if (ids.empty()) {
+				parseDataObject(pDataObj, ids);
+			}
+
+			m_cachedIds.clear();
+			m_dragAccepted = false;
+
+			if (ids.empty()) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			const auto recordHandler = DataHandler::get() ? DataHandler::get()->recordHandler : nullptr;
+			if (!recordHandler) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			std::vector<PhysicalObject*> objects;
+			for (const auto& id : ids) {
+				BaseObject* obj = recordHandler->getObjectByID(id.c_str());
+				if (obj && isPlaceable(obj) && !obj->getDeleted()) {
+					objects.push_back(static_cast<PhysicalObject*>(obj));
+				}
+			}
+
+			if (objects.empty()) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			auto* selection = SelectionData::get();
+			if (!selection) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			// Reject the drop while native placement is unavailable. The engine would
+			// otherwise ignore our message and leave the staged base objects behind as
+			// invalid selection targets, so bail out before touching the selection.
+			if (!isNativePlacementAvailable()) {
+				*pdwEffect = DROPEFFECT_NONE;
+				return S_OK;
+			}
+
+			selection->clear(true);
+			for (PhysicalObject* obj : objects) {
+				selection->addReference(reinterpret_cast<Reference*>(obj), false);
+			}
+
+			POINT screenPt = { pt.x, pt.y };
+			::SendMessageA(m_hWnd, CustomWindowMessage::PlaceDroppedObjects, 0, reinterpret_cast<LPARAM>(&screenPt));
+
+			*pdwEffect = (*pdwEffect & DROPEFFECT_COPY) ? DROPEFFECT_COPY : DROPEFFECT_NONE;
+			return S_OK;
+		}
+	};
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x45A3F0);
 
 		switch (msg) {
+		case WM_DESTROY:
+			if (g_registeredDropHwnd == hWnd) {
+				RevokeDragDrop(hWnd);
+				g_registeredDropHwnd = nullptr;
+			}
+			if (g_oleInitialized) {
+				OleUninitialize();
+				g_oleInitialized = false;
+			}
+			break;
 		case WM_MOUSEMOVE:
 			PatchDialogProc_BeforeMouseMove(context);
 			break;
@@ -3240,6 +3636,25 @@ namespace se::cs::dialog::render_window {
 		}
 
 		switch (msg) {
+		case WM_INITDIALOG:
+		{
+			const HRESULT oleResult = OleInitialize(nullptr);
+			if (SUCCEEDED(oleResult)) {
+				g_oleInitialized = true;
+				RenderWindowDropTarget::get().setWindow(hWnd);
+				const HRESULT hr = RegisterDragDrop(hWnd, &RenderWindowDropTarget::get());
+				if (SUCCEEDED(hr)) {
+					g_registeredDropHwnd = hWnd;
+				}
+				else {
+					log::stream << "CSSE: RegisterDragDrop failed: HRESULT 0x" << std::hex << hr << std::dec << std::endl;
+				}
+			}
+			else {
+				log::stream << "CSSE: OLE initialization failed: HRESULT 0x" << std::hex << oleResult << std::dec << std::endl;
+			}
+			break;
+		}
 		case WM_KEYDOWN:
 			PatchDialogProc_AfterKeyDown(context);
 			break;
