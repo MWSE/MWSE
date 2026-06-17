@@ -52,33 +52,6 @@ namespace se::cs::darkmode {
 	}
 
 	//
-	// OS support checks. Dark mode requires the private uxtheme exports that
-	// shipped with Windows 10 1809 (build 17763).
-	//
-
-	static DWORD getWindowsBuildNumber() {
-		using RtlGetVersionFn = LONG(WINAPI*)(PRTL_OSVERSIONINFOW);
-		const auto ntdll = GetModuleHandleW(L"ntdll.dll");
-		const auto rtlGetVersion = reinterpret_cast<RtlGetVersionFn>(GetProcAddress(ntdll, "RtlGetVersion"));
-		if (rtlGetVersion == nullptr) {
-			return 0;
-		}
-
-		RTL_OSVERSIONINFOW version = { sizeof(version) };
-		if (rtlGetVersion(&version) != 0) {
-			return 0;
-		}
-		if (version.dwMajorVersion < 10) {
-			return 0;
-		}
-		return version.dwBuildNumber;
-	}
-
-	static bool isRunningUnderWine() {
-		return GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version") != nullptr;
-	}
-
-	//
 	// Private uxtheme exports (by ordinal, Windows 10 1809+).
 	//
 
@@ -2376,12 +2349,12 @@ namespace se::cs::darkmode {
 			return;
 		}
 
-		if (isRunningUnderWine()) {
+		if (linux::isRunningWine()) {
 			log::stream << "Dark mode: disabled, requires native Windows 10 1809 or later." << std::endl;
 			return;
 		}
 
-		const auto buildNumber = getWindowsBuildNumber();
+		const auto buildNumber = windows::getWindowsBuildNumber();
 		if (buildNumber < 17763) {
 			log::stream << "Dark mode: disabled, requires Windows 10 1809 (build 17763) or later. Detected build: " << buildNumber << "." << std::endl;
 			return;

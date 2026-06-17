@@ -219,6 +219,29 @@ namespace se::windows {
 	using setThreadDescription_type = decltype(::SetThreadDescription);
 	static std::optional<setThreadDescription_type*> _SetThreadDescription;
 
+
+	DWORD getWindowsBuildNumber() {
+		using RtlGetVersionFn = LONG(WINAPI*)(PRTL_OSVERSIONINFOW);
+		const auto ntdll = GetModuleHandleW(L"ntdll.dll");
+		if (ntdll == nullptr) {
+			return 0;
+		}
+
+		const auto rtlGetVersion = reinterpret_cast<RtlGetVersionFn>(GetProcAddress(ntdll, "RtlGetVersion"));
+		if (rtlGetVersion == nullptr) {
+			return 0;
+		}
+
+		RTL_OSVERSIONINFOW version = { sizeof(version) };
+		if (rtlGetVersion(&version) != 0) {
+			return 0;
+		}
+		if (version.dwMajorVersion < 10) {
+			return 0;
+		}
+		return version.dwBuildNumber;
+	}
+
 	std::optional<std::wstring> GetThreadDescription(HANDLE thread) {
 		// Initialize handle to function.
 		if (!_GetThreadDescription) {

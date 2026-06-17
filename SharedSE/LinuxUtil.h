@@ -1,6 +1,6 @@
 #pragma once
 
-namespace se::cs::linux {
+namespace se::linux {
 	bool isRunningWine();
 	const char* getWineVersion();
 }

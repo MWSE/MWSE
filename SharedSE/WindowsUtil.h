@@ -26,6 +26,7 @@ namespace mwse::lua {
 #endif
 
 namespace se::windows {
+	DWORD getWindowsBuildNumber();
 	std::optional<std::wstring> GetThreadDescription(HANDLE thread);
 	bool SetThreadDescription(HANDLE thread, const std::wstring_view& description);
 
