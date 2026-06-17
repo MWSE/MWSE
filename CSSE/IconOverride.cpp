@@ -25,12 +25,6 @@ namespace se::cs::iconoverride {
 	constexpr DWORD IAT_IMAGELIST_LOADIMAGEA = 0x6D9918;
 	constexpr DWORD IAT_CREATETOOLBAREX = 0x6D990C;
 
-	// The Show Scene Graph image list is created 4bpp with no mask
-	// (editorUI_createImageList 0x493170: ImageList_Create(16, 15, 0, 8, 1)).
-	// This is the flags push, promoted to ILC_COLOR32 so override art keeps
-	// its alpha channel.
-	constexpr DWORD IMAGELIST_CREATE_FLAGS_PUSH = 0x493178;
-
 	static bool overridesAvailable = false;
 	static fs::path overrideDirectory;
 
@@ -88,8 +82,8 @@ namespace se::cs::iconoverride {
 
 		// Data Files dialog state marks, 16x16. Overriding any of these
 		// disables the black-stroke recolor hack, so supply all five.
-		{ 133, Kind::icon, "datafiles_check_133" },
-		{ 134, Kind::icon, "datafiles_check_134" },
+		{ 133, Kind::icon, "datafiles_check_checked" },
+		{ 134, Kind::icon, "datafiles_check_unchecked" },
 		{ 135, Kind::icon, "datafiles_check_135" },
 		{ 136, Kind::icon, "datafiles_check_136" },
 		{ 137, Kind::icon, "datafiles_check_137" },
@@ -393,9 +387,8 @@ namespace se::cs::iconoverride {
 		hookImportSlot(IAT_IMAGELIST_LOADIMAGEA, realImageList_LoadImageA, hookImageList_LoadImageA);
 		hookImportSlot(IAT_CREATETOOLBAREX, realCreateToolbarEx, hookCreateToolbarEx);
 
-		// Promote the Show Scene Graph image list to 32bpp so override art
-		// keeps its alpha; hookLoadImageA gives the vanilla tiles an opaque
-		// alpha channel to match.
-		memory::genPushEnforced(IMAGELIST_CREATE_FLAGS_PUSH, static_cast<BYTE>(ILC_COLOR32));
+		// Allow 32-bpp icons in a few lists.
+		memory::genPushEnforced(0x411DBF, static_cast<BYTE>(ILC_COLOR32 | ILC_MASK)); // Data Files
+		memory::genPushEnforced(0x493178, static_cast<BYTE>(ILC_COLOR32)); // Show Scene Graph
 	}
 }
