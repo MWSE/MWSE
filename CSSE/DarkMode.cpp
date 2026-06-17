@@ -865,7 +865,7 @@ namespace se::cs::darkmode {
 
 		FillRect(hdc, &itemRect, surfaceBrush);
 
-		std::vector<char> text;
+		std::string text;
 		const auto selected = static_cast<int>(SendMessageA(hWnd, CB_GETCURSEL, 0, 0));
 		if (selected != CB_ERR) {
 			const auto length = static_cast<int>(SendMessageA(hWnd, CB_GETLBTEXTLEN, selected, 0));
