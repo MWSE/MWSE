@@ -2,6 +2,7 @@
 
 #include "CDataBoundPropertyGridProperty.h"
 
+#include "DarkMode.h"
 #include "Settings.h"
 
 IMPLEMENT_DYNAMIC(DialogCSSESettings, CDialogEx);
@@ -28,7 +29,21 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	hdItem.cxy = 200;
 	m_PropertyGrid.GetHeaderCtrl().SetItem(0, &hdItem);
 
+	if (se::cs::darkmode::isActive()) {
+		using namespace se::cs::darkmode::palette;
+		m_PropertyGrid.SetCustomColors(background, text, control, text, background, text, border);
+	}
+
 	m_PropertyGrid.AddProperty(new CDataBoundPropertyGridProperty("Enabled", &se::cs::settings.enabled, "This can be used to prevent CSSE from loading at startup. You will need to manually re-enable it in the config file."));
+
+	auto groupColorTheme = new CMFCPropertyGridProperty("Color Theme");
+	auto themeMode = new CDataBoundPropertyGridProperty("Mode", &se::cs::settings.color_theme.mode, "The editor color theme: 'light', 'dark', or 'auto' to follow the Windows app theme. Dark mode requires Windows 10 1809 or later. Changing this requires restarting the Construction Set.");
+	themeMode->AddOption("light");
+	themeMode->AddOption("dark");
+	themeMode->AddOption("auto");
+	themeMode->AllowEdit(FALSE);
+	groupColorTheme->AddSubItem(themeMode);
+	m_PropertyGrid.AddProperty(groupColorTheme);
 
 	auto groupObjectsWindow = new CMFCPropertyGridProperty("Objects Window");
 	groupObjectsWindow->AddSubItem(new CDataBoundPropertyGridProperty("Change Tab Style", &se::cs::settings.object_window.use_button_style_tabs, "If true, the tab control will use a more button-like style. This will prevent tab rows from jumping to the bottom of the stack when selected."));
@@ -89,6 +104,15 @@ BOOL DialogCSSESettings::OnInitDialog() {
 	groupQuickStart->AddSubItem(new CDataBoundPropertyGridProperty("Enabled", &se::cs::settings.quickstart.enabled, "Determines if the QuickStart feature is used on startup."));
 	groupQuickStart->AddSubItem(new CDataBoundPropertyGridProperty("Load Cell", &se::cs::settings.quickstart.load_cell, "Should the CS automatically load a cell? If false, data files will still load."));
 	m_PropertyGrid.AddProperty(groupQuickStart);
+
+	if (se::cs::darkmode::isActive()) {
+		const auto scrollBar = m_PropertyGrid.GetScrollBarCtrl(SB_VERT);
+		se::cs::darkmode::themePropertyGrid(
+			m_PropertyGrid.GetSafeHwnd(),
+			m_PropertyGrid.GetHeaderCtrl().GetSafeHwnd(),
+			scrollBar ? scrollBar->GetSafeHwnd() : nullptr
+		);
+	}
 
 	return TRUE;
 }
