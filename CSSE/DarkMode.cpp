@@ -428,7 +428,7 @@ namespace se::cs::darkmode {
 		case CDDS_ITEMPREPAINT: {
 			auto itemRect = customDraw->rc;
 
-			char text[260] = {};
+			char text[MAX_PATH] = {};
 			HDITEMA item = {};
 			item.mask = HDI_TEXT;
 			item.pszText = text;
@@ -532,7 +532,7 @@ namespace se::cs::darkmode {
 	}
 
 	static void onUAHDrawMenuBarItem(HWND, UAHDrawMenuItem* item) {
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		MENUITEMINFOA info = { sizeof(info) };
 		info.fMask = MIIM_STRING;
 		info.dwTypeData = text;
@@ -877,7 +877,7 @@ namespace se::cs::darkmode {
 			}
 		}
 
-		char windowText[260] = {};
+		char windowText[MAX_PATH] = {};
 		const char* displayText = text.empty() ? windowText : text.data();
 		if (text.empty()) {
 			GetWindowTextA(hWnd, windowText, sizeof(windowText));
@@ -1388,7 +1388,7 @@ namespace se::cs::darkmode {
 			break;
 		}
 
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		GetWindowTextA(hWnd, text, sizeof(text));
 
 		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
@@ -1464,7 +1464,7 @@ namespace se::cs::darkmode {
 		RECT clientRect = {};
 		GetClientRect(hWnd, &clientRect);
 
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		GetWindowTextA(hWnd, text, sizeof(text));
 
 		const auto font = getMessageFont(hWnd);
@@ -1539,7 +1539,7 @@ namespace se::cs::darkmode {
 				| (pressed ? DFCS_PUSHED : 0));
 		}
 
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		GetWindowTextA(hWnd, text, sizeof(text));
 		RECT textRect = clientRect;
 		if (leftText) {
@@ -1613,7 +1613,7 @@ namespace se::cs::darkmode {
 				| (pressed ? DFCS_PUSHED : 0));
 		}
 
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		GetWindowTextA(hWnd, text, sizeof(text));
 		RECT textRect = clientRect;
 		if (leftText) {
@@ -1668,7 +1668,7 @@ namespace se::cs::darkmode {
 				| (pressed ? DFCS_PUSHED : 0));
 		}
 
-		char text[260] = {};
+		char text[MAX_PATH] = {};
 		GetWindowTextA(hWnd, text, sizeof(text));
 
 		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
@@ -1836,7 +1836,7 @@ namespace se::cs::darkmode {
 				FillRect(hdc, &separator, borderBrush);
 			}
 
-			char text[260] = {};
+			char text[MAX_PATH] = {};
 			const auto length = LOWORD(SendMessageA(hWnd, SB_GETTEXTLENGTHA, i, 0));
 			if (length == 0 || length >= sizeof(text)) {
 				continue;
@@ -2059,7 +2059,7 @@ namespace se::cs::darkmode {
 			FillRect(hdc, &itemRect, controlBrush);
 			FrameRect(hdc, &itemRect, borderBrush);
 
-			char text[260] = {};
+			char text[MAX_PATH] = {};
 			HDITEMA item = {};
 			item.mask = HDI_TEXT | HDI_FORMAT;
 			item.pszText = text;
