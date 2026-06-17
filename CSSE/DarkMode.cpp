@@ -2,15 +2,10 @@
 
 #include "CSSE.h"
 #include "IconOverride.h"
+#include "LinuxUtil.h"
 #include "LogUtil.h"
 #include "Settings.h"
-
-#include <uxtheme.h>
-#include <dwmapi.h>
-#include <richedit.h>
-
-#pragma comment(lib, "uxtheme.lib")
-#pragma comment(lib, "dwmapi.lib")
+#include "WindowsUtil.h"
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20

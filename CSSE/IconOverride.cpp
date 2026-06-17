@@ -5,25 +5,10 @@
 #include "MemoryUtil.h"
 #include "PathUtil.h"
 
-// framework.h undefines min/max, which the GDI+ headers rely on.
-namespace Gdiplus {
-	using std::min;
-	using std::max;
-}
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
-
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 namespace se::cs::iconoverride {
 	namespace fs = std::filesystem;
-
-	// CS exe import address table slots for every API the CS uses to load
-	// themeable icons or bitmaps from its baked resources.
-	constexpr DWORD IAT_LOADICONA = 0x6D9DA0;
-	constexpr DWORD IAT_LOADIMAGEA = 0x6D9E38;
-	constexpr DWORD IAT_IMAGELIST_LOADIMAGEA = 0x6D9918;
-	constexpr DWORD IAT_CREATETOOLBAREX = 0x6D990C;
 
 	static bool overridesAvailable = false;
 	static fs::path overrideDirectory;
@@ -53,7 +38,7 @@ namespace se::cs::iconoverride {
 
 		// Record/spell type strip used by the Object Window, Cell View, and the
 		// NPC/Creature/Race spell lists. 384x16, 24 cells, teal RGB(0,128,128) keyed.
-		{ 178, Kind::bitmap, "record_icons" },
+		{ 178, Kind::bitmap, "object_icons" },
 
 		// Show Scene Graph browser tiles, 16x15 (107/108 are 16x16), drawn opaque.
 		{ 103, Kind::bitmap, "scenegraph_103" },
@@ -84,9 +69,6 @@ namespace se::cs::iconoverride {
 		// disables the black-stroke recolor hack, so supply all five.
 		{ 133, Kind::icon, "datafiles_check_checked" },
 		{ 134, Kind::icon, "datafiles_check_unchecked" },
-		{ 135, Kind::icon, "datafiles_check_135" },
-		{ 136, Kind::icon, "datafiles_check_136" },
-		{ 137, Kind::icon, "datafiles_check_137" },
 	};
 
 	static std::string getOverrideName(HINSTANCE hInstance, UINT resourceId, Kind kind) {
@@ -382,10 +364,10 @@ namespace se::cs::iconoverride {
 			log::stream << "Icon overrides: loading from " << overrideDirectory.string() << "." << std::endl;
 		}
 
-		hookImportSlot(IAT_LOADICONA, realLoadIconA, hookLoadIconA);
-		hookImportSlot(IAT_LOADIMAGEA, realLoadImageA, hookLoadImageA);
-		hookImportSlot(IAT_IMAGELIST_LOADIMAGEA, realImageList_LoadImageA, hookImageList_LoadImageA);
-		hookImportSlot(IAT_CREATETOOLBAREX, realCreateToolbarEx, hookCreateToolbarEx);
+		hookImportSlot(0x6D9DA0, realLoadIconA, hookLoadIconA);
+		hookImportSlot(0x6D9E38, realLoadImageA, hookLoadImageA);
+		hookImportSlot(0x6D9918, realImageList_LoadImageA, hookImageList_LoadImageA);
+		hookImportSlot(0x6D990C, realCreateToolbarEx, hookCreateToolbarEx);
 
 		// Allow 32-bpp icons in a few lists.
 		memory::genPushEnforced(0x411DBF, static_cast<BYTE>(ILC_COLOR32 | ILC_MASK)); // Data Files
