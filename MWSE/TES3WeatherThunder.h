@@ -4,11 +4,11 @@
 
 namespace TES3 {
 	struct WeatherThunder : Weather {
-		char soundIDThunder1[260]; // 0x318
-		char soundIDThunder2[260]; // 0x41C
-		char soundIDThunder3[260]; // 0x520
-		char soundIDThunder4[260]; // 0x624
-		char soundIDRainLoop[260]; // 0x728
+		char soundIDThunder1[MAX_PATH]; // 0x318
+		char soundIDThunder2[MAX_PATH]; // 0x41C
+		char soundIDThunder3[MAX_PATH]; // 0x520
+		char soundIDThunder4[MAX_PATH]; // 0x624
+		char soundIDRainLoop[MAX_PATH]; // 0x728
 		Sound* thunderSound1; // 0x82C
 		Sound* thunderSound2; // 0x830
 		Sound* thunderSound3; // 0x834
