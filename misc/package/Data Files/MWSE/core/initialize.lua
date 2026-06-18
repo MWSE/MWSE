@@ -273,17 +273,6 @@ end
 -------------------------------------------------
 
 --- @param t table
---- @return number result
-function table.size(t)
-	local tType = type(t)
-	if (tType == "table") then
-		return table.nkeys(t)
-	else
-		return #t
-	end
-end
-
---- @param t table
 --- @param deepCheck? boolean
 --- @return boolean result
 function table.empty(t, deepCheck)
@@ -333,6 +322,7 @@ assert(table.print)
 assert(table.removevalue)
 assert(table.shallowcopy)
 assert(table.shuffle)
+assert(table.size)
 assert(table.sortedpairs)
 assert(table.swap)
 assert(table.traverse)
