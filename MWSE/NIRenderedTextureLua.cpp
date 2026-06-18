@@ -21,7 +21,7 @@ namespace mwse::lua {
 		setUserdataForNIObject(usertypeDefinition);
 
 		// Basic function binding.
-		usertypeDefinition["create"] = &NI::RenderedTexture::create;
+		usertypeDefinition["create"] = sol::resolve<NI::Pointer<NI::RenderedTexture>(unsigned int, unsigned int, sol::optional<const NI::Texture::FormatPrefs*>)>(&NI::RenderedTexture::create);
 		usertypeDefinition["readback"] = &NI::RenderedTexture::readback;
 	}
 }

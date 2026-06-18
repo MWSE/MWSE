@@ -416,6 +416,11 @@ namespace TES3 {
 #endif
 	}
 
+	const auto TES3_NonDynamicData_mapDrawCell = reinterpret_cast<void(__thiscall*)(NonDynamicData*, Cell*)>(0x4C81C0);
+	void NonDynamicData::mapDrawCell(Cell* cell) {
+		TES3_NonDynamicData_mapDrawCell(this, cell);
+	}
+
 	const auto TES3_NonDynamicData_findDialogue = reinterpret_cast<Dialogue * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA8D0);
 	Dialogue* NonDynamicData::findDialogue(const char* name) {
 		return TES3_NonDynamicData_findDialogue(this, name);

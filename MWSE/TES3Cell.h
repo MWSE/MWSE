@@ -203,7 +203,8 @@ namespace TES3 {
 		void setIsInterior(bool value);
 
 		bool refreshMapTileFromCache(int tileY, int tileX);
-		void maybeDeleteMappingVisuals(int keepData);
+		// nullptr (every caller) deletes this cell's own mappingVisuals; a non-null argument deletes that object instead.
+		void maybeDeleteMappingVisuals(MappingVisuals* visualsToDelete = nullptr);
 
 		bool getSleepingIsIllegal() const;
 		void setSleepingIsIllegal(bool value);

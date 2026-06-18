@@ -75,6 +75,41 @@ namespace TES3 {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
 	}
 
+	const auto TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer = reinterpret_cast<int(__thiscall*)(WorldControllerRenderTarget*, NI::RenderedTexture*, int, short, float)>(0x42FA50);
+	int WorldControllerRenderTarget::updateFogOfWarVertexBuffer(NI::RenderedTexture* texture, int fowX, short fowY, float radius) {
+		return TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer(this, texture, fowX, fowY, radius);
+	}
+
+	const auto TES3_MapController_borrowMapGeometry = reinterpret_cast<void(__thiscall*)(MapController*)>(0x420DB0);
+	void MapController::borrowMapGeometry() {
+		TES3_MapController_borrowMapGeometry(this);
+	}
+
+	const auto TES3_MapController_restoreMapGeometry = reinterpret_cast<void(__thiscall*)(MapController*)>(0x421100);
+	void MapController::restoreMapGeometry() {
+		TES3_MapController_restoreMapGeometry(this);
+	}
+
+	const auto TES3_MapController_renderCellMapTile = reinterpret_cast<Cell::MappingVisuals* (__thiscall*)(MapController*, int, int, Cell*, NI::Point3, float, Cell::MappingVisuals*)>(0x41FEA0);
+	Cell::MappingVisuals* MapController::renderCellMapTile(int tileY, int tileX, Cell* cell, NI::Point3 worldPosition, float northMarkerOrientation, Cell::MappingVisuals* accumulator) {
+		return TES3_MapController_renderCellMapTile(this, tileY, tileX, cell, worldPosition, northMarkerOrientation, accumulator);
+	}
+
+	const auto TES3_MapController_renderInteriorMap = reinterpret_cast<void(__thiscall*)(MapController*, Cell*)>(0x41F680);
+	void MapController::renderInteriorMap(Cell* cell) {
+		TES3_MapController_renderInteriorMap(this, cell);
+	}
+
+	const auto TES3_MapController_updateMapRenderEngine = reinterpret_cast<void(__thiscall*)(MapController*)>(0x420400);
+	void MapController::updateMapRenderEngine() {
+		TES3_MapController_updateMapRenderEngine(this);
+	}
+
+	const auto TES3_MapController_releaseAllTextures = reinterpret_cast<void(__thiscall*)(MapController*)>(0x41DFB0);
+	void MapController::releaseAllTextures() {
+		TES3_MapController_releaseAllTextures(this);
+	}
+
 	// Fog-of-war pixel cache: a CPU copy of each fog tile, keyed by texture. Entries persist across
 	// compositor passes; a tile's entry is invalidated when fog is drawn to it, so the GPU lock runs
 	// only when a queried tile's fog actually changed.

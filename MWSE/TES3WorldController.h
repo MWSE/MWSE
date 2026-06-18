@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
+#include "TES3Cell.h"
 #include "TES3UIDefines.h"
 #include "TES3UIVector.h"
 
@@ -92,7 +93,7 @@ namespace TES3 {
 		NI::Pointer<NI::ZBufferProperty> zBufferProperty; // 0x4C
 		void* offscreenD3DSurface; // 0x50
 		void* textureD3DSurface; // 0x54
-		NI::Pointer<NI::Object> accumulator; // OffscreenSceneGraph::MasterPropertyAccumulator
+		NI::Pointer<NI::Accumulator> accumulator; // OffscreenSceneGraph::MasterPropertyAccumulator
 		int unknown_0x5C;
 		NI::Pointer<NI::DirectionalLight> directionalLight; // 0x60
 		int unknown_0x64;
@@ -112,6 +113,7 @@ namespace TES3 {
 		void setSceneNode(NI::Node* sceneRoot);
 		void readbackRenderedTexture(D3DLOCKED_RECT* lockedRect);
 		unsigned char getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
+		int updateFogOfWarVertexBuffer(NI::RenderedTexture* texture, int fowX, short fowY, float radius);
 
 		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a CPU copy of each
 		// fog tile (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
@@ -125,7 +127,7 @@ namespace TES3 {
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
 
 	struct MapController {
-		char localMapTileVector[0x10]; // 0x0
+		char localMapTileVector[16]; // 0x0
 		unsigned short tileCountY; // 0x10
 		unsigned short tileCountX; // 0x12
 		int unknown_0x14;
@@ -143,6 +145,13 @@ namespace TES3 {
 
 		MapController() = delete;
 		~MapController() = delete;
+
+		void borrowMapGeometry();
+		void restoreMapGeometry();
+		Cell::MappingVisuals* renderCellMapTile(int tileY, int tileX, Cell* cell, NI::Point3 worldPosition, float northMarkerOrientation, Cell::MappingVisuals* accumulator);
+		void renderInteriorMap(Cell* cell);
+		void updateMapRenderEngine();
+		void releaseAllTextures();
 	};
 	static_assert(sizeof(MapController) == 0x38, "TES3::MapController failed size validation");
 

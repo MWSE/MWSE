@@ -60,9 +60,9 @@ namespace TES3 {
 		return TES3_Cell_refreshMapTileFromCache(this, tileY, tileX);
 	}
 
-	const auto TES3_Cell_maybeDeleteMappingVisuals = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4E3550);
-	void Cell::maybeDeleteMappingVisuals(int keepData) {
-		TES3_Cell_maybeDeleteMappingVisuals(this, keepData);
+	const auto TES3_Cell_maybeDeleteMappingVisuals = reinterpret_cast<void(__thiscall *)(Cell*, Cell::MappingVisuals*)>(0x4E3550);
+	void Cell::maybeDeleteMappingVisuals(MappingVisuals* visualsToDelete) {
+		TES3_Cell_maybeDeleteMappingVisuals(this, visualsToDelete);
 	}
 
 	const auto TES3_Cell_setGridX = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DB9E0);
