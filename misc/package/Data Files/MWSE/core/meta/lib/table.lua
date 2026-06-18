@@ -38,6 +38,18 @@ function table.bininsert(t, value, comp) end
 --- @return integer|nil highestMatch If a match was found, and if `findAll == true`, then this will be the largest `index` such that `tbl[index] == vale`. `nil` otherwise.
 function table.binsearch(tbl, value, comp, findAll) end
 
+--- Calls event handlers in reverse order until one returns `false`.
+--- @param handlers (fun(...): boolean?)[] The event handlers to call.
+--- @param ... any Arguments passed to each handler.
+--- @return boolean eventHandled True if no further handlers should be called.
+function table.calleventhandlers(handlers, ...) end
+
+--- Calls arrays of event handlers until one group handles the event.
+--- @param handlers (fun(...): boolean?)[][] The handler groups to call.
+--- @param ... any Arguments passed to each handler.
+--- @return boolean eventHandled True if no further handler groups should be called.
+function table.callmultipleeventhandlers(handlers, ...) end
+
 --- Returns a random element from the given table.
 --- @generic keyType
 --- @generic valueType
@@ -58,7 +70,10 @@ function table.clear(table) end
 --- @return boolean result No description yet available.
 function table.contains(t, value) end
 
+--- Deprecated. Use `table.shallowcopy` instead.
+--- 
 --- Shallowly copies a table's contents to a destination table. If no destination table is provided, a new table will be created. Note that sub tables will not be copied, and will still refer to the same data.
+--- @deprecated
 --- @generic fromType : table
 --- @generic toType : table
 --- @param from fromType No description yet available.
@@ -77,14 +92,25 @@ function table.copymissing(to, from) end
 --- @return tableType result No description yet available.
 function table.deepcopy(t) end
 
+--- Recursively converts a value to a human-readable string.
+--- @param value any No description yet available.
+--- @param level? integer *Default*: `1`. The maximum recursion depth.
+--- @param prefix? string *Optional*. The current indentation prefix.
+--- @return string result No description yet available.
+function table.deeptostring(value, level, prefix) end
+
 --- Checks if a table is empty.
 --- 
---- If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
+--- This is a compatibility helper that uses `pairs` and therefore respects normal iteration behavior such as `__pairs`. By contrast, `table.isempty` is a lower-level rubic0n helper that inspects raw table storage and does not honor `__pairs` or readonly proxy backing storage.
+--- 
+--- If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`. Use `table.isempty` when you specifically need a raw-storage emptiness check.
 --- @param t table No description yet available.
 --- @param deepCheck? boolean *Default*: `false`. If `true`, subtables will also be checked to see if they are empty.
 --- @return boolean result No description yet available.
 function table.empty(t, deepCheck) end
 
+--- Deprecated. Use `table.isequal` instead.
+--- 
 --- Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
 --- Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
 --- For example, all of the following assertions pass:
@@ -94,6 +120,7 @@ function table.empty(t, deepCheck) end
 --- assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
 --- ```
 --- 
+--- @deprecated
 --- @param left table No description yet available.
 --- @param right table No description yet available.
 --- @return boolean result True if the contents of `left` are equal to the contents of `right`. False otherwise.
@@ -133,6 +160,15 @@ function table.filterarray(arr, f, ...) end
 --- @return keyType|unknown|nil key A `key` such that `tbl[key] == value`, if such a key exists. `nil` otherwise.
 function table.find(t, value) end
 
+--- Finds the array element with the lowest score returned by `scoreFn`.
+--- @generic valueType
+--- @param array valueType[] No description yet available.
+--- @param scoreFn fun(x: valueType): number|nil No description yet available.
+--- @return valueType|nil element The element with the lowest score.
+--- @return number|nil score The lowest score.
+--- @return integer|nil index The index of the element with the lowest score.
+function table.findminscore(array, scoreFn) end
+
 --- Gets a value in a table. If the key doesn't exist in the table, a specified default value will be returned instead.
 --- @generic keyType
 --- @generic valueType
@@ -151,7 +187,39 @@ function table.get(t, key, defaultValue) end
 --- @param key keyType The key to use to access the table.
 --- @param defaultValue defaultValueType The default value to set and return if the key didn't exist in the table.
 --- @return valueType|defaultValueType|unknown result No description yet available.
+function table.getorset(t, key, defaultValue) end
+
+--- Returns a printable multi-line representation of a table-like value.
+--- @param inputTable table|userdata No description yet available.
+--- @param maxDepth? integer *Default*: `50`. No description yet available.
+--- @param indentStr? string *Optional*. Defaults to a tab character.
+--- @param indentLevel? integer *Default*: `0`. No description yet available.
+--- @return string result No description yet available.
+function table.getprintabletable(inputTable, maxDepth, indentStr, indentLevel) end
+
+--- Deprecated. Use `table.getorset` instead.
+--- 
+--- Gets a value in a table. If the key doesn't exist in the table, a specified default value will be set in the table and returned instead.
+--- @deprecated
+--- @generic keyType
+--- @generic valueType
+--- @generic defaultValueType
+--- @param t { [keyType]: valueType } No description yet available.
+--- @param key keyType The key to use to access the table.
+--- @param defaultValue defaultValueType The default value to set and return if the key didn't exist in the table.
+--- @return valueType|defaultValueType|unknown result No description yet available.
 function table.getset(t, key, defaultValue) end
+
+--- Splits a comma-separated string into a table.
+--- @param inputString string No description yet available.
+--- @return string[] result No description yet available.
+function table.gettablefromcommasplit(inputString) end
+
+--- Splits a string using a Lua pattern. If the pattern has captures, the first capture from each match is stored; otherwise, the full match is stored.
+--- @param inputString string No description yet available.
+--- @param pattern string No description yet available.
+--- @return string[] result No description yet available.
+function table.gettablefromsplit(inputString, pattern) end
 
 --- Returns a copy of `t` with the keys and values flipped.
 --- @generic keyType
@@ -165,12 +233,37 @@ function table.invert(t) end
 --- @return boolean result No description yet available.
 function table.isarray(t) end
 
+--- Returns true when raw table storage has no non-nil values.
+--- 
+--- This low-level helper inspects raw table storage directly. It does not honor `__pairs`, readonly proxy backing storage, or `table.makereadonly` backing contents.
+--- @param t table No description yet available.
+--- @return boolean result No description yet available.
+function table.isempty(t) end
+
+--- Recursively compares tables by key/value equality without recursing forever on cycles.
+--- 
+--- Tables are structurally compared with raw table identity checks. Table `__eq` metamethods are not invoked for table identity or table values. Non-table values use normal Lua equality.
+--- @param left any No description yet available.
+--- @param right any No description yet available.
+--- @return boolean result No description yet available.
+function table.isequal(left, right) end
+
 --- Returns an array-style table of all keys in the given table, t. Optionally, it will sort the returned table.
 --- @generic keyType
 --- @param t { [keyType]: unknown } The table to get keys for.
 --- @param sort? boolean|fun(a: keyType, b: keyType): boolean *Optional*. If true, the returned table will be sorted. If a function is passed, the table will be sorted using the given function.
 --- @return keyType[] keys An array of all table keys.
 function table.keys(t, sort) end
+
+--- Returns a proxy that guards normal assignment through the returned table.
+--- 
+--- This protects normal assignment on the proxy or converted tables, but it is not a sandbox boundary against `rawset`, debug-library metatable or upvalue access, or hostile privileged code. Omitting `copy` converts the input table in place and rehomes raw entries behind backing storage.
+--- @generic tableType : table
+--- @param inTable tableType No description yet available.
+--- @param copy? boolean *Default*: `false`. Copy instead of converting in place.
+--- @param strict? boolean *Optional*. Throw when reading missing keys.
+--- @return table result The readonly table proxy.
+function table.makereadonly(inTable, copy, strict) end
 
 --- Creates a new table consisting of key value pairs `k, f(k, v)`, where `k, v` is a pair in `t`.
 --- Any additional arguments will be passed to `f`. For example, `table.map(t, f, 10)` would call `f(k, v, 10)` on each value `v` of `t`.
@@ -183,11 +276,35 @@ function table.keys(t, sort) end
 --- @return { [keyType]: newValueType } result The result of applying `f` to each value in `t`.
 function table.map(t, f, ...) end
 
+--- Maps an array through `scoreFn`, keeping values with non-false scores.
+--- @generic valueType
+--- @generic scoreType
+--- @param array valueType[] No description yet available.
+--- @param scoreFn fun(x: valueType): scoreType|nil No description yet available.
+--- @return valueType[] output No description yet available.
+--- @return scoreType[] scores No description yet available.
+function table.mapfilter(array, scoreFn) end
+
+--- Maps and filters an array, then sorts by the returned scores.
+--- @generic valueType
+--- @param array valueType[] No description yet available.
+--- @param scoreFn fun(x: valueType): number|nil No description yet available.
+--- @return valueType[] output No description yet available.
+--- @return number[] scores No description yet available.
+function table.mapfiltersort(array, scoreFn) end
+
 --- This creates a pre-sized table. This is useful for big tables if the final table size is known and automatic table resizing is too expensive.
 --- @param narray number A hint for how many elements the array part of the table will have. Allocates fields for [0, narray].
 --- @param nhash number A hint for how many elements the hash part of the table will have.
 --- @return table newTable The pre-sized table that was created.
 function table.new(narray, nhash) end
+
+--- Prints the result of `table.getprintabletable(inputTable, ...)`.
+--- @param inputTable table|userdata No description yet available.
+--- @param maxDepth? integer *Optional*. No description yet available.
+--- @param indentStr? string *Optional*. No description yet available.
+--- @param indentLevel? integer *Optional*. No description yet available.
+function table.print(inputTable, maxDepth, indentStr, indentLevel) end
 
 --- Removes a `value` from a given `list`. Returns `true` if the value was successfully removed.
 --- @generic valueType
@@ -195,6 +312,14 @@ function table.new(narray, nhash) end
 --- @param value valueType No description yet available.
 --- @return boolean result No description yet available.
 function table.removevalue(list, value) end
+
+--- Shallow-copies values from one table to another table.
+--- @generic fromType : table
+--- @generic toType : table
+--- @param from fromType No description yet available.
+--- @param to? toType *Optional*. No description yet available.
+--- @return fromType|toType result No description yet available.
+function table.shallowcopy(from, to) end
 
 --- Shuffles the table in place using the Fisher-Yates algorithm. Passing in table size as the second argument saves the function from having to get it itself.
 --- @param t table No description yet available.
@@ -205,6 +330,14 @@ function table.shuffle(t, n) end
 --- @param t table No description yet available.
 --- @return number result No description yet available.
 function table.size(t) end
+
+--- Returns an iterator over keys in sorted order.
+--- @generic keyType
+--- @generic valueType
+--- @param tbl { [keyType]: valueType } No description yet available.
+--- @param comparator? fun(a: keyType, b: keyType): boolean *Optional*. No description yet available.
+--- @return fun(): keyType, valueType iterator No description yet available.
+function table.sortedpairs(tbl, comparator) end
 
 --- Sets a value in a table and returns any previously defined value for that key.
 --- @generic keyType
@@ -225,6 +358,16 @@ function table.swap(t, key, value) end
 --- @param k? string *Default*: `children`. The subtable key.
 --- @return fun(): tableType|any iterator No description yet available.
 function table.traverse(t, k) end
+
+--- Unpacks all values from an object iterable with `pairs`.
+--- @param object table No description yet available.
+--- @return any values No description yet available.
+function table.unwind(object) end
+
+--- Unpacks all values from an object iterable with `ipairs`.
+--- @param object table No description yet available.
+--- @return any values No description yet available.
+function table.unwindarray(object) end
 
 --- Returns an array-style table of all values in the given table, t. Optionally, it will sort the returned table.
 --- @generic valueType

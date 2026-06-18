@@ -301,438 +301,50 @@ function table.empty(t, deepCheck)
 	return true
 end
 
---- @generic keyType
---- @generic valueType
---- @param t { [keyType]: valueType }
---- @return valueType value
---- @return keyType key
-function table.choice(t)
-	-- We can abort on empty tables.
-	local size = table.size(t)
-	if (size == 0) then
-		return
-	end
-
-	-- Call next a random amount of times up to the size of the table to get a random key.
-	local key = nil
-	local nextCount = math.random(size)
-	for _ = 1, nextCount do
-		key = next(t, key)
-	end
-
-	return t[key], key
-end
-
---- @generic keyType
---- @generic valueType
---- @param t { [keyType]: valueType }
---- @param value valueType
---- @return keyType|unknown|nil key
-function table.find(t, value)
-	for i, v in pairs(t) do
-		if (v == value) then
-			return i
-		end
-	end
-end
-
---- @param t table
---- @param value unknown
---- @return boolean result
-function table.contains(t, value)
-	return table.find(t, value) ~= nil
-end
-
-
---- @param left table
---- @param right table
---- @return boolean result
-function table.equal(left, right)
-
-	-- Try a quick basic equality check.
-	if (left == right) then
-		return true
-	end
-
-	-- Make sure both inputs are tables.
-	if (type(left) ~= "table" or type(right) ~= "table") then
-		return false
-	end
-
-	-- Loop through pairs and see if all values match from t1 -> t2.
-	local size1 = 0
-	-- Store the function locally for faster function calls.
-	local eq = table.equal
-	for k, v1 in pairs(left) do
-		-- Note: If `v1 ~= v2`, then the recursive call to `table.equal` will
-		-- result in a redundant comparison of `v1` and `v2`.
-		-- But, testing shows that for highly similar tables, this approach is faster
-		-- than only checking `not table.equal(v1, v2)`.
-		-- This is likely due to the overhead from function calls.
-
-		local v2 = right[k]
-		if (v1 ~= v2 and not eq(v1, v2)) then
-			return false
-		end
-
-		size1 = size1 + 1
-	end
-
-	-- We can assume t1 == t2 if all values match for t1 -> t2 and both tables have the same size.
-	return size1 == table.size(right)
-end
-
-
---- @generic valueType
---- @param list { [unknown]: valueType }
---- @param value valueType
---- @return boolean result
-function table.removevalue(list, value)
-	local i = table.find(list, value)
-	if (i ~= nil) then
-		table.remove(list, i)
-		return true
-	end
-	return false
-end
-
---- @generic fromType : table
---- @generic toType : table
---- @param from fromType
---- @param to? toType
---- @return fromType|toType result
-function table.copy(from, to)
-	if (to == nil) then
-		to = {}
-	end
-
-	for k, v in pairs(from) do
-		to[k] = v
-	end
-
-	return to
-end
-
---- @generic tableType : table
---- @param t tableType
---- @return tableType result
-function table.deepcopy(t)
-	local copy = nil
-	if type(t) == "table" then
-		copy = {}
-		for k, v in next, t, nil do
-			copy[table.deepcopy(k)] = table.deepcopy(v)
-		end
-		setmetatable(copy, table.deepcopy(getmetatable(t)))
-	else -- number, string, boolean, etc
-		copy = t
-	end
-	return copy
-end
-
---- @param to table
---- @param from table
-function table.copymissing(to, from)
-	for k, v in pairs(from) do
-		if (type(to[k]) == "table" and type(v) == "table") then
-			table.copymissing(to[k], v)
-		else
-			if (to[k] == nil) then
-				to[k] = v
-			end
-		end
-	end
-end
-
---- @generic tableType
---- @param t tableType
---- @param k? string
---- @return fun(): tableType|any iterator
-function table.traverse(t, k)
-	k = k or "children"
-	local function iter(nodes)
-		for i, node in ipairs(nodes or t) do
-			if node then
-				coroutine.yield(node)
-				if node[k] then
-					iter(node[k])
-				end
-			end
-		end
-	end
-	return coroutine.wrap(iter)
-end
-
---- @generic keyType
---- @param t { [keyType]: unknown }
---- @param sort? boolean|fun(a: keyType, b: keyType): boolean
---- @return keyType[] keys
-function table.keys(t, sort)
-	local keys = {}
-	for k, _ in pairs(t) do
-		table.insert(keys, k)
-	end
-
-	if (sort) then
-		if (sort == true) then
-			sort = nil
-		end
-		table.sort(keys, sort)
-	end
-
-	return keys
-end
-
---- @generic valueType
---- @param t { [unknown]: valueType }
---- @param sort? boolean|fun(a: valueType, b: valueType): boolean
---- @return valueType[] values
-function table.values(t, sort)
-	local values = {}
-	for _, v in pairs(t) do
-		table.insert(values, v)
-	end
-
-	if (sort) then
-		if (sort == true) then
-			sort = nil
-		end
-		table.sort(values, sort)
-	end
-
-	return values
-end
-
---- @generic keyType
---- @generic valueType
---- @param t { [keyType]: valueType }
---- @return { [valueType]: keyType } result
-function table.invert(t)
-	local inverted = {}
-	for k, v in pairs(t) do
-		inverted[v] = k
-	end
-	return inverted
-end
-
---- @generic keyType
---- @generic valueType
---- @param t { [keyType]: valueType }
---- @param key keyType
---- @param value any
---- @return valueType|unknown|nil oldValue
-function table.swap(t, key, value)
-	local old = t[key]
-	t[key] = value
-	return old
-end
-
---- @generic keyType
---- @generic valueType
---- @generic defaultValueType
---- @param t { [keyType]: valueType }
---- @param key keyType
---- @param defaultValue defaultValueType
---- @return valueType|defaultValueType|unknown result
-function table.get(t, key, defaultValue)
-	local value = t[key]
-	if (value == nil) then
-		return defaultValue
-	end
-	return value
-end
-
---- @generic keyType
---- @generic valueType
---- @generic defaultValueType
---- @param t { [keyType]: valueType }
---- @param key keyType
---- @param defaultValue defaultValueType
---- @return valueType|defaultValueType|unknown result
-function table.getset(t, key, defaultValue)
-	local value = t[key]
-	if (value ~= nil) then
-		return value
-	end
-
-	t[key] = defaultValue
-	return defaultValue
-end
-
---- @param t table
---- @param index number
---- @return number index
-function table.wrapindex(t, index)
-	local size = #t
-	local newIndex = index % size
-	if (newIndex == 0) then
-		newIndex = size
-	end
-	return newIndex
-end
-
---- @param t table
---- @param n? integer
-function table.shuffle(t, n)
-	n = n or #t
-	for i = n, 2, -1 do
-		local j = math.random(i)
-		t[i], t[j] = t[j], t[i]
-	end
-end
-
--- Other Resty APIs.
+-- rubic0n APIs.
+assert(table.bininsert)
+assert(table.binsearch)
+assert(table.calleventhandlers)
+assert(table.callmultipleeventhandlers)
+assert(table.choice)
+assert(table.contains)
+assert(table.copymissing)
+assert(table.deepcopy)
+assert(table.deeptostring)
+assert(table.filter)
+assert(table.filterarray)
+assert(table.find)
+assert(table.findminscore)
+assert(table.get)
+assert(table.getorset)
+assert(table.getprintabletable)
+assert(table.gettablefromcommasplit)
+assert(table.gettablefromsplit)
+assert(table.invert)
 assert(table.isarray)
+assert(table.isempty)
+assert(table.isequal)
+assert(table.keys)
+assert(table.makereadonly)
+assert(table.map)
+assert(table.mapfilter)
+assert(table.mapfiltersort)
+assert(table.print)
+assert(table.removevalue)
+assert(table.shallowcopy)
+assert(table.shuffle)
+assert(table.sortedpairs)
+assert(table.swap)
+assert(table.traverse)
+assert(table.unwind)
+assert(table.unwindarray)
+assert(table.values)
+assert(table.wrapindex)
 
-
--------------------------------------------------
--- Extend base table: Add binary search/insert
--------------------------------------------------
-
---[[
-	table.binsearch( table, value [, comp [, findAll] ] )
-
-	finds a value by performing a binary search.
-	If the `value` is found:
-		if `findAll` evaluates to true, then the lowest matching index and the highest matching index will be returned.
-		otherwise, the first index to match will be returned.
-	If `comp` is given:
-		comparisons will be performed as though the array was sorted via `table.sort(tbl, comp)`.
-	If `findAll == true`:
-		two indices will be returned, corresponding to the lowest and highest indices whose corresponding elements are equal to `value`.
-	Return value:
-		on success: two integers: `lowestMatch, highestMatch`
-		on failure: nil
-]]--
---- @generic valueType
---- @param tbl valueType[]
---- @param value valueType
---- @param comp? fun(a: valueType, b: valueType): boolean
---- @param findAll? boolean
---- @return integer|nil index
---- @return integer|nil highestMatch
-function table.binsearch(tbl, value, comp, findAll)
-	-- initialize the index variables
-	local first, last, midpt = 1, #tbl, 0
-	local floor = math.floor
-	comp = comp or function(a,b) return a < b end -- set to default if not given
-	-- Binary Search
-	while first <= last do
-		-- calculate middle
-		midpt = floor((first + last) / 2)
-
-		if comp(value, tbl[midpt]) then -- `value < tbl[midpt]`
-
-			last = midpt - 1 -- value is in the first half
-
-		elseif comp(tbl[midpt], value) then -- `tbl[midpt] < value`
-
-			first = midpt + 1 -- value is in the second half
-
-		else -- `tbl[midpt] == value`
-
-			-- only want the first match? bail
-			if not findAll then return midpt, midpt end
-
-			-- find all the remaining matches
-			local lowestMatch, highestMatch = midpt, midpt
-			while value == tbl[lowestMatch - 1] do
-				lowestMatch = lowestMatch - 1
-			end
-			while value == tbl[highestMatch + 1] do
-				highestMatch = highestMatch + 1
-			end
-			return lowestMatch, highestMatch
-		end
-	end
-end
-
---[[
-	table.bininsert( table, value [, comp] )
-
-	Inserts a given value through BinaryInsert into the table sorted by [, comp].
-
-	If 'comp' is given, then it must be a function that receives
-	two table elements, and returns true when the first is less
-	than the second, e.g. comp = function(a, b) return a > b end,
-	will give a sorted table, with the biggest value on position 1.
-	[, comp] behaves as in table.sort(table, value [, comp])
-	returns the index where 'value' was inserted
-]]--
-local fcomp_default = function( a,b ) return a < b end
---- @generic valueType
---- @param t valueType[]
---- @param value valueType
---- @param comp? fun(a: valueType, b: valueType): boolean
---- @return number result
-function table.bininsert(t, value, comp)
-	-- Initialise compare function
-	local comp = comp or fcomp_default
-	--  Initialise numbers
-	local iStart,iEnd,iMid,iState = 1,#t,1,0
-	-- Get insert position
-	while iStart <= iEnd do
-		-- calculate middle
-		iMid = math.floor( (iStart+iEnd)/2 )
-		-- compare
-		if comp( value,t[iMid] ) then
-			iEnd,iState = iMid - 1,0
-		else
-			iStart,iState = iMid + 1,1
-		end
-	end
-	table.insert( t,(iMid+iState),value )
-	return (iMid+iState)
-end
-
-
--- functional programming stuff
-
---- @generic keyType
---- @generic valueType
---- @generic newValueType
---- @param t { [keyType]: valueType }
---- @param f fun(k: keyType, v: valueType, ...): newValueType
---- @param ... any
---- @return { [keyType]: newValueType } result
-function table.map(t, f, ...)
-	local tbl = {}
-	for k, v in pairs(t) do
-		tbl[k] = f(k, v, ...)
-	end
-	return tbl
-end
-
---- @generic keyType
---- @generic valueType
---- @param t { [keyType]: valueType }
---- @param f fun(k: keyType, v: valueType, ...): boolean
---- @param ... any
---- @return { [keyType]: valueType } result
-function table.filter(t, f, ...)
-	local tbl = {}
-	for k, v in pairs(t) do
-		if f(k, v, ...) then
-			tbl[k] = v
-		end
-	end
-	return tbl
-end
-
---- @generic valueType
---- @param arr valueType[]
---- @param f fun(i: integer, v: valueType, ...): boolean
---- @param ... any
---- @return valueType[] result
-function table.filterarray(arr, f, ...)
-	local tbl = {}
-	for i, v in ipairs(arr) do
-		if f(i, v, ...) then
-			table.insert(tbl, v)
-		end
-	end
-	return tbl
-end
+-- Legacy naming.
+table.equal = table.isequal
+table.copy = table.shallowcopy
+table.getset = table.getorset
 
 -------------------------------------------------
 -- Extend base API: string
