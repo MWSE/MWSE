@@ -1226,9 +1226,46 @@ namespace se::cs::darkmode {
 		format.dwMask = CFM_COLOR;
 		format.crTextColor = palette::text;
 		SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_DEFAULT, reinterpret_cast<LPARAM>(&format));
+		SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&format));
 		if (recolorAll) {
 			SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&format));
 		}
+	}
+
+	// Disabled RichEdit 1.0 controls ignore EM_SETBKGNDCOLOR and paint with a
+	// light system background. Repaint their client area using the same flat
+	// disabled treatment as other legacy controls.
+	static void paintDisabledRichEdit(HWND hWnd) {
+		PAINTSTRUCT paint = {};
+		const auto hdc = BeginPaint(hWnd, &paint);
+
+		RECT clientRect = {};
+		GetClientRect(hWnd, &clientRect);
+		FillRect(hdc, &clientRect, surfaceBrush);
+
+		const auto textLength = GetWindowTextLengthA(hWnd);
+		if (textLength > 0) {
+			std::string text(textLength + 1, '\0');
+			GetWindowTextA(hWnd, text.data(), static_cast<int>(text.size()));
+			text.resize(textLength);
+
+			const auto firstVisibleLine = SendMessageA(hWnd, EM_GETFIRSTVISIBLELINE, 0, 0);
+			const auto firstVisibleCharacter = SendMessageA(hWnd, EM_LINEINDEX, firstVisibleLine, 0);
+			if (firstVisibleCharacter > 0) {
+				text.erase(0, firstVisibleCharacter);
+			}
+
+			RECT formatRect = {};
+			SendMessageA(hWnd, EM_GETRECT, 0, reinterpret_cast<LPARAM>(&formatRect));
+
+			const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
+			SetBkMode(hdc, TRANSPARENT);
+			SetTextColor(hdc, palette::textDisabled);
+			DrawTextA(hdc, text.c_str(), -1, &formatRect, DT_EDITCONTROL | DT_EXPANDTABS | DT_NOPREFIX | DT_WORDBREAK);
+			SelectObject(hdc, previousFont);
+		}
+
+		EndPaint(hWnd, &paint);
 	}
 
 	static LRESULT CALLBACK richEditSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
@@ -1245,22 +1282,20 @@ namespace se::cs::darkmode {
 			applyRichEditColors(hWnd, true);
 			return result;
 		}
+		case WM_SETFONT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			applyRichEditColors(hWnd, true);
+			return result;
+		}
 		case WM_ENABLE: {
-			// Disabled rich edits revert to a system-color background.
+			// Disabled rich edits revert to system colors.
 			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
 			applyRichEditColors(hWnd, true);
 			return result;
 		}
 		case WM_PAINT:
-			// The script editor starts with an empty disabled rich edit, which
-			// ignores EM_SETBKGNDCOLOR and paints with COLOR_3DFACE.
-			if (!IsWindowEnabled(hWnd) && GetWindowTextLengthA(hWnd) == 0) {
-				PAINTSTRUCT paint = {};
-				const auto hdc = BeginPaint(hWnd, &paint);
-				RECT clientRect = {};
-				GetClientRect(hWnd, &clientRect);
-				FillRect(hdc, &clientRect, surfaceBrush);
-				EndPaint(hWnd, &paint);
+			if (!IsWindowEnabled(hWnd)) {
+				paintDisabledRichEdit(hWnd);
 				return 0;
 			}
 			break;
