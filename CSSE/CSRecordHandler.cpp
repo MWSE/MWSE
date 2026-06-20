@@ -113,4 +113,9 @@ namespace se::cs {
 		const auto RecordHandler_createReference = reinterpret_cast<Reference * (__thiscall*)(RecordHandler*, PhysicalObject*, NI::Point3*, NI::Point3*, bool*, Reference*, Cell*)>(0x506C80);
 		return RecordHandler_createReference(this, baseObject, position, orientation, cellWasCreated, existingReference, cell);
 	}
+
+	BaseObject* RecordHandler::getObjectByID(const char* id) const {
+		const auto RecordHandler_getObjectByID = reinterpret_cast<BaseObject*(__thiscall*)(const RecordHandler*, const char*)>(0x4015D7);
+		return RecordHandler_getObjectByID(this, id);
+	}
 }
