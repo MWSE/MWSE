@@ -2384,7 +2384,7 @@ namespace mwse::patch {
 			pending.cell = nullptr;
 			auto& mapRT = TES3::WorldController::get()->mapRenderTarget;
 			auto mappingVisuals = cell ? cell->mappingVisuals : nullptr;
-			if (mappingVisuals && static_cast<void*>(mappingVisuals->texture) == static_cast<void*>(pending.texture)) {
+			if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
 				auto lockedRect = mapRT.lockRenderTarget(pending.texture.get());
 				if (lockedRect) {
 					mapRT.readbackRenderedTexture(lockedRect);
@@ -2521,7 +2521,7 @@ namespace mwse::patch {
 			const float positionX = target.x - perpSin * kHalfCellWidthUnits - northAxis.x * kHalfCellWidthUnits;
 			const float positionY = target.y - perpCos * kHalfCellWidthUnits - northAxis.y * kHalfCellWidthUnits;
 			auto visuals = TES3::Cell::MappingVisuals::create(positionX, positionY, data_localMapTileCoverageMask[kMapTileGridSize * tileY + tileX]);
-			visuals->texture = reinterpret_cast<NI::SourceTexture*>(texture.get());
+			visuals->texture = texture.get();
 			if (cell->mappingVisuals) {
 				cell->maybeDeleteMappingVisuals();
 			}
@@ -2543,7 +2543,7 @@ namespace mwse::patch {
 			for (auto& pending : sPending) {
 				if (pending.cell == cell) {
 					auto mappingVisuals = cell->mappingVisuals;
-					if (mappingVisuals && static_cast<void*>(mappingVisuals->texture) == static_cast<void*>(pending.texture)) {
+					if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
 						pending.worldMapPaintPending = true;
 						return;
 					}
@@ -2564,7 +2564,7 @@ namespace mwse::patch {
 				auto cell = pending.cell;
 				if (cell) {
 					auto mappingVisuals = cell->mappingVisuals;
-					if (mappingVisuals && static_cast<void*>(mappingVisuals->texture) == static_cast<void*>(pending.texture)) {
+					if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
 						cell->maybeDeleteMappingVisuals();
 						cell->mappingVisuals = nullptr;
 					}
@@ -2592,13 +2592,13 @@ namespace mwse::patch {
 			if (pending.cell == nullptr) {
 				continue;
 			}
-			pending.age += 1;
+			++pending.age;
 			if (pending.age >= kDeferTicks) {
 				completeOne(pending);
 			}
 		}
 		if (sCompositorPending) {
-			sCompositorAge += 1;
+			++sCompositorAge;
 			if (sCompositorAge >= kDeferTicks) {
 				sCompositorPending = false;
 				auto mapController = TES3::WorldController::get()->mapController;

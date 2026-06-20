@@ -104,7 +104,10 @@ namespace TES3 {
 			unsigned short coverageMask; // 0xC
 			unsigned short unknown_0xE; // 0xE
 			int unknown_0x10;
-			NI::Pointer<NI::SourceTexture> texture; // 0x14
+			// The map tile's display texture. The engine reads back an NiSourceTexture here, but it is
+			// consumed only as an NiObject/NiTexture (and may also hold an NiRenderedTexture), so it is
+			// modeled as the NI::Texture base.
+			NI::Pointer<NI::Texture> texture; // 0x14
 
 			MappingVisuals() = delete;
 			~MappingVisuals() = delete;
