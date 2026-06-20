@@ -40,6 +40,8 @@
 
 #include "DialogProcContext.h"
 
+#pragma comment(lib, "ole32.lib") // OLE drag-and-drop
+
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;
 	__int16 lastCursorPosY = 0;
@@ -74,6 +76,10 @@ namespace se::cs::dialog::render_window {
 	using gIsHoldingZ = memory::ExternalGlobal<bool, 0x6CF788>;
 	using gIsScaling = memory::ExternalGlobal<bool, 0x6CF785>;
 	using gIsPanning = memory::ExternalGlobal<bool, 0x6CF78A>;
+
+	using gIsReferencePicking = memory::ExternalGlobal<bool, 0x6CF790>;
+	using gIsPathGridEditing = memory::ExternalGlobal<bool, 0x6CF791>;
+	using gIsPreviewMode = memory::ExternalGlobal<bool, 0x6CF797>;
 
 	void renderNextFrame() {
 		using gRenderNextFrame = memory::ExternalGlobal<bool, 0x6CF78D>;
@@ -3172,8 +3178,6 @@ namespace se::cs::dialog::render_window {
 		updateLandscapeCircleWidget();
 	}
 
-#pragma comment(lib, "ole32.lib")
-
 	// Window message 0x407 is the engine's "place dragged objects" handler: the native
 	// Object Window sends it to the render window to commit a drag-drop placement, and
 	// we reuse the same flow for external drops.
@@ -3193,10 +3197,10 @@ namespace se::cs::dialog::render_window {
 
 	static bool isNativePlacementAvailable() {
 		using landscape_edit_settings_window::getLandscapeEditingEnabled;
-		return !getLandscapeEditingEnabled()                   // (landscape editing)
-			&& !memory::ExternalGlobal<bool, 0x6CF790>::get()  // (reference picking)
-			&& !memory::ExternalGlobal<bool, 0x6CF791>::get()  // (path grid editing)
-			&& !memory::ExternalGlobal<bool, 0x6CF797>::get(); // (preview mode)
+		return !getLandscapeEditingEnabled()
+			&& !gIsReferencePicking::get()
+			&& !gIsPathGridEditing::get()
+			&& !gIsPreviewMode::get();
 	}
 
 	static bool isPlaceable(BaseObject* obj) {
