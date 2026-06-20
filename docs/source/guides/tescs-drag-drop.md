@@ -53,11 +53,44 @@ For rich web pages, drag elements that represent objects. The dropped HTML is sc
 - The total clipboard payload must not exceed **64 KB**.
 - At most **256 objects** are extracted.
 
+The current implementation does **not** run a full HTML parser; it scans for the
+`data-cs-object` attribute directly. The following are tolerated:
+
+- Either single quotes (`data-cs-object='<editorId>'`) or double quotes.
+- Whitespace around the `=` (`data-cs-object = "<editorId>"`).
+
+Unquoted attribute values (`data-cs-object=furn_active_de_bed_01`) are **not**
+supported. Always quote the value.
+
 #### Example HTML Element
 ```html
 <div class="spawnable-card" data-cs-object="furn_active_de_bed_01">
   <img src="bed.png" />
   <span>Dunmer Bed</span>
+</div>
+```
+
+#### Extension Attributes
+
+The protocol is designed to grow without breaking existing tools.
+
+- **The `data-cs-` prefix is reserved.** Future versions of this protocol may
+  define additional keys under it (for example, relative position or rotation
+  for spawning whole object palettes). Today only `data-cs-object` is read; any
+  other `data-cs-*` attribute is ignored.
+- **Tools may attach their own attributes.** Any other attribute on the element
+  (your own `data-*` keys, `id`, `class`, etc.) is ignored by the editor, so
+  external tools can carry their own metadata without conflicting with the
+  protocol.
+
+Because unrecognized keys are dropped silently, a payload written for a future
+version of the protocol still works against an older editor.
+
+```html
+<div data-cs-object="furn_active_de_bed_01"
+     data-cs-rotation="0,0,90"
+     data-myeditor-palette="bedroom">
+  Dunmer Bed
 </div>
 ```
 

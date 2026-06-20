@@ -3,6 +3,7 @@
 #include "LogUtil.h"
 #include "MathUtil.h"
 #include "MemoryUtil.h"
+#include "StringUtil.h"
 #include "WindowsUtil.h"
 
 #include "NIAVObject.h"
@@ -3201,34 +3202,6 @@ namespace se::cs::dialog::render_window {
 			&& !gIsPreviewMode::get();
 	}
 
-	static bool isPlaceable(BaseObject* obj) {
-		switch (obj->objectType) {
-		case ObjectType::Activator:
-		case ObjectType::Apparatus:
-		case ObjectType::Armor:
-		case ObjectType::Bodypart:
-		case ObjectType::Book:
-		case ObjectType::Clothing:
-		case ObjectType::Container:
-		case ObjectType::Door:
-		case ObjectType::Ingredient:
-		case ObjectType::Light:
-		case ObjectType::Lockpick:
-		case ObjectType::Misc:
-		case ObjectType::Probe:
-		case ObjectType::Repair:
-		case ObjectType::Static:
-		case ObjectType::Weapon:
-		case ObjectType::NPC:
-		case ObjectType::Creature:
-		case ObjectType::LeveledCreature:
-		case ObjectType::Alchemy:
-			return true;
-		default:
-			return false;
-		}
-	}
-
 	class RenderWindowDropTarget : public IDropTarget {
 	private:
 		HWND m_hWnd = nullptr;
@@ -3241,6 +3214,40 @@ namespace se::cs::dialog::render_window {
 
 		RenderWindowDropTarget(const RenderWindowDropTarget&) = delete;
 		RenderWindowDropTarget& operator=(const RenderWindowDropTarget&) = delete;
+
+		// A non-exhaustive pre-filter matching the object types the engine's placement
+		// handler accepts. The real engine handler performs the final context-dependent
+		// validation and we only report success based on what it actually placed.
+		bool isValidDropTarget(BaseObject* obj) const {
+			if (!obj || obj->getDeleted()) {
+				return false;
+			}
+			switch (obj->objectType) {
+			case ObjectType::Activator:
+			case ObjectType::Apparatus:
+			case ObjectType::Armor:
+			case ObjectType::Bodypart:
+			case ObjectType::Book:
+			case ObjectType::Clothing:
+			case ObjectType::Container:
+			case ObjectType::Door:
+			case ObjectType::Ingredient:
+			case ObjectType::Light:
+			case ObjectType::Lockpick:
+			case ObjectType::Misc:
+			case ObjectType::Probe:
+			case ObjectType::Repair:
+			case ObjectType::Static:
+			case ObjectType::Weapon:
+			case ObjectType::NPC:
+			case ObjectType::Creature:
+			case ObjectType::LeveledCreature:
+			case ObjectType::Alchemy:
+				return true;
+			default:
+				return false;
+			}
+		}
 
 		size_t parseHeaderOffset(const std::string& html, const std::string& key) {
 			size_t keyPos = html.find(key);
@@ -3326,8 +3333,7 @@ namespace se::cs::dialog::render_window {
 				if (recordHandler) {
 					for (const auto& id : uniqueIds) {
 						BaseObject* obj = recordHandler->getObjectByID(id.c_str());
-						// Filter out deleted objects to prevent native "Object has been deleted" modals
-						if (obj && isPlaceable(obj) && !obj->getDeleted()) {
+						if (isValidDropTarget(obj)) {
 							outIds.push_back(id);
 						}
 					}
@@ -3338,55 +3344,30 @@ namespace se::cs::dialog::render_window {
 		}
 
 		void parseUnicodeText(const std::wstring& text, std::vector<std::string>& outIds) {
+			// Note: `from_wstring` is lossy but that should be irrelevant for ASCII IDs.
+			const std::string payload = se::string::from_wstring(text);
+			constexpr std::string_view prefix = "cs-object:";
+
 			size_t objectCount = 0;
-			std::wstring_view sv(text);
+			std::string_view sv(payload);
 			size_t pos = 0;
 			while (pos < sv.size() && objectCount < MAX_DROP_OBJECTS) {
-				size_t nextLine = sv.find_first_of(L"\r\n", pos);
-				std::wstring_view line = sv.substr(pos, nextLine == std::wstring::npos ? std::wstring::npos : nextLine - pos);
+				const size_t nextLine = sv.find_first_of("\r\n", pos);
+				std::string line = se::string::trim_copy(std::string(
+					sv.substr(pos, nextLine == std::string_view::npos ? std::string_view::npos : nextLine - pos)));
 
-				size_t start = line.find_first_not_of(L" \t");
-				if (start != std::wstring_view::npos) {
-					size_t end = line.find_last_not_of(L" \t");
-					line = line.substr(start, end - start + 1);
-				} else {
-					line = std::wstring_view();
-				}
-
-				if (!line.empty()) {
-					std::wstring_view prefix = L"cs-object:";
-					if (line.size() >= prefix.size() && line.compare(0, prefix.size(), prefix) == 0) {
-						std::wstring_view idW = line.substr(prefix.size());
-						size_t idStart = idW.find_first_not_of(L" \t");
-						if (idStart != std::wstring_view::npos) {
-							size_t idEnd = idW.find_last_not_of(L" \t");
-							idW = idW.substr(idStart, idEnd - idStart + 1);
-						} else {
-							idW = std::wstring_view();
-						}
-
-						if (!idW.empty()) {
-							BOOL usedDefaultChar = FALSE;
-							int sizeNeeded = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, idW.data(), (int)idW.size(), nullptr, 0, nullptr, nullptr);
-							if (sizeNeeded > 0) {
-								std::string id(sizeNeeded, '\0');
-								WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, idW.data(), (int)idW.size(), &id[0], sizeNeeded, nullptr, &usedDefaultChar);
-
-								// Reject lossy conversions. WC_NO_BEST_FIT_CHARS makes best-fit
-								// substitutions (e.g. full-width to ASCII) set usedDefaultChar.
-								if (!usedDefaultChar && id.size() < MAX_EDITOR_ID_LENGTH) {
-									outIds.push_back(id);
-									objectCount++;
-								}
-							}
-						}
+				if (se::string::istarts_with(line, prefix)) {
+					std::string id = se::string::trim_copy(line.substr(prefix.size()));
+					if (!id.empty() && id.size() < MAX_EDITOR_ID_LENGTH) {
+						outIds.push_back(std::move(id));
+						objectCount++;
 					}
 				}
 
-				if (nextLine == std::wstring::npos) {
+				if (nextLine == std::string_view::npos) {
 					break;
 				}
-				pos = sv.find_first_not_of(L"\r\n", nextLine);
+				pos = sv.find_first_not_of("\r\n", nextLine);
 			}
 		}
 
@@ -3399,24 +3380,54 @@ namespace se::cs::dialog::render_window {
 
 			std::string_view fragment(html.data() + startFrag, endFrag - startFrag);
 
+			constexpr std::string_view attrName = "data-cs-object";
+			constexpr std::string_view whitespace = " \t\r\n";
+
 			size_t objectCount = 0;
 			size_t pos = 0;
-			std::string attr = "data-cs-object=\"";
 			while (objectCount < MAX_DROP_OBJECTS) {
-				size_t attrPos = fragment.find(attr, pos);
-				if (attrPos == std::string_view::npos) {
+				const size_t namePos = fragment.find(attrName, pos);
+				if (namePos == std::string_view::npos) {
 					break;
 				}
-				size_t valStart = attrPos + attr.size();
-				size_t valEnd = fragment.find('"', valStart);
+
+				// Always advance past this occurrence for the next iteration, whatever
+				// the outcome of the parse attempt below.
+				size_t cursor = namePos + attrName.size();
+				pos = cursor;
+
+				// The attribute name must end here. Reject longer names that merely
+				// share the prefix (e.g. a tool-specific "data-cs-object-foo"); the
+				// next character has to be '=' or whitespace.
+				if (cursor < fragment.size() && fragment[cursor] != '=' && whitespace.find(fragment[cursor]) == std::string_view::npos) {
+					continue;
+				}
+
+				// Tolerate whitespace around '=', e.g. data-cs-object = "id".
+				cursor = fragment.find_first_not_of(whitespace, cursor);
+				if (cursor == std::string_view::npos || fragment[cursor] != '=') {
+					continue;
+				}
+				cursor = fragment.find_first_not_of(whitespace, cursor + 1);
+				if (cursor == std::string_view::npos) {
+					break;
+				}
+
+				// Accept either single or double quoted values.
+				const char quote = fragment[cursor];
+				if (quote != '"' && quote != '\'') {
+					continue;
+				}
+				const size_t valStart = cursor + 1;
+				const size_t valEnd = fragment.find(quote, valStart);
 				if (valEnd == std::string_view::npos) {
 					break;
 				}
 
 				std::string_view id = fragment.substr(valStart, valEnd - valStart);
-				size_t s = id.find_first_not_of(" \t\r\n");
+				size_t s = id.find_first_not_of(whitespace);
 				if (s != std::string_view::npos) {
-					size_t e = id.find_last_not_of(" \t\r\n");
+					size_t e = id.find_last_not_of(whitespace);
 					id = id.substr(s, e - s + 1);
 				} else {
 					id = std::string_view();
@@ -3528,7 +3539,7 @@ namespace se::cs::dialog::render_window {
 			std::vector<PhysicalObject*> objects;
 			for (const auto& id : ids) {
 				BaseObject* obj = recordHandler->getObjectByID(id.c_str());
-				if (obj && isPlaceable(obj) && !obj->getDeleted()) {
+				if (isValidDropTarget(obj)) {
 					objects.push_back(static_cast<PhysicalObject*>(obj));
 				}
 			}
@@ -3560,24 +3571,54 @@ namespace se::cs::dialog::render_window {
 			POINT screenPt = { pt.x, pt.y };
 			::SendMessageA(m_hWnd, CustomWindowMessage::PlaceDroppedObjects, 0, reinterpret_cast<LPARAM>(&screenPt));
 
-			*pdwEffect = (*pdwEffect & DROPEFFECT_COPY) ? DROPEFFECT_COPY : DROPEFFECT_NONE;
+			// The native handler skips objects it cannot place in the current context
+			// ("player" NPC, door/travel markers, exterior or duplicate north markers)
+			// and rebuilds the selection with only the references it actually created.
+			// Report success based on what was really placed.
+			*pdwEffect = (selection->numberOfTargets != 0) ? DROPEFFECT_COPY : DROPEFFECT_NONE;
 			return S_OK;
 		}
 	};
+
+	void PatchDialogProc_AfterInit(DialogProcContext& context) {
+		const HWND hWnd = context.getWindowHandle();
+
+		const HRESULT oleResult = OleInitialize(nullptr);
+		if (SUCCEEDED(oleResult)) {
+			g_oleInitialized = true;
+			RenderWindowDropTarget::get().setWindow(hWnd);
+			const HRESULT hr = RegisterDragDrop(hWnd, &RenderWindowDropTarget::get());
+			if (SUCCEEDED(hr)) {
+				g_registeredDropHwnd = hWnd;
+			}
+			else {
+				log::stream << "CSSE: RegisterDragDrop failed: HRESULT 0x" << std::hex << hr << std::dec << std::endl;
+			}
+		}
+		else {
+			log::stream << "CSSE: OLE initialization failed: HRESULT 0x" << std::hex << oleResult << std::dec << std::endl;
+		}
+	}
+
+	void PatchDialogProc_BeforeDestroy(DialogProcContext& context) {
+		const HWND hWnd = context.getWindowHandle();
+
+		if (g_registeredDropHwnd == hWnd) {
+			RevokeDragDrop(hWnd);
+			g_registeredDropHwnd = nullptr;
+		}
+		if (g_oleInitialized) {
+			OleUninitialize();
+			g_oleInitialized = false;
+		}
+	}
 
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x45A3F0);
 
 		switch (msg) {
 		case WM_DESTROY:
-			if (g_registeredDropHwnd == hWnd) {
-				RevokeDragDrop(hWnd);
-				g_registeredDropHwnd = nullptr;
-			}
-			if (g_oleInitialized) {
-				OleUninitialize();
-				g_oleInitialized = false;
-			}
+			PatchDialogProc_BeforeDestroy(context);
 			break;
 		case WM_MOUSEMOVE:
 			PatchDialogProc_BeforeMouseMove(context);
@@ -3639,24 +3680,8 @@ namespace se::cs::dialog::render_window {
 
 		switch (msg) {
 		case WM_INITDIALOG:
-		{
-			const HRESULT oleResult = OleInitialize(nullptr);
-			if (SUCCEEDED(oleResult)) {
-				g_oleInitialized = true;
-				RenderWindowDropTarget::get().setWindow(hWnd);
-				const HRESULT hr = RegisterDragDrop(hWnd, &RenderWindowDropTarget::get());
-				if (SUCCEEDED(hr)) {
-					g_registeredDropHwnd = hWnd;
-				}
-				else {
-					log::stream << "CSSE: RegisterDragDrop failed: HRESULT 0x" << std::hex << hr << std::dec << std::endl;
-				}
-			}
-			else {
-				log::stream << "CSSE: OLE initialization failed: HRESULT 0x" << std::hex << oleResult << std::dec << std::endl;
-			}
+			PatchDialogProc_AfterInit(context);
 			break;
-		}
 		case WM_KEYDOWN:
 			PatchDialogProc_AfterKeyDown(context);
 			break;
