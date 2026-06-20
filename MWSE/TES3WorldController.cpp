@@ -18,6 +18,7 @@
 #include "CodePatchUtil.h"
 #include "MemoryUtil.h"
 #include "MGEApi.h"
+#include "PatchUtil.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -864,6 +865,10 @@ namespace TES3 {
 	}
 
 	void WorldController::tickClock() {
+		// Drive the deferred local-map tile completion + compositor once per frame, before the
+		// post-simulate event.
+		mwse::patch::drainDeferredMapTiles();
+
 		// Run post-simulate event before updating game time.
 		if (mwse::lua::event::SimulatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();

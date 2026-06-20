@@ -2279,6 +2279,9 @@ namespace mwse::patch {
 	}
 
 	static void __fastcall PatchDeferMapBorrow_OnBorrow(TES3::MapController* mapController, DWORD _EDX_) {
+		// Force-complete any tiles still pending from a previous cross before this one queues new tiles
+		// (or purges the old cells), so a pending tile's raw Cell* never outlives its cell. Usually a no-op.
+		completeDeferredMapTilesNow();
 		sMapBorrowController = mapController;
 		sMapGeometryBorrowed = false;
 	}
@@ -2426,8 +2429,8 @@ namespace mwse::patch {
 			return oldest;
 		}
 
-		// Render the bound map scene into the given RT: the render-only body of the engine's drawMap
-		// (0x42E320), minus the recreate logic and the synchronous readback, plus the opaque bracket.
+		// Render the bound map scene into the given RT: the engine drawMap (0x42E320) render path,
+		// without the synchronous readback.
 		static bool renderTileToTexture(TES3::WorldControllerRenderTarget& mapRT, NI::RenderedTexture* texture) {
 			auto loadScreenManager = TES3::Game::get()->loadScreenManager;
 			if (loadScreenManager) {
@@ -2459,7 +2462,7 @@ namespace mwse::patch {
 		}
 
 		// Owned exterior renderCellMapTile (faithful to 0x41FEA0), rendering into an owned RT that is
-		// displayed directly. Subsumes the deferred-borrow render gate.
+		// displayed directly.
 		static TES3::Cell::MappingVisuals* __fastcall OnRenderCellMapTile(TES3::MapController* mapController, DWORD _EDX_, int tileY, int tileX, TES3::Cell* cell, NI::Point3 worldPos, float northMarkerOrientation, TES3::Cell::MappingVisuals* accumulator) {
 			if (!sMapGeometryBorrowed && PatchDeferMapBorrow_WillRenderTile(cell, tileY, tileX)) {
 				(sMapBorrowController ? sMapBorrowController : mapController)->borrowMapGeometry();
@@ -2554,31 +2557,6 @@ namespace mwse::patch {
 			sCompositorAge = 0;
 		}
 
-		// Wraps the per-frame WorldController::tickClock call: drains the deferred tile completions and
-		// compositor (whose ages we bumped here), then runs the clock tick we replaced.
-		static void __fastcall OnTickClock(TES3::WorldController* worldController, DWORD _EDX_) {
-			for (auto& pending : sPending) {
-				if (pending.cell == nullptr) {
-					continue;
-				}
-				pending.age += 1;
-				if (pending.age >= kDeferTicks) {
-					completeOne(pending);
-				}
-			}
-			if (sCompositorPending) {
-				sCompositorAge += 1;
-				if (sCompositorAge >= kDeferTicks) {
-					sCompositorPending = false;
-					auto mapController = worldController->mapController;
-					if (mapController) {
-						mapController->updateMapRenderEngine();
-					}
-				}
-			}
-			worldController->tickClock();
-		}
-
 		// Device reset: the RTs' contents are unrecoverable, so force the affected cells to re-render
 		// through the purge flow that follows this call.
 		static void __fastcall OnReleaseAllMapTextures(TES3::MapController* mapController, DWORD _EDX_) {
@@ -2603,6 +2581,40 @@ namespace mwse::patch {
 			sUnsupported = false;
 			TES3::WorldControllerRenderTarget::clearFogCache();
 			mapController->releaseAllTextures();
+		}
+	}
+
+	// Called once per frame from WorldController::tickClock: age the pending tiles and the deferred
+	// compositor, completing each when its defer window has elapsed and the GPU queue has drained.
+	void drainDeferredMapTiles() {
+		using namespace PatchMapTileDirectDisplay;
+		for (auto& pending : sPending) {
+			if (pending.cell == nullptr) {
+				continue;
+			}
+			pending.age += 1;
+			if (pending.age >= kDeferTicks) {
+				completeOne(pending);
+			}
+		}
+		if (sCompositorPending) {
+			sCompositorAge += 1;
+			if (sCompositorAge >= kDeferTicks) {
+				sCompositorPending = false;
+				auto mapController = TES3::WorldController::get()->mapController;
+				if (mapController) {
+					mapController->updateMapRenderEngine();
+				}
+			}
+		}
+	}
+
+	void completeDeferredMapTilesNow() {
+		using namespace PatchMapTileDirectDisplay;
+		for (auto& pending : sPending) {
+			if (pending.cell) {
+				completeOne(pending);
+			}
 		}
 	}
 
@@ -3486,10 +3498,8 @@ namespace mwse::patch {
 		for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
 			genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnRenderCellMapTile));
 		}
-		// Wrap the per-frame WorldController::tickClock call (which the post-simulate patch above already
-		// installed at this site) to drive the deferred local-map completion; OnTickClock forwards to it.
-		auto WorldController_tickClock_mapDrain = &TES3::WorldController::tickClock;
-		genCallEnforced(0x41B857, *reinterpret_cast<DWORD*>(&WorldController_tickClock_mapDrain), reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnTickClock));
+		// The per-frame tile completion + compositor drain runs from inside WorldController::tickClock
+		// (see drainDeferredMapTiles), so no call-site hook is installed here.
 
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
