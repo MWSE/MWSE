@@ -40,8 +40,6 @@
 
 #include "DialogProcContext.h"
 
-#pragma comment(lib, "ole32.lib") // OLE drag-and-drop
-
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;
 	__int16 lastCursorPosY = 0;
