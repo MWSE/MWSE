@@ -1067,11 +1067,8 @@ namespace TES3 {
 			return;
 		}
 
-		// Recalculate rotation to always be between [0,2pi].
-		constexpr auto math2Pi = (se::math::M_PI * 2);
-		auto rotationInRadians = static_cast<float>(fmod(rotationInDegrees * (se::math::M_PI / 180.f), math2Pi));
-		if (rotationInRadians < 0)
-			rotationInRadians += static_cast<float>(math2Pi);
+		auto rotationInRadians = se::math::degreesToRadians(rotationInDegrees);
+		se::math::standardizeAngleRadians(rotationInRadians);
 
 		// Get reused variables.
 		auto dataHandler = TES3::DataHandler::get();
@@ -1174,12 +1171,12 @@ namespace TES3 {
 	}
 
 	const auto TES3_game_relocateReference = reinterpret_cast<void(__cdecl*)(Reference*, Cell*, const NI::Point3*, float)>(0x50EDD0);
-	void Reference::relocate(Cell * cell, const NI::Point3 * position, float rotation) {
+	void Reference::relocate(Cell * cell, const NI::Point3 * position, float rotationInDegrees) {
 		// Store old cell.
 		const auto oldCell = getCell();
 
 		// Fire off original function.
-		TES3_game_relocateReference_replacement(this, cell, position, rotation);
+		TES3_game_relocateReference_replacement(this, cell, position, rotationInDegrees);
 		
 		// Determine if cell active state changed.
 		const auto oldCellActive = oldCell ? oldCell->getCellActive() : false;
@@ -1201,7 +1198,7 @@ namespace TES3 {
 			sceneNode->localRotation->toEulerXYZ(&cachedOrientation);
 		}
 
-		relocate(cell, position, static_cast<float>(cachedOrientation.z * (180.0f / se::math::M_PI)));
+		relocate(cell, position, se::math::radiansToDegrees(cachedOrientation.z));
 
 		setOrientation(&cachedOrientation);
 	}

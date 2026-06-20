@@ -131,7 +131,7 @@ namespace NI {
 			half_theta = 0;
 		}
 		else if (dot_product <= -1.0) {
-			half_theta = se::math::M_PI;
+			half_theta = std::numbers::pi;
 		}
 		else {
 			half_theta = std::acos(dot_product);

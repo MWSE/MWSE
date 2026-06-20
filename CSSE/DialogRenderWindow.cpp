@@ -818,8 +818,6 @@ namespace se::cs::dialog::render_window {
 	SnappingAxis snappingAxis = SnappingAxis::POSITIVE_Z;
 
 	int Patch_AlignToSurfaceDragMovementLogic(RenderController* renderController, SelectionData::Target* firstTarget, int dx, int dy, bool lockX, bool lockY, bool lockZ) {
-		using se::math::M_PIf;
-
 		// Currently requires a single selection.
 		auto selectionData = SelectionData::get();
 		if (selectionData->numberOfTargets != 1) {
@@ -915,13 +913,13 @@ namespace se::cs::dialog::render_window {
 						NI::Matrix33 flipMatrix;
 						switch (refSnappingAxis) {
 						case SnappingAxis::NEGATIVE_X:
-							flipMatrix.toRotationY(M_PIf);
+							flipMatrix.toRotationY(std::numbers::pi_v<float>);
 							break;
 						case SnappingAxis::NEGATIVE_Y:
-							flipMatrix.toRotationZ(M_PIf);
+							flipMatrix.toRotationZ(std::numbers::pi_v<float>);
 							break;
 						case SnappingAxis::NEGATIVE_Z:
-							flipMatrix.toRotationX(M_PIf);
+							flipMatrix.toRotationX(std::numbers::pi_v<float>);
 							break;
 						default:
 							flipMatrix.toIdentity();
