@@ -2347,6 +2347,13 @@ namespace mwse::patch {
 		static NI::Pointer<NI::RenderedTexture> acquireTexture(TES3::WorldControllerRenderTarget& mapRT) {
 			for (auto& recycled : sRecycledTextures) {
 				if (recycled) {
+					// The readback in completeOne can tear down an RT's render-target surface
+					// (rendererData == null); such an RT can no longer be bound, so discard it and fall
+					// through to create a fresh one. The engine's own drawMap guards this the same way.
+					if (recycled->rendererData == nullptr) {
+						recycled = nullptr;
+						continue;
+					}
 					NI::Pointer<NI::RenderedTexture> result = recycled;
 					recycled = nullptr;
 					return result;
