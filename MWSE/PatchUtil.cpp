@@ -2404,10 +2404,16 @@ namespace mwse::patch {
 					cell->mappingVisuals = nullptr;
 				}
 			}
-			for (auto& recycled : sRecycledTextures) {
-				if (recycled == nullptr) {
-					recycled = pending.texture;
-					break;
+			// Only pool the RT if we are its sole owner. If a map tile still displays it (refCount > 1) -
+			// e.g. completion ran after the cell left the visible ring, so texture_0 was never handed off -
+			// recycling lets the engine later PurgeTexture its RendererData out from under the pool, and a
+			// subsequent setRenderTarget on the stale RT crashes. Drop our reference instead.
+			if (pending.texture && pending.texture->refCount == 1) {
+				for (auto& recycled : sRecycledTextures) {
+					if (recycled == nullptr) {
+						recycled = pending.texture;
+						break;
+					}
 				}
 			}
 			pending.texture = nullptr;
