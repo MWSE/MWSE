@@ -98,15 +98,21 @@ namespace TES3 {
 			~SourceMod() = delete;
 		};
 		struct MappingVisuals {
-			int unknown_0x0;
-			int unknown_0x4;
-			int unknown_0x8;
-			int unknown_0xC;
+			void* pixels; // 0x0
+			float positionX; // 0x4
+			float positionY; // 0x8
+			unsigned short coverageMask; // 0xC
+			unsigned short unknown_0xE; // 0xE
 			int unknown_0x10;
-			NI::Pointer<NI::SourceTexture> texture; // 0x14
+			// The map tile's display texture. The engine reads back an NiSourceTexture here, but it is
+			// consumed only as an NiObject/NiTexture (and may also hold an NiRenderedTexture), so it is
+			// modeled as the NI::Texture base.
+			NI::Pointer<NI::Texture> texture; // 0x14
 
 			MappingVisuals() = delete;
 			~MappingVisuals() = delete;
+
+			static MappingVisuals* create(float positionX, float positionY, unsigned short coverageMask);
 		};
 
 		char * name; // 0x10
@@ -198,6 +204,10 @@ namespace TES3 {
 
 		bool getIsInterior() const;
 		void setIsInterior(bool value);
+
+		bool refreshMapTileFromCache(int tileY, int tileX);
+		// nullptr (every caller) deletes this cell's own mappingVisuals; a non-null argument deletes that object instead.
+		void maybeDeleteMappingVisuals(MappingVisuals* visualsToDelete = nullptr);
 
 		bool getSleepingIsIllegal() const;
 		void setSleepingIsIllegal(bool value);

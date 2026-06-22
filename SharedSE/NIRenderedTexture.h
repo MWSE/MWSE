@@ -10,6 +10,8 @@ namespace NI {
 
 		bool readback(NI::PixelData* pixelData);
 
+		static Pointer<RenderedTexture> create(unsigned int width, unsigned int height, Renderer* renderer, const FormatPrefs* prefs);
+
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 		static Pointer<RenderedTexture> create(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs);
 #endif

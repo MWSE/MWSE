@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
+#include "TES3Cell.h"
 #include "TES3UIDefines.h"
 #include "TES3UIVector.h"
 
@@ -92,7 +93,7 @@ namespace TES3 {
 		NI::Pointer<NI::ZBufferProperty> zBufferProperty; // 0x4C
 		void* offscreenD3DSurface; // 0x50
 		void* textureD3DSurface; // 0x54
-		NI::Pointer<NI::Object> accumulator; // OffscreenSceneGraph::MasterPropertyAccumulator
+		NI::Pointer<NI::Accumulator> accumulator; // OffscreenSceneGraph::MasterPropertyAccumulator
 		int unknown_0x5C;
 		NI::Pointer<NI::DirectionalLight> directionalLight; // 0x60
 		int unknown_0x64;
@@ -109,15 +110,50 @@ namespace TES3 {
 
 		D3DLOCKED_RECT* lockRenderTarget(NI::Pointer<NI::Texture> texture);
 		void unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag);
+		void setSceneNode(NI::Node* sceneRoot);
+		void readbackRenderedTexture(D3DLOCKED_RECT* lockedRect);
 		unsigned char getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
+		int updateFogOfWarVertexBuffer(NI::RenderedTexture* texture, int fowX, short fowY, float radius);
 
-		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a per-compositor-pass
-		// copy (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
+		// Fog-of-war pixel cache: getFogOfWarPixelCached serves door queries from a CPU copy of each
+		// fog tile (bracketed by beginFogCache/endFogCache) instead of locking the GPU once per door.
+		// Entries persist across passes and are invalidated when fog is drawn to their tile.
 		unsigned char getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY);
 		static void beginFogCache();
 		static void endFogCache();
+		static void invalidateFogCacheTexture(NI::RenderedTexture* texture);
+		static void clearFogCache();
 	};
 	static_assert(sizeof(WorldControllerRenderTarget) == 0x84, "TES3::WorldControllerRenderTarget failed size validation");
+
+	struct MapController {
+		char localMapTileVector[16]; // 0x0
+		unsigned short tileCountY; // 0x10
+		unsigned short tileCountX; // 0x12
+		int unknown_0x14;
+		void* unknown_0x18;
+		float northMarkerRotationDegrees; // 0x1C
+		NI::Node* nodePick; // 0x20
+		NI::Node* nodeObjects; // 0x24
+		NI::Node* nodeLand; // 0x28
+		NI::Node* nodeWater; // 0x2C
+		NI::Node* waterNodeParent; // 0x30
+		char cachedPickNodeCulled; // 0x34
+		char cachedObjectsNodeCulled; // 0x35
+		char cachedLandNodeCulled; // 0x36
+		char cachedWaterNodeCulled; // 0x37
+
+		MapController() = delete;
+		~MapController() = delete;
+
+		void borrowMapGeometry();
+		void restoreMapGeometry();
+		Cell::MappingVisuals* renderCellMapTile(int tileY, int tileX, Cell* cell, NI::Point3 worldPosition, float northMarkerOrientation, Cell::MappingVisuals* accumulator);
+		void renderInteriorMap(Cell* cell);
+		void updateMapRenderEngine();
+		void releaseAllTextures();
+	};
+	static_assert(sizeof(MapController) == 0x38, "TES3::MapController failed size validation");
 
 	struct MouseController {
 		NI::Object* cursors[5];
@@ -385,7 +421,7 @@ namespace TES3 {
 		WorldControllerRenderTarget mapRenderTarget; // 0x22C
 		WorldControllerRenderCamera shadowCamera; // 0x2B0
 		void * shadowManager; // 0x2DC
-		void * mapController; // 0x2E0
+		MapController * mapController; // 0x2E0
 		UI::MenuController * menuController; // 0x2E4
 		InventoryData * inventoryData; // 0x2E8
 		Sound * soundWeaponSwish; // 0x2EC

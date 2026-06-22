@@ -57,6 +57,8 @@ namespace TES3 {
 		void createRipple(float x, float y, float scale, float speed, bool active = true);
 		void createRipple_lua(sol::optional<sol::table> params);
 
+		void renderWater(NI::Camera* camera, bool ignorePixelShader);
+
 		//
 		// Lua helper functions.
 		//

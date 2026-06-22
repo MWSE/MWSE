@@ -10,14 +10,20 @@
 #endif
 
 namespace NI {
+	Pointer<RenderedTexture> RenderedTexture::create(unsigned int width, unsigned int height, Renderer* renderer, const FormatPrefs* prefs) {
+#if defined(SE_NI_RENDEREDTEXTURE_FNADDR_CREATE) && SE_NI_RENDEREDTEXTURE_FNADDR_CREATE > 0
+		const auto NI_RenderedTexture_create = reinterpret_cast<RenderedTexture * (__cdecl*)(unsigned int, unsigned int, Renderer*, const Texture::FormatPrefs*)>(SE_NI_RENDEREDTEXTURE_FNADDR_CREATE);
+		return NI_RenderedTexture_create(width, height, renderer, prefs);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 	Pointer<RenderedTexture> RenderedTexture::create(unsigned int width, unsigned int height, sol::optional<const FormatPrefs*> prefs) {
 #if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
-		const auto NI_RenderedTexture_create = reinterpret_cast<RenderedTexture * (__cdecl*)(unsigned int, unsigned int, Renderer*, const Texture::FormatPrefs*)>(0x6DC090);
 		auto renderer = TES3::WorldController::get()->renderer;
-		const auto prefsVal = prefs.value_or(&Texture::FormatPrefs::DEFAULT_LUA_PREFS);
-		auto texture = NI_RenderedTexture_create(width, height, renderer, prefsVal);
-		return texture;
+		return create(width, height, renderer, prefs.value_or(&Texture::FormatPrefs::DEFAULT_LUA_PREFS));
 #else
 		throw not_implemented_exception();
 #endif

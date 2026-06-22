@@ -39,14 +39,21 @@
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
+#include "TES3WaterController.h"
 #include "TES3WorldController.h"
 #include "ReferenceTracker.h"
 
+#include "MathUtil.h"
+
 #include "NIAVObject.h"
 #include "NIBound.h"
+#include "NICamera.h"
 #include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
+#include "NIDX8Renderer.h"
+#include "NINode.h"
 #include "NIPoint3.h"
+#include "NIRenderedTexture.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
@@ -2249,9 +2256,404 @@ namespace mwse::patch {
 		sHoistDoneLand = true;
 	}
 
+	// Defer the local-map geometry borrow to the first cell-cross tile that actually renders, and skip the
+	// matching restore when nothing was borrowed. This drops the world-water-plane restore traversal on backtrack crosses, where every tile is already cached and none render.
+	static const unsigned char* const data_localMapTileCoverageMask = reinterpret_cast<const unsigned char*>(0x777748);
+
+	static TES3::MapController* sMapBorrowController = nullptr;
+	static bool sMapGeometryBorrowed = false;
+
+	static bool PatchDeferMapBorrow_WillRenderTile(TES3::Cell* cell, int tileY, int tileX) {
+		if (cell == nullptr) {
+			return false;
+		}
+		if (cell->getIsInterior() || tileY < 0 || tileY > 2 || tileX < 0 || tileX > 2) {
+			return true;
+		}
+		const auto* mappingVisuals = cell->mappingVisuals;
+		if (mappingVisuals == nullptr) {
+			return true;
+		}
+		const unsigned short mask = data_localMapTileCoverageMask[3 * tileY + tileX];
+		return static_cast<unsigned short>(mappingVisuals->coverageMask & mask) != mask;
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnBorrow(TES3::MapController* mapController, DWORD _EDX_) {
+		// Force-complete any tiles still pending from a previous cross before this one queues new tiles
+		// (or purges the old cells), so a pending tile's raw Cell* never outlives its cell. Usually a no-op.
+		completeDeferredMapTilesNow();
+		sMapBorrowController = mapController;
+		sMapGeometryBorrowed = false;
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnRenderInteriorMap(TES3::MapController* mapController, DWORD _EDX_, TES3::Cell* cell) {
+		if (!sMapGeometryBorrowed) {
+			(sMapBorrowController ? sMapBorrowController : mapController)->borrowMapGeometry();
+			sMapGeometryBorrowed = true;
+		}
+		mapController->renderInteriorMap(cell);
+	}
+
+	//
+	// Patch: Render local-map tiles into per-tile render targets, displayed directly; defer the GPU->CPU
+	// readback off the cross frame.
+	//
+	// Each new tile renders into an owned render target that the map displays immediately, and is
+	// converted to the engine's CPU-backed record a few ticks later when the GPU has finished - the
+	// readback lock is then instant instead of stalling the cross frame. Interiors, map-making mode,
+	// and unsupported hardware fall back to the engine path.
+	//
+
+	namespace PatchMapTileDirectDisplay {
+		struct PendingTile {
+			NI::Pointer<NI::RenderedTexture> texture;
+			TES3::Cell* cell = nullptr;
+			int age = 0;
+			bool worldMapPaintPending = false;
+		};
+		constexpr int kPendingCap = 12;
+		constexpr int kDeferTicks = 3;                 // frames to wait before the deferred lock/compositor run, so the GPU queue has drained
+		constexpr int kMapTileGridSize = 3;            // the visible exterior map is a 3x3 ring of cell tiles
+		constexpr float kCellWidthUnits = 8192.0f;     // world units across one exterior cell (the engine's gridX << 13)
+		constexpr float kHalfCellWidthUnits = 4096.0f; // half a cell, the tile centre offset
+		constexpr float kMapCameraHeight = 1000000.0f; // camera height above the tile centre, matching the engine
+		static PendingTile sPending[kPendingCap];
+		static NI::Pointer<NI::RenderedTexture> sRecycledTextures[kPendingCap];
+		static bool sUnsupported = false;
+		static bool sCapsChecked = false;
+		static bool sScenePrepared = false;
+
+		// Deferred compositor: the cross marks it pending; it runs once in the tick drain, after the
+		// tile completions, when the GPU queue has drained. Rapid crosses coalesce into one run.
+		static bool sCompositorPending = false;
+		static int sCompositorAge = 0;
+
+		static IDirect3DDevice8* getD3DDevice(NI::Renderer* renderer) {
+			return static_cast<NI::DX8Renderer*>(renderer)->d3dDevice;
+		}
+
+		static bool ensureColorWriteCapable(NI::Renderer* renderer) {
+			if (!sCapsChecked) {
+				sCapsChecked = true;
+				D3DCAPS8 caps = {};
+				auto device = getD3DDevice(renderer);
+				if (device == nullptr || FAILED(device->GetDeviceCaps(&caps)) || (caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) == 0) {
+					sUnsupported = true;
+				}
+			}
+			return !sUnsupported;
+		}
+
+		static NI::Pointer<NI::RenderedTexture> acquireTexture(TES3::WorldControllerRenderTarget& mapRT) {
+			for (auto& recycled : sRecycledTextures) {
+				if (recycled) {
+					// The readback in completeOne can tear down an RT's render-target surface
+					// (rendererData == null); such an RT can no longer be bound, so discard it and fall
+					// through to create a fresh one. The engine's own drawMap guards this the same way.
+					if (recycled->rendererData == nullptr) {
+						recycled = nullptr;
+						continue;
+					}
+					NI::Pointer<NI::RenderedTexture> result = recycled;
+					recycled = nullptr;
+					return result;
+				}
+			}
+			NI::Texture::FormatPrefs prefs(NI::Texture::FormatPrefs::PixelLayout::PIX_DEFAULT, NI::Texture::FormatPrefs::MipFlag::NO, NI::Texture::FormatPrefs::AlphaFormat::SMOOTH);
+			return NI::RenderedTexture::create(mapRT.targetWidth, mapRT.targetHeight, mapRT.renderer, &prefs);
+		}
+
+		// The visible 3x3 ring position of a loaded exterior cell, walking the grid in the same order as
+		// the engine's purge re-render loop: exteriorCellData index = x * 3 + (2 - y).
+		static bool currentRingCoords(const TES3::Cell* cell, int& tileY, int& tileX) {
+			auto dataHandler = TES3::DataHandler::get();
+			if (dataHandler == nullptr || dataHandler->currentInteriorCell) {
+				return false;
+			}
+			for (int x = 0; x < kMapTileGridSize; ++x) {
+				for (int y = kMapTileGridSize - 1; y >= 0; --y) {
+					const int cellDataIndex = x * kMapTileGridSize + (kMapTileGridSize - 1 - y);
+					auto cellData = dataHandler->exteriorCellData[cellDataIndex];
+					if (cellData && cellData->cell == cell) {
+						tileX = x;
+						tileY = y;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		// Convert a pending tile's RT into the engine's CPU-backed NiSourceTexture record. Runs ticks
+		// after the render, so the GPU has finished and the lock does not stall.
+		static void completeOne(PendingTile& pending) {
+			auto cell = pending.cell;
+			pending.cell = nullptr;
+			auto& mapRT = TES3::WorldController::get()->mapRenderTarget;
+			auto mappingVisuals = cell ? cell->mappingVisuals : nullptr;
+			if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
+				auto lockedRect = mapRT.lockRenderTarget(pending.texture.get());
+				if (lockedRect) {
+					mapRT.readbackRenderedTexture(lockedRect);
+					mapRT.unlockRenderTarget(lockedRect, 0);
+					mappingVisuals->texture = mapRT.readbackTexture;
+					mapRT.readbackTexture = nullptr;
+					int tileY, tileX;
+					if (currentRingCoords(cell, tileY, tileX)) {
+						cell->refreshMapTileFromCache(tileY, tileX);
+					}
+					if (pending.worldMapPaintPending) {
+						TES3::DataHandler::get()->nonDynamicData->mapDrawCell(cell);
+					}
+				}
+				else {
+					cell->maybeDeleteMappingVisuals();
+					cell->mappingVisuals = nullptr;
+				}
+			}
+			// Only pool the RT if we are its sole owner. If a map tile still displays it (refCount > 1) -
+			// e.g. completion ran after the cell left the visible ring, so texture_0 was never handed off -
+			// recycling lets the engine later PurgeTexture its RendererData out from under the pool, and a
+			// subsequent setRenderTarget on the stale RT crashes. Drop our reference instead.
+			if (pending.texture && pending.texture->refCount == 1) {
+				for (auto& recycled : sRecycledTextures) {
+					if (recycled == nullptr) {
+						recycled = pending.texture;
+						break;
+					}
+				}
+			}
+			pending.texture = nullptr;
+			pending.age = 0;
+			pending.worldMapPaintPending = false;
+		}
+
+		static PendingTile* acquirePendingSlot() {
+			PendingTile* oldest = nullptr;
+			for (auto& pending : sPending) {
+				if (pending.cell == nullptr) {
+					return &pending;
+				}
+				if (oldest == nullptr || pending.age > oldest->age) {
+					oldest = &pending;
+				}
+			}
+			completeOne(*oldest);
+			return oldest;
+		}
+
+		// Render the bound map scene into the given RT: the engine drawMap (0x42E320) render path,
+		// without the synchronous readback.
+		static bool renderTileToTexture(TES3::WorldControllerRenderTarget& mapRT, NI::RenderedTexture* texture) {
+			auto loadScreenManager = TES3::Game::get()->loadScreenManager;
+			if (loadScreenManager) {
+				loadScreenManager->renderMutexLock();
+			}
+			NI::Renderer* renderer = mapRT.renderer;
+			bool rendered = renderer->setRenderTarget(texture);
+			if (rendered) {
+				auto camera = mapRT.getCamera();
+				camera->clear(static_cast<NI::Renderer::ClearFlags>(NI::Renderer::ClearFlags::BACKBUFFER | NI::Renderer::ClearFlags::ZBUFFER));
+				auto device = getD3DDevice(renderer);
+				device->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 0, 0), 1.0f, 0);
+				NI::Pointer<NI::Accumulator> savedAccumulator = renderer->accumulator;
+				renderer->accumulator = mapRT.accumulator;
+				device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+				camera->click(false);
+				auto waterController = TES3::DataHandler::get()->waterController;
+				if (waterController && waterController->pixelShaderEnabled) {
+					waterController->renderWater(camera, true);
+				}
+				device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
+				renderer->accumulator = savedAccumulator;
+				renderer->setRenderTarget(nullptr);
+			}
+			if (loadScreenManager) {
+				loadScreenManager->renderMutexUnlock();
+			}
+			return rendered;
+		}
+
+		// Owned exterior renderCellMapTile (faithful to 0x41FEA0), rendering into an owned RT that is
+		// displayed directly.
+		static TES3::Cell::MappingVisuals* __fastcall OnRenderCellMapTile(TES3::MapController* mapController, DWORD _EDX_, int tileY, int tileX, TES3::Cell* cell, NI::Point3 worldPos, float northMarkerOrientation, TES3::Cell::MappingVisuals* accumulator) {
+			if (!sMapGeometryBorrowed && PatchDeferMapBorrow_WillRenderTile(cell, tileY, tileX)) {
+				(sMapBorrowController ? sMapBorrowController : mapController)->borrowMapGeometry();
+				sMapGeometryBorrowed = true;
+				sScenePrepared = false;
+			}
+			if (sUnsupported || accumulator != nullptr || cell == nullptr || cell->getIsInterior() || TES3::DataHandler::get()->flagTestingCells) {
+				return mapController->renderCellMapTile(tileY, tileX, cell, worldPos, northMarkerOrientation, accumulator);
+			}
+			if (cell->refreshMapTileFromCache(tileY, tileX) || tileY >= mapController->tileCountY || tileX >= mapController->tileCountX) {
+				return nullptr;
+			}
+
+			auto worldController = TES3::WorldController::get();
+			auto& mapRT = worldController->mapRenderTarget;
+			if (mapRT.renderer == nullptr || !ensureColorWriteCapable(mapRT.renderer)) {
+				return mapController->renderCellMapTile(tileY, tileX, cell, worldPos, northMarkerOrientation, accumulator);
+			}
+			auto texture = acquireTexture(mapRT);
+			if (texture == nullptr) {
+				return mapController->renderCellMapTile(tileY, tileX, cell, worldPos, northMarkerOrientation, accumulator);
+			}
+
+			NI::Point3 northAxis = { std::sin(northMarkerOrientation), std::cos(northMarkerOrientation), 0.0f };
+			const float perpSin = std::sin(northMarkerOrientation + se::math::M_PI_2f);
+			const float perpCos = std::cos(northMarkerOrientation + se::math::M_PI_2f);
+			NI::Point3 target = { cell->getGridX() * kCellWidthUnits + kHalfCellWidthUnits, cell->getGridY() * kCellWidthUnits + kHalfCellWidthUnits, 0.0f };
+
+			mapRT.setSceneNode(mapRT.root);
+			auto camera = mapRT.getCamera();
+			camera->localTranslate.x = target.x;
+			camera->localTranslate.y = target.y;
+			camera->localTranslate.z = target.z + kMapCameraHeight;
+			camera->update();
+			camera->LookAtWorldPoint(&target, &northAxis);
+			camera->update();
+			if (!sScenePrepared) {
+				mapRT.root->updateProperties();
+				mapRT.root->updateEffects();
+				mapController->nodeLand->update();
+				sScenePrepared = true;
+			}
+
+			const bool hasWater = cell->getHasWater();
+			if (hasWater) {
+				mapController->nodeWater->setAppCulled(false);
+			}
+			const bool rendered = renderTileToTexture(mapRT, texture);
+			if (hasWater) {
+				mapController->nodeWater->setAppCulled(true);
+			}
+			if (!rendered) {
+				return mapController->renderCellMapTile(tileY, tileX, cell, worldPos, northMarkerOrientation, accumulator);
+			}
+
+			const float positionX = target.x - perpSin * kHalfCellWidthUnits - northAxis.x * kHalfCellWidthUnits;
+			const float positionY = target.y - perpCos * kHalfCellWidthUnits - northAxis.y * kHalfCellWidthUnits;
+			auto visuals = TES3::Cell::MappingVisuals::create(positionX, positionY, data_localMapTileCoverageMask[kMapTileGridSize * tileY + tileX]);
+			visuals->texture = texture.get();
+			if (cell->mappingVisuals) {
+				cell->maybeDeleteMappingVisuals();
+			}
+			cell->mappingVisuals = visuals;
+
+			auto pending = acquirePendingSlot();
+			pending->texture = texture;
+			pending->cell = cell;
+			pending->age = 0;
+			pending->worldMapPaintPending = false;
+
+			cell->refreshMapTileFromCache(tileY, tileX);
+			return visuals;
+		}
+
+		// mapDrawCell needs the tile's CPU pixels; for a tile still living in an RT, defer the world-map
+		// paint to its completion.
+		static void __fastcall OnMapDrawCell(TES3::NonDynamicData* recordsHandler, DWORD _EDX_, TES3::Cell* cell) {
+			for (auto& pending : sPending) {
+				if (pending.cell == cell) {
+					auto mappingVisuals = cell->mappingVisuals;
+					if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
+						pending.worldMapPaintPending = true;
+						return;
+					}
+				}
+			}
+			recordsHandler->mapDrawCell(cell);
+		}
+
+		static void __fastcall OnDeferCompositor(TES3::MapController* mapController, DWORD _EDX_) {
+			sCompositorPending = true;
+			sCompositorAge = 0;
+		}
+
+		// Device reset: the RTs' contents are unrecoverable, so force the affected cells to re-render
+		// through the purge flow that follows this call.
+		static void __fastcall OnReleaseAllMapTextures(TES3::MapController* mapController, DWORD _EDX_) {
+			for (auto& pending : sPending) {
+				auto cell = pending.cell;
+				if (cell) {
+					auto mappingVisuals = cell->mappingVisuals;
+					if (mappingVisuals && mappingVisuals->texture == pending.texture.get()) {
+						cell->maybeDeleteMappingVisuals();
+						cell->mappingVisuals = nullptr;
+					}
+				}
+				pending.texture = nullptr;
+				pending.cell = nullptr;
+				pending.age = 0;
+				pending.worldMapPaintPending = false;
+			}
+			for (auto& recycled : sRecycledTextures) {
+				recycled = nullptr;
+			}
+			sCapsChecked = false;
+			sUnsupported = false;
+			TES3::WorldControllerRenderTarget::clearFogCache();
+			mapController->releaseAllTextures();
+		}
+	}
+
+	// Called once per frame from WorldController::tickClock: age the pending tiles and the deferred
+	// compositor, completing each when its defer window has elapsed and the GPU queue has drained.
+	void drainDeferredMapTiles() {
+		using namespace PatchMapTileDirectDisplay;
+		for (auto& pending : sPending) {
+			if (pending.cell == nullptr) {
+				continue;
+			}
+			++pending.age;
+			if (pending.age >= kDeferTicks) {
+				completeOne(pending);
+			}
+		}
+		if (sCompositorPending) {
+			++sCompositorAge;
+			if (sCompositorAge >= kDeferTicks) {
+				sCompositorPending = false;
+				auto mapController = TES3::WorldController::get()->mapController;
+				if (mapController) {
+					mapController->updateMapRenderEngine();
+				}
+			}
+		}
+	}
+
+	void completeDeferredMapTilesNow() {
+		using namespace PatchMapTileDirectDisplay;
+		for (auto& pending : sPending) {
+			if (pending.cell) {
+				completeOne(pending);
+			}
+		}
+	}
+
+	static void __fastcall PatchDeferMapBorrow_OnRestore(TES3::MapController* mapController, DWORD _EDX_) {
+		if (sMapGeometryBorrowed) {
+			mapController->restoreMapGeometry();
+			sMapGeometryBorrowed = false;
+		}
+	}
+
+	//
+	// Patch: Persist the fog-of-war pixel cache across compositor passes.
+	//
+	// Every fog draw funnels through updateFogOfWarVertexBuffer, so invalidating the drawn tile's cache
+	// entry there keeps the cache exact while persisting it across passes - the GPU lock then runs only
+	// when a queried tile's fog actually changed.
+	//
+
+	static int __fastcall PatchPersistentFogCache_OnFogDraw(TES3::WorldControllerRenderTarget* renderTarget, DWORD _EDX_, NI::RenderedTexture* texture, int fowX, short fowY, float radius) {
+		TES3::WorldControllerRenderTarget::invalidateFogCacheTexture(texture);
+		return renderTarget->updateFogOfWarVertexBuffer(texture, fowX, fowY, radius);
+	}
+
 	//
 	// Patch: Optimize relighting of actors during cell transition.
-	// 
+	//
 	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
 	// already left simulation, and memoize resetCollisionGroup's loop-invariant root-collision-node search.
 	//
@@ -3087,6 +3489,30 @@ namespace mwse::patch {
 		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateProperties));
 		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
 		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
+
+		// Patch: Skip the local-map borrow/restore on cell-crosses where no tile renders.
+		genCallEnforced(0x486B09, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+		genCallEnforced(0x486F5B, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+		genCallEnforced(0x486F0F, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+		genCallEnforced(0x486F99, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+		genCallEnforced(0x486F72, 0x41F680, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderInteriorMap));
+
+		// Patch: Persist the fog-of-war pixel cache across compositor passes (invalidate on fog draw).
+		for (DWORD site : { 0x42082Cu, 0x4208C2u, 0x420A7Fu, 0x420BB9u, 0x420CC8u, 0x421CE4u, 0x42FD7Cu }) {
+			genCallEnforced(site, 0x42FA50, reinterpret_cast<DWORD>(&PatchPersistentFogCache_OnFogDraw));
+		}
+
+		// Patch: Render local-map tiles into per-tile render targets, displayed directly; defer the
+		// GPU->CPU readback and the world-map paint off the cross frame.
+		genCallEnforced(0x4E32FE, 0x4C81C0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnMapDrawCell));
+		genCallEnforced(0x4854CD, 0x41DFB0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnReleaseAllMapTextures));
+		genCallEnforced(0x486F1F, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
+		genCallEnforced(0x486FA9, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
+		for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
+			genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnRenderCellMapTile));
+		}
+		// The per-frame tile completion + compositor drain runs from inside WorldController::tickClock
+		// (see drainDeferredMapTiles), so no call-site hook is installed here.
 
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;

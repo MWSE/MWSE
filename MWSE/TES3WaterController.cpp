@@ -3,6 +3,11 @@
 #include "LuaUtil.h"
 
 namespace TES3 {
+	const auto TES3_WaterController_renderWater = reinterpret_cast<void(__thiscall*)(WaterController*, NI::Camera*, bool)>(0x51C550);
+	void WaterController::renderWater(NI::Camera* camera, bool ignorePixelShader) {
+		TES3_WaterController_renderWater(this, camera, ignorePixelShader);
+	}
+
 	const auto TES3_WaterController_createRipple = reinterpret_cast<void(__thiscall*)(WaterController*, float, float, float, float, bool)>(0x51C1E0);
 	void WaterController::createRipple(float x, float y, float scale, float speed, bool active) {
 		TES3_WaterController_createRipple(this, x, y, scale, speed, active);

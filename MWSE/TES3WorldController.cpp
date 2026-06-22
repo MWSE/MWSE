@@ -18,6 +18,7 @@
 #include "CodePatchUtil.h"
 #include "MemoryUtil.h"
 #include "MGEApi.h"
+#include "PatchUtil.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -60,12 +61,59 @@ namespace TES3 {
 		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
 	}
 
+	const auto TES3_WorldControllerRenderTarget_setSceneNode = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, NI::Node*)>(0x42ED30);
+	void WorldControllerRenderTarget::setSceneNode(NI::Node* sceneRoot) {
+		TES3_WorldControllerRenderTarget_setSceneNode(this, sceneRoot);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_readbackRenderedTexture = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, D3DLOCKED_RECT*)>(0x42F830);
+	void WorldControllerRenderTarget::readbackRenderedTexture(D3DLOCKED_RECT* lockedRect) {
+		TES3_WorldControllerRenderTarget_readbackRenderedTexture(this, lockedRect);
+	}
+
 	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::RenderedTexture>, float, float)>(0x42FE20);
 	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
 		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
 	}
 
-	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
+	const auto TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer = reinterpret_cast<int(__thiscall*)(WorldControllerRenderTarget*, NI::RenderedTexture*, int, short, float)>(0x42FA50);
+	int WorldControllerRenderTarget::updateFogOfWarVertexBuffer(NI::RenderedTexture* texture, int fowX, short fowY, float radius) {
+		return TES3_WorldControllerRenderTarget_updateFogOfWarVertexBuffer(this, texture, fowX, fowY, radius);
+	}
+
+	const auto TES3_MapController_borrowMapGeometry = reinterpret_cast<void(__thiscall*)(MapController*)>(0x420DB0);
+	void MapController::borrowMapGeometry() {
+		TES3_MapController_borrowMapGeometry(this);
+	}
+
+	const auto TES3_MapController_restoreMapGeometry = reinterpret_cast<void(__thiscall*)(MapController*)>(0x421100);
+	void MapController::restoreMapGeometry() {
+		TES3_MapController_restoreMapGeometry(this);
+	}
+
+	const auto TES3_MapController_renderCellMapTile = reinterpret_cast<Cell::MappingVisuals* (__thiscall*)(MapController*, int, int, Cell*, NI::Point3, float, Cell::MappingVisuals*)>(0x41FEA0);
+	Cell::MappingVisuals* MapController::renderCellMapTile(int tileY, int tileX, Cell* cell, NI::Point3 worldPosition, float northMarkerOrientation, Cell::MappingVisuals* accumulator) {
+		return TES3_MapController_renderCellMapTile(this, tileY, tileX, cell, worldPosition, northMarkerOrientation, accumulator);
+	}
+
+	const auto TES3_MapController_renderInteriorMap = reinterpret_cast<void(__thiscall*)(MapController*, Cell*)>(0x41F680);
+	void MapController::renderInteriorMap(Cell* cell) {
+		TES3_MapController_renderInteriorMap(this, cell);
+	}
+
+	const auto TES3_MapController_updateMapRenderEngine = reinterpret_cast<void(__thiscall*)(MapController*)>(0x420400);
+	void MapController::updateMapRenderEngine() {
+		TES3_MapController_updateMapRenderEngine(this);
+	}
+
+	const auto TES3_MapController_releaseAllTextures = reinterpret_cast<void(__thiscall*)(MapController*)>(0x41DFB0);
+	void MapController::releaseAllTextures() {
+		TES3_MapController_releaseAllTextures(this);
+	}
+
+	// Fog-of-war pixel cache: a CPU copy of each fog tile, keyed by texture. Entries persist across
+	// compositor passes; a tile's entry is invalidated when fog is drawn to it, so the GPU lock runs
+	// only when a queried tile's fog actually changed.
 	static constexpr auto FogTileResolution = 64u;
 	static constexpr auto FogCacheCapacity = 16u;
 
@@ -74,17 +122,23 @@ namespace TES3 {
 		unsigned char pixels[FogTileResolution * FogTileResolution] = {};
 	};
 	static auto sFogCacheActive = false;
-	static auto sFogCacheCount = 0u;
+	static auto sFogCacheNextEvict = 0u;
 	static FogTileCacheEntry sFogCache[FogCacheCapacity] = {};
 
 	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::Pointer<NI::RenderedTexture> texture) {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
+		FogTileCacheEntry* freeEntry = nullptr;
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
 			if (sFogCache[i].texture == texture) {
 				return &sFogCache[i];
 			}
+			if (freeEntry == nullptr && sFogCache[i].texture == nullptr) {
+				freeEntry = &sFogCache[i];
+			}
 		}
-		if (sFogCacheCount >= FogCacheCapacity) {
-			return nullptr;
+		if (freeEntry == nullptr) {
+			freeEntry = &sFogCache[sFogCacheNextEvict];
+			sFogCacheNextEvict = (sFogCacheNextEvict + 1u) % FogCacheCapacity;
+			*freeEntry = {};
 		}
 		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
 		if (!rect) {
@@ -93,7 +147,7 @@ namespace TES3 {
 			renderTarget->unlockRenderTarget(rect, 0);
 			return nullptr;
 		}
-		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+		FogTileCacheEntry* entry = freeEntry;
 		entry->texture = texture;
 		const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
 		const int pitch = rect->Pitch;
@@ -103,24 +157,31 @@ namespace TES3 {
 			}
 		}
 		renderTarget->unlockRenderTarget(rect, 0);
-		++sFogCacheCount;
 		return entry;
 	}
 
 	void WorldControllerRenderTarget::beginFogCache() {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
-			sFogCache[i] = {};
-		}
 		sFogCacheActive = true;
-		sFogCacheCount = 0;
 	}
 
 	void WorldControllerRenderTarget::endFogCache() {
-		for (auto i = 0u; i < sFogCacheCount; ++i) {
+		sFogCacheActive = false;
+	}
+
+	void WorldControllerRenderTarget::invalidateFogCacheTexture(NI::RenderedTexture* texture) {
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
+			if (sFogCache[i].texture == texture) {
+				sFogCache[i] = {};
+				return;
+			}
+		}
+	}
+
+	void WorldControllerRenderTarget::clearFogCache() {
+		for (auto i = 0u; i < FogCacheCapacity; ++i) {
 			sFogCache[i] = {};
 		}
-		sFogCacheActive = false;
-		sFogCacheCount = 0;
+		sFogCacheNextEvict = 0;
 	}
 
 	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
@@ -804,6 +865,10 @@ namespace TES3 {
 	}
 
 	void WorldController::tickClock() {
+		// Drive the deferred local-map tile completion + compositor once per frame, before the
+		// post-simulate event.
+		mwse::patch::drainDeferredMapTiles();
+
 		// Run post-simulate event before updating game time.
 		if (mwse::lua::event::SimulatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();

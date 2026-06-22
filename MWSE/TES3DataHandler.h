@@ -196,6 +196,7 @@ namespace TES3 {
 
 		bool objectExists(const std::string_view& id);
 		void clearCellByNameCache(const Cell* cell);
+		void mapDrawCell(Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>
@@ -307,7 +308,7 @@ namespace TES3 {
 		NI::IteratedList<SoundEvent*>* tempSoundEvents; // 0xB4D4
 		NI::IteratedList<SoundEvent*>* lightSoundEvents; // 0xB4D8
 		bool showActorDrawBounds; // 0xB4DC
-		char unknown_0xB4DD;
+		bool flagTestingCells; // 0xB4DD // -createmaps mode
 		char unknown_0xB4DE;
 		char unknown_0xB4DF;
 		char unknown_0xB4E0;

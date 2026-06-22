@@ -16,6 +16,16 @@ namespace TES3 {
 		return TES3_LoadScreenManager_render(this, unknown1, unknown2, unknown3);
 	}
 
+	void LoadScreenManager::renderMutexLock() {
+		const auto TES3_LoadScreenManager_renderMutexLock = reinterpret_cast<void(__thiscall*)(LoadScreenManager*)>(0x458D70);
+		TES3_LoadScreenManager_renderMutexLock(this);
+	}
+
+	void LoadScreenManager::renderMutexUnlock() {
+		const auto TES3_LoadScreenManager_renderMutexUnlock = reinterpret_cast<void(__thiscall*)(LoadScreenManager*)>(0x458DA0);
+		TES3_LoadScreenManager_renderMutexUnlock(this);
+	}
+
 	void LoadScreenManager::clearMovieState(bool unknown) {
 		const auto TES3_LoadScreenManager_clearMovieState = reinterpret_cast<void(__thiscall*)(LoadScreenManager*, bool)>(0x4599E0);
 		TES3_LoadScreenManager_clearMovieState(this, unknown);

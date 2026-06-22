@@ -46,6 +46,25 @@ namespace TES3 {
 		return TES3_Cell_getExteriorGridX(this);
 	}
 
+	Cell::MappingVisuals* Cell::MappingVisuals::create(float positionX, float positionY, unsigned short coverageMask) {
+		auto* result = reinterpret_cast<MappingVisuals*>(se::memory::_new(sizeof(MappingVisuals)));
+		memset(result, 0, sizeof(MappingVisuals));
+		result->positionX = positionX;
+		result->positionY = positionY;
+		result->coverageMask = coverageMask;
+		return result;
+	}
+
+	const auto TES3_Cell_refreshMapTileFromCache = reinterpret_cast<bool(__thiscall *)(Cell*, int, int)>(0x4E3210);
+	bool Cell::refreshMapTileFromCache(int tileY, int tileX) {
+		return TES3_Cell_refreshMapTileFromCache(this, tileY, tileX);
+	}
+
+	const auto TES3_Cell_maybeDeleteMappingVisuals = reinterpret_cast<void(__thiscall *)(Cell*, Cell::MappingVisuals*)>(0x4E3550);
+	void Cell::maybeDeleteMappingVisuals(MappingVisuals* visualsToDelete) {
+		TES3_Cell_maybeDeleteMappingVisuals(this, visualsToDelete);
+	}
+
 	const auto TES3_Cell_setGridX = reinterpret_cast<void(__thiscall *)(Cell*, int)>(0x4DB9E0);
 	void Cell::setGridX(int x) {
 		const auto dataHandler = TES3::DataHandler::get();
