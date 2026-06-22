@@ -459,6 +459,21 @@ namespace se::cs::window::main {
 		SendMessage(statusBar, SB_SETPARTS, (WPARAM)4, (LPARAM)partsRightEdgePositions);
 	}
 
+	// During cell load the engine does a status bar update for every reference it
+	// creates. Those strings are nearly always distinct so the dedupe above can't
+	// collapse them. Cap the rate to 50ms. Throttling at the load loop rather than
+	// in the subclass keeps unrelated status messages from being swallowed.
+	const auto TES3CS_UpdateStatusBar = reinterpret_cast<LRESULT(__cdecl*)(WPARAM, LPARAM)>(0x46E680);
+	static LRESULT __cdecl PatchThrottleLoadingStatusText(WPARAM part, LPARAM text) {
+		static DWORD lastTick = 0;
+		const DWORD now = GetTickCount();
+		if (now - lastTick < 50) {
+			return 0;
+		}
+		lastTick = now;
+		return TES3CS_UpdateStatusBar(part, text);
+	}
+
 	//
 	// Patch: Enable QuickStart cell loading.
 	//
@@ -1121,6 +1136,8 @@ namespace se::cs::window::main {
 
 		// Patch: Throttle UI status updates.
 		genJumpEnforced(0x401848, 0x46E630, reinterpret_cast<DWORD>(PatchCreateStatusBar));
+		genCallEnforced(0x49FE06, 0x404881, reinterpret_cast<DWORD>(PatchThrottleLoadingStatusText));
+		genCallEnforced(0x49FE44, 0x404881, reinterpret_cast<DWORD>(PatchThrottleLoadingStatusText));
 
 		// Patch: Enable QuickStart cell loading.
 		genCallEnforced(0x447B78, 0x4033FF, reinterpret_cast<DWORD>(PatchEnableQuickStartCellLoading));
