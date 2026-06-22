@@ -1219,6 +1219,11 @@ namespace se::cs::darkmode {
 	}
 
 	static void applyRichEditColors(HWND hWnd, bool recolorAll = false) {
+		// EM_SETCHARFORMAT sets the control's modify flag as a side effect.
+		// The script editor will see that and make popup messages on close.
+		// Restore the value after theming so we don't break dirty tracking.
+		const auto wasModified = SendMessageA(hWnd, EM_GETMODIFY, 0, 0);
+
 		SendMessageA(hWnd, EM_SETBKGNDCOLOR, FALSE, palette::surface);
 
 		CHARFORMATA format = {};
@@ -1230,6 +1235,8 @@ namespace se::cs::darkmode {
 		if (recolorAll) {
 			SendMessageA(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&format));
 		}
+
+		SendMessageA(hWnd, EM_SETMODIFY, wasModified, 0);
 	}
 
 	// Disabled RichEdit 1.0 controls ignore EM_SETBKGNDCOLOR and paint with a
