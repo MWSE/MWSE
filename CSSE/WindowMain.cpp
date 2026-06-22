@@ -465,12 +465,18 @@ namespace se::cs::window::main {
 	// in the subclass keeps unrelated status messages from being swallowed.
 	const auto TES3CS_UpdateStatusBar = reinterpret_cast<LRESULT(__cdecl*)(WPARAM, LPARAM)>(0x46E680);
 	static LRESULT __cdecl PatchThrottleLoadingStatusText(WPARAM part, LPARAM text) {
-		static DWORD lastTick = 0;
+		// Throttle each part on its own clock. The loop updates parts 2/3 per reference,
+		// so a single shared clock would cause the first call to consume the budget and
+		// drop the second/third (which would result in the status bar not being updated).
+		static std::array<DWORD, STATUS_WINDOW_CELL_COUNT> lastTick = {};
+		if (part >= STATUS_WINDOW_CELL_COUNT) {
+			return TES3CS_UpdateStatusBar(part, text);
+		}
 		const DWORD now = GetTickCount();
-		if (now - lastTick < 50) {
+		if (now - lastTick[part] < 50) {
 			return 0;
 		}
-		lastTick = now;
+		lastTick[part] = now;
 		return TES3CS_UpdateStatusBar(part, text);
 	}
 
