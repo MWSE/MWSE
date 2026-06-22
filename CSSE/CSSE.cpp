@@ -652,6 +652,7 @@ namespace se::cs {
 		using memory::genNOPUnprotected;
 		using memory::genJumpEnforced;
 		using memory::genJumpUnprotected;
+		using memory::writeDoubleWordEnforced;
 		using memory::writeDoubleWordUnprotected;
 		using memory::writeValueEnforced;
 		using memory::overrideVirtualTableEnforced;
@@ -739,6 +740,14 @@ namespace se::cs {
 		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
 		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
+
+		// Patch: Optimize NiDX8Renderer hash map lookups. Use NiDX8RendererHashBuckets buckets instead of 37.
+		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.
+		writeDoubleWordEnforced(0x58D08D, 37, NiDX8RendererHashBuckets);
+		writeDoubleWordEnforced(0x58D092, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D0D8, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D11E, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D164, 0x94, NiDX8RendererHashBuckets * 4);
 
 		// Install all our sectioned patches.
 		window::main::installPatches();
