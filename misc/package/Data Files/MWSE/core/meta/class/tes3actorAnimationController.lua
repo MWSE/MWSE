@@ -7,6 +7,7 @@
 --- @class tes3actorAnimationController
 --- @field alphaProperty niAlphaProperty The alpha property applied to the actor. Controls the opacity/opaqueness of the actor.
 --- @field animationData tes3animationData Access to the actor's animation data.
+--- @field animGroupAttack tes3.animationGroup The actor's weapon attack or casting animation. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) table.
 --- @field animGroupIdle tes3.animationGroup The actor's idle animation. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) table.
 --- @field animGroupIdle2 integer 
 --- @field animGroupMovement tes3.animationGroup The actor's movement animations group. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) table.

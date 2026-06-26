@@ -3,8 +3,9 @@
 #include "LuaManager.h"
 #include "TES3ActorLua.h"
 
-#include "TES3AIConfig.h"
 #include "TES3Creature.h"
+#include "TES3AIConfig.h"
+#include "TES3AnimationGroup.h"
 #include "TES3Item.h"
 #include "TES3Script.h"
 #include "TES3SpellList.h"

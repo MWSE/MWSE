@@ -307,7 +307,7 @@ namespace TES3 {
 
 		baseObject->setModelPath(path);
 
-		// Update model if it is currently part of the scenegraph.
+		// Update model if it is currently part of the scenegraph. This completely resets the skeleton and scene nodes.
 		if (sceneNode) {
 			reloadAnimation(path);
 		}
@@ -348,7 +348,7 @@ namespace TES3 {
 						auto keyframes = modelLoader->loadKeyframes(path, "MWSE Anim");
 
 						if (animData && keyframes) {
-							animData->setOverrideLayerKeyframes(keyframes);
+							animData->setOverrideSourceKeyframes(keyframes);
 						}
 					}
 					else {

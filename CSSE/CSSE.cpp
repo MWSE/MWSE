@@ -737,6 +737,11 @@ namespace se::cs {
 		// Patch: Redirect away from the help file, which is no longer supported by Windows.
 		writeDoubleWordUnprotected(0x6D9ECC, reinterpret_cast<DWORD>(&patch::OverrideWinHelpA));
 
+		// Suppress "Bad note string" messages with new animation systems in MWSE/OpenMW.
+		writeValueEnforced<BYTE>(0x509AAD + 0x3, 0x1, 0x0);
+		writeValueEnforced<BYTE>(0x509B07 + 0x3, 0x1, 0x0);
+		writeValueEnforced<BYTE>(0x509E59 + 0x3, 0x1, 0x0);
+
 		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
 		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);

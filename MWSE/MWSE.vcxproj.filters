@@ -1518,6 +1518,9 @@
     <ClInclude Include="LuaStartGlobalScriptEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaAnimationTriggerEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1565,6 +1568,9 @@
     </ClInclude>
     <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaKeyframesParsedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
     <ClInclude Include="ReferenceTracker.h">
       <Filter>Header Files\Utility</Filter>
@@ -3482,6 +3488,9 @@
     <ClCompile Include="LuaStartGlobalScriptEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaAnimationTriggerEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaCalcTouchSpellConeEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3541,6 +3550,9 @@
     </ClCompile>
     <ClCompile Include="TES3ActionData.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaKeyframesParsedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

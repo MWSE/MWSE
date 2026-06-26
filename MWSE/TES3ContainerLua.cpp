@@ -4,6 +4,7 @@
 #include "TES3ActorLua.h"
 
 #include "TES3Container.h"
+#include "TES3AnimationGroup.h"
 #include "TES3Script.h"
 #include "TES3WorldController.h"
 

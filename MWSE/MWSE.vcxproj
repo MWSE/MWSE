@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BitUtil.h" />
+    <ClInclude Include="LuaAnimationTriggerEvent.h" />
     <ClInclude Include="CrashLogExceptionHandler.hpp" />
     <ClInclude Include="CrashLogFormatter.hpp" />
     <ClInclude Include="CrashLogger.hpp" />
@@ -22,6 +23,7 @@
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
     <ClInclude Include="LuaDialogueFilteredEvent.h" />
     <ClInclude Include="LuaKeyframesLoadedEvent.h" />
+    <ClInclude Include="LuaKeyframesParsedEvent.h" />
     <ClInclude Include="LuaMagicAbsorbEvent.h" />
     <ClInclude Include="LuaMagicReflectedEvent.h" />
     <ClInclude Include="LuaMagicReflectEvent.h" />
@@ -491,6 +493,7 @@
     <ClCompile Include="LuaActivationTargetChangedEvent.cpp" />
     <ClCompile Include="LuaActiveMagicEffectIconsUpdatedEvent.cpp" />
     <ClCompile Include="LuaAddTopicEvent.cpp" />
+    <ClCompile Include="LuaAnimationTriggerEvent.cpp" />
     <ClCompile Include="LuaAttackEvent.cpp" />
     <ClCompile Include="LuaAttackStartEvent.cpp" />
     <ClCompile Include="LuaAttackHitEvent.cpp" />
@@ -576,6 +579,7 @@
     <ClCompile Include="LuaKeyEvent.cpp" />
     <ClCompile Include="LuaKeyframesLoadedEvent.cpp" />
     <ClCompile Include="LuaKeyframesLoadEvent.cpp" />
+    <ClCompile Include="LuaKeyframesParsedEvent.cpp" />
     <ClCompile Include="LuaKeyUpEvent.cpp" />
     <ClCompile Include="LuaLeveledCreaturePickedEvent.cpp" />
     <ClCompile Include="LuaLeveledItemPickedEvent.cpp" />

@@ -5,8 +5,9 @@
 
 --- A game object which contains information that map actor sounds to animations.
 --- @class tes3animationGroupSoundGenKey
+--- @field luaEvent tes3animationGroupLuaEvent|nil The lua event fired at this sound generator key. `nil` if the key holds a sound instead.
 --- @field pitch number The pitch of the sound.
---- @field sound tes3sound The sound played at this sound generator key.
+--- @field sound tes3sound|nil The sound played at this sound generator key. `nil` if the key holds a lua event instead.
 --- @field startFrame number The starting frame of animation at which the sound plays.
 --- @field startTime number 
 --- @field volume number The sound's volume.

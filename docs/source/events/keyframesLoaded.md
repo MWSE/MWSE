@@ -23,6 +23,7 @@ event.register(tes3.event.keyframesLoaded, keyframesLoadedCallback)
 
 ## Event Data
 
+* `keyframe` ([tes3keyframeDefinition](../types/tes3keyframeDefinition.md)): The loaded keyframe definition.
 * `path` (string): The path to the keyframes file, relative to Data Files\Meshes.
 * `sequenceName` (string): The name of the associated NiSequence object.
 * `textKeys` ([niTextKeyExtraData](../types/niTextKeyExtraData.md)): Convience access to the sequence text keys, or `nil` if it has none.
@@ -30,5 +31,5 @@ event.register(tes3.event.keyframesLoaded, keyframesLoadedCallback)
 
 ## Related events
 
-[keyframesLoad](./keyframesLoad.md){ .md-button }
+[meshLoad](./meshLoad.md){ .md-button }[keyframesLoad](./keyframesLoad.md){ .md-button }[keyframesParsed](./keyframesParsed.md){ .md-button }
 

@@ -167,6 +167,17 @@ True if this object is an editor marker for a gameplay location. These include t
 
 ***
 
+### `keyframes`
+<div class="search_terms" style="display: none">keyframes</div>
+
+*Read-only*. Access to the actor's keyframe definition.
+
+**Returns**:
+
+* `result` ([tes3keyframeDefinition](../types/tes3keyframeDefinition.md))
+
+***
+
 ### `mesh`
 <div class="search_terms" style="display: none">mesh</div>
 

@@ -10,6 +10,17 @@ A game object which contains information that map actor sounds to animations.
 
 ## Properties
 
+### `luaEvent`
+<div class="search_terms" style="display: none">luaevent</div>
+
+The lua event fired at this sound generator key. `nil` if the key holds a sound instead.
+
+**Returns**:
+
+* `result` ([tes3animationGroupLuaEvent](../types/tes3animationGroupLuaEvent.md), nil)
+
+***
+
 ### `pitch`
 <div class="search_terms" style="display: none">pitch</div>
 
@@ -24,11 +35,11 @@ The pitch of the sound.
 ### `sound`
 <div class="search_terms" style="display: none">sound</div>
 
-The sound played at this sound generator key.
+The sound played at this sound generator key. `nil` if the key holds a lua event instead.
 
 **Returns**:
 
-* `result` ([tes3sound](../types/tes3sound.md))
+* `result` ([tes3sound](../types/tes3sound.md), nil)
 
 ***
 

@@ -12,12 +12,11 @@
 --- @field animationAttackState tes3.animationState The actor's animation state. Maps to values in [`tes3.animationState`](https://mwse.github.io/MWSE/references/animation-states/) namespace.
 --- @field animGroupBlocking number The animation group when blocking.
 --- @field animGroupCurrentAction number The animation group for the current action.
---- @field animGroupStunEffect number The animation group for when stunned.
+--- @field animGroupNextStun number The animation group for when stunned.
 --- @field animSectionCurrentAction number The animation section for the current action.
 --- @field attackSwing number When attacking, this value represents how much the weapon has been pulled back. The value ranges from [0.0 - 1.0].
 --- @field attackWasBlocked boolean A flag that indicates if an attack failed its block check on the initial attack swing, and should be blocked if it connects. May be modified before the strike hits to cause the attack to be blocked. This flag negates damage even if no shield is equipped, so you should check if a shield is present before setting it.
 --- @field blockingState number A state index that indicates an actor's blocking state. It is zero when not blocking and non-zero when blocking. A value of 1 indicates a state transition from non-blocking to blocking, while a value of 2 means blocking is active (where the block animation is currently playing and should not be interrupted). The action simulation will reset the value to 0 at the end of a block animation.
---- @field currentAnimationGroup tes3.animationGroup Actor's current animation group. Maps to values in [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace.
 --- @field dispositionCombatChange number The disposition modifier for combat.
 --- @field fightCombatChange number The fight modifier for combat.
 --- @field hitTarget tes3mobileActor|tes3mobileCreature|tes3mobileNPC|tes3mobilePlayer|nil The actor's attack target. The target will be saved in `hitTarget` field until a new attack is made. Missing an attack will clear `hitTarget` field.
