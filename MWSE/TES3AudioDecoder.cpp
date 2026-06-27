@@ -4,6 +4,7 @@
 #include "TES3AudioController.h"
 #include "TES3Sound.h"
 
+#include "Log.h"
 #include "MWSEConfig.h"
 
 #pragma comment(lib, "dxguid.lib") // IID_IDirectSound3DBuffer
@@ -166,6 +167,24 @@ namespace TES3 {
 		return buildSoundBuffer(audio, pcm, pcm.channels, isPointSource);
 	}
 
+	static long long elapsedUs(std::chrono::steady_clock::time_point start) {
+		return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
+	}
+
+	// Build + basic perf logging for an intercepted (decoded) file. One line per
+	// flexible load: format, source channels/rate, and decode vs build time -- so a
+	// main-thread decode hitch (large MP3, etc.) is visible in MWSE.log.
+	static SoundBuffer* timedBuild(AudioController* audio, const char* filename, const char* kind, DecodedPcm& pcm, bool isPointSource, long long decodeUs) {
+		const unsigned int channelsIn = pcm.channels;
+		const unsigned int sampleRate = pcm.sampleRate;
+		const auto buildStart = std::chrono::steady_clock::now();
+		SoundBuffer* soundBuffer = finishBuild(audio, pcm, isPointSource);
+		mwse::log::getLog() << "[MWSE] flexible audio: " << kind << ' ' << filename
+			<< " (" << channelsIn << "ch " << sampleRate << "Hz) " << (soundBuffer ? "ok" : "build-failed")
+			<< " decode=" << decodeUs << "us build=" << elapsedUs(buildStart) << "us\n";
+		return soundBuffer;
+	}
+
 	// Decodes WAV variants DirectSound can't take (24/32-bit, float, EXTENSIBLE)
 	// and non-voiceover MP3/FLAC (no ACM codec linked), and downmixes stereo 3D
 	// point sources to mono. Engine-compatible, missing, and voiceover files fall
@@ -178,13 +197,21 @@ namespace TES3 {
 
 		if (endsWithCI(filename, ".mp3")) {
 			DecodedPcm pcm;
-			if (!decodeMp3(filename, pcm)) return nullptr;
-			return finishBuild(this, pcm, isPointSource);
+			const auto start = std::chrono::steady_clock::now();
+			if (!decodeMp3(filename, pcm)) {
+				mwse::log::getLog() << "[MWSE] flexible audio: mp3 " << filename << " decode-failed\n";
+				return nullptr;
+			}
+			return timedBuild(this, filename, "mp3", pcm, isPointSource, elapsedUs(start));
 		}
 		if (endsWithCI(filename, ".flac")) {
 			DecodedPcm pcm;
-			if (!decodeFlac(filename, pcm)) return nullptr;
-			return finishBuild(this, pcm, isPointSource);
+			const auto start = std::chrono::steady_clock::now();
+			if (!decodeFlac(filename, pcm)) {
+				mwse::log::getLog() << "[MWSE] flexible audio: flac " << filename << " decode-failed\n";
+				return nullptr;
+			}
+			return timedBuild(this, filename, "flac", pcm, isPointSource, elapsedUs(start));
 		}
 
 		// WAV: pass engine-compatible files through unchanged; only intercept
@@ -204,12 +231,13 @@ namespace TES3 {
 		DecodedPcm pcm;
 		pcm.channels = wav.channels;
 		pcm.sampleRate = wav.sampleRate;
+		const auto start = std::chrono::steady_clock::now();
 		pcm.samples.resize(static_cast<size_t>(wav.totalPCMFrameCount) * wav.channels);
 		const drwav_uint64 framesRead = drwav_read_pcm_frames_s16(&wav, wav.totalPCMFrameCount, pcm.samples.data());
 		pcm.samples.resize(static_cast<size_t>(framesRead) * wav.channels);
 		drwav_uninit(&wav);
 
-		return finishBuild(this, pcm, isPointSource);
+		return timedBuild(this, filename, "wav", pcm, isPointSource, elapsedUs(start));
 	}
 
 }
