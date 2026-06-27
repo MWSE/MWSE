@@ -30,15 +30,6 @@ namespace mwse::patch::voice {
 			return sb && sb->bufferDescription.dwSize == STUB_PENDING_SENTINEL;
 		}
 
-		bool isVoiceoverPath(const char* filename) {
-			if (!filename) return false;
-			// Match the engine's own case-insensitive probe at 0x48C5F3.
-			return std::strstr(filename, "vo\\") != nullptr
-				|| std::strstr(filename, "Vo\\") != nullptr
-				|| std::strstr(filename, "vO\\") != nullptr
-				|| std::strstr(filename, "VO\\") != nullptr;
-		}
-
 		// Allocate a stub via SoundBuffer's class-specific operator new (engine
 		// heap), then ctor-zero. We then set the field invariants we rely on
 		// across the leaf accessors:
@@ -115,7 +106,8 @@ namespace mwse::patch::voice {
 			// use-after-free.
 			stub->bufferDescription.lpwfxFormat = reinterpret_cast<WAVEFORMATEX*>(stub->fileHeader);
 
-			stub->isVoiceover = true;
+			// Leave stub->isVoiceover as addTempSound set it -- this path now
+			// publishes non-voiceover sounds too, not just voiceovers.
 
 			// Do NOT touch stub->volume here. addTempSound already called
 			// SetSoundBufferVolume(stub, vol) while the stub was pending, which
@@ -391,15 +383,14 @@ namespace mwse::patch::voice {
 			delete sb;
 		}
 
-		// Replaces the call to LoadSoundFile inside addTempSound (0x48C369). For
-		// non-voiceover paths, falls straight through to the engine's loadSoundFile.
-		// For voiceover paths, allocates a pending stub and queues the actual decode
-		// onto the worker thread.
+		// Replaces the call to LoadSoundFile inside addTempSound (0x48C369). Every
+		// load is queued onto the decode worker: the flexible loadSoundFile decodes
+		// foreign formats and builds the DirectSound buffer off the main thread, so no
+		// sound load stalls the frame. addTempSound continues with a pending stub; the
+		// worker publishes the real buffer when the decode finishes. Engine-compatible
+		// files complete near-instantly on the worker, so their only added latency is
+		// worker scheduling.
 		TES3::SoundBuffer* __fastcall asyncLoadSoundFile(TES3::AudioController* audio, void* /*edx*/, const char* filename, bool isPointSource) {
-			if (!isVoiceoverPath(filename)) {
-				return audio->loadSoundFile(filename, isPointSource);
-			}
-
 			auto* stub = allocateStub();
 			auto* rc = acquireStubRef(stub);
 
