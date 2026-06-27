@@ -25,12 +25,14 @@ namespace TES3 {
 	// never recurses into itself.
 	static const auto engineLoadSoundFile = reinterpret_cast<SoundBuffer*(__thiscall*)(AudioController*, const char*, bool)>(0x401DB0);
 
-	// Captured at DLL load (main thread). Perf logging fires only on the main
-	// thread: addTempSound loads now run on the decode worker, where the
-	// (non-thread-safe) MWSE log must not be touched, and they no longer stall the
-	// frame so their timing is uninteresting.
+	// Captured at DLL load (main thread).
 	static const DWORD g_mainThreadId = GetCurrentThreadId();
 	static bool onMainThread() { return GetCurrentThreadId() == g_mainThreadId; }
+
+	// Perf logging is opt-in (MWSE MCM: "Log flexible audio loads") and main-thread
+	// only -- the decode worker must not touch the non-thread-safe MWSE log, and its
+	// loads no longer stall the frame so their timing is uninteresting.
+	static bool shouldLogLoad() { return mwse::Configuration::LogFlexibleAudioLoads && onMainThread(); }
 
 	struct DecodedPcm {
 		std::vector<drwav_int16> samples; // interleaved
@@ -187,7 +189,7 @@ namespace TES3 {
 		const auto buildStart = std::chrono::steady_clock::now();
 		SoundBuffer* soundBuffer = finishBuild(audio, pcm, isPointSource);
 		const long long buildUs = elapsedUs(buildStart);
-		if (onMainThread()) {
+		if (shouldLogLoad()) {
 			mwse::log::getLog() << "[MWSE] flexible audio: " << kind << ' ' << filename
 				<< " (" << channelsIn << "ch " << sampleRate << "Hz) " << (soundBuffer ? "ok" : "build-failed")
 				<< " decode=" << decodeUs << "us build=" << buildUs << "us\n";
@@ -209,7 +211,7 @@ namespace TES3 {
 			DecodedPcm pcm;
 			const auto start = std::chrono::steady_clock::now();
 			if (!decodeMp3(filename, pcm)) {
-				if (onMainThread()) mwse::log::getLog() << "[MWSE] flexible audio: mp3 " << filename << " decode-failed\n";
+				if (shouldLogLoad()) mwse::log::getLog() << "[MWSE] flexible audio: mp3 " << filename << " decode-failed\n";
 				return nullptr;
 			}
 			return timedBuild(this, filename, "mp3", pcm, isPointSource, elapsedUs(start));
@@ -218,7 +220,7 @@ namespace TES3 {
 			DecodedPcm pcm;
 			const auto start = std::chrono::steady_clock::now();
 			if (!decodeFlac(filename, pcm)) {
-				if (onMainThread()) mwse::log::getLog() << "[MWSE] flexible audio: flac " << filename << " decode-failed\n";
+				if (shouldLogLoad()) mwse::log::getLog() << "[MWSE] flexible audio: flac " << filename << " decode-failed\n";
 				return nullptr;
 			}
 			return timedBuild(this, filename, "flac", pcm, isPointSource, elapsedUs(start));
