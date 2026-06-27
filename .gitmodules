@@ -2,3 +2,6 @@
 	path = deps/rubic0n
 	url = https://github.com/DreamWeave-MP/rubic0n.git
 	branch = v2.1-agentzh
+[submodule "deps/dr_libs"]
+	path = deps/dr_libs
+	url = https://github.com/mackron/dr_libs.git

@@ -3353,6 +3353,9 @@
     <ClCompile Include="TES3VFXManager.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>
+    <ClCompile Include="TES3AudioDecoder.cpp">
+      <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
     <ClCompile Include="TES3VoiceStreamer.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
     </ClCompile>

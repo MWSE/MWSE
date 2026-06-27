@@ -3156,6 +3156,14 @@ namespace mwse::patch {
 			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
 		}
+
+		// Patch: Flexible sound loading. Route the engine's Sound::set3DParams load
+		// sites to the flexible AudioController::loadSoundFile (TES3AudioDecoder.cpp);
+		// MWSE/Lua callers reach it through the member, and addTempSound through the
+		// voice streamer.
+		auto AudioController_loadSoundFile = &TES3::AudioController::loadSoundFile;
+		genCallEnforced(0x51083F, 0x401DB0, *reinterpret_cast<DWORD*>(&AudioController_loadSoundFile));
+		genCallEnforced(0x510859, 0x401DB0, *reinterpret_cast<DWORD*>(&AudioController_loadSoundFile));
 	}
 
 	void installPostInitializationPatches() {

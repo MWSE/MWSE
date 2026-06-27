@@ -50,10 +50,7 @@ namespace TES3 {
 		TES3_AudioController_unpauseMusic(this);
 	}
 
-	const auto TES3_AudioController_loadSoundFile = reinterpret_cast<SoundBuffer*(__thiscall*)(AudioController*, const char*, bool)>(0x401DB0);
-	SoundBuffer* AudioController::loadSoundFile(const char* filename, bool isPointSource) {
-		return TES3_AudioController_loadSoundFile(this, filename, isPointSource);
-	}
+	// AudioController::loadSoundFile is defined in TES3AudioDecoder.cpp.
 
 	const auto TES3_AudioController_playSoundBuffer = reinterpret_cast<void(__thiscall*)(AudioController*, SoundBuffer*, int)>(0x402820);
 	void AudioController::playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags) {
