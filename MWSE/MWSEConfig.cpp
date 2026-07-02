@@ -20,6 +20,7 @@ namespace mwse {
 	bool Configuration::UseSkinnedAccurateActivationRaytests = true;
 	bool Configuration::UseBVHAcceleratedRaytests = true;
 	bool Configuration::UseBVHAcceleratedCollisions = true;
+	bool Configuration::UseCollisionProbeFastPath = true;
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::NonExclusiveKeyboard = false;
@@ -74,6 +75,7 @@ namespace mwse {
 		DECLARE_CONFIG(UseSkinnedAccurateActivationRaytests)
 		DECLARE_CONFIG(UseBVHAcceleratedRaytests)
 		DECLARE_CONFIG(UseBVHAcceleratedCollisions)
+		DECLARE_CONFIG(UseCollisionProbeFastPath)
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(NonExclusiveKeyboard)

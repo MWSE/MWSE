@@ -34,6 +34,8 @@ return {
 	["useBVHAcceleratedRaytests.description"] = "If enabled, raytests against complex meshes are accelerated with a cached bounding volume hierarchy instead of testing every triangle. This substantially reduces the cost of activation, sun glare, line of sight, and tes3.rayTest queries.",
 	["useBVHAcceleratedCollisions.label"] = "Enable BVH-accelerated collisions",
 	["useBVHAcceleratedCollisions.description"] = "If enabled, swept collision tests against complex meshes are accelerated with the same cached bounding volume hierarchy used for raytests, instead of testing every triangle. This substantially reduces the cost of actor movement collision in mesh-heavy areas.",
+	["useCollisionProbeFastPath.label"] = "Enable collision probe fast path",
+	["useCollisionProbeFastPath.description"] = "If enabled, the per-actor collision probe skips its scene and collision volume refresh when the actor is already at the probed position, avoiding two redundant walks of the actor's scene graph every frame. This reduces collision update cost with many actors around.",
 	["suppressUselessWarnings.label"] = "Suppress useless game warnings?",
 	["suppressUselessWarnings.description"] = "If enabled, the initial startup warning about mismatched masters is suppressed. This warning is almost always displayed on any modded install, and often prompts users to click Yes to All, hiding actually helpful warnings.",
 	["replaceLightSorting.label"] = "Replace light sorting?",

@@ -2283,6 +2283,57 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Skip the redundant refresh in the per-actor collision probe.
+	//
+	// Every frame, each active actor's collision resolution runs a probe that
+	// teleports the actor's scene node to its reference position, then walks the
+	// whole subtree twice (NiAVObject::Update + UpdateCollisionData) before
+	// gathering collisions there. When the node already sits at that position,
+	// the world state is already current and both walks recompute identical
+	// data. Skip them in that case; any mismatch falls through to vanilla.
+	//
+
+	static NI::AVObject* sCollisionProbeSkipNode = nullptr;
+
+	static void __fastcall CollisionProbeConditionalUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, bool bUpdateControllers, bool bUpdateChildren) {
+		sCollisionProbeSkipNode = nullptr;
+		if (Configuration::UseCollisionProbeFastPath) {
+			// The probe has already copied the reference position into the local
+			// translation. If the world translation matches it, the previous
+			// update pass already ran at this exact pose.
+			const auto& local = node->localTranslate;
+			const auto& world = node->worldTransform.translation;
+			if (world.x == local.x && world.y == local.y && world.z == local.z) {
+				sCollisionProbeSkipNode = node;
+				return;
+			}
+		}
+
+		node->update(fTime, bUpdateControllers, bUpdateChildren);
+	}
+
+	static void __fastcall PatchNiNodeUpdateCollisionData(NI::Node* node) {
+		// Consume the probe's skip marker, set when the transform refresh above
+		// was skipped for this same node.
+		if (node == sCollisionProbeSkipNode) {
+			sCollisionProbeSkipNode = nullptr;
+			return;
+		}
+
+		// Vanilla behavior: refresh our own world bounding volume, then recurse.
+		if (node->modelABV) {
+			const auto worldABV = static_cast<NI::BoundingVolume*>(node->worldABV);
+			const auto BV_updateWorldData = reinterpret_cast<void(__thiscall*)(NI::BoundingVolume*, const NI::BoundingVolume*, const NI::Transform*)>(worldABV->vtbl->updateWorldData);
+			BV_updateWorldData(worldABV, node->modelABV, &node->worldTransform);
+		}
+		for (auto& child : node->children) {
+			if (child) {
+				child->vTable.asAVObject->updateCollisionData(child);
+			}
+		}
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2776,6 +2827,10 @@ namespace mwse::patch {
 		genCallEnforced(0x6F149F, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
 		genCallEnforced(0x6F1574, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
 		genCallEnforced(0x6F1599, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+
+		// Patch: Skip the redundant refresh in the per-actor collision probe.
+		genCallEnforced(0x522D32, 0x6EB000, reinterpret_cast<DWORD>(CollisionProbeConditionalUpdate));
+		genJumpUnprotected(0x6C94D0, reinterpret_cast<DWORD>(PatchNiNodeUpdateCollisionData));
 
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));

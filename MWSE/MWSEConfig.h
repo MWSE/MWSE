@@ -17,6 +17,7 @@ namespace mwse {
 		static bool UseSkinnedAccurateActivationRaytests;
 		static bool UseBVHAcceleratedRaytests;
 		static bool UseBVHAcceleratedCollisions;
+		static bool UseCollisionProbeFastPath;
 		static bool SuppressUselessWarnings;
 		static bool UseGlobalAudio;
 		static bool NonExclusiveKeyboard;

@@ -190,6 +190,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("useCollisionProbeFastPath.label"),
+					description = i18n("useCollisionProbeFastPath.description"),
+					variable = {
+						id = "UseCollisionProbeFastPath",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {
