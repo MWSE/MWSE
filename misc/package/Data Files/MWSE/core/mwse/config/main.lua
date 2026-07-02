@@ -170,6 +170,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("useBVHAcceleratedRaytests.label"),
+					description = i18n("useBVHAcceleratedRaytests.description"),
+					variable = {
+						id = "UseBVHAcceleratedRaytests",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {

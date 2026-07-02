@@ -220,6 +220,7 @@
     <ClInclude Include="LuaWeatherTransitionFinishedEvent.h" />
     <ClInclude Include="LuaWeatherTransitionStartedEvent.h" />
     <ClInclude Include="MWSEConfig.h" />
+    <ClInclude Include="NIPickBVH.h" />
     <ClInclude Include="MWSEUtilLua.h" />
     <ClInclude Include="NIExtraDataLua.h" />
     <ClInclude Include="NIGeometryDataLua.h" />
@@ -678,6 +679,7 @@
     <ClCompile Include="MGEPostShadersLua.cpp" />
     <ClCompile Include="MGEUtilLua.cpp" />
     <ClCompile Include="MWSEConfig.cpp" />
+    <ClCompile Include="NIPickBVH.cpp" />
     <ClCompile Include="MWSEUtilLua.cpp" />
     <ClCompile Include="NIBoundingVolumeLua.cpp" />
     <ClCompile Include="NIBSAnimationNodeLua.cpp" />

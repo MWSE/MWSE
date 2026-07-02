@@ -8,6 +8,7 @@
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "MWSEConfig.h"
+#include "NIPickBVH.h"
 #endif
 
 namespace NI {
@@ -94,10 +95,19 @@ namespace NI {
 		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
 		const auto directionScaled = worldRotationInverse * (*direction);
 
-		// Loop through all the triangles
+		// Ask the BVH cache which triangles the ray can actually reach. Skinned
+		// geometry deforms per query, so it keeps the exhaustive loop.
+		const std::vector<unsigned int>* candidates = nullptr;
+		if (!skinInstance && mwse::Configuration::UseBVHAcceleratedRaytests) {
+			candidates = mwse::pickbvh::getCandidateTriangles(modelData.get(), triList, activeTriCount, vertices, modelData->vertexCount, worldScaled, directionScaled);
+		}
+
+		// Loop through the candidate triangles, or all of them without a BVH.
 		auto addedResult = false;
-		for (auto i = 0u; i < activeTriCount; ++i) {
+		const auto testCount = candidates ? static_cast<unsigned int>(candidates->size()) : static_cast<unsigned int>(activeTriCount);
+		for (auto k = 0u; k < testCount; ++k) {
 			// Get some shorthand variables we'll use throughout.
+			const auto i = candidates ? (*candidates)[k] : k;
 			const auto& triangle = triList[i];
 			const auto index1 = triangle.vertices[0];
 			const auto index2 = triangle.vertices[1];
