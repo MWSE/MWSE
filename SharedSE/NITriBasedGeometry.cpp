@@ -300,10 +300,10 @@ namespace NI {
 		}
 
 		const auto data = static_cast<TriBasedGeometryData*>(modelData.get());
-		const auto worldAbv = collidee ? static_cast<BoundingVolume*>(collidee->worldABV) : nullptr;
-		if (!data || !collidee->modelABV || !worldAbv) {
+		if (!data || !collidee || !collidee->modelABV || !collidee->worldABV) {
 			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
 		}
+		const auto worldAbv = static_cast<BoundingVolume*>(collidee->worldABV);
 
 		const auto triList = data->getTriList();
 		const auto triangleCount = data->triangleCount;
