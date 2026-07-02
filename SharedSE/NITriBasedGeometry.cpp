@@ -48,16 +48,14 @@ namespace NI {
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// Allow the MCM configuration options to disable this logic entirely and fall back to vanilla behavior.
-		// This will be removed in the future when the config options are removed, once we're confident of performance and accuracy.
-		// Note that tes3.rayTest turns UseSkinnedAccurateActivationRaytests off for the duration of the pick
-		// unless its accurateSkinned parameter is set, so this path must not depend on that flag alone.
+		// Note that tes3.rayTest turns UseSkinnedAccurateActivationRaytests off for the duration of the pick,
+		// so this path must not depend on that flag alone.
 		const auto useAccurateSkinnedRaytests = mwse::Configuration::UseSkinnedAccurateActivationRaytests;
 		if (!useAccurateSkinnedRaytests && !mwse::Configuration::UseBVHAcceleratedRaytests) {
 			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
 		}
 
-		// Skinned geometry semantics depend on the accurate-skinned option. Without it, vanilla
-		// must handle skinned objects (bound-hit behavior via pickIgnoresSkinInstances).
+		// Without the accurate-skinned option, vanilla must handle skinned objects.
 		if (skinInstance && !useAccurateSkinnedRaytests) {
 			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
 		}
@@ -106,8 +104,7 @@ namespace NI {
 		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
 		const auto directionScaled = worldRotationInverse * (*direction);
 
-		// Ask the BVH cache which triangles the ray can actually reach. Skinned
-		// geometry deforms per query, so it keeps the exhaustive loop.
+		// Skinned geometry deforms per query, so it keeps the exhaustive loop.
 		const std::vector<unsigned int>* candidates = nullptr;
 		if (!skinInstance && mwse::Configuration::UseBVHAcceleratedRaytests) {
 			candidates = mwse::pickbvh::getCandidateTriangles(modelData.get(), triList, activeTriCount, vertices, modelData->vertexCount, worldScaled, directionScaled);
@@ -221,8 +218,8 @@ namespace NI {
 	}
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-	// Conservative world AABB of an alternate bounding volume. Returns false for
-	// volume types we don't handle; the caller then falls back to vanilla.
+	// Conservative world AABB of an alternate bounding volume; false when the
+	// volume type is unhandled.
 	static bool computeAbvWorldAabb(const BoundingVolume* abv, Point3& out_min, Point3& out_max) {
 		switch (abv->getType()) {
 		case BoundingVolumeType::Sphere:
@@ -257,9 +254,7 @@ namespace NI {
 		}
 		case BoundingVolumeType::Union:
 		{
-			// Actor volumes are unions of two boxes (body + step box); bound the
-			// merge of all handled members. An unhandled member type makes the
-			// whole union unhandled.
+			// An unhandled member makes the whole union unhandled.
 			const auto& children = static_cast<const UnionBoundingVolume*>(abv)->children;
 			auto anyChild = false;
 			for (const auto child : children) {
@@ -293,8 +288,7 @@ namespace NI {
 		const auto NI_TriBasedGeometry_findCollisionsTriVsABV = reinterpret_cast<int(__thiscall*)(TriBasedGeometry*, float, AVObject*, char, CollisionGroup::Intersect*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// Skinned geometry deforms its world vertices; the model-space BVH does
-		// not describe it. Vanilla handles every case the BVH path can't.
+		// Skinned world vertices deform; the model-space BVH does not describe them.
 		if (!mwse::Configuration::UseBVHAcceleratedCollisions || skinInstance) {
 			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
 		}
@@ -311,9 +305,8 @@ namespace NI {
 			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
 		}
 
-		// Vanilla refreshes the collidee's world volume before testing;
-		// FindIntersectBVGeom reads it. This is idempotent, so the vanilla
-		// fallbacks below may safely repeat it.
+		// Vanilla refreshes the collidee's world volume before testing.
+		// Idempotent, so the vanilla fallbacks below may safely repeat it.
 		const auto BV_updateWorldData = reinterpret_cast<void(__thiscall*)(BoundingVolume*, const BoundingVolume*, const Transform*)>(worldAbv->vtbl->updateWorldData);
 		BV_updateWorldData(worldAbv, collidee->modelABV, &collidee->worldTransform);
 
@@ -322,9 +315,7 @@ namespace NI {
 			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
 		}
 
-		// Expand by both objects' motion over the tested interval, plus a small
-		// margin. Collision callbacks may alter velocities mid-loop, but only to
-		// slow or deflect; the initial velocities bound the sweep.
+		// Expand by both objects' motion over the tested interval, plus a margin.
 		static const Point3 zeroVelocity(0.0f, 0.0f, 0.0f);
 		const auto& colliderVelocity = velocities ? velocities->worldVelocity : zeroVelocity;
 		const auto& collideeVelocity = collidee->velocities ? collidee->velocities->worldVelocity : zeroVelocity;
@@ -336,8 +327,7 @@ namespace NI {
 		worldMin = worldMin - sweep;
 		worldMax = worldMax + sweep;
 
-		// Transform the world AABB into this geometry's model space, where the
-		// BVH lives, by bounding its eight transformed corners.
+		// Bound the world AABB's eight transformed corners in model space.
 		const auto inverseScale = 1.0f / worldTransform.scale;
 		const auto worldRotationInverse = worldTransform.rotation.invert() * inverseScale;
 		Point3 modelMin, modelMax;
@@ -377,8 +367,7 @@ namespace NI {
 		for (const auto i : *candidates) {
 			const auto& triangle = triList[i];
 
-			// Vanilla rereads velocities every iteration; collision callbacks
-			// may have changed them.
+			// Reread velocities; collision callbacks may change them.
 			const auto loopColliderVelocity = velocities ? &velocities->worldVelocity : &zeroVelocity;
 			const auto loopCollideeVelocity = collidee->velocities ? &collidee->velocities->worldVelocity : &zeroVelocity;
 

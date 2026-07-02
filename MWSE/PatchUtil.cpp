@@ -2285,22 +2285,15 @@ namespace mwse::patch {
 	//
 	// Patch: Skip the redundant refresh in the per-actor collision probe.
 	//
-	// Every frame, each active actor's collision resolution runs a probe that
-	// teleports the actor's scene node to its reference position, then walks the
-	// whole subtree twice (NiAVObject::Update + UpdateCollisionData) before
-	// gathering collisions there. When the node already sits at that position,
-	// the world state is already current and both walks recompute identical
-	// data. Skip them in that case; any mismatch falls through to vanilla.
-	//
 
 	static NI::AVObject* sCollisionProbeSkipNode = nullptr;
 
 	static void __fastcall CollisionProbeConditionalUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, bool bUpdateControllers, bool bUpdateChildren) {
 		sCollisionProbeSkipNode = nullptr;
 		if (Configuration::UseCollisionProbeFastPath) {
-			// The probe has already copied the reference position into the local
-			// translation. If the world translation matches it, the previous
-			// update pass already ran at this exact pose.
+			// The probe already copied the reference position into the local
+			// translation; a matching world translation means the update pass
+			// already ran at this exact pose.
 			const auto& local = node->localTranslate;
 			const auto& world = node->worldTransform.translation;
 			if (world.x == local.x && world.y == local.y && world.z == local.z) {
@@ -2315,13 +2308,9 @@ namespace mwse::patch {
 	//
 	// Patch: Update collider volumes without walking whole subtrees.
 	//
-	// Actors carry their collision volume on the scene node root only (a union
-	// of two boxes attached by MACT::setupCollision), yet the per-frame collider
-	// update recursively walks their entire subtree looking for volumes to
-	// refresh. Cache whether a collider has volumes below its root; if not,
-	// refresh the root volume directly and skip the walk. The cache stores no
-	// child pointers and rescans each collider periodically, so a volume later
-	// attached deeper in the subtree is picked up within a second.
+	// Actors carry their collision volume on the scene node root only. The cache
+	// stores no child pointers and rescans periodically, so a volume attached
+	// deeper in the subtree later is picked up within a second.
 	//
 
 	struct ColliderWalkInfo {
@@ -2384,20 +2373,18 @@ namespace mwse::patch {
 	}
 
 	static void __fastcall PatchNiNodeUpdateCollisionData(NI::Node* node) {
-		// Consume the probe's skip marker, set when the transform refresh above
-		// was skipped for this same node.
+		// Consume the skip marker set by CollisionProbeConditionalUpdate.
 		if (node == sCollisionProbeSkipNode) {
 			sCollisionProbeSkipNode = nullptr;
 			return;
 		}
 
-		// Known root-only colliders don't need the recursive walk.
 		if (sColliderWalkCache.contains(node) && isRootOnlyCollider(node)) {
 			updateOwnCollisionVolume(node);
 			return;
 		}
 
-		// Vanilla behavior: refresh our own world bounding volume, then recurse.
+		// Vanilla behavior: refresh own volume, then recurse.
 		updateOwnCollisionVolume(node);
 		for (auto& child : node->children) {
 			if (child) {

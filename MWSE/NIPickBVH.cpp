@@ -12,18 +12,15 @@ namespace mwse::pickbvh {
 	static_assert(sizeof(NI::Triangle) == 6, "NI::Triangle must be three packed 16-bit indices for zero-copy Bullet meshes.");
 	static_assert(sizeof(NI::Point3) == 12, "NI::Point3 must be three packed floats for zero-copy Bullet meshes.");
 
-	// Meshes below this size are cheaper to test exhaustively than to look up
-	// and walk an acceleration structure for.
+	// Below this size the exhaustive loop is cheaper than the BVH.
 	constexpr auto minimumTriangleCount = 64u;
 
-	// Safety valve so long sessions cannot grow the cache unboundedly. When the
-	// limit is hit the cache is dropped wholesale and rebuilds on demand.
+	// Safety valve; the cache rebuilds on demand after a wholesale drop.
 	constexpr auto maximumCacheEntries = size_t(4096);
 
 	struct CacheEntry {
-		// Bullet structures reference the engine's vertex/index arrays in place.
-		// They are only ever dereferenced while the caller holds a live geometry
-		// data object whose arrays were revalidated against the fields below.
+		// Bullet structures reference the engine's vertex/index arrays in place;
+		// they are only dereferenced after revalidation against the fields below.
 		std::unique_ptr<btTriangleIndexVertexArray> meshInterface;
 		std::unique_ptr<btBvhTriangleMeshShape> shape;
 		const NI::Triangle* triList = nullptr;
@@ -32,8 +29,7 @@ namespace mwse::pickbvh {
 		unsigned int vertexCount = 0;
 		unsigned short revisionID = 0;
 
-		// Entries that failed to build stay cached with no shape, so we don't
-		// retry the build on every pick against a problematic mesh.
+		// Failed builds stay cached so they aren't retried every query.
 		bool isUsable() const { return shape != nullptr; }
 
 		bool matches(const NI::TriBasedGeometryData* data, const NI::Triangle* triList_, unsigned int triangleCount_, const NI::Point3* vertices_, unsigned int vertexCount_) const {
@@ -106,9 +102,8 @@ namespace mwse::pickbvh {
 			return nullptr;
 		}
 
-		// Bullet wants a finite segment. Clip the pick ray against the mesh's
-		// model bound sphere: every vertex lies inside it, so any triangle the
-		// ray can hit is hit within [origin, exit point].
+		// Bullet wants a finite segment. Every vertex lies inside the model bound
+		// sphere, so any hittable triangle is hit within [origin, sphere exit].
 		const auto& bound = data->bounds;
 		const auto dd = modelDirection.dotProduct(&modelDirection);
 		if (dd <= 0.0f) {
@@ -121,12 +116,10 @@ namespace mwse::pickbvh {
 		const auto discriminant = b * b - dd * c;
 		candidateScratch.clear();
 		if (discriminant < 0.0f) {
-			// The ray misses the bound sphere entirely: no candidates.
 			return &candidateScratch;
 		}
 		const auto exitDistance = (b + std::sqrt(discriminant)) / dd;
 		if (exitDistance <= 0.0f) {
-			// The bound sphere is fully behind the ray origin.
 			return &candidateScratch;
 		}
 
@@ -137,8 +130,7 @@ namespace mwse::pickbvh {
 		CollectTriangleIndices collector;
 		entry->shape->performRaycast(&collector, rayFrom, rayTo);
 
-		// Ascending order preserves vanilla semantics exactly: the same triangle
-		// wins FIND_FIRST ties, and FIND_ALL records appear in the same order.
+		// Ascending order keeps results identical to the exhaustive loop.
 		std::sort(candidateScratch.begin(), candidateScratch.end());
 
 		return &candidateScratch;
@@ -157,8 +149,7 @@ namespace mwse::pickbvh {
 		CollectTriangleIndices collector;
 		entry->shape->processAllTriangles(&collector, aabbMin, aabbMax);
 
-		// Ascending order preserves vanilla semantics exactly: collision
-		// callbacks fire for the same triangle first.
+		// Ascending order keeps results identical to the exhaustive loop.
 		std::sort(candidateScratch.begin(), candidateScratch.end());
 
 		return &candidateScratch;
