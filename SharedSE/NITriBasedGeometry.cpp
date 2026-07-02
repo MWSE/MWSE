@@ -45,9 +45,18 @@ namespace NI {
 		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Point3*, const Point3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
-		// This will be removed in the future when the config option is removed, once we're confident of performance and accuracy.
-		if (!mwse::Configuration::UseSkinnedAccurateActivationRaytests) {
+		// Allow the MCM configuration options to disable this logic entirely and fall back to vanilla behavior.
+		// This will be removed in the future when the config options are removed, once we're confident of performance and accuracy.
+		// Note that tes3.rayTest turns UseSkinnedAccurateActivationRaytests off for the duration of the pick
+		// unless its accurateSkinned parameter is set, so this path must not depend on that flag alone.
+		const auto useAccurateSkinnedRaytests = mwse::Configuration::UseSkinnedAccurateActivationRaytests;
+		if (!useAccurateSkinnedRaytests && !mwse::Configuration::UseBVHAcceleratedRaytests) {
+			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
+		}
+
+		// Skinned geometry semantics depend on the accurate-skinned option. Without it, vanilla
+		// must handle skinned objects (bound-hit behavior via pickIgnoresSkinInstances).
+		if (skinInstance && !useAccurateSkinnedRaytests) {
 			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
 		}
 

@@ -31,7 +31,7 @@ return {
 	["useSkinnedAccurateActivationRaytests.label"] = "Enable skinned-accurate activation raytests",
 	["useSkinnedAccurateActivationRaytests.description"] = "If enabled, the player activation target raytest will be more accurate around skinned actors. This may impose a performance penalty in very complex situations.",
 	["useBVHAcceleratedRaytests.label"] = "Enable BVH-accelerated raytests",
-	["useBVHAcceleratedRaytests.description"] = "If enabled, raytests against complex meshes are accelerated with a cached bounding volume hierarchy instead of testing every triangle. This substantially reduces the cost of activation, sun glare, line of sight, and tes3.rayTest queries. Requires skinned-accurate activation raytests to be enabled.",
+	["useBVHAcceleratedRaytests.description"] = "If enabled, raytests against complex meshes are accelerated with a cached bounding volume hierarchy instead of testing every triangle. This substantially reduces the cost of activation, sun glare, line of sight, and tes3.rayTest queries.",
 	["suppressUselessWarnings.label"] = "Suppress useless game warnings?",
 	["suppressUselessWarnings.description"] = "If enabled, the initial startup warning about mismatched masters is suppressed. This warning is almost always displayed on any modded install, and often prompts users to click Yes to All, hiding actually helpful warnings.",
 	["replaceLightSorting.label"] = "Replace light sorting?",
