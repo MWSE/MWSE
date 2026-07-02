@@ -84,7 +84,7 @@ namespace mwse::pickbvh {
 		}
 	}
 
-	const std::vector<unsigned int>* getCandidateTriangles(const NI::TriBasedGeometryData* data, const NI::Triangle* triList, unsigned int triangleCount, const NI::Point3* vertices, unsigned int vertexCount, const NI::Point3& modelOrigin, const NI::Point3& modelDirection) {
+	static CacheEntry* getUsableEntry(const NI::TriBasedGeometryData* data, const NI::Triangle* triList, unsigned int triangleCount, const NI::Point3* vertices, unsigned int vertexCount) {
 		if (triangleCount < minimumTriangleCount) {
 			return nullptr;
 		}
@@ -97,7 +97,12 @@ namespace mwse::pickbvh {
 		if (!entry.matches(data, triList, triangleCount, vertices, vertexCount)) {
 			buildEntry(entry, data, triList, triangleCount, vertices, vertexCount);
 		}
-		if (!entry.isUsable()) {
+		return entry.isUsable() ? &entry : nullptr;
+	}
+
+	const std::vector<unsigned int>* getCandidateTriangles(const NI::TriBasedGeometryData* data, const NI::Triangle* triList, unsigned int triangleCount, const NI::Point3* vertices, unsigned int vertexCount, const NI::Point3& modelOrigin, const NI::Point3& modelDirection) {
+		const auto entry = getUsableEntry(data, triList, triangleCount, vertices, vertexCount);
+		if (!entry) {
 			return nullptr;
 		}
 
@@ -130,10 +135,30 @@ namespace mwse::pickbvh {
 		const btVector3 rayTo(rayEnd.x, rayEnd.y, rayEnd.z);
 
 		CollectTriangleIndices collector;
-		entry.shape->performRaycast(&collector, rayFrom, rayTo);
+		entry->shape->performRaycast(&collector, rayFrom, rayTo);
 
 		// Ascending order preserves vanilla semantics exactly: the same triangle
 		// wins FIND_FIRST ties, and FIND_ALL records appear in the same order.
+		std::sort(candidateScratch.begin(), candidateScratch.end());
+
+		return &candidateScratch;
+	}
+
+	const std::vector<unsigned int>* getCandidateTrianglesInBox(const NI::TriBasedGeometryData* data, const NI::Triangle* triList, unsigned int triangleCount, const NI::Point3* vertices, unsigned int vertexCount, const NI::Point3& modelAabbMin, const NI::Point3& modelAabbMax) {
+		const auto entry = getUsableEntry(data, triList, triangleCount, vertices, vertexCount);
+		if (!entry) {
+			return nullptr;
+		}
+
+		const btVector3 aabbMin(modelAabbMin.x, modelAabbMin.y, modelAabbMin.z);
+		const btVector3 aabbMax(modelAabbMax.x, modelAabbMax.y, modelAabbMax.z);
+
+		candidateScratch.clear();
+		CollectTriangleIndices collector;
+		entry->shape->processAllTriangles(&collector, aabbMin, aabbMax);
+
+		// Ascending order preserves vanilla semantics exactly: collision
+		// callbacks fire for the same triangle first.
 		std::sort(candidateScratch.begin(), candidateScratch.end());
 
 		return &candidateScratch;

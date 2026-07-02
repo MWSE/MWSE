@@ -2771,6 +2771,12 @@ namespace mwse::patch {
 		overrideVirtualTableEnforced(0x750A00, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriStrips
 		overrideVirtualTableEnforced(0x750CC0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriBasedGeometry
 
+		// Patch: Accelerate swept collision tests with the shared per-mesh BVH cache.
+		auto NiTriBasedGeometry_FindCollisionsTriVsABV = &NI::TriBasedGeometry::findCollisionsTriVsABV;
+		genCallEnforced(0x6F149F, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1574, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1599, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));
 		writeDoubleWordUnprotected(0x746118, reinterpret_cast<DWORD>(&PatchFindNextFileA));

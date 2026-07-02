@@ -180,6 +180,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("useBVHAcceleratedCollisions.label"),
+					description = i18n("useBVHAcceleratedCollisions.description"),
+					variable = {
+						id = "UseBVHAcceleratedCollisions",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {

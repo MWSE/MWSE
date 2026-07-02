@@ -18,6 +18,18 @@ namespace mwse::pickbvh {
 		const NI::Point3& modelOrigin,
 		const NI::Point3& modelDirection);
 
+	// Returns the indices (ascending) of triangles whose bounds intersect a
+	// model-space AABB, or nullptr when no acceleration structure is available.
+	// Same scratch buffer contract as getCandidateTriangles.
+	const std::vector<unsigned int>* getCandidateTrianglesInBox(
+		const NI::TriBasedGeometryData* data,
+		const NI::Triangle* triList,
+		unsigned int triangleCount,
+		const NI::Point3* vertices,
+		unsigned int vertexCount,
+		const NI::Point3& modelAabbMin,
+		const NI::Point3& modelAabbMax);
+
 	// Drops all cached acceleration structures. They rebuild lazily on demand.
 	void clearCache();
 }
