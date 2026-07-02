@@ -1216,12 +1216,12 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\bullet3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;Dep_Bullet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -1246,14 +1246,14 @@ copy /y "$(TargetDir)lua51.dll" "$(MorrowindDir)lua51.dll"</Command>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedSE;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\bullet3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;Dep_Bullet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
