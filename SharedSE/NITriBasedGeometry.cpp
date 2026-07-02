@@ -255,6 +255,33 @@ namespace NI {
 			out_max = box.center + extent;
 			return true;
 		}
+		case BoundingVolumeType::Union:
+		{
+			// Actor volumes are unions of two boxes (body + step box); bound the
+			// merge of all handled members. An unhandled member type makes the
+			// whole union unhandled.
+			const auto& children = static_cast<const UnionBoundingVolume*>(abv)->children;
+			auto anyChild = false;
+			for (const auto child : children) {
+				if (!child) {
+					continue;
+				}
+				Point3 childMin, childMax;
+				if (!computeAbvWorldAabb(child, childMin, childMax)) {
+					return false;
+				}
+				if (!anyChild) {
+					out_min = childMin;
+					out_max = childMax;
+					anyChild = true;
+				}
+				else {
+					out_min = { std::min(out_min.x, childMin.x), std::min(out_min.y, childMin.y), std::min(out_min.z, childMin.z) };
+					out_max = { std::max(out_max.x, childMax.x), std::max(out_max.y, childMax.y), std::max(out_max.z, childMax.z) };
+				}
+			}
+			return anyChild;
+		}
 		default:
 			return false;
 		}

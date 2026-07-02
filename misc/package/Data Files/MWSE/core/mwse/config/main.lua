@@ -200,6 +200,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("useCollisionRootOnlyUpdates.label"),
+					description = i18n("useCollisionRootOnlyUpdates.description"),
+					variable = {
+						id = "UseCollisionRootOnlyUpdates",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {

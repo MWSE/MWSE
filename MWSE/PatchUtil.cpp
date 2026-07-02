@@ -2312,6 +2312,77 @@ namespace mwse::patch {
 		node->update(fTime, bUpdateControllers, bUpdateChildren);
 	}
 
+	//
+	// Patch: Update collider volumes without walking whole subtrees.
+	//
+	// Actors carry their collision volume on the scene node root only (a union
+	// of two boxes attached by MACT::setupCollision), yet the per-frame collider
+	// update recursively walks their entire subtree looking for volumes to
+	// refresh. Cache whether a collider has volumes below its root; if not,
+	// refresh the root volume directly and skip the walk. The cache stores no
+	// child pointers and rescans each collider periodically, so a volume later
+	// attached deeper in the subtree is picked up within a second.
+	//
+
+	struct ColliderWalkInfo {
+		bool rootOnly = false;
+		DWORD nextRescanTick = 0;
+	};
+	static std::unordered_map<const NI::AVObject*, ColliderWalkInfo> sColliderWalkCache;
+
+	static void updateOwnCollisionVolume(NI::AVObject* object) {
+		if (object->modelABV && object->worldABV) {
+			const auto worldABV = static_cast<NI::BoundingVolume*>(object->worldABV);
+			const auto BV_updateWorldData = reinterpret_cast<void(__thiscall*)(NI::BoundingVolume*, const NI::BoundingVolume*, const NI::Transform*)>(worldABV->vtbl->updateWorldData);
+			BV_updateWorldData(worldABV, object->modelABV, &object->worldTransform);
+		}
+	}
+
+	static bool subtreeHasCollisionVolumeBelow(const NI::AVObject* object) {
+		if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			return false;
+		}
+		for (const auto& child : static_cast<const NI::Node*>(object)->children) {
+			if (child && (child->modelABV || subtreeHasCollisionVolumeBelow(child))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	static bool isRootOnlyCollider(NI::AVObject* object) {
+		if (!Configuration::UseCollisionRootOnlyUpdates) {
+			return false;
+		}
+
+		if (sColliderWalkCache.size() > 1024) {
+			sColliderWalkCache.clear();
+		}
+
+		auto& info = sColliderWalkCache[object];
+		const auto tick = GetTickCount();
+		if (tick >= info.nextRescanTick) {
+			info.rootOnly = !subtreeHasCollisionVolumeBelow(object);
+			info.nextRescanTick = tick + 1000;
+		}
+		return info.rootOnly;
+	}
+
+	static void __fastcall PatchCollisionGroupUpdateWorldData(NI::CollisionGroup* group) {
+		for (const auto& record : group->colliders) {
+			if (!record || !record->sgObject) {
+				continue;
+			}
+			const auto object = record->sgObject;
+			if (isRootOnlyCollider(object)) {
+				updateOwnCollisionVolume(object);
+			}
+			else {
+				object->vTable.asAVObject->updateCollisionData(object);
+			}
+		}
+	}
+
 	static void __fastcall PatchNiNodeUpdateCollisionData(NI::Node* node) {
 		// Consume the probe's skip marker, set when the transform refresh above
 		// was skipped for this same node.
@@ -2320,12 +2391,14 @@ namespace mwse::patch {
 			return;
 		}
 
-		// Vanilla behavior: refresh our own world bounding volume, then recurse.
-		if (node->modelABV) {
-			const auto worldABV = static_cast<NI::BoundingVolume*>(node->worldABV);
-			const auto BV_updateWorldData = reinterpret_cast<void(__thiscall*)(NI::BoundingVolume*, const NI::BoundingVolume*, const NI::Transform*)>(worldABV->vtbl->updateWorldData);
-			BV_updateWorldData(worldABV, node->modelABV, &node->worldTransform);
+		// Known root-only colliders don't need the recursive walk.
+		if (sColliderWalkCache.contains(node) && isRootOnlyCollider(node)) {
+			updateOwnCollisionVolume(node);
+			return;
 		}
+
+		// Vanilla behavior: refresh our own world bounding volume, then recurse.
+		updateOwnCollisionVolume(node);
 		for (auto& child : node->children) {
 			if (child) {
 				child->vTable.asAVObject->updateCollisionData(child);
@@ -2831,6 +2904,9 @@ namespace mwse::patch {
 		// Patch: Skip the redundant refresh in the per-actor collision probe.
 		genCallEnforced(0x522D32, 0x6EB000, reinterpret_cast<DWORD>(CollisionProbeConditionalUpdate));
 		genJumpUnprotected(0x6C94D0, reinterpret_cast<DWORD>(PatchNiNodeUpdateCollisionData));
+
+		// Patch: Update collider volumes without walking whole subtrees.
+		genCallEnforced(0x5638CF, 0x6FD710, reinterpret_cast<DWORD>(PatchCollisionGroupUpdateWorldData));
 
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));
