@@ -2283,6 +2283,117 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Skip the redundant refresh in the per-actor collision probe.
+	//
+
+	static NI::AVObject* sCollisionProbeSkipNode = nullptr;
+
+	static void __fastcall CollisionProbeConditionalUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, bool bUpdateControllers, bool bUpdateChildren) {
+		sCollisionProbeSkipNode = nullptr;
+		if (Configuration::UseCollisionProbeFastPath) {
+			// The probe already copied the reference position into the local
+			// translation; a matching world translation means the update pass
+			// already ran at this exact pose.
+			const auto& local = node->localTranslate;
+			const auto& world = node->worldTransform.translation;
+			if (world.x == local.x && world.y == local.y && world.z == local.z) {
+				sCollisionProbeSkipNode = node;
+				return;
+			}
+		}
+
+		node->update(fTime, bUpdateControllers, bUpdateChildren);
+	}
+
+	//
+	// Patch: Update collider volumes without walking whole subtrees.
+	//
+	// Actors carry their collision volume on the scene node root only. The cache
+	// stores no child pointers and rescans periodically, so a volume attached
+	// deeper in the subtree later is picked up within a second.
+	//
+
+	struct ColliderWalkInfo {
+		bool rootOnly = false;
+		DWORD nextRescanTick = 0;
+	};
+	static std::unordered_map<const NI::AVObject*, ColliderWalkInfo> sColliderWalkCache;
+
+	static void updateOwnCollisionVolume(NI::AVObject* object) {
+		if (object->modelABV && object->worldABV) {
+			const auto worldABV = static_cast<NI::BoundingVolume*>(object->worldABV);
+			const auto BV_updateWorldData = reinterpret_cast<void(__thiscall*)(NI::BoundingVolume*, const NI::BoundingVolume*, const NI::Transform*)>(worldABV->vtbl->updateWorldData);
+			BV_updateWorldData(worldABV, object->modelABV, &object->worldTransform);
+		}
+	}
+
+	static bool subtreeHasCollisionVolumeBelow(const NI::AVObject* object) {
+		if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			return false;
+		}
+		for (const auto& child : static_cast<const NI::Node*>(object)->children) {
+			if (child && (child->modelABV || subtreeHasCollisionVolumeBelow(child))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	static bool isRootOnlyCollider(NI::AVObject* object) {
+		if (!Configuration::UseCollisionRootOnlyUpdates) {
+			return false;
+		}
+
+		if (sColliderWalkCache.size() > 1024) {
+			sColliderWalkCache.clear();
+		}
+
+		auto& info = sColliderWalkCache[object];
+		const auto tick = GetTickCount();
+		if (tick >= info.nextRescanTick) {
+			info.rootOnly = !subtreeHasCollisionVolumeBelow(object);
+			info.nextRescanTick = tick + 1000;
+		}
+		return info.rootOnly;
+	}
+
+	static void __fastcall PatchCollisionGroupUpdateWorldData(NI::CollisionGroup* group) {
+		for (const auto& record : group->colliders) {
+			if (!record || !record->sgObject) {
+				continue;
+			}
+			const auto object = record->sgObject;
+			if (isRootOnlyCollider(object)) {
+				updateOwnCollisionVolume(object);
+			}
+			else {
+				object->vTable.asAVObject->updateCollisionData(object);
+			}
+		}
+	}
+
+	static void __fastcall PatchNiNodeUpdateCollisionData(NI::Node* node) {
+		// Consume the skip marker set by CollisionProbeConditionalUpdate.
+		if (node == sCollisionProbeSkipNode) {
+			sCollisionProbeSkipNode = nullptr;
+			return;
+		}
+
+		if (sColliderWalkCache.contains(node) && isRootOnlyCollider(node)) {
+			updateOwnCollisionVolume(node);
+			return;
+		}
+
+		// Vanilla behavior: refresh own volume, then recurse.
+		updateOwnCollisionVolume(node);
+		for (auto& child : node->children) {
+			if (child) {
+				child->vTable.asAVObject->updateCollisionData(child);
+			}
+		}
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2770,6 +2881,19 @@ namespace mwse::patch {
 		overrideVirtualTableEnforced(0x7508B0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriShape
 		overrideVirtualTableEnforced(0x750A00, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriStrips
 		overrideVirtualTableEnforced(0x750CC0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriBasedGeometry
+
+		// Patch: Accelerate swept collision tests with the shared per-mesh BVH cache.
+		auto NiTriBasedGeometry_FindCollisionsTriVsABV = &NI::TriBasedGeometry::findCollisionsTriVsABV;
+		genCallEnforced(0x6F149F, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1574, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1599, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+
+		// Patch: Skip the redundant refresh in the per-actor collision probe.
+		genCallEnforced(0x522D32, 0x6EB000, reinterpret_cast<DWORD>(CollisionProbeConditionalUpdate));
+		genJumpUnprotected(0x6C94D0, reinterpret_cast<DWORD>(PatchNiNodeUpdateCollisionData));
+
+		// Patch: Update collider volumes without walking whole subtrees.
+		genCallEnforced(0x5638CF, 0x6FD710, reinterpret_cast<DWORD>(PatchCollisionGroupUpdateWorldData));
 
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));

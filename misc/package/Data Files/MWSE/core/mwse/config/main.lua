@@ -170,6 +170,46 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("useBVHAcceleratedRaytests.label"),
+					description = i18n("useBVHAcceleratedRaytests.description"),
+					variable = {
+						id = "UseBVHAcceleratedRaytests",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("useBVHAcceleratedCollisions.label"),
+					description = i18n("useBVHAcceleratedCollisions.description"),
+					variable = {
+						id = "UseBVHAcceleratedCollisions",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("useCollisionProbeFastPath.label"),
+					description = i18n("useCollisionProbeFastPath.description"),
+					variable = {
+						id = "UseCollisionProbeFastPath",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
+					label = i18n("useCollisionRootOnlyUpdates.label"),
+					description = i18n("useCollisionRootOnlyUpdates.description"),
+					variable = {
+						id = "UseCollisionRootOnlyUpdates",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {
