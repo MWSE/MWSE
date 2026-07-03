@@ -16,9 +16,9 @@
 #include "TES3WeatherController.h"
 
 #include "CodePatchUtil.h"
+
 #include "MemoryUtil.h"
 #include "MGEApi.h"
-#include "PatchUtil.h"
 #include "TES3Util.h"
 
 #include "LuaPlayItemSoundEvent.h"
@@ -136,10 +136,22 @@ namespace TES3 {
 			}
 		}
 		if (freeEntry == nullptr) {
+			// Prefer evicting an entry whose texture the engine has already released (the cache is
+			// its sole owner): the engine replaces fog textures on tile install and grid shifts
+			// without any hooked call, so such entries are dead weight that round-robin eviction
+			// would otherwise keep pinned while it evicts live tiles.
+			for (auto i = 0u; i < FogCacheCapacity; ++i) {
+				if (sFogCache[i].texture->refCount == 1) {
+					freeEntry = &sFogCache[i];
+					break;
+				}
+			}
+		}
+		if (freeEntry == nullptr) {
 			freeEntry = &sFogCache[sFogCacheNextEvict];
 			sFogCacheNextEvict = (sFogCacheNextEvict + 1u) % FogCacheCapacity;
-			*freeEntry = {};
 		}
+		freeEntry->texture = nullptr;
 		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
 		if (!rect) {
 			return nullptr;
@@ -171,7 +183,9 @@ namespace TES3 {
 	void WorldControllerRenderTarget::invalidateFogCacheTexture(NI::RenderedTexture* texture) {
 		for (auto i = 0u; i < FogCacheCapacity; ++i) {
 			if (sFogCache[i].texture == texture) {
-				sFogCache[i] = {};
+				// A null texture marks the entry free; the stale pixels are unreachable and fully
+				// rewritten on the next load, so skip clearing them (this runs on every fog draw).
+				sFogCache[i].texture = nullptr;
 				return;
 			}
 		}
@@ -865,10 +879,6 @@ namespace TES3 {
 	}
 
 	void WorldController::tickClock() {
-		// Drive the deferred local-map tile completion + compositor once per frame, before the
-		// post-simulate event.
-		mwse::patch::drainDeferredMapTiles();
-
 		// Run post-simulate event before updating game time.
 		if (mwse::lua::event::SimulatedEvent::getEventEnabled()) {
 			auto& luaManager = mwse::lua::LuaManager::getInstance();

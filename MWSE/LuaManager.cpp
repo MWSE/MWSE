@@ -6,6 +6,7 @@
 #include "MemoryUtil.h"
 #include "mwOffsets.h"
 #include "MWSEConfig.h"
+#include "PatchUtil.h"
 #include "MWSEDefs.h"
 #include "MWSEUtilLua.h"
 #include "ScriptUtil.h"
@@ -766,6 +767,11 @@ namespace mwse::lua {
 	void __fastcall EnterFrame(TES3::WorldController* worldController, DWORD _UNUSED_) {
 		// Run the function before raising our event.
 		worldController->mainLoopBeforeInput();
+
+		// Drive the deferred local-map tile completion + compositor once per frame. This runs in
+		// menu mode too, so a cell cross followed immediately by a menu cannot stall the pending
+		// readbacks or leave the map menu displaying an un-composited local map.
+		patch::drainDeferredMapTiles();
 
 		// Fire off any button pressed events if we had one queued.
 		LuaManager& luaManager = LuaManager::getInstance();

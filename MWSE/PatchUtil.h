@@ -10,9 +10,9 @@ namespace mwse::patch {
 	bool installMiniDumpHook();
 
 	// Drive the deferred local-map tile completion + compositor; called once per frame from the
-	// WorldController::tickClock wrapper (the per-frame MWSE injection point).
+	// EnterFrame hook, which runs in menu mode too so pendings cannot stall while a menu is open.
 	void drainDeferredMapTiles();
-	// Force-complete every deferred local-map tile immediately, so a pending tile's raw Cell* can
-	// never outlive its cell across a cross/teardown boundary. A no-op when nothing is pending.
-	void completeDeferredMapTilesNow();
+	// Drop every deferred local-map tile without completing it; called at game-load entry so stale
+	// pending world-map paints from the pre-load world are never replayed onto the restored map.
+	void discardDeferredMapTiles();
 }

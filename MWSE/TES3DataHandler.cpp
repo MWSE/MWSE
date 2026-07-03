@@ -34,6 +34,7 @@
 #include "NIBSAnimationManager.h"
 
 #include "MWSEConfig.h"
+#include "PatchUtil.h"
 
 #include "ReferenceTracker.h"
 
@@ -224,6 +225,10 @@ namespace TES3 {
 		float* pLowestZInCurrentCell = reinterpret_cast<float*>(0x7B217C);
 		float previousLowestZInCurrentCell = *pLowestZInCurrentCell;
 
+		// Pending local-map tiles reference the pre-load world; drop them before the engine restores
+		// the saved world map, so their deferred paints cannot stamp it with unexplored cells.
+		mwse::patch::discardDeferredMapTiles();
+
 		bool loaded = TES3_NonDynamicData_loadGameInGame(this, eventFileName.c_str());
 
 		// Bugfix: In interior, restore previous lowestZInCurrentCell if has been reset.
@@ -274,6 +279,9 @@ namespace TES3 {
 			eventFileName = eventData["filename"];
 			eventFileName += ".ess";
 		}
+
+		// See loadGame: stale pending local-map tiles must not paint the restored world map.
+		mwse::patch::discardDeferredMapTiles();
 
 		bool loaded = TES3_NonDynamicData_loadGameMainMenu(this, eventFileName.c_str());
 

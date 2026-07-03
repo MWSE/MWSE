@@ -122,6 +122,21 @@ namespace mwse::lua {
 			usertypeDefinition["bloodTextures"] = sol::readonly_property(&TES3::SplashController::getBloodTextures);
 		}
 
+		// Binding for TES3::MapController.
+		{
+			// Start our usertype.
+			auto usertypeDefinition = state.new_usertype<TES3::MapController>("tes3mapController");
+			usertypeDefinition["new"] = sol::no_constructor;
+
+			// Basic property binding.
+			usertypeDefinition["nodeLand"] = sol::readonly_property(&TES3::MapController::nodeLand);
+			usertypeDefinition["nodeObjects"] = sol::readonly_property(&TES3::MapController::nodeObjects);
+			usertypeDefinition["nodeWater"] = sol::readonly_property(&TES3::MapController::nodeWater);
+			usertypeDefinition["northMarkerRotationDegrees"] = sol::readonly_property(&TES3::MapController::northMarkerRotationDegrees);
+			usertypeDefinition["tileCountX"] = sol::readonly_property(&TES3::MapController::tileCountX);
+			usertypeDefinition["tileCountY"] = sol::readonly_property(&TES3::MapController::tileCountY);
+		}
+
 		// Binding for TES3::WorldController.
 		{
 			// Start our usertype.
