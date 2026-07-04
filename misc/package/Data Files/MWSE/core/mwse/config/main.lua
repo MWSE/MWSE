@@ -214,6 +214,16 @@ local config = {
 						table = mwseConfig,
 					},
 				},
+				{
+					class = "OnOffButton",
+					label = i18n("tolerateBrokenDialogueScripts.label"),
+					description = i18n("tolerateBrokenDialogueScripts.description"),
+					variable = {
+						id = "TolerateBrokenDialogueScripts",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
 			},
 			sidebarComponents = {
 				{

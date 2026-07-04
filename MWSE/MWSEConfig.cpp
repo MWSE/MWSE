@@ -23,6 +23,7 @@ namespace mwse {
 	bool Configuration::NonExclusiveKeyboard = false;
 	bool Configuration::ReplaceLightSorting = true;
 	bool Configuration::CreateFullMinidumps = false;
+	bool Configuration::TolerateBrokenDialogueScripts = true;
 	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
@@ -75,6 +76,7 @@ namespace mwse {
 		DECLARE_CONFIG(NonExclusiveKeyboard)
 		DECLARE_CONFIG(ReplaceLightSorting)
 		DECLARE_CONFIG(CreateFullMinidumps)
+		DECLARE_CONFIG(TolerateBrokenDialogueScripts)
 		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
 		DECLARE_CONFIG(BuildNumber)
 	}
