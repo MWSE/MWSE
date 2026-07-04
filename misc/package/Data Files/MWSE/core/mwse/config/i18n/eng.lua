@@ -38,4 +38,6 @@ return {
 	["createFullMinidumps.description"] = "If enabled, full memory minidumps will be created. This is usually not needed, and will result in much larger minidumps being created.",
 	["backgroundLoadPollIntervalMs.label"] = "Background load poll interval (ms)",
 	["backgroundLoadPollIntervalMs.description"] = "Controls how often the game polls the background cell loader while a progress bar is being shown (most noticeable in exterior transitions). Morrowind's default is 100 ms, which can cause slightly noticeable stalls on fast machines that finish loading quickly. Lower values make the game resume sooner at the cost of slightly higher CPU use during loads.",
+	["deferLocalMapUpdates.label"] = "Defer local map updates?",
+	["deferLocalMapUpdates.description"] = "If enabled, the local map work done when crossing an exterior cell border is taken off the cross frame: new map tiles render into textures that are displayed immediately, and the expensive GPU readback runs a few frames later when it no longer stalls the game. This reduces the hitch when crossing cell borders. Requires a restart to take effect.",
 }

@@ -214,6 +214,16 @@ local config = {
 						table = mwseConfig,
 					},
 				},
+				{
+					class = "OnOffButton",
+					label = i18n("deferLocalMapUpdates.label"),
+					description = i18n("deferLocalMapUpdates.description"),
+					variable = {
+						id = "DeferLocalMapUpdates",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
 			},
 			sidebarComponents = {
 				{

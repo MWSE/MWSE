@@ -2225,13 +2225,27 @@ namespace mwse::patch {
 	static bool sHoistDoneFx = false;
 	static bool sHoistDoneLand = false;
 
+	// Owned-path map tiles queued for deferred readback during the current loader call; reported in
+	// the loader timing log below to correlate cross-frame cost with local-map work.
+	static int sMapTilesQueuedThisCross = 0;
+
 	static int __fastcall PatchOptimizeMapUpdates_WrapCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
 		sHoistBatchActive = true;
 		sHoistDoneProps = false;
 		sHoistDoneFx = false;
 		sHoistDoneLand = false;
+		sMapTilesQueuedThisCross = 0;
+		const auto start = std::chrono::steady_clock::now();
 		const int result = dataHandler->updateCellThreadLoader(position);
+		const auto elapsedMs = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 		sHoistBatchActive = false;
+		// The everyday no-cross call is microseconds; anything at millisecond scale is a cross or
+		// load spike, which is exactly what the local-map deferral targets - log those for A/B
+		// measurement against Configuration::DeferLocalMapUpdates.
+		if (elapsedMs >= 1.0) {
+			log::getLog() << fmt::format("[MWSE] Cell loader frame: {:.2f} ms (local-map deferral {}, {} tile(s) deferred).",
+				elapsedMs, Configuration::DeferLocalMapUpdates ? "on" : "off", sMapTilesQueuedThisCross) << std::endl;
+		}
 		return result;
 	}
 	static void __fastcall PatchOptimizeMapUpdates_WrapUpdateProperties(NI::AVObject* node) {
@@ -2574,6 +2588,7 @@ namespace mwse::patch {
 			pending->cell = cell;
 			pending->age = 0;
 			pending->worldMapPaintPending = false;
+			++sMapTilesQueuedThisCross;
 
 			cell->refreshMapTileFromCache(tileY, tileX);
 			return visuals;
@@ -2621,14 +2636,24 @@ namespace mwse::patch {
 	// elapsed and the GPU queue has drained.
 	void drainDeferredMapTiles() {
 		using namespace PatchMapTileDirectDisplay;
+		std::chrono::steady_clock::time_point start;
+		int completed = 0;
 		for (auto& pending : sPending) {
 			if (pending.cell == nullptr) {
 				continue;
 			}
 			++pending.age;
 			if (pending.age >= kDeferTicks) {
+				if (completed == 0) {
+					start = std::chrono::steady_clock::now();
+				}
 				completeOne(pending);
+				++completed;
 			}
+		}
+		if (completed > 0) {
+			const auto elapsedMs = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+			log::getLog() << fmt::format("[MWSE] Local-map deferral: completed {} deferred tile readback(s) in {:.2f} ms.", completed, elapsedMs) << std::endl;
 		}
 		if (sCompositorPending) {
 			++sCompositorAge;
@@ -2636,7 +2661,10 @@ namespace mwse::patch {
 				sCompositorPending = false;
 				auto mapController = TES3::WorldController::get()->mapController;
 				if (mapController) {
+					start = std::chrono::steady_clock::now();
 					mapController->updateMapRenderEngine();
+					const auto elapsedMs = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+					log::getLog() << fmt::format("[MWSE] Local-map deferral: compositor pass in {:.2f} ms.", elapsedMs) << std::endl;
 				}
 			}
 		}
@@ -2653,11 +2681,23 @@ namespace mwse::patch {
 
 	static void completeDeferredMapTilesLeavingRing() {
 		using namespace PatchMapTileDirectDisplay;
+		std::chrono::steady_clock::time_point start;
+		int completed = 0;
 		for (auto& pending : sPending) {
 			int tileY, tileX;
 			if (pending.cell && !currentRingCoords(pending.cell, tileY, tileX)) {
+				if (completed == 0) {
+					start = std::chrono::steady_clock::now();
+				}
 				completeOne(pending);
+				++completed;
 			}
+		}
+		// This is the residual synchronous cost on the cross frame (locks RTs rendered only a frame
+		// or two earlier); log it so rapid-cross stalls are attributable.
+		if (completed > 0) {
+			const auto elapsedMs = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+			log::getLog() << fmt::format("[MWSE] Local-map deferral: force-completed {} ring-leaving tile(s) in {:.2f} ms.", completed, elapsedMs) << std::endl;
 		}
 	}
 
@@ -3539,30 +3579,6 @@ namespace mwse::patch {
 		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
 		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
 
-		// Patch: Skip the local-map borrow/restore on cell-crosses where no tile renders.
-		genCallEnforced(0x486B09, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
-		genCallEnforced(0x486F5B, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
-		genCallEnforced(0x486F0F, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
-		genCallEnforced(0x486F99, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
-		genCallEnforced(0x486F72, 0x41F680, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderInteriorMap));
-
-		// Patch: Persist the fog-of-war pixel cache across compositor passes (invalidate on fog draw).
-		for (DWORD site : { 0x42082Cu, 0x4208C2u, 0x420A7Fu, 0x420BB9u, 0x420CC8u, 0x421CE4u, 0x42FD7Cu }) {
-			genCallEnforced(site, 0x42FA50, reinterpret_cast<DWORD>(&PatchPersistentFogCache_OnFogDraw));
-		}
-
-		// Patch: Render local-map tiles into per-tile render targets, displayed directly; defer the
-		// GPU->CPU readback and the world-map paint off the cross frame.
-		genCallEnforced(0x4E32FE, 0x4C81C0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnMapDrawCell));
-		genCallEnforced(0x4854CD, 0x41DFB0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnReleaseAllMapTextures));
-		genCallEnforced(0x486F1F, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
-		genCallEnforced(0x486FA9, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
-		for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
-			genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnRenderCellMapTile));
-		}
-		// The per-frame tile completion + compositor drain runs from inside WorldController::tickClock
-		// (see drainDeferredMapTiles), so no call-site hook is installed here.
-
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
 		genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&DataHandler_relightExteriorCellsAfterCross)); // updateCellThreadLoader -> updateAllLights
@@ -3620,6 +3636,31 @@ namespace mwse::patch {
 			auto NiFlipController_clone = &NI::FlipController::copy;
 			genCallEnforced(0x715D26, DWORD(NI::FlipController::_copy), *reinterpret_cast<DWORD*>(&NiFlipController_clone));
 		}
+
+		// Patch: Defer the local-map work off the cell-cross frame. Skips the borrow/restore on
+		// crosses where no tile renders, renders tiles into per-tile render targets displayed
+		// directly (deferring the GPU->CPU readback and world-map paint), and persists the
+		// fog-of-war pixel cache across compositor passes. The per-frame completion + compositor
+		// drain runs from the EnterFrame hook (see drainDeferredMapTiles), which is always active
+		// and idles when this patch is disabled.
+		if (Configuration::DeferLocalMapUpdates) {
+			genCallEnforced(0x486B09, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+			genCallEnforced(0x486F5B, 0x420DB0, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnBorrow));
+			genCallEnforced(0x486F0F, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+			genCallEnforced(0x486F99, 0x421100, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRestore));
+			genCallEnforced(0x486F72, 0x41F680, reinterpret_cast<DWORD>(&PatchDeferMapBorrow_OnRenderInteriorMap));
+			for (DWORD site : { 0x42082Cu, 0x4208C2u, 0x420A7Fu, 0x420BB9u, 0x420CC8u, 0x421CE4u, 0x42FD7Cu }) {
+				genCallEnforced(site, 0x42FA50, reinterpret_cast<DWORD>(&PatchPersistentFogCache_OnFogDraw));
+			}
+			genCallEnforced(0x4E32FE, 0x4C81C0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnMapDrawCell));
+			genCallEnforced(0x4854CD, 0x41DFB0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnReleaseAllMapTextures));
+			genCallEnforced(0x486F1F, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
+			genCallEnforced(0x486FA9, 0x420400, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnDeferCompositor));
+			for (DWORD site : { 0x486B7Bu, 0x486BF6u, 0x486C8Au, 0x486D06u, 0x486D8Au, 0x486DE9u, 0x486E5Fu, 0x486EBEu }) {
+				genCallEnforced(site, 0x41FEA0, reinterpret_cast<DWORD>(&PatchMapTileDirectDisplay::OnRenderCellMapTile));
+			}
+		}
+		log::getLog() << "[MWSE] Local-map cell-cross deferral: " << (Configuration::DeferLocalMapUpdates ? "enabled" : "disabled") << "." << std::endl;
 
 		// Patch: Allow global audio.
 		if (Configuration::UseGlobalAudio) {
