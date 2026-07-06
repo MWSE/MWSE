@@ -169,6 +169,30 @@ namespace TES3 {
 #endif
 	}
 
+#if !MWSE_CUSTOM_KILLCOUNTER
+	KillCounter::Node* KillCounter::getNode(Actor* actor) const {
+		const auto existing = std::find_if(killedActors->begin(), killedActors->end(), [&](const auto& node) { return node->actor == actor; });
+		if (existing == killedActors->end()) {
+			return nullptr;
+		}
+
+		return *existing;
+	}
+
+	KillCounter::Node* KillCounter::getOrCreateNode(Actor* actor) {
+		const auto existing = getNode(actor);
+		if (existing) {
+			return existing;
+		}
+
+		const auto node = se::memory::_new<KillCounter::Node>();
+		node->count = 0;
+		node->actor = actor;
+		killedActors->push_back(node);
+		return node;
+	}
+#endif
+
 	int KillCounter::getKillCount(Actor * actor) const {
 #if MWSE_CUSTOM_KILLCOUNTER
 		auto itt = counter->find(actor);
@@ -176,12 +200,9 @@ namespace TES3 {
 			return itt->second;
 		}
 #else
-		auto node = killedActors->head;
-		while (node) {
-			if (node->data->actor == actor) {
-				return node->data->count;
-			}
-			node = node->next;
+		auto node = getNode(actor);
+		if (node) {
+			return node->count;
 		}
 #endif
 
@@ -199,29 +220,18 @@ namespace TES3 {
 		(*counter)[actor]--;
 		totalKills--;
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, we don't care about it.
+		// Is this actor already in the collection? If it isn't in the collection, we don't care about it.
+		const auto node = getNode(actor);
 		if (node == nullptr) {
 			return;
 		}
 
-		// Increment kills for this actor and total kills.
+		// Decrement kills for this actor and total kills.
 		node->count--;
 		totalKills--;
 #endif
 
-		// Increment werewolf kills if the player is wolfing out.
+		// Decrement werewolf kills if the player is wolfing out.
 		auto worldController = TES3::WorldController::get();
 		if (werewolfKills > 0 && actor->objectType == TES3::ObjectType::NPC && worldController->getMobilePlayer()->getFlagWerewolf()) {
 			werewolfKills--;
@@ -246,27 +256,8 @@ namespace TES3 {
 		(*counter)[actor]++;
 		totalKills++;
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, create a new node and add it.
-		if (node == nullptr) {
-			node = se::memory::_new<KillCounter::Node>();
-			node->count = 0;
-			node->actor = actor;
-			killedActors->push_back(node);
-		}
-
 		// Increment kills for this actor and total kills.
+		auto node = getOrCreateNode(actor);
 		node->count++;
 		totalKills++;
 #endif
@@ -307,26 +298,7 @@ namespace TES3 {
 		(*counter)[actor] = count;
 		totalKills += (count - countBefore);
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, create a new node and add it.
-		if (node == nullptr) {
-			node = se::memory::_new<KillCounter::Node>();
-			node->count = 0;
-			node->actor = actor;
-			killedActors->push_back(node);
-		}
-
+		auto node = getOrCreateNode(actor);
 		totalKills += (count - node->count);
 		node->count = count;
 #endif
@@ -334,9 +306,9 @@ namespace TES3 {
 
 	const auto TES3_KillCounter_clear = reinterpret_cast<void(__thiscall*)(KillCounter*)>(0x55DBD0);
 	void KillCounter::clear() {
-#if MWSE_CUSTOM_KILLCOUNTER
 		totalKills = 0;
 		werewolfKills = 0;
+#if MWSE_CUSTOM_KILLCOUNTER
 		counter->clear();
 #else
 		TES3_KillCounter_clear(this);
@@ -348,7 +320,7 @@ namespace TES3 {
 #if MWSE_CUSTOM_KILLCOUNTER
 		if (file->getFirstSubrecord() == 'TSLK') {
 			// Clear existing data.
-			counter->clear();
+			clear();
 
 			// Parse subrecords.
 			int countBuffer;
@@ -364,7 +336,6 @@ namespace TES3 {
 					auto actor = static_cast<Actor*>(TES3::DataHandler::get()->nonDynamicData->resolveObject(idBuffer));
 					if (actor) {
 						setKillCount(actor, countBuffer);
-						totalKills += countBuffer;
 					}
 					else {
 						mwse::tes3::logAndShowError("Unable to locate Killed Object '%s'.", idBuffer);
@@ -404,13 +375,13 @@ namespace TES3 {
 		for (auto& itt : *counter) {
 			if (itt.second > 0) {
 				const char* id = itt.first->getObjectID();
-				file->writeChunkData('MANK', id, strnlen_s(id, 32) + 1);
-				file->writeChunkData('MANC', &itt.second, 4);
+				file->writeChunkString('MANK', id);
+				file->writeChunkValue('MANC', itt.second);
 			}
 		}
 
 		// Write werewolf kills.
-		file->writeChunkData('VTNI', &werewolfKills, 4);
+		file->writeChunkValue('VTNI', werewolfKills);
 
 		// Finish up this record.
 		file->endRecord();

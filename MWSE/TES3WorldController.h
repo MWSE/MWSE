@@ -162,6 +162,11 @@ namespace TES3 {
 		KillCounter* ctor();
 		void dtor();
 
+#if !MWSE_CUSTOM_KILLCOUNTER
+		Node* getNode(Actor* actor) const;
+		Node* getOrCreateNode(Actor* actor);
+#endif
+
 		int getKillCount(Actor* actor) const;
 		void decrementMobile(MobileActor* actor);
 		void decrement(Actor* actor);
