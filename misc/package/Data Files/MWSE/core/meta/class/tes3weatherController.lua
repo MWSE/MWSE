@@ -44,7 +44,7 @@
 --- @field skyPreSunsetTime number The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
 --- @field snowFallSpeedScale number A multipler for the z component of snow fall particle velocity (not including blizzards). The z component is set by `precipitationFallSpeed * snowFallSpeedScale`. This value is initialized by the "Snow Gravity Scale" entry in morrowind.ini.
 --- @field starsFadingDuration number The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade out `starsPreSunriseFinish` hours before sunrise. This value represents the duration of the fading. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field starsPostSunsetStart number The stars will start to fade in (appear) `starsPostSunsetStart` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
+--- @field starsPostSunsetStart number The stars will start to fade in (appear) `starsPostSunsetStart` hours after sunset. This corresponds to the setting of the same name in Morrowind.ini file.
 --- @field starsPreSunriseFinish number The stars will start to fade out (disappear) `starsPreSunriseFinish` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
 --- @field sunglareFaderAngleMax number The sunglare fader maximum angle.
 --- @field sunglareFaderColor tes3vector3 The sunglare fader color. The values can range from 0 to 1.

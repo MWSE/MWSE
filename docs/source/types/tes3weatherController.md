@@ -442,7 +442,7 @@ The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade 
 ### `starsPostSunsetStart`
 <div class="search_terms" style="display: none">starspostsunsetstart</div>
 
-The stars will start to fade in (appear) `starsPostSunsetStart` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
+The stars will start to fade in (appear) `starsPostSunsetStart` hours after sunset. This corresponds to the setting of the same name in Morrowind.ini file.
 
 **Returns**:
 
