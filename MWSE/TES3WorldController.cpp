@@ -371,7 +371,8 @@ namespace TES3 {
 					}
 				}
 				break;
-				case 'INTV':
+				case 'VTNI':
+				case 'INTV': // Backwards compatibility with previously bugged MWSE saves.
 					file->readChunkData(&werewolfKills);
 					break;
 				}
@@ -409,7 +410,7 @@ namespace TES3 {
 		}
 
 		// Write werewolf kills.
-		file->writeChunkData('INTV', &werewolfKills, 4);
+		file->writeChunkData('VTNI', &werewolfKills, 4);
 
 		// Finish up this record.
 		file->endRecord();
