@@ -1,8 +1,10 @@
 #pragma once
 
 #include "NIDefines.h"
+#include "NIBoundingBox.h"
 #include "NIMatrix33.h"
 #include "NIPoint3.h"
+#include "NITArray.h"
 
 namespace NI {
 	struct Bound {
@@ -82,6 +84,10 @@ namespace NI {
 		BoundingVolume_vtbl* vtbl; // 0x0
 
 		BoundingVolumeType getType() const;
+
+		// Conservative axis-aligned bounds of the volume, in the space the volume
+		// is stored in; empty when the volume type is unhandled.
+		std::optional<BoundingBox> computeBoundingBox() const;
 	};
 	static_assert(sizeof(BoundingVolume) == 0x4, "NI::BoundingVolume failed size validation");
 
@@ -109,4 +115,10 @@ namespace NI {
 		static BoxBoundingVolume* create(const Point3& extent, const Point3& center, const Point3& xAxis, const Point3& yAxis, const Point3& zAxis);
 	};
 	static_assert(sizeof(BoxBoundingVolume) == 0x40, "NI::SphereBV failed size validation");
+
+	struct UnionBoundingVolume : BoundingVolume {
+		TArray<BoundingVolume*> children; // 0x4
+		unsigned int whichChildIntersected; // 0x1C
+	};
+	static_assert(sizeof(UnionBoundingVolume) == 0x20, "NI::UnionBoundingVolume failed size validation");
 }
