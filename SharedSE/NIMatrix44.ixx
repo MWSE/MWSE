@@ -1,9 +1,9 @@
-#pragma once
+export module NIMatrix44;
 
 import NIPoint4;
 
 namespace NI {
-	struct Matrix44 {
+	export struct Matrix44 {
 		Point4 m0;
 		Point4 m1;
 		Point4 m2;

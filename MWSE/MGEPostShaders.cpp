@@ -2,12 +2,13 @@
 
 #include "MGEApi.h"
 #include "NIMatrix33.h"
-#include "NIMatrix44.h"
 
 #include "Log.h"
 
+import NIMatrix44;
 import NIPoint2;
 import NIPoint3;
+import NIPoint4;
 
 namespace mge {
 	//

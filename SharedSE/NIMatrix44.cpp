@@ -1,4 +1,4 @@
-#include "NIMatrix44.h"
+module NIMatrix44;
 
 namespace NI {
 	const Matrix44 Matrix44::IDENTITY = {

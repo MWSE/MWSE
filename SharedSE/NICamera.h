@@ -2,7 +2,8 @@
 
 #include "NINode.h"
 #include "NIRenderer.h"
-#include "NIMatrix44.h"
+
+import NIMatrix44;
 
 namespace NI {
 	struct Frustum {
