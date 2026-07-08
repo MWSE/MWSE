@@ -97,7 +97,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITransform.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriangle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h" />
@@ -179,6 +178,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />

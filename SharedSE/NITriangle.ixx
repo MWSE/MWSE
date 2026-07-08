@@ -1,7 +1,7 @@
-#pragma once
+export module NITriangle;
 
 namespace NI {
-	struct Triangle {
+	export struct Triangle {
 		unsigned short vertices[3];
 
 		Triangle();

@@ -1,4 +1,4 @@
-#include "NITriangle.h"
+module NITriangle;
 
 namespace NI {
 	Triangle::Triangle() : Triangle(0, 0, 0) {

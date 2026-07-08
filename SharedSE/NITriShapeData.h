@@ -2,7 +2,7 @@
 
 #include "NITriBasedGeometryData.h"
 
-#include "NITriangle.h"
+import NITriangle;
 
 namespace NI {
 	struct TriShapeData : TriBasedGeometryData {
