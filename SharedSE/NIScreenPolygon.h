@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NIObject.h"
-#include "NIPoint2.h"
 
+import NIPoint2;
 import NIPoint3;
 
 namespace NI {

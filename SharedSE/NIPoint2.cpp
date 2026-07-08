@@ -1,6 +1,8 @@
-#include "NIPoint2.h"
+module;
 
 #include "MathUtil.h"
+
+module NIPoint2;
 
 namespace NI {
 	const Point2 Point2::UNIT_X = { 1.0f, 0.0f };

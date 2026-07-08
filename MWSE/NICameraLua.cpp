@@ -4,7 +4,8 @@
 #include "LuaManager.h"
 
 #include "NICamera.h"
-#include "NIPoint2.h"
+
+import NIPoint2;
 
 namespace mwse::lua {
 	void bindNICamera() {

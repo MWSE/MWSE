@@ -6,8 +6,7 @@
 #include "TES3DataHandler.h"
 #include "TES3UIDefines.h"
 
-#include "NIPoint2.h"
-
+import NIPoint2;
 import NIPoint3;
 
 namespace mwse::lua {

@@ -2,7 +2,8 @@
 
 #include "NIBound.h"
 #include "NIObject.h"
-#include "NIPoint2.h"
+
+import NIPoint2;
 
 namespace NI {
 	struct GeometryData_vTable : Object_vTable {

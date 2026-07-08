@@ -5,8 +5,8 @@
 
 #include "NIDefines.h"
 #include "NINode.h"
-#include "NIPoint2.h"
 
+import NIPoint2;
 import NIPoint3;
 
 // Must be added to header files that declare types that can be derived.

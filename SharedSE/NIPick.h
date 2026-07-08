@@ -6,12 +6,12 @@
 #include "NINode.h"
 
 #include "NIColor.h"
-#include "NIPoint2.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
 #endif
 
+import NIPoint2;
 import NIPoint3;
 
 namespace NI {

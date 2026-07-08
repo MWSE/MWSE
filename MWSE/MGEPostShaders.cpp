@@ -3,10 +3,10 @@
 #include "MGEApi.h"
 #include "NIMatrix33.h"
 #include "NIMatrix44.h"
-#include "NIPoint2.h"
 
 #include "Log.h"
 
+import NIPoint2;
 import NIPoint3;
 
 namespace mge {

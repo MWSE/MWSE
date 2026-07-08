@@ -2,7 +2,8 @@
 #include "TES3Weather.h"
 
 #include "NIIteratedList.h"
-#include "NIPoint2.h"
+
+import NIPoint2;
 
 namespace TES3 {
 	struct WeatherBlight : Weather {

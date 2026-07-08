@@ -13,8 +13,8 @@
 #include "NIRenderer.h"
 #include "NISourceTexture.h"
 #include "NITextureEffect.h"
-#include "NIPoint2.h"
 
+import NIPoint2;
 import NIPoint3;
 
 namespace TES3 {

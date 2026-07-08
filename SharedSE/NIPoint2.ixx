@@ -1,7 +1,7 @@
-#pragma once
+export module NIPoint2;
 
 namespace NI {
-	struct Point2 {
+	export struct Point2 {
 		float x;
 		float y;
 
