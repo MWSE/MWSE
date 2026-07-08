@@ -13,7 +13,6 @@
 #include "NIGeometry.h"
 #include "NIMatrix33.h"
 #include "NINode.h"
-#include "NIPoint3.h"
 #include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
@@ -40,6 +39,8 @@
 #include "WindowMain.h"
 
 #include "DialogProcContext.h"
+
+import NIPoint3;
 
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;

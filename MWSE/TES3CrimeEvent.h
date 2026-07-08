@@ -3,9 +3,10 @@
 #include "TES3Defines.h"
 
 #include "NIIteratedList.h"
-#include "NIPoint3.h"
 
 #include "StdString.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	using se::StdString;

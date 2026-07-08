@@ -4,9 +4,10 @@
 #include "NIDefines.h"
 
 #include "NIIteratedList.h"
-#include "NIPoint3.h"
 
 #include "NINode.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	constexpr int WEATHER_ID_INVALID = -1;

@@ -7,11 +7,12 @@
 
 #include "NIColor.h"
 #include "NIPoint2.h"
-#include "NIPoint3.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
 #endif
+
+import NIPoint3;
 
 namespace NI {
 	enum class PickType {

@@ -3,7 +3,8 @@
 #include "TES3ActorAnimationController.h"
 
 #include "NIPick.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	struct PlayerAnimationController : ActorAnimationController {

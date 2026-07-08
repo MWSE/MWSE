@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NITriBasedGeometry.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct ParticlesData : TriBasedGeometryData {

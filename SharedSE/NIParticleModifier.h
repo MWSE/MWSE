@@ -2,8 +2,9 @@
 
 #include "NIObject.h"
 #include "NIAnimationData.h"
-#include "NIPoint3.h"
 #include "NIPoint4.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct ParticleModifier : Object {

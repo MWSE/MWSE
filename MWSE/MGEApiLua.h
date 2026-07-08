@@ -3,7 +3,7 @@
 #include "MGEApi.h"
 #include "MGEPostShaders.h"
 
-#include "NIPoint3.h"
+import NIPoint3;
 
 namespace mge::lua {
 	class CoreInterface {

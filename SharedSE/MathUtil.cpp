@@ -1,7 +1,8 @@
 #pragma intrinsic(_BitScanReverse)
 
 #include "MathUtil.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace se::math {
 	void standardizeAngleRadians(float& value) {

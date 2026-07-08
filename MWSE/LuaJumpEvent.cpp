@@ -4,7 +4,8 @@
 
 #include "TES3MobileActor.h"
 #include "TES3Reference.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace mwse::lua::event {
 	JumpEvent::JumpEvent(TES3::MobileActor* mobile, NI::Point3& velocity, bool applyFatigueCost, bool isDefaultJump) :

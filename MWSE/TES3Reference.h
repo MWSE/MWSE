@@ -6,7 +6,8 @@
 #include "TES3Attachment.h"
 
 #include "NILight.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	struct Reference : Object {

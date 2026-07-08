@@ -3,9 +3,10 @@
 #include "TES3Defines.h"
 
 #include "TES3MobileObject.h"
-#include "NIPoint3.h"
 
 #include "NIHashMap.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	enum class SpellEffectState {

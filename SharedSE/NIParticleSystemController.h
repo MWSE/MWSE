@@ -2,7 +2,8 @@
 
 #include "NITimeController.h"
 #include "NIParticleModifier.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct PerParticleData;

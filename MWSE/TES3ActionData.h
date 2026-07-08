@@ -2,7 +2,7 @@
 
 #include "TES3Defines.h"
 
-#include "NIPoint3.h"
+import NIPoint3;
 
 namespace TES3 {
 	enum AttackAnimationState : signed char {

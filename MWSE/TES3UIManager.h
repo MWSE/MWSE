@@ -1,7 +1,8 @@
 #pragma once
 
 #include "TES3UIDefines.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3::UI {
 	UI_ID registerID(const char* name);

@@ -3,7 +3,8 @@
 #include "TES3Defines.h"
 
 #include "TES3MobileObject.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	struct MobileProjectile_vTable : MobileObject_vTable {

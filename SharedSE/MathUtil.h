@@ -1,7 +1,8 @@
 #pragma once
 
 #include <numbers>
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace se::math {
 	constexpr auto M_PI_2 = 1.57079632679489661923; // pi/2

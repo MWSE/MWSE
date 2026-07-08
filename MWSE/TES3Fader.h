@@ -1,9 +1,10 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "NIPoint3.h"
 
 #include "NIObject.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	typedef void(__stdcall* FaderCallback)();

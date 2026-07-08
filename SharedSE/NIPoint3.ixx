@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
+export module NIPoint3;
+
 namespace NI {
-	struct Point3 {
+	export struct Point3 {
 		float x; // 0x0
 		float y; // 0x4
 		float z; // 0x8

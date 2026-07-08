@@ -1,11 +1,12 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "NIPoint3.h"
 #include "TES3AnimationGroup.h"
 
 #include "NIDefines.h"
 #include "NIPointer.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	struct AnimationData {

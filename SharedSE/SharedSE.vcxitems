@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -108,7 +108,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint2.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint3.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -162,6 +161,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />

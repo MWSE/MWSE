@@ -4,9 +4,10 @@
 #include "NIMatrix33.h"
 #include "NIMatrix44.h"
 #include "NIPoint2.h"
-#include "NIPoint3.h"
 
 #include "Log.h"
+
+import NIPoint3;
 
 namespace mge {
 	//

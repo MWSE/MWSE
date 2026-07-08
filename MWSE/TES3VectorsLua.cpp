@@ -7,8 +7,9 @@
 #include "NIRange.h"
 #include "NIQuaternion.h"
 #include "NIPoint2.h"
-#include "NIPoint3.h"
 #include "NIPoint4.h"
+
+import NIPoint3;
 
 namespace mwse::lua {
 	void bindTES3Vectors() {

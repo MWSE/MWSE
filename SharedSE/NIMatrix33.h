@@ -1,6 +1,8 @@
 #pragma once
 
-#include "NIPoint3.h"
+#include "NIQuaternion.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct Matrix33 {

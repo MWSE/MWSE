@@ -72,7 +72,6 @@
 #include "TES3Spell.h"
 #include "TES3Static.h"
 #include "TES3UIElement.h"
-#include "NIPoint3.h"
 #include "TES3Weapon.h"
 #include "TES3Weather.h"
 #include "TES3WeatherAsh.h"
@@ -91,6 +90,8 @@
 
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
+
+import NIPoint3;
 
 namespace mwse::lua {
 	void* getUserdataPointerSlot(lua_State* L, int index) {

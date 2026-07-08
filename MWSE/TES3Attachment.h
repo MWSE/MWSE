@@ -5,7 +5,8 @@
 #include "NILight.h"
 
 #include "TES3Item.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	namespace AttachmentType {

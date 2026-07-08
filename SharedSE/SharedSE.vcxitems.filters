@@ -333,9 +333,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint4.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint3.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint2.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
@@ -560,5 +557,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
   </ItemGroup>
 </Project>

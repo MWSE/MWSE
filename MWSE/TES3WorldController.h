@@ -14,7 +14,8 @@
 #include "NISourceTexture.h"
 #include "NITextureEffect.h"
 #include "NIPoint2.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	enum class MusicSituation : int {

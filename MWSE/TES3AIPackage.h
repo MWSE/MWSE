@@ -1,7 +1,8 @@
 #pragma once
 
 #include "TES3Defines.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 // Must be added to header files that declare Ni types that can be derived.
 #define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3_AIPACKAGE(T) \

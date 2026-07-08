@@ -14,9 +14,10 @@
 #include "TES3Statistic.h"
 
 #include "NIHashMap.h"
-#include "NIPoint3.h"
 
 #include "Deque.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	enum class MobileActorType : char {

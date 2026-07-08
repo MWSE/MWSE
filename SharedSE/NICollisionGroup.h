@@ -2,7 +2,8 @@
 
 #include "NIAVObject.h"
 #include "NITArray.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct CollisionGroup {

@@ -1,7 +1,9 @@
-#include "NIPoint3.h"
+module;
 
 #include "NIColor.h"
 #include "NIMatrix33.h"
+
+module NIPoint3;
 
 namespace NI {
 	const Point3 Point3::UNIT_X = { 1.0f, 0.0f, 0.0f };

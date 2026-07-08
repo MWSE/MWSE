@@ -3,7 +3,7 @@
 #include "LuaObjectFilteredEvent.h"
 #include "LuaDisableableEvent.h"
 
-#include "NIPoint3.h"
+import NIPoint3;
 
 namespace mwse::lua::event {
 	class JumpEvent : public ObjectFilteredEvent, public DisableableEvent<JumpEvent> {

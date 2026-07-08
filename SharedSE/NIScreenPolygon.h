@@ -2,7 +2,8 @@
 
 #include "NIObject.h"
 #include "NIPoint2.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace NI {
 	struct ScreenPolygon : Object {

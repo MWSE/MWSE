@@ -3,10 +3,11 @@
 #include "TES3Defines.h"
 
 #include "TES3AnimationData.h"
-#include "NIPoint3.h"
 
 #include "NIExtraData.h"
 #include "NIProperty.h"
+
+import NIPoint3;
 
 namespace TES3 {
 	struct KeyframeDefinition {

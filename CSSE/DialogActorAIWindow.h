@@ -3,7 +3,8 @@
 #include "CSDefines.h"
 
 #include "NIIteratedList.h"
-#include "NIPoint3.h"
+
+import NIPoint3;
 
 namespace se::cs::dialog::actor_ai_window {
 	constexpr UINT DIALOG_ID = 154;
