@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
+
+export module NIMatrix33;
 
 import NIPoint3;
 
 namespace NI {
-	struct Matrix33 {
+	export struct Matrix33 {
 		Point3 m0;
 		Point3 m1;
 		Point3 m2;

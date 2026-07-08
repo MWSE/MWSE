@@ -1,10 +1,10 @@
 #include "MGEPostShaders.h"
 
 #include "MGEApi.h"
-#include "NIMatrix33.h"
 
 #include "Log.h"
 
+import NIMatrix33;
 import NIMatrix44;
 import NIPoint2;
 import NIPoint3;

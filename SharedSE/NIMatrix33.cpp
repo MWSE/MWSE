@@ -1,7 +1,9 @@
-#include "NIMatrix33.h"
+module;
 
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
+
+module NIMatrix33;
 
 import NIQuaternion;
 

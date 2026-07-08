@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NIMatrix33.h"
+import NIMatrix33;
 
 namespace NI {
 	struct Transform {

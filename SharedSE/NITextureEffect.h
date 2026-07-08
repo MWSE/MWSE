@@ -1,9 +1,9 @@
 #pragma once
 
 #include "NIDynamicEffect.h"
-#include "NIMatrix33.h"
 #include "NISourceTexture.h"
 
+import NIMatrix33;
 import NIPoint3;
 
 namespace NI {

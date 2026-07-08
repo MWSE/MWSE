@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NIDefines.h"
-#include "NIMatrix33.h"
 
+import NIMatrix33;
 import NIPoint3;
 
 namespace NI {

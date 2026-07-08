@@ -7,13 +7,14 @@
 
 #include "NICamera.h"
 #include "NIGeometry.h"
-#include "NIMatrix33.h"
 #include "NILines.h"
 #include "NILinesData.h"
 #include "NISwitchNode.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
+
+import NIMatrix33;
 
 namespace se::cs::dialog::render_window {
 	WidgetsController::WidgetsController() {

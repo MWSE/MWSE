@@ -11,7 +11,6 @@
 #include "NICamera.h"
 #include "NICollisionSwitch.h"
 #include "NIGeometry.h"
-#include "NIMatrix33.h"
 #include "NINode.h"
 #include "NIPick.h"
 #include "NILines.h"
@@ -40,6 +39,7 @@
 
 #include "DialogProcContext.h"
 
+import NIMatrix33;
 import NIPoint3;
 
 namespace se::cs::dialog::render_window {

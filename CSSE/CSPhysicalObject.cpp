@@ -5,7 +5,8 @@
 #include "NIAVObject.h"
 #include "NINode.h"
 #include "NITransform.h"
-#include "NIMatrix33.h"
+
+import NIMatrix33;
 
 namespace se::cs {
 	bool PhysicalObject::canRotateOnAllAxes() const {

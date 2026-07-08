@@ -4,8 +4,8 @@
 #include "NIKeyframeController.h"
 #include "NIExtraData.h"
 #include "NIHashMap.h"
-#include "NIMatrix33.h"
 
+import NIMatrix33;
 import NIPoint3;
 
 namespace NI {
