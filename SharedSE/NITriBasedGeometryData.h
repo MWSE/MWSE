@@ -25,6 +25,19 @@ namespace NI {
 		unsigned short getActiveTriangleCount() const;
 		void setActiveTriangleCount(unsigned short count);
 
+		//
+		// Custom functions.
+		//
+
+		// Returns ascending indices of active triangles a model-space ray may hit,
+		// or nullptr when the caller must test every triangle. The result is a
+		// shared scratch buffer, valid until the next candidate query. Not thread-safe.
+		const std::vector<unsigned int>* getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection) const;
+
+		// Same contract as getRayCandidateTriangles, for a model-space AABB tested
+		// against all triangles rather than the active count.
+		const std::vector<unsigned int>* getAabbCandidateTriangles(const Point3& modelAabbMin, const Point3& modelAabbMax) const;
+
 	};
 	static_assert(sizeof(TriBasedGeometryData) == 0x38, "NI::TriBasedGeometryData failed size validation");
 }
