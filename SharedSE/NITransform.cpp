@@ -1,4 +1,4 @@
-#include "NITransform.h"
+module NITransform;
 
 namespace NI {
 	Transform::Transform() {

@@ -1,9 +1,9 @@
-#pragma once
+export module NITransform;
 
 import NIMatrix33;
 
 namespace NI {
-	struct Transform {
+	export struct Transform {
 		Matrix33 rotation;
 		Point3 translation;
 		float scale;

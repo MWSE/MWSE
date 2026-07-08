@@ -5,7 +5,7 @@
 
 #include "TES3Defines.h"
 
-#include "NITransform.h"
+import NITransform;
 
 namespace mwse::lua::event {
 	class CameraControlEvent : public GenericEvent, public DisableableEvent<CameraControlEvent> {

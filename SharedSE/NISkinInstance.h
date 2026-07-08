@@ -3,8 +3,8 @@
 #include "NIObject.h"
 
 #include "NIBound.h"
-#include "NITransform.h"
 
+import NITransform;
 import NITriangle;
 
 namespace NI {

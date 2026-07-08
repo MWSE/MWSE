@@ -6,7 +6,8 @@
 #include "NIBoundingBox.h"
 #include "NILinkedList.h"
 #include "NIProperty.h"
-#include "NITransform.h"
+
+import NITransform;
 
 namespace NI {
 	struct ObjectVelocities {
