@@ -350,6 +350,7 @@ namespace mwse::patch {
 		constexpr DWORD ModMaskMWSE = ((1 << ModBitsMWSE) - 1) << FormBitsMWSE;
 		constexpr DWORD FormMaskMWSE = (1 << FormBitsMWSE) - 1;
 		constexpr DWORD ModCountMWSE = 1 << ModBitsMWSE;
+		constexpr DWORD InvalidFormId = 0xFFFFFFFF;
 		static_assert(1 << ModBitsMWSE == sizeof(TES3::NonDynamicData::activeMods) / sizeof(TES3::GameFile*), "Reference FormID bit assignment does not match active game file array size.");
 
 		struct SerializedFormId {
@@ -362,11 +363,24 @@ namespace mwse::patch {
 			SerializedFormId data;
 			if (file->currentChunkHeader.size == sizeof(SerializedFormId)) {
 				file->readChunkData(&data);
+
+				// Handle saves where an invalid form ID was incorrectly serialized.
+				// This does have the edge case if mod 1023 has a more than ~4.2 million form IDs. Extremely unlikely.
+				if (data.modIndex == ModCountMWSE - 1 && data.formId == FormMaskMWSE) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
 			}
 			else {
 				// If it's not the new format, we need to convert.
 				DWORD oldFormId = 0;
 				file->readChunkData(&oldFormId);
+
+				// Preserve invalid form IDs.
+				if (oldFormId == InvalidFormId) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
 
 				data.modIndex = (oldFormId >> FormBitsVanilla);
 				data.formId = (oldFormId & FormMaskVanilla);
@@ -376,19 +390,26 @@ namespace mwse::patch {
 		}
 
 		void __fastcall SaveFormId(TES3::GameFile* file, DWORD edx, unsigned int tag, DWORD* movedRefId, size_t size) {
+			// Preserve invalid form IDs.
+			if (*movedRefId == InvalidFormId) {
+				DWORD refId = InvalidFormId;
+				file->writeChunkValue(tag, refId);
+				return;
+			}
+
 			// Split out the bitmasked field.
 			SerializedFormId data = {};
 			data.modIndex = *movedRefId >> FormBitsMWSE;
 			data.formId = *movedRefId & FormMaskMWSE;
 
 			// If the mod index is higher than the vanilla limit, save the new format.
-			if (data.modIndex > 255) {
-				file->writeChunkData(tag, &data, sizeof(data));
+			if (data.modIndex >= ModCountVanilla) {
+				file->writeChunkValue(tag, data);
 			}
-			// If the mod index is <255, use the vanilla save format and masks for compatibility.
+			// If the mod index is below the vanilla limit, use the vanilla save format and masks for compatibility.
 			else {
 				DWORD refId = (data.modIndex << FormBitsVanilla) + data.formId;
-				file->writeChunkData(tag, &refId, 4);
+				file->writeChunkValue(tag, refId);
 			}
 		}
 	}
