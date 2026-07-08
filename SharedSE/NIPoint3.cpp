@@ -2,8 +2,9 @@ module;
 
 #include "NIColor.h"
 
-import NIMatrix33;
 module NIPoint3;
+
+import NIMatrix33;
 
 namespace NI {
 	const Point3 Point3::UNIT_X = { 1.0f, 0.0f, 0.0f };
