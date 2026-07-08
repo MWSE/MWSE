@@ -3,7 +3,7 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
-#include "NIQuaternion.h"
+import NIQuaternion;
 
 namespace NI {
 	Particles::Particles(ParticlesData* data) : TriBasedGeometry(data) {

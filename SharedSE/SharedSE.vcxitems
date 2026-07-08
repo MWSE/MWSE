@@ -77,7 +77,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIQuaternion.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderer.h" />
@@ -164,6 +163,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderedTexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.cpp" />

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "NIColor.h"
-#include "NIQuaternion.h"
 
 import NIPoint3;
+import NIQuaternion;
 
 namespace NI {
 	struct AnimationKey {

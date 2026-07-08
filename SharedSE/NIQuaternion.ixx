@@ -1,12 +1,13 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
-#include "NIMatrix33.h"
+
+export module NIQuaternion;
 
 import NIPoint3;
 
 namespace NI {
-	struct Quaternion {
+	export struct Quaternion {
 		float w;
 		float x;
 		float y;

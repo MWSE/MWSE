@@ -5,11 +5,11 @@
 #include "NIMatrix33.h"
 #include "NIMatrix44.h"
 #include "NIRange.h"
-#include "NIQuaternion.h"
 
 import NIPoint2;
 import NIPoint3;
 import NIPoint4;
+import NIQuaternion;
 
 namespace mwse::lua {
 	void bindTES3Vectors() {

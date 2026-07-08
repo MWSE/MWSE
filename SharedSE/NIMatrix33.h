@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NIQuaternion.h"
+#include "NIDefines.h"
 
 import NIPoint3;
 

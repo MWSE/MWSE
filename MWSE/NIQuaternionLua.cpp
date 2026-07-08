@@ -3,7 +3,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIQuaternion.h"
+import NIQuaternion;
 
 void mwse::lua::bindNIQuaternion() {
 	// Get our lua state.

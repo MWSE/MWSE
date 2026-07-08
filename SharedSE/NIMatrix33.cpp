@@ -3,7 +3,7 @@
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
 
-#include "NIQuaternion.h"
+import NIQuaternion;
 
 namespace NI {
 	const Matrix33 Matrix33::IDENTITY = {

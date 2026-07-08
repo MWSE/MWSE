@@ -1,7 +1,12 @@
-#include "NIQuaternion.h"
+module;
+
+#include "NIMatrix33.h"
 
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
+
+
+module NIQuaternion;
 
 namespace NI {
 	const Quaternion Quaternion::IDENTITY = { 1.0f, 0.0f, 0.0f, 0.0f };
