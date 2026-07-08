@@ -170,16 +170,6 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
-					label = i18n("usePhysicsOptimizations.label"),
-					description = i18n("usePhysicsOptimizations.description"),
-					variable = {
-						id = "UsePhysicsOptimizations",
-						class = "TableVariable",
-						table = mwseConfig,
-					},
-				},
-				{
-					class = "OnOffButton",
 					label = i18n("suppressUselessWarnings.label"),
 					description = i18n("suppressUselessWarnings.description"),
 					variable = {

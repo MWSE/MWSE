@@ -15,7 +15,6 @@ namespace mwse {
 		static bool ReplaceDialogueFiltering;
 		static bool EnableLuaErrorNotifications;
 		static bool UseSkinnedAccurateActivationRaytests;
-		static bool UsePhysicsOptimizations;
 		static bool SuppressUselessWarnings;
 		static bool UseGlobalAudio;
 		static bool NonExclusiveKeyboard;
