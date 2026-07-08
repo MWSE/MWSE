@@ -1,9 +1,7 @@
-#pragma once
+export module NIPoint4;
 
 namespace NI {
-	struct Matrix33;
-
-	struct Point4 {
+	export struct Point4 {
 		float x; // 0x0
 		float y; // 0x4
 		float z; // 0x8
@@ -20,7 +18,7 @@ namespace NI {
 		Point4 operator*(const float scalar) const;
 		Point4 operator/(const float scalar) const;
 
-		friend std::ostream& operator<<(std::ostream& str, const Point4& matrix);
+		friend std::ostream& operator<<(std::ostream& str, const Point4& point);
 		std::string toString() const;
 		std::string toJson() const;
 

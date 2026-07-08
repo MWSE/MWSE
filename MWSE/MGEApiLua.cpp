@@ -2,9 +2,9 @@
 
 #include "TES3Game.h"
 
-#include "NIPoint4.h"
-
 #include "LuaUtil.h"
+
+import NIPoint4;
 
 namespace mge::lua {
 

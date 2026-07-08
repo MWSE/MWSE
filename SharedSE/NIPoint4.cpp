@@ -1,4 +1,4 @@
-#include "NIPoint4.h"
+module NIPoint4;
 
 namespace NI {
 	const Point4 Point4::ZEROES = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -49,8 +49,8 @@ namespace NI {
 		return Point4(x / scalar, y / scalar, z / scalar, w / scalar);
 	}
 
-	std::ostream& operator<<(std::ostream& str, const Point4& vector) {
-		str << "(" << vector.x << "," << vector.y << "," << vector.z << "," << vector.w << ")";
+	std::ostream& operator<<(std::ostream& str, const Point4& point) {
+		str << "(" << point.x << "," << point.y << "," << point.z << "," << point.w << ")";
 		return str;
 	}
 

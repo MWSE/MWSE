@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NIPoint4.h"
+import NIPoint4;
 
 namespace NI {
 	struct Matrix44 {

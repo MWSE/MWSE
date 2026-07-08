@@ -25,7 +25,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint4.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
@@ -162,6 +161,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />
