@@ -2,7 +2,8 @@
 
 #include "NIAVObject.h"
 #include "NIGeometryData.h"
-#include "NISkinInstance.h"
+
+import NISkinInstance;
 
 namespace NI {
 	struct Geometry_vTable : AVObject_vTable {

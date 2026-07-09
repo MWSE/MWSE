@@ -6,10 +6,10 @@
 #include "LuaUtil.h"
 
 #include "NINode.h"
-#include "NITextureEffect.h"
 
 import NIRTTI;
 import NISourceTexture;
+import NITextureEffect;
 
 namespace mwse::lua {
 	void bindNITextureEffect() {

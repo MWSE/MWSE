@@ -25,7 +25,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAccumulator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
@@ -54,10 +53,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITextureEffect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h" />
@@ -78,6 +75,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAccumulator.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
@@ -161,6 +159,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISourceTexture.cpp" />
@@ -173,6 +172,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.ixx" />

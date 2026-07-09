@@ -2,10 +2,11 @@ module;
 
 #include "NIDefines.h"
 
-#include "NIAccumulator.h"
 #include "NINode.h"
 
 export module NISortAdjustNode;
+
+import NIAccumulator;
 
 namespace NI {
 	export enum struct SortAdjustMode : int {

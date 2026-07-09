@@ -1,14 +1,16 @@
-#pragma once
+module;
 
 #include "NIObject.h"
 
 #include "NIBound.h"
 
+export module NISkinInstance;
+
 import NITransform;
 import NITriangle;
 
 namespace NI {
-	struct SkinPartition : Object {
+	export struct SkinPartition : Object {
 		struct Partition {
 			void* vtbl;
 			unsigned short* bones; // 0x4
@@ -37,7 +39,7 @@ namespace NI {
 	static_assert(sizeof(SkinPartition) == 0x10, "NI::SkinPartition failed size validation");
 	static_assert(sizeof(SkinPartition::Partition) == 0x2C, "NI::SkinPartition::Partition failed size validation");
 
-	struct SkinData : Object {
+	export struct SkinData : Object {
 		struct BoneData {
 			struct VertexWeight {
 				unsigned short index; // 0x0
@@ -61,7 +63,7 @@ namespace NI {
 	static_assert(sizeof(SkinData::BoneData) == 0x4C, "NI::SkinData::BoneData failed size validation");
 	static_assert(sizeof(SkinData::BoneData::VertexWeight) == 0x8, "NI::SkinData::VertexWeight failed size validation");
 
-	struct SkinInstance : Object {
+	export struct SkinInstance : Object {
 		Pointer<SkinData> skinData; // 0x8
 		AVObject* rootParent; // 0xC
 		AVObject** bones; // 0x10

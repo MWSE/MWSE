@@ -2,7 +2,7 @@
 
 #include "NIDynamicEffectLua.h"
 
-#include "NITextureEffect.h"
+import NITextureEffect;
 
 namespace mwse::lua {
 	template <typename T>

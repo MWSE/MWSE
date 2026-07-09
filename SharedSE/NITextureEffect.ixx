@@ -1,13 +1,17 @@
-#pragma once
+module;
 
 #include "NIDynamicEffect.h"
+
+#include "SolUtil.h"
+
+export module NITextureEffect;
 
 import NIMatrix33;
 import NIPoint3;
 import NISourceTexture;
 
 namespace NI {
-	struct TextureEffect : DynamicEffect {
+	export struct TextureEffect : DynamicEffect {
 		Matrix33 unknown_0xA8;
 		Point3 unknnown_0xCC;
 		Matrix33 unknown_0xD8;

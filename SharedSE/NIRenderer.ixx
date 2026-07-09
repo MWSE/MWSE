@@ -2,13 +2,13 @@ module;
 
 #include "NIDefines.h"
 
-#include "NIAccumulator.h"
 #include "NIObject.h"
 #include "NIProperty.h"
 #include "NIRect.h"
 
 export module NIRenderer;
 
+import NIAccumulator;
 import NITexture;
 
 namespace NI {

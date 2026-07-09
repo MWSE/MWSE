@@ -1,6 +1,10 @@
-#include "NISkinInstance.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+
+module NISkinInstance;
 
 namespace NI {
 	std::span<unsigned short> SkinPartition::Partition::getBones() {

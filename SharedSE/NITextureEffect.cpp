@@ -1,6 +1,11 @@
-#include "NITextureEffect.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NITextureEffect;
 
 namespace NI {
 #if defined(SE_NI_TEXTUREEFFECT_FNADDR_CTOR) && SE_NI_TEXTUREEFFECT_FNADDR_CTOR > 0

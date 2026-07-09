@@ -7,7 +7,6 @@
 #include "NIDefines.h"
 #include "NIIteratedList.h"
 #include "NIProperty.h"
-#include "NITextureEffect.h"
 
 import NICamera;
 import NIDirectionalLight;
@@ -16,6 +15,7 @@ import NIPoint3;
 import NIRenderedTexture;
 import NIRenderer;
 import NISourceTexture;
+import NITextureEffect;
 
 namespace TES3 {
 	enum class MusicSituation : int {

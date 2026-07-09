@@ -2,7 +2,7 @@
 
 #include "LuaManager.h"
 
-#include "NISkinInstance.h"
+import NISkinInstance;
 
 namespace mwse::lua {
 	void bindNISkinInstance() {

@@ -1,7 +1,5 @@
 #include "NITriBasedGeometry.h"
 
-#include "NISkinInstance.h"
-
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
@@ -10,6 +8,8 @@
 #endif
 
 import NIPick;
+import NISkinInstance;
+import NITriangle;
 
 namespace NI {
 	TriBasedGeometry::TriBasedGeometry(TriBasedGeometryData* data) {

@@ -19,8 +19,6 @@
 #include "NIParticles.h"
 #include "NIParticleSystemController.h"
 #include "NIProperty.h"
-#include "NISkinInstance.h"
-#include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
 
@@ -42,10 +40,12 @@ import NIPathController;
 import NIPixelData;
 import NIPointLight;
 import NIRenderedTexture;
+import NISkinInstance;
 import NISortAdjustNode;
 import NISpotLight;
 import NISourceTexture;
 import NISwitchNode;
+import NITextureEffect;
 #endif
 
 import NIRTTI;
