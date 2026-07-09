@@ -78,9 +78,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)CrashLoggerShared.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
@@ -363,9 +360,6 @@
       <Filter>Source Files\NI</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLoggerShared.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsUtil.cpp">
