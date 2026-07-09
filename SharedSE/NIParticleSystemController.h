@@ -3,6 +3,7 @@
 #include "NITimeController.h"
 #include "NIParticleModifier.h"
 
+import NIColor;
 import NIPoint3;
 
 namespace NI {

@@ -1,4 +1,4 @@
-#include "NIAnimationKey.h"
+module NIAnimationKey;
 
 namespace NI {
 	template <typename T>

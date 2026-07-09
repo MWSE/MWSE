@@ -30,7 +30,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAccumulator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBillboardNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
@@ -108,6 +107,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />

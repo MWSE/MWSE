@@ -1,7 +1,8 @@
 #pragma once
 
-#include "NIAnimationKey.h"
 #include "NIObject.h"
+
+import NIAnimationKey;
 
 namespace NI {
 	struct FloatData : Object {

@@ -2,7 +2,8 @@
 
 #include "NITimeController.h"
 #include "NIAnimationData.h"
-#include "NIAnimationKey.h"
+
+import NIAnimationKey;
 
 namespace NI {
 	struct KeyframeData : Object {

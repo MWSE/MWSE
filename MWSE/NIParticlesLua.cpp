@@ -8,6 +8,8 @@
 #include "NIParticles.h"
 #include "NIParticleModifier.h"
 
+import NIQuaternion;
+
 namespace mwse::lua {
 	void bindNIParticles() {
 		// Get our lua state.
