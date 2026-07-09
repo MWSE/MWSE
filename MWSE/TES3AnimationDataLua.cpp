@@ -8,7 +8,8 @@
 #include "TES3Sound.h"
 
 #include "NIGeometry.h"
-#include "NIKeyframeManager.h"
+
+import NIKeyframeManager;
 
 namespace mwse::lua {
 	void bindTES3AnimationData() {

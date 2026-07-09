@@ -1,7 +1,9 @@
-#include "NIKeyframeManager.h"
+module;
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+
+module NIKeyframeManager;
 
 namespace NI {
 	void Sequence::release() {

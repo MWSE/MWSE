@@ -1,15 +1,11 @@
-#pragma once
+module;
 
 #include "NITimeController.h"
 
+export module NICopyTransformController;
+
 namespace NI {
-	struct CopyTransformController_vTable : TimeController_vTable {
-		CopyTransformController_vTable();
-
-		static CopyTransformController_vTable Instance;
-	};
-
-	struct CopyTransformController : public TimeController {
+	export struct CopyTransformController : public TimeController {
 		//
 		// Custom data
 		//
@@ -50,5 +46,11 @@ namespace NI {
 		//
 
 		static Object* loader(Stream* stream);
+	};
+
+	export struct CopyTransformController_vTable : TimeController_vTable {
+		CopyTransformController_vTable();
+
+		static CopyTransformController_vTable Instance;
 	};
 }

@@ -15,7 +15,6 @@
 #include "NIBSAnimationNode.h"
 #include "NICamera.h"
 #include "NIExtraData.h"
-#include "NIKeyframeController.h"
 #include "NILines.h"
 #include "NINode.h"
 #include "NIParticleModifier.h"
@@ -37,6 +36,7 @@ import NIAmbientLight;
 import NIBillboardNode;
 import NICollisionSwitch;
 import NIDirectionalLight;
+import NIKeyframeController;
 import NILookAtController;
 import NIPathController;
 import NIPixelData;

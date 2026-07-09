@@ -6,10 +6,10 @@
 #include "LuaUtil.h"
 
 #include "NIAnimationData.h"
-#include "NIKeyframeController.h"
-#include "NIKeyframeManager.h"
 #include "NITimeController.h"
 
+import NIKeyframeController;
+import NIKeyframeManager;
 import NILookAtController;
 import NIPathController;
 

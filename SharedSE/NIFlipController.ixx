@@ -1,11 +1,14 @@
-#pragma once
+module;
 
+#include "NIDefines.h"
 #include "NITimeController.h"
+
+export module NIFlipController;
 
 import NITexture;
 
 namespace NI {
-	struct FlipController : TimeController {
+	export struct FlipController : TimeController {
 		TArray<Pointer<Texture>> textures; // 0x34
 		unsigned int currentIndex; // 0x4C
 		unsigned int affectedMap; // 0x50
@@ -16,7 +19,7 @@ namespace NI {
 
 #if defined(SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX) && SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX > 0
 		Texture* getTextureAtIndex(size_t index) const;
-		static constexpr auto _getTextureAtIndex = reinterpret_cast<Texture*(__thiscall*)(const FlipController*, size_t)>(SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX);
+		static constexpr auto _getTextureAtIndex = reinterpret_cast<Texture * (__thiscall*)(const FlipController*, size_t)>(SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX);
 #endif
 
 #if defined(SE_NI_FLIPCONTROLLER_FNADDR_SETTEXTURE) && SE_NI_FLIPCONTROLLER_FNADDR_SETTEXTURE > 0

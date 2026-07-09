@@ -1,6 +1,9 @@
-#include "NIFlipController.h"
+module;
 
+#include "NIDefines.h"
 #include "ExceptionUtil.h"
+
+module NIFlipController;
 
 namespace NI {
 #if defined(SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX) && SE_NI_FLIPCONTROLLER_FNADDR_GETTEXTUREATINDEX > 0

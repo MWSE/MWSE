@@ -9,11 +9,12 @@
 #include "MWSEDefs.h"
 #include "BuildDate.h"
 
-#include "NICopyTransformController.h"
 #include "NIStream.h"
 
 #include "LuaManager.h"
 #include "TES3Game.h"
+
+import NICopyTransformController;
 
 TES3MACHINE* mge_virtual_machine = NULL;
 

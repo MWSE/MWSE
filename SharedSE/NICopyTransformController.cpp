@@ -1,7 +1,9 @@
-#include "NICopyTransformController.h"
+module;
 
 #include "NIAVObject.h"
 #include "NIStream.h"
+
+module NICopyTransformController;
 
 import NIBinaryStream;
 import NIRTTI;

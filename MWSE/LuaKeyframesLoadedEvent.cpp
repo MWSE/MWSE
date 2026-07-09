@@ -5,7 +5,7 @@
 
 #include "TES3ActorAnimationController.h"
 
-#include "NIKeyframeManager.h"
+import NIKeyframeManager;
 
 namespace mwse::lua::event {
 	KeyframesLoadedEvent::KeyframesLoadedEvent(const char* path, const char* sequenceName, TES3::KeyframeDefinition* keyframeDefinition) :

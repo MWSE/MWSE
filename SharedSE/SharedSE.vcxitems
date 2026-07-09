@@ -20,7 +20,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SolUtil.h" />
@@ -38,12 +37,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDynamicEffect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIExtraData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIFlipController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeController.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
@@ -108,6 +104,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
@@ -117,10 +114,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeManager.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILines.cpp" />

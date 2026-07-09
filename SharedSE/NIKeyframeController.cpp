@@ -1,6 +1,8 @@
-#include "NIKeyframeController.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NIKeyframeController;
 
 namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

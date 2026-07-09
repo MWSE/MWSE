@@ -2,11 +2,12 @@
 #include "TES3ActorAnimationController.h"
 
 #include "NINode.h"
-#include "NIKeyframeManager.h"
 
 #include "LuaManager.h"
 
 #include "LuaPlayAnimationGroupEvent.h"
+
+import NIKeyframeManager;
 
 namespace TES3 {
 	constexpr float fixedPointSpeedScale = 256.0f;

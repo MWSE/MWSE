@@ -1,15 +1,17 @@
-#pragma once
+module;
 
 #include "NITimeController.h"
-#include "NIKeyframeController.h"
 #include "NIExtraData.h"
 #include "NIHashMap.h"
 
+export module NIKeyframeManager;
+
+import NIKeyframeController;
 import NIMatrix33;
 import NIPoint3;
 
 namespace NI {
-	enum struct SequenceState : int {
+	export enum struct SequenceState : int {
 		Inactive,
 		Animating,
 		LayerBlend,
@@ -22,7 +24,7 @@ namespace NI {
 		SumDest
 	};
 
-	struct Sequence {
+	export struct Sequence {
 		char* name; // 0x0
 		char* filename; // 0x4
 		int fileNum;
@@ -47,7 +49,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Sequence) == 0xC0, "NI::Sequence failed size validation");
 
-	struct KeyframeManager : TimeController {
+	export struct KeyframeManager : TimeController {
 		NI::HashMap<int, Sequence*> sequences; // 0x34
 		bool cumulative; // 0x44
 		NI::Matrix33 globalScaleRotation; // 0x48

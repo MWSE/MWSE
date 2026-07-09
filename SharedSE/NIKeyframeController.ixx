@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include "NITimeController.h"
 #include "NIAnimationData.h"
 
+export module NIKeyframeController;
+
 import NIAnimationKey;
 
 namespace NI {
-	struct KeyframeData : Object {
+	export struct KeyframeData : Object {
 		unsigned int rotationKeyCount; // 0x8
 		AmbiguousRotKeyPtr rotationKeys; // 0xC
 		AnimationKey::KeyType rotationType; // 0x10
@@ -32,7 +34,7 @@ namespace NI {
 	};
 	static_assert(sizeof(KeyframeData) == 0x2C, "NI::KeyframeData failed size validation");
 
-	struct KeyframeController : TimeController {
+	export struct KeyframeController : TimeController {
 		unsigned int lastRotIndex; // 0x34
 		unsigned int lastPosIndex; // 0x38
 		unsigned int lastScaleIndex; // 0x3C

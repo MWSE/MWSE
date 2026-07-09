@@ -44,7 +44,6 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
@@ -66,6 +65,7 @@
 
 import NICollisionGroup;
 import NICollisionSwitch;
+import NIFlipController;
 import NIPick;
 import NIPoint3;
 import NIPointLight;
