@@ -54,6 +54,18 @@ namespace se::windows {
 
 	std::filesystem::path getModulePath(HINSTANCE hInstance);
 
+	//
+	// INI Helpers
+	//
+
+	namespace ini {
+		bool HasValue(const char* fileName, const char* section, const char* key);
+		std::optional<std::string> GetString(const char* fileName, const char* section, const char* key, size_t bufferSize = 64);
+		std::optional<bool> GetBool(const char* fileName, const char* section, const char* key);
+		std::optional<int> GetInt(const char* fileName, const char* section, const char* key);
+		std::optional<float> GetFloat(const char* fileName, const char* section, const char* key);
+	}
+
 	class DialogProcContext {
 	public:
 		DialogProcContext(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, DWORD originalAddress);

@@ -2320,6 +2320,10 @@ namespace mwse::patch {
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
 
+		// Patch: Allow Morrowind.ini [Application] values to override registry-backed application settings.
+		auto Game_readSettings = &TES3::Game::readSettings;
+		overrideVirtualTableEnforced(0x74665C, offsetof(TES3::Game_vTable, ReadSettings), 0x4F54F0, *reinterpret_cast<DWORD*>(&Game_readSettings));
+
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
 		genCallUnprotected(0x5090DB, reinterpret_cast<DWORD>(PatchScriptOpDisable), 0x9);

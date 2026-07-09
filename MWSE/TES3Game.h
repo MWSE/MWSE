@@ -119,6 +119,8 @@ namespace TES3 {
 
 		void setGamma(float value);
 
+		bool readSettings();
+
 		//
 		// Other related this-call functions.
 		//
@@ -132,6 +134,8 @@ namespace TES3 {
 		//
 		// Custom functions.
 		//
+
+		void applyApplicationIniOverrides();
 
 		void setPlayerTarget(Reference* reference);
 

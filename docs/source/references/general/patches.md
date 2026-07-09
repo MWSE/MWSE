@@ -28,6 +28,7 @@ The following patches are included by MWSE.
 - Raises mod limit from 256 to 1024.
 - Replaces Morrowind's dialogue filtering system with one that is much more performant.
 - Fixes the activation raytest when around skinned objects, such as creatures/NPCs.
+- Allows overwriting reading the registry using Morrowind.ini. The `Application` section can accept values with the same key as the registry value, e.g. `Screen Width`.
 
 
 ## Bug Fixes
