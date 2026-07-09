@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIObjectNET.h"
-#include "NIPixelFormat.h"
+
+import NIPixelFormat;
 
 namespace NI {
 	struct Texture_vTable : Object_vTable {

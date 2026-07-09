@@ -1,6 +1,8 @@
-#include "NIPixelFormat.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NIPixelFormat;
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 namespace NI {

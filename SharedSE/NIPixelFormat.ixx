@@ -1,9 +1,7 @@
-#pragma once
-
-#include "NIDefines.h"
+export module NIPixelFormat;
 
 namespace NI {
-	struct PixelFormat {
+	export struct PixelFormat {
 		enum struct Format : int {
 			RGB = 0,
 			RGBA = 1,

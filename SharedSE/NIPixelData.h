@@ -3,8 +3,9 @@
 #include "NIDefines.h"
 
 #include "NIObject.h"
-#include "NIPixelFormat.h"
 #include "NIPointer.h"
+
+import NIPixelFormat;
 
 namespace NI {
 	struct PixelData : Object {

@@ -1,6 +1,5 @@
 #include "NIPixelData.h"
 
-#include "NIPixelFormat.h"
 #include "NISourceTexture.h"
 #include "NITexture.h"
 
@@ -10,6 +9,8 @@
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "Log.h"
 #endif
+
+import NIPixelFormat;
 
 namespace NI {
 
