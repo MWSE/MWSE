@@ -13,10 +13,8 @@
 #include "NIAmbientLight.h"
 #include "NIAnimationData.h"
 #include "NIAVObject.h"
-#include "NIBillboardNode.h"
 #include "NIBSAnimationNode.h"
 #include "NICamera.h"
-#include "NICollisionSwitch.h"
 #include "NIDirectionalLight.h"
 #include "NIExtraData.h"
 #include "NIKeyframeController.h"
@@ -44,6 +42,9 @@
 #include "LuaManager.h"
 
 #include "MWSEConfig.h"
+
+import NIBillboardNode;
+import NICollisionSwitch;
 #endif
 
 import NIRTTI;

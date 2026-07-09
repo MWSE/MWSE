@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include "NINode.h"
 
+export module NIBillboardNode;
+
 namespace NI {
-	namespace BillboardNodeFlags {
+	export namespace BillboardNodeFlags {
 		typedef unsigned short value_type;
 		const int ModeBit = 5;
 
@@ -15,7 +17,7 @@ namespace NI {
 		};
 	}
 
-	struct BillboardNode : Node {
+	export struct BillboardNode : Node {
 		float savedTime;
 		bool updateControllers;
 

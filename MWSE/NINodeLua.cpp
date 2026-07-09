@@ -3,9 +3,9 @@
 #include "LuaManager.h"
 
 #include "NIAVObject.h"
-#include "NIBillboardNode.h"
 #include "NINode.h"
 
+import NIBillboardNode;
 import NISortAdjustNode;
 
 namespace mwse::lua {

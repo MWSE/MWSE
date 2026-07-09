@@ -2,7 +2,6 @@
 
 #include "NIDefines.h"
 #include "NICamera.h"
-#include "NICollisionSwitch.h"
 #include "NINode.h"
 #include "NIProperty.h"
 #include "NISwitchNode.h"
@@ -15,6 +14,8 @@
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #endif
+
+import NICollisionSwitch;
 
 namespace NI {
 

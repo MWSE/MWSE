@@ -35,7 +35,6 @@
 #include "TES3Weather.h"
 #include "TES3WorldController.h"
 
-#include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NITriShape.h"
@@ -54,6 +53,7 @@
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
 
+import NICollisionSwitch;
 import NIPick;
 import NISortAdjustNode;
 

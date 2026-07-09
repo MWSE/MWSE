@@ -6,8 +6,8 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NICollisionSwitch.h"
 
+import NICollisionSwitch;
 import NIRTTI;
 
 namespace mwse::lua {

@@ -1,6 +1,12 @@
-#include "NICollisionSwitch.h"
+module;
 
+#include "NIAVObject.h"
+#include "NIObject.h"
+
+#include "BitUtil.h"
 #include "ExceptionUtil.h"
+
+module NICollisionSwitch;
 
 import NIPick;
 

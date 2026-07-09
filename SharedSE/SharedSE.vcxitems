@@ -31,11 +31,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAccumulator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIBillboardNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICamera.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionSwitch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
@@ -107,6 +105,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.ixx" />
@@ -119,6 +118,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionGroup.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionGroup.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionSwitch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionSwitch.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp" />

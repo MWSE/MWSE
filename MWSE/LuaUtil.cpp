@@ -7,7 +7,6 @@
 #include "NIAmbientLight.h"
 #include "NIAVObject.h"
 #include "NICamera.h"
-#include "NICollisionSwitch.h"
 #include "NIDefines.h"
 #include "NIDirectionalLight.h"
 #include "NIDynamicEffect.h"
@@ -89,6 +88,7 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
+import NICollisionSwitch;
 import NIPick;
 import NIPoint3;
 import NIRTTI;

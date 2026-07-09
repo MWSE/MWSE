@@ -1,11 +1,11 @@
-#pragma once
+module;
 
 #include "NINode.h"
 
-#include "BitUtil.h"
+export module NICollisionSwitch;
 
 namespace NI {
-	struct CollisionSwitch : Node {
+	export struct CollisionSwitch : Node {
 		static constexpr unsigned short flagCollision = 0x20;
 		static constexpr unsigned short flagPickProxy = 0x400; // Added by MWSE
 
