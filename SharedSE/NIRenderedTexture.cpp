@@ -7,11 +7,12 @@ module;
 #include "NIPixelData.h"
 #include "TES3WorldController.h"
 
-import NIDX8Renderer;
-import NIDX8TextureData;
 #endif
 
 module NIRenderedTexture;
+
+import NIDX8Renderer;
+import NIDX8TextureData;
 
 namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
