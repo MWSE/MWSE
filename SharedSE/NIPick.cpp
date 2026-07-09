@@ -1,4 +1,4 @@
-#include "NIPick.h"
+module;
 
 #include "NITriShape.h"
 #include "NITriShapeData.h"
@@ -10,6 +10,8 @@
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "NIUtil.h"
 #endif
+
+module NIPick;
 
 namespace NI {
 	Pick::Pick() {

@@ -1,6 +1,5 @@
 #include "NITriBasedGeometry.h"
 
-#include "NIPick.h"
 #include "NISkinInstance.h"
 
 #include "ExceptionUtil.h"
@@ -9,6 +8,8 @@
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "MWSEConfig.h"
 #endif
+
+import NIPick;
 
 namespace NI {
 	TriBasedGeometry::TriBasedGeometry(TriBasedGeometryData* data) {

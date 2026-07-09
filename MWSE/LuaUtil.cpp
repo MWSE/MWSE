@@ -15,7 +15,6 @@
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
-#include "NIPick.h"
 #include "NIPointLight.h"
 #include "NIRTTI.h"
 #include "NISpotLight.h"
@@ -91,6 +90,7 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
+import NIPick;
 import NIPoint3;
 
 namespace mwse::lua {

@@ -3,7 +3,8 @@
 #include "TES3UIDefines.h"
 #include "TES3UIVector.h"
 #include "NINode.h"
-#include "NIPick.h"
+
+import NIPick;
 
 namespace TES3::UI {
 	struct MenuInputController {

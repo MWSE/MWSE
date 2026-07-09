@@ -48,7 +48,6 @@
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
-#include "NIPick.h"
 #include "NIPointLight.h"
 #include "NISortAdjustNode.h"
 #include "NITriShape.h"
@@ -70,6 +69,7 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+import NIPick;
 import NIPoint3;
 
 namespace mwse::patch {

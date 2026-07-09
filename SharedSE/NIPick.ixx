@@ -1,42 +1,43 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 #include "NIPointer.h"
 #include "NITArray.h"
-#include "NINode.h"
-
 #include "NIColor.h"
+#include "NINode.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3Defines.h"
 #endif
 
+export module NIPick;
+
 import NIPoint2;
 import NIPoint3;
 
 namespace NI {
-	enum class PickType {
+	export enum class PickType {
 		FIND_ALL,
 		FIND_FIRST
 	};
 
-	enum class PickSortType {
+	export enum class PickSortType {
 		SORT,
 		NO_SORT
 	};
 
-	enum class PickIntersectType {
+	export enum class PickIntersectType {
 		BOUND_INTERSECT,
 		TRIANGLE_INTERSECT,
 		UNKNOWN_2,
 	};
 
-	enum class PickCoordinateType {
+	export enum class PickCoordinateType {
 		MODEL_COORDINATES,
 		WORLD_COORDINATES
 	};
 
-	struct Pick {
+	export struct Pick {
 		PickType pickType;
 		PickSortType sortType;
 		PickIntersectType intersectType;
@@ -75,7 +76,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Pick) == 0x38, "NI::Pick failed size validation");
 
-	struct PickRecord {
+	export struct PickRecord {
 		Pointer<Geometry> object;
 		Pointer<AVObject> proxyParent;
 		Point3 intersection;

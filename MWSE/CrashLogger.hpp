@@ -38,7 +38,6 @@
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
-#include "NIPick.h"
 #include "NISortAdjustNode.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
@@ -55,6 +54,8 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
+
+import NIPick;
 
 namespace CrashLogger::Version { inline void Process(EXCEPTION_POINTERS* info); inline std::stringstream& Get(); }
 namespace CrashLogger::Playtime { inline void Init(); inline void Process(EXCEPTION_POINTERS* info); inline std::stringstream& Get(); }

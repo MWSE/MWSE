@@ -1,8 +1,8 @@
 #include "NICollisionSwitch.h"
 
-#include "NIPick.h"
-
 #include "ExceptionUtil.h"
+
+import NIPick;
 
 namespace NI {
 	CollisionSwitch::CollisionSwitch() {

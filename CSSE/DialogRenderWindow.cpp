@@ -12,7 +12,6 @@
 #include "NICollisionSwitch.h"
 #include "NIGeometry.h"
 #include "NINode.h"
-#include "NIPick.h"
 #include "NILines.h"
 #include "NITriShape.h"
 #include "NIProperty.h"
@@ -40,6 +39,7 @@
 #include "DialogProcContext.h"
 
 import NIMatrix33;
+import NIPick;
 import NIPoint3;
 
 namespace se::cs::dialog::render_window {

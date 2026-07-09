@@ -2,8 +2,7 @@
 
 #include "TES3ActorAnimationController.h"
 
-#include "NIPick.h"
-
+import NIPick;
 import NIPoint3;
 
 namespace TES3 {
