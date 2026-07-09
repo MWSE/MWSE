@@ -19,7 +19,7 @@
 #include "TES3Util.h"
 #include "TES3UIManagerLua.h"
 
-#include "NITexture.h"
+import NITexture;
 
 namespace TES3::UI {
 	typedef Element* (__cdecl *TES3_UI_WidgetFactoryMethod_t)(Element*);

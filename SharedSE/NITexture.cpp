@@ -1,4 +1,8 @@
-#include "NITexture.h"
+module;
+
+#include "SolUtil.h"
+
+module NITexture;
 
 namespace NI {
 	Texture::FormatPrefs::FormatPrefs() {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "NITexture.h"
-
 import NIPixelFormat;
+import NITexture;
 
 namespace NI {
 	struct DX8PixelFormat : PixelFormat {

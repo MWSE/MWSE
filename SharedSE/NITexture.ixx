@@ -1,16 +1,15 @@
-#pragma once
+module;
 
 #include "NIObjectNET.h"
+
+#include "SolUtil.h"
+
+export module NITexture;
 
 import NIPixelFormat;
 
 namespace NI {
-	struct Texture_vTable : Object_vTable {
-		unsigned int(__thiscall* getWidth)(Texture*); // 0x2C
-		unsigned int(__thiscall* getHeight)(Texture*); // 0x30
-	};
-
-	struct Texture : ObjectNET {
+	export struct Texture : ObjectNET {
 		struct FormatPrefs {
 			enum struct PixelLayout {
 				PALETTIZED_8,
@@ -67,6 +66,11 @@ namespace NI {
 
 	};
 	static_assert(sizeof(Texture) == 0x2C, "NI::Texture failed size validation");
+
+	export struct Texture_vTable : Object_vTable {
+		unsigned int(__thiscall* getWidth)(Texture*); // 0x2C
+		unsigned int(__thiscall* getHeight)(Texture*); // 0x30
+	};
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

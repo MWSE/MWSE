@@ -6,7 +6,8 @@
 #include "NIObject.h"
 #include "NIProperty.h"
 #include "NIRect.h"
-#include "NITexture.h"
+
+import NITexture;
 
 namespace NI {
 	struct Renderer_vTable : Object_vTable {

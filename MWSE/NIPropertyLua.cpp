@@ -5,9 +5,9 @@
 #include "LuaUtil.h"
 
 #include "NIProperty.h"
-#include "NITexture.h"
 
 import NIRTTI;
+import NITexture;
 
 namespace mwse::lua {
 	void bindNIProperties() {

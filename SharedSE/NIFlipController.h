@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NITimeController.h"
-#include "NITexture.h"
+
+import NITexture;
 
 namespace NI {
 	struct FlipController : TimeController {

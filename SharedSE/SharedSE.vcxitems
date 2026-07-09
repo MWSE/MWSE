@@ -71,7 +71,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITextureEffect.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h" />
@@ -172,6 +171,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />

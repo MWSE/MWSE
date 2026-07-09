@@ -2,7 +2,7 @@
 
 #include "NIObjectLua.h"
 
-#include "NITexture.h"
+import NITexture;
 
 namespace mwse::lua {
 	template <typename T>

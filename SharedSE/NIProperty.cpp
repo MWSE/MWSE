@@ -4,7 +4,6 @@
 #include "MemoryUtil.h"
 
 #include "NIStream.h"
-#include "NITexture.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
@@ -13,6 +12,7 @@
 #include "ExceptionUtil.h"
 
 import NIBinaryStream;
+import NITexture;
 
 namespace NI {
 

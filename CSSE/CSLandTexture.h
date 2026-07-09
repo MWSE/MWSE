@@ -2,7 +2,9 @@
 
 #include "CSBaseObject.h"
 
-#include "NITexture.h"
+#include "NIPointer.h"
+
+import NITexture;
 
 namespace se::cs {
 	struct LandTexture : BaseObject {

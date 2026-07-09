@@ -5,6 +5,8 @@
 #include "NIHashMap.h"
 #include "NIRenderer.h"
 
+import NIPixelFormat;
+
 namespace NI {
 	struct DX8DeviceDesc {
 		int deviceType; // 0x0

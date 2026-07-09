@@ -1,11 +1,12 @@
 module;
 
-#include "NITexture.h"
 #include "NIPixelData.h"
 
 #include "SolUtil.h"
 
 export module NIRenderedTexture;
+
+import NITexture;
 
 namespace NI {
 	export struct RenderedTexture : Texture {
