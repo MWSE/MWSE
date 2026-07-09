@@ -1,4 +1,4 @@
-#include "NIDX8Renderer.h"
+module NIDX8Renderer;
 
 namespace NI {
 	DX8AdapterDesc* DX8Renderer::getCurrentAdapter() const {

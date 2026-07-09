@@ -4,10 +4,11 @@ module;
 #include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-#include "NIDX8Renderer.h"
-#include "NIDX8TextureData.h"
 #include "NIPixelData.h"
 #include "TES3WorldController.h"
+
+import NIDX8Renderer;
+import NIDX8TextureData;
 #endif
 
 module NIRenderedTexture;

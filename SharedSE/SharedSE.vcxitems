@@ -21,8 +21,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8Renderer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SolUtil.h" />
@@ -118,6 +116,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8TextureData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx" />

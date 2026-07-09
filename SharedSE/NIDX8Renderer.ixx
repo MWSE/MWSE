@@ -1,14 +1,17 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
 #include "NIHashMap.h"
 #include "NIRenderer.h"
 
+export module NIDX8Renderer;
+
 import NIPixelFormat;
+import NIPoint3;
 
 namespace NI {
-	struct DX8DeviceDesc {
+	export struct DX8DeviceDesc {
 		int deviceType; // 0x0
 		D3DCAPS8 caps; // 0x4
 		int screenFormats[6]; // 0xD8 // NI::TList
@@ -16,7 +19,7 @@ namespace NI {
 	};
 	static_assert(sizeof(DX8DeviceDesc) == 0xF4, "NI::DX8DeviceDesc failed size validation");
 
-	struct DX8AdapterDesc {
+	export struct DX8AdapterDesc {
 		struct DX8AdapterModeDesc {
 			NI::PixelFormat pixelFormat; // 0x0
 			unsigned int unknown_0x20;
@@ -32,13 +35,13 @@ namespace NI {
 	static_assert(sizeof(DX8AdapterDesc) == 0x454, "NI::DX8AdapterDesc failed size validation");
 	static_assert(sizeof(DX8AdapterDesc::DX8AdapterModeDesc) == 0x28, "NI::DX8AdapterDesc::DX8AdapterModeDesc failed size validation");
 
-	struct DX8SystemDesc {
+	export struct DX8SystemDesc {
 		size_t adapterCount; // 0x0
 		NI::TArray<DX8AdapterDesc*> adapters; // 0x4
 	};
 	static_assert(sizeof(DX8SystemDesc) == 0x1C, "NI::DX8SystemDesc failed size validation");
 
-	struct DX8Renderer : Renderer {
+	export struct DX8Renderer : Renderer {
 		Pointer<void> propertyStatePtr; // 0x1C
 		Pointer<void> effectStatePtr; // 0x20
 		IDirect3DDevice8* d3dDevice; // 0x24

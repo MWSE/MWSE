@@ -1,6 +1,6 @@
 #include "CrashLogger.hpp"
 
-#include "NIDX8Renderer.h"
+import NIDX8Renderer;
 
 namespace CrashLogger::Device {
 	std::stringstream output;

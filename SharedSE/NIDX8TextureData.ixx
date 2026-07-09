@@ -1,16 +1,20 @@
-#pragma once
+module;
+
+#include "NIRenderer.h"
+
+export module NIDX8TextureData;
 
 import NIPixelFormat;
 import NITexture;
 
 namespace NI {
-	struct DX8PixelFormat : PixelFormat {
+	export struct DX8PixelFormat : PixelFormat {
 		unsigned int extraData;
 		D3DFORMAT d3dFormat;
 	};
 	static_assert(sizeof(DX8PixelFormat) == 0x28, "NI::DX8PixelFormat failed size validation");
 
-	struct DX8TextureData : Texture::RendererData {
+	export struct DX8TextureData : Texture::RendererData {
 		Renderer* renderer;
 		DX8PixelFormat format;
 		int d3dPalette;
@@ -21,7 +25,7 @@ namespace NI {
 	};
 	static_assert(sizeof(DX8TextureData) == 0x50, "NI::DX8TextureData failed size validation");
 
-	struct DX8SourceTextureData : DX8TextureData {
+	export struct DX8SourceTextureData : DX8TextureData {
 		bool mipmap;
 		char pad_0x51[3];
 		int formattedSize;
@@ -32,7 +36,7 @@ namespace NI {
 	};
 	static_assert(sizeof(DX8SourceTextureData) == 0x68, "NI::DX8SourceTextureData failed size validation");
 
-	struct DX8RenderedTextureData : DX8TextureData {
+	export struct DX8RenderedTextureData : DX8TextureData {
 		DX8PixelFormat sourceFormat;
 		IDirect3DTexture8* d3dTexture;
 		void* renderTarget;
