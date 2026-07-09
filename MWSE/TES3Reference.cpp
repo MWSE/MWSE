@@ -18,7 +18,6 @@
 #include "MemoryUtil.h"
 
 #include "NINode.h"
-#include "NIPointLight.h"
 
 #include "TES3Actor.h"
 #include "TES3AIData.h"
@@ -48,6 +47,8 @@
 
 #include "BitUtil.h"
 #include "MathUtil.h"
+
+import NIPointLight;
 
 namespace TES3 {
 	Reference::Reference() {

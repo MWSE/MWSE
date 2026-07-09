@@ -3,8 +3,6 @@
 #include "TES3Util.h"
 #include "LuaUtil.h"
 
-#include "NIPointLight.h"
-
 #include "TES3Actor.h"
 #include "TES3DataHandler.h"
 #include "TES3Enchantment.h"
@@ -20,6 +18,8 @@
 #include "LuaManager.h"
 #include "LuaConvertReferenceToItemEvent.h"
 #include "LuaLeveledItemPickedEvent.h"
+
+import NIPointLight;
 
 namespace TES3 {
 	//

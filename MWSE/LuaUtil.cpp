@@ -14,8 +14,6 @@
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
-#include "NIPointLight.h"
-#include "NISpotLight.h"
 #include "NITextureEffect.h"
 #include "NITriShape.h"
 
@@ -90,7 +88,9 @@
 import NICollisionSwitch;
 import NIPick;
 import NIPoint3;
+import NIPointLight;
 import NIRTTI;
+import NISpotLight;
 import NISwitchNode;
 
 namespace mwse::lua {

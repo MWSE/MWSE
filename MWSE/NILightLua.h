@@ -2,9 +2,8 @@
 
 #include "NIDynamicEffectLua.h"
 
-#include "NIPointLight.h"
-
 import NIColor;
+import NIPointLight;
 
 namespace mwse::lua {
 	template <typename T>

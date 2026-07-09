@@ -1,9 +1,13 @@
-#pragma once
+module;
 
 #include "NILight.h"
 
+#include "SolUtil.h"
+
+export module NIPointLight;
+
 namespace NI {
-	struct PointLight : Light {
+	export struct PointLight : Light {
 		float constantAttenuation; // 0xD0
 		float linearAttenuation; // 0xD4
 		float quadraticAttenuation; // 0xD8

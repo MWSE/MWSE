@@ -26,12 +26,10 @@
 #include "NIParticleSystemController.h"
 #include "NIPathController.h"
 #include "NIPixelData.h"
-#include "NIPointLight.h"
 #include "NIProperty.h"
 #include "NIRenderedTexture.h"
 #include "NISkinInstance.h"
 #include "NISourceTexture.h"
-#include "NISpotLight.h"
 #include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
@@ -44,7 +42,9 @@
 
 import NIBillboardNode;
 import NICollisionSwitch;
+import NIPointLight;
 import NISortAdjustNode;
+import NISpotLight;
 import NISwitchNode;
 #endif
 

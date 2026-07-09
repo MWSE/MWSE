@@ -3,12 +3,12 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIPointLight.h"
-
 #include "TES3Attachment.h"
 #include "TES3Cell.h"
 #include "TES3Misc.h"
 #include "TES3Spell.h"
+
+import NIPointLight;
 
 namespace mwse::lua {
 	void bindTES3Attachment() {

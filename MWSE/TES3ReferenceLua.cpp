@@ -6,7 +6,6 @@
 #include "TES3Util.h"
 
 #include "NINode.h"
-#include "NIPointLight.h"
 
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
@@ -16,6 +15,8 @@
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
+
+import NIPointLight;
 
 namespace mwse::lua {
 	void bindTES3Reference() {

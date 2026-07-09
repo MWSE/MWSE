@@ -1,9 +1,13 @@
-#pragma once
+module;
 
-#include "NIPointLight.h"
+#include "SolUtil.h"
+
+export module NISpotLight;
+
+import NIPointLight;
 
 namespace NI {
-	struct SpotLight : PointLight {
+	export struct SpotLight : PointLight {
 		Point3 direction; // 0xDC
 		float spotAngle; // 0xE8
 		float spotExponent; // 0xEC

@@ -2,12 +2,12 @@
 
 #include "LuaManager.h"
 
-#include "NIPointLight.h"
-
 #include "TES3MagicEffectInstance.h"
 #include "TES3MagicInstanceController.h"
 #include "TES3MobileActor.h"
 #include "TES3WorldController.h"
+
+import NIPointLight;
 
 namespace mwse::lua {
 	void bindTES3MobileActor() {

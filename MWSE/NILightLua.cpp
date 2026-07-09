@@ -6,9 +6,9 @@
 #include "NINode.h"
 #include "NIAmbientLight.h"
 #include "NIDirectionalLight.h"
-#include "NISpotLight.h"
 
 import NIRTTI;
+import NISpotLight;
 
 namespace mwse {
 	namespace lua {

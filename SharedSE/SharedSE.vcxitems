@@ -62,7 +62,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPathController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPerParticleData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPointLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
@@ -74,7 +73,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISourceTexture.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NISpotLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITextureEffect.h" />
@@ -157,6 +155,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.ixx" />
@@ -169,6 +168,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISourceTexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.ixx" />

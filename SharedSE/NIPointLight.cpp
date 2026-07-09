@@ -1,9 +1,10 @@
-#include "NIPointLight.h"
+module;
 
 #include "NINode.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3DataHandler.h"
@@ -29,6 +30,8 @@ namespace TES3 {
 	float& LightAttenuation_QuadraticRadiusMultiplier = *reinterpret_cast<float*>(0x7CB1E0);
 }
 #endif
+
+module NIPointLight;
 
 namespace NI {
 	Pointer<PointLight> PointLight::create() {
