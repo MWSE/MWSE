@@ -1,3 +1,7 @@
+module;
+
+#include "NIDefines.h"
+
 module NIAnimationKey;
 
 namespace NI {

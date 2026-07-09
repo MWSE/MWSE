@@ -1,6 +1,7 @@
 module;
 
 #include "NIAVObject.h"
+#include "NIDefines.h"
 
 #include "BitUtil.h"
 #include "ExceptionUtil.h"

@@ -1,5 +1,7 @@
 module;
 
+#include "NIDefines.h"
+
 #include "ExceptionUtil.h"
 
 module NICollisionGroup;

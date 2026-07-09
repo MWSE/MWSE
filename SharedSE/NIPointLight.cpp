@@ -1,5 +1,6 @@
 module;
 
+#include "NIDefines.h"
 #include "NINode.h"
 
 #include "ExceptionUtil.h"
