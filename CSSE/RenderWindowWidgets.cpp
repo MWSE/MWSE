@@ -12,6 +12,7 @@
 #include "LogUtil.h"
 #include "MathUtil.h"
 
+import NIColor;
 import NICamera;
 import NIMatrix33;
 import NISwitchNode;

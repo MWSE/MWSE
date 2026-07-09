@@ -8,6 +8,7 @@
 #include "NITriBasedGeometryData.h"
 #include "NITriShapeData.h"
 
+import NIColor;
 import NIRTTI;
 
 namespace mwse::lua {

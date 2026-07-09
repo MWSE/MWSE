@@ -1,9 +1,13 @@
-#pragma once
+module;
 
 #include "NIAVObject.h"
 
+#include "SolUtil.h"
+
+export module NIDynamicEffect;
+
 namespace NI {
-	struct DynamicEffect : AVObject {
+	export struct DynamicEffect : AVObject {
 		enum Type : int {
 			TYPE_AMBIENT_LIGHT,
 			TYPE_DIRECTIONAL_LIGHT,
@@ -39,12 +43,12 @@ namespace NI {
 	};
 	static_assert(sizeof(DynamicEffect) == 0xA8, "NI::DynamicEffect failed size validation");
 
-	struct DynamicEffect_vTable : AVObject_vTable {
+	export struct DynamicEffect_vTable : AVObject_vTable {
 		int(__thiscall* getType)(const DynamicEffect*); // 0x94
 	};
 	static_assert(sizeof(DynamicEffect_vTable) == 0x98, "NI::DynamicEffect's vtable failed size validation");
 
-	void __cdecl ClearDynamicEffectNodes(DynamicEffect* effect);
+	export void __cdecl ClearDynamicEffectNodes(DynamicEffect* effect);
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

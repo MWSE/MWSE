@@ -15,14 +15,13 @@
 #include "TES3WeatherThunder.h"
 #include "TES3WorldController.h"
 
-#include "NIProperty.h"
-
 #include "LuaManager.h"
 #include "LuaCalcSunDamageScalarEvent.h"
 #include "LuaWeatherChangedImmediateEvent.h"
 #include "LuaWeatherTransitionFinishedEvent.h"
 #include "LuaWeatherTransitionStartedEvent.h"
 
+import NIProperty;
 import NIRenderer;
 
 namespace TES3 {

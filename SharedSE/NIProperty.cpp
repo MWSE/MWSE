@@ -1,7 +1,10 @@
-#include "NIProperty.h"
+module;
+
+#include "NIDefines.h"
 
 #include "BitUtil.h"
 #include "MemoryUtil.h"
+#include "SolUtil.h"
 
 #include "NIStream.h"
 
@@ -10,6 +13,8 @@
 #endif
 
 #include "ExceptionUtil.h"
+
+module NIProperty;
 
 import NIBinaryStream;
 import NITexture;

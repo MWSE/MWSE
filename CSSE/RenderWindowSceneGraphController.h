@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NINode.h"
-#include "NIProperty.h"
+
+import NIProperty;
 
 namespace se::cs::dialog::render_window {
 	struct SceneGraphControllerVanilla {

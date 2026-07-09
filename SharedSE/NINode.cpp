@@ -1,10 +1,10 @@
 #include "NINode.h"
 
 #include "NIBound.h"
-#include "NIDynamicEffect.h"
 
 #include "ExceptionUtil.h"
 
+import NIDynamicEffect;
 import NIPointLight;
 
 namespace NI {

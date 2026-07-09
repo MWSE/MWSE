@@ -31,7 +31,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIDynamicEffect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIExtraData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h" />
@@ -47,7 +46,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPerParticleData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h" />
@@ -109,6 +107,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8TextureData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
@@ -150,6 +149,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPointLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIProperty.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderedTexture.cpp" />

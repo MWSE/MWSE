@@ -1,13 +1,17 @@
-#pragma once
+module;
 
 #include "NIObjectNET.h"
 
 #include "NILinkedList.h"
 
+#include "SolUtil.h"
+
+export module NIProperty;
+
 import NIColor;
 
 namespace NI {
-	enum class PropertyType : int {
+	export enum class PropertyType : int {
 		Alpha = 0x0,
 		Fog = 0x1,
 		Material = 0x2,
@@ -25,7 +29,7 @@ namespace NI {
 		LastPropertyType = RendererSpecific,
 	};
 
-	struct PropertyState : Object {
+	export struct PropertyState : Object {
 		AlphaProperty* alpha; // 0x8
 		FogProperty* fog; // 0xC
 		MaterialProperty* material; // 0x10
@@ -41,13 +45,13 @@ namespace NI {
 	};
 	static_assert(sizeof(PropertyState) == 0x38, "NI::PropertyState failed size validation");
 
-	struct Property_vTable : Object_vTable {
+	export struct Property_vTable : Object_vTable {
 		PropertyType(__thiscall* getType)(const Property*); // 0x2C
 		void(__thiscall* update)(Property*, float); // 0x30
 	};
 	static_assert(sizeof(Property_vTable) == 0x34, "NI::Property's vtable failed size validation");
 
-	struct Property : ObjectNET {
+	export struct Property : ObjectNET {
 		unsigned short flags;
 
 		Property();
@@ -76,7 +80,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Property) == 0x18, "NI::Property failed size validation");
 
-	struct AlphaProperty : Property {
+	export struct AlphaProperty : Property {
 		enum {
 			ALPHA_MASK = 0x0001,
 			SRC_BLEND_MASK = 0x001E,
@@ -97,7 +101,7 @@ namespace NI {
 	};
 	static_assert(sizeof(AlphaProperty) == 0x1C, "NI::AlphaProperty failed size validation");
 
-	struct FogProperty : Property {
+	export struct FogProperty : Property {
 		float density;
 		unsigned char color[4];
 
@@ -110,7 +114,7 @@ namespace NI {
 	};
 	static_assert(sizeof(FogProperty) == 0x20, "NI::FogProperty failed size validation");
 
-	struct MaterialProperty : Property {
+	export struct MaterialProperty : Property {
 		int index;
 		Color ambient;
 		Color diffuse;
@@ -164,7 +168,7 @@ namespace NI {
 	};
 	static_assert(sizeof(MaterialProperty) == 0x58, "NI::MaterialProperty failed size validation");
 
-	struct StencilProperty : Property {
+	export struct StencilProperty : Property {
 		enum TestFunc {
 			TEST_NEVER,
 			TEST_LESS,
@@ -211,7 +215,7 @@ namespace NI {
 	};
 	static_assert(sizeof(StencilProperty) == 0x38, "NI::StencilProperty failed size validation");
 
-	struct TexturingProperty : Property {
+	export struct TexturingProperty : Property {
 		enum struct ClampMode {
 			CLAMP_S_CLAMP_T,
 			CLAMP_S_WRAP_T,
@@ -346,7 +350,7 @@ namespace NI {
 	static_assert(sizeof(TexturingProperty::Map) == 0x14, "NI::TexturingProperty::Map failed size validation");
 	static_assert(sizeof(TexturingProperty::BumpMap) == 0x2C, "NI::TexturingProperty::BumpMap failed size validation");
 
-	struct VertexColorProperty : Property {
+	export struct VertexColorProperty : Property {
 		enum SourceVertexMode {
 			SOURCE_IGNORE,
 			SOURCE_EMISSIVE,
@@ -370,20 +374,20 @@ namespace NI {
 	};
 	static_assert(sizeof(VertexColorProperty) == 0x20, "NI::VertexColorProperty failed size validation");
 
-	namespace WireframePropertyFlags {
+	export namespace WireframePropertyFlags {
 		enum WireframePropertyFlags : unsigned int {
 			Enabled = 0x1,
 		};
 	}
 
-	struct WireframeProperty : Property {
+	export struct WireframeProperty : Property {
 
 		bool getEnabled() const;
 		void setEnabled(bool state);
 	};
 	static_assert(sizeof(WireframeProperty) == 0x18, "NI::WireframeProperty failed size validation");
 
-	struct ZBufferProperty : Property {
+	export struct ZBufferProperty : Property {
 		enum struct TestFunction : unsigned int {
 			ALWAYS,
 			LESS,

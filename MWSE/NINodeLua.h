@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIObjectLua.h"
-#include "NIDynamicEffect.h"
+
+import NIDynamicEffect;
 
 namespace mwse::lua {
 	template <typename T>

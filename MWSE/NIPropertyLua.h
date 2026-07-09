@@ -1,8 +1,8 @@
 #pragma once
 
-#include "NIProperty.h"
-
 #include "NIObjectLua.h"
+
+import NIProperty;
 
 namespace mwse::lua {
 	template <typename T>

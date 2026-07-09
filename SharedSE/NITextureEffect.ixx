@@ -1,11 +1,10 @@
 module;
 
-#include "NIDynamicEffect.h"
-
 #include "SolUtil.h"
 
 export module NITextureEffect;
 
+import NIDynamicEffect;
 import NIMatrix33;
 import NIPoint3;
 import NISourceTexture;

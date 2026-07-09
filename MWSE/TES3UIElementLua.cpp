@@ -1,7 +1,6 @@
 #include "TES3UIElementLua.h"
 
 #include "LuaUtil.h"
-#include "NIProperty.h"
 
 #include "TES3GameFile.h"
 #include "TES3Item.h"
@@ -17,6 +16,7 @@
 #include "LuaManager.h"
 #include "Log.h"
 
+import NIProperty;
 import NITexture;
 
 namespace mwse::lua {

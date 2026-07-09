@@ -4,8 +4,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIProperty.h"
-
+import NIProperty;
 import NIRTTI;
 import NITexture;
 

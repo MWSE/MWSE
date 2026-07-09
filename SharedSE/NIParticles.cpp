@@ -3,6 +3,7 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
+import NIColor;
 import NIQuaternion;
 
 namespace NI {

@@ -1,12 +1,11 @@
 module;
 
-#include "NIDynamicEffect.h"
-
 #include "SolUtil.h"
 
 export module NILight;
 
 import NIColor;
+import NIDynamicEffect;
 
 namespace NI {
 	export struct Light : DynamicEffect {

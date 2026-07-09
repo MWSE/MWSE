@@ -6,12 +6,13 @@
 
 #include "NIDefines.h"
 #include "NIIteratedList.h"
-#include "NIProperty.h"
+#include "NIPointer.h"
 
 import NICamera;
 import NIDirectionalLight;
 import NIPoint2;
 import NIPoint3;
+import NIProperty;
 import NIRenderedTexture;
 import NIRenderer;
 import NISourceTexture;

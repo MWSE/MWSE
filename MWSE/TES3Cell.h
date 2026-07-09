@@ -5,6 +5,7 @@
 #include "TES3Object.h"
 #include "TES3ReferenceList.h"
 
+import NIColor;
 import NISourceTexture;
 
 namespace TES3 {

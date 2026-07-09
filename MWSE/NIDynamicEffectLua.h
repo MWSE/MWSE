@@ -2,8 +2,9 @@
 
 #include "NIObjectLua.h"
 
-#include "NIDynamicEffect.h"
 #include "NILinkedList.h"
+
+import NIDynamicEffect;
 
 namespace mwse::lua {
 	template <typename T>

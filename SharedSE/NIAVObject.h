@@ -4,9 +4,9 @@
 
 #include "NIBound.h"
 #include "NILinkedList.h"
-#include "NIProperty.h"
 
 import NIBoundingBox;
+import NIProperty;
 import NITransform;
 
 namespace NI {

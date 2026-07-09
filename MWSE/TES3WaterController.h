@@ -1,9 +1,9 @@
 #pragma once
 
-#include "NIProperty.h"
 #include "NITriShape.h"
 
 import NIFlipController;
+import NIProperty;
 
 namespace TES3 {
 	struct WaterController {

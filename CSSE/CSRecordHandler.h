@@ -3,12 +3,14 @@
 #include "CSDefines.h"
 
 #include "NIIteratedList.h"
-#include "NIProperty.h"
+#include "NIPointer.h"
 
 #include "CSMagicEffect.h"
 
 #include "StlList.h"
 #include "LinkedObjectsList.h"
+
+import NIProperty;
 
 namespace se::cs {
 	struct Skill_dummy {

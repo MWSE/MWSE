@@ -18,7 +18,6 @@
 #include "NIParticleModifier.h"
 #include "NIParticles.h"
 #include "NIParticleSystemController.h"
-#include "NIProperty.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
 
@@ -39,6 +38,7 @@ import NILookAtController;
 import NIPathController;
 import NIPixelData;
 import NIPointLight;
+import NIProperty;
 import NIRenderedTexture;
 import NISkinInstance;
 import NISortAdjustNode;

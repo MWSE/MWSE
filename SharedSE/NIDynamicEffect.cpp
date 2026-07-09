@@ -1,6 +1,11 @@
-#include "NIDynamicEffect.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NIDynamicEffect;
 
 namespace NI {
 	DynamicEffect::DynamicEffect() {

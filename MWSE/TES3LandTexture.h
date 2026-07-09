@@ -4,8 +4,7 @@
 
 #include "NIIteratedList.h"
 
-#include "NIProperty.h"
-
+import NIProperty;
 import NISourceTexture;
 
 namespace TES3 {

@@ -2,6 +2,8 @@
 
 #include "ExceptionUtil.h"
 
+import NIColor;
+
 namespace NI {
 
 	Lines::Lines(unsigned short vertexCount, Point3* vertices, PackedColor* colors, Point2* textureCoords, bool* lineSegmentFlags) {

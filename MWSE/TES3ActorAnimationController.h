@@ -5,9 +5,9 @@
 #include "TES3AnimationData.h"
 
 #include "NIExtraData.h"
-#include "NIProperty.h"
 
 import NIPoint3;
+import NIProperty;
 
 namespace TES3 {
 	struct KeyframeDefinition {
