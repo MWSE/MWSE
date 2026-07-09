@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CrashLoggerShared.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
@@ -118,6 +119,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLoggerShared.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CodePatchUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />

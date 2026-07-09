@@ -38,6 +38,7 @@
 
 #include "DarkMode.h"
 #include "IconOverride.h"
+#include "CrashLoggerShared.h"
 #include "MemoryUtil.h"
 #include "PathUtil.h"
 #include "StringUtil.h"
@@ -274,138 +275,31 @@ namespace se::cs {
 			return CS_RequestIconFilename(hWnd, currentFilename, successMessage, filter);
 		}
 
-		//
-		// Create minidumps.
-		//
-
-		bool isDataSectionNeeded(const WCHAR* pModuleName) {
-			// Check parameters.
-			if (pModuleName == 0) {
-				return false;
-			}
-
-			// Extract the module name.
-			WCHAR szFileName[_MAX_FNAME] = L"";
-			_wsplitpath_s(pModuleName, NULL, NULL, NULL, NULL, szFileName, _MAX_FNAME, NULL, NULL);
-
-			// Compare the name with the list of known names and decide.
-			if (_wcsicmp(szFileName, L"Morrowind") == 0) {
-				return true;
-			}
-			else if (_wcsicmp(szFileName, L"ntdll") == 0)
-			{
-				return true;
-			}
-			else if (_wcsicmp(szFileName, L"CSSE") == 0)
-			{
-				return true;
-			}
-
-			// Complete.
-			return false;
+		std::ostream& getCrashLog() {
+			return log::stream;
 		}
 
-		BOOL CALLBACK miniDumpCallback(PVOID pParam, const PMINIDUMP_CALLBACK_INPUT pInput, PMINIDUMP_CALLBACK_OUTPUT pOutput) {
-			BOOL bRet = FALSE;
-
-			// Check parameters 
-			if (pInput == 0) {
-				return FALSE;
-			}
-			if (pOutput == 0) {
-				return FALSE;
-			}
-
-			// Process the callbacks 
-			switch (pInput->CallbackType) {
-			case IncludeModuleCallback:
-			case IncludeThreadCallback:
-			case ThreadCallback:
-			case ThreadExCallback:
-			{
-				// Include the thread into the dump 
-				bRet = TRUE;
-			}
-			break;
-
-			case MemoryCallback:
-			{
-				// We do not include any information here -> return FALSE 
-				bRet = FALSE;
-			}
-			break;
-
-			case ModuleCallback:
-			{
-				// Does the module have ModuleReferencedByMemory flag set? 
-				if (pOutput->ModuleWriteFlags & ModuleWriteDataSeg) {
-					if (!isDataSectionNeeded(pInput->Module.FullPath)) {
-						pOutput->ModuleWriteFlags &= (~ModuleWriteDataSeg);
-					}
-				}
-
-				bRet = TRUE;
-			}
-			break;
-			}
-
-			return bRet;
+		se::crash::Settings getCrashLoggerSettings() {
+			se::crash::Settings settings;
+			settings.productName = "Construction Set";
+			settings.crashMessage =
+				"The Construction Set has crashed! To help improve stability, post CSSE_MiniDump.dmp and csse.log to the Morrowind Modding Community #mwse channel on Discord: https://discord.me/mwmods";
+			settings.miniDumpPath = "CSSE_MiniDump.dmp";
+			settings.buildLabel = "CSSE";
+			settings.buildDate = std::to_string(CSSE_BUILD_DATE);
+			settings.dataSectionModules = { L"Morrowind", L"ntdll", L"CSSE" };
+			settings.logProvider = getCrashLog;
+			return settings;
 		}
 
-		void CreateMiniDump(EXCEPTION_POINTERS* pep) {
-			log::stream << std::endl;
-			log::stream << "The Construction Set has crashed! To help improve game stability, post the CSSE_Minidump.dmp and csse.log files to the Morrowind Modding Community #mwse channel on Discord." << std::endl;
-			log::stream << "The Morrowind Modding Community Discord can be found at https://discord.me/mwmods" << std::endl;
+		using WinMainFn = int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int);
 
-#ifdef APPVEYOR_BUILD_NUMBER
-			log::stream << "Appveyor build: " << APPVEYOR_BUILD_NUMBER << std::endl;
-#endif
-			log::stream << "Build date: " << CSSE_BUILD_DATE << std::endl;
-
-			// Display the memory usage in the log.
-			PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-			GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-			log::stream << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-			if (memCounter.PrivateUsage > 3650722201) {
-				log::stream << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
+		int __stdcall runWinMainWithCrashHandler(WinMainFn winMain, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+			__try {
+				return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 			}
-
-			// Open the file.
-			auto hFile = CreateFile("CSSE_MiniDump.dmp", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-			if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE)) {
-				// Create the minidump.
-				MINIDUMP_EXCEPTION_INFORMATION mdei = {};
-
-				mdei.ThreadId = GetCurrentThreadId();
-				mdei.ExceptionPointers = pep;
-				mdei.ClientPointers = FALSE;
-
-				MINIDUMP_CALLBACK_INFORMATION mci = {};
-
-				mci.CallbackRoutine = (MINIDUMP_CALLBACK_ROUTINE)miniDumpCallback;
-				mci.CallbackParam = 0;
-
-				auto mdt = (MINIDUMP_TYPE)(MiniDumpWithDataSegs |
-					MiniDumpWithHandleData |
-					MiniDumpWithFullMemoryInfo |
-					MiniDumpWithThreadInfo |
-					MiniDumpWithUnloadedModules);
-
-				auto rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, &mci);
-
-				if (!rv) {
-					log::stream << "MiniDump creation failed. Error: 0x" << std::hex << GetLastError() << std::endl;
-				}
-				else {
-					log::stream << "MiniDump creation successful." << std::endl;
-				}
-
-				// Close the file
-				CloseHandle(hFile);
-			}
-			else {
-				log::stream << "MiniDump creation failed. Could not get file handle. Error: " << GetLastError() << std::endl;
+			__except (se::crash::handleException(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
+				return 0;
 			}
 		}
 
@@ -419,12 +313,8 @@ namespace se::cs {
 			// Skip the minidump handler so the debugger catches crashes.
 			return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 #else
-			__try {
-				return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-			}
-			__except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
-				return 0;
-			}
+			se::crash::initialize(getCrashLoggerSettings());
+			return runWinMainWithCrashHandler(winMain, hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 #endif
 		}
 
