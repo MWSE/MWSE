@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Collections">
       <UniqueIdentifier>{dc2213a8-5f9a-4d9f-8933-eebad18bcffd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Module Interface Files">
+      <UniqueIdentifier>{ecc9b7f1-2070-4dac-abf5-b563fe5dc7dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h">
@@ -42,13 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h">
       <Filter>Header Files\NI\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix33.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIColor.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIQuaternion.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h">
@@ -100,9 +97,6 @@
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITransform.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h">
@@ -160,9 +154,6 @@
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriangle.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h">
@@ -321,19 +312,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h">
       <Filter>Header Files\Collections</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIMatrix44.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint4.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint2.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -557,6 +539,29 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix33.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix44.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIQuaternion.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
