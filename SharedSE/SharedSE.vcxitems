@@ -23,7 +23,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8Renderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
@@ -133,6 +132,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.cpp" />

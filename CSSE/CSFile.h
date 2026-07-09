@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NIFile.h"
+import NIFile;
 
 namespace se::cs {
 	struct File : NI::File {

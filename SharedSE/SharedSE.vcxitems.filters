@@ -189,9 +189,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIFile.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
@@ -561,6 +558,9 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>

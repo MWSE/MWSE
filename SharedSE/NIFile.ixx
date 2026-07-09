@@ -1,7 +1,7 @@
-#pragma once
+export module NIFile;
 
 namespace NI {
-	struct File {
+	export struct File {
 		void* vtbl; // 0x0
 		void* buffer; //0x4
 		size_t bufferAllocSize; // 0x8
