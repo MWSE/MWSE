@@ -34,7 +34,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBillboardNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIBoundingBox.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICamera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionGroup.h" />
@@ -69,7 +68,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPick.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelFormat.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPlane.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
@@ -99,7 +97,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIViewer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
@@ -119,6 +116,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.cpp" />
@@ -156,6 +154,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPlane.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.ixx" />
@@ -188,6 +187,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIViewer.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StdString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WindowsUtil.cpp" />

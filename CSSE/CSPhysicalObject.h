@@ -2,7 +2,7 @@
 
 #include "CSObject.h"
 
-#include "NIBoundingBox.h"
+import NIBoundingBox;
 
 namespace se::cs {
 	struct PhysicalObject : Object {

@@ -1,9 +1,9 @@
-#pragma once
+export module NIBoundingBox;
 
 import NIPoint3;
 
 namespace NI {
-	struct BoundingBox {
+	export struct BoundingBox {
 		Point3 minimum; // 0x0
 		Point3 maximum; // 0xC
 

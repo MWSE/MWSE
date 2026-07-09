@@ -3,10 +3,10 @@
 #include "NIObjectNET.h"
 
 #include "NIBound.h"
-#include "NIBoundingBox.h"
 #include "NILinkedList.h"
 #include "NIProperty.h"
 
+import NIBoundingBox;
 import NITransform;
 
 namespace NI {

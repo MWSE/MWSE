@@ -1,9 +1,9 @@
-#pragma once
+export module NIPlane;
 
 import NIPoint3;
 
 namespace NI {
-	struct Plane {
+	export struct Plane {
 		Point3 normal; // 0x0
 		float constant; // 0xC
 	};

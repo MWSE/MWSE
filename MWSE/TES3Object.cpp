@@ -51,7 +51,6 @@
 #include "TES3WorldController.h"
 
 #include "NIBound.h"
-#include "NIBoundingBox.h"
 
 #include "TES3UIMenuController.h"
 
@@ -64,6 +63,8 @@
 #include "LuaObjectCopiedEvent.h"
 
 #include "Log.h"
+
+import NIBoundingBox;
 
 namespace TES3 {
 	void* BaseObject::operator new(size_t size) {

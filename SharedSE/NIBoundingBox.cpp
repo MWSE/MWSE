@@ -1,4 +1,4 @@
-#include "NIBoundingBox.h"
+module NIBoundingBox;
 
 import NIPoint3;
 
