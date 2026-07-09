@@ -1,10 +1,10 @@
 #include "NICopyTransformController.h"
 
 #include "NIAVObject.h"
-#include "NIRTTI.h"
 #include "NIStream.h"
 
 import NIBinaryStream;
+import NIRTTI;
 
 namespace NI {
 	CopyTransformController::CopyTransformController(AVObject* from) {

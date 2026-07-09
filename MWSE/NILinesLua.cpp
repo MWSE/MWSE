@@ -4,9 +4,10 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NIRTTI.h"
 #include "NILines.h"
 #include "NILinesData.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNILines() {

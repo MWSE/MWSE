@@ -4,10 +4,11 @@
 #include "LuaUtil.h"
 
 #include "NIGeometryData.h"
-#include "NIRTTI.h"
 #include "NILinesData.h"
 #include "NITriBasedGeometryData.h"
 #include "NITriShapeData.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNIGeometryData() {

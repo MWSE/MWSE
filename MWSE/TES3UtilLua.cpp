@@ -17,7 +17,6 @@
 
 #include "NICamera.h"
 #include "NINode.h"
-#include "NIRTTI.h"
 #include "NIStream.h"
 #include "NITriShape.h"
 
@@ -90,6 +89,7 @@
 #include "MathUtil.h"
 
 import NIPick;
+import NIRTTI;
 
 namespace mwse::lua {
 	//

@@ -3,9 +3,10 @@
 #include "NIObject.h"
 #include "NIExtraData.h"
 #include "NINode.h"
-#include "NIRTTI.h"
 
 #include "TES3Reference.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::AVObject* self, sol::optional<sol::table> param);

@@ -6,9 +6,10 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NIRTTI.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNITriShape() {

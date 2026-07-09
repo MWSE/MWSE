@@ -4,9 +4,10 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIRTTI.h"
 #include "NIProperty.h"
 #include "NITexture.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNIProperties() {

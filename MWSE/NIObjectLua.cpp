@@ -9,10 +9,10 @@
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
-#include "NIRTTI.h"
 
 #include "StringUtil.h"
 
+import NIRTTI;
 
 namespace {
 	bool passesTraverseFilters(const NI::AVObject* object, const std::unordered_set<unsigned int>& typeFilters, std::string_view prefix) {

@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
+export module NIRTTI;
+
 namespace NI {
-	struct RTTI {
+	export struct RTTI {
 		char* name; // 0x0
 		RTTI* baseRTTI; // 0x4
 

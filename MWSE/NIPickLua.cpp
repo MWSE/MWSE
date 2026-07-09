@@ -7,12 +7,12 @@
 #include "NIDefines.h"
 #include "NIGeometry.h"
 #include "NINode.h"
-#include "NIRTTI.h"
 
 #include "TES3Defines.h"
 #include "TES3Reference.h"
 
 import NIPick;
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNIPick() {

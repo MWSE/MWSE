@@ -7,7 +7,8 @@
 
 #include "NIDefines.h"
 #include "NINode.h"
-#include "NIRTTI.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNISwitchNode() {

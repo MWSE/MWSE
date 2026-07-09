@@ -1,6 +1,8 @@
-#include "NIRTTI.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NIRTTI;
 
 namespace NI {
 	RTTI::RTTI(const char* name, RTTI* parent) {

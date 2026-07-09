@@ -2,7 +2,6 @@
 
 #include "NIDefines.h"
 
-#include "NIRTTI.h"
 #include "NIStream.h"
 
 #include "ExceptionUtil.h"
@@ -47,6 +46,8 @@
 
 #include "MWSEConfig.h"
 #endif
+
+import NIRTTI;
 
 namespace NI {
 	Object::Object() {

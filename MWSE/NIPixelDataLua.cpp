@@ -8,8 +8,9 @@
 #include "LuaUtil.h"
 
 #include "NIPixelData.h"
-#include "NIRTTI.h"
 #include "NISourceTexture.h"
+
+import NIRTTI;
 
 namespace mwse::lua {
 	void bindNIPixelData() {
