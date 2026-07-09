@@ -56,7 +56,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPathController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPerParticleData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPixelData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
@@ -144,6 +143,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelFormat.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPlane.ixx" />

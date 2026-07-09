@@ -1,11 +1,14 @@
-#include "NIPixelData.h"
+module;
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "Log.h"
 #endif
+
+module NIPixelData;
 
 import NIPixelFormat;
 import NISourceTexture;

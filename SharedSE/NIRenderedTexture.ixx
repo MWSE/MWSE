@@ -1,11 +1,10 @@
 module;
 
-#include "NIPixelData.h"
-
 #include "SolUtil.h"
 
 export module NIRenderedTexture;
 
+import NIPixelData;
 import NITexture;
 
 namespace NI {

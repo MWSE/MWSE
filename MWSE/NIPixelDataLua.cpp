@@ -7,8 +7,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIPixelData.h"
-
+import NIPixelData;
 import NIRTTI;
 import NISourceTexture;
 

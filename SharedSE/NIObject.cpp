@@ -23,7 +23,6 @@
 #include "NIParticles.h"
 #include "NIParticleSystemController.h"
 #include "NIPathController.h"
-#include "NIPixelData.h"
 #include "NIProperty.h"
 #include "NISkinInstance.h"
 #include "NITextureEffect.h"
@@ -40,6 +39,7 @@ import NIAmbientLight;
 import NIBillboardNode;
 import NICollisionSwitch;
 import NIDirectionalLight;
+import NIPixelData;
 import NIPointLight;
 import NIRenderedTexture;
 import NISortAdjustNode;

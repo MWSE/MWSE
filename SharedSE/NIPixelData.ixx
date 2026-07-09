@@ -1,14 +1,18 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
 #include "NIObject.h"
 #include "NIPointer.h"
 
+#include "SolUtil.h"
+
+export module NIPixelData;
+
 import NIPixelFormat;
 
 namespace NI {
-	struct PixelData : Object {
+	export struct PixelData : Object {
 #pragma pack(push, 1)
 		struct HeaderTGA {
 			enum struct DataType : unsigned char {
@@ -68,14 +72,14 @@ namespace NI {
 	};
 	static_assert(sizeof(PixelData) == 0x48, "NI::PixelData failed size validation");
 
-	struct PixelRGB {
+	export struct PixelRGB {
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
 	};
 	static_assert(sizeof(PixelRGB) == 0x3, "NI::PixelRGB failed size validation");
 
-	struct PixelRGBA : PixelRGB {
+	export struct PixelRGBA : PixelRGB {
 		unsigned char a;
 	};
 	static_assert(sizeof(PixelRGBA) == 0x4, "NI::PixelRGBA failed size validation");

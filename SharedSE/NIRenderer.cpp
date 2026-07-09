@@ -1,8 +1,6 @@
-module;
-
-#include "NIPixelData.h"
-
 module NIRenderer;
+
+import NIPixelData;
 
 namespace NI {
 	char* Renderer::getDriverInfo() {
