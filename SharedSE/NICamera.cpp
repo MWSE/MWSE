@@ -1,12 +1,16 @@
-#include "NICamera.h"
+module;
 
 #include "ExceptionUtil.h"
 #include "MathUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #include "TES3WorldController.h"
 #endif
+
+module NICamera;
+
 
 namespace NI {
 	bool Frustum::setFOV(float fovDegrees, float aspect) {

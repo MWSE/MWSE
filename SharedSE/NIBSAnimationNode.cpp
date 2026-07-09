@@ -1,6 +1,11 @@
-#include "NIBSAnimationNode.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NIBSAnimationNode;
 
 namespace NI {
 #if defined(SE_NI_BSANIMATIONNODE_FNADDR_CTOR) && SE_NI_BSANIMATIONNODE_FNADDR_CTOR > 0

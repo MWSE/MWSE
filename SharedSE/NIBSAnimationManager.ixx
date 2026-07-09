@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "NINode.h"
 
-#include "NIBSAnimationNode.h"
+export module NIBSAnimationManager;
+
+import NIBSAnimationNode;
 
 namespace NI {
-	struct BSAnimationManager : Node {
+	export struct BSAnimationManager : Node {
 		TArray<Pointer<BSAnimationNode>> managedNodes; // 0xB0
 
 		static bool isExactType(const AVObject* object);

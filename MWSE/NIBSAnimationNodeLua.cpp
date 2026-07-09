@@ -4,7 +4,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIBSAnimationNode.h"
+import NIBSAnimationNode;
 
 namespace mwse::lua {
 	void bindNIBSAnimationNode() {

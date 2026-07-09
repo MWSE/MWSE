@@ -1,9 +1,13 @@
-#pragma once
+module;
 
 #include "NINode.h"
 
+#include "SolUtil.h"
+
+export module NIBSAnimationNode;
+
 namespace NI {
-	struct BSAnimationNode : Node {
+	export struct BSAnimationNode : Node {
 		enum AVObjectFlag : unsigned char {
 			Animated = 0x20,
 			NotRandom = 0x40,
@@ -34,7 +38,7 @@ namespace NI {
 	};
 	static_assert(sizeof(BSAnimationNode) == 0xB4, "NI::BSAnimationNode failed size validation");
 
-	struct BSParticleNode : BSAnimationNode {
+	export struct BSParticleNode : BSAnimationNode {
 		enum AVObjectFlag : unsigned char {
 			Follow = 0x80,
 		};

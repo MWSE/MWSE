@@ -3,9 +3,9 @@
 #include "LuaUtil.h"
 #include "LuaManager.h"
 
-#include "NICamera.h"
-
 #include "TES3PlayerAnimationController.h"
+
+import NICamera;
 
 namespace mwse::lua {
 	void bindTES3PlayerAnimationController() {

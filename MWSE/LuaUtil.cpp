@@ -5,7 +5,6 @@
 #include "Log.h"
 
 #include "NIAVObject.h"
-#include "NICamera.h"
 #include "NIDefines.h"
 #include "NIDynamicEffect.h"
 #include "NIExtraData.h"
@@ -84,6 +83,7 @@
 #include "MWSEConfig.h"
 
 import NIAmbientLight;
+import NICamera;
 import NICollisionSwitch;
 import NIDirectionalLight;
 import NIPick;

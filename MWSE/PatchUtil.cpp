@@ -47,7 +47,6 @@
 #include "NILinesData.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
-#include "NIBSAnimationManager.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -63,6 +62,7 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+import NIBSAnimationManager;
 import NICollisionGroup;
 import NICollisionSwitch;
 import NIFlipController;

@@ -1,7 +1,6 @@
 #include "NIAVObject.h"
 
 #include "NIDefines.h"
-#include "NICamera.h"
 #include "NINode.h"
 #include "NIProperty.h"
 #include "NITriBasedGeometry.h"
@@ -14,6 +13,7 @@
 #include "LuaUtil.h"
 #endif
 
+import NICamera;
 import NICollisionSwitch;
 import NISwitchNode;
 

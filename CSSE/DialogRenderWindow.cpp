@@ -8,7 +8,6 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NICamera.h"
 #include "NIGeometry.h"
 #include "NINode.h"
 #include "NILines.h"
@@ -37,6 +36,7 @@
 
 #include "DialogProcContext.h"
 
+import NICamera;
 import NICollisionSwitch;
 import NIMatrix33;
 import NIPick;

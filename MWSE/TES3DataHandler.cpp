@@ -31,11 +31,11 @@
 #include "TES3WorldController.h"
 #include "TES3MobManager.h"
 
-#include "NIBSAnimationManager.h"
-
 #include "MWSEConfig.h"
 
 #include "ReferenceTracker.h"
+
+import NIBSAnimationManager;
 
 namespace TES3 {
 

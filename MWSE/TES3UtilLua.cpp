@@ -15,7 +15,6 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
-#include "NICamera.h"
 #include "NINode.h"
 #include "NIStream.h"
 #include "NITriShape.h"
@@ -88,6 +87,7 @@
 #include "BitUtil.h"
 #include "MathUtil.h"
 
+import NICamera;
 import NIPick;
 import NIRTTI;
 

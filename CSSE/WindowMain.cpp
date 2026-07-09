@@ -16,8 +16,6 @@
 #include "CSReference.h"
 #include "CSScript.h"
 
-#include "NICamera.h"
-
 #include "DialogRenderWindow.h"
 #include "DialogObjectWindow.h"
 #include "DialogLayersWindow.h"
@@ -36,6 +34,7 @@
 
 #include "DialogProcContext.h"
 
+import NICamera;
 import NIPoint3;
 
 namespace se::cs::window::main {

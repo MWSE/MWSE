@@ -1,9 +1,9 @@
 module;
 
-#include "NICamera.h"
 #include "ExceptionUtil.h"
 
 module NIBillboardNode;
+import NICamera;
 
 namespace NI {
 	BillboardNode::BillboardNode() : Node() {

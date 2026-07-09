@@ -3,8 +3,7 @@
 
 #include "LuaManager.h"
 
-#include "NICamera.h"
-
+import NICamera;
 import NIPoint2;
 
 namespace mwse::lua {

@@ -1,6 +1,8 @@
-#include "NIBSAnimationManager.h"
+module;
 
 #include "NIBound.h"
+
+module NIBSAnimationManager;
 
 namespace NI {
 

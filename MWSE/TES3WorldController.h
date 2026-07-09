@@ -5,11 +5,11 @@
 #include "TES3UIVector.h"
 
 #include "NIDefines.h"
-#include "NICamera.h"
 #include "NIIteratedList.h"
 #include "NIProperty.h"
 #include "NITextureEffect.h"
 
+import NICamera;
 import NIDirectionalLight;
 import NIPoint2;
 import NIPoint3;

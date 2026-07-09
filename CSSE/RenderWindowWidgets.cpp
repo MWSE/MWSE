@@ -5,7 +5,6 @@
 #include "CSRecordHandler.h"
 #include "CSModelLoader.h"
 
-#include "NICamera.h"
 #include "NIGeometry.h"
 #include "NILines.h"
 #include "NILinesData.h"
@@ -13,6 +12,7 @@
 #include "LogUtil.h"
 #include "MathUtil.h"
 
+import NICamera;
 import NIMatrix33;
 import NISwitchNode;
 

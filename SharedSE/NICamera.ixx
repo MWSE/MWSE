@@ -1,12 +1,15 @@
-#pragma once
+module;
 
 #include "NINode.h"
+#include "SolUtil.h"
+
+export module NICamera;
 
 import NIMatrix44;
 import NIRenderer;
 
 namespace NI {
-	struct Frustum {
+	export struct Frustum {
 		float left; // 0x0
 		float right; // 0x4
 		float top; // 0x8
@@ -18,7 +21,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Frustum) == 0x18, "NI::Frustum failed size validation");
 
-	struct Camera : AVObject {
+	export struct Camera : AVObject {
 		NI::Matrix44 worldToCamera; // 0x90
 		float viewDistance; // 0xD0
 		float twoDivRmL; // 0xD4
