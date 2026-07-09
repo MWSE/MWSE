@@ -8,14 +8,14 @@
 #include "NICamera.h"
 #include "NIIteratedList.h"
 #include "NIProperty.h"
-#include "NIRenderedTexture.h"
 #include "NIRenderer.h"
-#include "NISourceTexture.h"
 #include "NITextureEffect.h"
 
 import NIDirectionalLight;
 import NIPoint2;
 import NIPoint3;
+import NIRenderedTexture;
+import NISourceTexture;
 
 namespace TES3 {
 	enum class MusicSituation : int {

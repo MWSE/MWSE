@@ -27,9 +27,10 @@
 #include "TES3WaterController.h"
 
 #include "NINode.h"
-#include "NISourceTexture.h"
 
 #include "LuaUtil.h"
+
+import NISourceTexture;
 
 namespace mwse::lua {
 	void bindTES3DataHandler() {

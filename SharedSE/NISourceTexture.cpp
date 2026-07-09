@@ -1,10 +1,13 @@
-#include "NISourceTexture.h"
+module;
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3DataHandler.h"
 #endif
+
+module NISourceTexture;
 
 namespace NI {
 	Pointer<SourceTexture> SourceTexture::createFromPath(const char* path, SourceTexture::FormatPrefs* formatPrefs) {

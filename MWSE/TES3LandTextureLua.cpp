@@ -3,8 +3,9 @@
 #include "LuaManager.h"
 #include "TES3ObjectLua.h"
 
-#include "NISourceTexture.h"
 #include "TES3LandTexture.h"
+
+import NISourceTexture;
 
 namespace mwse::lua {
 	void bindTES3LandTexture() {

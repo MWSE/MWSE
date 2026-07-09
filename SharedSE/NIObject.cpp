@@ -25,9 +25,7 @@
 #include "NIPathController.h"
 #include "NIPixelData.h"
 #include "NIProperty.h"
-#include "NIRenderedTexture.h"
 #include "NISkinInstance.h"
-#include "NISourceTexture.h"
 #include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
@@ -43,8 +41,10 @@ import NIBillboardNode;
 import NICollisionSwitch;
 import NIDirectionalLight;
 import NIPointLight;
+import NIRenderedTexture;
 import NISortAdjustNode;
 import NISpotLight;
+import NISourceTexture;
 import NISwitchNode;
 #endif
 

@@ -1,6 +1,5 @@
 #include "NIPixelData.h"
 
-#include "NISourceTexture.h"
 #include "NITexture.h"
 
 #include "ExceptionUtil.h"
@@ -11,6 +10,7 @@
 #endif
 
 import NIPixelFormat;
+import NISourceTexture;
 
 namespace NI {
 

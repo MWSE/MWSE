@@ -8,7 +8,8 @@
 #include "TES3UIVector.h"
 
 #include "NINode.h"
-#include "NISourceTexture.h"
+
+import NISourceTexture;
 
 namespace TES3::UI {
 	struct Element;

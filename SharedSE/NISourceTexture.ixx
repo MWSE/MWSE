@@ -1,16 +1,14 @@
-#pragma once
+module;
 
 #include "NITexture.h"
 #include "NIPixelData.h"
 
-namespace NI {
-	struct SourceTexture_vTable : Texture_vTable {
-		void(__thiscall* loadPixelDataFromFile)(SourceTexture*); // 0x34
-		void(__thiscall* clearPixelData)(SourceTexture*); // 0x38
-	};
-	static_assert(sizeof(SourceTexture_vTable) == 0x3C, "NI::SourceTexture's vtable failed size validation");
+#include "SolUtil.h"
 
-	struct SourceTexture : Texture {
+export module NISourceTexture;
+
+namespace NI {
+	export struct SourceTexture : Texture {
 		const char* fileName; // 0x2C
 		const char* platformFileName; // 0x30
 		Pointer<PixelData> pixelData; // 0x34
@@ -27,6 +25,12 @@ namespace NI {
 #endif
 	};
 	static_assert(sizeof(SourceTexture) == 0x3C, "NI::SourceTexture failed size validation");
+
+	export struct SourceTexture_vTable : Texture_vTable {
+		void(__thiscall* loadPixelDataFromFile)(SourceTexture*); // 0x34
+		void(__thiscall* clearPixelData)(SourceTexture*); // 0x38
+	};
+	static_assert(sizeof(SourceTexture_vTable) == 0x3C, "NI::SourceTexture's vtable failed size validation");
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

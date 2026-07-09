@@ -1,6 +1,7 @@
-#include "NIRenderedTexture.h"
+module;
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "NIDX8Renderer.h"
@@ -8,6 +9,8 @@
 #include "NIPixelData.h"
 #include "TES3WorldController.h"
 #endif
+
+module NIRenderedTexture;
 
 namespace NI {
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

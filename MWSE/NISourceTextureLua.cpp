@@ -5,9 +5,8 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NISourceTexture.h"
-
 import NIRTTI;
+import NISourceTexture;
 
 namespace mwse::lua {
 	void bindNISourceTexture() {

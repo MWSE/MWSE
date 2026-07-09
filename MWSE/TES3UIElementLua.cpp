@@ -2,6 +2,7 @@
 
 #include "LuaUtil.h"
 #include "NIProperty.h"
+#include "NITexture.h"
 
 #include "TES3GameFile.h"
 #include "TES3Item.h"

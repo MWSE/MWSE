@@ -5,7 +5,7 @@
 #include "TES3Object.h"
 #include "TES3ReferenceList.h"
 
-#include "NISourceTexture.h"
+import NISourceTexture;
 
 namespace TES3 {
 	namespace CellFlag {

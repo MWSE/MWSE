@@ -1,10 +1,10 @@
 #pragma once
 
 #include "NIDynamicEffect.h"
-#include "NISourceTexture.h"
 
 import NIMatrix33;
 import NIPoint3;
+import NISourceTexture;
 
 namespace NI {
 	struct TextureEffect : DynamicEffect {

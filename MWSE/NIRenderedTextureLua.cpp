@@ -4,7 +4,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIRenderedTexture.h"
+import NIRenderedTexture;
 
 namespace mwse::lua {
 	void bindNIRenderedTexture() {

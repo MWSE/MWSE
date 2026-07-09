@@ -1,10 +1,14 @@
-#pragma once
+module;
 
 #include "NITexture.h"
 #include "NIPixelData.h"
 
+#include "SolUtil.h"
+
+export module NIRenderedTexture;
+
 namespace NI {
-	struct RenderedTexture : Texture {
+	export struct RenderedTexture : Texture {
 		unsigned int width; // 0x2C
 		unsigned int height; // 0x30
 

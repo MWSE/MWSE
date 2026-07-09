@@ -8,13 +8,14 @@
 
 #include "NIAVObject.h"
 #include "NIHashMap.h"
-#include "NISourceTexture.h"
 
 #include "StlList.h"
 
 #define MWSE_CUSTOM_EFFECTS true
 #define MWSE_RAISED_FILE_LIMIT true
 #define MWSE_CUSTOM_GLOBALS true
+
+import NISourceTexture;
 
 namespace TES3 {
 

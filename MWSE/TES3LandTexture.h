@@ -5,7 +5,8 @@
 #include "NIIteratedList.h"
 
 #include "NIProperty.h"
-#include "NISourceTexture.h"
+
+import NISourceTexture;
 
 namespace TES3 {
 	struct LandTexture : BaseObject {
