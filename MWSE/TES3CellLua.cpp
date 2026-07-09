@@ -7,7 +7,7 @@
 #include "TES3Land.h"
 #include "TES3Region.h"
 
-#include "NIColor.h"
+import NIColor;
 
 namespace mwse::lua {
 	auto iterateReferencesFiltered(const TES3::Cell* cell, const std::unordered_set<unsigned int> desiredTypes, bool iterateDisabled) {

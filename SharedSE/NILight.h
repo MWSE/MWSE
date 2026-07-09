@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIDynamicEffect.h"
-#include "NIColor.h"
+
+import NIColor;
 
 namespace NI {
 	struct Light : DynamicEffect {

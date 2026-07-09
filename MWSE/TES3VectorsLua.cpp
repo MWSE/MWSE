@@ -1,9 +1,9 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIColor.h"
 #include "NIRange.h"
 
+import NIColor;
 import NIMatrix33;
 import NIMatrix44;
 import NIPoint2;

@@ -3,7 +3,6 @@ module;
 #include "NIDefines.h"
 #include "NIPointer.h"
 #include "NITArray.h"
-#include "NIColor.h"
 #include "NINode.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
@@ -12,6 +11,7 @@ module;
 
 export module NIPick;
 
+import NIColor;
 import NIPoint2;
 import NIPoint3;
 

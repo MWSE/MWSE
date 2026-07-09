@@ -2,8 +2,9 @@
 
 #include "NIObjectNET.h"
 
-#include "NIColor.h"
 #include "NILinkedList.h"
+
+import NIColor;
 
 namespace NI {
 	enum class PropertyType : int {

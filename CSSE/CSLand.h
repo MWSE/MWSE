@@ -3,10 +3,10 @@
 #include "CSBaseObject.h"
 #include "NIObject.h"
 
-#include "NIColor.h"
 #include "NINode.h"
 #include "NITriShape.h"
 
+import NIColor;
 import NIPoint3;
 
 namespace se::cs {

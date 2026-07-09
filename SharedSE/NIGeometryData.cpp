@@ -1,6 +1,6 @@
 #include "NIGeometryData.h"
 
-#include "NIColor.h"
+import NIColor;
 
 namespace NI {
 	unsigned short GeometryData::getActiveVertexCount() const {

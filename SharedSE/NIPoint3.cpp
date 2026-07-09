@@ -1,9 +1,6 @@
-module;
-
-#include "NIColor.h"
-
 module NIPoint3;
 
+import NIColor;
 import NIMatrix33;
 
 namespace NI {

@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
+
+export module NIColor;
 
 import NIPoint3;
 
 namespace NI {
-	struct PackedColor {
+	export struct PackedColor {
 		unsigned char b; // 0x0
 		unsigned char g; // 0x1
 		unsigned char r; // 0x2
@@ -13,7 +15,8 @@ namespace NI {
 
 		PackedColor() : r(0), g(0), b(0), a(0) {}
 		PackedColor(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0)
-			: r(_r), g(_g), b(_b), a(_a) {}
+			: r(_r), g(_g), b(_b), a(_a) {
+		}
 		PackedColor(float r, float g, float b, float a = 1.0f);
 		PackedColor(const std::array<unsigned char, 3>& from);
 		PackedColor(const std::array<float, 3>& from);
@@ -23,7 +26,7 @@ namespace NI {
 	};
 	static_assert(sizeof(PackedColor) == 0x4, "NI::PackedColor failed size validation");
 
-	struct Color {
+	export struct Color {
 		float r; // 0x0
 		float g; // 0x4
 		float b; // 0x8
@@ -65,7 +68,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Color) == 0xC, "NI::Color failed size validation");
 
-	struct ColorA : Color {
+	export struct ColorA : Color {
 		float a;
 
 		ColorA() : Color(), a(0.0f) {}

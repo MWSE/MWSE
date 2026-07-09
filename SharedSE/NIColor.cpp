@@ -1,4 +1,4 @@
-#include "NIColor.h"
+module NIColor;
 
 namespace NI {
 	//

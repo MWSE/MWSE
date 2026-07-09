@@ -1,13 +1,13 @@
 #include "NITriShapeData.h"
 
-#include "NIColor.h"
-
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #endif
+
+import NIColor;
 
 namespace NI {
 	Pointer<TriShapeData> TriShapeData::create(unsigned short _vertexCount, Point3* _vertices, Point3* _normals, PackedColor* _colors, Point2* _textureCoords, unsigned short _triangleCount, Triangle* _triangleList, int unused) {

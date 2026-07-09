@@ -1,7 +1,6 @@
 #pragma once
 
-#include "NIColor.h"
-
+import NIColor;
 import NIPoint3;
 import NIQuaternion;
 

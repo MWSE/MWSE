@@ -1,7 +1,5 @@
 #include "TES3MobileObject.h"
 
-#include "NIColor.h"
-
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
@@ -18,6 +16,8 @@
 #include "TES3WorldController.h"
 
 #include "Log.h"
+
+import NIColor;
 
 namespace TES3 {
 
