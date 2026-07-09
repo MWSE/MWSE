@@ -2,6 +2,7 @@
 
 #include "TES3Defines.h"
 #include "TES3UIDefines.h"
+#include "StdMap.h"
 
 namespace TES3::UI {
 	struct TreeItem {
@@ -23,24 +24,11 @@ namespace TES3::UI {
 	};
 	static_assert(sizeof(TreeItem) == 0xC, "TES3::UI::TreeNode failed size validation");
 
-	struct TreeNode {
-		TreeNode * branchLess;
-		TreeNode * nextLeafOrRoot;
-		TreeNode * branchGreaterThanOrEqual;
-		TreeItem item;
-		int unknown_18;
-
-		TreeNode() = delete;
-		~TreeNode() = delete;
-	};
+	using TreeNode = se::StdMapNode<TreeItem>;
 	static_assert(sizeof(TreeNode) == 0x1C, "TES3::UI::TreeNode failed size validation");
+	static_assert(offsetof(TreeNode, item) == 0xC, "TES3::UI::TreeNode::item failed offset validation");
 
-	struct Tree {
-		char tag;
-		TreeNode * root;
-		char unknown_8;
-		size_t itemCount;
-
+	struct Tree : se::StdMap<TreeItem> {
 		Tree() = delete;
 		~Tree() = delete;
 	};

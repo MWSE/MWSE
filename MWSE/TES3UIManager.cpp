@@ -11,6 +11,8 @@
 #include "TES3UILuaData.h"
 #include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
+#include "StdString.h"
+#include "StdMap.h"
 
 #include "TES3Game.h"
 #include "TES3GameSetting.h"
@@ -28,17 +30,15 @@
 
 #include "TES3UIManagerLua.h"
 
-#include "MemoryUtil.h"
-
 namespace TES3::UI {
 	static bool bSuppressHelpMenu = false;
 
 	const DWORD TES3_hook_dispatchMousewheelUp = 0x58F19B;
 	const DWORD TES3_hook_dispatchMousewheelDown = 0x58F1CA;
 
-	const auto TES3_uiMainRoot = reinterpret_cast<Element* const*>(0x7D1C28);
-	const auto TES3_uiHelpRoot = reinterpret_cast<Element* const*>(0x7D1C74);
-	const auto TES3_ui_captureMouseDrag = reinterpret_cast<bool*>(0x7D207D);
+	using TES3_uiMainRoot = se::memory::ExternalGlobal<Element*, 0x7D1C28>;
+	using TES3_uiHelpRoot = se::memory::ExternalGlobal<Element*, 0x7D1C74>;
+	using TES3_ui_captureMouseDrag = se::memory::ExternalGlobal<bool, 0x7D207D>;
 
 	const auto TES3_ui_registerID = reinterpret_cast<UI_ID (__cdecl *)(const char *)>(0x58DF10);
 	const auto TES3_ui_createChildElement = reinterpret_cast<Element* (__thiscall *)(Element*)>(0x582B50);
@@ -55,22 +55,173 @@ namespace TES3::UI {
 	const auto TES3_ui_getServiceActor = reinterpret_cast<MobileActor* (__cdecl*)()>(0x5BFEA0);
 	const auto TES3_ui_updateDialogDisposition = reinterpret_cast<void (__cdecl*)()>(0x5C0780);
 
+	struct UIPropertyMapItem {
+		se::StdString key; // 0x0
+		UI_ID value; // 0x10
+	};
+
+	using UIPropertyMapNode = se::StdMapNode<UIPropertyMapItem>;
+	using UIPropertyMap = se::StdMap<UIPropertyMapItem>;
+
+	static_assert(sizeof(se::StdString) == 0x10, "se::StdString failed size validation");
+	static_assert(offsetof(UIPropertyMapItem, key) == 0x0, "UIPropertyMapItem key offset mismatch");
+	static_assert(offsetof(UIPropertyMapItem, value) == 0x10, "UIPropertyMapItem value offset mismatch");
+	static_assert(offsetof(UIPropertyMapNode, item) == 0xC, "UIPropertyMapNode item offset mismatch");
+	static_assert(offsetof(UIPropertyMapNode, item) + offsetof(UIPropertyMapItem, value) == 0x1C, "UIPropertyMapNode value offset mismatch");
+	static_assert(offsetof(UIPropertyMap, root) == 0x4, "UIPropertyMap root offset mismatch");
+	static_assert(offsetof(UIPropertyMap, itemCount) == 0xC, "UIPropertyMap item count offset mismatch");
+
+	using TES3_emptyString = se::memory::ExternalGlobal<const char, 0x7C6180>;
+	using TES3_ui_propertyMap = se::memory::ExternalGlobal<UIPropertyMap, 0x7D1BB8>;
+	using TES3_ui_propertyMapSentinel = se::memory::ExternalGlobal<UIPropertyMapNode*, 0x7D1CDC>;
+	const auto TES3_ui_clearPropertyMap = reinterpret_cast<void(__cdecl*)()>(0x57B060);
+	const auto TES3_ui_bindMenuChildPropertyRecursive = reinterpret_cast<bool(__thiscall*)(Element*, Element*, Element*, UI_ID)>(0x587C20);
+
+	constexpr size_t uiIDNameCacheSize = 0x10000;
+	const char* uiIDNameCache[uiIDNameCacheSize] = {};
+	DWORD uiIDNameCacheItemCount = 0;
+	bool uiIDNameCacheValid = false;
+
+	static void invalidateUIIDNameCache() {
+		uiIDNameCacheValid = false;
+		uiIDNameCacheItemCount = 0;
+	}
+
+	static void cacheUIIDNameFromPropertyMapNode(UIPropertyMapNode* node) {
+		auto& cachedName = uiIDNameCache[static_cast<unsigned short>(node->item.value)];
+		if (cachedName != nullptr) {
+			return;
+		}
+
+		cachedName = node->item.key.c_str ? node->item.key.c_str : "";
+	}
+
+	static void rebuildUIIDNameCache() {
+		for (auto& name : uiIDNameCache) {
+			name = nullptr;
+		}
+
+		auto& propertyMap = TES3_ui_propertyMap::get();
+		if (propertyMap.root) {
+			propertyMap.traverseInOrder(TES3_ui_propertyMapSentinel::get(), cacheUIIDNameFromPropertyMapNode);
+		}
+
+		uiIDNameCacheItemCount = propertyMap.itemCount;
+		uiIDNameCacheValid = true;
+	}
+
+	static const char* __cdecl patchLookupID(UI_ID id) {
+		if (!uiIDNameCacheValid || uiIDNameCacheItemCount != TES3_ui_propertyMap::get().itemCount) {
+			rebuildUIIDNameCache();
+		}
+
+		const auto name = uiIDNameCache[static_cast<unsigned short>(id)];
+		if (!name) {
+			return "";
+		}
+		
+		return name;
+	}
+
+	static se::StdString* __cdecl patchLookupPropertyNameAsStdString(se::StdString* outName, UI_ID id) {
+		return std::construct_at(outName, patchLookupID(id));
+	}
+
+	static void __cdecl clearPropertyMapAndInvalidateUIIDNameCache() {
+		TES3_ui_clearPropertyMap();
+		invalidateUIIDNameCache();
+	}
+
+	static bool __cdecl patchBindMenuChildProperties(Element* menu, UI_ID menuId, UI_ID firstProperty, ...) {
+		auto element = findMenu(menuId);
+		if (!element) {
+			return false;
+		}
+
+		auto result = true;
+		auto property = firstProperty;
+		auto propertyCount = 0;
+		va_list properties;
+		va_start(properties, firstProperty);
+
+		while (property != ID_NULL) {
+			auto found = false;
+			const auto propertyName = patchLookupID(property);
+
+			for (auto child = element->vectorChildren.begin(); child != element->vectorChildren.end(); ++child) {
+				auto childElement = *child;
+				const auto childName = childElement->name.cString ? childElement->name.cString : "";
+
+				if (strcmp(childName, propertyName) == 0) {
+					element->setProperty(static_cast<Property>(property), childElement);
+					found = true;
+					break;
+				}
+				if (TES3_ui_bindMenuChildPropertyRecursive(menu, element, childElement, property)) {
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				result = false;
+			}
+
+			if (propertyCount++ > 100) {
+				break;
+			}
+			property = static_cast<UI_ID>(va_arg(properties, int));
+		}
+
+		va_end(properties);
+		return result;
+	}
+
+	static void patchUIIDNameLookups() {
+		constexpr DWORD getPropertyNameCallSites[] = {
+			0x5896AD, 0x61D267, 0x630022, 0x639536, 0x63E759, 0x640A69, 0x643249, 0x645F8A, 0x6487EF, 0x648D5B,
+			0x64911B, 0x64AA01, 0x64C2AB, 0x64DE08, 0x64DED2,
+		};
+		for (auto callSite : getPropertyNameCallSites) {
+			se::memory::genCallEnforced(callSite, 0x57B120, reinterpret_cast<DWORD>(patchLookupPropertyNameAsStdString));
+		}
+
+		constexpr DWORD lookupIDCallSites[] = {
+			0x597019, 0x597388, 0x5B4765, 0x5B7711, 0x5B7ADB, 0x5BE5EE, 0x5BE641, 0x5BFA61, 0x5CAAC2, 0x5CAB22,
+			0x5E13C2, 0x5E62CF, 0x5E97C5, 0x5E983D, 0x610451, 0x6104E0, 0x61079D, 0x610820, 0x6262A2, 0x62CDC2,
+			0x62CEAE, 0x62EB62, 0x62EC12, 0x63CA60,
+		};
+		for (auto callSite : lookupIDCallSites) {
+			se::memory::genCallEnforced(callSite, 0x57B220, reinterpret_cast<DWORD>(patchLookupID));
+		}
+
+		constexpr DWORD bindMenuChildPropertiesCallSites[] = {
+			0x5AC2F0, 0x5B1F85, 0x5BDC5F, 0x5D3602, 0x5D6360, 0x5DFECB, 0x5E8D37, 0x5E95F4, 0x5F1B11, 0x610207,
+			0x6138E9, 0x62427D, 0x634BF9, 0x635FFE,
+		};
+		for (auto callSite : bindMenuChildPropertiesCallSites) {
+			se::memory::genCallEnforced(callSite, 0x587970, reinterpret_cast<DWORD>(patchBindMenuChildProperties));
+		}
+
+		se::memory::genCallEnforced(0x594BD6, 0x57B060, reinterpret_cast<DWORD>(clearPropertyMapAndInvalidateUIIDNameCache));
+	}
+
 	//
 	// UI framework functions
 	//
 
 	UI_ID registerID(const char *name) {
-		return TES3_ui_registerID(name);
+		auto id = TES3_ui_registerID(name);
+		invalidateUIIDNameCache();
+		return id;
 	}
 
-	const auto TES3_ui_lookupID = reinterpret_cast<const char*(__cdecl *)(UI_ID)>(0x57B220);
 	const char* lookupID(UI_ID id) {
-		return TES3_ui_lookupID(id);
+		return patchLookupID(id);
 	}
 
-	const auto TES3_ui_lookupPropertyID = reinterpret_cast<const char* (__cdecl*)(Property)>(0x57B220);
 	const char* lookupID(Property id) {
-		return TES3_ui_lookupPropertyID(id);
+		return patchLookupID(static_cast<UI_ID>(id));
 	}
 
 	const char* lookupID_lua(sol::object id) {
@@ -87,7 +238,7 @@ namespace TES3::UI {
 	}
 
 	Property registerProperty(const char *name) {
-		return static_cast<Property>(TES3_ui_registerID(name));
+		return static_cast<Property>(registerID(name));
 	}
 
 	Element* createMenu(UI_ID id) {
@@ -134,7 +285,7 @@ namespace TES3::UI {
 
 	Element* createHelpLayerMenu(UI_ID id) {
 		// Simple replacement implementation. The Morrowind implementation is convoluted.
-		Element* menu = TES3_ui_createChildElement(*TES3_uiHelpRoot);
+		Element* menu = TES3_ui_createChildElement(TES3_uiHelpRoot::get());
 		menu->createFixedFrame(id, 1);
 		return menu;
 	}
@@ -180,7 +331,7 @@ namespace TES3::UI {
 		if (spell) {
 			// Set a property on a temp element, where the spell tooltip game function expects to find the spell.
 			const auto ui_id_MagicMenu_Spell = *reinterpret_cast<const Property*>(0x7D431C);
-			Element* tempElement = TES3_ui_createChildElement(*TES3_uiHelpRoot);
+			Element* tempElement = TES3_ui_createChildElement(TES3_uiHelpRoot::get());
 			tempElement->setProperty(ui_id_MagicMenu_Spell, spell);
 
 			// Build the tooltip.
@@ -269,7 +420,7 @@ namespace TES3::UI {
 	}
 
 	void captureMouseDrag(bool capture) {
-		*TES3_ui_captureMouseDrag = capture;
+		TES3_ui_captureMouseDrag::set(capture);
 	}
 
 	void preventInventoryMenuToggle(Element* menu) {
@@ -431,7 +582,7 @@ namespace TES3::UI {
 			help->parent->vectorChildren.nextEmpty--;
 
 			// Place menu in main layer.
-			help->reattachToParent(*TES3_uiMainRoot);
+			help->reattachToParent(TES3_uiMainRoot::get());
 
 			// Add an empty dummy menu to satisfy game code that expects the help menu.
 			createTooltipMenu(static_cast<UI_ID>(Property::HelpMenu));
@@ -1333,6 +1484,9 @@ namespace TES3::UI {
 		// allowing mousewheel to apply to more than the first scrollpane in a menu.
 		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelUp, (BYTE*)&patchDispatchMousewheelUp, patchDispatchMousewheelUp_size);
 		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelDown, (BYTE*)&patchDispatchMousewheelDown, patchDispatchMousewheelDown_size);
+
+		// Patch UI ID reverse lookups to avoid repeatedly scanning the property map.
+		patchUIIDNameLookups();
 
 		// Patch UI layout engine to reflow wrapped text content on size changes.
 		auto patch = &Element::patchUpdateLayout_propagateFlow;
