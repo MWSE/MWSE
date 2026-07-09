@@ -992,7 +992,12 @@ namespace se::cs::dialog::render_window {
 			return DefaultDragMovementFunction(renderController, firstTarget, dx, dy, lockX, lockY, lockZ);
 		}
 
-		// When holding alt perform align-to-surface behavior. 
+		// Don't dirty the reference when nothing has changed.
+		if (dx == 0 && dy == 0) {
+			return 0;
+		}
+
+		// When holding alt perform align-to-surface behavior.
 		// Disallow while control is down (grid snap enabled).
 		if (isKeyDown(VK_MENU) && !isControlDown()) {
 			return Patch_AlignToSurfaceDragMovementLogic(renderController, firstTarget, dx, dy, lockX, lockY, lockZ);
@@ -1018,7 +1023,10 @@ namespace se::cs::dialog::render_window {
 			MovementContext context;
 			auto pick = SceneGraphController::get()->objectPick;
 			if (pick->pickObjectsWithSkinDeforms(&rayOrigin, &rayDirection)) {
-				context.basePosition = pick->results.at(0)->intersection;
+				const auto hit = pick->results.at(0)->intersection;
+				// Account for racial scaling distorting NiPick's local-space ray transformation.
+				const auto distanceAlongRay = (hit - rayOrigin).dotProduct(&rayDirection);
+				context.basePosition = rayOrigin + rayDirection * distanceAlongRay;
 				context.cursorOffset = context.basePosition - planeOrigin;
 			}
 			else {
