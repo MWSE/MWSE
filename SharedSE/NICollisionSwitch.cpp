@@ -1,10 +1,10 @@
 module;
 
 #include "NIAVObject.h"
-#include "NIObject.h"
 
 #include "BitUtil.h"
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
 
 module NICollisionSwitch;
 

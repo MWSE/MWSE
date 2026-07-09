@@ -1,4 +1,4 @@
-#include "NISwitchNode.h"
+#include "NITriShapeLua.h"
 
 #include "NIObjectLua.h"
 
@@ -9,6 +9,7 @@
 #include "NITriShape.h"
 #include "NITriShapeData.h"
 
+import NISwitchNode;
 import NIRTTI;
 
 namespace mwse::lua {

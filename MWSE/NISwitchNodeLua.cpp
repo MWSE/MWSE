@@ -1,4 +1,4 @@
-#include "NISwitchNode.h"
+#include "NISwitchNodeLua.h"
 
 #include "NINodeLua.h"
 
@@ -8,6 +8,7 @@
 #include "NIDefines.h"
 #include "NINode.h"
 
+import NISwitchNode;
 import NIRTTI;
 
 namespace mwse::lua {

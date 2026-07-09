@@ -1,4 +1,8 @@
-#include "NISwitchNode.h"
+module;
+
+#include "SolUtil.h"
+
+module NISwitchNode;
 
 namespace NI {
 	int SwitchNode::getSwitchIndex() const {

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIGeometry.h"
-#include "NISwitchNode.h"
+
+import NISwitchNode;
 
 namespace se::cs::dialog::render_window {
 	enum WidgetsAxis {

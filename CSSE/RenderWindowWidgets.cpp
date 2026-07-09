@@ -9,12 +9,12 @@
 #include "NIGeometry.h"
 #include "NILines.h"
 #include "NILinesData.h"
-#include "NISwitchNode.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
 
 import NIMatrix33;
+import NISwitchNode;
 
 namespace se::cs::dialog::render_window {
 	WidgetsController::WidgetsController() {

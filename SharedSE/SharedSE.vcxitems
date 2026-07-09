@@ -25,6 +25,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDX8TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIVirtualTableDefines.TESConstructionSet.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SolUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
@@ -75,7 +76,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NISourceTexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISpotLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NISwitchNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITextureEffect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITexture.h" />
@@ -171,6 +171,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISwitchNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />

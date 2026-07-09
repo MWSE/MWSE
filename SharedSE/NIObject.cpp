@@ -32,7 +32,6 @@
 #include "NISkinInstance.h"
 #include "NISourceTexture.h"
 #include "NISpotLight.h"
-#include "NISwitchNode.h"
 #include "NITextureEffect.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
@@ -45,10 +44,11 @@
 
 import NIBillboardNode;
 import NICollisionSwitch;
+import NISortAdjustNode;
+import NISwitchNode;
 #endif
 
 import NIRTTI;
-import NISortAdjustNode;
 
 namespace NI {
 	Object::Object() {

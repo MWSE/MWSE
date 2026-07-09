@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include "NINode.h"
 
+export module NISwitchNode;
+
 namespace NI {
-	struct SwitchNode : Node {
+	export struct SwitchNode : Node {
 		int switchIndex; // 0xB0
 		float fSavedTime;
 		int updateIndex;

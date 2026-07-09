@@ -16,7 +16,6 @@
 #include "NIObjectNET.h"
 #include "NIPointLight.h"
 #include "NISpotLight.h"
-#include "NISwitchNode.h"
 #include "NITextureEffect.h"
 #include "NITriShape.h"
 
@@ -92,6 +91,7 @@ import NICollisionSwitch;
 import NIPick;
 import NIPoint3;
 import NIRTTI;
+import NISwitchNode;
 
 namespace mwse::lua {
 	void* getUserdataPointerSlot(lua_State* L, int index) {

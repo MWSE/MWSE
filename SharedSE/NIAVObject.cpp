@@ -4,7 +4,6 @@
 #include "NICamera.h"
 #include "NINode.h"
 #include "NIProperty.h"
-#include "NISwitchNode.h"
 #include "NITriBasedGeometry.h"
 
 #include "BitUtil.h"
@@ -16,6 +15,7 @@
 #endif
 
 import NICollisionSwitch;
+import NISwitchNode;
 
 namespace NI {
 
