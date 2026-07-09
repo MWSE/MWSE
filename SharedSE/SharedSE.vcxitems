@@ -32,7 +32,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIBinaryStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBillboardNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBoundingBox.h" />
@@ -119,6 +118,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.cpp" />

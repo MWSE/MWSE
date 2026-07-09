@@ -1,9 +1,10 @@
 #include "NILinesData.h"
 
-#include "NIBinaryStream.h"
 #include "NIStream.h"
 #include "MemoryUtil.h"
 #include "ExceptionUtil.h"
+
+import NIBinaryStream;
 
 namespace NI {
 	void LinesData::loadBinary(Stream* stream) {

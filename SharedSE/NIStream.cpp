@@ -1,9 +1,9 @@
 #include "NIStream.h"
 
-#include "NIBinaryStream.h"
-
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+
+import NIBinaryStream;
 
 namespace NI {
 	//

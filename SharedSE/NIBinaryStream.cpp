@@ -1,4 +1,4 @@
-#include "NIBinaryStream.h"
+module NIBinaryStream;
 
 namespace NI {
 	unsigned int BinaryStream::read(void* data, unsigned int bytes) {

@@ -1,7 +1,7 @@
-#pragma once
+export module NIBinaryStream;
 
 namespace NI {
-	struct BinaryStream {
+	export struct BinaryStream {
 		struct VirtualTable {
 			void(__thiscall* destructor)(BinaryStream*, bool); // 0x0
 			bool(__thiscall* asBool)(BinaryStream*); // 0x4

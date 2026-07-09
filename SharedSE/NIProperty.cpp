@@ -3,7 +3,6 @@
 #include "BitUtil.h"
 #include "MemoryUtil.h"
 
-#include "NIBinaryStream.h"
 #include "NIStream.h"
 #include "NITexture.h"
 
@@ -12,6 +11,8 @@
 #endif
 
 #include "ExceptionUtil.h"
+
+import NIBinaryStream;
 
 namespace NI {
 
