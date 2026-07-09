@@ -2,10 +2,9 @@
 
 #include "TES3Defines.h"
 
-#include "NILight.h"
-
 #include "TES3Item.h"
 
+import NILight;
 import NIPoint3;
 
 namespace TES3 {

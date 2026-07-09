@@ -3,7 +3,7 @@
 #include "CSLight.h"
 #include "CSReference.h"
 
-#include "NILight.h"
+import NILight;
 
 namespace se::cs {
 	void DataHandler::updateLightingForNonLightReference(Reference* reference) {

@@ -46,7 +46,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NILight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
@@ -131,6 +130,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILines.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILookAtController.cpp" />

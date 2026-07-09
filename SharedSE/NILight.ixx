@@ -1,11 +1,15 @@
-#pragma once
+module;
 
 #include "NIDynamicEffect.h"
+
+#include "SolUtil.h"
+
+export module NILight;
 
 import NIColor;
 
 namespace NI {
-	struct Light : DynamicEffect {
+	export struct Light : DynamicEffect {
 		float dimmer; // 0xA8
 		Color ambient; // 0xAC
 		Color diffuse; // 0xB8

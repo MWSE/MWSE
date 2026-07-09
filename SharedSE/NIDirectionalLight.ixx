@@ -1,10 +1,10 @@
 module;
 
-#include "NILight.h"
-
 #include "SolUtil.h"
 
 export module NIDirectionalLight;
+
+import NILight;
 
 namespace NI {
 	export struct DirectionalLight : Light {

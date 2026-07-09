@@ -1,6 +1,10 @@
-#include "NILight.h"
+module;
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NILight;
+
 
 namespace NI {
 	Light* Light::ctor() {

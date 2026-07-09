@@ -5,8 +5,7 @@
 #include "TES3Defines.h"
 #include "TES3Attachment.h"
 
-#include "NILight.h"
-
+import NILight;
 import NIPoint3;
 
 namespace TES3 {
