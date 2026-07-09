@@ -1,6 +1,8 @@
-#include "NISortAdjustNode.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NISortAdjustNode;
 
 namespace NI {
 	SortAdjustNode::SortAdjustNode() : Node() {

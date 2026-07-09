@@ -74,7 +74,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISkinInstance.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NISortAdjustNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISourceTexture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NISpotLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
@@ -167,6 +166,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISourceTexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISpotLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIStream.cpp" />

@@ -48,7 +48,6 @@
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPointLight.h"
-#include "NISortAdjustNode.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
 #include "NIUVController.h"
@@ -71,6 +70,7 @@
 import NICollisionGroup;
 import NIPick;
 import NIPoint3;
+import NISortAdjustNode;
 
 namespace mwse::patch {
 

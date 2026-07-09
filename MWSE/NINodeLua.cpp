@@ -5,7 +5,8 @@
 #include "NIAVObject.h"
 #include "NIBillboardNode.h"
 #include "NINode.h"
-#include "NISortAdjustNode.h"
+
+import NISortAdjustNode;
 
 namespace mwse::lua {
 	void bindNINode() {

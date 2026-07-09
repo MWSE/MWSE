@@ -1,19 +1,21 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
 #include "NIAccumulator.h"
 #include "NINode.h"
 
+export module NISortAdjustNode;
+
 namespace NI {
-	enum struct SortAdjustMode : int {
+	export enum struct SortAdjustMode : int {
 		SORTING_INHERIT = 0,
 		SORTING_OFF = 1,
 		SORTING_SUBSORT = 2,
 		SORTING_ORDERED_SUBTREE_MWSE = 64,
 	};
 
-	struct SortAdjustNode : Node {
+	export struct SortAdjustNode : Node {
 		SortAdjustMode sortingMode; // 0xB0
 		Pointer<Accumulator> accumulator; // 0xB4
 

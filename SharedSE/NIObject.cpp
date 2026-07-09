@@ -32,7 +32,6 @@
 #include "NIProperty.h"
 #include "NIRenderedTexture.h"
 #include "NISkinInstance.h"
-#include "NISortAdjustNode.h"
 #include "NISourceTexture.h"
 #include "NISpotLight.h"
 #include "NISwitchNode.h"
@@ -48,6 +47,7 @@
 #endif
 
 import NIRTTI;
+import NISortAdjustNode;
 
 namespace NI {
 	Object::Object() {

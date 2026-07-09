@@ -13,7 +13,6 @@
 #include "NIAVObject.h"
 #include "NICamera.h"
 #include "NILinesData.h"
-#include "NISortAdjustNode.h"
 
 #include "WindowMain.h"
 
@@ -50,6 +49,8 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+import NISortAdjustNode;
 
 namespace se::cs {
 	constexpr auto LOG_SUPPRESSED_WARNINGS = false;
