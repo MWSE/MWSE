@@ -8,13 +8,13 @@
 #include "NICamera.h"
 #include "NIIteratedList.h"
 #include "NIProperty.h"
-#include "NIRenderer.h"
 #include "NITextureEffect.h"
 
 import NIDirectionalLight;
 import NIPoint2;
 import NIPoint3;
 import NIRenderedTexture;
+import NIRenderer;
 import NISourceTexture;
 
 namespace TES3 {

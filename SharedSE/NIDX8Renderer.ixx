@@ -3,12 +3,14 @@ module;
 #include "NIDefines.h"
 
 #include "NIHashMap.h"
-#include "NIRenderer.h"
+#include "NITArray.h"
 
 export module NIDX8Renderer;
 
+import NIColor;
 import NIPixelFormat;
 import NIPoint3;
+import NIRenderer;
 
 namespace NI {
 	export struct DX8DeviceDesc {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "NINode.h"
-#include "NIRenderer.h"
 
 import NIMatrix44;
+import NIRenderer;
 
 namespace NI {
 	struct Frustum {

@@ -61,7 +61,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIProperty.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIRenderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
@@ -159,6 +158,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderedTexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderedTexture.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.cpp" />

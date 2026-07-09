@@ -1,10 +1,7 @@
-module;
-
-#include "NIRenderer.h"
-
 export module NIDX8TextureData;
 
 import NIPixelFormat;
+import NIRenderer;
 import NITexture;
 
 namespace NI {

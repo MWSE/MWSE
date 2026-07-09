@@ -5,7 +5,6 @@
 
 #include "NICamera.h"
 #include "NINode.h"
-#include "NIRenderer.h"
 
 #include "TES3AudioController.h"
 #include "TES3Enchantment.h"
@@ -23,6 +22,8 @@
 #include "TES3VFXManager.h"
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
+
+import NIRenderer;
 
 namespace mwse::lua {
 	void bindTES3WorldController() {

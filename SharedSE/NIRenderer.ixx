@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
@@ -7,10 +7,43 @@
 #include "NIProperty.h"
 #include "NIRect.h"
 
+export module NIRenderer;
+
 import NITexture;
 
 namespace NI {
-	struct Renderer_vTable : Object_vTable {
+	export struct Renderer : Object {
+		enum ClearFlags : unsigned int {
+			BACKBUFFER = 0x1,
+			STENCIL = 0x2,
+			ZBUFFER = 0x4,
+
+			ALL = BACKBUFFER | STENCIL | ZBUFFER,
+		};
+		Pointer<Accumulator> accumulator; // 0x8
+		Pointer<Object> currentPropertyState; // 0xC
+		Pointer<Object> currentEffectState; // 0x10
+		unsigned int precacheCriticalSection; // 0x14
+		unsigned int sourceDataCriticalSection; // 0x18
+
+		//
+		// vTable accessor functions.
+		//
+
+		char* getDriverInfo();
+		unsigned int getCapabilityFlags();
+		const Texture::FormatPrefs* findClosestPixelFormat(Texture::FormatPrefs* toFormat);
+		int getBackBufferWidth() const;
+		int getBackBufferHeight() const;
+		bool setRenderTarget(RenderedTexture* texture = nullptr);
+		PixelData* takeScreenshot(const Rect<unsigned int>* bounds);
+		bool getTextureMemoryStats(unsigned int& total, unsigned int& available);
+		bool getTextureStats(unsigned int& loadedTextures, unsigned int& usedTextures, unsigned int& stateChanges, unsigned int& newTextures, unsigned int& evictedTextures, unsigned int& bytesTransferred);
+
+	};
+	static_assert(sizeof(Renderer) == 0x1C, "NI::Renderer failed size validation");
+
+	export struct Renderer_vTable : Object_vTable {
 		char* (__thiscall* getDriverInfo)(Renderer*); // 0x2C
 		unsigned int(__thiscall* getCapabilityFlags)(Renderer*); // 0x30
 		const Texture::FormatPrefs* (__thiscall* findClosestPixelFormat)(Renderer*, Texture::FormatPrefs*); // 0x34
@@ -21,8 +54,8 @@ namespace NI {
 		void* getLeftRightSwap; // 0x48
 		void* setLeftRightSwap; // 0x4C
 		void* setUseWBuffer; // 0x50
-		int (__thiscall* getBackBufferWidth)(const Renderer*); // 0x54
-		int (__thiscall* getBackBufferHeight)(const Renderer*); // 0x58
+		int(__thiscall* getBackBufferWidth)(const Renderer*); // 0x54
+		int(__thiscall* getBackBufferHeight)(const Renderer*); // 0x58
 		PixelData* (__thiscall* takeScreenshot)(Renderer*, const Rect<unsigned int>*); // 0x5C
 		void* imageBlt; // 0x60
 		void* setDepthClear; // 0x64
@@ -69,35 +102,4 @@ namespace NI {
 		void* createBltSourceRendererData; // 0x108
 	};
 	static_assert(sizeof(Renderer_vTable) == 0x10C, "NI::Renderer failed size validation");
-
-	struct Renderer : Object {
-		enum ClearFlags : unsigned int {
-			BACKBUFFER = 0x1,
-			STENCIL = 0x2,
-			ZBUFFER = 0x4,
-
-			ALL = BACKBUFFER | STENCIL | ZBUFFER,
-		};
-		Pointer<Accumulator> accumulator; // 0x8
-		Pointer<Object> currentPropertyState; // 0xC
-		Pointer<Object> currentEffectState; // 0x10
-		unsigned int precacheCriticalSection; // 0x14
-		unsigned int sourceDataCriticalSection; // 0x18
-
-		//
-		// vTable accessor functions.
-		//
-
-		char* getDriverInfo();
-		unsigned int getCapabilityFlags();
-		const Texture::FormatPrefs* findClosestPixelFormat(Texture::FormatPrefs* toFormat);
-		int getBackBufferWidth() const;
-		int getBackBufferHeight() const;
-		bool setRenderTarget(RenderedTexture* texture = nullptr);
-		PixelData* takeScreenshot(const Rect<unsigned int>* bounds);
-		bool getTextureMemoryStats(unsigned int& total, unsigned int& available);
-		bool getTextureStats(unsigned int& loadedTextures, unsigned int& usedTextures, unsigned int& stateChanges, unsigned int& newTextures, unsigned int& evictedTextures, unsigned int& bytesTransferred);
-
-	};
-	static_assert(sizeof(Renderer) == 0x1C, "NI::Renderer failed size validation");
 }

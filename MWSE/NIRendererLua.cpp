@@ -4,8 +4,9 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIRenderer.h"
 #include "NIPixelData.h"
+
+import NIRenderer;
 
 namespace mwse::lua {
 	void bindNIRenderer() {
