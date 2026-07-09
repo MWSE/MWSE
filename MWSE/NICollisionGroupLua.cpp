@@ -3,7 +3,8 @@
 
 #include "NIDefines.h"
 #include "NIAVObject.h"
-#include "NICollisionGroup.h"
+
+import NICollisionGroup;
 
 namespace mwse::lua {
 	void bindNICollisionGroup() {

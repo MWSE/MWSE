@@ -6,7 +6,8 @@
 #include "NIIteratedList.h"
 
 #include "NINode.h"
-#include "NICollisionGroup.h"
+
+import NICollisionGroup;
 
 namespace TES3 {
 	struct ProcessManager {

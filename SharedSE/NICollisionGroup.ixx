@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include "NIAVObject.h"
 #include "NITArray.h"
 
+export module NICollisionGroup;
+
 import NIPoint3;
 
 namespace NI {
-	struct CollisionGroup {
+	export struct CollisionGroup {
 		struct Record {
 			NI::AVObject* sgCollisionRoot;
 			NI::AVObject* sgObject;

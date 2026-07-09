@@ -1,6 +1,8 @@
-#include "NICollisionGroup.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NICollisionGroup;
 
 namespace NI {
 	bool CollisionGroup::containsCollider(AVObject* obj) {

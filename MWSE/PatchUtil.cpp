@@ -44,7 +44,6 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
@@ -69,6 +68,7 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+import NICollisionGroup;
 import NIPick;
 import NIPoint3;
 

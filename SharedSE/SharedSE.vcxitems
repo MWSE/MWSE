@@ -36,7 +36,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICamera.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionGroup.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICollisionSwitch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
@@ -120,6 +119,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICamera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionGroup.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionGroup.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICollisionSwitch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.ixx" />
