@@ -17,12 +17,10 @@
 #include "NIExtraData.h"
 #include "NIKeyframeController.h"
 #include "NILines.h"
-#include "NILookAtController.h"
 #include "NINode.h"
 #include "NIParticleModifier.h"
 #include "NIParticles.h"
 #include "NIParticleSystemController.h"
-#include "NIPathController.h"
 #include "NIProperty.h"
 #include "NISkinInstance.h"
 #include "NITextureEffect.h"
@@ -39,6 +37,8 @@ import NIAmbientLight;
 import NIBillboardNode;
 import NICollisionSwitch;
 import NIDirectionalLight;
+import NILookAtController;
+import NIPathController;
 import NIPixelData;
 import NIPointLight;
 import NIRenderedTexture;

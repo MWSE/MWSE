@@ -1,6 +1,9 @@
-#include "NIPathController.h"
+module;
 
 #include "BitUtil.h"
+#include "SolUtil.h"
+
+module NIPathController;
 
 namespace NI {
 	bool PathController::getAllowFlip() const {

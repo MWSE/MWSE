@@ -1,6 +1,8 @@
-#include "NIUVController.h"
+module;
 
 #include "ExceptionUtil.h"
+
+module NIUVController;
 
 namespace NI {
 	void UVController::copy(UVController* to) const {

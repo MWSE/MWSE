@@ -1,4 +1,8 @@
-#include "NILookAtController.h"
+module;
+
+#include "SolUtil.h"
+
+module NILookAtController;
 
 namespace NI {
 	unsigned int LookAtController::getAxis() const {

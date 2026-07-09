@@ -48,7 +48,6 @@
 #include "NILinesData.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
-#include "NIUVController.h"
 #include "NIBSAnimationManager.h"
 
 #include "BitUtil.h"
@@ -71,6 +70,7 @@ import NIPick;
 import NIPoint3;
 import NIPointLight;
 import NISortAdjustNode;
+import NIUVController;
 
 namespace mwse::patch {
 

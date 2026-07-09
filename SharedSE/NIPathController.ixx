@@ -1,10 +1,14 @@
-#pragma once
+module;
 
 #include "NIAnimationData.h"
 #include "NITimeController.h"
 
+#include "SolUtil.h"
+
+export module NIPathController;
+
 namespace NI {
-	namespace PathControllerFlags {
+	export namespace PathControllerFlags {
 		typedef TimeControllerFlags::value_type value_type;
 
 		enum PathControllerFlags {
@@ -27,7 +31,7 @@ namespace NI {
 		};
 	}
 
-	struct PathController : TimeController {
+	export struct PathController : TimeController {
 		int lastUsedPathIndex; // 0x34
 		int lastUsedPercentIndex; // 0x38
 		Pointer<PosData> pathData; // 0x3C

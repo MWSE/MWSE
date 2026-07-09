@@ -1,10 +1,14 @@
-#pragma once
+module;
 
 #include "NIAVObject.h"
 #include "NITimeController.h"
 
+#include "SolUtil.h"
+
+export module NILookAtController;
+
 namespace NI {
-	namespace LookAtControllerFlags {
+	export namespace LookAtControllerFlags {
 		typedef TimeControllerFlags::value_type value_type;
 
 		enum LookAtControllerFlags {
@@ -20,7 +24,7 @@ namespace NI {
 		};
 	}
 
-	struct LookAtController : TimeController {
+	export struct LookAtController : TimeController {
 		AVObject* lookAt; // 0x34. Not an NI::Pointer.
 
 		unsigned int getAxis() const;

@@ -1,10 +1,12 @@
-#pragma once
+module;
 
 #include "NITimeController.h"
 #include "NIUVData.h"
 
+export module NIUVController;
+
 namespace NI {
-	struct UVController : TimeController {
+	export struct UVController : TimeController {
 		unsigned int lastUOffsetIndex; // 0x34
 		unsigned int lastUTilingIndex; // 0x38
 		unsigned int lastVOffsetIndex; // 0x3C

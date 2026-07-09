@@ -6,11 +6,12 @@
 #include "LuaUtil.h"
 
 #include "NIAnimationData.h"
-#include "NILookAtController.h"
 #include "NIKeyframeController.h"
 #include "NIKeyframeManager.h"
-#include "NIPathController.h"
 #include "NITimeController.h"
+
+import NILookAtController;
+import NIPathController;
 
 namespace mwse::lua {
 	template <typename T>

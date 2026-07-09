@@ -39,7 +39,6 @@
 #include "NILinesData.h"
 #include "NITriShape.h"
 #include "NITriShapeData.h"
-#include "NIUVController.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -56,6 +55,7 @@
 import NICollisionSwitch;
 import NIPick;
 import NISortAdjustNode;
+import NIUVController;
 
 namespace CrashLogger::Version { inline void Process(EXCEPTION_POINTERS* info); inline std::stringstream& Get(); }
 namespace CrashLogger::Playtime { inline void Init(); inline void Process(EXCEPTION_POINTERS* info); inline std::stringstream& Get(); }
