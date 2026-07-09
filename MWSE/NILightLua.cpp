@@ -4,9 +4,9 @@
 #include "LuaUtil.h"
 
 #include "NINode.h"
-#include "NIAmbientLight.h"
-#include "NIDirectionalLight.h"
 
+import NIAmbientLight;
+import NIDirectionalLight;
 import NIRTTI;
 import NISpotLight;
 

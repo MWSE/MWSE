@@ -1,9 +1,13 @@
-#pragma once
+module;
 
 #include "NILight.h"
 
+#include "SolUtil.h"
+
+export module NIDirectionalLight;
+
 namespace NI {
-	struct DirectionalLight : Light {
+	export struct DirectionalLight : Light {
 		Point3 direction; // 0xD0
 	};
 	static_assert(sizeof(DirectionalLight) == 0xDC, "NI::DirectionalLight failed size validation");

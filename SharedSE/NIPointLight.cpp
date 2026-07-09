@@ -8,7 +8,11 @@ module;
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "TES3DataHandler.h"
+#endif
 
+module NIPointLight;
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 namespace TES3 {
 	enum LightAttenuationFlag {
 		UseConstant = 0x1,
@@ -30,8 +34,6 @@ namespace TES3 {
 	float& LightAttenuation_QuadraticRadiusMultiplier = *reinterpret_cast<float*>(0x7CB1E0);
 }
 #endif
-
-module NIPointLight;
 
 namespace NI {
 	Pointer<PointLight> PointLight::create() {

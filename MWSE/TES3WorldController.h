@@ -6,7 +6,6 @@
 
 #include "NIDefines.h"
 #include "NICamera.h"
-#include "NIDirectionalLight.h"
 #include "NIIteratedList.h"
 #include "NIProperty.h"
 #include "NIRenderedTexture.h"
@@ -14,6 +13,7 @@
 #include "NISourceTexture.h"
 #include "NITextureEffect.h"
 
+import NIDirectionalLight;
 import NIPoint2;
 import NIPoint3;
 

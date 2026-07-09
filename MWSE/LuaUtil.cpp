@@ -4,11 +4,9 @@
 
 #include "Log.h"
 
-#include "NIAmbientLight.h"
 #include "NIAVObject.h"
 #include "NICamera.h"
 #include "NIDefines.h"
-#include "NIDirectionalLight.h"
 #include "NIDynamicEffect.h"
 #include "NIExtraData.h"
 #include "NINode.h"
@@ -85,7 +83,9 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
+import NIAmbientLight;
 import NICollisionSwitch;
+import NIDirectionalLight;
 import NIPick;
 import NIPoint3;
 import NIPointLight;

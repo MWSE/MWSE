@@ -5,7 +5,10 @@
 #include "NIIteratedList.h"
 
 #include "NIDefines.h"
-#include "NIAmbientLight.h"
+#include "NIPointer.h"
+
+import NIAmbientLight;
+import NIColor;
 
 namespace TES3 {
 	struct Game_vTable {

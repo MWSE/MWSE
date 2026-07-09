@@ -1,9 +1,13 @@
-#pragma once
+module;
 
 #include "NILight.h"
 
+#include "SolUtil.h"
+
+export module NIAmbientLight;
+
 namespace NI {
-	struct AmbientLight : Light {
+	export struct AmbientLight : Light {
 	};
 	static_assert(sizeof(AmbientLight) == 0xD0, "NI::AmbientLight failed size validation");
 }

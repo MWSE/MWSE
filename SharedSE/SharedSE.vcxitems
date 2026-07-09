@@ -46,8 +46,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIKeyframeManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAmbientLight.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIDirectionalLight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h" />
@@ -99,6 +97,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.ixx" />
@@ -121,6 +120,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIColor.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NICopyTransformController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIDirectionalLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDX8Renderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />

@@ -10,12 +10,10 @@
 #include "NIObjectNET.h"
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-#include "NIAmbientLight.h"
 #include "NIAnimationData.h"
 #include "NIAVObject.h"
 #include "NIBSAnimationNode.h"
 #include "NICamera.h"
-#include "NIDirectionalLight.h"
 #include "NIExtraData.h"
 #include "NIKeyframeController.h"
 #include "NILines.h"
@@ -40,8 +38,10 @@
 
 #include "MWSEConfig.h"
 
+import NIAmbientLight;
 import NIBillboardNode;
 import NICollisionSwitch;
+import NIDirectionalLight;
 import NIPointLight;
 import NISortAdjustNode;
 import NISpotLight;
