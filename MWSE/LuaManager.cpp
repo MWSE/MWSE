@@ -279,6 +279,7 @@
 #include "LuaPreventRestEvent.h"
 #include "LuaProjectileExpireEvent.h"
 #include "LuaReferenceActivatedEvent.h"
+#include "LuaRenderEvent.h"
 #include "LuaRepairEvent.h"
 #include "LuaRestInterruptEvent.h"
 #include "LuaShieldBlockedEvent.h"
@@ -811,6 +812,17 @@ namespace mwse::lua {
 		if (!worldController->flagMenuMode && event::SimulateEvent::getEventEnabled()) {
 			luaManager.getThreadSafeStateHandle().triggerEvent(new event::SimulateEvent(worldController->deltaTime, highResolutionTimestamp));
 		}
+	}
+
+	//
+	// Hook: Render
+	//
+
+	void __fastcall Render(TES3::Game* game, DWORD _UNUSED_, int renderType) {
+		if (event::RenderEvent::getEventEnabled()) {
+			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::RenderEvent());
+		}
+		game->renderNextFrame(renderType);
 	}
 
 	//
@@ -5074,6 +5086,9 @@ namespace mwse::lua {
 		// Event: enterFrame. This hook can be in a couple of locations, because of MCP.
 		genCallEnforced(0x41ABB0, 0x40F610, reinterpret_cast<DWORD>(EnterFrame));
 		genCallEnforced(0x41ABA5, 0x40F610, reinterpret_cast<DWORD>(EnterFrame));
+
+		// Event: render. Wraps the main loop's `TES3Game::renderNextFrame` call.
+		genCallEnforced(0x41BE56, 0x41BE90, reinterpret_cast<DWORD>(Render));
 
 		// Event: equip.
 		genCallEnforced(0x5CB8E7, 0x5CE130, reinterpret_cast<DWORD>(OnPCEquip));

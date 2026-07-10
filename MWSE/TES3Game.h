@@ -131,6 +131,8 @@ namespace TES3 {
 
 		void savePlayerOptions();
 
+		void renderNextFrame(int renderType);
+
 		//
 		// Custom functions.
 		//
