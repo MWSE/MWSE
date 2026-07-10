@@ -33,6 +33,11 @@ namespace TES3 {
 		TES3_Game_savePlayerOptions(this);
 	}
 
+	const auto TES3_Game_renderNextFrame = reinterpret_cast<void(__thiscall*)(Game*, int)>(0x41BE90);
+	void Game::renderNextFrame(int renderType) {
+		TES3_Game_renderNextFrame(this, renderType);
+	}
+
 	void Game::applyApplicationIniOverrides() {
 		constexpr auto morrowindIniFile = ".\\Morrowind.ini";
 

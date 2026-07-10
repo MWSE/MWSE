@@ -144,6 +144,7 @@ return {
 	["referenceDeactivated"] = "referenceDeactivated",
 	["referenceSceneNodeCreated"] = "referenceSceneNodeCreated",
 	["removedEquipmentBodyParts"] = "removedEquipmentBodyParts",
+	["render"] = "render",
 	["repair"] = "repair",
 	["restInterrupt"] = "restInterrupt",
 	["save"] = "save",

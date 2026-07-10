@@ -4132,6 +4132,7 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.referenceDeactivated`
 ---| `tes3.event.referenceSceneNodeCreated`
 ---| `tes3.event.removedEquipmentBodyParts`
+---| `tes3.event.render`
 ---| `tes3.event.repair`
 ---| `tes3.event.restInterrupt`
 ---| `tes3.event.save`

@@ -191,6 +191,7 @@
     <ClInclude Include="LuaReferenceActivatedEvent.h" />
     <ClInclude Include="LuaReferenceDeactivatedEvent.h" />
     <ClInclude Include="LuaReferenceSceneNodeCreatedEvent.h" />
+    <ClInclude Include="LuaRenderEvent.h" />
     <ClInclude Include="LuaRestInterruptEvent.h" />
     <ClInclude Include="LuaSavedGameEvent.h" />
     <ClInclude Include="LuaSaveGameEvent.h" />
@@ -630,6 +631,7 @@
     <ClCompile Include="LuaReferenceActivatedEvent.cpp" />
     <ClCompile Include="LuaReferenceDeactivatedEvent.cpp" />
     <ClCompile Include="LuaReferenceSceneNodeCreatedEvent.cpp" />
+    <ClCompile Include="LuaRenderEvent.cpp" />
     <ClCompile Include="LuaRepairEvent.cpp" />
     <ClCompile Include="LuaRestInterruptEvent.cpp" />
     <ClCompile Include="LuaSavedGameEvent.cpp" />
