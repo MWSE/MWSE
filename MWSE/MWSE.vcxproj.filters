@@ -1554,16 +1554,7 @@
     <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="CrashLogExceptionHandler.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
     <ClInclude Include="CrashLogFormatter.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
-    <ClInclude Include="CrashLogger.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
-    <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
     <ClInclude Include="ReferenceTracker.h">
@@ -3521,19 +3512,13 @@
     <ClCompile Include="MGEApi.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogCallTrace.cpp">
-      <Filter>Source Files\Utility\CrashLogger</Filter>
-    </ClCompile>
-    <ClCompile Include="CrashLogDevice.cpp">
-      <Filter>Source Files\Utility\CrashLogger</Filter>
-    </ClCompile>
     <ClCompile Include="CrashLogLabelsMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogMemory.cpp">
+	<ClCompile Include="CrashLoggerMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogRegistryStack.cpp">
+	<ClCompile Include="CrashLoggerMWSEClient.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
     <ClCompile Include="ReferenceTracker.cpp">

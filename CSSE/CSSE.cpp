@@ -1,5 +1,6 @@
 #include "CSSE.h"
 
+#include "CrashLogger.h"
 #include "LogUtil.h"
 
 #include "CSDialogue.h"
@@ -356,19 +357,7 @@ namespace se::cs {
 			log::stream << std::endl;
 			log::stream << "The Construction Set has crashed! To help improve game stability, post the CSSE_Minidump.dmp and csse.log files to the Morrowind Modding Community #mwse channel on Discord." << std::endl;
 			log::stream << "The Morrowind Modding Community Discord can be found at https://discord.me/mwmods" << std::endl;
-
-#ifdef APPVEYOR_BUILD_NUMBER
-			log::stream << "Appveyor build: " << APPVEYOR_BUILD_NUMBER << std::endl;
-#endif
-			log::stream << "Build date: " << CSSE_BUILD_DATE << std::endl;
-
-			// Display the memory usage in the log.
-			PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-			GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-			log::stream << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-			if (memCounter.PrivateUsage > 3650722201) {
-				log::stream << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
-			}
+			CrashLogger::AttemptLog(pep);
 
 			// Open the file.
 			auto hFile = CreateFile("CSSE_MiniDump.dmp", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -605,6 +594,7 @@ namespace se::cs {
 
 		// Open our log file.
 		log::stream.open(path::getInstallPath() / "csse.log");
+		CrashLogger::Playtime::Init();
 #ifdef APPVEYOR_BUILD_NUMBER
 		log::stream << "Construction Set Extender build " << APPVEYOR_BUILD_NUMBER << " (built " << __DATE__ << ") hooked." << std::endl;
 #else

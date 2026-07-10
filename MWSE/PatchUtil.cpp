@@ -59,6 +59,7 @@
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
+#include "StringUtil.h"
 #include "TES3Util.h"
 #include "WindowsUtil.h"
 
@@ -69,7 +70,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
-#include "CrashLogExceptionHandler.hpp"
+#include "CrashLogger.h"
 
 namespace mwse::patch {
 

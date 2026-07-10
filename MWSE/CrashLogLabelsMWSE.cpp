@@ -1,10 +1,23 @@
-#include "CrashLogger.hpp"
+#include "CrashLogger.h"
 #include "CrashLogFormatter.hpp"
 
 #include "TES3Defines.h"
 #include "NIDefines.h"
 
 namespace CrashLogger::Labels {
+	template<typename T>
+	std::string As(void* pointer) {
+		try {
+			if (auto object = Dereference<T>(pointer)) {
+				return LogClassLineByLine(*object);
+			}
+			return "Unable to dereference";
+		}
+		catch (...) {
+			return "Failed to format";
+		}
+	}
+
 	void FillMWSELabels() {
 		// Derived from TES3::BaseObject
 		Push(TES3::VirtualTableAddress::BaseObject, As<TES3::BaseObject>);

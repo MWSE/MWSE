@@ -13,10 +13,7 @@
   <ItemGroup>
     <ClInclude Include="ArrayUtil.h" />
     <ClInclude Include="BitUtil.h" />
-    <ClInclude Include="CrashLogExceptionHandler.hpp" />
     <ClInclude Include="CrashLogFormatter.hpp" />
-    <ClInclude Include="CrashLogger.hpp" />
-    <ClInclude Include="CrashLogUtilities.hpp" />
     <ClInclude Include="LuaCalcChargenStatsEvent.h" />
     <ClInclude Include="LuaCalcHitDetectionConeEvent.h" />
     <ClInclude Include="LuaCalcTouchSpellConeEvent.h" />
@@ -479,11 +476,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArrayUtil.cpp" />
-    <ClCompile Include="CrashLogCallTrace.cpp" />
-    <ClCompile Include="CrashLogDevice.cpp" />
     <ClCompile Include="CrashLogLabelsMWSE.cpp" />
-    <ClCompile Include="CrashLogMemory.cpp" />
-    <ClCompile Include="CrashLogRegistryStack.cpp" />
+	<ClCompile Include="CrashLoggerMWSE.cpp" />
+	<ClCompile Include="CrashLoggerMWSEClient.cpp" />
     <ClCompile Include="DynamicLuaObject.cpp" />
     <ClCompile Include="FileUtil.cpp" />
     <ClCompile Include="LuaAbsorbedMagicEvent.cpp" />

@@ -23,4 +23,10 @@
 #define SE_MEMORY_FNADDR_FREE 0x620B26
 #define SE_MEMORY_FNADDR_REALLOC 0x0
 
+// Crash logger formatting support.
+#define FMT_HEADER_ONLY
+#include <fmt/chrono.h>
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+
 #endif //PCH_H
