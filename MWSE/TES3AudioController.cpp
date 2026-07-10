@@ -65,6 +65,42 @@ namespace TES3 {
 		return TES3_AudioController_setSoundBufferMinMaxDistance(this, soundBuffer, minDistance, maxDistance);
 	}
 
+	void AudioController::setListenerDistanceFactor(float factor) {
+		if (!primary3DListener) {
+			return;
+		}
+
+		primary3DListener->SetDistanceFactor(factor, DS3D_DEFERRED);
+		dsound3DChanged = true;
+	}
+
+	void AudioController::setListenerDopplerFactor(float factor) {
+		if (!primary3DListener) {
+			return;
+		}
+
+		primary3DListener->SetDopplerFactor(factor, DS3D_DEFERRED);
+		dsound3DChanged = true;
+	}
+
+	void AudioController::setListenerRolloffFactor(float factor) {
+		if (!primary3DListener) {
+			return;
+		}
+
+		primary3DListener->SetRolloffFactor(factor, DS3D_DEFERRED);
+		dsound3DChanged = true;
+	}
+
+	void AudioController::setListenerVelocity(const NI::Point3* velocity) {
+		if (!dsound3DCommitted || !primary3DListener || !velocity) {
+			return;
+		}
+
+		primary3DListener->SetVelocity(velocity->x, velocity->z, velocity->y, DS3D_DEFERRED);
+		dsound3DChanged = true;
+	}
+
 	const auto TES3_AudioController_isDirectSoundAvailable = reinterpret_cast<bool(__thiscall*)(const AudioController*)>(0x401DA0);
 	bool AudioController::isDirectSoundAvailable() const {
 		return TES3_AudioController_isDirectSoundAvailable(this);
@@ -427,6 +463,12 @@ namespace TES3 {
 
 	const auto TES3_AudioController_commitDeferredSettings = reinterpret_cast<void(__thiscall*)(AudioController*)>(0x403250);
 	void AudioController::commitDeferredSettings() {
+		if (!primary3DListener) {
+			dsound3DChanged = false;
+			dsound3DCommitted = true;
+			return;
+		}
+
 		TES3_AudioController_commitDeferredSettings(this);
 	}
 

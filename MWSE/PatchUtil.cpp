@@ -3128,6 +3128,28 @@ namespace mwse::patch {
 		writeDoubleWordEnforced(0x6A9B38, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (skin partitions)
 		writeDoubleWordEnforced(0x6A9B7E, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered textures)
 		writeDoubleWordEnforced(0x6A9BC4, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered cubemaps)
+
+		// Patch: Guarded 3D audio listener access.
+		auto AudioController_setListenerDistanceFactor = &TES3::AudioController::setListenerDistanceFactor;
+		genCallEnforced(0x40E5DB, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E602, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E74E, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E775, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		auto AudioController_setListenerDopplerFactor = &TES3::AudioController::setListenerDopplerFactor;
+		genCallEnforced(0x40E5E8, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		genCallEnforced(0x40E75B, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		genCallEnforced(0x489851, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		auto AudioController_setListenerRolloffFactor = &TES3::AudioController::setListenerRolloffFactor;
+		genCallEnforced(0x40E5F5, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		genCallEnforced(0x40E768, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		genCallEnforced(0x489864, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		auto AudioController_setListenerVelocity = &TES3::AudioController::setListenerVelocity;
+		genCallEnforced(0x48B112, 0x403220, *reinterpret_cast<DWORD*>(&AudioController_setListenerVelocity));
+		auto AudioController_commitDeferredSettings = &TES3::AudioController::commitDeferredSettings;
+		genCallEnforced(0x40F7ED, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+		genCallEnforced(0x48C6C3, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+		genCallEnforced(0x510B57, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+
 	}
 
 	void installPostLuaPatches() {

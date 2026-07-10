@@ -100,6 +100,10 @@ namespace TES3 {
 		void playSoundBuffer(SoundBuffer* soundBuffer, DWORD flags);
 		void setSoundBufferCurrentPosition(SoundBuffer* soundBuffer, float position) const;
 		int setSoundBufferMinMaxDistance(SoundBuffer* soundBuffer, float minDistance, float maxDistance);
+		void setListenerDistanceFactor(float factor);
+		void setListenerDopplerFactor(float factor);
+		void setListenerRolloffFactor(float factor);
+		void setListenerVelocity(const NI::Point3* velocity);
 
 		bool isDirectSoundAvailable() const;
 
