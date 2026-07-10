@@ -1,15 +1,18 @@
-#pragma once
+module;
 
 #include "NITimeController.h"
-#include "NIParticleModifier.h"
+
+#include "SolUtil.h"
+
+export module NIParticleSystemController;
 
 import NIColor;
+import NIParticleModifier;
+import NIPerParticleData;
 import NIPoint3;
 
 namespace NI {
-	struct PerParticleData;
-
-	struct ParticleSystemController : TimeController {
+	export struct ParticleSystemController : TimeController {
 		float scaledLastTime; // 0x34
 		float speed; // 0x38
 		float speedVariation; // 0x3C

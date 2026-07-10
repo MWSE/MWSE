@@ -1,4 +1,8 @@
-#include "NIParticleSystemController.h"
+module;
+
+#include "SolUtil.h"
+
+module NIParticleSystemController;
 
 import NIPerParticleData;
 

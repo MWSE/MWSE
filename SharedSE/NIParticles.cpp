@@ -1,7 +1,12 @@
-#include "NIParticles.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+#include "SolUtil.h"
+
+module NIParticles;
 
 import NIColor;
 import NIQuaternion;

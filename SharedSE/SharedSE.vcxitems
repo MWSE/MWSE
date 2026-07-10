@@ -25,7 +25,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
@@ -40,9 +39,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObjectNET.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleModifier.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticles.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
@@ -73,6 +69,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAmbientLight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
@@ -129,8 +126,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticles.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticles.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleSystemController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleSystemController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPathController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPathController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPerParticleData.ixx" />

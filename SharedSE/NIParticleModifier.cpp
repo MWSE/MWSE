@@ -1,4 +1,8 @@
-#include "NIParticleModifier.h"
+module;
+
+#include "SolUtil.h"
+
+module NIParticleModifier;
 
 namespace NI {
 	float SphericalCollider::getRadius() const {

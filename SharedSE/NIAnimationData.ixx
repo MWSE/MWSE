@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "NIObject.h"
+
+export module NIAnimationData;
 
 import NIAnimationKey;
 
 namespace NI {
-	struct FloatData : Object {
+	export struct FloatData : Object {
 		unsigned int keyCount; // 0x8
 		AmbiguousFloatKeyPtr keys; // 0xC
 		AnimationKey::KeyType keyType; // 0x10
@@ -14,7 +16,7 @@ namespace NI {
 	};
 	static_assert(sizeof(FloatData) == 0x14, "NI::FloatData failed size validation");
 
-	struct PosData : Object {
+	export struct PosData : Object {
 		unsigned int keyCount; // 0x8
 		AmbiguousPosKeyPtr keys; // 0xC
 		AnimationKey::KeyType keyType; // 0x10
@@ -23,7 +25,7 @@ namespace NI {
 	};
 	static_assert(sizeof(PosData) == 0x14, "NI::PosData failed size validation");
 
-	struct ColorData : Object {
+	export struct ColorData : Object {
 		unsigned int keyCount; // 0x8
 		ColorKey** keys; // 0xC
 		AnimationKey::KeyType keyType; // 0x10

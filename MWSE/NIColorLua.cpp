@@ -5,8 +5,7 @@
 
 #include "NIObjectLua.h"
 
-#include "NIAnimationData.h"
-
+import NIAnimationData;
 import NIColor;
 
 namespace mwse::lua {

@@ -1,6 +1,10 @@
-#include "NIAnimationData.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+
+module NIAnimationData;
 
 namespace NI {
 #if defined(SE_NI_FLOATDATA_FNADDR_GETKEYSIZE) && SE_NI_FLOATDATA_FNADDR_GETKEYSIZE > 0

@@ -1,11 +1,15 @@
-#pragma once
+module;
 
 #include "NITriBasedGeometry.h"
+
+#include "SolUtil.h"
+
+export module NIParticles;
 
 import NIPoint3;
 
 namespace NI {
-	struct ParticlesData : TriBasedGeometryData {
+	export struct ParticlesData : TriBasedGeometryData {
 		float radius; // 0x38
 		unsigned short activeCount; // 0x3C
 		float* sizes; // 0x40
@@ -17,20 +21,20 @@ namespace NI {
 	};
 	static_assert(sizeof(ParticlesData) == 0x44, "NI::ParticlesData failed size validation");
 
-	struct AutoNormalParticlesData : ParticlesData {
+	export struct AutoNormalParticlesData : ParticlesData {
 		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, Point3* vertices, PackedColor* colors);
 		static Pointer<AutoNormalParticlesData> create(unsigned short vertexCount, bool hasColors);
 	};
 	static_assert(sizeof(AutoNormalParticlesData) == 0x44, "NI::AutoNormalParticlesData failed size validation");
 
-	struct RotatingParticlesData : ParticlesData {
+	export struct RotatingParticlesData : ParticlesData {
 		Quaternion* rotations; // 0x44
 
 		std::span<NI::Quaternion> getRotations();
 	};
 	static_assert(sizeof(RotatingParticlesData) == 0x48, "NI::RotatingParticlesData failed size validation");
 
-	struct Particles : TriBasedGeometry {
+	export struct Particles : TriBasedGeometry {
 		AVObject* staticBoundPositionSource; // 0xAC
 
 		Particles(ParticlesData* data);
@@ -40,7 +44,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Particles) == 0xB0, "NI::Particles failed size validation");
 
-	struct AutoNormalParticles : Particles {
+	export struct AutoNormalParticles : Particles {
 		AutoNormalParticles(AutoNormalParticlesData* data);
 		static Pointer<AutoNormalParticles> create(unsigned short vertexCount, bool hasColors);
 
@@ -48,7 +52,7 @@ namespace NI {
 	};
 	static_assert(sizeof(AutoNormalParticles) == 0xB0, "NI::AutoNormalParticles failed size validation");
 
-	struct RotatingParticles : Particles {
+	export struct RotatingParticles : Particles {
 		RotatingParticles(RotatingParticlesData* data);
 
 		Pointer<RotatingParticlesData> getModelData() const;

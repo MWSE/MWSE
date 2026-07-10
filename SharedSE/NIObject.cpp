@@ -10,13 +10,9 @@
 #include "NIObjectNET.h"
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-#include "NIAnimationData.h"
 #include "NIAVObject.h"
 #include "NILines.h"
 #include "NINode.h"
-#include "NIParticleModifier.h"
-#include "NIParticles.h"
-#include "NIParticleSystemController.h"
 #include "NITimeController.h"
 #include "NITriShape.h"
 
@@ -27,6 +23,7 @@
 #include "MWSEConfig.h"
 
 import NIAmbientLight;
+import NIAnimationData;
 import NIBillboardNode;
 import NIBSAnimationNode;
 import NICamera;
@@ -35,6 +32,9 @@ import NIDirectionalLight;
 import NIExtraData;
 import NIKeyframeController;
 import NILookAtController;
+import NIParticleModifier;
+import NIParticles;
+import NIParticleSystemController;
 import NIPathController;
 import NIPixelData;
 import NIPointLight;

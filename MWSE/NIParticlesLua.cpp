@@ -3,10 +3,10 @@
 
 #include "LuaManager.h"
 
-#include "NIParticleSystemController.h"
-#include "NIParticles.h"
-#include "NIParticleModifier.h"
 
+import NIParticleModifier;
+import NIParticles;
+import NIParticleSystemController;
 import NIPerParticleData;
 import NIQuaternion;
 

@@ -1,11 +1,12 @@
 module;
 
-#include "NIAnimationData.h"
 #include "NITimeController.h"
 
 #include "SolUtil.h"
 
 export module NIPathController;
+
+import NIAnimationData;
 
 namespace NI {
 	export namespace PathControllerFlags {

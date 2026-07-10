@@ -1,10 +1,10 @@
 module;
 
 #include "NITimeController.h"
-#include "NIAnimationData.h"
 
 export module NIKeyframeController;
 
+import NIAnimationData;
 import NIAnimationKey;
 
 namespace NI {

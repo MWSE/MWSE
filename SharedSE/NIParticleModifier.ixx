@@ -1,19 +1,23 @@
-#pragma once
+module;
 
 #include "NIObject.h"
-#include "NIAnimationData.h"
 
+#include "SolUtil.h"
+
+export module NIParticleModifier;
+
+import NIAnimationData;
 import NIPoint3;
 import NIPoint4;
 
 namespace NI {
-	struct ParticleModifier : Object {
+	export struct ParticleModifier : Object {
 		Pointer<ParticleModifier> nextModifier; // 0x8
 		Object* controller; // 0xC
 	};
 	static_assert(sizeof(ParticleModifier) == 0x10, "NI::ParticleModifier failed size validation");
 
-	struct Gravity : ParticleModifier {
+	export struct Gravity : ParticleModifier {
 		enum class ForceType : unsigned int {
 			Planar = 0,
 			Spherical = 1,
@@ -27,7 +31,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Gravity) == 0x34, "NI::Gravity failed size validation");
 
-	struct ParticleBomb : ParticleModifier {
+	export struct ParticleBomb : ParticleModifier {
 		enum class DecayType : unsigned int {
 			None = 0,
 			Linear = 1,
@@ -50,25 +54,25 @@ namespace NI {
 	};
 	static_assert(sizeof(ParticleBomb) == 0x40, "NI::ParticleBomb failed size validation");
 
-	struct ParticleColorModifier : ParticleModifier {
+	export struct ParticleColorModifier : ParticleModifier {
 		Pointer<ColorData> colorData; // 0x10
 	};
 	static_assert(sizeof(ParticleColorModifier) == 0x14, "NI::ParticleColorModifier failed size validation");
 
-	struct ParticleGrowFade : ParticleModifier {
+	export struct ParticleGrowFade : ParticleModifier {
 		float grow; // 0x10
 		float fade; // 0x14
 	};
 	static_assert(sizeof(ParticleGrowFade) == 0x18, "NI::ParticleGrowFade failed size validation");
 
-	struct ParticleRotation : ParticleModifier {
+	export struct ParticleRotation : ParticleModifier {
 		bool randomInitialAxis; // 0x10
 		Point3 initialAxis; // 0x14
 		float rotationSpeed; // 0x20
 	};
 	static_assert(sizeof(ParticleRotation) == 0x24, "NI::ParticleRotation failed size validation");
 
-	struct ParticleCollider : ParticleModifier {
+	export struct ParticleCollider : ParticleModifier {
 		float restitution; // 0x10
 		bool spawnOnCollide; // 0x14
 		bool dieOnCollide; // 0x15
@@ -77,7 +81,7 @@ namespace NI {
 	};
 	static_assert(sizeof(ParticleCollider) == 0x28, "NI::ParticleCollider failed size validation");
 
-	struct PlanarCollider : ParticleCollider {
+	export struct PlanarCollider : ParticleCollider {
 		float height; // 0x28
 		float width; // 0x2C
 		Point4 planeEquation; // 0x30
@@ -87,7 +91,7 @@ namespace NI {
 	};
 	static_assert(sizeof(PlanarCollider) == 0x64, "NI::PlanarCollider failed size validation");
 
-	struct SphericalCollider : ParticleCollider {
+	export struct SphericalCollider : ParticleCollider {
 		float radius; // 0x28
 		float radiusSquared; // 0x2C
 		Point3 position; // 0x30

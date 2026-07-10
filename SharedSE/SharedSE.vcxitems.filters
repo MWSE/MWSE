@@ -147,15 +147,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticles.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleModifier.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
@@ -163,9 +154,6 @@
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAnimationData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Deque.h">
@@ -564,6 +552,18 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIViewer.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticles.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleSystemController.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>
