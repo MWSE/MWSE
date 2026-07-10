@@ -1,9 +1,9 @@
-#pragma once
+export module NIPerParticleData;
 
 import NIPoint3;
 
 namespace NI {
-	struct PerParticleData {
+	export struct PerParticleData {
 		Point3 velocity; // 0x0
 		Point3 rotationAxis; // 0xC
 		float age; // 0x18

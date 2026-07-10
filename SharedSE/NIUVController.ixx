@@ -1,9 +1,10 @@
 module;
 
 #include "NITimeController.h"
-#include "NIUVData.h"
 
 export module NIUVController;
+
+import NIUVData;
 
 namespace NI {
 	export struct UVController : TimeController {

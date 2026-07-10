@@ -1,12 +1,15 @@
-#pragma once
+module;
 
 #include "NIObject.h"
 
+export module NIScreenPolygon;
+
+import NIColor;
 import NIPoint2;
 import NIPoint3;
 
 namespace NI {
-	struct ScreenPolygon : Object {
+	export struct ScreenPolygon : Object {
 		void* propertyState; // 0x8
 		unsigned short vertexCount; // 0xC
 		Point3* vertices; // 0x10

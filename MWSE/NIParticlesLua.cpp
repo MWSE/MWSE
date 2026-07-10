@@ -3,11 +3,11 @@
 
 #include "LuaManager.h"
 
-#include "NIPerParticleData.h"
 #include "NIParticleSystemController.h"
 #include "NIParticles.h"
 #include "NIParticleModifier.h"
 
+import NIPerParticleData;
 import NIQuaternion;
 
 namespace mwse::lua {

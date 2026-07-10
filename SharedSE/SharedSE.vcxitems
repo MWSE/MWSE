@@ -31,7 +31,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIExtraData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
@@ -44,13 +43,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleModifier.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticles.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIParticleSystemController.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIPerParticleData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIScreenPolygon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
@@ -60,7 +57,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIUVData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
@@ -109,6 +105,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIDynamicEffect.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIExtraData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFile.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.ixx" />
@@ -136,6 +133,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleSystemController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPathController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPathController.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIPerParticleData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPick.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPixelData.cpp" />
@@ -158,6 +156,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRenderer.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIRTTI.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIScreenPolygon.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISkinInstance.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NISortAdjustNode.cpp" />
@@ -188,6 +187,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint4.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIUVData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIViewer.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StdString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)StringUtil.cpp" />

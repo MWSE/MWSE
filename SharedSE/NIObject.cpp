@@ -12,7 +12,6 @@
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "NIAnimationData.h"
 #include "NIAVObject.h"
-#include "NIExtraData.h"
 #include "NILines.h"
 #include "NINode.h"
 #include "NIParticleModifier.h"
@@ -33,6 +32,7 @@ import NIBSAnimationNode;
 import NICamera;
 import NICollisionSwitch;
 import NIDirectionalLight;
+import NIExtraData;
 import NIKeyframeController;
 import NILookAtController;
 import NIPathController;

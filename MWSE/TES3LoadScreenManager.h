@@ -2,7 +2,9 @@
 
 #include "TES3Defines.h"
 
-#include "NIScreenPolygon.h"
+#include "NIPointer.h"
+
+import NIScreenPolygon;
 
 namespace TES3 {
 	struct LoadScreenManager {

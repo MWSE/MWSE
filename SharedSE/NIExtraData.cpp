@@ -1,4 +1,6 @@
-#include "NIExtraData.h"
+module;
+
+#include "NIDefines.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
@@ -6,6 +8,9 @@
 #endif
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NIExtraData;
 
 namespace NI {
 	std::span<BYTE> ExtraData::getGenericData() {

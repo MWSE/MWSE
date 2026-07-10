@@ -1,11 +1,11 @@
 module;
 
 #include "NITimeController.h"
-#include "NIExtraData.h"
 #include "NIHashMap.h"
 
 export module NIKeyframeManager;
 
+import NIExtraData;
 import NIKeyframeController;
 import NIMatrix33;
 import NIPoint3;

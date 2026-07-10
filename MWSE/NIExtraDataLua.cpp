@@ -2,8 +2,7 @@
 
 #include "LuaManager.h"
 
-#include "NIExtraData.h"
-
+import NIExtraData;
 import NIRTTI;
 
 namespace mwse::lua {

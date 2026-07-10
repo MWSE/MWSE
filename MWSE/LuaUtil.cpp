@@ -6,7 +6,6 @@
 
 #include "NIAVObject.h"
 #include "NIDefines.h"
-#include "NIExtraData.h"
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
@@ -85,6 +84,7 @@ import NICamera;
 import NICollisionSwitch;
 import NIDirectionalLight;
 import NIDynamicEffect;
+import NIExtraData;
 import NIPick;
 import NIPoint3;
 import NIPointLight;

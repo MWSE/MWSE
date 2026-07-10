@@ -1,6 +1,6 @@
 #include "NIParticleSystemController.h"
 
-#include "NIPerParticleData.h"
+import NIPerParticleData;
 
 namespace NI {
 	std::span<PerParticleData> ParticleSystemController::getPerParticleData() {

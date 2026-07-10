@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include "NIObject.h"
 
+export module NIUVData;
+
 namespace NI {
-	struct UVData : Object {
+	export struct UVData : Object {
 		struct KeyData {
 			unsigned int numKeys; // 0x0
 			void* keys; // 0x4
