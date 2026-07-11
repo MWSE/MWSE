@@ -4,9 +4,9 @@
 #include "NIDefines.h"
 
 #include "NIIteratedList.h"
-#include "NIPointer.h"
 
-import NINode;
+#include "NINode.h"
+
 import NIPoint3;
 
 namespace TES3 {

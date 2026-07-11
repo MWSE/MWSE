@@ -1,7 +1,10 @@
+module;
+
+#include "NINode.h"
+
 export module NIBSAnimationManager;
 
 import NIBSAnimationNode;
-import NINode;
 
 namespace NI {
 	export struct BSAnimationManager : Node {

@@ -4,8 +4,8 @@
 #include "TES3Object.h"
 
 #include "NIDefines.h"
+#include "NINode.h"
 
-import NINode;
 import NIPoint2;
 import NIPoint3;
 

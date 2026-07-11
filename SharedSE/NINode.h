@@ -1,15 +1,11 @@
-module;
+#pragma once
 
 #include "NIDefines.h"
 #include "NIAVObject.h"
 #include "NITArray.h"
 
-#include "SolUtil.h"
-
-export module NINode;
-
 namespace NI {
-	export struct Node : AVObject {
+	struct Node : AVObject {
 		TArray<Pointer<AVObject>> children; // 0x90
 		DynamicEffectLinkedList effectList; // 0xA8
 
@@ -55,7 +51,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Node) == 0xB0, "NI::Node failed size validation");
 
-	export struct Node_vTable : AVObject_vTable {
+	struct Node_vTable : AVObject_vTable {
 		void(__thiscall* attachChild)(Node*, AVObject*, bool); // 0x94
 		Pointer<AVObject>* (__thiscall* detachChild)(Node*, Pointer<AVObject>*, AVObject*); // 0x98
 		Pointer<AVObject>* (__thiscall* detachChildAt)(Node*, Pointer<AVObject>*, unsigned int); // 0x9C

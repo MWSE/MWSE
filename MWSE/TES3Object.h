@@ -5,9 +5,8 @@
 
 #include "LinkedObjectsList.h"
 #include "NIIteratedList.h"
-#include "NIPointer.h"
 
-import NINode;
+#include "NINode.h"
 
 // Must be added to header files that declare Ni types that can be derived.
 #define MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_TES3(T) \

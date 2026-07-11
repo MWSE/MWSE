@@ -1,5 +1,4 @@
 #pragma once
-
 #include "CrashLogger.hpp"
 #include "Log.h"
 

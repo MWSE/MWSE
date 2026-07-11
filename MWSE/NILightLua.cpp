@@ -3,9 +3,10 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
+#include "NINode.h"
+
 import NIAmbientLight;
 import NIDirectionalLight;
-import NINode;
 import NIRTTI;
 import NISpotLight;
 

@@ -1,6 +1,6 @@
 #include "CSReference.h"
 
-import NINode;
+#include "NINode.h"
 
 namespace se::cs {
 	Attachment* Reference::getAttachment(Attachment::Type type) const {

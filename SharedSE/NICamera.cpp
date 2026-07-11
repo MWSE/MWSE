@@ -11,6 +11,7 @@ module;
 
 module NICamera;
 
+
 namespace NI {
 	bool Frustum::setFOV(float fovDegrees, float aspect) {
 		const auto fovRadians = se::math::degreesToRadians(fovDegrees);

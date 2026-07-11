@@ -3,9 +3,9 @@
 #include "CSStatic.h"
 
 #include "NIAVObject.h"
+#include "NINode.h"
 
 import NIMatrix33;
-import NINode;
 import NITransform;
 
 namespace se::cs {

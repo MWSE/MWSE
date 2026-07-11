@@ -3,13 +3,12 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 #include "MemoryUtil.h"
+#include "NINode.h"
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
 
 #include "LuaCameraControlEvent.h"
-
-import NINode;
 
 namespace TES3 {
 	NI::Transform PlayerAnimationController::previousCameraTransform;

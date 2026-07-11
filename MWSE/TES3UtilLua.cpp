@@ -15,6 +15,7 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
+#include "NINode.h"
 #include "NIStream.h"
 
 #include "TES3Actor.h"
@@ -87,7 +88,6 @@
 
 import NICamera;
 import NIGeometry;
-import NINode;
 import NIPick;
 import NIRTTI;
 import NITriBasedGeometry;

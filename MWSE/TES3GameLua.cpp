@@ -3,10 +3,10 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
+#include "NINode.h"
+
 #include "TES3Game.h"
 #include "TES3Reference.h"
-
-import NINode;
 
 namespace mwse::lua {
 	void bindTES3Game() {

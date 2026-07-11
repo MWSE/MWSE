@@ -9,7 +9,7 @@
 #include "TES3UIElement.h"
 #include "TES3UIMenuController.h"
 
-import NINode;
+#include "NINode.h"
 
 namespace mwse::lua {
 	void bindTES3UIMenuController() {

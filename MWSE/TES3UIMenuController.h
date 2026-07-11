@@ -2,8 +2,8 @@
 
 #include "TES3UIDefines.h"
 #include "TES3UIVector.h"
+#include "NINode.h"
 
-import NINode;
 import NIPick;
 
 namespace TES3::UI {

@@ -2,11 +2,10 @@
 
 #include "LuaUtil.h"
 
+#include "NINode.h"
 #include "TES3GameFile.h"
 #include "TES3ReferenceList.h"
 #include "TES3MobileObject.h"
-
-import NINode;
 
 namespace mwse::lua {
 	template <typename T>

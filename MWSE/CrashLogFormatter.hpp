@@ -7,11 +7,11 @@
 #include "TES3Reference.h"
 #include "TES3Script.h"
 #include "TES3Weather.h"
+#include "NINode.h"
 #include "NIObjectNET.h"
 
 #include "TES3Land.h"
 
-import NINode;
 import NIRTTI;
 
 // If class is described by a single line, no need to name the variable

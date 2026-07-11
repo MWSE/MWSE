@@ -2,9 +2,7 @@
 
 #include "CSPhysicalObject.h"
 
-#include "NIPointer.h"
-
-import NINode;
+#include "NINode.h"
 
 namespace se::cs {
 	namespace BodyPartFlag {

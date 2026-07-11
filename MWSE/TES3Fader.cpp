@@ -5,9 +5,9 @@
 
 #include "TES3WorldController.h"
 
-#include "Log.h"
+#include "NINode.h"
 
-import NINode;
+#include "Log.h"
 
 namespace TES3 {
 	static int faderCount = 5;

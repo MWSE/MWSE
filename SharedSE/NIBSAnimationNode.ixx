@@ -1,10 +1,10 @@
 module;
 
+#include "NINode.h"
+
 #include "SolUtil.h"
 
 export module NIBSAnimationNode;
-
-import NINode;
 
 namespace NI {
 	export struct BSAnimationNode : Node {

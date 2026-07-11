@@ -1,6 +1,7 @@
 module;
 
 #include "NIDefines.h"
+#include "NINode.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -11,8 +12,6 @@ module;
 #endif
 
 module NIPointLight;
-
-import NINode;
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 namespace TES3 {

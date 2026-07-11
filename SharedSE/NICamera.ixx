@@ -1,13 +1,11 @@
 module;
 
-#include "NIAVObject.h"
-
+#include "NINode.h"
 #include "SolUtil.h"
 
 export module NICamera;
 
 import NIMatrix44;
-import NINode;
 import NIRenderer;
 
 namespace NI {

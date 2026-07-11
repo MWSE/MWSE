@@ -3,9 +3,8 @@
 #include "TES3Defines.h"
 #include "TES3Actor.h"
 
+#include "NINode.h"
 #include "NIRange.h"
-
-import NINode;
 
 namespace TES3 {
 	namespace ActorFlagCreature {

@@ -2,8 +2,6 @@
 
 #include "LuaManager.h"
 
-#include "NIAVObject.h"
-
 import NISkinInstance;
 
 namespace mwse::lua {

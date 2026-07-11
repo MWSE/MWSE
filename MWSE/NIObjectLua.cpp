@@ -5,13 +5,13 @@
 
 #include "NIDefines.h"
 #include "NIAVObject.h"
+#include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
 
 #include "StringUtil.h"
 
 import NIDynamicEffect;
-import NINode;
 import NIRTTI;
 
 namespace {

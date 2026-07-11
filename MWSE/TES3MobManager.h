@@ -4,11 +4,10 @@
 
 #include "TES3CriticalSection.h"
 #include "NIIteratedList.h"
-#include "NIPointer.h"
+
+#include "NINode.h"
 
 import NICollisionGroup;
-import NINode;
-import NIPoint3;
 
 namespace TES3 {
 	struct ProcessManager {
