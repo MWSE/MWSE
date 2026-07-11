@@ -1,11 +1,11 @@
 module;
 
 #include "NIDefines.h"
-#include "NITimeController.h"
 
 export module NIFlipController;
 
 import NITexture;
+import NITimeController;
 
 namespace NI {
 	export struct FlipController : TimeController {

@@ -1,22 +1,15 @@
-#pragma once
+module;
 
 #include "NIObject.h"
 
+#include "NIDefines.h"
+
+#include "SolUtil.h"
+
+export module NITimeController;
+
 namespace NI {
-	struct TimeController_vTable : Object_vTable {
-		void(__thiscall* start)(TimeController*, float); // 0x2C
-		void(__thiscall* stop)(TimeController*); // 0x30
-		void(__thiscall* update)(TimeController*, float); // 0x34
-		void(__thiscall* setTarget)(TimeController*, ObjectNET*); // 0x38
-		float(__thiscall* computeScaledTime)(TimeController*, float); // 0x3C
-		void(__thiscall* onPreDisplay)(TimeController*); // 0x40
-		bool(__thiscall* targetIsRequiredType)(const TimeController*); // 0x44
-
-		TimeController_vTable();
-	};
-	static_assert(sizeof(TimeController_vTable) == 0x48, "NI::TimeController's vtable failed size validation");
-
-	namespace TimeControllerFlags {
+	export namespace TimeControllerFlags {
 		typedef unsigned short value_type;
 
 		enum TimeControllerFlags : value_type {
@@ -31,7 +24,7 @@ namespace NI {
 		};
 	}
 
-	struct TimeController : Object {
+	export struct TimeController : Object {
 		TimeControllerFlags::value_type flags; // 0x8
 		float frequency; // 0xC
 		float phase; // 0x10
@@ -112,6 +105,19 @@ namespace NI {
 #endif
 	};
 	static_assert(sizeof(TimeController) == 0x34, "NI::TimeController failed size validation");
+
+	export struct TimeController_vTable : Object_vTable {
+		void(__thiscall* start)(TimeController*, float); // 0x2C
+		void(__thiscall* stop)(TimeController*); // 0x30
+		void(__thiscall* update)(TimeController*, float); // 0x34
+		void(__thiscall* setTarget)(TimeController*, ObjectNET*); // 0x38
+		float(__thiscall* computeScaledTime)(TimeController*, float); // 0x3C
+		void(__thiscall* onPreDisplay)(TimeController*); // 0x40
+		bool(__thiscall* targetIsRequiredType)(const TimeController*); // 0x44
+
+		TimeController_vTable();
+	};
+	static_assert(sizeof(TimeController_vTable) == 0x48, "NI::TimeController's vtable failed size validation");
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

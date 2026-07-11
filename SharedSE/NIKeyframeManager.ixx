@@ -1,7 +1,8 @@
 module;
 
-#include "NITimeController.h"
 #include "NIHashMap.h"
+#include "NIPointer.h"
+#include "NITArray.h"
 
 export module NIKeyframeManager;
 
@@ -9,6 +10,7 @@ import NIExtraData;
 import NIKeyframeController;
 import NIMatrix33;
 import NIPoint3;
+import NITimeController;
 
 namespace NI {
 	export enum struct SequenceState : int {
@@ -23,6 +25,8 @@ namespace NI {
 		SumSource,
 		SumDest
 	};
+
+	struct KeyframeManager;
 
 	export struct Sequence {
 		char* name; // 0x0

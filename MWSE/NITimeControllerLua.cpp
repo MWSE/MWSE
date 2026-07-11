@@ -5,14 +5,13 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NITimeController.h"
-
 import NIAnimationData;
 import NIAnimationKey;
 import NIKeyframeController;
 import NIKeyframeManager;
 import NILookAtController;
 import NIPathController;
+import NITimeController;
 
 namespace mwse::lua {
 	template <typename T>

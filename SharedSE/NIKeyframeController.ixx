@@ -1,11 +1,12 @@
 module;
 
-#include "NITimeController.h"
+#include "NIObject.h"
 
 export module NIKeyframeController;
 
 import NIAnimationData;
 import NIAnimationKey;
+import NITimeController;
 
 namespace NI {
 	export struct KeyframeData : Object {

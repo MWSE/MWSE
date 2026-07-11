@@ -60,9 +60,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObjectNET.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
@@ -564,6 +561,9 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>

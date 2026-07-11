@@ -42,7 +42,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -168,6 +167,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITexture.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITextureEffect.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITransform.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.cpp" />

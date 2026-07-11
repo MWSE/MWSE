@@ -4,9 +4,8 @@
 
 #include "NIObject.h"
 
-#include "NITimeController.h"
-
 import NIExtraData;
+import NITimeController;
 
 namespace NI {
 	struct ObjectNET : Object {

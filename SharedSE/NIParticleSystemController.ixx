@@ -1,7 +1,5 @@
 module;
 
-#include "NITimeController.h"
-
 #include "SolUtil.h"
 
 export module NIParticleSystemController;
@@ -10,6 +8,7 @@ import NIColor;
 import NIParticleModifier;
 import NIPerParticleData;
 import NIPoint3;
+import NITimeController;
 
 namespace NI {
 	export struct ParticleSystemController : TimeController {

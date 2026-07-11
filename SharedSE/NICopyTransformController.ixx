@@ -1,8 +1,10 @@
 module;
 
-#include "NITimeController.h"
+#include "NIDefines.h"
 
 export module NICopyTransformController;
+
+import NITimeController;
 
 namespace NI {
 	export struct CopyTransformController : public TimeController {

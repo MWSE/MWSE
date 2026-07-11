@@ -1,6 +1,11 @@
-#include "NITimeController.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NITimeController;
 
 namespace NI {
 	TimeController_vTable::TimeController_vTable() {
