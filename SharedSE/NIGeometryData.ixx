@@ -1,12 +1,13 @@
 module;
 
-#include "NIObject.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NIGeometryData;
 
 import NIBound;
+import NIObject;
 import NIPoint2;
 
 namespace NI {

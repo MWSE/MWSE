@@ -3,7 +3,7 @@
 #include "LuaGenericEvent.h"
 #include "LuaDisableableEvent.h"
 
-#include "NIObject.h"
+import NIObject;
 
 namespace mwse::lua::event {
 	class KeyframesLoadEvent : public GenericEvent, public DisableableEvent<KeyframesLoadEvent> {

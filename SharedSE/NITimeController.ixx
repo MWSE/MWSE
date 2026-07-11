@@ -1,12 +1,13 @@
 module;
 
-#include "NIObject.h"
-
 #include "NIDefines.h"
+#include "NITArray.h"
 
 #include "SolUtil.h"
 
 export module NITimeController;
+
+import NIObject;
 
 namespace NI {
 	export namespace TimeControllerFlags {

@@ -2,13 +2,13 @@ module;
 
 #include "NIDefines.h"
 
-#include "NIObject.h"
 #include "NIPointer.h"
 
 #include "SolUtil.h"
 
 export module NIPixelData;
 
+import NIObject;
 import NIPixelFormat;
 
 namespace NI {

@@ -1,10 +1,7 @@
-module;
-
-#include "NIObject.h"
-
 export module NIAnimationData;
 
 import NIAnimationKey;
+import NIObject;
 
 namespace NI {
 	export struct FloatData : Object {

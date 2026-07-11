@@ -1,6 +1,5 @@
 module;
 
-#include "NIAVObject.h"
 #include "NINode.h"
 
 #include "NIDefines.h"
@@ -9,6 +8,8 @@ module;
 #include "SolUtil.h"
 
 module NIObjectNET;
+
+import NIAVObject;
 
 namespace NI {
 	void ObjectNET::prependController(TimeController* controller) {

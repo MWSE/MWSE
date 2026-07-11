@@ -1,13 +1,14 @@
 module;
 
 #include "NIDefines.h"
+#include "NIPointer.h"
 
-#include "NIObject.h"
 #include "NIRect.h"
 
 export module NIRenderer;
 
 import NIAccumulator;
+import NIObject;
 import NIProperty;
 import NITexture;
 

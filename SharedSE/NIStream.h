@@ -2,10 +2,11 @@
 
 #include "NIDefines.h"
 
-#include "NIObject.h"
 #include "NIPointer.h"
 #include "NITArray.h"
 #include "NIHashMap.h"
+
+import NIObject;
 
 namespace NI {
 	struct Stream {

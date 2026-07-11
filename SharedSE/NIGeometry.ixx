@@ -1,11 +1,10 @@
 module;
 
-#include "NIAVObject.h"
-
 #include "SolUtil.h"
 
 export module NIGeometry;
 
+import NIAVObject;
 import NIGeometryData;
 import NISkinInstance;
 

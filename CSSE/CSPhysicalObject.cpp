@@ -2,9 +2,9 @@
 
 #include "CSStatic.h"
 
-#include "NIAVObject.h"
 #include "NINode.h"
 
+import NIAVObject;
 import NIMatrix33;
 import NITransform;
 

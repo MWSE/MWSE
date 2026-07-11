@@ -2,7 +2,10 @@
 
 #include "CSPhysicalObject.h"
 
-#include "NIObject.h"
+#include "NIDefines.h"
+#include "NIPointer.h"
+
+import NIObject;
 
 namespace se::cs {
 	struct Attachment {

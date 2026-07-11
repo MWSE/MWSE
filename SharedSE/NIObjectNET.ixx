@@ -2,13 +2,12 @@ module;
 
 #include "NIDefines.h"
 
-#include "NIObject.h"
-
 #include "SolUtil.h"
 
 export module NIObjectNET;
 
 import NIExtraData;
+import NIObject;
 import NITimeController;
 
 namespace NI {

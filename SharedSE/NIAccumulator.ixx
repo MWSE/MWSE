@@ -2,9 +2,11 @@ module;
 
 #include "NIDefines.h"
 
-#include "NIObject.h"
+#include "NIPointer.h"
 
 export module NIAccumulator;
+
+import NIObject;
 
 namespace NI {
 	export struct Accumulator : Object {

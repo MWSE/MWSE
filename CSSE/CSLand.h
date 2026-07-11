@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CSBaseObject.h"
-#include "NIObject.h"
 
 #include "NINode.h"
 
 import NIColor;
+import NIObject;
 import NIPoint3;
 import NITriShape;
 

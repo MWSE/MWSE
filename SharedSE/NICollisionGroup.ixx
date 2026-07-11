@@ -1,10 +1,10 @@
 module;
 
-#include "NIAVObject.h"
 #include "NITArray.h"
 
 export module NICollisionGroup;
 
+import NIAVObject;
 import NIPoint3;
 
 namespace NI {

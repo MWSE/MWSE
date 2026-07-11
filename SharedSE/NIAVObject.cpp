@@ -1,4 +1,4 @@
-#include "NIAVObject.h"
+module;
 
 #include "NIDefines.h"
 #include "NINode.h"
@@ -6,11 +6,13 @@
 #include "BitUtil.h"
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+#include "SolUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #endif
 
+module NIAVObject;
 import NICamera;
 import NICollisionSwitch;
 import NIGeometry;

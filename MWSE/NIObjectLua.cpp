@@ -4,13 +4,13 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NIAVObject.h"
 #include "NINode.h"
-#include "NIObject.h"
 
 #include "StringUtil.h"
 
+import NIAVObject;
 import NIDynamicEffect;
+import NIObject;
 import NIObjectNET;
 import NIRTTI;
 

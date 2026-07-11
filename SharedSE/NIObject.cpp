@@ -1,4 +1,4 @@
-#include "NIObject.h"
+module;
 
 #include "NIDefines.h"
 
@@ -8,7 +8,6 @@
 #include "MemoryUtil.h"
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
-#include "NIAVObject.h"
 #include "NINode.h"
 
 #include "LuaObjectInvalidatedEvent.h"
@@ -16,9 +15,13 @@
 #include "LuaManager.h"
 
 #include "MWSEConfig.h"
+#endif
+
+module NIObject;
 
 import NIAmbientLight;
 import NIAnimationData;
+import NIAVObject;
 import NIBillboardNode;
 import NIBSAnimationNode;
 import NICamera;
@@ -28,6 +31,7 @@ import NIExtraData;
 import NIKeyframeController;
 import NILines;
 import NILookAtController;
+import NIObjectNET;
 import NIParticleModifier;
 import NIParticles;
 import NIParticleSystemController;
@@ -36,6 +40,7 @@ import NIPixelData;
 import NIPointLight;
 import NIProperty;
 import NIRenderedTexture;
+import NIRTTI;
 import NISkinInstance;
 import NISortAdjustNode;
 import NISpotLight;
@@ -44,10 +49,6 @@ import NISwitchNode;
 import NITextureEffect;
 import NITimeController;
 import NITriShape;
-#endif
-
-import NIObjectNET;
-import NIRTTI;
 
 namespace NI {
 	Object::Object() {

@@ -1,11 +1,8 @@
-module;
-
-#include "NIObject.h"
-
 export module NIKeyframeController;
 
 import NIAnimationData;
 import NIAnimationKey;
+import NIObject;
 import NITimeController;
 
 namespace NI {

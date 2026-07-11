@@ -1,10 +1,10 @@
 module;
 
-#include "NIAVObject.h"
 #include "NIStream.h"
 
 module NICopyTransformController;
 
+import NIAVObject;
 import NIBinaryStream;
 import NIRTTI;
 

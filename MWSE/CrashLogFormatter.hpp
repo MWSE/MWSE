@@ -11,6 +11,7 @@
 
 #include "NINode.h"
 
+import NIObject;
 import NIObjectNET;
 import NIRTTI;
 

@@ -42,8 +42,6 @@
 #include "TES3WorldController.h"
 #include "ReferenceTracker.h"
 
-#include "NIAVObject.h"
-
 #include "BitUtil.h"
 #include "ScriptUtil.h"
 #include "TES3Util.h"
@@ -58,6 +56,7 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+import NIAVObject;
 import NIBound;
 import NIBSAnimationManager;
 import NICollisionGroup;

@@ -1,10 +1,12 @@
 module;
 
-#include "NIAVObject.h"
+#include "NILinkedList.h"
 
 #include "SolUtil.h"
 
 export module NIDynamicEffect;
+
+import NIAVObject;
 
 namespace NI {
 	export struct DynamicEffect : AVObject {

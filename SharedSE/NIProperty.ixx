@@ -1,7 +1,5 @@
 module;
 
-#include "NIObject.h"
-
 #include "NILinkedList.h"
 
 #include "SolUtil.h"
@@ -9,6 +7,7 @@ module;
 export module NIProperty;
 
 import NIColor;
+import NIObject;
 import NIObjectNET;
 
 namespace NI {

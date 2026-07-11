@@ -6,7 +6,6 @@
 #include "StringUtil.h"
 #include "WindowsUtil.h"
 
-#include "NIAVObject.h"
 #include "NINode.h"
 
 #include "CSCell.h"
@@ -31,6 +30,7 @@
 
 #include "DialogProcContext.h"
 
+import NIAVObject;
 import NIBound;
 import NICamera;
 import NICollisionSwitch;

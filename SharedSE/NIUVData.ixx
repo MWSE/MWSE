@@ -1,8 +1,6 @@
-module;
-
-#include "NIObject.h"
-
 export module NIUVData;
+
+import NIObject;
 
 namespace NI {
 	export struct UVData : Object {

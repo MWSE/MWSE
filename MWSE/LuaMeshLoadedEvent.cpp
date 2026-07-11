@@ -3,6 +3,8 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
+import NIAVObject;
+
 namespace mwse::lua::event {
 	MeshLoadedEvent::MeshLoadedEvent(const char* path, NI::AVObject* mesh) :
 		GenericEvent("meshLoaded"),

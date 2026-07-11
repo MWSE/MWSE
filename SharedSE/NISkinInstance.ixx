@@ -1,10 +1,12 @@
 module;
 
-#include "NIObject.h"
+#include "NIPointer.h"
 
 export module NISkinInstance;
 
+import NIAVObject;
 import NIBound;
+import NIObject;
 import NITransform;
 import NITriangle;
 

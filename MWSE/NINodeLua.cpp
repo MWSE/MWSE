@@ -2,9 +2,9 @@
 
 #include "LuaManager.h"
 
-#include "NIAVObject.h"
 #include "NINode.h"
 
+import NIAVObject;
 import NIBillboardNode;
 import NISortAdjustNode;
 

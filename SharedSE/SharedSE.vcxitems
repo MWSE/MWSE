@@ -25,14 +25,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StlList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
@@ -61,6 +59,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationKey.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
@@ -117,6 +116,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix44.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NINode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIObject.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.cpp" />

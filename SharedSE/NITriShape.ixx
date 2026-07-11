@@ -1,11 +1,12 @@
 module;
 
-#include "NIAVObject.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NITriShape;
 
+import NIAVObject;
 import NITriBasedGeometry;
 
 namespace NI {

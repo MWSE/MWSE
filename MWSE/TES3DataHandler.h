@@ -6,7 +6,6 @@
 #include "TES3MagicEffect.h"
 #include "TES3Skill.h"
 
-#include "NIAVObject.h"
 #include "NIHashMap.h"
 
 #include "StlList.h"
@@ -15,6 +14,7 @@
 #define MWSE_RAISED_FILE_LIMIT true
 #define MWSE_CUSTOM_GLOBALS true
 
+import NIAVObject;
 import NISourceTexture;
 
 namespace TES3 {

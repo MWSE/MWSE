@@ -2,7 +2,7 @@
 
 #include "TES3Object.h"
 
-#include "NIObject.h"
+import NIObject;
 
 namespace TES3 {
 	struct Land : BaseObject {

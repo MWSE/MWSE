@@ -2,6 +2,8 @@ module;
 
 #include "NINode.h"
 
+#include "SolUtil.h"
+
 export module NICollisionSwitch;
 
 namespace NI {

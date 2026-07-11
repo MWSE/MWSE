@@ -2,8 +2,10 @@
 
 #include "TES3Defines.h"
 
-#include "NIObject.h"
+#include "NIDefines.h"
+#include "NIPointer.h"
 
+import NIObject;
 import NIPoint3;
 
 namespace TES3 {

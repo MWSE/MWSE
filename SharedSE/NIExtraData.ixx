@@ -1,10 +1,12 @@
 module;
 
-#include "NIObject.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NIExtraData;
+
+import NIObject;
 
 namespace NI {
 	export struct ExtraData : Object {

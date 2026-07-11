@@ -1,10 +1,7 @@
-module;
-
-#include "NIObject.h"
-
 export module NIScreenPolygon;
 
 import NIColor;
+import NIObject;
 import NIPoint2;
 import NIPoint3;
 

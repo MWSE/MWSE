@@ -10,8 +10,6 @@
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 
-#include "NIAVObject.h"
-
 #include "WindowMain.h"
 
 #include "DialogActorAIWindow.h"
@@ -48,6 +46,7 @@
 #define new DEBUG_NEW
 #endif
 
+import NIAVObject;
 import NICamera;
 import NILinesData;
 import NISortAdjustNode;

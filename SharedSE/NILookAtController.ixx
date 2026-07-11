@@ -1,11 +1,10 @@
 module;
 
-#include "NIAVObject.h"
-
 #include "SolUtil.h"
 
 export module NILookAtController;
 
+import NIAVObject;
 import NITimeController;
 
 namespace NI {

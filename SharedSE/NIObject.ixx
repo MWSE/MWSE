@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
@@ -7,8 +7,10 @@
 
 #include "SolUtil.h"
 
+export module NIObject;
+
 namespace NI {
-	struct Object {
+	export struct Object {
 		union {
 			AVObject_vTable* asAVObject;
 			DynamicEffect_vTable* asDynamicEffect;
@@ -86,7 +88,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Object) == 0x8, "NI::Object failed size validation");
 
-	struct Object_vTable {
+	export struct Object_vTable {
 		void(__thiscall* destructor)(Object*, int); // 0x0
 		RTTI* (__thiscall* getRTTI)(const Object*); // 0x4
 		Object* (__thiscall* createClone)(Object*); // 0x8

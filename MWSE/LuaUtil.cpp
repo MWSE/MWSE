@@ -4,10 +4,8 @@
 
 #include "Log.h"
 
-#include "NIAVObject.h"
 #include "NIDefines.h"
 #include "NINode.h"
-#include "NIObject.h"
 
 #include "TES3Defines.h"
 #include "TES3Activator.h"
@@ -78,11 +76,13 @@
 #include "MWSEConfig.h"
 
 import NIAmbientLight;
+import NIAVObject;
 import NICamera;
 import NICollisionSwitch;
 import NIDirectionalLight;
 import NIDynamicEffect;
 import NIExtraData;
+import NIObject;
 import NIObjectNET;
 import NIPick;
 import NIPoint3;

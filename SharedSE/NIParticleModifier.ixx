@@ -1,12 +1,11 @@
 module;
 
-#include "NIObject.h"
-
 #include "SolUtil.h"
 
 export module NIParticleModifier;
 
 import NIAnimationData;
+import NIObject;
 import NIPoint3;
 import NIPoint4;
 

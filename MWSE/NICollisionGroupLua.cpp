@@ -2,8 +2,8 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NIAVObject.h"
 
+import NIAVObject;
 import NICollisionGroup;
 
 namespace mwse::lua {

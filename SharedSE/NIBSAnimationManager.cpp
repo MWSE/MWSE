@@ -1,11 +1,10 @@
 module;
 
-#include "NIAVObject.h"
-
 #include "NIDefines.h"
 
 module NIBSAnimationManager;
 
+import NIAVObject;
 import NIBound;
 
 namespace NI {

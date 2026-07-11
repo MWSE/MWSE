@@ -1,6 +1,5 @@
 module;
 
-#include "NIAVObject.h"
 #include "NIDefines.h"
 
 #include "BitUtil.h"
@@ -9,6 +8,7 @@ module;
 
 module NICollisionSwitch;
 
+import NIAVObject;
 import NIPick;
 
 namespace NI {

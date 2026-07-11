@@ -3,7 +3,10 @@
 #include "LuaGenericEvent.h"
 #include "LuaDisableableEvent.h"
 
-#include "NIObject.h"
+#include "NIPointer.h"
+
+import NIAVObject;
+import NIObject;
 
 namespace mwse::lua::event {
 	class MeshLoadedEvent : public GenericEvent, public DisableableEvent<MeshLoadedEvent> {
