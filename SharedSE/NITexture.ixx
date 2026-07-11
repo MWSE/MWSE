@@ -1,11 +1,12 @@
 module;
 
-#include "NIObjectNET.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NITexture;
 
+import NIObjectNET;
 import NIPixelFormat;
 
 namespace NI {

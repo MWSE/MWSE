@@ -1,9 +1,14 @@
-#include "NIObjectNET.h"
+module;
 
 #include "NIAVObject.h"
 #include "NINode.h"
 
+#include "NIDefines.h"
+
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NIObjectNET;
 
 namespace NI {
 	void ObjectNET::prependController(TimeController* controller) {

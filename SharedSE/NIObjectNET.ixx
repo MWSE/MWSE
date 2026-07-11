@@ -1,14 +1,18 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
 
 #include "NIObject.h"
 
+#include "SolUtil.h"
+
+export module NIObjectNET;
+
 import NIExtraData;
 import NITimeController;
 
 namespace NI {
-	struct ObjectNET : Object {
+	export struct ObjectNET : Object {
 		char* name; // 0x8
 		Pointer<ExtraData> extraData; // 0xC
 		Pointer<TimeController> controllers; // 0x10

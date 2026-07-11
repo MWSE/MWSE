@@ -1,11 +1,12 @@
 #pragma once
 
-#include "NIObjectNET.h"
+#include "NIObject.h"
 
 #include "NILinkedList.h"
 
 import NIBound;
 import NIBoundingBox;
+import NIObjectNET;
 import NIPoint3;
 import NIProperty;
 import NITransform;

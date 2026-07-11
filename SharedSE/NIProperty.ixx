@@ -1,6 +1,6 @@
 module;
 
-#include "NIObjectNET.h"
+#include "NIObject.h"
 
 #include "NILinkedList.h"
 
@@ -9,6 +9,7 @@ module;
 export module NIProperty;
 
 import NIColor;
+import NIObjectNET;
 
 namespace NI {
 	export enum class PropertyType : int {

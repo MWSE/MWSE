@@ -8,7 +8,6 @@
 #include "NIDefines.h"
 #include "NINode.h"
 #include "NIObject.h"
-#include "NIObjectNET.h"
 
 #include "TES3Defines.h"
 #include "TES3Activator.h"
@@ -84,6 +83,7 @@ import NICollisionSwitch;
 import NIDirectionalLight;
 import NIDynamicEffect;
 import NIExtraData;
+import NIObjectNET;
 import NIPick;
 import NIPoint3;
 import NIPointLight;

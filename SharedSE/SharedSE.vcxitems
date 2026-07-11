@@ -33,7 +33,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObject.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIObjectNET.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPointer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRange.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h" />
@@ -119,6 +118,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NINode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIObjectNET.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticleModifier.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIParticles.cpp" />

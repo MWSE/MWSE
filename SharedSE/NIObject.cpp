@@ -7,8 +7,6 @@
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
-#include "NIObjectNET.h"
-
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "NIAVObject.h"
 #include "NINode.h"
@@ -48,6 +46,7 @@ import NITimeController;
 import NITriShape;
 #endif
 
+import NIObjectNET;
 import NIRTTI;
 
 namespace NI {

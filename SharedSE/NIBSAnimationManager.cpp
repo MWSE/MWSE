@@ -1,5 +1,7 @@
 module;
 
+#include "NIAVObject.h"
+
 #include "NIDefines.h"
 
 module NIBSAnimationManager;

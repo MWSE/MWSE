@@ -2,16 +2,16 @@
 
 #include "TES3Cell.h"
 #include "TES3GameFile.h"
+#include "TES3Land.h"
 #include "TES3MobileObject.h"
 #include "TES3Object.h"
 #include "TES3Reference.h"
 #include "TES3Script.h"
 #include "TES3Weather.h"
+
 #include "NINode.h"
-#include "NIObjectNET.h"
 
-#include "TES3Land.h"
-
+import NIObjectNET;
 import NIRTTI;
 
 // If class is described by a single line, no need to name the variable

@@ -7,11 +7,11 @@
 #include "NIAVObject.h"
 #include "NINode.h"
 #include "NIObject.h"
-#include "NIObjectNET.h"
 
 #include "StringUtil.h"
 
 import NIDynamicEffect;
+import NIObjectNET;
 import NIRTTI;
 
 namespace {
