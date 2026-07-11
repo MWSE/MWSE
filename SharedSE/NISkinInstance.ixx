@@ -2,10 +2,9 @@ module;
 
 #include "NIObject.h"
 
-#include "NIBound.h"
-
 export module NISkinInstance;
 
+import NIBound;
 import NITransform;
 import NITriangle;
 

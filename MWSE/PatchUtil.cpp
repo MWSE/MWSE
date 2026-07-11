@@ -43,7 +43,6 @@
 #include "ReferenceTracker.h"
 
 #include "NIAVObject.h"
-#include "NIBound.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -59,6 +58,7 @@
 #include "MWSEDefs.h"
 #include "CrashLogExceptionHandler.hpp"
 
+import NIBound;
 import NIBSAnimationManager;
 import NICollisionGroup;
 import NICollisionSwitch;

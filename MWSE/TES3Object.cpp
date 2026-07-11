@@ -50,8 +50,6 @@
 #include "TES3Weapon.h"
 #include "TES3WorldController.h"
 
-#include "NIBound.h"
-
 #include "TES3UIMenuController.h"
 
 #include "BitUtil.h"
@@ -64,6 +62,7 @@
 
 #include "Log.h"
 
+import NIBound;
 import NIBoundingBox;
 
 namespace TES3 {

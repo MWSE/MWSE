@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include "NIDefines.h"
+
+export module NIBound;
 
 import NIMatrix33;
 import NIPoint3;
 
 namespace NI {
-	struct Bound {
+	export struct Bound {
 		Point3 center; // 0x0
 		float radius; // 0xC
 
@@ -53,7 +55,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Bound) == 0x10, "NI::Bound failed size validation");
 
-	enum class BoundingVolumeType : int {
+	export enum class BoundingVolumeType : int {
 		Sphere,
 		Box,
 		Capsule,
@@ -63,7 +65,7 @@ namespace NI {
 		ENUM_MAX,
 	};
 
-	struct BoundingVolume_vtbl {
+	export struct BoundingVolume_vtbl {
 		void* load;
 		void* save;
 		void* dtor;
@@ -79,7 +81,7 @@ namespace NI {
 	};
 	static_assert(sizeof(BoundingVolume_vtbl) == 0x30, "NI::BoundingVolume's vtable failed size validation");
 
-	struct BoundingVolume {
+	export struct BoundingVolume {
 		BoundingVolume_vtbl* vtbl; // 0x0
 
 		BoundingVolumeType getType() const;
@@ -91,22 +93,22 @@ namespace NI {
 		T bounds; // 0x4
 	};
 
-	struct Sphere {
+	export struct Sphere {
 		Point3 center; // 0x0
 		float radius; // 0xC
 	};
 
-	struct SphereBoundingVolume : TypedBoundingVolume<Sphere> {
+	export struct SphereBoundingVolume : TypedBoundingVolume<Sphere> {
 	};
 
-	struct BoxBound {
+	export struct BoxBound {
 		Point3 center; // 0x4
 		Matrix33 basis; // 0xC
 		Point3 extent; // 0x30
 	};
 	static_assert(sizeof(BoxBound) == 0x3C, "NI::SphereBV failed size validation");
 
-	struct BoxBoundingVolume : TypedBoundingVolume<BoxBound> {
+	export struct BoxBoundingVolume : TypedBoundingVolume<BoxBound> {
 		static BoxBoundingVolume* create(const Point3& extent, const Point3& center, const Point3& xAxis, const Point3& yAxis, const Point3& zAxis);
 	};
 	static_assert(sizeof(BoxBoundingVolume) == 0x40, "NI::SphereBV failed size validation");

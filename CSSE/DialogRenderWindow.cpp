@@ -7,7 +7,6 @@
 #include "WindowsUtil.h"
 
 #include "NIAVObject.h"
-#include "NIBound.h"
 #include "NINode.h"
 
 #include "CSCell.h"
@@ -32,6 +31,7 @@
 
 #include "DialogProcContext.h"
 
+import NIBound;
 import NICamera;
 import NICollisionSwitch;
 import NIGeometry;

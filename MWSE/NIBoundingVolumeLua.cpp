@@ -3,7 +3,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIBound.h"
+import NIBound;
 
 namespace mwse::lua {
 	void bindNIBoundingVolume() {

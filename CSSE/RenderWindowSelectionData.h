@@ -2,10 +2,11 @@
 
 #include "CSDefines.h"
 
-#include "NIBound.h"
 #include "CSReference.h"
 
 #include "MemoryUtil.h"
+
+import NIBound;
 
 namespace se::cs::dialog::render_window {
 	struct SelectionData {

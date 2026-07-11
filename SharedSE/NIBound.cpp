@@ -1,7 +1,11 @@
-#include "NIBound.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
+
+module NIBound;
 
 namespace NI {
 	void Bound::computeFromData(unsigned int vertexCount, const Point3* vertices, unsigned int stride) {

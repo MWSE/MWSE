@@ -1,9 +1,8 @@
 #include "NINode.h"
 
-#include "NIBound.h"
-
 #include "ExceptionUtil.h"
 
+import NIBound;
 import NIDynamicEffect;
 import NIPointLight;
 

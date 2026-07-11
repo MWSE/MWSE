@@ -26,7 +26,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MemoryUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIBound.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
@@ -67,6 +66,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />

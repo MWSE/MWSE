@@ -1,8 +1,10 @@
 module;
 
-#include "NIBound.h"
+#include "NIDefines.h"
 
 module NIBSAnimationManager;
+
+import NIBound;
 
 namespace NI {
 

@@ -2,10 +2,11 @@
 
 #include "NIObjectNET.h"
 
-#include "NIBound.h"
 #include "NILinkedList.h"
 
+import NIBound;
 import NIBoundingBox;
+import NIPoint3;
 import NIProperty;
 import NITransform;
 
