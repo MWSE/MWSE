@@ -1,17 +1,16 @@
-#pragma once
+export module NITriBasedGeometry;
 
-#include "NIGeometry.h"
-
+import NIGeometry;
 import NITriBasedGeometryData;
 
 namespace NI {
-	struct TriBasedGeometry_vTable : Geometry_vTable {
+	export struct TriBasedGeometry_vTable : Geometry_vTable {
 		void* unknown_0x9C;
 		void* unknown_0xA0;
 	};
 	static_assert(sizeof(TriBasedGeometry_vTable) == 0xA4, "NI::TriBasedGeometry_vTable failed size validation");
 
-	struct TriBasedGeometry : Geometry {
+	export struct TriBasedGeometry : Geometry {
 
 		TriBasedGeometry(TriBasedGeometryData* data);
 

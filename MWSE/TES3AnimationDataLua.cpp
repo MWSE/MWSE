@@ -7,8 +7,7 @@
 #include "TES3Reference.h"
 #include "TES3Sound.h"
 
-#include "NIGeometry.h"
-
+import NIGeometry;
 import NIKeyframeManager;
 
 namespace mwse::lua {

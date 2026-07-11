@@ -1,7 +1,9 @@
 #pragma once
 
-#include "NIGeometry.h"
+#include "NIDefines.h"
+#include "NIPointer.h"
 
+import NIGeometry;
 import NISwitchNode;
 
 namespace se::cs::dialog::render_window {

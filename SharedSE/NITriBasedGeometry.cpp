@@ -1,4 +1,6 @@
-#include "NITriBasedGeometry.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -6,6 +8,8 @@
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "MWSEConfig.h"
 #endif
+
+module NITriBasedGeometry;
 
 import NIPick;
 import NISkinInstance;

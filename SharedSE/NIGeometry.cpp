@@ -1,4 +1,8 @@
-#include "NIGeometry.h"
+module;
+
+#include "SolUtil.h"
+
+module NIGeometry;
 
 namespace NI {
 	Pointer<GeometryData> Geometry::getModelData() const {

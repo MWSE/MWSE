@@ -1,12 +1,14 @@
 module;
 
-#include "NITriBasedGeometry.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NIParticles;
 
 import NIPoint3;
+import NITriBasedGeometry;
+import NITriBasedGeometryData;
 
 namespace NI {
 	export struct ParticlesData : TriBasedGeometryData {

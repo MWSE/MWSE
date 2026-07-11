@@ -1,18 +1,16 @@
-#pragma once
+module;
 
 #include "NIAVObject.h"
+
+#include "SolUtil.h"
+
+export module NIGeometry;
 
 import NIGeometryData;
 import NISkinInstance;
 
 namespace NI {
-	struct Geometry_vTable : AVObject_vTable {
-		void* (__thiscall* setModelData)(Geometry*, GeometryData*); // 0x94
-		void(__thiscall* calculateNormals)(Geometry*); // 0x98
-	};
-	static_assert(sizeof(Geometry_vTable) == 0x9C, "NI::Geometry_vTable failed size validation");
-
-	struct Geometry : AVObject {
+	export struct Geometry : AVObject {
 		void* propertyState; // 0x90
 		void* effectState; // 0x94
 		Pointer<GeometryData> modelData; // 0x98
@@ -34,8 +32,14 @@ namespace NI {
 	};
 	static_assert(sizeof(Geometry) == 0xAC, "NI::Geometry failed size validation");
 
-	void __cdecl TransformVertices(Point3* vertices, unsigned short vertexCount, const Transform* transform);
-	void __cdecl TransformVertices(Point3* out_vertices, unsigned short vertexCount, const Point3* in_vertices, const Transform* transform);
+	export void __cdecl TransformVertices(Point3* vertices, unsigned short vertexCount, const Transform* transform);
+	export void __cdecl TransformVertices(Point3* out_vertices, unsigned short vertexCount, const Point3* in_vertices, const Transform* transform);
+
+	export struct Geometry_vTable : AVObject_vTable {
+		void* (__thiscall* setModelData)(Geometry*, GeometryData*); // 0x94
+		void(__thiscall* calculateNormals)(Geometry*); // 0x98
+	};
+	static_assert(sizeof(Geometry_vTable) == 0x9C, "NI::Geometry_vTable failed size validation");
 }
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

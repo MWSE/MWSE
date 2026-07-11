@@ -15,10 +15,8 @@
 #include "MemoryUtil.h"
 #include "MWSEConfig.h"
 
-#include "NIGeometry.h"
 #include "NINode.h"
 #include "NIStream.h"
-#include "NITriBasedGeometry.h"
 
 #include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
@@ -89,8 +87,10 @@
 #include "MathUtil.h"
 
 import NICamera;
+import NIGeometry;
 import NIPick;
 import NIRTTI;
+import NITriBasedGeometry;
 import NITriShape;
 
 namespace mwse::lua {

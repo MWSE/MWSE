@@ -30,7 +30,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
@@ -44,7 +43,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -100,6 +98,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.cpp" />
@@ -174,6 +173,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />

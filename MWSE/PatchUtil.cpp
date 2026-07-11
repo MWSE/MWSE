@@ -44,7 +44,6 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NITriBasedGeometry.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"

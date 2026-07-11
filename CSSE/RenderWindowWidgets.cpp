@@ -5,13 +5,12 @@
 #include "CSRecordHandler.h"
 #include "CSModelLoader.h"
 
-#include "NIGeometry.h"
-
 #include "LogUtil.h"
 #include "MathUtil.h"
 
 import NIColor;
 import NICamera;
+import NIGeometry;
 import NILines;
 import NILinesData;
 import NIMatrix33;

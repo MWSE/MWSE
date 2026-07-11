@@ -1,11 +1,12 @@
 module;
 
-#include "NIGeometry.h"
+#include "NIDefines.h"
 
 #include "SolUtil.h"
 
 export module NILines;
 
+import NIGeometry;
 import NILinesData;
 
 namespace NI {
