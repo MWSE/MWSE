@@ -3,13 +3,12 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NIGeometryData.h"
-#include "NILinesData.h"
-#include "NITriBasedGeometryData.h"
-#include "NITriShapeData.h"
-
 import NIColor;
+import NIGeometryData;
+import NILinesData;
 import NIRTTI;
+import NITriBasedGeometryData;
+import NITriShapeData;
 
 namespace mwse::lua {
 	void bindNIGeometryData() {

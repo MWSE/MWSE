@@ -11,7 +11,6 @@
 #include "CSReference.h"
 
 #include "NIAVObject.h"
-#include "NILinesData.h"
 
 #include "WindowMain.h"
 
@@ -50,6 +49,7 @@
 #endif
 
 import NICamera;
+import NILinesData;
 import NISortAdjustNode;
 
 namespace se::cs {

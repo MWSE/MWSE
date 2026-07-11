@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NIAVObject.h"
-#include "NIGeometryData.h"
 
+import NIGeometryData;
 import NISkinInstance;
 
 namespace NI {

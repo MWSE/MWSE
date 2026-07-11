@@ -1,8 +1,12 @@
-#include "NILinesData.h"
+module;
 
+#include "NIDefines.h"
 #include "NIStream.h"
+
 #include "MemoryUtil.h"
 #include "ExceptionUtil.h"
+
+module NILinesData;
 
 import NIBinaryStream;
 

@@ -1,4 +1,6 @@
-#include "NITriShapeData.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -6,6 +8,8 @@
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 #include "LuaUtil.h"
 #endif
+
+module NITriShapeData;
 
 import NIColor;
 

@@ -1,11 +1,14 @@
-#pragma once
+module;
 
-#include "NITriBasedGeometryData.h"
+#include "NIPOinter.h"
+
+export module NITriShapeData;
 
 import NITriangle;
+import NITriBasedGeometryData;
 
 namespace NI {
-	struct TriShapeData : TriBasedGeometryData {
+	export struct TriShapeData : TriBasedGeometryData {
 		unsigned int triangleListLength; // 0x38
 		Triangle* triangleList; // 0x3C
 		void* sharedNormals; // 0x40

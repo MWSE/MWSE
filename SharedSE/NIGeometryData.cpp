@@ -1,4 +1,8 @@
-#include "NIGeometryData.h"
+module;
+
+#include "SolUtil.h"
+
+module NIGeometryData;
 
 import NIColor;
 

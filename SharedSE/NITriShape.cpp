@@ -1,8 +1,8 @@
 #include "NITriShape.h"
 
-#include "NITriShapeData.h"
-
 #include "ExceptionUtil.h"
+
+import NITriShapeData;
 
 namespace NI {
 	TriShape::TriShape(TriBasedGeometryData* data) : TriBasedGeometry(data) {

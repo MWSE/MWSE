@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIGeometry.h"
-#include "NITriBasedGeometryData.h"
+
+import NITriBasedGeometryData;
 
 namespace NI {
 	struct TriBasedGeometry_vTable : Geometry_vTable {

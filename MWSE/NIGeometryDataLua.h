@@ -1,7 +1,8 @@
 #pragma once
 
 #include "NIObjectLua.h"
-#include "NIGeometryData.h"
+
+import NIGeometryData;
 
 namespace mwse::lua {
 	template <typename T>

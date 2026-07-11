@@ -31,10 +31,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.TESConstructionSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObject.h" />
@@ -48,10 +46,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeData.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -108,6 +103,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIFlipController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIKeyframeManager.cpp" />
@@ -116,6 +112,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILines.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILookAtController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILookAtController.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix33.cpp" />
@@ -179,8 +176,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriangle.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.ixx" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIPoint2.cpp" />

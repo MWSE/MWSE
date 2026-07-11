@@ -44,9 +44,7 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NILinesData.h"
 #include "NITriShape.h"
-#include "NITriShapeData.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -66,10 +64,12 @@ import NIBSAnimationManager;
 import NICollisionGroup;
 import NICollisionSwitch;
 import NIFlipController;
+import NILinesData;
 import NIPick;
 import NIPoint3;
 import NIPointLight;
 import NISortAdjustNode;
+import NITriShapeData;
 import NIUVController;
 
 namespace mwse::patch {

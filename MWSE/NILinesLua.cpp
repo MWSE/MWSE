@@ -5,8 +5,8 @@
 
 #include "NIDefines.h"
 #include "NILines.h"
-#include "NILinesData.h"
 
+import NILinesData;
 import NIRTTI;
 
 namespace mwse::lua {

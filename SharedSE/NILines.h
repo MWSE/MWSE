@@ -2,7 +2,7 @@
 
 #include "NIGeometry.h"
 
-#include "NILinesData.h"
+import NILinesData;
 
 namespace NI {
 	struct Lines : Geometry {

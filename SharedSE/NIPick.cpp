@@ -3,7 +3,6 @@ module;
 #include "NIDefines.h"
 
 #include "NITriShape.h"
-#include "NITriShapeData.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -14,6 +13,7 @@ module;
 
 module NIPick;
 import NISkinInstance;
+import NITriShapeData;
 
 namespace NI {
 	Pick::Pick() {

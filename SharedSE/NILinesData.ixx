@@ -1,9 +1,9 @@
-#pragma once
+export module NILinesData;
 
-#include "NIGeometryData.h"
+import NIGeometryData;
 
 namespace NI {
-	struct LinesData : GeometryData {
+	export struct LinesData : GeometryData {
 		bool* lineSegmentFlags; // 0x34
 
 		// Fixed loadBinary implementation that correctly reads per-segment flags.

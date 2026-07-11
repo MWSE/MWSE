@@ -1,9 +1,9 @@
-#pragma once
+export module NITriShapeDynamicData;
 
-#include "NITriShapeData.h"
+import NITriShapeData;
 
 namespace NI {
-	struct TriShapeDynamicData : TriShapeData {
+	export struct TriShapeDynamicData : TriShapeData {
 		unsigned short activeVertices; // 0x48
 		unsigned short activeTriangles; // 0x4A
 	};

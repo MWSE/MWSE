@@ -105,19 +105,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometryData.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h">
@@ -138,16 +129,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.TESConstructionSet.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRTTIDefines.Morrowind.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NILinesData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIConfig.Morrowind.h">
@@ -564,6 +549,21 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAnimationData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>

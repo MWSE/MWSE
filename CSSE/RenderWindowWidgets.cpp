@@ -7,13 +7,13 @@
 
 #include "NIGeometry.h"
 #include "NILines.h"
-#include "NILinesData.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
 
 import NIColor;
 import NICamera;
+import NILinesData;
 import NIMatrix33;
 import NISwitchNode;
 

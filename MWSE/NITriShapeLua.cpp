@@ -7,10 +7,10 @@
 
 #include "NIDefines.h"
 #include "NITriShape.h"
-#include "NITriShapeData.h"
 
 import NISwitchNode;
 import NIRTTI;
+import NITriShapeData;
 
 namespace mwse::lua {
 	void bindNITriShape() {

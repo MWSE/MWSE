@@ -35,9 +35,7 @@
 #include "TES3Weather.h"
 #include "TES3WorldController.h"
 
-#include "NILinesData.h"
 #include "NITriShape.h"
-#include "NITriShapeData.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -53,8 +51,10 @@
 
 import NICollisionSwitch;
 import NIFlipController;
+import NILinesData;
 import NIPick;
 import NISortAdjustNode;
+import NITriShapeData;
 import NIUVController;
 
 namespace CrashLogger::Version { inline void Process(EXCEPTION_POINTERS* info); inline std::stringstream& Get(); }
