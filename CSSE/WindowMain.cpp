@@ -35,6 +35,7 @@
 #include "DialogProcContext.h"
 
 import NICamera;
+import NIMatrix33;
 import NIPoint3;
 
 namespace se::cs::window::main {

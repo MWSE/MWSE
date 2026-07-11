@@ -1,7 +1,6 @@
 #include "NIAVObject.h"
 
 #include "NIDefines.h"
-#include "NINode.h"
 
 #include "BitUtil.h"
 #include "ExceptionUtil.h"
@@ -14,6 +13,7 @@
 import NICamera;
 import NICollisionSwitch;
 import NIGeometry;
+import NINode;
 import NIProperty;
 import NISwitchNode;
 import NITriBasedGeometry;

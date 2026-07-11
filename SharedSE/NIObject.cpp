@@ -11,7 +11,6 @@
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "NIAVObject.h"
-#include "NINode.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -30,6 +29,7 @@ import NIExtraData;
 import NIKeyframeController;
 import NILines;
 import NILookAtController;
+import NINode;
 import NIParticleModifier;
 import NIParticles;
 import NIParticleSystemController;

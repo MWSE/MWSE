@@ -1,8 +1,12 @@
 module;
 
-#include "NINode.h"
+#include "NIDefines.h"
+
+#include "SolUtil.h"
 
 export module NICollisionSwitch;
+
+import NINode;
 
 namespace NI {
 	export struct CollisionSwitch : Node {

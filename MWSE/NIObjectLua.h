@@ -1,11 +1,12 @@
 #pragma once
 
 #include "NIObject.h"
-#include "NINode.h"
+#include "NIAVObject.h"
 
 #include "TES3Reference.h"
 
 import NIExtraData;
+import NINode;
 import NIRTTI;
 
 namespace mwse::lua {

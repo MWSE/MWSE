@@ -1,8 +1,6 @@
-module;
-
-#include "NINode.h"
-
 export module NIBillboardNode;
+
+import NINode;
 
 namespace NI {
 	export namespace BillboardNodeFlags {

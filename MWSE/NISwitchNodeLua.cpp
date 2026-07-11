@@ -6,8 +6,8 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NINode.h"
 
+import NINode;
 import NISwitchNode;
 import NIRTTI;
 

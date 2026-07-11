@@ -5,12 +5,12 @@
 
 #include "NIUtil.h"
 #include "NIDefines.h"
-#include "NINode.h"
 
 #include "TES3Defines.h"
 #include "TES3Reference.h"
 
 import NIGeometry;
+import NINode;
 import NIPick;
 import NIRTTI;
 

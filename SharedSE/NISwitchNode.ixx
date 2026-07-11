@@ -1,8 +1,10 @@
 module;
 
-#include "NINode.h"
+#include "SolUtil.h"
 
 export module NISwitchNode;
+
+import NINode;
 
 namespace NI {
 	export struct SwitchNode : Node {

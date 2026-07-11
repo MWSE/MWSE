@@ -5,8 +5,6 @@
 
 #include "TES3Util.h"
 
-#include "NINode.h"
-
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
 #include "TES3DataHandler.h"
@@ -16,6 +14,7 @@
 #include "TES3Reference.h"
 #include "TES3WorldController.h"
 
+import NINode;
 import NIPointLight;
 
 namespace mwse::lua {

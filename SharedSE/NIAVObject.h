@@ -3,6 +3,7 @@
 #include "NIObjectNET.h"
 
 #include "NIBound.h"
+#include "NIDefines.h"
 #include "NILinkedList.h"
 
 import NIBoundingBox;

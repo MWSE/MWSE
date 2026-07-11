@@ -1,8 +1,13 @@
-#include "NINode.h"
+module;
 
 #include "NIBound.h"
 
+#include "NIDefines.h"
+
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NINode;
 
 import NIDynamicEffect;
 import NIPointLight;

@@ -3,9 +3,8 @@
 #include "CSBaseObject.h"
 #include "NIObject.h"
 
-#include "NINode.h"
-
 import NIColor;
+import NINode;
 import NIPoint3;
 import NITriShape;
 

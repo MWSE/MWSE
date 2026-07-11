@@ -5,6 +5,7 @@
 #include "TES3AnimationData.h"
 
 import NIExtraData;
+import NIMatrix33;
 import NIPoint3;
 import NIProperty;
 

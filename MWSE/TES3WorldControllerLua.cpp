@@ -3,8 +3,6 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NINode.h"
-
 #include "TES3AudioController.h"
 #include "TES3Enchantment.h"
 #include "TES3Fader.h"
@@ -23,6 +21,7 @@
 #include "TES3WorldController.h"
 
 import NICamera;
+import NINode;
 import NIRenderer;
 
 namespace mwse::lua {

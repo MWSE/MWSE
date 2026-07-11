@@ -7,9 +7,11 @@
 #include "TES3UITree.h"
 #include "TES3UIVector.h"
 
-#include "NINode.h"
+#include "NIPointer.h"
 
+import NINode;
 import NISourceTexture;
+import NITexture;
 
 namespace TES3::UI {
 	struct Element;

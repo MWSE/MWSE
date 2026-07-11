@@ -1,4 +1,5 @@
 #pragma once
+
 #include "CrashLogUtilities.hpp"
 #include "CrashLogFormatter.hpp"
 

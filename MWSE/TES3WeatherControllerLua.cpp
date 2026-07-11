@@ -1,7 +1,6 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NINode.h"
 #include "TES3Moon.h"
 #include "TES3Region.h"
 #include "TES3Weather.h"
@@ -9,6 +8,7 @@
 #include "TES3WeatherControllerLua.h"
 
 import NIDirectionalLight;
+import NINode;
 
 namespace mwse::lua {
 	void bindTES3WeatherController() {

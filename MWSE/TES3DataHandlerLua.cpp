@@ -26,10 +26,9 @@
 #include "TES3MagicEffect.h"
 #include "TES3WaterController.h"
 
-#include "NINode.h"
-
 #include "LuaUtil.h"
 
+import NINode;
 import NISourceTexture;
 
 namespace mwse::lua {

@@ -4,9 +4,9 @@
 #include "TES3MagicSourceInstance.h"
 #include "TES3VFXManager.h"
 
-#include "NINode.h"
-
 #include "LuaManager.h"
+
+import NINode;
 
 namespace mwse::lua {
 	void bindTES3VFX() {

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "NINode.h"
-
+#include "NIDefines.h"
 #include "NIHashMap.h"
+
+import NINode;
 
 namespace se::cs {
 	struct ModelLoader {

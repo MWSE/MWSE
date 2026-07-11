@@ -1,7 +1,11 @@
 #pragma once
 
-#include "NINode.h"
+#include "NIDefines.h"
+#include "NIPointer.h"
 
+#include "MemoryUtil.h"
+
+import NINode;
 import NIProperty;
 
 namespace se::cs::dialog::render_window {

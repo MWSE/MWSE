@@ -7,7 +7,6 @@ module;
 
 module NILight;
 
-
 namespace NI {
 	Light* Light::ctor() {
 #if defined(SE_NI_LIGHT_FNADDR_CTOR) && SE_NI_LIGHT_FNADDR_CTOR > 0

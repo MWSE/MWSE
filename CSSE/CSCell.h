@@ -2,11 +2,12 @@
 
 #include "CSBaseObject.h"
 
-#include "NINode.h"
 #include "NIIteratedList.h"
+#include "NIPointer.h"
 #include "LinkedObjectsList.h"
 
 import NIColor;
+import NINode;
 
 namespace se::cs {
 	struct ReferenceList : LinkedObjectList<Reference> {

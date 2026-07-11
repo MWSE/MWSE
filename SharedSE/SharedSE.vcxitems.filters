@@ -81,9 +81,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAVObject.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIRect.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
@@ -564,6 +561,9 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NITimeController.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NINode.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>

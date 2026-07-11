@@ -5,7 +5,10 @@
 
 #include "Deque.h"
 
-#include "NINode.h"
+#include "NIPointer.h"
+
+import NINode;
+import NIPoint3;
 
 namespace TES3 {
 	using se::Deque;

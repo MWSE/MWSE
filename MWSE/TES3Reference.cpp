@@ -17,8 +17,6 @@
 
 #include "MemoryUtil.h"
 
-#include "NINode.h"
-
 #include "TES3Actor.h"
 #include "TES3AIData.h"
 #include "TES3AudioController.h"
@@ -48,6 +46,7 @@
 #include "BitUtil.h"
 #include "MathUtil.h"
 
+import NINode;
 import NIPointLight;
 
 namespace TES3 {

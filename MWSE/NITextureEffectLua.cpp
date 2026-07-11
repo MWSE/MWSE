@@ -5,8 +5,7 @@
 #include "LuaManager.h"
 #include "LuaUtil.h"
 
-#include "NINode.h"
-
+import NINode;
 import NIRTTI;
 import NISourceTexture;
 import NITextureEffect;

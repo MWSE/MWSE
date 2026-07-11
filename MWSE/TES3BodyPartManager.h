@@ -2,7 +2,11 @@
 
 #include "TES3Defines.h"
 
-#include "NINode.h"
+#include "NIPointer.h"
+
+import NIMatrix33;
+import NINode;
+import NIPoint3;
 
 namespace TES3 {
 	struct BodyPartManager {
