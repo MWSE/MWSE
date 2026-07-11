@@ -44,7 +44,7 @@
 
 #include "NIAVObject.h"
 #include "NIBound.h"
-#include "NITriShape.h"
+#include "NITriBasedGeometry.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
@@ -69,6 +69,7 @@ import NIPick;
 import NIPoint3;
 import NIPointLight;
 import NISortAdjustNode;
+import NITriShape;
 import NITriShapeData;
 import NIUVController;
 

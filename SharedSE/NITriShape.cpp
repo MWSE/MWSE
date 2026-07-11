@@ -1,6 +1,11 @@
-#include "NITriShape.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "SolUtil.h"
+
+module NITriShape;
 
 import NITriShapeData;
 

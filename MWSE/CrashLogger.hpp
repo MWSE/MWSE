@@ -35,8 +35,6 @@
 #include "TES3Weather.h"
 #include "TES3WorldController.h"
 
-#include "NITriShape.h"
-
 #include "BitUtil.h"
 #include "ScriptUtil.h"
 #include "TES3Util.h"
@@ -54,6 +52,7 @@ import NIFlipController;
 import NILinesData;
 import NIPick;
 import NISortAdjustNode;
+import NITriShape;
 import NITriShapeData;
 import NIUVController;
 

@@ -1,8 +1,7 @@
 module;
 
 #include "NIDefines.h"
-
-#include "NITriShape.h"
+#include "NIGeometry.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
@@ -12,7 +11,9 @@ module;
 #endif
 
 module NIPick;
+
 import NISkinInstance;
+import NITriShape;
 import NITriShapeData;
 
 namespace NI {

@@ -108,12 +108,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h">
-      <Filter>Header Files\NI</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
@@ -564,6 +558,12 @@
       <Filter>Module Interface Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIGeometryData.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILines.ixx">
+      <Filter>Module Interface Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.ixx">
       <Filter>Module Interface Files</Filter>
     </ClCompile>
   </ItemGroup>

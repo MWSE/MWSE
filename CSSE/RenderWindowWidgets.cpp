@@ -6,13 +6,13 @@
 #include "CSModelLoader.h"
 
 #include "NIGeometry.h"
-#include "NILines.h"
 
 #include "LogUtil.h"
 #include "MathUtil.h"
 
 import NIColor;
 import NICamera;
+import NILines;
 import NILinesData;
 import NIMatrix33;
 import NISwitchNode;

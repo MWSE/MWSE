@@ -1,11 +1,15 @@
-#pragma once
+module;
 
 #include "NIGeometry.h"
+
+#include "SolUtil.h"
+
+export module NILines;
 
 import NILinesData;
 
 namespace NI {
-	struct Lines : Geometry {
+	export struct Lines : Geometry {
 		// Engine-dispatch ctor/dtor. Body in SharedSE/NILines.cpp throws
 		// not_implemented_exception when SE_NI_LINES_FNADDR_CTOR is 0x0.
 		Lines(unsigned short vertexCount, Point3* vertices, PackedColor* colors, Point2* textureCoords, bool* lineSegmentFlags);
@@ -19,3 +23,7 @@ namespace NI {
 	};
 	static_assert(sizeof(Lines) == 0xAC, "NI::Lines failed size validation");
 }
+
+#if defined(SE_USE_LUA) && SE_USE_LUA == 1
+MWSE_SOL_CUSTOMIZED_PUSHER_DECLARE_NI(NI::Lines)
+#endif

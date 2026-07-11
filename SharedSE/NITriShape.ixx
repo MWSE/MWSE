@@ -1,10 +1,14 @@
-#pragma once
+module;
 
 #include "NIAVObject.h"
 #include "NITriBasedGeometry.h"
 
+#include "SolUtil.h"
+
+export module NITriShape;
+
 namespace NI {
-	namespace TriShapeFlags {
+	export namespace TriShapeFlags {
 		typedef unsigned short value_type;
 
 		enum TriShapeFlags {
@@ -12,13 +16,13 @@ namespace NI {
 		};
 	}
 
-	struct TriShape_vTable : TriBasedGeometry_vTable {
+	export struct TriShape_vTable : TriBasedGeometry_vTable {
 		void* unknown_0xA4;
 		void* unknown_0xA8;
 	};
 	static_assert(sizeof(TriShape_vTable) == 0xAC, "NI::TriShape's vtable failed size validation");
 
-	struct TriShape : TriBasedGeometry {
+	export struct TriShape : TriBasedGeometry {
 
 		TriShape(TriBasedGeometryData* data);
 

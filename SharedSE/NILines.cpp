@@ -1,6 +1,12 @@
-#include "NILines.h"
+module;
+
+#include "NIDefines.h"
 
 #include "ExceptionUtil.h"
+#include "MemoryUtil.h"
+#include "SolUtil.h"
+
+module NILines;
 
 import NIColor;
 

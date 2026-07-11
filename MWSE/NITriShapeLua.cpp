@@ -6,10 +6,10 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NITriShape.h"
 
 import NISwitchNode;
 import NIRTTI;
+import NITriShape;
 import NITriShapeData;
 
 namespace mwse::lua {

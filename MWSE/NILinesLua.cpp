@@ -4,8 +4,8 @@
 #include "LuaUtil.h"
 
 #include "NIDefines.h"
-#include "NILines.h"
 
+import NILines;
 import NILinesData;
 import NIRTTI;
 

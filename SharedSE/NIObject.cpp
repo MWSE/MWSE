@@ -11,10 +11,8 @@
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1
 #include "NIAVObject.h"
-#include "NILines.h"
 #include "NINode.h"
 #include "NITimeController.h"
-#include "NITriShape.h"
 
 #include "LuaObjectInvalidatedEvent.h"
 
@@ -31,6 +29,7 @@ import NICollisionSwitch;
 import NIDirectionalLight;
 import NIExtraData;
 import NIKeyframeController;
+import NILines;
 import NILookAtController;
 import NIParticleModifier;
 import NIParticles;
@@ -46,6 +45,7 @@ import NISpotLight;
 import NISourceTexture;
 import NISwitchNode;
 import NITextureEffect;
+import NITriShape;
 #endif
 
 import NIRTTI;

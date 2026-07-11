@@ -4,10 +4,10 @@
 #include "NIObject.h"
 
 #include "NINode.h"
-#include "NITriShape.h"
 
 import NIColor;
 import NIPoint3;
+import NITriShape;
 
 namespace se::cs {
 	struct LandTileInfo {

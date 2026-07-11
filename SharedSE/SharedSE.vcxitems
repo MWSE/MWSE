@@ -32,7 +32,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIDefines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIGeometry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIHashMap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NILines.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NILinkedList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NINode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIObject.h" />
@@ -46,7 +45,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITimeController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometry.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StringUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h" />
@@ -111,6 +109,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILight.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILines.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NILines.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILinesData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NILookAtController.cpp" />
@@ -178,6 +177,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriShape.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeData.ixx" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriShapeDynamicData.ixx" />

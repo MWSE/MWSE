@@ -9,7 +9,6 @@
 #include "NINode.h"
 #include "NIObject.h"
 #include "NIObjectNET.h"
-#include "NITriShape.h"
 
 #include "TES3Defines.h"
 #include "TES3Activator.h"
@@ -92,6 +91,7 @@ import NIRTTI;
 import NISpotLight;
 import NISwitchNode;
 import NITextureEffect;
+import NITriShape;
 
 namespace mwse::lua {
 	void* getUserdataPointerSlot(lua_State* L, int index) {

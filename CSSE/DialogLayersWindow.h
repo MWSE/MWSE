@@ -10,9 +10,9 @@
 #include "CSDataHandler.h"
 #include "NIIteratedList.h"
 #include "CSReference.h"
-#include "NITriShape.h"
 
 import NIProperty;
+import NITriShape;
 
 constexpr size_t HIDDEN_LAYER_ID = 0;
 constexpr auto MAX_LAYERS = 32;

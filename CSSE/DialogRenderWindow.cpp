@@ -10,8 +10,6 @@
 #include "NIBound.h"
 #include "NIGeometry.h"
 #include "NINode.h"
-#include "NILines.h"
-#include "NITriShape.h"
 
 #include "CSCell.h"
 #include "CSDataHandler.h"
@@ -37,10 +35,12 @@
 
 import NICamera;
 import NICollisionSwitch;
+import NILines;
 import NIMatrix33;
 import NIPick;
 import NIPoint3;
 import NIProperty;
+import NITriShape;
 
 namespace se::cs::dialog::render_window {
 	__int16 lastCursorPosX = 0;
