@@ -25135,7 +25135,7 @@
 <h3 id="ambientpostsunrisetime"><code>ambientPostSunriseTime</code><a class="headerlink" href="#ambientpostsunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">ambientpostsunrisetime</div>
 
-<p>Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between <code>ambientPostSunriseTime</code> and <code>ambientPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunriseDuration</code> before the ambient sunrise transition ends. The transition ends at <code>sunriseHour + sunriseDuration + ambientPostSunriseTime</code>; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25144,7 +25144,7 @@
 <h3 id="ambientpostsunsettime"><code>ambientPostSunsetTime</code><a class="headerlink" href="#ambientpostsunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">ambientpostsunsettime</div>
 
-<p>Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between <code>ambientPostSunsetTime</code> and <code>ambientPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunsetDuration</code> before the ambient sunset transition ends. The transition ends at <code>sunsetHour + sunsetDuration + ambientPostSunsetTime</code>; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25153,7 +25153,7 @@
 <h3 id="ambientpresunrisetime"><code>ambientPreSunriseTime</code><a class="headerlink" href="#ambientpresunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">ambientpresunrisetime</div>
 
-<p>Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between <code>ambientPostSunsetTime</code> and <code>ambientPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunriseHour</code> when the ambient-color transition begins. The window is <code>sunriseHour - ambientPreSunriseTime</code> through <code>sunriseHour + sunriseDuration + ambientPostSunriseTime</code>, split between night → <code>ambientSunriseColor</code> and <code>ambientSunriseColor</code> → day. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25162,7 +25162,7 @@
 <h3 id="ambientpresunsettime"><code>ambientPreSunsetTime</code><a class="headerlink" href="#ambientpresunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">ambientpresunsettime</div>
 
-<p>Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between <code>ambientPostSunriseTime</code> and <code>ambientPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunsetHour</code> when the ambient-color transition begins. The window is <code>sunsetHour - ambientPreSunsetTime</code> through <code>sunsetHour + sunsetDuration + ambientPostSunsetTime</code>, split between day → <code>ambientSunsetColor</code> and <code>ambientSunsetColor</code> → night. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25207,7 +25207,7 @@
 <h3 id="fogdepthchangespeed"><code>fogDepthChangeSpeed</code><a class="headerlink" href="#fogdepthchangespeed" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">fogdepthchangespeed</div>
 
-<p>Controls the speed of how fast the fog comes in. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Duration, in in-game hours, used to interpolate land-fog depth from night to day after <code>sunriseHour</code> and from day to night after <code>sunsetHour</code>. It controls land-fog depth, not fog color.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25216,7 +25216,7 @@
 <h3 id="fogpostsunrisetime"><code>fogPostSunriseTime</code><a class="headerlink" href="#fogpostsunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">fogpostsunrisetime</div>
 
-<p>Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between <code>fogPostSunriseTime</code> and <code>fogPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunriseDuration</code> before the fog sunrise transition ends. The transition ends at <code>sunriseHour + sunriseDuration + fogPostSunriseTime</code>; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25225,7 +25225,7 @@
 <h3 id="fogpostsunsettime"><code>fogPostSunsetTime</code><a class="headerlink" href="#fogpostsunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">fogpostsunsettime</div>
 
-<p>Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between <code>fogPostSunsetTime</code> and <code>fogPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunsetDuration</code> before the fog sunset transition ends. The transition ends at <code>sunsetHour + sunsetDuration + fogPostSunsetTime</code>; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25234,7 +25234,7 @@
 <h3 id="fogpresunrisetime"><code>fogPreSunriseTime</code><a class="headerlink" href="#fogpresunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">fogpresunrisetime</div>
 
-<p>Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between <code>fogPostSunsetTime</code> and <code>fogPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunriseHour</code> when the fog-color transition begins. The window is <code>sunriseHour - fogPreSunriseTime</code> through <code>sunriseHour + sunriseDuration + fogPostSunriseTime</code>, split between night → <code>fogSunriseColor</code> and <code>fogSunriseColor</code> → day. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25243,7 +25243,7 @@
 <h3 id="fogpresunsettime"><code>fogPreSunsetTime</code><a class="headerlink" href="#fogpresunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">fogpresunsettime</div>
 
-<p>Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between <code>fogPostSunriseTime</code> and <code>fogPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunsetHour</code> when the fog-color transition begins. The window is <code>sunsetHour - fogPreSunsetTime</code> through <code>sunsetHour + sunsetDuration + fogPostSunsetTime</code>, split between day → <code>fogSunsetColor</code> and <code>fogSunsetColor</code> → night. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25432,7 +25432,7 @@
 <h3 id="skypostsunrisetime"><code>skyPostSunriseTime</code><a class="headerlink" href="#skypostsunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">skypostsunrisetime</div>
 
-<p>The sky has one color for day and night states each. The day color will be used when the game hour is between <code>skyPostSunriseTime</code> and <code>skyPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunriseDuration</code> before the sky sunrise transition ends. The transition ends at <code>sunriseHour + sunriseDuration + skyPostSunriseTime</code>; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25441,7 +25441,7 @@
 <h3 id="skypostsunsettime"><code>skyPostSunsetTime</code><a class="headerlink" href="#skypostsunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">skypostsunsettime</div>
 
-<p>The sky has one color for day and night states each. The night color will be used when the game hour is between <code>skyPostSunsetTime</code> and <code>skyPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunsetDuration</code> before the sky sunset transition ends. The transition ends at <code>sunsetHour + sunsetDuration + skyPostSunsetTime</code>; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25450,7 +25450,7 @@
 <h3 id="skypresunrisetime"><code>skyPreSunriseTime</code><a class="headerlink" href="#skypresunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">skypresunrisetime</div>
 
-<p>The sky has one color for day and night states each. The night color will be used when the game hour is between <code>skyPostSunsetTime</code> and <code>skyPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunriseHour</code> when the sky-color transition begins. The window is <code>sunriseHour - skyPreSunriseTime</code> through <code>sunriseHour + sunriseDuration + skyPostSunriseTime</code>, split between night → <code>skySunriseColor</code> and <code>skySunriseColor</code> → day. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25459,7 +25459,7 @@
 <h3 id="skypresunsettime"><code>skyPreSunsetTime</code><a class="headerlink" href="#skypresunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">skypresunsettime</div>
 
-<p>The sky has one color for day and night states each. The day color will be used when the game hour is between <code>skyPostSunriseTime</code> and <code>skyPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunsetHour</code> when the sky-color transition begins. The window is <code>sunsetHour - skyPreSunsetTime</code> through <code>sunsetHour + sunsetDuration + skyPostSunsetTime</code>, split between day → <code>skySunsetColor</code> and <code>skySunsetColor</code> → night. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25477,7 +25477,7 @@
 <h3 id="starsfadingduration"><code>starsFadingDuration</code><a class="headerlink" href="#starsfadingduration" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">starsfadingduration</div>
 
-<p>The stars will fade in <code>starsPostSunsetStart</code> hours after the sunset. They fade out <code>starsPreSunriseFinish</code> hours before sunrise. This value represents the duration of the fading. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Duration, in in-game hours, of each star fade. Opacity rises from 0 to 1 between <code>starsPostSunsetStart</code> and <code>starsPostSunsetStart + starsFadingDuration</code>, and falls from 1 to 0 between <code>starsPreSunriseFinish</code> and <code>starsPreSunriseFinish + starsFadingDuration</code>.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25486,7 +25486,7 @@
 <h3 id="starspostsunsetstart"><code>starsPostSunsetStart</code><a class="headerlink" href="#starspostsunsetstart" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">starspostsunsetstart</div>
 
-<p>The stars will start to fade in (appear) <code>starsPostSunsetStart</code> hours after sunset. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Absolute game hour when the stars start fading in. At construction, this is initialized as <code>sunsetHour +</code> the <code>Morrowind.ini</code> offset (default <code>+1</code> hour); the field itself is then compared directly with the current game hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25495,7 +25495,7 @@
 <h3 id="starspresunrisefinish"><code>starsPreSunriseFinish</code><a class="headerlink" href="#starspresunrisefinish" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">starspresunrisefinish</div>
 
-<p>The stars will start to fade out (disappear) <code>starsPreSunriseFinish</code> hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Absolute game hour when the stars start fading out. At construction, this is initialized as <code>sunriseHour -</code> the <code>Morrowind.ini</code> offset (default offset <code>2</code> hours); the field itself is then compared directly with the current game hour. Despite its name, it marks the start of the fade-out.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25531,7 +25531,7 @@
 <h3 id="sunpostsunrisetime"><code>sunPostSunriseTime</code><a class="headerlink" href="#sunpostsunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunpostsunrisetime</div>
 
-<p>The Sun has one color for day and night states each. The day color will be used when the game hour is between <code>sunPostSunriseTime</code> and <code>sunPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunriseDuration</code> before the sunlight-color sunrise transition ends. The transition ends at <code>sunriseHour + sunriseDuration + sunPostSunriseTime</code>; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25540,7 +25540,7 @@
 <h3 id="sunpostsunsettime"><code>sunPostSunsetTime</code><a class="headerlink" href="#sunpostsunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunpostsunsettime</div>
 
-<p>The Sun has one color for day and night states each. The night color will be used when the game hour is between <code>sunPostSunsetTime</code> and <code>sunPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours added after <code>sunsetDuration</code> before the sunlight-color sunset transition ends. The transition ends at <code>sunsetHour + sunsetDuration + sunPostSunsetTime</code>; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25549,7 +25549,7 @@
 <h3 id="sunpresunrisetime"><code>sunPreSunriseTime</code><a class="headerlink" href="#sunpresunrisetime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunpresunrisetime</div>
 
-<p>The Sun has one color for day and night states each. The night color will be used when the game hour is between <code>sunPostSunsetTime</code> and <code>sunPreSunriseTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunriseHour</code> when the sunlight-color transition begins. The window is <code>sunriseHour - sunPreSunriseTime</code> through <code>sunriseHour + sunriseDuration + sunPostSunriseTime</code>, split between night → <code>sunSunriseColor</code> and <code>sunSunriseColor</code> → day. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25558,7 +25558,7 @@
 <h3 id="sunpresunsettime"><code>sunPreSunsetTime</code><a class="headerlink" href="#sunpresunsettime" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunpresunsettime</div>
 
-<p>The Sun has one color for day and night states each. The day color will be used when the game hour is between <code>sunPostSunriseTime</code> and <code>sunPreSunsetTime</code>. This corresponds to the setting of the same name in Morrowind.ini file.</p>
+<p>Hours before <code>sunsetHour</code> when the sunlight-color transition begins. The window is <code>sunsetHour - sunPreSunsetTime</code> through <code>sunsetHour + sunsetDuration + sunPostSunsetTime</code>, split between day → <code>sunSunsetColor</code> and <code>sunSunsetColor</code> → night. This is an offset, not an absolute hour.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25567,7 +25567,7 @@
 <h3 id="sunriseduration"><code>sunriseDuration</code><a class="headerlink" href="#sunriseduration" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunriseduration</div>
 
-<p>The sunrise duration.</p>
+<p>Duration, in in-game hours, of the sun's sunrise motion/fade. It also contributes to every sunrise color window: that window lasts <code>Pre + sunriseDuration + Post</code> hours.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25576,7 +25576,7 @@
 <h3 id="sunrisehour"><code>sunriseHour</code><a class="headerlink" href="#sunrisehour" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunrisehour</div>
 
-<p>The sunrise hour.</p>
+<p>Absolute in-game hour used as the sunrise reference. The sun's sunrise motion begins here; each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its <code>Pre</code> and <code>Post</code> settings.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25585,7 +25585,7 @@
 <h3 id="sunsetduration"><code>sunsetDuration</code><a class="headerlink" href="#sunsetduration" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunsetduration</div>
 
-<p>The sunset duration.</p>
+<p>Duration, in in-game hours, of the sun's sunset motion/fade. It also contributes to every sunset color window: that window lasts <code>Pre + sunsetDuration + Post</code> hours.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25594,7 +25594,7 @@
 <h3 id="sunsethour"><code>sunsetHour</code><a class="headerlink" href="#sunsethour" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">sunsethour</div>
 
-<p>The sunset hour.</p>
+<p>Absolute in-game hour used as the sunset reference. Each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its <code>Pre</code> and <code>Post</code> settings.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25621,7 +25621,7 @@
 <h3 id="underwatercolor"><code>underwaterColor</code><a class="headerlink" href="#underwatercolor" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwatercolor</div>
 
-<p>The underwater color, represented as a vector. The values can range from 0 to 1.</p>
+<p>Color blended into weather colors while underwater. <code>underwaterColorWeight</code> controls the blend amount. Values range from 0 to 1.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (<a href="../tes3vector3/">tes3vector3</a>)</li>
@@ -25630,7 +25630,7 @@
 <h3 id="underwatercolorweight"><code>underwaterColorWeight</code><a class="headerlink" href="#underwatercolorweight" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwatercolorweight</div>
 
-<p>The underwater color weight.</p>
+<p>Blend weight for <code>underwaterColor</code>: <code>0</code> keeps the normal weather color, and <code>1</code> replaces it with <code>underwaterColor</code>. Values are clamped to 0–1 during initialization.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25639,7 +25639,7 @@
 <h3 id="underwaterdayfog"><code>underwaterDayFog</code><a class="headerlink" href="#underwaterdayfog" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwaterdayfog</div>
 
-<p>The underwater day fog value.</p>
+<p>Underwater fog-density multiplier used during the daytime portion between the sunrise and sunset transitions.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25648,7 +25648,7 @@
 <h3 id="underwaterindoorfog"><code>underwaterIndoorFog</code><a class="headerlink" href="#underwaterindoorfog" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwaterindoorfog</div>
 
-<p>The underwater indoor fog value.</p>
+<p>Underwater fog-density multiplier used in ordinary interior cells. Exterior-interior cells use the time-of-day underwater values instead.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25657,7 +25657,7 @@
 <h3 id="underwaternightfog"><code>underwaterNightFog</code><a class="headerlink" href="#underwaternightfog" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwaternightfog</div>
 
-<p>The underwater night fog value.</p>
+<p>Underwater fog-density multiplier used during the nighttime portion outside the sunrise and sunset transitions.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25666,7 +25666,7 @@
 <h3 id="underwatersunrisefog"><code>underwaterSunriseFog</code><a class="headerlink" href="#underwatersunrisefog" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwatersunrisefog</div>
 
-<p>The underwater sunrise fog value.</p>
+<p>Underwater fog-density multiplier used at the sunrise endpoint. In exterior water, it is blended from <code>underwaterNightFog</code> toward <code>underwaterDayFog</code> using <code>sunriseHour</code> and the day midpoint.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25675,7 +25675,7 @@
 <h3 id="underwatersunsetfog"><code>underwaterSunsetFog</code><a class="headerlink" href="#underwatersunsetfog" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">underwatersunsetfog</div>
 
-<p>The underwater sunset fog value.</p>
+<p>Underwater fog-density multiplier used at the sunset endpoint. In exterior water, it is blended from <code>underwaterDayFog</code> toward <code>underwaterNightFog</code> between <code>sunsetHour</code> and midnight.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
@@ -25772,7 +25772,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="July 6, 2026 10:16:16 UTC">July 6, 2026 10:16:16</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="July 12, 2026 07:37:50 UTC">July 12, 2026 07:37:50</span>
   </span>
 
     
