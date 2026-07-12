@@ -1,5 +1,8 @@
 # Agent Instructions
 
+- Do not take control of the user's PC unless explicitly and unambiguously asked to do so.
+- Do not alter EOF-newlines.
+
 
 ## Skills
 
