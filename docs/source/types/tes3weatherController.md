@@ -13,7 +13,7 @@ A data structure that handles the weather.
 ### `ambientPostSunriseTime`
 <div class="search_terms" style="display: none">ambientpostsunrisetime</div>
 
-Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between `ambientPostSunriseTime` and `ambientPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunriseDuration` before the ambient sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + ambientPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -24,7 +24,7 @@ Each weather's ambiental color has one color for day and night states each. The 
 ### `ambientPostSunsetTime`
 <div class="search_terms" style="display: none">ambientpostsunsettime</div>
 
-Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between `ambientPostSunsetTime` and `ambientPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunsetDuration` before the ambient sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + ambientPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -35,7 +35,7 @@ Each weather's ambiental color has one color for day and night states each. The 
 ### `ambientPreSunriseTime`
 <div class="search_terms" style="display: none">ambientpresunrisetime</div>
 
-Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between `ambientPostSunsetTime` and `ambientPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunriseHour` when the ambient-color transition begins. The window is `sunriseHour - ambientPreSunriseTime` through `sunriseHour + sunriseDuration + ambientPostSunriseTime`, split between night → `ambientSunriseColor` and `ambientSunriseColor` → day. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -46,7 +46,7 @@ Each weather's ambiental color has one color for day and night states each. The 
 ### `ambientPreSunsetTime`
 <div class="search_terms" style="display: none">ambientpresunsettime</div>
 
-Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between `ambientPostSunriseTime` and `ambientPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunsetHour` when the ambient-color transition begins. The window is `sunsetHour - ambientPreSunsetTime` through `sunsetHour + sunsetDuration + ambientPostSunsetTime`, split between day → `ambientSunsetColor` and `ambientSunsetColor` → night. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -101,7 +101,7 @@ The days remaining for the current weather.
 ### `fogDepthChangeSpeed`
 <div class="search_terms" style="display: none">fogdepthchangespeed</div>
 
-Controls the speed of how fast the fog comes in. This corresponds to the setting of the same name in Morrowind.ini file.
+Duration, in in-game hours, used to interpolate land-fog depth from night to day after `sunriseHour` and from day to night after `sunsetHour`. It controls land-fog depth, not fog color.
 
 **Returns**:
 
@@ -112,7 +112,7 @@ Controls the speed of how fast the fog comes in. This corresponds to the setting
 ### `fogPostSunriseTime`
 <div class="search_terms" style="display: none">fogpostsunrisetime</div>
 
-Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between `fogPostSunriseTime` and `fogPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunriseDuration` before the fog sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + fogPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -123,7 +123,7 @@ Each weather's fog color has one color for day and night states each. The day co
 ### `fogPostSunsetTime`
 <div class="search_terms" style="display: none">fogpostsunsettime</div>
 
-Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between `fogPostSunsetTime` and `fogPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunsetDuration` before the fog sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + fogPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -134,7 +134,7 @@ Each weather's fog color has one color for day and night states each. The night 
 ### `fogPreSunriseTime`
 <div class="search_terms" style="display: none">fogpresunrisetime</div>
 
-Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between `fogPostSunsetTime` and `fogPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunriseHour` when the fog-color transition begins. The window is `sunriseHour - fogPreSunriseTime` through `sunriseHour + sunriseDuration + fogPostSunriseTime`, split between night → `fogSunriseColor` and `fogSunriseColor` → day. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -145,7 +145,7 @@ Each weather's fog color has one color for day and night states each. The night 
 ### `fogPreSunsetTime`
 <div class="search_terms" style="display: none">fogpresunsettime</div>
 
-Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between `fogPostSunriseTime` and `fogPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunsetHour` when the fog-color transition begins. The window is `sunsetHour - fogPreSunsetTime` through `sunsetHour + sunsetDuration + fogPostSunsetTime`, split between day → `fogSunsetColor` and `fogSunsetColor` → night. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -376,7 +376,7 @@ The z component of the rain or snow fall particle velocity (not including blizza
 ### `skyPostSunriseTime`
 <div class="search_terms" style="display: none">skypostsunrisetime</div>
 
-The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunriseDuration` before the sky sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + skyPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -387,7 +387,7 @@ The sky has one color for day and night states each. The day color will be used 
 ### `skyPostSunsetTime`
 <div class="search_terms" style="display: none">skypostsunsettime</div>
 
-The sky has one color for day and night states each. The night color will be used when the game hour is between `skyPostSunsetTime` and `skyPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunsetDuration` before the sky sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + skyPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -398,7 +398,7 @@ The sky has one color for day and night states each. The night color will be use
 ### `skyPreSunriseTime`
 <div class="search_terms" style="display: none">skypresunrisetime</div>
 
-The sky has one color for day and night states each. The night color will be used when the game hour is between `skyPostSunsetTime` and `skyPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunriseHour` when the sky-color transition begins. The window is `sunriseHour - skyPreSunriseTime` through `sunriseHour + sunriseDuration + skyPostSunriseTime`, split between night → `skySunriseColor` and `skySunriseColor` → day. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -409,7 +409,7 @@ The sky has one color for day and night states each. The night color will be use
 ### `skyPreSunsetTime`
 <div class="search_terms" style="display: none">skypresunsettime</div>
 
-The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunsetHour` when the sky-color transition begins. The window is `sunsetHour - skyPreSunsetTime` through `sunsetHour + sunsetDuration + skyPostSunsetTime`, split between day → `skySunsetColor` and `skySunsetColor` → night. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -431,7 +431,7 @@ A multipler for the z component of snow fall particle velocity (not including bl
 ### `starsFadingDuration`
 <div class="search_terms" style="display: none">starsfadingduration</div>
 
-The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade out `starsPreSunriseFinish` hours before sunrise. This value represents the duration of the fading. This corresponds to the setting of the same name in Morrowind.ini file.
+Duration, in in-game hours, of each star fade. Opacity rises from 0 to 1 between `starsPostSunsetStart` and `starsPostSunsetStart + starsFadingDuration`, and falls from 1 to 0 between `starsPreSunriseFinish` and `starsPreSunriseFinish + starsFadingDuration`.
 
 **Returns**:
 
@@ -442,7 +442,7 @@ The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade 
 ### `starsPostSunsetStart`
 <div class="search_terms" style="display: none">starspostsunsetstart</div>
 
-The stars will start to fade in (appear) `starsPostSunsetStart` hours after sunset. This corresponds to the setting of the same name in Morrowind.ini file.
+Absolute game hour when the stars start fading in. At construction, this is initialized as `sunsetHour +` the `Morrowind.ini` offset (default `+1` hour); the field itself is then compared directly with the current game hour.
 
 **Returns**:
 
@@ -453,7 +453,7 @@ The stars will start to fade in (appear) `starsPostSunsetStart` hours after suns
 ### `starsPreSunriseFinish`
 <div class="search_terms" style="display: none">starspresunrisefinish</div>
 
-The stars will start to fade out (disappear) `starsPreSunriseFinish` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
+Absolute game hour when the stars start fading out. At construction, this is initialized as `sunriseHour -` the `Morrowind.ini` offset (default offset `2` hours); the field itself is then compared directly with the current game hour. Despite its name, it marks the start of the fade-out.
 
 **Returns**:
 
@@ -497,7 +497,7 @@ The sunglare fader maximum.
 ### `sunPostSunriseTime`
 <div class="search_terms" style="display: none">sunpostsunrisetime</div>
 
-The Sun has one color for day and night states each. The day color will be used when the game hour is between `sunPostSunriseTime` and `sunPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunriseDuration` before the sunlight-color sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + sunPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -508,7 +508,7 @@ The Sun has one color for day and night states each. The day color will be used 
 ### `sunPostSunsetTime`
 <div class="search_terms" style="display: none">sunpostsunsettime</div>
 
-The Sun has one color for day and night states each. The night color will be used when the game hour is between `sunPostSunsetTime` and `sunPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours added after `sunsetDuration` before the sunlight-color sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + sunPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -519,7 +519,7 @@ The Sun has one color for day and night states each. The night color will be use
 ### `sunPreSunriseTime`
 <div class="search_terms" style="display: none">sunpresunrisetime</div>
 
-The Sun has one color for day and night states each. The night color will be used when the game hour is between `sunPostSunsetTime` and `sunPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunriseHour` when the sunlight-color transition begins. The window is `sunriseHour - sunPreSunriseTime` through `sunriseHour + sunriseDuration + sunPostSunriseTime`, split between night → `sunSunriseColor` and `sunSunriseColor` → day. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -530,7 +530,7 @@ The Sun has one color for day and night states each. The night color will be use
 ### `sunPreSunsetTime`
 <div class="search_terms" style="display: none">sunpresunsettime</div>
 
-The Sun has one color for day and night states each. The day color will be used when the game hour is between `sunPostSunriseTime` and `sunPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+Hours before `sunsetHour` when the sunlight-color transition begins. The window is `sunsetHour - sunPreSunsetTime` through `sunsetHour + sunsetDuration + sunPostSunsetTime`, split between day → `sunSunsetColor` and `sunSunsetColor` → night. This is an offset, not an absolute hour.
 
 **Returns**:
 
@@ -541,7 +541,7 @@ The Sun has one color for day and night states each. The day color will be used 
 ### `sunriseDuration`
 <div class="search_terms" style="display: none">sunriseduration</div>
 
-The sunrise duration.
+Duration, in in-game hours, of the sun's sunrise motion/fade. It also contributes to every sunrise color window: that window lasts `Pre + sunriseDuration + Post` hours.
 
 **Returns**:
 
@@ -552,7 +552,7 @@ The sunrise duration.
 ### `sunriseHour`
 <div class="search_terms" style="display: none">sunrisehour</div>
 
-The sunrise hour.
+Absolute in-game hour used as the sunrise reference. The sun's sunrise motion begins here; each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
 
 **Returns**:
 
@@ -563,7 +563,7 @@ The sunrise hour.
 ### `sunsetDuration`
 <div class="search_terms" style="display: none">sunsetduration</div>
 
-The sunset duration.
+Duration, in in-game hours, of the sun's sunset motion/fade. It also contributes to every sunset color window: that window lasts `Pre + sunsetDuration + Post` hours.
 
 **Returns**:
 
@@ -574,7 +574,7 @@ The sunset duration.
 ### `sunsetHour`
 <div class="search_terms" style="display: none">sunsethour</div>
 
-The sunset hour.
+Absolute in-game hour used as the sunset reference. Each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
 
 **Returns**:
 
@@ -607,7 +607,7 @@ The scalar transition.
 ### `underwaterColor`
 <div class="search_terms" style="display: none">underwatercolor</div>
 
-The underwater color, represented as a vector. The values can range from 0 to 1.
+Color blended into weather colors while underwater. `underwaterColorWeight` controls the blend amount. Values range from 0 to 1.
 
 **Returns**:
 
@@ -618,7 +618,7 @@ The underwater color, represented as a vector. The values can range from 0 to 1.
 ### `underwaterColorWeight`
 <div class="search_terms" style="display: none">underwatercolorweight</div>
 
-The underwater color weight.
+Blend weight for `underwaterColor`: `0` keeps the normal weather color, and `1` replaces it with `underwaterColor`. Values are clamped to 0–1 during initialization.
 
 **Returns**:
 
@@ -629,7 +629,7 @@ The underwater color weight.
 ### `underwaterDayFog`
 <div class="search_terms" style="display: none">underwaterdayfog</div>
 
-The underwater day fog value.
+Underwater fog-density multiplier used during the daytime portion between the sunrise and sunset transitions.
 
 **Returns**:
 
@@ -640,7 +640,7 @@ The underwater day fog value.
 ### `underwaterIndoorFog`
 <div class="search_terms" style="display: none">underwaterindoorfog</div>
 
-The underwater indoor fog value.
+Underwater fog-density multiplier used in ordinary interior cells. Exterior-interior cells use the time-of-day underwater values instead.
 
 **Returns**:
 
@@ -651,7 +651,7 @@ The underwater indoor fog value.
 ### `underwaterNightFog`
 <div class="search_terms" style="display: none">underwaternightfog</div>
 
-The underwater night fog value.
+Underwater fog-density multiplier used during the nighttime portion outside the sunrise and sunset transitions.
 
 **Returns**:
 
@@ -662,7 +662,7 @@ The underwater night fog value.
 ### `underwaterSunriseFog`
 <div class="search_terms" style="display: none">underwatersunrisefog</div>
 
-The underwater sunrise fog value.
+Underwater fog-density multiplier used at the sunrise endpoint. In exterior water, it is blended from `underwaterNightFog` toward `underwaterDayFog` using `sunriseHour` and the day midpoint.
 
 **Returns**:
 
@@ -673,7 +673,7 @@ The underwater sunrise fog value.
 ### `underwaterSunsetFog`
 <div class="search_terms" style="display: none">underwatersunsetfog</div>
 
-The underwater sunset fog value.
+Underwater fog-density multiplier used at the sunset endpoint. In exterior water, it is blended from `underwaterDayFog` toward `underwaterNightFog` between `sunsetHour` and midnight.
 
 **Returns**:
 

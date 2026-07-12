@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between `fogPostSunriseTime` and `fogPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.]],
+	description = [[Hours before `sunsetHour` when the fog-color transition begins. The window is `sunsetHour - fogPreSunsetTime` through `sunsetHour + sunsetDuration + fogPostSunsetTime`, split between day → `fogSunsetColor` and `fogSunsetColor` → night. This is an offset, not an absolute hour.]],
 	valuetype = "number",
 }

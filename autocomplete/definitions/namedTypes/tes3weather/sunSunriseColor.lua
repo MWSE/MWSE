@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The weather's sun sunrise color. The values can range from 0 to 1.]],
+	description = [[Intermediate directional sunlight color used at the midpoint of the sunrise transition, between `sunNightColor` and `sunDayColor`. Values range from 0 to 1.]],
 	valuetype = "tes3vector3",
 }

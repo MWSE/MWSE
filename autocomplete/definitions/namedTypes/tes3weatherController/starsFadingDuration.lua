@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade out `starsPreSunriseFinish` hours before sunrise. This value represents the duration of the fading. This corresponds to the setting of the same name in Morrowind.ini file.]],
+	description = [[Duration, in in-game hours, of each star fade. Opacity rises from 0 to 1 between `starsPostSunsetStart` and `starsPostSunsetStart + starsFadingDuration`, and falls from 1 to 0 between `starsPreSunriseFinish` and `starsPreSunriseFinish + starsFadingDuration`.]],
 	valuetype = "number",
 }

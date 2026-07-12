@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The stars will start to fade in (appear) `starsPostSunsetStart` hours after sunset. This corresponds to the setting of the same name in Morrowind.ini file.]],
+	description = [[Absolute game hour when the stars start fading in. At construction, this is initialized as `sunsetHour +` the `Morrowind.ini` offset (default `+1` hour); the field itself is then compared directly with the current game hour.]],
 	valuetype = "number",
 }

@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The weather's fog day color. The values can range from 0 to 1.]],
+	description = [[Daytime endpoint for the weather's fog color cycle. It is used after the fog sunrise transition and before the fog sunset transition. Values range from 0 to 1.]],
 	valuetype = "tes3vector3",
 }
