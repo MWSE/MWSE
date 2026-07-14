@@ -26,6 +26,7 @@ namespace mwse::lua {
 #endif
 
 namespace se::windows {
+	DWORD getWindowsBuildNumber();
 	std::optional<std::wstring> GetThreadDescription(HANDLE thread);
 	bool SetThreadDescription(HANDLE thread, const std::wstring_view& description);
 
@@ -52,6 +53,18 @@ namespace se::windows {
 	}
 
 	std::filesystem::path getModulePath(HINSTANCE hInstance);
+
+	//
+	// INI Helpers
+	//
+
+	namespace ini {
+		bool HasValue(const char* fileName, const char* section, const char* key);
+		std::optional<std::string> GetString(const char* fileName, const char* section, const char* key, size_t bufferSize = 64);
+		std::optional<bool> GetBool(const char* fileName, const char* section, const char* key);
+		std::optional<int> GetInt(const char* fileName, const char* section, const char* key);
+		std::optional<float> GetFloat(const char* fileName, const char* section, const char* key);
+	}
 
 	class DialogProcContext {
 	public:

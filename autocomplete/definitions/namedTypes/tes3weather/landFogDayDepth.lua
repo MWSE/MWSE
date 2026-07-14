@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The weather's land fog day depth value.]],
+	description = [[Land-fog depth used during daytime. The controller interpolates toward this value from `landFogNightDepth` over `fogDepthChangeSpeed` hours after `sunriseHour`.]],
 	valuetype = "number",
 }

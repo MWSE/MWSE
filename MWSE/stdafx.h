@@ -15,6 +15,7 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <numbers>
 #include <numeric>
 #include <ostream>
 #include <queue>
@@ -38,6 +39,7 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <intrin.h>
 
 // Required Windows APIs.
 #include <windows.h>

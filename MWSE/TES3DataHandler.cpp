@@ -31,6 +31,8 @@
 #include "TES3WorldController.h"
 #include "TES3MobManager.h"
 
+#include "NIBSAnimationManager.h"
+
 #include "MWSEConfig.h"
 
 #include "ReferenceTracker.h"
@@ -496,7 +498,7 @@ namespace TES3 {
 			}
 
 			if (destinationCell->getIsInterior()) {
-				if (visitedCells.find(destinationCell) == visitedCells.end()) {
+				if (!visitedCells.contains(destinationCell)) {
 					linkedInteriorCells.push_back(destinationCell);
 				}
 				continue;
@@ -760,6 +762,22 @@ namespace TES3 {
 	}
 
 	//
+	// DataHandler::ExteriorCellData
+	//
+
+	bool DataHandler::ExteriorCellData::isFullyLoaded() const {
+		if (!cell) {
+			return false;
+		}
+
+		if (state != ExteriorDataLoadingState::Loaded) {
+			return false;
+		}
+
+		return true;
+	}
+
+	//
 	// DataHandler
 	//
 
@@ -910,9 +928,91 @@ namespace TES3 {
 		TES3_DataHandler_updateLightingForReference(this, reference);
 	}
 
+	const auto TES3_DataHandler_updateCellThreadLoader = reinterpret_cast<int(__thiscall*)(DataHandler*, NI::Point3*)>(0x486620);
+	int DataHandler::updateCellThreadLoader(NI::Point3* position) {
+		return TES3_DataHandler_updateCellThreadLoader(this, position);
+	}
+
 	const auto TES3_DataHandler_updateLightingForExteriorCells = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*)>(0x485C50);
 	void DataHandler::updateLightingForExteriorCells() {
 		TES3_DataHandler_updateLightingForExteriorCells(this);
+	}
+
+	const auto TES3_DataHandler_updateLightsBetweenCells = reinterpret_cast<void(__thiscall*)(TES3::DataHandler*, TES3::Cell*, TES3::Cell*)>(0x485A70);
+	void DataHandler::updateLightsBetweenCells(Cell* cell, Cell* otherCell) {
+		TES3_DataHandler_updateLightsBetweenCells(this, cell, otherCell);
+	}
+
+	// Incremental replacement for updateLightingForExteriorCells: on a clean 1-step exterior cross, relight
+	// only the light-application pairs that touch a newly-loaded cell (the retained cells re-apply an
+	// identical result and the dropped row self-cleans on unload), else fall back to the full relight.
+	void DataHandler::relightExteriorCellsAfterCross() {
+		constexpr auto InvalidGridCoord = 0x7FFFFFFF;  // sentinel: no prior cross / no leading edge on an axis
+		static auto prevCenterX = InvalidGridCoord;
+		static auto prevCenterY = InvalidGridCoord;
+
+		const auto cx = centralGridX;
+		const auto cy = centralGridY;
+		const auto dx = cx - prevCenterX;
+		const auto dy = cy - prevCenterY;
+		const auto hasPreviousCenter = prevCenterX != InvalidGridCoord && prevCenterY != InvalidGridCoord;
+		const auto movedNearby = dx || dy;
+		const auto movedIncrementally = std::abs(dx) <= 1 && std::abs(dy) <= 1;
+		const auto incremental = hasPreviousCenter && movedNearby && movedIncrementally;
+		prevCenterX = cx;
+		prevCenterY = cy;
+		if (!incremental) {
+			updateLightingForExteriorCells();  // first cross / teleport / >1-cell jump: full relight
+			return;
+		}
+
+		// Leading edge: a column at gridX = cx +/- 1 and/or a row at gridY = cy +/- 1 (both for a diagonal).
+		const auto newGridX = dx ? cx + dx : InvalidGridCoord;
+		const auto newGridY = dy ? cy + dy : InvalidGridCoord;
+
+		Cell* cells[9] = {};
+		bool isNew[9] = {};
+		for (auto i = 0u; i < 9u; ++i) {
+			auto* ecd = exteriorCellData[i];
+			if (!ecd || !ecd->isFullyLoaded()) {
+				continue;
+			}
+			cells[i] = ecd->cell;
+			isNew[i] = (dx != 0 && cells[i]->getGridX() == newGridX) || (dy != 0 && cells[i]->getGridY() == newGridY);
+		}
+
+		// Clean only the new cells' lights; retained cells keep their already-valid applied state.
+		for (auto i = 0u; i < 9u; ++i) {
+			if (!isNew[i]) {
+				continue;
+			}
+			for (auto ref : cells[i]->actors) ref->detachDynamicLightFromAffectedNodes();
+			for (auto ref : cells[i]->persistentRefs) ref->detachDynamicLightFromAffectedNodes();
+			for (auto ref : cells[i]->temporaryRefs) ref->detachDynamicLightFromAffectedNodes();
+		}
+
+		// Re-apply only the (cell -> neighbour) pairs that touch a new cell. The grid is row-major over
+		// a 3x3 block (index = row * 3 + col); neighbours are the in-bounds Moore neighbourhood incl. self.
+		for (auto i = 0; i < 9; ++i) {
+			if (!cells[i]) {
+				continue;
+			}
+			const int col = i % 3, row = i / 3;
+			for (int r = row - 1; r <= row + 1; ++r) {
+				if (r < 0 || r > 2) {
+					continue;
+				}
+				for (int c = col - 1; c <= col + 1; ++c) {
+					if (c < 0 || c > 2) {
+						continue;
+					}
+					const int j = r * 3 + c;
+					if (cells[j] && (isNew[i] || isNew[j])) {
+						updateLightsBetweenCells(cells[i], cells[j]);
+					}
+				}
+			}
+		}
 	}
 
 	const auto TES3_DataHandler_setDynamicLightingForReference = reinterpret_cast<void(__thiscall*)(DataHandler*, Reference*)>(0x485B00);
@@ -965,6 +1065,43 @@ namespace TES3 {
 
 	std::reference_wrapper<DataHandler::ExteriorCellData* [9]> DataHandler::getExteriorCellData_lua() {
 		return std::ref(exteriorCellData);
+	}
+
+	void DataHandler::rebuildActiveCellManagerBoundsUnderRoot(NI::Node* root) {
+		if (root == nullptr) {
+			return;
+		}
+
+		auto* storage = root->children.storage;
+		auto endIndex = root->children.getEndIndex();
+
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child == nullptr) {
+				continue;
+			}
+
+			if (!NI::BSAnimationManager::isExactType(child)) {
+				continue;
+			}
+
+			auto* manager = static_cast<NI::BSAnimationManager*>(child);
+			manager->vTable.asAVObject->updateWorldBound(manager);
+		}
+
+		root->vTable.asAVObject->updateWorldBound(root);
+	}
+
+	bool DataHandler::rebuildActiveCellManagerBounds() {
+		const auto isBackgroundThreadRunning = *reinterpret_cast<volatile const bool*>(&backgroundThreadRunning);
+		if (isBackgroundThreadRunning) {
+			return false;
+		}
+
+		rebuildActiveCellManagerBoundsUnderRoot(worldObjectRoot);
+		rebuildActiveCellManagerBoundsUnderRoot(worldPickObjectRoot);
+
+		return true;
 	}
 
 	long DataHandler::getGameSettingLong(int id) const {

@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The weather's sundisc sunset color. The values can range from 0 to 1.]],
+	description = [[Sun-disc tint used during sunset. The disc blends from white toward this color from `sunsetHour - sunPreSunsetTime` through `sunsetHour`; it is separate from `sunSunsetColor`. Values range from 0 to 1.]],
 	valuetype = "tes3vector3",
 }

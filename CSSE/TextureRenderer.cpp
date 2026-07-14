@@ -1,6 +1,7 @@
 #include "TextureRenderer.h"
 
 #include "DDSUtil.h"
+#include "DarkMode.h"
 #include "MemoryUtil.h"
 #include "WinUIUtil.h"
 
@@ -88,7 +89,13 @@ namespace se::cs {
 
 					const auto previousBitmap = SelectObject(sourceDC, sourceBitmap);
 
-					FillRect(drawItem->hDC, rcItem, GetSysColorBrush(COLOR_BTNFACE));
+					if (darkmode::isActive()) {
+						SetDCBrushColor(drawItem->hDC, darkmode::palette::background);
+						FillRect(drawItem->hDC, rcItem, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+					}
+					else {
+						FillRect(drawItem->hDC, rcItem, GetSysColorBrush(COLOR_BTNFACE));
+					}
 
 					BLENDFUNCTION blend = {};
 					blend.BlendOp = AC_SRC_OVER;

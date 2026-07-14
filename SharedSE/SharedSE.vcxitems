@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -15,9 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BitUtil.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)BSAnimationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
+	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogger.h" />
+	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogUtilities.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MWSEInterface.h" />
@@ -119,6 +121,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsUtil.h" />
   </ItemGroup>
   <ItemGroup>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogger.cpp" />
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogDevice.cpp" />
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogMemory.cpp" />
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogRegistryStack.cpp" />
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogSections.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CodePatchUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />
@@ -129,6 +136,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIAVObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBinaryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBound.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBoundingBox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.cpp" />

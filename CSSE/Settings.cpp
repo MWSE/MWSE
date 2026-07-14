@@ -1,5 +1,6 @@
 #include "Settings.h"
 
+#include "DarkMode.h"
 #include "LogUtil.h"
 #include "StringUtil.h"
 #include "TomlUtil.h"
@@ -373,30 +374,58 @@ namespace se::cs {
 	// 
 
 	void Settings_t::ColorTheme::from_toml(const toml::value& v) {
+		mode = toml::find_or(v, "mode", mode);
+
 		// Modified object highlight
 		highlight_deleted_object_color = toml::find_or(v, "highlight_deleted_object_color", highlight_deleted_object_color);
 		highlight_modified_from_master_color = toml::find_or(v, "highlight_modified_from_master_color", highlight_modified_from_master_color);
 		highlight_modified_new_object_color = toml::find_or(v, "highlight_modified_new_object_color", highlight_modified_new_object_color);
 		highlight_deprecated_object_color = toml::find_or(v, "highlight_deprecated_object_color", highlight_deprecated_object_color);
+
+		// Modified object highlight, dark mode variants
+		dark_highlight_deleted_object_color = toml::find_or(v, "dark_highlight_deleted_object_color", dark_highlight_deleted_object_color);
+		dark_highlight_modified_from_master_color = toml::find_or(v, "dark_highlight_modified_from_master_color", dark_highlight_modified_from_master_color);
+		dark_highlight_modified_new_object_color = toml::find_or(v, "dark_highlight_modified_new_object_color", dark_highlight_modified_new_object_color);
+		dark_highlight_deprecated_object_color = toml::find_or(v, "dark_highlight_deprecated_object_color", dark_highlight_deprecated_object_color);
 	}
 
 	toml::value Settings_t::ColorTheme::into_toml() const {
 		return toml::value(
 			{
+				{ "mode", mode },
+
 				// Modified object highlight
 				{ "highlight_deleted_object_color", highlight_deleted_object_color },
 				{ "highlight_modified_from_master_color", highlight_modified_from_master_color },
 				{ "highlight_modified_new_object_color", highlight_modified_new_object_color },
 				{ "highlight_deprecated_object_color", highlight_deprecated_object_color },
+
+				// Modified object highlight, dark mode variants
+				{ "dark_highlight_deleted_object_color", dark_highlight_deleted_object_color },
+				{ "dark_highlight_modified_from_master_color", dark_highlight_modified_from_master_color },
+				{ "dark_highlight_modified_new_object_color", dark_highlight_modified_new_object_color },
+				{ "dark_highlight_deprecated_object_color", dark_highlight_deprecated_object_color },
 			}
 		);
 	}
 
 	void Settings_t::ColorTheme::packColors() {
-		highlight_deleted_object_packed_color = RGB(highlight_deleted_object_color[0], highlight_deleted_object_color[1], highlight_deleted_object_color[2]);
-		highlight_modified_from_master_packed_color = RGB(highlight_modified_from_master_color[0], highlight_modified_from_master_color[1], highlight_modified_from_master_color[2]);
-		highlight_modified_new_object_packed_color = RGB(highlight_modified_new_object_color[0], highlight_modified_new_object_color[1], highlight_modified_new_object_color[2]);
-		highlight_deprecated_object_packed_color = RGB(highlight_deprecated_object_color[0], highlight_deprecated_object_color[1], highlight_deprecated_object_color[2]);
+		const auto pack = [](const std::array<unsigned char, 3>& color) {
+			return static_cast<unsigned int>(RGB(color[0], color[1], color[2]));
+		};
+
+		if (darkmode::isActive()) {
+			highlight_deleted_object_packed_color = pack(dark_highlight_deleted_object_color);
+			highlight_modified_from_master_packed_color = pack(dark_highlight_modified_from_master_color);
+			highlight_modified_new_object_packed_color = pack(dark_highlight_modified_new_object_color);
+			highlight_deprecated_object_packed_color = pack(dark_highlight_deprecated_object_color);
+		}
+		else {
+			highlight_deleted_object_packed_color = pack(highlight_deleted_object_color);
+			highlight_modified_from_master_packed_color = pack(highlight_modified_from_master_color);
+			highlight_modified_new_object_packed_color = pack(highlight_modified_new_object_color);
+			highlight_deprecated_object_packed_color = pack(highlight_deprecated_object_color);
+		}
 	}
 
 	//

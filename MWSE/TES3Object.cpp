@@ -371,7 +371,7 @@ namespace TES3 {
 
 	const auto TES3_isSourcelessObject = reinterpret_cast<bool(__stdcall*)(const BaseObject*)>(0x4C1980);
 	bool __stdcall BaseObject::isSourcelessObject(const BaseObject* object) {
-		return TES3_isSourcelessObject(object) || sourcelessObjects.find(object) != sourcelessObjects.end();
+		return TES3_isSourcelessObject(object) || sourcelessObjects.contains(object);
 	}
 
 	void BaseObject::setSourcelessObject(const BaseObject* object) {
@@ -383,7 +383,7 @@ namespace TES3 {
 	static std::unordered_map<const BaseObject*, sol::object> baseObjectCache;
 
 	bool BaseObject::hasCachedLuaObject() const {
-		return baseObjectCache.find(this) != baseObjectCache.end();
+		return baseObjectCache.contains(this);
 	}
 
 	sol::object BaseObject::getCachedLuaObject() const {

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Header Files">
@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Collections">
       <UniqueIdentifier>{dc2213a8-5f9a-4d9f-8933-eebad18bcffd}</UniqueIdentifier>
     </Filter>
+	<Filter Include="Header Files\CrashLogger">
+	  <UniqueIdentifier>{b29f8a80-21a4-4797-846a-1f06bf75b10b}</UniqueIdentifier>
+	</Filter>
+	<Filter Include="Source Files\CrashLogger">
+	  <UniqueIdentifier>{9d42f240-15aa-44d5-bca9-d5d7ea289b13}</UniqueIdentifier>
+	</Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)NIIteratedList.h">
@@ -306,7 +312,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIAmbientLight.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)BSAnimationManager.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h">
@@ -455,6 +461,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBillboardNode.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIBSAnimationNode.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
@@ -560,5 +569,28 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MemoryUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogger.h">
+	  <Filter>Header Files\CrashLogger</Filter>
+	</ClInclude>
+	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogUtilities.h">
+	  <Filter>Header Files\CrashLogger</Filter>
+	</ClInclude>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogger.cpp">
+	  <Filter>Source Files\CrashLogger</Filter>
+	</ClCompile>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogDevice.cpp">
+	  <Filter>Source Files\CrashLogger</Filter>
+	</ClCompile>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogMemory.cpp">
+	  <Filter>Source Files\CrashLogger</Filter>
+	</ClCompile>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogRegistryStack.cpp">
+	  <Filter>Source Files\CrashLogger</Filter>
+	</ClCompile>
+	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogSections.cpp">
+	  <Filter>Source Files\CrashLogger</Filter>
+	</ClCompile>
   </ItemGroup>
 </Project>

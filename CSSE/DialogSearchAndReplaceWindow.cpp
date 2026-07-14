@@ -3,6 +3,10 @@
 #include "MemoryUtil.h"
 #include "LogUtil.h"
 
+#include "CSCell.h"
+#include "CSReference.h"
+#include "CSRecordHandler.h"
+
 #include "DialogProcContext.h"
 
 namespace se::cs::dialog::search_and_replace_window {
@@ -66,10 +70,25 @@ namespace se::cs::dialog::search_and_replace_window {
 		return context.getResult();
 	}
 
+	Reference* __fastcall PatchCreateReference(RecordHandler* recordHandler, DWORD _EDX_, PhysicalObject* baseObject, NI::Point3* position, NI::Point3* orientation, bool* cellWasCreated, Reference* existingReference, Cell* cell) {
+		auto reference = recordHandler->createReference(baseObject, position, orientation, cellWasCreated, existingReference, cell);
+
+		if (reference && existingReference && cell) {
+			cell->reclassifyReference(reference);
+		}
+
+		return reference;
+	}
+
 	void installPatches() {
 		using memory::genJumpEnforced;
+		using memory::genCallEnforced;
 
 		// Patch: Extend Object Window message handling.
 		genJumpEnforced(0x4024D7, 0x438CE0, reinterpret_cast<DWORD>(PatchDialogProc));
+
+		// Patch: Fix Search & Replace not moving references between actor/non-actor lists.
+		genCallEnforced(0x438EF5, 0x403CF1, reinterpret_cast<DWORD>(PatchCreateReference));
+		genCallEnforced(0x439003, 0x403CF1, reinterpret_cast<DWORD>(PatchCreateReference));
 	}
 }

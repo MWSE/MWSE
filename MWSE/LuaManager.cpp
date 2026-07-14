@@ -280,6 +280,7 @@
 #include "LuaPreventRestEvent.h"
 #include "LuaProjectileExpireEvent.h"
 #include "LuaReferenceActivatedEvent.h"
+#include "LuaRenderEvent.h"
 #include "LuaRepairEvent.h"
 #include "LuaRestInterruptEvent.h"
 #include "LuaShieldBlockedEvent.h"
@@ -763,6 +764,7 @@ namespace mwse::lua {
 	//
 
 	bool lastMenuMode = true;
+	bool cellManagerBoundsRebuildPending = false;
 	void __fastcall EnterFrame(TES3::WorldController* worldController, DWORD _UNUSED_) {
 		// Run the function before raising our event.
 		worldController->mainLoopBeforeInput();
@@ -788,10 +790,18 @@ namespace mwse::lua {
 		// Has our cell changed?
 		auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler->currentCell != TES3::DataHandler::previousVisitedCell) {
+			// Tighten cell-manager bounds to fit the newly loaded cell. If the background loader is still active then
+			// we defer until the next frame. Bounds do stay conservatively correct meanwhile, just potentially larger.
+			// This deferred path could only ever happen in new-game and save-load at the time of writing this comment.
+			cellManagerBoundsRebuildPending = !dataHandler->rebuildActiveCellManagerBounds();
+
 			if (event::CellChangedEvent::getEventEnabled()) {
 				luaManager.getThreadSafeStateHandle().triggerEvent(new event::CellChangedEvent(dataHandler->currentCell, TES3::DataHandler::previousVisitedCell));
 			}
 			TES3::DataHandler::previousVisitedCell = dataHandler->currentCell;
+		}
+		else if (cellManagerBoundsRebuildPending) {
+			cellManagerBoundsRebuildPending = !dataHandler->rebuildActiveCellManagerBounds();
 		}
 
 		// Send off our enterFrame event always.
@@ -803,6 +813,17 @@ namespace mwse::lua {
 		if (!worldController->flagMenuMode && event::SimulateEvent::getEventEnabled()) {
 			luaManager.getThreadSafeStateHandle().triggerEvent(new event::SimulateEvent(worldController->deltaTime, highResolutionTimestamp));
 		}
+	}
+
+	//
+	// Hook: Render
+	//
+
+	void __fastcall Render(TES3::Game* game, DWORD _UNUSED_, int renderType) {
+		if (event::RenderEvent::getEventEnabled()) {
+			LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new event::RenderEvent());
+		}
+		game->renderNextFrame(renderType);
 	}
 
 	//
@@ -2650,7 +2671,7 @@ namespace mwse::lua {
 			const auto& lowerPath = maybeLowerPath.value();
 
 			// We only care about *-metadata.toml files.
-			if (!se::string::ends_with(lowerPath, "-metadata.toml")) {
+			if (!lowerPath.ends_with("-metadata.toml")) {
 				continue;
 			}
 
@@ -5056,6 +5077,9 @@ namespace mwse::lua {
 		// Event: enterFrame. This hook can be in a couple of locations, because of MCP.
 		genCallEnforced(0x41ABB0, 0x40F610, reinterpret_cast<DWORD>(EnterFrame));
 		genCallEnforced(0x41ABA5, 0x40F610, reinterpret_cast<DWORD>(EnterFrame));
+
+		// Event: render. Wraps the main loop's `TES3Game::renderNextFrame` call.
+		genCallEnforced(0x41BE56, 0x41BE90, reinterpret_cast<DWORD>(Render));
 
 		// Event: equip.
 		genCallEnforced(0x5CB8E7, 0x5CE130, reinterpret_cast<DWORD>(OnPCEquip));

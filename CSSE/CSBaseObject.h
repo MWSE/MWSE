@@ -43,6 +43,8 @@ namespace se::cs {
 		bool getPersists() const;
 		bool getBlocked() const;
 
+		bool isMobileCapableActor() const;
+
 		void setFlag80(bool set);
 
 		struct SearchSettings {

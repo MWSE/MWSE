@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.]],
+	description = [[Hours before `sunsetHour` when the sky-color transition begins. The window is `sunsetHour - skyPreSunsetTime` through `sunsetHour + sunsetDuration + skyPostSunsetTime`, split between day → `skySunsetColor` and `skySunsetColor` → night. This is an offset, not an absolute hour.]],
 	valuetype = "number",
 }

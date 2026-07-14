@@ -68,12 +68,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+	<IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+	<IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,11 +84,12 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <LanguageStandard>stdcpp20</LanguageStandard>
+	  <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -115,13 +116,14 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <LanguageStandard>stdcpp20</LanguageStandard>
+	  <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\CSSE.def</ModuleDefinitionFile>
-      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>msimg32.lib;comctl32.lib;dbghelp.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -138,6 +140,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+	<ClCompile Include="CrashLoggerCSSE.cpp" />
     <ClCompile Include="CDataBoundPropertyGridProperty.cpp" />
     <ClCompile Include="CSAlchemy.cpp" />
     <ClCompile Include="CSArmor.cpp" />
@@ -165,7 +168,9 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="CSRace.cpp" />
     <ClCompile Include="CSSpell.cpp" />
     <ClCompile Include="CSWeapon.cpp" />
+    <ClCompile Include="DarkMode.cpp" />
     <ClCompile Include="DialogAboutCSSE.cpp" />
+    <ClCompile Include="IconOverride.cpp" />
     <ClCompile Include="DialogActorAIWindow.cpp" />
     <ClCompile Include="DialogCSSESettings.cpp" />
     <ClCompile Include="DialogEditAlchemyObjectWindow.cpp" />
@@ -223,6 +228,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="CSSE.def" />
+    <None Include="res\comctl32v6.manifest" />
     <None Include="res\CSSE.rc2" />
   </ItemGroup>
   <ItemGroup>
@@ -238,7 +244,9 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="CSRace.h" />
     <ClInclude Include="CSRegion.h" />
     <ClInclude Include="CSSE.h" />
+    <ClInclude Include="DarkMode.h" />
     <ClInclude Include="DialogAboutCSSE.h" />
+    <ClInclude Include="IconOverride.h" />
     <ClInclude Include="DialogActorAIWindow.h" />
     <ClInclude Include="DialogCSSESettings.h" />
     <ClInclude Include="DialogLayersWindow.h" />

@@ -56,6 +56,27 @@ The *machine* minimum available value for single-precision numbers. This is the 
 
 ## Functions
 
+### `math.approach`
+<div class="search_terms" style="display: none">approach</div>
+
+Moves current toward target by at most step, without overshooting.
+
+```lua
+local result = math.approach(current, target, step )
+```
+
+**Parameters**:
+
+* `current` (number)
+* `target` (number)
+* `step ` (number): Positive step expected.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `math.clamp`
 <div class="search_terms" style="display: none">clamp</div>
 
@@ -780,6 +801,27 @@ local result = math.ease.springOutWeak(x)
 
 ***
 
+### `math.eerp`
+<div class="search_terms" style="display: none">eerp</div>
+
+Exponentially interpolates between two positive values.
+
+```lua
+local result = math.eerp(a, b, t)
+```
+
+**Parameters**:
+
+* `a` (number): A positive value.
+* `b` (number): A positive value.
+* `t` (number): The interpolation factor.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `math.isclose`
 <div class="search_terms" style="display: none">isclose, close</div>
 
@@ -823,13 +865,15 @@ local result = math.lerp(v0, v1, t)
 
 ***
 
-### `math.nextPowerOfTwo`
+### `math.nextpoweroftwo`
 <div class="search_terms" style="display: none">nextpoweroftwo</div>
 
 Returns the next power of 2 that is equal to, or greater than, value.
 
+This function was previously exposed as `math.nextPowerOfTwo`.
+
 ```lua
-local result = math.nextPowerOfTwo(value)
+local result = math.nextpoweroftwo(value)
 ```
 
 **Parameters**:
@@ -842,6 +886,46 @@ local result = math.nextPowerOfTwo(value)
 
 ***
 
+### `math.normalizeangle`
+<div class="search_terms" style="display: none">normalizeangle</div>
+
+Normalizes an angle into the range [-pi, pi].
+
+```lua
+local result = math.normalizeangle(angle)
+```
+
+**Parameters**:
+
+* `angle` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.oscillate`
+<div class="search_terms" style="display: none">oscillate</div>
+
+Bounces a phase value back and forth between the inclusive range `inMin` to `inMax`.
+
+```lua
+local result = math.oscillate(phase, inMin, inMax)
+```
+
+**Parameters**:
+
+* `phase` (number)
+* `inMin` (number)
+* `inMax` (number): Must differ from `inMin`.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `math.remap`
 <div class="search_terms" style="display: none">remap</div>
 
@@ -851,6 +935,29 @@ For example, a value of 7 remapped from [0,10] to [0,100] would be 70.
 
 ```lua
 local result = math.remap(value, lowIn, highIn, lowOut, highOut)
+```
+
+**Parameters**:
+
+* `value` (number)
+* `lowIn` (number)
+* `highIn` (number)
+* `lowOut` (number)
+* `highOut` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.remapclamped`
+<div class="search_terms" style="display: none">remapclamped</div>
+
+Remaps a value from one range to another, then clamps to the output range.
+
+```lua
+local result = math.remapclamped(value, lowIn, highIn, lowOut, highOut)
 ```
 
 **Parameters**:
@@ -880,6 +987,68 @@ local result = math.round(value, digits)
 
 * `value` (number)
 * `digits` (number): *Default*: `0`.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.smootherstep`
+<div class="search_terms" style="display: none">smootherstep</div>
+
+Returns smoother quintic interpolation over the range `edge0` to `edge1`.
+
+```lua
+local result = math.smootherstep(edge0, edge1, x)
+```
+
+**Parameters**:
+
+* `edge0` (number)
+* `edge1` (number): Must differ from `edge0`.
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.smoothstep`
+<div class="search_terms" style="display: none">smoothstep</div>
+
+Returns smooth cubic interpolation over the range `edge0` to `edge1`.
+
+```lua
+local result = math.smoothstep(edge0, edge1, x)
+```
+
+**Parameters**:
+
+* `edge0` (number)
+* `edge1` (number): Must differ from `edge0`.
+* `x` (number)
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `math.snap`
+<div class="search_terms" style="display: none">snap</div>
+
+Rounds a value to the nearest multiple of `step`.
+
+```lua
+local result = math.snap(value, step)
+```
+
+**Parameters**:
+
+* `value` (number)
+* `step` (number): A positive step value.
 
 **Returns**:
 

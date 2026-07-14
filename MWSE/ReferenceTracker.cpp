@@ -411,7 +411,7 @@ namespace mwse {
 							continue;
 						}
 
-						if (trackedReferences.find(reference) == trackedReferences.end()) {
+						if (!trackedReferences.contains(reference)) {
 							log << "[MWSE] ReferenceTracker validation failed: untracked reference found in cell"
 								<< " cell=" << cell
 								<< " list=" << listName

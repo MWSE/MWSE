@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The weather's sun day color. The values can range from 0 to 1.]],
+	description = [[Daytime endpoint for the weather's directional sunlight color cycle. It is used after the sun sunrise transition and before the sun sunset transition. Values range from 0 to 1.]],
 	valuetype = "tes3vector3",
 }

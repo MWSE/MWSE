@@ -47,6 +47,104 @@ namespace TES3 {
 	}
 
 	//
+	// WorldControllerRenderTarget
+	//
+
+	const auto TES3_WorldControllerRenderTarget_lockRenderTarget = reinterpret_cast<D3DLOCKED_RECT*(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::Texture>)>(0x42F3F0);
+	D3DLOCKED_RECT* WorldControllerRenderTarget::lockRenderTarget(NI::Pointer<NI::Texture> texture) {
+		return TES3_WorldControllerRenderTarget_lockRenderTarget(this, texture);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_unlockRenderTarget = reinterpret_cast<void(__thiscall*)(WorldControllerRenderTarget*, D3DLOCKED_RECT*, int)>(0x42F620);
+	void WorldControllerRenderTarget::unlockRenderTarget(D3DLOCKED_RECT* lockedRect, int flag) {
+		TES3_WorldControllerRenderTarget_unlockRenderTarget(this, lockedRect, flag);
+	}
+
+	const auto TES3_WorldControllerRenderTarget_getFogOfWarPixel = reinterpret_cast<unsigned char(__thiscall*)(WorldControllerRenderTarget*, NI::Pointer<NI::RenderedTexture>, float, float)>(0x42FE20);
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixel(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
+		return TES3_WorldControllerRenderTarget_getFogOfWarPixel(this, texture, worldX, worldY);
+	}
+
+	// Fog-of-war pixel cache: a per-compositor-pass copy of each fog tile, keyed by texture.
+	static constexpr auto FogTileResolution = 64u;
+	static constexpr auto FogCacheCapacity = 16u;
+
+	struct FogTileCacheEntry {
+		NI::Pointer<NI::RenderedTexture> texture = nullptr;
+		unsigned char pixels[FogTileResolution * FogTileResolution] = {};
+	};
+	static auto sFogCacheActive = false;
+	static auto sFogCacheCount = 0u;
+	static FogTileCacheEntry sFogCache[FogCacheCapacity] = {};
+
+	static FogTileCacheEntry* fogCacheFindOrLoad(WorldControllerRenderTarget* renderTarget, NI::Pointer<NI::RenderedTexture> texture) {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			if (sFogCache[i].texture == texture) {
+				return &sFogCache[i];
+			}
+		}
+		if (sFogCacheCount >= FogCacheCapacity) {
+			return nullptr;
+		}
+		D3DLOCKED_RECT* rect = renderTarget->lockRenderTarget(texture);
+		if (!rect) {
+			return nullptr;
+		} else if (!rect->pBits) {
+			renderTarget->unlockRenderTarget(rect, 0);
+			return nullptr;
+		}
+		FogTileCacheEntry* entry = &sFogCache[sFogCacheCount];
+		entry->texture = texture;
+		const unsigned char* bits = static_cast<const unsigned char*>(rect->pBits);
+		const int pitch = rect->Pitch;
+		for (unsigned int y = 0; y < FogTileResolution; ++y) {
+			for (unsigned int x = 0; x < FogTileResolution; ++x) {
+				entry->pixels[y * FogTileResolution + x] = bits[4 * x + pitch * y + 1];  // same channel as getFogOfWarPixel
+			}
+		}
+		renderTarget->unlockRenderTarget(rect, 0);
+		++sFogCacheCount;
+		return entry;
+	}
+
+	void WorldControllerRenderTarget::beginFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
+		sFogCacheActive = true;
+		sFogCacheCount = 0;
+	}
+
+	void WorldControllerRenderTarget::endFogCache() {
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
+		sFogCacheActive = false;
+		sFogCacheCount = 0;
+	}
+
+	unsigned char WorldControllerRenderTarget::getFogOfWarPixelCached(NI::Pointer<NI::RenderedTexture> texture, float worldX, float worldY) {
+		if (!sFogCacheActive) {
+			return getFogOfWarPixel(texture, worldX, worldY);  // outside the burst: exact vanilla
+		}
+		const auto px = static_cast<unsigned int>(static_cast<double>(worldX) * FogTileResolution);
+		const auto py = static_cast<unsigned int>(static_cast<double>(worldY) * FogTileResolution);
+		if (px > FogTileResolution || py > FogTileResolution) {
+			return 0;
+		}
+		unsigned char result = 0;
+		if (texture) {
+			const FogTileCacheEntry* entry = fogCacheFindOrLoad(this, texture);
+			if (entry) {
+				const unsigned int cx = px < FogTileResolution ? px : FogTileResolution - 1;  // engine reads index 64 (OOB); clamp safely
+				const unsigned int cy = py < FogTileResolution ? py : FogTileResolution - 1;
+				result = entry->pixels[cy * FogTileResolution + cx];
+			}
+		}
+		return result;
+	}
+
+	//
 	// KillCounter
 	//
 
@@ -71,6 +169,30 @@ namespace TES3 {
 #endif
 	}
 
+#if !MWSE_CUSTOM_KILLCOUNTER
+	KillCounter::Node* KillCounter::getNode(Actor* actor) const {
+		const auto existing = std::find_if(killedActors->begin(), killedActors->end(), [&](const auto& node) { return node->actor == actor; });
+		if (existing == killedActors->end()) {
+			return nullptr;
+		}
+
+		return *existing;
+	}
+
+	KillCounter::Node* KillCounter::getOrCreateNode(Actor* actor) {
+		const auto existing = getNode(actor);
+		if (existing) {
+			return existing;
+		}
+
+		const auto node = se::memory::_new<KillCounter::Node>();
+		node->count = 0;
+		node->actor = actor;
+		killedActors->push_back(node);
+		return node;
+	}
+#endif
+
 	int KillCounter::getKillCount(Actor * actor) const {
 #if MWSE_CUSTOM_KILLCOUNTER
 		auto itt = counter->find(actor);
@@ -78,12 +200,9 @@ namespace TES3 {
 			return itt->second;
 		}
 #else
-		auto node = killedActors->head;
-		while (node) {
-			if (node->data->actor == actor) {
-				return node->data->count;
-			}
-			node = node->next;
+		auto node = getNode(actor);
+		if (node) {
+			return node->count;
 		}
 #endif
 
@@ -101,29 +220,18 @@ namespace TES3 {
 		(*counter)[actor]--;
 		totalKills--;
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, we don't care about it.
+		// Is this actor already in the collection? If it isn't in the collection, we don't care about it.
+		const auto node = getNode(actor);
 		if (node == nullptr) {
 			return;
 		}
 
-		// Increment kills for this actor and total kills.
+		// Decrement kills for this actor and total kills.
 		node->count--;
 		totalKills--;
 #endif
 
-		// Increment werewolf kills if the player is wolfing out.
+		// Decrement werewolf kills if the player is wolfing out.
 		auto worldController = TES3::WorldController::get();
 		if (werewolfKills > 0 && actor->objectType == TES3::ObjectType::NPC && worldController->getMobilePlayer()->getFlagWerewolf()) {
 			werewolfKills--;
@@ -148,27 +256,8 @@ namespace TES3 {
 		(*counter)[actor]++;
 		totalKills++;
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, create a new node and add it.
-		if (node == nullptr) {
-			node = se::memory::_new<KillCounter::Node>();
-			node->count = 0;
-			node->actor = actor;
-			killedActors->push_back(node);
-		}
-
 		// Increment kills for this actor and total kills.
+		auto node = getOrCreateNode(actor);
 		node->count++;
 		totalKills++;
 #endif
@@ -209,26 +298,7 @@ namespace TES3 {
 		(*counter)[actor] = count;
 		totalKills += (count - countBefore);
 #else
-		// Is this actor already in the collection?
-		KillCounter::Node* node = nullptr;
-		auto itt = killedActors->head;
-		while (itt) {
-			if (itt->data->actor == actor) {
-				node = itt->data;
-				break;
-			}
-
-			itt = itt->next;
-		}
-
-		// If it isn't in the collection, create a new node and add it.
-		if (node == nullptr) {
-			node = se::memory::_new<KillCounter::Node>();
-			node->count = 0;
-			node->actor = actor;
-			killedActors->push_back(node);
-		}
-
+		auto node = getOrCreateNode(actor);
 		totalKills += (count - node->count);
 		node->count = count;
 #endif
@@ -236,9 +306,9 @@ namespace TES3 {
 
 	const auto TES3_KillCounter_clear = reinterpret_cast<void(__thiscall*)(KillCounter*)>(0x55DBD0);
 	void KillCounter::clear() {
-#if MWSE_CUSTOM_KILLCOUNTER
 		totalKills = 0;
 		werewolfKills = 0;
+#if MWSE_CUSTOM_KILLCOUNTER
 		counter->clear();
 #else
 		TES3_KillCounter_clear(this);
@@ -250,7 +320,7 @@ namespace TES3 {
 #if MWSE_CUSTOM_KILLCOUNTER
 		if (file->getFirstSubrecord() == 'TSLK') {
 			// Clear existing data.
-			counter->clear();
+			clear();
 
 			// Parse subrecords.
 			int countBuffer;
@@ -266,14 +336,14 @@ namespace TES3 {
 					auto actor = static_cast<Actor*>(TES3::DataHandler::get()->nonDynamicData->resolveObject(idBuffer));
 					if (actor) {
 						setKillCount(actor, countBuffer);
-						totalKills += countBuffer;
 					}
 					else {
 						mwse::tes3::logAndShowError("Unable to locate Killed Object '%s'.", idBuffer);
 					}
 				}
 				break;
-				case 'INTV':
+				case 'VTNI':
+				case 'INTV': // Backwards compatibility with previously bugged MWSE saves.
 					file->readChunkData(&werewolfKills);
 					break;
 				}
@@ -305,13 +375,13 @@ namespace TES3 {
 		for (auto& itt : *counter) {
 			if (itt.second > 0) {
 				const char* id = itt.first->getObjectID();
-				file->writeChunkData('MANK', id, strnlen_s(id, 32) + 1);
-				file->writeChunkData('MANC', &itt.second, 4);
+				file->writeChunkString('MANK', id);
+				file->writeChunkValue('MANC', itt.second);
 			}
 		}
 
 		// Write werewolf kills.
-		file->writeChunkData('INTV', &werewolfKills, 4);
+		file->writeChunkValue('VTNI', werewolfKills);
 
 		// Finish up this record.
 		file->endRecord();

@@ -64,6 +64,9 @@ namespace se::cs {
 		Land* getOrCreateLand();
 		Region* getRegion() const;
 
+		void addReference(Reference* reference);
+		void reclassifyReference(Reference* reference);
+
 		const char* getDisplayName() const;
 		std::string getEditorId() const;
 	};

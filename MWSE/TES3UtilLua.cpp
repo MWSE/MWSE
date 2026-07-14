@@ -2387,7 +2387,7 @@ namespace mwse::lua {
 			int exteriorCount = 0;
 			for (size_t i = 0; i < 9; ++i) {
 				auto cellDataPointer = dataHandler->exteriorCellData[i];
-				if (cellDataPointer && cellDataPointer->loadingFlags >= 1) {
+				if (cellDataPointer && cellDataPointer->isFullyLoaded()) {
 					exteriorCount++;
 					result[exteriorCount] = cellDataPointer->cell;
 				}
@@ -2476,7 +2476,7 @@ namespace mwse::lua {
 			std::swap(TES3::DataHandler::suppressThreadLoad, suppressThreadLoad);
 
 			if (userProvidedOrientation) {
-				reference->relocate(cell, &position.value(), static_cast<float>(orientation.value().z * (180.0f / se::math::M_PI)));
+				reference->relocate(cell, &position.value(), se::math::radiansToDegrees(orientation.value().z));
 			}
 			else {
 				reference->relocateNoRotation(cell, &position.value());
@@ -2734,7 +2734,7 @@ namespace mwse::lua {
 			std::unordered_set<unsigned int> instancesToRetire;
 
 			for (const auto& effect : mobile->activeMagicEffects) {
-				if (instancesToRetire.find(effect.magicInstanceSerial) != instancesToRetire.end()) {
+				if (instancesToRetire.contains(effect.magicInstanceSerial)) {
 					continue;
 				}
 

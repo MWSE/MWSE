@@ -5,36 +5,36 @@
 
 --- A structure that contains base weather information shared by inheriting weather structures.
 --- @class tes3weather
---- @field ambientDayColor tes3vector3 The weather's ambient day color. The values can range from 0 to 1.
+--- @field ambientDayColor tes3vector3 Daytime endpoint for the weather's ambient-light color cycle. It is used after the sunrise transition and before the sunset transition. Values range from 0 to 1.
 --- @field ambientLoopSound tes3sound The weather's ambient looping sound. The current ambient sound should be changed by setting `ambientLoopSoundId`.
 --- @field ambientLoopSoundId string The weather's ambient looping sound ID. This can be changed, and the sound will switch over when the weather is active.
---- @field ambientNightColor tes3vector3 The weather's ambient night color. The values can range from 0 to 1.
+--- @field ambientNightColor tes3vector3 Nighttime endpoint for the weather's ambient-light color cycle. It is used outside the sunrise and sunset transition windows. Values range from 0 to 1.
 --- @field ambientPlaying boolean The weather's ambient playing flag.
---- @field ambientSunriseColor tes3vector3 The weather's ambient sunrise color. The values can range from 0 to 1.
---- @field ambientSunsetColor tes3vector3 The weather's ambient sunset color. The values can range from 0 to 1.
+--- @field ambientSunriseColor tes3vector3 Intermediate ambient-light color used at the midpoint of the sunrise transition, between `ambientNightColor` and `ambientDayColor`. Values range from 0 to 1.
+--- @field ambientSunsetColor tes3vector3 Intermediate ambient-light color used at the midpoint of the sunset transition, between `ambientDayColor` and `ambientNightColor`. Values range from 0 to 1.
 --- @field cloudsMaxPercent number The weather's cloud maximum percentage.
 --- @field cloudsSpeed number The weather's cloud speed.
 --- @field cloudTexture string The weather's cloud texture path.
 --- @field controller tes3weatherController *Read-only*. The weather's weather controller.
---- @field fogDayColor tes3vector3 The weather's fog day color. The values can range from 0 to 1.
---- @field fogNightColor tes3vector3 The weather's fog night color. The values can range from 0 to 1.
---- @field fogSunriseColor tes3vector3 The weather's fog sunrise color. The values can range from 0 to 1.
---- @field fogSunsetColor tes3vector3 The weather's fog sunset color. The values can range from 0 to 1.
+--- @field fogDayColor tes3vector3 Daytime endpoint for the weather's fog color cycle. It is used after the fog sunrise transition and before the fog sunset transition. Values range from 0 to 1.
+--- @field fogNightColor tes3vector3 Nighttime endpoint for the weather's fog color cycle. It is used outside the fog sunrise and sunset transition windows. Values range from 0 to 1.
+--- @field fogSunriseColor tes3vector3 Intermediate fog color used at the midpoint of the sunrise transition, between `fogNightColor` and `fogDayColor`. Values range from 0 to 1.
+--- @field fogSunsetColor tes3vector3 Intermediate fog color used at the midpoint of the sunset transition, between `fogDayColor` and `fogNightColor`. Values range from 0 to 1.
 --- @field glareView number The weather's glare view.
 --- @field index tes3.weather *Read-only*. The weather's index ID. Maps to values in the [`tes3.weather`](https://mwse.github.io/MWSE/references/weather-types/) table.
---- @field landFogDayDepth number The weather's land fog day depth value.
---- @field landFogNightDepth number The weather's land fog night depth value.
+--- @field landFogDayDepth number Land-fog depth used during daytime. The controller interpolates toward this value from `landFogNightDepth` over `fogDepthChangeSpeed` hours after `sunriseHour`.
+--- @field landFogNightDepth number Land-fog depth used at night. The controller interpolates toward this value from `landFogDayDepth` over `fogDepthChangeSpeed` hours after `sunsetHour`.
 --- @field name string *Read-only*. The weather's user-friendly name, hardcoded in English to match the INI settings name. These values can be `"Ashstorm"`, `"Blight"`, `"Blizzard"`, `"Clear"`, `"Cloudy"`, `"Foggy"`, `"Overcast"`, `"Rain"`, `"Snow"`, or `"Thunderstorm"` as appropriate.
 --- @field relevance number *Read-only*. The weather's relevance. If the weather is fully active and not transitioning, this value will be 1.0. If it is inactive entirely, it will be 0.0. The value will increase/decrease as it is transitioned to/from.
---- @field skyDayColor tes3vector3 The weather's sky day color. The values can range from 0 to 1.
---- @field skyNightColor tes3vector3 The weather's sky night color. The values can range from 0 to 1.
---- @field skySunriseColor tes3vector3 The weather's sky sunrise color. The values can range from 0 to 1.
---- @field skySunsetColor tes3vector3 The weather's sky sunset color. The values can range from 0 to 1.
---- @field sunDayColor tes3vector3 The weather's sun day color. The values can range from 0 to 1.
---- @field sundiscSunsetColor tes3vector3 The weather's sundisc sunset color. The values can range from 0 to 1.
---- @field sunNightColor tes3vector3 The weather's sun night color. The values can range from 0 to 1.
---- @field sunSunriseColor tes3vector3 The weather's sun sunrise color. The values can range from 0 to 1.
---- @field sunSunsetColor tes3vector3 The weather's sun sunset color. The values can range from 0 to 1.
+--- @field skyDayColor tes3vector3 Daytime endpoint for the weather's sky-color cycle. It is used after the sky sunrise transition and before the sky sunset transition. Values range from 0 to 1.
+--- @field skyNightColor tes3vector3 Nighttime endpoint for the weather's sky-color cycle. It is used outside the sky sunrise and sunset transition windows. Values range from 0 to 1.
+--- @field skySunriseColor tes3vector3 Intermediate sky color used at the midpoint of the sunrise transition, between `skyNightColor` and `skyDayColor`. Values range from 0 to 1.
+--- @field skySunsetColor tes3vector3 Intermediate sky color used at the midpoint of the sunset transition, between `skyDayColor` and `skyNightColor`. Values range from 0 to 1.
+--- @field sunDayColor tes3vector3 Daytime endpoint for the weather's directional sunlight color cycle. It is used after the sun sunrise transition and before the sun sunset transition. Values range from 0 to 1.
+--- @field sundiscSunsetColor tes3vector3 Sun-disc tint used during sunset. The disc blends from white toward this color from `sunsetHour - sunPreSunsetTime` through `sunsetHour`; it is separate from `sunSunsetColor`. Values range from 0 to 1.
+--- @field sunNightColor tes3vector3 Nighttime endpoint for the weather's directional sunlight color cycle. It is used outside the sun sunrise and sunset transition windows. Values range from 0 to 1.
+--- @field sunSunriseColor tes3vector3 Intermediate directional sunlight color used at the midpoint of the sunrise transition, between `sunNightColor` and `sunDayColor`. Values range from 0 to 1.
+--- @field sunSunsetColor tes3vector3 Intermediate directional sunlight color used at the midpoint of the sunset transition, between `sunDayColor` and `sunNightColor`. Values range from 0 to 1.
 --- @field supportsParticleLerp boolean The weather's particle lerping support flag.
 --- @field transitionDelta number The weather's transition delta.
 --- @field underwaterSoundState boolean The weather's underwater sound state flag. This value will be `true`, while the player is underwater.

@@ -219,6 +219,29 @@ namespace se::windows {
 	using setThreadDescription_type = decltype(::SetThreadDescription);
 	static std::optional<setThreadDescription_type*> _SetThreadDescription;
 
+
+	DWORD getWindowsBuildNumber() {
+		using RtlGetVersionFn = LONG(WINAPI*)(PRTL_OSVERSIONINFOW);
+		const auto ntdll = GetModuleHandleW(L"ntdll.dll");
+		if (ntdll == nullptr) {
+			return 0;
+		}
+
+		const auto rtlGetVersion = reinterpret_cast<RtlGetVersionFn>(GetProcAddress(ntdll, "RtlGetVersion"));
+		if (rtlGetVersion == nullptr) {
+			return 0;
+		}
+
+		RTL_OSVERSIONINFOW version = { sizeof(version) };
+		if (rtlGetVersion(&version) != 0) {
+			return 0;
+		}
+		if (version.dwMajorVersion < 10) {
+			return 0;
+		}
+		return version.dwBuildNumber;
+	}
+
 	std::optional<std::wstring> GetThreadDescription(HANDLE thread) {
 		// Initialize handle to function.
 		if (!_GetThreadDescription) {
@@ -277,6 +300,49 @@ namespace se::windows {
 			return {};
 		}
 		return path;
+	}
+
+	namespace ini {
+		bool HasValue(const char* fileName, const char* section, const char* key) {
+			return GetString(fileName, section, key).has_value();
+		}
+
+		std::optional<std::string> GetString(const char* fileName, const char* section, const char* key, size_t bufferSize) {
+			std::string buffer;
+			buffer.reserve(bufferSize);
+
+			if (GetPrivateProfileStringA(section, key, "", buffer.data(), buffer.capacity(), fileName) == 0) {
+				return {};
+			}
+
+			return buffer;
+		}
+
+		std::optional<bool> GetBool(const char* fileName, const char* section, const char* key) {
+			const auto asInt = GetInt(fileName, section, key);
+			if (!asInt.has_value()) {
+				return {};
+			}
+
+			return asInt.value() != 0;
+		}
+
+		std::optional<int> GetInt(const char* fileName, const char* section, const char* key) {
+			if (!HasValue(fileName, section, key)) {
+				return {};
+			}
+
+			return GetPrivateProfileIntA(section, key, 0, fileName);
+		}
+
+		std::optional<float> GetFloat(const char* fileName, const char* section, const char* key) {
+			const auto asString = GetString(fileName, section, key);
+			if (!asString.has_value()) {
+				return {};
+			}
+
+			return static_cast<float>(atof(asString.value().c_str()));
+		}
 	}
 
 	//

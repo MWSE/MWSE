@@ -112,6 +112,8 @@ namespace TES3 {
 		sol::optional<float> getFrequency_lua() const;
 		void setFrequency(float frequency) const;
 
+		SoundBuffer* createSoundBuffer(bool isPointSource) const;
+
 		std::string toJson() const;
 		bool play_lua(sol::optional<sol::table> params);
 

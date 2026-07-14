@@ -11,12 +11,26 @@
 --- @field nfhuge number The *machine* minimum available value for single-precision numbers. This is the minimum representable value for any floating-point Morrowind structures.
 math = {}
 
+--- Moves current toward target by at most step, without overshooting.
+--- @param current number No description yet available.
+--- @param target number No description yet available.
+--- @param step  number Positive step expected.
+--- @return number result No description yet available.
+function math.approach(current, target, step ) end
+
 --- Returns a value, limited by upper and lower bounds.
 --- @param value number No description yet available.
 --- @param min number No description yet available.
 --- @param max number No description yet available.
 --- @return number result No description yet available.
 function math.clamp(value, min, max) end
+
+--- Exponentially interpolates between two positive values.
+--- @param a number A positive value.
+--- @param b number A positive value.
+--- @param t number The interpolation factor.
+--- @return number result No description yet available.
+function math.eerp(a, b, t) end
 
 --- This function compares `a` and `b` and returns true if they are close together. This can be useful when comparing floating-point numbers with some degree of tolerance.
 --- @param a number First value.
@@ -34,9 +48,23 @@ function math.isclose(a, b, absoluteTolerance, relativeTolerance) end
 function math.lerp(v0, v1, t) end
 
 --- Returns the next power of 2 that is equal to, or greater than, value.
+--- 
+--- This function was previously exposed as `math.nextPowerOfTwo`.
 --- @param value number No description yet available.
 --- @return integer result No description yet available.
-function math.nextPowerOfTwo(value) end
+function math.nextpoweroftwo(value) end
+
+--- Normalizes an angle into the range [-pi, pi].
+--- @param angle number No description yet available.
+--- @return number result No description yet available.
+function math.normalizeangle(angle) end
+
+--- Bounces a phase value back and forth between the inclusive range `inMin` to `inMax`.
+--- @param phase number No description yet available.
+--- @param inMin number No description yet available.
+--- @param inMax number Must differ from `inMin`.
+--- @return number result No description yet available.
+function math.oscillate(phase, inMin, inMax) end
 
 --- Returns a value, scaled from expected values [lowIn, highIn] to [lowOut, highOut].
 --- 
@@ -49,11 +77,40 @@ function math.nextPowerOfTwo(value) end
 --- @return number result No description yet available.
 function math.remap(value, lowIn, highIn, lowOut, highOut) end
 
+--- Remaps a value from one range to another, then clamps to the output range.
+--- @param value number No description yet available.
+--- @param lowIn number No description yet available.
+--- @param highIn number No description yet available.
+--- @param lowOut number No description yet available.
+--- @param highOut number No description yet available.
+--- @return number result No description yet available.
+function math.remapclamped(value, lowIn, highIn, lowOut, highOut) end
+
 --- Rounds a number to a given count of digits.
 --- @param value number No description yet available.
 --- @param digits? number *Default*: `0`. No description yet available.
 --- @return number result No description yet available.
 function math.round(value, digits) end
+
+--- Returns smoother quintic interpolation over the range `edge0` to `edge1`.
+--- @param edge0 number No description yet available.
+--- @param edge1 number Must differ from `edge0`.
+--- @param x number No description yet available.
+--- @return number result No description yet available.
+function math.smootherstep(edge0, edge1, x) end
+
+--- Returns smooth cubic interpolation over the range `edge0` to `edge1`.
+--- @param edge0 number No description yet available.
+--- @param edge1 number Must differ from `edge0`.
+--- @param x number No description yet available.
+--- @return number result No description yet available.
+function math.smoothstep(edge0, edge1, x) end
+
+--- Rounds a value to the nearest multiple of `step`.
+--- @param value number No description yet available.
+--- @param step number A positive step value.
+--- @return number result No description yet available.
+function math.snap(value, step) end
 
 math.ease = require("math.ease")
 

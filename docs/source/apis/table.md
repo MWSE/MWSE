@@ -67,6 +67,46 @@ local index, highestMatch = table.binsearch(tbl, value, comp, findAll)
 
 ***
 
+### `table.calleventhandlers`
+<div class="search_terms" style="display: none">calleventhandlers</div>
+
+Calls event handlers in reverse order until one returns `false`.
+
+```lua
+local eventHandled = table.calleventhandlers(handlers, ...)
+```
+
+**Parameters**:
+
+* `handlers` ((fun(...): boolean?)[]): The event handlers to call.
+* `...` (any): Arguments passed to each handler.
+
+**Returns**:
+
+* `eventHandled` (boolean): True if no further handlers should be called.
+
+***
+
+### `table.callmultipleeventhandlers`
+<div class="search_terms" style="display: none">callmultipleeventhandlers</div>
+
+Calls arrays of event handlers until one group handles the event.
+
+```lua
+local eventHandled = table.callmultipleeventhandlers(handlers, ...)
+```
+
+**Parameters**:
+
+* `handlers` ((fun(...): boolean?)[][]): The handler groups to call.
+* `...` (any): Arguments passed to each handler.
+
+**Returns**:
+
+* `eventHandled` (boolean): True if no further handler groups should be called.
+
+***
+
 ### `table.choice`
 <div class="search_terms" style="display: none">choice</div>
 
@@ -124,26 +164,6 @@ local result = table.contains(t, value)
 
 ***
 
-### `table.copy`
-<div class="search_terms" style="display: none">copy</div>
-
-Shallowly copies a table's contents to a destination table. If no destination table is provided, a new table will be created. Note that sub tables will not be copied, and will still refer to the same data.
-
-```lua
-local result = table.copy(from, to)
-```
-
-**Parameters**:
-
-* `from` (fromType)
-* `to` (toType): *Optional*.
-
-**Returns**:
-
-* `result` (fromType, toType)
-
-***
-
 ### `table.copymissing`
 <div class="search_terms" style="display: none">copymissing</div>
 
@@ -179,12 +199,35 @@ local result = table.deepcopy(t)
 
 ***
 
+### `table.deeptostring`
+<div class="search_terms" style="display: none">deeptostring</div>
+
+Recursively converts a value to a human-readable string.
+
+```lua
+local result = table.deeptostring(value, level, prefix)
+```
+
+**Parameters**:
+
+* `value` (any)
+* `level` (integer): *Default*: `1`. The maximum recursion depth.
+* `prefix` (string): *Optional*. The current indentation prefix.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `table.empty`
 <div class="search_terms" style="display: none">empty</div>
 
 Checks if a table is empty.
 
-If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`.
+This is a compatibility helper that uses `pairs` and therefore respects normal iteration behavior such as `__pairs`. By contrast, `table.isempty` is a lower-level rubic0n helper that inspects raw table storage and does not honor `__pairs` or readonly proxy backing storage.
+
+If `deepCheck == true`, then tables are allowed to have nested subtables, so long as those subtables are empty. e.g., `table.empty({ {}, {} }, true) == true`, while `table.empty({ {}, {} }) == false`. Use `table.isempty` when you specifically need a raw-storage emptiness check.
 
 ```lua
 local result = table.empty(t, deepCheck)
@@ -198,34 +241,6 @@ local result = table.empty(t, deepCheck)
 **Returns**:
 
 * `result` (boolean)
-
-***
-
-### `table.equal`
-<div class="search_terms" style="display: none">equal</div>
-
-Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
-Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
-For example, all of the following assertions pass:
-```lua
-assert(table.equal({1, 2}, {1, 2}))
-assert({1, 2} ~= {1, 2})
-assert(table.equal({a = 1, b = {x = 1}}, {a = 1, b = {x = 1}}))
-```
-
-
-```lua
-local result = table.equal(left, right)
-```
-
-**Parameters**:
-
-* `left` (table)
-* `right` (table)
-
-**Returns**:
-
-* `result` (boolean): True if the contents of `left` are equal to the contents of `right`. False otherwise.
 
 ***
 
@@ -300,6 +315,28 @@ local key = table.find(t, value)
 
 ***
 
+### `table.findminscore`
+<div class="search_terms" style="display: none">findminscore, minscore</div>
+
+Finds the array element with the lowest score returned by `scoreFn`.
+
+```lua
+local element, score, index = table.findminscore(array, scoreFn)
+```
+
+**Parameters**:
+
+* `array` (valueType[])
+* `scoreFn` (fun(x: valueType): number, nil)
+
+**Returns**:
+
+* `element` (valueType, nil): The element with the lowest score.
+* `score` (number, nil): The lowest score.
+* `index` (integer, nil): The index of the element with the lowest score.
+
+***
+
 ### `table.get`
 <div class="search_terms" style="display: none">get</div>
 
@@ -321,13 +358,13 @@ local result = table.get(t, key, defaultValue)
 
 ***
 
-### `table.getset`
-<div class="search_terms" style="display: none">getset, set</div>
+### `table.getorset`
+<div class="search_terms" style="display: none">getorset, orset</div>
 
 Gets a value in a table. If the key doesn't exist in the table, a specified default value will be set in the table and returned instead.
 
 ```lua
-local result = table.getset(t, key, defaultValue)
+local result = table.getorset(t, key, defaultValue)
 ```
 
 **Parameters**:
@@ -339,6 +376,67 @@ local result = table.getset(t, key, defaultValue)
 **Returns**:
 
 * `result` (valueType, defaultValueType, unknown)
+
+***
+
+### `table.getprintabletable`
+<div class="search_terms" style="display: none">getprintabletable, printabletable</div>
+
+Returns a printable multi-line representation of a table-like value.
+
+```lua
+local result = table.getprintabletable(inputTable, maxDepth, indentStr, indentLevel)
+```
+
+**Parameters**:
+
+* `inputTable` (table, userdata)
+* `maxDepth` (integer): *Default*: `50`.
+* `indentStr` (string): *Optional*. Defaults to a tab character.
+* `indentLevel` (integer): *Default*: `0`.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
+### `table.gettablefromcommasplit`
+<div class="search_terms" style="display: none">gettablefromcommasplit, tablefromcommasplit</div>
+
+Splits a comma-separated string into a table.
+
+```lua
+local result = table.gettablefromcommasplit(inputString)
+```
+
+**Parameters**:
+
+* `inputString` (string)
+
+**Returns**:
+
+* `result` (string[])
+
+***
+
+### `table.gettablefromsplit`
+<div class="search_terms" style="display: none">gettablefromsplit, tablefromsplit</div>
+
+Splits a string using a Lua pattern. If the pattern has captures, the first capture from each match is stored; otherwise, the full match is stored.
+
+```lua
+local result = table.gettablefromsplit(inputString, pattern)
+```
+
+**Parameters**:
+
+* `inputString` (string)
+* `pattern` (string)
+
+**Returns**:
+
+* `result` (string[])
 
 ***
 
@@ -380,6 +478,49 @@ local result = table.isarray(t)
 
 ***
 
+### `table.isempty`
+<div class="search_terms" style="display: none">isempty, empty</div>
+
+Returns true when raw table storage has no non-nil values.
+
+This low-level helper inspects raw table storage directly. It does not honor `__pairs`, readonly proxy backing storage, or `table.makereadonly` backing contents.
+
+```lua
+local result = table.isempty(t)
+```
+
+**Parameters**:
+
+* `t` (table)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `table.isequal`
+<div class="search_terms" style="display: none">isequal, equal</div>
+
+Recursively compares tables by key/value equality without recursing forever on cycles.
+
+Tables are structurally compared with raw table identity checks. Table `__eq` metamethods are not invoked for table identity or table values. Non-table values use normal Lua equality.
+
+```lua
+local result = table.isequal(left, right)
+```
+
+**Parameters**:
+
+* `left` (any)
+* `right` (any)
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `table.keys`
 <div class="search_terms" style="display: none">keys</div>
 
@@ -397,6 +538,29 @@ local keys = table.keys(t, sort)
 **Returns**:
 
 * `keys` (keyType[]): An array of all table keys.
+
+***
+
+### `table.makereadonly`
+<div class="search_terms" style="display: none">makereadonly</div>
+
+Returns a proxy that guards normal assignment through the returned table.
+
+This protects normal assignment on the proxy or converted tables, but it is not a sandbox boundary against `rawset`, debug-library metatable or upvalue access, or hostile privileged code. Omitting `copy` converts the input table in place and rehomes raw entries behind backing storage.
+
+```lua
+local result = table.makereadonly(inTable, copy, strict)
+```
+
+**Parameters**:
+
+* `inTable` (tableType)
+* `copy` (boolean): *Default*: `false`. Copy instead of converting in place.
+* `strict` (boolean): *Optional*. Throw when reading missing keys.
+
+**Returns**:
+
+* `result` (table): The readonly table proxy.
 
 ***
 
@@ -422,6 +586,48 @@ local result = table.map(t, f, ...)
 
 ***
 
+### `table.mapfilter`
+<div class="search_terms" style="display: none">mapfilter</div>
+
+Maps an array through `scoreFn`, keeping values with non-false scores.
+
+```lua
+local output, scores = table.mapfilter(array, scoreFn)
+```
+
+**Parameters**:
+
+* `array` (valueType[])
+* `scoreFn` (fun(x: valueType): scoreType, nil)
+
+**Returns**:
+
+* `output` (valueType[])
+* `scores` (scoreType[])
+
+***
+
+### `table.mapfiltersort`
+<div class="search_terms" style="display: none">mapfiltersort</div>
+
+Maps and filters an array, then sorts by the returned scores.
+
+```lua
+local output, scores = table.mapfiltersort(array, scoreFn)
+```
+
+**Parameters**:
+
+* `array` (valueType[])
+* `scoreFn` (fun(x: valueType): number, nil)
+
+**Returns**:
+
+* `output` (valueType[])
+* `scores` (number[])
+
+***
+
 ### `table.new`
 <div class="search_terms" style="display: none">new</div>
 
@@ -442,6 +648,24 @@ local newTable = table.new(narray, nhash)
 
 ***
 
+### `table.print`
+<div class="search_terms" style="display: none">print</div>
+
+Prints the result of `table.getprintabletable(inputTable, ...)`.
+
+```lua
+table.print(inputTable, maxDepth, indentStr, indentLevel)
+```
+
+**Parameters**:
+
+* `inputTable` (table, userdata)
+* `maxDepth` (integer): *Optional*.
+* `indentStr` (string): *Optional*.
+* `indentLevel` (integer): *Optional*.
+
+***
+
 ### `table.removevalue`
 <div class="search_terms" style="display: none">removevalue, value</div>
 
@@ -459,6 +683,26 @@ local result = table.removevalue(list, value)
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+### `table.shallowcopy`
+<div class="search_terms" style="display: none">shallowcopy</div>
+
+Shallow-copies values from one table to another table.
+
+```lua
+local result = table.shallowcopy(from, to)
+```
+
+**Parameters**:
+
+* `from` (fromType)
+* `to` (toType): *Optional*.
+
+**Returns**:
+
+* `result` (fromType, toType)
 
 ***
 
@@ -494,6 +738,26 @@ local result = table.size(t)
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `table.sortedpairs`
+<div class="search_terms" style="display: none">sortedpairs</div>
+
+Returns an iterator over keys in sorted order.
+
+```lua
+local iterator = table.sortedpairs(tbl, comparator)
+```
+
+**Parameters**:
+
+* `tbl` ({ [keyType]: valueType })
+* `comparator` (fun(a: keyType, b: keyType): boolean): *Optional*.
+
+**Returns**:
+
+* `iterator` (fun(): keyType, valueType)
 
 ***
 
@@ -555,6 +819,44 @@ local iterator = table.traverse(t, k)
 	event.register(tes3.event.loaded, onLoaded)
 
 	```
+
+***
+
+### `table.unwind`
+<div class="search_terms" style="display: none">unwind</div>
+
+Unpacks all values from an object iterable with `pairs`.
+
+```lua
+local values = table.unwind(object)
+```
+
+**Parameters**:
+
+* `object` (table)
+
+**Returns**:
+
+* `values` (any)
+
+***
+
+### `table.unwindarray`
+<div class="search_terms" style="display: none">unwindarray</div>
+
+Unpacks all values from an object iterable with `ipairs`.
+
+```lua
+local values = table.unwindarray(object)
+```
+
+**Parameters**:
+
+* `object` (table)
+
+**Returns**:
+
+* `values` (any)
 
 ***
 

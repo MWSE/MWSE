@@ -14,7 +14,7 @@ This type inherits the following: [tes3weather](../types/tes3weather.md).
 ### `ambientDayColor`
 <div class="search_terms" style="display: none">ambientdaycolor</div>
 
-The weather's ambient day color. The values can range from 0 to 1.
+Daytime endpoint for the weather's ambient-light color cycle. It is used after the sunrise transition and before the sunset transition. Values range from 0 to 1.
 
 **Returns**:
 
@@ -47,7 +47,7 @@ The weather's ambient looping sound ID. This can be changed, and the sound will 
 ### `ambientNightColor`
 <div class="search_terms" style="display: none">ambientnightcolor</div>
 
-The weather's ambient night color. The values can range from 0 to 1.
+Nighttime endpoint for the weather's ambient-light color cycle. It is used outside the sunrise and sunset transition windows. Values range from 0 to 1.
 
 **Returns**:
 
@@ -69,7 +69,7 @@ The weather's ambient playing flag.
 ### `ambientSunriseColor`
 <div class="search_terms" style="display: none">ambientsunrisecolor</div>
 
-The weather's ambient sunrise color. The values can range from 0 to 1.
+Intermediate ambient-light color used at the midpoint of the sunrise transition, between `ambientNightColor` and `ambientDayColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -80,7 +80,7 @@ The weather's ambient sunrise color. The values can range from 0 to 1.
 ### `ambientSunsetColor`
 <div class="search_terms" style="display: none">ambientsunsetcolor</div>
 
-The weather's ambient sunset color. The values can range from 0 to 1.
+Intermediate ambient-light color used at the midpoint of the sunset transition, between `ambientDayColor` and `ambientNightColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -135,7 +135,7 @@ The weather's cloud texture path.
 ### `fogDayColor`
 <div class="search_terms" style="display: none">fogdaycolor</div>
 
-The weather's fog day color. The values can range from 0 to 1.
+Daytime endpoint for the weather's fog color cycle. It is used after the fog sunrise transition and before the fog sunset transition. Values range from 0 to 1.
 
 **Returns**:
 
@@ -146,7 +146,7 @@ The weather's fog day color. The values can range from 0 to 1.
 ### `fogNightColor`
 <div class="search_terms" style="display: none">fognightcolor</div>
 
-The weather's fog night color. The values can range from 0 to 1.
+Nighttime endpoint for the weather's fog color cycle. It is used outside the fog sunrise and sunset transition windows. Values range from 0 to 1.
 
 **Returns**:
 
@@ -157,7 +157,7 @@ The weather's fog night color. The values can range from 0 to 1.
 ### `fogSunriseColor`
 <div class="search_terms" style="display: none">fogsunrisecolor</div>
 
-The weather's fog sunrise color. The values can range from 0 to 1.
+Intermediate fog color used at the midpoint of the sunrise transition, between `fogNightColor` and `fogDayColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -168,7 +168,7 @@ The weather's fog sunrise color. The values can range from 0 to 1.
 ### `fogSunsetColor`
 <div class="search_terms" style="display: none">fogsunsetcolor</div>
 
-The weather's fog sunset color. The values can range from 0 to 1.
+Intermediate fog color used at the midpoint of the sunset transition, between `fogDayColor` and `fogNightColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -201,7 +201,7 @@ The weather's glare view.
 ### `landFogDayDepth`
 <div class="search_terms" style="display: none">landfogdaydepth</div>
 
-The weather's land fog day depth value.
+Land-fog depth used during daytime. The controller interpolates toward this value from `landFogNightDepth` over `fogDepthChangeSpeed` hours after `sunriseHour`.
 
 **Returns**:
 
@@ -212,7 +212,7 @@ The weather's land fog day depth value.
 ### `landFogNightDepth`
 <div class="search_terms" style="display: none">landfognightdepth</div>
 
-The weather's land fog night depth value.
+Land-fog depth used at night. The controller interpolates toward this value from `landFogDayDepth` over `fogDepthChangeSpeed` hours after `sunsetHour`.
 
 **Returns**:
 
@@ -245,7 +245,7 @@ The weather's land fog night depth value.
 ### `skyDayColor`
 <div class="search_terms" style="display: none">skydaycolor</div>
 
-The weather's sky day color. The values can range from 0 to 1.
+Daytime endpoint for the weather's sky-color cycle. It is used after the sky sunrise transition and before the sky sunset transition. Values range from 0 to 1.
 
 **Returns**:
 
@@ -256,7 +256,7 @@ The weather's sky day color. The values can range from 0 to 1.
 ### `skyNightColor`
 <div class="search_terms" style="display: none">skynightcolor</div>
 
-The weather's sky night color. The values can range from 0 to 1.
+Nighttime endpoint for the weather's sky-color cycle. It is used outside the sky sunrise and sunset transition windows. Values range from 0 to 1.
 
 **Returns**:
 
@@ -267,7 +267,7 @@ The weather's sky night color. The values can range from 0 to 1.
 ### `skySunriseColor`
 <div class="search_terms" style="display: none">skysunrisecolor</div>
 
-The weather's sky sunrise color. The values can range from 0 to 1.
+Intermediate sky color used at the midpoint of the sunrise transition, between `skyNightColor` and `skyDayColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -278,7 +278,7 @@ The weather's sky sunrise color. The values can range from 0 to 1.
 ### `skySunsetColor`
 <div class="search_terms" style="display: none">skysunsetcolor</div>
 
-The weather's sky sunset color. The values can range from 0 to 1.
+Intermediate sky color used at the midpoint of the sunset transition, between `skyDayColor` and `skyNightColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -300,7 +300,7 @@ The origin point of weather particles. The storm will appear to blow outwards fr
 ### `sunDayColor`
 <div class="search_terms" style="display: none">sundaycolor</div>
 
-The weather's sun day color. The values can range from 0 to 1.
+Daytime endpoint for the weather's directional sunlight color cycle. It is used after the sun sunrise transition and before the sun sunset transition. Values range from 0 to 1.
 
 **Returns**:
 
@@ -311,7 +311,7 @@ The weather's sun day color. The values can range from 0 to 1.
 ### `sundiscSunsetColor`
 <div class="search_terms" style="display: none">sundiscsunsetcolor</div>
 
-The weather's sundisc sunset color. The values can range from 0 to 1.
+Sun-disc tint used during sunset. The disc blends from white toward this color from `sunsetHour - sunPreSunsetTime` through `sunsetHour`; it is separate from `sunSunsetColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -322,7 +322,7 @@ The weather's sundisc sunset color. The values can range from 0 to 1.
 ### `sunNightColor`
 <div class="search_terms" style="display: none">sunnightcolor</div>
 
-The weather's sun night color. The values can range from 0 to 1.
+Nighttime endpoint for the weather's directional sunlight color cycle. It is used outside the sun sunrise and sunset transition windows. Values range from 0 to 1.
 
 **Returns**:
 
@@ -333,7 +333,7 @@ The weather's sun night color. The values can range from 0 to 1.
 ### `sunSunriseColor`
 <div class="search_terms" style="display: none">sunsunrisecolor</div>
 
-The weather's sun sunrise color. The values can range from 0 to 1.
+Intermediate directional sunlight color used at the midpoint of the sunrise transition, between `sunNightColor` and `sunDayColor`. Values range from 0 to 1.
 
 **Returns**:
 
@@ -344,7 +344,7 @@ The weather's sun sunrise color. The values can range from 0 to 1.
 ### `sunSunsetColor`
 <div class="search_terms" style="display: none">sunsunsetcolor</div>
 
-The weather's sun sunset color. The values can range from 0 to 1.
+Intermediate directional sunlight color used at the midpoint of the sunset transition, between `sunDayColor` and `sunNightColor`. Values range from 0 to 1.
 
 **Returns**:
 

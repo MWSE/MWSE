@@ -1,5 +1,6 @@
 #include "WindowMain.h"
 
+#include "DarkMode.h"
 #include "LogUtil.h"
 #include "MemoryUtil.h"
 #include "WinUIUtil.h"
@@ -30,7 +31,6 @@
 
 #include "MathUtil.h"
 #include "PathUtil.h"
-#include "StringUtil.h"
 
 #include "CSSE.h"
 #include "resource.h"
@@ -408,8 +408,23 @@ namespace se::cs::window::main {
 	//
 
 	constexpr auto STATUS_WINDOW_CELL_COUNT = 5u;
-	static std::array<std::string, STATUS_WINDOW_CELL_COUNT> cachedStatusWindowText;
-	static std::optional<std::string> bufferedIndex2Text;
+	constexpr UINT_PTR STATUS_WINDOW_UPDATE_TIMER = 0xC55E0001;
+	constexpr auto STATUS_WINDOW_UPDATE_INTERVAL = 50u;
+	static std::array<std::optional<std::string>, STATUS_WINDOW_CELL_COUNT> cachedStatusWindowText;
+	static ULONGLONG lastStatusWindowUpdateTime = 0;
+
+	static void flushCachedStatusWindowText(HWND hWnd) {
+		lastStatusWindowUpdateTime = GetTickCount64();
+
+		for (auto index = 0u; index < cachedStatusWindowText.size(); ++index) {
+			auto& text = cachedStatusWindowText[index];
+			if (text.has_value()) {
+				const auto wParam = MAKEWPARAM(index, 0);
+				DefSubclassProc(hWnd, SB_SETTEXTA, wParam, (LPARAM)text.value().c_str());
+				text.reset();
+			}
+		}
+	}
 
 	static LRESULT CALLBACK PatchStatusWindowSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
 		switch (msg) {
@@ -421,23 +436,30 @@ namespace se::cs::window::main {
 				return 0;
 			}
 
-			if (index != 2 && bufferedIndex2Text.has_value()) {
-				DefSubclassProc(hWnd, msg, MAKEWPARAM(2, 0), (LPARAM)bufferedIndex2Text.value().c_str());
-				bufferedIndex2Text.reset();
-			}
-
-			auto& previousText = cachedStatusWindowText[index];
 			const std::string_view currentText = text ? text : "";
-			if (se::string::equal(previousText, currentText)) {
-				return 0;
-			}
-			previousText = currentText;
+			cachedStatusWindowText[index] = currentText;
 
-			if (index == 2) {
-				bufferedIndex2Text = text;
+			// Sometimes we will be blocking window messages, like during startup.
+			// So some manual checking on setting the text can make for a more responsive UI.
+			if (GetTickCount64() - lastStatusWindowUpdateTime >= STATUS_WINDOW_UPDATE_INTERVAL) {
+				flushCachedStatusWindowText(hWnd);
+			}
+
+			return 0;
+		}
+		case WM_TIMER:
+			if (wParam == STATUS_WINDOW_UPDATE_TIMER) {
+				flushCachedStatusWindowText(hWnd);
 				return 0;
 			}
-		}
+			break;
+		case WM_NCDESTROY:
+			KillTimer(hWnd, STATUS_WINDOW_UPDATE_TIMER);
+			for (auto& text : cachedStatusWindowText) {
+				text.reset();
+			}
+			RemoveWindowSubclass(hWnd, PatchStatusWindowSubclassProc, uIdSubclass);
+			break;
 		}
 
 		return DefSubclassProc(hWnd, msg, wParam, lParam);
@@ -452,6 +474,8 @@ namespace se::cs::window::main {
 
 		// Subclass the window to optimize displays.
 		SetWindowSubclass(statusBar, PatchStatusWindowSubclassProc, NULL, 0);
+		lastStatusWindowUpdateTime = GetTickCount64();
+		SetTimer(statusBar, STATUS_WINDOW_UPDATE_TIMER, STATUS_WINDOW_UPDATE_INTERVAL, nullptr);
 
 		// Make better use of horizontal space.
 		int partsRightEdgePositions[4] = { 220, 330, 800, -1 };
@@ -525,7 +549,9 @@ namespace se::cs::window::main {
 		hBMInst = application.m_hInstance;
 		wBMID = IDB_MAIN_TOOLBAR;
 
-		return CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		const auto toolbar = CreateToolbarEx(hWnd, ws, wID, nBitmaps, hBMInst, wBMID, lpButtons, iNumButtons, dxButton, dyButton, dxBitmap, dyBitmap, uStructSize);
+		darkmode::remapToolbarImages(toolbar, hBMInst, IDB_MAIN_TOOLBAR, dxBitmap, dyBitmap);
+		return toolbar;
 	}
 
 	//
@@ -563,7 +589,7 @@ namespace se::cs::window::main {
 		// Flag any game files as marked to load.
 		for (auto itt = recordHandler->availableDataFiles->head; itt; itt = itt->next) {
 			auto gameFile = itt->data;
-			if (toLoadSet.find(gameFile->fileName) != toLoadSet.end()) {
+			if (toLoadSet.contains(gameFile->fileName)) {
 				gameFile->setToLoadFlag(true);
 			}
 		}

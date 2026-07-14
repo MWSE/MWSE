@@ -19,12 +19,14 @@
 #include "TES3GameFile.h"
 #include "TES3GameSetting.h"
 #include "TES3InputController.h"
+#include "TES3AIData.h"
 #include "TES3ItemData.h"
 #include "TES3Light.h"
 #include "TES3LoadScreenManager.h"
 #include "TES3MagicEffectController.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3Misc.h"
+#include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
@@ -33,6 +35,7 @@
 #include "TES3Sound.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
+#include "TES3UIManager.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
@@ -41,18 +44,23 @@
 #include "ReferenceTracker.h"
 
 #include "NIAVObject.h"
+#include "NIBound.h"
+#include "NICollisionGroup.h"
 #include "NICollisionSwitch.h"
+#include "NIPoint3.h"
 #include "NIFlipController.h"
 #include "NILinesData.h"
 #include "NIPick.h"
 #include "NIPointLight.h"
 #include "NISortAdjustNode.h"
-#include "NiTriShape.h"
-#include "NiTriShapeData.h"
+#include "NITriShape.h"
+#include "NITriShapeData.h"
 #include "NIUVController.h"
+#include "NIBSAnimationManager.h"
 
 #include "BitUtil.h"
 #include "ScriptUtil.h"
+#include "StringUtil.h"
 #include "TES3Util.h"
 #include "WindowsUtil.h"
 
@@ -63,7 +71,7 @@
 #include "CodePatchUtil.h"
 #include "MWSEConfig.h"
 #include "MWSEDefs.h"
-#include "CrashLogExceptionHandler.hpp"
+#include "CrashLogger.h"
 
 namespace mwse::patch {
 
@@ -344,6 +352,7 @@ namespace mwse::patch {
 		constexpr DWORD ModMaskMWSE = ((1 << ModBitsMWSE) - 1) << FormBitsMWSE;
 		constexpr DWORD FormMaskMWSE = (1 << FormBitsMWSE) - 1;
 		constexpr DWORD ModCountMWSE = 1 << ModBitsMWSE;
+		constexpr DWORD InvalidFormId = 0xFFFFFFFF;
 		static_assert(1 << ModBitsMWSE == sizeof(TES3::NonDynamicData::activeMods) / sizeof(TES3::GameFile*), "Reference FormID bit assignment does not match active game file array size.");
 
 		struct SerializedFormId {
@@ -356,11 +365,24 @@ namespace mwse::patch {
 			SerializedFormId data;
 			if (file->currentChunkHeader.size == sizeof(SerializedFormId)) {
 				file->readChunkData(&data);
+
+				// Handle saves where an invalid form ID was incorrectly serialized.
+				// This does have the edge case if mod 1023 has a more than ~4.2 million form IDs. Extremely unlikely.
+				if (data.modIndex == ModCountMWSE - 1 && data.formId == FormMaskMWSE) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
 			}
 			else {
 				// If it's not the new format, we need to convert.
 				DWORD oldFormId = 0;
 				file->readChunkData(&oldFormId);
+
+				// Preserve invalid form IDs.
+				if (oldFormId == InvalidFormId) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
 
 				data.modIndex = (oldFormId >> FormBitsVanilla);
 				data.formId = (oldFormId & FormMaskVanilla);
@@ -370,19 +392,26 @@ namespace mwse::patch {
 		}
 
 		void __fastcall SaveFormId(TES3::GameFile* file, DWORD edx, unsigned int tag, DWORD* movedRefId, size_t size) {
+			// Preserve invalid form IDs.
+			if (*movedRefId == InvalidFormId) {
+				DWORD refId = InvalidFormId;
+				file->writeChunkValue(tag, refId);
+				return;
+			}
+
 			// Split out the bitmasked field.
 			SerializedFormId data = {};
 			data.modIndex = *movedRefId >> FormBitsMWSE;
 			data.formId = *movedRefId & FormMaskMWSE;
 
 			// If the mod index is higher than the vanilla limit, save the new format.
-			if (data.modIndex > 255) {
-				file->writeChunkData(tag, &data, sizeof(data));
+			if (data.modIndex >= ModCountVanilla) {
+				file->writeChunkValue(tag, data);
 			}
-			// If the mod index is <255, use the vanilla save format and masks for compatibility.
+			// If the mod index is below the vanilla limit, use the vanilla save format and masks for compatibility.
 			else {
 				DWORD refId = (data.modIndex << FormBitsVanilla) + data.formId;
-				file->writeChunkData(tag, &refId, 4);
+				file->writeChunkValue(tag, refId);
 			}
 		}
 	}
@@ -813,6 +842,135 @@ namespace mwse::patch {
 	NI::Object* __fastcall PatchNISortAdjustNodeCloneAccumulator(NI::Accumulator* accumulator) {
 		// Only call createClone if accumulator exists.
 		return accumulator ? accumulator->vTable.asObject->createClone(accumulator) : nullptr;
+	}
+
+	//
+	// Patch: Optimize NiBound::Merge.
+	//
+
+	void __fastcall PatchNiBoundMerge(NI::Bound* bound, DWORD _, const NI::Bound* other) {
+		bound->merge(*other);
+	}
+
+	//
+	// Patch: Optimize NiBound::ComputeMinimalBound.
+	//
+
+	void __fastcall PatchNiBoundComputeMinimalBound(NI::Bound* bound, DWORD _, NI::TArray<const NI::Bound*>* others) {
+		// Vanilla dereferences storage[0] unconditionally. For us that
+		// is UB if the compiler can ever prove an empty array was here.
+		if (others->getEndIndex() == 0) {
+			return;
+		}
+
+		// We use a local accumulator here to avoid pointer aliasing.
+		// Allows the compiler to accumulate directly into registers.
+		NI::Bound accumulator = *others->storage[0];
+
+		for (size_t i = 1; i < others->getEndIndex(); ++i) {
+			accumulator.merge(*others->storage[i]);
+		}
+
+		*bound = accumulator;
+	}
+
+	//
+	// Patch: Manually specialize NiNode::UpdateWorldBound implementation.
+	// Why: The majority of calls to NiBound::Merge originate from NiNode.
+	//
+
+	static NI::Bound* getWorldBound(NI::AVObject* object) {
+		return reinterpret_cast<NI::Bound*>(&object->worldBoundOrigin);
+	}
+
+	void __fastcall PatchNiNodeUpdateWorldBound(NI::AVObject* node) {
+		auto* niNode = static_cast<NI::Node*>(node);
+		auto* bound = getWorldBound(node);
+
+		auto* storage = niNode->children.storage;
+		auto endIndex = niNode->children.getEndIndex();
+
+		// The original vanilla function has only one loop here, but we split it
+		// intentionally because `isVisualObject` is an optimization barrier due
+		// to being both dynamic dispatch and a call to foreign code in another
+		// binary.
+
+		// This loop can also break early, and in vast majority of cases it will
+		// break on the 1st or 2nd iteration because most nodes do have visuals.
+
+		bool hasVisual = false;
+
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child && child->vTable.asAVObject->isVisualObject(child)) {
+				hasVisual = true;
+				break;
+			}
+		}
+
+		// Local accumulator to avoid aliasing and keep the bound in registers.
+		NI::Bound accumulator;
+		accumulator.center = node->worldTransform.translation;
+		accumulator.radius = 0.01f;
+
+		// This loop is all our own code, `accumulator.merge` is forced inline.
+		for (size_t i = 0; i < endIndex; ++i) {
+			auto* child = static_cast<NI::AVObject*>(storage[i]);
+			if (child) {
+				accumulator.merge(*getWorldBound(child));
+			}
+		}
+
+		*bound = accumulator;
+
+		const auto NiNodeFlags_ContainsRenderableGeom = 0x8;
+
+		if (hasVisual) {
+			node->flags |= NiNodeFlags_ContainsRenderableGeom;
+		}
+		else {
+			node->flags &= ~NiNodeFlags_ContainsRenderableGeom;
+		}
+	}
+
+	void __fastcall PatchNiBSAnimationManagerAttachChild(NI::BSAnimationManager* manager, DWORD _EDX_, NI::AVObject* child, bool useFirstAvailable) {
+		const auto NI_Node_AttachChild = reinterpret_cast<void(__thiscall*)(NI::Node*, NI::AVObject*, bool)>(SE_NI_NODE_FNADDR_ATTACHCHILD);
+		NI_Node_AttachChild(manager, child, useFirstAvailable);
+
+		if (child != nullptr) {
+			manager->growWorldBoundFromChild(child);
+		}
+	}
+
+	NI::Pointer<NI::AVObject>* __fastcall PatchNiBSAnimationManagerSetChildAt(NI::BSAnimationManager* manager, DWORD _EDX_, NI::Pointer<NI::AVObject>* outPreviousChild, unsigned int index, NI::AVObject* child) {
+		const auto NI_Node_SetChildAt = reinterpret_cast<NI::Pointer<NI::AVObject>* (__thiscall*)(NI::Node*, NI::Pointer<NI::AVObject>*, unsigned int, NI::AVObject*)>(SE_NI_NODE_FNADDR_SETCHILDAT);
+		NI_Node_SetChildAt(manager, outPreviousChild, index, child);
+
+		if (child != nullptr) {
+			manager->growWorldBoundFromChild(child);
+		}
+
+		return outPreviousChild;
+	}
+
+	void __fastcall PatchNiAVObjectUpdate(NI::AVObject* object, DWORD _EDX_, float fTime, bool updateControllers, bool updateChildren) {
+		object->vTable.asAVObject->updateDownwardPass(object, fTime, updateControllers, updateChildren);
+
+		auto* changedBranch = object;
+		auto* ancestor = object->parentNode;
+		while (ancestor != nullptr) {
+			auto* nextParent = ancestor->parentNode;
+			if (NI::BSAnimationManager::isExactType(ancestor)) {
+				auto* manager = static_cast<NI::BSAnimationManager*>(ancestor);
+				manager->growWorldBoundFromChild(changedBranch);
+			}
+			else {
+				ancestor->vTable.asAVObject->updateWorldBound(ancestor);
+			}
+
+			changedBranch = ancestor;
+			ancestor = nextParent;
+		}
 	}
 
 	//
@@ -1963,8 +2121,188 @@ namespace mwse::patch {
 	static bool __cdecl PatchCellLoadReference(TES3::Reference* reference, TES3::GameFile* gameFile, bool mustBePersistent, bool insertNew, TES3::Cell* cell) {
 		const auto previousLookupKey = ReferenceTracker::getLookupKey(reference);
 		const auto result = TES3_Cell_static_loadReference(reference, gameFile, mustBePersistent, insertNew, cell);
+		if (
+			cell
+			&& reference->baseObject
+			&& reference->baseObject->isMobileCapableActor()
+			&& reference->owningCollection.asReferenceList == &cell->temporaryRefs
+		) {
+			cell->temporaryRefs.remove(reference);
+			cell->actors.insertAtEnd(reference);
+			const auto objectId = reference->baseObject->getObjectID();
+			mwse::log::getLog() << fmt::format(
+				"[MWSE] Warning: Loaded actor '{}' from the temporary references list of cell '{}' in '{}'.",
+				objectId ? objectId : "<invalid>",
+				cell->getEditorName(),
+				gameFile ? gameFile->getFilename() : "<unknown>"
+			) << std::endl;
+		}
 		ReferenceTracker::rekeyReference(reference, previousLookupKey);
 		return result;
+	}
+
+	//
+	// Patch: Ensure exclusive sound buffer for water audio.
+	//
+
+	static TES3::Sound* waterSound = nullptr;
+	static TES3::SoundBuffer* waterSoundBuffer = nullptr;
+
+	static void PatchWaterSoundInstantiate(TES3::Sound* sound) {
+		if (waterSound == sound && waterSoundBuffer) {
+			return;
+		}
+
+		if (waterSoundBuffer) {
+			delete waterSoundBuffer;
+			waterSoundBuffer = nullptr;
+		}
+
+		waterSound = sound;
+		waterSoundBuffer = sound->createSoundBuffer(false);
+	}
+
+	static void __fastcall PatchWaterSoundSet3DParams(TES3::Sound* sound, DWORD, bool isPointSource) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		ac->setSoundBuffer3DParams(waterSoundBuffer, isPointSource);
+	}
+
+	static bool __fastcall PatchWaterSoundIsPlaying(TES3::Sound* sound) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		return ac->getSoundBufferIsPlaying(waterSoundBuffer);
+	}
+
+	static void __fastcall PatchWaterSoundPlay(TES3::Sound* sound, DWORD, DWORD flags, uint8_t volume, float pitch, bool isNot3D) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		PatchWaterSoundInstantiate(sound);
+		ac->playSoundBuffer(waterSoundBuffer, flags, volume, pitch, isNot3D);
+	}
+
+	static void __fastcall PatchWaterSoundStop(TES3::Sound* sound) {
+		const auto ac = TES3::WorldController::get()->audioController;
+		if (!ac->getSoundBufferIsPlaying(waterSoundBuffer)) {
+			return;
+		}
+		PatchWaterSoundInstantiate(sound);
+		ac->stopSoundBuffer(waterSoundBuffer);
+	}
+
+	static void __fastcall PatchWaterSoundReset(TES3::Sound* sound, DWORD, int) {
+		if (waterSoundBuffer) {
+			delete waterSoundBuffer;
+			waterSoundBuffer = nullptr;
+		}
+		waterSound = nullptr;
+	}
+
+	static void __fastcall PatchWaterSoundSetFrequency(TES3::AudioController* ac, DWORD, TES3::SoundBuffer* _, float frequency) {
+		ac->setSoundBufferFrequency(waterSoundBuffer, frequency);
+	}
+
+	static void __fastcall PatchWaterSoundSetLoopVolume(TES3::SoundBuffer* _, DWORD, int volume) {
+		if (!waterSoundBuffer) {
+			return;
+		}
+
+		const auto newVolume = static_cast<uint8_t>(waterSound->volume * float(volume) / 250.0f);
+		const auto ac = TES3::WorldController::get()->audioController;
+		ac->setSoundBufferVolume(waterSoundBuffer, newVolume);
+	}
+
+	static void __stdcall PatchWaterSoundSetLoopVolumeMCP(TES3::SoundBuffer* _, int volume) {
+		if (!waterSoundBuffer || !waterSoundBuffer->lpSoundBuffer) {
+			return;
+		}
+
+		volume = std::clamp(volume, -10000, 0);
+		waterSoundBuffer->lpSoundBuffer->SetVolume(volume);
+	}
+
+	//
+	// Patch: Optimize map rendering when crossing cell borders
+	// 
+	// renderCellMapTile re-runs UpdateProperties/UpdateEffects on the same map render-target root and Update on the
+	// same nodeLand once per ring tile; a batch bracketed around updateCellThreadLoader runs each traversal once per
+	// cross instead.
+	//
+
+	// Bracket the local-map compositor so the fog cache is active while it runs.
+	static const auto TES3_ui_MenuMap_updateMapRender = reinterpret_cast<void(__cdecl*)()>(0x5E99C0);
+	static void __cdecl PatchOptimizeMapUpdates_UpdateMapRenderCached() {
+		TES3::WorldControllerRenderTarget::beginFogCache();
+		TES3_ui_MenuMap_updateMapRender();
+		TES3::WorldControllerRenderTarget::endFogCache();
+	}
+
+	static bool sHoistBatchActive = false;
+	static bool sHoistDoneProps = false;
+	static bool sHoistDoneFx = false;
+	static bool sHoistDoneLand = false;
+
+	static int __fastcall PatchOptimizeMapUpdates_WrapCellThreadLoader(TES3::DataHandler* dataHandler, DWORD _EDX_, NI::Point3* position) {
+		sHoistBatchActive = true;
+		sHoistDoneProps = false;
+		sHoistDoneFx = false;
+		sHoistDoneLand = false;
+		const int result = dataHandler->updateCellThreadLoader(position);
+		sHoistBatchActive = false;
+		return result;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdateProperties(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneProps) {
+			return;
+		}
+		node->updateProperties();
+		sHoistDoneProps = true;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdateEffects(NI::AVObject* node) {
+		if (sHoistBatchActive && sHoistDoneFx) {
+			return;
+		}
+		node->updateEffects();
+		sHoistDoneFx = true;
+	}
+	static void __fastcall PatchOptimizeMapUpdates_WrapUpdate(NI::AVObject* node, DWORD _EDX_, float fTime, int updateControllers, int updateChildren) {
+		if (sHoistBatchActive && sHoistDoneLand) {
+			return;
+		}
+		node->update(fTime, updateControllers, updateChildren);
+		sHoistDoneLand = true;
+	}
+
+	//
+	// Patch: Optimize relighting of actors during cell transition.
+	// 
+	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
+	// already left simulation, and memoize resetCollisionGroup's loop-invariant root-collision-node search.
+	//
+
+	static NI::AVObject* sRootSearchArg = nullptr;
+	static NI::Node* sRootSearchResult = nullptr;
+
+	static void __fastcall ActorTeardownDedupLeaveSimulation(TES3::AIPlanner* aiPlanner, DWORD _EDX_, bool active) {
+		if (!active && aiPlanner) {
+			TES3::MobileActor* mobileActor = aiPlanner->mobileActor;
+			if (mobileActor && !mobileActor->getMobileActorFlag(TES3::MobileActorFlag::ActiveInSimulation)) {
+				return;
+			}
+		}
+		aiPlanner->enterLeaveSimulation(active);
+	}
+
+	static void __fastcall ActorTeardownResetRootSearchCache(NI::CollisionGroup* group) {
+		sRootSearchArg = nullptr;
+		group->removeAll();
+	}
+	static NI::Node* __cdecl ActorTeardownMemoizedRootSearch(NI::AVObject* sceneNode) {
+		if (sceneNode == sRootSearchArg) {
+			return sRootSearchResult;
+		}
+		sRootSearchResult = sceneNode->findRootCollisionNode();
+		sRootSearchArg = sceneNode;
+		return sRootSearchResult;
 	}
 
 	//
@@ -1983,6 +2321,10 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
+
+		// Patch: Allow Morrowind.ini [Application] values to override registry-backed application settings.
+		auto Game_readSettings = &TES3::Game::readSettings;
+		overrideVirtualTableEnforced(0x74665C, offsetof(TES3::Game_vTable, ReadSettings), 0x4F54F0, *reinterpret_cast<DWORD*>(&Game_readSettings));
 
 		// Patch: Enable/Disable.
 		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
@@ -2708,13 +3050,110 @@ namespace mwse::patch {
 		genCallEnforced(0x4EF99F, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
 		genCallEnforced(0x4EFE70, 0x4EEFC0, *reinterpret_cast<DWORD*>(&PhysicalObject_createBoundingBox));
 
+		// Patch: Optimize NiBound::Merge and NiBound::ComputeMinimalBound.
+		genCallEnforced(0x6C8BF7, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x6C8CEE, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x6D152B, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x71746A, 0x6ED310, reinterpret_cast<DWORD>(PatchNiBoundMerge));
+		genCallEnforced(0x709EBB, 0x6F2610, reinterpret_cast<DWORD>(PatchNiBoundComputeMinimalBound));
+
+		// Patch: Optimize UpdateWorldBound so mergeBound can be inlined.
+		// These are all vtables whose updateWorldBound slot is the shared
+		// NiNode::UpdateWorldBound. NiSwitchNode, NiFltAnimationNode, and
+		// NiLODNode instead run their own updateWorldBound that calls 0x6C8C90,
+		// so we redirect that internal call site (0x6D85F2) as well.
+		auto updateWorldBound = reinterpret_cast<DWORD>(PatchNiNodeUpdateWorldBound);
+		genJumpEnforced(0x6D85F2, 0x6C8C90, updateWorldBound);
+		writeDoubleWordEnforced(0x74771C, 0x6C8C90, updateWorldBound); // BSMirroredNode
+		writeDoubleWordEnforced(0x74A75C, 0x6C8C90, updateWorldBound); // RootCollisionNode
+		writeDoubleWordEnforced(0x74F400, 0x6C8C90, updateWorldBound); // AvoidNode
+		writeDoubleWordEnforced(0x74F4A8, 0x6C8C90, updateWorldBound); // NiCollisionSwitch
+		writeDoubleWordEnforced(0x74FA58, 0x6C8C90, updateWorldBound); // NiNode
+		writeDoubleWordEnforced(0x74FFC0, 0x6C8C90, updateWorldBound); // NiBSPNode
+		writeDoubleWordEnforced(0x750610, 0x6C8C90, updateWorldBound); // NiSortAdjustNode
+		writeDoubleWordEnforced(0x750C68, 0x6C8C90, updateWorldBound); // NiBSAnimationManager
+		writeDoubleWordEnforced(0x750DF8, 0x6C8C90, updateWorldBound); // NiBSAnimationNode
+		writeDoubleWordEnforced(0x7511C0, 0x6C8C90, updateWorldBound); // NiBSParticleNode
+
+		// Patch: Make scene graph bounds updates incremental for NiBSAnimationManager.
+		genJumpUnprotected(0x6EB000, reinterpret_cast<DWORD>(PatchNiAVObjectUpdate), 0x5);
+		writeDoubleWordEnforced(0x750C6C, 0x6C8410, reinterpret_cast<DWORD>(PatchNiBSAnimationManagerAttachChild));
+		writeDoubleWordEnforced(0x750C78, 0x6C8780, reinterpret_cast<DWORD>(PatchNiBSAnimationManagerSetChildAt));
+
 		// Patch: Store last read key state.
 		auto InputController_readButtonPressed = &TES3::InputController::readButtonPressed;
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 
-		// Pach: Extend weather system.
+		// Patch: Extend weather system.
 		TES3::WeatherController::installPatches();
+
+		// Patch: Ensure exclusive sound buffer for water audio.
+		genCallEnforced(0x48A861, 0x5107E0, reinterpret_cast<DWORD>(PatchWaterSoundSet3DParams));
+		genCallEnforced(0x48A86C, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A89F, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A8EE, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
+		genCallEnforced(0x48A8D0, 0x510A40, reinterpret_cast<DWORD>(PatchWaterSoundPlay));
+		genCallEnforced(0x48A892, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
+		genCallEnforced(0x48A9C8, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
+		genCallEnforced(0x48C7A9, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset));
+		genCallEnforced(0x745F72, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset)); // MCP-183
+		genNOPUnprotected(0x48A8DB, 0x48A8EE - 0x48A8DB);
+		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
+		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
+		genCallEnforced(0x48A989, 0x402B42, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolumeMCP));
+
+		// Patch: Optimize map rendering when crossing cell borders.
+		genJumpEnforced(0x420415, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // MapController::updateMapRender tail-jmp
+		genCallEnforced(0x5E9757, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_showMapMenu
+		genCallEnforced(0x5F0BF2, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_MenuMapNoteEdit_onOK
+		genCallEnforced(0x5F0D32, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_MenuMapNoteEdit_onDeleteNote
+		auto WorldControllerRenderTarget_getFogOfWarPixelCached = &TES3::WorldControllerRenderTarget::getFogOfWarPixelCached;
+		genCallEnforced(0x5EE104, 0x42FE20, *reinterpret_cast<DWORD*>(&WorldControllerRenderTarget_getFogOfWarPixelCached)); // isPositionUncoveredByFogOfWar
+		genCallEnforced(0x5EE286, 0x42FE20, *reinterpret_cast<DWORD*>(&WorldControllerRenderTarget_getFogOfWarPixelCached));
+		genCallEnforced(0x41B771, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // mainLoop
+		genCallEnforced(0x485731, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // sub_485680
+		genCallEnforced(0x48915D, 0x486620, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapCellThreadLoader)); // cellChangeToInterior
+		genCallEnforced(0x420089, 0x6EB0E0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateProperties));
+		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
+		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
+
+		// Patch: Optimize relighting of actors during cell transition.
+		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
+		genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&DataHandler_relightExteriorCellsAfterCross)); // updateCellThreadLoader -> updateAllLights
+		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardownDedupLeaveSimulation));
+		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardownResetRootSearchCache));
+		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardownMemoizedRootSearch));
+
+		// Patch: Optimize renderer hash map lookups. Use `NiDX8RendererHashBuckets` buckets instead of 37.
+		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.
+		writeDoubleWordEnforced(0x6A9AED, 37, NiDX8RendererHashBuckets); // mov ebp, 25h
+		writeDoubleWordEnforced(0x6A9AF2, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (geometry buffers)
+		writeDoubleWordEnforced(0x6A9B38, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (skin partitions)
+		writeDoubleWordEnforced(0x6A9B7E, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered textures)
+		writeDoubleWordEnforced(0x6A9BC4, 0x94, NiDX8RendererHashBuckets * 4); // push 94h (rendered cubemaps)
+
+		// Patch: Guarded 3D audio listener access.
+		auto AudioController_setListenerDistanceFactor = &TES3::AudioController::setListenerDistanceFactor;
+		genCallEnforced(0x40E5DB, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E602, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E74E, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		genCallEnforced(0x40E775, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
+		auto AudioController_setListenerDopplerFactor = &TES3::AudioController::setListenerDopplerFactor;
+		genCallEnforced(0x40E5E8, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		genCallEnforced(0x40E75B, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		genCallEnforced(0x489851, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
+		auto AudioController_setListenerRolloffFactor = &TES3::AudioController::setListenerRolloffFactor;
+		genCallEnforced(0x40E5F5, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		genCallEnforced(0x40E768, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		genCallEnforced(0x489864, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
+		auto AudioController_setListenerVelocity = &TES3::AudioController::setListenerVelocity;
+		genCallEnforced(0x48B112, 0x403220, *reinterpret_cast<DWORD*>(&AudioController_setListenerVelocity));
+		auto AudioController_commitDeferredSettings = &TES3::AudioController::commitDeferredSettings;
+		genCallEnforced(0x40F7ED, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+		genCallEnforced(0x48C6C3, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+		genCallEnforced(0x510B57, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
+
 	}
 
 	void installPostLuaPatches() {

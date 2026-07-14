@@ -1,5 +1,6 @@
 #include "CSSE.h"
 
+#include "CrashLogger.h"
 #include "LogUtil.h"
 
 #include "CSDialogue.h"
@@ -36,6 +37,8 @@
 
 #include "TextureRenderer.h"
 
+#include "DarkMode.h"
+#include "IconOverride.h"
 #include "MemoryUtil.h"
 #include "PathUtil.h"
 #include "StringUtil.h"
@@ -354,19 +357,7 @@ namespace se::cs {
 			log::stream << std::endl;
 			log::stream << "The Construction Set has crashed! To help improve game stability, post the CSSE_Minidump.dmp and csse.log files to the Morrowind Modding Community #mwse channel on Discord." << std::endl;
 			log::stream << "The Morrowind Modding Community Discord can be found at https://discord.me/mwmods" << std::endl;
-
-#ifdef APPVEYOR_BUILD_NUMBER
-			log::stream << "Appveyor build: " << APPVEYOR_BUILD_NUMBER << std::endl;
-#endif
-			log::stream << "Build date: " << CSSE_BUILD_DATE << std::endl;
-
-			// Display the memory usage in the log.
-			PROCESS_MEMORY_COUNTERS_EX memCounter = {};
-			GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&memCounter, sizeof(memCounter));
-			log::stream << "Memory usage: " << std::dec << memCounter.PrivateUsage << " bytes." << std::endl;
-			if (memCounter.PrivateUsage > 3650722201) {
-				log::stream << "  Memory usage is high. Crash is likely due to running out of memory." << std::endl;
-			}
+			CrashLogger::AttemptLog(pep);
 
 			// Open the file.
 			auto hFile = CreateFile("CSSE_MiniDump.dmp", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -408,12 +399,22 @@ namespace se::cs {
 		}
 
 		int __stdcall onWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+			// Dark mode must be set up before WinMain creates any window.
+			darkmode::initialize();
+			iconoverride::initialize();
+
+			const auto winMain = reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x4049B7);
+#ifdef _DEBUG
+			// Skip the minidump handler so the debugger catches crashes.
+			return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+#else
 			__try {
-				return reinterpret_cast<int(__stdcall*)(HINSTANCE, HINSTANCE, LPSTR, int)>(0x4049B7)(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
+				return winMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 			}
 			__except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 				return 0;
 			}
+#endif
 		}
 
 		//
@@ -593,6 +594,7 @@ namespace se::cs {
 
 		// Open our log file.
 		log::stream.open(path::getInstallPath() / "csse.log");
+		CrashLogger::Playtime::Init();
 #ifdef APPVEYOR_BUILD_NUMBER
 		log::stream << "Construction Set Extender build " << APPVEYOR_BUILD_NUMBER << " (built " << __DATE__ << ") hooked." << std::endl;
 #else
@@ -640,14 +642,13 @@ namespace se::cs {
 		using memory::genNOPUnprotected;
 		using memory::genJumpEnforced;
 		using memory::genJumpUnprotected;
+		using memory::writeDoubleWordEnforced;
 		using memory::writeDoubleWordUnprotected;
 		using memory::writeValueEnforced;
 		using memory::overrideVirtualTableEnforced;
 
-		// Patch: Collect crash dumps.
-#ifndef _DEBUG
+		// Patch: Collect crash dumps (release only) and initialize dark mode at WinMain entry.
 		genCallEnforced(0x620DF9, 0x4049B7, reinterpret_cast<DWORD>(patch::onWinMain));
-#endif
 
 		// Get the vanilla masters so we suppress errors from them.
 		genCallEnforced(0x50194E, 0x4041C4, reinterpret_cast<DWORD>(patch::findVanillaMasters));
@@ -729,6 +730,14 @@ namespace se::cs {
 		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
 		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
+
+		// Patch: Optimize NiDX8Renderer hash map lookups. Use NiDX8RendererHashBuckets buckets instead of 37.
+		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.
+		writeDoubleWordEnforced(0x58D08D, 37, NiDX8RendererHashBuckets);
+		writeDoubleWordEnforced(0x58D092, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D0D8, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D11E, 0x94, NiDX8RendererHashBuckets * 4);
+		writeDoubleWordEnforced(0x58D164, 0x94, NiDX8RendererHashBuckets * 4);
 
 		// Install all our sectioned patches.
 		window::main::installPatches();

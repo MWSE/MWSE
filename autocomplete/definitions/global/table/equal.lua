@@ -1,6 +1,9 @@
 return {
 	type = "function",
-	description = [[Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
+	deprecated = true,
+	description = [[Deprecated. Use `table.isequal` instead.
+
+Checks if one table is equal to another by recursively iterating through the (key, value) pairs of both tables.
 Unlike the `==` operator, this will return `true` if two distinct tables have contents that compare equal.
 For example, all of the following assertions pass:
 ```lua

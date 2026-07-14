@@ -16,6 +16,9 @@
 
 namespace {
 	bool passesTraverseFilters(const NI::AVObject* object, const std::unordered_set<unsigned int>& typeFilters, std::string_view prefix) {
+		if (object == nullptr) {
+			return false;
+		}
 		bool passesFilter = typeFilters.empty() ? true : false;
 		if (!passesFilter) {
 			for (const auto type : typeFilters) {
@@ -58,7 +61,7 @@ namespace mwse::lua {
 
 		std::queue<NI::Pointer<NI::AVObject>> queue;
 		std::function<void(const NI::AVObject*)> traverseChild = [&](const NI::AVObject* object) {
-			if (!object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
+			if (!object || !object->isInstanceOfType(NI::RTTIStaticPtr::NiNode)) {
 				return;
 			}
 

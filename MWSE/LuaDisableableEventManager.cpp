@@ -144,6 +144,7 @@
 #include "LuaReferenceDeactivatedEvent.h"
 #include "LuaReferenceSceneNodeCreatedEvent.h"
 #include "LuaRemovedEquipmentBodyPartsEvent.h"
+#include "LuaRenderEvent.h"
 #include "LuaRepairEvent.h"
 #include "LuaRestInterruptEvent.h"
 #include "LuaSavedGameEvent.h"
@@ -155,6 +156,8 @@
 #include "LuaSkillExerciseEvent.h"
 #include "LuaSkillRaisedEvent.h"
 #include "LuaSoundObjectPlayEvent.h"
+#include "LuaScriptExecuteEvent.h"
+#include "LuaScriptExecutedEvent.h"
 #include "LuaSpellCastedEvent.h"
 #include "LuaSpellCastEvent.h"
 #include "LuaSpellCreatedEvent.h"
@@ -332,10 +335,13 @@ namespace mwse::lua::event {
 		usertypeDefinition["referenceDeactivated"] = sol::property(&ReferenceDeactivatedEvent::getEventEnabled, &ReferenceDeactivatedEvent::setEventEnabled);
 		usertypeDefinition["referenceSceneNodeCreated"] = sol::property(&ReferenceSceneNodeCreatedEvent::getEventEnabled, &ReferenceSceneNodeCreatedEvent::setEventEnabled);
 		usertypeDefinition["removedEquipmentBodyParts"] = sol::property(&RemovedEquipmentBodyPartsEvent::getEventEnabled, &RemovedEquipmentBodyPartsEvent::setEventEnabled);
+		usertypeDefinition["render"] = sol::property(&RenderEvent::getEventEnabled, &RenderEvent::setEventEnabled);
 		usertypeDefinition["repair"] = sol::property(&RepairEvent::getEventEnabled, &RepairEvent::setEventEnabled);
 		usertypeDefinition["restInterrupt"] = sol::property(&RestInterruptEvent::getEventEnabled, &RestInterruptEvent::setEventEnabled);
 		usertypeDefinition["save"] = sol::property(&SaveGameEvent::getEventEnabled, &SaveGameEvent::setEventEnabled);
 		usertypeDefinition["saved"] = sol::property(&SavedGameEvent::getEventEnabled, &SavedGameEvent::setEventEnabled);
+		usertypeDefinition["scriptExecute"] = sol::property(&ScriptExecuteEvent::getEventEnabled, &ScriptExecuteEvent::setEventEnabled);
+		usertypeDefinition["scriptExecuted"] = sol::property(&ScriptExecutedEvent::getEventEnabled, &ScriptExecutedEvent::setEventEnabled);
 		usertypeDefinition["shieldBlocked"] = sol::property(&ShieldBlockedEvent::getEventEnabled, &ShieldBlockedEvent::setEventEnabled);
 		usertypeDefinition["simulate"] = sol::property(&SimulateEvent::getEventEnabled, &SimulateEvent::setEventEnabled);
 		usertypeDefinition["simulated"] = sol::property(&SimulatedEvent::getEventEnabled, &SimulatedEvent::setEventEnabled);

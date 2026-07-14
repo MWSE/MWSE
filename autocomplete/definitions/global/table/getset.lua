@@ -1,6 +1,9 @@
 return {
 	type = "function",
-	description = [[Gets a value in a table. If the key doesn't exist in the table, a specified default value will be set in the table and returned instead.]],
+	deprecated = true,
+	description = [[Deprecated. Use `table.getorset` instead.
+
+Gets a value in a table. If the key doesn't exist in the table, a specified default value will be set in the table and returned instead.]],
 	generics = {
 		{ name = "keyType" },
 		{ name = "valueType" },

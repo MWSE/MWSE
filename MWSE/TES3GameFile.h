@@ -74,6 +74,15 @@ namespace TES3 {
 
 		void deleteFile();
 		bool readChunkData(void * data, unsigned int size = 0);
+		template <typename T>
+		int writeChunkValue(unsigned int tag, const T& data) {
+			return writeChunkData(tag, &data, sizeof(T));
+		}
+		template <typename T>
+		int writeChunkValue(unsigned int tag, const T* data) {
+			return writeChunkData(tag, data, sizeof(T));
+		}
+		int writeChunkString(unsigned int tag, std::string string);
 		int writeChunkData(unsigned int tag, const void * data, unsigned int size);
 		int writeRecordHeader(unsigned int tag, unsigned int flags);
 		int endRecord();

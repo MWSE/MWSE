@@ -5,19 +5,19 @@
 
 --- A data structure that handles the weather.
 --- @class tes3weatherController
---- @field ambientPostSunriseTime number Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between `ambientPostSunriseTime` and `ambientPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field ambientPostSunsetTime number Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between `ambientPostSunsetTime` and `ambientPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field ambientPreSunriseTime number Each weather's ambiental color has one color for day and night states each. The night color will be used when the game hour is between `ambientPostSunsetTime` and `ambientPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field ambientPreSunsetTime number Each weather's ambiental color has one color for day and night states each. The day color will be used when the game hour is between `ambientPostSunriseTime` and `ambientPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+--- @field ambientPostSunriseTime number Hours added after `sunriseDuration` before the ambient sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + ambientPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field ambientPostSunsetTime number Hours added after `sunsetDuration` before the ambient sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + ambientPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field ambientPreSunriseTime number Hours before `sunriseHour` when the ambient-color transition begins. The window is `sunriseHour - ambientPreSunriseTime` through `sunriseHour + sunriseDuration + ambientPostSunriseTime`, split between night → `ambientSunriseColor` and `ambientSunriseColor` → day. This is an offset, not an absolute hour.
+--- @field ambientPreSunsetTime number Hours before `sunsetHour` when the ambient-color transition begins. The window is `sunsetHour - ambientPreSunsetTime` through `sunsetHour + sunsetDuration + ambientPostSunsetTime`, split between day → `ambientSunsetColor` and `ambientSunsetColor` → night. This is an offset, not an absolute hour.
 --- @field currentFogColor tes3vector3 The current fog color. The values can range from 0 to 1.
 --- @field currentSkyColor tes3vector3 The current sky color. The values can range from 0 to 1.
 --- @field currentWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The current weather.
 --- @field daysRemaining number The days remaining for the current weather.
---- @field fogDepthChangeSpeed number Controls the speed of how fast the fog comes in. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field fogPostSunriseTime number Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between `fogPostSunriseTime` and `fogPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field fogPostSunsetTime number Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between `fogPostSunsetTime` and `fogPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field fogPreSunriseTime number Each weather's fog color has one color for day and night states each. The night color will be used when the game hour is between `fogPostSunsetTime` and `fogPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field fogPreSunsetTime number Each weather's fog color has one color for day and night states each. The day color will be used when the game hour is between `fogPostSunriseTime` and `fogPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+--- @field fogDepthChangeSpeed number Duration, in in-game hours, used to interpolate land-fog depth from night to day after `sunriseHour` and from day to night after `sunsetHour`. It controls land-fog depth, not fog color.
+--- @field fogPostSunriseTime number Hours added after `sunriseDuration` before the fog sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + fogPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field fogPostSunsetTime number Hours added after `sunsetDuration` before the fog sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + fogPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field fogPreSunriseTime number Hours before `sunriseHour` when the fog-color transition begins. The window is `sunriseHour - fogPreSunriseTime` through `sunriseHour + sunriseDuration + fogPostSunriseTime`, split between night → `fogSunriseColor` and `fogSunriseColor` → day. This is an offset, not an absolute hour.
+--- @field fogPreSunsetTime number Hours before `sunsetHour` when the fog-color transition begins. The window is `sunsetHour - fogPreSunsetTime` through `sunsetHour + sunsetDuration + fogPostSunsetTime`, split between day → `fogSunsetColor` and `fogSunsetColor` → night. This is an offset, not an absolute hour.
 --- @field hoursBetweenWeatherChanges number The hours between weather changes. Stored as a float value.
 --- @field hoursRemaining number The hours remaining.
 --- @field lastActiveRegion tes3region *Read-only*. Provides read-only access to last active region object.
@@ -38,35 +38,35 @@
 --- @field sceneSunGlare niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Provides read-only access to the scene sun glare NiNode.
 --- @field sceneSunVis niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode *Read-only*. Provides read-only access to the scene sun vis NiNode.
 --- @field secunda tes3moon *Read-only*. Provides read-only access to the Secunda moon object.
---- @field skyPostSunriseTime number The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field skyPostSunsetTime number The sky has one color for day and night states each. The night color will be used when the game hour is between `skyPostSunsetTime` and `skyPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field skyPreSunriseTime number The sky has one color for day and night states each. The night color will be used when the game hour is between `skyPostSunsetTime` and `skyPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field skyPreSunsetTime number The sky has one color for day and night states each. The day color will be used when the game hour is between `skyPostSunriseTime` and `skyPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
+--- @field skyPostSunriseTime number Hours added after `sunriseDuration` before the sky sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + skyPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field skyPostSunsetTime number Hours added after `sunsetDuration` before the sky sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + skyPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field skyPreSunriseTime number Hours before `sunriseHour` when the sky-color transition begins. The window is `sunriseHour - skyPreSunriseTime` through `sunriseHour + sunriseDuration + skyPostSunriseTime`, split between night → `skySunriseColor` and `skySunriseColor` → day. This is an offset, not an absolute hour.
+--- @field skyPreSunsetTime number Hours before `sunsetHour` when the sky-color transition begins. The window is `sunsetHour - skyPreSunsetTime` through `sunsetHour + sunsetDuration + skyPostSunsetTime`, split between day → `skySunsetColor` and `skySunsetColor` → night. This is an offset, not an absolute hour.
 --- @field snowFallSpeedScale number A multipler for the z component of snow fall particle velocity (not including blizzards). The z component is set by `precipitationFallSpeed * snowFallSpeedScale`. This value is initialized by the "Snow Gravity Scale" entry in morrowind.ini.
---- @field starsFadingDuration number The stars will fade in `starsPostSunsetStart` hours after the sunset. They fade out `starsPreSunriseFinish` hours before sunrise. This value represents the duration of the fading. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field starsPostSunsetStart number The stars will start to fade in (appear) `starsPostSunsetStart` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field starsPreSunriseFinish number The stars will start to fade out (disappear) `starsPreSunriseFinish` hours before sunrise. This corresponds to the setting of the same name in Morrowind.ini file.
+--- @field starsFadingDuration number Duration, in in-game hours, of each star fade. Opacity rises from 0 to 1 between `starsPostSunsetStart` and `starsPostSunsetStart + starsFadingDuration`, and falls from 1 to 0 between `starsPreSunriseFinish` and `starsPreSunriseFinish + starsFadingDuration`.
+--- @field starsPostSunsetStart number Absolute game hour when the stars start fading in. At construction, this is initialized as `sunsetHour +` the `Morrowind.ini` offset (default `+1` hour); the field itself is then compared directly with the current game hour.
+--- @field starsPreSunriseFinish number Absolute game hour when the stars start fading out. At construction, this is initialized as `sunriseHour -` the `Morrowind.ini` offset (default offset `2` hours); the field itself is then compared directly with the current game hour. Despite its name, it marks the start of the fade-out.
 --- @field sunglareFaderAngleMax number The sunglare fader maximum angle.
 --- @field sunglareFaderColor tes3vector3 The sunglare fader color. The values can range from 0 to 1.
 --- @field sunglareFaderMax number The sunglare fader maximum.
---- @field sunPostSunriseTime number The Sun has one color for day and night states each. The day color will be used when the game hour is between `sunPostSunriseTime` and `sunPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field sunPostSunsetTime number The Sun has one color for day and night states each. The night color will be used when the game hour is between `sunPostSunsetTime` and `sunPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field sunPreSunriseTime number The Sun has one color for day and night states each. The night color will be used when the game hour is between `sunPostSunsetTime` and `sunPreSunriseTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field sunPreSunsetTime number The Sun has one color for day and night states each. The day color will be used when the game hour is between `sunPostSunriseTime` and `sunPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.
---- @field sunriseDuration number The sunrise duration.
---- @field sunriseHour number The sunrise hour.
---- @field sunsetDuration number The sunset duration.
---- @field sunsetHour number The sunset hour.
+--- @field sunPostSunriseTime number Hours added after `sunriseDuration` before the sunlight-color sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + sunPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field sunPostSunsetTime number Hours added after `sunsetDuration` before the sunlight-color sunset transition ends. The transition ends at `sunsetHour + sunsetDuration + sunPostSunsetTime`; the sunset color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
+--- @field sunPreSunriseTime number Hours before `sunriseHour` when the sunlight-color transition begins. The window is `sunriseHour - sunPreSunriseTime` through `sunriseHour + sunriseDuration + sunPostSunriseTime`, split between night → `sunSunriseColor` and `sunSunriseColor` → day. This is an offset, not an absolute hour.
+--- @field sunPreSunsetTime number Hours before `sunsetHour` when the sunlight-color transition begins. The window is `sunsetHour - sunPreSunsetTime` through `sunsetHour + sunsetDuration + sunPostSunsetTime`, split between day → `sunSunsetColor` and `sunSunsetColor` → night. This is an offset, not an absolute hour.
+--- @field sunriseDuration number Duration, in in-game hours, of the sun's sunrise motion/fade. It also contributes to every sunrise color window: that window lasts `Pre + sunriseDuration + Post` hours.
+--- @field sunriseHour number Absolute in-game hour used as the sunrise reference. The sun's sunrise motion begins here; each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
+--- @field sunsetDuration number Duration, in in-game hours, of the sun's sunset motion/fade. It also contributes to every sunset color window: that window lasts `Pre + sunsetDuration + Post` hours.
+--- @field sunsetHour number Absolute in-game hour used as the sunset reference. Each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
 --- @field thunderFlashIntensity number The active thunder flash intensity.
 --- @field timescaleClouds string The timescale for clouds.
 --- @field transitionScalar number The scalar transition.
---- @field underwaterColor tes3vector3 The underwater color, represented as a vector. The values can range from 0 to 1.
---- @field underwaterColorWeight number The underwater color weight.
---- @field underwaterDayFog number The underwater day fog value.
---- @field underwaterIndoorFog number The underwater indoor fog value.
---- @field underwaterNightFog number The underwater night fog value.
---- @field underwaterSunriseFog number The underwater sunrise fog value.
---- @field underwaterSunsetFog number The underwater sunset fog value.
+--- @field underwaterColor tes3vector3 Color blended into weather colors while underwater. `underwaterColorWeight` controls the blend amount. Values range from 0 to 1.
+--- @field underwaterColorWeight number Blend weight for `underwaterColor`: `0` keeps the normal weather color, and `1` replaces it with `underwaterColor`. Values are clamped to 0–1 during initialization.
+--- @field underwaterDayFog number Underwater fog-density multiplier used during the daytime portion between the sunrise and sunset transitions.
+--- @field underwaterIndoorFog number Underwater fog-density multiplier used in ordinary interior cells. Exterior-interior cells use the time-of-day underwater values instead.
+--- @field underwaterNightFog number Underwater fog-density multiplier used during the nighttime portion outside the sunrise and sunset transitions.
+--- @field underwaterSunriseFog number Underwater fog-density multiplier used at the sunrise endpoint. In exterior water, it is blended from `underwaterNightFog` toward `underwaterDayFog` using `sunriseHour` and the day midpoint.
+--- @field underwaterSunsetFog number Underwater fog-density multiplier used at the sunset endpoint. In exterior water, it is blended from `underwaterDayFog` toward `underwaterNightFog` between `sunsetHour` and midnight.
 --- @field weathers table<tes3.weather, tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder> *Read-only*. Array-style table with weather objects for each weather type. The indices in the table map to the values in the [`tes3.weather`](https://mwse.github.io/MWSE/references/weather-types/) table.
 --- @field windVelocityCurrWeather tes3vector3 The wind velocity for the current weather.
 --- @field windVelocityNextWeather tes3vector3 The wind velocity for the next weather.

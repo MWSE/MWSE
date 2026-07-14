@@ -399,6 +399,12 @@
     <ClInclude Include="LuaScript.h">
       <Filter>Header Files\Lua</Filter>
     </ClInclude>
+    <ClInclude Include="LuaScriptExecuteEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaScriptExecutedEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="DynamicLuaObject.h">
       <Filter>Header Files\Lua</Filter>
     </ClInclude>
@@ -1224,6 +1230,9 @@
     <ClInclude Include="LuaPreLevelUpEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
+    <ClInclude Include="LuaRenderEvent.h">
+      <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1551,16 +1560,7 @@
     <ClInclude Include="LuaRemovedEquipmentBodyPartsEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="CrashLogExceptionHandler.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
     <ClInclude Include="CrashLogFormatter.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
-    <ClInclude Include="CrashLogger.hpp">
-      <Filter>Header Files\Utility\CrashLogger</Filter>
-    </ClInclude>
-    <ClInclude Include="CrashLogUtilities.hpp">
       <Filter>Header Files\Utility\CrashLogger</Filter>
     </ClInclude>
     <ClInclude Include="TES3WeatherCustom.h">
@@ -2663,6 +2663,12 @@
     <ClCompile Include="LuaSaveGameEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaScriptExecuteEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaScriptExecutedEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaSavedGameEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3137,6 +3143,9 @@
     <ClCompile Include="LuaPreLevelUpEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
+    <ClCompile Include="LuaRenderEvent.cpp">
+      <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="LuaPostInfoResponseEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
     </ClCompile>
@@ -3542,19 +3551,13 @@
     <ClCompile Include="MWSEInterface.cpp">
       <Filter>Source Files\MGE Interface</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogCallTrace.cpp">
-      <Filter>Source Files\Utility\CrashLogger</Filter>
-    </ClCompile>
-    <ClCompile Include="CrashLogDevice.cpp">
-      <Filter>Source Files\Utility\CrashLogger</Filter>
-    </ClCompile>
     <ClCompile Include="CrashLogLabelsMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogMemory.cpp">
+	<ClCompile Include="CrashLoggerMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-    <ClCompile Include="CrashLogRegistryStack.cpp">
+	<ClCompile Include="CrashLoggerMWSEClient.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
     <ClCompile Include="ReferenceTracker.cpp">

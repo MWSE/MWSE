@@ -2,6 +2,7 @@
 #include "DialogRenderWindow.h"
 #include "RenderWindowSelectionData.h"
 #include "WindowMain.h"
+#include "DarkMode.h"
 
 #define IDC_LAYERS_LIST 2001
 #define IDC_BTN_SAVE 2002
@@ -121,7 +122,7 @@ namespace se::cs::dialog::layer_window {
 		auto objIt = perCellReferences.find(objCell);
 		if (objIt != perCellReferences.end()) {
 			auto cellRefs = &objIt->second;
-			if (cellRefs->find(objRef) != cellRefs->end()) {
+			if (cellRefs->contains(objRef)) {
 				updateObject(objRef, true);
 				isRemoved = true;
 				cellRefs->erase(objRef);
@@ -147,95 +148,95 @@ namespace se::cs::dialog::layer_window {
 		auto objCell = objRef ? objRef->getCell() : nullptr;
 		if (!objCell) return;
 
-		if (perCellReferences.find(objCell) == perCellReferences.end()) return;
+		if (!perCellReferences.contains(objCell)) return;
 
 		auto& cellRefs = perCellReferences[objCell];
-		if (cellRefs.find(objRef) == cellRefs.end()) return;
+		if (!cellRefs.contains(objRef)) return;
 
 		auto node = objRef ? objRef->sceneNode : nullptr;
 		if (!node) return;
 
 		for (auto& child : node->children) {
-			if (child && child->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
+			if (!child || !child->isInstanceOfType(NI::RTTIStaticPtr::NiTriShape)) {
+				continue;
+			}
 
-				auto triShape = static_cast<NI::TriShape*>(child.get());
+			auto triShape = static_cast<NI::TriShape*>(child.get());
+			auto currMaterialProp = triShape->getMaterialProperty();
+			if (!currMaterialProp) {
+				continue;
+			}
 
-				auto currMaterialProp = triShape->getMaterialProperty();
+			auto nodeColorData = getNodeColorData(triShape);
 
-				if (currMaterialProp) {
+			auto layerColor = getLayerColor();
+			auto layerMaterial = getLayerOverlayMaterial(currMaterialProp);
+			auto layerVertexProp = getLayerVertexColorProperty();
+			auto layerAlphaProp = getLayerAlphaProperty();
 
-					auto nodeColorData = getNodeColorData(triShape);
+			auto currVertexProp = triShape->getVertexColorProperty();
+			auto currAlphaProperty = triShape->getAlphaProperty();
 
-					auto layerColor = getLayerColor();
-					auto layerMaterial = getLayerOverlayMaterial(currMaterialProp);
-					auto layerVertexProp = getLayerVertexColorProperty();
-					auto layerAlphaProp = getLayerAlphaProperty();
-
-					auto currVertexProp = triShape->getVertexColorProperty();
-					auto currAlphaProperty = triShape->getAlphaProperty();
-
-					if (isOverlayActive && !forceRestore) {
-						// Apply overlay material
-						if (!nodeColorData->originalMaterial) {
-							nodeColorData->originalMaterial = currMaterialProp;
-						}
-						triShape->setMaterialProperty(layerMaterial);
-
-						// Apply vertex color prop
-						if (!nodeColorData->originalVColorProperty) {
-							nodeColorData->originalVColorProperty = currVertexProp;
-						}
-						triShape->setVertexColorProperty(layerVertexProp);
-					}
-					else {
-						// Restore original material
-						auto& originalMaterial = nodeColorData->originalMaterial;
-						if (originalMaterial) {
-							triShape->setMaterialProperty(originalMaterial);
-						}
-						else if (layerMaterial == currMaterialProp) {
-							triShape->detachPropertyByType(NI::PropertyType::Material);
-						}
-
-						// Restore original vertex color prop
-						auto& originalVertexProp = nodeColorData->originalVColorProperty;
-						if (originalVertexProp) {
-							triShape->setVertexColorProperty(originalVertexProp);
-						}
-						else if (layerVertexProp == currVertexProp) {
-							triShape->detachPropertyByType(NI::PropertyType::VertexColor);
-						}
-					}
-
-					if (isOverlayActive && isLayerHidden && !forceRestore) {
-						// Apply transparency 
-						if (!nodeColorData->originalAlphaProperty) {
-							nodeColorData->originalAlphaProperty = currAlphaProperty;
-						}
-
-						triShape->setAlphaProperty(layerAlphaProp);
-
-						layerMaterial->setAlpha(0.5f);
-					}
-					else {
-						// Restore original alpha prop
-						auto& originalAlphaProp = nodeColorData->originalAlphaProperty;
-
-						layerMaterial->setAlpha(1.0f);
-						if (originalAlphaProp) {
-							triShape->setAlphaProperty(originalAlphaProp);
-						}
-						else if (layerAlphaProp == currAlphaProperty) {
-							triShape->detachPropertyByType(NI::PropertyType::Alpha);
-						}
-					}
-
-					triShape->updateProperties();
-
-					if (forceRestore) {
-						removeNodeColorData(triShape);
-					}
+			if (isOverlayActive && !forceRestore) {
+				// Apply overlay material
+				if (!nodeColorData->originalMaterial) {
+					nodeColorData->originalMaterial = currMaterialProp;
 				}
+				triShape->setMaterialProperty(layerMaterial);
+
+				// Apply vertex color prop
+				if (!nodeColorData->originalVColorProperty) {
+					nodeColorData->originalVColorProperty = currVertexProp;
+				}
+				triShape->setVertexColorProperty(layerVertexProp);
+			}
+			else {
+				// Restore original material
+				auto& originalMaterial = nodeColorData->originalMaterial;
+				if (originalMaterial) {
+					triShape->setMaterialProperty(originalMaterial);
+				}
+				else if (layerMaterial == currMaterialProp) {
+					triShape->detachPropertyByType(NI::PropertyType::Material);
+				}
+
+				// Restore original vertex color prop
+				auto& originalVertexProp = nodeColorData->originalVColorProperty;
+				if (originalVertexProp) {
+					triShape->setVertexColorProperty(originalVertexProp);
+				}
+				else if (layerVertexProp == currVertexProp) {
+					triShape->detachPropertyByType(NI::PropertyType::VertexColor);
+				}
+			}
+
+			if (isOverlayActive && isLayerHidden && !forceRestore) {
+				// Apply transparency 
+				if (!nodeColorData->originalAlphaProperty) {
+					nodeColorData->originalAlphaProperty = currAlphaProperty;
+				}
+
+				triShape->setAlphaProperty(layerAlphaProp);
+
+				layerMaterial->setAlpha(0.5f);
+			}
+			else {
+				// Restore original alpha prop
+				auto& originalAlphaProp = nodeColorData->originalAlphaProperty;
+
+				layerMaterial->setAlpha(1.0f);
+				if (originalAlphaProp) {
+					triShape->setAlphaProperty(originalAlphaProp);
+				}
+				else if (layerAlphaProp == currAlphaProperty) {
+					triShape->detachPropertyByType(NI::PropertyType::Alpha);
+				}
+			}
+
+			triShape->updateProperties();
+
+			if (forceRestore) {
+				removeNodeColorData(triShape);
 			}
 		}
 
@@ -374,7 +375,7 @@ namespace se::cs::dialog::layer_window {
 
 	size_t getNextLayerId() {
 		size_t nextId = 0;
-		while (g_LayersIdMap.find(nextId) != g_LayersIdMap.end()) {
+		while (g_LayersIdMap.contains(nextId)) {
 			++nextId;
 		}
 
@@ -496,8 +497,7 @@ namespace se::cs::dialog::layer_window {
 		auto cellList = recordHandler->cells;
 
 		// Populate layer data with actual object references
-		for (auto cellIt = cellList->begin(); cellIt != cellList->end(); ++cellIt) {
-			Cell* cell = *cellIt;
+		for (auto cell : *cellList) {
 			if (!cell) continue;
 
 			std::string currentCellId = cell->getEditorId(); // will fail to be restored if cell was renamed
@@ -551,7 +551,7 @@ namespace se::cs::dialog::layer_window {
 		}
 
 		// if layer id 0 is missing, recreate default layer
-		if (g_LayersIdMap.find(0) == g_LayersIdMap.end()) {
+		if (!g_LayersIdMap.contains(0)) {
 			auto hiddenLayer = new LayerData();
 			hiddenLayer->id = HIDDEN_LAYER_ID;
 			hiddenLayer->layerName = new std::string("Hidden");
@@ -875,9 +875,15 @@ namespace se::cs::dialog::layer_window {
 				if (pDIS->itemID >= (int)g_Layers.size()) break;
 
 				LayerData* layer = g_Layers[pDIS->itemID];
+				const auto dark = darkmode::isActive();
 
 				// Background
-				if (pDIS->itemState & ODS_SELECTED) {
+				if (dark) {
+					SetDCBrushColor(pDIS->hDC, (pDIS->itemState & ODS_SELECTED) ? darkmode::palette::controlHot : darkmode::palette::surface);
+					FillRect(pDIS->hDC, &pDIS->rcItem, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+					SetTextColor(pDIS->hDC, darkmode::palette::text);
+				}
+				else if (pDIS->itemState & ODS_SELECTED) {
 					FillRect(pDIS->hDC, &pDIS->rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
 					SetTextColor(pDIS->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
 				}
@@ -903,16 +909,46 @@ namespace se::cs::dialog::layer_window {
 				InflateRect(&rcColor, -4, -4);
 				HBRUSH hBrush = CreateSolidBrush(NIColorToRef(layer->getLayerColor()));
 				FillRect(pDIS->hDC, &rcColor, hBrush);
-				FrameRect(pDIS->hDC, &rcColor, (HBRUSH)GetStockObject(BLACK_BRUSH));
+				if (dark) {
+					SetDCBrushColor(pDIS->hDC, darkmode::palette::border);
+					FrameRect(pDIS->hDC, &rcColor, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+				}
+				else {
+					FrameRect(pDIS->hDC, &rcColor, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
+				}
 				DeleteObject(hBrush);
 
-				// Visible checkbox
-				UINT stateVis = DFCS_BUTTONCHECK | (!layer->isLayerHidden ? DFCS_CHECKED : 0);
-				DrawFrameControl(pDIS->hDC, &rcVis, DFC_BUTTON, stateVis);
+				if (dark) {
+					const auto drawCheckbox = [&](RECT rect, bool checked) {
+						constexpr int size = 13;
+						const auto centerX = (rect.left + rect.right) / 2;
+						const auto centerY = (rect.top + rect.bottom) / 2;
+						RECT box = { centerX - size / 2, centerY - size / 2, centerX + size / 2 + 1, centerY + size / 2 + 1 };
 
-				// Overlay checkbox
-				UINT stateOver = DFCS_BUTTONCHECK | (layer->isOverlayActive ? DFCS_CHECKED : 0);
-				DrawFrameControl(pDIS->hDC, &rcOver, DFC_BUTTON, stateOver);
+						SetDCBrushColor(pDIS->hDC, darkmode::palette::control);
+						FillRect(pDIS->hDC, &box, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+						SetDCBrushColor(pDIS->hDC, darkmode::palette::border);
+						FrameRect(pDIS->hDC, &box, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+
+						if (checked) {
+							const auto previousPen = SelectObject(pDIS->hDC, GetStockObject(DC_PEN));
+							SetDCPenColor(pDIS->hDC, darkmode::palette::text);
+							MoveToEx(pDIS->hDC, box.left + 3, box.top + 6, nullptr);
+							LineTo(pDIS->hDC, box.left + 6, box.top + 9);
+							LineTo(pDIS->hDC, box.right - 2, box.top + 3);
+							SelectObject(pDIS->hDC, previousPen);
+						}
+					};
+					drawCheckbox(rcVis, !layer->isLayerHidden);
+					drawCheckbox(rcOver, layer->isOverlayActive);
+				}
+				else {
+					UINT stateVis = DFCS_BUTTONCHECK | (!layer->isLayerHidden ? DFCS_CHECKED : 0);
+					DrawFrameControl(pDIS->hDC, &rcVis, DFC_BUTTON, stateVis);
+
+					UINT stateOver = DFCS_BUTTONCHECK | (layer->isOverlayActive ? DFCS_CHECKED : 0);
+					DrawFrameControl(pDIS->hDC, &rcOver, DFC_BUTTON, stateOver);
+				}
 
 				return TRUE;
 			}

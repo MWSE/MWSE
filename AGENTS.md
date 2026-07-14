@@ -1,5 +1,8 @@
 # Agent Instructions
 
+- Do not take control of the user's PC unless explicitly and unambiguously asked to do so.
+- Do not alter EOF-newlines.
+
 
 ## Skills
 
@@ -113,6 +116,14 @@ autocomplete/
 ## Workflow
 
 - Do not bother doing git diff checks.
+- `rg` is not available in this workspace. Use PowerShell search commands such as `Get-ChildItem ... | Select-String ...` instead of trying `rg` first.
+- In the Codex sandbox, the normal solution build can fail before compiling because the environment has both `Path` and `PATH`, and post-build copy steps can fail when writing to the configured Morrowind install directory. For targeted CSSE validation, use:
+  ```powershell
+  Remove-Item Env:PATH -ErrorAction SilentlyContinue
+  $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" | Select-Object -First 1
+  & $msbuild CSSE\CSSE.vcxproj /t:Build /p:Configuration=Debug /p:Platform=x86 /p:SolutionDir=E:\Projects\Morrowind\MWSE\ /p:PostBuildEventUseInBuild=false /nr:false
+  ```
+- The normal headless solution build remains useful outside the sandbox or when post-build deployment is required, but do not spend time debugging the known sandbox-only `Path`/`PATH` or MorrowindDir copy failures.
 
 
 ## Behavior Refinement

@@ -24,11 +24,15 @@ Lockpicks and probes do not invoke this event.]],
 			description = "The speed multiplier of the attack animation, normally equal to the weapon speed (1.0 for no equipped weapon). May be changed to change the current attack's speed. See also [tes3actorAnimationController](https://mwse.github.io/MWSE/types/tes3actorAnimationController/) to change animation speed during the attack.",
 		},
 	},
+	blockable = true,
 	examples = {
 		["directionChange"] = {
 			title = "Changing axe attack direction",
 			description = [[]],
-		}
+		},
+		["blockAttack"] = {
+			title = "Blocking an attack from starting",
+		},
 	},
 	filter = "reference",
 }

@@ -6,15 +6,17 @@
 --- A structure containing properties specific to scroll panes.
 --- @class tes3uiScrollPane : tes3uiWidget
 --- @field contentPane tes3uiElement *Read-only*. The content element of this pane.
+--- @field horizontalScrollBar tes3uiElement *Read-only*. The horizontal scroll bar element of this pane.
 --- @field positionX number The horizontal scroll offset in pixels.
 --- @field positionY number The vertical scroll offset in pixels.
 --- @field scrollbarVisible boolean If `true`, the scrollbar will be visible.
+--- @field verticalScrollBar tes3uiElement *Read-only*. The vertical scroll bar element of this pane.
 tes3uiScrollPane = {}
 
 --- Updates the scrollbar slider and scrollbar limits after adding or removing elements to the content container. Because content size depends on layout, this must be run after calling `updateLayout` on the widget element. Only required if the content size changes.
 function tes3uiScrollPane:contentsChanged() end
 
---- Scrolls the pane vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
+--- Scrolls the pane horizontally or vertically to ensure that the given descendant element is fully visible. If the element is already fully visible, the scroll position is left unchanged.
 --- @param child tes3uiElement A descendant element of the scroll pane's content element. Nested descendants are supported.
 --- @return boolean result No description yet available.
 function tes3uiScrollPane:scrollIntoView(child) end

@@ -16,7 +16,7 @@ namespace TES3 {
 		}
 
 		NI::Matrix33 rotation;
-		rotation.toRotationZ(se::math::M_PI * 1.5f);
+		rotation.toRotationZ(se::math::M_2PIf * 0.75f);
 		if (controller->sgBlizzard) {
 			controller->sgBlizzard->setLocalRotationMatrix(&rotation);
 		}

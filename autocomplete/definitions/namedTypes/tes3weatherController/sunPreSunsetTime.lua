@@ -1,5 +1,5 @@
 return {
 	type = "value",
-	description = [[The Sun has one color for day and night states each. The day color will be used when the game hour is between `sunPostSunriseTime` and `sunPreSunsetTime`. This corresponds to the setting of the same name in Morrowind.ini file.]],
+	description = [[Hours before `sunsetHour` when the sunlight-color transition begins. The window is `sunsetHour - sunPreSunsetTime` through `sunsetHour + sunsetDuration + sunPostSunsetTime`, split between day → `sunSunsetColor` and `sunSunsetColor` → night. This is an offset, not an absolute hour.]],
 	valuetype = "number",
 }

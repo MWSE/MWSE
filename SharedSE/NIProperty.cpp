@@ -103,7 +103,27 @@ namespace NI {
 	// NiMaterialProperty
 	//
 
-	Color MaterialProperty::getAmbient() {
+	MaterialProperty::MaterialProperty() {
+#if defined(SE_NI_MATERIALPROPERTY_FNADDR_CTOR) && SE_NI_PROPERTY_FNADDR_CTOR > 0
+		const auto NI_MaterialProperty_ctor = reinterpret_cast<MaterialProperty * (__thiscall*)(MaterialProperty*)>(SE_NI_MATERIALPROPERTY_FNADDR_CTOR);
+		NI_MaterialProperty_ctor(this);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	MaterialProperty::~MaterialProperty() {
+#if defined(SE_NI_MATERIALPROPERTY_FNADDR_DTOR) && SE_NI_MATERIALPROPERTY_FNADDR_DTOR > 0
+		const auto NI_MaterialProperty_dtor = reinterpret_cast<void(__thiscall*)(MaterialProperty*)>(SE_NI_MATERIALPROPERTY_FNADDR_DTOR);
+		NI_MaterialProperty_dtor(this);
+#endif
+	}
+
+	Pointer<MaterialProperty> MaterialProperty::create() {
+		return new MaterialProperty();
+	}
+
+	Color MaterialProperty::getAmbient() const {
 		return ambient;
 	}
 
@@ -119,7 +139,7 @@ namespace NI {
 	}
 #endif
 
-	Color MaterialProperty::getDiffuse() {
+	Color MaterialProperty::getDiffuse() const {
 		return diffuse;
 	}
 
@@ -135,7 +155,7 @@ namespace NI {
 	}
 #endif
 
-	Color MaterialProperty::getSpecular() {
+	Color MaterialProperty::getSpecular() const {
 		return specular;
 	}
 
@@ -151,7 +171,7 @@ namespace NI {
 	}
 #endif
 
-	Color MaterialProperty::getEmissive() {
+	Color MaterialProperty::getEmissive() const {
 		return emissive;
 	}
 
@@ -167,7 +187,7 @@ namespace NI {
 	}
 #endif
 
-	float MaterialProperty::getShininess() {
+	float MaterialProperty::getShininess() const {
 		return shininess;
 	}
 
@@ -176,7 +196,7 @@ namespace NI {
 		revisionID++;
 	}
 
-	float MaterialProperty::getAlpha() {
+	float MaterialProperty::getAlpha() const {
 		return alpha;
 	}
 

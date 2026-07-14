@@ -1,6 +1,6 @@
 #include "LinuxUtil.h"
 
-namespace se::cs::linux {
+namespace se::linux {
 	bool isRunningWine() {
 		return getWineVersion() != nullptr;
 	}

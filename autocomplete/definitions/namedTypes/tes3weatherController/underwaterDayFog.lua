@@ -1,6 +1,6 @@
 return {
 	type = "value",
-	description = [[The underwater day fog value.]],
+	description = [[Underwater fog-density multiplier used during the daytime portion between the sunrise and sunset transitions.]],
 	readOnly = false,
 	valuetype = "number",
 }

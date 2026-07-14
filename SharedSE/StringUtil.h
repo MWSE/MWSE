@@ -34,8 +34,6 @@ namespace se::string {
 	bool niequal(std::string_view a, std::string_view b, size_t maxCount);
 
 	bool istarts_with(std::string_view string, std::string_view substring);
-	bool starts_with(const std::string_view& string, const std::string_view& substring);
-	bool ends_with(const std::string_view& string, const std::string_view& substring);
 
 	bool contains(const std::string_view& haystack, const std::string_view& needle);
 	bool cicontains(const std::string_view& haystack, const std::string_view& needle);
@@ -54,9 +52,9 @@ namespace se::string {
 	}
 
 	static inline std::string from_wstring(const std::wstring& wstr) {
-		std::vector<char> buf(wstr.size());
+		std::string buf(wstr.size(), '\0');
 		std::use_facet<std::ctype<wchar_t>>(std::locale{}).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
-		return std::string(buf.data(), buf.size());
+		return buf;
 	}
 
 	static inline void ltrim(std::string& s) {

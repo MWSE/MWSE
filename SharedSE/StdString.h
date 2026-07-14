@@ -15,6 +15,9 @@ namespace se {
 		StdString(const char* c_str);
 		~StdString();
 
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
+
 		void operator=(const char* c_str);
 
 	};

@@ -329,6 +329,6 @@ namespace TES3 {
 
 	void MobManager::setMaxClimbableSlope(float value) {
 		maxClimbableSlopeDegrees = value;
-		dotProductOfMaxClimbableSlope = cos(static_cast<float>(maxClimbableSlopeDegrees * se::math::M_PI / 180.0));
+		dotProductOfMaxClimbableSlope = cos(se::math::degreesToRadians(maxClimbableSlopeDegrees));
 	}
 }

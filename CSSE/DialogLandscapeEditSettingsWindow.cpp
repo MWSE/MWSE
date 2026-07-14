@@ -14,6 +14,7 @@
 #include "DialogProcContext.h"
 
 #include "DialogRenderWindow.h"
+#include "DarkMode.h"
 
 namespace se::cs::dialog::landscape_edit_settings_window {
 	constexpr auto MIN_WIDTH = 416u + 17u;
@@ -22,6 +23,44 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 	constexpr const char* VERTEX_COLOR_BLEND_MODES[] = {
 		"Mix", "Darken", "Lighten", "Multiply", "Screen", "Add", "Subtract",
 	};
+
+	static constexpr UINT_PTR DARK_PREVIEW_SUBCLASS_ID = 0x4C445046; // 'LDPF'
+
+	static LRESULT CALLBACK DarkPreviewSubclassProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR, DWORD_PTR) {
+		switch (msg) {
+		case WM_PAINT: {
+			const auto result = DefSubclassProc(hWnd, msg, wParam, lParam);
+			const auto hdc = GetDC(hWnd);
+			if (hdc) {
+				RECT clientRect = {};
+				GetClientRect(hWnd, &clientRect);
+				SetDCBrushColor(hdc, darkmode::palette::border);
+				FrameRect(hdc, &clientRect, reinterpret_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
+				ReleaseDC(hWnd, hdc);
+			}
+			return result;
+		}
+		case WM_NCDESTROY:
+			RemoveWindowSubclass(hWnd, DarkPreviewSubclassProc, DARK_PREVIEW_SUBCLASS_ID);
+			break;
+		}
+		return DefSubclassProc(hWnd, msg, wParam, lParam);
+	}
+
+	static void ThemePreviewBorder(HWND hWnd) {
+		if (!darkmode::isActive() || !hWnd) {
+			return;
+		}
+
+		auto style = GetWindowLongA(hWnd, GWL_STYLE);
+		style &= ~(SS_TYPEMASK | SS_SUNKEN);
+		style |= SS_LEFT;
+		SetWindowLongA(hWnd, GWL_STYLE, style);
+		SetWindowLongA(hWnd, GWL_EXSTYLE, GetWindowLongA(hWnd, GWL_EXSTYLE) & ~WS_EX_CLIENTEDGE);
+		SetWindowSubclass(hWnd, DarkPreviewSubclassProc, DARK_PREVIEW_SUBCLASS_ID, 0);
+		SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+		InvalidateRect(hWnd, nullptr, TRUE);
+	}
 
 	namespace LandscapeEditFlag {
 		enum LandscapeEditFlag : unsigned int {
@@ -340,6 +379,10 @@ namespace se::cs::dialog::landscape_edit_settings_window {
 		SetWindowIdByValue(hWnd, "R", CONTROL_ID_SECONDARY_COLOR_RED_STATIC);
 		SetWindowIdByValue(hWnd, "G", CONTROL_ID_SECONDARY_COLOR_GREEN_STATIC);
 		SetWindowIdByValue(hWnd, "B", CONTROL_ID_SECONDARY_COLOR_BLUE_STATIC);
+
+		ThemePreviewBorder(GetDlgItem(hWnd, CONTROL_ID_PREVIEW_TEXTURE_FRAME_STATIC));
+		ThemePreviewBorder(GetDlgItem(hWnd, CONTROL_ID_PRIMARY_COLOR_PREVIEW_STATIC));
+		ThemePreviewBorder(GetDlgItem(hWnd, CONTROL_ID_SECONDARY_COLOR_PREVIEW_STATIC));
 
 		RemoveStyles(hWnd, DS_MODALFRAME | WS_SYSMENU);
 		AddStyles(hWnd, WS_POPUP | WS_CAPTION | WS_SIZEBOX);
