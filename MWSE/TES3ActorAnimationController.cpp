@@ -10,6 +10,83 @@
 #include "TES3WorldController.h"
 
 namespace TES3 {
+	const auto TES3_ActorAnimationController_swingAnimationStateMachine = reinterpret_cast<void(__thiscall*)(ActorAnimationController*)>(0x5415F0);
+	void ActorAnimationController::swingAnimationStateMachine() {
+		TES3_ActorAnimationController_swingAnimationStateMachine(this);
+	}
+
+	const auto TES3_ActorAnimationController_castAnimationStateMachine = reinterpret_cast<void(__thiscall*)(ActorAnimationController*)>(0x541C30);
+	void ActorAnimationController::castAnimationStateMachine() {
+		TES3_ActorAnimationController_castAnimationStateMachine(this);
+	}
+
+	const auto TES3_ActorAnimationController_selectActorAnim = reinterpret_cast<void(__thiscall*)(ActorAnimationController*)>(0x53F2D0);
+	void ActorAnimationController::selectActorAnim() {
+		TES3_ActorAnimationController_selectActorAnim(this);
+	}
+
+	const auto TES3_ActorAnimationController_actionDataStateMachine = reinterpret_cast<void(__thiscall*)(ActorAnimationController*)>(0x53FBA0);
+	void ActorAnimationController::actionDataStateMachine() {
+		TES3_ActorAnimationController_actionDataStateMachine(this);
+	}
+
+	const auto TES3_ActorAnimationController_movementPhysics = reinterpret_cast<void(__thiscall*)(ActorAnimationController*)>(0x53E270);
+	void ActorAnimationController::movementPhysics() {
+		TES3_ActorAnimationController_movementPhysics(this);
+	}
+
+	void ActorAnimationController::update(float deltaTime) {
+		if (!mobileActor || mobileActor->getFlagIdleAnim()) {
+			return;
+		}
+
+		if (mobileActor->getEffectAttributeParalyze() > 0 && !mobileActor->isDead()) {
+			animationData->movementSpeed = 0.0f;
+			animationData->weaponSpeed = 0.0f;
+			return;
+		}
+
+		if (animationData->weaponSpeed == 0.0f) {
+			animationData->weaponSpeed = mobileActor->getWeaponSpeed();
+		}
+
+		const auto attackState = mobileActor->actionData.animStateAttack;
+		switch (attackState) {
+		case AttackAnimationState::SwingDown:
+		case AttackAnimationState::SwingHit:
+		case AttackAnimationState::SwingFollowLight:
+		case AttackAnimationState::SwingFollowMed:
+		case AttackAnimationState::SwingFollowHeavy:
+			swingAnimationStateMachine();
+			break;
+		case AttackAnimationState::Casting:
+		case AttackAnimationState::CastingFollow:
+			castAnimationStateMachine();
+			break;
+		}
+
+		if (!mobileActor) {
+			return;
+		}
+
+		selectActorAnim();
+		if (!mobileActor) {
+			return;
+		}
+
+		actionDataStateMachine();
+		if (!mobileActor) {
+			return;
+		}
+
+		selectMovementAnimAndUpdate(deltaTime, false);
+		if (!mobileActor) {
+			return;
+		}
+
+		movementPhysics();
+	}
+
 	const auto TES3_ActorAnimationController_calculateMovementSpeed = reinterpret_cast<float(__thiscall*)(ActorAnimationController*)>(0x53E1A0);
 	float ActorAnimationController::calculateMovementSpeed() {
 		// Call the original function to get the default movement speed value.

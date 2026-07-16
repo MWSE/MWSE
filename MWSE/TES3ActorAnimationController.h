@@ -89,6 +89,12 @@ namespace TES3 {
 		float calculateMovementSpeed();
 		float calculateCreatureMovementSpeed();
 		float calculateAttackSwing();
+		void update(float deltaTime);
+		void swingAnimationStateMachine();
+		void castAnimationStateMachine();
+		void selectActorAnim();
+		void actionDataStateMachine();
+		void movementPhysics();
 
 		float getOpacity() const;
 		void setOpacity(float value);

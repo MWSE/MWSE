@@ -2787,6 +2787,11 @@ namespace mwse::patch {
 		// Patch: Fall back to reference rotation values when initializing animation controllers without a scene node.
 		genCallEnforced(0x521773, 0x53DE70, reinterpret_cast<DWORD>(PatchSetAnimControllerMobile));
 
+		// Patch: Stop updating an actor animation controller if its mobile is detached during a state-machine update.
+		auto ActorAnimationController_update = &TES3::ActorAnimationController::update;
+		overrideVirtualTableEnforced(TES3::VirtualTableAddress::ActorAnimController, offsetof(TES3::ActorAnimationController_VirtualTable, update), 0x53E070, *reinterpret_cast<DWORD*>(&ActorAnimationController_update));
+		genCallEnforced(0x543A2B, 0x53E070, *reinterpret_cast<DWORD*>(&ActorAnimationController_update));
+
 		// Provide lua stack traces with invalid UI access.
 		genCallEnforced(0x581484, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
 		genCallEnforced(0x582DFA, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
