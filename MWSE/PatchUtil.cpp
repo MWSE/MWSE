@@ -3157,6 +3157,49 @@ namespace mwse::patch {
 
 	}
 
+	// The engine's error box (0x477400) runs a modal message pump that calls renderNextFrame; for a
+	// dialogue result that re-serves the failing result and re-enters before the box is dismissed,
+	// recursing until stack overflow. Suppress re-entrant boxes; the first still shows and logs.
+	// The pump can re-enter once per rendered frame, so log the suppression once per shown box.
+	static int sScriptErrorBoxDepth = 0;
+	static bool sScriptErrorBoxSuppressionLogged = false;
+	static void __cdecl PatchGuardScriptErrorBox(const char* message) {
+		if (sScriptErrorBoxDepth > 0) {
+			if (!sScriptErrorBoxSuppressionLogged) {
+				sScriptErrorBoxSuppressionLogged = true;
+				log::getLog() << "[MWSE] Suppressed re-entrant script error dialog: " << message << std::endl;
+			}
+			return;
+		}
+		++sScriptErrorBoxDepth;
+		sScriptErrorBoxSuppressionLogged = false;
+		tes3::logAndShowError("%s", message);
+		--sScriptErrorBoxDepth;
+	}
+
+	static void __cdecl LogSkippedMissingTopic(const char* scriptName, const char* topicName, int line) {
+		log::getLog() << "[MWSE] Script '" << scriptName << "': skipped AddTopic for missing dialogue topic '" << topicName << "' on line " << line << "." << std::endl;
+	}
+
+	// Jump target for the AddTopic missing-topic miss block (0x4F9075). At that point ebp is the
+	// ScriptCompiler: [ebp+0Ch] script/compiler name, [ebp+26Ch] parsed topic name, [ebp+50h] line.
+	// Every register is dead at the return-true cleanup tail (0x4FBAFF), which restores from the
+	// stack, so only esp must be preserved.
+	__declspec(naked) static void PatchSkipMissingTopic() {
+		__asm {
+			mov eax, [ebp + 0x50] // line
+			push eax
+			lea eax, [ebp + 0x26C] // topic name
+			push eax
+			lea eax, [ebp + 0xC] // script name
+			push eax
+			call LogSkippedMissingTopic
+			add esp, 0xC
+			mov eax, 0x4FBAFF // compileOperation return-true cleanup tail
+			jmp eax
+		}
+	}
+
 	void installPostLuaPatches() {
 		using se::memory::writeByteUnprotected;
 		using se::memory::genCallUnprotected;
@@ -3208,6 +3251,30 @@ namespace mwse::patch {
 			se::memory::writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
 			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
+		}
+
+		if (Configuration::TolerateBrokenDialogueScripts) {
+			// Guard the script compile-error box against the re-entrant stack-overflow crash.
+			genCallEnforced(0x4F7332, 0x477400, reinterpret_cast<DWORD>(&PatchGuardScriptErrorBox));
+
+			// AddTopic opcode family (0x1022 / 0x4130 / 0x4301): on a missing topic, getDialogue
+			// returns null and compileOperation (0x4F73E0) aborts the whole compiled result. These
+			// opcodes take one argument, so at the 0x4F9075 miss block nothing has been emitted and
+			// the statement is fully parsed; route to PatchSkipMissingTopic, which logs the skip and
+			// continues at the return-true cleanup tail to omit only that opcode and keep compiling.
+			// Signature-guarded. Not applied to the Journal miss (two-argument; a bare skip would
+			// desync the parser).
+			const auto* missBlock = reinterpret_cast<const unsigned char*>(0x4F9075);
+			const bool signatureMatches =
+				missBlock[0] == 0x8B && missBlock[1] == 0x45 && missBlock[2] == 0x50 &&  // mov eax, [ebp+50h]
+				missBlock[9] == 0x68 &&                                                  // push imm32
+				*reinterpret_cast<const DWORD*>(0x4F907F) == 0x7ADF64;                   // "Dialogue topic %s was not found"
+			if (signatureMatches) {
+				se::memory::genJumpUnprotected(0x4F9075, reinterpret_cast<DWORD>(&PatchSkipMissingTopic));
+			}
+			else {
+				log::getLog() << "[MWSE] TolerateBrokenDialogueScripts: compiler miss-block signature mismatch; opcode-skip not applied." << std::endl;
+			}
 		}
 	}
 
