@@ -6,6 +6,7 @@
 --- A sound object created in the TES3 CS.
 --- @class tes3sound : tes3baseObject
 --- @field filename string *Read-only*. Path to the sound file.
+--- @field frequency number|nil The sound the underlying sound buffer uses. This is typically changed to alter sounds underwater.
 --- @field maxDistance number The maximum distance the sound will be played at. Defaults to `0`. If both this and minDistance are `0`, the values are ignored.
 --- @field minDistance number The minimum distance the sound will be played at. Defaults to `0`.
 --- @field volume number Direct access to sound's volume.

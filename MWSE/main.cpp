@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "MgeTes3Machine.h"
 #include "MGEApi.h"
+#include "MWSEInterface.h"
 
 #include "TES3Util.h"
 #include "CodePatchUtil.h"
@@ -16,6 +17,13 @@
 #include "TES3Game.h"
 
 TES3MACHINE* mge_virtual_machine = NULL;
+
+extern "C" {
+	__declspec(dllexport) bool MGEInterface(mge::MGEAPI*);
+	__declspec(dllexport) TES3MACHINE* MWSEGetVM();
+	__declspec(dllexport) bool MWSEAddInstruction(OPCODE op, INSTRUCTION* ins);
+	__declspec(dllexport) mwse::MWSEAPI* MWSEGetInterface(int version);
+}
 
 const auto TES3_Game_ctor = reinterpret_cast<TES3::Game * (__thiscall*)(TES3::Game*)>(0x417280);
 TES3::Game* __fastcall OnGameStructCreated(TES3::Game* game) {
@@ -196,14 +204,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 	return TRUE; // Successful DLL_PROCESS_ATTACH.
 }
 
-// MGE XE exports
-extern "C"
-{
-	__declspec(dllexport) bool MGEInterface(mge::MGEAPI*);
-	__declspec(dllexport) TES3MACHINE* MWSEGetVM();
-	__declspec(dllexport) bool MWSEAddInstruction(OPCODE op, INSTRUCTION* ins);
-}
-
 bool MGEInterface(mge::MGEAPI* api) {
 	int version = api->getAPIVersion();
 	if (version >= 1) {
@@ -213,6 +213,10 @@ bool MGEInterface(mge::MGEAPI* api) {
 		return true;
 	}
 	return false;
+}
+
+mwse::MWSEAPI* MWSEGetInterface(int version) {
+	return mwse::getInterface(version);
 }
 
 TES3MACHINE* MWSEGetVM()

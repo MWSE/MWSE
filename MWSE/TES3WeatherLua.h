@@ -28,6 +28,7 @@ namespace mwse::lua {
 		usertypeDefinition["landFogDayDepth"] = &TES3::Weather::landFogDayDepth;
 		usertypeDefinition["landFogNightDepth"] = &TES3::Weather::landFogNightDepth;
 		usertypeDefinition["name"] = sol::readonly_property(&TES3::Weather::getName);
+		usertypeDefinition["relevance"] = sol::readonly_property(&TES3::Weather::getRelevance);
 		usertypeDefinition["skyDayColor"] = &TES3::Weather::skyDayCol;
 		usertypeDefinition["skyNightColor"] = &TES3::Weather::skyNightCol;
 		usertypeDefinition["skySunriseColor"] = &TES3::Weather::skySunriseCol;
@@ -37,13 +38,24 @@ namespace mwse::lua {
 		usertypeDefinition["sunNightColor"] = &TES3::Weather::sunNightCol;
 		usertypeDefinition["sunSunriseColor"] = &TES3::Weather::sunSunriseCol;
 		usertypeDefinition["sunSunsetColor"] = &TES3::Weather::sunSunsetCol;
+		usertypeDefinition["supportsParticleLerp"] = sol::readonly_property(&TES3::Weather::supportsParticleLerp);
 		usertypeDefinition["transitionDelta"] = &TES3::Weather::transitionDelta;
 		usertypeDefinition["underwaterSoundState"] = &TES3::Weather::underwaterSoundState;
+		usertypeDefinition["windJitterScalar"] = sol::readonly_property(&TES3::Weather::getWindJitter);
 		usertypeDefinition["windSpeed"] = &TES3::Weather::windSpeed;
 
 		// Binding for IDs and paths.
 		usertypeDefinition["ambientLoopSoundId"] = sol::property(&TES3::Weather::getAmbientLoopSoundID, &TES3::Weather::setAmbientLoopSoundID);
 		usertypeDefinition["cloudTexture"] = sol::property(&TES3::Weather::getCloudTexturePath, &TES3::Weather::setCloudTexturePath);
+
+		// Basic function binding.
+		usertypeDefinition["getPrecipitationBlend"] = &TES3::Weather::getPrecipitationBlend;
+		usertypeDefinition["playSound"] = &TES3::Weather::playSound;
+		usertypeDefinition["updateAmbientSound"] = &TES3::Weather::updateAmbientSound_lua;
+		usertypeDefinition["updateCloudWind"] = &TES3::Weather::updateCloudWind;
+		usertypeDefinition["updateLoopSound"] = &TES3::Weather::updateLoopSound_lua;
+		usertypeDefinition["updatePrecipitationParticles"] = &TES3::Weather::updatePrecipitationParticles;
+		usertypeDefinition["updateSound"] = &TES3::Weather::updateSound;
 
 		// Support for checking managed lua objects.
 		usertypeDefinition["isValid"] = &isUserdataPointerValid;

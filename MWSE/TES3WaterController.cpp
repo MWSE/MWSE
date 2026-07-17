@@ -8,6 +8,11 @@ namespace TES3 {
 		TES3_WaterController_createRipple(this, x, y, scale, speed, active);
 	}
 
+	const auto TES3_WaterController_setRainFrequency = reinterpret_cast<void(__thiscall*)(WaterController*, float)>(0x51DAB0);
+	void WaterController::setRainFrequency(float frequency) {
+		TES3_WaterController_setRainFrequency(this, frequency);
+	}
+
 	void WaterController::createRipple_lua(sol::optional<sol::table> params) {
 		using namespace mwse::lua;
 
@@ -22,6 +27,11 @@ namespace TES3 {
 		const auto active = getOptionalParam(params, "active", true);
 
 		createRipple(x.value(), y.value(), scale, speed, active);
+	}
+
+	const auto TES3_WaterController_clearWaterReflectionFlag = reinterpret_cast<void(__thiscall*)(WaterController*)>(0x51E150);
+	void WaterController::clearWaterReflectionFlag() {
+		TES3_WaterController_clearWaterReflectionFlag(this);
 	}
 
 	std::reference_wrapper<float[3]> WaterController::getRippleAlphas() {
