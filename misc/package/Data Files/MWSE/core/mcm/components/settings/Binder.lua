@@ -10,6 +10,7 @@ local Parent = require("mcm.components.settings.Button")
 
 --- @class mwseMCMBinder
 local Binder = Parent:new()
+Binder.__index = Binder
 Binder.allowCombinations = true
 
 local popupId = tes3ui.registerID("KeyMouseBinderPopup")

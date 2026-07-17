@@ -6,6 +6,7 @@ local Parent = require("mcm.components.pages.SideBarPage")
 
 --- @class mwseMCMFilterPage
 local FilterPage = Parent:new()
+FilterPage.__index = FilterPage
 FilterPage.placeholderSearchText = mwse.mcm.i18n("Search...")
 
 --- Recursively makes a a category's components visible.

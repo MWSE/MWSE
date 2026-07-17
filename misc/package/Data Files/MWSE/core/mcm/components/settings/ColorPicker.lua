@@ -13,6 +13,7 @@ local Parent = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMColorPicker
 local ColorPicker = Parent:new()
+ColorPicker.__index = ColorPicker
 ColorPicker.initialColor = { r = 1.0, g = 1.0, b = 1.0 }
 ColorPicker.initialAlpha = 1.0
 
