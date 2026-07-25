@@ -2064,7 +2064,68 @@ namespace mwse::patch {
 		}
 	}
 
-	static TES3::Object* __fastcall PatchEntityListInsertAfter(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* insertAfter, TES3::Object* item) {
+	using ObjectList = se::LinkedObjectList<TES3::Object>;
+
+	enum class ObjectListIdentity {
+		Global,  // The captured global object list.
+		Other,   // A different list while the global list is known.
+		Unknown, // The global list has not been captured or has been destroyed.
+	};
+
+	static constexpr int SoundGeneratorCount = 8;
+
+	struct KeyframeSoundGeneratorCache {
+		bool resolved = false;
+		TES3::Sound* sounds[SoundGeneratorCount] = {};
+		KeyframeSoundGeneratorCache* previous = nullptr;
+	};
+
+	static thread_local KeyframeSoundGeneratorCache* tlsSoundGeneratorCache = nullptr;
+
+	class KeyframeSoundGeneratorCacheScope {
+	public:
+		KeyframeSoundGeneratorCacheScope() {
+			cache.previous = tlsSoundGeneratorCache;
+			tlsSoundGeneratorCache = &cache;
+		}
+
+		~KeyframeSoundGeneratorCacheScope() {
+			tlsSoundGeneratorCache = cache.previous;
+		}
+
+	private:
+		KeyframeSoundGeneratorCache cache;
+	};
+
+	static std::mutex globalObjectListMutex;
+	static std::atomic<ObjectList*> capturedGlobalObjectList{ nullptr };
+	static std::atomic<bool> globalObjectListPatchEnabled{ false };
+
+	static ObjectListIdentity classifyObjectList(ObjectList* list) {
+		const auto capturedList = capturedGlobalObjectList.load(std::memory_order_acquire);
+		if (!capturedList) {
+			return ObjectListIdentity::Unknown;
+		}
+		return list == capturedList ? ObjectListIdentity::Global : ObjectListIdentity::Other;
+	}
+
+	static std::unique_lock<std::mutex> lockObjectListForMutation(ObjectListIdentity identity) {
+		std::unique_lock lock(globalObjectListMutex, std::defer_lock);
+		// Unknown lists are conservatively guarded during startup and teardown.
+		if (identity != ObjectListIdentity::Other) {
+			lock.lock();
+		}
+		return lock;
+	}
+
+	const auto TES3_BaseObjectList_ctor = reinterpret_cast<ObjectList * (__thiscall*)(ObjectList*, int)>(0x4F1980);
+	static ObjectList* __fastcall PatchGlobalObjectListCtor(ObjectList* self, DWORD, int ownsObjects) {
+		const auto result = TES3_BaseObjectList_ctor(self, ownsObjects);
+		capturedGlobalObjectList.store(result, std::memory_order_release);
+		return result;
+	}
+
+	static TES3::Object* __fastcall PatchObjectListInsertAfter(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* insertAfter, TES3::Object* item) {
 		item->previousInCollection = insertAfter;
 		if (insertAfter) {
 			item->nextInCollection = insertAfter->nextInCollection;
@@ -2094,8 +2155,25 @@ namespace mwse::patch {
 		return item;
 	}
 
-	static void __fastcall PatchEntityListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
-		if (item->objectType == TES3::ObjectType::Reference && isCellReferenceList(self)) {
+	static void __fastcall PatchObjectListRemove(se::LinkedObjectList<TES3::Object>* self, DWORD, TES3::Object* item) {
+		const auto identity = globalObjectListPatchEnabled.load(std::memory_order_acquire)
+			? classifyObjectList(self)
+			: ObjectListIdentity::Other;
+
+		auto objectListLock = lockObjectListForMutation(identity);
+
+		const auto cellReferenceList =
+			identity != ObjectListIdentity::Global &&
+			item->objectType == TES3::ObjectType::Reference &&
+			isCellReferenceList(self);
+
+		const auto ownsItem = item->owningCollection.asGenericList == self;
+		if (!ownsItem && identity == ObjectListIdentity::Global) {
+			// Detached global objects must not unlink themselves during destruction.
+			return;
+		}
+
+		if (cellReferenceList) {
 			ReferenceTracker::untrackReferenceForLookup(static_cast<TES3::Reference*>(item));
 		}
 
@@ -2114,6 +2192,130 @@ namespace mwse::patch {
 
 		item->owningCollection.asReferenceList = nullptr;
 		--self->count;
+	}
+
+	static TES3::Object* __fastcall PatchObjectListInsertAtEnd(ObjectList* self, DWORD, TES3::Object* item) {
+		const auto identity = classifyObjectList(self);
+		auto objectListLock = lockObjectListForMutation(identity);
+		return PatchObjectListInsertAfter(self, 0, self->tail, item);
+	}
+
+	static void clearGlobalObjectList(ObjectList* self, bool resetCapturedList) {
+		TES3::Object* detachedTail = nullptr;
+		{
+			std::lock_guard objectListLock(globalObjectListMutex);
+			detachedTail = self->tail;
+			for (auto object = detachedTail; object; object = object->previousInCollection) {
+				object->owningCollection.asGenericList = nullptr;
+			}
+			self->count = 0;
+			self->head = nullptr;
+			self->tail = nullptr;
+		}
+
+		// Object destruction can enter Lua and ReferenceTracker, so it must happen unlocked.
+		while (detachedTail) {
+			const auto previous = detachedTail->previousInCollection;
+			detachedTail->vTable.base->deleting_dtor(detachedTail, 1);
+			detachedTail = previous;
+		}
+
+		if (resetCapturedList) {
+			capturedGlobalObjectList.store(nullptr, std::memory_order_release);
+		}
+	}
+
+	static void __fastcall PatchGlobalObjectListClearForDestructor(ObjectList* self, DWORD) {
+		clearGlobalObjectList(self, true);
+	}
+
+	static void __fastcall PatchGlobalObjectListClearForReuse(ObjectList* self, DWORD) {
+		clearGlobalObjectList(self, false);
+	}
+
+	TES3::Sound* __cdecl PatchResolveSoundGeneratorForKeyframe(const char* filePath, int index) {
+		if (index < 0 || index >= SoundGeneratorCount) {
+			return nullptr;
+		}
+
+		const auto cache = tlsSoundGeneratorCache;
+		if (cache && cache->resolved) {
+			return cache->sounds[index];
+		}
+
+		TES3::Sound* resolvedSounds[SoundGeneratorCount] = {};
+		{
+			// Keep the matched creature protected until its sound lookup is complete.
+			std::lock_guard objectListLock(globalObjectListMutex);
+			const auto dataHandler = TES3::DataHandler::get();
+			const auto nonDynamicData = dataHandler ? dataHandler->nonDynamicData : nullptr;
+			const auto list = nonDynamicData ? nonDynamicData->list : nullptr;
+			if (list) {
+				TES3::Creature* creature = nullptr;
+				for (auto object = list->head; object; object = object->nextInCollection) {
+					if (object->objectType != TES3::ObjectType::Creature) {
+						continue;
+					}
+
+					const auto modelPath = object->getModelPath();
+					if (modelPath && filePath && _stricmp(modelPath, filePath) == 0) {
+						creature = static_cast<TES3::Creature*>(object);
+						break;
+					}
+				}
+
+				if (!cache) {
+					return nonDynamicData->getSoundGeneratorSound(creature, index);
+				}
+
+				// Cache every slot while the protected creature is available.
+				for (int soundIndex = 0; soundIndex < SoundGeneratorCount; ++soundIndex) {
+					resolvedSounds[soundIndex] = nonDynamicData->getSoundGeneratorSound(creature, soundIndex);
+				}
+			}
+			else if (!cache) {
+				return nullptr;
+			}
+		}
+
+		for (int soundIndex = 0; soundIndex < SoundGeneratorCount; ++soundIndex) {
+			cache->sounds[soundIndex] = resolvedSounds[soundIndex];
+		}
+		cache->resolved = true;
+		return cache->sounds[index];
+	}
+
+	template <size_t Size>
+	static bool matchesPatchBytes(DWORD address, const BYTE (&expected)[Size]) {
+		return std::memcmp(reinterpret_cast<const void*>(address), expected, Size) == 0;
+	}
+
+	// Reader and writer hooks must be installed together, so validate every patch site first.
+	static bool validateObjectListConcurrencyPatchSites() {
+		static constexpr BYTE globalListCtorCall[] = { 0xE8, 0x2C, 0x9F, 0x03, 0x00 };
+		static constexpr BYTE destructorClearCall[] = { 0xE8, 0x3E, 0x9A, 0x03, 0x00 };
+		static constexpr BYTE reusableClearCall[] = { 0xE8, 0xBF, 0x92, 0x03, 0x00 };
+		static constexpr BYTE insertAtEnd[] = {
+			0x8B, 0x44, 0x24, 0x04, 0x8B, 0x51, 0x08, 0x50, 0x52,
+			0xE8, 0xA2, 0xFF, 0xFF, 0xFF, 0xC2, 0x04, 0x00,
+		};
+		static constexpr BYTE resolveSoundGen[] = {
+			0x8B, 0x15, 0xE0, 0x67, 0x7C, 0x00, 0x8B, 0x1A, 0x8B, 0x4B, 0x0C, 0xE8, 0xCC, 0xE2, 0x02, 0x00,
+			0x8B, 0xF0, 0x85, 0xF6, 0x74, 0x40, 0x8D, 0x4E, 0x04, 0xE8, 0xBE, 0xB0, 0x02, 0x00, 0x3D, 0x43,
+			0x52, 0x45, 0x41, 0x75, 0x24, 0x8B, 0x06, 0x8B, 0xCE, 0xFF, 0x50, 0x48, 0x85, 0xC0, 0x74, 0x19,
+			0x8B, 0x4D, 0x0C, 0x8B, 0x16, 0x51, 0x8B, 0xCE, 0xFF, 0x52, 0x48, 0x50, 0xFF, 0x15, 0xF0, 0x62,
+			0x74, 0x00, 0x83, 0xC4, 0x08, 0x85, 0xC0, 0x74, 0x12, 0x8B, 0xCE, 0xE8, 0x6C, 0x30, 0x1F, 0x00,
+			0x8B, 0xF0, 0x85, 0xF6, 0x75, 0xC0, 0x57, 0x6A, 0x00, 0xEB, 0x02, 0x57, 0x56, 0x8B, 0xCB, 0xE8,
+			0x28, 0x46, 0x00, 0x00,
+		};
+		static_assert(sizeof(insertAtEnd) == 0x11);
+		static_assert(sizeof(resolveSoundGen) == 0x64);
+
+		return matchesPatchBytes(0x4B7A4F, globalListCtorCall)
+			&& matchesPatchBytes(0x4B801D, destructorClearCall)
+			&& matchesPatchBytes(0x4B879C, reusableClearCall)
+			&& matchesPatchBytes(0x4F1A40, insertAtEnd)
+			&& matchesPatchBytes(0x4C37D4, resolveSoundGen);
 	}
 
 	const auto TES3_Cell_static_loadReference = reinterpret_cast<bool(__cdecl*)(TES3::Reference*, TES3::GameFile*, bool, bool, TES3::Cell*)>(0x4DE380);
@@ -2382,8 +2584,8 @@ namespace mwse::patch {
 		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
 
 		// Patch: Implement map-based lookup of references.
-		genJumpUnprotected(0x4F19F0, reinterpret_cast<DWORD>(PatchEntityListInsertAfter), 0x5);
-		genJumpUnprotected(0x4F19A0, reinterpret_cast<DWORD>(PatchEntityListRemove), 0x5);
+		genJumpUnprotected(0x4F19F0, reinterpret_cast<DWORD>(PatchObjectListInsertAfter), 0x5);
+		genJumpUnprotected(0x4F19A0, reinterpret_cast<DWORD>(PatchObjectListRemove), 0x5);
 		genCallEnforced(0x4A43A5, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
 		genCallEnforced(0x4F8FBB, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
 		genCallEnforced(0x4FA93D, 0x4B8F50, reinterpret_cast<DWORD>(PatchRecordsHandlerFindFirstInstanceOfObjectId));
@@ -2410,6 +2612,32 @@ namespace mwse::patch {
 		genCallEnforced(0x4DDBD3, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 		genCallEnforced(0x4DE2B4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 		genCallEnforced(0x4E0D04, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
+
+		// Patch: Synchronize global object-list access during background keyframe loading.
+		if (validateObjectListConcurrencyPatchSites()) {
+			genCallEnforced(0x4B7A4F, 0x4F1980, reinterpret_cast<DWORD>(PatchGlobalObjectListCtor));
+			genJumpUnprotected(0x4F1A40, reinterpret_cast<DWORD>(PatchObjectListInsertAtEnd), 0x11);
+			genCallEnforced(0x4B801D, 0x4F1A60, reinterpret_cast<DWORD>(PatchGlobalObjectListClearForDestructor));
+			genCallEnforced(0x4B879C, 0x4F1A60, reinterpret_cast<DWORD>(PatchGlobalObjectListClearForReuse));
+
+			// Replace the vanilla traversal with a cdecl resolver call, leaving the Sound* in EAX.
+			static constexpr BYTE resolveSoundGenPatch[] = {
+				0x57,                         // push edi
+				0xFF, 0x75, 0x0C,             // push dword ptr [ebp+0Ch]
+				0x90, 0x90, 0x90, 0x90, 0x90, // replaced with call
+				0x83, 0xC4, 0x08,             // add esp, 8
+			};
+			genNOPUnprotected(0x4C37D4, 0x64);
+			writeBytesUnprotected(0x4C37D4, resolveSoundGenPatch, sizeof(resolveSoundGenPatch));
+			genCallUnprotected(0x4C37D8, reinterpret_cast<DWORD>(PatchResolveSoundGeneratorForKeyframe));
+
+			// Direct MWSE calls to ReferenceList::insertAfter are cell-list-only.
+			// Global insertions funnel through the guarded insertAtEnd replacement.
+			globalObjectListPatchEnabled.store(true, std::memory_order_release);
+		}
+		else {
+			mwse::log::getLog() << "[MWSE] Global object-list concurrency patch validation failed." << std::endl;
+		}
 
 		// Patch: Improve performance of script reloading.
 		{
@@ -3403,4 +3631,9 @@ namespace mwse::patch {
 		}
 		return true;
 	}
+}
+
+TES3::KeyframeDefinition* TES3::MeshData::loadKeyframesWithSoundGeneratorCache(const char* path, const char* sequenceName) {
+	mwse::patch::KeyframeSoundGeneratorCacheScope cacheScope;
+	return loadKeyframesUncached(path, sequenceName);
 }

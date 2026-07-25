@@ -42,6 +42,8 @@ namespace TES3 {
 		NI::Node* loadMesh(const char* path);
 		NI::Pointer<NI::Node> loadMeshUncached(const char* path);
 		KeyframeDefinition* loadKeyframes(const char* path, const char* animation);
+		KeyframeDefinition* loadKeyframesWithSoundGeneratorCache(const char* path, const char* animation);
+		KeyframeDefinition* loadKeyframesUncached(const char* path, const char* animation);
 	};
 
 	template <typename OT>
@@ -158,6 +160,7 @@ namespace TES3 {
 		Dialogue* findDialogue(const char*);
 		bool addSound(Sound*);
 		Sound* findSound(const char*);
+		Sound* getSoundGeneratorSound(Actor* actor, int soundGenNoteIndex);
 		Class* findClass(const char*);
 		Race* findRace(const char*);
 		Faction* findFaction(const char*);

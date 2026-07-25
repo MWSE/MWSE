@@ -1,4 +1,5 @@
 #include "TES3DataHandler.h"
+#include "PatchUtil.h"
 
 #include "LuaManager.h"
 #include "LuaUtil.h"
@@ -113,6 +114,10 @@ namespace TES3 {
 	}
 
 	const auto TES3_MeshData_loadKeyframes = reinterpret_cast<KeyframeDefinition * (__thiscall*)(MeshData*, const char*, const char*)>(0x4EE200);
+	KeyframeDefinition* MeshData::loadKeyframesUncached(const char* path, const char* sequenceName) {
+		return TES3_MeshData_loadKeyframes(this, path, sequenceName);
+	}
+
 	KeyframeDefinition* MeshData::loadKeyframes(const char* path, const char* sequenceName) {
 		// Allow changing the desired mesh path.
 		std::string keyframesPath = path;
@@ -130,7 +135,8 @@ namespace TES3 {
 		path = keyframesPath.c_str();
 		sequenceName = sequenceString.c_str();
 
-		auto keyframeDefinition = TES3_MeshData_loadKeyframes(this, path, sequenceName);
+		const auto keyframeDefinition = loadKeyframesWithSoundGeneratorCache(path, sequenceName);
+
 		if (keyframeDefinition && mwse::lua::event::KeyframesLoadedEvent::getEventEnabled()) {
 			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(
 				new mwse::lua::event::KeyframesLoadedEvent(path, sequenceName, keyframeDefinition)
@@ -433,6 +439,11 @@ namespace TES3 {
 	const auto TES3_NonDynamicData_findSound = reinterpret_cast<Sound * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA7A0);
 	Sound* NonDynamicData::findSound(const char* id) {
 		return TES3_NonDynamicData_findSound(this, id);
+	}
+
+	const auto TES3_NonDynamicData_getSoundGeneratorSound = reinterpret_cast<Sound * (__thiscall*)(NonDynamicData*, Actor*, int)>(0x4C7E60);
+	Sound* NonDynamicData::getSoundGeneratorSound(Actor* actor, int soundGenNoteIndex) {
+		return TES3_NonDynamicData_getSoundGeneratorSound(this, actor, soundGenNoteIndex);
 	}
 
 	const auto TES3_NonDynamicData_findClass = reinterpret_cast<Class * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA6B0);
