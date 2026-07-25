@@ -329,7 +329,7 @@ namespace TES3 {
 		case ObjectType::Static:
 			return true;
 		case ObjectType::Light:
-			return !static_cast<const Light*>(this)->getCanCarry();
+			return !static_cast<const Light*>(baseObject)->getCanCarry();
 		}
 		return false;
 	}
