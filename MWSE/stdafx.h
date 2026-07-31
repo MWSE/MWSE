@@ -54,6 +54,9 @@
 #include <fmt/chrono.h>
 #include <fmt/ranges.h>
 
+// 3rd party library: mimalloc
+#include <mimalloc.h>
+
 // DirectInput/Sound requirements.
 #define DIRECTINPUT_VERSION 0x0800
 #include <control.h>

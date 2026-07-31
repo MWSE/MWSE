@@ -1,5 +1,6 @@
 #include "mwAdapter.h"
 #include "Log.h"
+#include "MorrowindMemoryAllocator.h"
 #include "MgeTes3Machine.h"
 #include "MGEApi.h"
 
@@ -62,6 +63,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 
 		// Initialize log file.
 		mwse::log::OpenLog("MWSE.log");
+		if (mwse::memory::installMimalloc()) {
+			mwse::log::getLog() << "mimalloc 3.4.3 installed for Morrowind allocations." << std::endl;
+		}
+		else {
+			mwse::log::getLog() << "Warning: Morrowind allocator imports did not match; mimalloc was not installed." << std::endl;
+		}
 #ifdef APPVEYOR_BUILD_NUMBER
 		mwse::log::getLog() << "Morrowind Script Extender v" << MWSE_VERSION_MAJOR << "." << MWSE_VERSION_MINOR << "." << MWSE_VERSION_PATCH << "-" << APPVEYOR_BUILD_NUMBER << " (built " << __DATE__ << ") hooked." << std::endl;
 #else

@@ -327,6 +327,7 @@
     <ClInclude Include="InstructionInterface.h" />
     <ClInclude Include="InstructionStore.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="MorrowindMemoryAllocator.h" />
     <ClInclude Include="MemAccess.h" />
     <ClInclude Include="MgeInstruction.h" />
     <ClInclude Include="MgeVirtualMachine.h" />
@@ -1037,10 +1038,16 @@
     <ClCompile Include="InstructionStore.cpp" />
     <ClCompile Include="Jump.cpp" />
     <ClCompile Include="Log.cpp" />
+    <ClCompile Include="MorrowindMemoryAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mwAdapter.cpp" />
     <ClCompile Include="mwseString.cpp" />
     <ClCompile Include="Pop.cpp" />
+    <ClCompile Include="..\deps\mimalloc\src\static.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
     <ClCompile Include="Push.cpp" />
     <ClCompile Include="xGetService.cpp" />
     <ClCompile Include="xGetSkill.cpp" />
@@ -1191,13 +1198,13 @@
   </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\mimalloc\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(LuaJitSourceDir);$(SolutionDir)deps\sol\include;$(SolutionDir)deps\DirectX8\include;$(SolutionDir)deps\yaml-cpp\include;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\mimalloc\include;$(ProjectDir);$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
     <LibraryPath>$(OutDir);$(LuaJitSourceDir);$(SolutionDir)deps\yaml-cpp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -1218,7 +1225,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;bcrypt.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -1250,7 +1257,7 @@ copy /y "$(TargetDir)lua51.dll" "$(MorrowindDir)lua51.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;bcrypt.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />

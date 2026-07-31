@@ -219,6 +219,9 @@
     <ClInclude Include="Log.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="MorrowindMemoryAllocator.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="RngUtil.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -1606,6 +1609,12 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MorrowindMemoryAllocator.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\mimalloc\src\static.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VirtualMachine.cpp">
       <Filter>Source Files\ScriptVM</Filter>
