@@ -33,9 +33,6 @@
 namespace TES3::UI {
 	static bool bSuppressHelpMenu = false;
 
-	const DWORD TES3_hook_dispatchMousewheelUp = 0x58F19B;
-	const DWORD TES3_hook_dispatchMousewheelDown = 0x58F1CA;
-
 	using TES3_uiMainRoot = se::memory::ExternalGlobal<Element*, 0x7D1C28>;
 	using TES3_uiHelpRoot = se::memory::ExternalGlobal<Element*, 0x7D1C74>;
 	using TES3_ui_captureMouseDrag = se::memory::ExternalGlobal<bool, 0x7D207D>;
@@ -640,32 +637,6 @@ namespace TES3::UI {
 	// UI framework improvement hooks
 	//
 
-	__declspec(naked) void patchDispatchMousewheelUp() {
-		__asm {
-			mov eax, [esi + 4]
-			mov edx, [esi + 8]
-			push ecx
-			push edx
-			push eax
-			push 0xFFFF8036
-			jmp $ + 0x37C
-		}
-	}
-	const size_t patchDispatchMousewheelUp_size = 0x14;
-
-	__declspec(naked) void patchDispatchMousewheelDown() {
-		__asm {
-			mov eax, [esi + 4]
-			mov edx, [esi + 8]
-			push ecx
-			push edx
-			push eax
-			push 0xFFFF8037
-			jmp $ + 0x34D
-		}
-	}
-	const size_t patchDispatchMousewheelDown_size = 0x14;
-
 	const auto TES3_ConsoleLogResult = reinterpret_cast<void(__cdecl*)(const char*, bool)>(0x5B2C20);
 	void logToConsole(const char* text, bool isCommand) {
 		TES3_ConsoleLogResult(text, isCommand);
@@ -681,6 +652,11 @@ namespace TES3::UI {
 	const auto TES3_HideCursor = reinterpret_cast<void(__cdecl*)()>(0x5966F0);
 	void hideCursor() {
 		TES3_HideCursor();
+	}
+
+	const auto TES3_ui_clearAndHideHelpMenu = reinterpret_cast<void(__cdecl*)()>(0x595E30);
+	void clearAndHideHelpMenu() {
+		TES3_ui_clearAndHideHelpMenu();
 	}
 
 	const auto TES3_CloseBookMenu = reinterpret_cast<void(__cdecl*)()>(0x5AC7F0);
@@ -1480,10 +1456,21 @@ namespace TES3::UI {
 	}
 
 	void hook() {
-		// Patch mousewheel event dispatch to not redirect to the top-level element,
-		// allowing mousewheel to apply to more than the first scrollpane in a menu.
-		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelUp, (BYTE*)&patchDispatchMousewheelUp, patchDispatchMousewheelUp_size);
-		se::memory::writePatchCodeUnprotected(TES3_hook_dispatchMousewheelDown, (BYTE*)&patchDispatchMousewheelDown, patchDispatchMousewheelDown_size);
+		// Replace the menu event dispatcher with a re-entrancy-safe reimplementation, fixing a
+		// stack-overflow crash when a nested event pump (e.g. the modal script-error box) runs
+		// during event callbacks. Also absorbs the old mousewheel dispatch patch, still allowing
+		// mousewheel to apply to more than the first scrollpane in a menu.
+		auto dispatchEvents = &MenuInputController::dispatchEvents;
+		se::memory::genCallEnforced(0x58E1F6, 0x58F060, *reinterpret_cast<DWORD*>(&dispatchEvents));
+		se::memory::genCallEnforced(0x58EC49, 0x58F060, *reinterpret_cast<DWORD*>(&dispatchEvents));
+		se::memory::genCallEnforced(0x595958, 0x58F060, *reinterpret_cast<DWORD*>(&dispatchEvents));
+
+		// Route element-reference invalidation through a wrapper that also scrubs events the above
+		// replacement has copied out of the queue and is mid-dispatch on.
+		auto invalidateReferences = &MenuInputController::patchInvalidateElementReferences;
+		se::memory::genCallEnforced(0x578502, 0x58EE90, *reinterpret_cast<DWORD*>(&invalidateReferences));
+		se::memory::genCallEnforced(0x5BECA9, 0x58EE90, *reinterpret_cast<DWORD*>(&invalidateReferences));
+		se::memory::genCallEnforced(0x5BECC5, 0x58EE90, *reinterpret_cast<DWORD*>(&invalidateReferences));
 
 		// Patch UI ID reverse lookups to avoid repeatedly scanning the property map.
 		patchUIIDNameLookups();

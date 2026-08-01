@@ -241,6 +241,16 @@ namespace TES3::UI {
 		return TES3_ui_getTopLevelParent(this);
 	}
 
+	const auto TES3_ui_dispatchInputEvent = reinterpret_cast<void(__thiscall*)(Element*, Property, int, int, Element*)>(0x583460);
+	void Element::dispatchInputEvent(Property eventId, int data0, int data1, Element* source) {
+		TES3_ui_dispatchInputEvent(this, eventId, data0, data1, source);
+	}
+
+	const auto TES3_ui_checkMouseEventInElement = reinterpret_cast<bool(__thiscall*)(Element*, int, int)>(0x587730);
+	bool Element::checkMouseEventInElement(int mouseX, int mouseY) {
+		return TES3_ui_checkMouseEventInElement(this, mouseX, mouseY);
+	}
+
 	Element* Element::performLayout(bool bUpdateTimestamp) {
 		return TES3_ui_performLayout(this, bUpdateTimestamp);
 	}

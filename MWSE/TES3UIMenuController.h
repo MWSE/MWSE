@@ -8,6 +8,19 @@
 namespace TES3::UI {
 	struct MenuInputController {
 		struct Event {
+			enum Type : int {
+				None = 0,
+				MouseRelease = 1,
+				MousePress = 2,
+				MouseDragMove = 5,
+				MouseEnter = 6,
+				MouseLeave = 7,
+				ScrollUp = 0xE,
+				ScrollDown = 0xF,
+				KeyPress = 0x10,
+				KeyEnter = 0x11,
+			};
+
 			int type;
 			int data0;
 			int data1;
@@ -15,6 +28,16 @@ namespace TES3::UI {
 
 			Event() = delete;
 			~Event() = delete;
+		};
+
+		// An event that dispatchEvents has copied out of the queue and is dispatching. Unlike
+		// Event, this is an MWSE-side type; the engine never sees it.
+		struct DispatchingEvent {
+			int type;
+			int data0;
+			int data1;
+			Element* element;
+			DispatchingEvent* previous;
 		};
 
 		NI::Pick pick; // 0x0
@@ -60,6 +83,18 @@ namespace TES3::UI {
 		//
 
 		void flushBufferedTextEvents();
+		Element* checkMouseEventInChildren(Element* element, int mouseX, int mouseY);
+
+		//
+		// Patch methods
+		//
+
+		// Re-entrancy-safe replacement for the engine's event dispatch (0x58F060).
+		void dispatchEvents();
+
+		// Wrapper for the engine's element-reference invalidation (0x58EE90) that also scrubs
+		// events dispatchEvents has copied out of the queue and is mid-dispatch on.
+		void patchInvalidateElementReferences(Element* element);
 
 		//
 		// Custom functions.
@@ -67,7 +102,15 @@ namespace TES3::UI {
 
 		static Element* previousTextInputFocus;
 
+		// Events currently being dispatched, innermost last. Dispatch can re-enter when an event
+		// callback runs a modal event pump, so this is a stack, linked through the callers' frames.
+		static DispatchingEvent* lastDispatchingEvent;
+
 		void updateObjectTooltip();
+
+		void dispatchMouseReleaseEvent(DispatchingEvent& event, Element* element, bool visible, bool isSameSourceAsLastButtonPress);
+		static bool isDispatchTargetVisible(const Element* element);
+		static int truncateCursorCoordinate(float value);
 	};
 	static_assert(sizeof(MenuInputController) == 0xAC, "TES3::UI::MenuInputController failed size validation");
 	static_assert(sizeof(MenuInputController::Event) == 0x10, "TES3::UI::MenuInputController::Event failed size validation");
