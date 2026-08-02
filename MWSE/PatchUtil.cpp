@@ -1525,6 +1525,17 @@ namespace mwse::patch {
 	}
 	const size_t PatchSoulTrappedCreatureNotFound3_size = 0x5;
 
+	// Prevent crashes when the actor holding a casting item is no longer present.
+	// The engine computes &actor->inventory without checking that the actor from the save's
+	// target reference id resolved. Returning no result makes loading take the normal
+	// invalid-spell path ("Failed to load spell ...") instead of crashing.
+	static TES3::ItemStack* __fastcall PatchFindRestoredCastingItemEntry(TES3::Inventory* inventory, DWORD _EDX_, TES3::Object* item) {
+		if (reinterpret_cast<DWORD>(inventory) == offsetof(TES3::Actor, inventory)) {
+			return nullptr;
+		}
+		return inventory->findItemStack(item);
+	}
+
 	//
 	// Patch: Prevent crash with magic effects on invalid targets.
 	//
@@ -2849,6 +2860,7 @@ namespace mwse::patch {
 		writePatchCodeUnprotected(0x49DEE1, (BYTE*)&PatchSoulTrappedCreatureNotFound1, PatchSoulTrappedCreatureNotFound1_size);
 		writePatchCodeUnprotected(0x4A4BEC, (BYTE*)&PatchSoulTrappedCreatureNotFound2, PatchSoulTrappedCreatureNotFound2_size);
 		writePatchCodeUnprotected(0x4D8DD7, (BYTE*)&PatchSoulTrappedCreatureNotFound3, PatchSoulTrappedCreatureNotFound3_size);
+		genCallEnforced(0x51428D, 0x49A6C0, reinterpret_cast<DWORD>(PatchFindRestoredCastingItemEntry));
 
 		// Patch: Prevent crash with magic effects on invalid targets.
 		WritePatchMagicEffect_RequireMobile<0x45F170>(TES3::EffectID::WaterBreathing);
