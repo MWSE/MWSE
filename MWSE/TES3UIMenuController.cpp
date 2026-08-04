@@ -68,13 +68,18 @@ namespace TES3::UI {
 			return;
 		}
 
+		// Commit the released state before any callback runs, for the same reason dispatchEvents
+		// commits the queue slot: a nested event pump (e.g. the script error box) re-synthesizes a
+		// mouse release from the still-latched input edge, and it must not count as another click.
+		// The engine version clears this only after its callbacks return.
+		isMouseButtonHeldDown = false;
+
 		if (isSameSourceAsLastButtonPress && visible && !TES3_ui_captureMouseDrag::get()) {
 			// Plain click on the pressed element.
 			element->dispatchInputEvent(Property::event_mouse_click, event.data0, event.data1, element);
 			if (isDispatchTargetVisible(event.element)) {
 				event.element->dispatchInputEvent(Property::event_mouse_over, event.data0, event.data1, event.element);
 			}
-			isMouseButtonHeldDown = false;
 			return;
 		}
 
@@ -118,14 +123,12 @@ namespace TES3::UI {
 				}
 				TES3_ui_captureMouseDrag::set(false);
 			}
-			isMouseButtonHeldDown = false;
 			return;
 		}
 
 		// Released over a different element than the one pressed.
 		const auto pressSource = buttonPressEventSource;
 		if (!isDispatchTargetVisible(pressSource)) {
-			isMouseButtonHeldDown = false;
 			return;
 		}
 		pressSource->dispatchInputEvent(Property::event_mouse_release, event.data0, event.data1, pressSource);
@@ -136,7 +139,6 @@ namespace TES3::UI {
 		if (isDispatchTargetVisible(event.element)) {
 			event.element->dispatchInputEvent(Property::event_mouse_over, event.data0, event.data1, event.element);
 		}
-		isMouseButtonHeldDown = false;
 	}
 
 	void MenuInputController::dispatchEvents() {
