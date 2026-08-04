@@ -37,6 +37,17 @@ function Category:new(data)
 	--- @diagnostic disable-next-line: param-type-mismatch
 	local t = Parent:new(data) --[[@as mwseMCMCategory]]
 	t.components = t.components or {}
+	for _, component in ipairs(t.components) do
+		component.parentComponent = t
+		if component.class and not component.componentType then
+			local componentClass = utils.getComponentClass(component.class)
+			if not componentClass then
+				error(string.format("Could not intialize component %q", component.label))
+			end
+			component.parentComponent = t
+			component = componentClass:new(component)
+		end
+	end
 
 	setmetatable(t, self)
 	t.__index = self.__index
