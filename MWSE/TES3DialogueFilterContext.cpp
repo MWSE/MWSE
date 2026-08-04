@@ -101,6 +101,7 @@ namespace TES3 {
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -121,6 +122,7 @@ namespace TES3 {
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -141,11 +143,13 @@ namespace TES3 {
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
 		const auto faction = speakerBase->getFaction();
 		if (faction == nullptr) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -160,6 +164,7 @@ namespace TES3 {
 
 		const auto speaker = context->parentContext->speaker;
 		if (speaker->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -268,11 +273,13 @@ namespace TES3 {
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
 		const auto faction = speakerBase->getFaction();
 		if (faction == nullptr) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
@@ -350,11 +357,8 @@ namespace TES3 {
 		}
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
-		if (speakerBase->objectType != ObjectType::NPC) {
-			return;
-		}
 
-		const auto faction = speakerBase->getFaction();
+		const auto faction = speakerBase->objectType != ObjectType::NPC ? nullptr : speakerBase->getFaction();
 		context->compareValue = faction && faction->getPlayerJoined() ? 1.0f : 0.0f;
 		context->compareOperator = DialogueConditionalComparator::Equal;
 	}
@@ -367,6 +371,7 @@ namespace TES3 {
 
 		const auto speakerBase = context->parentContext->speakerBaseActor;
 		if (speakerBase->objectType != ObjectType::NPC) {
+			context->compareValue = 0.0f;
 			return;
 		}
 
