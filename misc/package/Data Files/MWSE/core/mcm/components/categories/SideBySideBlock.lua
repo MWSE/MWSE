@@ -11,6 +11,7 @@ local Parent = require("mcm.components.categories.Category")
 
 --- @class mwseMCMSideBySideBlock
 local SideBySideBlock = Parent:new()
+SideBySideBlock.__index = SideBySideBlock
 
 --- @param parentBlock tes3uiElement
 function SideBySideBlock:createSubcomponentsContainer(parentBlock)
