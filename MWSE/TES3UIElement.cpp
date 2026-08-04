@@ -246,8 +246,8 @@ namespace TES3::UI {
 		TES3_ui_dispatchInputEvent(this, eventId, data0, data1, source);
 	}
 
-	const auto TES3_ui_checkMouseEventInElement = reinterpret_cast<bool(__thiscall*)(Element*, int, int)>(0x587730);
-	bool Element::checkMouseEventInElement(int mouseX, int mouseY) {
+	const auto TES3_ui_checkMouseEventInElement = reinterpret_cast<bool(__thiscall*)(const Element*, int, int)>(0x587730);
+	bool Element::checkMouseEventInElement(int mouseX, int mouseY) const {
 		return TES3_ui_checkMouseEventInElement(this, mouseX, mouseY);
 	}
 

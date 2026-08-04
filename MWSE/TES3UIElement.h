@@ -159,7 +159,7 @@ namespace TES3::UI {
 		//
 
 		void dispatchInputEvent(Property eventId, int data0, int data1, Element* source);
-		bool checkMouseEventInElement(int mouseX, int mouseY);
+		bool checkMouseEventInElement(int mouseX, int mouseY) const;
 
 		//
 		// Property methods

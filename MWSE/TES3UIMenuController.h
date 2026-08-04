@@ -27,17 +27,14 @@ namespace TES3::UI {
 			Element* element;
 
 			Event() = delete;
-			~Event() = delete;
 		};
 
 		// An event that dispatchEvents has copied out of the queue and is dispatching. Unlike
 		// Event, this is an MWSE-side type; the engine never sees it.
-		struct DispatchingEvent {
-			int type;
-			int data0;
-			int data1;
-			Element* element;
+		struct DispatchingEvent : Event {
 			DispatchingEvent* previous;
+
+			DispatchingEvent(const Event& event, DispatchingEvent* previous) : Event(event), previous(previous) {}
 		};
 
 		NI::Pick pick; // 0x0

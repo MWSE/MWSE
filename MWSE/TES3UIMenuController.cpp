@@ -147,7 +147,7 @@ namespace TES3::UI {
 			}
 
 			// Copy the event and clear its queue slot before any callback can run a nested pump.
-			DispatchingEvent event = { slot.type, slot.data0, slot.data1, slot.element, lastDispatchingEvent };
+			DispatchingEvent event(slot, lastDispatchingEvent);
 			slot.type = Event::Type::None;
 			slot.data0 = 0;
 			slot.data1 = 0;
