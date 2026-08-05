@@ -101,12 +101,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 		}
 
 		// List of temporary files that the updater couldn't update, and so need to be swapped out.
-		std::vector<std::string> updaterTempFiles;
-		updaterTempFiles.push_back("MWSE-Update.exe");
-		updaterTempFiles.push_back("Newtonsoft.Json.dll");
-
-		// Look to see if an update to the MWSE Updater was downloaded. If so, swap the temp files.
-		for (const std::string& destFile : updaterTempFiles) {
+		for (const std::string& destFile : { "MWSE-Update.exe", "Newtonsoft.Json.dll" }) {
 			const std::string tempFile = destFile + ".tmp";
 			if (std::filesystem::exists(tempFile)) {
 				if (std::filesystem::exists(destFile)) {
@@ -133,13 +128,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 			log << "Morrowind Code Patch installed features: ";
 
 			// Get a sorted list of enabled features.
-			std::vector<long> enabledFeatures;
-			for (const auto& itt : mwse::mcp::featureStore) {
-				if (itt.second) {
-					enabledFeatures.push_back(itt.first);
-				}
-			}
-			std::sort(enabledFeatures.begin(), enabledFeatures.end());
+			auto featureEnabled = [](const std::pair<long, bool>& p) -> bool {
+				return p.second;
+			};
+			auto featuresView = std::views::keys(mwse::mcp::featureStore | std::views::filter(featureEnabled));
+			std::vector<long> enabledFeatures(featuresView.begin(), featuresView.end());
+			std::ranges::sort(enabledFeatures);
 
 			// Print them to the log.
 			log << std::dec;

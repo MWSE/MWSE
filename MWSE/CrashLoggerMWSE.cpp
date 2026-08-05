@@ -127,10 +127,10 @@ namespace CrashLogger::Mods {
 			const auto activeMods = dataHandler->nonDynamicData->getActiveMods();
 			if (activeMods.empty()) return;
 
-			const auto filenameLength = std::strlen((*std::max_element(activeMods.begin(), activeMods.end(), [](const auto& a, const auto& b) {
+			const auto filenameLength = std::strlen((*std::ranges::max_element(activeMods, [](const auto& a, const auto& b) {
 				return std::strlen(a->getFilename()) < std::strlen(b->getFilename());
 			}))->getFilename());
-			const auto authorLength = std::strlen((*std::max_element(activeMods.begin(), activeMods.end(), [](const auto& a, const auto& b) {
+			const auto authorLength = std::strlen((*std::ranges::max_element(activeMods, [](const auto& a, const auto& b) {
 				return std::strlen(a->getAuthor()) < std::strlen(b->getAuthor());
 			}))->getAuthor());
 
@@ -192,10 +192,10 @@ namespace CrashLogger::LuaMods {
 
 			if (results.empty()) return;
 
-			const auto keyLength = std::max_element(results.begin(), results.end(), [](const auto& a, const auto& b) {
+			const auto keyLength = std::ranges::max_element(results, [](const auto& a, const auto& b) {
 				return a.key.length() < b.key.length();
 			})->key.length();
-			const auto authorLength = std::max_element(results.begin(), results.end(), [](const auto& a, const auto& b) {
+			const auto authorLength = std::ranges::max_element(results, [](const auto& a, const auto& b) {
 				return a.firstAuthor.length() < b.firstAuthor.length();
 			})->firstAuthor.length();
 

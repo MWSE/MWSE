@@ -75,7 +75,7 @@ namespace mwse {
 		}
 
 		auto& references = referenceDataByObject[key].references;
-		if (std::find(references.begin(), references.end(), reference) == references.end()) {
+		if (std::ranges::find(references, reference) == references.end()) {
 			references.push_back(reference);
 			return true;
 		}
@@ -219,7 +219,7 @@ namespace mwse {
 		}
 
 		auto& references = dataIt->second.references;
-		std::sort(references.begin(), references.end(), isReferenceBeforeInVanillaLookupOrder);
+		std::ranges::sort(references, isReferenceBeforeInVanillaLookupOrder);
 		dataIt->second.dirtyLookup = false;
 	}
 

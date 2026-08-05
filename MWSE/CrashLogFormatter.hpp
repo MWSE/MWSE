@@ -172,10 +172,11 @@ inline std::string GetObjectType(TES3::ObjectType::ObjectType type) {
 	return result;
 }
 
-inline auto Offset(std::vector<std::string> vector) {
-	for (auto& i : vector) i.insert(0, "    ");
-	return vector;
-}
+inline std::vector<std::string> LogClass(const TES3::BaseObject&);
+inline std::vector<std::string> LogClass(const TES3::MobileObject&);
+inline std::vector<std::string> LogClass(const TES3::PathGrid&);
+inline std::vector<std::string> LogClass(const TES3::Weather&);
+inline std::vector<std::string> LogClass(const NI::Object&);
 
 inline std::vector<std::string> LogClass(TES3::BaseObject&);
 inline std::vector<std::string> LogClass(TES3::MobileObject&);
@@ -185,8 +186,14 @@ inline std::vector<std::string> LogClass(NI::Object&);
 
 template<class Member> auto LogMember(const std::string& name, Member& member) {
 	std::vector<std::string> vec = LogClass(member);
-	if (vec.size() == 1) return std::vector{ name + " " + vec[0] };
-	vec = Offset(vec);
+	if (vec.size() == 1) {
+		return std::vector{ name + " " + vec[0] };
+	}
+
+	// Apply an offset for multi-line classes
+	std::ranges::for_each(vec, [](std::string& s) {
+		s.insert(0, "    ");
+	});
 	vec.insert(vec.begin(), name);
 	vec.insert(vec.begin(), "\t \t \t \t \t ");
 	return vec;
@@ -341,7 +348,7 @@ inline std::vector<std::string>  LogClass(const BaseProcess& obj)
 			&& reinterpret_cast<Actor*>(iter)->pkBaseProcess == &obj)
 			return LogClass(reinterpret_cast<const TESObjectREFR&>(*iter));
 	return {};
-} 
+}
 
 inline auto LogClass(const NiControllerSequence& obj)
 {
@@ -371,7 +378,7 @@ inline std::vector<std::string> LogClass(const AnimSequenceMultiple& obj)
 		vec.append_range(LogMember(fmt::format("AnimSequence{}", i), *iter));
 	}
 	return vec;
-} 
+}
 
 inline std::vector<std::string> LogClass(const NiExtraData& obj)
 {
@@ -510,7 +517,7 @@ inline std::vector<std::string> LogClass(const hkpWorldObject& obj)
 		vec.append_range(LogMember("Collision Object:", reinterpret_cast<const NiCollisionObject&>(*object)));
 
 	return vec;
-} 
+}
 
 inline std::vector<std::string> LogClass(const IMemoryHeap& obj)
 {

@@ -1761,7 +1761,7 @@ namespace mwse::patch {
 		for (const auto& dialogue : *dialogues) {
 			sortedDialogues.push_back(dialogue);
 		}
-		std::sort(sortedDialogues.begin(), sortedDialogues.end(), dialogueLengthSorter);
+		std::ranges::sort(sortedDialogues, dialogueLengthSorter);
 
 		// Clone the sorted data back into the TList, without any allocations.
 		auto itt = dialogues->head;

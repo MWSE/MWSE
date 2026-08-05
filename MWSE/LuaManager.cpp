@@ -3,6 +3,7 @@
 #include "BitUtil.h"
 #include "BuildDate.h"
 #include "Log.h"
+#include "MathUtil.h"
 #include "MemoryUtil.h"
 #include "mwOffsets.h"
 #include "MWSEConfig.h"
@@ -2759,7 +2760,7 @@ namespace mwse::lua {
 
 			try {
 				auto filename = it->path().filename();
-				
+
 				if (filename == ".git") {
 					// Skip .git subdirectories, as scanning their contents are likely to take the path length over the path limit and crash.
 					it.disable_recursion_pending();
@@ -4332,7 +4333,7 @@ namespace mwse::lua {
 	//
 	// Patch: calcMoveSpeed event for creatures.
 	//
-	
+
 	__declspec(naked) void patchCreatureCalcMoveSpeed() {
 		__asm {
 			mov ecx, esi	// Size: 0x2
@@ -4518,9 +4519,8 @@ namespace mwse::lua {
 
 		// Fire event.
 		if (event::CalcHitDetectionConeEvent::getEventEnabled()) {
-			const double radiansToDegrees = 57.29577951308232;
-			double degreesXY = radiansToDegrees * std::asin(fCombatAngleXY);
-			double degreesZ = radiansToDegrees * std::asin(fCombatAngleZ);
+			float degreesXY = se::math::radiansToDegrees(std::asin(fCombatAngleXY));
+			float degreesZ = se::math::radiansToDegrees(std::asin(fCombatAngleZ));
 
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new event::CalcHitDetectionConeEvent(attacker, nullptr, attackReach, degreesXY, degreesZ));
@@ -4529,8 +4529,8 @@ namespace mwse::lua {
 				attackReach = eventData["reach"];
 				degreesXY = eventData["angleXY"];
 				degreesZ = eventData["angleZ"];
-				fCombatAngleXY = float(std::sin(std::min(90.0, degreesXY) / radiansToDegrees));
-				fCombatAngleZ = float(std::sin(std::min(90.0, degreesZ) / radiansToDegrees));
+				fCombatAngleXY = std::sin(se::math::degreesToRadians(std::min(90.0f, degreesXY)));
+				fCombatAngleZ = std::sin(se::math::degreesToRadians(std::min(90.0f, degreesZ)));
 			}
 		}
 
@@ -4553,9 +4553,8 @@ namespace mwse::lua {
 
 		// Fire event.
 		if (event::CalcTouchSpellConeEvent::getEventEnabled()) {
-			const double radiansToDegrees = 57.29577951308232;
-			double degreesXY = radiansToDegrees * std::asin(fCombatAngleXY);
-			double degreesZ = radiansToDegrees * std::asin(fCombatAngleZ);
+			float degreesXY = se::math::radiansToDegrees(std::asin(fCombatAngleXY));
+			float degreesZ = se::math::radiansToDegrees(std::asin(fCombatAngleZ));
 
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new event::CalcTouchSpellConeEvent(attacker, sourceInstance, attackReach, degreesXY, degreesZ));
@@ -4564,8 +4563,8 @@ namespace mwse::lua {
 				attackReach = eventData["reach"];
 				degreesXY = eventData["angleXY"];
 				degreesZ = eventData["angleZ"];
-				fCombatAngleXY = float(std::sin(std::min(90.0, degreesXY) / radiansToDegrees));
-				fCombatAngleZ = float(std::sin(std::min(90.0, degreesZ) / radiansToDegrees));
+				fCombatAngleXY = std::sin(se::math::degreesToRadians(std::min(90.0f, degreesXY)));
+				fCombatAngleZ = std::sin(se::math::degreesToRadians(std::min(90.0f, degreesZ)));
 			}
 		}
 
@@ -4620,9 +4619,8 @@ namespace mwse::lua {
 
 		// Fire event.
 		if (event::CalcHitDetectionConeEvent::getEventEnabled()) {
-			const double radiansToDegrees = 57.29577951308232;
-			double degreesXY = radiansToDegrees * std::asin(fCombatAngleXY);
-			double degreesZ = radiansToDegrees * std::asin(fCombatAngleZ);
+			double degreesXY = se::math::radiansToDegrees(std::asin(fCombatAngleXY));
+			double degreesZ = se::math::radiansToDegrees(std::asin(fCombatAngleZ));
 
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response = stateHandle.triggerEvent(new event::CalcHitDetectionConeEvent(attacker, target, attackReach, degreesXY, degreesZ));
@@ -4866,7 +4864,7 @@ namespace mwse::lua {
 		if (mwse::lua::event::PickpocketEvent::getEventEnabled()) {
 			const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 			sol::object response;
-			
+
 			if (tile) {
 				// On pickpocketing an item.
 				response = stateHandle.triggerEvent(new event::PickpocketEvent(mobile, tile->item, tile->itemData, count, chance));
