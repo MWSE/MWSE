@@ -104,7 +104,7 @@ namespace mwse::lua {
 
 		// Prepare the lists we care about.
 		std::queue<TES3::Object*> objectListQueue;
-		auto searchingSpells = desiredTypes.count(TES3::ObjectType::Spell) > 0; // TODO: Change in C++20 to .contains.
+		auto searchingSpells = desiredTypes.contains(TES3::ObjectType::Spell);
 		if (searchingSpells) {
 			objectListQueue.push(ndd->spellsList->head);
 		}
@@ -1014,8 +1014,8 @@ namespace mwse::lua {
 		Configuration::UseSkinnedAccurateActivationRaytests = existingUseNewSkinning;
 
 		// Restore previous cull states.
-		for (auto itt = ignoreRestoreList.begin(); itt != ignoreRestoreList.end(); ++itt) {
-			(*itt)->setAppCulled(false);
+		for (auto node : ignoreRestoreList) {
+			node->setAppCulled(false);
 		}
 
 		// Did we get any results?
@@ -2528,23 +2528,27 @@ namespace mwse::lua {
 			unvisitedCells.pop_back();
 
 			for (auto refr : cell->persistentRefs) {
-				if (refr->baseObject->objectType == TES3::ObjectType::Door) {
-					auto destination = refr->getAttachedTravelDestination();
-					if (destination) {
-						auto destinationCell = destination->cell;
+				if (refr->baseObject->objectType != TES3::ObjectType::Door) {
+					continue;
+				}
 
-						if (destinationCell->getIsInterior()) {
-							// Queue up new unseen interior cells.
-							if (knownCells.count(destinationCell) == 0) {
-								knownCells.insert(destinationCell);
-								unvisitedCells.push_back(destinationCell);
-							}
-						}
-						else {
-							// For an exterior destination, return the door marker position.
-							return destination->destination->position;
-						}
+				auto destination = refr->getAttachedTravelDestination();
+				if (!destination) {
+					continue;
+				}
+
+				auto destinationCell = destination->cell;
+
+				if (destinationCell->getIsInterior()) {
+					// Queue up new unseen interior cells.
+					if (!knownCells.contains(destinationCell)) {
+						knownCells.insert(destinationCell);
+						unvisitedCells.push_back(destinationCell);
 					}
+				}
+				else {
+					// For an exterior destination, return the door marker position.
+					return destination->destination->position;
 				}
 			}
 		}
