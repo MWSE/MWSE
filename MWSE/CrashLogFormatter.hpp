@@ -178,13 +178,7 @@ inline std::vector<std::string> LogClass(const TES3::PathGrid&);
 inline std::vector<std::string> LogClass(const TES3::Weather&);
 inline std::vector<std::string> LogClass(const NI::Object&);
 
-inline std::vector<std::string> LogClass(TES3::BaseObject&);
-inline std::vector<std::string> LogClass(TES3::MobileObject&);
-inline std::vector<std::string> LogClass(TES3::PathGrid&);
-inline std::vector<std::string> LogClass(TES3::Weather&);
-inline std::vector<std::string> LogClass(NI::Object&);
-
-template<class Member> auto LogMember(const std::string& name, Member& member) {
+template<class Member> auto LogMember(const std::string& name, const Member& member) {
 	std::vector<std::string> vec = LogClass(member);
 	if (vec.size() == 1) {
 		return std::vector{ name + " " + vec[0] };
@@ -199,13 +193,13 @@ template<class Member> auto LogMember(const std::string& name, Member& member) {
 	return vec;
 }
 
-template<class Member> std::string LogClassLineByLine(Member& member) {
+template<class Member> std::string LogClassLineByLine(const Member& member) {
 	std::string output;
 	std::vector<std::string> vec = LogClass(member);
 	return fmt::format("{}", fmt::join(vec, "\n                                  "));
 }
 
-inline std::vector<std::string> LogClass(TES3::BaseObject& obj) {
+inline std::vector<std::string> LogClass(const TES3::BaseObject& obj) {
 	std::vector<std::string> vec;
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
@@ -226,8 +220,8 @@ inline std::vector<std::string> LogClass(TES3::BaseObject& obj) {
 	return vec;
 }
 
-inline auto LogClass(TES3::Object& obj) {
-	std::vector<std::string> vec = LogClass(static_cast<TES3::BaseObject&>(obj));
+inline auto LogClass(const TES3::Object& obj) {
+	std::vector<std::string> vec = LogClass(static_cast<const TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
 	TES3::GameFile* sourceMod = obj.sourceMod;
@@ -252,7 +246,7 @@ inline auto LogClass(TES3::Object& obj) {
 	return vec;
 }
 
-inline auto LogClass(TES3::Reference& obj) {
+inline auto LogClass(const TES3::Reference& obj) {
 	std::vector<std::string> vec;
 	//std::vector<std::string> vec = LogClass(static_cast<TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
@@ -279,13 +273,13 @@ inline auto LogClass(TES3::Reference& obj) {
 	return vec;
 }
 
-inline std::vector<std::string> LogClass(TES3::MobileObject& obj) {
+inline std::vector<std::string> LogClass(const TES3::MobileObject& obj) {
 	auto vec = LogClass(static_cast<TES3::Reference&>(*obj.reference));
 	return vec;
 }
 
-inline std::vector<std::string> LogClass(TES3::PathGrid& obj) {
-	auto vec = LogClass(static_cast<TES3::BaseObject&>(obj));
+inline std::vector<std::string> LogClass(const TES3::PathGrid& obj) {
+	auto vec = LogClass(static_cast<const TES3::BaseObject&>(obj));
 	if (obj.parentCell) {
 		std::vector<std::string> baseVector = LogMember("Cell:", static_cast<TES3::BaseObject&>(*obj.parentCell));
 		vec.insert(vec.end(), baseVector.begin(), baseVector.end());
@@ -293,7 +287,7 @@ inline std::vector<std::string> LogClass(TES3::PathGrid& obj) {
 	return vec;
 }
 
-inline auto LogClass(TES3::Cell& obj) {
+inline auto LogClass(const TES3::Cell& obj) {
 	std::vector<std::string> vec;
 	const std::string objectID = obj.getEditorName();
 	const std::string sourceMod = obj.sourceMod ? obj.sourceMod->getFilename() : "N/A";
@@ -301,7 +295,7 @@ inline auto LogClass(TES3::Cell& obj) {
 	return vec;
 }
 
-inline auto LogClass(TES3::Land& obj) {
+inline auto LogClass(const TES3::Land& obj) {
 	std::vector<std::string> vec;
 	const std::string objectID = fmt::format("({}, {})", obj.gridX, obj.gridY);
 	const std::string sourceMod = obj.sourceMod ? obj.sourceMod->getFilename() : "N/A";
@@ -309,14 +303,14 @@ inline auto LogClass(TES3::Land& obj) {
 	return vec;
 }
 
-inline std::vector<std::string> LogClass(TES3::Weather& obj) {
+inline std::vector<std::string> LogClass(const TES3::Weather& obj) {
 	std::vector<std::string> vec;
 	std::string name = obj.getName();
 	vec.push_back(fmt::format("ID: {}", name));
 	return vec;
 }
 
-inline std::vector<std::string> LogClass(NI::Object& obj) {
+inline std::vector<std::string> LogClass(const NI::Object& obj) {
 	std::vector<std::string> vec;
 
 	const auto rtti = obj.getRunTimeTypeInformation();
@@ -327,7 +321,7 @@ inline std::vector<std::string> LogClass(NI::Object& obj) {
 
 	std::optional<std::string> name;
 	if (obj.isInstanceOfType(NI::RTTIStaticPtr::NiObjectNET)) {
-		const auto n = static_cast<NI::ObjectNET&>(obj).getName();
+		const auto n = static_cast<const NI::ObjectNET&>(obj).getName();
 		if (n) {
 			vec.push_back(fmt::format("Name: {}", n));
 		}
@@ -402,17 +396,17 @@ inline std::vector<std::string> LogClass(NiObjectNET& obj)
 	return {};
 } */
 
-inline std::vector<std::string> LogClass(NI::ObjectNET& obj) {
+inline std::vector<std::string> LogClass(const NI::ObjectNET& obj) {
 	const auto name = obj.name;
 	if (name)
 		return std::vector{ '"' + SanitizeString(name) + '"' };
 	return {};
 }
 
-inline std::vector<std::string> LogClass(NI::Node& obj) {
+inline std::vector<std::string> LogClass(const NI::Node& obj) {
 	std::vector<std::string> vec;
 	if (const auto name = obj.name)
-		vec = LogMember("Name: ", static_cast<NI::ObjectNET&>(obj));
+		vec = LogMember("Name: ", static_cast<const NI::ObjectNET&>(obj));
 	//if (const auto ref = TESObjectREFR::FindReferenceFor3D(&obj))
 		//vec.append_range(LogMember("Reference:", *ref));
 	return vec;
@@ -448,8 +442,8 @@ inline std::vector<std::string> LogClass(NI::Node& obj) {
 //inline std::vector<std::string> LogClass(const ActiveEffect& obj) { if (obj.enchantObject) return LogClass(*obj.enchantObject); return {}; }
 
 
-inline std::vector<std::string> LogClass(TES3::Script& obj) {
-	std::vector<std::string> vec = LogClass(static_cast<TES3::BaseObject&>(obj));
+inline std::vector<std::string> LogClass(const TES3::Script& obj) {
+	std::vector<std::string> vec = LogClass(static_cast<const TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
 	TES3::GameFile* sourceMod = obj.sourceMod;
