@@ -50,8 +50,7 @@ namespace mwse {
 
 		// Verify actor state.
 		TES3::Actor* actor = reinterpret_cast<TES3::Actor*>(reference->baseObject);
-		TES3::ObjectType::ObjectType objectType = actor->objectType;
-		if (objectType != TES3::ObjectType::NPC && objectType != TES3::ObjectType::Creature) {
+		if (!actor->isMobileCapableActor()) {
 			mwse::log::getLog() << "xEquipmentList: Called on non-actor." << std::endl;
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);
@@ -66,7 +65,7 @@ namespace mwse {
 		}
 
 		// Make sure the object isn't a base actor.
-		if (actor->actorFlags & TES3::ActorFlag::IsBase) {
+		if (actor->isBaseActor()) {
 			mwse::log::getLog() << "xEquipmentList: Called on base actor. Must be used on instance." << std::endl;
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);
