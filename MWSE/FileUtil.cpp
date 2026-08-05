@@ -139,20 +139,21 @@ namespace mwse {
 			return INVALID_HANDLE_VALUE;
 		}
 
-		char realName[BUFSIZ] = "Data Files\\MWSE\\";
+		std::string realName = "Data Files\\MWSE\\";
 
 		// Create the file storage area if it doesn't already exist
 		CreateDirectoryA("Data Files\\MWSE", NULL);
 
 		// Allow connection to named pipes one the local machine.
+		// We performed a check that fileName isn't empty in validFileName
 		if (fileName[0] == '|') {
-			strcpy(realName, "\\\\.\\pipe\\MWSE");
-			fileName = fileName.substr(1);
+			realName = "\\\\.\\pipe\\MWSE";
+			fileName.remove_prefix(1);
 		}
+		realName += fileName;
 
-		strncpy(&realName[strlen(realName)], fileName.data(), NELEM(realName) - strlen(realName));
 		HANDLE result = CreateFileA(
-			realName,
+			realName.c_str(),
 			GENERIC_READ | GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			NULL,
@@ -169,25 +170,25 @@ namespace mwse {
 	}
 
 	bool FileSystem::validFileName(std::string_view fileName) {
-		// Allow for a named pipe (I'm not sure it's wise, but it's requested enough.)
-		if (fileName[0] == '|') {
-			fileName = fileName.substr(1);
-		}
-		
 		// By forcing at least 5 characters, we don't have to
 		// worry about someone opening the .. or . files.
 		// Files 4 characters and under might be special like
 		// the CON, PRN, COM1, etc. DOS device files. 
-		if (fileName.length() < 5 || fileName.length() >= 61) {
+		if (fileName.empty() || fileName.length() < 5 || fileName.length() >= 62) {
 			return false;
 		}
+	
+		auto itt = fileName.begin();
+		if (*itt == '|') {
+			++itt;
+		}
 
-		for (auto& c : fileName) {
+		for (auto c = *itt; itt != fileName.end(); ++itt) {
 			// Allow _ and . in filenames but limit their length.
-			if (!isalnum(c) && c != '_' && c != '.') 
+			if (!isalnum(c) && c != '_' && c != '.')
 				return false;
 		}
-		
+
 		return true;
 	}
 
