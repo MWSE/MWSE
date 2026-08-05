@@ -108,7 +108,7 @@ namespace se::cs {
 		return ss.str();
 	}
 
-	bool Effect::search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex) const {
+	bool Effect::search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex) const {
 		const auto effectData = getEffectData();
 		if (effectData == nullptr) {
 			return false;

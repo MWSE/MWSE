@@ -54,7 +54,7 @@ namespace se::cs::dialog::text_search_window {
 
 	static std::regex TextSearchRegex;
 
-	bool TextSearchGatherObjectResults(const std::string_view& needle, NI::IteratedList<BaseObject*>* results, const BaseObject::SearchSettings& settings, std::regex* regex) {
+	bool TextSearchGatherObjectResults(std::string_view needle, NI::IteratedList<BaseObject*>* results, const BaseObject::SearchSettings& settings, std::regex* regex) {
 		const auto recordHandler = DataHandler::get()->recordHandler;
 
 		// Search game settings.

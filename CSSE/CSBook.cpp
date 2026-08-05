@@ -16,7 +16,7 @@ namespace se::cs {
 		return gmst->value.asString;
 	}
 
-	bool Book::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Book::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (Object::search(needle, settings, regex)) {
 			return true;
 		}

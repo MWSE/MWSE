@@ -52,7 +52,7 @@ namespace se::cs {
 		return;
 	}
 
-	bool NPC::search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex) const {
+	bool NPC::search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex) const {
 		if (Object::search(needle, settings, regex)) {
 			return true;
 		}

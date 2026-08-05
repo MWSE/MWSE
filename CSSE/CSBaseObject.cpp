@@ -60,7 +60,7 @@ namespace se::cs {
 		BaseObject_setFlag80(this, set);
 	}
 
-	bool BaseObject::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool BaseObject::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (settings.id && string::complex_contains(getObjectID(), needle, settings, regex)) {
 			return true;
 		}
@@ -68,7 +68,7 @@ namespace se::cs {
 		return false;
 	}
 
-	bool BaseObject::searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool BaseObject::searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
 		case ObjectType::Birthsign:
 			return static_cast<const Birthsign*>(this)->search(needle, settings, regex);

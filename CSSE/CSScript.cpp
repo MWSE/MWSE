@@ -20,7 +20,7 @@ namespace se::cs {
 	}
 
 
-	bool Script::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Script::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}

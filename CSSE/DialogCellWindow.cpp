@@ -56,7 +56,7 @@ namespace se::cs::dialog::cell_window {
 		}
 	}
 
-	bool matchDispatcher(const std::string_view& haystack) {
+	bool matchDispatcher(std::string_view haystack) {
 		if (currentSearchRegex) {
 			return std::regex_search(haystack.data(), currentSearchRegex.value());
 		}

@@ -16,7 +16,7 @@ namespace se::cs {
 
 		void getEffectName(char* buffer, size_t bufferSize, int index) const;
 
-		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool search(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Ingredient) == 0xE4, "Ingredient failed size validation");
 }

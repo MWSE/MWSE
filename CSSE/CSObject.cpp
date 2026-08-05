@@ -107,7 +107,7 @@ namespace se::cs {
 		vtbl.object->populateObjectWindow(this, hWnd);
 	}
 
-	bool Object::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Object::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}
@@ -140,7 +140,7 @@ namespace se::cs {
 		return false;
 	}
 
-	bool Object::searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Object::searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
 		case ObjectType::Alchemy:
 			return static_cast<const Alchemy*>(this)->search(needle, settings, regex);

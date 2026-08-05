@@ -117,8 +117,8 @@ namespace se::cs {
 		// Custom functions
 		//
 
-		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
-		bool searchWithInheritance(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool search(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Object) == 0x28, "CS::Object failed size validation");
 	static_assert(sizeof(Object_VirtualTable) == 0x138, "CS::Object's virtual table failed size validation");

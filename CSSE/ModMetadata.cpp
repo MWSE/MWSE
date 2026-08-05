@@ -3,7 +3,7 @@
 #include "PathUtil.h"
 
 namespace se::cs::metadata {
-	ModMetadata::ModMetadata(const std::string_view& file, GameFile* gameFile) {
+	ModMetadata::ModMetadata(std::string_view file, GameFile* gameFile) {
 		m_FilePath = path::getDataFilesPath() / file;
 		m_Toml = {};
 		m_GameFile = gameFile;
