@@ -520,7 +520,7 @@ namespace TES3 {
 			}
 		}
 
-		setDeleted(deleted);
+		BaseObject::setDeleted(deleted);
 	}
 
 	bool Reference::getNoCollision() const {
