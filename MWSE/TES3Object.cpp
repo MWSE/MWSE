@@ -290,6 +290,10 @@ namespace TES3 {
 		BIT_SET(objectFlags, TES3::ObjectFlag::LinksResolvedBit, value);
 	}
 
+	bool BaseObject::getDisabled() const {
+		return BIT_TEST(objectFlags, TES3::ObjectFlag::DisabledBit);
+	}
+
 	bool BaseObject::getDeleted() const {
 		return BIT_TEST(objectFlags, TES3::ObjectFlag::DeleteBit);
 	}

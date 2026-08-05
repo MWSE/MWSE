@@ -63,7 +63,6 @@ namespace mwse::lua {
 		usertypeDefinition["attachments"] = sol::readonly_property(&TES3::Reference::getAttachments_lua);
 		usertypeDefinition["context"] = sol::readonly_property(&TES3::Reference::getContext_lua);
 		usertypeDefinition["data"] = sol::readonly_property(&TES3::Reference::getLuaTable);
-		usertypeDefinition["disabled"] = sol::readonly_property(&TES3::Reference::getDisabled);
 		usertypeDefinition["facing"] = sol::property(&TES3::Reference::getFacing, &TES3::Reference::setFacing);
 		usertypeDefinition["forwardDirection"] = sol::readonly_property(&TES3::Reference::getForwardDirectionVector);
 		usertypeDefinition["hasNoCollision"] = sol::property(&TES3::Reference::getNoCollision, &TES3::Reference::setNoCollision_lua);
