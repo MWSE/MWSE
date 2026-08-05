@@ -818,7 +818,7 @@ namespace TES3 {
 
 	Object* Object::skipDeletedObjects() {
 		TES3::Object* object = this;
-		while (object && (object->objectFlags & TES3::ObjectFlag::Delete) == TES3::ObjectFlag::Delete)
+		while (object && object->getDeleted())
 		{
 			object = object->nextInCollection;
 		}

@@ -78,7 +78,6 @@ namespace TES3 {
 
 		bool enable();
 		bool disable();
-		bool getDisabled() const;
 
 		void setDeleted(bool deleted);
 		void setDeletedWithSafety();
