@@ -3255,7 +3255,7 @@ namespace se::cs::dialog::render_window {
 			}
 		}
 
-		size_t parseHeaderOffset(const std::string& html, const std::string& key) {
+		size_t parseHeaderOffset(std::string_view html, std::string_view key) {
 			size_t keyPos = html.find(key);
 			if (keyPos == std::string::npos) return 0;
 			size_t valStart = keyPos + key.size();
@@ -3268,7 +3268,7 @@ namespace se::cs::dialog::render_window {
 			}
 			if (valStart == valEnd) return 0;
 			try {
-				return static_cast<size_t>(std::stoull(html.substr(valStart, valEnd - valStart)));
+				return static_cast<size_t>(std::stoull(std::string(html.substr(valStart, valEnd - valStart))));
 			} catch (...) {
 				return 0;
 			}
@@ -3377,7 +3377,7 @@ namespace se::cs::dialog::render_window {
 			}
 		}
 
-		void parseHtmlFormat(const std::string& html, std::vector<std::string>& outIds) {
+		void parseHtmlFormat(std::string_view html, std::vector<std::string>& outIds) {
 			size_t startFrag = parseHeaderOffset(html, "StartFragment");
 			size_t endFrag = parseHeaderOffset(html, "EndFragment");
 			if (startFrag == 0 || endFrag == 0 || startFrag >= html.size() || endFrag > html.size() || startFrag >= endFrag) {

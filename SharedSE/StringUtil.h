@@ -51,7 +51,7 @@ namespace se::string {
 		return std::isprint(c) || std::isspace(c);
 	}
 
-	static inline std::string from_wstring(const std::wstring& wstr) {
+	static inline std::string from_wstring(std::wstring_view wstr) {
 		std::string buf(wstr.size(), '\0');
 		std::use_facet<std::ctype<wchar_t>>(std::locale{}).narrow(wstr.data(), wstr.data() + wstr.size(), '?', buf.data());
 		return buf;
