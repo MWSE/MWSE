@@ -471,6 +471,10 @@ namespace TES3 {
 		return true;
 	}
 
+	bool Reference::getDisabled() const {
+		return BIT_TEST(objectFlags, TES3::ObjectFlag::DeleteBit);
+	}
+
 	bool Reference::disable() {
 		// Make sure we're not already disabled.
 		if (getDisabled()) {
@@ -520,7 +524,7 @@ namespace TES3 {
 			}
 		}
 
-		setDeleted(deleted);
+		BaseObject::setDeleted(deleted);
 	}
 
 	bool Reference::getNoCollision() const {

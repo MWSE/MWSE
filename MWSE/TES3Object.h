@@ -267,7 +267,6 @@ namespace TES3 {
 		bool getLinksResolved() const;
 		void setLinksResolved(bool value);
 
-		bool getDisabled() const;
 		bool getDeleted() const;
 		void setDeleted(bool deleted);
 
