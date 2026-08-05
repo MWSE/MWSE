@@ -2742,7 +2742,7 @@ namespace mwse::lua {
 		return disabledPathItt != disabledMarkers.end();
 	}
 
-	void LuaManager::gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& scriptFilename) {
+	void LuaManager::gatherMainModScripts(std::string_view path, bool core, const std::string_view& scriptFilename) {
 		if (!std::filesystem::exists(path)) {
 			return;
 		}

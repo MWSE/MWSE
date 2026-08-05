@@ -744,7 +744,7 @@ namespace TES3 {
 		return results;
 	}
 
-	bool NonDynamicData::objectExists(const std::string_view& id) {
+	bool NonDynamicData::objectExists(std::string_view id) {
 		return resolveObject(id.data()) != nullptr;
 	}
 

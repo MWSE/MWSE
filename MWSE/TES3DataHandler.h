@@ -52,7 +52,7 @@ namespace TES3 {
 #if MWSE_CUSTOM_GLOBALS
 	struct GlobalHashContainer {
 		struct icomp {
-			bool operator() (const std::string_view& lhs, const std::string_view& rhs) const {
+			bool operator() (std::string_view lhs, std::string_view rhs) const {
 				return _strnicmp(lhs.data(), rhs.data(), 32) < 0;
 			}
 		};
@@ -194,12 +194,12 @@ namespace TES3 {
 
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
-		bool objectExists(const std::string_view& id);
+		bool objectExists(std::string_view id);
 		void clearCellByNameCache(const Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>
-		T* resolveObjectByType(const std::string_view& id) {
+		T* resolveObjectByType(std::string_view id) {
 			const auto potentialResult = resolveObject(id.data());
 			if (potentialResult == nullptr) {
 				return nullptr;

@@ -1166,7 +1166,7 @@ namespace TES3::UI {
 		return container->getData();
 	}
 
-	sol::object Element::getLuaData(const std::string_view& key) const {
+	sol::object Element::getLuaData(std::string_view key) const {
 		auto container = getLuaDataContainer();
 		if (container == nullptr) {
 			return sol::nil;
@@ -1175,7 +1175,7 @@ namespace TES3::UI {
 		return container->getValue(key);
 	}
 
-	void Element::setLuaData(sol::this_state ts, const std::string_view& key, sol::object value) {
+	void Element::setLuaData(sol::this_state ts, std::string_view key, sol::object value) {
 		auto container = getLuaDataContainer();
 		if (container == nullptr) {
 			container = new LuaData(ts);
