@@ -31,16 +31,20 @@ namespace mwse {
 
 		long npcServiceFlags = 0;
 		long classServiceFlags = 0;
-
+		
+		using namespace TES3::ServiceFlag;
+		constexpr auto providerMask = OffersSpells | OffersSpellmaking | OffersEnchanting | OffersRepairs;
+		static_assert(providerMask == 0x38800);
+		
 		// Get the gold based on the base record type.
 		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
-			npcServiceFlags = aiConfig->merchantFlags & 0x00038800;
+			npcServiceFlags = aiConfig->merchantFlags & providerMask;
 
 			// Get the class flags.
 			TES3::Class* npcClass = reference->baseObject->getClass();
 			if (npcClass) {
-				npcServiceFlags = npcClass->services & 0x00038800;
+				npcServiceFlags = npcClass->services & providerMask;
 			}
 		}
 		else {

@@ -35,12 +35,12 @@ namespace mwse {
 		// Get the gold based on the base record type.
 		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
-			npcServiceFlags = aiConfig->merchantFlags & 0x00004000;
+			npcServiceFlags = aiConfig->merchantFlags & TES3::ServiceFlag::OffersTraining;
 
 			// Get the class flags.
 			TES3::Class* npcClass = reference->baseObject->getClass();
 			if (npcClass) {
-				npcServiceFlags = npcClass->services & 0x00004000;
+				npcServiceFlags = npcClass->services & TES3::ServiceFlag::OffersTraining;
 			}
 		}
 		else {

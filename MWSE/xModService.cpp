@@ -65,7 +65,7 @@ namespace mwse {
 		}
 		// Want to add services.
 		else {
-			services = services | (data & 0x0003FFFF);
+			services = services | (data & TES3::ServiceFlag::AllServicesMask);
 		}
 
 		aiConfig->merchantFlags = services;

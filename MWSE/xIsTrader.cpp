@@ -31,16 +31,18 @@ namespace mwse {
 
 		long npcServiceFlags = 0;
 		long classServiceFlags = 0;
+		constexpr auto traderMask = TES3::ServiceFlag::OffersBarteringMask | TES3::ServiceFlag::BartersEnchantedItems;
+		static_assert(traderMask == 0x37FF);
 
 		// Get the gold based on the base record type.
 		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
-			npcServiceFlags = aiConfig->merchantFlags & 0x000037FF;
+			npcServiceFlags = aiConfig->merchantFlags & traderMask;
 
 			// Get the class flags.
 			TES3::Class* npcClass = reference->baseObject->getClass();
 			if (npcClass) {
-				npcServiceFlags = npcClass->services & 0x000037FF;
+				npcServiceFlags = npcClass->services & traderMask;
 			}
 		}
 		else {

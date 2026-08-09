@@ -15,7 +15,7 @@ namespace mwse {
 		virtual float execute(VMExecuteInterface& virtualMachine);
 
 	private:
-		long getBitMaskForRecordType(long recordType);
+		long getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType);
 		bool passesFilter(TES3::Object* record, long filter);
 
 		enum FilterMask {
@@ -142,7 +142,7 @@ namespace mwse {
 		return 0.0f;
 	}
 
-	long xContentListFiltered::getBitMaskForRecordType(long recordType) {
+	long xContentListFiltered::getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType) {
 		switch (recordType) {
 		case TES3::ObjectType::Activator: return FILTER_ACTI;
 		case TES3::ObjectType::Alchemy: return FILTER_ALCH;

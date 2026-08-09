@@ -29,7 +29,9 @@ namespace TES3 {
 		};
 
 		constexpr auto OffersBarteringMask = BartersWeapons | BartersArmor | BartersClothing | BartersBooks | BartersIngredients | BartersLockpicks | BartersProbes | BartersLights | BartersApparatus | BartersRepairTools | BartersMiscItems | BartersAlchemy;
+		constexpr auto AllServicesMask = OffersBarteringMask | OffersSpells | BartersEnchantedItems | OffersTraining | OffersSpellmaking | OffersEnchanting | OffersRepairs;
 		static_assert(OffersBarteringMask == 0x27FF, "Bartering mask does not match game code. Was a new bartering type added?");
+		static_assert(AllServicesMask == 0x3FFFF, "Services mask does not match MWSE-mwscript code. Was a new bartering type added?");
 	}
 
 	struct Class : BaseObject {

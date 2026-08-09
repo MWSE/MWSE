@@ -1,6 +1,7 @@
 #include "VMExecuteInterface.h"
 #include "Stack.h"
 #include "InstructionInterface.h"
+#include "TES3Class.h"
 #include "TES3Util.h"
 #include "TES3NPC.h"
 #include "TES3Reference.h"
@@ -19,7 +20,7 @@ namespace mwse {
 
 	float xSetService::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		long flags = mwse::Stack::getInstance().popLong() & 0x0003FFFF;
+		long flags = mwse::Stack::getInstance().popLong() & TES3::ServiceFlag::AllServicesMask;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
