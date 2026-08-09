@@ -22,6 +22,12 @@ namespace se::math {
 		return degrees * std::numbers::pi_v<float> / 180.0f;
 	}
 
+	// Contrary to std::clamp, this implementation will return the lower bound in case of a NaN value.
+	template <class T>
+	inline T clamp(T value, T minVal, T maxVal) { 
+		return std::min(std::max(value, minVal), maxVal);
+	}
+
 	// Recalculates rotation to always be between [0, 2pi].
 	void standardizeAngleRadians(float& value);
 	

@@ -401,7 +401,7 @@ namespace mwse::lua {
 		}
 
 		// Clamp volume.
-		volume = std::clamp(volume, 0.0, 1.0);
+		volume = se::math::clamp(volume, 0.0, 1.0);
 
 		// Apply mix and rescale to 0-250
 		volume *= TES3::WorldController::get()->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
