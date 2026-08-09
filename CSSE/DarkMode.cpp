@@ -1486,7 +1486,7 @@ namespace se::cs::darkmode {
 		SelectObject(hdc, previousBrush);
 		SelectObject(hdc, previousPen);
 
-		if (text.empty()) {
+		if (!text.empty()) {
 			RECT textRect = { clientRect.left + 8, clientRect.top, clientRect.left + 8 + textSize.cx + 4, clientRect.top + textSize.cy };
 			FillRect(hdc, &textRect, backgroundBrush);
 			textRect.left += 2;
