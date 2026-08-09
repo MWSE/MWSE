@@ -14,6 +14,7 @@
 #include "LuaSavedGameEvent.h"
 #include "LuaSaveGameEvent.h"
 
+#include "StringUtil.h"
 #include "TES3Util.h"
 
 #include "TES3Actor.h"
@@ -645,9 +646,7 @@ namespace TES3 {
 
 	static std::string normalizeCellName(const char* name) {
 		std::string normalized = name;
-		std::transform(normalized.begin(), normalized.end(), normalized.begin(), [](unsigned char c) {
-			return static_cast<char>(std::tolower(c));
-			});
+		se::string::to_lower(normalized);
 		return normalized;
 	}
 

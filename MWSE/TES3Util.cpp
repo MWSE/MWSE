@@ -43,9 +43,7 @@ namespace mwse::tes3 {
 			return dataHandler->nonDynamicData->playerSaveGame;
 		}
 		else {
-			if (dataHandler) {
-				return dataHandler->nonDynamicData->findFirstInstanceOfObjectId(id);
-			}
+			return dataHandler->nonDynamicData->findFirstInstanceOfObjectId(id);
 		}
 
 		return nullptr;

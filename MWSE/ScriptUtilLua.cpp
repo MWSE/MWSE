@@ -230,7 +230,7 @@ namespace mwse::lua {
 			auto script = getOptionalParamExecutionScript(params);
 			auto reference = getOptionalParamExecutionReference(params);
 
-			return BITMASK_TEST(reference->objectFlags, TES3::ObjectFlag::Delete);
+			return reference->getDeleted();
 		};
 		lua_mwscript["getDetected"] = [](sol::optional<sol::table> params) {
 			auto script = getOptionalParamExecutionScript(params);

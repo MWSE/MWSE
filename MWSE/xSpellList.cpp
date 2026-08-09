@@ -54,7 +54,7 @@ namespace mwse {
 
 		// Make sure we have the base NPC.
 		TES3::NPC* npc = reinterpret_cast<TES3::NPC*>(reference->baseObject);
-		if (!(npc->actorFlags & TES3::ActorFlag::IsBase)) {
+		if (!npc->isBaseActor()) {
 			npc = reinterpret_cast<TES3::NPCInstance*>(npc)->baseNPC;
 		}
 

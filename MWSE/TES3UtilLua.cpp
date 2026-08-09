@@ -104,7 +104,7 @@ namespace mwse::lua {
 
 		// Prepare the lists we care about.
 		std::queue<TES3::Object*> objectListQueue;
-		auto searchingSpells = desiredTypes.count(TES3::ObjectType::Spell) > 0; // TODO: Change in C++20 to .contains.
+		auto searchingSpells = desiredTypes.contains(TES3::ObjectType::Spell);
 		if (searchingSpells) {
 			objectListQueue.push(ndd->spellsList->head);
 		}
@@ -401,8 +401,7 @@ namespace mwse::lua {
 		}
 
 		// Clamp volume.
-		volume = std::max(0.0, volume);
-		volume = std::min(volume, 1.0);
+		volume = se::math::clamp(volume, 0.0, 1.0);
 
 		// Apply mix and rescale to 0-250
 		volume *= TES3::WorldController::get()->audioController->getMixVolumeRaw(TES3::AudioMixType(mix));
@@ -1015,8 +1014,8 @@ namespace mwse::lua {
 		Configuration::UseSkinnedAccurateActivationRaytests = existingUseNewSkinning;
 
 		// Restore previous cull states.
-		for (auto itt = ignoreRestoreList.begin(); itt != ignoreRestoreList.end(); ++itt) {
-			(*itt)->setAppCulled(false);
+		for (auto node : ignoreRestoreList) {
+			node->setAppCulled(false);
 		}
 
 		// Did we get any results?
@@ -1334,20 +1333,15 @@ namespace mwse::lua {
 		}
 
 		int effect = getOptionalParam<int>(params, "effect", -1);
-		int castType = getOptionalParam<int>(params, "castType", -1);
+		auto castType = (TES3::SpellCastType::SpellCastType)getOptionalParam<int>(params, "castType", -1);
 		int chance = getOptionalParam<int>(params, "chance", 100);
-		if (chance > 100) {
-			chance = 100;
-		}
-		else if (chance < 0) {
-			chance = 0;
-		}
+		chance = std::clamp(chance, 0, 100);
 
 		if (effect != -1) {
 			TES3::WorldController::get()->magicInstanceController->removeSpellsByEffect(reference, effect, chance);
 		}
 		else if (castType != -1) {
-			bool removeSpell = getOptionalParam<bool>(params, "removeSpell", castType != int(TES3::SpellCastType::Spell));
+			bool removeSpell = getOptionalParam<bool>(params, "removeSpell", castType != TES3::SpellCastType::Spell);
 			TES3::WorldController::get()->magicInstanceController->clearSpellEffect(reference, castType, chance, removeSpell);
 		}
 		else {
@@ -2534,23 +2528,27 @@ namespace mwse::lua {
 			unvisitedCells.pop_back();
 
 			for (auto refr : cell->persistentRefs) {
-				if (refr->baseObject->objectType == TES3::ObjectType::Door) {
-					auto destination = refr->getAttachedTravelDestination();
-					if (destination) {
-						auto destinationCell = destination->cell;
+				if (refr->baseObject->objectType != TES3::ObjectType::Door) {
+					continue;
+				}
 
-						if (destinationCell->getIsInterior()) {
-							// Queue up new unseen interior cells.
-							if (knownCells.count(destinationCell) == 0) {
-								knownCells.insert(destinationCell);
-								unvisitedCells.push_back(destinationCell);
-							}
-						}
-						else {
-							// For an exterior destination, return the door marker position.
-							return destination->destination->position;
-						}
+				auto destination = refr->getAttachedTravelDestination();
+				if (!destination) {
+					continue;
+				}
+
+				auto destinationCell = destination->cell;
+
+				if (destinationCell->getIsInterior()) {
+					// Queue up new unseen interior cells.
+					if (!knownCells.contains(destinationCell)) {
+						knownCells.insert(destinationCell);
+						unvisitedCells.push_back(destinationCell);
 					}
+				}
+				else {
+					// For an exterior destination, return the door marker position.
+					return destination->destination->position;
 				}
 			}
 		}

@@ -502,10 +502,6 @@ namespace TES3 {
 		return true;
 	}
 
-	bool Reference::getDisabled() const {
-		return BIT_TEST(objectFlags, ObjectFlag::DisabledBit);
-	}
-
 	void Reference::setDeleted(bool deleted) {
 		if (deleted == getDeleted()) {
 			return;
@@ -524,7 +520,7 @@ namespace TES3 {
 			}
 		}
 
-		BIT_SET(objectFlags, ObjectFlag::DeleteBit, deleted);
+		BaseObject::setDeleted(deleted);
 	}
 
 	bool Reference::getNoCollision() const {
