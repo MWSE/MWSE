@@ -3329,7 +3329,7 @@ namespace se::cs::dialog::render_window {
 			if (!outIds.empty()) {
 				std::vector<std::string> uniqueIds;
 				for (const auto& id : outIds) {
-					if (std::find(uniqueIds.begin(), uniqueIds.end(), id) == uniqueIds.end()) {
+					if (std::ranges::find(uniqueIds, id) == uniqueIds.end()) {
 						uniqueIds.push_back(id);
 					}
 				}

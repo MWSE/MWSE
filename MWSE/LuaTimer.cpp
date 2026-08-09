@@ -227,7 +227,7 @@ namespace mwse::lua {
 	}
 
 	std::vector<std::shared_ptr<Timer>>::iterator TimerController::insertActiveTimer(std::shared_ptr<Timer> timer) {
-		auto position = std::upper_bound(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer, comparer);
+		auto position = std::ranges::upper_bound(m_ActiveTimers, timer, comparer);
 		return m_ActiveTimers.insert(position, timer);
 	}
 

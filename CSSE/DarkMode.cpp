@@ -999,7 +999,7 @@ namespace se::cs::darkmode {
 		const auto hdc = GetDC(nullptr);
 		const auto scanLines = GetDIBits(hdc, imageInfo.hbmImage, 0, bitmap.bmHeight, pixels.data(), &bitmapInfo, DIB_RGB_COLORS);
 		if (scanLines == bitmap.bmHeight) {
-			const auto hasAlpha = std::any_of(pixels.begin(), pixels.end(), [](DWORD pixel) {
+			const auto hasAlpha = std::ranges::any_of(pixels, [](DWORD pixel) {
 				return (pixel & 0xFF000000) != 0;
 			});
 			if (!hasAlpha) {
