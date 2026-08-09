@@ -41,19 +41,13 @@ namespace mwse {
 		float totalWeight = 0.0f;
 
 		// Loop through the inventory nodes of the reference, adding weight for each item found.
-		NI::IteratedList<TES3::ItemStack*>::Node* inventoryListNode = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
-		while (inventoryListNode) {
-			TES3::ItemStack* inventoryNode = inventoryListNode->data;
-			if (inventoryNode) {
-				totalWeight += inventoryNode->object->vTable.object->getWeight(inventoryNode->object) * std::abs(inventoryNode->count);
+		for (const auto stack : static_cast<TES3::Actor*>(reference->baseObject)->inventory) {
+			totalWeight += stack->object->getWeight() * std::abs(stack->count);
 
-				// Keep track if we've run across leveled content.
-				if (!hasLeveledContent && inventoryNode->object->objectType == TES3::ObjectType::LeveledItem) {
-					hasLeveledContent = true;
-				}
+			// Keep track if we've run across leveled content.
+			if (!hasLeveledContent && stack->object->objectType == TES3::ObjectType::LeveledItem) {
+				hasLeveledContent = true;
 			}
-
-			inventoryListNode = inventoryListNode->next;
 		}
 
 		// If we ran into leveled content, make our weight negative.
