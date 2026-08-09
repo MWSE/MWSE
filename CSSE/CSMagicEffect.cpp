@@ -236,7 +236,7 @@ namespace se::cs {
 		BIT_SET(flags, EffectFlag::AllowEnchantingBit, value);
 	}
 
-	bool MagicEffect::search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex, int attribute, int skill) const {
+	bool MagicEffect::search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex, int attribute, int skill) const {
 		if (!settings.effect) {
 			return false;
 		}

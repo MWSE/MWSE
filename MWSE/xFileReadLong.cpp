@@ -29,7 +29,7 @@ namespace mwse {
 		std::list<long> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				long value = mwse::FileSystem::getInstance().readLong(fileName.c_str());
+				long value = mwse::FileSystem::getInstance().readLong(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}

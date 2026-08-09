@@ -3,7 +3,7 @@
 #include "StringUtil.h"
 
 namespace se::cs {
-	bool Faction::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Faction::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}

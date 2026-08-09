@@ -1,7 +1,7 @@
 #include "CSAlchemy.h"
 
 namespace se::cs {
-	bool Alchemy::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Alchemy::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (Object::search(needle, settings, regex)) {
 			return true;
 		}

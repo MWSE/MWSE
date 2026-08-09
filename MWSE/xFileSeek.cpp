@@ -23,7 +23,7 @@ namespace mwse {
 		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
 		long position = mwse::Stack::getInstance().popLong();
 
-		mwse::FileSystem::getInstance().seek(fileName.c_str(), position);
+		mwse::FileSystem::getInstance().seek(fileName, position);
 
 		return 0.0f;
 	}

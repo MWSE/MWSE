@@ -15,7 +15,7 @@ namespace se::cs {
 		Effect effects[8]; // 0x60
 		unsigned short flags; // 0x120
 
-		bool search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool search(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Alchemy) == 0x124, "TES3::Alchemy failed size validation");
 }

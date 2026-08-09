@@ -34,7 +34,7 @@ namespace mwse {
 		long* results = new long[maxResults];
 
 		// Read the string from the file. If we can't read a string back, push 0s.
-		std::string readString = mwse::FileSystem::getInstance().readString(fileName.c_str(), stopAtEndOfLine);
+		std::string readString = mwse::FileSystem::getInstance().readString(fileName, stopAtEndOfLine);
 		if (readString.empty()) {
 			while (maxResults--) {
 				mwse::Stack::getInstance().pushLong(0);

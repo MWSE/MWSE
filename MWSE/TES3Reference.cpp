@@ -539,7 +539,7 @@ namespace TES3 {
 		}
 	}
 
-	void Reference::setNoCollision_lua (bool set, sol::optional<bool> updateCollisions) {
+	void Reference::setNoCollision_lua(bool set, sol::optional<bool> updateCollisions) {
 		setNoCollision(set, updateCollisions.value_or(true));
 	}
 

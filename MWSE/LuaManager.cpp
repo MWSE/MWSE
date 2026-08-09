@@ -2735,7 +2735,7 @@ namespace mwse::lua {
 
 	const std::array<std::string, 2> disabledMarkers = { ".disabled", ".mohidden" };
 
-	bool isPathDisabled(const std::string_view& path) {
+	bool isPathDisabled(std::string_view path) {
 		const auto disabledPathItt = std::find_if(disabledMarkers.begin(), disabledMarkers.end(),
 			[&](std::string_view s) {
 				return path.find(s) != std::string::npos;
@@ -2743,7 +2743,7 @@ namespace mwse::lua {
 		return disabledPathItt != disabledMarkers.end();
 	}
 
-	void LuaManager::gatherMainModScripts(const std::string_view& path, bool core, const std::string_view& scriptFilename) {
+	void LuaManager::gatherMainModScripts(std::string_view path, bool core, const std::string_view& scriptFilename) {
 		if (!std::filesystem::exists(path)) {
 			return;
 		}

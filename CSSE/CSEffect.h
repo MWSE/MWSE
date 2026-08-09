@@ -25,7 +25,7 @@ namespace se::cs {
 		MagicEffect* getEffectData() const;
 		std::optional<std::string> toString() const;
 
-		bool search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Effect) == 0x18, "Effect failed size validation");
 }

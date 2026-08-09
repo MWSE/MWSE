@@ -41,7 +41,7 @@ namespace se::cs {
 		const char* getFactionRankName() const;
 		void getTraining(char* buffer, size_t bufferSize) const;
 		int getFight() const;
-		bool search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
+		bool search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(NPC) == 0x108, "NPC failed size validation");
 }

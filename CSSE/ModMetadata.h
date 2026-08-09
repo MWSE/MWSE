@@ -5,7 +5,7 @@
 namespace se::cs::metadata {
 	class ModMetadata {
 	public:
-		ModMetadata(const std::string_view& file, GameFile* gameFile);
+		ModMetadata(std::string_view file, GameFile* gameFile);
 
 		void reload();
 

@@ -19,7 +19,7 @@ namespace se::cs::dialog::script_list_window {
 	static std::optional<std::regex> currentSearchRegex;
 	static bool modeShowModifiedOnly = false;
 
-	bool matchDispatcher(const std::string_view& haystack) {
+	bool matchDispatcher(std::string_view haystack) {
 		if (currentSearchRegex) {
 			return std::regex_search(haystack.data(), currentSearchRegex.value());
 		}

@@ -44,7 +44,7 @@ namespace se::cs {
 		return &initializers[index];
 	}
 
-	bool GameSetting::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool GameSetting::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (BaseObject::search(needle, settings, regex)) {
 			return true;
 		}

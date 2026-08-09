@@ -8,8 +8,8 @@ namespace se::cs::winui {
 
 	bool GetIsValidID(int iDlgId);
 
-	HWND GetControlByText(HWND hParent, const std::string_view& text, bool ignoreResultsWithIDs);
-	bool SetWindowIdByValue(HWND hParent, const std::string_view text, int newID);
+	HWND GetControlByText(HWND hParent, std::string_view text, bool ignoreResultsWithIDs);
+	bool SetWindowIdByValue(HWND hParent, std::string_view text, int newID);
 
 	inline LONG GetRectWidth(const RECT* rect) {
 		return rect->right - rect->left;

@@ -17,30 +17,30 @@ namespace mwse {
 	public:
 		static FileSystem& getInstance() { return singleton; };
 
-		HANDLE getFile(const char* fileName);
+		HANDLE getFile(std::string_view fileName);
 
-		short readShort(const char* fileName);
-		long readLong(const char* fileName);
-		float readFloat(const char* fileName);
-		std::string readString(const char* fileName, bool stopAtEndOfLine);
+		short readShort(std::string_view fileName);
+		long readLong(std::string_view fileName);
+		float readFloat(std::string_view fileName);
+		std::string readString(std::string_view fileName, bool stopAtEndOfLine);
 
-		void writeShort(const char* fileName, const short value);
-		void writeLong(const char* fileName, const long value);
-		void writeFloat(const char* fileName, const float value);
-		void writeString(const char* fileName, std::string_view value, bool suppressNull = false);
+		void writeShort(std::string_view fileName, const short value);
+		void writeLong(std::string_view fileName, const long value);
+		void writeFloat(std::string_view fileName, const float value);
+		void writeString(std::string_view fileName, std::string_view value, bool suppressNull = false);
 
-		bool seek(const char* fileName, long absolute);
+		bool seek(std::string_view fileName, long absolute);
 
 	private:
 		FileSystem();
 
-		HANDLE openFileAt(const char* fileName, size_t position);
+		HANDLE openFileAt(std::string_view fileName, size_t position);
 
-		bool validFileName(const char* fileName);
+		bool validFileName(std::string_view fileName);
 
-		int read(const char* fileName, void* data, size_t size);
+		int read(std::string_view fileName, void* data, size_t size);
 
-		int write(const char* fileName, const void* data, size_t size);
+		int write(std::string_view fileName, const void* data, size_t size);
 
 		static FileSystem singleton;
 

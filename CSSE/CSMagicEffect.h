@@ -295,7 +295,7 @@ namespace se::cs {
 		bool getAllowEnchanting() const;
 		void setAllowEnchanting(bool value);
 
-		bool search(const std::string_view& needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr, int attribute = -1, int skill = -1) const;
+		bool search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex = nullptr, int attribute = -1, int skill = -1) const;
 	};
 	static_assert(sizeof(MagicEffect) == 0x10C, "TES3::MagicEffect failed size validation");
 }

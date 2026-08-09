@@ -14,11 +14,11 @@ namespace TES3::UI {
 		return data;
 	}
 
-	sol::object LuaData::getValue(const std::string_view& key) {
+	sol::object LuaData::getValue(std::string_view key) {
 		return data[key];
 	}
 
-	void LuaData::setValue(const std::string_view& key, sol::object value) {
+	void LuaData::setValue(std::string_view key, sol::object value) {
 		data[key] = value;
 	}
 }

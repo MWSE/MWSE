@@ -2,7 +2,7 @@
 
 namespace se::cs {
 
-	bool Enchantment::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Enchantment::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (Object::search(needle, settings, regex)) {
 			return true;
 		}

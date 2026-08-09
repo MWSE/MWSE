@@ -26,7 +26,7 @@ namespace se::cs {
 		return TES3_DialogueInfo_filter(this, actor, reference, source, dialogue);
 	}
 
-	bool DialogueInfo::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool DialogueInfo::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (loadLinkNodes && loadLinkNodes->name && string::complex_contains(loadLinkNodes->name, needle, settings, regex)) {
 			return true;
 		}

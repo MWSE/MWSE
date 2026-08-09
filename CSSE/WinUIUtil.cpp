@@ -33,7 +33,7 @@ namespace se::cs::winui {
 		return TRUE;
 	}
 
-	HWND GetControlByText(HWND hParent, const std::string_view& text, bool ignoreResultsWithIDs) {
+	HWND GetControlByText(HWND hParent, std::string_view text, bool ignoreResultsWithIDs) {
 		// Make sure our buffer in GetControlByTextEnumChildProc is big enough.
 		if (text.length() > 127) {
 			throw std::invalid_argument("Buffer length insufficient to perform operation.");
@@ -47,7 +47,7 @@ namespace se::cs::winui {
 		return param.result;
 	}
 
-	bool SetWindowIdByValue(HWND hParent, const std::string_view text, int newID) {
+	bool SetWindowIdByValue(HWND hParent, std::string_view text, int newID) {
 		auto hWnd = GetControlByText(hParent, text, true);
 		if (hWnd == NULL) {
 			return false;

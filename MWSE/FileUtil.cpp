@@ -7,7 +7,7 @@ namespace mwse {
 
 	FileSystem::FileSystem() {}
 
-	HANDLE FileSystem::getFile(const char* fileName) {
+	HANDLE FileSystem::getFile(std::string_view fileName) {
 		HANDLE result = NULL;
 
 		std::string str(fileName);
@@ -21,14 +21,14 @@ namespace mwse {
 		}
 		else {
 			mwseFileState_t state = { openFileAt(fileName, 0), 0 };
-			fileMap[fileName] = state;
+			fileMap[str] = state;
 			result = state.file;
 		}
 
 		return result;
 	}
 
-	short FileSystem::readShort(const char* fileName) {
+	short FileSystem::readShort(std::string_view fileName) {
 		short result = 0;
 		if (read(fileName, &result, sizeof(short)) != sizeof(short)) {
 			throw std::exception("Invalid size read.");
@@ -36,7 +36,7 @@ namespace mwse {
 		return result;
 	}
 
-	long FileSystem::readLong(const char* fileName) {
+	long FileSystem::readLong(std::string_view fileName) {
 		long result = 0;
 		if (read(fileName, &result, sizeof(long)) != sizeof(long)) {
 			throw std::exception("Invalid size read.");
@@ -44,7 +44,7 @@ namespace mwse {
 		return result;
 	}
 
-	float FileSystem::readFloat(const char* fileName) {
+	float FileSystem::readFloat(std::string_view fileName) {
 		float result = 0.0f;
 		if (read(fileName, &result, sizeof(float)) != sizeof(float)) {
 			throw std::exception("Invalid size read.");
@@ -52,7 +52,7 @@ namespace mwse {
 		return result;
 	}
 
-	std::string FileSystem::readString(const char* fileName, bool stopAtEndOfLine) {
+	std::string FileSystem::readString(std::string_view fileName, bool stopAtEndOfLine) {
 		HANDLE file = getFile(fileName);
 
 		// String buffer.
@@ -104,19 +104,19 @@ namespace mwse {
 		return buffer;
 	}
 
-	void FileSystem::writeShort(const char* fileName, const short value) {
+	void FileSystem::writeShort(std::string_view fileName, const short value) {
 		write(fileName, &value, sizeof(short));
 	}
 
-	void FileSystem::writeLong(const char* fileName, const long value) {
+	void FileSystem::writeLong(std::string_view fileName, const long value) {
 		write(fileName, &value, sizeof(long));
 	}
 
-	void FileSystem::writeFloat(const char* fileName, const float value) {
+	void FileSystem::writeFloat(std::string_view fileName, const float value) {
 		write(fileName, &value, sizeof(float));
 	}
 
-	void FileSystem::writeString(const char* fileName, std::string_view value, bool suppressNull) {
+	void FileSystem::writeString(std::string_view fileName, std::string_view value, bool suppressNull) {
 		size_t length = value.length();
 		if (!suppressNull) {
 			length++;
@@ -124,7 +124,7 @@ namespace mwse {
 		write(fileName, value.data(), length);
 	}
 
-	bool FileSystem::seek(const char* fileName, long position) {
+	bool FileSystem::seek(std::string_view fileName, long position) {
 		bool result = false;
 		HANDLE file = getFile(fileName);
 		if (file != INVALID_HANDLE_VALUE) {
@@ -134,25 +134,26 @@ namespace mwse {
 		return result;
 	}
 
-	HANDLE FileSystem::openFileAt(const char* fileName, size_t position) {
+	HANDLE FileSystem::openFileAt(std::string_view fileName, size_t position) {
 		if (!validFileName(fileName)) {
 			return INVALID_HANDLE_VALUE;
 		}
 
-		char realName[BUFSIZ] = "Data Files\\MWSE\\";
+		std::string realName = "Data Files\\MWSE\\";
 
 		// Create the file storage area if it doesn't already exist
 		CreateDirectoryA("Data Files\\MWSE", NULL);
 
 		// Allow connection to named pipes one the local machine.
-		if (*fileName == '|') {
-			strcpy(realName, "\\\\.\\pipe\\MWSE");
-			fileName++;
+		// We performed a check that fileName isn't empty in validFileName
+		if (fileName[0] == '|') {
+			realName = "\\\\.\\pipe\\MWSE";
+			fileName.remove_prefix(1);
 		}
+		realName += fileName;
 
-		strncpy(&realName[strlen(realName)], fileName, NELEM(realName) - strlen(realName));
 		HANDLE result = CreateFileA(
-			realName,
+			realName.c_str(),
 			GENERIC_READ | GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			NULL,
@@ -168,43 +169,36 @@ namespace mwse {
 		return result;
 	}
 
-	bool FileSystem::validFileName(const char* fileName) {
-		// Allow for a named pipe (I'm not sure it's wise, but
-		// it's requested enough.)
-		if (*fileName == '|') {
-			fileName++;
-		}
-
-		int len = 0;
-		while (*fileName) {
-			if (len++ >= 61) {
-				return false;
-			}
-			// Allow _ and . in filenames but limit their length.
-			else if (!isalnum(*fileName) && *fileName != '_' && *fileName != '.') {
-				return false;
-			}
-			fileName++;
-		}
-
+	bool FileSystem::validFileName(std::string_view fileName) {
 		// By forcing at least 5 characters, we don't have to
 		// worry about someone opening the .. or . files.
 		// Files 4 characters and under might be special like
 		// the CON, PRN, COM1, etc. DOS device files. 
-		if (len < 5) {
+		if (fileName.empty() || fileName.length() < 5 || fileName.length() >= 62) {
 			return false;
+		}
+	
+		auto itt = fileName.begin();
+		if (*itt == '|') {
+			++itt;
+		}
+
+		for (auto c = *itt; itt != fileName.end(); ++itt) {
+			// Allow _ and . in filenames but limit their length.
+			if (!isalnum(c) && c != '_' && c != '.')
+				return false;
 		}
 
 		return true;
 	}
 
-	int FileSystem::read(const char* fileName, void* data, size_t size) {
+	int FileSystem::read(std::string_view fileName, void* data, size_t size) {
 		int result = 0;
 		HANDLE file = getFile(fileName);
 		if (file != INVALID_HANDLE_VALUE)
 		{
 			//Tp21 2006-06-21: Stop MWSE getting stuck if there's no data available to be read (original code from timeslip)
-			if (*fileName == '|') { //check if it's a pipe
+			if (fileName[0] == '|') { //check if it's a pipe
 				DWORD toread;
 				PeekNamedPipe(file, NULL, 0, NULL, &toread, NULL); //look if there is something to read
 				if (!toread) return 0; //if not, return
@@ -218,7 +212,7 @@ namespace mwse {
 		return result;
 	}
 
-	int FileSystem::write(const char* fileName, const void* data, size_t size) {
+	int FileSystem::write(std::string_view fileName, const void* data, size_t size) {
 		int result = 0;
 		HANDLE file = getFile(fileName);
 		if (file != INVALID_HANDLE_VALUE) {

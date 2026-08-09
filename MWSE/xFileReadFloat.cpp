@@ -29,7 +29,7 @@ namespace mwse {
 		std::list<float> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				float value = mwse::FileSystem::getInstance().readFloat(fileName.c_str());
+				float value = mwse::FileSystem::getInstance().readFloat(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}

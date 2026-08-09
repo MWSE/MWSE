@@ -11,7 +11,7 @@ namespace se::cs {
 		return getSpellFlag(SpellFlag::PCStartSpell);
 	}
 
-	bool Spell::search(const std::string_view& needle, const SearchSettings& settings, std::regex* regex) const {
+	bool Spell::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		if (Object::search(needle, settings, regex)) {
 			return true;
 		}
