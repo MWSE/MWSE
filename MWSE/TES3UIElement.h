@@ -155,6 +155,13 @@ namespace TES3::UI {
 		long timingUpdate();
 
 		//
+		// Input event methods
+		//
+
+		void dispatchInputEvent(Property eventId, int data0, int data1, Element* source);
+		bool checkMouseEventInElement(int mouseX, int mouseY) const;
+
+		//
 		// Property methods
 		//
 
