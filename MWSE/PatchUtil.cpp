@@ -1141,10 +1141,7 @@ namespace mwse::patch {
 
 	BOOL __stdcall PatchFindClose(HANDLE hFindFile) {
 		findFileMutex.lock();
-		const auto itt = findFilePaths.find(hFindFile);
-		if (itt != findFilePaths.end()) {
-			findFilePaths.erase(itt);
-		}
+		findFilePaths.erase(hFindFile);
 		findFileMutex.unlock();
 
 		return FindClose(hFindFile);
