@@ -28,7 +28,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		long isFemale = reference->baseObject->vTable.object->isFemale(reference->baseObject);
+		long isFemale = reference->baseObject->isFemale();
 		mwse::Stack::getInstance().pushLong(isFemale);
 
 		return 0.0f;

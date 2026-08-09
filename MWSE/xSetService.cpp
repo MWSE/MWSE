@@ -32,7 +32,7 @@ namespace mwse {
 		}
 
 		// Set service mask.
-		TES3::AIConfig* aiConfig = reference->baseObject->vTable.object->getAIConfig(reference->baseObject);
+		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
 			aiConfig->merchantFlags = flags;
 		}

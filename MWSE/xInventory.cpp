@@ -48,7 +48,7 @@ namespace mwse {
 
 		mwse::Stack::getInstance().pushLong((long)firstItem->next);
 		mwse::Stack::getInstance().pushLong(firstItem->data->count);
-		mwse::Stack::getInstance().pushString(firstItem->data->object->vTable.object->getObjectID(firstItem->data->object));
+		mwse::Stack::getInstance().pushString(firstItem->data->object->getObjectID());
 
 		return 0.0f;
 	}

@@ -106,9 +106,9 @@ namespace mwse {
 
 			id = reinterpret_cast<TES3::PhysicalObject*>(object)->objectID;
 			type = object->objectType;
-			value = object->vTable.object->getValue(object);
-			weight = object->vTable.object->getWeight(object);
-			name = object->vTable.object->getName(object);
+			value = object->getValue();
+			weight = object->getWeight();
+			name = object->getName();
 
 			// Get subtype. We can't directly use the vtable here to get the type,
 			// because types are zero-indexed.
@@ -123,7 +123,7 @@ namespace mwse {
 			}
 
 			// Get enchantment id.
-			TES3::Enchantment* enchantment = object->vTable.object->getEnchantment(object);
+			TES3::Enchantment* enchantment = object->getEnchantment();
 			if (enchantment) {
 				enchantId = enchantment->objectID;
 			}
@@ -170,11 +170,11 @@ namespace mwse {
 
 		long subtype = -2;
 
-		long type = object->objectType;
+		auto type = object->objectType;
 		if (type == TES3::ObjectType::Armor || type == TES3::ObjectType::Apparatus ||
 			type == TES3::ObjectType::Clothing || type == TES3::ObjectType::Weapon)
 		{
-			subtype = object->vTable.object->getType(object);
+			subtype = object->getType();
 		}
 
 		return subtype;

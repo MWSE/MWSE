@@ -70,7 +70,7 @@ namespace mwse {
 		long minorMask = mwse::Stack::getInstance().popLong();
 
 		// Get the class record.
-		TES3::Class* classRecord = object->vTable.object->getClass(object);
+		TES3::Class* classRecord = object->getClass();
 
 		// Get basic class details.
 		char* id = classRecord->id;

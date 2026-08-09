@@ -31,7 +31,7 @@ namespace mwse {
 		// Get the base record.
 		TES3::BaseObject* record = reference->baseObject;
 		if (record) {
-			name = reference->baseObject->vTable.object->getName(reference->baseObject);
+			name = reference->baseObject->getName();
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {

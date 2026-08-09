@@ -35,7 +35,7 @@ namespace mwse {
 			cost = enchantment->chargeCost;
 			maxCharge = enchantment->maxCharge;
 			effects = enchantment->getActiveEffectCount();
-			autocalc = enchantment->vTable.object->getAutoCalc(enchantment);
+			autocalc = enchantment->getAutoCalc();
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
