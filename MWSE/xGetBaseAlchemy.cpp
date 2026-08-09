@@ -32,7 +32,7 @@ namespace mwse {
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
-		if (mobileObject == NULL) {
+		if (!mobileObject) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseAlchemy: Could not find MACP record for reference." << std::endl;
 			}

@@ -31,7 +31,7 @@ namespace mwse {
 		}
 
 		auto mobileObject = reference->getAttachedMobileActor();
-		if (mobileObject == NULL) {
+		if (!mobileObject) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseAgi: Could not find MACP record for reference." << std::endl;
 			}

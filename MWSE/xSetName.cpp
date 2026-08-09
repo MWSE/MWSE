@@ -39,7 +39,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetName: No reference provided." << std::endl;
 			}
@@ -49,7 +49,7 @@ namespace mwse {
 
 		// Get the base record.
 		TES3::BaseObject* recordGeneric = reference->baseObject;
-		if (recordGeneric == NULL) {
+		if (!recordGeneric) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetName: No record found for reference." << std::endl;
 			}
@@ -58,8 +58,8 @@ namespace mwse {
 		}
 
 		// Get string pointer based on record type.
-		char* namePtr = NULL;
-		char** nameContainer = NULL;
+		char* namePtr = nullptr;
+		char** nameContainer = nullptr;
 		TES3::ObjectType::ObjectType recordType = recordGeneric->objectType;
 		switch (recordType) {
 		case TES3::ObjectType::NPC:
@@ -104,7 +104,7 @@ namespace mwse {
 		}
 
 		// Bail out if we haven't found the name.
-		if (namePtr == NULL) {
+		if (!namePtr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetName: Unsupported record format: " << recordType << "." << std::endl;
 			}
@@ -113,7 +113,7 @@ namespace mwse {
 		}
 
 		// Some strings might need to be recreated.
-		if (nameContainer != NULL && name.length() > strlen(namePtr)) {
+		if (nameContainer != nullptr && name.length() > strlen(namePtr)) {
 			namePtr = reinterpret_cast<char*>(se::memory::realloc(namePtr, name.length() + 1));
 			*nameContainer = namePtr;
 		}

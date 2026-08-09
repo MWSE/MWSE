@@ -29,7 +29,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModService: Called on invalid reference." << std::endl;
 			}
@@ -58,7 +58,7 @@ namespace mwse {
 		}
 
 		long services = aiConfig->merchantFlags | classRecord->services;
-
+		
 		// Want to remove services.
 		if (data < 0) {
 			services = services & (~(0 - data));

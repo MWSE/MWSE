@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetWeight::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetWeight: No reference provided." << std::endl;
 			}
@@ -34,7 +34,7 @@ namespace mwse {
 		try {
 			// Get record.
 			auto object = reference->baseObject;
-			if (object == NULL) {
+			if (!object) {
 				throw std::exception("No base object found.");
 			}
 

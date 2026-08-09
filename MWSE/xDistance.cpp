@@ -17,7 +17,7 @@ namespace mwse {
 	float xDistance::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get target reference
 		TES3::Reference* targetref = reinterpret_cast<TES3::Reference*>(mwse::Stack::getInstance().popLong());
-		if (targetref == NULL) {
+		if (!targetref) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModProgressSkill: Target reference is invalid." << std::endl;
 			}
@@ -27,7 +27,7 @@ namespace mwse {
 
 		// Get script reference.
 		TES3::Reference* thisref = virtualMachine.getReference();
-		if (thisref == NULL) {
+		if (!thisref) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModProgressSkill: Script reference is invalid." << std::endl;
 			}

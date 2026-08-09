@@ -23,7 +23,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference("player");
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xPlace: Called on invalid reference." << std::endl;
 			}
@@ -33,7 +33,7 @@ namespace mwse {
 
 		// Get the template we're supposed to place.
 		TES3::BaseObject* templateToPlace = virtualMachine.getTemplate(id.c_str());
-		if (templateToPlace == NULL) {
+		if (!templateToPlace) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xPlace: No template found for id '" << id << "'." << std::endl;
 			}

@@ -18,7 +18,7 @@ namespace mwse {
 	float xGetName::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetName: No reference provided." << std::endl;
 			}
@@ -26,7 +26,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		const char* name = NULL;
+		const char* name = nullptr;
 
 		// Get the base record.
 		TES3::BaseObject* record = reference->baseObject;

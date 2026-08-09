@@ -71,7 +71,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xContentListFiltered: Called on invalid reference." << std::endl;
 			}
@@ -94,16 +94,16 @@ namespace mwse {
 		}
 
 		// Results.
-		const char* id = NULL;
+		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
 		long value = 0;
 		float weight = 0;
-		const char* name = NULL;
-		NI::IteratedList<TES3::ItemStack*>::Node* next = NULL;
+		const char* name = nullptr;
+		NI::IteratedList<TES3::ItemStack*>::Node* next = nullptr;
 
 		// If we aren't given a node, get the first one.
-		if (node == NULL) {
+		if (!node) {
 			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 
 			// Pass over any records that don't match the current filter.

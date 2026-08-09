@@ -20,7 +20,7 @@ namespace mwse {
 
 		// Get reference to what we're finding the lock level of.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetLockLevel: No reference provided." << std::endl;
 			}

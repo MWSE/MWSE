@@ -30,7 +30,7 @@ namespace mwse {
 
 		// Validate effect index.
 		const auto enchantment = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId);
-		if (enchantment != NULL) {
+		if (enchantment) {
 			type = int(enchantment->castType);
 			cost = enchantment->chargeCost;
 			maxCharge = enchantment->maxCharge;

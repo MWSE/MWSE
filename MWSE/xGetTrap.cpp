@@ -18,13 +18,13 @@ namespace mwse {
 	xGetTrap::xGetTrap() : mwse::InstructionInterface_t(OpCode::xGetTrap) {}
 
 	float xGetTrap::execute(mwse::VMExecuteInterface& virtualMachine) {
-		char* id = NULL;
-		char* name = NULL;
+		char* id = nullptr;
+		char* name = nullptr;
 		short cost = 0;
 
 		// Get reference to what we're finding the trap of.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetTrap: Called on invalid reference." << std::endl;
 			}

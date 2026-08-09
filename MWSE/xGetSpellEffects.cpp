@@ -23,7 +23,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSpellEffects: Called on invalid reference." << std::endl;
 			}
@@ -33,7 +33,7 @@ namespace mwse {
 
 		// Get spell template by the id.
 		TES3::BaseObject* spellTemplate = virtualMachine.getTemplate(id.c_str());
-		if (spellTemplate == NULL) {
+		if (!spellTemplate) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSpellEffects: No template found with id '" << id << "'." << std::endl;
 			}

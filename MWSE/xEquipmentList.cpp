@@ -34,7 +34,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (!reference) {
 			mwse::log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);
@@ -80,18 +80,18 @@ namespace mwse {
 		}
 
 		// Results.
-		const char* id = NULL;
+		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
 		long subtype = -1;
 		long value = 0;
 		float weight = 0;
-		const char* name = NULL;
-		const char* enchantId = NULL;
-		NI::IteratedList<TES3::EquipmentStack*>::Node* next = NULL;
+		const char* name = nullptr;
+		const char* enchantId = nullptr;
+		NI::IteratedList<TES3::EquipmentStack*>::Node* next = nullptr;
 
 		// If we aren't given a node, get the first one.
-		if (node == NULL) {
+		if (!node) {
 			node = actor->equipment.head;
 
 			// Pass over any records that don't match the current filters.
@@ -164,7 +164,7 @@ namespace mwse {
 	}
 
 	long xEquipmentList::getItemSubType(TES3::Object* object) {
-		if (object == NULL) {
+		if (!object) {
 			return -2;
 		}
 

@@ -22,14 +22,14 @@ namespace mwse {
 		TES3::Reference* reference = (TES3::Reference*)mwse::Stack::getInstance().popLong();
 
 		// Start looking for our next reference.
-		TES3::Reference* next = NULL;
+		TES3::Reference* next = nullptr;
 		__try {
 			if (reference) {
 				// Try to get the next non-removed reference linked down from the passed one.
 				next = static_cast<TES3::Reference*>(reference->nextInCollection->skipDeletedObjects());
 
 				// If we found nothing, check the stored exterior references.
-				if (next == NULL && mwse::tes3::exteriorRefs[0] != NULL) {
+				if (!next && mwse::tes3::exteriorRefs[0] != nullptr) {
 					next = mwse::tes3::exteriorRefs[0];
 					for (auto i = 0; i < 8; ++i) {
 						mwse::tes3::exteriorRefs[i] = mwse::tes3::exteriorRefs[i + 1];
@@ -47,7 +47,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xNextRef: Invalid object given in script " << script->sourceMod->filename << "/" << script->header.name << ". Fix script to not save variables across saves!" << std::endl;
 			}
-			next = NULL;
+			next = nullptr;
 		}
 
 		mwse::Stack::getInstance().pushLong((long)next);

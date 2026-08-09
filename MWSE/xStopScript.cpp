@@ -24,7 +24,7 @@ namespace mwse {
 	float xStopScript::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get parameter: script name. We allow a value of 0 to target the current script.
 		long scriptNameId = mwse::Stack::getInstance().popLong();
-		const char* scriptName = NULL;
+		const char* scriptName = nullptr;
 		if (scriptNameId == 0) {
 			scriptName = virtualMachine.getScript()->header.name;
 		}
@@ -34,7 +34,7 @@ namespace mwse {
 
 		// Try to get the target script.
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName);
-		if (targetScript == NULL) {
+		if (!targetScript) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xStopScript: No script could be found with name '" << scriptName << "'." << std::endl;
 			}
