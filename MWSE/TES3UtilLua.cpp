@@ -682,7 +682,7 @@ namespace mwse::lua {
 		}
 	}
 
-	TES3::SoundGenerator* getSoundGenerator(std::string creatureId, unsigned int type) {
+	TES3::SoundGenerator* getSoundGenerator(const std::string& creatureId, unsigned int type) {
 		auto nonDynamicData = TES3::DataHandler::get()->nonDynamicData;
 		auto creature = nonDynamicData->resolveObjectByType<TES3::Creature>(creatureId);
 		if (creature == nullptr) {

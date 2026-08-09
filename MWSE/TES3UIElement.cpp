@@ -767,7 +767,7 @@ namespace TES3::UI {
 		return (flow == Property::top_to_bottom) ? "top_to_bottom" : "left_to_right";
 	}
 
-	void Element::setFlowDirectionString(std::string value) {
+	void Element::setFlowDirectionString(const std::string& value) {
 		auto prop = (value == "top_to_bottom") ? Property::top_to_bottom : Property::left_to_right;
 		setProperty(TES3::UI::Property::flow_direction, prop);
 	}
@@ -869,7 +869,7 @@ namespace TES3::UI {
 		return "left";
 	}
 
-	void Element::setJustifyTextString(std::string value) {
+	void Element::setJustifyTextString(const std::string& value) {
 		auto prop = Property::left;
 		if (value == "center") {
 			prop = Property::center;

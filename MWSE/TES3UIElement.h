@@ -252,7 +252,7 @@ namespace TES3::UI {
 		bool getDisabled() const;
 		void setDisabled(bool value);
 		std::string getFlowDirectionString() const;
-		void setFlowDirectionString(std::string value);
+		void setFlowDirectionString(const std::string& value);
 		int getFont() const;
 		void setFont_lua(sol::optional<int> value = 0);
 		int getHeight() const;
@@ -270,7 +270,7 @@ namespace TES3::UI {
 		float getImageScaleY() const;
 		void setImageScaleY(float value);
 		std::string getJustifyTextString() const;
-		void setJustifyTextString(std::string value);
+		void setJustifyTextString(const std::string& value);
 		sol::optional<int> getMaxHeight_lua() const;
 		void setMaxHeight_lua(sol::optional<int> value = INT32_MAX);
 		sol::optional<int> getMaxWidth_lua() const;

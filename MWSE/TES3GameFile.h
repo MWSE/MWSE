@@ -82,7 +82,7 @@ namespace TES3 {
 		int writeChunkValue(unsigned int tag, const T* data) {
 			return writeChunkData(tag, data, sizeof(T));
 		}
-		int writeChunkString(unsigned int tag, std::string string);
+		int writeChunkString(unsigned int tag, const std::string& string);
 		int writeChunkData(unsigned int tag, const void * data, unsigned int size);
 		int writeRecordHeader(unsigned int tag, unsigned int flags);
 		int endRecord();
