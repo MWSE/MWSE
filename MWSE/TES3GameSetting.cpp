@@ -52,7 +52,7 @@ namespace TES3 {
 	std::string GameSetting::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3gameSetting:" << getName() << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	sol::object GameSetting::getDefaultValue_lua(sol::this_state ts) const {

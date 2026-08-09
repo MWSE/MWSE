@@ -321,7 +321,7 @@ namespace TES3 {
 			ss << " (" << getGridX() << ", " << getGridY() << ")";
 		}
 
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	bool Cell::isPointInCell(float x, float y) const {

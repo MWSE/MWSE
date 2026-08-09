@@ -203,7 +203,7 @@ namespace mge::lua {
 			}
 		}
 
-		return std::move(out.str());
+		return out.str();
 	}
 
 	sol::optional<ShaderHandleLua> ShadersConfig::findShader(sol::optional<sol::table> params) {

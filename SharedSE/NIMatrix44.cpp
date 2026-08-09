@@ -87,7 +87,7 @@ namespace NI {
 	std::string Matrix44::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Matrix44::toJson() const {
@@ -98,7 +98,7 @@ namespace NI {
 			<< m2.toJson() << ","
 			<< m3.toJson()
 			<< "]";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	Matrix44 Matrix44::copy() const {

@@ -10,7 +10,7 @@ namespace TES3 {
 	std::string Quest::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3quest:" << getObjectID() << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	bool Quest::isActive() const {

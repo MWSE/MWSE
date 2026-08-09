@@ -119,7 +119,7 @@ namespace mwse::lua {
 		auto result = std::move(outputBuilder.str());
 		outputBuilder.clear();
 		outputBuilderMutex.unlock();
-		return std::move(result);
+		return result;
 	}
 
 	void LuaExecutor::defineLuaBindings() {

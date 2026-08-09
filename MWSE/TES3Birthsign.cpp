@@ -18,7 +18,7 @@ namespace TES3 {
 	std::string Birthsign::getAndFreeDescription() {
 		std::string desc = getDescription();
 		freeDescription();
-		return std::move(desc);
+		return desc;
 	}
 }
 

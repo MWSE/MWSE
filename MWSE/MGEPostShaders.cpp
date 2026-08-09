@@ -39,7 +39,7 @@ namespace mge {
 	std::string ShaderHandleLua::toJson() const {
 		std::ostringstream ss;
 		ss << "\"" << api->shaderGetName(handle) << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	sol::table ShaderHandleLua::listVariables(sol::this_state ts) const {

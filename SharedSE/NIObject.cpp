@@ -143,7 +143,7 @@ namespace NI {
 			name = static_cast<const ObjectNET*>(this)->name;
 		}
 		ss << getRunTimeTypeInformation()->toString() << ":" << (name ? name : "(unnamed)");
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Object::toJson() const {
@@ -153,7 +153,7 @@ namespace NI {
 			name = static_cast<const ObjectNET*>(this)->name;
 		}
 		ss << "\"" << getRunTimeTypeInformation()->toString() << ":" << (name ? name : "(unnamed)") << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 #if defined(SE_USE_LUA) && SE_USE_LUA == 1

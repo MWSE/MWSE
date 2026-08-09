@@ -48,13 +48,13 @@ namespace NI {
 	std::string Quaternion::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Quaternion::toJson() const {
 		std::ostringstream ss;
 		ss << "{\"w\":" << w << ",\"x\":" << x << ",\"y\":" << y << ",\"z\":" << z << "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	Quaternion Quaternion::copy() const {

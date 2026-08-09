@@ -251,7 +251,7 @@ namespace TES3 {
 	std::string Dialogue::toJson() {
 		std::ostringstream ss;
 		ss << "\"tes3dialogue:" << name << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	bool Dialogue::addToJournal_lua(sol::table params) {

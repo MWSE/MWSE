@@ -275,7 +275,7 @@ namespace TES3::UI {
 
 	std::string WidgetParagraphInput::getText() const {
 		auto textInput = WidgetTextInput::fromElement(findChild(uiidParagraphInputText));
-		return std::move(textInput->getText());
+		return textInput->getText();
 	}
 
 	void WidgetParagraphInput::setText(const char* text) {
@@ -579,7 +579,7 @@ namespace TES3::UI {
 		if (i != std::string::npos) {
 			editText.erase(i, 1);
 		}
-		return std::move(editText);
+		return editText;
 	}
 	void WidgetTextInput::setText(const char* text) {
 		// Use standard setText without adding a caret.

@@ -244,7 +244,7 @@ namespace TES3 {
 			results.push_back(mobile);
 		}
 
-		return std::move(results);
+		return results;
 	}
 
 	float MobilePlayer::getCompanionMaxDistance() const {

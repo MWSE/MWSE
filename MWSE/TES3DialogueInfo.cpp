@@ -397,7 +397,7 @@ namespace TES3 {
 	std::string DialogueInfo::toJson() {
 		std::ostringstream ss;
 		ss << "\"tes3dialogueInfo:" << getID().value_or("<invalid>") << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 }
 
