@@ -241,7 +241,7 @@ namespace TES3 {
 			luaManager.restorePersistentTimers();
 
 			if (mwse::lua::event::LoadedGameEvent::getEventEnabled()) {
-				luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadedGameEvent(eventFileName.c_str(), fileName == NULL));
+				luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadedGameEvent(eventFileName.c_str(), fileName == nullptr));
 			}
 
 			// Extra things we want to do if we're successfully loading.

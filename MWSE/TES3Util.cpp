@@ -71,7 +71,7 @@ namespace mwse::tes3 {
 		long skillAttributeId, long range, long area, long duration,
 		long minimumMagnitude, long maximumMagnitude) {
 		// Validate effect pointer.
-		if (effects == NULL) {
+		if (effects == nullptr) {
 			mwse::log::getLog() << __FUNCTION__ << ": No effect passed." << std::endl;
 			return false;
 		}
@@ -244,11 +244,11 @@ namespace mwse::tes3 {
 		customArmorSlots[data->slot] = data;
 	}
 
-	TES3::Reference* exteriorRefs[9] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+	TES3::Reference* exteriorRefs[9] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 	void clearExteriorRefs() {
 		for (size_t i = 0; i < 9; ++i) {
-			exteriorRefs[i] = NULL;
+			exteriorRefs[i] = nullptr;
 		}
 	}
 
@@ -257,7 +257,7 @@ namespace mwse::tes3 {
 		// Call our load event.
 		auto& luaManager = mwse::lua::LuaManager::getInstance();
 		if (mwse::lua::event::LoadGameEvent::getEventEnabled()) {
-			luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadGameEvent(NULL, false, true));
+			luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadGameEvent(nullptr, false, true));
 		}
 
 		// Call original function.
@@ -269,7 +269,7 @@ namespace mwse::tes3 {
 
 		// Call our post-load event.
 		if (mwse::lua::event::LoadedGameEvent::getEventEnabled()) {
-			luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadedGameEvent(NULL, false, true));
+			luaManager.getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::LoadedGameEvent(nullptr, false, true));
 		}
 	}
 

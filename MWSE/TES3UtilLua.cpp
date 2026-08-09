@@ -642,7 +642,7 @@ namespace mwse::lua {
 		TES3::Reference* reference = getOptionalParamExecutionReference(params);
 		TES3::Item* item = getOptionalParamObject<TES3::Item>(params, "item");
 		auto state = getOptionalParam<bool>(params, "pickup", true) ? TES3::ItemSoundState::Up : TES3::ItemSoundState::Down;
-		if (item == NULL) {
+		if (!item) {
 			return;
 		}
 
@@ -1148,7 +1148,7 @@ namespace mwse::lua {
 
 	TES3::EquipmentStack* getEquippedItem(sol::table params) {
 		// Find our equipment based on the object given.
-		NI::IteratedList<TES3::EquipmentStack*>* equipment = NULL;
+		NI::IteratedList<TES3::EquipmentStack*>* equipment = nullptr;
 		sol::object actor = params["actor"];
 		if (actor.valid()) {
 			if (actor.is<TES3::Reference*>()) {

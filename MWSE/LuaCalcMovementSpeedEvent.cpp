@@ -8,7 +8,7 @@
 
 namespace mwse::lua::event {
 	CalculateMovementSpeed::CalculateMovementSpeed(MovementType type, TES3::MobileActor* mobile, float speed) :
-		ObjectFilteredEvent(NULL, mobile->reference),
+		ObjectFilteredEvent(nullptr, mobile->reference),
 		m_Type(type),
 		m_MobileActor(mobile),
 		m_Speed(speed)
