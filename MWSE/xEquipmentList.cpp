@@ -18,6 +18,9 @@ namespace mwse {
 		virtual float execute(VMExecuteInterface& virtualMachine);
 
 	private:
+		const long NO_ITEM_SUBTYPE = -1l;
+		const long NO_ITEM_SUBTYPE_OFFSET = NO_ITEM_SUBTYPE - 1l;
+
 		bool nodeMatchesFilter(NI::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);
 		long getItemSubType(TES3::Object* object);
 	};
@@ -83,7 +86,7 @@ namespace mwse {
 		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
-		long subtype = -1;
+		long subtype = NO_ITEM_SUBTYPE;
 		long value = 0;
 		float weight = 0;
 		const char* name = nullptr;
@@ -163,12 +166,14 @@ namespace mwse {
 		return true;
 	}
 
+
+
 	long xEquipmentList::getItemSubType(TES3::Object* object) {
 		if (object == nullptr) {
-			return -2;
+			return NO_ITEM_SUBTYPE_OFFSET;
 		}
 
-		long subtype = -2;
+		long subtype = NO_ITEM_SUBTYPE_OFFSET;
 
 		auto type = object->objectType;
 		if (type == TES3::ObjectType::Armor || type == TES3::ObjectType::Apparatus ||
