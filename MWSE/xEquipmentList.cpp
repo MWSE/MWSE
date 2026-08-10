@@ -11,6 +11,11 @@
 #include "TES3Reference.h"
 #include "TES3Weapon.h"
 
+enum class ItemSubtype : long {
+	NoItemSubtype = -1,
+	NoItemSubtypeZeroIndexed = -2,
+};
+
 namespace mwse {
 	class xEquipmentList : InstructionInterface_t {
 	public:
@@ -18,11 +23,8 @@ namespace mwse {
 		virtual float execute(VMExecuteInterface& virtualMachine);
 
 	private:
-		const long NO_ITEM_SUBTYPE = -1l;
-		const long NO_ITEM_SUBTYPE_OFFSET = NO_ITEM_SUBTYPE - 1l;
-
 		bool nodeMatchesFilter(NI::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);
-		long getItemSubType(TES3::Object* object);
+		long getItemSubType(const TES3::Object* object);
 	};
 
 	static xEquipmentList xEquipmentListInstance;
@@ -86,7 +88,7 @@ namespace mwse {
 		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
-		long subtype = NO_ITEM_SUBTYPE;
+		long subtype = (long)ItemSubtype::NoItemSubtype;
 		long value = 0;
 		float weight = 0;
 		const char* name = nullptr;
@@ -168,12 +170,12 @@ namespace mwse {
 
 
 
-	long xEquipmentList::getItemSubType(TES3::Object* object) {
+	long xEquipmentList::getItemSubType(const TES3::Object* object) {
 		if (object == nullptr) {
-			return NO_ITEM_SUBTYPE_OFFSET;
+			return (long)ItemSubtype::NoItemSubtypeZeroIndexed;
 		}
 
-		long subtype = NO_ITEM_SUBTYPE_OFFSET;
+		long subtype = (long)ItemSubtype::NoItemSubtypeZeroIndexed;
 
 		auto type = object->objectType;
 		if (type == TES3::ObjectType::Armor || type == TES3::ObjectType::Apparatus ||
