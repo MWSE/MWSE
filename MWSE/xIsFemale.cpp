@@ -20,7 +20,7 @@ namespace mwse {
 	float xIsFemale::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xIsFemale: Called on invalid reference." << std::endl;
 			}

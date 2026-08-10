@@ -20,7 +20,7 @@ namespace mwse {
 	float xInventory::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xInventory: Invalid reference attachment." << std::endl;
 			}
@@ -39,7 +39,7 @@ namespace mwse {
 		}
 
 		NI::IteratedList<TES3::ItemStack*>::Node* firstItem = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
-		if (firstItem == NULL) {
+		if (firstItem == nullptr) {
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);

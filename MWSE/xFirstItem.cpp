@@ -48,7 +48,7 @@ namespace mwse {
 					}
 				}
 
-				// Make sure that we end our list with a NULL, so we know we're done.
+				// Make sure that we end our list with a nullptr, so we know we're done.
 				mwse::tes3::exteriorRefs[exteriorCount] = nullptr;
 
 				// Make sure the reference in the center cell is valid.

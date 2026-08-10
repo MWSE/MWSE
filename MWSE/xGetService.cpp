@@ -22,7 +22,7 @@ namespace mwse {
 	float xGetService::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetRace: No reference provided." << std::endl;
 			}

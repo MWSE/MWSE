@@ -23,7 +23,7 @@ namespace mwse {
 
 		// Get spell.
 		TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(id.c_str());
-		if (spell == NULL) {
+		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xDeleteSpell: No spell found with id '" << id << "'." << std::endl;
 			}

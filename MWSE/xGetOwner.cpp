@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetOwner::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetOwner: No reference provided." << std::endl;
 			}
@@ -29,7 +29,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		const char* owner = NULL;
+		const char* owner = nullptr;
 
 		// Get the attached varnode.
 		auto node = reference->getAttachedItemData();

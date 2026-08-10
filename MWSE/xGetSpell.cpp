@@ -27,7 +27,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSpell: Could not find reference." << std::endl;
 			}

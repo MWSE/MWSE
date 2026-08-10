@@ -26,7 +26,7 @@ namespace mwse {
 	float xGetRace::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetRace: No reference provided." << std::endl;
 			}
@@ -35,7 +35,7 @@ namespace mwse {
 
 		// Get the base record.
 		TES3::NPCInstance* object = reinterpret_cast<TES3::NPCInstance*>(reference->baseObject);
-		if (object == NULL) {
+		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetRace: No record found for reference." << std::endl;
 			}

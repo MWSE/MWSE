@@ -29,7 +29,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetMaxCondition: No reference provided." << std::endl;
 			}
@@ -39,7 +39,7 @@ namespace mwse {
 
 		// Get the base object.
 		TES3::BaseObject* object = reference->baseObject;
-		if (object == NULL) {
+		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetMaxCondition: No object found for reference." << std::endl;
 			}

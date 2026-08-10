@@ -24,7 +24,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetService: Called on invalid reference." << std::endl;
 			}
