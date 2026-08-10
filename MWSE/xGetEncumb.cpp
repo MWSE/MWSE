@@ -42,6 +42,10 @@ namespace mwse {
 
 		// Loop through the inventory nodes of the reference, adding weight for each item found.
 		for (const auto stack : static_cast<TES3::Actor*>(reference->baseObject)->inventory) {
+			if (!stack) {
+				continue;
+			}
+
 			totalWeight += stack->object->getWeight() * std::abs(stack->count);
 
 			// Keep track if we've run across leveled content.
