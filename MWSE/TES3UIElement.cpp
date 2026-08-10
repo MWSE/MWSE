@@ -289,12 +289,12 @@ namespace TES3::UI {
 		if (moveFrom < insertBefore) {
 			int shift = insertBefore - moveFrom;
 			memmove_s(from, sizeof(Element*) * shift, from + count, sizeof(Element*) * shift);
-			memmove_s(to - count, sizeof(Element*) * count, &*temp.begin(), sizeof(Element*) * count);
+			memmove_s(to - count, sizeof(Element*) * count, std::to_address(temp.begin()), sizeof(Element*) * count);
 		}
 		else {
 			int shift = moveFrom - insertBefore;
 			memmove_s(to + count, sizeof(Element*) * shift, to, sizeof(Element*) * shift);
-			memmove_s(to, sizeof(Element*) * count, &*temp.begin(), sizeof(Element*) * count);
+			memmove_s(to, sizeof(Element*) * count, std::to_address(temp.begin()), sizeof(Element*) * count);
 		}
 
 		return true;
