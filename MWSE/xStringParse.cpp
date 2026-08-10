@@ -34,14 +34,12 @@ namespace mwse {
 		se::string::enumerate(format.c_str(), resultCount, eolMode);
 		resultCount++;
 
-		long* results = new long[resultCount];
-		se::string::secernate(format.c_str(), string.c_str(), results, resultCount);
+		std::vector<long> results(resultCount);
+		se::string::secernate(format.c_str(), string.c_str(), results.data(), resultCount);
 
 		while (resultCount--) {
 			mwse::Stack::getInstance().pushLong(results[resultCount]);
 		}
-
-		delete[] results;
 
 		return 0.0f;
 	}
