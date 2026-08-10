@@ -22,7 +22,7 @@ namespace mwse {
 		mwseString& spellId = virtualMachine.getString(Stack::getInstance().popLong());
 
 		// Return values.
-		char* name = nullptr;
+		char* name = NULL;
 		long type = 0;
 		long cost = 0;
 		long effects = 0;
@@ -31,7 +31,7 @@ namespace mwse {
 
 		// Get spell data by id.
 		const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId);;
-		if (spell) {
+		if (spell != NULL) {
 			name = spell->name;
 			type = long(spell->castType);
 			cost = spell->magickaCost;

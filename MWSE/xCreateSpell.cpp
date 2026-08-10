@@ -46,7 +46,7 @@ namespace mwse {
 		}
 
 		// Verify that a spell of this id doesn't already exist.
-		if (TES3::DataHandler::get()->nonDynamicData->getSpellById(spellId.c_str())) {
+		if (TES3::DataHandler::get()->nonDynamicData->getSpellById(spellId.c_str()) != NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xCreateSpell: A spell of the given id '" << spellId << "' already exists." << std::endl;
 			}

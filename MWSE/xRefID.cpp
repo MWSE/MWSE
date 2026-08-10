@@ -18,7 +18,7 @@ namespace mwse {
 
 	float xRefID::execute(mwse::VMExecuteInterface& virtualMachine) {
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xRefID: Called on invalid reference." << std::endl;
 			}

@@ -22,7 +22,7 @@ namespace mwse {
 
 		// Get reference to what we're finding the trap of.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetTrap: No reference provided." << std::endl;
 			}
@@ -51,7 +51,7 @@ namespace mwse {
 		}
 
 		// If we have a spellId, set it. Otherwise we'll clear it.
-		TES3::Spell* spell = nullptr;
+		TES3::Spell* spell = NULL;
 		if (spellId) {
 			// Get the spell based on the ID given.
 			mwseString& spellObjId = virtualMachine.getString(spellId);

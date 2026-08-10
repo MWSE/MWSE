@@ -38,7 +38,7 @@ namespace mwse {
 
 		// Get script reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModAttribute: Called on invalid reference." << std::endl;
 			}
@@ -58,7 +58,7 @@ namespace mwse {
 
 		// Get the associated MACP record.
 		auto mobileObject = reference->getAttachedMobileActor();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModAttribute: Could not find MACP record for reference." << std::endl;
 			}

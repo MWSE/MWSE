@@ -24,7 +24,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xRemoveItem: Called on invalid reference." << std::endl;
 			}
@@ -33,7 +33,7 @@ namespace mwse {
 
 		// Get spell template by the id.
 		TES3::BaseObject* itemTemplate = virtualMachine.getTemplate(id.c_str());
-		if (!itemTemplate) {
+		if (itemTemplate == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xRemoveItem: No template found with id '" << id << "'." << std::endl;
 			}

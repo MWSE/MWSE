@@ -21,9 +21,9 @@ namespace mwse {
 		// Clear elements in our stored exterior ref list.
 		mwse::tes3::clearExteriorRefs();
 
-		TES3::Reference* reference = nullptr;
+		TES3::Reference* reference = NULL;
 		auto dataHandler = TES3::DataHandler::get();
-		if (dataHandler->currentInteriorCell) {
+		if (dataHandler->currentInteriorCell != NULL) {
 			reference = static_cast<TES3::Reference*>(dataHandler->currentInteriorCell->persistentRefs.head->skipDeletedObjects());
 		}
 		else {
@@ -40,22 +40,22 @@ namespace mwse {
 					cellPointer = dataHandler->exteriorCellData[i];
 					if (cellPointer->isFullyLoaded()) {
 						TES3::Reference* tempReference = static_cast<TES3::Reference*>(cellPointer->cell->persistentRefs.head->skipDeletedObjects());
-						if (tempReference) {
+						if (tempReference != NULL) {
 							mwse::tes3::exteriorRefs[exteriorCount] = tempReference;
 							exteriorCount++;
 						}
 					}
 				}
 
-				// Make sure that we end our list with a nullptr, so we know we're done.
-				mwse::tes3::exteriorRefs[exteriorCount] = nullptr;
+				// Make sure that we end our list with a NULL, so we know we're done.
+				mwse::tes3::exteriorRefs[exteriorCount] = NULL;
 
 				// Make sure the reference in the center cell is valid.
 				// If not, use the reference from another exterior cell.
-				if (reference && exteriorCount > 0) {
+				if (reference == NULL && exteriorCount > 0) {
 					exteriorCount--;
 					reference = mwse::tes3::exteriorRefs[exteriorCount];
-					mwse::tes3::exteriorRefs[exteriorCount] = nullptr;
+					mwse::tes3::exteriorRefs[exteriorCount] = NULL;
 				}
 			}
 		}

@@ -23,7 +23,7 @@ namespace mwse {
 		float value = Stack::getInstance().popFloat();
 
 		TES3::GlobalVariable* global = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(variable.c_str());
-		if (!global) {
+		if (global == NULL) {
 			mwse::log::getLog() << "xSetGlobal: No global could be found with id '" << variable << "'." << std::endl;
 			mwse::Stack::getInstance().pushLong(false);
 			return 0.0f;

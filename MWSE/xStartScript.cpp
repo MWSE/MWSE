@@ -26,7 +26,7 @@ namespace mwse {
 
 		// Try to get the target script.
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName.c_str());
-		if (!targetScript) {
+		if (targetScript == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xStartScript: No script could be found with name '" << scriptName << "'." << std::endl;
 			}

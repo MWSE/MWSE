@@ -25,7 +25,7 @@ namespace mwse {
 
 		// Get global.
 		const TES3::GlobalVariable* global = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(variable.c_str());
-		if (!global) {
+		if (global == NULL) {
 			mwse::log::getLog() << "xGetGlobal: Global '" << variable << "' could not be found." << std::endl;
 			mwse::Stack::getInstance().pushFloat(0.0f);
 			mwse::Stack::getInstance().pushLong(false);

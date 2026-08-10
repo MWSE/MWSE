@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetValue::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetValue: No reference provided." << std::endl;
 			}
@@ -34,7 +34,7 @@ namespace mwse {
 		try {
 			// Get record.
 			auto object = reference->baseObject;
-			if (!object) {
+			if (object == NULL) {
 				throw std::exception("No base record found.");
 			}
 

@@ -32,7 +32,7 @@ namespace mwse {
 
 		// Get reference to target.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
 			}
@@ -42,7 +42,7 @@ namespace mwse {
 
 		// Get record for reference.
 		TES3::BaseObject* record = reference->baseObject;
-		if (!record) {
+		if (record == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
 			}
@@ -63,7 +63,7 @@ namespace mwse {
 
 		// Get associated MACP node.
 		auto mobileObject = reference->getAttachedMobileActor();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
 			}

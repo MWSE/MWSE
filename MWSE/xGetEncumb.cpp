@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetEncumb::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference to target.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumb: No reference provided." << std::endl;
 			}

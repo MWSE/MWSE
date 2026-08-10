@@ -23,7 +23,7 @@ namespace mwse {
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		auto mobileObject = reference->getAttachedMobileActor();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseFatigue: Could not find MACP record for reference." << std::endl;
 			}

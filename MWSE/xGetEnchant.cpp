@@ -24,7 +24,7 @@ namespace mwse {
 
 	float xGetEnchant::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Return values.
-		char* enchId = nullptr;
+		char* enchId = NULL;
 		long type = 0;
 		long cost = 0;
 		float currCharge = 0.0f;

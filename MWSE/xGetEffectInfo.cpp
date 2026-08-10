@@ -40,7 +40,7 @@ namespace mwse {
 		// Validate effect index.
 		if (effectIndex >= 1 && effectIndex <= 8) {
 			// Get the desired effect.
-			TES3::Effect* effect = nullptr;
+			TES3::Effect* effect = NULL;
 			if (effectType == TES3::ObjectType::Spell) {
 				const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(effectId.c_str());
 				if (spell) {

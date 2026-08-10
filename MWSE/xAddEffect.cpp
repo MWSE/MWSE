@@ -33,7 +33,7 @@ namespace mwse {
 		size_t effectCount = 0;
 
 		// Get the desired effect.
-		TES3::Effect* effects = nullptr;
+		TES3::Effect* effects = NULL;
 		if (type == TES3::ObjectType::Spell) {
 			const auto spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(id.c_str());
 			if (spell) {

@@ -26,7 +26,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
 			}
@@ -35,7 +35,7 @@ namespace mwse {
 
 		// Get spell template by the id.
 		TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(spellId.c_str());
-		if (!spell) {
+		if (spell == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xCast: No template found with id '" << spellId << "'." << std::endl;
 			}
@@ -44,7 +44,7 @@ namespace mwse {
 
 		// Get the target by id.
 		TES3::Reference* target = virtualMachine.getReference(targetId.c_str());
-		if (!target) {
+		if (target == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xCast: Could not find valid target by id '" << targetId << "'." << std::endl;
 			}

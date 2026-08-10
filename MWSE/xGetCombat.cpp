@@ -19,7 +19,7 @@ namespace mwse {
 	float xGetCombat::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCombat: No reference provided." << std::endl;
 			}
@@ -28,7 +28,7 @@ namespace mwse {
 		}
 
 		auto mobileObject = reference->getAttachedMobileActor();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCombat: No mach node found." << std::endl;
 			}

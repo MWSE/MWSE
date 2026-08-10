@@ -33,7 +33,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (!reference) {
+		if (reference == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSkill: Call on invalid reference." << std::endl;
 			}
@@ -52,7 +52,7 @@ namespace mwse {
 
 		// Get the associated MACP record.
 		auto mobileObject = reference->getAttachedMobileNPC();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSkill: Could not find MACP record for reference." << std::endl;
 			}

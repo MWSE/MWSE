@@ -30,7 +30,7 @@ namespace mwse {
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
-		if (!mobileObject) {
+		if (mobileObject == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseInt: Could not find MACP record for reference." << std::endl;
 			}

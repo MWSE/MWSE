@@ -28,7 +28,7 @@ namespace mwse {
 
 		// Get the ingredient.
 		const auto ingredient = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Ingredient>(id);
-		if (!ingredient) {
+		if (ingredient == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetIngredientEffect: No ingredient record found with id '" << id << "'." << std::endl;
 			}

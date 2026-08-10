@@ -20,7 +20,7 @@ namespace mwse {
 	xGetOwnerInfo::xGetOwnerInfo() : mwse::InstructionInterface_t(OpCode::xGetOwnerInfo) {}
 
 	float xGetOwnerInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
-		const char* id = nullptr;
+		const char* id = NULL;
 		long rank = 0;
 		long type = 0;
 

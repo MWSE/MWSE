@@ -21,14 +21,14 @@ namespace mwse {
 		// Get our parameter.
 		long param = Stack::getInstance().popLong();
 
-		const char* model = nullptr;
+		const char* model = NULL;
 
 		// If we were given a value, it's supposed to be a string, and we'll get a record by this ID.
 		if (param) {
 			// Get the record by id string.
 			mwseString& id = virtualMachine.getString(param);
 			const auto record = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Object>(id);
-			if (!record) {
+			if (record == NULL) {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					log::getLog() << "xGetModel: No record found for id '" << id << "'." << std::endl;
 				}
@@ -41,7 +41,7 @@ namespace mwse {
 		// If we were not given a value, we try to use the function's given reference.
 		else {
 			TES3::Reference* reference = virtualMachine.getReference();
-			if (!reference) {
+			if (reference == NULL) {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					log::getLog() << "xGetModel: Invalid reference." << std::endl;
 				}

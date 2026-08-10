@@ -19,7 +19,7 @@ namespace mwse {
 
 	float xPCCellID::execute(mwse::VMExecuteInterface& virtualMachine) {
 		TES3::DataHandler* masterCell = TES3::DataHandler::get();
-		if (!masterCell) {
+		if (masterCell == NULL) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xPCCellID: Cell master could not be found." << std::endl;
 			}
@@ -29,7 +29,7 @@ namespace mwse {
 
 		// Determine the PC cell -- either the interior cell if we have one, or the center cell.
 		TES3::Cell* cell = masterCell->currentInteriorCell;
-		if (!cell) {
+		if (cell == NULL) {
 			cell = masterCell->exteriorCellData[TES3::CellGrid::Center]->cell;
 		}
 

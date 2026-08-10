@@ -37,7 +37,7 @@ namespace mwse {
 		// Validate effect index.
 		if (effectIndex >= 1 && effectIndex <= 8) {
 			// Get the desired effect.
-			TES3::Effect* effects = nullptr;
+			TES3::Effect* effects = NULL;
 			if (targetType == TES3::ObjectType::Spell) {
 				TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(targetId);
 				if (spell) {
