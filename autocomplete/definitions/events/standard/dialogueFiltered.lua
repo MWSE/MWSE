@@ -19,7 +19,7 @@ return {
 			description = "Any associated actor for the query.",
 		},
 		["reference"] = {
-			type = "tes3actor",
+			type = "tes3reference",
 			readOnly = true,
 			description = "Any associated reference for the query.",
 		},

@@ -24,7 +24,7 @@ event.register(tes3.event.dialogueFiltered, dialogueFilteredCallback)
 * `context` ([tes3.dialogueFilterContext](../references/dialogue-filter-context.md)): *Read-only*. What caused the dialogue filtering. Maps to values in the [`tes3.dialogueFilterContext`](https://mwse.github.io/MWSE/references/dialogue-filter-context/) table.
 * `dialogue` ([tes3dialogue](../types/tes3dialogue.md)): *Read-only*. The dialogue that was filtered.
 * `info` ([tes3dialogueInfo](../types/tes3dialogueInfo.md)): *Read-only*. The result that the filter returned.
-* `reference` ([tes3actor](../types/tes3actor.md)): *Read-only*. Any associated reference for the query.
+* `reference` ([tes3reference](../types/tes3reference.md)): *Read-only*. Any associated reference for the query.
 
 
 ## Related events
