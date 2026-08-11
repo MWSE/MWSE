@@ -21,7 +21,7 @@ namespace mwse {
 	float xIsTrainer::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xIsTrader: Called on invalid reference." << std::endl;
 			}
@@ -33,14 +33,14 @@ namespace mwse {
 		long classServiceFlags = 0;
 
 		// Get the gold based on the base record type.
-		TES3::AIConfig* aiConfig = reference->baseObject->vTable.object->getAIConfig(reference->baseObject);
+		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
-			npcServiceFlags = aiConfig->merchantFlags & 0x00004000;
+			npcServiceFlags = aiConfig->merchantFlags & TES3::ServiceFlag::OffersTraining;
 
 			// Get the class flags.
-			TES3::Class* npcClass = reference->baseObject->vTable.object->getClass(reference->baseObject);
+			TES3::Class* npcClass = reference->baseObject->getClass();
 			if (npcClass) {
-				npcServiceFlags = npcClass->services & 0x00004000;
+				npcServiceFlags = npcClass->services & TES3::ServiceFlag::OffersTraining;
 			}
 		}
 		else {

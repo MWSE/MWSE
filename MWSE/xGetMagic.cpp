@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetMagic::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Return values.
 		long type = 0;
-		const char* id = NULL;
+		const char* id = nullptr;
 
 		// Get reference to what we're finding enchantment information for.
 		TES3::Reference* reference = virtualMachine.getReference();

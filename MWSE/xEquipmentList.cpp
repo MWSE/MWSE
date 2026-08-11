@@ -11,6 +11,11 @@
 #include "TES3Reference.h"
 #include "TES3Weapon.h"
 
+enum class ItemSubtype : long {
+	NoItemSubtype = -1,
+	NoItemSubtypeZeroIndexed = -2,
+};
+
 namespace mwse {
 	class xEquipmentList : InstructionInterface_t {
 	public:
@@ -19,7 +24,7 @@ namespace mwse {
 
 	private:
 		bool nodeMatchesFilter(NI::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);
-		long getItemSubType(TES3::Object* object);
+		long getItemSubType(const TES3::Object* object);
 	};
 
 	static xEquipmentList xEquipmentListInstance;
@@ -34,7 +39,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			mwse::log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
 			mwse::Stack::getInstance().pushLong(0);
 			mwse::Stack::getInstance().pushLong(0);
@@ -80,18 +85,18 @@ namespace mwse {
 		}
 
 		// Results.
-		const char* id = NULL;
+		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
-		long subtype = -1;
+		long subtype = (long)ItemSubtype::NoItemSubtype;
 		long value = 0;
 		float weight = 0;
-		const char* name = NULL;
-		const char* enchantId = NULL;
-		NI::IteratedList<TES3::EquipmentStack*>::Node* next = NULL;
+		const char* name = nullptr;
+		const char* enchantId = nullptr;
+		NI::IteratedList<TES3::EquipmentStack*>::Node* next = nullptr;
 
 		// If we aren't given a node, get the first one.
-		if (node == NULL) {
+		if (node == nullptr) {
 			node = actor->equipment.head;
 
 			// Pass over any records that don't match the current filters.
@@ -106,9 +111,9 @@ namespace mwse {
 
 			id = reinterpret_cast<TES3::PhysicalObject*>(object)->objectID;
 			type = object->objectType;
-			value = object->vTable.object->getValue(object);
-			weight = object->vTable.object->getWeight(object);
-			name = object->vTable.object->getName(object);
+			value = object->getValue();
+			weight = object->getWeight();
+			name = object->getName();
 
 			// Get subtype. We can't directly use the vtable here to get the type,
 			// because types are zero-indexed.
@@ -123,7 +128,7 @@ namespace mwse {
 			}
 
 			// Get enchantment id.
-			TES3::Enchantment* enchantment = object->vTable.object->getEnchantment(object);
+			TES3::Enchantment* enchantment = object->getEnchantment();
 			if (enchantment) {
 				enchantId = enchantment->objectID;
 			}
@@ -163,18 +168,20 @@ namespace mwse {
 		return true;
 	}
 
-	long xEquipmentList::getItemSubType(TES3::Object* object) {
-		if (object == NULL) {
-			return -2;
+
+
+	long xEquipmentList::getItemSubType(const TES3::Object* object) {
+		if (object == nullptr) {
+			return (long)ItemSubtype::NoItemSubtypeZeroIndexed;
 		}
 
-		long subtype = -2;
+		long subtype = (long)ItemSubtype::NoItemSubtypeZeroIndexed;
 
-		long type = object->objectType;
+		auto type = object->objectType;
 		if (type == TES3::ObjectType::Armor || type == TES3::ObjectType::Apparatus ||
 			type == TES3::ObjectType::Clothing || type == TES3::ObjectType::Weapon)
 		{
-			subtype = object->vTable.object->getType(object);
+			subtype = object->getType();
 		}
 
 		return subtype;

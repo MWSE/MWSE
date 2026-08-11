@@ -230,7 +230,7 @@ namespace mwse::lua {
 			}
 		}
 
-		return NULL;
+		return nullptr;
 	}
 
 	TES3::Reference* getOptionalParamReference(sol::optional<sol::table> maybeParams, const char* key) {

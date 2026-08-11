@@ -10,7 +10,7 @@
 #include "TES3Sound.h"
 
 namespace mwse::mwscript {
-	TES3::Reference* lastCreatedPlaceAtPCReference = NULL;
+	TES3::Reference* lastCreatedPlaceAtPCReference = nullptr;
 
 	int getInstructionPointer() {
 		return *reinterpret_cast<int*>(TES3_IP_IMAGE);
@@ -30,7 +30,7 @@ namespace mwse::mwscript {
 
 	void setScriptTargetReference(TES3::Reference* reference) {
 		*reinterpret_cast<TES3::Reference**>(TES3_SCRIPTTARGETREF_IMAGE) = reference;
-		if (reference != NULL) {
+		if (reference) {
 			setScriptTargetTemplate(reference->baseObject);
 		}
 		else {
@@ -392,15 +392,15 @@ namespace mwse::mwscript {
 	}
 
 	bool GetPCJumping(TES3::Script* script) {
-		return RunOriginalOpCode(script, NULL, OpCode::GetPCJumping) == 1;
+		return RunOriginalOpCode(script, nullptr, OpCode::GetPCJumping) == 1;
 	}
 
 	bool GetPCRunning(TES3::Script* script) {
-		return RunOriginalOpCode(script, NULL, OpCode::GetPCRunning) == 1;
+		return RunOriginalOpCode(script, nullptr, OpCode::GetPCRunning) == 1;
 	}
 
 	bool GetPCSneaking(TES3::Script* script) {
-		return RunOriginalOpCode(script, NULL, OpCode::GetPCSneaking) == 1;
+		return RunOriginalOpCode(script, nullptr, OpCode::GetPCSneaking) == 1;
 	}
 
 	bool GetSpellEffects(TES3::Script* script, TES3::Reference* reference, TES3::BaseObject* spellTemplate) {
@@ -532,7 +532,7 @@ namespace mwse::mwscript {
 
 	bool ScriptRunning(TES3::Script* script, TES3::Script* targetScript) {
 		// Run original opcode.
-		float value = RunOriginalOpCode(script, NULL, OpCode::ScriptRunning, reinterpret_cast<TES3::BaseObject*>(targetScript));
+		float value = RunOriginalOpCode(script, nullptr, OpCode::ScriptRunning, reinterpret_cast<TES3::BaseObject*>(targetScript));
 
 		return value != 0.0f;
 	}
@@ -583,7 +583,7 @@ namespace mwse::mwscript {
 
 		// Prepare variables and run original opcode.
 		setScriptSecondObject(reinterpret_cast<TES3::BaseObject*>(targetScript));
-		RunOriginalOpCode(script, NULL, OpCode::StopScript);
+		RunOriginalOpCode(script, nullptr, OpCode::StopScript);
 
 		// Restore original script variables.
 		setScriptSecondObject(cachedSecondObject);

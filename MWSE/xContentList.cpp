@@ -25,7 +25,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xContentList: Called on invalid reference." << std::endl;
 			}
@@ -40,16 +40,16 @@ namespace mwse {
 		}
 
 		// Results.
-		const char* id = NULL;
+		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
 		long value = 0;
 		float weight = 0;
-		const char* name = NULL;
-		NI::IteratedList<TES3::ItemStack*>::Node* next = NULL;
+		const char* name = nullptr;
+		NI::IteratedList<TES3::ItemStack*>::Node* next = nullptr;
 
 		// If we aren't given a node, get the first one.
-		if (node == NULL && reference->baseObject->isActor()) {
+		if (node == nullptr && reference->baseObject->isActor()) {
 			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 		}
 
@@ -57,12 +57,12 @@ namespace mwse {
 		if (node && node->data && node->data->object) {
 			TES3::Object* object = node->data->object;
 
-			id = object->vTable.object->getObjectID(object);
+			id = object->getObjectID();
 			count = node->data->count;
 			type = object->objectType;
-			value = object->vTable.object->getValue(object);
-			weight = object->vTable.object->getWeight(object);
-			name = object->vTable.object->getName(object);
+			value = object->getValue();
+			weight = object->getWeight();
+			name = object->getName();
 
 			next = node->next;
 		}

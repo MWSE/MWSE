@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetProgressLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get the player's associated MACP record.
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
-		if (mobileObject == NULL) {
+		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetProgressLevel: Could not find MACP record for reference." << std::endl;
 			}

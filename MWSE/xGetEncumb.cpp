@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetEncumb::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference to target.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumb: No reference provided." << std::endl;
 			}
@@ -41,19 +41,17 @@ namespace mwse {
 		float totalWeight = 0.0f;
 
 		// Loop through the inventory nodes of the reference, adding weight for each item found.
-		NI::IteratedList<TES3::ItemStack*>::Node* inventoryListNode = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
-		while (inventoryListNode) {
-			TES3::ItemStack* inventoryNode = inventoryListNode->data;
-			if (inventoryNode) {
-				totalWeight += inventoryNode->object->vTable.object->getWeight(inventoryNode->object) * std::abs(inventoryNode->count);
-
-				// Keep track if we've run across leveled content.
-				if (!hasLeveledContent && inventoryNode->object->objectType == TES3::ObjectType::LeveledItem) {
-					hasLeveledContent = true;
-				}
+		for (const auto stack : static_cast<TES3::Actor*>(reference->baseObject)->inventory) {
+			if (!stack) {
+				continue;
 			}
 
-			inventoryListNode = inventoryListNode->next;
+			totalWeight += stack->object->getWeight() * std::abs(stack->count);
+
+			// Keep track if we've run across leveled content.
+			if (!hasLeveledContent && stack->object->objectType == TES3::ObjectType::LeveledItem) {
+				hasLeveledContent = true;
+			}
 		}
 
 		// If we ran into leveled content, make our weight negative.

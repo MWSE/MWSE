@@ -1,6 +1,7 @@
 #include "VMExecuteInterface.h"
 #include "Stack.h"
 #include "InstructionInterface.h"
+#include "TES3Class.h"
 #include "TES3Util.h"
 #include "TES3NPC.h"
 #include "TES3Reference.h"
@@ -19,11 +20,11 @@ namespace mwse {
 
 	float xSetService::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		long flags = mwse::Stack::getInstance().popLong() & 0x0003FFFF;
+		long flags = mwse::Stack::getInstance().popLong() & TES3::ServiceFlag::AllServicesMask;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetService: Called on invalid reference." << std::endl;
 			}
@@ -32,7 +33,7 @@ namespace mwse {
 		}
 
 		// Set service mask.
-		TES3::AIConfig* aiConfig = reference->baseObject->vTable.object->getAIConfig(reference->baseObject);
+		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
 		if (aiConfig) {
 			aiConfig->merchantFlags = flags;
 		}

@@ -23,7 +23,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetCondition: No reference provided." << std::endl;
 			}
@@ -33,7 +33,7 @@ namespace mwse {
 
 		// Get associated varnode, and the condition from it.
 		auto varNode = reference->getAttachedItemData();
-		if (varNode != NULL) {
+		if (varNode != nullptr) {
 			varNode->condition = value;
 		}
 		else {

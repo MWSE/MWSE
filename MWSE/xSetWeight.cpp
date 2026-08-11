@@ -31,7 +31,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetWeight: No reference provided." << std::endl;
 			}
@@ -41,7 +41,7 @@ namespace mwse {
 
 		// Get record.
 		TES3::BaseObject* record = reference->baseObject;
-		if (record == NULL) {
+		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetWeight: No base record found." << std::endl;
 			}

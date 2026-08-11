@@ -2,6 +2,7 @@
 #include "Stack.h"
 #include "InstructionInterface.h"
 #include "TES3Util.h"
+#include "BitUtil.h"
 #include "StringUtil.h"
 
 
@@ -22,7 +23,7 @@ namespace mwse {
 	static std::map<int, char> keyCharMap;
 
 	bool xTextInputAlt::GetKeyIsPressed(int VK_key) {
-		return (GetAsyncKeyState(VK_key) & 0x8001) == 0x8001;
+		return BITMASK_TEST(GetAsyncKeyState(VK_key), 0x8001);
 	}
 
 	float xTextInputAlt::execute(mwse::VMExecuteInterface& virtualMachine) {

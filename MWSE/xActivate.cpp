@@ -25,7 +25,7 @@ namespace mwse {
 
 		// Verify that the script is called on a valid reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << __FUNCTION__ << ": Called on invalid reference." << std::endl;
 			}
@@ -42,7 +42,7 @@ namespace mwse {
 		}
 
 		// Determine if the target is a reference.
-		TES3::Reference* target = NULL;
+		TES3::Reference* target = nullptr;
 		try {
 			TES3::Reference* potential = reinterpret_cast<TES3::Reference*>(parameter);
 			if (potential && potential->objectType == TES3::ObjectType::Reference) {
@@ -57,7 +57,7 @@ namespace mwse {
 		}
 
 		// Verify that the target reference was found.
-		if (target == NULL) {
+		if (target == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << __FUNCTION__ << ": Target reference is invalid." << std::endl;
 			}
@@ -66,11 +66,11 @@ namespace mwse {
 
 		// Set up the attachment node.
 		auto activator = static_cast<TES3::ActionAttachment*>(target->getAttachment(TES3::AttachmentType::Action));
-		if (activator == NULL) {
+		if (activator == nullptr) {
 			activator = se::memory::malloc<TES3::ActionAttachment>();
 			activator->type = TES3::AttachmentType::Action;
-			activator->next = NULL;
-			activator->reference = NULL;
+			activator->next = nullptr;
+			activator->reference = nullptr;
 			activator->flags = 1;
 
 			target->insertAttachment(activator);

@@ -42,7 +42,7 @@ namespace mwse {
 			unsigned int primary_index = (opcode >> 8) & 0xFF;
 			unsigned int secondary_index = opcode & 0xFF;
 			InstructionInterface_t** secondary_table = opCode_primary_table[primary_index];
-			if (secondary_table == NULL || secondary_table[secondary_index] == NULL) {
+			if (secondary_table == nullptr || secondary_table[secondary_index] == nullptr) {
 				// FIXME: This should probably be in the VM, where it can report script name and offset.
 				log::getLog() << "Illegal or unimplemented opcode " << std::hex << opcode << std::endl;
 				throw IllegalOpCode(opcode);
@@ -56,7 +56,7 @@ namespace mwse {
 			unsigned int secondary_index = opcode & 0xFF;
 			InstructionInterface_t** secondary_table = opCode_primary_table[primary_index];
 
-			return (secondary_table != NULL) && (secondary_table[secondary_index] != NULL);
+			return (secondary_table != nullptr) && (secondary_table[secondary_index] != nullptr);
 		}
 	};
 }

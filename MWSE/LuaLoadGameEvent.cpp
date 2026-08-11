@@ -9,7 +9,7 @@ namespace mwse::lua::event {
 		m_QuickLoad(quickLoad),
 		m_NewGame(newGame)
 	{
-		if (m_FileName == NULL && !m_NewGame) {
+		if (m_FileName == nullptr && !m_NewGame) {
 			m_QuickLoad = true;
 			m_FileName = "quiksave.ess";
 		}

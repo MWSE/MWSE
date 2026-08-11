@@ -347,7 +347,7 @@ namespace mwse::lua {
 	static std::unordered_map<unsigned long, sol::object> scriptOverrides;
 
 	// The currently executing overwritten script.
-	static LuaScript* currentOverwrittenScript = NULL;
+	static LuaScript* currentOverwrittenScript = nullptr;
 
 	// We still abort the program if an unprotected lua error happens. Here we at least
 	// get it in the log so it can be debugged.
@@ -1787,7 +1787,7 @@ namespace mwse::lua {
 
 	TES3::Object* __fastcall OnInterruptRest(TES3::LeveledCreature* leveledCreature, DWORD _UNUSED_) {
 		// Creature that we return.
-		TES3::Object* creature = NULL;
+		TES3::Object* creature = nullptr;
 
 		// Fire off an event and change the determined creature.
 		if (event::RestInterruptEvent::getEventEnabled()) {
@@ -1799,7 +1799,7 @@ namespace mwse::lua {
 				if (eventData.get_or("block", false)) {
 					tes3::setRestInterruptCount(0);
 					tes3::setRestHoursInterrupted(-1);
-					return NULL;
+					return nullptr;
 				}
 
 				// Allow overriding the spawn.

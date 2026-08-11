@@ -47,7 +47,7 @@ namespace mwse::lua {
 
 	template <typename T>
 	T* getOptionalParamObject(sol::optional<sol::table> maybeParams, const char* key) {
-		T* value = NULL;
+		T* value = nullptr;
 
 		if (maybeParams) {
 			sol::table params = maybeParams.value();

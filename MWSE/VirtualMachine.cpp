@@ -22,7 +22,7 @@ using namespace mwse;
 
 VirtualMachine::VirtualMachine()
 	: context(),
-	oldscript(NULL)
+	oldscript(nullptr)
 {
 	// Holds the current location in the script. when you read parameters from the script stream, you need to add the number of bytes read to this.
 	mwScriptIP = reinterpret_cast<long*>(TES3_IP_IMAGE);
@@ -36,7 +36,7 @@ void VirtualMachine::loadParametersForOperation(OpCode::OpCode_t opcode, HookCon
 	setScript(script);
 
 	// Call OnScriptChange if we're running a different script.
-	if (oldscript != NULL && oldscript != script) {
+	if (oldscript && oldscript != script) {
 		OnScriptChange();
 	}
 	oldscript = script;
@@ -109,7 +109,7 @@ TES3::Reference* VirtualMachine::getReference(const char* id)
 
 void VirtualMachine::setReference(TES3::Reference* reference)
 {
-	if (reference == NULL || reference->baseObject == NULL) {
+	if (!reference || !reference->baseObject) {
 #if _DEBUG
 		mwse::log::getLog() << __FUNCTION__ << ": Attempted to set to invalid reference." << std::endl;
 #endif
@@ -195,7 +195,7 @@ void VirtualMachine::setLongVariable(const char* id, long value)
 void VirtualMachine::setLongVariable(int index, long value, TES3::Reference& reference)
 {
 	auto attachment = reference.getAttachedItemData();
-	if (attachment == NULL) {
+	if (!attachment) {
 		return;
 	}
 
@@ -262,7 +262,7 @@ void VirtualMachine::setShortVariable(const char* id, short value)
 void VirtualMachine::setShortVariable(int index, short value, TES3::Reference& reference)
 {
 	auto attachment = reference.getAttachedItemData();
-	if (attachment == NULL) {
+	if (!attachment) {
 		return;
 	}
 
@@ -329,7 +329,7 @@ void VirtualMachine::setFloatVariable(const char* id, float value)
 void VirtualMachine::setFloatVariable(int index, float value, TES3::Reference& reference)
 {
 	auto attachment = reference.getAttachedItemData();
-	if (attachment == NULL) {
+	if (!attachment) {
 		return;
 	}
 
@@ -344,7 +344,7 @@ void VirtualMachine::setFloatVariable(int index, float value, TES3::Reference& r
 long VirtualMachine::getLongGlobal(const char* id)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif
@@ -362,7 +362,7 @@ long VirtualMachine::getLongGlobal(const char* id)
 void VirtualMachine::setLongGlobal(const char* id, long value)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif
@@ -381,7 +381,7 @@ void VirtualMachine::setLongGlobal(const char* id, long value)
 short VirtualMachine::getShortGlobal(const char* id)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif
@@ -399,7 +399,7 @@ short VirtualMachine::getShortGlobal(const char* id)
 void VirtualMachine::setShortGlobal(const char* id, short value)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif
@@ -418,7 +418,7 @@ void VirtualMachine::setShortGlobal(const char* id, short value)
 float VirtualMachine::getFloatGlobal(const char* id)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif
@@ -436,7 +436,7 @@ float VirtualMachine::getFloatGlobal(const char* id)
 void VirtualMachine::setFloatGlobal(const char* id, float value)
 {
 	TES3::GlobalVariable* globalVar = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(id);
-	if (globalVar == NULL) {
+	if (!globalVar) {
 #if _DEBUG
 		mwse::log::getLog() << "Could not find global variable '" << id << "'." << std::endl;
 #endif

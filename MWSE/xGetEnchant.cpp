@@ -24,7 +24,7 @@ namespace mwse {
 
 	float xGetEnchant::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Return values.
-		char* enchId = NULL;
+		char* enchId = nullptr;
 		long type = 0;
 		long cost = 0;
 		float currCharge = 0.0f;
@@ -36,14 +36,14 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference) {
 			// Get data from ENCH record.
-			TES3::Enchantment* enchantment = reference->baseObject->vTable.object->getEnchantment(reference->baseObject);
+			TES3::Enchantment* enchantment = reference->baseObject->getEnchantment();
 			if (enchantment) {
 				enchId = enchantment->objectID;
 				type = int(enchantment->castType);
 				cost = enchantment->chargeCost;
 				maxCharge = enchantment->maxCharge;
 				effects = enchantment->getActiveEffectCount();
-				autocalc = enchantment->vTable.object->getAutoCalc(enchantment);
+				autocalc = enchantment->getAutoCalc();
 
 				// Get the current charge.
 				auto varNode = reference->getAttachedItemData();

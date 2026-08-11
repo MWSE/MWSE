@@ -25,7 +25,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCharge: No reference provided." << std::endl;
 			}
@@ -35,7 +35,7 @@ namespace mwse {
 
 		// Get the base record.
 		TES3::Object* object = reference->baseObject;
-		if (object == NULL) {
+		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCharge: No record found for reference." << std::endl;
 			}
@@ -50,7 +50,7 @@ namespace mwse {
 			charge = varNode->charge;
 		}
 		else {
-			TES3::Enchantment* enchantment = object->vTable.object->getEnchantment(object);
+			TES3::Enchantment* enchantment = object->getEnchantment();
 			if (enchantment) {
 				charge = enchantment->maxCharge;
 			}

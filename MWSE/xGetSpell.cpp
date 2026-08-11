@@ -27,7 +27,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetSpell: Could not find reference." << std::endl;
 			}
@@ -43,14 +43,8 @@ namespace mwse {
 		}
 
 		TES3::NPC* npc = reinterpret_cast<TES3::NPCInstance*>(reference->baseObject)->baseNPC;
-		NI::IteratedList<TES3::Spell*>::Node* currentNode = npc->spellList.list.head;
-		while (currentNode != NULL) {
-			TES3::Spell* spell = currentNode->data;
-			if (strcmp(spell->objectID, spellId.c_str()) == 0) {
-				result = 1;
-				break;
-			}
-			currentNode = currentNode->next;
+		if (npc->spellList.contains(spellId)) {
+			result = 1;
 		}
 
 		mwse::Stack::getInstance().pushShort(result);

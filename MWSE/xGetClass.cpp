@@ -21,7 +21,7 @@ namespace mwse {
 	float xGetClass::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetClass: No reference provided." << std::endl;
 			}
@@ -37,7 +37,7 @@ namespace mwse {
 
 		// Get the base record.
 		TES3::Object* object = reference->baseObject;
-		if (object == NULL) {
+		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetClass: No object found for reference." << std::endl;
 			}
@@ -70,7 +70,7 @@ namespace mwse {
 		long minorMask = mwse::Stack::getInstance().popLong();
 
 		// Get the class record.
-		TES3::Class* classRecord = object->vTable.object->getClass(object);
+		TES3::Class* classRecord = object->getClass();
 
 		// Get basic class details.
 		char* id = classRecord->id;

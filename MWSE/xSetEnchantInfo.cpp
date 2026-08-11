@@ -35,7 +35,7 @@ namespace mwse {
 		}
 
 		const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId);
-		if (enchant == NULL) {
+		if (enchant == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetEnchantInfo: No effect found given id '" << enchantId << "'." << std::endl;
 			}
@@ -47,7 +47,7 @@ namespace mwse {
 		enchant->castType = static_cast<TES3::EnchantmentCastType>(type);
 		enchant->chargeCost = static_cast<unsigned short>(cost);
 		enchant->maxCharge = static_cast<unsigned short>(charge);
-		enchant->vTable.object->setAutoCalc(enchant, autocalc);
+		enchant->setAutoCalc(autocalc);
 
 		mwse::Stack::getInstance().pushLong(true);
 		return 0.0f;

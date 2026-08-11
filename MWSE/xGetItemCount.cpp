@@ -24,7 +24,7 @@ namespace mwse {
 		// Get who we're getting the item count of. mwscript's GetItemCount validates the
 		// object type for us, we don't need to.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetItemCount: No reference found for function call." << std::endl;
 			}
@@ -34,7 +34,7 @@ namespace mwse {
 
 		// Get template for the item we want to get the count of.
 		TES3::BaseObject* itemTemplate = virtualMachine.getTemplate(id.c_str());
-		if (itemTemplate == NULL) {
+		if (itemTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetItemCount: No template found with id " << id << "." << std::endl;
 			}

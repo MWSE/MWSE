@@ -20,7 +20,7 @@ namespace mwse {
 	xGetOwnerInfo::xGetOwnerInfo() : mwse::InstructionInterface_t(OpCode::xGetOwnerInfo) {}
 
 	float xGetOwnerInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
-		const char* id = NULL;
+		const char* id = nullptr;
 		long rank = 0;
 		long type = 0;
 
@@ -34,7 +34,7 @@ namespace mwse {
 				if (owner) {
 					type = owner->objectType;
 					if (type == TES3::ObjectType::NPC) {
-						id = owner->vTable.object->getObjectID(owner);
+						id = owner->getObjectID();
 						if (varNode->requiredVariable) {
 							rank = se::string::store::getOrCreate(varNode->requiredVariable->name);
 						}

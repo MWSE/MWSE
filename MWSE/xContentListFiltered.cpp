@@ -15,7 +15,7 @@ namespace mwse {
 		virtual float execute(VMExecuteInterface& virtualMachine);
 
 	private:
-		long getBitMaskForRecordType(long recordType);
+		long getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType);
 		bool passesFilter(TES3::Object* record, long filter);
 
 		enum FilterMask {
@@ -71,7 +71,7 @@ namespace mwse {
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xContentListFiltered: Called on invalid reference." << std::endl;
 			}
@@ -94,16 +94,16 @@ namespace mwse {
 		}
 
 		// Results.
-		const char* id = NULL;
+		const char* id = nullptr;
 		long count = 0;
 		long type = 0;
 		long value = 0;
 		float weight = 0;
-		const char* name = NULL;
-		NI::IteratedList<TES3::ItemStack*>::Node* next = NULL;
+		const char* name = nullptr;
+		NI::IteratedList<TES3::ItemStack*>::Node* next = nullptr;
 
 		// If we aren't given a node, get the first one.
-		if (node == NULL) {
+		if (node == nullptr) {
 			node = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 
 			// Pass over any records that don't match the current filter.
@@ -116,12 +116,12 @@ namespace mwse {
 		if (node && node->data && node->data->object) {
 			TES3::Object* object = node->data->object;
 
-			id = object->vTable.object->getObjectID(object);
+			id = object->getObjectID();
 			count = node->data->count;
 			type = object->objectType;
-			value = object->vTable.object->getValue(object);
-			weight = object->vTable.object->getWeight(object);
-			name = object->vTable.object->getName(object);
+			value = object->getValue();
+			weight = object->getWeight();
+			name = object->getName();
 
 			// Get next node. Pass over any records that don't match the given filter.
 			next = node->next;
@@ -142,7 +142,7 @@ namespace mwse {
 		return 0.0f;
 	}
 
-	long xContentListFiltered::getBitMaskForRecordType(long recordType) {
+	long xContentListFiltered::getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType) {
 		switch (recordType) {
 		case TES3::ObjectType::Activator: return FILTER_ACTI;
 		case TES3::ObjectType::Alchemy: return FILTER_ALCH;
@@ -180,7 +180,7 @@ namespace mwse {
 		// If we're filtering by enchantment, verify that the record has one.
 		if (filter & FILTER_ENCH) {
 			try {
-				if (object->vTable.object->getEnchantment(object) == NULL) {
+				if (!object->getEnchantment()) {
 					return false;
 				}
 			}

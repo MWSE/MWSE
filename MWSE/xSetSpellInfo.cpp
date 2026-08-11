@@ -55,7 +55,7 @@ namespace mwse {
 
 		// Get spell data by id.
 		const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId);;
-		if (spell == NULL) {
+		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
 			}

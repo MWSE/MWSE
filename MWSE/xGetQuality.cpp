@@ -20,7 +20,7 @@ namespace mwse {
 	float xGetQuality::execute(mwse::VMExecuteInterface& virtualMachine) {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
-		if (reference == NULL) {
+		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetQuality: No reference provided." << std::endl;
 			}
@@ -30,7 +30,7 @@ namespace mwse {
 
 		// Get record.
 		TES3::Object* object = reference->baseObject;
-		if (object == NULL) {
+		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetQuality: No base record found." << std::endl;
 			}
@@ -38,7 +38,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushFloat(object->vTable.object->getQuality(object));
+		mwse::Stack::getInstance().pushFloat(object->getQuality());
 
 		return 0.0f;
 	}

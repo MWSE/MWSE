@@ -15,7 +15,7 @@
 #include "LuaManager.h"
 #include "TES3Game.h"
 
-TES3MACHINE* mge_virtual_machine = NULL;
+TES3MACHINE* mge_virtual_machine = nullptr;
 
 const auto TES3_Game_ctor = reinterpret_cast<TES3::Game * (__thiscall*)(TES3::Game*)>(0x417280);
 TES3::Game* __fastcall OnGameStructCreated(TES3::Game* game) {
