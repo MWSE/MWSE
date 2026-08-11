@@ -1,5 +1,7 @@
 #include "TES3ScriptCompiler.h"
 
+#include "Log.h"
+
 namespace TES3 {
 	ScriptCompiler::ScriptCompiler() {
 		const auto TES3_ScriptCompiler_ctor = reinterpret_cast<void(__thiscall*)(ScriptCompiler*)>(0x4F7260);
@@ -65,7 +67,8 @@ namespace TES3 {
 
 				function = parseFunctionName();
 				if (function == CompilerFunction::INVALID) {
-					// TODO: Error. Need to end with `end`
+					mwse::log::getLog() << "tes3script:recompile: Could not recompile provided script " << scriptHeader.name 
+						<< ". Script needs to end with `end` keyword." << std::endl;
 					delete shortVarList;
 					shortVarList = nullptr;
 					delete longVarList;
@@ -86,7 +89,8 @@ namespace TES3 {
 			return false;
 		}
 		else {
-			// TODO: Error. Need to start with `begin`
+			mwse::log::getLog() << "tes3script:recompile: Could not recompile provided script " << scriptHeader.name
+				<< ". Script needs to start with `begin` keyword." << std::endl;
 			return false;
 		}
 	}
