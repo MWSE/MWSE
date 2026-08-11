@@ -15,12 +15,13 @@ namespace se {
 			friend class LinkedObjectList;
 
 		private:
-			T* m_Object;
+			mutable T* m_Object;
 
 			iterator(T* object) : m_Object(object) {}
 
 		public:
-			using iterator_category = std::random_access_iterator_tag;
+			using iterator_category = std::bidirectional_iterator_tag;
+			using iterator_concept = std::bidirectional_iterator_tag;
 
 			using value_type = T*;
 			using difference_type = int;
@@ -37,9 +38,15 @@ namespace se {
 
 			iterator& operator--() {
 				if (m_Object) {
-					m_Object = m_Object->previousInCollection;
+					m_Object = static_cast<value_type>(m_Object->previousInCollection);
 				}
 				return *this;
+			}
+
+			iterator operator--(int) {
+				auto result = *this;
+				--*this;
+				return result;
 			}
 
 			iterator& operator-=(difference_type diff) {
@@ -62,6 +69,12 @@ namespace se {
 				return *this;
 			}
 
+			iterator operator++(int) {
+				auto result = *this;
+				++*this;
+				return result;
+			}
+
 			iterator& operator+=(difference_type diff) {
 				while (m_Object && diff-- > 0) {
 					m_Object = static_cast<value_type>(m_Object->nextInCollection);
@@ -77,11 +90,11 @@ namespace se {
 				return itt.m_Object != m_Object;
 			}
 
-			reference operator->() {
+			reference operator->() const {
 				return m_Object;
 			}
 
-			reference operator*() {
+			reference operator*() const {
 				return m_Object;
 			}
 		};
@@ -92,7 +105,7 @@ namespace se {
 		using pointer = T**;
 		using const_pointer = const T**;
 		using reference = T*&;
-		using const_reference = const T*&;
+		using const_reference = T* const&;
 		using const_iterator = const iterator;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -232,5 +245,6 @@ namespace se {
 		}
 
 	};
+
 	static_assert(sizeof(LinkedObjectList<void*>) == 0x0C, "TES3::LinkedObjectList failed size validation");
 }
