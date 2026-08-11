@@ -3349,7 +3349,7 @@ namespace se::cs::dialog::render_window {
 			return !outIds.empty();
 		}
 
-		void parseUnicodeText(const std::wstring& text, std::vector<std::string>& outIds) {
+		void parseUnicodeText(std::wstring_view text, std::vector<std::string>& outIds) {
 			// Note: `from_wstring` is lossy but that should be irrelevant for ASCII IDs.
 			const std::string payload = se::string::from_wstring(text);
 			constexpr std::string_view prefix = "cs-object:";

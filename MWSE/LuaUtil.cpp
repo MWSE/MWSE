@@ -144,7 +144,7 @@ namespace mwse::lua {
 			}
 		}
 
-		return std::move(value);
+		return value;
 	}
 
 	TES3::BaseObject* getOptionalParamBaseObject(sol::optional<sol::table> maybeParams, const char* key) {

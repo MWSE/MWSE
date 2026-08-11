@@ -162,6 +162,6 @@ namespace NI {
 		se::memory::_delete(string);
 #endif
 
-		return std::move(out_string);
+		return out_string;
 	}
 }

@@ -417,7 +417,7 @@ namespace TES3::UI {
 	std::string Element::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3uiElement:" << id << ":" << (name.cString ? name.cString : "(unnamed)") << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	sol::table Element::getChildren_lua(sol::this_state ts) const {
@@ -578,10 +578,10 @@ namespace TES3::UI {
 			return WidgetButton::fromElement(this)->getText();
 		}
 		else if (part == propParagraphInput) {
-			return std::move(WidgetParagraphInput::fromElement(this)->getText());
+			return WidgetParagraphInput::fromElement(this)->getText();
 		}
 		else if (part == propTextInput) {
-			return std::move(WidgetTextInput::fromElement(this)->getText());
+			return WidgetTextInput::fromElement(this)->getText();
 		}
 
 		return getText();
@@ -777,7 +777,7 @@ namespace TES3::UI {
 		return (flow == Property::top_to_bottom) ? "top_to_bottom" : "left_to_right";
 	}
 
-	void Element::setFlowDirectionString(std::string value) {
+	void Element::setFlowDirectionString(std::string_view value) {
 		auto prop = (value == "top_to_bottom") ? Property::top_to_bottom : Property::left_to_right;
 		setProperty(TES3::UI::Property::flow_direction, prop);
 	}
@@ -879,7 +879,7 @@ namespace TES3::UI {
 		return "left";
 	}
 
-	void Element::setJustifyTextString(std::string value) {
+	void Element::setJustifyTextString(std::string_view value) {
 		auto prop = Property::left;
 		if (value == "center") {
 			prop = Property::center;

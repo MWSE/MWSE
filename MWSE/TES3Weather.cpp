@@ -23,7 +23,7 @@ namespace TES3 {
 	std::string Weather::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3weather:" << index << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	const char* Weather::getName() const {

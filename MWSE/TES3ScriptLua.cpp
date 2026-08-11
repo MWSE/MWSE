@@ -10,7 +10,7 @@
 #include "TES3Script.h"
 
 namespace mwse::lua {
-	sol::object ScriptContext::index(std::string key) {
+	sol::object ScriptContext::index(const std::string& key) {
 		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 		auto& state = stateHandle.getState();
 

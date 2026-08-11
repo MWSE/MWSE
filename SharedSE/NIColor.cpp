@@ -31,7 +31,7 @@ namespace NI {
 	std::string PackedColor::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << int(r) << ", " << int(g) << ", " << int(b) << ", " << int(a) << ">";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	//
@@ -157,13 +157,13 @@ namespace NI {
 	std::string Color::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << r << ", " << g << ", " << b << ">";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Color::toJson() const {
 		std::ostringstream ss;
 		ss << "{\"r\":" << r << ",\"g\":" << g << ",\"b\":" << b << "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	//
@@ -182,6 +182,6 @@ namespace NI {
 	std::string ColorA::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << "<" << r << ", " << g << ", " << b << ", " << a << ">";
-		return std::move(ss.str());
+		return ss.str();
 	}
 }

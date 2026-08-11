@@ -47,7 +47,7 @@ namespace NI {
 	std::string BoundingBox::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string BoundingBox::toJson() const {
@@ -56,7 +56,7 @@ namespace NI {
 			<< "\"min\":" << minimum.toJson() << ","
 			<< "\"max\":" << maximum.toJson()
 			<< "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	BoundingBox BoundingBox::copy() const {

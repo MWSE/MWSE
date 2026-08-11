@@ -8,7 +8,7 @@ namespace TES3 {
 	std::string SoundGenerator::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3soundGenerator:" << name << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 }
 

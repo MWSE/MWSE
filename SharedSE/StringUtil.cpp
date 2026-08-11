@@ -618,7 +618,7 @@ namespace se::string {
 			start = end;
 		}
 
-		return std::move(result);
+		return result;
 	}
 #endif
 

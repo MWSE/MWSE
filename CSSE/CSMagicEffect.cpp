@@ -69,7 +69,7 @@ namespace se::cs {
 			ss << "<invalid effect>";
 		}
 
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	int MagicEffect::getNameGMST() const {

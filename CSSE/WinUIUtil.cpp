@@ -150,7 +150,7 @@ namespace se::cs::winui {
 		// GetWindowTextA will cause a null terminator character to be appended to the string, which we need to pop off.
 		text.pop_back();
 
-		return std::move(text);
+		return text;
 	}
 
 	std::optional<int> GetDlgItemSignedInt(HWND hWnd, UINT nIDDlgItem) {

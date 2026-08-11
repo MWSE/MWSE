@@ -17,7 +17,7 @@ namespace TES3 {
 	std::string Skill::getIconPath() const {
 		std::string path = "icons\\k\\";
 		path.append(ICON_PATHS[skill]);
-		return std::move(path);
+		return path;
 	}
 
 	std::reference_wrapper<float[4]> Skill::getProgressActions() {

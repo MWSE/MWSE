@@ -211,7 +211,7 @@ namespace TES3 {
 	std::string Sound::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3sound:" << id << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	bool Sound::play_lua(sol::optional<sol::table> params) {

@@ -351,7 +351,7 @@ namespace TES3 {
 	std::string BaseObject::toJson() const {
 		std::ostringstream ss;
 		ss << "\"tes3baseObject:" << getObjectID() << "\"";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::unordered_set<const BaseObject*> sourcelessObjects;

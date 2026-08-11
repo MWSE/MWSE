@@ -39,7 +39,7 @@ namespace TES3 {
 		return TES3_TES3File_readChunkData(this, data, size);
 	}
 
-	int GameFile::writeChunkString(unsigned int tag, std::string string) {
+	int GameFile::writeChunkString(unsigned int tag, const std::string& string) {
 		return writeChunkData(tag, string.data(), string.length() + 1);
 	}
 

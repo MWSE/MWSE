@@ -6,6 +6,7 @@
 #include "LogUtil.h"
 #include "Settings.h"
 #include "WindowsUtil.h"
+#include "WinUIUtil.h"
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
@@ -845,10 +846,8 @@ namespace se::cs::darkmode {
 			}
 		}
 
-		char windowText[MAX_PATH] = {};
-		const char* displayText = text.empty() ? windowText : text.data();
 		if (text.empty()) {
-			GetWindowTextA(hWnd, windowText, sizeof(windowText));
+			text = winui::GetWindowTextA(hWnd);
 		}
 
 		itemRect.left += 3;
@@ -857,7 +856,7 @@ namespace se::cs::darkmode {
 		const auto previousFont = SelectObject(hdc, getMessageFont(hWnd));
 		SetBkMode(hdc, TRANSPARENT);
 		SetTextColor(hdc, IsWindowEnabled(hWnd) ? palette::text : palette::textDisabled);
-		DrawTextA(hdc, displayText, -1, &itemRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+		DrawTextA(hdc, text.c_str(), -1, &itemRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
 		SelectObject(hdc, previousFont);
 
 	}
@@ -1250,12 +1249,8 @@ namespace se::cs::darkmode {
 		GetClientRect(hWnd, &clientRect);
 		FillRect(hdc, &clientRect, surfaceBrush);
 
-		const auto textLength = GetWindowTextLengthA(hWnd);
-		if (textLength > 0) {
-			std::string text(textLength + 1, '\0');
-			GetWindowTextA(hWnd, text.data(), static_cast<int>(text.size()));
-			text.resize(textLength);
-
+		std::string text = winui::GetWindowTextA(hWnd);
+		if (!text.empty()) {
 			const auto firstVisibleLine = SendMessageA(hWnd, EM_GETFIRSTVISIBLELINE, 0, 0);
 			const auto firstVisibleCharacter = SendMessageA(hWnd, EM_LINEINDEX, firstVisibleLine, 0);
 			if (firstVisibleCharacter > 0) {
@@ -1474,14 +1469,13 @@ namespace se::cs::darkmode {
 		RECT clientRect = {};
 		GetClientRect(hWnd, &clientRect);
 
-		char text[MAX_PATH] = {};
-		GetWindowTextA(hWnd, text, sizeof(text));
+		auto text = winui::GetWindowTextA(hWnd);
 
 		const auto font = getMessageFont(hWnd);
 		const auto previousFont = SelectObject(hdc, font);
 
 		SIZE textSize = {};
-		GetTextExtentPoint32A(hdc, text, static_cast<int>(strlen(text)), &textSize);
+		GetTextExtentPoint32A(hdc, text.c_str(), static_cast<int>(text.size()), &textSize);
 
 		// Frame, dropped below the caption's center line.
 		auto frameRect = clientRect;
@@ -1492,13 +1486,13 @@ namespace se::cs::darkmode {
 		SelectObject(hdc, previousBrush);
 		SelectObject(hdc, previousPen);
 
-		if (text[0] != '\0') {
+		if (!text.empty()) {
 			RECT textRect = { clientRect.left + 8, clientRect.top, clientRect.left + 8 + textSize.cx + 4, clientRect.top + textSize.cy };
 			FillRect(hdc, &textRect, backgroundBrush);
 			textRect.left += 2;
 			SetBkMode(hdc, TRANSPARENT);
 			SetTextColor(hdc, IsWindowEnabled(hWnd) ? palette::text : palette::textDisabled);
-			DrawTextA(hdc, text, -1, &textRect, DT_LEFT | DT_TOP | DT_SINGLELINE);
+			DrawTextA(hdc, text.c_str(), -1, &textRect, DT_LEFT | DT_TOP | DT_SINGLELINE);
 		}
 
 		SelectObject(hdc, previousFont);

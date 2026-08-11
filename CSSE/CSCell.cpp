@@ -97,6 +97,6 @@ namespace se::cs {
 			ss << " (" << getGridX() << ", " << getGridY() << ")";
 		}
 
-		return std::move(ss.str());
+		return ss.str();
 	}
 }

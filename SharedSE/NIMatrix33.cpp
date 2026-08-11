@@ -139,7 +139,7 @@ namespace NI {
 	std::string Matrix33::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Matrix33::toJson() const {
@@ -149,7 +149,7 @@ namespace NI {
 			<< "[" << m1.x << "," << m1.y << "," << m1.z << "],"
 			<< "[" << m2.x << "," << m2.y << "," << m2.z << "]"
 			<< "]";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	Matrix33 Matrix33::copy() const {

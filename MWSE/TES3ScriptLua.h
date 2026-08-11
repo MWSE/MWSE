@@ -12,7 +12,7 @@ namespace mwse::lua {
 
 		}
 
-		sol::object index(std::string);
+		sol::object index(const std::string&);
 		void new_index(std::string, sol::stack_object);
 		size_t length();
 

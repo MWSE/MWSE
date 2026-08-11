@@ -57,13 +57,13 @@ namespace NI {
 	std::string Point4::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Point4::toJson() const {
 		std::ostringstream ss;
 		ss << "{\"x\":" << x << ",\"y\":" << y << ",\"z\":" << z << ",\"w\":" << w << "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	Point4 Point4::copy() const {

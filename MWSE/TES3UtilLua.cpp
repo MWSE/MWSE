@@ -682,7 +682,7 @@ namespace mwse::lua {
 		}
 	}
 
-	TES3::SoundGenerator* getSoundGenerator(std::string creatureId, unsigned int type) {
+	TES3::SoundGenerator* getSoundGenerator(std::string_view creatureId, unsigned int type) {
 		auto nonDynamicData = TES3::DataHandler::get()->nonDynamicData;
 		auto creature = nonDynamicData->resolveObjectByType<TES3::Creature>(creatureId);
 		if (creature == nullptr) {
@@ -753,7 +753,7 @@ namespace mwse::lua {
 
 		auto attribute = getOptionalParam<int>(params, "attribute", -1);
 		auto skill = getOptionalParam<int>(params, "skill", -1);
-		return std::move(effect->getComplexName(attribute, skill));
+		return effect->getComplexName(attribute, skill);
 	}
 
 	sol::optional<NI::Camera*> getCamera() {

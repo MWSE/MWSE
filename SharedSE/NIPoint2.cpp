@@ -94,13 +94,13 @@ namespace NI {
 	std::string Point2::toString() const {
 		std::ostringstream ss;
 		ss << std::fixed << std::setprecision(2) << std::dec << *this;
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	std::string Point2::toJson() const {
 		std::ostringstream ss;
 		ss << "{\"x\":" << x << ",\"y\":" << y << "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 
 	Point2 Point2::copy() const {
