@@ -489,9 +489,7 @@ namespace se::cs::dialog::layer_window {
 		}
 
 		// Sort g_Layers by their IDs (ascending) for consistent ordering in the UI
-		std::ranges::sort(g_Layers, [](LayerData* a, LayerData* b) {
-			return a->id < b->id;
-		});
+		std::ranges::sort(g_Layers, {}, &LayerData::id);
 
 		auto recordHandler = DataHandler::get()->recordHandler;
 		auto cellList = recordHandler->cells;
