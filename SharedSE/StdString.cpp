@@ -23,12 +23,8 @@ namespace se {
 	}
 
 	StdString::~StdString() {
-#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
 		const auto TES3_StdString_dtor = reinterpret_cast<void(__thiscall**)(StdString*)>(0x7461C4);
 		(*TES3_StdString_dtor)(this);
-#else
-		throw not_implemented_exception();
-#endif
 	}
 
 	void* StdString::operator new(size_t size) {
