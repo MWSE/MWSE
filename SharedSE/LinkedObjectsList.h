@@ -16,8 +16,10 @@ namespace se {
 
 		private:
 			T* m_Object;
+			const LinkedObjectList* m_Parent;
 
-			iterator(T* object) : m_Object(object) {}
+			iterator(T* object, const LinkedObjectList* list)
+				: m_Object(object), m_Parent(list) {}
 
 		public:
 			using iterator_category = std::bidirectional_iterator_tag;
@@ -26,12 +28,12 @@ namespace se {
 			using value_type = T*;
 			using difference_type = int;
 			using pointer = T**;
-			using reference = T*&;
+			using reference = T* const&;
 
-			iterator() : m_Object(nullptr) {}
+			iterator() : m_Parent(nullptr), m_Object(nullptr) {}
 
 			iterator operator-(difference_type diff) const {
-				iterator r = m_Object;
+				iterator r = *this;
 				r -= diff;
 				return r;
 			}
@@ -39,6 +41,9 @@ namespace se {
 			iterator& operator--() {
 				if (m_Object) {
 					m_Object = static_cast<value_type>(m_Object->previousInCollection);
+				}
+				else if (m_Parent) {
+					m_Object = m_Parent->tail;
 				}
 				return *this;
 			}
@@ -57,7 +62,7 @@ namespace se {
 			}
 
 			iterator operator+(difference_type diff) const {
-				iterator r = m_Object;
+				iterator r = *this;
 				r += diff;
 				return r;
 			}
@@ -90,11 +95,11 @@ namespace se {
 				return itt.m_Object != m_Object;
 			}
 
-			T* operator->() const {
+			reference operator->() const {
 				return m_Object;
 			}
 
-			T* const& operator*() const {
+			reference operator*() const {
 				return m_Object;
 			}
 		};
@@ -110,14 +115,14 @@ namespace se {
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-		iterator begin() const { return head; }
-		iterator end() const { return nullptr; }
-		reverse_iterator rbegin() const { return tail; }
-		reverse_iterator rend() const { return nullptr; }
-		const_iterator cbegin() const { return head; }
-		const_iterator cend() const { return nullptr; }
-		const_reverse_iterator crbegin() const { return tail; }
-		const_reverse_iterator crend() const { return nullptr; }
+		iterator begin() const { return iterator(head, this); }
+		iterator end() const { return iterator(nullptr, this); }
+		reverse_iterator rbegin() const { return reverse_iterator(end()); }
+		reverse_iterator rend() const { return reverse_iterator(begin()); }
+		const_iterator cbegin() const { return const_iterator(head, this); }
+		const_iterator cend() const { return const_iterator(nullptr, this); }
+		const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+		const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 		size_type size() const noexcept { return count; }
 		bool empty() const noexcept { return count == 0; }
 
@@ -175,7 +180,7 @@ namespace se {
 				}
 			}
 
-			return value;
+			return iterator(value, this);
 		}
 
 		iterator insert(size_type position, reference value) {
@@ -200,7 +205,7 @@ namespace se {
 		}
 
 		iterator erase(iterator position) {
-			iterator nextInCollection = nullptr;
+			iterator nextInCollection(nullptr, this);
 
 			auto node = position.m_Object;
 			if (node) {
@@ -215,7 +220,7 @@ namespace se {
 					node->previousInCollection->nextInCollection = static_cast<value_type>(node->nextInCollection);
 				}
 				if (node->nextInCollection) {
-					nextInCollection = static_cast<value_type>(node->nextInCollection);
+					nextInCollection = iterator(static_cast<value_type>(node->nextInCollection), this);
 					node->nextInCollection->previousInCollection = static_cast<value_type>(node->previousInCollection);
 				}
 				node->previousInCollection = nullptr;
