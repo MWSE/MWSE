@@ -21,9 +21,9 @@ namespace se::cs::dialog::path_grid_window {
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x553660);
 
-		switch (msg) {
-
-		}
+		//switch (msg) {
+		
+		//}
 
 		// Call original function, or return early if we already have a result.
 		if (context.hasResult()) {

@@ -10,9 +10,9 @@ namespace se::cs::dialog::preview_window {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x455AA0);
 
 		// Handle pre-patches.
-		switch (msg) {
+		// switch (msg) {
 
-		}
+		// }
 
 		// Call original function, or return early if we already have a result.
 		if (context.hasResult()) {
@@ -23,9 +23,9 @@ namespace se::cs::dialog::preview_window {
 		}
 
 		// Handle post-patches.
-		switch (msg) {
+		// switch (msg) {
 
-		}
+		// }
 
 		return context.getResult();
 	}
