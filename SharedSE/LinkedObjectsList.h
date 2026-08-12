@@ -15,7 +15,7 @@ namespace se {
 			friend class LinkedObjectList;
 
 		private:
-			mutable T* m_Object;
+			T* m_Object;
 
 			iterator(T* object) : m_Object(object) {}
 
@@ -90,11 +90,11 @@ namespace se {
 				return itt.m_Object != m_Object;
 			}
 
-			reference operator->() const {
+			T* operator->() const {
 				return m_Object;
 			}
 
-			reference operator*() const {
+			T* const& operator*() const {
 				return m_Object;
 			}
 		};
