@@ -207,7 +207,7 @@ namespace TES3 {
 
 		if (mobile && mobile->lightMagicEffectData && mobile->lightMagicEffectData->light) {
 			mobile->lightMagicEffectData->light->update(0.0f, true, true);
-			mobile->actorFlags &= ~0x80; // TODO: Name and create helper functions for this flag.
+			mobile->setLightingValidFlag(false);
 		}
 	}
 
