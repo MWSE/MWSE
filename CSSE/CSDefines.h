@@ -1,12 +1,13 @@
 #pragma once
 
+#include "TES3Defines.h"
+
 namespace se::cs {
 	struct Actor;
 	struct AIConfig;
 	struct AnimatedObject;
 	struct Apparatus;
 	struct Armor;
-	struct BaseObject;
 	struct Birthsign;
 	struct BodyPart;
 	struct Book;
@@ -20,7 +21,6 @@ namespace se::cs {
 	struct Effect;
 	struct Enchantment;
 	struct Faction;
-	struct GameFile;
 	struct GameSetting;
 	struct GameSettingInitializer;
 	struct GlobalVariable;
@@ -52,69 +52,7 @@ namespace se::cs {
 	struct TravelDestination;
 	struct Weapon;
 
-	struct BaseObject_VirtualTable;
-	struct Object_VirtualTable;
-	struct Actor_VirtualTable;
-
-	namespace ObjectType {
-		enum ObjectType {
-			Invalid = 0,
-			Activator = 'ITCA',
-			Alchemy = 'HCLA',
-			Ammo = 'OMMA',
-			AnimationGroup = 'GINA',
-			Apparatus = 'APPA',
-			Armor = 'OMRA',
-			Birthsign = 'NGSB',
-			Bodypart = 'YDOB',
-			Book = 'KOOB',
-			Cell = 'LLEC',
-			Class = 'SALC',
-			Clothing = 'TOLC',
-			Container = 'TNOC',
-			Creature = 'AERC',
-			CreatureClone = 'CERC',
-			Dialogue = 'LAID',
-			DialogueInfo = 'OFNI',
-			Door = 'ROOD',
-			Enchantment = 'HCNE',
-			Faction = 'TCAF',
-			GameSetting = 'TSMG',
-			Global = 'BOLG',
-			Ingredient = 'RGNI',
-			Land = 'DNAL',
-			LandTexture = 'XETL',
-			LeveledCreature = 'CVEL',
-			LeveledItem = 'IVEL',
-			Light = 'HGIL',
-			Lockpick = 'KCOL',
-			MagicEffect = 'FEGM',
-			MagicSourceInstance = 'LLPS',
-			Misc = 'CSIM',
-			MobileCreature = 'RCAM',
-			MobileNPC = 'HCAM',
-			MobileObject = 'TCAM',
-			MobilePlayer = 'PCAM',
-			MobileProjectile = 'JRPM',
-			MobileSpellProjectile = 'PSPM',
-			NPC = '_CPN',
-			NPCClone = 'CCPN',
-			PathGrid = 'DRGP',
-			Probe = 'BORP',
-			Quest = 'SEUQ',
-			Race = 'ECAR',
-			Reference = 'RFER',
-			Region = 'NGER',
-			Repair = 'APER',
-			Script = 'TPCS',
-			Skill = 'LIKS',
-			Sound = 'NUOS',
-			SoundGenerator = 'GDNS',
-			Spell = 'LEPS',
-			Static = 'TATS',
-			TES3 = '3SET',
-			Training = 'IART',
-			Weapon = 'PAEW',
-		};
-	}
+	using BaseObject = TES3::BaseObject;
+	using GameFile = TES3::GameFile;
+	using ObjectType = TES3::ObjectType::ObjectType;
 }

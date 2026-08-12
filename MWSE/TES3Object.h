@@ -1,7 +1,9 @@
 #pragma once
 
-#include "NIDefines.h"
+#include "TES3BaseObject.h"
 #include "TES3Defines.h"
+
+#include "NIDefines.h"
 
 #include "LinkedObjectsList.h"
 #include "NIIteratedList.h"
@@ -22,118 +24,8 @@ namespace TES3 {
 	using se::LinkedObjectList;
 
 	//
-	// Object types. They are char[4], or can be interpreted as a 32-bit integer.
-	//
-
-	namespace ObjectType {
-		enum ObjectType {
-			Invalid = 0,
-			Activator = 'ITCA',
-			Alchemy = 'HCLA',
-			Ammo = 'OMMA',
-			AnimationGroup = 'GINA',
-			Apparatus = 'APPA',
-			Armor = 'OMRA',
-			Birthsign = 'NGSB',
-			Bodypart = 'YDOB',
-			Book = 'KOOB',
-			Cell = 'LLEC',
-			Class = 'SALC',
-			Clothing = 'TOLC',
-			Container = 'TNOC',
-			Creature = 'AERC',
-			CreatureClone = 'CERC',
-			Dialogue = 'LAID',
-			DialogueInfo = 'OFNI',
-			Door = 'ROOD',
-			Enchantment = 'HCNE',
-			Faction = 'TCAF',
-			GameSetting = 'TSMG',
-			Global = 'BOLG',
-			Ingredient = 'RGNI',
-			Land = 'DNAL',
-			LandTexture = 'XETL',
-			LeveledCreature = 'CVEL',
-			LeveledItem = 'IVEL',
-			Light = 'HGIL',
-			Lockpick = 'KCOL',
-			MagicEffect = 'FEGM',
-			MagicSourceInstance = 'LLPS',
-			Misc = 'CSIM',
-			MobileCreature = 'RCAM',
-			MobileNPC = 'HCAM',
-			MobileObject = 'TCAM',
-			MobilePlayer = 'PCAM',
-			MobileProjectile = 'JRPM',
-			MobileSpellProjectile = 'PSPM',
-			NPC = '_CPN',
-			NPCClone = 'CCPN',
-			PathGrid = 'DRGP',
-			Probe = 'BORP',
-			Quest = 'SEUQ',
-			Race = 'ECAR',
-			Reference = 'RFER',
-			Region = 'NGER',
-			Repair = 'APER',
-			Script = 'TPCS',
-			Skill = 'LIKS',
-			Sound = 'NUOS',
-			SoundGenerator = 'GDNS',
-			Spell = 'LEPS',
-			Static = 'TATS',
-			TES3 = '3SET',
-			Weapon = 'PAEW',
-		};
-	}
-
-	//
-	// Enums
-	//
-
-	namespace ObjectFlag {
-		typedef unsigned int value_type;
-
-		enum Flag : value_type {
-			Modified = 0x2,
-			LinksResolved = 0x8,
-			NoCollision = 0x10,
-			Delete = 0x20,
-			Persistent = 0x400,
-			Disabled = 0x800,
-			SelectedByConsole = 0x1000,
-			Blocked = 0x2000,
-			EmptyInventory = 0x2000,
-		};
-
-		enum FlagBit {
-			ModifiedBit = 1,
-			LinksResolvedBit = 3,
-			NoCollisionBit = 4,
-			DeleteBit = 5,
-			PersistentBit = 10,
-			DisabledBit = 11,
-			SelectedByConsoleBit = 12,
-			BlockedBit = 13,
-			EmptyInventoryBit = 13,
-		};
-	}
-
-	//
 	// The core building blocks of TES3 objects.
 	//
-
-	struct BaseObjectVirtualTable {
-		void (__thiscall* deleting_dtor)(BaseObject*, char); // 0x0
-		bool (__thiscall* loadObjectSpecific)(BaseObject*, GameFile*); // 0x4
-		bool (__thiscall* saveRecordSpecific)(BaseObject*, GameFile*); // 0x8
-		bool (__thiscall* loadObject)(BaseObject*, GameFile*); // 0xC
-		bool (__thiscall* saveObject)(BaseObject*, GameFile*); // 0x10
-		void (__thiscall* setObjectModified)(BaseObject*, bool); // 0x14
-		void (__thiscall* setFlagMovedRef)(BaseObject*, bool); // 0x18
-		void* unknown_0x1C;
-		const char* (__thiscall* getObjectID)(const BaseObject*); // 0x20
-	};
-	static_assert(sizeof(BaseObjectVirtualTable) == 0x24, "TES3::BaseObjectVirtualTable failed size validation");
 
 	struct ObjectVirtualTable : BaseObjectVirtualTable {
 		void (__thiscall* copy)(Object*, const Object*, bool); // 0x24
@@ -208,96 +100,6 @@ namespace TES3 {
 		void (__thiscall* applyCollisionMode)(Object*, NI::Node*, int, int); // 0x138
 	};
 	static_assert(sizeof(ObjectVirtualTable) == 0x13C, "TES3::ObjectVirtualTable failed size validation");
-
-	struct BaseObject {
-		union {
-			BaseObjectVirtualTable* base;
-			ObjectVirtualTable* object;
-			PhysicalObjectVirtualTable* physical;
-			ActorVirtualTable* actor;
-		} vTable; // 0x0
-		ObjectType::ObjectType objectType; // 0x4
-		unsigned int objectFlags; // 0x8
-		GameFile* sourceMod; // 0xC
-
-		static constexpr auto OBJECT_TYPE = ObjectType::Invalid;
-
-		//
-		// Basic operators.
-		//
-
-		static void* operator new(size_t size);
-		static void operator delete(void* block);
-
-		// The address of a destructor can't be taken, so we need to put all the logic here.
-		void dtor();
-
-		//
-		// Function wrappers for our virtual table.
-		//
-
-		bool getObjectModified() const;
-		void setObjectModified(bool);
-		const char* getObjectID() const;
-
-		//
-		// Other related this-call functions.
-		//
-
-		bool writeFileHeader(GameFile* file) const;
-
-		//
-		// Custom functions.
-		//
-
-		bool supportsActivate() const;
-
-		BaseObject * getBaseObject();
-		BaseObject const* getBaseObject() const;
-
-		bool isPhysicalObject() const;
-		PhysicalObject* asPhysicalObject();
-		const PhysicalObject* asPhysicalObject() const;
-		bool isActor() const;
-		bool isMobileCapableActor() const;
-		bool isItem() const;
-		bool isWeaponOrAmmo() const;
-		const char* getSourceFilename() const;
-
-		bool getLinksResolved() const;
-		void setLinksResolved(bool value);
-
-		bool getDisabled() const;
-		bool getDeleted() const;
-		void setDeleted(bool deleted);
-
-		bool getPersistent() const;
-		void setPersistent(bool value);
-
-		bool getBlocked() const;
-		void setBlocked(bool value);
-
-		bool getUpdatesCollisionGroups() const;
-
-		bool getSupportsLuaData() const;
-
-		std::string toJson() const;
-
-		bool getSourceless() const;
-		void setSourceless(bool sourceless) const;
-
-		static bool __stdcall isSourcelessObject(const BaseObject* object);
-		static void setSourcelessObject(const BaseObject* object);
-
-		// Storage for cached userdata.
-		bool hasCachedLuaObject() const;
-		sol::object getCachedLuaObject() const;
-		sol::object getOrCreateLuaObject(lua_State* L) const;
-		static void clearCachedLuaObject(const BaseObject* object);
-		static void clearCachedLuaObjects();
-
-	};
-	static_assert(sizeof(BaseObject) == 0x10, "TES3::BaseObject failed size validation");
 
 	struct Object : BaseObject {
 		NI::Pointer<NI::Node> sceneNode; // 0x10

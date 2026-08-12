@@ -68,12 +68,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-	<IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(OutDir);$(SolutionDir)deps\LuaJIT\src;$(LibraryPath)</LibraryPath>
-	<IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\boost;$(SolutionDir)deps\fmt\include;$(SolutionDir)deps\LuaJIT\src;$(SolutionDir)deps\sol\include;$(SolutionDir)deps\toml11\include;$(SolutionDir)deps\DirectX8\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,7 +84,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <LanguageStandard>stdcpp20</LanguageStandard>
-	  <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,7 +116,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>pch.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <LanguageStandard>stdcpp20</LanguageStandard>
-	  <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,7 +140,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-	<ClCompile Include="CrashLoggerCSSE.cpp" />
+    <ClCompile Include="CrashLoggerCSSE.cpp" />
     <ClCompile Include="CDataBoundPropertyGridProperty.cpp" />
     <ClCompile Include="CSAlchemy.cpp" />
     <ClCompile Include="CSArmor.cpp" />
@@ -192,9 +192,7 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClCompile Include="DialogTextSearchWindow.cpp" />
     <ClCompile Include="DialogUseReportWindow.cpp" />
     <ClCompile Include="EditBasicExtended.cpp" />
-    <ClCompile Include="CSBaseObject.cpp" />
     <ClCompile Include="CSDataHandler.cpp" />
-    <ClCompile Include="CSGameFile.cpp" />
     <ClCompile Include="CSLight.cpp" />
     <ClCompile Include="CSModelLoader.cpp" />
     <ClCompile Include="CSPhysicalObject.cpp" />
@@ -279,7 +277,6 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="CSEffect.h" />
     <ClInclude Include="CSEnchantment.h" />
     <ClInclude Include="CSFaction.h" />
-    <ClInclude Include="CSGameFile.h" />
     <ClInclude Include="CSGameSetting.h" />
     <ClInclude Include="CSIngredient.h" />
     <ClInclude Include="CSLandTexture.h" />
@@ -325,7 +322,6 @@ copy /y "$(TargetDir)CSSE.pdb" "$(MorrowindDir)CSSE.pdb"</Command>
     <ClInclude Include="DialogSearchAndReplaceWindow.h" />
     <ClInclude Include="DialogTextSearchWindow.h" />
     <ClInclude Include="EditBasicExtended.h" />
-    <ClInclude Include="CSBaseObject.h" />
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="ObjectWindowTabData.h" />
     <ClInclude Include="RenderWindowSceneGraphController.h" />

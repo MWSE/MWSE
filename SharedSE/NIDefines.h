@@ -33,6 +33,7 @@ namespace NI {
 	struct AVObject;
 	struct BinaryStream;
 	struct Bound;
+	struct BoundingBox;
 	struct BoundingVolume;
 	struct BoxBound;
 	struct BoxBoundingVolume;

@@ -32,7 +32,7 @@ namespace TES3 {
 		int errorCode; // 0x0
 		void* ioObjectBeforeSave; // 0x4
 		void* ioObject; // 0x8
-		char filename[MAX_PATH]; // 0xC
+		char fileName[MAX_PATH]; // 0xC
 		char path[MAX_PATH]; // 0x110
 		void* field_214;
 		int field_218;
@@ -61,6 +61,9 @@ namespace TES3 {
 		se::StlList<unsigned int>* masterFileSizes; // 0x4E4
 		GameFile** arrayMasters; // 0x4E8
 		unsigned int highestFormID; // 0x4EC
+
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
+
 		GMDT gmdt; // 0x4F0
 		void* sgSaveImage; // 0x56C
 		NI::IteratedList<void*>* list_570;
@@ -69,11 +72,11 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
-		GameFile(const char* path, const char* filename, void * unknown = nullptr);
+		GameFile(const char* path, const char* fileName, void* unknown = nullptr);
 		~GameFile();
 
 		void deleteFile();
-		bool readChunkData(void * data, unsigned int size = 0);
+		bool readChunkData(void* data, unsigned int size = 0);
 		template <typename T>
 		int writeChunkValue(unsigned int tag, const T& data) {
 			return writeChunkData(tag, &data, sizeof(T));
@@ -83,7 +86,7 @@ namespace TES3 {
 			return writeChunkData(tag, data, sizeof(T));
 		}
 		int writeChunkString(unsigned int tag, const std::string& string);
-		int writeChunkData(unsigned int tag, const void * data, unsigned int size);
+		int writeChunkData(unsigned int tag, const void* data, unsigned int size);
 		int writeRecordHeader(unsigned int tag, unsigned int flags);
 		int endRecord();
 
@@ -95,7 +98,7 @@ namespace TES3 {
 
 		bool collectActiveMods(bool showMasterErrors = false);
 		bool load(int unknown1 = 0, bool unknown2 = false);
-		bool loadByPath(const char* path, const char* filename, int unknown1 = 0, bool unknown2 = false);
+		bool loadByPath(const char* path, const char* fileName, int unknown1 = 0, bool unknown2 = false);
 		unsigned int readFirstChunk();
 		unsigned int readNextChunk();
 		bool nextForm(int flag = 1);
@@ -133,7 +136,22 @@ namespace TES3 {
 
 		std::span<GameFile*> getMasters();
 
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
+
+		int unknown_0x4F0;
+
+		bool getIsMasterFile() const;
+
+		bool getToLoadFlag() const;
+		void setToLoadFlag(bool state);
+
+		int sortAgainst(const GameFile* other) const;
+#endif
 	};
-	static_assert(sizeof(GameFile) == 0x574, "TES3::GameFile failed size validation");
 	static_assert(sizeof(GameFile::GMDT) == 0x7C, "TES3::GameFile::GMDT failed size validation");
+#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
+	static_assert(sizeof(GameFile) == 0x574, "TES3::GameFile failed size validation");
+#elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
+	static_assert(sizeof(GameFile) == 0x4f4, "TES3::GameFile failed size validation");
+#endif
 }

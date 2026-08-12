@@ -287,7 +287,6 @@
     <ClInclude Include="PatchUtil.h" />
     <ClInclude Include="ScriptUtilLua.h" />
     <ClInclude Include="TES3ActorLua.h" />
-    <ClInclude Include="TES3Defines.h" />
     <ClInclude Include="TES3Dialogue.h" />
     <ClInclude Include="TES3DialogueLua.h" />
     <ClInclude Include="TES3GlobalVariableLua.h" />
@@ -463,7 +462,6 @@
     <ClInclude Include="TES3WeatherThunder.h" />
     <ClInclude Include="TES3WorldController.h" />
     <ClInclude Include="TES3WorldControllerLua.h" />
-    <ClInclude Include="TES3GameFile.h" />
     <ClInclude Include="TES3UIManagerLua.h" />
     <ClInclude Include="UIUtil.h" />
     <ClInclude Include="UTF8Convert.h" />
@@ -758,7 +756,6 @@
     <ClCompile Include="TES3Fader.cpp" />
     <ClCompile Include="TES3FaderLua.cpp" />
     <ClCompile Include="TES3Game.cpp" />
-    <ClCompile Include="TES3GameFile.cpp" />
     <ClCompile Include="TES3GameFileLua.cpp" />
     <ClCompile Include="TES3Ingredient.cpp" />
     <ClCompile Include="TES3Item.cpp" />
