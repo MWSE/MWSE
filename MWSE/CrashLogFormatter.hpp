@@ -203,8 +203,8 @@ inline std::vector<std::string> LogClass(const TES3::BaseObject& obj) {
 	std::vector<std::string> vec;
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
-	TES3::GameFile* sourceMod = obj.sourceMod;
-	if (!sourceMod) {
+	TES3::GameFile* sourceFile = obj.sourceFile;
+	if (!sourceFile) {
 		if (!&obj) {
 			objectName = fmt::format("No Source Mod: {} ({})", GetObjectType(obj.objectType), "NULL");
 		}
@@ -214,7 +214,7 @@ inline std::vector<std::string> LogClass(const TES3::BaseObject& obj) {
 		vec.push_back(fmt::format("ID: {} ", objectName));
 	}
 	else {
-		std::string modName = sourceMod->filename;
+		std::string modName = sourceFile->filename;
 		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectType(obj.objectType), modName));
 	}
 	return vec;
@@ -224,8 +224,8 @@ inline auto LogClass(const TES3::Object& obj) {
 	std::vector<std::string> vec = LogClass(static_cast<const TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
-	TES3::GameFile* sourceMod = obj.sourceMod;
-	if (!sourceMod) {
+	TES3::GameFile* sourceFile = obj.sourceFile;
+	if (!sourceFile) {
 		if (!&obj) {
 			objectName = fmt::format("No Source Mod: {} ({})", GetObjectType(obj.objectType), "NULL");
 		}
@@ -235,7 +235,7 @@ inline auto LogClass(const TES3::Object& obj) {
 		vec.push_back(fmt::format("ID: {} ({})", objectID, objectName));
 	}
 	else {
-		std::string modName = sourceMod->filename;
+		std::string modName = sourceFile->filename;
 
 		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectType(obj.objectType), modName));
 	}
@@ -251,8 +251,8 @@ inline auto LogClass(const TES3::Reference& obj) {
 	//std::vector<std::string> vec = LogClass(static_cast<TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
-	TES3::GameFile* sourceMod = obj.sourceMod;
-	if (!sourceMod) {
+	TES3::GameFile* sourceFile = obj.sourceFile;
+	if (!sourceFile) {
 		if (!&obj) {
 			objectName = fmt::format("No Source Mod: {} ({})", "NULL", "NULL");
 		}
@@ -262,7 +262,7 @@ inline auto LogClass(const TES3::Reference& obj) {
 		vec.push_back(fmt::format("ID: {} ({})", objectID, objectName));
 	}
 	else {
-		std::string modName = sourceMod->filename;
+		std::string modName = sourceFile->filename;
 
 		vec.push_back(fmt::format("ID: ({}) : (Plugin: \"{}\")", objectID, modName));
 	}
@@ -290,16 +290,16 @@ inline std::vector<std::string> LogClass(const TES3::PathGrid& obj) {
 inline auto LogClass(const TES3::Cell& obj) {
 	std::vector<std::string> vec;
 	const std::string objectID = obj.getEditorName();
-	const std::string sourceMod = obj.sourceMod ? obj.sourceMod->getFilename() : "N/A";
-	vec.push_back(fmt::format("ID: {} : (Plugin: \"{}\")", objectID, sourceMod));
+	const std::string sourceFile = obj.sourceFile ? obj.sourceFile->getFilename() : "N/A";
+	vec.push_back(fmt::format("ID: {} : (Plugin: \"{}\")", objectID, sourceFile));
 	return vec;
 }
 
 inline auto LogClass(const TES3::Land& obj) {
 	std::vector<std::string> vec;
 	const std::string objectID = fmt::format("({}, {})", obj.gridX, obj.gridY);
-	const std::string sourceMod = obj.sourceMod ? obj.sourceMod->getFilename() : "N/A";
-	vec.push_back(fmt::format("ID: {} : (Plugin: \"{}\")", objectID, sourceMod));
+	const std::string sourceFile = obj.sourceFile ? obj.sourceFile->getFilename() : "N/A";
+	vec.push_back(fmt::format("ID: {} : (Plugin: \"{}\")", objectID, sourceFile));
 	return vec;
 }
 
@@ -446,8 +446,8 @@ inline std::vector<std::string> LogClass(const TES3::Script& obj) {
 	std::vector<std::string> vec = LogClass(static_cast<const TES3::BaseObject&>(obj));
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
-	TES3::GameFile* sourceMod = obj.sourceMod;
-	std::string modName = sourceMod->filename;
+	TES3::GameFile* sourceFile = obj.sourceFile;
+	std::string modName = sourceFile->fileName;
 	vec.push_back(fmt::format("\t \t \t \t \t ID: {} ({}) : (Plugin: \"{}\")", objectID, objectName, modName));
 	if (const auto baseObject = obj.getBaseObject()) {
 		std::vector<std::string> baseVector = LogMember("\t \t \t \t \t BaseObject:", *baseObject);
