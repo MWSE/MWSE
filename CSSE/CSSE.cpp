@@ -558,12 +558,12 @@ namespace se::cs {
 			CS_Object_SetScale(reference, scale, clamp);
 			const auto newScale = reference->getScale();
 			if (newScale == 1.0f && oldScale != newScale) {
-				reference->flags |= ObjectFlag::ScaleModifiedToOne;
+				reference->setScaleModifiedToOne(true);
 			}
 		}
 
 		bool __fastcall shouldSaveReferenceScale(Reference* reference) {
-			return reference->getScale() != 1.0f || (reference->flags & ObjectFlag::ScaleModifiedToOne) != 0;
+			return reference->getScale() != 1.0f || reference->getScaleModifiedToOne();
 		}
 
 		__declspec(naked) void PatchSaveReferenceScaleCheck() {

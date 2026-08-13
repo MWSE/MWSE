@@ -56,10 +56,10 @@ namespace se::cs::dialog::script_list_window {
 			}
 
 			const char* suffix = "";
-			if (s->flags & 0x20) {
+			if (s->getDeleted()) {
 				suffix = "      DELETED";
 			}
-			else if (s->flags & 2) {
+			else if (s->getModified()) {
 				suffix = " *";
 			}
 			snprintf(buffer, sizeof(buffer), "%s%s", s->getObjectID(), suffix);
