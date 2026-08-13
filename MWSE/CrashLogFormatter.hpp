@@ -447,7 +447,7 @@ inline std::vector<std::string> LogClass(const TES3::Script& obj) {
 	std::string objectID = obj.getObjectID();
 	std::string objectName;
 	TES3::GameFile* sourceFile = obj.sourceFile;
-	std::string modName = sourceFile->fileName;
+	std::string modName = sourceFile->filename;
 	vec.push_back(fmt::format("\t \t \t \t \t ID: {} ({}) : (Plugin: \"{}\")", objectID, objectName, modName));
 	if (const auto baseObject = obj.getBaseObject()) {
 		std::vector<std::string> baseVector = LogMember("\t \t \t \t \t BaseObject:", *baseObject);

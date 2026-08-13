@@ -24,9 +24,9 @@ namespace TES3 {
 	const auto TES3File_delete = reinterpret_cast<void(__thiscall*)(GameFile*)>(0x4B48F0);
 	void GameFile::deleteFile() {
 		// Constrain to save games only
-		size_t s = strlen(fileName);
+		size_t s = strlen(filename);
 		if (s > 4) {
-			const char* ext = fileName + (s - 4);
+			const char* ext = filename + (s - 4);
 			if (_stricmp(ext, ".ess") == 0) {
 				TES3File_delete(this);
 			}
@@ -88,7 +88,7 @@ namespace TES3 {
 	}
 
 	bool GameFile::load(int unknown1, bool unknown2) {
-		return loadByPath(path, fileName, unknown1, unknown2);
+		return loadByPath(path, filename, unknown1, unknown2);
 	}
 
 	const auto TES3File_loadByPath = reinterpret_cast<bool(__thiscall*)(GameFile*, const char*, const char*, int, bool)>(0x4B4530);
@@ -150,7 +150,7 @@ namespace TES3 {
 	}
 
 	const char* GameFile::getFilename() const {
-		return fileName;
+		return filename;
 	}
 
 	const char* GameFile::getPath() const {
