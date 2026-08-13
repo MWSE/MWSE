@@ -44,7 +44,7 @@ namespace se::cs::window::main {
 	const auto initializationTimer = std::chrono::high_resolution_clock::now();
 
 	struct ObjectEditLParam {
-		ObjectType::ObjectType objectType; // 0x0
+		TES3::ObjectType::ObjectType objectType; // 0x0
 		BaseObject* object; // 0x4
 		Reference* reference; // 0x8
 		Reference::ReferenceData* referenceData; // 0xC

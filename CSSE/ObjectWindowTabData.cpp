@@ -277,7 +277,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorClass::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorClass::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Creature:
 		case ObjectType::NPC:
@@ -307,7 +307,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorEssential::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorEssential::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Container;
 	}
 
@@ -334,7 +334,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorFaction::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorFaction::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::NPC;
 	}
 
@@ -359,7 +359,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorFactionRank::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorFactionRank::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::NPC;
 	}
 
@@ -386,7 +386,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnTraining::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnTraining::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::NPC;
 	}
 
@@ -419,7 +419,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnFight::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnFight::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::NPC;
 	}
 
@@ -446,7 +446,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorInventory::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorInventory::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Creature:
 		case ObjectType::Container:
@@ -479,7 +479,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorLevel::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorLevel::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Creature:
 		case ObjectType::NPC:
@@ -509,7 +509,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorRespawns::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorRespawns::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Creature:
 		case ObjectType::NPC:
@@ -540,7 +540,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAllLTEPC::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnAllLTEPC::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::LeveledCreature:
 		case ObjectType::LeveledItem:
@@ -593,7 +593,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAnimation::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnAnimation::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::NPC;
 	}
 
@@ -624,7 +624,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnArmorRating::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnArmorRating::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Armor;
 	}
 
@@ -651,7 +651,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAutoCalc::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnAutoCalc::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Alchemy:
 		case ObjectType::Enchantment:
@@ -683,7 +683,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnChanceNone::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnChanceNone::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::LeveledCreature:
 		case ObjectType::LeveledItem:
@@ -727,7 +727,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureIsBipedal::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureIsBipedal::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Creature;
 	}
 
@@ -754,7 +754,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureMovementType::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureMovementType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Creature;
 	}
 
@@ -781,7 +781,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureSoulValue::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureSoulValue::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Creature;
 	}
 
@@ -808,7 +808,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureSound::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureSound::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Creature;
 	}
 
@@ -836,7 +836,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureUsesWeaponAndShield::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureUsesWeaponAndShield::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Creature;
 	}
 
@@ -863,7 +863,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBlocked::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnBlocked::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -888,7 +888,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBookIsScroll::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnBookIsScroll::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Book;
 	}
 
@@ -915,7 +915,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBookTeaches::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnBookTeaches::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Book;
 	}
 
@@ -952,7 +952,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCost::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCost::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Spell:
 		case ObjectType::Enchantment:
@@ -982,7 +982,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCount::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCount::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Bodypart:
 			return false;
@@ -1026,7 +1026,7 @@ namespace se::cs::dialog::object_window {
 		m_Title = title;
 	}
 
-	bool TabColumnEffect::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEffect::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Ingredient:
 			return true;
@@ -1061,7 +1061,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchanting::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEnchanting::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Armor:
 		case ObjectType::Book:
@@ -1112,7 +1112,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchantment::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEnchantment::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Armor:
 		case ObjectType::Book:
@@ -1144,7 +1144,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchantmentCharge::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEnchantmentCharge::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Enchantment;
 	}
 
@@ -1181,7 +1181,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnFemale::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnFemale::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Bodypart:
 		case ObjectType::NPC:
@@ -1221,7 +1221,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnHealth::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnHealth::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Armor:
 		case ObjectType::Weapon:
@@ -1251,7 +1251,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnID::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnID::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -1276,7 +1276,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnInventory::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnInventory::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Activator:
 		case ObjectType::Bodypart:
@@ -1315,7 +1315,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureList::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCreatureList::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::LeveledCreature;
 	}
 
@@ -1342,7 +1342,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLeveledItemList::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnLeveledItemList::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::LeveledItem;
 	}
 
@@ -1369,7 +1369,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLightRadius::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnLightRadius::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Light;
 	}
 
@@ -1396,7 +1396,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLightTime::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnLightTime::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Light;
 	}
 
@@ -1423,7 +1423,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnModel::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnModel::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Creature:
 		case ObjectType::Enchantment:
@@ -1457,7 +1457,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnModified::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnModified::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -1482,7 +1482,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnName::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnName::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Bodypart:
 		case ObjectType::Enchantment:
@@ -1515,7 +1515,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPart::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPart::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Bodypart;
 	}
 
@@ -1542,7 +1542,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnOrganic::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnOrganic::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Container;
 	}
 
@@ -1569,7 +1569,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPartType::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPartType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Bodypart;
 	}
 
@@ -1596,7 +1596,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPCStart::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPCStart::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Spell;
 	}
 
@@ -1623,7 +1623,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPlayable::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPlayable::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Bodypart;
 	}
 
@@ -1650,17 +1650,17 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPersists::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPersists::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
 	void TabColumnPersists::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getPersists());
+		display(displayInfo, object->getPersistent());
 	}
 
 	int TabColumnPersists::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getPersists(), lParam2->getPersists(), sortOrderAsc);
+		return sort(lParam1->getPersistent(), lParam2->getPersistent(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnPersists::getSettings() const {
@@ -1689,7 +1689,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnQuality::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnQuality::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Apparatus:
 		case ObjectType::Lockpick:
@@ -1728,7 +1728,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnRace::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnRace::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Bodypart:
 		case ObjectType::NPC:
@@ -1758,7 +1758,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnScript::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnScript::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Bodypart:
 		case ObjectType::Enchantment:
@@ -1796,7 +1796,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnSound::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnSound::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Light:
 			return true;
@@ -1856,7 +1856,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnSpellRange::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnSpellRange::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Spell:
 			return true;
@@ -1887,7 +1887,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnType::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Apparatus:
 		case ObjectType::Armor:
@@ -1934,7 +1934,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnUses::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnUses::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Lockpick:
 		case ObjectType::Probe:
@@ -1965,7 +1965,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnValue::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnValue::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Alchemy:
 		case ObjectType::Apparatus:
@@ -2005,7 +2005,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponChopMax::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponChopMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2032,7 +2032,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponChopMin::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponChopMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2059,7 +2059,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponIgnoresResistance::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponIgnoresResistance::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2086,7 +2086,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponIsSilver::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponIsSilver::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2113,7 +2113,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponReach::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponReach::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2140,7 +2140,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSlashMax::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponSlashMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2167,7 +2167,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSlashMin::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponSlashMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2194,7 +2194,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSpeed::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponSpeed::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2221,7 +2221,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponThrustMax::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponThrustMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2248,7 +2248,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponThrustMin::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeaponThrustMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Weapon;
 	}
 
@@ -2275,7 +2275,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeight::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeight::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
 		case ObjectType::Alchemy:
 		case ObjectType::Apparatus:
@@ -2315,7 +2315,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeightClass::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeightClass::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return objectType == ObjectType::Armor;
 	}
 
@@ -2415,8 +2415,8 @@ namespace se::cs::dialog::object_window {
 	TabColumnWeight TabController::tabColumnWeight;
 	TabColumnWeightClass TabController::tabColumnWeightClass;
 
-	TabController::TabController(ObjectType::ObjectType objectType) {
-		const auto TabController_ctor = reinterpret_cast<TabController * (__thiscall*)(TabController*, ObjectType::ObjectType)>(0x43BF60);
+	TabController::TabController(TES3::ObjectType::ObjectType objectType) {
+		const auto TabController_ctor = reinterpret_cast<TabController * (__thiscall*)(TabController*, TES3::ObjectType::ObjectType)>(0x43BF60);
 		TabController_ctor(this, objectType);
 	}
 

@@ -131,8 +131,8 @@ namespace {
 		}
 	}
 
-	const char* GetObjectTypeName(se::cs::ObjectType::ObjectType type) {
-		using namespace se::cs::ObjectType;
+	const char* GetObjectTypeName(TES3::ObjectType::ObjectType type) {
+		using namespace TES3::ObjectType;
 		switch (type) {
 		case Activator: return "Activator";
 		case Alchemy: return "Alchemy";
@@ -187,7 +187,7 @@ namespace {
 		case SoundGenerator: return "SoundGenerator";
 		case Spell: return "Spell";
 		case Static: return "Static";
-		case TES3: return "TES3";
+		case ObjectType::TES3: return "TES3";
 		case Training: return "Training";
 		case Weapon: return "Weapon";
 		default: return nullptr;
