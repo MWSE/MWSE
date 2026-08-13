@@ -3,6 +3,7 @@
 #include "CSDataHandler.h"
 #include "CSRecordHandler.h"
 #include "DialogRenderWindow.h"
+#include "CrashLogUtilities.h"
 #include "LogUtil.h"
 
 #include "TES3BaseObject.h"
@@ -128,69 +129,6 @@ namespace {
 			return true;
 		default:
 			return false;
-		}
-	}
-
-	const char* GetObjectTypeName(TES3::ObjectType::ObjectType type) {
-		using namespace TES3::ObjectType;
-		switch (type) {
-		case Activator: return "Activator";
-		case Alchemy: return "Alchemy";
-		case Ammo: return "Ammo";
-		case AnimationGroup: return "AnimationGroup";
-		case Apparatus: return "Apparatus";
-		case Armor: return "Armor";
-		case Birthsign: return "Birthsign";
-		case Bodypart: return "Bodypart";
-		case Book: return "Book";
-		case Cell: return "Cell";
-		case Class: return "Class";
-		case Clothing: return "Clothing";
-		case Container: return "Container";
-		case Creature: return "Creature";
-		case CreatureClone: return "CreatureClone";
-		case Dialogue: return "Dialogue";
-		case DialogueInfo: return "DialogueInfo";
-		case Door: return "Door";
-		case Enchantment: return "Enchantment";
-		case Faction: return "Faction";
-		case GameSetting: return "GameSetting";
-		case Global: return "GlobalVariable";
-		case Ingredient: return "Ingredient";
-		case Land: return "Land";
-		case LandTexture: return "LandTexture";
-		case LeveledCreature: return "LeveledCreature";
-		case LeveledItem: return "LeveledItem";
-		case Light: return "Light";
-		case Lockpick: return "Lockpick";
-		case MagicEffect: return "MagicEffect";
-		case MagicSourceInstance: return "MagicSourceInstance";
-		case Misc: return "Miscellaneous";
-		case MobileCreature: return "MobileCreature";
-		case MobileNPC: return "MobileNPC";
-		case MobileObject: return "MobileObject";
-		case MobilePlayer: return "MobilePlayer";
-		case MobileProjectile: return "MobileProjectile";
-		case MobileSpellProjectile: return "MobileSpellProjectile";
-		case NPC: return "NPC";
-		case NPCClone: return "NPCClone";
-		case PathGrid: return "PathGrid";
-		case Probe: return "Probe";
-		case Quest: return "Quest";
-		case Race: return "Race";
-		case Reference: return "Reference";
-		case Region: return "Region";
-		case Repair: return "RepairTool";
-		case Script: return "Script";
-		case Skill: return "Skill";
-		case Sound: return "Sound";
-		case SoundGenerator: return "SoundGenerator";
-		case Spell: return "Spell";
-		case Static: return "Static";
-		case ObjectType::TES3: return "TES3";
-		case Training: return "Training";
-		case Weapon: return "Weapon";
-		default: return nullptr;
 		}
 	}
 
