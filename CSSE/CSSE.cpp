@@ -729,7 +729,7 @@ namespace se::cs {
 		writeDoubleWordUnprotected(0x6D9ECC, reinterpret_cast<DWORD>(&patch::OverrideWinHelpA));
 
 		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
-		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
+		overrideVirtualTableEnforced(0x6760D0, offsetof(TES3::ObjectVirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
 
 		// Patch: Optimize NiDX8Renderer hash map lookups. Use NiDX8RendererHashBuckets buckets instead of 37.
