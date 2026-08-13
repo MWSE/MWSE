@@ -217,7 +217,7 @@ namespace TES3 {
 			}
 
 			if (sourceFile->flags_4D8 & 0x8) {
-				tempEffect.setObjectModified(true);
+				tempEffect.setModified(true);
 			}
 
 			auto effect = controller->getEffectObject(effectId);
@@ -234,7 +234,7 @@ namespace TES3 {
 			}
 
 			if (sourceFile->flags_4D8 & 0x8) {
-				effect->setObjectModified(true);
+				effect->setModified(true);
 			}
 		}
 		else {
@@ -261,7 +261,7 @@ namespace TES3 {
 			}
 
 			if (sourceFile->flags_4D8 & 0x8) {
-				effect->setObjectModified(true);
+				effect->setModified(true);
 			}
 
 			effect->id = effectId;

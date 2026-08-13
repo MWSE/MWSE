@@ -114,7 +114,7 @@ namespace TES3 {
 
 	bool Dialogue::setJournalIndexAndMarkModified(int index) {
 		if (setJournalIndex(index)) {
-			setObjectModified(true);
+			setModified(true);
 			return true;
 		}
 		return false;
