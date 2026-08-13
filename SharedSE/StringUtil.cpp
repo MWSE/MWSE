@@ -627,7 +627,7 @@ namespace se::string {
 	//
 
 #if defined(SE_IS_CS) && SE_IS_CS == 1
-	bool complex_contains(std::string_view haystack, std::string_view needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex) {
+	bool complex_contains(std::string_view haystack, std::string_view needle, const TES3::BaseObject::SearchSettings& settings, std::regex* regex) {
 		if (settings.use_regex && regex) {
 			return std::regex_search(haystack.data(), *regex);
 		}

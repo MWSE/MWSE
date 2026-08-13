@@ -5,11 +5,12 @@
 
 #include "CSDialogue.h"
 #include "CSDialogueInfo.h"
-#include "CSGameFile.h"
 #include "CSGameSetting.h"
 #include "CSPhysicalObject.h"
 #include "CSRecordHandler.h"
 #include "CSReference.h"
+
+#include "TES3GameFile.h"
 
 #include "NIAVObject.h"
 #include "NICamera.h"

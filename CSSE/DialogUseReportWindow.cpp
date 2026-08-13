@@ -4,7 +4,7 @@
 #include "MemoryUtil.h"
 #include "WinUIUtil.h"
 
-#include "CSBaseObject.h"
+#include "TES3BaseObject.h"
 
 #include "DialogProcContext.h"
 

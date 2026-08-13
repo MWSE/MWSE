@@ -22,12 +22,13 @@
 #include "CSCell.h"
 #include "CSDataHandler.h"
 #include "CSDoor.h"
-#include "CSGameFile.h"
 #include "CSLandTexture.h"
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 #include "CSStatic.h"
 #include "CSLand.h"
+
+#include "TES3GameFile.h"
 
 #include "RenderWindowSceneGraphController.h"
 #include "RenderWindowSelectionData.h"

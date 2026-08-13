@@ -8,13 +8,14 @@
 #include "Settings.h"
 
 #include "CSArchive.h"
-#include "CSBaseObject.h"
 #include "CSDataHandler.h"
-#include "CSGameFile.h"
 #include "CSGameSetting.h"
 #include "CSRecordHandler.h"
 #include "CSReference.h"
 #include "CSScript.h"
+
+#include "TES3BaseObject.h"
+#include "TES3GameFile.h"
 
 #include "NICamera.h"
 #include "NIPoint3.h"

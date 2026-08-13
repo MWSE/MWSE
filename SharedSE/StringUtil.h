@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(SE_IS_CS) && SE_IS_CS == 1
-#include "CSObject.h"
+#include "TES3BaseObject.h"
 #endif
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
@@ -142,7 +142,7 @@ namespace se::string {
 	//
 
 #if defined(SE_IS_CS) && SE_IS_CS == 1
-	bool complex_contains(std::string_view haystack, std::string_view needle, const se::cs::BaseObject::SearchSettings& settings, std::regex* regex);
+	bool complex_contains(std::string_view haystack, std::string_view needle, const TES3::BaseObject::SearchSettings& settings, std::regex* regex);
 #endif
 
 }

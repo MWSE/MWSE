@@ -1,11 +1,12 @@
 #include "CrashLogger.h"
 
-#include "CSBaseObject.h"
 #include "CSDataHandler.h"
-#include "CSGameFile.h"
 #include "CSRecordHandler.h"
 #include "DialogRenderWindow.h"
 #include "LogUtil.h"
+
+#include "TES3BaseObject.h"
+#include "TES3GameFile.h"
 
 #include "NICamera.h"
 #include "NIDX8Renderer.h"

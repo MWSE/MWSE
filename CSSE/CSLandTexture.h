@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CSBaseObject.h"
+#include "TES3BaseObject.h"
 
 #include "NITexture.h"
 

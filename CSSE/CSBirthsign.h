@@ -1,7 +1,8 @@
 #pragma once
 
-#include "CSBaseObject.h"
 #include "CSSpellList.h"
+
+#include "TES3BaseObject.h"
 
 namespace se::cs {
 	struct Birthsign : BaseObject {

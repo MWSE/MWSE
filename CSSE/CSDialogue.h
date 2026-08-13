@@ -2,7 +2,7 @@
 
 #include "CSDefines.h"
 
-#include "CSBaseObject.h"
+#include "TES3BaseObject.h"
 #include "NIIteratedList.h"
 
 namespace se::cs {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CSBaseObject.h"
-#include "NIObject.h"
+#include "TES3BaseObject.h"
 
 #include "NIColor.h"
 #include "NINode.h"
-#include "NITriShape.h"
+#include "NIObject.h"
 #include "NIPoint3.h"
+#include "NITriShape.h"
 
 namespace se::cs {
 	struct LandTileInfo {

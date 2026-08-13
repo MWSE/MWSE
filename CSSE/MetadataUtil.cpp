@@ -1,9 +1,10 @@
 #include "MetadataUtil.h"
 
-#include "CSBaseObject.h"
 #include "CSDataHandler.h"
-#include "CSGameFile.h"
 #include "CSRecordHandler.h"
+
+#include "TES3BaseObject.h"
+#include "TES3GameFile.h"
 
 #include "LogUtil.h"
 #include "PathUtil.h"
