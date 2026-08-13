@@ -61,10 +61,6 @@
 
 #include "MemoryUtil.h"
 
-#include <sstream>
-#include <unordered_map>
-#include <unordered_set>
-
 #elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
 
 #include "CSBirthsign.h"
