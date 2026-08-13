@@ -249,7 +249,7 @@ namespace {
 
 			const auto id = object->getObjectID();
 			if (id) strncpy_s(result.id, id, _TRUNCATE);
-			if (object->sourceFile) strncpy_s(result.source, object->sourceFile->fileName, _TRUNCATE);
+			if (object->sourceFile) strncpy_s(result.source, object->sourceFile->filename, _TRUNCATE);
 			return true;
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
@@ -295,7 +295,7 @@ namespace CrashLogger::Mods {
 			for (auto index = 0; index < count; ++index) {
 				const auto file = recordHandler->activeGameFiles[index];
 				if (file) {
-					output << file->fileName << " | " << (file == recordHandler->activeFile ? "yes" : "no") << '\n';
+					output << file->filename << " | " << (file == recordHandler->activeFile ? "yes" : "no") << '\n';
 				}
 			}
 		}

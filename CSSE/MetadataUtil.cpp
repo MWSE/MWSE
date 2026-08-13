@@ -31,7 +31,7 @@ namespace se::cs::metadata {
 			}
 
 			// Convert the mod name to a toml file name.
-			const std::string gameFileName = gameFile->fileName;
+			const std::string gameFileName = gameFile->filename;
 			const std::string metadataPath = std::string(gameFileName.begin(), gameFileName.end() - 4) + "-metadata.toml";
 			if (!std::filesystem::exists(path::getDataFilesPath() / metadataPath)) {
 				continue;
@@ -66,7 +66,7 @@ namespace se::cs::metadata {
 				if (i != 0) {
 					log::stream << ", ";
 				}
-				log::stream << activeMetadata[i]->gameFile()->fileName;
+				log::stream << activeMetadata[i]->gameFile()->filename;
 			}
 			log::stream << std::endl;
 		}

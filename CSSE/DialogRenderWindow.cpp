@@ -2029,12 +2029,12 @@ namespace se::cs::dialog::render_window {
 		// Store the active game file list.
 		quickstart.data_files.clear();
 		for (auto i = 0; i < recordHandler->activeModCount; ++i) {
-			quickstart.data_files.push_back(recordHandler->activeGameFiles[i]->fileName);
+			quickstart.data_files.push_back(recordHandler->activeGameFiles[i]->filename);
 		}
 		
 		// Also store the current file set as active.
 		if (recordHandler->activeFile) {
-			quickstart.active_file = recordHandler->activeFile->fileName;
+			quickstart.active_file = recordHandler->activeFile->filename;
 		}
 
 		quickstart.enabled = true;

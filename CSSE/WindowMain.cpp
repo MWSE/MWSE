@@ -101,7 +101,7 @@ namespace se::cs::window::main {
 		settings.test_environment.game_files.clear();
 		for (const auto& gameFile : *recordHandler->availableDataFiles) {
 			if (gameFile->getToLoadFlag()) {
-				settings.test_environment.game_files.push_back(gameFile->fileName);
+				settings.test_environment.game_files.push_back(gameFile->filename);
 			}
 		}
 	}
@@ -590,7 +590,7 @@ namespace se::cs::window::main {
 		// Flag any game files as marked to load.
 		for (auto itt = recordHandler->availableDataFiles->head; itt; itt = itt->next) {
 			auto gameFile = itt->data;
-			if (toLoadSet.contains(gameFile->fileName)) {
+			if (toLoadSet.contains(gameFile->filename)) {
 				gameFile->setToLoadFlag(true);
 			}
 		}

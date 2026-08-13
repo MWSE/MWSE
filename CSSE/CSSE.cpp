@@ -72,13 +72,13 @@ namespace se::cs {
 		void __fastcall findVanillaMasters(RecordHandler* recordHandler) {
 			for (auto i = 0; i < recordHandler->activeModCount; ++i) {
 				const auto gameFile = recordHandler->activeGameFiles[i];
-				if (master_Morrowind == nullptr && string::iequal(gameFile->fileName, "Morrowind.esm")) {
+				if (master_Morrowind == nullptr && string::iequal(gameFile->filename, "Morrowind.esm")) {
 					master_Morrowind = gameFile;
 				}
-				else if (master_Tribunal == nullptr && string::iequal(gameFile->fileName, "Tribunal.esm")) {
+				else if (master_Tribunal == nullptr && string::iequal(gameFile->filename, "Tribunal.esm")) {
 					master_Tribunal = gameFile;
 				}
-				else if (master_Bloodmoon == nullptr && string::iequal(gameFile->fileName, "Bloodmoon.esm")) {
+				else if (master_Bloodmoon == nullptr && string::iequal(gameFile->filename, "Bloodmoon.esm")) {
 					master_Bloodmoon = gameFile;
 				}
 			}
