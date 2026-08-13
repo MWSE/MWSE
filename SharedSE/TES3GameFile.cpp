@@ -212,29 +212,29 @@ namespace TES3 {
 
 #elif defined(SE_TARGETS_CS) && SE_TARGETS_CS == 1
 
-const auto GameFile_getIsMasterFile = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x402B1C);
-bool GameFile::getIsMasterFile() const {
-	return GameFile_getIsMasterFile(this);
-}
-
-const auto GameFile_getToLoadFlag = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x40148D);
-bool GameFile::getToLoadFlag() const {
-	return GameFile_getToLoadFlag(this);
-}
-
-const auto GameFile_setToLoadFlag = reinterpret_cast<void(__thiscall*)(GameFile*, bool)>(0x401D84);
-void GameFile::setToLoadFlag(bool state) {
-	GameFile_setToLoadFlag(this, state);
-}
-
-int GameFile::sortAgainst(const GameFile* other) const {
-	const auto isMaster = getIsMasterFile();
-	const auto otherIsMaster = other->getIsMasterFile();
-	if (isMaster != otherIsMaster) {
-		return otherIsMaster ? 1 : -1;
+	const auto GameFile_getIsMasterFile = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x402B1C);
+	bool GameFile::getIsMasterFile() const {
+		return GameFile_getIsMasterFile(this);
 	}
 
-	return CompareFileTime(&findData.ftLastWriteTime, &other->findData.ftLastWriteTime);;
-}
+	const auto GameFile_getToLoadFlag = reinterpret_cast<bool(__thiscall*)(const GameFile*)>(0x40148D);
+	bool GameFile::getToLoadFlag() const {
+		return GameFile_getToLoadFlag(this);
+	}
+
+	const auto GameFile_setToLoadFlag = reinterpret_cast<void(__thiscall*)(GameFile*, bool)>(0x401D84);
+	void GameFile::setToLoadFlag(bool state) {
+		GameFile_setToLoadFlag(this, state);
+	}
+
+	int GameFile::sortAgainst(const GameFile* other) const {
+		const auto isMaster = getIsMasterFile();
+		const auto otherIsMaster = other->getIsMasterFile();
+		if (isMaster != otherIsMaster) {
+			return otherIsMaster ? 1 : -1;
+		}
+
+		return CompareFileTime(&findData.ftLastWriteTime, &other->findData.ftLastWriteTime);;
+	}
 #endif
 }
