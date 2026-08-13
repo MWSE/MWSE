@@ -35,7 +35,7 @@ namespace se::cs {
 
 	struct ItemData {
 		int count; // 0x0
-		TES3::BaseObject* owner; // 0x4
+		BaseObject* owner; // 0x4
 		union {
 			long requiredRank;
 			GlobalVariable* requiredVariable;

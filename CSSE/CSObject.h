@@ -81,7 +81,7 @@ namespace TES3 {
 }
 
 namespace se::cs {
-	struct Object : TES3::BaseObject {
+	struct Object : BaseObject {
 		NI::Node* sceneNode; // 0x10
 		BaseObject* unknown_0x14;
 		void* referenceToThis; // 0x18
