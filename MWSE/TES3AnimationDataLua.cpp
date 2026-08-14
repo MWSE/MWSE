@@ -50,6 +50,11 @@ namespace mwse::lua {
 			usertypeDefinition["flags"] = &TES3::AnimationData::flags;
 			usertypeDefinition["hasOverrideAnimations"] = sol::readonly_property(&TES3::AnimationData::hasOverrideAnimations);
 			usertypeDefinition["headGeometry"] = &TES3::AnimationData::headGeometry;
+			usertypeDefinition["headLookAngleX"] = &TES3::AnimationData::headLookAngleX;
+			usertypeDefinition["headLookAngleZ"] = &TES3::AnimationData::headLookAngleZ;
+			usertypeDefinition["headLookClosestDistance"] = &TES3::AnimationData::headLookClosestDistance;
+			usertypeDefinition["headLookTargetAngleX"] = &TES3::AnimationData::headLookTargetAngleX;
+			usertypeDefinition["headLookTargetAngleZ"] = &TES3::AnimationData::headLookTargetAngleZ;
 			usertypeDefinition["headNode"] = &TES3::AnimationData::headNode;
 			usertypeDefinition["headMorphTiming"] = &TES3::AnimationData::headMorphTiming;
 			usertypeDefinition["keyframeLayers"] = sol::readonly_property(&TES3::AnimationData::getKeyframeLayers);
@@ -57,6 +62,7 @@ namespace mwse::lua {
 			usertypeDefinition["loopCounts"] = sol::readonly_property(&TES3::AnimationData::getLoopCounts);
 			usertypeDefinition["manager"] = &TES3::AnimationData::manager;
 			usertypeDefinition["movementRootNode"] = &TES3::AnimationData::movementRootNode;
+			usertypeDefinition["nextAnimGroup"] = &TES3::AnimationData::nextAnimGroup;
 			usertypeDefinition["nextLoopCounts"] = &TES3::AnimationData::nextLoopCounts;
 			usertypeDefinition["movementSpeed"] = sol::readonly_property(&TES3::AnimationData::movementSpeed);
 			usertypeDefinition["positionDeltaMovementRoot"] = &TES3::AnimationData::positionDeltaMovementRoot;

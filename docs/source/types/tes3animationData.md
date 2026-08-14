@@ -206,6 +206,61 @@ The time in seconds since the last update.
 
 ***
 
+### `headLookAngleX`
+<div class="search_terms" style="display: none">headlookanglex</div>
+
+The current local X-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward `headLookTargetAngleX`.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `headLookAngleZ`
+<div class="search_terms" style="display: none">headlookanglez</div>
+
+The current local Z-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward `headLookTargetAngleZ`.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `headLookClosestDistance`
+<div class="search_terms" style="display: none">headlookclosestdistance</div>
+
+The world-space distance, in game units, to the closest valid head-tracking target selected during the current animation update. This is used while evaluating potential targets so that nearer references take precedence, then reset after the procedural animation update.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `headLookTargetAngleX`
+<div class="search_terms" style="display: none">headlooktargetanglex</div>
+
+The target local X-axis rotation for procedural head tracking, in radians. The animation update eases `headLookAngleX` toward this value, then clears the target for the next update.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `headLookTargetAngleZ`
+<div class="search_terms" style="display: none">headlooktargetanglez</div>
+
+The target local Z-axis rotation for procedural head tracking, in radians. The animation update eases `headLookAngleZ` toward this value, then clears the target for the next update.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `headMorphTiming`
 <div class="search_terms" style="display: none">headmorphtiming</div>
 
@@ -312,6 +367,17 @@ Easy access to the actor's "MRT" movement root node.
 **Returns**:
 
 * `result` (number)
+
+***
+
+### `nextAnimGroup`
+<div class="search_terms" style="display: none">nextanimgroup</div>
+
+The animation group queued to play on the lower body when the current animation can transition. A value from the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. A value of `255` indicates that no animation group is queued.
+
+**Returns**:
+
+* `result` ([tes3.animationGroup](../references/animation-groups.md))
 
 ***
 

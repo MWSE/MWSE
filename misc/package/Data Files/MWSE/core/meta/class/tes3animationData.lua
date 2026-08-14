@@ -25,6 +25,11 @@
 --- @field flags number 
 --- @field hasOverrideAnimations boolean *Read-only*. True if the actor has some custom animations in the override layer. For example, drumming or sitting. These are assigned in the Construction Set or using [tes3.loadAnimation](https://mwse.github.io/MWSE/apis/tes3/#tes3loadanimation).
 --- @field headGeometry niAutoNormalParticles|niGeometry|niParticles|niRotatingParticles|niTriShape 
+--- @field headLookAngleX number The current local X-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward `headLookTargetAngleX`.
+--- @field headLookAngleZ number The current local Z-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward `headLookTargetAngleZ`.
+--- @field headLookClosestDistance number The world-space distance, in game units, to the closest valid head-tracking target selected during the current animation update. This is used while evaluating potential targets so that nearer references take precedence, then reset after the procedural animation update.
+--- @field headLookTargetAngleX number The target local X-axis rotation for procedural head tracking, in radians. The animation update eases `headLookAngleX` toward this value, then clears the target for the next update.
+--- @field headLookTargetAngleZ number The target local Z-axis rotation for procedural head tracking, in radians. The animation update eases `headLookAngleZ` toward this value, then clears the target for the next update.
 --- @field headMorphTiming number The timing offset of the head morph controller. Used to select either blinking or lipsync animations. Actively updated by the animation system during blinking or voiceovers. Timing is specific to the current head model.
 --- @field headNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
 --- @field keyframeLayers tes3animationDataSequenceGroup[] *Read-only*. 
@@ -39,6 +44,7 @@
 --- @field manager niKeyframeManager 
 --- @field movementRootNode niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode Easy access to the actor's "MRT" movement root node.
 --- @field movementSpeed number *Read-only*. The animation speed multiplier of movement animations. This includes walking, running, crouching, swimming, turning, jumping and other movement related animations.
+--- @field nextAnimGroup tes3.animationGroup The animation group queued to play on the lower body when the current animation can transition. A value from the [`tes3.animationGroup`](https://mwse.github.io/MWSE/references/animation-groups/) namespace. A value of `255` indicates that no animation group is queued.
 --- @field nextLoopCounts number 
 --- @field positionDeltaMovementRoot tes3vector3 Tracks the change from the last frame of the "MRT" child node that controls animation driven movement.
 --- @field spine1Node niBSAnimationNode|niBSParticleNode|niBillboardNode|niCollisionSwitch|niNode|niSortAdjustNode|niSwitchNode 
