@@ -12798,6 +12798,61 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#headlookanglex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookAngleX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlookanglez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookAngleZ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlookclosestdistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookClosestDistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlooktargetanglex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookTargetAngleX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlooktargetanglez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookTargetAngleZ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#headmorphtiming" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12879,6 +12934,17 @@
     <span class="md-ellipsis">
       
         movementSpeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nextanimgroup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nextAnimGroup
       
     </span>
   </a>
@@ -24201,6 +24267,61 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#headlookanglex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookAngleX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlookanglez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookAngleZ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlookclosestdistance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookClosestDistance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlooktargetanglex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookTargetAngleX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headlooktargetanglez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headLookTargetAngleZ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#headmorphtiming" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -24282,6 +24403,17 @@
     <span class="md-ellipsis">
       
         movementSpeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nextanimgroup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nextAnimGroup
       
     </span>
   </a>
@@ -24674,6 +24806,51 @@
 <li><code>result</code> (<a href="../niGeometry/">niGeometry</a>)</li>
 </ul>
 <hr />
+<h3 id="headlookanglex"><code>headLookAngleX</code><a class="headerlink" href="#headlookanglex" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">headlookanglex</div>
+
+<p>The current local X-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward <code>headLookTargetAngleX</code>.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (number)</li>
+</ul>
+<hr />
+<h3 id="headlookanglez"><code>headLookAngleZ</code><a class="headerlink" href="#headlookanglez" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">headlookanglez</div>
+
+<p>The current local Z-axis rotation applied to the head by procedural head tracking, in radians. During animation updates, this value is eased toward <code>headLookTargetAngleZ</code>.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (number)</li>
+</ul>
+<hr />
+<h3 id="headlookclosestdistance"><code>headLookClosestDistance</code><a class="headerlink" href="#headlookclosestdistance" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">headlookclosestdistance</div>
+
+<p>The world-space distance, in game units, to the closest valid head-tracking target selected during the current animation update. This is used while evaluating potential targets so that nearer references take precedence, then reset after the procedural animation update.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (number)</li>
+</ul>
+<hr />
+<h3 id="headlooktargetanglex"><code>headLookTargetAngleX</code><a class="headerlink" href="#headlooktargetanglex" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">headlooktargetanglex</div>
+
+<p>The target local X-axis rotation for procedural head tracking, in radians. The animation update eases <code>headLookAngleX</code> toward this value, then clears the target for the next update.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (number)</li>
+</ul>
+<hr />
+<h3 id="headlooktargetanglez"><code>headLookTargetAngleZ</code><a class="headerlink" href="#headlooktargetanglez" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">headlooktargetanglez</div>
+
+<p>The target local Z-axis rotation for procedural head tracking, in radians. The animation update eases <code>headLookAngleZ</code> toward this value, then clears the target for the next update.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (number)</li>
+</ul>
+<hr />
 <h3 id="headmorphtiming"><code>headMorphTiming</code><a class="headerlink" href="#headmorphtiming" title="Permanent link">⚓︎</a></h3>
 <div class="search_terms" style="display: none">headmorphtiming</div>
 
@@ -24772,6 +24949,15 @@
 <p><strong>Returns</strong>:</p>
 <ul>
 <li><code>result</code> (number)</li>
+</ul>
+<hr />
+<h3 id="nextanimgroup"><code>nextAnimGroup</code><a class="headerlink" href="#nextanimgroup" title="Permanent link">⚓︎</a></h3>
+<div class="search_terms" style="display: none">nextanimgroup</div>
+
+<p>The animation group queued to play on the lower body when the current animation can transition. A value from the <a href="https://mwse.github.io/MWSE/references/animation-groups/"><code>tes3.animationGroup</code></a> namespace. A value of <code>255</code> indicates that no animation group is queued.</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li><code>result</code> (<a href="../../references/animation-groups/">tes3.animationGroup</a>)</li>
 </ul>
 <hr />
 <h3 id="nextloopcounts"><code>nextLoopCounts</code><a class="headerlink" href="#nextloopcounts" title="Permanent link">⚓︎</a></h3>
@@ -24956,7 +25142,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="August 12, 2025 15:45:41 UTC">August 12, 2025 15:45:41</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="August 14, 2026 21:42:17 UTC">August 14, 2026 21:42:17</span>
   </span>
 
     
