@@ -3,15 +3,9 @@
 #include "CSPhysicalObject.h"
 
 #include "NINode.h"
+#include "TES3BodyPartFlags.h"
 
 namespace se::cs {
-	namespace BodyPartFlag {
-		enum Flag : unsigned int {
-			Female = 0x1,
-			Playable = 0x2
-		};
-	}
-
 	struct BodyPart : PhysicalObject {
 		char* model; // 0x48
 		char* fileName; // 0x4C

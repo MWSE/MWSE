@@ -1,18 +1,11 @@
 #pragma once
 
+#include "TES3BodyPartFlags.h"
 #include "TES3Defines.h"
 
 #include "TES3Object.h"
 
 namespace TES3 {
-	namespace BodyPartFlag {
-		enum Flag : unsigned int {
-			Female = 0x1,
-			NotPlayable = 0x2, // Note: Flag is presented as Playable in the CS, but the bit is set when not playable.
-		};
-
-	}
-
 	struct BodyPart : PhysicalObject {
 		char * fileName; // 0x30
 		char * raceName; // 0x34

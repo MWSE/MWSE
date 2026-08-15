@@ -379,6 +379,9 @@
       <Filter>Header Files\TES3</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3CellFlags.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3BodyPartFlags.h">
+      <Filter>Header Files\TES3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix33.cpp">
