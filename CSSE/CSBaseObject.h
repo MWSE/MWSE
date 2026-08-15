@@ -36,6 +36,8 @@ namespace se::cs {
 		void setDeleted(bool deleted);
 		bool getPersists() const;
 		bool getBlocked() const;
+		bool getScaleModifiedToOne() const;
+		void setScaleModifiedToOne(bool value);
 
 		bool isMobileCapableActor() const;
 

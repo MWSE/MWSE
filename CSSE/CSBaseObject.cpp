@@ -15,11 +15,11 @@ namespace se::cs {
 	}
 
 	bool BaseObject::isFromMaster() const {
-		return (flags & 0x1);
+		return BIT_TEST(flags, TES3::ObjectFlag::FromMasterBit);
 	}
 
 	bool BaseObject::getModified() const {
-		return (flags & 0x2) != 0;
+		return BIT_TEST(flags, TES3::ObjectFlag::ModifiedBit);
 	}
 
 	void BaseObject::setModified(bool modified) {
@@ -27,7 +27,7 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getDeleted() const {
-		return (flags & 0x20);
+		return BIT_TEST(flags, TES3::ObjectFlag::DeleteBit);
 	}
 
 	void BaseObject::setDeleted(bool deleted) {
@@ -36,11 +36,19 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getPersists() const {
-		return (flags & 0x400);
+		return BIT_TEST(flags, TES3::ObjectFlag::PersistentBit);
 	}
 
 	bool BaseObject::getBlocked() const {
-		return (flags & 0x2000);
+		return BIT_TEST(flags, TES3::ObjectFlag::BlockedBit);
+	}
+
+	bool BaseObject::getScaleModifiedToOne() const {
+		return BIT_TEST(flags, TES3::ObjectFlag::ScaleModifiedToOneBit);
+	}
+
+	void BaseObject::setScaleModifiedToOne(bool value) {
+		BIT_SET(flags, TES3::ObjectFlag::ScaleModifiedToOneBit, value);
 	}
 
 	bool BaseObject::isMobileCapableActor() const {
