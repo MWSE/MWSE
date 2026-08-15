@@ -31,7 +31,7 @@ namespace se::cs {
 		return vTable.object->getModelPath(this);
 	}
 
-	Object* Object::getEnchantment() const {
+	Enchantment* Object::getEnchantment() const {
 		return vTable.object->getEnchantment(this);
 	}
 

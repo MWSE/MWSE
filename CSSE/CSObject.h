@@ -49,7 +49,7 @@ namespace se::cs {
 		void* unknown_0xC4;
 		void* unknown_0xC8;
 		void* unknown_0xCC;
-		Object* (__thiscall* getEnchantment)(const Object*); // 0xD0
+		Enchantment* (__thiscall* getEnchantment)(const Object*); // 0xD0
 		void* unknown_0xD4;
 		void* unknown_0xD8;
 		void* unknown_0xDC;
@@ -93,7 +93,7 @@ namespace se::cs {
 		bool isLocationMarker() const;
 		char* getIcon() const;
 		char* getModel() const;
-		Object* getEnchantment() const;
+		Enchantment* getEnchantment() const;
 		Script* getScript() const;
 		float getScale() const;
 		void setScale(float scale, bool clamp = true);
