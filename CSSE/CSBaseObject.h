@@ -28,7 +28,7 @@ namespace se::cs {
 			BaseObject_VirtualTable* baseObject;
 			Object_VirtualTable* object;
 			Actor_VirtualTable* actor;
-		} vtbl; // 0x0
+		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
 		unsigned int flags; // 0x8
 		GameFile* sourceFile; // 0xC

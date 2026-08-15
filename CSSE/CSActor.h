@@ -72,15 +72,15 @@ namespace se::cs {
 		int unknown_0x78;
 
 		inline bool hasMovementSwim() const {
-			return vtbl.actor->hasMovementSwim(this);
+			return vTable.actor->hasMovementSwim(this);
 		}
 
 		inline bool hasMovementWalk() const {
-			return vtbl.actor->hasMovementWalk(this);
+			return vTable.actor->hasMovementWalk(this);
 		}
 
 		inline bool hasMovementFly() const {
-			return vtbl.actor->hasMovementFly(this);
+			return vTable.actor->hasMovementFly(this);
 		}
 	};
 	static_assert(sizeof(Actor) == 0x7C, "CS::Actor failed size validation");

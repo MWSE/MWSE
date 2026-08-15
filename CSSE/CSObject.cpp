@@ -16,95 +16,95 @@
 
 namespace se::cs {
 	const char* Object::getName() const {
-		return vtbl.object->getName(this);
+		return vTable.object->getName(this);
 	}
 
 	bool Object::isMarker() const {
-		return vtbl.object->isMarker(this);
+		return vTable.object->isMarker(this);
 	}
 
 	char* Object::getIcon() const {
-		return vtbl.object->getIconPath(this);
+		return vTable.object->getIconPath(this);
 	}
 
 	char* Object::getModel() const {
-		return vtbl.object->getModelPath(this);
+		return vTable.object->getModelPath(this);
 	}
 
 	Object* Object::getEnchantment() const {
-		return vtbl.object->getEnchantment(this);
+		return vTable.object->getEnchantment(this);
 	}
 
 	Script* Object::getScript() const {
-		return vtbl.object->getScript(this);
+		return vTable.object->getScript(this);
 	}
 
 	float Object::getScale() const {
-		return vtbl.object->getScale(this);
+		return vTable.object->getScale(this);
 	}
 
 	void Object::setScale(float scale, bool clamp) {
-		vtbl.object->setScale(this, scale, clamp);
+		vTable.object->setScale(this, scale, clamp);
 	}
 
 	int Object::getCount() const {
-		return vtbl.object->getCount(this);
+		return vTable.object->getCount(this);
 	}
 
 	const char* Object::getTypeName() const {
-		return vtbl.object->getTypeName(this);
+		return vTable.object->getTypeName(this);
 	}
 
 	Sound* Object::getSound() const {
-		return vtbl.object->getSound(this);
+		return vTable.object->getSound(this);
 	}
 
 	const char* Object::getRaceName() const {
-		return vtbl.object->getRaceName(this);
+		return vTable.object->getRaceName(this);
 	}
 
 	const char* Object::getClassName() const {
-		return vtbl.object->getClassName(this);
+		return vTable.object->getClassName(this);
 	}
 
 	const char* Object::getFactionName() const {
-		return vtbl.object->getFactionName(this);
+		return vTable.object->getFactionName(this);
 	}
 
 	Faction* Object::getFaction() const {
-		return vtbl.object->getFaction(this);
+		return vTable.object->getFaction(this);
 	}
 
 	bool Object::getIsFemale() const {
-		return vtbl.object->getIsFemale(this);
+		return vTable.object->getIsFemale(this);
 	}
 
 	bool Object::getIsEssential() const {
-		return vtbl.object->getIsEssential(this);
+		return vTable.object->getIsEssential(this);
 	}
 
 	bool Object::getRespawns() const {
-		return vtbl.object->getRespawns(this);
+		return vTable.object->getRespawns(this);
 	}
 
 	int Object::getLevel() const {
-		return vtbl.object->getLevel(this);
+		return vTable.object->getLevel(this);
 	}
 
 	bool Object::getAutoCalc() const {
-		return vtbl.object->getAutoCalc(this);
+		return vTable.object->getAutoCalc(this);
 	}
 
 	float Object::getWeight() const {
-		return vtbl.object->getWeight(this);
+		return vTable.object->getWeight(this);
 	}
 
 	int Object::getValue() const {
-		return vtbl.object->getValue(this);
+		return vTable.object->getValue(this);
 	}
 
 	void Object::populateObjectWindow(HWND hWnd) const {
-		vtbl.object->populateObjectWindow(this, hWnd);
+		vTable.object->populateObjectWindow(this, hWnd);
 	}
 
 	bool Object::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
