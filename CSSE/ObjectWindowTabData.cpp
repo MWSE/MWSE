@@ -288,11 +288,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorClass::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getClassName());
+		display(displayInfo, object->getClassID());
 	}
 
 	int TabColumnActorClass::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getClassName(), lParam2->getClassName(), sortOrderAsc);
+		return sort(lParam1->getClassID(), lParam2->getClassID(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorClass::getSettings() const {
@@ -340,11 +340,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorFaction::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getFactionName());
+		display(displayInfo, object->getFactionID());
 	}
 
 	int TabColumnActorFaction::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getFactionName(), lParam2->getFactionName(), sortOrderAsc);
+		return sort(lParam1->getFactionID(), lParam2->getFactionID(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorFaction::getSettings() const {
@@ -1719,9 +1719,9 @@ namespace se::cs::dialog::object_window {
 
 	const char* GetRaceID(const Object* object) {
 		if (object->objectType == ObjectType::Bodypart) {
-			return static_cast<const BodyPart*>(object)->getRaceName();
+			return static_cast<const BodyPart*>(object)->getRaceID();
 		}
-		return object->getRaceName();
+		return object->getRaceID();
 	}
 
 	TabColumnRace::TabColumnRace() : TabColumn("Race") {

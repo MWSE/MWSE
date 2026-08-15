@@ -59,16 +59,16 @@ namespace se::cs {
 		return vTable.object->getSound(this);
 	}
 
-	const char* Object::getRaceName() const {
-		return vTable.object->getRaceName(this);
+	const char* Object::getRaceID() const {
+		return vTable.object->getRaceID(this);
 	}
 
-	const char* Object::getClassName() const {
-		return vTable.object->getClassName(this);
+	const char* Object::getClassID() const {
+		return vTable.object->getClassID(this);
 	}
 
-	const char* Object::getFactionName() const {
-		return vTable.object->getFactionName(this);
+	const char* Object::getFactionID() const {
+		return vTable.object->getFactionID(this);
 	}
 
 	Faction* Object::getFaction() const {

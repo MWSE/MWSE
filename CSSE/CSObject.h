@@ -7,7 +7,7 @@
 namespace se::cs {
 	struct ObjectVirtualTable : BaseObjectVirtualTable {
 		void* unknown_0x24;
-		void(__thiscall* setObjectID)(Object*, const char*); // 0x28
+		void(__thiscall* setID)(Object*, const char*); // 0x28
 		void* unknown_0x2C;
 		void* unknown_0x30;
 		void* unknown_0x34;
@@ -18,9 +18,9 @@ namespace se::cs {
 		char* (__thiscall* getModelPath)(const Object*); // 0x48
 		Script* (__thiscall* getScript)(const Object*); // 0x4C
 		Sound* (__thiscall* getSound)(const Object*); // 0x50
-		const char* (__thiscall* getRaceName)(const Object*); // 0x54
-		const char* (__thiscall* getClassName)(const Object*); // 0x58
-		const char* (__thiscall* getFactionName)(const Object*); // 0x5C
+		const char* (__thiscall* getRaceID)(const Object*); // 0x54
+		const char* (__thiscall* getClassID)(const Object*); // 0x58
+		const char* (__thiscall* getFactionID)(const Object*); // 0x5C
 		void* unknown_0x60;
 		void* unknown_0x64;
 		Faction*(__thiscall* getFaction)(const Object*); // 0x68
@@ -100,9 +100,9 @@ namespace se::cs {
 		int getCount() const;
 		const char* getTypeName() const;
 		Sound* getSound() const;
-		const char* getRaceName() const;
-		const char* getClassName() const;
-		const char* getFactionName() const;
+		const char* getRaceID() const;
+		const char* getClassID() const;
+		const char* getFactionID() const;
 		Faction* getFaction() const;
 		bool getIsFemale() const;
 		bool getIsEssential() const;
