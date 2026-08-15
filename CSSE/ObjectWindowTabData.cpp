@@ -1835,17 +1835,17 @@ namespace se::cs::dialog::object_window {
 			}
 
 			if (effect.rangeType != range) {
-				range = Effect::Range::Invalid;
+				range = TES3::EffectRange::Invalid;
 				break;
 			}
 		}
 
 		switch (range) {
-		case Effect::Range::Self:
+		case TES3::EffectRange::Self:
 			return "Self";
-		case Effect::Range::Touch:
+		case TES3::EffectRange::Touch:
 			return "Touch";
-		case Effect::Range::Target:
+		case TES3::EffectRange::Target:
 			return "Target";
 		default:
 			return "Mixed";
