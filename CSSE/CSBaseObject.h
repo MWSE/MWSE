@@ -40,7 +40,7 @@ namespace se::cs {
 		void setModified(bool modified);
 		bool getDeleted() const;
 		void setDeleted(bool deleted);
-		bool getPersists() const;
+		bool getPersistent() const;
 		bool getBlocked() const;
 
 		bool isMobileCapableActor() const;

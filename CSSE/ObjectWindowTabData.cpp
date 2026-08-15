@@ -1656,11 +1656,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnPersists::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getPersists());
+		display(displayInfo, object->getPersistent());
 	}
 
 	int TabColumnPersists::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getPersists(), lParam2->getPersists(), sortOrderAsc);
+		return sort(lParam1->getPersistent(), lParam2->getPersistent(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnPersists::getSettings() const {

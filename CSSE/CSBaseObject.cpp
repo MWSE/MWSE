@@ -35,7 +35,7 @@ namespace se::cs {
 		BaseObject_setDeleted(this, deleted);
 	}
 
-	bool BaseObject::getPersists() const {
+	bool BaseObject::getPersistent() const {
 		return (objectFlags & 0x400);
 	}
 
