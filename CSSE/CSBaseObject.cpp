@@ -11,7 +11,7 @@
 
 namespace se::cs {
 	const char* BaseObject::getObjectID() const {
-		return vTable.baseObject->getObjectID(this);
+		return vTable.base->getObjectID(this);
 	}
 
 	bool BaseObject::isFromMaster() const {
@@ -23,7 +23,7 @@ namespace se::cs {
 	}
 
 	void BaseObject::setModified(bool modified) {
-		vTable.baseObject->setModified(this, modified);
+		vTable.base->setModified(this, modified);
 	}
 
 	bool BaseObject::getDeleted() const {

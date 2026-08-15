@@ -237,7 +237,7 @@ namespace {
 	bool DescribeConstructionSetObject(void* pointer, RawDescription& result) {
 		__try {
 			const auto object = static_cast<se::cs::BaseObject*>(pointer);
-			const auto vtable = object->vTable.baseObject;
+			const auto vtable = object->vTable.base;
 			if (!IsAddressInConstructionSetImage(vtable, false) || !IsAddressInConstructionSetImage(vtable->getObjectID, true)) {
 				return false;
 			}

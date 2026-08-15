@@ -25,7 +25,7 @@ namespace se::cs {
 
 	struct BaseObject {
 		union {
-			BaseObject_VirtualTable* baseObject;
+			BaseObject_VirtualTable* base;
 			Object_VirtualTable* object;
 			Actor_VirtualTable* actor;
 		} vTable; // 0x0
