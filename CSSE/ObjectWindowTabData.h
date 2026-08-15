@@ -45,7 +45,7 @@ namespace se::cs::dialog::object_window {
 
 		TabColumn(const char* title, int fmt = LVCFMT_LEFT);
 
-		virtual bool supportsObjectType(ObjectType::ObjectType objectType) const = 0;
+		virtual bool supportsObjectType(TES3::ObjectType::ObjectType objectType) const = 0;
 		virtual void getDisplayInfo(LPNMLVDISPINFOA displayInfo) const = 0;
 		virtual int sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const = 0;
 
@@ -78,7 +78,7 @@ namespace se::cs::dialog::object_window {
 	class TabColumn##NAME : public TabColumn { \
 	public: \
 		TabColumn##NAME(); \
-		bool supportsObjectType(ObjectType::ObjectType objectType) const override; \
+		bool supportsObjectType(TES3::ObjectType::ObjectType objectType) const override; \
 		void getDisplayInfo(LPNMLVDISPINFOA displayInfo) const override; \
 		int sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const override; \
 		ColumnSettings& getSettings() const override; \
@@ -156,7 +156,7 @@ namespace se::cs::dialog::object_window {
 	class TabColumnEffect : public TabColumn {
 	public:
 		TabColumnEffect(int index);
-		bool supportsObjectType(ObjectType::ObjectType objectType) const override;
+		bool supportsObjectType(TES3::ObjectType::ObjectType objectType) const override;
 		void getDisplayInfo(LPNMLVDISPINFOA displayInfo) const override;
 		int sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const override;
 		ColumnSettings& getSettings() const override;
@@ -169,7 +169,7 @@ namespace se::cs::dialog::object_window {
 	//
 
 	struct TabController {
-		ObjectType::ObjectType objectType; // 0x0
+		TES3::ObjectType::ObjectType objectType; // 0x0
 		unsigned int columnsActive; // 0x4
 		unsigned int topIndex; // 0x8
 		NI::IteratedList<BaseObject*>* containedObjects; // 0xC
@@ -247,7 +247,7 @@ namespace se::cs::dialog::object_window {
 		static TabColumnWeight tabColumnWeight;
 		static TabColumnWeightClass tabColumnWeightClass;
 
-		TabController(ObjectType::ObjectType objectType);
+		TabController(TES3::ObjectType::ObjectType objectType);
 
 		void setupColumns(HWND hWnd);
 

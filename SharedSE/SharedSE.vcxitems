@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -18,8 +18,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIBSAnimationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CodePatchUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DDSUtil.h" />
-	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogger.h" />
-	<ClInclude Include="$(MSBuildThisFileDirectory)CrashLogUtilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CrashLogger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)CrashLogUtilities.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExceptionUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LinuxUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NICopyTransformController.h" />
@@ -117,14 +117,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Deque.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsUtil.h" />
   </ItemGroup>
   <ItemGroup>
-	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogger.cpp" />
-	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogDevice.cpp" />
-	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogMemory.cpp" />
-	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogRegistryStack.cpp" />
-	<ClCompile Include="$(MSBuildThisFileDirectory)CrashLogSections.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLogger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLogDevice.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLogMemory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLogRegistryStack.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)CrashLogSections.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CodePatchUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LinuxUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MathUtil.cpp" />

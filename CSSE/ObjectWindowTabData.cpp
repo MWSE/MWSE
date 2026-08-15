@@ -277,10 +277,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorClass::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorClass::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::NPC:
 			return true;
 		}
 		return false;
@@ -307,8 +307,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorEssential::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Container;
+	bool TabColumnActorEssential::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Container;
 	}
 
 	void TabColumnActorEssential::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -334,8 +334,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorFaction::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::NPC;
+	bool TabColumnActorFaction::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::NPC;
 	}
 
 	void TabColumnActorFaction::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -359,8 +359,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorFactionRank::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::NPC;
+	bool TabColumnActorFactionRank::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::NPC;
 	}
 
 	void TabColumnActorFactionRank::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -386,8 +386,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnTraining::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::NPC;
+	bool TabColumnTraining::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::NPC;
 	}
 
 	void TabColumnTraining::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -419,8 +419,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnFight::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::NPC;
+	bool TabColumnFight::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::NPC;
 	}
 
 	void TabColumnFight::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -446,11 +446,11 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorInventory::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorInventory::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::Container:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::NPC:
 			return true;
 		}
 		return false;
@@ -479,10 +479,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorLevel::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorLevel::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::NPC:
 			return true;
 		}
 		return false;
@@ -509,11 +509,11 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnActorRespawns::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnActorRespawns::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::NPC:
-		case ObjectType::Container:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::Container:
 			return true;
 		}
 		return false;
@@ -540,10 +540,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAllLTEPC::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnAllLTEPC::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
 			return true;
 		}
 		return false;
@@ -553,10 +553,10 @@ namespace se::cs::dialog::object_window {
 		auto object = getObjectFromDisplayInfo(displayInfo);
 		bool allLTEPC = false;
 		switch (object->objectType) {
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			allLTEPC = static_cast<const LeveledCreature*>(object)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			break;
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			allLTEPC = static_cast<const LeveledItem*>(object)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			break;
 		}
@@ -568,11 +568,11 @@ namespace se::cs::dialog::object_window {
 		bool a = false;
 		bool b = false;
 		switch (lParam1->objectType) {
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			a = static_cast<const LeveledCreature*>(lParam1)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			b = static_cast<const LeveledCreature*>(lParam2)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			break;
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			a = static_cast<const LeveledItem*>(lParam1)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			b = static_cast<const LeveledItem*>(lParam2)->getCalculateFromAllLevelsLessThanEqualToPCLevel();
 			break;
@@ -593,8 +593,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAnimation::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::NPC;
+	bool TabColumnAnimation::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::NPC;
 	}
 
 	void TabColumnAnimation::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -624,8 +624,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnArmorRating::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Armor;
+	bool TabColumnArmorRating::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Armor;
 	}
 
 	void TabColumnArmorRating::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -651,12 +651,12 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnAutoCalc::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnAutoCalc::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Alchemy:
-		case ObjectType::Enchantment:
-		case ObjectType::NPC:
-		case ObjectType::Spell:
+		case TES3::ObjectType::Alchemy:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::Spell:
 			return true;
 		}
 		return false;
@@ -683,10 +683,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnChanceNone::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnChanceNone::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
 			return true;
 		}
 		return false;
@@ -695,10 +695,10 @@ namespace se::cs::dialog::object_window {
 	void TabColumnChanceNone::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
 		switch (object->objectType) {
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			display(displayInfo, static_cast<const LeveledCreature*>(object)->chanceForNone);
 			break;
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			display(displayInfo, static_cast<const LeveledItem*>(object)->chanceForNone);
 			break;
 		}
@@ -707,9 +707,9 @@ namespace se::cs::dialog::object_window {
 	int TabColumnChanceNone::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
 		int chanceNone = 0;
 		switch (lParam1->objectType) {
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			return sort(static_cast<const LeveledCreature*>(lParam1)->chanceForNone, static_cast<const LeveledCreature*>(lParam2)->chanceForNone, sortOrderAsc);
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			return sort(static_cast<const LeveledItem*>(lParam1)->chanceForNone, static_cast<const LeveledItem*>(lParam2)->chanceForNone, sortOrderAsc);
 		}
 		return 0;
@@ -727,8 +727,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureIsBipedal::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Creature;
+	bool TabColumnCreatureIsBipedal::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Creature;
 	}
 
 	void TabColumnCreatureIsBipedal::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -754,8 +754,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureMovementType::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Creature;
+	bool TabColumnCreatureMovementType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Creature;
 	}
 
 	void TabColumnCreatureMovementType::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -781,8 +781,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureSoulValue::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Creature;
+	bool TabColumnCreatureSoulValue::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Creature;
 	}
 
 	void TabColumnCreatureSoulValue::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -808,8 +808,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureSound::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Creature;
+	bool TabColumnCreatureSound::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Creature;
 	}
 
 	void TabColumnCreatureSound::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -836,8 +836,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureUsesWeaponAndShield::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Creature;
+	bool TabColumnCreatureUsesWeaponAndShield::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Creature;
 	}
 
 	void TabColumnCreatureUsesWeaponAndShield::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -863,7 +863,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBlocked::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnBlocked::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -888,8 +888,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBookIsScroll::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Book;
+	bool TabColumnBookIsScroll::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Book;
 	}
 
 	void TabColumnBookIsScroll::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -915,8 +915,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnBookTeaches::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Book;
+	bool TabColumnBookTeaches::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Book;
 	}
 
 	void TabColumnBookTeaches::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -939,10 +939,10 @@ namespace se::cs::dialog::object_window {
 	//
 
 	int GetObjectCost(const Object* object) {
-		if (object->objectType == ObjectType::Enchantment) {
+		if (object->objectType == TES3::ObjectType::Enchantment) {
 			return static_cast<const Enchantment*>(object)->chargeCost;
 		}
-		else if (object->objectType == ObjectType::Spell) {
+		else if (object->objectType == TES3::ObjectType::Spell) {
 			return static_cast<const Spell*>(object)->magickaCost;
 		}
 		return 0;
@@ -952,10 +952,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCost::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCost::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Spell:
-		case ObjectType::Enchantment:
+		case TES3::ObjectType::Spell:
+		case TES3::ObjectType::Enchantment:
 			return true;
 		}
 		return false;
@@ -982,9 +982,9 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCount::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnCount::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Bodypart:
+		case TES3::ObjectType::Bodypart:
 			return false;
 		}
 		return true;
@@ -1009,7 +1009,7 @@ namespace se::cs::dialog::object_window {
 
 	void GetEffectName(char* buffer, size_t bufferSize, const Object* object, int index) {
 		switch (object->objectType) {
-		case ObjectType::Ingredient:
+		case TES3::ObjectType::Ingredient:
 			static_cast<const Ingredient*>(object)->getEffectName(buffer, bufferSize, index);
 			break;
 		default:
@@ -1026,9 +1026,9 @@ namespace se::cs::dialog::object_window {
 		m_Title = title;
 	}
 
-	bool TabColumnEffect::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEffect::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Ingredient:
+		case TES3::ObjectType::Ingredient:
 			return true;
 		}
 		return false;
@@ -1061,12 +1061,12 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchanting::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEnchanting::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Armor:
-		case ObjectType::Book:
-		case ObjectType::Clothing:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -1096,13 +1096,13 @@ namespace se::cs::dialog::object_window {
 
 	int GetObjectEnchantment(const Object* object) {
 		switch (object->objectType) {
-		case ObjectType::Armor:
+		case TES3::ObjectType::Armor:
 			return static_cast<const Armor*>(object)->enchantPoints;
-		case ObjectType::Book:
+		case TES3::ObjectType::Book:
 			return static_cast<const Book*>(object)->enchantPoints;
-		case ObjectType::Clothing:
+		case TES3::ObjectType::Clothing:
 			return static_cast<const Clothing*>(object)->enchantPoints;
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Weapon:
 			return static_cast<const Weapon*>(object)->enchantPoints;
 		}
 		return 0;
@@ -1112,12 +1112,12 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchantment::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnEnchantment::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Armor:
-		case ObjectType::Book:
-		case ObjectType::Clothing:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -1144,8 +1144,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnEnchantmentCharge::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Enchantment;
+	bool TabColumnEnchantmentCharge::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Enchantment;
 	}
 
 	void TabColumnEnchantmentCharge::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1169,9 +1169,9 @@ namespace se::cs::dialog::object_window {
 
 	bool GetObjectIsFemale(const Object* object) {
 		switch (object->objectType) {
-		case ObjectType::Bodypart:
+		case TES3::ObjectType::Bodypart:
 			return static_cast<const BodyPart*>(object)->getIsFemale();
-		case ObjectType::NPC:
+		case TES3::ObjectType::NPC:
 			return object->getIsFemale();
 		}
 		return false;
@@ -1181,10 +1181,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnFemale::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnFemale::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Bodypart:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::NPC:
 			return true;
 		}
 		return false;
@@ -1209,9 +1209,9 @@ namespace se::cs::dialog::object_window {
 
 	int GetObjectHealth(const Object* object) {
 		switch (object->objectType) {
-		case ObjectType::Armor:
+		case TES3::ObjectType::Armor:
 			return static_cast<const Armor*>(object)->maxCondition;
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Weapon:
 			return static_cast<const Weapon*>(object)->maxCondition;
 		}
 		return 0;
@@ -1221,10 +1221,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnHealth::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnHealth::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Armor:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -1251,7 +1251,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnID::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnID::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -1276,19 +1276,19 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnInventory::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnInventory::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Activator:
-		case ObjectType::Bodypart:
-		case ObjectType::Container:
-		case ObjectType::Creature:
-		case ObjectType::Door:
-		case ObjectType::Enchantment:
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
-		case ObjectType::NPC:
-		case ObjectType::Spell:
-		case ObjectType::Static:
+		case TES3::ObjectType::Activator:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::Container:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::Door:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::Spell:
+		case TES3::ObjectType::Static:
 			return false;
 		}
 		return true;
@@ -1315,8 +1315,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnCreatureList::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::LeveledCreature;
+	bool TabColumnCreatureList::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::LeveledCreature;
 	}
 
 	void TabColumnCreatureList::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1342,8 +1342,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLeveledItemList::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::LeveledItem;
+	bool TabColumnLeveledItemList::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::LeveledItem;
 	}
 
 	void TabColumnLeveledItemList::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1369,8 +1369,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLightRadius::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Light;
+	bool TabColumnLightRadius::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Light;
 	}
 
 	void TabColumnLightRadius::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1396,8 +1396,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnLightTime::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Light;
+	bool TabColumnLightTime::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Light;
 	}
 
 	void TabColumnLightTime::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1423,14 +1423,14 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnModel::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnModel::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::Enchantment:
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
-		case ObjectType::NPC:
-		case ObjectType::Spell:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::Spell:
 			return false;
 		}
 		return true;
@@ -1457,7 +1457,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnModified::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnModified::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -1482,13 +1482,13 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnName::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnName::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Bodypart:
-		case ObjectType::Enchantment:
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
-		case ObjectType::Static:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::Static:
 			return false;
 		}
 		return true;
@@ -1515,8 +1515,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPart::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Bodypart;
+	bool TabColumnPart::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Bodypart;
 	}
 
 	void TabColumnPart::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1542,8 +1542,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnOrganic::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Container;
+	bool TabColumnOrganic::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Container;
 	}
 
 	void TabColumnOrganic::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1569,8 +1569,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPartType::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Bodypart;
+	bool TabColumnPartType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Bodypart;
 	}
 
 	void TabColumnPartType::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1596,8 +1596,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPCStart::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Spell;
+	bool TabColumnPCStart::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Spell;
 	}
 
 	void TabColumnPCStart::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1623,8 +1623,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPlayable::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Bodypart;
+	bool TabColumnPlayable::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Bodypart;
 	}
 
 	void TabColumnPlayable::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -1650,7 +1650,7 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnPersists::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnPersists::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		return true;
 	}
 
@@ -1673,13 +1673,13 @@ namespace se::cs::dialog::object_window {
 
 	float GetObjectQuality(const Object* object) {
 		switch (object->objectType) {
-		case ObjectType::Apparatus:
+		case TES3::ObjectType::Apparatus:
 			return static_cast<const Apparatus*>(object)->quality;
-		case ObjectType::Lockpick:
+		case TES3::ObjectType::Lockpick:
 			return static_cast<const Lockpick*>(object)->quality;
-		case ObjectType::Probe:
+		case TES3::ObjectType::Probe:
 			return static_cast<const Probe*>(object)->quality;
-		case ObjectType::Repair:
+		case TES3::ObjectType::Repair:
 			return static_cast<const RepairTool*>(object)->quality;
 		}
 		return 0.0f;
@@ -1689,12 +1689,12 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnQuality::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnQuality::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Apparatus:
-		case ObjectType::Lockpick:
-		case ObjectType::Probe:
-		case ObjectType::Repair:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
 			return true;
 		}
 		return false;
@@ -1718,7 +1718,7 @@ namespace se::cs::dialog::object_window {
 	//
 
 	const char* GetRaceID(const Object* object) {
-		if (object->objectType == ObjectType::Bodypart) {
+		if (object->objectType == TES3::ObjectType::Bodypart) {
 			return static_cast<const BodyPart*>(object)->getRaceName();
 		}
 		return object->getRaceName();
@@ -1728,10 +1728,10 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnRace::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnRace::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Bodypart:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::NPC:
 			return true;
 		}
 		return false;
@@ -1758,13 +1758,13 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnScript::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnScript::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Bodypart:
-		case ObjectType::Enchantment:
-		case ObjectType::LeveledCreature:
-		case ObjectType::LeveledItem:
-		case ObjectType::Static:
+		case TES3::ObjectType::Bodypart:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledItem:
+		case TES3::ObjectType::Static:
 			return false;
 		}
 		return true;
@@ -1796,9 +1796,9 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnSound::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnSound::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Light:
+		case TES3::ObjectType::Light:
 			return true;
 		}
 		return false;
@@ -1856,9 +1856,9 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnSpellRange::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnSpellRange::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Spell:
+		case TES3::ObjectType::Spell:
 			return true;
 		}
 		return false;
@@ -1887,15 +1887,15 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnType::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnType::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Apparatus:
-		case ObjectType::Armor:
-		case ObjectType::Clothing:
-		case ObjectType::Creature:
-		case ObjectType::Enchantment:
-		case ObjectType::Spell:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::Enchantment:
+		case TES3::ObjectType::Spell:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -1920,11 +1920,11 @@ namespace se::cs::dialog::object_window {
 
 	int GetObjectUses(const Object* object) {
 		switch (object->objectType) {
-		case ObjectType::Lockpick:
+		case TES3::ObjectType::Lockpick:
 			return static_cast<const Lockpick*>(object)->uses;
-		case ObjectType::Probe:
+		case TES3::ObjectType::Probe:
 			return static_cast<const Probe*>(object)->uses;
-		case ObjectType::Repair:
+		case TES3::ObjectType::Repair:
 			return static_cast<const RepairTool*>(object)->uses;
 		}
 		return -1;
@@ -1934,11 +1934,11 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnUses::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnUses::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Lockpick:
-		case ObjectType::Probe:
-		case ObjectType::Repair:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
 			return true;
 		}
 		return false;
@@ -1965,20 +1965,20 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnValue::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnValue::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Alchemy:
-		case ObjectType::Apparatus:
-		case ObjectType::Armor:
-		case ObjectType::Book:
-		case ObjectType::Clothing:
-		case ObjectType::Ingredient:
-		case ObjectType::Light:
-		case ObjectType::Lockpick:
-		case ObjectType::Misc:
-		case ObjectType::Probe:
-		case ObjectType::Repair:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Alchemy:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Ingredient:
+		case TES3::ObjectType::Light:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Misc:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -2005,8 +2005,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponChopMax::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponChopMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponChopMax::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2032,8 +2032,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponChopMin::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponChopMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponChopMin::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2059,8 +2059,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponIgnoresResistance::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponIgnoresResistance::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponIgnoresResistance::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2086,8 +2086,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponIsSilver::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponIsSilver::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponIsSilver::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2113,8 +2113,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponReach::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponReach::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponReach::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2140,8 +2140,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSlashMax::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponSlashMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponSlashMax::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2167,8 +2167,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSlashMin::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponSlashMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponSlashMin::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2194,8 +2194,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponSpeed::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponSpeed::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponSpeed::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2221,8 +2221,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponThrustMax::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponThrustMax::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponThrustMax::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2248,8 +2248,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeaponThrustMin::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Weapon;
+	bool TabColumnWeaponThrustMin::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Weapon;
 	}
 
 	void TabColumnWeaponThrustMin::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2275,20 +2275,20 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeight::supportsObjectType(ObjectType::ObjectType objectType) const {
+	bool TabColumnWeight::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
 		switch (objectType) {
-		case ObjectType::Alchemy:
-		case ObjectType::Apparatus:
-		case ObjectType::Armor:
-		case ObjectType::Book:
-		case ObjectType::Clothing:
-		case ObjectType::Ingredient:
-		case ObjectType::Light:
-		case ObjectType::Lockpick:
-		case ObjectType::Misc:
-		case ObjectType::Probe:
-		case ObjectType::Repair:
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Alchemy:
+		case TES3::ObjectType::Apparatus:
+		case TES3::ObjectType::Armor:
+		case TES3::ObjectType::Book:
+		case TES3::ObjectType::Clothing:
+		case TES3::ObjectType::Ingredient:
+		case TES3::ObjectType::Light:
+		case TES3::ObjectType::Lockpick:
+		case TES3::ObjectType::Misc:
+		case TES3::ObjectType::Probe:
+		case TES3::ObjectType::Repair:
+		case TES3::ObjectType::Weapon:
 			return true;
 		}
 		return false;
@@ -2315,8 +2315,8 @@ namespace se::cs::dialog::object_window {
 
 	}
 
-	bool TabColumnWeightClass::supportsObjectType(ObjectType::ObjectType objectType) const {
-		return objectType == ObjectType::Armor;
+	bool TabColumnWeightClass::supportsObjectType(TES3::ObjectType::ObjectType objectType) const {
+		return objectType == TES3::ObjectType::Armor;
 	}
 
 	void TabColumnWeightClass::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
@@ -2415,8 +2415,8 @@ namespace se::cs::dialog::object_window {
 	TabColumnWeight TabController::tabColumnWeight;
 	TabColumnWeightClass TabController::tabColumnWeightClass;
 
-	TabController::TabController(ObjectType::ObjectType objectType) {
-		const auto TabController_ctor = reinterpret_cast<TabController * (__thiscall*)(TabController*, ObjectType::ObjectType)>(0x43BF60);
+	TabController::TabController(TES3::ObjectType::ObjectType objectType) {
+		const auto TabController_ctor = reinterpret_cast<TabController * (__thiscall*)(TabController*, TES3::ObjectType::ObjectType)>(0x43BF60);
 		TabController_ctor(this, objectType);
 	}
 
@@ -2425,13 +2425,13 @@ namespace se::cs::dialog::object_window {
 		tabColumnCount.conditionalAddToController(this, hWnd);
 
 		switch (objectType) {
-		case ObjectType::Activator:
+		case TES3::ObjectType::Activator:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Apparatus:
+		case TES3::ObjectType::Apparatus:
 			tabColumnType.addToController(this, hWnd);
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
@@ -2442,7 +2442,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Armor:
+		case TES3::ObjectType::Armor:
 			tabColumnType.addToController(this, hWnd);
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
@@ -2457,7 +2457,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Bodypart:
+		case TES3::ObjectType::Bodypart:
 			tabColumnPartType.addToController(this, hWnd);
 			tabColumnRace.addToController(this, hWnd);
 			tabColumnPart.addToController(this, hWnd);
@@ -2465,7 +2465,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnPlayable.addToController(this, hWnd);
 			tabColumnModel.addToController(this, hWnd);
 			break;
-		case ObjectType::Book:
+		case TES3::ObjectType::Book:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2478,7 +2478,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Clothing:
+		case TES3::ObjectType::Clothing:
 			tabColumnType.addToController(this, hWnd);
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
@@ -2490,7 +2490,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Container:
+		case TES3::ObjectType::Container:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2500,13 +2500,13 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Door:
+		case TES3::ObjectType::Door:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Ingredient:
+		case TES3::ObjectType::Ingredient:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2519,7 +2519,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Light:
+		case TES3::ObjectType::Light:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnSound.addToController(this, hWnd);
@@ -2531,7 +2531,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Lockpick:
+		case TES3::ObjectType::Lockpick:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2542,7 +2542,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Misc:
+		case TES3::ObjectType::Misc:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2551,18 +2551,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Probe:
-			tabColumnName.addToController(this, hWnd);
-			tabColumnScript.addToController(this, hWnd);
-			tabColumnWeight.addToController(this, hWnd);
-			tabColumnValue.addToController(this, hWnd);
-			tabColumnUses.addToController(this, hWnd);
-			tabColumnQuality.addToController(this, hWnd);
-			tabColumnInventory.addToController(this, hWnd);
-			tabColumnModel.addToController(this, hWnd);
-			tabColumnPersists.addToController(this, hWnd);
-			break;
-		case ObjectType::Repair:
+		case TES3::ObjectType::Probe:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2573,11 +2562,22 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Static:
+		case TES3::ObjectType::Repair:
+			tabColumnName.addToController(this, hWnd);
+			tabColumnScript.addToController(this, hWnd);
+			tabColumnWeight.addToController(this, hWnd);
+			tabColumnValue.addToController(this, hWnd);
+			tabColumnUses.addToController(this, hWnd);
+			tabColumnQuality.addToController(this, hWnd);
+			tabColumnInventory.addToController(this, hWnd);
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Static:
+			tabColumnModel.addToController(this, hWnd);
+			tabColumnPersists.addToController(this, hWnd);
+			break;
+		case TES3::ObjectType::Weapon:
 			tabColumnType.addToController(this, hWnd);
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
@@ -2600,7 +2600,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::NPC:
+		case TES3::ObjectType::NPC:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnActorLevel.addToController(this, hWnd);
@@ -2617,7 +2617,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnTraining.addToController(this, hWnd);
 			tabColumnFight.addToController(this, hWnd);
 			break;
-		case ObjectType::Creature:
+		case TES3::ObjectType::Creature:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnType.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
@@ -2632,12 +2632,12 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			tabColumnAllLTEPC.addToController(this, hWnd);
 			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnCreatureList.addToController(this, hWnd);
 			break;
-		case ObjectType::Spell:
+		case TES3::ObjectType::Spell:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnType.addToController(this, hWnd);
 			tabColumnCost.addToController(this, hWnd);
@@ -2645,13 +2645,13 @@ namespace se::cs::dialog::object_window {
 			tabColumnAutoCalc.addToController(this, hWnd);
 			tabColumnPCStart.addToController(this, hWnd);
 			break;
-		case ObjectType::Enchantment:
+		case TES3::ObjectType::Enchantment:
 			tabColumnEnchantmentCharge.addToController(this, hWnd);
 			tabColumnType.addToController(this, hWnd);
 			tabColumnCost.addToController(this, hWnd);
 			tabColumnAutoCalc.addToController(this, hWnd);
 			break;
-		case ObjectType::Alchemy:
+		case TES3::ObjectType::Alchemy:
 			tabColumnName.addToController(this, hWnd);
 			tabColumnScript.addToController(this, hWnd);
 			tabColumnWeight.addToController(this, hWnd);
@@ -2661,7 +2661,7 @@ namespace se::cs::dialog::object_window {
 			tabColumnModel.addToController(this, hWnd);
 			tabColumnPersists.addToController(this, hWnd);
 			break;
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			tabColumnAllLTEPC.addToController(this, hWnd);
 			tabColumnChanceNone.addToController(this, hWnd);
 			tabColumnLeveledItemList.addToController(this, hWnd);

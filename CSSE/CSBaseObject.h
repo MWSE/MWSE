@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CSDefines.h"
+#include "TES3ObjectType.h"
 
 namespace se::cs {
 	namespace ObjectFlag {
@@ -29,7 +30,7 @@ namespace se::cs {
 			Object_VirtualTable* object;
 			Actor_VirtualTable* actor;
 		} vtbl; // 0x0
-		ObjectType::ObjectType objectType; // 0x4
+		TES3::ObjectType::ObjectType objectType; // 0x4
 		unsigned int flags; // 0x8
 		GameFile* sourceFile; // 0xC
 

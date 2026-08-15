@@ -19,7 +19,7 @@ namespace se::cs {
 	void DataHandler::updateLightingForReference(Reference* reference) {
 		auto attachedLightData = reference->getLightAttachment();
 		auto object = reference->baseObject;
-		if (object->objectType == ObjectType::Light && attachedLightData) {
+		if (object->objectType == TES3::ObjectType::Light && attachedLightData) {
 			auto baseObjectLight = static_cast<Light*>(object);
 			if (currentInteriorCell) {
 				attachedLightData->light->detachAllAffectedNodes();

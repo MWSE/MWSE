@@ -2,6 +2,7 @@
 
 #include "NIDefines.h"
 #include "TES3Defines.h"
+#include "TES3ObjectType.h"
 
 #include "LinkedObjectsList.h"
 #include "NIIteratedList.h"
@@ -20,71 +21,6 @@ int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOr
 
 namespace TES3 {
 	using se::LinkedObjectList;
-
-	//
-	// Object types. They are char[4], or can be interpreted as a 32-bit integer.
-	//
-
-	namespace ObjectType {
-		enum ObjectType {
-			Invalid = 0,
-			Activator = 'ITCA',
-			Alchemy = 'HCLA',
-			Ammo = 'OMMA',
-			AnimationGroup = 'GINA',
-			Apparatus = 'APPA',
-			Armor = 'OMRA',
-			Birthsign = 'NGSB',
-			Bodypart = 'YDOB',
-			Book = 'KOOB',
-			Cell = 'LLEC',
-			Class = 'SALC',
-			Clothing = 'TOLC',
-			Container = 'TNOC',
-			Creature = 'AERC',
-			CreatureClone = 'CERC',
-			Dialogue = 'LAID',
-			DialogueInfo = 'OFNI',
-			Door = 'ROOD',
-			Enchantment = 'HCNE',
-			Faction = 'TCAF',
-			GameSetting = 'TSMG',
-			Global = 'BOLG',
-			Ingredient = 'RGNI',
-			Land = 'DNAL',
-			LandTexture = 'XETL',
-			LeveledCreature = 'CVEL',
-			LeveledItem = 'IVEL',
-			Light = 'HGIL',
-			Lockpick = 'KCOL',
-			MagicEffect = 'FEGM',
-			MagicSourceInstance = 'LLPS',
-			Misc = 'CSIM',
-			MobileCreature = 'RCAM',
-			MobileNPC = 'HCAM',
-			MobileObject = 'TCAM',
-			MobilePlayer = 'PCAM',
-			MobileProjectile = 'JRPM',
-			MobileSpellProjectile = 'PSPM',
-			NPC = '_CPN',
-			NPCClone = 'CCPN',
-			PathGrid = 'DRGP',
-			Probe = 'BORP',
-			Quest = 'SEUQ',
-			Race = 'ECAR',
-			Reference = 'RFER',
-			Region = 'NGER',
-			Repair = 'APER',
-			Script = 'TPCS',
-			Skill = 'LIKS',
-			Sound = 'NUOS',
-			SoundGenerator = 'GDNS',
-			Spell = 'LEPS',
-			Static = 'TATS',
-			TES3 = '3SET',
-			Weapon = 'PAEW',
-		};
-	}
 
 	//
 	// Enums

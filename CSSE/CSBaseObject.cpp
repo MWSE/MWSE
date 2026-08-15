@@ -45,10 +45,10 @@ namespace se::cs {
 
 	bool BaseObject::isMobileCapableActor() const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::CreatureClone:
-		case ObjectType::NPC:
-		case ObjectType::NPCClone:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -70,15 +70,15 @@ namespace se::cs {
 
 	bool BaseObject::searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
-		case ObjectType::Birthsign:
+		case TES3::ObjectType::Birthsign:
 			return static_cast<const Birthsign*>(this)->search(needle, settings, regex);
-		case ObjectType::Class:
+		case TES3::ObjectType::Class:
 			return static_cast<const Class*>(this)->search(needle, settings, regex);
-		case ObjectType::Faction:
+		case TES3::ObjectType::Faction:
 			return static_cast<const Faction*>(this)->search(needle, settings, regex);
-		case ObjectType::Script:
+		case TES3::ObjectType::Script:
 			return static_cast<const Script*>(this)->search(needle, settings, regex);
-		case ObjectType::Race:
+		case TES3::ObjectType::Race:
 			return static_cast<const Race*>(this)->search(needle, settings, regex);
 		}
 
