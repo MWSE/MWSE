@@ -19,8 +19,8 @@ namespace se::cs {
 		return vTable.object->getName(this);
 	}
 
-	bool Object::isMarker() const {
-		return vTable.object->isMarker(this);
+	bool Object::isLocationMarker() const {
+		return vTable.object->isLocationMarker(this);
 	}
 
 	char* Object::getIcon() const {

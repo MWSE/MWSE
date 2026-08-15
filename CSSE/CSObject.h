@@ -63,7 +63,7 @@ namespace se::cs {
 		void* unknown_0xFC;
 		void(__thiscall* populateObjectWindow)(const Object*, HWND); // 0x100
 		void* unknown_0x104;
-		bool(__thiscall* isMarker)(const Object*); // 0x108
+		bool(__thiscall* isLocationMarker)(const Object*); // 0x108
 		void* unknown_0x10C;
 		void* unknown_0x110;
 		void* unknown_0x114;
@@ -90,7 +90,7 @@ namespace se::cs {
 		//
 
 		const char* getName() const;
-		bool isMarker() const;
+		bool isLocationMarker() const;
 		char* getIcon() const;
 		char* getModel() const;
 		Object* getEnchantment() const;
