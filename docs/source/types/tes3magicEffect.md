@@ -8,6 +8,7 @@
 
 A core magic effect definition.
 
+This type inherits the following: [tes3baseObject](../types/tes3baseObject.md).
 ## Properties
 
 ### `allowEnchanting`
@@ -95,6 +96,17 @@ The path to the large icon to use for the effect. This is derived from the base 
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `blocked`
+<div class="search_terms" style="display: none">blocked</div>
+
+The blocked state of the object.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -188,6 +200,17 @@ The visual played when a spell with this effect is cast.
 
 ***
 
+### `deleted`
+<div class="search_terms" style="display: none">deleted</div>
+
+*Read-only*. The deleted state of the object.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `description`
 <div class="search_terms" style="display: none">description</div>
 
@@ -196,6 +219,17 @@ Player-facing description of the effect.
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `disabled`
+<div class="search_terms" style="display: none">disabled</div>
+
+*Read-only*. The disabled state of the object.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -353,6 +387,17 @@ The amount of red lighting to use when lighting projectiles. This is also used f
 
 ***
 
+### `modified`
+<div class="search_terms" style="display: none">modified, ified</div>
+
+The modification state of the object since the last save.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
 ### `name`
 <div class="search_terms" style="display: none">name</div>
 
@@ -375,6 +420,28 @@ Access to the base flag that determines if this effect can be refreshed by recas
 
 ***
 
+### `objectFlags`
+<div class="search_terms" style="display: none">objectflags</div>
+
+*Read-only*. The raw flags of the object.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
+### `objectType`
+<div class="search_terms" style="display: none">objecttype</div>
+
+*Read-only*. The type of object. Maps to values in [`tes3.objectType`](https://mwse.github.io/MWSE/references/object-types/).
+
+**Returns**:
+
+* `result` ([tes3.objectType](../references/object-types.md))
+
+***
+
 ### `particleTexture`
 <div class="search_terms" style="display: none">particletexture</div>
 
@@ -383,6 +450,17 @@ Access to the base flag that determines if this effect can be refreshed by recas
 **Returns**:
 
 * `result` (string)
+
+***
+
+### `persistent`
+<div class="search_terms" style="display: none">persistent</div>
+
+The persistent flag of the object.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -430,6 +508,28 @@ The maximum possible size of the spell projectile with this effect.
 
 ***
 
+### `sourceless`
+<div class="search_terms" style="display: none">sourceless</div>
+
+The sourceless flag of the object.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `sourceMod`
+<div class="search_terms" style="display: none">sourcemod</div>
+
+*Read-only*. The filename (including the extension) of the mod that owns this object. It has `nil` value if the object was anything other than loaded from an ESP or ESM file.
+
+**Returns**:
+
+* `result` (string)
+
+***
+
 ### `speed`
 <div class="search_terms" style="display: none">speed</div>
 
@@ -449,6 +549,30 @@ No description yet available.
 **Returns**:
 
 * `result` ([tes3sound](../types/tes3sound.md))
+
+***
+
+### `supportsActivate`
+<div class="search_terms" style="display: none">supportsactivate</div>
+
+If true, the object supports activation. This includes all the items (excluding non-carriable lights), actors outside combat, activators, containers and doors.
+
+However, the activation of such an object may still be blocked via mwscript or a Lua script.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `supportsLuaData`
+<div class="search_terms" style="display: none">supportsluadata</div>
+
+If true, references of this object can store temporary or persistent lua data.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 
@@ -493,4 +617,36 @@ Access to the base flag that determines if this effect provides negative lightin
 **Returns**:
 
 * `result` (boolean)
+
+***
+
+## Methods
+
+### `__tojson`
+<div class="search_terms" style="display: none">__tojson</div>
+
+Serializes the object to json.
+
+```lua
+local string = myObject:__tojson()
+```
+
+**Returns**:
+
+* `string` (string)
+
+***
+
+### `isValid`
+<div class="search_terms" style="display: none">isvalid, valid</div>
+
+Checks to see if the object still points to valid memory. This should be done any time when the object may have been deleted since the variable's last use (e.g. in timer callbacks).
+
+```lua
+local valid = myObject:isValid()
+```
+
+**Returns**:
+
+* `valid` (boolean)
 

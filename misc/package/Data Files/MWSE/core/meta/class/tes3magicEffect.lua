@@ -4,7 +4,7 @@
 -- More information: https://github.com/MWSE/MWSE/tree/master/docs
 
 --- A core magic effect definition.
---- @class tes3magicEffect
+--- @class tes3magicEffect : tes3baseObject
 --- @field allowEnchanting boolean Access to the flag that determines if this effect can be used in enchanting.
 --- @field allowSpellmaking boolean Access to the flag that determines if this effect can be used with spellmaking.
 --- @field appliesOnce boolean Access to the base flag that determines if this effect is applied only once.

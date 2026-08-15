@@ -35,7 +35,7 @@ Defines the transform of the bone in the bind pose from the skinned object's coo
 ### `weights`
 <div class="search_terms" style="display: none">weights</div>
 
-*Read-only*. Contains all the per-vertex weight coefficients used when deforming the verticies influenced by this bone.
+*Read-only*. Contains all the per-vertex weight coefficients used when deforming the vertices influenced by this bone.
 
 **Returns**:
 
