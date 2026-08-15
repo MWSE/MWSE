@@ -32,7 +32,6 @@ namespace se {
 #endif
 	}
 
-
 	void* StdString::operator new(size_t size) {
 #if defined(SE_MEMORY_FNADDR_NEW) && SE_MEMORY_FNADDR_NEW > 0
 		return se::memory::_new(size);
