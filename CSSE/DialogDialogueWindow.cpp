@@ -1190,7 +1190,7 @@ namespace se::cs::dialog::dialogue_window {
 		}
 
 		const auto id = condition->compareValue.object->getObjectID();
-		const auto compare = invert ? 	compareText[GetInverseCompareOperator(condition->compareOp)] : compareText[condition->compareOp];
+		const auto compare = invert ? compareText[GetInverseCompareOperator(condition->compareOp)] : compareText[condition->compareOp];
 
 		if (wrapper) {
 			sprintf_s(displayInfo->item.pszText, displayInfo->item.cchTextMax, "%s(%s) %s %d", wrapper, id, compare, (int)condition->value);
