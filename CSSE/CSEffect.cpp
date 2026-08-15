@@ -11,6 +11,7 @@ namespace se::cs {
 	}
 
 	std::optional<std::string> Effect::toString() const {
+		using TES3::EffectID::EffectID;
 		if (effectID == EffectID::None) {
 			return {};
 		}
