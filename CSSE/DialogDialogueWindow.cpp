@@ -74,7 +74,7 @@ namespace se::cs::dialog::dialogue_window {
 		return ghWnd::get();
 	}
 
-	void selectTab(DialogueType type) {
+	void selectTab(TES3::DialogueType type) {
 		const auto hWnd = ghWnd::get();
 		if (hWnd == NULL) {
 			return;
@@ -475,15 +475,15 @@ namespace se::cs::dialog::dialogue_window {
 	// locals that are on that NPC.
 	//
 
-	void __cdecl PatchFillConditionCombos(HWND hWnd, int controlIdOffset, int conditionType) {
-		const auto CS_FillConditionCombos = reinterpret_cast<void(__cdecl*)(HWND, int, int)>(0x4E7C00);
+	void __cdecl PatchFillConditionCombos(HWND hWnd, int controlIdOffset, TES3::DialogueConditionalType conditionType) {
+		const auto CS_FillConditionCombos = reinterpret_cast<void(__cdecl*)(HWND, int, TES3::DialogueConditionalType)>(0x4E7C00);
 
 		const auto userData = reinterpret_cast<UserData*>(GetWindowLongA(hWnd, GWL_USERDATA));
 		const auto filterScript = (userData && userData->currentFilterObject) ? userData->currentFilterObject->getScript() : nullptr;
 
 		// We only care if we are filtering for local variables, and have a script.
 		// Not Local conditions should not be filtered.
-		if (filterScript == nullptr || conditionType != DialogueInfo::Condition::TypeLocal) {
+		if (filterScript == nullptr || conditionType != TES3::DialogueConditionalType::LocalVar) {
 			CS_FillConditionCombos(hWnd, controlIdOffset, conditionType);
 			return;
 		}
@@ -1165,20 +1165,20 @@ namespace se::cs::dialog::dialogue_window {
 	const auto compareText = reinterpret_cast<const char**>(0x6A5A20);
 
 	int GetInverseCompareOperator(int compareOp) {
-		using CompareOp = DialogueInfo::Condition::CompareOp;
-		switch (compareOp) {
+		using CompareOp = TES3::DialogueConditionalComparator;
+		switch (static_cast<CompareOp>(compareOp)) {
 		case CompareOp::Equal:
-			return CompareOp::NotEqual;
+			return static_cast<int>(CompareOp::NotEqual);
 		case CompareOp::NotEqual:
-			return CompareOp::Equal;
-		case CompareOp::GreaterThan:
-			return CompareOp::LessThanOrEqual;
-		case CompareOp::GreaterThanOrEqual:
-			return CompareOp::LessThan;
-		case CompareOp::LessThan:
-			return CompareOp::GreaterThanOrEqual;
-		case CompareOp::LessThanOrEqual:
-			return CompareOp::GreaterThan;
+			return static_cast<int>(CompareOp::Equal);
+		case CompareOp::Greater:
+			return static_cast<int>(CompareOp::LessEqual);
+		case CompareOp::GreaterEqual:
+			return static_cast<int>(CompareOp::Less);
+		case CompareOp::Less:
+			return static_cast<int>(CompareOp::GreaterEqual);
+		case CompareOp::LessEqual:
+			return static_cast<int>(CompareOp::Greater);
 		}
 		return compareOp;
 	}
@@ -1190,7 +1190,7 @@ namespace se::cs::dialog::dialogue_window {
 		}
 
 		const auto id = condition->compareValue.object->getObjectID();
-		const auto compare = invert ? compareText[GetInverseCompareOperator(condition->compareOp)] : compareText[condition->compareOp];
+		const auto compare = invert ? 	compareText[GetInverseCompareOperator(condition->compareOp)] : compareText[condition->compareOp];
 
 		if (wrapper) {
 			sprintf_s(displayInfo->item.pszText, displayInfo->item.cchTextMax, "%s(%s) %s %d", wrapper, id, compare, (int)condition->value);
@@ -1240,32 +1240,32 @@ namespace se::cs::dialog::dialogue_window {
 		const auto condition = &info->conditions[conditionIndex];
 
 		switch (condition->type) {
-		case DialogueInfo::Condition::TypeFunction:
+		case TES3::DialogueConditionalType::Function:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_Function(context, displayInfo, info, condition);
 			break;
-		case DialogueInfo::Condition::TypeGlobal:
+		case TES3::DialogueConditionalType::GlobalVar:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_Object(context, displayInfo, info, condition, false);
 			break;
-		case DialogueInfo::Condition::TypeLocal:
+		case TES3::DialogueConditionalType::LocalVar:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_String(context, displayInfo, info, condition, false);
 			break;
-		case DialogueInfo::Condition::TypeJournal:
+		case TES3::DialogueConditionalType::JournalIndex:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_ObjectDialogue(context, displayInfo, info, condition, false);
 			break;
-		case DialogueInfo::Condition::TypeItem:
+		case TES3::DialogueConditionalType::ItemCount:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_Object(context, displayInfo, info, condition, false);
 			break;
-		case DialogueInfo::Condition::TypeDead:
+		case TES3::DialogueConditionalType::DeadActor:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_Object(context, displayInfo, info, condition, false, "dead");
 			break;
-		case DialogueInfo::Condition::TypeNotID:
-		case DialogueInfo::Condition::TypeNotFaction:
-		case DialogueInfo::Condition::TypeNotClass:
-		case DialogueInfo::Condition::TypeNotRace:
-		case DialogueInfo::Condition::TypeNotCell:
+		case TES3::DialogueConditionalType::NotID:
+		case TES3::DialogueConditionalType::NotFaction:
+		case TES3::DialogueConditionalType::NotClass:
+		case TES3::DialogueConditionalType::NotRace:
+		case TES3::DialogueConditionalType::NotCell:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_Object(context, displayInfo, info, condition, true);
 			break;
-		case DialogueInfo::Condition::TypeNotLocal:
+		case TES3::DialogueConditionalType::NotLocal:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo_FunVar_String(context, displayInfo, info, condition, true);
 			break;
 		}

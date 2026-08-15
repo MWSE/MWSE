@@ -1,65 +1,10 @@
 #pragma once
 
+#include "TES3DialogueFlags.h"
 #include "TES3Object.h"
-
 #include "NIIteratedList.h"
 
 namespace TES3 {
-	enum class DialogueType : unsigned char {
-		Topic,
-		Voice,
-		Greeting,
-		Persuasion,
-		Journal,
-
-		MAX_VALUE = Journal,
-	};
-
-	enum class VoiceType : int {
-		Hello,
-		Idle,
-		Intruder,
-		Thief,
-		Hit,
-		Attack,
-		Flee,
-
-		COUNT,
-		Invalid = -1,
-	};
-
-	enum class GreetingType : int {
-		Greeting0,
-		Greeting1,
-		Greeting2,
-		Greeting3,
-		Greeting4,
-		Greeting5,
-		Greeting6,
-		Greeting7,
-		Greeting8,
-		Greeting9,
-
-		COUNT,
-		Invalid = -1,
-	};
-
-	enum class ResponseType : int {
-		InfoRefusal,
-		AdmireSuccess,
-		AdmireFail,
-		IntimidateSuccess,
-		IntimidateFail,
-		TauntSuccess,
-		TauntFail,
-		ServiceRefusal,
-		BribeSuccess,
-		BribeFail,
-
-		COUNT,
-		Invalid = -1,
-	};
-
 	struct DialogueName {
 		Dialogue* dialogue; // 0x0
 		const char* name; // 0x4
