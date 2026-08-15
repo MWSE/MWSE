@@ -3,6 +3,7 @@
 #include "NIDefines.h"
 #include "TES3Defines.h"
 #include "TES3ObjectType.h"
+#include "TES3ObjectFlags.h"
 
 #include "LinkedObjectsList.h"
 #include "NIIteratedList.h"
@@ -21,38 +22,6 @@ int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOr
 
 namespace TES3 {
 	using se::LinkedObjectList;
-
-	//
-	// Enums
-	//
-
-	namespace ObjectFlag {
-		typedef unsigned int value_type;
-
-		enum Flag : value_type {
-			Modified = 0x2,
-			LinksResolved = 0x8,
-			NoCollision = 0x10,
-			Delete = 0x20,
-			Persistent = 0x400,
-			Disabled = 0x800,
-			SelectedByConsole = 0x1000,
-			Blocked = 0x2000,
-			EmptyInventory = 0x2000,
-		};
-
-		enum FlagBit {
-			ModifiedBit = 1,
-			LinksResolvedBit = 3,
-			NoCollisionBit = 4,
-			DeleteBit = 5,
-			PersistentBit = 10,
-			DisabledBit = 11,
-			SelectedByConsoleBit = 12,
-			BlockedBit = 13,
-			EmptyInventoryBit = 13,
-		};
-	}
 
 	//
 	// The core building blocks of TES3 objects.

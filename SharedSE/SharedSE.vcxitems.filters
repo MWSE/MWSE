@@ -345,7 +345,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NIPoint2.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h">
+      <Filter>Header Files\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlag.h">
+      <Filter>Header Files\TES3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIMatrix33.cpp">
