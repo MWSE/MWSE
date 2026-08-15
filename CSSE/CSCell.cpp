@@ -8,11 +8,11 @@
 
 namespace se::cs {
 	bool Cell::getIsInterior() const {
-		return cellFlags & CellFlag::Interior;
+		return cellFlags & TES3::CellFlag::Interior;
 	}
 
 	bool Cell::getBehavesAsExterior() const {
-		return cellFlags & CellFlag::BehavesAsExterior;
+		return cellFlags & TES3::CellFlag::BehavesAsExterior;
 	}
 
 	bool Cell::getIsOrBehavesAsExterior() const {
