@@ -9,11 +9,6 @@ namespace se::cs::dialog::preview_window {
 	LRESULT CALLBACK PatchDialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		DialogProcContext context(hWnd, msg, wParam, lParam, 0x455AA0);
 
-		// Handle pre-patches.
-		// switch (msg) {
-
-		// }
-
 		// Call original function, or return early if we already have a result.
 		if (context.hasResult()) {
 			return context.getResult();
@@ -21,11 +16,6 @@ namespace se::cs::dialog::preview_window {
 		else {
 			context.callOriginalFunction();
 		}
-
-		// Handle post-patches.
-		// switch (msg) {
-
-		// }
 
 		return context.getResult();
 	}
