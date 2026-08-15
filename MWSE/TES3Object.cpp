@@ -100,12 +100,12 @@ namespace TES3 {
 		BaseObject_dtor(this);
 	}
 
-	bool BaseObject::getObjectModified() const {
+	bool BaseObject::getModified() const {
 		return (objectFlags & TES3::ObjectFlag::Modified);
 	}
 
-	void BaseObject::setObjectModified(bool modified) {
-		vTable.base->setObjectModified(this, modified);
+	void BaseObject::setModified(bool modified) {
+		vTable.base->setModified(this, modified);
 	}
 
 	const char* BaseObject::getObjectID() const {

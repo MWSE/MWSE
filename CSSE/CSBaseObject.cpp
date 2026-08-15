@@ -23,7 +23,7 @@ namespace se::cs {
 	}
 
 	void BaseObject::setModified(bool modified) {
-		vtbl.baseObject->setObjectModified(this, modified);
+		vtbl.baseObject->setModified(this, modified);
 	}
 
 	bool BaseObject::getDeleted() const {

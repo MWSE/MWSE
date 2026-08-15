@@ -17,7 +17,7 @@ namespace se::cs {
 		int(__thiscall* saveRecordSpecific)(BaseObject*, GameFile*); // 0x8
 		int(__thiscall* loadObject)(BaseObject*, GameFile*); // 0xC
 		int(__thiscall* saveObject)(BaseObject*, GameFile*); // 0x10
-		void(__thiscall* setObjectModified)(BaseObject*, bool); // 0x14
+		void(__thiscall* setModified)(BaseObject*, bool); // 0x14
 		int(__thiscall* setObjectFlag40)(BaseObject*, bool); // 0x18
 		int(__thiscall* getCount)(const BaseObject*); // 0x1C
 		const char* (__thiscall* getObjectID)(const BaseObject*); // 0x20
