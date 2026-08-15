@@ -5,7 +5,7 @@ namespace TES3 {
 		if (strlen(path) >= 32) {
 			throw std::invalid_argument("Path cannot be 32 or more characters.");
 		}
-		strncpy_s(texture, path, sizeof(texture));
+		strncpy_s(icon, path, sizeof(icon));
 	}
 
 	void Apparatus::setName(const char* newName) {
