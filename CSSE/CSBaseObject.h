@@ -11,8 +11,8 @@ namespace se::cs {
 		};
 	}
 
-	struct BaseObject_VirtualTable {
-		void(__thiscall* destructor)(BaseObject*, signed char); // 0x0
+	struct BaseObjectVirtualTable {
+		void(__thiscall* deleting_dtor)(BaseObject*, char); // 0x0
 		int(__thiscall* loadObjectSpecific)(BaseObject*, GameFile*); // 0x4
 		int(__thiscall* saveRecordSpecific)(BaseObject*, GameFile*); // 0x8
 		int(__thiscall* loadObject)(BaseObject*, GameFile*); // 0xC
@@ -25,9 +25,9 @@ namespace se::cs {
 
 	struct BaseObject {
 		union {
-			BaseObject_VirtualTable* base;
-			Object_VirtualTable* object;
-			Actor_VirtualTable* actor;
+			BaseObjectVirtualTable* base;
+			ObjectVirtualTable* object;
+			ActorVirtualTable* actor;
 		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
 		unsigned int objectFlags; // 0x8
@@ -66,5 +66,5 @@ namespace se::cs {
 		bool searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(BaseObject) == 0x10, "TES3::BaseObject failed size validation");
-	static_assert(sizeof(BaseObject_VirtualTable) == 0x24, "TES3::BaseObject_VirtualTable failed size validation");
+	static_assert(sizeof(BaseObjectVirtualTable) == 0x24, "TES3::BaseObjectVirtualTable failed size validation");
 }

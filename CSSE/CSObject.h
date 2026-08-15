@@ -5,7 +5,7 @@
 #include "NIDefines.h"
 
 namespace se::cs {
-	struct Object_VirtualTable : BaseObject_VirtualTable {
+	struct ObjectVirtualTable : BaseObjectVirtualTable {
 		void* unknown_0x24;
 		void(__thiscall* setObjectID)(Object*, const char*); // 0x28
 		void* unknown_0x2C;
@@ -121,5 +121,5 @@ namespace se::cs {
 		bool searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Object) == 0x28, "CS::Object failed size validation");
-	static_assert(sizeof(Object_VirtualTable) == 0x138, "CS::Object's virtual table failed size validation");
+	static_assert(sizeof(ObjectVirtualTable) == 0x138, "CS::Object's virtual table failed size validation");
 }
