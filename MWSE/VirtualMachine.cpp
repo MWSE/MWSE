@@ -554,7 +554,7 @@ mwseString& VirtualMachine::getString(long fromStack)	//ask grant, need a '*' or
 
 	// If it's not in storage, but is probably not a char*, return an empty string and log a message.
 	else if (fromStack < 0x3F0000) {
-		mwse::log::getLog() << "ERROR: Script '" << script->getObjectID() << "' in game file '" << (script->sourceMod != nullptr ? script->sourceMod->filename : "{N/A}") << "' contained garbage string reference! String references cannot be stored across saves." << std::endl;
+		mwse::log::getLog() << "ERROR: Script '" << script->getObjectID() << "' in game file '" << (script->sourceFile != nullptr ? script->sourceFile->filename : "{N/A}") << "' contained garbage string reference! String references cannot be stored across saves." << std::endl;
 		return se::string::store::create("");
 	}
 

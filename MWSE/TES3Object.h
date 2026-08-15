@@ -218,7 +218,7 @@ namespace TES3 {
 		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
 		unsigned int objectFlags; // 0x8
-		GameFile* sourceMod; // 0xC
+		GameFile* sourceFile; // 0xC
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Invalid;
 

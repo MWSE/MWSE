@@ -276,8 +276,8 @@ namespace TES3 {
 	}
 
 	const char* BaseObject::getSourceFilename() const {
-		if (sourceMod) {
-			return sourceMod->filename;
+		if (sourceFile) {
+			return sourceFile->filename;
 		}
 		return nullptr;
 	}
