@@ -132,8 +132,8 @@ namespace se::cs::dialog::object_window {
 		sprintf_s(displayInfo->item.pszText, displayInfo->item.cchTextMax, "%s", string);
 	}
 
-	void TabColumn::display(LPNMLVDISPINFOA displayInfo, const NI::IteratedList<ItemStack*>& items) const {
-		if (items.empty()) {
+	void TabColumn::display(LPNMLVDISPINFOA displayInfo, const NI::IteratedList<ItemStack*>& itemStacks) const {
+		if (itemStacks.empty()) {
 			display(displayInfo, "-NONE-");
 			return;
 		}
@@ -142,7 +142,7 @@ namespace se::cs::dialog::object_window {
 		const auto bufferSize = displayInfo->item.cchTextMax;
 		size_t bytesRemaining = bufferSize - 1;
 		bool first = true;
-		for (const auto& itt : items) {
+		for (const auto& itt : itemStacks) {
 			const std::string_view sv = itt->object->getObjectID();
 			if (bytesRemaining <= sv.length() + 8) {
 				strcat_s(buffer, bufferSize, ", ...");
@@ -458,13 +458,13 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorInventory::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		const auto object = static_cast<const Actor*>(getObjectFromDisplayInfo(displayInfo));
-		display(displayInfo, object->inventory.items);
+		display(displayInfo, object->inventory.itemStacks);
 	}
 
 	int TabColumnActorInventory::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
 		const auto& a = static_cast<const Actor*>(lParam1);
 		const auto& b = static_cast<const Actor*>(lParam2);
-		return sort(a->inventory.items, b->inventory.items, sortOrderAsc);
+		return sort(a->inventory.itemStacks, b->inventory.itemStacks, sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorInventory::getSettings() const {
