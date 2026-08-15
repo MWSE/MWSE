@@ -348,7 +348,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h">
       <Filter>Header Files\TES3</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlag.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlags.h">
+      <Filter>Header Files\TES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3WeaponFlags.h">
       <Filter>Header Files\TES3</Filter>
     </ClInclude>
   </ItemGroup>

@@ -117,8 +117,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LinkedObjectsList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Deque.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlag.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlags.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3WeaponFlags.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WindowsUtil.h" />
   </ItemGroup>
   <ItemGroup>
