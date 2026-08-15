@@ -30,7 +30,7 @@ namespace se::cs {
 			Actor_VirtualTable* actor;
 		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
-		unsigned int flags; // 0x8
+		unsigned int objectFlags; // 0x8
 		GameFile* sourceFile; // 0xC
 
 		const char* getObjectID() const;

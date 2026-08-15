@@ -15,11 +15,11 @@ namespace se::cs {
 	}
 
 	bool BaseObject::isFromMaster() const {
-		return (flags & 0x1);
+		return (objectFlags & 0x1);
 	}
 
 	bool BaseObject::getModified() const {
-		return (flags & 0x2) != 0;
+		return (objectFlags & 0x2) != 0;
 	}
 
 	void BaseObject::setModified(bool modified) {
@@ -27,7 +27,7 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getDeleted() const {
-		return (flags & 0x20);
+		return (objectFlags & 0x20);
 	}
 
 	void BaseObject::setDeleted(bool deleted) {
@@ -36,11 +36,11 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getPersists() const {
-		return (flags & 0x400);
+		return (objectFlags & 0x400);
 	}
 
 	bool BaseObject::getBlocked() const {
-		return (flags & 0x2000);
+		return (objectFlags & 0x2000);
 	}
 
 	bool BaseObject::isMobileCapableActor() const {
