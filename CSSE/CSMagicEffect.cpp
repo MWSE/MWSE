@@ -25,40 +25,40 @@ namespace se::cs {
 		if (skill >= 0 && getFlagTargetSkill()) {
 			const auto skillName = ndd->getGameSettingForSkill(skill)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifySkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectFortifySkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectDrainSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectDrainSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectDamageSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectDamageSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectRestoreSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectRestoreSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectAbsorbSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectAbsorbSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString << " " << skillName;
 				break;
 			}
 		}
 		else if (attribute >= 0 && getFlagTargetAttribute()) {
 			const auto attributeName = ndd->getGameSettingForAttribute(attribute)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifyAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectFortifyAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectDrainAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectDrainAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectDamageAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectDamageAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectRestoreAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectRestoreAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectAbsorbAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectAbsorbAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString << " " << attributeName;
 				break;
 			}
 		}
@@ -253,20 +253,20 @@ namespace se::cs {
 		if (skill >= 0 && getFlagTargetSkill()) {
 			const auto skillName = ndd->getGameSettingForSkill(skill)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifySkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString, skillName);
+			case TES3::GMST::sEffectFortifySkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString, skillName);
 				break;
-			case GMST::sEffectDrainSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString, skillName);
+			case TES3::GMST::sEffectDrainSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString, skillName);
 				break;
-			case GMST::sEffectDamageSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString, skillName);
+			case TES3::GMST::sEffectDamageSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString, skillName);
 				break;
-			case GMST::sEffectRestoreSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString, skillName);
+			case TES3::GMST::sEffectRestoreSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString, skillName);
 				break;
-			case GMST::sEffectAbsorbSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString, skillName);
+			case TES3::GMST::sEffectAbsorbSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString, skillName);
 				break;
 			}
 
@@ -277,20 +277,20 @@ namespace se::cs {
 		else if (attribute >= 0 && getFlagTargetAttribute()) {
 			const auto attributeName = ndd->getGameSettingForAttribute(attribute)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifyAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString, attributeName);
+			case TES3::GMST::sEffectFortifyAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString, attributeName);
 				break;
-			case GMST::sEffectDrainAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString, attributeName);
+			case TES3::GMST::sEffectDrainAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString, attributeName);
 				break;
-			case GMST::sEffectDamageAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString, attributeName);
+			case TES3::GMST::sEffectDamageAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString, attributeName);
 				break;
-			case GMST::sEffectRestoreAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString, attributeName);
+			case TES3::GMST::sEffectRestoreAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString, attributeName);
 				break;
-			case GMST::sEffectAbsorbAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString, attributeName);
+			case TES3::GMST::sEffectAbsorbAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString, attributeName);
 				break;
 			}
 

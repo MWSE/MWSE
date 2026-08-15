@@ -86,7 +86,7 @@ namespace se::cs {
 		}
 
 		// Fallback to GMST.
-		return DataHandler::get()->recordHandler->gameSettingsHandler->gameSettings[GMST::sDefaultCellname]->value.asString;
+		return DataHandler::get()->recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sDefaultCellname]->value.asString;
 	}
 
 	std::string Cell::getEditorId() const {

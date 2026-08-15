@@ -119,6 +119,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StdString.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3AttachmentFlags.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3EffectFlags.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TES3GMST.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectFlags.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3ObjectType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TES3RaceFlags.h" />

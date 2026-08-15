@@ -33,17 +33,19 @@ namespace se::cs {
 		if (effectID == EffectID::FortifyMagickaMultiplier) {
 			float min = magnitudeMin * 0.1f;
 			if (magnitudeMin == magnitudeMax) {
-				ss << " " << min << recordHandler->gameSettingsHandler->gameSettings[GMST::sXTimesINT]->value.asString;
+				ss << " " << min << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sXTimesINT]->value.asString;
 			}
 			else {
 				float max = magnitudeMax * 0.1f;
-				ss << " " << min << recordHandler->gameSettingsHandler->gameSettings[GMST::sXTimes]->value.asString << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sTo]->value.asString << " " << max << recordHandler->gameSettingsHandler->gameSettings[GMST::sXTimesINT]->value.asString;
+				ss << " " << min << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sXTimes]->value.asString 
+				   << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sTo]->value.asString 
+				   << " " << max << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sXTimesINT]->value.asString;
 			}
 		}
 		else {
 			if (!recordHandler->magicEffects[effectID].getFlagNoMagnitude()) {
 				if (magnitudeMin != magnitudeMax) {
-					ss << " " << magnitudeMin << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sTo]->value.asString << " " << magnitudeMax;
+					ss << " " << magnitudeMin << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sTo]->value.asString << " " << magnitudeMax;
 				}
 				else {
 					ss << " " << magnitudeMin;
@@ -73,34 +75,34 @@ namespace se::cs {
 				case EffectID::ResistPoison:
 				case EffectID::ResistNormalWeapons:
 				case EffectID::ResistParalysis:
-					ss << recordHandler->gameSettingsHandler->gameSettings[GMST::spercent]->value.asString;
+					ss << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::spercent]->value.asString;
 					break;
 				case EffectID::Telekinesis:
 				case EffectID::DetectAnimal:
 				case EffectID::DetectEnchantment:
 				case EffectID::DetectKey:
 					if (magnitudeMax == 1) {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sfootarea]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sfootarea]->value.asString;
 					}
 					else {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sfeet]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sfeet]->value.asString;
 					}
 					break;
 				case EffectID::CommandCreature:
 				case EffectID::CommandHumanoid:
 					if (magnitudeMax == 1) {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sLevel]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sLevel]->value.asString;
 					}
 					else {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::sLevels]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sLevels]->value.asString;
 					}
 					break;
 				default:
 					if (magnitudeMax == 1) {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::spoint]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::spoint]->value.asString;
 					}
 					else {
-						ss << " " << recordHandler->gameSettingsHandler->gameSettings[GMST::spoints]->value.asString;
+						ss << " " << recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::spoints]->value.asString;
 					}
 				}
 			}
