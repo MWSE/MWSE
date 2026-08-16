@@ -11,7 +11,7 @@
 --- @field ambientPreSunsetTime number Hours before `sunsetHour` when the ambient-color transition begins. The window is `sunsetHour - ambientPreSunsetTime` through `sunsetHour + sunsetDuration + ambientPostSunsetTime`, split between day → `ambientSunsetColor` and `ambientSunsetColor` → night. This is an offset, not an absolute hour.
 --- @field currentFogColor tes3vector3 The current fog color. The values can range from 0 to 1.
 --- @field currentSkyColor tes3vector3 The current sky color. The values can range from 0 to 1.
---- @field currentWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The current weather.
+--- @field currentWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The current weather.
 --- @field daysRemaining number The days remaining for the current weather.
 --- @field fogDepthChangeSpeed number Duration, in in-game hours, used to interpolate land-fog depth from night to day after `sunriseHour` and from day to night after `sunsetHour`. It controls land-fog depth, not fog color.
 --- @field fogPostSunriseTime number Hours added after `sunriseDuration` before the fog sunrise transition ends. The transition ends at `sunriseHour + sunriseDuration + fogPostSunriseTime`; the sunrise color is the midpoint, not the color at this field's value. This is an offset, not an absolute hour.
@@ -22,7 +22,7 @@
 --- @field hoursRemaining number The hours remaining.
 --- @field lastActiveRegion tes3region *Read-only*. Provides read-only access to last active region object.
 --- @field masser tes3moon *Read-only*. Provides read-only access to the Masser moon object.
---- @field nextWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The next weather.
+--- @field nextWeather tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder *Read-only*. The next weather.
 --- @field particlesActive tes3weatherControllerParticle[] *Read-only*. Provides a list of active weather particles.
 --- @field particlesInactive tes3weatherControllerParticle[] *Read-only*. Provides a list of inactive weather particles.
 --- @field precipitationFallSpeed number The z component of the rain or snow fall particle velocity (not including blizzards). Snow fall velocity is also multiplied by `snowFallSpeedScale`. This value is initialized by the "Precipitation Gravity" entry in morrowind.ini.
@@ -57,6 +57,7 @@
 --- @field sunriseHour number Absolute in-game hour used as the sunrise reference. The sun's sunrise motion begins here; each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
 --- @field sunsetDuration number Duration, in in-game hours, of the sun's sunset motion/fade. It also contributes to every sunset color window: that window lasts `Pre + sunsetDuration + Post` hours.
 --- @field sunsetHour number Absolute in-game hour used as the sunset reference. Each ambient, fog, sky, and sunlight color transition may begin earlier or end later according to its `Pre` and `Post` settings.
+--- @field thunderFlashIntensity number The active thunder flash intensity.
 --- @field timescaleClouds string The timescale for clouds.
 --- @field transitionScalar number The scalar transition.
 --- @field underwaterColor tes3vector3 Color blended into weather colors while underwater. `underwaterColorWeight` controls the blend amount. Values range from 0 to 1.
@@ -66,7 +67,7 @@
 --- @field underwaterNightFog number Underwater fog-density multiplier used during the nighttime portion outside the sunrise and sunset transitions.
 --- @field underwaterSunriseFog number Underwater fog-density multiplier used at the sunrise endpoint. In exterior water, it is blended from `underwaterNightFog` toward `underwaterDayFog` using `sunriseHour` and the day midpoint.
 --- @field underwaterSunsetFog number Underwater fog-density multiplier used at the sunset endpoint. In exterior water, it is blended from `underwaterDayFog` toward `underwaterNightFog` between `sunsetHour` and midnight.
---- @field weathers table<tes3.weather, tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder> *Read-only*. Array-style table with weather objects for each weather type. The indices in the table map to the values in the [`tes3.weather`](https://mwse.github.io/MWSE/references/weather-types/) table.
+--- @field weathers table<tes3.weather, tes3weather|tes3weatherAsh|tes3weatherBlight|tes3weatherBlizzard|tes3weatherClear|tes3weatherCloudy|tes3weatherCustom|tes3weatherFoggy|tes3weatherOvercast|tes3weatherRain|tes3weatherSnow|tes3weatherThunder> *Read-only*. Array-style table with weather objects for each weather type. The indices in the table map to the values in the [`tes3.weather`](https://mwse.github.io/MWSE/references/weather-types/) table.
 --- @field windVelocityCurrWeather tes3vector3 The wind velocity for the current weather.
 --- @field windVelocityNextWeather tes3vector3 The wind velocity for the next weather.
 tes3weatherController = {}

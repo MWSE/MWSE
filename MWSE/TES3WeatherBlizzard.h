@@ -8,6 +8,8 @@ namespace TES3 {
 
 		WeatherBlizzard() = delete;
 		~WeatherBlizzard() = delete;
+
+		void simulate(float transitionScalar, float deltaTime);
 	};
 	static_assert(sizeof(WeatherBlizzard) == 0x31C, "TES3::WeatherBlizzard failed size validation");
 }
