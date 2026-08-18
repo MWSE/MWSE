@@ -8,6 +8,7 @@
 #include "TES3MagicEffect.h"
 #include "TES3MagicEffectInstance.h"
 #include "TES3MagicSourceInstance.h"
+#include "TES3MobileActor.h"
 #include "TES3MobilePlayer.h"
 #include "TES3NPC.h"
 #include "TES3WorldController.h"
@@ -478,6 +479,17 @@ namespace TES3 {
 		}
 	}
 
+	static bool __fastcall PatchRemoveRetiredMagicEffect(se::Deque<ActiveMagicEffect>* activeMagicEffects, DWORD _UNUSED_, unsigned int serial, unsigned char effectIndex) {
+		// MagicSourceInstance::process forms `&mobile->activeMagicEffects` before checking that the
+		// mobile exists, so a target reference with no mobile actor arrives as the bare member offset.
+		const auto mobile = reinterpret_cast<MobileActor*>(reinterpret_cast<DWORD>(activeMagicEffects) - offsetof(MobileActor, activeMagicEffects));
+		if (!mobile) {
+			return false;
+		}
+
+		return mobile->removeActiveMagicEffect(serial, effectIndex);
+	}
+
 	std::tuple<bool, sol::object> triggerSpellEffectEvent(sol::table self, sol::optional<sol::table> maybe_data, sol::this_state s) {
 		sol::state_view state = s;
 
@@ -935,6 +947,9 @@ namespace TES3 {
 
 		// Trigger activation/deactivation events from per-reference state transitions in MagicSourceInstance::process.
 		se::memory::genJumpUnprotected(0x515AA7, reinterpret_cast<DWORD>(PatchMagicEffectDispatchStateChangeEvents), 0x1C);
+
+		// Fix crash when an effect retires on a target reference that has no mobile actor.
+		se::memory::genCallEnforced(0x515AEF, 0x55C9D0, reinterpret_cast<DWORD>(PatchRemoveRetiredMagicEffect));
 
 		// Trigger ended events when stored MagicEffectInstance nodes are removed.
 		se::memory::genJumpUnprotected(0x515CE5, reinterpret_cast<DWORD>(PatchMagicEffectRemovedEvent), 0xA);
