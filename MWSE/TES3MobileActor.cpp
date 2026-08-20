@@ -2175,17 +2175,6 @@ namespace TES3 {
 		powers.addKey(power, timestamp);
 	}
 
-	bool MobileActor::removeActiveMagicEffect(unsigned int serial, unsigned char effectIndex) {
-		for (auto itt = activeMagicEffects.begin(); itt != activeMagicEffects.end(); ++itt) {
-			const auto& activeEffect = *itt;
-			if (activeEffect.magicInstanceSerial == serial && activeEffect.magicInstanceEffectIndex == effectIndex) {
-				activeMagicEffects.erase(itt);
-				return true;
-			}
-		}
-		return false;
-	}
-
 	sol::table MobileActor::getActiveMagicEffectsList_lua(sol::optional<sol::table> params) {
 		auto effectID = mwse::lua::getOptionalParam<int>(params, "effect");
 		auto serial = mwse::lua::getOptionalParam<unsigned int>(params, "serial");

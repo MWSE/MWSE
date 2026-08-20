@@ -487,7 +487,8 @@ namespace TES3 {
 			return false;
 		}
 
-		return mobile->removeActiveMagicEffect(serial, effectIndex);
+		const auto TES3_MACTActiveEffects_removeBySerial = reinterpret_cast<bool(__thiscall*)(se::Deque<ActiveMagicEffect>*, unsigned int, unsigned char)>(0x55C9D0);
+		return TES3_MACTActiveEffects_removeBySerial(activeMagicEffects, serial, effectIndex);
 	}
 
 	std::tuple<bool, sol::object> triggerSpellEffectEvent(sol::table self, sol::optional<sol::table> maybe_data, sol::this_state s) {

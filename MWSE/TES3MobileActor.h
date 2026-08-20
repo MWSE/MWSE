@@ -505,8 +505,6 @@ namespace TES3 {
 		bool getMobToMobCollision() const;
 		void setMobToMobCollision(bool collide);
 
-		bool removeActiveMagicEffect(unsigned int serial, unsigned char effectIndex);
-
 		sol::table getActiveMagicEffectsList_lua(sol::optional<sol::table> params);
 		ActiveMagicEffect* getActiveMagicEffects_legacy() const;
 		int getActiveMagicEffectCount_legacy() const;
