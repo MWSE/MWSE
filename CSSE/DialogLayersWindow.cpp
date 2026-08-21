@@ -1328,7 +1328,7 @@ namespace se::cs::dialog::layer_window {
 	}
 
 	void __fastcall Patch_SetDeleted(BaseObject* object, DWORD _EDX_, bool deleted) {
-		if (object->objectType == ObjectType::Reference) {
+		if (object->objectType == TES3::ObjectType::Reference) {
 			HandleObjectDeleteState(static_cast<Reference*>(object), deleted);
 		}
 

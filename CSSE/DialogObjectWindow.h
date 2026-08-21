@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CSDefines.h"
+#include "TES3ObjectType.h"
 
 #include "MemoryUtil.h"
 
@@ -16,7 +17,7 @@ namespace se::cs::dialog::object_window {
 	constexpr UINT CONTROL_ID_FILTER_EDIT = 2001;
 	constexpr UINT CONTROL_ID_SHOW_MODIFIED_ONLY_BUTTON = 2002;
 
-	int getTabForObjectType(ObjectType::ObjectType objectType);
+	int getTabForObjectType(TES3::ObjectType::ObjectType objectType);
 
 	void installPatches();
 }

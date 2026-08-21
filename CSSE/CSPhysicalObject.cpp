@@ -10,11 +10,11 @@
 namespace se::cs {
 	bool PhysicalObject::canRotateOnAllAxes() const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::LeveledCreature:
-		case ObjectType::NPC:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::LeveledCreature:
+		case TES3::ObjectType::NPC:
 			return false;
-		case ObjectType::Static:
+		case TES3::ObjectType::Static:
 			if (this == Static::gDoorMarker::get()) {
 				return false;
 			}

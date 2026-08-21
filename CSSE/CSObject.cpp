@@ -142,17 +142,17 @@ namespace se::cs {
 
 	bool Object::searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
-		case ObjectType::Alchemy:
+		case TES3::ObjectType::Alchemy:
 			return static_cast<const Alchemy*>(this)->search(needle, settings, regex);
-		case ObjectType::Book:
+		case TES3::ObjectType::Book:
 			return static_cast<const Book*>(this)->search(needle, settings, regex);
-		case ObjectType::Enchantment:
+		case TES3::ObjectType::Enchantment:
 			return static_cast<const Enchantment*>(this)->search(needle, settings, regex);
-		case ObjectType::Ingredient:
+		case TES3::ObjectType::Ingredient:
 			return static_cast<const Ingredient*>(this)->search(needle, settings, regex);
-		case ObjectType::Spell:
+		case TES3::ObjectType::Spell:
 			return static_cast<const Spell*>(this)->search(needle, settings, regex);
-		case ObjectType::NPC:
+		case TES3::ObjectType::NPC:
 			return static_cast<const NPC*>(this)->search(needle, settings, regex);
 		}
 

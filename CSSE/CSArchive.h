@@ -1,16 +1,9 @@
 #pragma once
 
 #include "MemoryUtil.h"
+#include "TES3FileLoadSource.h"
 
 namespace se::cs {
-	namespace FileLoadSource {
-		enum FileLoadSource : int {
-			Missing,
-			File,
-			BSA,
-		};
-	}
-
 	struct Archive {
 		struct CaseInsensitiveFileHash {
 			DWORD unknown_0x0;
