@@ -52,9 +52,9 @@ namespace se::cs {
 	struct TravelDestination;
 	struct Weapon;
 
-	struct BaseObject_VirtualTable;
-	struct Object_VirtualTable;
-	struct Actor_VirtualTable;
+	struct BaseObjectVirtualTable;
+	struct ObjectVirtualTable;
+	struct ActorVirtualTable;
 
 	namespace ObjectType {
 		enum ObjectType {

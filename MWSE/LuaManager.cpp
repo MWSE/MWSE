@@ -2965,7 +2965,7 @@ namespace mwse::lua {
 
 	TES3::GameFile* __fastcall PatchGetDialogueInfoText_GetSourceMod(TES3::DialogueInfo* dialogueInfo) {
 		lastReadDialogueInfo = dialogueInfo;
-		return dialogueInfo->sourceMod;
+		return dialogueInfo->sourceFile;
 	}
 
 	bool __fastcall PatchGetDialogueInfoText_ReadFromFile(TES3::GameFile* gameFile, DWORD _UNUSUED_, char* dialogueTextBuffer, size_t size) {
@@ -4485,7 +4485,7 @@ namespace mwse::lua {
 	void __cdecl PatchModelLoaderErrorReport(const char* format, const char* errorText, const char* filename) {
 		if (currentlyLoadingMeshObject) {
 			const char* id = currentlyLoadingMeshObject->getObjectID();
-			const char* mod = currentlyLoadingMeshObject->sourceMod ? currentlyLoadingMeshObject->sourceMod->getFilename() : "no source";
+			const char* mod = currentlyLoadingMeshObject->sourceFile ? currentlyLoadingMeshObject->sourceFile->getFilename() : "no source";
 			tes3::logAndShowError("Object \"%s\" (%s)\r\n\r\nModel Load Error: %s\r\nin %s.", id, mod, errorText, filename);
 		}
 		else {
@@ -4496,7 +4496,7 @@ namespace mwse::lua {
 	void __cdecl PatchStreamLoaderErrorReport(const char* errorText, const char* caption) {
 		if (currentlyLoadingMeshObject) {
 			const char* id = currentlyLoadingMeshObject->getObjectID();
-			const char* mod = currentlyLoadingMeshObject->sourceMod ? currentlyLoadingMeshObject->sourceMod->getFilename() : "no source";
+			const char* mod = currentlyLoadingMeshObject->sourceFile ? currentlyLoadingMeshObject->sourceFile->getFilename() : "no source";
 			tes3::logAndShowError("Object \"%s\" (%s)\r\n\r\n%s", id, mod, errorText);
 		}
 		else {
@@ -4930,7 +4930,7 @@ namespace mwse::lua {
 	//
 
 	bool __fastcall SafeSourcelessDeleteFromRetiredEffect(TES3::Alchemy* alchemy) {
-		return alchemy->sourceMod || alchemy->getSourceless();
+		return alchemy->sourceFile || alchemy->getSourceless();
 	}
 
 	//

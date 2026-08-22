@@ -1271,7 +1271,7 @@ namespace se::cs::dialog::render_window {
 			return;
 		}
 
-		if (reference->isMarker()) {
+		if (reference->isLocationMarker()) {
 			reference->sceneNode->setAppCulled(cull);
 		}
 		else if (reference->sceneNode->hasStringDataWithValue("MRK")) {

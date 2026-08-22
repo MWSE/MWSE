@@ -28,7 +28,7 @@ namespace se::cs {
 		const char* getTypeName() const;
 
 		// Virtual table overwrite functions.
-		const char* getRaceName() const;
+		const char* getRaceID() const;
 	};
 	static_assert(sizeof(BodyPart) == 0x58, "BodyPart failed size validation");
 }
