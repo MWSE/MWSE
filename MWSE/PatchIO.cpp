@@ -4,17 +4,10 @@
 #include "MemoryUtil.h"
 
 #include "TES3Cell.h"
+#include "TES3DataHandler.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3WorldController.h"
-
-/*
-raiseStdioFileLimit
-OverrideDontThreadLoad
-
-INI-related patches
-ESM/ESP serialization if you choose to classify that as I/O
-*/
 
 namespace mwse::patch::io {
 	//
@@ -200,6 +193,20 @@ namespace mwse::patch::io {
 		}
 	}
 
+	//
+	// Patch: Optimize DontThreadLoad, prevent multi-thread loading from lua.
+	//
+	// Every time the game wants to load, it checks the ini file from disk for the DontThreadLoad value.
+	// This patch caches the value so it only needs to be read once.
+	//
+	// Additionally, this provides a way to suppress thread loading from lua, if it is causing an issue in
+	// a script (namely, a lua state deadlock).
+	//
+
+	UINT WINAPI	OverrideDontThreadLoad(LPCSTR lpAppName, LPCSTR lpKeyName, INT nDefault, LPCSTR lpFileName) {
+		return TES3::DataHandler::suppressThreadLoad || TES3::DataHandler::dontThreadLoad;
+	}
+
 	void install() {
 		using se::memory::genCallEnforced;
 		using se::memory::genCallUnprotected;
@@ -241,5 +248,12 @@ namespace mwse::patch::io {
 
 		// Patch: Decrease MO2 load times. Somehow...
 		writeDoubleWordUnprotected(0x7462F4, reinterpret_cast<DWORD>(&_stat32));
+
+		// Patch: Cache DontThreadLoad INI value and extend it with a suppression flag.
+		TES3::DataHandler::dontThreadLoad = GetPrivateProfileIntA("General", "DontThreadLoad", 0, ".\\Morrowind.ini") != 0;
+		genCallUnprotected(0x48539C, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+		genCallUnprotected(0x4869DB, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+		genCallUnprotected(0x48F489, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+		genCallUnprotected(0x4904D0, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 	}
 }

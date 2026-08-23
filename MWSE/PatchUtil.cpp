@@ -71,20 +71,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Optimize DontThreadLoad, prevent multi-thread loading from lua.
-	//
-	// Every time the game wants to load, it checks the ini file from disk for the DontThreadLoad value.
-	// This patch caches the value so it only needs to be read once.
-	//
-	// Additionally, this provides a way to suppress thread loading from lua, if it is causing an issue in
-	// a script (namely, a lua state deadlock).
-	//
-
-	UINT WINAPI	OverrideDontThreadLoad(LPCSTR lpAppName, LPCSTR lpKeyName, INT nDefault, LPCSTR lpFileName) {
-		return TES3::DataHandler::suppressThreadLoad || TES3::DataHandler::dontThreadLoad;
-	}
-
-	//
 	// Patch: Optimize access to global variables. Access them in a hashmap instead of linear searching.
 	//
 
@@ -654,13 +640,6 @@ namespace mwse::patch {
 		genCallEnforced(0x47731B, 0x5F2160, reinterpret_cast<DWORD>(SafeQuitGetMessageChoice));
 		genCallEnforced(0x4779D9, 0x5F2160, reinterpret_cast<DWORD>(SafeQuitGetMessageChoice));
 		genCallEnforced(0x477E6F, 0x5F2160, reinterpret_cast<DWORD>(SafeQuitGetMessageChoice));
-
-		// Patch: Cache DontThreadLoad INI value and extend it with a suppression flag.
-		TES3::DataHandler::dontThreadLoad = GetPrivateProfileIntA("General", "DontThreadLoad", 0, ".\\Morrowind.ini") != 0;
-		genCallUnprotected(0x48539C, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
-		genCallUnprotected(0x4869DB, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
-		genCallUnprotected(0x48F489, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
-		genCallUnprotected(0x4904D0, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 
 		// Patch: Cache cell lookups by ID.
 		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
