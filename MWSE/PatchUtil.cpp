@@ -1,16 +1,16 @@
 #include "PatchUtil.h"
 
-#include "PatchNI.h"
+#include "PatchAudio.h"
 #include "PatchMagic.h"
+#include "PatchMWScript.h"
+#include "PatchNI.h"
 
 #include "Log.h"
 #include "MemoryUtil.h"
 #include "mwOffsets.h"
 
-#include "TES3Actor.h"
 #include "TES3ActorAnimationController.h"
 #include "TES3AIData.h"
-#include "TES3AudioController.h"
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
 #include "TES3Class.h"
@@ -32,8 +32,6 @@
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
 #include "TES3Reference.h"
-#include "TES3Script.h"
-#include "TES3Sound.h"
 #include "TES3UIElement.h"
 #include "TES3UIInventoryTile.h"
 #include "TES3UIManager.h"
@@ -48,7 +46,6 @@
 #include "NIPoint3.h"
 
 #include "BitUtil.h"
-#include "ScriptUtil.h"
 #include "StringUtil.h"
 #include "TES3Util.h"
 #include "WindowsUtil.h"
@@ -106,49 +103,6 @@ namespace mwse::patch {
 	template <typename T>
 	void safePrintObjectToLog(const char* title, const T* object) {
 		safePrintObject(title, object, log::getLog());
-	}
-
-	//
-	// Patch: Enable
-	//
-
-	void PatchScriptOpEnable() {
-		auto scriptVars = mwscript::getLocalScriptVariables();
-		if (scriptVars) {
-			scriptVars->unknown_0xC &= 0xFE;
-		}
-	}
-
-	//
-	// Patch: Disable
-	//
-
-	static bool PatchScriptOpDisable_ForceCollisionUpdate = false;
-
-	void PatchScriptOpDisable() {
-		auto scriptVars = mwscript::getLocalScriptVariables();
-		if (scriptVars) {
-			scriptVars->unknown_0xC |= 0x1;
-		}
-
-		// Determine if we need to force update collision.
-		auto reference = mwscript::getScriptTargetReference();
-		if (reference) {
-			PatchScriptOpDisable_ForceCollisionUpdate = !reference->getDisabled();
-		}
-		else {
-			PatchScriptOpDisable_ForceCollisionUpdate = false;
-		}
-	}
-
-	void* __fastcall PatchScriptOpDisableCollision(TES3::Reference* reference) {
-		// Force update collision.
-		if (PatchScriptOpDisable_ForceCollisionUpdate && reference->getUpdatesCollisionGroups()) {
-			TES3::DataHandler::get()->updateCollisionGroupsForActiveCells();
-		}
-
-		// Return overwritten code.
-		return &reference->baseObject;
 	}
 
 	//
@@ -401,53 +355,6 @@ namespace mwse::patch {
 		}
 	}
 #endif
-
-	//
-	// Patch: Fix RemoveItem crash.
-	//
-	// Seen with StarFire's StarfireNPCA_nightlife script. Doesn't seem to actually call RemoveItem.
-	// Mostly here to gather more information to help diagnose the crash.
-	//
-	// referenceToThis is only accessed for clones.
-	//
-
-	TES3::Reference::ReferenceData* __fastcall PatchFixupActorSelfReference(TES3::Reference* self) {
-		auto isClone = self->baseObject->isActor() && static_cast<TES3::Actor*>(self->baseObject)->isClone();
-
-		if (isClone && self->baseObject->referenceToThis == nullptr) {
-			self->baseObject->referenceToThis = self;
-
-			using namespace mwse::log;
-			auto& log = getLog();
-			log << "[MWSE] Fixed crash with invalid RemoveItem call. Report this to the #mwse channel in the Morrowind Modding Community Discord so we can narrow this down more. Dumping related objects." << std::endl;
-
-			log << "Reference: " << self->getObjectID() << std::endl;
-			prettyDump(self);
-
-			log << "Object: " << self->baseObject->getObjectID() << std::endl;
-			prettyDump(static_cast<TES3::Actor*>(self->baseObject));
-
-			auto script = TES3::Script::currentlyExecutingScript;
-			if (script) {
-				log << "Script: " << script->getObjectID() << std::endl;
-				prettyDump(script);
-			}
-
-			auto cell = self->getCell();
-			if (cell) {
-				log << "Cell: " << cell->getEditorName() << std::endl;
-				prettyDump(cell);
-
-				auto playerCell = TES3::DataHandler::get()->currentCell;
-				if (playerCell && playerCell != cell) {
-					log << "Player cell differs: " << playerCell->getEditorName() << std::endl;
-				}
-			}
-
-			log << "mwscript data: OpCode: " << std::hex << *reinterpret_cast<DWORD*>(0x7A91C4) << "; Cursor offset: " << *reinterpret_cast<DWORD*>(0x7CEBB0) << "; Look ahead token: " << int(*reinterpret_cast<unsigned char*>(0x7CEBA8)) << std::endl;
-		}
-		return &self->referenceData;
-	}
 
 	//
 	// Patch: Player animation idles.
@@ -722,17 +629,6 @@ namespace mwse::patch {
 		}
 	}
 	const size_t PatchUIUpdateLayoutImageContent2_size = 0x11;
-
-	//
-	// Patch: When adjusting effects mix volume, update looping audio volume correctly.
-	//
-	
-	void __fastcall PatchSetLoopingSoundBufferVolume(TES3::AudioController* audio, DWORD unused, TES3::SoundEvent* soundEvent, unsigned char volume) {
-		if (soundEvent->sound) {
-			volume = (unsigned char)(float(volume) * float(soundEvent->sound->volume) / 255.0f);
-		}
-		audio->setSoundBufferVolume(soundEvent->soundBuffer, volume);
-	}
 
 	//
 	// Patch: Improve error reporting by including the source mod next to object IDs in load error messages.
@@ -1550,85 +1446,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Ensure exclusive sound buffer for water audio.
-	//
-
-	static TES3::Sound* waterSound = nullptr;
-	static TES3::SoundBuffer* waterSoundBuffer = nullptr;
-
-	static void PatchWaterSoundInstantiate(TES3::Sound* sound) {
-		if (waterSound == sound && waterSoundBuffer) {
-			return;
-		}
-
-		if (waterSoundBuffer) {
-			delete waterSoundBuffer;
-			waterSoundBuffer = nullptr;
-		}
-
-		waterSound = sound;
-		waterSoundBuffer = sound->createSoundBuffer(false);
-	}
-
-	static void __fastcall PatchWaterSoundSet3DParams(TES3::Sound* sound, DWORD, bool isPointSource) {
-		const auto ac = TES3::WorldController::get()->audioController;
-		PatchWaterSoundInstantiate(sound);
-		ac->setSoundBuffer3DParams(waterSoundBuffer, isPointSource);
-	}
-
-	static bool __fastcall PatchWaterSoundIsPlaying(TES3::Sound* sound) {
-		const auto ac = TES3::WorldController::get()->audioController;
-		PatchWaterSoundInstantiate(sound);
-		return ac->getSoundBufferIsPlaying(waterSoundBuffer);
-	}
-
-	static void __fastcall PatchWaterSoundPlay(TES3::Sound* sound, DWORD, DWORD flags, uint8_t volume, float pitch, bool isNot3D) {
-		const auto ac = TES3::WorldController::get()->audioController;
-		PatchWaterSoundInstantiate(sound);
-		ac->playSoundBuffer(waterSoundBuffer, flags, volume, pitch, isNot3D);
-	}
-
-	static void __fastcall PatchWaterSoundStop(TES3::Sound* sound) {
-		const auto ac = TES3::WorldController::get()->audioController;
-		if (!ac->getSoundBufferIsPlaying(waterSoundBuffer)) {
-			return;
-		}
-		PatchWaterSoundInstantiate(sound);
-		ac->stopSoundBuffer(waterSoundBuffer);
-	}
-
-	static void __fastcall PatchWaterSoundReset(TES3::Sound* sound, DWORD, int) {
-		if (waterSoundBuffer) {
-			delete waterSoundBuffer;
-			waterSoundBuffer = nullptr;
-		}
-		waterSound = nullptr;
-	}
-
-	static void __fastcall PatchWaterSoundSetFrequency(TES3::AudioController* ac, DWORD, TES3::SoundBuffer* _, float frequency) {
-		ac->setSoundBufferFrequency(waterSoundBuffer, frequency);
-	}
-
-	static void __fastcall PatchWaterSoundSetLoopVolume(TES3::SoundBuffer* _, DWORD, int volume) {
-		if (!waterSoundBuffer) {
-			return;
-		}
-
-		const auto newVolume = static_cast<uint8_t>(waterSound->volume * float(volume) / 250.0f);
-		const auto ac = TES3::WorldController::get()->audioController;
-		ac->setSoundBufferVolume(waterSoundBuffer, newVolume);
-	}
-
-	static void __stdcall PatchWaterSoundSetLoopVolumeMCP(TES3::SoundBuffer* _, int volume) {
-		if (!waterSoundBuffer || !waterSoundBuffer->lpSoundBuffer) {
-			return;
-		}
-
-		volume = std::clamp(volume, -10000, 0);
-		waterSoundBuffer->lpSoundBuffer->SetVolume(volume);
-	}
-
-	//
 	// Patch: Optimize map rendering when crossing cell borders
 	// 
 	// renderCellMapTile re-runs UpdateProperties/UpdateEffects on the same map render-target root and Update on the
@@ -1734,17 +1551,14 @@ namespace mwse::patch {
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
 
+		audio::install();
 		magic::install();
+		mwscript::install();
 		ni::install();
 
 		// Patch: Allow Morrowind.ini [Application] values to override registry-backed application settings.
 		auto Game_readSettings = &TES3::Game::readSettings;
 		overrideVirtualTableEnforced(0x74665C, offsetof(TES3::Game_vTable, ReadSettings), 0x4F54F0, *reinterpret_cast<DWORD*>(&Game_readSettings));
-
-		// Patch: Enable/Disable.
-		genCallUnprotected(0x508FEB, reinterpret_cast<DWORD>(PatchScriptOpEnable), 0x9);
-		genCallUnprotected(0x5090DB, reinterpret_cast<DWORD>(PatchScriptOpDisable), 0x9);
-		genCallUnprotected(0x50912F, reinterpret_cast<DWORD>(PatchScriptOpDisableCollision));
 
 		// Patch: Unify athletics and sneak training.
 		genCallUnprotected(0x569EE7, reinterpret_cast<DWORD>(PatchUnifyAthleticsTraining), 0xC6);
@@ -1826,27 +1640,6 @@ namespace mwse::patch {
 		genCallEnforced(0x4DDBD3, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 		genCallEnforced(0x4DE2B4, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
 		genCallEnforced(0x4E0D04, 0x4DE380, reinterpret_cast<DWORD>(PatchCellLoadReference));
-
-		// Patch: Improve performance of script reloading.
-		{
-			auto Script_ctor = &TES3::Script::ctor;
-			genCallEnforced(0x40E95B, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
-			genCallEnforced(0x40E963, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
-			genCallEnforced(0x4C0842, 0x4FD830, *reinterpret_cast<DWORD*>(&Script_ctor));
-			writeValueEnforced<BYTE>(0x4C0824, 0x70, sizeof(TES3::Script));
-			auto Script_loadRecordSpecific = &TES3::Script::loadRecordSpecific;
-			overrideVirtualTableEnforced(0x74A990, 0x4, 0x4FF700, *reinterpret_cast<DWORD*>(&Script_loadRecordSpecific));
-			auto Script_reloadScript = &TES3::Script::reloadScript;
-			genCallEnforced(0x4C78A3, 0x4FF9D0, *reinterpret_cast<DWORD*>(&Script_reloadScript));
-
-			// MCP adds a second script for the compiler. We need to patch that as a special case.
-			if (writeValueEnforced<BYTE>(0x50E593, 0x70, sizeof(TES3::Script))) {
-				writeValueEnforced<BYTE>(0x40E93F, 0xE0, sizeof(TES3::Script) * 2);
-			}
-			else {
-				writeValueEnforced<BYTE>(0x40E93F, 0x70, sizeof(TES3::Script));
-			}
-		}
 
 		// Patch: Try to catch bogus collisions.
 		auto MobileObject_Collision_clone = &TES3::MobileObject::Collision::clone;
@@ -1975,22 +1768,6 @@ namespace mwse::patch {
 		writeValueEnforced<DWORD>(0x4C85BC + 2, 0x200, 0x1F7);
 		writeValueEnforced<DWORD>(0x4C85CC + 1, 0x200, 0x1F7);
 
-		// Patch: Optimize ShowMap (and FillMap) mwscript command.
-		auto NonDynamicData_showLocationOnMap = &TES3::NonDynamicData::showLocationOnMap;
-		genCallEnforced(0x505374, 0x4C8480, *reinterpret_cast<DWORD*>(&NonDynamicData_showLocationOnMap));
-		genCallEnforced(0x50CB22, 0x4C8480, *reinterpret_cast<DWORD*>(&NonDynamicData_showLocationOnMap));
-
-		// Patch: Fix crash when trying to remove items from incomplete references.
-		genCallEnforced(0x508D14, 0x45E5C0, reinterpret_cast<DWORD>(PatchFixupActorSelfReference));
-
-		// Patch: Store last executed script for crash dump information.
-		auto Script_execute = &TES3::Script::execute;
-		genCallEnforced(0x40F679, 0x5028A0, *reinterpret_cast<DWORD*>(&Script_execute));
-		genCallEnforced(0x40FC1D, 0x5028A0, *reinterpret_cast<DWORD*>(&Script_execute));
-		genCallEnforced(0x49A5D7, 0x5028A0, *reinterpret_cast<DWORD*>(&Script_execute));
-		genCallEnforced(0x4E71FE, 0x5028A0, *reinterpret_cast<DWORD*>(&Script_execute));
-		genCallEnforced(0x50E6BD, 0x5028A0, *reinterpret_cast<DWORD*>(&Script_execute));
-
 		// Patch: Update player first and third person animations when the idle flag is pausing the controller.
 		genCallUnprotected(0x41B836, reinterpret_cast<DWORD>(PatchUpdateAllIdles));
 
@@ -2042,14 +1819,6 @@ namespace mwse::patch {
 		writePatchCodeUnprotected(0x57DE3F, (BYTE*)&PatchUIUpdateLayoutImageContent1, PatchUIUpdateLayoutImageContent1_size);
 		writePatchCodeUnprotected(0x57E1E8, (BYTE*)&PatchUIUpdateLayoutImageContent2, PatchUIUpdateLayoutImageContent2_size);
 		genCallUnprotected(0x57E1E8 + 0x2, reinterpret_cast<DWORD>(PatchUIElementTexcoordWrite));
-
-		// Patch: When adjusting effects mix volume, update looping audio volume correctly.
-		writeValueEnforced<BYTE>(0x5A1F24, 0x52, 0x56);
-		genCallEnforced(0x5A1F25, 0x4029F0, reinterpret_cast<DWORD>(PatchSetLoopingSoundBufferVolume));
-		writeValueEnforced<BYTE>(0x5A1FC5, 0x52, 0x56);
-		genCallEnforced(0x5A1FC6, 0x4029F0, reinterpret_cast<DWORD>(PatchSetLoopingSoundBufferVolume));
-		// Fix Sound::changeVolume scaling constant to be 1/255.
-		writeValueEnforced<DWORD>(0x510C6C, 0x74A9E4, 0x746910);
 
 		// Patch: Improve error reporting by including the source mod next to object IDs in load error messages.
 		// In Cell::loadReference:
@@ -2246,21 +2015,6 @@ namespace mwse::patch {
 		genCallEnforced(0x58E8C6, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 		genCallEnforced(0x5BCA1D, 0x406950, *reinterpret_cast<DWORD*>(&InputController_readButtonPressed));
 
-		// Patch: Ensure exclusive sound buffer for water audio.
-		genCallEnforced(0x48A861, 0x5107E0, reinterpret_cast<DWORD>(PatchWaterSoundSet3DParams));
-		genCallEnforced(0x48A86C, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
-		genCallEnforced(0x48A89F, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
-		genCallEnforced(0x48A8EE, 0x510B80, reinterpret_cast<DWORD>(PatchWaterSoundIsPlaying));
-		genCallEnforced(0x48A8D0, 0x510A40, reinterpret_cast<DWORD>(PatchWaterSoundPlay));
-		genCallEnforced(0x48A892, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
-		genCallEnforced(0x48A9C8, 0x510BC0, reinterpret_cast<DWORD>(PatchWaterSoundStop));
-		genCallEnforced(0x48C7A9, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset));
-		genCallEnforced(0x745F72, 0x5109F0, reinterpret_cast<DWORD>(PatchWaterSoundReset)); // MCP-183
-		genNOPUnprotected(0x48A8DB, 0x48A8EE - 0x48A8DB);
-		genCallEnforced(0x48A930, 0x402A60, reinterpret_cast<DWORD>(PatchWaterSoundSetFrequency));
-		genCallEnforced(0x48A97F, 0x510C30, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolume));
-		genCallEnforced(0x48A989, 0x402B42, reinterpret_cast<DWORD>(PatchWaterSoundSetLoopVolumeMCP));
-
 		// Patch: Optimize map rendering when crossing cell borders.
 		genJumpEnforced(0x420415, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // MapController::updateMapRender tail-jmp
 		genCallEnforced(0x5E9757, 0x5E99C0, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_UpdateMapRenderCached)); // ui_showMapMenu
@@ -2282,28 +2036,6 @@ namespace mwse::patch {
 		genCallEnforced(0x56F0AF, 0x565350, reinterpret_cast<DWORD>(&ActorTeardownDedupLeaveSimulation));
 		genCallEnforced(0x55ECC0, 0x6FD680, reinterpret_cast<DWORD>(&ActorTeardownResetRootSearchCache));
 		genCallEnforced(0x55ED1B, 0x6A3080, reinterpret_cast<DWORD>(&ActorTeardownMemoizedRootSearch));
-
-		// Patch: Guarded 3D audio listener access.
-		auto AudioController_setListenerDistanceFactor = &TES3::AudioController::setListenerDistanceFactor;
-		genCallEnforced(0x40E5DB, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
-		genCallEnforced(0x40E602, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
-		genCallEnforced(0x40E74E, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
-		genCallEnforced(0x40E775, 0x402F40, *reinterpret_cast<DWORD*>(&AudioController_setListenerDistanceFactor));
-		auto AudioController_setListenerDopplerFactor = &TES3::AudioController::setListenerDopplerFactor;
-		genCallEnforced(0x40E5E8, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
-		genCallEnforced(0x40E75B, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
-		genCallEnforced(0x489851, 0x402F60, *reinterpret_cast<DWORD*>(&AudioController_setListenerDopplerFactor));
-		auto AudioController_setListenerRolloffFactor = &TES3::AudioController::setListenerRolloffFactor;
-		genCallEnforced(0x40E5F5, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
-		genCallEnforced(0x40E768, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
-		genCallEnforced(0x489864, 0x402F80, *reinterpret_cast<DWORD*>(&AudioController_setListenerRolloffFactor));
-		auto AudioController_setListenerVelocity = &TES3::AudioController::setListenerVelocity;
-		genCallEnforced(0x48B112, 0x403220, *reinterpret_cast<DWORD*>(&AudioController_setListenerVelocity));
-		auto AudioController_commitDeferredSettings = &TES3::AudioController::commitDeferredSettings;
-		genCallEnforced(0x40F7ED, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
-		genCallEnforced(0x48C6C3, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
-		genCallEnforced(0x510B57, 0x403250, *reinterpret_cast<DWORD*>(&AudioController_commitDeferredSettings));
-
 	}
 
 	void installPostLuaPatches() {
@@ -2312,6 +2044,7 @@ namespace mwse::patch {
 		using se::memory::genCallEnforced;
 		using se::memory::genPushEnforced;
 
+		audio::installPostLua();
 		ni::installPostLua();
 
 		// Patch: Be better about showing/hiding the cursor.
@@ -2343,17 +2076,6 @@ namespace mwse::patch {
 		// is a 6-byte `FF 15 [IAT_Sleep]` indirect call at 0x48F88E; the
 		// preceding `push 64h` is left in place and ignored by the wrapper.
 		genCallUnprotected(0x48F88E, reinterpret_cast<DWORD>(PatchBackgroundLoadSleep), 0x6);
-
-		// Patch: Allow global audio.
-		if (Configuration::UseGlobalAudio) {
-			constexpr auto DS_FLAGS_DEFAULT = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
-			constexpr auto DS_FLAGS_3D = DS_FLAGS_DEFAULT | DSBCAPS_CTRL3D | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_MUTE3DATMAXDISTANCE;
-			se::memory::writeAddFlagEnforced(0x401FEA + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
-			se::memory::writeAddFlagEnforced(0x401FE1 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
-			se::memory::writeAddFlagEnforced(0x401FF7 + 0x3, DS_FLAGS_DEFAULT, DSBCAPS_GLOBALFOCUS);
-			se::memory::writeAddFlagEnforced(0x40240E + 0x3, DS_FLAGS_DEFAULT | DSBCAPS_CTRLPAN, DSBCAPS_GLOBALFOCUS);
-			se::memory::writeAddFlagEnforced(0x402405 + 0x3, DS_FLAGS_3D, DSBCAPS_GLOBALFOCUS);
-		}
 	}
 
 	void installPostInitializationPatches() {

@@ -35,7 +35,9 @@
     <ClInclude Include="Minidump.h" />
     <ClInclude Include="NIBoundingVolumeLua.h" />
     <ClInclude Include="NIBSAnimationNodeLua.h" />
+    <ClInclude Include="PatchAudio.h" />
     <ClInclude Include="PatchMagic.h" />
+    <ClInclude Include="PatchMWScript.h" />
     <ClInclude Include="PatchNI.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
     <ClInclude Include="TES3CrimeLua.h" />
@@ -692,7 +694,9 @@
     <ClCompile Include="NISkinInstanceLua.cpp" />
     <ClCompile Include="NITextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
+    <ClCompile Include="PatchAudio.cpp" />
     <ClCompile Include="PatchMagic.cpp" />
+    <ClCompile Include="PatchMWScript.cpp" />
     <ClCompile Include="PatchNI.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -1,6 +1,7 @@
 #include "PatchMagic.h"
 
 #include "CodePatchUtil.h"
+#include "MemoryUtil.h"
 
 #include "TES3Actor.h"
 #include "TES3DataHandler.h"

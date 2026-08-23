@@ -1587,6 +1587,12 @@
     <ClInclude Include="PatchMagic.h">
       <Filter>Header Files\Utility\Patches</Filter>
     </ClInclude>
+    <ClInclude Include="PatchAudio.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchMWScript.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3552,6 +3558,12 @@
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
     <ClCompile Include="PatchMagic.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchAudio.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMWScript.cpp">
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>
