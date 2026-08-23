@@ -5,6 +5,7 @@
 
 #include "TES3Cell.h"
 #include "TES3DataHandler.h"
+#include "TES3GameFile.h"
 #include "TES3UIMenuController.h"
 #include "TES3VFXManager.h"
 #include "TES3WorldController.h"
@@ -124,7 +125,9 @@ namespace mwse::patch::io {
 		return TES3_VFXManager_createFromSaveData(vfxManager, effect, reference, serializedVFX, verticalOffset);
 	}
 
+	//
 	// Patch: Land textures loading/unloading flag array overflow bug. Increase array from 500 to 4096 elements and fix bounds checks.
+	//
 
 	const unsigned short Land_LTEX_isLoaded_size = 4096;
 	bool Land_LTEX_isLoaded[Land_LTEX_isLoaded_size];
@@ -207,9 +210,125 @@ namespace mwse::patch::io {
 		return TES3::DataHandler::suppressThreadLoad || TES3::DataHandler::dontThreadLoad;
 	}
 
+
+	//
+	// Patch: Support loading existing moved references.
+	//
+	// The following records have been modified:
+	//  - CELL.FRMR
+	//  - CELL.MVRF
+	//  - REFR.FRMR
+	//  - SCPT.RNAM
+	//
+
+#if MWSE_RAISED_FILE_LIMIT
+	namespace PatchRaiseESXLimit {
+		// Vanilla offsets and masks.
+		constexpr DWORD ModBitsVanilla = 8;
+		constexpr DWORD FormBitsVanilla = sizeof(DWORD) * CHAR_BIT - ModBitsVanilla;
+		constexpr DWORD ModMaskVanilla = ((1 << ModBitsVanilla) - 1) << FormBitsVanilla;
+		constexpr DWORD FormMaskVanilla = (1 << FormBitsVanilla) - 1;
+		constexpr DWORD ModCountVanilla = 1 << ModBitsVanilla;
+
+		// New offsets and masks.
+		constexpr DWORD ModBitsMWSE = 10;
+		constexpr DWORD FormBitsMWSE = sizeof(DWORD) * CHAR_BIT - ModBitsMWSE;
+		constexpr DWORD ModMaskMWSE = ((1 << ModBitsMWSE) - 1) << FormBitsMWSE;
+		constexpr DWORD FormMaskMWSE = (1 << FormBitsMWSE) - 1;
+		constexpr DWORD ModCountMWSE = 1 << ModBitsMWSE;
+		constexpr DWORD InvalidFormId = 0xFFFFFFFF;
+		static_assert(1 << ModBitsMWSE == sizeof(TES3::NonDynamicData::activeMods) / sizeof(TES3::GameFile*), "Reference FormID bit assignment does not match active game file array size.");
+
+		struct SerializedFormId {
+			DWORD modIndex; // 0x0
+			DWORD formId; // 0x4
+		};
+
+		void __fastcall LoadFormId(TES3::GameFile* file, DWORD edx, DWORD* out_movedFormId, size_t size) {
+			// Loading the new format?
+			SerializedFormId data;
+			if (file->currentChunkHeader.size == sizeof(SerializedFormId)) {
+				file->readChunkData(&data);
+
+				// Handle saves where an invalid form ID was incorrectly serialized.
+				// This does have the edge case if mod 1023 has a more than ~4.2 million form IDs. Extremely unlikely.
+				if (data.modIndex == ModCountMWSE - 1 && data.formId == FormMaskMWSE) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
+			}
+			else {
+				// If it's not the new format, we need to convert.
+				DWORD oldFormId = 0;
+				file->readChunkData(&oldFormId);
+
+				// Preserve invalid form IDs.
+				if (oldFormId == InvalidFormId) {
+					*out_movedFormId = InvalidFormId;
+					return;
+				}
+
+				data.modIndex = (oldFormId >> FormBitsVanilla);
+				data.formId = (oldFormId & FormMaskVanilla);
+			}
+
+			*out_movedFormId = (data.modIndex << FormBitsMWSE) + data.formId;
+		}
+
+		void __fastcall SaveFormId(TES3::GameFile* file, DWORD edx, unsigned int tag, DWORD* movedRefId, size_t size) {
+			// Preserve invalid form IDs.
+			if (*movedRefId == InvalidFormId) {
+				DWORD refId = InvalidFormId;
+				file->writeChunkValue(tag, refId);
+				return;
+			}
+
+			// Split out the bitmasked field.
+			SerializedFormId data = {};
+			data.modIndex = *movedRefId >> FormBitsMWSE;
+			data.formId = *movedRefId & FormMaskMWSE;
+
+			// If the mod index is higher than the vanilla limit, save the new format.
+			if (data.modIndex >= ModCountVanilla) {
+				file->writeChunkValue(tag, data);
+			}
+			// If the mod index is below the vanilla limit, use the vanilla save format and masks for compatibility.
+			else {
+				DWORD refId = (data.modIndex << FormBitsVanilla) + data.formId;
+				file->writeChunkValue(tag, refId);
+			}
+		}
+	}
+#endif
+
+	//
+	// Helper function for raised mod limit.
+	//
+	// Raise C runtime fopen limit from 512 to 2048. This covers the case where all mods are open during game load.
+	// Otherwise, fopen will fail and Morrowind will ignore the error, causing issues.
+	//
+	bool raiseStdioFileLimit() {
+		// Use stdio function from Morrowind's C runtime.
+		HINSTANCE hMSVCRT = GetModuleHandleA("msvcrt.dll");
+		if (hMSVCRT != NULL) {
+			auto msvcrt_setmaxstdio = reinterpret_cast<int(*)(int)>(GetProcAddress(hMSVCRT, "_setmaxstdio"));
+			if (msvcrt_setmaxstdio(2048) == 2048) {
+				return true;
+			}
+			else {
+				mwse::log::getLog() << "MWSE_RAISED_FILE_LIMIT: msvcrt_setmaxstdio(2048) failed." << std::endl;
+			}
+		}
+		else {
+			mwse::log::getLog() << "MWSE_RAISED_FILE_LIMIT: GetModuleHandleA(\"msvcrt.dll\") failed." << std::endl;
+		}
+		return false;
+	}
+
 	void install() {
 		using se::memory::genCallEnforced;
 		using se::memory::genCallUnprotected;
+		using se::memory::genJumpEnforced;
 		using se::memory::writeDoubleWordUnprotected;
 		using se::memory::writeValueEnforced;
 		using se::memory::writePatchCodeUnprotected;
@@ -255,5 +374,71 @@ namespace mwse::patch::io {
 		genCallUnprotected(0x4869DB, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x48F489, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
 		genCallUnprotected(0x4904D0, reinterpret_cast<DWORD>(OverrideDontThreadLoad), 0x6);
+
+#if MWSE_RAISED_FILE_LIMIT
+		// Patch: Raise esm/esp limit from 256 to 1024.
+
+		// Change hardcoded 256 checks to 1024.
+		writeValueEnforced<DWORD>(0x4B7A22 + 0x1, PatchRaiseESXLimit::ModCountVanilla, PatchRaiseESXLimit::ModCountMWSE);
+		if (raiseStdioFileLimit()) {
+			// Actually only allow loading more than 256 mods if we were able to raise the fopen limit.
+			writeValueEnforced<DWORD>(0x4BB4AE + 0x3, PatchRaiseESXLimit::ModCountVanilla, PatchRaiseESXLimit::ModCountMWSE);
+			writeValueEnforced<DWORD>(0x4BB588 + 0x3, PatchRaiseESXLimit::ModCountVanilla, PatchRaiseESXLimit::ModCountMWSE);
+		}
+
+		// Fix accesses into the active mods list to point to the new array.
+		writeValueEnforced<DWORD>(0x4B7A27 + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4B87A9 + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BB498 + 0x3, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BB56F + 0x3, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BB5ED + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BB650 + 0x3, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BBD21 + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4BD252 + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+		writeValueEnforced<DWORD>(0x4C8B92 + 0x2, 0xAE64, offsetof(TES3::NonDynamicData, activeMods));
+
+		// Change of form ID: 8 bit to 10 bit game file mask.
+		writeValueEnforced<BYTE>(0x4DD03F + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x4DD2A7 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x4DD31E + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x4DD813 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x4DDA09 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x4DDBB1 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x7367A0 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x736809 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x73685A + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x736890 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x7368D7 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x736B56 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<BYTE>(0x736B75 + 0x2, PatchRaiseESXLimit::FormBitsVanilla, PatchRaiseESXLimit::FormBitsMWSE);
+		writeValueEnforced<DWORD>(0x4B54DD + 0x1, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x4DD030 + 0x1, PatchRaiseESXLimit::ModMaskVanilla, PatchRaiseESXLimit::ModMaskMWSE);
+		writeValueEnforced<DWORD>(0x4DD089 + 0x1, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x4DD107 + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x4DD80B + 0x2, PatchRaiseESXLimit::ModMaskVanilla, PatchRaiseESXLimit::ModMaskMWSE);
+		writeValueEnforced<DWORD>(0x4DD829 + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x4E0C8B + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x4E0C91 + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x7367A3 + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x73680C + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+		writeValueEnforced<DWORD>(0x736B78 + 0x2, PatchRaiseESXLimit::FormMaskVanilla, PatchRaiseESXLimit::FormMaskMWSE);
+
+		// Patch loading to support either the old or new format.
+		genCallEnforced(0x4C01B1, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x4DCE01, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x4DD027, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x4DE197, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x4E0C2F, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x4E0C6D, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genJumpEnforced(0x7367BA, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+		genCallEnforced(0x736B48, 0x4B6880, reinterpret_cast<DWORD>(PatchRaiseESXLimit::LoadFormId));
+
+		// Patch saving to try to use the old format if possible, and use the new format if it can't.
+		genCallEnforced(0x4E1144, 0x4B6BA0, reinterpret_cast<DWORD>(PatchRaiseESXLimit::SaveFormId));
+		genCallEnforced(0x4E14D5, 0x4B6BA0, reinterpret_cast<DWORD>(PatchRaiseESXLimit::SaveFormId));
+		genCallEnforced(0x4E1B15, 0x4B6BA0, reinterpret_cast<DWORD>(PatchRaiseESXLimit::SaveFormId));
+		genCallEnforced(0x4E1E78, 0x4B6BA0, reinterpret_cast<DWORD>(PatchRaiseESXLimit::SaveFormId));
+		genCallEnforced(0x4FFB78, 0x4B6BA0, reinterpret_cast<DWORD>(PatchRaiseESXLimit::SaveFormId));
+#endif
 	}
 }
