@@ -1584,6 +1584,9 @@
     <ClInclude Include="Minidump.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="PatchMagic.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3546,6 +3549,9 @@
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="PatchNI.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMagic.cpp">
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>
