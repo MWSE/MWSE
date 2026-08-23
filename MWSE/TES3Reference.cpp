@@ -546,9 +546,11 @@ namespace TES3 {
 	void Reference::setDeletedWithSafety() {
 		disable();
 
-		const auto worldController = TES3::WorldController::get();
-		if (worldController && worldController->magicInstanceController) {
-			worldController->magicInstanceController->cleanupReference(this);
+		if (baseObject && baseObject->isMobileCapableActor()) {
+			const auto worldController = TES3::WorldController::get();
+			if (worldController && worldController->magicInstanceController) {
+				worldController->magicInstanceController->retireMagicCastedByActor(this);
+			}
 		}
 
 		if (baseObject) {
