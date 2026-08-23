@@ -1602,6 +1602,9 @@
     <ClInclude Include="PatchUI.h">
       <Filter>Header Files\Utility\Patches</Filter>
     </ClInclude>
+    <ClInclude Include="PatchActors.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3582,6 +3585,9 @@
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
     <ClCompile Include="PatchUI.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchActors.cpp">
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>

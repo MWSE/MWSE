@@ -238,5 +238,8 @@ namespace mwse::patch::io {
 		// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
 		writePatchCodeUnprotected(0x4F444E, (BYTE*)&PatchPathGridLoader, PatchPathGridLoader_size);
 		genCallUnprotected(0x4F444E + 4, reinterpret_cast<DWORD>(PatchPathGridLoaderCheckNodeData));
+
+		// Patch: Decrease MO2 load times. Somehow...
+		writeDoubleWordUnprotected(0x7462F4, reinterpret_cast<DWORD>(&_stat32));
 	}
 }

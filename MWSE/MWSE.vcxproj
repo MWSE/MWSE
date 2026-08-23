@@ -35,6 +35,7 @@
     <ClInclude Include="Minidump.h" />
     <ClInclude Include="NIBoundingVolumeLua.h" />
     <ClInclude Include="NIBSAnimationNodeLua.h" />
+    <ClInclude Include="PatchActors.h" />
     <ClInclude Include="PatchAudio.h" />
     <ClInclude Include="PatchInput.h" />
     <ClInclude Include="PatchIO.h" />
@@ -697,6 +698,7 @@
     <ClCompile Include="NISkinInstanceLua.cpp" />
     <ClCompile Include="NITextureEffectLua.cpp" />
     <ClCompile Include="NITextureLua.cpp" />
+    <ClCompile Include="PatchActors.cpp" />
     <ClCompile Include="PatchAudio.cpp" />
     <ClCompile Include="PatchInput.cpp" />
     <ClCompile Include="PatchIO.cpp" />
