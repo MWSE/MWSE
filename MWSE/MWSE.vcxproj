@@ -37,6 +37,7 @@
     <ClInclude Include="NIBSAnimationNodeLua.h" />
     <ClInclude Include="PatchActors.h" />
     <ClInclude Include="PatchAudio.h" />
+    <ClInclude Include="PatchDialogue.h" />
     <ClInclude Include="PatchInput.h" />
     <ClInclude Include="PatchIO.h" />
     <ClInclude Include="PatchMagic.h" />
@@ -700,6 +701,7 @@
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="PatchActors.cpp" />
     <ClCompile Include="PatchAudio.cpp" />
+    <ClCompile Include="PatchDialogue.cpp" />
     <ClCompile Include="PatchInput.cpp" />
     <ClCompile Include="PatchIO.cpp" />
     <ClCompile Include="PatchMagic.cpp" />
