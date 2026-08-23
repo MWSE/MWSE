@@ -1593,6 +1593,9 @@
     <ClInclude Include="PatchMWScript.h">
       <Filter>Header Files\Utility\Patches</Filter>
     </ClInclude>
+    <ClInclude Include="PatchInput.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3564,6 +3567,9 @@
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
     <ClCompile Include="PatchMWScript.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchInput.cpp">
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>
