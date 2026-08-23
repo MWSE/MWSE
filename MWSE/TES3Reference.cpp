@@ -546,6 +546,11 @@ namespace TES3 {
 	void Reference::setDeletedWithSafety() {
 		disable();
 
+		const auto worldController = TES3::WorldController::get();
+		if (worldController && worldController->magicInstanceController) {
+			worldController->magicInstanceController->cleanupReference(this);
+		}
+
 		if (baseObject) {
 			// This always seems to return 0 and do nothing.
 			// But we'll keep it for consistency.
