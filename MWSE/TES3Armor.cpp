@@ -133,10 +133,10 @@ namespace TES3 {
 
 			float armorEpsilon = *reinterpret_cast<float*>(0x7483A0);
 			auto dataHandler = TES3::DataHandler::get();
-			if (slotData->weight * dataHandler->nonDynamicData->GMSTs[TES3::GMST::fLightMaxMod]->value.asFloat + armorEpsilon < weight) {
+			if (weight <= slotData->weight * dataHandler->nonDynamicData->GMSTs[TES3::GMST::fLightMaxMod]->value.asFloat + armorEpsilon) {
 				return ArmorWeightClass::Light;
 			}
-			else if (slotData->weight * dataHandler->nonDynamicData->GMSTs[TES3::GMST::fMedMaxMod]->value.asFloat + armorEpsilon < weight) {
+			else if (weight <= slotData->weight * dataHandler->nonDynamicData->GMSTs[TES3::GMST::fMedMaxMod]->value.asFloat + armorEpsilon) {
 				return ArmorWeightClass::Medium;
 			}
 			else {
