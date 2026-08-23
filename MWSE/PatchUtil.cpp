@@ -2,9 +2,11 @@
 
 #include "PatchAudio.h"
 #include "PatchInput.h"
+#include "PatchIO.h"
 #include "PatchMagic.h"
 #include "PatchMWScript.h"
 #include "PatchNI.h"
+#include "PatchUI.h"
 
 #include "Log.h"
 #include "MemoryUtil.h"
@@ -14,7 +16,6 @@
 #include "TES3AIData.h"
 #include "TES3BodyPartManager.h"
 #include "TES3Cell.h"
-#include "TES3Class.h"
 #include "TES3Creature.h"
 #include "TES3CutscenePlayer.h"
 #include "TES3DataHandler.h"
@@ -32,11 +33,7 @@
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
 #include "TES3Reference.h"
-#include "TES3UIElement.h"
-#include "TES3UIInventoryTile.h"
 #include "TES3UIManager.h"
-#include "TES3UIMenuController.h"
-#include "TES3VFXManager.h"
 #include "TES3VoiceStreamer.h"
 #include "TES3WorldController.h"
 #include "ReferenceTracker.h"
@@ -47,11 +44,9 @@
 
 #include "BitUtil.h"
 #include "StringUtil.h"
-#include "TES3Util.h"
 #include "WindowsUtil.h"
 
 #include "LuaManager.h"
-#include "LuaUtil.h"
 
 #include "BuildDate.h"
 #include "MWSEConfig.h"
@@ -138,29 +133,6 @@ namespace mwse::patch {
 
 		// Excercise sneak.
 		TES3::WorldController::get()->getMobilePlayer()->exerciseSkill(TES3::SkillID::Sneak, nonDynamicData->skills[TES3::SkillID::Sneak].progressActions[0]);
-	}
-
-	//
-	// Patch: Fix crash with paper doll equipping/unequipping.
-	//
-	// In this patch, the tile associated with the stack may have been deleted, but the property to the TES3::ItemData 
-	// remains. If the memory is reallocated it will fill with garbage, and cause a crash. The tile property, however,
-	// is properly deleted. So we look for that instead, and return its associated item data (which is the same value).
-	//! TODO: Find out where it's being deleted, and also delete the right property.
-	//
-
-	TES3::UI::PropertyValue* __fastcall PatchPaperdollTooltipCrashFix(TES3::UI::Element* self, DWORD _UNUSUED_, TES3::UI::PropertyValue* propValue, TES3::UI::Property prop, TES3::UI::PropertyType propType, const TES3::UI::Element* element = nullptr, bool checkInherited = false) {
-		auto tileProp = self->getProperty(TES3::UI::PropertyType::Pointer, *reinterpret_cast<TES3::UI::Property*>(0x7D3A70));
-		auto tile = reinterpret_cast<TES3::UI::InventoryTile*>(tileProp.ptrValue);
-
-		if (tile == nullptr) {
-			propValue->ptrValue = nullptr;
-		}
-		else {
-			propValue->ptrValue = tile->itemData;
-		}
-
-		return propValue;
 	}
 
 	//
@@ -372,25 +344,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Fix crash when saving menu position if the derived key name is too long.
-	//
-
-	__declspec(naked) void PatchSaveMenuPositionRightPad() {
-		__asm {
-			// Clamp eax <= 32
-			cmp eax, 32
-			jbe clamped
-			mov eax, 32
-		clamped:
-			// Null terminate padding so that key length+padding length is at least 32
-			lea ecx, [esp+4+0x64]
-			sub ecx, eax
-			mov byte ptr [ecx], 0
-			ret
-		}
-	}
-
-	//
 	// Patch: Letterbox movies.
 	//
 
@@ -410,46 +363,6 @@ namespace mwse::patch {
 		}
 
 		return TES3_DrawMovieFrame(device, left, top, scaleWidth, scaleHeight, textureWidth, textureHeight);
-	}
-
-	//
-	// Patch: Slight optimization to journal updating.
-	//
-
-	__declspec(naked) void PatchSwapJournalUpdateCheckForSpeakerOrder() {
-		__asm {
-			// Check speaker first.
-			mov eax, [edi + 0x28]            // Size: 0x3
-			test eax, eax                    // Size: 0x2
-			jnz $ + 0xE5                     // Size: 0x6
-
-			// Then bother to check to see if we have text.
-			mov ecx, edi                     // Size: 0x2
-			nop							     // Size: 0x5. Replaced with a call generation. Can't do so here, because offsets aren't accurate.
-			nop							     // ^
-			nop							     // ^
-			nop							     // ^
-			nop							     // ^
-			test eax, eax                    // Size: 0x2
-			jz $ + 0xD6                      // Size: 0x6
-		}
-	}
-	constexpr auto PatchSwapJournalUpdateCheckForSpeakerOrder_size = (0x4B2FF1u - 0x4B2FD7u);
-
-	//
-	// Patch: Fix issue when serializing no effects.
-	//
-
-	const auto TES3_SaveVisualEffects = reinterpret_cast<void(__thiscall*)(TES3::VFXManager*, TES3::GameFile*)>(0x469CC0);
-	void __fastcall PatchSaveVisualEffects(TES3::VFXManager* vfxManager, DWORD _EDX_, TES3::GameFile* file) {
-		// Ensure that we have serializable VFXs.
-		for (const auto& vfx : vfxManager->vfxNodes) {
-			if (vfx->effectObject && !vfx->createdFromNode && !vfx->expired) {
-				// Call original code.
-				TES3_SaveVisualEffects(vfxManager, file);
-				return;
-			}
-		}
 	}
 
 	//
@@ -494,28 +407,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Support custom class images.
-	//
-
-	__declspec(naked) void PatchAddCustomClassImageSupportSetup() {
-		__asm {
-			mov ecx, esi			// Size: 0x2. The Class*.
-			mov edx, ebx			// Size: 0x2. The parent element pointer.
-			nop						// Size: 0x5. Replaced with a call generation. Can't do so here, because offsets aren't accurate.
-			nop						// ^
-			nop						// ^
-			nop						// ^
-			nop						// ^
-		}
-	}
-	constexpr auto PatchAddCustomClassImageSupport_size = 0x9;
-
-	TES3::UI::Element* __fastcall PatchAddCustomClassImageSupport(const TES3::Class* charClass, TES3::UI::Element* parent) {
-		auto result = charClass->getLevelUpImage();
-		return parent->createImage(TES3::UI::ID_NULL, result.c_str(), false);
-	}
-
-	//
 	// Patch: Unsummoned actor cleanup
 	//
 
@@ -539,59 +430,6 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: UI element image mirroring on negative image scale.
-	// 
-
-	// Mirror image texcoords with negative image scale.
-	void __cdecl PatchUIElementTexcoordWrite(TES3::UI::Element* element, NI::Point2* texCoords) {
-		float left = 0.0f, top = 0.0f, right = 1.0f, bottom = 1.0f;
-
-		if (element->imageScaleX < 0) {
-			std::swap(left, right);
-		}
-		if (element->imageScaleY < 0) {
-			std::swap(top, bottom);
-		}
-		texCoords[0].x = left;
-		texCoords[0].y = top;
-		texCoords[1].x = left;
-		texCoords[1].y = bottom;
-		texCoords[2].x = right;
-		texCoords[2].y = top;
-		texCoords[3].x = right;
-		texCoords[3].y = bottom;
-	}
-
-	// Change pixel width/height calculation to floor(abs(imageScale{X,Y} * texture{Width,Height}) + 0.5)
-	const float f_half = 0.5f;
-	__declspec(naked) void PatchUIUpdateLayoutImageContent1() {
-		__asm {
-			fmulp	st(1), st			// imageScale * textureDimension
-			fabs						// abs
-			fadd	[f_half]			// + 0.5
-			fstp	qword ptr [esp]		// double argument for floor
-		}
-	}
-	const size_t PatchUIUpdateLayoutImageContent1_size = 0xD;
-
-	// Replace texcoord writer.
-	__declspec(naked) void PatchUIUpdateLayoutImageContent2() {
-		__asm {
-			push eax		// texcoord data pointer
-			push esi		// UiElement pointer
-			nop				// call to patch placeholder
-			nop
-			nop
-			nop
-			nop
-			add esp, 8
-			xor ecx, ecx
-			jmp $ + 0x51
-		}
-	}
-	const size_t PatchUIUpdateLayoutImageContent2_size = 0x11;
-
-	//
 	// Patch: Improve error reporting by including the source mod next to object IDs in load error messages.
 	//
 
@@ -603,56 +441,6 @@ namespace mwse::patch {
 		std::snprintf(tempErrorMessageObjectID, sizeof(tempErrorMessageObjectID), "%s' (%s)", id, source);
 		return tempErrorMessageObjectID;
 	}
-
-	//
-	// Patch: Do not load VFX with maxAge <= 0.001f from save games.
-	//
-
-	const auto TES3_VFXManager_createFromSaveData = reinterpret_cast<TES3::VFX* (__thiscall*)(TES3::VFXManager*, TES3::PhysicalObject*, TES3::Reference*, TES3::VFXSerialized*, float)>(0x468620);
-
-	TES3::VFX* __fastcall PatchVFXManagerCreateFromSaveData(TES3::VFXManager* vfxManager, DWORD unused, TES3::PhysicalObject* effect, TES3::Reference* reference, TES3::VFXSerialized* serializedVFX, float verticalOffset) {
-		// Do not load VFX with maxAge <= 0.001f, as they are persistent and may have accumulated in saves from before these fixes.
-		if (serializedVFX->maxAge <= 0.001f) {
-			return nullptr;
-		}
-
-		return TES3_VFXManager_createFromSaveData(vfxManager, effect, reference, serializedVFX, verticalOffset);
-	}
-
-	// Patch: Land textures loading/unloading flag array overflow bug. Increase array from 500 to 4096 elements and fix bounds checks.
-
-	const unsigned short Land_LTEX_isLoaded_size = 4096;
-	bool Land_LTEX_isLoaded[Land_LTEX_isLoaded_size];
-
-	__declspec(naked) void PatchLandUnloadTexturesBoundsCheck() {
-		__asm {
-			// Replace index >= 500 and index != -1 with a single unsigned comparison against the new size.
-			cmp ax, 4096 // immediate arg = Land_LTEX_isLoaded_size
-			jnb $ + 0xAB
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-		}
-	}
-	const size_t PatchLandUnloadTexturesBoundsCheck_size = 0x10;
-	
-	__declspec(naked) void PatchLandLoadTexturesBoundsCheck() {
-		__asm {
-			// Replace index >= 500 and index != -1 with a single unsigned comparison against the new size.
-			cmp cx, 4096 // immediate arg = Land_LTEX_isLoaded_size
-			jnb $ + 0xF5
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-		}
-	}
-	const size_t PatchLandLoadTexturesBoundsCheck_size = 0x11;
 
 	//
 	// Patch: Fall back to reference rotation values when initializing animation controllers without a scene node.
@@ -675,98 +463,6 @@ namespace mwse::patch {
 		animController->mobileActor = mobile;
 		animController->animationData = mobile->getAnimationData();
 		animController->groundPlaneRotation = mobile->reference->getRotationMatrix();
-	}
-
-	//
-	// Patch: Log stack traces of problematic UI pointer issues.
-	//
-
-	void __cdecl PatchLogUIMemoryPointerErrors(const char* message) {
-		lua::logStackTrace("Lua traceback at time of invalid access:");
-		tes3::logErrorAndSavePoint(message);
-	}
-
-	//
-	// Patch: Respect symbolic links.
-	// 
-	// Unlike most of the Win32 API, FindFirstFileA and FindNextFileA don't respect symbolic links and
-	// instead return information about the link itself instead of its target.
-	// 
-	// This patch makes it return the file size of the target file, rather than the symlink itself (0).
-	//
-
-	static std::unordered_map<HANDLE, std::string> findFilePaths;
-	static std::recursive_mutex findFileMutex;
-
-	std::optional<std::string> getFindFilePath(HANDLE hFindFile) {
-		findFileMutex.lock();
-		const auto itt = findFilePaths.find(hFindFile);
-		if (itt == findFilePaths.end()) {
-			findFileMutex.unlock();
-			return {};
-		}
-
-		findFileMutex.unlock();
-		return itt->second;
-	}
-
-	void PatchFixSymlinkData(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData) {
-		const auto path = getFindFilePath(hFindFile);
-		if (!path) {
-			return;
-		}
-
-		const auto fullPath = std::filesystem::path(path.value()) / lpFindFileData->cFileName;
-		if (!std::filesystem::exists(fullPath)) {
-			return;
-		}
-
-		const auto fileSize = std::filesystem::file_size(fullPath);
-		lpFindFileData->nFileSizeHigh = unsigned int(fileSize / std::numeric_limits<unsigned int>::max());
-		lpFindFileData->nFileSizeLow = unsigned int(fileSize);
-	}
-
-	HANDLE __stdcall PatchFindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData) {
-		auto result = FindFirstFileA(lpFileName, lpFindFileData);
-		if (result == INVALID_HANDLE_VALUE) {
-			return result;
-		}
-
-		findFileMutex.lock();
-		findFilePaths[result] = std::filesystem::path(lpFileName).parent_path().string();
-		findFileMutex.unlock();
-
-		// Check to see if it resolved to a symbolic link.
-		if (lpFindFileData->dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT && lpFindFileData->dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
-			PatchFixSymlinkData(result, lpFindFileData);
-		}
-
-		return result;
-	}
-
-	BOOL __stdcall PatchFindNextFileA(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData) {
-		auto result = FindNextFileA(hFindFile, lpFindFileData);
-		if (!result) {
-			return result;
-		}
-
-		// Check to see if it resolved to a symbolic link.
-		if (lpFindFileData->dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT && lpFindFileData->dwReserved0 == IO_REPARSE_TAG_SYMLINK) {
-			PatchFixSymlinkData(hFindFile, lpFindFileData);
-		}
-
-		return result;
-	}
-
-	BOOL __stdcall PatchFindClose(HANDLE hFindFile) {
-		findFileMutex.lock();
-		const auto itt = findFilePaths.find(hFindFile);
-		if (itt != findFilePaths.end()) {
-			findFilePaths.erase(itt);
-		}
-		findFileMutex.unlock();
-
-		return FindClose(hFindFile);
 	}
 
 	//
@@ -801,40 +497,6 @@ namespace mwse::patch {
 		}
 
 		TES3_Light_UpdateFlickerPulse(light, sgNode, flickerPhase, itemData);
-	}
-
-	//
-	// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
-	// 
-
-	__declspec(naked) void PatchPathGridLoader() {
-		__asm {
-			pop esi
-			pop ebx
-			mov ecx, ebp
-			nop			// Replace with call
-			nop
-			nop
-			nop
-			nop
-			jmp $ + 0x15
-		}
-	}
-	const size_t PatchPathGridLoader_size = 0xE;
-
-	void __fastcall PatchPathGridLoaderCheckNodeData(TES3::PathGrid* pathGrid) {
-		// Check node count from record matches node data. Reset node count on mismatch.
-		if (pathGrid->nodeCount != pathGrid->nodes.count) {
-			log::getLog() << "[MWSE] Warning: Pathgrid in cell '" << pathGrid->parentCell->getEditorName() <<
-				"' has mismatching path node count. nodeCount=" << pathGrid->nodeCount << ", node data count=" << pathGrid->nodes.count << std::endl;
-
-			pathGrid->nodeCount = static_cast<unsigned short>(pathGrid->nodes.count);
-		}
-
-		// Perform overwritten code.
-		if (TES3::WorldController::get()->menuController->gameplayFlags & 0x800000) {
-			pathGrid->show();
-		}
 	}
 
 	//
@@ -925,30 +587,6 @@ namespace mwse::patch {
 		}
 	}
 	constexpr size_t PatchUnequipIndexedProjectileSetup_size = 0x2;
-
-	//
-	// Patch: Fix MenuEnchant menu pointer on failed enchant
-	//
-
-	static TES3::UI::Element* __cdecl PatchEnchantingMenuPointer(TES3::UI::UI_ID id) {
-		const auto menuInputController = TES3::WorldController::get()->menuController->menuInputController;
-		if (!menuInputController->textInputFocus->isValid()) {
-			menuInputController->textInputFocus = nullptr;
-		}
-
-		// Call original code.
-		return TES3::UI::findMenu(id);
-	}
-
-	//
-	// Patch: IDK something
-	//
-
-	static TES3::UI::InventoryTile* __fastcall PatchFindInventoryTileWithForcedRefreshForPlayer(TES3::InventoryData* inventoryData, DWORD _EDX_, const TES3::Item* item) {
-		const auto player = TES3::WorldController::get()->getMobilePlayer()->reference;
-		inventoryData->refreshForReference(player, 2);
-		return inventoryData->findTile(item);
-	}
 
 	//
 	// Patch: Improve performance of initial game load.
@@ -1388,9 +1026,11 @@ namespace mwse::patch {
 
 		audio::install();
 		input::install();
+		io::install();
 		magic::install();
 		mwscript::install();
 		ni::install();
+		ui::install();
 
 		// Patch: Allow Morrowind.ini [Application] values to override registry-backed application settings.
 		auto Game_readSettings = &TES3::Game::readSettings;
@@ -1399,9 +1039,6 @@ namespace mwse::patch {
 		// Patch: Unify athletics and sneak training.
 		genCallUnprotected(0x569EE7, reinterpret_cast<DWORD>(PatchUnifyAthleticsTraining), 0xC6);
 		genCallUnprotected(0x5683D0, reinterpret_cast<DWORD>(PatchUnifySneakTraining), 0x65);
-
-		// Patch: Crash fix for help text for paperdolls.
-		genCallEnforced(0x5CDFD0, 0x581440, reinterpret_cast<DWORD>(PatchPaperdollTooltipCrashFix));
 
 		// Patch: Optimize GetDeadCount and associated dialogue filtering/logic.
 		auto killCounter_increment = &TES3::KillCounter::incrementMobile;
@@ -1610,10 +1247,6 @@ namespace mwse::patch {
 		// Patch: Correctly initialize MobileProjectile tag/objectType
 		genCallEnforced(0x572444, 0x4EE8A0, reinterpret_cast<DWORD>(PatchInitializeMobileProjectileType));
 
-		// Patch: Fix crash when saving menu position if the derived key name is too long.
-		genCallUnprotected(0x597061, reinterpret_cast<DWORD>(PatchSaveMenuPositionRightPad), 0x6);
-		genNOPUnprotected(0x59706C, 0x59706F - 0x59706C);
-
 		// Patch: Letterbox movies.
 		genCallEnforced(0x64FC55, 0x64FE20, reinterpret_cast<DWORD>(PatchDrawLetterboxMovieFrame));
 		genCallEnforced(0x64FC9C, 0x64FE20, reinterpret_cast<DWORD>(PatchDrawLetterboxMovieFrame));
@@ -1624,13 +1257,6 @@ namespace mwse::patch {
 		genCallEnforced(0x64FDD2, 0x64FE20, reinterpret_cast<DWORD>(PatchDrawLetterboxMovieFrame));
 		genCallEnforced(0x64FE03, 0x64FE20, reinterpret_cast<DWORD>(PatchDrawLetterboxMovieFrame));
 
-		// Patch: Slight journal update optimization.
-		writePatchCodeUnprotected(0x4B2FD7, (BYTE*)&PatchSwapJournalUpdateCheckForSpeakerOrder, PatchSwapJournalUpdateCheckForSpeakerOrder_size);
-		genCallUnprotected(0x4B2FD7 + 0xD, 0x4B1B80);
-
-		// Patch: Don't save VFX manager if there are no valid visual effects.
-		genCallEnforced(0x4BD149, 0x469CC0, reinterpret_cast<DWORD>(PatchSaveVisualEffects));
-
 		// Patch: Fix crash when releasing a clone of a light with no reference. Also fix crash when the attachment scenegraph light pointer has been cleared.
 		genCallEnforced(0x4D260C, 0x4E5170, reinterpret_cast<DWORD>(PatchReleaseLightEntityForReference));
 
@@ -1638,23 +1264,12 @@ namespace mwse::patch {
 		genCallUnprotected(0x4B1646, reinterpret_cast<DWORD>(PatchDialogueFilterCacheGetDisposition), 0x6);
 		genCallUnprotected(0x4B167B, reinterpret_cast<DWORD>(PatchDialogueFilterCacheGetDisposition), 0x6);
 
-		// Patch: Support custom class images.
-		genNOPUnprotected(0x5AF047, 0x5AF583 - 0x5AF047);
-		writePatchCodeUnprotected(0x5AF047, (BYTE*)&PatchAddCustomClassImageSupportSetup, PatchAddCustomClassImageSupport_size);
-		genCallUnprotected(0x5AF047 + 0x4, reinterpret_cast<DWORD>(PatchAddCustomClassImageSupport), 0x9);
-
 		// Patch: Clean up unsummoned actors.
 		genCallEnforced(0x466858, 0x4E5750, reinterpret_cast<DWORD>(cleanupUnsummonedActor));
 
 		// Patch: Fix crash in NPC wander and flee logic when trying to pick a random node from a pathgrid with 0 nodes.
 		genCallEnforced(0x5339D8, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
 		genCallEnforced(0x549E76, 0x4E2850, reinterpret_cast<DWORD>(PatchCellGetPathGridWithNodes));
-
-		// Patch: UI element image mirroring on negative image scale.
-		writePatchCodeUnprotected(0x57DE02, (BYTE*)&PatchUIUpdateLayoutImageContent1, PatchUIUpdateLayoutImageContent1_size);
-		writePatchCodeUnprotected(0x57DE3F, (BYTE*)&PatchUIUpdateLayoutImageContent1, PatchUIUpdateLayoutImageContent1_size);
-		writePatchCodeUnprotected(0x57E1E8, (BYTE*)&PatchUIUpdateLayoutImageContent2, PatchUIUpdateLayoutImageContent2_size);
-		genCallUnprotected(0x57E1E8 + 0x2, reinterpret_cast<DWORD>(PatchUIElementTexcoordWrite));
 
 		// Patch: Improve error reporting by including the source mod next to object IDs in load error messages.
 		// In Cell::loadReference:
@@ -1747,26 +1362,6 @@ namespace mwse::patch {
 		writeBytesUnprotected(0x4F2132, patchImprovedErrorIDArgs20, sizeof(patchImprovedErrorIDArgs20));
 		genCallUnprotected(0x4F2134, reinterpret_cast<DWORD>(PatchGetImprovedObjectIdentifier));
 
-		// Patch: Ensure VFX with maxAge <= 0.001f are cleared when clearing data on load game, instead of leaking.
-		auto VFXManager_reset = &TES3::VFXManager::reset;
-		genCallEnforced(0x4C6F00, 0x469390, *reinterpret_cast<DWORD*>(&VFXManager_reset));
-
-		// Patch: Do not load VFX with maxAge <= 0.001f from save games.
-		genCallEnforced(0x46A04B, 0x468620, reinterpret_cast<DWORD>(PatchVFXManagerCreateFromSaveData));
-
-		// Patch: LTEX loading/unloading array overflow bug. Increase array from 500 to 4096 elements and fix bounds checks.
-		writeValueEnforced(0x4CDF09, 500 / 4, Land_LTEX_isLoaded_size / 4);
-		writeValueEnforced(0x4CDF0E, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-		writePatchCodeUnprotected(0x4CDF58, (BYTE*)&PatchLandUnloadTexturesBoundsCheck, PatchLandUnloadTexturesBoundsCheck_size);
-		writeValueEnforced(0x4CDF6D, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-		writeValueEnforced(0x4CDF7E, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-
-		writeValueEnforced(0x4CECAE, 500 / 4, Land_LTEX_isLoaded_size / 4);
-		writeValueEnforced(0x4CECB3, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-		writePatchCodeUnprotected(0x4CECD3, (BYTE*)&PatchLandLoadTexturesBoundsCheck, PatchLandLoadTexturesBoundsCheck_size);
-		writeValueEnforced(0x4CECE9, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-		writeValueEnforced(0x4CEDB1, DWORD(0x7CA9E0), reinterpret_cast<DWORD>(Land_LTEX_isLoaded));
-
 		// Patch: Fall back to reference rotation values when initializing animation controllers without a scene node.
 		genCallEnforced(0x521773, 0x53DE70, reinterpret_cast<DWORD>(PatchSetAnimControllerMobile));
 
@@ -1774,15 +1369,6 @@ namespace mwse::patch {
 		auto ActorAnimationController_update = &TES3::ActorAnimationController::update;
 		overrideVirtualTableEnforced(TES3::VirtualTableAddress::ActorAnimController, offsetof(TES3::ActorAnimationController_VirtualTable, update), 0x53E070, *reinterpret_cast<DWORD*>(&ActorAnimationController_update));
 		genCallEnforced(0x543A2B, 0x53E070, *reinterpret_cast<DWORD*>(&ActorAnimationController_update));
-
-		// Provide lua stack traces with invalid UI access.
-		genCallEnforced(0x581484, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
-		genCallEnforced(0x582DFA, 0x476E20, reinterpret_cast<DWORD>(PatchLogUIMemoryPointerErrors));
-
-		// Patch: Respect targets when searching for symlinks.
-		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));
-		writeDoubleWordUnprotected(0x746118, reinterpret_cast<DWORD>(&PatchFindNextFileA));
-		writeDoubleWordUnprotected(0x74611C, reinterpret_cast<DWORD>(&PatchFindClose));
 
 		// Patch: Guard against updating dynamic light attachments that have no actual light.
 		genCallEnforced(0x485DA4, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
@@ -1793,10 +1379,6 @@ namespace mwse::patch {
 		// Patch: Guard against invalid light flicker/pulse updates.
 		genCallEnforced(0x49B75E, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 		genCallEnforced(0x4D33BF, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
-
-		// Patch: Resolve node count mismatch when loading pathgrid records with missing subrecords.
-		writePatchCodeUnprotected(0x4F444E, (BYTE*)&PatchPathGridLoader, PatchPathGridLoader_size);
-		genCallUnprotected(0x4F444E + 4, reinterpret_cast<DWORD>(PatchPathGridLoaderCheckNodeData));
 
 		// Patch: Modify proximity movement speed matching of AI followers to limit the speed match from going to zero on immobilized follow targets.
 		writePatchCodeUnprotected(0x540DBA, (BYTE*)&PatchMovementAnimSpeedMatching, PatchMovementAnimSpeedMatching_size);
@@ -1816,12 +1398,6 @@ namespace mwse::patch {
 		genNOPUnprotected(0x4968E1, 0x4968FB - 0x4968E1);
 		writePatchCodeUnprotected(0x4968E1, (BYTE*)&PatchUnequipIndexedProjectileSetup, PatchUnequipIndexedProjectileSetup_size);
 		genCallUnprotected(0x4968E1 + 0x2, reinterpret_cast<DWORD>(PatchUnequipIndexedProjectile));
-
-		// Patch: Fix invalid UI memory pointer.
-		genCallEnforced(0x5C48DB, 0x595370, reinterpret_cast<DWORD>(PatchEnchantingMenuPointer));
-
-		// Patch: Prevent quickslot failures from stale inventory data.
-		genCallEnforced(0x608608, 0x633E80, reinterpret_cast<DWORD>(PatchFindInventoryTileWithForcedRefreshForPlayer));
 
 		// Patch: Improve performance of initial game load.
 		genCallEnforced(0x4BB84E, 0x4B2C90, reinterpret_cast<DWORD>(PatchDialogueSorting));
@@ -1867,10 +1443,7 @@ namespace mwse::patch {
 	}
 
 	void installPostLuaPatches() {
-		using se::memory::writeByteUnprotected;
 		using se::memory::genCallUnprotected;
-		using se::memory::genCallEnforced;
-		using se::memory::genPushEnforced;
 
 		audio::installPostLua();
 		input::installPostLua();

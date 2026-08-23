@@ -37,9 +37,11 @@
     <ClInclude Include="NIBSAnimationNodeLua.h" />
     <ClInclude Include="PatchAudio.h" />
     <ClInclude Include="PatchInput.h" />
+    <ClInclude Include="PatchIO.h" />
     <ClInclude Include="PatchMagic.h" />
     <ClInclude Include="PatchMWScript.h" />
     <ClInclude Include="PatchNI.h" />
+    <ClInclude Include="PatchUI.h" />
     <ClInclude Include="TES3AnimationGroupLua.h" />
     <ClInclude Include="TES3CrimeLua.h" />
     <ClInclude Include="TES3DialogueFilterContext.h" />
@@ -697,9 +699,11 @@
     <ClCompile Include="NITextureLua.cpp" />
     <ClCompile Include="PatchAudio.cpp" />
     <ClCompile Include="PatchInput.cpp" />
+    <ClCompile Include="PatchIO.cpp" />
     <ClCompile Include="PatchMagic.cpp" />
     <ClCompile Include="PatchMWScript.cpp" />
     <ClCompile Include="PatchNI.cpp" />
+    <ClCompile Include="PatchUI.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

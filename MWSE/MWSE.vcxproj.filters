@@ -1596,6 +1596,12 @@
     <ClInclude Include="PatchInput.h">
       <Filter>Header Files\Utility\Patches</Filter>
     </ClInclude>
+    <ClInclude Include="PatchIO.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchUI.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -3570,6 +3576,12 @@
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
     <ClCompile Include="PatchInput.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchIO.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchUI.cpp">
       <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>
