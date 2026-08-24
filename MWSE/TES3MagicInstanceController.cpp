@@ -47,19 +47,42 @@ namespace TES3 {
 		TES3_MagicInstanceController_interruptCasting(this, reference);
 	}
 
+	// The engine function is compiled against this map's sentinel, so it is not valid for the other maps.
+	const auto TES3_MagicInstanceController_nextSerialInstanceNode = reinterpret_cast<void(__thiscall*)(MagicInstanceController::StlMap::Node**)>(0x457750);
+	MagicInstanceController::StlMap::Node* MagicInstanceController::getNextSerialInstanceNode(StlMap::Node* node) const {
+		TES3_MagicInstanceController_nextSerialInstanceNode(&node);
+		return node;
+	}
+
 	void MagicInstanceController::cleanupReference(Reference* reference) {
 		if (reference == nullptr) {
 			return;
 		}
 
-		// Only NPCs/creatures can have effects.
-		if (!reference->isMobileCapableActor()) {
+		// Retire any magic this reference cast. This also covers non-actor casters such as trapped doors and containers, and unlike the retire in Reference::dtor it does not require a live mobile.
+		retireMagicCastedByActor(reference);
+
+		// Only actors and lockable objects can be targets of magic effects.
+		const auto baseObject = reference->baseObject;
+		if (baseObject == nullptr) {
+			return;
+		}
+		const auto canBeEffectTarget = baseObject->isMobileCapableActor()
+			|| baseObject->objectType == ObjectType::Door
+			|| baseObject->objectType == ObjectType::Container;
+		if (!canBeEffectTarget) {
 			return;
 		}
 
-		// TODO: It'd be nice if we could iterate over this hash map more cleanly. This method of indexing is slower.
-		const auto maxSerial = getSerialCount();
-		for (auto serial = 0u; serial <= maxSerial; ++serial) {
+		// Snapshot the live serials first, as retiring modifies the map.
+		std::vector<unsigned int> serials;
+		serials.reserve(mapSerialToMagicSourceInstance.itemCount);
+		const auto sentinel = mapSerialToMagicSourceInstance.root;
+		for (auto node = sentinel->left; node != sentinel; node = getNextSerialInstanceNode(node)) {
+			serials.push_back(node->key);
+		}
+
+		for (const auto serial : serials) {
 			auto instance = getInstanceFromSerial(serial);
 			if (instance == nullptr) {
 				continue;

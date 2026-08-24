@@ -7,8 +7,18 @@
 namespace TES3 {
 	struct MagicInstanceController {
 		struct StlMap {
+			// Node of the engine's std::map. The root member points at the sentinel head node, whose left child is the first element in key order.
+			struct Node {
+				Node* left; // 0x0
+				Node* parent; // 0x4
+				Node* right; // 0x8
+				unsigned int key; // 0xC
+				void* value; // 0x10
+				char redBlack; // 0x14
+			};
+
 			char tag;
-			void * root;
+			Node * root;
 			char unknown_8;
 			size_t itemCount;
 
@@ -41,6 +51,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		StlMap::Node* getNextSerialInstanceNode(StlMap::Node* node) const;
 		void cleanupReference(Reference* reference);
 
 		//
