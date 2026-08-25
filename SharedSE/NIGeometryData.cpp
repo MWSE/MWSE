@@ -2,9 +2,19 @@
 
 #include "NIColor.h"
 
+#include "ExceptionUtil.h"
+
 namespace NI {
 	unsigned short GeometryData::getActiveVertexCount() const {
 		return vTable.asGeometryData->getActiveVertexCount(this);
+	}
+
+	void GeometryData::dtor() {
+#if defined(SE_NI_GEOMETRYDATA_FNADDR_DTOR) && SE_NI_GEOMETRYDATA_FNADDR_DTOR > 0
+		reinterpret_cast<void(__thiscall*)(GeometryData*)>(SE_NI_GEOMETRYDATA_FNADDR_DTOR)(this);
+#else
+		throw not_implemented_exception();
+#endif
 	}
 
 	void GeometryData::markAsChanged() {

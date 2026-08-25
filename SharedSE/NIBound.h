@@ -1,8 +1,10 @@
 #pragma once
 
 #include "NIDefines.h"
+#include "NIBoundingBox.h"
 #include "NIMatrix33.h"
 #include "NIPoint3.h"
+#include "NITArray.h"
 
 namespace NI {
 	struct Bound {
@@ -82,6 +84,21 @@ namespace NI {
 		BoundingVolume_vtbl* vtbl; // 0x0
 
 		BoundingVolumeType getType() const;
+		void updateWorldData(const BoundingVolume* modelVolume, const Transform* worldTransform);
+
+		//
+		// Other related this-call functions.
+		//
+
+		// NiFindIntersectBVGeom, swept over [0, fTime]. Argument order follows the engine.
+		bool findIntersectGeom(float fTime, const Point3* volumeVelocity, const Point3* vertex0, const Point3* vertex1, const Point3* vertex2, const Point3* triangleVelocity, float* out_time, Point3* out_point, bool calculateNormals, Point3* out_normal1, Point3* out_normal0);
+
+		//
+		// Custom functions.
+		//
+
+		// Conservative AABB in the volume's own space; empty for unhandled types.
+		std::optional<BoundingBox> computeBoundingBox() const;
 	};
 	static_assert(sizeof(BoundingVolume) == 0x4, "NI::BoundingVolume failed size validation");
 
@@ -109,4 +126,10 @@ namespace NI {
 		static BoxBoundingVolume* create(const Point3& extent, const Point3& center, const Point3& xAxis, const Point3& yAxis, const Point3& zAxis);
 	};
 	static_assert(sizeof(BoxBoundingVolume) == 0x40, "NI::SphereBV failed size validation");
+
+	struct UnionBoundingVolume : BoundingVolume {
+		TArray<BoundingVolume*> children; // 0x4
+		unsigned int whichChildIntersected; // 0x1C
+	};
+	static_assert(sizeof(UnionBoundingVolume) == 0x20, "NI::UnionBoundingVolume failed size validation");
 }

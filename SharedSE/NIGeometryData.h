@@ -31,6 +31,13 @@ namespace NI {
 		unsigned short getActiveVertexCount() const;
 
 		//
+		// Other related this-call functions.
+		//
+
+		// Non-deleting destructor.
+		void dtor();
+
+		//
 		// Custom functions.
 		//
 
