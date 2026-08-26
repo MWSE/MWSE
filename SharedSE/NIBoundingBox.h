@@ -26,6 +26,19 @@ namespace NI {
 		void invalidate();
 		bool hasUninitializedData() const;
 		void clampPoint(Point3& point, const Point3& origin) const;
+
+		// Grows the box to include another box or a point.
+		void merge(const BoundingBox& other);
+		void merge(const Point3& point);
+
+		// True when the closed boxes overlap. Written as the negated separation test so
+		// NaN coordinates count as overlapping, which keeps BVH candidate sets conservative.
+		// Inline: BVH query hot path.
+		bool intersects(const BoundingBox& other) const {
+			return !(minimum.x > other.maximum.x || maximum.x < other.minimum.x
+				|| minimum.y > other.maximum.y || maximum.y < other.minimum.y
+				|| minimum.z > other.maximum.z || maximum.z < other.minimum.z);
+		}
 	};
 	static_assert(sizeof(BoundingBox) == 0x18, "NI::BoundingBox failed size validation");
 }

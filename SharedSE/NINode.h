@@ -49,7 +49,6 @@ namespace NI {
 		void updatePointLight(PointLight* light, bool isLand);
 		void sortDynamicEffects(bool isLand);
 
-		// Reimplements NiNode::UpdateCollisionData.
 		void updateCollisionData();
 
 		// Replaces the Update call in MobileActor's per-frame collision probe.

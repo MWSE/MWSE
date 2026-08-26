@@ -34,7 +34,6 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-		// Non-deleting destructor.
 		void dtor();
 
 		//

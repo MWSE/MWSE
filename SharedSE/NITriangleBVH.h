@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NIDefines.h"
+#include "NIBoundingBox.h"
 
 namespace NI {
 	// Static BVH over an indexed triangle list. Queries return conservative
@@ -15,27 +15,22 @@ namespace NI {
 		size_t getMemoryUsage() const;
 
 		// Ray origin + t * direction, t >= 0.
-		void collectRayCandidates(const Point3& origin, const Point3& direction, std::vector<unsigned int>& out_candidates) const;
-		void collectBoxCandidates(const Point3& minimum, const Point3& maximum, std::vector<unsigned int>& out_candidates) const;
+		void collectRayCandidates(const Point3& origin, const Point3& direction, std::vector<unsigned int>& outCandidates) const;
+		void collectBoxCandidates(const BoundingBox& box, std::vector<unsigned int>& outCandidates) const;
 
 	private:
-		struct AABB {
-			float min[3];
-			float max[3];
-		};
-
 		struct Node {
-			AABB bounds;
+			BoundingBox bounds;
 			// Leaf when triangleCount > 0: firstOrRight indexes triangleIndices.
 			// Internal otherwise: the left child follows this node, firstOrRight is the right child.
 			unsigned int firstOrRight = 0;
 			unsigned int triangleCount = 0;
 		};
 
-		unsigned int buildNode(unsigned int begin, unsigned int end, const std::vector<AABB>& triangleBounds);
+		unsigned int buildNode(unsigned int begin, unsigned int end, const std::vector<BoundingBox>& triangleBounds);
 
 		template <typename BoundsTest>
-		void collect(BoundsTest&& intersectsBounds, std::vector<unsigned int>& out_candidates) const;
+		void collect(BoundsTest&& intersectsBounds, std::vector<unsigned int>& outCandidates) const;
 
 		std::vector<Node> nodes;
 		std::vector<unsigned int> triangleIndices;

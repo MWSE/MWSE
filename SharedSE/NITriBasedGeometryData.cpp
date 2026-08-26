@@ -1,5 +1,6 @@
 #include "NITriBasedGeometryData.h"
 
+#include "NIBoundingBox.h"
 #include "NIPoint3.h"
 #include "NITriangle.h"
 #include "NITriangleBVH.h"
@@ -55,27 +56,8 @@ namespace NI {
 	};
 
 	static std::unordered_map<const TriBasedGeometryData*, CandidateCacheEntry> candidateCache;
-	static std::vector<unsigned int> candidateScratch;
 	static size_t candidateBuildCount = 0;
 	static size_t candidateEvictionCount = 0;
-
-	static void buildCandidateCacheEntry(CandidateCacheEntry& entry, const TriBasedGeometryData* data, const Triangle* triList, unsigned int triangleCount) {
-		entry.usable = false;
-		entry.triList = triList;
-		entry.vertices = data->vertex;
-		entry.triangleCount = triangleCount;
-		entry.vertexCount = data->vertexCount;
-		entry.revisionID = data->revisionID;
-		++candidateBuildCount;
-
-		try {
-			entry.bvh.build(triList, triangleCount, data->vertex);
-			entry.usable = true;
-		}
-		catch (const std::bad_alloc&) {
-			entry.bvh = {};
-		}
-	}
 
 	// One tree per mesh over the full triangle list; ray queries filter to the active count afterwards.
 	static CandidateCacheEntry* getUsableCandidateCacheEntry(const TriBasedGeometryData* data) {
@@ -87,7 +69,21 @@ namespace NI {
 
 		auto& entry = candidateCache[data];
 		if (!entry.matches(data, triList, triangleCount)) {
-			buildCandidateCacheEntry(entry, data, triList, triangleCount);
+			entry.usable = false;
+			entry.triList = triList;
+			entry.vertices = data->vertex;
+			entry.triangleCount = triangleCount;
+			entry.vertexCount = data->vertexCount;
+			entry.revisionID = data->revisionID;
+			++candidateBuildCount;
+
+			try {
+				entry.bvh.build(triList, triangleCount, data->vertex);
+				entry.usable = true;
+			}
+			catch (const std::bad_alloc&) {
+				entry.bvh = {};
+			}
 		}
 		return entry.usable ? &entry : nullptr;
 	}
@@ -106,36 +102,36 @@ namespace NI {
 #endif
 	}
 
-	const std::vector<unsigned int>* TriBasedGeometryData::getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection) const {
+	bool TriBasedGeometryData::getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection, std::vector<unsigned int>& outCandidates) const {
 		const auto entry = getUsableCandidateCacheEntry(this);
 		if (!entry) {
-			return nullptr;
+			return false;
 		}
 
-		candidateScratch.clear();
-		entry->bvh.collectRayCandidates(modelOrigin, modelDirection, candidateScratch);
+		outCandidates.clear();
+		entry->bvh.collectRayCandidates(modelOrigin, modelDirection, outCandidates);
 
 		// Raytests only consider the active triangles.
 		const auto activeTriangleCount = getActiveTriangleCount();
-		std::erase_if(candidateScratch, [=](unsigned int index) { return index >= activeTriangleCount; });
+		std::erase_if(outCandidates, [=](unsigned int index) { return index >= activeTriangleCount; });
 
 		// Ascending order keeps results identical to the exhaustive loop.
-		std::ranges::sort(candidateScratch);
-		return &candidateScratch;
+		std::ranges::sort(outCandidates);
+		return true;
 	}
 
-	const std::vector<unsigned int>* TriBasedGeometryData::getAabbCandidateTriangles(const Point3& modelAabbMin, const Point3& modelAabbMax) const {
+	bool TriBasedGeometryData::getAabbCandidateTriangles(const BoundingBox& modelBounds, std::vector<unsigned int>& outCandidates) const {
 		const auto entry = getUsableCandidateCacheEntry(this);
 		if (!entry) {
-			return nullptr;
+			return false;
 		}
 
-		candidateScratch.clear();
-		entry->bvh.collectBoxCandidates(modelAabbMin, modelAabbMax, candidateScratch);
+		outCandidates.clear();
+		entry->bvh.collectBoxCandidates(modelBounds, outCandidates);
 
 		// Ascending order keeps results identical to the exhaustive loop.
-		std::ranges::sort(candidateScratch);
-		return &candidateScratch;
+		std::ranges::sort(outCandidates);
+		return true;
 	}
 
 	TriBasedGeometryData::CandidateCacheStats TriBasedGeometryData::getCandidateCacheStats() {

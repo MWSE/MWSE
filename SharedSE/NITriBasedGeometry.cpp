@@ -1,6 +1,7 @@
 #include "NITriBasedGeometry.h"
 
 #include "NIBound.h"
+#include "NIBoundingBox.h"
 #include "NICollisionGroup.h"
 #include "NIPick.h"
 #include "NISkinInstance.h"
@@ -41,6 +42,7 @@ namespace NI {
 
 	static std::vector<Point3> deformVertices;
 	static std::vector<Point3> deformNormals;
+	static std::vector<unsigned int> rayCandidates;
 
 #if defined(_DEBUG)
 	// Debug self-check: every exhaustive-loop hit must be a candidate. Bounded to keep Debug playable.
@@ -130,22 +132,21 @@ namespace NI {
 		const auto directionScaled = worldRotationInverse * (*direction);
 
 		// Skinned geometry deforms per query, so it keeps the exhaustive loop.
-		const std::vector<unsigned int>* candidates = nullptr;
-		if (!skinInstance && mwse::Configuration::UsePhysicsOptimizations) {
-			candidates = modelData->getRayCandidateTriangles(worldScaled, directionScaled);
+		const auto useCandidates = !skinInstance
+			&& mwse::Configuration::UsePhysicsOptimizations
+			&& modelData->getRayCandidateTriangles(worldScaled, directionScaled, rayCandidates);
 #if defined(_DEBUG)
-			if (candidates) {
-				verifyRayCandidates(*candidates, worldScaled, directionScaled, vertices, triList, activeTriCount, pick->frontOnly);
-			}
-#endif
+		if (useCandidates) {
+			verifyRayCandidates(rayCandidates, worldScaled, directionScaled, vertices, triList, activeTriCount, pick->frontOnly);
 		}
+#endif
 
 		// Loop through the candidate triangles, or all of them without a BVH.
 		auto addedResult = false;
-		const auto testCount = candidates ? static_cast<unsigned int>(candidates->size()) : static_cast<unsigned int>(activeTriCount);
+		const auto testCount = useCandidates ? static_cast<unsigned int>(rayCandidates.size()) : static_cast<unsigned int>(activeTriCount);
 		for (auto k = 0u; k < testCount; ++k) {
 			// Get some shorthand variables we'll use throughout.
-			const auto i = candidates ? (*candidates)[k] : k;
+			const auto i = useCandidates ? rayCandidates[k] : k;
 			const auto& triangle = triList[i];
 			const auto index1 = triangle.vertices[0];
 			const auto index2 = triangle.vertices[1];
@@ -247,26 +248,26 @@ namespace NI {
 		return static_cast<TriBasedGeometryData*>(modelData.get());
 	}
 
-	int TriBasedGeometry::findCollisionsTriVsABV(float fTime, AVObject* collidee, char bCalcNormals, CollisionIntersect* intersect) {
+	int TriBasedGeometry::findCollisionsTriVsABV(float fTime, AVObject* collidee, bool calculateNormals, CollisionIntersect* intersect) {
 #if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV) && SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV > 0
-		const auto NI_TriBasedGeometry_findCollisionsTriVsABV = reinterpret_cast<int(__thiscall*)(TriBasedGeometry*, float, AVObject*, char, CollisionIntersect*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV);
+		const auto NI_TriBasedGeometry_findCollisionsTriVsABV = reinterpret_cast<int(__thiscall*)(TriBasedGeometry*, float, AVObject*, bool, CollisionIntersect*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
 		// Skinned world vertices deform; the model-space BVH does not describe them.
 		if (!mwse::Configuration::UsePhysicsOptimizations || skinInstance) {
-			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 		}
 
 		const auto data = static_cast<TriBasedGeometryData*>(modelData.get());
 		if (!data || !collidee || !collidee->modelABV || !collidee->worldABV) {
-			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 		}
 		const auto worldAbv = static_cast<BoundingVolume*>(collidee->worldABV);
 
 		const auto triList = data->getTriList();
 		const auto triangleCount = data->triangleCount;
 		if (!triList || !data->vertex || triangleCount == 0 || worldTransform.scale == 0.0f) {
-			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 		}
 
 		// Vanilla refreshes the collidee's world volume first; idempotent.
@@ -274,17 +275,18 @@ namespace NI {
 
 		auto worldBounds = worldAbv->computeBoundingBox();
 		if (!worldBounds) {
-			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 		}
 
-		// Expand by both objects' motion over the tested interval, plus a margin.
+		// Expand by both objects' motion over the tested interval, plus a rounding margin in game units.
+		constexpr auto sweepPadding = 1.0f;
 		static const Point3 zeroVelocity(0.0f, 0.0f, 0.0f);
 		const auto& colliderVelocity = velocities ? velocities->worldVelocity : zeroVelocity;
 		const auto& collideeVelocity = collidee->velocities ? collidee->velocities->worldVelocity : zeroVelocity;
 		const Point3 sweep = {
-			(std::fabs(colliderVelocity.x) + std::fabs(collideeVelocity.x)) * fTime + 1.0f,
-			(std::fabs(colliderVelocity.y) + std::fabs(collideeVelocity.y)) * fTime + 1.0f,
-			(std::fabs(colliderVelocity.z) + std::fabs(collideeVelocity.z)) * fTime + 1.0f,
+			(std::fabs(colliderVelocity.x) + std::fabs(collideeVelocity.x)) * fTime + sweepPadding,
+			(std::fabs(colliderVelocity.y) + std::fabs(collideeVelocity.y)) * fTime + sweepPadding,
+			(std::fabs(colliderVelocity.z) + std::fabs(collideeVelocity.z)) * fTime + sweepPadding,
 		};
 		worldBounds->minimum = worldBounds->minimum - sweep;
 		worldBounds->maximum = worldBounds->maximum + sweep;
@@ -292,28 +294,21 @@ namespace NI {
 		// Bound the world box's eight transformed corners in model space.
 		const auto inverseScale = 1.0f / worldTransform.scale;
 		const auto worldRotationInverse = worldTransform.rotation.invert() * inverseScale;
-		Point3 modelMin, modelMax;
-		auto firstCorner = true;
-		for (const auto& worldCorner : worldBounds->vertices()) {
-			const auto modelCorner = worldRotationInverse * (worldCorner - worldTransform.translation);
-			if (firstCorner) {
-				modelMin = modelCorner;
-				modelMax = modelCorner;
-				firstCorner = false;
-			}
-			else {
-				modelMin = { std::min(modelMin.x, modelCorner.x), std::min(modelMin.y, modelCorner.y), std::min(modelMin.z, modelCorner.z) };
-				modelMax = { std::max(modelMax.x, modelCorner.x), std::max(modelMax.y, modelCorner.y), std::max(modelMax.z, modelCorner.z) };
-			}
+		const auto toModelSpace = [&](const Point3& worldCorner) {
+			return worldRotationInverse * (worldCorner - worldTransform.translation);
+		};
+		const auto worldCorners = worldBounds->vertices();
+		const auto firstCorner = toModelSpace(worldCorners[0]);
+		BoundingBox modelBounds(firstCorner, firstCorner);
+		for (auto i = 1u; i < worldCorners.size(); ++i) {
+			modelBounds.merge(toModelSpace(worldCorners[i]));
 		}
 
-		const auto candidates = data->getAabbCandidateTriangles(modelMin, modelMax);
-		if (!candidates) {
-			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+		// A local list: collision callbacks may issue nested queries.
+		std::vector<unsigned int> candidates;
+		if (!data->getAabbCandidateTriangles(modelBounds, candidates)) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 		}
-
-		// Collision callbacks may issue nested queries; copy out of the shared scratch.
-		const std::vector<unsigned int> candidateList = *candidates;
 
 		// Vanilla allocates world vertices on demand before its loop.
 		if (!worldVertices) {
@@ -323,14 +318,14 @@ namespace NI {
 			}
 		}
 
-		for (const auto i : candidateList) {
+		for (const auto i : candidates) {
 			const auto& triangle = triList[i];
 
 			// Reread velocities; collision callbacks may change them.
 			const auto loopColliderVelocity = velocities ? &velocities->worldVelocity : &zeroVelocity;
 			const auto loopCollideeVelocity = collidee->velocities ? &collidee->velocities->worldVelocity : &zeroVelocity;
 
-			if (worldAbv->findIntersectGeom(fTime, loopCollideeVelocity, &worldVertices[triangle.vertices[0]], &worldVertices[triangle.vertices[1]], &worldVertices[triangle.vertices[2]], loopColliderVelocity, &intersect->fTime, &intersect->point, bCalcNormals != 0, &intersect->normal1, &intersect->normal0)) {
+			if (worldAbv->findIntersectGeom(fTime, loopCollideeVelocity, &worldVertices[triangle.vertices[0]], &worldVertices[triangle.vertices[1]], &worldVertices[triangle.vertices[2]], loopColliderVelocity, &intersect->fTime, &intersect->point, calculateNormals, &intersect->normal1, &intersect->normal0)) {
 				if (runCollisionCallbacks(intersect)) {
 					return 1;
 				}
@@ -339,7 +334,7 @@ namespace NI {
 		return 0;
 #else
 		// Non-MWSE targets fall through to engine vanilla behavior.
-		return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, bCalcNormals, intersect);
+		return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
 #endif
 #else
 		throw not_implemented_exception();

@@ -91,7 +91,7 @@ namespace NI {
 		//
 
 		// NiFindIntersectBVGeom, swept over [0, fTime]. Argument order follows the engine.
-		bool findIntersectGeom(float fTime, const Point3* volumeVelocity, const Point3* vertex0, const Point3* vertex1, const Point3* vertex2, const Point3* triangleVelocity, float* out_time, Point3* out_point, bool calculateNormals, Point3* out_normal1, Point3* out_normal0);
+		bool findIntersectGeom(float fTime, const Point3* volumeVelocity, const Point3* vertex0, const Point3* vertex1, const Point3* vertex2, const Point3* triangleVelocity, float* outTime, Point3* outPoint, bool calculateNormals, Point3* outNormal1, Point3* outNormal0);
 
 		//
 		// Custom functions.

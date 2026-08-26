@@ -30,10 +30,6 @@ function mwse.clearScriptOverride(scriptId) end
 --- @return tes3reference|nil reference The currently executing mwscript script's associated reference. This will be nil for global scripts, or nil if no script is presently being executed.
 function mwse.getCurrentMorrowindScriptState() end
 
---- Returns counters for the physics optimizations toggled by the "Enable physics optimizations" MWSE option: whether they are active, and the size of the cached per-mesh bounding volume hierarchies that accelerate raytests and swept collision tests. Intended for measuring memory use and cache churn while testing.
---- @return table stats A table with the fields `enabled` (boolean), `meshCacheEntries` (number of meshes with a cached hierarchy), `meshCacheBytes` (memory held by those hierarchies), `meshCacheBuilds` (hierarchies built since startup), and `meshCacheEvictions` (hierarchies released with their mesh since startup).
-function mwse.getPhysicsOptimizationStats() end
-
 --- Equivalent to mwse.version.
 --- @return integer result No description yet available.
 function mwse.getVersion() end

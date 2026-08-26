@@ -18,12 +18,6 @@ namespace NI {
 	// that immediately follows it in the engine.
 	static const AVObject* collisionDataUpdateToSkip = nullptr;
 
-	static bool isIdentity(const Transform& transform) {
-		return transform.translation == Point3(0.0f, 0.0f, 0.0f)
-			&& transform.scale == 1.0f
-			&& transform.rotation == Matrix33::IDENTITY;
-	}
-
 	Node::Node() {
 #if defined(SE_NI_NODE_FNADDR_CTOR) && SE_NI_NODE_FNADDR_CTOR > 0
 		const auto NI_Node_ctor = reinterpret_cast<void(__thiscall*)(const Node*)>(SE_NI_NODE_FNADDR_CTOR);
@@ -65,11 +59,8 @@ namespace NI {
 			// UpdateCollisionData with no branch between them. If the world transform
 			// already matches the local pose, both are no-ops and are skipped.
 			const auto& rotation = localRotation ? *localRotation : Matrix33::IDENTITY;
-			const auto parentIsNeutral = !parentNode || isIdentity(parentNode->worldTransform);
-			if (parentIsNeutral
-				&& worldTransform.translation == localTranslate
-				&& worldTransform.scale == localScale
-				&& worldTransform.rotation == rotation) {
+			const auto parentIsNeutral = !parentNode || parentNode->worldTransform == Transform::IDENTITY;
+			if (parentIsNeutral && worldTransform == Transform(rotation, localTranslate, localScale)) {
 				collisionDataUpdateToSkip = this;
 				return;
 			}

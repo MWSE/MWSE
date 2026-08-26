@@ -40,10 +40,10 @@ namespace NI {
 		reinterpret_cast<void(__thiscall*)(BoundingVolume*, const BoundingVolume*, const Transform*)>(vtbl->updateWorldData)(this, modelVolume, worldTransform);
 	}
 
-	bool BoundingVolume::findIntersectGeom(float fTime, const Point3* volumeVelocity, const Point3* vertex0, const Point3* vertex1, const Point3* vertex2, const Point3* triangleVelocity, float* out_time, Point3* out_point, bool calculateNormals, Point3* out_normal1, Point3* out_normal0) {
+	bool BoundingVolume::findIntersectGeom(float fTime, const Point3* volumeVelocity, const Point3* vertex0, const Point3* vertex1, const Point3* vertex2, const Point3* triangleVelocity, float* outTime, Point3* outPoint, bool calculateNormals, Point3* outNormal1, Point3* outNormal0) {
 #if defined(SE_NI_BOUNDINGVOLUME_FNADDR_FINDINTERSECTGEOM) && SE_NI_BOUNDINGVOLUME_FNADDR_FINDINTERSECTGEOM > 0
 		const auto NI_FindIntersectBVGeom = reinterpret_cast<bool(__cdecl*)(float, BoundingVolume*, const Point3*, const Point3*, const Point3*, const Point3*, const Point3*, float*, Point3*, char, Point3*, Point3*)>(SE_NI_BOUNDINGVOLUME_FNADDR_FINDINTERSECTGEOM);
-		return NI_FindIntersectBVGeom(fTime, this, volumeVelocity, vertex0, vertex1, vertex2, triangleVelocity, out_time, out_point, calculateNormals, out_normal1, out_normal0);
+		return NI_FindIntersectBVGeom(fTime, this, volumeVelocity, vertex0, vertex1, vertex2, triangleVelocity, outTime, outPoint, calculateNormals, outNormal1, outNormal0);
 #else
 		throw not_implemented_exception();
 #endif
@@ -87,8 +87,7 @@ namespace NI {
 					result = childBox;
 				}
 				else {
-					result->minimum = { std::min(result->minimum.x, childBox->minimum.x), std::min(result->minimum.y, childBox->minimum.y), std::min(result->minimum.z, childBox->minimum.z) };
-					result->maximum = { std::max(result->maximum.x, childBox->maximum.x), std::max(result->maximum.y, childBox->maximum.y), std::max(result->maximum.z, childBox->maximum.z) };
+					result->merge(*childBox);
 				}
 			}
 			return result;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NIBoundingBox.h"
 #include "NIGeometryData.h"
 
 namespace NI {
@@ -29,19 +30,18 @@ namespace NI {
 		// Other related this-call functions.
 		//
 
-		// Non-deleting destructor, reimplemented to release the candidate cache.
 		void dtor();
 
 		//
 		// Custom functions.
 		//
 
-		// Ascending indices of active triangles a model-space ray may hit, or nullptr to test every triangle.
-		// The result is a shared scratch buffer, valid until the next candidate query.
-		const std::vector<unsigned int>* getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection) const;
+		// Fills outCandidates with the ascending indices of active triangles a model-space ray may hit.
+		// Returns false when no acceleration structure applies and every triangle must be tested.
+		bool getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection, std::vector<unsigned int>& outCandidates) const;
 
 		// As above, for a model-space AABB against all triangles.
-		const std::vector<unsigned int>* getAabbCandidateTriangles(const Point3& modelAabbMin, const Point3& modelAabbMax) const;
+		bool getAabbCandidateTriangles(const BoundingBox& modelBounds, std::vector<unsigned int>& outCandidates) const;
 
 		struct CandidateCacheStats {
 			size_t entries = 0;
