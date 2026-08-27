@@ -1,8 +1,6 @@
 #include "NITransform.h"
 
 namespace NI {
-	// Built from literals: the default constructor calls into the engine and reads
-	// statics from other translation units, neither of which is safe during static initialization.
 	const Transform Transform::IDENTITY = Transform(
 		Matrix33(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
 		Point3(0.0f, 0.0f, 0.0f),
@@ -21,7 +19,6 @@ namespace NI {
 	}
 
 	bool Transform::operator==(const Transform& transform) const {
-		// Cheapest first: the rotation compare is an engine call.
 		return scale == transform.scale
 			&& translation == transform.translation
 			&& rotation == transform.rotation;

@@ -27,7 +27,6 @@ namespace NI {
 		bool hasUninitializedData() const;
 		void clampPoint(Point3& point, const Point3& origin) const;
 
-		// Grows the box to include another box or a point.
 		void merge(const BoundingBox& other);
 		void merge(const Point3& point);
 
