@@ -60,13 +60,11 @@ namespace TES3 {
 				continue;
 			}
 
-			// If we cast this spell, end it immediately.
+			// If we cast this spell, mark it to retire.
 			if (instance->caster == reference) {
+				instance->caster = nullptr;
 				instance->retire();
 				instance->state = SpellEffectState::Ending;
-				instance->process(0.0f);
-				retireMagicBySerial(serial);
-				continue;
 			}
 
 			if (instance->target == reference) {
