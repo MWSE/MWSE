@@ -463,7 +463,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(false);
 		}
 
-		handleUpdate(false, true);
+		handleUpdate(UpdateType::Enabled, true);
 
 		// Finally flag as modified.
 		setObjectModified(true);
@@ -485,7 +485,7 @@ namespace TES3 {
 			sceneNode->setAppCulled(true);
 		}
 
-		handleUpdate(true, true);
+		handleUpdate(UpdateType::Disabled, true);
 
 		// Clean up any sounds.
 		auto sound = baseObject->getSound();
@@ -544,14 +544,11 @@ namespace TES3 {
 	}
 
 	void Reference::setDeletedWithSafety() {
-		disable();
-
-		if (baseObject && baseObject->isMobileCapableActor()) {
-			const auto worldController = TES3::WorldController::get();
-			if (worldController && worldController->magicInstanceController) {
-				worldController->magicInstanceController->retireMagicCastedByActor(this);
-			}
+		if (getDeleted()) {
+			return;
 		}
+
+		disable();
 
 		if (baseObject) {
 			// This always seems to return 0 and do nothing.
@@ -559,6 +556,7 @@ namespace TES3 {
 			baseObject->vTable.object->unknown_0x12C(baseObject);
 		}
 
+		handleUpdate(UpdateType::Deleted, true);
 		removeAllAttachments();
 		setScale(1.0f);
 		setDeleted(true);
@@ -937,25 +935,27 @@ namespace TES3 {
 		}
 	}
 
-	void Reference::handleUpdate(bool deletion, bool updateCollisions) {
+	void Reference::handleUpdate(UpdateType updateType, bool updateCollisions) {
 		const auto dataHandler = DataHandler::get();
 		const auto worldController = TES3::WorldController::get();
 
 		// Did we just make an actor? If so we need to add it to the mob manager.
+		const auto willBeVisible = (updateType == UpdateType::Enabled);
 		if (baseObject->isMobileCapableActor()) {
 			worldController->mobManager->addMob(this);
 			const auto mact = getAttachedMobileActor();
 			if (mact && mact->isActor()) {
-				if (deletion) {
-					worldController->mobManager->removeMob(this);
-
-					// This is normally done on death, but needs to be forced for deletion.
-					worldController->magicInstanceController->retireMagicCastedByActor(this);
-				}
-				else {
+				if (willBeVisible) {
 					mact->enterLeaveSimulation(true);
 				}
+				else {
+					worldController->mobManager->removeMob(this);
+				}
 			}
+		}
+
+		if (updateType == UpdateType::Deleted) {
+			worldController->magicInstanceController->retireMagicCastedByReference(this);
 		}
 
 		if (baseObject->objectType == TES3::ObjectType::Light) {
@@ -967,7 +967,7 @@ namespace TES3 {
 		}
 
 		// Retire any VFX attached to the reference.
-		if (deletion) {
+		if (!willBeVisible) {
 			worldController->vfxManager->removeForReference(this);
 		}
 

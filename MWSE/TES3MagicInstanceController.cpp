@@ -38,7 +38,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_MagicInstanceController_retireMagicCastedByActor = reinterpret_cast<void(__thiscall*)(MagicInstanceController*, Reference*)>(0x454EC0);
-	void MagicInstanceController::retireMagicCastedByActor(Reference* reference) {
+	void MagicInstanceController::retireMagicCastedByReference(Reference* reference) {
 		TES3_MagicInstanceController_retireMagicCastedByActor(this, reference);
 	}
 
@@ -53,7 +53,8 @@ namespace TES3 {
 		}
 
 		// Only NPCs/creatures can have effects.
-		if (!reference->isMobileCapableActor()) {
+		const auto baseObject = reference->getBaseObject();
+		if (!baseObject || !baseObject->isValidSpellTarget()) {
 			return;
 		}
 
