@@ -262,10 +262,10 @@ namespace NI {
 #endif
 	}
 
-	TexturingProperty::Map::Map(Texture* _texture, ClampMode _clampMode, FilterMode _filterMode, unsigned int _textCoords) {
+	TexturingProperty::Map::Map(Texture* _texture, ClampMode _clampMode, FilterMode _filterMode, unsigned int _texCoordSet) {
 #if defined(SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS) && SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS > 0
 		const auto NI_TexturingProperty_Map_ctorWithParams = reinterpret_cast<TexturingProperty::Map * (__thiscall*)(TexturingProperty::Map*, Texture*, unsigned int, TexturingProperty::ClampMode, TexturingProperty::FilterMode)>(SE_NI_TEXTURINGPROPERTY_MAP_FNADDR_CTORWITHPARAMS);
-		NI_TexturingProperty_Map_ctorWithParams(this, _texture, _textCoords, _clampMode, _filterMode);
+		NI_TexturingProperty_Map_ctorWithParams(this, _texture, _texCoordSet, _clampMode, _filterMode);
 #else
 		throw not_implemented_exception();
 #endif
@@ -289,13 +289,13 @@ namespace NI {
 		auto texture = mwse::lua::getOptionalParam<Texture*>(params, "texture", nullptr);
 		auto clampMode = mwse::lua::getOptionalParam(params, "clampMode", ClampMode::WRAP_S_WRAP_T);
 		auto filterMode = mwse::lua::getOptionalParam(params, "filterMode", FilterMode::TRILERP);
-		auto textCoords = mwse::lua::getOptionalParam(params, "textCoords", 0u);
+		auto texCoordSet = mwse::lua::getOptionalParam(params, "texCoordSet", 0u);
 
 		if (mwse::lua::getOptionalParam(params, "isBumpMap", false)) {
-			return new BumpMap(texture, clampMode, filterMode, textCoords);
+			return new BumpMap(texture, clampMode, filterMode, texCoordSet);
 		}
 		else {
-			return new Map(texture, clampMode, filterMode, textCoords);
+			return new Map(texture, clampMode, filterMode, texCoordSet);
 		}
 	}
 #endif
@@ -310,7 +310,7 @@ namespace NI {
 		bumpMat[1][1] = 0.5f;
 	}
 
-	TexturingProperty::BumpMap::BumpMap(Texture* _texture, ClampMode _clampMode, FilterMode _filterMode, unsigned int _textCoords) : Map(_texture, _clampMode, _filterMode, _textCoords) {
+	TexturingProperty::BumpMap::BumpMap(Texture* _texture, ClampMode _clampMode, FilterMode _filterMode, unsigned int _texCoordSet) : Map(_texture, _clampMode, _filterMode, _texCoordSet) {
 		vTable = (VirtualTable*)SE_NI_TEXTURINGPROPERTY_BUMPMAP_VTBL;
 		lumaScale = 1.0f;
 		lumaOffset = 0.0f;

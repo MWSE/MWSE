@@ -62,7 +62,7 @@ The texture for the Map.
 Creates a new basic or bump map.
 
 ```lua
-local map = niTexturingPropertyMap.new({ texture = ..., clampMode = ..., filterMode = ..., textCoords = ..., isBumpMap = ... })
+local map = niTexturingPropertyMap.new({ texture = ..., clampMode = ..., filterMode = ..., texCoordSet = ..., isBumpMap = ... })
 ```
 
 **Parameters**:
@@ -71,7 +71,7 @@ local map = niTexturingPropertyMap.new({ texture = ..., clampMode = ..., filterM
 	* `texture` ([niTexture](../types/niTexture.md)): *Optional*. If provided, sets the map texture to the given value.
 	* `clampMode` ([ni.texturingPropertyClampMode](../references/ni/texturing-property-clamp-modes.md)): *Default*: `ni.texturingPropertyClampMode.wrapSwrapT`. The clamp mode to set the map to use.
 	* `filterMode` ([ni.texturingPropertyFilterMode](../references/ni/texturing-property-filter-modes.md)): *Default*: `ni.texturingPropertyFilterMode.trilerp`. The filter mode to set the map to use.
-	* `textCoords` (integer): *Default*: `0`. The texture coordinates to set the map to use.
+	* `texCoordSet` (integer): *Default*: `0`. The texture coordinates to set the map to use.
 	* `isBumpMap` (boolean): *Default*: `false`. If true, a bump map will be created instead.
 
 **Returns**:
