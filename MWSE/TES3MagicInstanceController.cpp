@@ -38,7 +38,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_MagicInstanceController_retireMagicCastedByActor = reinterpret_cast<void(__thiscall*)(MagicInstanceController*, Reference*)>(0x454EC0);
-	void MagicInstanceController::retireMagicCastedByActor(Reference* reference) {
+	void MagicInstanceController::retireMagicCastedByReference(Reference* reference) {
 		TES3_MagicInstanceController_retireMagicCastedByActor(this, reference);
 	}
 
@@ -52,11 +52,6 @@ namespace TES3 {
 			return;
 		}
 
-		// Only NPCs/creatures can have effects.
-		if (!reference->isMobileCapableActor()) {
-			return;
-		}
-
 		// TODO: It'd be nice if we could iterate over this hash map more cleanly. This method of indexing is slower.
 		const auto maxSerial = getSerialCount();
 		for (auto serial = 0u; serial <= maxSerial; ++serial) {
@@ -65,13 +60,11 @@ namespace TES3 {
 				continue;
 			}
 
-			// If we cast this spell, end it immediately.
+			// If we cast this spell, mark it to retire.
 			if (instance->caster == reference) {
+				instance->caster = nullptr;
 				instance->retire();
 				instance->state = SpellEffectState::Ending;
-				instance->process(0.0f);
-				retireMagicBySerial(serial);
-				continue;
 			}
 
 			if (instance->target == reference) {

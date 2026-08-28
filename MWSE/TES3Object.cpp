@@ -265,6 +265,20 @@ namespace TES3 {
 		}
 	}
 
+	bool BaseObject::isValidSpellTarget() const {
+		switch (objectType) {
+		case ObjectType::Container:
+		case ObjectType::Creature:
+		case ObjectType::CreatureClone:
+		case ObjectType::Door:
+		case ObjectType::NPC:
+		case ObjectType::NPCClone:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	bool BaseObject::isWeaponOrAmmo() const {
 		switch (objectType) {
 		case TES3::ObjectType::Ammo:

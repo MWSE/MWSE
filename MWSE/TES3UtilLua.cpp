@@ -3022,7 +3022,7 @@ namespace mwse::lua {
 		}
 
 		const auto updateCollisions = getOptionalParam<bool>(params, "updateCollisionGroups", true);
-		reference->handleUpdate(false, updateCollisions);
+		reference->handleUpdate(TES3::Reference::UpdateType::Enabled, updateCollisions);
 
 		// Make sure everything is set as modified.
 		reference->setObjectModified(true);
