@@ -167,6 +167,9 @@ namespace mwse::lua {
 	}
 
 	void TimerController::clearTimers() {
+		// Destroying timers releases their Lua references.
+		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
+
 		// Mark all timers as expired.
 		for (auto itt = m_ActiveTimers.begin(); itt != m_ActiveTimers.end(); ++itt) {
 			(*itt)->state = TimerState::Expired;
