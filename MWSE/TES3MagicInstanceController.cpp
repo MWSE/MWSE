@@ -52,12 +52,6 @@ namespace TES3 {
 			return;
 		}
 
-		// Only NPCs/creatures can have effects.
-		const auto baseObject = reference->getBaseObject();
-		if (!baseObject || !baseObject->isValidSpellTarget()) {
-			return;
-		}
-
 		// TODO: It'd be nice if we could iterate over this hash map more cleanly. This method of indexing is slower.
 		const auto maxSerial = getSerialCount();
 		for (auto serial = 0u; serial <= maxSerial; ++serial) {
