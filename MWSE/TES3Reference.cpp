@@ -548,7 +548,7 @@ namespace TES3 {
 			return;
 		}
 
-		disable();
+		const auto didDisable = disable();
 
 		if (baseObject) {
 			// This always seems to return 0 and do nothing.
@@ -556,7 +556,8 @@ namespace TES3 {
 			baseObject->vTable.object->unknown_0x12C(baseObject);
 		}
 
-		handleUpdate(UpdateType::Deleted, true);
+		// disable() updates collision groups when it runs, so only rebuild here if it didn't.
+		handleUpdate(UpdateType::Deleted, !didDisable);
 		removeAllAttachments();
 		setScale(1.0f);
 		setDeleted(true);
@@ -601,9 +602,9 @@ namespace TES3 {
 			worldController->mobManager->processManager->cleanupAIPackages(this, mobile);
 		}
 
-		// Clean up any related magic effects.
+		// Vanilla only retires casters that have a mobile (0x4E476E). mapReferenceToSerial indexes every caster (0x454BE5), so this is one lookup.
 		if (worldController && worldController->magicInstanceController) {
-			worldController->magicInstanceController->cleanupReference(this);
+			worldController->magicInstanceController->retireMagicCastedByReference(this);
 		}
 
 		// Clean up global scripts for the reference.

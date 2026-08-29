@@ -37,9 +37,27 @@ namespace TES3 {
 		TES3_MagicInstanceController_retireMagicBySerial(this, serial);
 	}
 
+	// One link per active retirement, chained on the stack so nesting can be checked without allocating.
+	struct RetiringReference {
+		Reference* reference;
+		RetiringReference* previous;
+	};
+
 	const auto TES3_MagicInstanceController_retireMagicCastedByActor = reinterpret_cast<void(__thiscall*)(MagicInstanceController*, Reference*)>(0x454EC0);
 	void MagicInstanceController::retireMagicCastedByReference(Reference* reference) {
+		// process() runs lua callbacks before retireSpellBySerial() erases the caster entry, so a callback that
+		// deletes anything already retiring would free the instance an outer call is still holding.
+		static RetiringReference* retiring = nullptr;
+		for (auto entry = retiring; entry; entry = entry->previous) {
+			if (entry->reference == reference) {
+				return;
+			}
+		}
+
+		RetiringReference entry{ reference, retiring };
+		retiring = &entry;
 		TES3_MagicInstanceController_retireMagicCastedByActor(this, reference);
+		retiring = entry.previous;
 	}
 
 	const auto TES3_MagicInstanceController_interruptCasting = reinterpret_cast<void(__thiscall*)(MagicInstanceController*, Reference*)>(0x455610);
@@ -47,6 +65,7 @@ namespace TES3 {
 		TES3_MagicInstanceController_interruptCasting(this, reference);
 	}
 
+	// Unused: probing every serial was too slow to run per destroyed reference. See Reference::cleanupAssociatedData().
 	void MagicInstanceController::cleanupReference(Reference* reference) {
 		if (reference == nullptr) {
 			return;
