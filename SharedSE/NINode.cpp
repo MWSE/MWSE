@@ -1,12 +1,22 @@
 #include "NINode.h"
 
 #include "NIBound.h"
+#include "NICollisionGroup.h"
 #include "NIDynamicEffect.h"
+#include "NIMatrix33.h"
 #include "NIPointLight.h"
+#include "NITransform.h"
 
 #include "ExceptionUtil.h"
 
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "MWSEConfig.h"
+#endif
+
 namespace NI {
+	// Set by updateForCollisionProbe, consumed by the UpdateCollisionData call
+	// that immediately follows it in the engine.
+	static const AVObject* collisionDataUpdateToSkip = nullptr;
 
 	Node::Node() {
 #if defined(SE_NI_NODE_FNADDR_CTOR) && SE_NI_NODE_FNADDR_CTOR > 0
@@ -20,6 +30,44 @@ namespace NI {
 	Node::~Node() {
 		// Call dtor without deletion.
 		vTable.asObject->destructor(this, 0);
+	}
+
+	void Node::updateCollisionData() {
+		if (this == collisionDataUpdateToSkip) {
+			collisionDataUpdateToSkip = nullptr;
+			return;
+		}
+
+		updateWorldCollisionVolume();
+
+		if (CollisionGroup::isRootOnlyCollider(this)) {
+			return;
+		}
+		for (const auto& child : children) {
+			if (child) {
+				child->updateCollisionData();
+			}
+		}
+	}
+
+	void Node::updateForCollisionProbe(float fTime, bool bUpdateControllers, bool bUpdateChildren) {
+		collisionDataUpdateToSkip = nullptr;
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		if (mwse::Configuration::UsePhysicsOptimizations) {
+			// The probe (0x522C00) sets the local translation, then calls Update and
+			// UpdateCollisionData with no branch between them. If the world transform
+			// already matches the local pose, both are no-ops and are skipped.
+			const auto& rotation = localRotation ? *localRotation : Matrix33::IDENTITY;
+			const auto parentIsNeutral = !parentNode || parentNode->worldTransform == Transform::IDENTITY;
+			if (parentIsNeutral && worldTransform == Transform(rotation, localTranslate, localScale)) {
+				collisionDataUpdateToSkip = this;
+				return;
+			}
+		}
+#endif
+
+		update(fTime, bUpdateControllers, bUpdateChildren);
 	}
 
 	void Node::attachChild(AVObject* child, bool useFirstAvailable) {

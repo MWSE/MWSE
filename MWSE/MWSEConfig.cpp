@@ -18,6 +18,7 @@ namespace mwse {
 	bool Configuration::ReplaceDialogueFiltering = true;
 	bool Configuration::EnableLuaErrorNotifications = false;
 	bool Configuration::UseSkinnedAccurateActivationRaytests = true;
+	bool Configuration::UsePhysicsOptimizations = true;
 	bool Configuration::SuppressUselessWarnings = true;
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::NonExclusiveKeyboard = false;
@@ -70,6 +71,7 @@ namespace mwse {
 		DECLARE_CONFIG(ReplaceDialogueFiltering)
 		DECLARE_CONFIG(EnableLuaErrorNotifications)
 		DECLARE_CONFIG(UseSkinnedAccurateActivationRaytests)
+		DECLARE_CONFIG(UsePhysicsOptimizations)
 		DECLARE_CONFIG(SuppressUselessWarnings)
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(NonExclusiveKeyboard)

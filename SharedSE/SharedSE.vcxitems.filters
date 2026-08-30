@@ -177,6 +177,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NITriangleBVH.h">
+      <Filter>Header Files\NI</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NITriShape.h">
       <Filter>Header Files\NI</Filter>
     </ClInclude>
@@ -522,6 +525,9 @@
       <Filter>Source Files\NI</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NITriBasedGeometryData.cpp">
+      <Filter>Source Files\NI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NITriangleBVH.cpp">
       <Filter>Source Files\NI</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NIUVController.cpp">

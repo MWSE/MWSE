@@ -40,6 +40,7 @@ namespace NI {
 	struct BSParticleNode;
 	struct Camera;
 	struct CollisionGroup;
+	struct CollisionIntersect;
 	struct CollisionSwitch;
 	struct Color;
 	struct ColorA;
