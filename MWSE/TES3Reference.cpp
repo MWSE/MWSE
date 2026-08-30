@@ -141,6 +141,10 @@ namespace TES3 {
 		return TES3_Reference_getScriptVariables(this);
 	}
 
+	NewOrientationAttachment* Reference::getNewOrientationAttachment() const {
+		return static_cast<NewOrientationAttachment*>(getAttachment(AttachmentType::NewOrientation));
+	}
+
 	const auto TES3_Reference_removeAttachment = reinterpret_cast<void(__thiscall*)(Reference*, Attachment*)>(0x4E4C10);
 	void Reference::removeAttachment(TES3::Attachment * attachment) {
 		TES3_Reference_removeAttachment(this, attachment);
@@ -764,6 +768,14 @@ namespace TES3 {
 		BIT_SET(objectFlags, ObjectFlag::EmptyInventoryBit, set);
 	}
 
+	bool Reference::getMovedReferenceFlag() const {
+		return BIT_TEST(objectFlags, ObjectFlag::MovedReferenceBit);
+	}
+
+	void Reference::setMovedReferenceFlag(bool set) {
+		BIT_SET(objectFlags, ObjectFlag::MovedReferenceBit, set);
+	}
+
 	void Reference::attemptUnlockDisarm(MobileNPC * disarmer, Item * tool, ItemData * toolItemData) {
 		if (baseObject->objectType != ObjectType::Door && baseObject->objectType != ObjectType::Container) {
 			return;
@@ -1205,6 +1217,46 @@ namespace TES3 {
 		relocate(cell, position, se::math::radiansToDegrees(cachedOrientation.z));
 
 		setOrientation(&cachedOrientation);
+	}
+
+	Reference* Reference::createCopyFromSource() const {
+		auto cell = getCell();
+		if (!cell || !sourceMod) {
+			return nullptr;
+		}
+
+		const auto sourceReference = new Reference();
+		sourceReference->setMovedReferenceFlag(getMovedReferenceFlag());
+		sourceReference->sourceID = sourceID;
+		sourceReference->targetID = targetID;
+
+		if (!cell->reloadReference(sourceMod, sourceReference, targetID)) {
+			delete sourceReference;
+			return nullptr;
+		}
+
+		return sourceReference;
+	}
+
+	const auto TES3_Reference_returnToStartingLocation = reinterpret_cast<void(__cdecl*)(Reference*)>(0x4EBB00);
+	void Reference::returnToStartingLocation() {
+		// Let vanilla make its attempt first, but it tends to suck.
+		TES3_Reference_returnToStartingLocation(this);
+
+		const auto sourceReference = createCopyFromSource();
+		if (!sourceReference) {
+			return;
+		}
+
+		const auto startingTransform = getNewOrientationAttachment();
+		if (startingTransform) {
+			startingTransform->position = sourceReference->position;
+			startingTransform->orientation = sourceReference->orientation;
+		}
+
+		setPosition(&sourceReference->position);
+		setOrientation(&sourceReference->orientation);
+		delete sourceReference;
 	}
 
 	bool Reference::clone() {

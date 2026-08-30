@@ -2316,6 +2316,14 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Ensure that respawned actors get moved to their starting cell.
+	//
+
+	static void __fastcall PatchRespawnAtStartingLocation(TES3::MobileActor* mobile, DWORD _EDX_, bool moveToStartingLocation) {
+		mobile->resurrect(true, moveToStartingLocation);
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2356,6 +2364,7 @@ namespace mwse::patch {
 		genCallEnforced(0x50AC85, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
 		genCallEnforced(0x50ACAB, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
 		genCallEnforced(0x745FF0, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
+
 #if MWSE_CUSTOM_KILLCOUNTER
 		auto killCounter_ctor = &TES3::KillCounter::ctor;
 		genCallEnforced(0x40DE9B, 0x55D750, *reinterpret_cast<DWORD*>(&killCounter_ctor));
@@ -2464,6 +2473,11 @@ namespace mwse::patch {
 		// Patch: Fix NiUVController losing its texture set on clone.
 		auto UVController_clone = &NI::UVController::copy;
 		genCallEnforced(0x722317, 0x722330, *reinterpret_cast<DWORD*>(&UVController_clone));
+
+		// Patch: Ensure that respawned actors get moved to their starting cell.
+		genCallEnforced(0x4E2A3A, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
+		genCallEnforced(0x4E2ABA, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
+		genCallEnforced(0x509EF8, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
 
 		// Patch: Make globals less slow to access.
 #if MWSE_CUSTOM_GLOBALS

@@ -61,6 +61,7 @@ namespace TES3 {
 		LockAttachmentNode* getOrCreateLockNode();
 		Reference* getLeveledBaseReference();
 		ScriptVariables * getScriptVariables();
+		NewOrientationAttachment* getNewOrientationAttachment() const;
 		void removeAttachment(TES3::Attachment* attachment);
 		void removeAllAttachments();
 		void ensureScriptDataIsInstanced();
@@ -123,6 +124,8 @@ namespace TES3 {
 
 		void relocate(Cell * cell, const NI::Point3 * position, float rotation);
 		void relocateNoRotation(Cell* cell, const NI::Point3* position);
+		Reference* createCopyFromSource() const;
+		void returnToStartingLocation();
 		bool clone();
 		bool onCloseInventory();
 
@@ -152,6 +155,8 @@ namespace TES3 {
 
 		bool getEmptyInventoryFlag();
 		void setEmptyInventoryFlag(bool);
+		bool getMovedReferenceFlag() const;
+		void setMovedReferenceFlag(bool);
 
 		void attemptUnlockDisarm(MobileNPC * disarmer, Item * tool, ItemData * itemData = nullptr);
 
