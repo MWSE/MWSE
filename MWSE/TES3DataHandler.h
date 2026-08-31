@@ -169,6 +169,7 @@ namespace TES3 {
 		Cell * getCellByGrid(int x, int y);
 		Cell * getCellByPosition(float x, float y);
 		Cell * getCellByName(const char* name);
+		Cell* getMovedReferenceCell(const Reference* reference);
 		Region* getRegion(const char* id);
 
 		MagicEffect * getMagicEffect(int id);

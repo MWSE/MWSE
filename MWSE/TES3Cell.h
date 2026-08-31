@@ -166,6 +166,7 @@ namespace TES3 {
 		void addReference(Reference* reference);
 		void insertReference(Reference* reference);
 		bool reloadReference(GameFile* sourceFile, Reference* reference, unsigned int targetID);
+		MovedRef* getMovedReference(const Reference* reference) const;
 
 		NI::Node* getOrCreateActivatorsNode();
 

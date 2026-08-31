@@ -56,12 +56,11 @@ namespace TES3 {
 		Reference * getActionReference();
 
 		ItemDataAttachment* addItemDataAttachment(ItemData*);
-		NI::Point3* getOrCreateOrientationFromAttachment();
-		NI::Point3* getPositionFromAttachment();
 		LockAttachmentNode* getOrCreateLockNode();
 		Reference* getLeveledBaseReference();
 		ScriptVariables * getScriptVariables();
-		NewOrientationAttachment* getNewOrientationAttachment() const;
+		TransformAttachment* getTransformAttachment() const;
+		TransformAttachment* getOrCreateTransformAttachment();
 		void removeAttachment(TES3::Attachment* attachment);
 		void removeAllAttachments();
 		void ensureScriptDataIsInstanced();
@@ -103,6 +102,7 @@ namespace TES3 {
 
 		NI::Point3* getOrientation();
 		void setOrientation(const NI::Point3 * newOrientation);
+		void setStartingTransform(const NI::Point3* position, const NI::Point3* orientation);
 
 		float getFacing();
 		void setFacing(float facing);
@@ -124,6 +124,9 @@ namespace TES3 {
 
 		void relocate(Cell * cell, const NI::Point3 * position, float rotation);
 		void relocateNoRotation(Cell* cell, const NI::Point3* position);
+		Cell* getStartingCell() const;
+		NI::Point3 getStartingPosition() const;
+		NI::Point3 getStartingOrientation() const;
 		Reference* createCopyFromSource() const;
 		void returnToStartingLocation();
 		bool clone();

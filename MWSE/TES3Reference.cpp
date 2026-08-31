@@ -119,14 +119,6 @@ namespace TES3 {
 		return TES3_Reference_addItemDataAttachment(this, data);
 	}
 
-	NI::Point3* Reference::getOrCreateOrientationFromAttachment() {
-		return reinterpret_cast<NI::Point3* (__thiscall *)(Reference*)>(0x4E5970)(this);
-	}
-
-	NI::Point3* Reference::getPositionFromAttachment() {
-		return reinterpret_cast<NI::Point3* (__thiscall *)(Reference*)>(0x4E58D0)(this);
-	}
-
 	LockAttachmentNode* Reference::getOrCreateLockNode() {
 		return reinterpret_cast<LockAttachmentNode* (__thiscall *)(Reference*)>(0x4E7DF0)(this);
 	}
@@ -141,8 +133,17 @@ namespace TES3 {
 		return TES3_Reference_getScriptVariables(this);
 	}
 
-	NewOrientationAttachment* Reference::getNewOrientationAttachment() const {
-		return static_cast<NewOrientationAttachment*>(getAttachment(AttachmentType::NewOrientation));
+	TransformAttachment* Reference::getTransformAttachment() const {
+		return static_cast<TransformAttachment*>(getAttachment(AttachmentType::Transform));
+	}
+
+	TransformAttachment* Reference::getOrCreateTransformAttachment() {
+		const auto attachment = getTransformAttachment();
+		if (attachment) {
+			return attachment;
+		}
+
+		return reinterpret_cast<TransformAttachment* (__thiscall*)(Reference*)>(0x4E5850)(this);
 	}
 
 	const auto TES3_Reference_removeAttachment = reinterpret_cast<void(__thiscall*)(Reference*, Attachment*)>(0x4E4C10);
@@ -633,7 +634,13 @@ namespace TES3 {
 	}
 
 	NI::Point3 * Reference::getPosition() {
-		return &position;
+		// NPCs and Creatures use the base position in the reference struct.
+		if (baseObject->isMobileCapableActor()) {
+			return &position;
+		}
+
+		// Everything else uses the transform attachment.
+		return &getOrCreateTransformAttachment()->position;
 	}
 
 	void Reference::setPosition(const NI::Point3 * newPosition) {
@@ -657,7 +664,13 @@ namespace TES3 {
 		}
 		else {
 			// Reference has not changed cell, allowing a lower impact update.
-			position = *newPosition;
+			NI::Point3* positionPackage = getPosition();
+			*positionPackage = *newPosition;
+
+			// Keep the base position in sync for saving and other engine systems that access it directly.
+			if (positionPackage != &position) {
+				position = *positionPackage;
+			}
 
 			if (sceneNode) {
 				sceneNode->localTranslate = position;
@@ -665,24 +678,17 @@ namespace TES3 {
 			}
 		}
 
-		// Sync position attachment to local position.
-		auto attachment = static_cast<NewOrientationAttachment*>(getAttachment(AttachmentType::NewOrientation));
-		if (attachment) {
-			attachment->position = position;
-		}
-
 		setObjectModified(true);
 	}
 
 	NI::Point3 * Reference::getOrientation() {
 		// NPCs and Creatures use the base orientation in the reference struct.
-		ObjectType::ObjectType type = baseObject->objectType;
-		if (type == ObjectType::NPC || type == ObjectType::Creature) {
+		if (baseObject->isMobileCapableActor()) {
 			return &orientation;
 		}
 
-		// Everything else uses the positioning attachment.
-		return getOrCreateOrientationFromAttachment();
+		// Everything else uses the transform attachment.
+		return &getOrCreateTransformAttachment()->orientation;
 	}
 
 	void Reference::setOrientation(const NI::Point3 * newOrientation) {
@@ -690,6 +696,7 @@ namespace TES3 {
 		NI::Point3 * orientationPackage = getOrientation();
 		*orientationPackage = *newOrientation;
 
+		// Keep the base orientation in sync for saving and other engine systems that access it directly.
 		if (orientationPackage != &orientation) {
 			orientation = *orientationPackage;
 		}
@@ -701,6 +708,18 @@ namespace TES3 {
 		}
 
 		setObjectModified(true);
+	}
+
+	void Reference::setStartingTransform(const NI::Point3* startingPosition, const NI::Point3* startingOrientation) {
+		if (baseObject->isMobileCapableActor()) {
+			const auto attachment = getOrCreateTransformAttachment();
+			attachment->position = *startingPosition;
+			attachment->orientation = *startingOrientation;
+		}
+		else {
+			position = *startingPosition;
+			orientation = *startingOrientation;
+		}
 	}
 
 	NI::Matrix33 Reference::getRotationMatrix() {
@@ -1095,10 +1114,12 @@ namespace TES3 {
 			reference->position = *position;
 			reference->orientation.z = rotationInRadians;
 
-			auto attachment = static_cast<NewOrientationAttachment*>(reference->getAttachment(AttachmentType::NewOrientation));
-			if (attachment) {
-				attachment->position = reference->position;
-				attachment->orientation = reference->orientation;
+			if (!reference->baseObject->isMobileCapableActor()) {
+				auto attachment = reference->getTransformAttachment();
+				if (attachment) {
+					attachment->position = reference->position;
+					attachment->orientation = reference->orientation;
+				}
 			}
 
 			// Update scene node, if loaded.
@@ -1219,14 +1240,42 @@ namespace TES3 {
 		setOrientation(&cachedOrientation);
 	}
 
+	Cell* Reference::getStartingCell() const {
+		const auto dataHandler = DataHandler::get();
+		const auto nonDynamicData = dataHandler ? dataHandler->nonDynamicData : nullptr;
+		const auto movedReferenceCell = nonDynamicData ? nonDynamicData->getMovedReferenceCell(this) : nullptr;
+		return movedReferenceCell ? movedReferenceCell : getCell();
+	}
+
+	NI::Point3 Reference::getStartingPosition() const {
+		if (baseObject->isMobileCapableActor()) {
+			const auto attachment = getTransformAttachment();
+			if (attachment) {
+				return attachment->position;
+			}
+		}
+
+		return position;
+	}
+
+	NI::Point3 Reference::getStartingOrientation() const {
+		if (baseObject->isMobileCapableActor()) {
+			const auto attachment = getTransformAttachment();
+			if (attachment) {
+				return attachment->orientation;
+			}
+		}
+
+		return orientation;
+	}
+
 	Reference* Reference::createCopyFromSource() const {
-		auto cell = getCell();
+		auto cell = getStartingCell();
 		if (!cell || !sourceMod) {
 			return nullptr;
 		}
 
 		const auto sourceReference = new Reference();
-		sourceReference->setMovedReferenceFlag(getMovedReferenceFlag());
 		sourceReference->sourceID = sourceID;
 		sourceReference->targetID = targetID;
 
@@ -1240,22 +1289,35 @@ namespace TES3 {
 
 	const auto TES3_Reference_returnToStartingLocation = reinterpret_cast<void(__cdecl*)(Reference*)>(0x4EBB00);
 	void Reference::returnToStartingLocation() {
-		// Let vanilla make its attempt first, but it tends to suck.
-		TES3_Reference_returnToStartingLocation(this);
+		// Expiring a corpse can clear this flag before returning the reference.
+		// Restore it so vanilla reclaims the existing moved-reference entry.
+		const auto currentCell = getCell();
+		const auto startingCell = getStartingCell();
+		const auto movedReferenceFlag = getMovedReferenceFlag();
+		if (!movedReferenceFlag && startingCell && startingCell != currentCell) {
+			setMovedReferenceFlag(true);
+		}
 
+		// Vanilla uses this attachment as the actor's starting transform. Correct it
+		// before asking vanilla to reclaim a moved reference into its defining cell.
 		const auto sourceReference = createCopyFromSource();
 		if (!sourceReference) {
+			TES3_Reference_returnToStartingLocation(this);
 			return;
 		}
+		setStartingTransform(&sourceReference->position, &sourceReference->orientation);
 
-		const auto startingTransform = getNewOrientationAttachment();
-		if (startingTransform) {
-			startingTransform->position = sourceReference->position;
-			startingTransform->orientation = sourceReference->orientation;
+		// Safe to call the vanilla function now.
+		TES3_Reference_returnToStartingLocation(this);
+
+		if (startingCell && getCell() != startingCell) {
+			relocate(startingCell, &sourceReference->position, se::math::radiansToDegrees(sourceReference->orientation.z));
 		}
-
-		setPosition(&sourceReference->position);
+		else {
+			setPosition(&sourceReference->position);
+		}
 		setOrientation(&sourceReference->orientation);
+
 		delete sourceReference;
 	}
 

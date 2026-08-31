@@ -2323,6 +2323,10 @@ namespace mwse::patch {
 		mobile->resurrect(true, moveToStartingLocation);
 	}
 
+	static void __cdecl PatchExpiredCorpseAtStartingLocation(TES3::Reference* reference) {
+		reference->returnToStartingLocation();
+	}
+
 	//
 	// Install all the patches.
 	//
@@ -2477,6 +2481,7 @@ namespace mwse::patch {
 		// Patch: Ensure that respawned actors get moved to their starting cell.
 		genCallEnforced(0x4E2A3A, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
 		genCallEnforced(0x4E2ABA, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
+		genCallEnforced(0x4EC015, 0x4EBB00, reinterpret_cast<DWORD>(PatchExpiredCorpseAtStartingLocation));
 		genCallEnforced(0x509EF8, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
 
 		// Patch: Make globals less slow to access.
