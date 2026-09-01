@@ -2,6 +2,8 @@
 
 #include "CSBaseObject.h"
 
+#include "TES3RaceFlags.h"
+
 namespace se::cs {
 	struct Race : BaseObject {
 		struct SkillBonus {
@@ -65,14 +67,6 @@ namespace se::cs {
 			Clavicle,
 			Tail,
 			COUNT,
-		};
-		enum Flag : unsigned int {
-			Playable = 0x1,
-			Beast = 0x2,
-		};
-		enum FlagBit : unsigned int {
-			PlayableBit = 0,
-			BeastBit = 1,
 		};
 
 		char id[32]; // 0x10

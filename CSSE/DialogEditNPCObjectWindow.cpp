@@ -21,8 +21,8 @@ namespace se::cs::dialog::edit_npc_object_window {
 	// Patch: Hide deprecated heads/hairs
 	//
 
-	ObjectType::ObjectType __fastcall PatchFilterHeadHair(ObjectType::ObjectType& objectType) {
-		if (objectType != ObjectType::Bodypart) {
+	TES3::ObjectType::ObjectType __fastcall PatchFilterHeadHair(TES3::ObjectType::ObjectType& objectType) {
+		if (objectType != TES3::ObjectType::Bodypart) {
 			return objectType;
 		}
 
@@ -30,11 +30,11 @@ namespace se::cs::dialog::edit_npc_object_window {
 
 		// Prevent deprecated objects from being added.
 		if (metadata::isDeprecated(object)) {
-			return ObjectType::Invalid;
+			return TES3::ObjectType::Invalid;
 		}
 
 		// Return the right value to continue.
-		return ObjectType::Bodypart;
+		return TES3::ObjectType::Bodypart;
 	}
 
 

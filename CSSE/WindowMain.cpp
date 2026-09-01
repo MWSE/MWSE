@@ -43,7 +43,7 @@ namespace se::cs::window::main {
 	const auto initializationTimer = std::chrono::high_resolution_clock::now();
 
 	struct ObjectEditLParam {
-		ObjectType::ObjectType objectType; // 0x0
+		TES3::ObjectType::ObjectType objectType; // 0x0
 		BaseObject* object; // 0x4
 		Reference* reference; // 0x8
 		Reference::ReferenceData* referenceData; // 0xC
@@ -331,7 +331,7 @@ namespace se::cs::window::main {
 
 	HWND showDefaultObjectEditWindow(BaseObject* object) {
 		Reference* reference = nullptr;
-		if (object->objectType == ObjectType::Reference) {
+		if (object->objectType == TES3::ObjectType::Reference) {
 			reference = static_cast<Reference*>(object);
 			object = reference->baseObject;
 		}
@@ -346,25 +346,25 @@ namespace se::cs::window::main {
 
 		DLGPROC proc = (DLGPROC)0x402F9A;
 		switch (object->objectType) {
-		case ObjectType::Alchemy:
+		case TES3::ObjectType::Alchemy:
 			proc = (DLGPROC)0x4035BC;
 			break;
-		case ObjectType::Creature:
+		case TES3::ObjectType::Creature:
 			proc = (DLGPROC)0x40132F;
 			break;
-		case ObjectType::Enchantment:
+		case TES3::ObjectType::Enchantment:
 			proc = (DLGPROC)0x404912;
 			break;
-		case ObjectType::LeveledCreature:
+		case TES3::ObjectType::LeveledCreature:
 			proc = (DLGPROC)0x402C3E;
 			break;
-		case ObjectType::LeveledItem:
+		case TES3::ObjectType::LeveledItem:
 			proc = (DLGPROC)0x401D66;
 			break;
-		case ObjectType::NPC:
+		case TES3::ObjectType::NPC:
 			proc = (DLGPROC)0x40313E;
 			break;
-		case ObjectType::Spell:
+		case TES3::ObjectType::Spell:
 			proc = (DLGPROC)0x401299;
 			break;
 		}
@@ -381,17 +381,17 @@ namespace se::cs::window::main {
 
 	HWND showObjectEditWindow(BaseObject* object) {
 		switch (object->objectType) {
-		case ObjectType::Birthsign:
+		case TES3::ObjectType::Birthsign:
 			return showBirthsignEditWindow(object);
-		case ObjectType::Class:
+		case TES3::ObjectType::Class:
 			return showClassEditWindow(object);
-		case ObjectType::Faction:
+		case TES3::ObjectType::Faction:
 			return showFactionEditWindow(object);
-		case ObjectType::GameSetting:
+		case TES3::ObjectType::GameSetting:
 			return NULL;
-		case ObjectType::Race:
+		case TES3::ObjectType::Race:
 			return showRaceEditWindow(object);
-		case ObjectType::Script:
+		case TES3::ObjectType::Script:
 			return showScriptEditWindow(object);
 		default:
 			return showDefaultObjectEditWindow(object);
