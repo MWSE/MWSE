@@ -13,6 +13,8 @@ namespace TES3 {
 
 		WeatherSnow() = delete;
 		~WeatherSnow() = delete;
+
+		void simulate(float transitionScalar, float deltaTime);
 	};
 	static_assert(sizeof(WeatherSnow) == 0x330, "TES3::WeatherSnow failed size validation");
 }
