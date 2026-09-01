@@ -17,6 +17,8 @@ local Parent = require("mcm.components.settings.Setting")
 
 --- @class mwseMCMInfo
 local Info = Parent:new()
+Info.__index = Info
+
 Info.componentType = "Info"
 Info.text = ""
 -- CONTROL METHODS

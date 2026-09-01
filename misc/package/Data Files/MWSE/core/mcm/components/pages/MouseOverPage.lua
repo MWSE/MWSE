@@ -6,6 +6,7 @@ local Parent = require("mcm.components.pages.Page")
 
 --- @class mwseMCMMouseOverPage
 local MouseOverPage = Parent:new()
+MouseOverPage.__index = MouseOverPage
 MouseOverPage.noScroll = true
 
 --- @param parentBlock tes3uiElement

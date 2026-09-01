@@ -15,6 +15,7 @@ local Parent = require("mcm.components.settings.Button")
 
 --- @class mwseMCMYesNoButton
 local YesNoButton = Parent:new()
+YesNoButton.__index = YesNoButton
 
 function YesNoButton:convertToLabelValue(variableValue)
 	return variableValue and self.sYes or self.sNo
