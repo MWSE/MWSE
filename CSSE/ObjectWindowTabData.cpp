@@ -132,8 +132,8 @@ namespace se::cs::dialog::object_window {
 		sprintf_s(displayInfo->item.pszText, displayInfo->item.cchTextMax, "%s", string);
 	}
 
-	void TabColumn::display(LPNMLVDISPINFOA displayInfo, const NI::IteratedList<ItemStack*>& items) const {
-		if (items.empty()) {
+	void TabColumn::display(LPNMLVDISPINFOA displayInfo, const NI::IteratedList<ItemStack*>& itemStacks) const {
+		if (itemStacks.empty()) {
 			display(displayInfo, "-NONE-");
 			return;
 		}
@@ -142,7 +142,7 @@ namespace se::cs::dialog::object_window {
 		const auto bufferSize = displayInfo->item.cchTextMax;
 		size_t bytesRemaining = bufferSize - 1;
 		bool first = true;
-		for (const auto& itt : items) {
+		for (const auto& itt : itemStacks) {
 			const std::string_view sv = itt->object->getObjectID();
 			if (bytesRemaining <= sv.length() + 8) {
 				strcat_s(buffer, bufferSize, ", ...");
@@ -288,11 +288,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorClass::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getClassName());
+		display(displayInfo, object->getClassID());
 	}
 
 	int TabColumnActorClass::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getClassName(), lParam2->getClassName(), sortOrderAsc);
+		return sort(lParam1->getClassID(), lParam2->getClassID(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorClass::getSettings() const {
@@ -340,11 +340,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorFaction::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getFactionName());
+		display(displayInfo, object->getFactionID());
 	}
 
 	int TabColumnActorFaction::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getFactionName(), lParam2->getFactionName(), sortOrderAsc);
+		return sort(lParam1->getFactionID(), lParam2->getFactionID(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorFaction::getSettings() const {
@@ -458,13 +458,13 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnActorInventory::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		const auto object = static_cast<const Actor*>(getObjectFromDisplayInfo(displayInfo));
-		display(displayInfo, object->inventory.items);
+		display(displayInfo, object->inventory.itemStacks);
 	}
 
 	int TabColumnActorInventory::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
 		const auto& a = static_cast<const Actor*>(lParam1);
 		const auto& b = static_cast<const Actor*>(lParam2);
-		return sort(a->inventory.items, b->inventory.items, sortOrderAsc);
+		return sort(a->inventory.itemStacks, b->inventory.itemStacks, sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnActorInventory::getSettings() const {
@@ -1656,11 +1656,11 @@ namespace se::cs::dialog::object_window {
 
 	void TabColumnPersists::getDisplayInfo(LPNMLVDISPINFOA displayInfo) const {
 		auto object = getObjectFromDisplayInfo(displayInfo);
-		display(displayInfo, object->getPersists());
+		display(displayInfo, object->getPersistent());
 	}
 
 	int TabColumnPersists::sortObject(const Object* lParam1, const Object* lParam2, bool sortOrderAsc) const {
-		return sort(lParam1->getPersists(), lParam2->getPersists(), sortOrderAsc);
+		return sort(lParam1->getPersistent(), lParam2->getPersistent(), sortOrderAsc);
 	}
 
 	TabColumn::ColumnSettings& TabColumnPersists::getSettings() const {
@@ -1719,9 +1719,9 @@ namespace se::cs::dialog::object_window {
 
 	const char* GetRaceID(const Object* object) {
 		if (object->objectType == ObjectType::Bodypart) {
-			return static_cast<const BodyPart*>(object)->getRaceName();
+			return static_cast<const BodyPart*>(object)->getRaceID();
 		}
-		return object->getRaceName();
+		return object->getRaceID();
 	}
 
 	TabColumnRace::TabColumnRace() : TabColumn("Race") {

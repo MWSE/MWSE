@@ -41,12 +41,12 @@ namespace se::cs {
 
 	struct Inventory {
 		unsigned int flags; // 0x0
-		NI::IteratedList<ItemStack*> items; // 0x4
+		NI::IteratedList<ItemStack*> itemStacks; // 0x4
 		Light* internalLight; // 0x18
 	};
 	static_assert(sizeof(Inventory) == 0x1C, "Inventory failed size validation");
 
-	struct Actor_VirtualTable : Object_VirtualTable {
+	struct ActorVirtualTable : ObjectVirtualTable {
 		void* unknown_0x138;
 		void* unknown_0x13C;
 		void* unknown_0x140;
@@ -54,14 +54,14 @@ namespace se::cs {
 		void* unknown_0x148;
 		void* unknown_0x14C;
 		void* unknown_0x150;
-		bool(__thiscall* hasMovementSwim)(const Object*); // 0x154
-		bool(__thiscall* hasMovementWalk)(const Object*); // 0x154
-		bool(__thiscall* hasMovementFly)(const Object*); // 0x154
+		bool(__thiscall* canSwim)(const Object*); // 0x154
+		bool(__thiscall* canWalk)(const Object*); // 0x154
+		bool(__thiscall* canFly)(const Object*); // 0x154
 		void* unknown_0x160;
 		void* unknown_0x164;
 		void* unknown_0x168;
 	};
-	static_assert(sizeof(Actor_VirtualTable) == 0x16C, "Actor virtual table failed size validation");
+	static_assert(sizeof(ActorVirtualTable) == 0x16C, "Actor virtual table failed size validation");
 
 	struct Actor : AnimatedObject {
 		unsigned int actorFlags; // 0x4C
@@ -71,16 +71,16 @@ namespace se::cs {
 		int unknown_0x74;
 		int unknown_0x78;
 
-		inline bool hasMovementSwim() const {
-			return vtbl.actor->hasMovementSwim(this);
+		inline bool canSwim() const {
+			return vTable.actor->canSwim(this);
 		}
 
-		inline bool hasMovementWalk() const {
-			return vtbl.actor->hasMovementWalk(this);
+		inline bool canWalk() const {
+			return vTable.actor->canWalk(this);
 		}
 
-		inline bool hasMovementFly() const {
-			return vtbl.actor->hasMovementFly(this);
+		inline bool canFly() const {
+			return vTable.actor->canFly(this);
 		}
 	};
 	static_assert(sizeof(Actor) == 0x7C, "CS::Actor failed size validation");

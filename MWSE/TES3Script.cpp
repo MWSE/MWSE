@@ -57,29 +57,29 @@ namespace TES3 {
 			return true;
 		}
 
-		if (!sourceMod || !sourceMod->reopen(0, false)) {
+		if (!sourceFile || !sourceFile->reopen(0, false)) {
 			return false;
 		}
 
 		if (espFileOffset != 0) {
-			if (!sourceMod->setFilePointer(static_cast<unsigned int>(espFileOffset))) {
+			if (!sourceFile->setFilePointer(static_cast<unsigned int>(espFileOffset))) {
 				return false;
 			}
 		}
 
-		const auto firstRecord = sourceMod->getFirstSubrecord();
+		const auto firstRecord = sourceFile->getFirstSubrecord();
 		if (firstRecord != 'TPCS') {
 			return false;
 		}
 
 		bool scriptFound = false;
 		do {
-			const auto chunkType = sourceMod->getNextSubrecord();
+			const auto chunkType = sourceFile->getNextSubrecord();
 			switch (chunkType) {
 			case 'DHCS':
 			{
 				ScriptHeader chunkData = {};
-				if (!sourceMod->readChunkData(&chunkData, sizeof(chunkData))) {
+				if (!sourceFile->readChunkData(&chunkData, sizeof(chunkData))) {
 					return false;
 				}
 
@@ -95,10 +95,10 @@ namespace TES3 {
 						se::memory::_delete(machineCode);
 					}
 
-					const auto dataSize = static_cast<size_t>(sourceMod->currentChunkHeader.size + 4);
+					const auto dataSize = static_cast<size_t>(sourceFile->currentChunkHeader.size + 4);
 					machineCode = reinterpret_cast<unsigned char*>(se::memory::_new(dataSize));
 					memset(machineCode, 0, dataSize);
-					if (!sourceMod->readChunkData(machineCode, 0)) {
+					if (!sourceFile->readChunkData(machineCode, 0)) {
 						return false;
 					}
 
@@ -107,7 +107,7 @@ namespace TES3 {
 				}
 				break;
 			}
-		} while (sourceMod->hasMoreRecords());
+		} while (sourceFile->hasMoreRecords());
 
 		return false;
 	}
@@ -222,11 +222,11 @@ namespace TES3 {
 	}
 
 	sol::optional<std::string> Script::getScriptText() const {
-		if (sourceMod == nullptr) {
+		if (sourceFile == nullptr) {
 			return {};
 		}
 
-		GameFile tempFile = GameFile(sourceMod->path, sourceMod->filename);
+		GameFile tempFile = GameFile(sourceFile->path, sourceFile->filename);
 		tempFile.collectActiveMods();
 		if (!tempFile.reopen()) {
 			return {};
