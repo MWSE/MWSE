@@ -642,20 +642,6 @@ namespace TES3 {
 		return getCellByGrid(cellX, cellY);
 	}
 
-	Cell* NonDynamicData::getMovedReferenceCell(const Reference* reference) {
-		if (!reference || !cells) {
-			return nullptr;
-		}
-
-		for (const auto cell : *cells) {
-			if (cell && cell->getMovedReference(reference)) {
-				return cell;
-			}
-		}
-
-		return nullptr;
-	}
-
 	static std::unordered_map<std::string, Cell*> cellByNameCache;
 
 	static std::string normalizeCellName(const char* name) {

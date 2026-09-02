@@ -106,11 +106,6 @@ namespace TES3 {
 		return TES3_Cell_reloadReference(this, sourceFile, reference, targetID);
 	}
 
-	const auto TES3_Cell_getMovedReference = reinterpret_cast<Cell::MovedRef* (__thiscall*)(const Cell*, const Reference*)>(0x4DC440);
-	Cell::MovedRef* Cell::getMovedReference(const Reference* reference) const {
-		return TES3_Cell_getMovedReference(this, reference);
-	}
-
 	const auto TES3_Cell_getOrCreateActivatorsNode = reinterpret_cast<NI::Node*(__thiscall*)(Cell*)>(0x4E2680);
 	NI::Node* Cell::getOrCreateActivatorsNode() {
 		return TES3_Cell_getOrCreateActivatorsNode(this);

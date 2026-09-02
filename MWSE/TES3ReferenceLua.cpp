@@ -77,8 +77,8 @@ namespace mwse::lua {
 		usertypeDefinition["sourceFormId"] = sol::readonly_property(&TES3::Reference::getSourceFormId);
 		usertypeDefinition["sourceModId"] = sol::readonly_property(&TES3::Reference::getSourceModId);
 		usertypeDefinition["supportsLuaData"] = sol::readonly_property(&TES3::Reference::getSupportsLuaData);
-		usertypeDefinition["startingOrientation"] = sol::readonly_property(&TES3::Reference::getStartingOrientation);
-		usertypeDefinition["startingPosition"] = sol::readonly_property(&TES3::Reference::getStartingPosition);
+		usertypeDefinition["startingOrientation"] = sol::readonly_property(&TES3::Reference::orientation);
+		usertypeDefinition["startingPosition"] = sol::readonly_property(&TES3::Reference::position);
 		usertypeDefinition["targetFormId"] = sol::readonly_property(&TES3::Reference::getTargetFormId);
 		usertypeDefinition["targetModId"] = sol::readonly_property(&TES3::Reference::getTargetModId);
 		usertypeDefinition["tempData"] = sol::readonly_property(&TES3::Reference::getLuaTempTable);

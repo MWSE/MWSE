@@ -1582,7 +1582,7 @@ namespace mwse::lua {
 			reference->clearActionFlag(TES3::ActionFlags::DoorOpening | TES3::ActionFlags::DoorClosing | TES3::ActionFlags::DoorJammedOpening | TES3::ActionFlags::DoorJammedClosing);
 
 			// Reset orientation.
-			auto orientationAttachment = reference->getTransformAttachment();
+			auto orientationAttachment = static_cast<TES3::NewOrientationAttachment*>(reference->getAttachment(TES3::AttachmentType::NewOrientation));
 			if (orientationAttachment) {
 				orientationAttachment->orientation.z = reference->orientation.z;
 			}
@@ -2411,7 +2411,7 @@ namespace mwse::lua {
 		sol::optional<NI::Point3> orientation = getOptionalParamPoint3(params, "orientation");
 		const auto userProvidedOrientation = orientation.has_value();
 		if (!userProvidedOrientation) {
-			orientation = *reference->getOrientation();
+			orientation = reference->orientation;
 		}
 
 		// Get the cell.
@@ -2428,16 +2428,14 @@ namespace mwse::lua {
 		}
 
 		// Are we doing a simple reposition?
-		const auto isPlayer = reference == playerRef;
-		const auto isMobileActor = reference->baseObject->isMobileCapableActor();
-		if (cell == reference->getCell() && (!isMobileActor || isPlayer) && !getOptionalParam<bool>(params, "forceCellChange", false)) {
+		if (cell == reference->getCell() && !getOptionalParam<bool>(params, "forceCellChange", false)) {
 			reference->setPosition(&position.value());
 			reference->setOrientation(&orientation.value());
 			return true;
 		}
 
 		// Are we dealing with the player? If so, use the special functions.
-		if (isPlayer) {
+		if (reference == playerRef) {
 			sol::optional<bool> suppressFaderOpt = params["suppressFader"];
 			bool suppressFader = suppressFaderOpt.value_or(false);
 			bool faderInitialState = TES3::DataHandler::get()->useCellTransitionFader;

@@ -232,23 +232,17 @@ namespace TES3 {
 	}
 
 	const auto TES3_MobileActor_resurrect = reinterpret_cast<void(__thiscall*)(MobileActor*, bool)>(0x529AF0);
+	void MobileActor::respawnAtStartingLocation() {
+		reference->returnToStartingLocation();
+		TES3_MobileActor_resurrect(this, true);
+	}
+
 	void MobileActor::resurrect(bool resetState, bool moveToStartingLocation) {
-		if (reference == nullptr) {
-			return;
-		}
-
 		if (resetState) {
-			// Vanilla fails to restore start position correctly. We'll force it.
-			if (moveToStartingLocation) {
-				reference->returnToStartingLocation();
-			}
-
 			// Original function will resurrect, but also reset the stats, inventory, and reference of non-players.
-			// We don't pass moveToStartingLocation because its code block sucks so we restore the location before calling.
-			return TES3_MobileActor_resurrect(this, false);
+			TES3_MobileActor_resurrect(this, moveToStartingLocation);
 		}
-		
-		if (isDead()) {
+		else if (this->isDead()) {
 			// Custom resurrect logic that revives with minimal state changes.
 			actionData.animStateAttack = AttackAnimationState::Idle;
 			actionData.aiBehaviorState = 0;

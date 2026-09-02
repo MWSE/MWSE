@@ -2315,15 +2315,11 @@ namespace mwse::patch {
 		return sRootSearchResult;
 	}
 
-	//
-	// Patch: Ensure that respawned actors get moved to their starting cell.
-	//
-
-	static void __fastcall PatchRespawnAtStartingLocation(TES3::MobileActor* mobile, DWORD _EDX_, bool moveToStartingLocation) {
-		mobile->resurrect(true, moveToStartingLocation);
+	static void __fastcall PatchRespawnMovedActorAtStartingLocation(TES3::MobileActor* mobile) {
+		mobile->respawnAtStartingLocation();
 	}
 
-	static void __cdecl PatchExpiredCorpseAtStartingLocation(TES3::Reference* reference) {
+	static void __cdecl PatchReturnReferenceToStartingLocation(TES3::Reference* reference) {
 		reference->returnToStartingLocation();
 	}
 
@@ -2368,7 +2364,6 @@ namespace mwse::patch {
 		genCallEnforced(0x50AC85, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
 		genCallEnforced(0x50ACAB, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
 		genCallEnforced(0x745FF0, 0x55D900, *reinterpret_cast<DWORD*>(&killCounter_getCount));
-
 #if MWSE_CUSTOM_KILLCOUNTER
 		auto killCounter_ctor = &TES3::KillCounter::ctor;
 		genCallEnforced(0x40DE9B, 0x55D750, *reinterpret_cast<DWORD*>(&killCounter_ctor));
@@ -2478,11 +2473,9 @@ namespace mwse::patch {
 		auto UVController_clone = &NI::UVController::copy;
 		genCallEnforced(0x722317, 0x722330, *reinterpret_cast<DWORD*>(&UVController_clone));
 
-		// Patch: Ensure that respawned actors get moved to their starting cell.
-		genCallEnforced(0x4E2A3A, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
-		genCallEnforced(0x4E2ABA, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
-		genCallEnforced(0x4EC015, 0x4EBB00, reinterpret_cast<DWORD>(PatchExpiredCorpseAtStartingLocation));
-		genCallEnforced(0x509EF8, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnAtStartingLocation));
+		// Restore respawning moved actors to the placement defined by their source file.
+		genCallEnforced(0x4E2ABA, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnMovedActorAtStartingLocation));
+		genCallEnforced(0x4EC015, 0x4EBB00, reinterpret_cast<DWORD>(PatchReturnReferenceToStartingLocation));
 
 		// Patch: Make globals less slow to access.
 #if MWSE_CUSTOM_GLOBALS

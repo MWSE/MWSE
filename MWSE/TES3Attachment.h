@@ -19,7 +19,7 @@ namespace TES3 {
 			Variables = 0x6,
 			ActorData = 0x8,
 			Action = 0x9,
-			Transform = 0xA
+			NewOrientation = 0xA
 		};
 	}
 
@@ -179,16 +179,15 @@ namespace TES3 {
 	static_assert(sizeof(ActionAttachment) == 0x10, "TES3::ActionAttachment failed size validation");
 	
 	//
-	// Position/orientation transforms.
-	// Stores the current transform for non-actors and the starting transform for actors.
+	// New Orientation
 	//
 
-	struct TransformAttachment : Attachment {
+	struct NewOrientationAttachment : Attachment {
 		NI::Point3 position;
 		NI::Point3 orientation;
 
-		TransformAttachment() = delete;
-		~TransformAttachment() = delete;
+		NewOrientationAttachment() = delete;
+		~NewOrientationAttachment() = delete;
 	};
-	static_assert(sizeof(TransformAttachment) == 0x20, "TES3::TransformAttachment failed size validation");
+	static_assert(sizeof(NewOrientationAttachment) == 0x20, "TES3::NewOrientationAttachment failed size validation");
 }

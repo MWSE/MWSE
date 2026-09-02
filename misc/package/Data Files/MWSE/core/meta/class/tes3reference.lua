@@ -67,8 +67,8 @@
 --- @field sourceFormId number No description yet available.
 --- @field sourceModId number No description yet available.
 --- @field stackSize number Access to the size of a stack, if the reference represents one or more items.
---- @field startingOrientation tes3vector3 *Read-only*. Access to the reference's starting orientation.
---- @field startingPosition tes3vector3 *Read-only*. Access to the reference's starting position.
+--- @field startingOrientation tes3vector3 *Read-only*. Access to the reference's original orientation. Note that this value is invalid for NPCs and creatures.
+--- @field startingPosition tes3vector3 *Read-only*. Access to the reference's original position. Note that this value is invalid for NPCs and creatures.
 --- @field supportsLuaData boolean If true, this reference can store temporary or persistent lua data.
 --- @field targetFormId number No description yet available.
 --- @field targetModId number No description yet available.
