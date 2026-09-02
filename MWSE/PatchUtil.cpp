@@ -2315,7 +2315,11 @@ namespace mwse::patch {
 		return sRootSearchResult;
 	}
 
-	static void __fastcall PatchRespawnMovedActorAtStartingLocation(TES3::MobileActor* mobile) {
+	//
+	// Patch: Restore respawning moved actors to the placement defined by their source file.
+	//
+
+	static void __fastcall PatchRespawnMovedActorAtStartingLocation(TES3::MobileActor* mobile, DWORD _, bool ignored) {
 		mobile->respawnAtStartingLocation();
 	}
 
