@@ -2316,6 +2316,18 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Restore respawning moved actors to the placement defined by their source file.
+	//
+
+	static void __fastcall PatchRespawnMovedActorAtStartingLocation(TES3::MobileActor* mobile, DWORD _, bool ignored) {
+		mobile->respawnAtStartingLocation();
+	}
+
+	static void __cdecl PatchReturnReferenceToStartingLocation(TES3::Reference* reference) {
+		reference->returnToStartingLocation();
+	}
+
+	//
 	// Install all the patches.
 	//
 
@@ -2464,6 +2476,10 @@ namespace mwse::patch {
 		// Patch: Fix NiUVController losing its texture set on clone.
 		auto UVController_clone = &NI::UVController::copy;
 		genCallEnforced(0x722317, 0x722330, *reinterpret_cast<DWORD*>(&UVController_clone));
+
+		// Restore respawning moved actors to the placement defined by their source file.
+		genCallEnforced(0x4E2ABA, 0x529AF0, reinterpret_cast<DWORD>(PatchRespawnMovedActorAtStartingLocation));
+		genCallEnforced(0x4EC015, 0x4EBB00, reinterpret_cast<DWORD>(PatchReturnReferenceToStartingLocation));
 
 		// Patch: Make globals less slow to access.
 #if MWSE_CUSTOM_GLOBALS
