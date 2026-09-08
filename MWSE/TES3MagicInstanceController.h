@@ -7,8 +7,16 @@
 namespace TES3 {
 	struct MagicInstanceController {
 		struct StlMap {
+			struct Node {
+				Node* left; // 0x0
+				Node* parent; // 0x4
+				Node* right; // 0x8
+				unsigned int key; // 0xC
+				void* value; // 0x10
+				char redBlack; // 0x14
+			};
 			char tag;
-			void * root;
+			Node* root;
 			char unknown_8;
 			size_t itemCount;
 
@@ -34,7 +42,7 @@ namespace TES3 {
 		void clearSpellEffect(Reference* reference, int castType, int percentChance, bool removeSpell);
 		MagicSourceInstance* getInstanceFromSerial(unsigned int serial);
 		void retireMagicBySerial(unsigned int serial);
-		void retireMagicCastedByActor(Reference* reference);
+		void retireMagicCastedByReference(Reference* reference);
 		void interruptCasting(Reference* reference);
 
 		//

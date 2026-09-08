@@ -261,6 +261,7 @@ namespace TES3 {
 		bool isActor() const;
 		bool isMobileCapableActor() const;
 		bool isItem() const;
+		bool isValidSpellTarget() const;
 		bool isWeaponOrAmmo() const;
 		const char* getSourceFilename() const;
 

@@ -6922,6 +6922,8 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::savePersistentTimers() {
+		const auto stateHandle = getThreadSafeStateHandle();
+
 		auto macp = TES3::WorldController::get()->getMobilePlayer();
 		if (macp == nullptr) {
 			return;
@@ -6960,6 +6962,8 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::restorePersistentTimers() {
+		const auto stateHandle = getThreadSafeStateHandle();
+
 		auto macp = TES3::WorldController::get()->getMobilePlayer();
 		if (macp == nullptr) {
 			return;
@@ -6982,6 +6986,8 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::clearPersistentTimers() {
+		const auto stateHandle = getThreadSafeStateHandle();
+
 		auto macp = TES3::WorldController::get()->getMobilePlayer();
 		if (macp == nullptr) {
 			return;
@@ -6992,6 +6998,8 @@ namespace mwse::lua {
 	}
 
 	void LuaManager::clearTimers() {
+		const auto stateHandle = getThreadSafeStateHandle();
+
 		realTimers->clearTimers();
 		simulateTimers->clearTimers();
 		gameTimers->clearTimers();
