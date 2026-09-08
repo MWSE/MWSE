@@ -104,4 +104,14 @@ namespace NI {
 		return minimum.x == Point3::MAX.x || minimum.y == Point3::MAX.y || minimum.z == Point3::MAX.z
 			|| maximum.x == Point3::MIN.x || maximum.y == Point3::MIN.y || maximum.z == Point3::MIN.z;
 	}
+
+	void BoundingBox::merge(const BoundingBox& other) {
+		minimum = minimum.min(other.minimum);
+		maximum = maximum.max(other.maximum);
+	}
+
+	void BoundingBox::merge(const Point3& point) {
+		minimum = minimum.min(point);
+		maximum = maximum.max(point);
+	}
 }

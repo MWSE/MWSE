@@ -48,6 +48,11 @@ namespace NI {
 		bool shouldBeAffectedByLight(const PointLight* light) const;
 		void updatePointLight(PointLight* light, bool isLand);
 		void sortDynamicEffects(bool isLand);
+
+		void updateCollisionData();
+
+		// Replaces the Update call in MobileActor's per-frame collision probe.
+		void updateForCollisionProbe(float fTime, bool bUpdateControllers, bool bUpdateChildren);
 	};
 	static_assert(sizeof(Node) == 0xB0, "NI::Node failed size validation");
 

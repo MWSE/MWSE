@@ -49,6 +49,10 @@ namespace NI {
 		Point3 min(const Point3& other) const;
 		Point3 max(const Point3& other) const;
 
+		// Axis access: 0 = x, 1 = y, 2 = z.
+		float& operator[](unsigned int axis) { return (&x)[axis]; }
+		float operator[](unsigned int axis) const { return (&x)[axis]; }
+
 		Point3 crossProduct(const Point3*) const;
 		float dotProduct(const Point3*) const;
 		Matrix33 outerProduct(const Point3*) const;
