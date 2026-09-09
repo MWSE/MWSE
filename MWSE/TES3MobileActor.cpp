@@ -232,6 +232,11 @@ namespace TES3 {
 	}
 
 	const auto TES3_MobileActor_resurrect = reinterpret_cast<void(__thiscall*)(MobileActor*, bool)>(0x529AF0);
+	void MobileActor::respawnAtStartingLocation() {
+		reference->returnToStartingLocation();
+		TES3_MobileActor_resurrect(this, true);
+	}
+
 	void MobileActor::resurrect(bool resetState, bool moveToStartingLocation) {
 		if (resetState) {
 			// Original function will resurrect, but also reset the stats, inventory, and reference of non-players.
