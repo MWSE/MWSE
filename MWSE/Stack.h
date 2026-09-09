@@ -5,23 +5,23 @@
 #include "Log.h"
 #include "StringUtil.h"
 
-/**
- * This Stack class is a singleton. It provides an
- * efficient push/pop mechanism for a parameter stack.
- *
- * Items on the stack are native types plus the two MWSE types.
- * No validation across push/pop operations are performed; that is,
- * no error will occur in the sequence of:
- *      pushLong(value);
- *      float value = popFloat(value);
- * save where the value defines a cast operator that validates
- * its value (as may be the case for mwseString).
- *
- * Basic usage:
- *      Stack::getInstance().pushLong(value);
- *      ....
- *      long value = Stack::getInstance().popLong(value);
- */
+/*
+This Stack class is a singleton. It provides an
+efficient push/pop mechanism for a parameter stack.
+
+Items on the stack are native types plus the two MWSE types.
+No validation across push/pop operations are performed; that is,
+no error will occur in the sequence of:
+	pushLong(value);
+	float value = popFloat(value);
+save where the value defines a cast operator that validates
+its value (as may be the case for mwseString).
+
+Basic usage:
+	Stack::getInstance().pushLong(value);
+	....
+	long value = Stack::getInstance().popLong(value);
+*/
 namespace mwse {
 
 	constexpr auto MWSE_DEBUG_STACK = false;
@@ -88,34 +88,34 @@ namespace mwse {
 			return *reinterpret_cast<float*>(&temp);
 		}
 
-		// pop <frame_count> frames from the stack`
-		void popFrames(size_t frame_count) {
-			stack_top -= frame_count > stack_top ? stack_top : frame_count;
+		// pop <frameCount> frames from the stack`
+		void popFrames(size_t frameCount) {
+			stackTop -= frameCount > stackTop ? stackTop : frameCount;
 		}
 
 		// Returns the element count of the stack.
 		size_t size() {
-			return stack_top;
+			return stackTop;
 		}
 
 		bool empty() {
-			return (stack_top == 0);
+			return (stackTop == 0);
 		}
 
 		// Clears the stack.
 		void clear() {
-			stack_top = 0;
+			stackTop = 0;
 		}
 
 		// Prints information about the Stack to the MWSE log file.
 		void dump() {
-			log::getLog() << std::dec << "Stack dump (Size: " << stack_top << "; Buffer Size: " << stack_size << "):" << std::endl;
-			for (size_t i = stack_top; i > 0; i--) {
-				log::getLog() << "\t" << std::dec << i - 1 << "\t" << std::hex << stack_storage[i - 1] << "h" << std::endl;
+			log::getLog() << std::dec << "Stack dump (Size: " << stackTop << "; Buffer Size: " << stackSize << "):" << std::endl;
+			for (size_t i = stackTop; i > 0; i--) {
+				log::getLog() << "\t" << std::dec << i - 1 << "\t" << std::hex << storage[i - 1] << "h" << std::endl;
 				if constexpr (MWSE_PRINT_DETAILED_STACK_DUMP) {
-					log::getLog() << "\t\tShort: " << std::dec << *reinterpret_cast<short*>(&stack_storage[i - 1]) << std::endl;
-					log::getLog() << "\t\tLong: " << std::dec << *reinterpret_cast<long*>(&stack_storage[i - 1]) << std::endl;
-					log::getLog() << "\t\tFloat: " << std::dec << *reinterpret_cast<float*>(&stack_storage[i - 1]) << std::endl;
+					log::getLog() << "\t\tShort: " << std::dec << *reinterpret_cast<short*>(&storage[i - 1]) << std::endl;
+					log::getLog() << "\t\tLong: " << std::dec << *reinterpret_cast<long*>(&storage[i - 1]) << std::endl;
+					log::getLog() << "\t\tFloat: " << std::dec << *reinterpret_cast<float*>(&storage[i - 1]) << std::endl;
 				}
 			}
 		}
@@ -126,43 +126,43 @@ namespace mwse {
 		static Stack singleton;
 
 		void push(StackItem_t value) {
-			if (stack_top >= stack_size) {
-				stack_size += stack_grow_size;
-				StackItem_t* new_stack = new StackItem_t[stack_size];
-				std::copy(stack_storage, stack_storage + stack_top, new_stack);
-				delete[] stack_storage;
-				stack_storage = new_stack;
+			if (stackTop >= stackSize) {
+				stackSize += stack_grow_size;
+				StackItem_t* newStack = new StackItem_t[stackSize];
+				std::copy(storage, storage + stackTop, newStack);
+				delete[] storage;
+				storage = newStack;
 			}
 
 			if constexpr (MWSE_DEBUG_STACK) {
-				log::getLog() << std::dec << "Stack: Pushing element " << stack_top << " as " << std::hex << value << "h" << std::endl;
+				log::getLog() << std::dec << "Stack: Pushing element " << stackTop << " as " << std::hex << value << "h" << std::endl;
 			}
 
-			stack_storage[stack_top] = value;
-			stack_top++;
+			storage[stackTop] = value;
+			stackTop++;
 
 			Flags::setFlags(value);	//set flags
 		}
 
 		StackItem_t pop() {
-			if (stack_top == 0) {
+			if (stackTop == 0) {
 				if constexpr (MWSE_DEBUG_STACK) {
 					mwse::log::getLog() << __FUNCTION__ << ": Stack is empty, but a pop was requested! Check function definition." << std::endl;
 				}
 
 				return 0;
 			}
-			stack_top--;
+			stackTop--;
 
 			if constexpr (MWSE_DEBUG_STACK) {
-				log::getLog() << std::dec << "Stack: Popping element " << stack_top << " as " << std::hex << stack_storage[stack_top] << "h" << std::endl;
+				log::getLog() << std::dec << "Stack: Popping element " << stackTop << " as " << std::hex << storage[stackTop] << "h" << std::endl;
 			}
 
-			return stack_storage[stack_top];
+			return storage[stackTop];
 		}
 
-		StackItem_t* stack_storage;  // dynamically sized array
-		size_t stack_size;     // current allocated size
-		size_t stack_top;      // current top (0=empty; 1=one item)
+		StackItem_t* storage;  // dynamically sized array
+		size_t stackSize;     // current allocated size
+		size_t stackTop;      // current top (0=empty; 1=one item)
 	};
 };

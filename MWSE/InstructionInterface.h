@@ -11,7 +11,7 @@ namespace mwse {
 		virtual float execute(VMExecuteInterface& virtualMachine) = 0;
 		virtual void loadParameters(VMExecuteInterface& virtualMachine) {}
 	protected:
-		InstructionInterface_t(const OpCode::OpCode_t ctor_opcode);
+		InstructionInterface_t(const OpCode::OpCode_t ctorOpCode);
 	private:
 		const OpCode::OpCode_t opcode;
 	};
