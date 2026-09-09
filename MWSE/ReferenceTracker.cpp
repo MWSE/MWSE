@@ -94,7 +94,7 @@ namespace mwse {
 		}
 
 		auto& references = referencesIt->second.references;
-		references.erase(std::remove(references.begin(), references.end(), reference), references.end());
+		std::erase(references, reference);
 		referencesIt->second.dirtyLookup = true;
 	}
 
@@ -457,12 +457,7 @@ namespace mwse {
 	}
 
 	static void invalidateCell(const TES3::Cell* cell) {
-		const auto itt = referenceLookupCellOrder.find(cell);
-		if (itt == referenceLookupCellOrder.end()) {
-			return;
-		}
-
-		referenceLookupCellOrder.erase(itt);
+		referenceLookupCellOrder.erase(cell);
 	}
 
 	static void invalidatePhysicalObject(const TES3::PhysicalObject* object) {
@@ -470,12 +465,7 @@ namespace mwse {
 			return;
 		}
 
-		const auto itt = referenceDataByObject.find(object);
-		if (itt == referenceDataByObject.end()) {
-			return;
-		}
-
-		referenceDataByObject.erase(itt);
+		referenceDataByObject.erase(object);
 	}
 
 	void ReferenceTracker::invalidateObject(TES3::BaseObject* object) {

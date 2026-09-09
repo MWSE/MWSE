@@ -2736,7 +2736,7 @@ namespace mwse::lua {
 	const std::array<std::string, 2> disabledMarkers = { ".disabled", ".mohidden" };
 
 	bool isPathDisabled(std::string_view path) {
-		const auto disabledPathItt = std::find_if(disabledMarkers.begin(), disabledMarkers.end(),
+		const auto disabledPathItt = std::ranges::find_if(disabledMarkers,
 			[&](std::string_view s) {
 				return path.find(s) != std::string::npos;
 			});
@@ -2777,7 +2777,7 @@ namespace mwse::lua {
 
 					// Get a version of its path as a key.
 					auto luaModKey = pathString.substr(path.length() + 1, pathString.length() - path.length() - scriptFilename.length() - 2);
-					std::replace(luaModKey.begin(), luaModKey.end(), '\\', '.');
+					std::ranges::replace(luaModKey, '\\', '.');
 					se::string::to_lower(luaModKey);
 
 					// Check for key conflicts.

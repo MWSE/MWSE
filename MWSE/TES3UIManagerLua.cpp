@@ -232,12 +232,12 @@ namespace mwse::lua {
 		auto& properties = eventCallbacksBefore[target];
 		auto& callbacks = properties[eventID];
 
-		auto existing = std::find_if(callbacks.begin(), callbacks.end(), [&](auto& s) { return s.callback == callback && s.priority == priority; });
+		auto existing = std::ranges::find_if(callbacks, [&](auto& s) { return s.callback == callback && s.priority == priority; });
 		if (existing != callbacks.end()) {
 			return;
 		}
 
-		auto pos = std::find_if(callbacks.begin(), callbacks.end(), [priority](auto& s) { return s.priority < priority; });
+		auto pos = std::ranges::find_if(callbacks, [priority](auto& s) { return s.priority < priority; });
 		callbacks.insert(pos, { callback, priority });
 
 		// Forward the event to our dispatcher.
@@ -262,12 +262,12 @@ namespace mwse::lua {
 		auto& properties = eventCallbacksAfter[target];
 		auto& callbacks = properties[eventID];
 
-		auto existing = std::find_if(callbacks.begin(), callbacks.end(), [&](auto& s) { return s.callback == callback && s.priority == priority; });
+		auto existing = std::ranges::find_if(callbacks, [&](auto& s) { return s.callback == callback && s.priority == priority; });
 		if (existing != callbacks.end()) {
 			return;
 		}
 
-		auto pos = std::find_if(callbacks.begin(), callbacks.end(), [priority](auto& s) { return s.priority < priority; });
+		auto pos = std::ranges::find_if(callbacks, [priority](auto& s) { return s.priority < priority; });
 		callbacks.insert(pos, { callback, priority });
 
 		// Forward the event to our dispatcher.

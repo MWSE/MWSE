@@ -1838,14 +1838,14 @@ namespace mwse::lua {
 
 	bool getFileExists(std::string path) {
 		// Sanitize path.
-		std::replace(path.begin(), path.end(), '/', '\\');
+		std::ranges::replace(path, '/', '\\');
 
 		return tes3::resolveAssetPath(path.c_str()) != TES3::FileLoadSource::Missing;
 	}
 
 	sol::optional<std::tuple<std::string, std::string>> getFileSource(std::string path) {
 		// Sanitize path.
-		std::replace(path.begin(), path.end(), '/', '\\');
+		std::ranges::replace(path, '/', '\\');
 
 		char buffer[512];
 		int result = tes3::resolveAssetPath(path.c_str(), buffer);
