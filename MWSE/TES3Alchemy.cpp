@@ -34,13 +34,9 @@ namespace TES3 {
 	}
 
 	size_t Alchemy::getActiveEffectCount() const {
-		size_t count = 0;
-		for (size_t i = 0; i < 8; ++i) {
-			if (effects[i].effectID != TES3::EffectID::None) {
-				count++;
-			}
-		}
-		return count;
+		return std::ranges::count_if(effects, [](const Effect& effect) {
+			return	effect.effectID != EffectID::None;
+		});
 	}
 
 	int Alchemy::getFirstIndexOfEffect(int effectId) const {
