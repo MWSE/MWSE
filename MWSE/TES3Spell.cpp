@@ -232,9 +232,13 @@ namespace TES3 {
 	}
 
 	size_t Spell::getActiveEffectCount() const {
-		return std::ranges::count_if(effects, [](const Effect& effect) {
-			return	effect.effectID != EffectID::None;
-		});
+		size_t count = 0;
+		for (size_t i = 0; i < 8; ++i) {
+			if (effects[i].effectID != TES3::EffectID::None) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	int Spell::getFirstIndexOfEffect(int effectId) const {
