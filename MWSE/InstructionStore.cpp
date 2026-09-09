@@ -17,9 +17,7 @@ void InstructionStore::add(InstructionInterface_t& implementation) {
 	InstructionInterface_t** secondary_table = opCode_primary_table[primary_index];
 	if (secondary_table == nullptr) {
 		opCode_primary_table[primary_index] = secondary_table = new InstructionInterface_t * [table_size];
-		for (int i = 0; i < table_size; ++i) {
-			secondary_table[i] = nullptr;
-		}
+		std::fill(secondary_table, secondary_table + table_size, nullptr);
 	}
 	secondary_table[secondary_index] = &implementation;
 }
