@@ -108,13 +108,17 @@ namespace TES3 {
 	}
 
 	void WorldControllerRenderTarget::beginFogCache() {
-		std::fill_n(sFogCache, sFogCacheCount, FogTileCacheEntry{});
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
 		sFogCacheActive = true;
 		sFogCacheCount = 0;
 	}
 
 	void WorldControllerRenderTarget::endFogCache() {
-		std::fill_n(sFogCache, sFogCacheCount, FogTileCacheEntry{});
+		for (auto i = 0u; i < sFogCacheCount; ++i) {
+			sFogCache[i] = {};
+		}
 		sFogCacheActive = false;
 		sFogCacheCount = 0;
 	}

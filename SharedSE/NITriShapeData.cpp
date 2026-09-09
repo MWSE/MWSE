@@ -61,30 +61,30 @@ namespace NI {
 		auto vertexCount = getActiveVertexCount();
 
 		Point3* _vertices = se::memory::_new<Point3>(vertexCount);
-		std::copy_n(vertex, vertexCount, _vertices);
+		memcpy_s(_vertices, sizeof(Point3) * vertexCount, vertex, sizeof(Point3) * vertexCount);
 
 		Point3* _normals = nullptr;
 		if (normal && copyNormals) {
 			_normals = se::memory::_new<Point3>(vertexCount);
-			std::copy_n(normal, vertexCount, _normals);
+			memcpy_s(_normals, sizeof(Point3) * vertexCount, normal, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* _colors = nullptr;
 		if (color && copyColors) {
 			_colors = se::memory::_new<PackedColor>(vertexCount);
-			std::copy_n(color, vertexCount, _colors);
+			memcpy_s(_colors, sizeof(PackedColor) * vertexCount, color, sizeof(PackedColor) * vertexCount);
 		}
 
 		Point2* _textureCoords = nullptr;
 		if (textureCoords && copyTextureCoordinates) {
 			_textureCoords = se::memory::_new<Point2>(vertexCount);
-			std::copy_n(textureCoords, vertexCount, _textureCoords);
+			memcpy_s(_textureCoords, sizeof(Point2) * vertexCount, textureCoords, sizeof(Point2) * vertexCount);
 		}
 
 		Triangle* _triangleList = nullptr;
 		if (triangleList) {
 			_triangleList = se::memory::_new<Triangle>(triangleCount);
-			std::copy_n(triangleList, triangleCount, _triangleList);
+			memcpy_s(_triangleList, sizeof(Triangle) * triangleCount, triangleList, sizeof(Triangle) * triangleCount);
 		}
 
 		auto result = create(vertexCount, _vertices, _normals, _colors, _textureCoords, triangleCount, _triangleList);
@@ -100,31 +100,31 @@ namespace NI {
 		auto vertexCount = getActiveVertexCount();
 
 		Point3* _vertices = se::memory::_new<Point3>(vertexCount);
-		std::copy_n(vertex, vertexCount, _vertices);
+		memcpy_s(_vertices, sizeof(Point3) * vertexCount, vertex, sizeof(Point3) * vertexCount);
 
 		Point3* _normals = nullptr;
 		if (normal && mwse::lua::getOptionalParam(filters, "normals", true)) {
 			_normals = se::memory::_new<Point3>(vertexCount);
-			std::copy_n(normal, vertexCount, _normals);
+			memcpy_s(_normals, sizeof(Point3) * vertexCount, normal, sizeof(Point3) * vertexCount);
 		}
 
 		PackedColor* _colors = nullptr;
 		if (color && mwse::lua::getOptionalParam(filters, "colors", true)) {
 			_colors = se::memory::_new<PackedColor>(vertexCount);
-			std::copy_n(color, vertexCount, _colors);
+			memcpy_s(_colors, sizeof(PackedColor) * vertexCount, color, sizeof(PackedColor) * vertexCount);
 		}
 
 		Point2* _textureCoords = nullptr;
 		if (textureCoords && mwse::lua::getOptionalParam(filters, "texCoords", true)) {
 			size_t textureCoordTotal = textureSets * vertexCount;
 			_textureCoords = se::memory::_new<Point2>(textureCoordTotal);
-			std::copy_n(textureCoords, textureCoordTotal, _textureCoords);
+			memcpy_s(_textureCoords, sizeof(Point2) * textureCoordTotal, textureCoords, sizeof(Point2) * textureCoordTotal);
 		}
 
 		Triangle* _triangleList = nullptr;
 		if (triangleList) {
 			_triangleList = se::memory::_new<Triangle>(triangleCount);
-			std::copy_n(triangleList, triangleCount, _triangleList);
+			memcpy_s(_triangleList, sizeof(Triangle) * triangleCount, triangleList, sizeof(Triangle) * triangleCount);
 		}
 
 		// Create data and update texture set count after creation, as the constructor call assumes there is only 0 or 1 texture set.

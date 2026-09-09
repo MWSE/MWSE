@@ -247,7 +247,9 @@ namespace mwse::tes3 {
 	TES3::Reference* exteriorRefs[9] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 	void clearExteriorRefs() {
-		std::ranges::fill(exteriorRefs, nullptr);
+		for (size_t i = 0; i < 9; ++i) {
+			exteriorRefs[i] = nullptr;
+		}
 	}
 
 	const auto TES3_newGame = reinterpret_cast<void(__stdcall*)()>(0x5FAEA0);

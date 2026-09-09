@@ -320,7 +320,9 @@ namespace NI {
 #else
 			auto newStorage = new T[size];
 #endif
-			std::copy_n(storage, endIndex, newStorage);
+			for (size_type i = 0; i < endIndex; ++i) {
+				newStorage[i] = storage[i];
+			}
 #if !defined(MWSE_NO_CUSTOM_ALLOC) || MWSE_NO_CUSTOM_ALLOC == 0
 			se::memory::_delete(storage);
 #else
