@@ -40,11 +40,9 @@ namespace se::cs::toml_util {
 		}
 		case toml::value_t::array:
 		{
-			if (rhs.as_array().size() != lhs.as_array().size()) { return false; }
-			for (size_t i = 0; i < rhs.as_array().size(); ++i) {
-				if (!valuesEqual(lhs.as_array().at(i), rhs.as_array().at(i))) { return false; }
-			}
-			return true;
+			return std::ranges::equal(lhs.as_array(), rhs.as_array(), [](const toml::value& lhsVal, const toml::value& rhsVal) {
+				return valuesEqual(lhsVal, rhsVal);
+			});
 		}
 		case toml::value_t::table:
 		{
@@ -54,8 +52,10 @@ namespace se::cs::toml_util {
 			}
 			return true;
 		}
-		case toml::value_t::empty: {return true; }
-		default: {return false; }
+		case toml::value_t::empty:
+			return true;
+		default:
+			return false;
 		}
 	}
 
