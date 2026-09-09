@@ -12,8 +12,12 @@ namespace se::cs {
 			return true;
 		}
 
-		return std::ranges::any_of(rankNames, [&](const auto& rank) {
-			return string::complex_contains(rank, needle, settings, regex);
-		});
+		for (const auto& rank : rankNames) {
+			if (string::complex_contains(rank, needle, settings, regex)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
