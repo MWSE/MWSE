@@ -200,7 +200,7 @@ namespace se::cs::dialog::render_window {
 		// Set rotation
 		// If we're moving on Z axis, align the grid vertically.
 		if (snapZ) {
-			const auto worldUp = NI::Point3(0, 0, 1);
+			const auto worldUp = NI::Point3::UNIT_Z;
 			auto camera = RenderController::get()->camera;
 
 			auto up = position - camera->worldTransform.translation;
