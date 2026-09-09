@@ -1415,9 +1415,8 @@ namespace TES3 {
 			}
 			// Warning: Unequipping lights during menumode with updateGUI=true triggers a Morrowind crash.
 			// UI update has been moved to a separate function.
-			for (auto it : matches) {
-				s = it;
-				actor->unequipItem(s->object, true, this, false, s->itemData);
+			for (auto stack : matches) {
+				actor->unequipItem(stack->object, true, this, false, stack->itemData);
 			}
 			actor->postUnequipUIRefresh(this);
 		}
