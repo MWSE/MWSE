@@ -4665,9 +4665,8 @@ namespace mwse::lua {
 		DispatchCopiedObjectEvent(self, from);
 	}
 
-	template <typename T, DWORD address>
+	template <TES3Object T, DWORD address>
 	bool OverwriteCopyObjectVirtualCall(TES3::VirtualTableAddress::VirtualTableAddress vTableAddress) {
-		static_assert(std::is_base_of<TES3::Object, T>::value, "Attempt to override virtual table of non-TES3::Object class.");
 		return se::memory::overrideVirtualTableEnforced(vTableAddress, 0x24, address, reinterpret_cast<DWORD>(&CopyObject<T, address>));
 	}
 

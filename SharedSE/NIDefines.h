@@ -132,3 +132,12 @@ namespace NI {
 	struct TriBasedGeometryData_vTable;
 	struct TriShape_vTable;
 }
+
+template<typename T>
+concept NIObject = std::derived_from<T, NI::Object>;
+
+template<typename T>
+concept NIObjectNET = std::derived_from<T, NI::ObjectNET>;
+
+template<typename T>
+concept NIAVObject = std::derived_from<T, NI::AVObject>;

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <charconv>
 #include <chrono>
+#include <concepts>
 #include <exception>
 #include <filesystem>
 #include <fstream>
