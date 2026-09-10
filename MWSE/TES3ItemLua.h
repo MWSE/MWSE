@@ -5,9 +5,8 @@
 #include "TES3Enchantment.h"
 
 namespace mwse::lua {
-	template <typename T>
+	template <TES3Item T>
 	void setUserdataForTES3Item(sol::usertype<T>& usertypeDefinition) {
-		static_assert(std::is_base_of<TES3::Item, T>::value, "Type must inherit from TES3::Item.");
 		setUserdataForTES3PhysicalObject(usertypeDefinition);
 
 		// Functions exposed as properties.
