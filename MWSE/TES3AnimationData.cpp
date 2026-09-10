@@ -73,6 +73,11 @@ namespace TES3 {
 		playAnimationGroupForIndex(animationGroup, 2, startFlag, loopCount);
 	}
 
+	const auto TES3_AnimationData_calcRootMovement = reinterpret_cast<void(__thiscall*)(AnimationData*, unsigned char)>(0x46FD80);
+	void AnimationData::calcRootMovement(int animationGroup) {
+		TES3_AnimationData_calcRootMovement(this, static_cast<unsigned char>(animationGroup));
+	}
+
 	const auto TES3_AnimationData_setLayerKeyframes = reinterpret_cast<bool(__thiscall*)(AnimationData*, KeyframeDefinition*, int, bool)>(0x46BA30);
 	const auto TES3_AnimationData_mergeAnimGroups = reinterpret_cast<void(__thiscall*)(AnimationData*, AnimationGroup*, int)>(0x4708D0);
 
