@@ -2,6 +2,7 @@
 
 // Standard template libraries.
 #include <algorithm>
+#include <bit>
 #include <charconv>
 #include <chrono>
 #include <exception>
