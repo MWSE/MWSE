@@ -603,8 +603,8 @@ namespace TES3 {
 
 	void BaseObject::clearCachedLuaObjects() {
 		const auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-		for (auto& item : baseObjectCache) {
-			mwse::lua::clearUserdataPointer(item.second);
+		for (auto& [_, object] : baseObjectCache) {
+			mwse::lua::clearUserdataPointer(object);
 		}
 		baseObjectCache.clear();
 	}

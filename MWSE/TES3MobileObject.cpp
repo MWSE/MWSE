@@ -402,8 +402,8 @@ namespace TES3 {
 
 	void MobileObject::clearCachedLuaObjects() {
 		mobileObjectCacheMutex.lock();
-		for (auto& item : mobileObjectCache) {
-			mwse::lua::clearUserdataPointer(item.second);
+		for (auto& [_, object] : mobileObjectCache) {
+			mwse::lua::clearUserdataPointer(object);
 		}
 		mobileObjectCache.clear();
 		mobileObjectCacheMutex.unlock();

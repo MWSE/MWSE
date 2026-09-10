@@ -31,10 +31,9 @@ namespace se::cs::dialog::layer_window {
 	LayerData::~LayerData() noexcept {
 		clearLayer();
 
-		for (auto& kv : nodeMaterialData) {
-			NodeColorData* p = kv.second;
-			if (p) {
-				delete p;
+		for (auto& [_, colorData] : nodeMaterialData) {
+			if (colorData) {
+				delete colorData;
 			}
 		}
 		nodeMaterialData.clear();
@@ -336,8 +335,8 @@ namespace se::cs::dialog::layer_window {
 	void LayerData::clearLayer() {
 		// copy to avoid problems with modification during iteration
 		auto c_perCellReferences = this->perCellReferences;
-		for (auto& cell_data : c_perCellReferences) {
-			for (auto objRef : cell_data.second) {
+		for (auto& [_, references] : c_perCellReferences) {
+			for (auto objRef : references) {
 				this->removeObject(objRef);
 			}
 		}
@@ -367,8 +366,8 @@ namespace se::cs::dialog::layer_window {
 
 	size_t LayerData::get_counts() {
 		size_t total = 0;
-		for (auto& cell_data : perCellReferences) {
-			total += cell_data.second.size();
+		for (const auto& [_, references] : perCellReferences) {
+			total += references.size();
 		}
 		return total;
 	}

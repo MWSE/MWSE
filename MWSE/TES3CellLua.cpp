@@ -69,9 +69,9 @@ namespace mwse::lua {
 			}
 			else if (param.value().is<sol::table>()) {
 				sol::table filterTable = param.value().as<sol::table>();
-				for (const auto& kv : filterTable) {
-					if (kv.second.is<unsigned int>()) {
-						filters.insert(kv.second.as<unsigned int>());
+				for (const auto& [_, value] : filterTable) {
+					if (value.is<unsigned int>()) {
+						filters.insert(value.as<unsigned int>());
 					}
 				}
 			}
