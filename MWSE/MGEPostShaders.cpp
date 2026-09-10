@@ -46,8 +46,8 @@ namespace mge {
 		sol::state_view state(ts);
 		auto table = state.create_table();
 
-		for (auto& v : variableTypes) {
-			table[v.first] = v.second;
+		for (auto& [key, value] : variableTypes) {
+			table[key] = value;
 		}
 
 		return table;

@@ -102,8 +102,8 @@ namespace TES3::UI {
 	}
 
 	void Element::clearCachedLuaObjects() {
-		for (auto& item : uiElementCache) {
-			mwse::lua::clearUserdataPointer(item.second);
+		for (auto& [_, object] : uiElementCache) {
+			mwse::lua::clearUserdataPointer(object);
 		}
 		uiElementCache.clear();
 	}

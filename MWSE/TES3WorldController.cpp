@@ -372,11 +372,11 @@ namespace TES3 {
 		recordHolder.writeFileHeader(file);
 
 		// Write out individual kills.
-		for (auto& itt : *counter) {
-			if (itt.second > 0) {
-				const char* id = itt.first->getObjectID();
+		for (const auto& [actor, killCount] : *counter) {
+			if (killCount > 0) {
+				const char* id = actor->getObjectID();
 				file->writeChunkString('MANK', id);
-				file->writeChunkValue('MANC', itt.second);
+				file->writeChunkValue('MANC', killCount);
 			}
 		}
 
