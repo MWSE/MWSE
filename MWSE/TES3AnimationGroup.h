@@ -29,6 +29,8 @@ namespace TES3 {
 		AnimationGroup() = delete;
 		~AnimationGroup() = delete;
 
+		void dtor();
+
 		std::span<int> getActionFrames();
 		std::span<float> getActionTimings();
 		std::span<SoundGenKey> getSoundGenKeys();

@@ -2288,8 +2288,9 @@ namespace mwse::patch {
 	//
 	// Patch: Cache root movement speeds per animation group.
 	//
-	// Entries are validated by group id and action timing table identity, served only to actors that
-	// meet calcRootMovement's own preconditions, and never stored from a call that did not write the speed.
+	// Entries are evicted before their animation group is destroyed and validated by group id and
+	// action timing table identity. Only actors meeting calcRootMovement's own preconditions use the
+	// cache, and calls that did not write the speed are never stored.
 	//
 
 	namespace PatchCacheRootMovementSpeed {
@@ -3197,6 +3198,8 @@ namespace mwse::patch {
 
 		// Patch: Cache root movement speeds per animation group.
 		genCallEnforced(0x47092B, 0x46FD80, reinterpret_cast<DWORD>(&PatchCacheRootMovementSpeed::OnCalcRootMovement)); // ActorAnimationData::mergeAnimGroups -> calcRootMovement
+		auto animationGroup_dtor = &TES3::AnimationGroup::dtor;
+		genCallEnforced(0x492863, 0x492880, *reinterpret_cast<DWORD*>(&animationGroup_dtor)); // AnimationGroup::deleting_dtor -> dtor
 
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
@@ -3481,5 +3484,16 @@ namespace mwse::patch {
 			CrashLogger::s_originalFilter = SetUnhandledExceptionFilter(MWSEUnhandledExceptionFilter);
 		}
 		return true;
+	}
+}
+
+namespace TES3 {
+	const auto TES3_AnimationGroup_dtor = reinterpret_cast<void(__thiscall*)(AnimationGroup*)>(0x492880);
+	void AnimationGroup::dtor() {
+		{
+			std::lock_guard lock(mwse::patch::PatchCacheRootMovementSpeed::sCacheMutex);
+			mwse::patch::PatchCacheRootMovementSpeed::sCache.erase(this);
+		}
+		TES3_AnimationGroup_dtor(this);
 	}
 }
