@@ -85,23 +85,8 @@ namespace mwse::lua {
 		}
 
 		auto argCount = definition.argumentConverters.size();
-		if (argCount > 0) {
-			luaFunctionArguments.push_back(definition.argumentConverters[0](arg0));
-			if (argCount > 1) {
-				luaFunctionArguments.push_back(definition.argumentConverters[1](arg1));
-				if (argCount > 2) {
-					luaFunctionArguments.push_back(definition.argumentConverters[2](arg2));
-					if (argCount > 3) {
-						luaFunctionArguments.push_back(definition.argumentConverters[3](arg3));
-						if (argCount > 4) {
-							luaFunctionArguments.push_back(definition.argumentConverters[4](arg4));
-							if (argCount > 5) {
-								luaFunctionArguments.push_back(definition.argumentConverters[5](arg5));
-							}
-						}
-					}
-				}
-			}
+		for (unsigned i = 0u; i < argCount; ++i) {
+			luaFunctionArguments.push_back(definition.argumentConverters[i]);
 		}
 
 		return &definitionItt->second;
