@@ -3,7 +3,7 @@
 #include "NINode.h"
 
 namespace se::cs {
-	Attachment* Reference::getAttachment(Attachment::Type type) const {
+	Attachment* Reference::getAttachment(TES3::AttachmentType::AttachmentType type) const {
 		auto attachment = firstAttachment;
 		while (attachment) {
 			if (attachment->type == type) {

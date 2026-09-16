@@ -4,23 +4,11 @@
 
 #include "NIObject.h"
 
+#include "TES3AttachmentFlags.h"
+
 namespace se::cs {
 	struct Attachment {
-		enum class Type : unsigned int {
-			Animation = 0,
-			BodyPartManager = 1,
-			Light = 2,
-			Lock = 3,
-			LeveledBaseReference = 4,
-			TravelDestination = 5,
-			Variables = 6,
-			LoadDoorBackReference = 7,
-			ActorData = 8,
-			Action = 9,
-			NewOrientation = 10,
-		};
-
-		Type type; // 0x0
+		TES3::AttachmentType::AttachmentType type; // 0x0
 		Attachment* next; // 0x4
 	};
 	static_assert(sizeof(Attachment) == 0x8, "TES3::Attachment failed size validation");
@@ -82,7 +70,7 @@ namespace se::cs {
 		int targetID; // Master index?
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
-		Attachment* getAttachment(Attachment::Type type) const;
+		Attachment* getAttachment(TES3::AttachmentType::AttachmentType type) const;
 		LightAttachmentNode* getLightAttachment() const;
 		TravelDestination* getTravelDestination() const;
 		Reference* getDoorMarkerBackReference() const;

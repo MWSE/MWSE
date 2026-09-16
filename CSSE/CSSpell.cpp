@@ -3,12 +3,12 @@
 #include "StringUtil.h"
 
 namespace se::cs {
-	bool Spell::getSpellFlag(SpellFlag::Flag flag) const {
+	bool Spell::getSpellFlag(TES3::SpellFlag::Flag flag) const {
 		return (spellFlags & flag) == flag;
 	}
 
 	bool Spell::getPlayerStart() const {
-		return getSpellFlag(SpellFlag::PCStartSpell);
+		return getSpellFlag(TES3::SpellFlag::PCStartSpell);
 	}
 
 	bool Spell::search(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {

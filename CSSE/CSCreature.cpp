@@ -20,10 +20,10 @@ namespace se::cs {
 	}
 
 	bool Creature::getIsBipedal() const {
-		return (actorFlags & ActorFlagCreature::Biped);
+		return (actorFlags & TES3::ActorFlagCreature::Biped);
 	}
 
 	bool Creature::getUsesWeaponAndShield() const {
-		return (actorFlags & ActorFlagCreature::WeaponAndShield);
+		return (actorFlags & TES3::ActorFlagCreature::WeaponAndShield);
 	}
 }

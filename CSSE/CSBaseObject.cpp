@@ -15,11 +15,11 @@ namespace se::cs {
 	}
 
 	bool BaseObject::isFromMaster() const {
-		return (flags & 0x1);
+		return BIT_TEST(flags, TES3::ObjectFlag::FromMasterBit);
 	}
 
 	bool BaseObject::getModified() const {
-		return (flags & 0x2) != 0;
+		return BIT_TEST(flags, TES3::ObjectFlag::ModifiedBit);
 	}
 
 	void BaseObject::setModified(bool modified) {
@@ -27,7 +27,7 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getDeleted() const {
-		return (flags & 0x20);
+		return BIT_TEST(flags, TES3::ObjectFlag::DeleteBit);
 	}
 
 	void BaseObject::setDeleted(bool deleted) {
@@ -36,19 +36,27 @@ namespace se::cs {
 	}
 
 	bool BaseObject::getPersists() const {
-		return (flags & 0x400);
+		return BIT_TEST(flags, TES3::ObjectFlag::PersistentBit);
 	}
 
 	bool BaseObject::getBlocked() const {
-		return (flags & 0x2000);
+		return BIT_TEST(flags, TES3::ObjectFlag::BlockedBit);
+	}
+
+	bool BaseObject::getScaleModifiedToOne() const {
+		return BIT_TEST(flags, TES3::ObjectFlag::ScaleModifiedToOneBit);
+	}
+
+	void BaseObject::setScaleModifiedToOne(bool value) {
+		BIT_SET(flags, TES3::ObjectFlag::ScaleModifiedToOneBit, value);
 	}
 
 	bool BaseObject::isMobileCapableActor() const {
 		switch (objectType) {
-		case ObjectType::Creature:
-		case ObjectType::CreatureClone:
-		case ObjectType::NPC:
-		case ObjectType::NPCClone:
+		case TES3::ObjectType::Creature:
+		case TES3::ObjectType::CreatureClone:
+		case TES3::ObjectType::NPC:
+		case TES3::ObjectType::NPCClone:
 			return true;
 		default:
 			return false;
@@ -70,15 +78,15 @@ namespace se::cs {
 
 	bool BaseObject::searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex) const {
 		switch (objectType) {
-		case ObjectType::Birthsign:
+		case TES3::ObjectType::Birthsign:
 			return static_cast<const Birthsign*>(this)->search(needle, settings, regex);
-		case ObjectType::Class:
+		case TES3::ObjectType::Class:
 			return static_cast<const Class*>(this)->search(needle, settings, regex);
-		case ObjectType::Faction:
+		case TES3::ObjectType::Faction:
 			return static_cast<const Faction*>(this)->search(needle, settings, regex);
-		case ObjectType::Script:
+		case TES3::ObjectType::Script:
 			return static_cast<const Script*>(this)->search(needle, settings, regex);
-		case ObjectType::Race:
+		case TES3::ObjectType::Race:
 			return static_cast<const Race*>(this)->search(needle, settings, regex);
 		}
 

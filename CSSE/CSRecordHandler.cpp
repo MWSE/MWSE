@@ -98,7 +98,7 @@ namespace se::cs {
 	}
 
 	MagicEffect* RecordHandler::getMagicEffect(int id) {
-		if (id < EffectID::FirstEffect || id > EffectID::LastEffect) {
+		if (id < TES3::EffectID::FirstEffect || id > TES3::EffectID::LastEffect) {
 			return nullptr;
 		}
 		return &magicEffects[id];

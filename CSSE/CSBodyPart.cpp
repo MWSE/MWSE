@@ -2,11 +2,11 @@
 
 namespace se::cs {
 	bool BodyPart::getIsFemale() const {
-		return (flags & BodyPartFlag::Female) != 0;
+		return (flags & TES3::BodyPartFlag::Female) != 0;
 	}
 
 	bool BodyPart::getIsPlayable() const {
-		return (flags & BodyPartFlag::Playable) == 0;
+		return (flags & TES3::BodyPartFlag::NotPlayable) == 0;
 	}
 
 	const char* BodyPart::getPartName() const {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TES3Defines.h"
-
+#include "TES3RaceFlags.h"
 #include "TES3Object.h"
 
 namespace TES3 {
@@ -67,14 +67,6 @@ namespace TES3 {
 			Clavicle,
 			Tail,
 			COUNT,
-		};
-		enum Flag : unsigned int {
-			Playable = 0x1,
-			Beast = 0x2,
-		};
-		enum FlagBit : unsigned int {
-			PlayableBit = 0,
-			BeastBit = 1,
 		};
 
 		char id[32]; // 0x10

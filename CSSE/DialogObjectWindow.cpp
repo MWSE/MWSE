@@ -99,7 +99,7 @@ namespace se::cs::dialog::object_window {
 	// Patch: Replace column logic so we can add columns wherever we want.
 	//
 
-	TabController* __fastcall PatchColumnLogic_ctor(TabController* controller, DWORD _EDX_, ObjectType::ObjectType objectType) {
+	TabController* __fastcall PatchColumnLogic_ctor(TabController* controller, DWORD _EDX_, TES3::ObjectType::ObjectType objectType) {
 		memory::_delete(controller);
 
 		return new TabController(objectType);
@@ -491,8 +491,8 @@ namespace se::cs::dialog::object_window {
 		return context.getResult();
 	}
 
-	int getTabForObjectType(ObjectType::ObjectType objectType) {
-		const auto objectTypesForTab = (ObjectType::ObjectType*)0x6A3CC4;
+	int getTabForObjectType(TES3::ObjectType::ObjectType objectType) {
+		const auto objectTypesForTab = (TES3::ObjectType::ObjectType*)0x6A3CC4;
 		for (auto i = 0u; i < Tab::COUNT; ++i) {
 			if (objectTypesForTab[i] == objectType) {
 				return i;

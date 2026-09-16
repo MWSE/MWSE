@@ -3001,7 +3001,7 @@ namespace se::cs::dialog::render_window {
 					focusReference(loadDoor);
 				}
 			}
-			else if (baseObject->objectType == ObjectType::Door) {
+			else if (baseObject->objectType == TES3::ObjectType::Door) {
 				const auto travelDestination = reference->getTravelDestination();
 				if (travelDestination) {
 					focusReference(travelDestination->destination);
@@ -3228,6 +3228,7 @@ namespace se::cs::dialog::render_window {
 			if (!obj || obj->getDeleted()) {
 				return false;
 			}
+			using TES3::ObjectType::ObjectType;
 			switch (obj->objectType) {
 			case ObjectType::Activator:
 			case ObjectType::Apparatus:

@@ -32,7 +32,7 @@ namespace se::cs {
 
 	std::span<GameSettingInitializer> GameSettingInitializer::get() {
 		const auto initializers = reinterpret_cast<GameSettingInitializer*>(0x6A8128);
-		return std::span(initializers, GMST::COUNT);
+		return std::span(initializers, TES3::GMST::COUNT);
 	}
 
 	//

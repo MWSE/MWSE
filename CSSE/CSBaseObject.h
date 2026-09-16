@@ -1,16 +1,10 @@
 #pragma once
 
 #include "CSDefines.h"
+#include "TES3ObjectType.h"
+#include "TES3ObjectFlags.h"
 
 namespace se::cs {
-	namespace ObjectFlag {
-		typedef unsigned int value_type;
-
-		enum Flag : value_type {
-			ScaleModifiedToOne = 0x8000
-		};
-	}
-
 	struct BaseObject_VirtualTable {
 		void(__thiscall* destructor)(BaseObject*, signed char); // 0x0
 		int(__thiscall* loadObjectSpecific)(BaseObject*, GameFile*); // 0x4
@@ -29,7 +23,7 @@ namespace se::cs {
 			Object_VirtualTable* object;
 			Actor_VirtualTable* actor;
 		} vtbl; // 0x0
-		ObjectType::ObjectType objectType; // 0x4
+		TES3::ObjectType::ObjectType objectType; // 0x4
 		unsigned int flags; // 0x8
 		GameFile* sourceFile; // 0xC
 
@@ -42,6 +36,8 @@ namespace se::cs {
 		void setDeleted(bool deleted);
 		bool getPersists() const;
 		bool getBlocked() const;
+		bool getScaleModifiedToOne() const;
+		void setScaleModifiedToOne(bool value);
 
 		bool isMobileCapableActor() const;
 

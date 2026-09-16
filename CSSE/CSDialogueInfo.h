@@ -2,6 +2,8 @@
 
 #include "CSBaseObject.h"
 
+#include "TES3DialogueFlags.h"
+
 namespace se::cs {
 	struct DialogueInfo : BaseObject {
 		struct LoadLinkNode {
@@ -16,35 +18,10 @@ namespace se::cs {
 				BaseObject* object;
 				Dialogue* dialogue;
 			} compareValue; // 0x0
-			char type; // 0x4
-			char unknown_0x5;
+			TES3::DialogueConditionalType type; // 0x4
+			TES3::DialogueConditionalConstantType constantType;
 			int compareOp; //0x8
 			float value; // 0xC
-
-			enum CompareOp {
-				Equal,
-				NotEqual,
-				GreaterThan,
-				GreaterThanOrEqual,
-				LessThan,
-				LessThanOrEqual,
-			};
-
-			enum Type {
-				TypeNone,
-				TypeFunction,
-				TypeGlobal,
-				TypeLocal,
-				TypeJournal,
-				TypeItem,
-				TypeDead,
-				TypeNotID,
-				TypeNotFaction,
-				TypeNotClass,
-				TypeNotRace,
-				TypeNotCell,
-				TypeNotLocal,
-			};
 		};
 		LoadLinkNode* loadLinkNodes; // 0x10
 		bool hasSound; // 0x14

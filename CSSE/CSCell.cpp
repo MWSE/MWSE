@@ -8,11 +8,11 @@
 
 namespace se::cs {
 	bool Cell::getIsInterior() const {
-		return cellFlags & CellFlag::Interior;
+		return cellFlags & TES3::CellFlag::Interior;
 	}
 
 	bool Cell::getBehavesAsExterior() const {
-		return cellFlags & CellFlag::BehavesAsExterior;
+		return cellFlags & TES3::CellFlag::BehavesAsExterior;
 	}
 
 	bool Cell::getIsOrBehavesAsExterior() const {
@@ -86,7 +86,7 @@ namespace se::cs {
 		}
 
 		// Fallback to GMST.
-		return DataHandler::get()->recordHandler->gameSettingsHandler->gameSettings[GMST::sDefaultCellname]->value.asString;
+		return DataHandler::get()->recordHandler->gameSettingsHandler->gameSettings[TES3::GMST::sDefaultCellname]->value.asString;
 	}
 
 	std::string Cell::getEditorId() const {

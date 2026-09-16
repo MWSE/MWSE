@@ -27,19 +27,19 @@ namespace TES3 {
 	}
 
 	bool Race::getIsPlayable() const {
-		return BIT_TEST(flags, PlayableBit);
+		return BIT_TEST(flags, RaceFlag::PlayableBit);
 	}
 
 	void Race::setIsPlayable(bool value) {
-		BIT_SET(flags, PlayableBit, value);
+		BIT_SET(flags, RaceFlag::PlayableBit, value);
 	}
 
 	bool Race::getIsBeast() const {
-		return BIT_TEST(flags, BeastBit);
+		return BIT_TEST(flags, RaceFlag::BeastBit);
 	}
 
 	void Race::setIsBeast(bool value) {
-		BIT_SET(flags, BeastBit, value);
+		BIT_SET(flags, RaceFlag::BeastBit, value);
 	}
 
 	sol::optional<std::string> Race::getAndLoadDescription() {

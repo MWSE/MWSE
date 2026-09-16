@@ -25,40 +25,40 @@ namespace se::cs {
 		if (skill >= 0 && getFlagTargetSkill()) {
 			const auto skillName = ndd->getGameSettingForSkill(skill)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifySkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectFortifySkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectDrainSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectDrainSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectDamageSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectDamageSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectRestoreSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectRestoreSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString << " " << skillName;
 				break;
-			case GMST::sEffectAbsorbSkill:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString << " " << skillName;
+			case TES3::GMST::sEffectAbsorbSkill:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString << " " << skillName;
 				break;
 			}
 		}
 		else if (attribute >= 0 && getFlagTargetAttribute()) {
 			const auto attributeName = ndd->getGameSettingForAttribute(attribute)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifyAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectFortifyAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectDrainAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectDrainAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectDamageAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectDamageAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectRestoreAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectRestoreAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString << " " << attributeName;
 				break;
-			case GMST::sEffectAbsorbAttribute:
-				ss << ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString << " " << attributeName;
+			case TES3::GMST::sEffectAbsorbAttribute:
+				ss << ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString << " " << attributeName;
 				break;
 			}
 		}
@@ -73,7 +73,7 @@ namespace se::cs {
 	}
 
 	int MagicEffect::getNameGMST() const {
-		if (id < EffectID::FirstEffect || id > EffectID::LastEffect) {
+		if (id < TES3::EffectID::FirstEffect || id > TES3::EffectID::LastEffect) {
 			return -1;
 		}
 		const auto gConvertEffectToGMST = reinterpret_cast<int*>(0x6A7E74);
@@ -101,139 +101,139 @@ namespace se::cs {
 	}
 
 	bool MagicEffect::getFlagTargetSkill() const {
-		return getEffectFlag(EffectFlag::TargetSkillBit);
+		return getEffectFlag(TES3::EffectFlag::TargetSkillBit);
 	}
 
 	void MagicEffect::setFlagTargetSkill(bool value) const {
-		setEffectFlag(EffectFlag::TargetSkillBit, value);
+		setEffectFlag(TES3::EffectFlag::TargetSkillBit, value);
 	}
 
 	bool MagicEffect::getFlagTargetAttribute() const {
-		return getEffectFlag(EffectFlag::TargetAttributeBit);
+		return getEffectFlag(TES3::EffectFlag::TargetAttributeBit);
 	}
 
 	void MagicEffect::setFlagTargetAttribute(bool value) const {
-		setEffectFlag(EffectFlag::TargetAttributeBit, value);
+		setEffectFlag(TES3::EffectFlag::TargetAttributeBit, value);
 	}
 
 	bool MagicEffect::getFlagNoDuration() const {
-		return getEffectFlag(EffectFlag::NoDurationBit);
+		return getEffectFlag(TES3::EffectFlag::NoDurationBit);
 	}
 
 	void MagicEffect::setFlagNoDuration(bool value) const {
-		setEffectFlag(EffectFlag::NoDurationBit, value);
+		setEffectFlag(TES3::EffectFlag::NoDurationBit, value);
 	}
 
 	bool MagicEffect::getFlagNoMagnitude() const {
-		return getEffectFlag(EffectFlag::NoMagnitudeBit);
+		return getEffectFlag(TES3::EffectFlag::NoMagnitudeBit);
 	}
 
 	void MagicEffect::setFlagNoMagnitude(bool value) const {
-		setEffectFlag(EffectFlag::NoMagnitudeBit, value);
+		setEffectFlag(TES3::EffectFlag::NoMagnitudeBit, value);
 	}
 
 	bool MagicEffect::getFlagHarmful() const {
-		return getEffectFlag(EffectFlag::HarmfulBit);
+		return getEffectFlag(TES3::EffectFlag::HarmfulBit);
 	}
 
 	void MagicEffect::setFlagHarmful(bool value) const {
-		setEffectFlag(EffectFlag::HarmfulBit, value);
+		setEffectFlag(TES3::EffectFlag::HarmfulBit, value);
 	}
 
 	bool MagicEffect::getFlagContinuousVFX() const {
-		return getEffectFlag(EffectFlag::ContinuousVFXBit);
+		return getEffectFlag(TES3::EffectFlag::ContinuousVFXBit);
 	}
 
 	void MagicEffect::setFlagContinuousVFX(bool value) const {
-		setEffectFlag(EffectFlag::ContinuousVFXBit, value);
+		setEffectFlag(TES3::EffectFlag::ContinuousVFXBit, value);
 	}
 
 	bool MagicEffect::getFlagCanCastSelf() const {
-		return getEffectFlag(EffectFlag::CanCastSelfBit);
+		return getEffectFlag(TES3::EffectFlag::CanCastSelfBit);
 	}
 
 	void MagicEffect::setFlagCanCastSelf(bool value) const {
-		setEffectFlag(EffectFlag::CanCastSelfBit, value);
+		setEffectFlag(TES3::EffectFlag::CanCastSelfBit, value);
 	}
 
 	bool MagicEffect::getFlagCanCastTouch() const {
-		return getEffectFlag(EffectFlag::CanCastTouchBit);
+		return getEffectFlag(TES3::EffectFlag::CanCastTouchBit);
 	}
 
 	void MagicEffect::setFlagCanCastTouch(bool value) const {
-		setEffectFlag(EffectFlag::CanCastTouchBit, value);
+		setEffectFlag(TES3::EffectFlag::CanCastTouchBit, value);
 	}
 
 	bool MagicEffect::getFlagCanCastTarget() const {
-		return getEffectFlag(EffectFlag::CanCastTargetBit);
+		return getEffectFlag(TES3::EffectFlag::CanCastTargetBit);
 	}
 
 	void MagicEffect::setFlagCanCastTarget(bool value) const {
-		setEffectFlag(EffectFlag::CanCastTargetBit, value);
+		setEffectFlag(TES3::EffectFlag::CanCastTargetBit, value);
 	}
 
 	bool MagicEffect::getFlagNegativeLighting() const {
-		return getEffectFlag(EffectFlag::NegativeLightingBit);
+		return getEffectFlag(TES3::EffectFlag::NegativeLightingBit);
 	}
 
 	void MagicEffect::setFlagNegativeLighting(bool value) const {
-		setEffectFlag(EffectFlag::NegativeLightingBit, value);
+		setEffectFlag(TES3::EffectFlag::NegativeLightingBit, value);
 	}
 
 	bool MagicEffect::getFlagAppliedOnce() const {
-		return getEffectFlag(EffectFlag::AppliedOnceBit);
+		return getEffectFlag(TES3::EffectFlag::AppliedOnceBit);
 	}
 
 	void MagicEffect::setFlagAppliedOnce(bool value) const {
-		setEffectFlag(EffectFlag::AppliedOnceBit, value);
+		setEffectFlag(TES3::EffectFlag::AppliedOnceBit, value);
 	}
 
 	bool MagicEffect::getFlagNonRecastable() const {
-		return getEffectFlag(EffectFlag::NonRecastableBit);
+		return getEffectFlag(TES3::EffectFlag::NonRecastableBit);
 	}
 
 	void MagicEffect::setFlagNonRecastable(bool value) const {
-		setEffectFlag(EffectFlag::NonRecastableBit, value);
+		setEffectFlag(TES3::EffectFlag::NonRecastableBit, value);
 	}
 
 	bool MagicEffect::getFlagIllegalDaedra() const {
-		return getEffectFlag(EffectFlag::IllegalDaedraBit);
+		return getEffectFlag(TES3::EffectFlag::IllegalDaedraBit);
 	}
 
 	void MagicEffect::setFlagIllegalDaedra(bool value) const {
-		setEffectFlag(EffectFlag::IllegalDaedraBit, value);
+		setEffectFlag(TES3::EffectFlag::IllegalDaedraBit, value);
 	}
 
 	bool MagicEffect::getFlagUnreflectable() const {
-		return getEffectFlag(EffectFlag::UnreflectableBit);
+		return getEffectFlag(TES3::EffectFlag::UnreflectableBit);
 	}
 
 	void MagicEffect::setFlagUnreflectable(bool value) const {
-		setEffectFlag(EffectFlag::UnreflectableBit, value);
+		setEffectFlag(TES3::EffectFlag::UnreflectableBit, value);
 	}
 
 	bool MagicEffect::getFlagCasterLinked() const {
-		return getEffectFlag(EffectFlag::CasterLinkedBit);
+		return getEffectFlag(TES3::EffectFlag::CasterLinkedBit);
 	}
 
 	void MagicEffect::setFlagCasterLinked(bool value) const {
-		setEffectFlag(EffectFlag::CasterLinkedBit, value);
+		setEffectFlag(TES3::EffectFlag::CasterLinkedBit, value);
 	}
 
 	bool MagicEffect::getAllowSpellmaking() const {
-		return BIT_TEST(flags, EffectFlag::AllowSpellmakingBit);
+		return BIT_TEST(flags, TES3::EffectFlag::AllowSpellmakingBit);
 	}
 
 	void MagicEffect::setAllowSpellmaking(bool value) {
-		BIT_SET(flags, EffectFlag::AllowSpellmakingBit, value);
+		BIT_SET(flags, TES3::EffectFlag::AllowSpellmakingBit, value);
 	}
 
 	bool MagicEffect::getAllowEnchanting() const {
-		return BIT_TEST(flags, EffectFlag::AllowEnchantingBit);
+		return BIT_TEST(flags, TES3::EffectFlag::AllowEnchantingBit);
 	}
 
 	void MagicEffect::setAllowEnchanting(bool value) {
-		BIT_SET(flags, EffectFlag::AllowEnchantingBit, value);
+		BIT_SET(flags, TES3::EffectFlag::AllowEnchantingBit, value);
 	}
 
 	bool MagicEffect::search(std::string_view needle, const BaseObject::SearchSettings& settings, std::regex* regex, int attribute, int skill) const {
@@ -253,20 +253,20 @@ namespace se::cs {
 		if (skill >= 0 && getFlagTargetSkill()) {
 			const auto skillName = ndd->getGameSettingForSkill(skill)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifySkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString, skillName);
+			case TES3::GMST::sEffectFortifySkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString, skillName);
 				break;
-			case GMST::sEffectDrainSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString, skillName);
+			case TES3::GMST::sEffectDrainSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString, skillName);
 				break;
-			case GMST::sEffectDamageSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString, skillName);
+			case TES3::GMST::sEffectDamageSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString, skillName);
 				break;
-			case GMST::sEffectRestoreSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString, skillName);
+			case TES3::GMST::sEffectRestoreSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString, skillName);
 				break;
-			case GMST::sEffectAbsorbSkill:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString, skillName);
+			case TES3::GMST::sEffectAbsorbSkill:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString, skillName);
 				break;
 			}
 
@@ -277,20 +277,20 @@ namespace se::cs {
 		else if (attribute >= 0 && getFlagTargetAttribute()) {
 			const auto attributeName = ndd->getGameSettingForAttribute(attribute)->value.asString;
 			switch (nameGMST) {
-			case GMST::sEffectFortifyAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sFortify]->value.asString, attributeName);
+			case TES3::GMST::sEffectFortifyAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sFortify]->value.asString, attributeName);
 				break;
-			case GMST::sEffectDrainAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDrain]->value.asString, attributeName);
+			case TES3::GMST::sEffectDrainAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDrain]->value.asString, attributeName);
 				break;
-			case GMST::sEffectDamageAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sDamage]->value.asString, attributeName);
+			case TES3::GMST::sEffectDamageAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sDamage]->value.asString, attributeName);
 				break;
-			case GMST::sEffectRestoreAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sRestore]->value.asString, attributeName);
+			case TES3::GMST::sEffectRestoreAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sRestore]->value.asString, attributeName);
 				break;
-			case GMST::sEffectAbsorbAttribute:
-				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[GMST::sAbsorb]->value.asString, attributeName);
+			case TES3::GMST::sEffectAbsorbAttribute:
+				sprintf_s(buffer, "%s %s", ndd->gameSettingsHandler->gameSettings[TES3::GMST::sAbsorb]->value.asString, attributeName);
 				break;
 			}
 

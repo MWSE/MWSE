@@ -2,6 +2,6 @@
 
 namespace se::cs {
 	bool Container::getIsOrganic() const {
-		return (actorFlags & ActorFlagContainer::Organic) != 0;
+		return (actorFlags & TES3::ActorFlagContainer::Organic) != 0;
 	}
 }

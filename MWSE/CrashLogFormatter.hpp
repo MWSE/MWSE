@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CrashLogUtilities.h"
+
 #include "TES3Cell.h"
 #include "TES3GameFile.h"
 #include "TES3MobileObject.h"
@@ -15,162 +17,6 @@
 
 // If class is described by a single line, no need to name the variable
 // If there is a member class, if it's one-line, leave it as one-line, if there are several, prepend the name and add offset
-
-inline std::string GetObjectType(TES3::ObjectType::ObjectType type) {
-	std::string result;
-	switch (type) {
-	case TES3::ObjectType::ObjectType::Activator:
-		result = "Activator";
-		break;
-	case TES3::ObjectType::ObjectType::Alchemy:
-		result = "Alchemy";
-		break;
-	case TES3::ObjectType::ObjectType::AnimationGroup:
-		result = "AnimationGroup";
-		break;
-	case TES3::ObjectType::ObjectType::Apparatus:
-		result = "Apparatus";
-		break;
-	case TES3::ObjectType::ObjectType::Armor:
-		result = "Armor";
-		break;
-	case TES3::ObjectType::ObjectType::Birthsign:
-		result = "Birthsign";
-		break;
-	case TES3::ObjectType::ObjectType::Bodypart:
-		result = "Bodypart";
-		break;
-	case TES3::ObjectType::ObjectType::Book:
-		result = "Book";
-		break;
-	case TES3::ObjectType::ObjectType::Cell:
-		result = "Cell";
-		break;
-	case TES3::ObjectType::ObjectType::Class:
-		result = "Class";
-		break;
-	case TES3::ObjectType::ObjectType::Clothing:
-		result = "Clothing";
-		break;
-	case TES3::ObjectType::ObjectType::Container:
-		result = "Container";
-		break;
-	case TES3::ObjectType::ObjectType::Creature:
-		result = "Creature";
-		break;
-	case TES3::ObjectType::ObjectType::Dialogue:
-		result = "Dialogue";
-		break;
-	case TES3::ObjectType::ObjectType::DialogueInfo:
-		result = "DialogueInfo";
-		break;
-	case TES3::ObjectType::ObjectType::Door:
-		result = "Door";
-		break;
-	case TES3::ObjectType::ObjectType::Enchantment:
-		result = "Enchantment";
-		break;
-	case TES3::ObjectType::ObjectType::Faction:
-		result = "Faction";
-		break;
-	case TES3::ObjectType::ObjectType::GameSetting:
-		result = "GameSetting";
-		break;
-	case TES3::ObjectType::ObjectType::Global:
-		result = "GlobalVariable";
-		break;
-	case TES3::ObjectType::ObjectType::Ingredient:
-		result = "Ingredient";
-		break;
-	case TES3::ObjectType::ObjectType::Land:
-		result = "Land";
-		break;
-	case TES3::ObjectType::ObjectType::LandTexture:
-		result = "LandTexture";
-		break;
-	case TES3::ObjectType::ObjectType::LeveledCreature:
-		result = "LeveledCreature";
-		break;
-	case TES3::ObjectType::ObjectType::LeveledItem:
-		result = "LeveledItem";
-		break;
-	case TES3::ObjectType::ObjectType::Light:
-		result = "Light";
-		break;
-	case TES3::ObjectType::ObjectType::Lockpick:
-		result = "Lockpick";
-		break;
-	case TES3::ObjectType::ObjectType::MagicEffect:
-		result = "MagicEffect";
-		break;
-	case TES3::ObjectType::ObjectType::MagicSourceInstance:
-		result = "MagicSourceInstance";
-		break;
-	case TES3::ObjectType::ObjectType::Misc:
-		result = "Miscellaneous";
-		break;
-	case TES3::ObjectType::ObjectType::MobileNPC:
-		result = "MobileActor";
-		break;
-	case TES3::ObjectType::ObjectType::MobileCreature:
-		result = "MobileCreature";
-		break;
-	case TES3::ObjectType::ObjectType::MobileObject:
-		result = "MobileObject";
-		break;
-	case TES3::ObjectType::ObjectType::MobilePlayer:
-		result = "MobilePlayer";
-		break;
-	case TES3::ObjectType::ObjectType::MobileProjectile:
-		result = "MobileProjectile";
-		break;
-	case TES3::ObjectType::ObjectType::PathGrid:
-		result = "PathGrid";
-		break;
-	case TES3::ObjectType::ObjectType::Probe:
-		result = "Probe";
-		break;
-	case TES3::ObjectType::ObjectType::Quest:
-		result = "Quest";
-		break;
-	case TES3::ObjectType::ObjectType::Race:
-		result = "Race";
-		break;
-	case TES3::ObjectType::ObjectType::Reference:
-		result = "Reference";
-		break;
-	case TES3::ObjectType::ObjectType::Region:
-		result = "Region";
-		break;
-	case TES3::ObjectType::ObjectType::Repair:
-		result = "RepairTool";
-		break;
-	case TES3::ObjectType::ObjectType::Script:
-		result = "Script";
-		break;
-	case TES3::ObjectType::ObjectType::Skill:
-		result = "Skill";
-		break;
-	case TES3::ObjectType::ObjectType::Sound:
-		result = "Sound";
-		break;
-	case TES3::ObjectType::ObjectType::SoundGenerator:
-		result = "SoundGenerator";
-		break;
-	case TES3::ObjectType::ObjectType::Spell:
-		result = "Spell";
-		break;
-	case TES3::ObjectType::ObjectType::Static:
-		result = "Static";
-		break;
-	case TES3::ObjectType::ObjectType::Weapon:
-		result = "Weapon";
-		break;
-	default:
-		break;
-	}
-	return result;
-}
 
 inline std::vector<std::string> LogClass(const TES3::BaseObject&);
 inline std::vector<std::string> LogClass(const TES3::MobileObject&);
@@ -206,16 +52,16 @@ inline std::vector<std::string> LogClass(const TES3::BaseObject& obj) {
 	TES3::GameFile* sourceMod = obj.sourceMod;
 	if (!sourceMod) {
 		if (!&obj) {
-			objectName = fmt::format("No Source Mod: {} ({})", GetObjectType(obj.objectType), "NULL");
+			objectName = fmt::format("No Source Mod: {} ({})", GetObjectTypeName(obj.objectType), "NULL");
 		}
 		else {
-			objectName = fmt::format("No Source Mod: {}", GetObjectType(obj.objectType));
+			objectName = fmt::format("No Source Mod: {}", GetObjectTypeName(obj.objectType));
 		}
 		vec.push_back(fmt::format("ID: {} ", objectName));
 	}
 	else {
 		std::string modName = sourceMod->filename;
-		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectType(obj.objectType), modName));
+		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectTypeName(obj.objectType), modName));
 	}
 	return vec;
 }
@@ -227,17 +73,17 @@ inline auto LogClass(const TES3::Object& obj) {
 	TES3::GameFile* sourceMod = obj.sourceMod;
 	if (!sourceMod) {
 		if (!&obj) {
-			objectName = fmt::format("No Source Mod: {} ({})", GetObjectType(obj.objectType), "NULL");
+			objectName = fmt::format("No Source Mod: {} ({})", GetObjectTypeName(obj.objectType), "NULL");
 		}
 		else {
-			objectName = fmt::format("No Source Mod: {}", GetObjectType(obj.objectType));
+			objectName = fmt::format("No Source Mod: {}", GetObjectTypeName(obj.objectType));
 		}
 		vec.push_back(fmt::format("ID: {} ({})", objectID, objectName));
 	}
 	else {
 		std::string modName = sourceMod->filename;
 
-		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectType(obj.objectType), modName));
+		vec.push_back(fmt::format("ID: {} ({}) : (Plugin: \"{}\")", objectID, GetObjectTypeName(obj.objectType), modName));
 	}
 	if (const auto baseObject = obj.getBaseObject()) {
 			std::vector<std::string> baseVector = LogMember("BaseObject:", *baseObject);

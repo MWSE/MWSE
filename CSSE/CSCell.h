@@ -6,24 +6,12 @@
 #include "NINode.h"
 #include "NIIteratedList.h"
 #include "LinkedObjectsList.h"
+#include "TES3CellFlags.h"
 
 namespace se::cs {
 	struct ReferenceList : LinkedObjectList<Reference> {
 		Cell* cell; // 0xC
 	};
-
-	namespace CellFlag {
-		typedef unsigned int value_type;
-
-		enum Flag : value_type {
-			Interior = 0x1,
-			HasWater = 0x2,
-			SleepIsIllegal = 0x4,
-			WasLoaded = 0x8,
-			IsLoaded = 0x20,
-			BehavesAsExterior = 0x80
-		};
-	}
 
 	struct Cell : BaseObject {
 		const char* name; // 0x10

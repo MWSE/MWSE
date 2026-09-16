@@ -7,44 +7,6 @@
 #include "TES3Object.h"
 
 namespace TES3 {
-	enum class DialogueInfoFilterType {
-		Actor,
-		Race,
-		Class,
-		NPCFaction,
-		Cell,
-		PCFaction,
-		SoundPath,
-		Conditional0,
-		Conditional1,
-		Conditional2,
-		Conditional3,
-		Conditional4,
-		Conditional5,
-	};
-
-	constexpr auto DialogueInfoConditionalCount = 6u;
-
-	namespace ObjectFlag {
-		typedef unsigned int value_type;
-
-		enum DialogueInfoFlag : value_type {
-			QuestName = 0x40,
-			QuestStarted = 0x80,
-			QuestFinished = 0x100,
-			QuestRestart = 0x200,
-			HasResultText = 0x2000,
-		};
-
-		enum DialogueInfoFlagBit {
-			QuestNameBit = 6,
-			QuestStartedBit = 7,
-			QuestFinishedBit = 8,
-			QuestRestartBit = 9,
-			HasResultTextBit = 13,
-		};
-	}
-
 	struct DialogueInfoFilterNode {
 		DialogueInfoFilterType tag;
 		DialogueInfoFilterNode* next;

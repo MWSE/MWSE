@@ -1,19 +1,12 @@
 #pragma once
 
 #include "TES3Defines.h"
+#include "TES3FileLoadSource.h"
 #include "TES3Stream.h"
 
 #include "TES3CriticalSection.h"
 
 namespace TES3 {
-	namespace FileLoadSource {
-		enum FileLoadSource : int {
-			Missing,
-			File,
-			BSA,
-		};
-	}
-
 	struct BSALoader {
 		Archive* lastLoadedArchive; // 0x0
 		Archive* archiveIterator; // 0x4

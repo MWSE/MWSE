@@ -102,7 +102,7 @@ namespace se::cs::dialog::reference_data {
 		if (selectedOwner == nullptr) {
 			EnableWindow(hOwnerVariableComboBox, FALSE);
 		}
-		else if (selectedOwner->objectType == ObjectType::NPC) {
+		else if (selectedOwner->objectType == TES3::ObjectType::NPC) {
 			const auto noVariableIndex = ComboBox_AddString(hOwnerVariableComboBox, "");
 			ComboBox_SetItemData(hOwnerVariableComboBox, noVariableIndex, nullptr);
 			for (auto global : *DataHandler::get()->recordHandler->globals) {
@@ -118,7 +118,7 @@ namespace se::cs::dialog::reference_data {
 			}
 			SendMessageA(hWnd, WM_COMMAND, 0x103FEu, (LPARAM)hOwnerVariableComboBox);
 		}
-		else if (selectedOwner->objectType == ObjectType::Faction) {
+		else if (selectedOwner->objectType == TES3::ObjectType::Faction) {
 			const auto ownerAsFaction = static_cast<Faction*>(selectedOwner);
 			const auto noVariableIndex = ComboBox_AddString(hOwnerVariableComboBox, "");
 			ComboBox_SetItemData(hOwnerVariableComboBox, noVariableIndex, -1);
@@ -325,10 +325,10 @@ namespace se::cs::dialog::reference_data {
 
 		auto modifiesCount = false;
 		switch (object->objectType) {
-		case ObjectType::Misc:
+		case TES3::ObjectType::Misc:
 			modifiesCount = true;
 			break;
-		case ObjectType::Weapon:
+		case TES3::ObjectType::Weapon:
 			modifiesCount = static_cast<Weapon*>(object)->isProjectile();
 			break;
 		}

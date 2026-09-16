@@ -49,18 +49,18 @@ namespace se::cs {
 
 		for (const auto& condition : conditions) {
 			switch (condition.type) {
-			case Condition::Type::TypeGlobal:
-			case Condition::Type::TypeItem:
-			case Condition::Type::TypeDead:
-			case Condition::Type::TypeNotID:
-			case Condition::Type::TypeNotFaction:
-			case Condition::Type::TypeNotClass:
-			case Condition::Type::TypeNotRace:
+			case TES3::DialogueConditionalType::GlobalVar:
+			case TES3::DialogueConditionalType::ItemCount:
+			case TES3::DialogueConditionalType::DeadActor:
+			case TES3::DialogueConditionalType::NotID:
+			case TES3::DialogueConditionalType::NotFaction:
+			case TES3::DialogueConditionalType::NotClass:
+			case TES3::DialogueConditionalType::NotRace:
 				if (string::complex_contains(condition.compareValue.object->getObjectID(), needle, settings, regex)) {
 					return true;
 				}
 				break;
-			case Condition::Type::TypeJournal:
+			case TES3::DialogueConditionalType::JournalIndex:
 				if (condition.compareValue.dialogue->id && string::complex_contains(condition.compareValue.dialogue->id, needle, settings, regex)) {
 					return true;
 				}
