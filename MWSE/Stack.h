@@ -51,7 +51,7 @@ namespace mwse {
 		}
 
 		void pushFloat(float value) {
-			push(*reinterpret_cast<StackItem_t*>(&value));
+			push(std::bit_cast<StackItem_t>(value));
 		}
 
 		void pushString(const mwseString& value) {
@@ -85,7 +85,7 @@ namespace mwse {
 
 		float popFloat(void) {
 			int temp = pop();
-			return *reinterpret_cast<float*>(&temp);
+			return std::bit_cast<float>(temp);
 		}
 
 		// pop <frame_count> frames from the stack`
@@ -114,8 +114,8 @@ namespace mwse {
 				log::getLog() << "\t" << std::dec << i - 1 << "\t" << std::hex << stack_storage[i - 1] << "h" << std::endl;
 				if constexpr (MWSE_PRINT_DETAILED_STACK_DUMP) {
 					log::getLog() << "\t\tShort: " << std::dec << *reinterpret_cast<short*>(&stack_storage[i - 1]) << std::endl;
-					log::getLog() << "\t\tLong: " << std::dec << *reinterpret_cast<long*>(&stack_storage[i - 1]) << std::endl;
-					log::getLog() << "\t\tFloat: " << std::dec << *reinterpret_cast<float*>(&stack_storage[i - 1]) << std::endl;
+					log::getLog() << "\t\tLong: " << std::dec << std::bit_cast<long>(stack_storage[i - 1]) << std::endl;
+					log::getLog() << "\t\tFloat: " << std::dec << std::bit_cast<float>(stack_storage[i - 1]) << std::endl;
 				}
 			}
 		}
