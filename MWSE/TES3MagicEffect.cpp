@@ -46,7 +46,7 @@ namespace TES3 {
 		std::stringstream ss;
 
 		int nameGMST = getNameGMST();
-		if (skill >= 0 && getFlagTargetSkill()) {
+		if (skill >= SkillID::FirstSkill && skill <= SkillID::LastSkill && getFlagTargetSkill()) {
 			const char* skillName = ndd->GMSTs[mwse::tes3::getSkillNameGMST(skill)]->value.asString;
 			switch (nameGMST) {
 			case GMST::sEffectFortifySkill:
@@ -66,7 +66,7 @@ namespace TES3 {
 				break;
 			}
 		}
-		else if (attribute >= 0 && getFlagTargetAttribute()) {
+		else if (attribute >= TES3::Attribute::FirstAttribute && attribute <= TES3::Attribute::LastAttribute && getFlagTargetAttribute()) {
 			const char* attributeName = ndd->GMSTs[mwse::tes3::getAttributeNameGMST(attribute)]->value.asString;
 			switch (nameGMST) {
 			case GMST::sEffectFortifyAttribute:
