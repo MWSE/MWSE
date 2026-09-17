@@ -55,6 +55,15 @@ namespace TES3 {
 			delete effect;
 			effect = nullptr;
 		}
+
+		for (auto& data : effectExtendedData) {
+			if (data == nullptr) {
+				continue;
+			}
+
+			delete data;
+			data = nullptr;
+		}
 	}
 
 	static MagicEffect* InvalidMagicEffect = nullptr;
