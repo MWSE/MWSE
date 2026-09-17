@@ -21,7 +21,7 @@ namespace mwse {
 		long gmstId = Stack::getInstance().popLong();
 		mwseString& newString = virtualMachine.getString(Stack::getInstance().popLong());
 
-		if (gmstId < 0) {
+		if (gmstId < TES3::GMST::FirstGMST || gmstId > TES3::GMST::LastGMST) {
 			mwse::log::getLog() << "xSetGSString: Invalid GMST id." << std::endl;
 			mwse::Stack::getInstance().pushLong(false);
 			return 0.0f;

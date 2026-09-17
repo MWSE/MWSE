@@ -1527,7 +1527,10 @@ namespace TES3 {
 			sSpellsword,
 			sThief,
 			sWarrior,
-			sWitchhunter
+			sWitchhunter,
+
+			FirstGMST = sMonthMorningstar,
+			LastGMST = sWitchhunter
 		};
 	}
 

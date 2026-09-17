@@ -20,7 +20,7 @@ namespace mwse {
 	float xGetGSString::execute(mwse::VMExecuteInterface& virtualMachine) {
 		long gmstId = Stack::getInstance().popLong();
 
-		if (gmstId < 0) {
+		if (gmstId < TES3::GMST::FirstGMST || gmstId > TES3::GMST::LastGMST) {
 			mwse::log::getLog() << "xGetGSString: Invalid GMST id." << std::endl;
 			mwse::Stack::getInstance().pushLong(NULL);
 			return 0.0f;
