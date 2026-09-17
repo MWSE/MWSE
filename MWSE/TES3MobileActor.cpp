@@ -679,7 +679,7 @@ namespace TES3 {
 		}
 
 		// Effect attribute based resistance/weakness.
-		if (resistIndex >= TES3::MagicEffectAttribute::AttackBonus && resistIndex <= TES3::MagicEffectAttribute::Invisibility) {
+		if (resistIndex >= TES3::EffectAttribute::AttackBonus && resistIndex <= TES3::EffectAttribute::Invisibility) {
 			adjustedDamage *= std::max(0, 100 - effectAttributes[resistIndex]) / 100.0f;
 		}
 
@@ -724,7 +724,7 @@ namespace TES3 {
 		}
 
 		// Effect attribute based resistance/weakness.
-		if (resistIndex >= TES3::MagicEffectAttribute::AttackBonus && resistIndex <= TES3::MagicEffectAttribute::Invisibility) {
+		if (resistIndex >= TES3::EffectAttribute::AttackBonus && resistIndex <= TES3::EffectAttribute::Invisibility) {
 			adjustedDamage *= std::max(0, 100 - effectAttributes[resistIndex]) / 100.0f;
 		}
 

@@ -3,47 +3,11 @@
 #include "TES3Defines.h"
 
 #include "TES3MagicEffect.h"
-#include "TES3MobileObject.h"
+#include "TES3MobileActor.h"
 
 namespace TES3 {
 	constexpr int MAX_EFFECT_COUNT = SHRT_MAX;
 	constexpr int EFFECT_ID_INVALID = MAX_EFFECT_COUNT - 1;
-
-	namespace MagicEffectAttribute {
-		typedef unsigned int value_type;
-
-		enum EffectAttribute : value_type {
-			AttackBonus = 0,
-			Sanctuary = 1,
-			ResistMagicka = 2,
-			ResistFire = 3,
-			ResistFrost = 4,
-			ResistShock = 5,
-			ResistCommonDisease = 6,
-			ResistBlightDisease = 7,
-			ResistCorprus = 8,
-			ResistPoison = 9,
-			ResistParalysis = 10,
-			Chameleon = 11,
-			ResistNormalWeapons = 12,
-			WaterBreathing = 13,
-			WaterWalking = 14,
-			SwiftSwim = 15,
-			Jump = 16,
-			Levitate = 17,
-			Shield = 18,
-			Sound = 19,
-			Silence = 20,
-			Blind = 21,
-			Paralyze = 22,
-			Invisibility = 23,
-			Fight = 24,
-			Flee = 25,
-			Hello = 26,
-			Alarm = 27,
-			NonResistable = 28,
-		};
-	}
 
 	class MagicEffectController {
 	public:
@@ -76,7 +40,7 @@ namespace TES3 {
 		// Spell effect event related.
 		typedef void(__cdecl* spellEffectTickFunction)(MagicSourceInstance*, float, MagicEffectInstance*, int);
 		typedef bool(__cdecl* spellEffectEventResistTestFunction)(MagicSourceInstance*, MagicEffectInstance*, int);
-		static bool __cdecl spellEffectEvent(MagicSourceInstance* sourceInstance, float deltaTime, MagicEffectInstance* effectInstance, int effectIndex, bool negateOnExpiry, bool isUncapped, void* attribute, DWORD attributeTypeInfo, unsigned int resistAttribute, spellEffectEventResistTestFunction resistFunction);
+		static bool __cdecl spellEffectEvent(MagicSourceInstance* sourceInstance, float deltaTime, MagicEffectInstance* effectInstance, int effectIndex, bool negateOnExpiry, bool isUncapped, void* attribute, DWORD attributeTypeInfo, EffectAttribute::EffectAttribute resistAttribute, spellEffectEventResistTestFunction resistFunction);
 		static MagicSourceInstance* cachedSpellEffectEventSourceInstance;
 		static MagicEffectInstance* cachedSpellEffectEventEffectInstance;
 		static int cachedSpellEffectEventEffectIndex;
