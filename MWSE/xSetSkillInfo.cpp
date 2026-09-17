@@ -70,7 +70,7 @@ namespace mwse {
 		skillInfo.progressActions[0] = action1;
 		skillInfo.progressActions[1] = action2;
 		skillInfo.progressActions[2] = action3;
-		skillInfo.progressActions[4] = action4;
+		skillInfo.progressActions[3] = action4;
 
 		// If our specialization changed, check for a skill level up.
 		if (oldSpecialization != specialization) {
