@@ -28,10 +28,9 @@ namespace TES3 {
 	}
 
 	bool SpellList::remove(const char* id) {
-		for (auto itt = list.head; itt != nullptr; itt = itt->next) {
-			const char* thisId = itt->data->getObjectID();
-			if (_strcmpi(thisId, id) == 0) {
-				return remove(itt->data);
+		for (auto spell : list) {
+			if (_strcmpi(spell->getObjectID(), id) == 0) {
+				return remove(spell);
 			}
 		}
 		return false;
