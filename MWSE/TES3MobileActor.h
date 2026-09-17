@@ -495,7 +495,7 @@ namespace TES3 {
 
 		bool isAffectedByObject_lua(sol::object object) const;
 
-		bool hasSummonEffect();
+		bool hasSummonEffect() const;
 
 		bool hasUsedPower(Spell* power) const;
 		bool rechargePower(Spell* power);

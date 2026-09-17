@@ -51,11 +51,11 @@ namespace TES3 {
 		~MagicEffectController();
 
 		// MagicEffect object functions.
-		MagicEffect* getEffectObject(int id);
+		MagicEffect* getEffectObject(int id) const;
 		void addEffectObject(MagicEffect* effect);
-		bool getEffectExists(int id);
+		bool getEffectExists(int id) const;
 
-		const char * getEffectName(int id);
+		const char * getEffectName(int id) const;
 
 		// Flag manipulation.
 		static unsigned int getEffectFlags(int id);

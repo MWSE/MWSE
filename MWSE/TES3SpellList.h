@@ -36,7 +36,7 @@ namespace TES3 {
 		bool remove_lua(sol::object value);
 		bool contains_lua(sol::object value);
 
-		bool containsType(SpellCastType::value_type);
+		bool containsType(SpellCastType::value_type) const;
 
 		//
 		// Container wrapping methods.

@@ -94,9 +94,9 @@ namespace TES3 {
 		return false;
 	}
 
-	bool SpellList::containsType(SpellCastType::value_type type) {
-		for (auto itt = list.head; itt != nullptr; itt = itt->next) {
-			if (itt->data->castType == type) {
+	bool SpellList::containsType(SpellCastType::value_type type) const {
+		for (const auto spell : list) {
+			if (spell->castType == type) {
 				return true;
 			}
 		}

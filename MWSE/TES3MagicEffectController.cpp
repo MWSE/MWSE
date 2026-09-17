@@ -60,7 +60,7 @@ namespace TES3 {
 	static MagicEffect* InvalidMagicEffect = nullptr;
 	static std::unordered_set<int> warnedMagicEffectIds;
 
-	MagicEffect* MagicEffectController::getEffectObject(int id) {
+	MagicEffect* MagicEffectController::getEffectObject(int id) const {
 		if (id == -1) {
 			return nullptr;
 		}
@@ -82,12 +82,12 @@ namespace TES3 {
 		effectObjects[effect->id] = effect;
 	}
 
-	bool MagicEffectController::getEffectExists(int id) {
+	bool MagicEffectController::getEffectExists(int id) const {
 		if (id < 0 || id >= MAX_EFFECT_COUNT) return false;
 		return effectObjects[id] != nullptr;
 	}
 
-	const char * MagicEffectController::getEffectName(int id) {
+	const char * MagicEffectController::getEffectName(int id) const {
 		if (id <= EffectID::LastEffect) {
 			return DataHandler::get()->nonDynamicData->GMSTs[effectNameGMSTs[id]]->value.asString;
 		}
