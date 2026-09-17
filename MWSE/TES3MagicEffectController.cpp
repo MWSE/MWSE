@@ -231,7 +231,7 @@ namespace TES3 {
 
 			if (!(sourceMod->flags_4D8 & 0x20)) {
 				effect->sourceMod = sourceMod;
-				BIT_SET(effect->objectFlags, ObjectFlag::DeleteBit, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
+				effect->setDeleted(BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
 			}
 
 			if (sourceMod->flags_4D8 & 0x8) {
@@ -651,7 +651,7 @@ namespace TES3 {
 			}
 
 			bool hasEffect = false;
-			if (effect->flags & EffectFlag::AllowEnchanting) {
+			if (effect->getAllowEnchanting()) {
 				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
@@ -661,11 +661,9 @@ namespace TES3 {
 						continue;
 					}
 
-					for (size_t i = 0; i < 8; ++i) {
-						if (spell->effects[i].effectID == effect->id) {
-							hasEffect = true;
-							break;
-						}
+					if (spell->hasEffect(effect->id)) {
+						hasEffect = true;
+						break;
 					}
 				}
 			}
@@ -708,7 +706,7 @@ namespace TES3 {
 			}
 
 			bool hasEffect = false;
-			if (effect->flags & EffectFlag::AllowSpellmaking) {
+			if (effect->getAllowSpellmaking()) {
 				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
@@ -718,11 +716,9 @@ namespace TES3 {
 						continue;
 					}
 
-					for (size_t i = 0; i < 8; ++i) {
-						if (spell->effects[i].effectID == effect->id) {
-							hasEffect = true;
-							break;
-						}
+					if (spell->hasEffect(effect->id)) {
+						hasEffect = true;
+						break;
 					}
 				}
 			}
