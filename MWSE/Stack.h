@@ -122,6 +122,7 @@ namespace mwse {
 
 	private:
 		Stack();
+		~Stack();
 
 		static Stack singleton;
 

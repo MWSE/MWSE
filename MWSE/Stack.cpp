@@ -9,3 +9,7 @@ Stack::Stack() {
 	stack_storage = new StackItem_t[stack_size];
 	stack_top = 0;
 }
+
+Stack::~Stack() {
+	delete[] stack_storage;
+}
