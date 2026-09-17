@@ -92,6 +92,7 @@ namespace mwse::lua {
 
 		// All good? Add and return the object.
 		if (!ndd->addNewObject(alchemy)) {
+			delete alchemy;
 			return nullptr;
 		}
 		return alchemy;
