@@ -466,7 +466,7 @@ namespace TES3 {
 		handleUpdate(UpdateType::Enabled, true);
 
 		// Finally flag as modified.
-		setObjectModified(true);
+		setModified(true);
 
 		return true;
 	}
@@ -497,7 +497,7 @@ namespace TES3 {
 		BIT_SET_ON(objectFlags, ObjectFlag::DisabledBit);
 
 		// Finally flag as modified.
-		setObjectModified(true);
+		setModified(true);
 
 		return true;
 	}
@@ -561,7 +561,7 @@ namespace TES3 {
 		removeAllAttachments();
 		setScale(1.0f);
 		setDeleted(true);
-		setObjectModified(true);
+		setModified(true);
 	}
 
 	inline void clearIfThis(const Reference* self, Reference*& ptr) {
@@ -667,7 +667,7 @@ namespace TES3 {
 			attachment->position = position;
 		}
 
-		setObjectModified(true);
+		setModified(true);
 	}
 
 	NI::Point3 * Reference::getOrientation() {
@@ -696,7 +696,7 @@ namespace TES3 {
 			sceneNode->update();
 		}
 
-		setObjectModified(true);
+		setModified(true);
 	}
 
 	NI::Matrix33 Reference::getRotationMatrix() {
@@ -821,7 +821,7 @@ namespace TES3 {
 				}
 				else {
 					lockData->trap = nullptr;
-					setObjectModified(true);
+					setModified(true);
 					Game::get()->clearTarget();
 					dataHandler->addSoundById("Disarm Trap", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 
@@ -881,7 +881,7 @@ namespace TES3 {
 				}
 				else {
 					lockData->locked = false;
-					setObjectModified(true);
+					setModified(true);
 					Game::get()->clearTarget();
 					dataHandler->addSoundById("Open Lock", this, 0, worldController->audioController->getMixVolumeRaw(AudioMixType::Effects));
 
@@ -1120,10 +1120,10 @@ namespace TES3 {
 
 				const auto global_dontSaveObject = *reinterpret_cast<bool*>(0x7CEBDD);
 				if (!global_dontSaveObject) {
-					reference->setObjectModified(true);
+					reference->setModified(true);
 				}
 
-				cell->setObjectModified(true);
+				cell->setModified(true);
 				cell->addReference(reference);
 			}
 
@@ -1221,8 +1221,8 @@ namespace TES3 {
 
 		// Clone the object and set the reference (and implicitly its parent cell) as modified.
 		actor->clone(this);
-		baseObject->setObjectModified(true);
-		setObjectModified(true);
+		baseObject->setModified(true);
+		setModified(true);
 
 		return true;
 	}
@@ -1458,7 +1458,7 @@ namespace TES3 {
 		NI::Matrix33 tempOutArg;
 		sceneNode->setLocalRotationMatrix(updateSceneMatrix(&tempOutArg));
 		sceneNode->update();
-		setObjectModified(true);
+		setModified(true);
 	}
 
 	Reference* Reference::getThis() {

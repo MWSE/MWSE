@@ -14,7 +14,7 @@ namespace TES3 {
 	GameSetting::GameSetting() {
 		vTable.base = reinterpret_cast<BaseObjectVirtualTable*>(0x749868);
 		objectFlags = 0;
-		sourceMod = nullptr;
+		sourceFile = nullptr;
 		value.asLong = 0;
 		index = -1;
 	}

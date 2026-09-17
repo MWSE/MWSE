@@ -1549,7 +1549,7 @@ namespace mwse::lua {
 		int level = getOptionalParam<int>(params, "level", -1);
 		if (level >= 0) {
 			node->lockLevel = level;
-			reference->setObjectModified(true);
+			reference->setModified(true);
 			return true;
 		}
 
@@ -1608,7 +1608,7 @@ namespace mwse::lua {
 		}
 
 		// Set the locked state, and return true if it changed.
-		reference->setObjectModified(true);
+		reference->setModified(true);
 		if (!lockNode->locked) {
 			lockNode->locked = true;
 			return true;
@@ -1631,7 +1631,7 @@ namespace mwse::lua {
 
 		if (node->locked) {
 			node->locked = false;
-			reference->setObjectModified(true);
+			reference->setModified(true);
 			return true;
 		}
 		else {
@@ -1672,7 +1672,7 @@ namespace mwse::lua {
 		}
 
 		lockNode->trap = getOptionalParamSpell(params, "spell");
-		reference->setObjectModified(true);
+		reference->setModified(true);
 		return true;
 	}
 
@@ -2050,7 +2050,7 @@ namespace mwse::lua {
 
 		// Ensure the reference is flagged as modified.
 		if (mobile->reference) {
-			mobile->reference->setObjectModified(true);
+			mobile->reference->setModified(true);
 		}
 
 		// If this was on the player update any associated GUI widgets.
@@ -2189,7 +2189,7 @@ namespace mwse::lua {
 
 		// Ensure the reference is flagged as modified.
 		if (mobile->reference) {
-			mobile->reference->setObjectModified(true);
+			mobile->reference->setModified(true);
 		}
 
 		// If this was on the player update any associated GUI widgets.
@@ -2481,8 +2481,8 @@ namespace mwse::lua {
 		}
 
 		// Ensure the reference and cell is flagged as modified.
-		reference->setObjectModified(true);
-		cell->setObjectModified(true);
+		reference->setModified(true);
+		cell->setModified(true);
 
 		return true;
 	}
@@ -2685,9 +2685,9 @@ namespace mwse::lua {
 		}
 
 		// Update modified flags.
-		object->getBaseObject()->setObjectModified(true);
+		object->getBaseObject()->setModified(true);
 		if (reference) {
-			reference->setObjectModified(true);
+			reference->setModified(true);
 		}
 
 		return true;
@@ -2783,9 +2783,9 @@ namespace mwse::lua {
 		}
 
 		// Update modified flags.
-		object->getBaseObject()->setObjectModified(true);
+		object->getBaseObject()->setModified(true);
 		if (reference) {
-			reference->setObjectModified(true);
+			reference->setModified(true);
 		}
 
 		return true;
@@ -2960,7 +2960,7 @@ namespace mwse::lua {
 			cell->setName(name.value());
 		}
 
-		cell->setObjectModified(true);
+		cell->setModified(true);
 
 		nonDynamicData->cells->push_back(cell);
 
@@ -3025,8 +3025,8 @@ namespace mwse::lua {
 		reference->handleUpdate(TES3::Reference::UpdateType::Enabled, updateCollisions);
 
 		// Make sure everything is set as modified.
-		reference->setObjectModified(true);
-		cell->setObjectModified(true);
+		reference->setModified(true);
+		cell->setModified(true);
 
 		return reference;
 	}
@@ -3077,7 +3077,7 @@ namespace mwse::lua {
 		}
 
 		reference->setTravelDestination(&position.value(), &orientation.value(), cell);
-		reference->setObjectModified(true);
+		reference->setModified(true);
 		return true;
 	}
 
@@ -3631,7 +3631,7 @@ namespace mwse::lua {
 			}
 		}
 
-		reference->setObjectModified(true);
+		reference->setModified(true);
 		return { fulfilledCount, item, itemData };
 	}
 
@@ -3775,7 +3775,7 @@ namespace mwse::lua {
 			}
 		}
 
-		reference->setObjectModified(true);
+		reference->setModified(true);
 		return fulfilledCount;
 	}
 
@@ -4064,8 +4064,8 @@ namespace mwse::lua {
 			}
 		}
 
-		fromReference->setObjectModified(true);
-		toReference->setObjectModified(true);
+		fromReference->setModified(true);
+		toReference->setModified(true);
 		return fulfilledCount;
 	}
 
@@ -4078,7 +4078,7 @@ namespace mwse::lua {
 			if (toReference->getAttachedItemData()) {
 				return nullptr;
 			}
-			toReference->setObjectModified(true);
+			toReference->setModified(true);
 			return toReference->getOrCreateAttachedItemData();
 		}
 
@@ -4155,7 +4155,7 @@ namespace mwse::lua {
 			}
 		}
 
-		toReference->setObjectModified(true);
+		toReference->setModified(true);
 		return itemData;
 	}
 
@@ -4186,7 +4186,7 @@ namespace mwse::lua {
 			// Detach the attachment and delete the associated data.
 			reference->removeAttachment(reference->getAttachment(TES3::AttachmentType::Variables));
 			se::memory::_delete(itemData);
-			reference->setObjectModified(true);
+			reference->setModified(true);
 			return true;
 		}
 
@@ -4233,8 +4233,8 @@ namespace mwse::lua {
 			}
 		}
 
-		reference->baseObject->setObjectModified(true);
-		reference->setObjectModified(true);
+		reference->baseObject->setModified(true);
+		reference->setModified(true);
 
 		return true;
 	}
@@ -4604,7 +4604,7 @@ namespace mwse::lua {
 		auto index = getOptionalParam<int>(params, "index", -1);
 
 		if (index >= 0 && index <= 6) {
-			actor->reference->setObjectModified(true);
+			actor->reference->setModified(true);
 			return actor->persuade(rng, index);
 		}
 		else {
@@ -4617,7 +4617,7 @@ namespace mwse::lua {
 			auto result = actor->persuade(rng, 4);
 			fBribe100Mod->value.asFloat = oldModifier;
 
-			actor->reference->setObjectModified(true);
+			actor->reference->setModified(true);
 
 			return result;
 		}
@@ -4701,7 +4701,7 @@ namespace mwse::lua {
 			throw std::invalid_argument("Invalid 'reference' parameter provided.");
 		}
 
-		reference->setObjectModified(true);
+		reference->setModified(true);
 
 		// Allow toggling.
 		if (getOptionalParam<bool>(params, "toggle", false)) {
@@ -5596,7 +5596,7 @@ namespace mwse::lua {
 		}
 
 		// Finish up.
-		reference->setObjectModified(true);
+		reference->setModified(true);
 	}
 
 	int getKillCount(sol::optional<sol::table> params) {

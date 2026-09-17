@@ -262,7 +262,7 @@ namespace TES3 {
 
 	void Class::setDescription_lua(const char* value) {
 		setDescription(value);
-		setObjectModified(true);
+		setModified(true);
 	}
 
 	sol::table Class::getMajorSkills_lua(sol::this_state ts) {

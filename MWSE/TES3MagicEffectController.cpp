@@ -195,30 +195,30 @@ namespace TES3 {
 	const size_t patchInitializeMEC_size = 0x7;
 
 	const auto TES3_MagicEffect_copyFromLoading = reinterpret_cast<void(__thiscall*)(MagicEffect*, MagicEffect*)>(0x4A9990);
-	void __fastcall ReadMagicEffectIdForLoading(GameFile * sourceMod, DWORD EDX, int& effectId, int size) {
+	void __fastcall ReadMagicEffectIdForLoading(GameFile * sourceFile, DWORD EDX, int& effectId, int size) {
 		auto nonDynamicData = DataHandler::get()->nonDynamicData;
 		auto controller = nonDynamicData->magicEffects;
 
 		// Call overwritten code.
-		sourceMod->readChunkData(&effectId, size);
+		sourceFile->readChunkData(&effectId, size);
 
 		// Vanilla effect loading.
-		if (!(sourceMod->flags_4D8 & 1)) {
+		if (!(sourceFile->flags_4D8 & 1)) {
 			MagicEffect tempEffect;
 
 			bool wasFlag1Set = BIT_TEST(tempEffect.objectFlags, 0);
-			tempEffect.vTable.base->loadObjectSpecific(&tempEffect, sourceMod);
-			tempEffect.sourceMod = sourceMod;
+			tempEffect.vTable.base->loadObjectSpecific(&tempEffect, sourceFile);
+			tempEffect.sourceFile = sourceFile;
 
 			if (wasFlag1Set) {
 				BIT_SET_ON(tempEffect.objectFlags, 0);
 			}
 			else {
-				BIT_SET(tempEffect.objectFlags, 0, BIT_TEST(sourceMod->flags_4D8, 0));
+				BIT_SET(tempEffect.objectFlags, 0, BIT_TEST(sourceFile->flags_4D8, 0));
 			}
 
-			if (sourceMod->flags_4D8 & 0x8) {
-				tempEffect.setObjectModified(true);
+			if (sourceFile->flags_4D8 & 0x8) {
+				tempEffect.setModified(true);
 			}
 
 			auto effect = controller->getEffectObject(effectId);
@@ -229,13 +229,13 @@ namespace TES3 {
 
 			TES3_MagicEffect_copyFromLoading(effect, &tempEffect);
 
-			if (!(sourceMod->flags_4D8 & 0x20)) {
-				effect->sourceMod = sourceMod;
-				BIT_SET(effect->objectFlags, ObjectFlag::DeleteBit, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
+			if (!(sourceFile->flags_4D8 & 0x20)) {
+				effect->sourceFile = sourceFile;
+				BIT_SET(effect->objectFlags, ObjectFlag::DeleteBit, BIT_TEST(sourceFile->flags_4D8, ObjectFlag::DeleteBit));
 			}
 
-			if (sourceMod->flags_4D8 & 0x8) {
-				effect->setObjectModified(true);
+			if (sourceFile->flags_4D8 & 0x8) {
+				effect->setModified(true);
 			}
 		}
 		else {
@@ -251,18 +251,18 @@ namespace TES3 {
 
 			// 
 			bool wasFlag1Set = BIT_TEST(effect->objectFlags, 0);
-			effect->vTable.base->loadObjectSpecific(effect, sourceMod);
-			effect->sourceMod = sourceMod;
+			effect->vTable.base->loadObjectSpecific(effect, sourceFile);
+			effect->sourceFile = sourceFile;
 
 			if (wasFlag1Set) {
 				BIT_SET_ON(effect->objectFlags, 0);
 			}
 			else {
-				BIT_SET(effect->objectFlags, 0, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::ModifiedBit));
+				BIT_SET(effect->objectFlags, 0, BIT_TEST(sourceFile->flags_4D8, ObjectFlag::ModifiedBit));
 			}
 
-			if (sourceMod->flags_4D8 & 0x8) {
-				effect->setObjectModified(true);
+			if (sourceFile->flags_4D8 & 0x8) {
+				effect->setModified(true);
 			}
 
 			effect->id = effectId;

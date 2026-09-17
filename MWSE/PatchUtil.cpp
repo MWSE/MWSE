@@ -980,7 +980,7 @@ namespace mwse::patch {
 
 	const char* __fastcall PatchGetImprovedObjectIdentifier(TES3::Object* object) {
 		const auto id = object->getObjectID();
-		const auto source = object->sourceMod ? object->sourceMod->filename : "no source";
+		const auto source = object->sourceFile ? object->sourceFile->filename : "no source";
 		std::snprintf(tempErrorMessageObjectID, sizeof(tempErrorMessageObjectID), "%s' (%s)", id, source);
 		return tempErrorMessageObjectID;
 	}

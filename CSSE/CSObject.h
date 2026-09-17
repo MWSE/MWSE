@@ -5,9 +5,9 @@
 #include "NIDefines.h"
 
 namespace se::cs {
-	struct Object_VirtualTable : BaseObject_VirtualTable {
+	struct ObjectVirtualTable : BaseObjectVirtualTable {
 		void* unknown_0x24;
-		void(__thiscall* setObjectID)(Object*, const char*); // 0x28
+		void(__thiscall* setID)(Object*, const char*); // 0x28
 		void* unknown_0x2C;
 		void* unknown_0x30;
 		void* unknown_0x34;
@@ -18,9 +18,9 @@ namespace se::cs {
 		char* (__thiscall* getModelPath)(const Object*); // 0x48
 		Script* (__thiscall* getScript)(const Object*); // 0x4C
 		Sound* (__thiscall* getSound)(const Object*); // 0x50
-		const char* (__thiscall* getRaceName)(const Object*); // 0x54
-		const char* (__thiscall* getClassName)(const Object*); // 0x58
-		const char* (__thiscall* getFactionName)(const Object*); // 0x5C
+		const char* (__thiscall* getRaceID)(const Object*); // 0x54
+		const char* (__thiscall* getClassID)(const Object*); // 0x58
+		const char* (__thiscall* getFactionID)(const Object*); // 0x5C
 		void* unknown_0x60;
 		void* unknown_0x64;
 		Faction*(__thiscall* getFaction)(const Object*); // 0x68
@@ -49,7 +49,7 @@ namespace se::cs {
 		void* unknown_0xC4;
 		void* unknown_0xC8;
 		void* unknown_0xCC;
-		Object* (__thiscall* getEnchantment)(const Object*); // 0xD0
+		Enchantment* (__thiscall* getEnchantment)(const Object*); // 0xD0
 		void* unknown_0xD4;
 		void* unknown_0xD8;
 		void* unknown_0xDC;
@@ -63,7 +63,7 @@ namespace se::cs {
 		void* unknown_0xFC;
 		void(__thiscall* populateObjectWindow)(const Object*, HWND); // 0x100
 		void* unknown_0x104;
-		bool(__thiscall* isMarker)(const Object*); // 0x108
+		bool(__thiscall* isLocationMarker)(const Object*); // 0x108
 		void* unknown_0x10C;
 		void* unknown_0x110;
 		void* unknown_0x114;
@@ -90,19 +90,19 @@ namespace se::cs {
 		//
 
 		const char* getName() const;
-		bool isMarker() const;
+		bool isLocationMarker() const;
 		char* getIcon() const;
 		char* getModel() const;
-		Object* getEnchantment() const;
+		Enchantment* getEnchantment() const;
 		Script* getScript() const;
 		float getScale() const;
 		void setScale(float scale, bool clamp = true);
 		int getCount() const;
 		const char* getTypeName() const;
 		Sound* getSound() const;
-		const char* getRaceName() const;
-		const char* getClassName() const;
-		const char* getFactionName() const;
+		const char* getRaceID() const;
+		const char* getClassID() const;
+		const char* getFactionID() const;
 		Faction* getFaction() const;
 		bool getIsFemale() const;
 		bool getIsEssential() const;
@@ -121,5 +121,5 @@ namespace se::cs {
 		bool searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(Object) == 0x28, "CS::Object failed size validation");
-	static_assert(sizeof(Object_VirtualTable) == 0x138, "CS::Object's virtual table failed size validation");
+	static_assert(sizeof(ObjectVirtualTable) == 0x138, "CS::Object's virtual table failed size validation");
 }

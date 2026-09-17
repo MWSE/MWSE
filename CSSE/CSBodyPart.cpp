@@ -19,12 +19,12 @@ namespace se::cs {
 		return partTypeNameArray[partType];
 	}
 
-	const char* BodyPart::getRaceName() const {
+	const char* BodyPart::getRaceID() const {
 		if (partType) {
 			return "";
 		}
 		else {
-			return Object::getRaceName();
+			return Object::getRaceID();
 		}
 	}
 }

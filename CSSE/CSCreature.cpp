@@ -5,13 +5,13 @@ namespace se::cs {
 		if (getIsBipedal()) {
 			return "Bipedal";
 		}
-		else if (hasMovementWalk()) {
+		else if (canWalk()) {
 			return "Walk";
 		}
-		else if (hasMovementFly()) {
+		else if (canFly()) {
 			return "Fly";
 		}
-		else if (hasMovementSwim()) {
+		else if (canSwim()) {
 			return "Swim";
 		}
 		else {

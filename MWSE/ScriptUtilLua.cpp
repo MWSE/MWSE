@@ -60,8 +60,8 @@ namespace mwse::lua {
 			}
 
 			mwscript::AddItem(script, reference, item, count);
-			reference->setObjectModified(true);
-			reference->baseObject->setObjectModified(true);
+			reference->setModified(true);
+			reference->baseObject->setModified(true);
 			return true;
 		};
 		lua_mwscript["addSoulGem"] = [](sol::optional<sol::table> params) {
@@ -140,7 +140,7 @@ namespace mwse::lua {
 			auto setModified = getOptionalParam(params, "modify", true);
 
 			if (setModified) {
-				reference->setObjectModified(true);
+				reference->setModified(true);
 			}
 
 			mwscript::Disable(script, reference);
@@ -168,7 +168,7 @@ namespace mwse::lua {
 			}
 
 			if (setModified) {
-				reference->setObjectModified(true);
+				reference->setModified(true);
 			}
 
 			mwscript::Enable(script, reference);
@@ -384,8 +384,8 @@ namespace mwse::lua {
 			}
 
 			mwscript::RemoveItem(script, reference, item, count);
-			reference->setObjectModified(true);
-			reference->baseObject->setObjectModified(true);
+			reference->setModified(true);
+			reference->baseObject->setModified(true);
 			return true;
 		};
 		lua_mwscript["removeSpell"] = [](sol::optional<sol::table> params) {
@@ -414,7 +414,7 @@ namespace mwse::lua {
 			auto reference = getOptionalParamExecutionReference(params);
 
 			reference->setDeleted(getOptionalParam(params, "delete", true));
-			reference->setObjectModified(true);
+			reference->setModified(true);
 
 			return true;
 		};

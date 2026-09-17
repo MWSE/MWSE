@@ -128,7 +128,7 @@ namespace TES3 {
 		bool (__thiscall* saveRecordSpecific)(BaseObject*, GameFile*); // 0x8
 		bool (__thiscall* loadObject)(BaseObject*, GameFile*); // 0xC
 		bool (__thiscall* saveObject)(BaseObject*, GameFile*); // 0x10
-		void (__thiscall* setObjectModified)(BaseObject*, bool); // 0x14
+		void (__thiscall* setModified)(BaseObject*, bool); // 0x14
 		void (__thiscall* setFlagMovedRef)(BaseObject*, bool); // 0x18
 		void* unknown_0x1C;
 		const char* (__thiscall* getObjectID)(const BaseObject*); // 0x20
@@ -218,7 +218,7 @@ namespace TES3 {
 		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
 		unsigned int objectFlags; // 0x8
-		GameFile* sourceMod; // 0xC
+		GameFile* sourceFile; // 0xC
 
 		static constexpr auto OBJECT_TYPE = ObjectType::Invalid;
 
@@ -236,8 +236,8 @@ namespace TES3 {
 		// Function wrappers for our virtual table.
 		//
 
-		bool getObjectModified() const;
-		void setObjectModified(bool);
+		bool getModified() const;
+		void setModified(bool);
 		const char* getObjectID() const;
 
 		//

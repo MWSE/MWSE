@@ -55,7 +55,7 @@ namespace mwse::lua {
 		}
 
 		// Force the object as modified.
-		newSpell->setObjectModified(true);
+		newSpell->setModified(true);
 
 		// Finally return the spell.
 		return newSpell;

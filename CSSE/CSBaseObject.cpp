@@ -11,23 +11,23 @@
 
 namespace se::cs {
 	const char* BaseObject::getObjectID() const {
-		return vtbl.baseObject->getObjectID(this);
+		return vTable.base->getObjectID(this);
 	}
 
 	bool BaseObject::isFromMaster() const {
-		return (flags & 0x1);
+		return (objectFlags & 0x1);
 	}
 
 	bool BaseObject::getModified() const {
-		return (flags & 0x2) != 0;
+		return (objectFlags & 0x2) != 0;
 	}
 
 	void BaseObject::setModified(bool modified) {
-		vtbl.baseObject->setObjectModified(this, modified);
+		vTable.base->setModified(this, modified);
 	}
 
 	bool BaseObject::getDeleted() const {
-		return (flags & 0x20);
+		return (objectFlags & 0x20);
 	}
 
 	void BaseObject::setDeleted(bool deleted) {
@@ -35,12 +35,12 @@ namespace se::cs {
 		BaseObject_setDeleted(this, deleted);
 	}
 
-	bool BaseObject::getPersists() const {
-		return (flags & 0x400);
+	bool BaseObject::getPersistent() const {
+		return (objectFlags & 0x400);
 	}
 
 	bool BaseObject::getBlocked() const {
-		return (flags & 0x2000);
+		return (objectFlags & 0x2000);
 	}
 
 	bool BaseObject::isMobileCapableActor() const {

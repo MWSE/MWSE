@@ -11,13 +11,13 @@ namespace se::cs {
 		};
 	}
 
-	struct BaseObject_VirtualTable {
-		void(__thiscall* destructor)(BaseObject*, signed char); // 0x0
+	struct BaseObjectVirtualTable {
+		void(__thiscall* deleting_dtor)(BaseObject*, char); // 0x0
 		int(__thiscall* loadObjectSpecific)(BaseObject*, GameFile*); // 0x4
 		int(__thiscall* saveRecordSpecific)(BaseObject*, GameFile*); // 0x8
 		int(__thiscall* loadObject)(BaseObject*, GameFile*); // 0xC
 		int(__thiscall* saveObject)(BaseObject*, GameFile*); // 0x10
-		void(__thiscall* setObjectModified)(BaseObject*, bool); // 0x14
+		void(__thiscall* setModified)(BaseObject*, bool); // 0x14
 		int(__thiscall* setObjectFlag40)(BaseObject*, bool); // 0x18
 		int(__thiscall* getCount)(const BaseObject*); // 0x1C
 		const char* (__thiscall* getObjectID)(const BaseObject*); // 0x20
@@ -25,12 +25,12 @@ namespace se::cs {
 
 	struct BaseObject {
 		union {
-			BaseObject_VirtualTable* baseObject;
-			Object_VirtualTable* object;
-			Actor_VirtualTable* actor;
-		} vtbl; // 0x0
+			BaseObjectVirtualTable* base;
+			ObjectVirtualTable* object;
+			ActorVirtualTable* actor;
+		} vTable; // 0x0
 		ObjectType::ObjectType objectType; // 0x4
-		unsigned int flags; // 0x8
+		unsigned int objectFlags; // 0x8
 		GameFile* sourceFile; // 0xC
 
 		const char* getObjectID() const;
@@ -40,7 +40,7 @@ namespace se::cs {
 		void setModified(bool modified);
 		bool getDeleted() const;
 		void setDeleted(bool deleted);
-		bool getPersists() const;
+		bool getPersistent() const;
 		bool getBlocked() const;
 
 		bool isMobileCapableActor() const;
@@ -66,5 +66,5 @@ namespace se::cs {
 		bool searchWithInheritance(std::string_view needle, const SearchSettings& settings, std::regex* regex = nullptr) const;
 	};
 	static_assert(sizeof(BaseObject) == 0x10, "TES3::BaseObject failed size validation");
-	static_assert(sizeof(BaseObject_VirtualTable) == 0x24, "TES3::BaseObject_VirtualTable failed size validation");
+	static_assert(sizeof(BaseObjectVirtualTable) == 0x24, "TES3::BaseObjectVirtualTable failed size validation");
 }
