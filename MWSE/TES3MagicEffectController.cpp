@@ -657,7 +657,7 @@ namespace TES3 {
 						break;
 					}
 
-					if (spell->castType != SpellCastType::Spell) {
+					if (!spell->isSpell()) {
 						continue;
 					}
 
@@ -714,7 +714,7 @@ namespace TES3 {
 						break;
 					}
 
-					if (spell->castType != SpellCastType::Spell) {
+					if (!spell->isSpell()) {
 						continue;
 					}
 

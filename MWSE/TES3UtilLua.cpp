@@ -2767,7 +2767,7 @@ namespace mwse::lua {
 					}
 
 					// Magic menu spell list update.
-					if (spell->castType == TES3::SpellCastType::Spell) {
+					if (spell->isSpell()) {
 						TES3_UI_removeSpellFromGUIList(spell);
 					}
 					else {

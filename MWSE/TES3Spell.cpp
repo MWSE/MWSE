@@ -150,7 +150,7 @@ namespace TES3 {
 		float castChance = calculateCastChance(caster, checkMagicka, weakestSchoolId);
 
 		// Ignore ability spells, as they are automatically activated as NPCs enter simulation range.
-		if (castType != TES3::SpellCastType::Ability && mwse::lua::event::SpellCastEvent::getEventEnabled()) {
+		if (!isAbility() && mwse::lua::event::SpellCastEvent::getEventEnabled()) {
 			// Trigger event, and update the cast chance.
 			mwse::lua::LuaManager& luaManager = mwse::lua::LuaManager::getInstance();
 			const auto stateHandle = luaManager.getThreadSafeStateHandle();
