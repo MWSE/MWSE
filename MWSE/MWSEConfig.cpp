@@ -22,8 +22,10 @@ namespace mwse {
 	bool Configuration::UseGlobalAudio = false;
 	bool Configuration::NonExclusiveKeyboard = false;
 	bool Configuration::ReplaceLightSorting = true;
+	bool Configuration::ReplaceLightFlicker = true;
 	bool Configuration::CreateFullMinidumps = false;
 	UINT Configuration::BackgroundLoadPollIntervalMs = 5;
+	UINT Configuration::LightFlickerReferenceFPS = 15;
 #ifdef APPVEYOR_BUILD_NUMBER
 	UINT Configuration::BuildNumber = APPVEYOR_BUILD_NUMBER;
 #else
@@ -74,8 +76,10 @@ namespace mwse {
 		DECLARE_CONFIG(UseGlobalAudio)
 		DECLARE_CONFIG(NonExclusiveKeyboard)
 		DECLARE_CONFIG(ReplaceLightSorting)
+		DECLARE_CONFIG(ReplaceLightFlicker)
 		DECLARE_CONFIG(CreateFullMinidumps)
 		DECLARE_CONFIG(BackgroundLoadPollIntervalMs)
+		DECLARE_CONFIG(LightFlickerReferenceFPS)
 		DECLARE_CONFIG(BuildNumber)
 	}
 }

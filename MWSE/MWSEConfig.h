@@ -19,8 +19,10 @@ namespace mwse {
 		static bool UseGlobalAudio;
 		static bool NonExclusiveKeyboard;
 		static bool ReplaceLightSorting;
+		static bool ReplaceLightFlicker;
 		static bool CreateFullMinidumps;
 		static UINT BackgroundLoadPollIntervalMs;
+		static UINT LightFlickerReferenceFPS;
 		static UINT BuildNumber;
 
 		static sol::table getDefaults();

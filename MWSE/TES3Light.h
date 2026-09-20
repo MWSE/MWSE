@@ -43,10 +43,13 @@ namespace TES3 {
 		~Light();
 
 		void setupLightForMobile(MobileObject* mobile) const;
+		bool updateFlickerPulse(NI::Light* sgLight, float* flickerPhase, const ItemData* itemData) const;
 
 		//
 		// Custom functions.
 		//
+
+		bool updateFlickerPulseEased(NI::Light* sgLight, float* flickerPhase, const ItemData* itemData) const;
 
 		bool getIsDynamic() const;
 		void setIsDynamic(bool);
