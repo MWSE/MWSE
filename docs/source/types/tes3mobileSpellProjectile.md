@@ -316,7 +316,7 @@ The angular speed that the projectile rotates around its local Y axis.
 ### `spellInstance`
 <div class="search_terms" style="display: none">spellinstance</div>
 
-Access to the magic source instance of the object.
+*Read-only*. Access to the magic source instance of the object.
 
 **Returns**:
 

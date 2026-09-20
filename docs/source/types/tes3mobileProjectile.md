@@ -302,17 +302,6 @@ Access to the root mobile object movement flags from the previous frame, represe
 
 ***
 
-### `spellInstance`
-<div class="search_terms" style="display: none">spellinstance</div>
-
-A quick access to [`tes3magicSourceInstance`](https://mwse.github.io/MWSE/types/tes3magicSourceInstance/) object of this `tes3mobileProjectile` if aplicable.
-
-**Returns**:
-
-* `result` ([tes3magicSourceInstance](../types/tes3magicSourceInstance.md))
-
-***
-
 ### `velocity`
 <div class="search_terms" style="display: none">velocity</div>
 
