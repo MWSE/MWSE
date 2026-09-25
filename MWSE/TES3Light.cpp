@@ -32,10 +32,15 @@ namespace TES3 {
 	}
 
 	bool Light::updateFlickerPulseEased(NI::Light* sgLight, float* flickerPhase, const ItemData* itemData) const {
+		// The caller puts out a burnt out light.
+		const auto burntOut = itemData && std::fabs(itemData->timeLeft) < 0.001f;
+		if (burntOut) {
+			return true;
+		}
+
 		const auto flickers = getFlickers() || getFlickersSlowly();
 		const auto pulses = getPulses() || getPulsesSlowly();
-		const auto burntOut = itemData && std::fabs(itemData->timeLeft) < 0.001f;
-		if (!flickers && !pulses && !burntOut) {
+		if (!flickers && !pulses) {
 			return false;
 		}
 
@@ -51,7 +56,7 @@ namespace TES3 {
 		constexpr EasingRate easingRates[2][2] = {
 			// Normal,        slow.
 			{ { 6.3f, 7.5f }, { 4.9f, 5.2f } }, // Flicker.
-			{ { 4.7f, 4.7f }, { 2.8f, 2.9f } }, // Pulse, and burnt out lights with neither flag.
+			{ { 4.7f, 4.7f }, { 2.8f, 2.9f } }, // Pulse.
 		};
 		const auto& easingRate = easingRates[flickers ? 0 : 1][isSlow ? 1 : 0];
 		const auto rate = mwse::Configuration::LightFlickerReferenceFPS >= 30 ? easingRate.at30FPS : easingRate.at15FPS;
@@ -59,7 +64,6 @@ namespace TES3 {
 		// Advance the easing across the frame, picking new targets as they are reached.
 		auto dimmer = sgLight->getDimmer();
 		auto remainingTime = WorldController::get()->deltaTime;
-		auto expired = false;
 		for (auto i = 0; i < 16; ++i) {
 			const auto target = *flickerPhase;
 			const auto gap = target - dimmer;
@@ -74,11 +78,6 @@ namespace TES3 {
 				remainingTime -= timeToThreshold;
 			}
 
-			if (burntOut) {
-				expired = true;
-				break;
-			}
-
 			if (flickers) {
 				*flickerPhase = 0.25f + 0.01f * (mwse::tes3::rand() % 75);
 			}
@@ -88,7 +87,7 @@ namespace TES3 {
 		}
 
 		sgLight->setDimmer(dimmer);
-		return expired;
+		return false;
 	}
 
 	bool Light::getIsDynamic() const {
