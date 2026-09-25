@@ -55,12 +55,21 @@ namespace TES3 {
 			delete effect;
 			effect = nullptr;
 		}
+
+		for (auto& data : effectExtendedData) {
+			if (data == nullptr) {
+				continue;
+			}
+
+			delete data;
+			data = nullptr;
+		}
 	}
 
 	static MagicEffect* InvalidMagicEffect = nullptr;
 	static std::unordered_set<int> warnedMagicEffectIds;
 
-	MagicEffect* MagicEffectController::getEffectObject(int id) {
+	MagicEffect* MagicEffectController::getEffectObject(int id) const {
 		if (id == -1) {
 			return nullptr;
 		}
@@ -82,12 +91,12 @@ namespace TES3 {
 		effectObjects[effect->id] = effect;
 	}
 
-	bool MagicEffectController::getEffectExists(int id) {
+	bool MagicEffectController::getEffectExists(int id) const {
 		if (id < 0 || id >= MAX_EFFECT_COUNT) return false;
 		return effectObjects[id] != nullptr;
 	}
 
-	const char * MagicEffectController::getEffectName(int id) {
+	const char * MagicEffectController::getEffectName(int id) const {
 		if (id <= EffectID::LastEffect) {
 			return DataHandler::get()->nonDynamicData->GMSTs[effectNameGMSTs[id]]->value.asString;
 		}
@@ -231,7 +240,7 @@ namespace TES3 {
 
 			if (!(sourceMod->flags_4D8 & 0x20)) {
 				effect->sourceMod = sourceMod;
-				BIT_SET(effect->objectFlags, ObjectFlag::DeleteBit, BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
+				effect->setDeleted(BIT_TEST(sourceMod->flags_4D8, ObjectFlag::DeleteBit));
 			}
 
 			if (sourceMod->flags_4D8 & 0x8) {
@@ -320,7 +329,7 @@ namespace TES3 {
 	}
 
 	const auto TES3_MagicSourceInstance_SpellEffectEvent = reinterpret_cast<bool(__cdecl*)(MagicSourceInstance*, float, MagicEffectInstance*, int, bool, bool, void*, DWORD, unsigned int, bool(__cdecl*)(MagicSourceInstance*, MagicEffectInstance*, int))>(0x518460);
-	bool __cdecl MagicEffectController::spellEffectEvent(MagicSourceInstance* sourceInstance, float deltaTime, MagicEffectInstance* effectInstance, int effectIndex, bool negateOnExpiry, bool isUncapped, void* attribute, DWORD attributeTypeInfo, unsigned int resistAttribute, MagicEffectController::spellEffectEventResistTestFunction resistFunction) {
+	bool __cdecl MagicEffectController::spellEffectEvent(MagicSourceInstance* sourceInstance, float deltaTime, MagicEffectInstance* effectInstance, int effectIndex, bool negateOnExpiry, bool isUncapped, void* attribute, DWORD attributeTypeInfo, EffectAttribute::EffectAttribute resistAttribute, MagicEffectController::spellEffectEventResistTestFunction resistFunction) {
 		// Cache the parameters of the spell effect event.
 		MagicEffectController::cachedSpellEffectEventSourceInstance = sourceInstance;
 		MagicEffectController::cachedSpellEffectEventEffectInstance = effectInstance;
@@ -505,7 +514,7 @@ namespace TES3 {
 		sol::table data = maybe_data.value_or(state.create_table());
 		bool negateOnExpiry = data.get_or("negateOnExpiry", true);
 		bool isUncapped = data.get_or("isUncapped", (MagicEffectController::effectFlags[effectId] >> 12) & 0xFFFFFF01);
-		unsigned int attribute = data.get_or("attribute", (unsigned int)MagicEffectAttribute::NonResistable);
+		EffectAttribute::EffectAttribute attribute = data.get_or("attribute", EffectAttribute::NonResistable);
 
 		// Provide values to modify.
 		union {
@@ -594,7 +603,7 @@ namespace TES3 {
 					// We still need the main effect event function to be called for visual effects and durations to be handled.
 					int flags = (DataHandler::get()->nonDynamicData->magicEffects->getEffectFlags(effectId) >> 12) & 0xFFFFFF01;
 					int value = 0;
-					MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, flags, &value, 0x7886F0, 0x1C, nullptr);
+					MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, flags, &value, 0x7886F0, EffectAttribute::NonResistable, nullptr);
 					return;
 				}
 			}
@@ -611,7 +620,7 @@ namespace TES3 {
 			if (extendedData == nullptr || !extendedData->tickFunction.valid()) {
 				int flags = (DataHandler::get()->nonDynamicData->magicEffects->getEffectFlags(effectId) >> 12) & 0xFFFFFF01;
 				int value = 0;
-				MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, flags, &value, 0x7886F0, 0x1C, nullptr);
+				MagicEffectController::spellEffectEvent(sourceInstance, deltaTime, effectInstance, effectIndex, true, flags, &value, 0x7886F0, EffectAttribute::NonResistable, nullptr);
 				return;
 			}
 
@@ -651,21 +660,19 @@ namespace TES3 {
 			}
 
 			bool hasEffect = false;
-			if (effect->flags & EffectFlag::AllowEnchanting) {
+			if (effect->getAllowEnchanting()) {
 				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
 					}
 
-					if (spell->castType != SpellCastType::Spell) {
+					if (!spell->isSpell()) {
 						continue;
 					}
 
-					for (size_t i = 0; i < 8; ++i) {
-						if (spell->effects[i].effectID == effect->id) {
-							hasEffect = true;
-							break;
-						}
+					if (spell->hasEffect(effect->id)) {
+						hasEffect = true;
+						break;
 					}
 				}
 			}
@@ -708,21 +715,19 @@ namespace TES3 {
 			}
 
 			bool hasEffect = false;
-			if (effect->flags & EffectFlag::AllowSpellmaking) {
+			if (effect->getAllowSpellmaking()) {
 				for (auto& spell : *spellList) {
 					if (hasEffect) {
 						break;
 					}
 
-					if (spell->castType != SpellCastType::Spell) {
+					if (!spell->isSpell()) {
 						continue;
 					}
 
-					for (size_t i = 0; i < 8; ++i) {
-						if (spell->effects[i].effectID == effect->id) {
-							hasEffect = true;
-							break;
-						}
+					if (spell->hasEffect(effect->id)) {
+						hasEffect = true;
+						break;
 					}
 				}
 			}

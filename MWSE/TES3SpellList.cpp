@@ -28,10 +28,9 @@ namespace TES3 {
 	}
 
 	bool SpellList::remove(const char* id) {
-		for (auto itt = list.head; itt != nullptr; itt = itt->next) {
-			const char* thisId = itt->data->getObjectID();
-			if (_strcmpi(thisId, id) == 0) {
-				return remove(itt->data);
+		for (auto spell : list) {
+			if (_strcmpi(spell->getObjectID(), id) == 0) {
+				return remove(spell);
 			}
 		}
 		return false;
@@ -94,9 +93,9 @@ namespace TES3 {
 		return false;
 	}
 
-	bool SpellList::containsType(SpellCastType::value_type type) {
-		for (auto itt = list.head; itt != nullptr; itt = itt->next) {
-			if (itt->data->castType == type) {
+	bool SpellList::containsType(SpellCastType::value_type type) const {
+		for (const auto spell : list) {
+			if (spell->castType == type) {
 				return true;
 			}
 		}

@@ -1628,7 +1628,7 @@ namespace mwse::lua {
 
 	void __stdcall OnMagicCastSuccess(TES3::MagicSourceInstance* magicInstance, int* pExpGainSchool) {
 		// Ignore ability spells, as they are automatically activated as NPCs enter simulation range.
-		if (magicInstance->sourceCombo.sourceType == TES3::MagicSourceType::Spell && magicInstance->sourceCombo.source.asSpell->castType == TES3::SpellCastType::Ability) {
+		if (magicInstance->sourceCombo.sourceType == TES3::MagicSourceType::Spell && magicInstance->sourceCombo.source.asSpell->isAbility()) {
 			return;
 		}
 
