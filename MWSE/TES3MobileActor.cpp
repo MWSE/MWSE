@@ -42,6 +42,8 @@
 
 #include "TES3Util.h"
 
+#include "Log.h"
+
 namespace TES3 {
 	MagicSourceInstance* ActiveMagicEffect::getInstance() const {
 		return WorldController::get()->magicInstanceController->getInstanceFromSerial(magicInstanceSerial);
@@ -129,7 +131,20 @@ namespace TES3 {
 	const auto TES3_MobileActor_onObjectCollision = reinterpret_cast<bool(__thiscall*)(MobileActor*, int, bool)>(0x5233B0);
 	bool MobileActor::onObjectCollision(int collisionIndex, bool flag) {
 		// Grab the hit reference now, it won't be available after calling the main function.
-		TES3::Reference* hitReference = arrayCollisionResults[collisionIndex].colliderRef;
+		auto& collision = arrayCollisionResults[collisionIndex];
+		TES3::Reference* hitReference = collision.colliderRef;
+
+		// A collidee that no longer belongs to a reference is a stale record. Drop the collision.
+		if (hitReference == nullptr) {
+			static bool warned = false;
+			if (!warned) {
+				warned = true;
+				const auto root = collision.colliderRoot.get();
+				mwse::log::getLog() << "WARNING: Ignoring a static collision with no reference (node \"" << ((root && root->name) ? root->name : "") << "\")." << std::endl;
+			}
+			collision.valid = false;
+			return false;
+		}
 
 		// Call the original function. We can't invoke the vtable here because we overwrite it.
 		bool result = TES3_MobileActor_onObjectCollision(this, collisionIndex, flag);
