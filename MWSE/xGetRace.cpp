@@ -116,9 +116,9 @@ namespace mwse {
 				returnArray.push_back(skillArrayId);
 				returnArray.push_back(attributeArrayId);
 				returnArray.push_back(std::bit_cast<long>(race->height.male));
-				returnArray.push_back(std::bit_cast<long>(&race->height.female));
-				returnArray.push_back(std::bit_cast<long>(&race->weight.male));
-				returnArray.push_back(std::bit_cast<long>(&race->weight.female));
+				returnArray.push_back(std::bit_cast<long>(race->height.female));
+				returnArray.push_back(std::bit_cast<long>(race->weight.male));
+				returnArray.push_back(std::bit_cast<long>(race->weight.female));
 				returnArray.push_back(race->flags & 1);
 				returnArray.push_back(race->flags >> 1);
 
