@@ -299,7 +299,11 @@ namespace mwse::lua {
 		}
 
 		size_t byteCount = bytes.value().size();
-		BYTE* data = new BYTE[byteCount];
+		if (byteCount == 0) {
+			throw std::invalid_argument("Invalid 'bytes' parameter provided. It needs to contain at least one byte to write.");
+		}
+
+		std::vector<BYTE> data(byteCount);
 		for (size_t i = 0; i < byteCount; ++i) {
 			sol::object byte = bytes.value()[i + 1];
 			if (byte.is<BYTE>()) {
@@ -310,9 +314,7 @@ namespace mwse::lua {
 			}
 		}
 
-		se::memory::writeBytesUnprotected(address.value(), data, byteCount);
-
-		delete[] data;
+		se::memory::writeBytesUnprotected(address.value(), data.data(), byteCount);
 
 		return true;
 	}

@@ -2,8 +2,6 @@
 
 using namespace mwse;
 
-constexpr auto table_size = 255;
-
 InstructionStore InstructionStore::single_instance;
 
 InstructionStore::InstructionStore()

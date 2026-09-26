@@ -277,7 +277,7 @@ namespace mwse::lua {
 			}
 		}
 
-		if (index >= TES3::GMST::sMonthMorningstar && index <= TES3::GMST::sWitchhunter) {
+		if (index >= TES3::GMST::FirstGMST && index <= TES3::GMST::LastGMST) {
 			return dataHandler->nonDynamicData->GMSTs[index];
 		}
 
@@ -299,14 +299,14 @@ namespace mwse::lua {
 
 		if (key.is<int>()) {
 			int index = key.as<int>();
-			if (index >= TES3::GMST::sMonthMorningstar && index <= TES3::GMST::sWitchhunter) {
+			if (index >= TES3::GMST::FirstGMST && index <= TES3::GMST::LastGMST) {
 				return dataHandler->nonDynamicData->GMSTs[index];
 			}
 		}
 		else if (key.is<std::string>()) {
 			int index = -1;
 			std::string keyStr = key.as<std::string>();
-			for (int i = 0; i <= TES3::GMST::sWitchhunter; ++i) {
+			for (int i = TES3::GMST::FirstGMST; i <= TES3::GMST::LastGMST; ++i) {
 				TES3::GameSettingInfo* info = TES3::GameSettingInfo::get(i);
 				if (strcmp(info->name, keyStr.c_str()) == 0) {
 					index = i;

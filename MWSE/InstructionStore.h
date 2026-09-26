@@ -3,6 +3,8 @@
 #include "InstructionInterface.h"
 #include "Log.h"
 
+constexpr auto table_size = 256u;
+
 namespace mwse {
 	// This can afford to be expensive for adding opcodes, as that's not done often.
 	// Conversely, looking up opcodes needs to be as fast as possible.
@@ -29,7 +31,7 @@ namespace mwse {
 		InstructionStore(); // private, this is a singleton
 		static InstructionStore single_instance;
 
-		InstructionInterface_t** opCode_primary_table[256];
+		InstructionInterface_t** opCode_primary_table[table_size];
 
 	public:
 		static InstructionStore& getInstance() {

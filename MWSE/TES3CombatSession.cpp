@@ -84,6 +84,7 @@ namespace TES3 {
 		if (data == sol::nil) {
 			if (luaData != nullptr) {
 				delete luaData;
+				luaData = nullptr;
 			}
 		}
 		else {
