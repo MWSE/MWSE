@@ -114,7 +114,7 @@ namespace NI {
 	template <typename T, typename F>
 	constexpr inline T ConvertThisCall(F&& value) {
 		static_assert(sizeof(T) == sizeof(F), "Types must be of the same size.");
-		return *reinterpret_cast<T*>(&value);
+		return std::bit_cast<T>(value);
 	}
 
 	CopyTransformController_vTable::CopyTransformController_vTable() {
