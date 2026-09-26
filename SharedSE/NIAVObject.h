@@ -105,6 +105,7 @@ namespace NI {
 		void updateWorldNormals();
 		void updateWorldDeforms();
 		void updateWorldBound();
+		void updateCollisionData();
 
 		//
 		// Other related this-call functions.
@@ -121,6 +122,9 @@ namespace NI {
 		void setFlag(bool state, unsigned char index);
 
 		bool intersectBounds(const Point3* position, const Point3* direction, float* out_result) const;
+
+		// Returns true if a callback asks to stop testing.
+		bool runCollisionCallbacks(CollisionIntersect* intersect);
 
 		void calculateBounds(Point3& min, Point3& max, const Point3& translation, const Matrix33& rotation, const float& scale, const bool accurateSkinned, const bool observeAppCullFlag, const bool onlyActiveChildren) const;
 
@@ -153,6 +157,9 @@ namespace NI {
 
 		// ABV setter; uses the typed BoundingVolume from NIBound.h.
 		void setModelSpaceABV(BoundingVolume* volume);
+
+		// Refreshes worldABV from modelABV; does not recurse.
+		void updateWorldCollisionVolume();
 
 		void detachFromParent();
 

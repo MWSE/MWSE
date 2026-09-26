@@ -1,6 +1,12 @@
 #include "NITransform.h"
 
 namespace NI {
+	const Transform Transform::IDENTITY = Transform(
+		Matrix33(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		Point3(0.0f, 0.0f, 0.0f),
+		1.0f
+	);
+
 	Transform::Transform() {
 		this->toIdentity();
 	}
@@ -10,6 +16,16 @@ namespace NI {
 		translation(translation),
 		scale(scale)
 	{
+	}
+
+	bool Transform::operator==(const Transform& transform) const {
+		return scale == transform.scale
+			&& translation == transform.translation
+			&& rotation == transform.rotation;
+	}
+
+	bool Transform::operator!=(const Transform& transform) const {
+		return !(*this == transform);
 	}
 
 	Transform Transform::operator*(const Transform& transform) const {

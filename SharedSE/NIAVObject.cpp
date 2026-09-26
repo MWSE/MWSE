@@ -1,6 +1,7 @@
 #include "NIAVObject.h"
 
 #include "NIDefines.h"
+#include "NIBound.h"
 #include "NICamera.h"
 #include "NICollisionSwitch.h"
 #include "NINode.h"
@@ -137,6 +138,10 @@ namespace NI {
 		geometry->updateDeforms();
 	}
 
+	void AVObject::updateCollisionData() {
+		vTable.asAVObject->updateCollisionData(this);
+	}
+
 	void AVObject::updateWorldBound() {
 		vTable.asAVObject->updateWorldBound(this);
 	}
@@ -226,6 +231,20 @@ namespace NI {
 		return removedProperties;
 	}
 #endif
+
+	bool AVObject::runCollisionCallbacks(CollisionIntersect* intersect) {
+#if defined(SE_NI_AVOBJECT_FNADDR_RUNCOLLISIONCALLBACKS) && SE_NI_AVOBJECT_FNADDR_RUNCOLLISIONCALLBACKS > 0
+		return reinterpret_cast<bool(__thiscall*)(AVObject*, CollisionIntersect*)>(SE_NI_AVOBJECT_FNADDR_RUNCOLLISIONCALLBACKS)(this, intersect);
+#else
+		throw not_implemented_exception();
+#endif
+	}
+
+	void AVObject::updateWorldCollisionVolume() {
+		if (modelABV && worldABV) {
+			static_cast<BoundingVolume*>(worldABV)->updateWorldData(modelABV, &worldTransform);
+		}
+	}
 
 	bool AVObject::intersectBounds(const Point3* position, const Point3* direction, float* out_result) const {
 #if defined(SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS) && SE_NI_AVOBJECT_FNADDR_INTERSECTBOUNDS > 0

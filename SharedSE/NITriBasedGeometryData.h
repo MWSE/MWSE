@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NIBoundingBox.h"
 #include "NIGeometryData.h"
 
 namespace NI {
@@ -25,6 +26,30 @@ namespace NI {
 		unsigned short getActiveTriangleCount() const;
 		void setActiveTriangleCount(unsigned short count);
 
+		//
+		// Other related this-call functions.
+		//
+
+		void dtor();
+
+		//
+		// Custom functions.
+		//
+
+		// Fills outCandidates with the ascending indices of active triangles a model-space ray may hit.
+		// Returns false when no acceleration structure applies and every triangle must be tested.
+		bool getRayCandidateTriangles(const Point3& modelOrigin, const Point3& modelDirection, std::vector<unsigned int>& outCandidates) const;
+
+		// As above, for a model-space AABB against all triangles.
+		bool getAabbCandidateTriangles(const BoundingBox& modelBounds, std::vector<unsigned int>& outCandidates) const;
+
+		struct CandidateCacheStats {
+			size_t entries = 0;
+			size_t bytes = 0;
+			size_t builds = 0;
+			size_t evictions = 0;
+		};
+		static CandidateCacheStats getCandidateCacheStats();
 	};
 	static_assert(sizeof(TriBasedGeometryData) == 0x38, "NI::TriBasedGeometryData failed size validation");
 }

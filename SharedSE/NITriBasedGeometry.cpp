@@ -1,12 +1,17 @@
 #include "NITriBasedGeometry.h"
 
+#include "NIBound.h"
+#include "NIBoundingBox.h"
+#include "NICollisionGroup.h"
 #include "NIPick.h"
 #include "NISkinInstance.h"
+#include "NITransform.h"
 
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+#include "Log.h"
 #include "MWSEConfig.h"
 #endif
 
@@ -37,6 +42,32 @@ namespace NI {
 
 	static std::vector<Point3> deformVertices;
 	static std::vector<Point3> deformNormals;
+	static std::vector<unsigned int> rayCandidates;
+
+#if defined(_DEBUG)
+	// Debug self-check: every exhaustive-loop hit must be a candidate. Bounded to keep Debug playable.
+	static void verifyRayCandidates(const std::vector<unsigned int>& sortedCandidates, const Point3& origin, const Point3& direction, const Point3* vertices, const Triangle* triList, unsigned int activeTriCount, bool frontOnly) {
+		static auto remainingChecks = 4096u;
+		if (remainingChecks == 0) {
+			return;
+		}
+		--remainingChecks;
+
+		for (auto i = 0u; i < activeTriCount; ++i) {
+			const auto& triangle = triList[i];
+			auto distance = std::numeric_limits<float>::infinity();
+			Point3 intersection;
+			float weight2, weight3;
+			if (!FindIntersectRayWithTriangle(&origin, &direction, &vertices[triangle.vertices[0]], &vertices[triangle.vertices[1]], &vertices[triangle.vertices[2]], frontOnly, &intersection, &distance, &weight2, &weight3)) {
+				continue;
+			}
+			if (!std::ranges::binary_search(sortedCandidates, i)) {
+				mwse::log::getLog() << "TriangleBVH self-check failed: triangle " << i << " is hit by the exhaustive raytest but missing from " << sortedCandidates.size() << " candidates." << std::endl;
+				assert(false && "TriangleBVH candidate set missed a triangle.");
+			}
+		}
+	}
+#endif
 #endif
 
 	bool TriBasedGeometry::findIntersections(const Point3* position, const Point3* direction, Pick* pick) {
@@ -44,9 +75,15 @@ namespace NI {
 		const auto NI_TriBasedGeometry_findIntersections = reinterpret_cast<bool(__thiscall*)(TriBasedGeometry*, const Point3*, const Point3*, Pick*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDINTERSECTIONS);
 
 #if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
-		// Allow the MCM configuration option to disable this logic entirely and fall back to vanilla behavior.
-		// This will be removed in the future when the config option is removed, once we're confident of performance and accuracy.
-		if (!mwse::Configuration::UseSkinnedAccurateActivationRaytests) {
+		// Fall back to vanilla if both options are off. tes3.rayTest turns UseSkinnedAccurateActivationRaytests
+		// off for the duration of the pick, so this path must not depend on that flag alone.
+		const auto useAccurateSkinnedRaytests = mwse::Configuration::UseSkinnedAccurateActivationRaytests;
+		if (!useAccurateSkinnedRaytests && !mwse::Configuration::UsePhysicsOptimizations) {
+			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
+		}
+
+		// Without the accurate-skinned option, vanilla must handle skinned objects.
+		if (skinInstance && !useAccurateSkinnedRaytests) {
 			return NI_TriBasedGeometry_findIntersections(this, position, direction, pick);
 		}
 
@@ -94,10 +131,22 @@ namespace NI {
 		const auto worldScaled = worldRotationInverse * (*position - worldTransform.translation);
 		const auto directionScaled = worldRotationInverse * (*direction);
 
-		// Loop through all the triangles
+		// Skinned geometry deforms per query, so it keeps the exhaustive loop.
+		const auto useCandidates = !skinInstance
+			&& mwse::Configuration::UsePhysicsOptimizations
+			&& modelData->getRayCandidateTriangles(worldScaled, directionScaled, rayCandidates);
+#if defined(_DEBUG)
+		if (useCandidates) {
+			verifyRayCandidates(rayCandidates, worldScaled, directionScaled, vertices, triList, activeTriCount, pick->frontOnly);
+		}
+#endif
+
+		// Loop through the candidate triangles, or all of them without a BVH.
 		auto addedResult = false;
-		for (auto i = 0u; i < activeTriCount; ++i) {
+		const auto testCount = useCandidates ? static_cast<unsigned int>(rayCandidates.size()) : static_cast<unsigned int>(activeTriCount);
+		for (auto k = 0u; k < testCount; ++k) {
 			// Get some shorthand variables we'll use throughout.
+			const auto i = useCandidates ? rayCandidates[k] : k;
 			const auto& triangle = triList[i];
 			const auto index1 = triangle.vertices[0];
 			const auto index2 = triangle.vertices[1];
@@ -197,5 +246,98 @@ namespace NI {
 
 	Pointer<TriBasedGeometryData> TriBasedGeometry::getModelData() const {
 		return static_cast<TriBasedGeometryData*>(modelData.get());
+	}
+
+	int TriBasedGeometry::findCollisionsTriVsABV(float fTime, AVObject* collidee, bool calculateNormals, CollisionIntersect* intersect) {
+#if defined(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV) && SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV > 0
+		const auto NI_TriBasedGeometry_findCollisionsTriVsABV = reinterpret_cast<int(__thiscall*)(TriBasedGeometry*, float, AVObject*, bool, CollisionIntersect*)>(SE_NI_TRIBASEDGEOMETRY_FNADDR_FINDCOLLISIONSTRIVSABV);
+
+#if defined(SE_IS_MWSE) && SE_IS_MWSE == 1
+		// Skinned world vertices deform; the model-space BVH does not describe them.
+		if (!mwse::Configuration::UsePhysicsOptimizations || skinInstance) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+		}
+
+		const auto data = static_cast<TriBasedGeometryData*>(modelData.get());
+		if (!data || !collidee || !collidee->modelABV || !collidee->worldABV) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+		}
+		const auto worldAbv = static_cast<BoundingVolume*>(collidee->worldABV);
+
+		const auto triList = data->getTriList();
+		const auto triangleCount = data->triangleCount;
+		if (!triList || !data->vertex || triangleCount == 0 || worldTransform.scale == 0.0f) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+		}
+
+		// Vanilla refreshes the collidee's world volume first; idempotent.
+		worldAbv->updateWorldData(collidee->modelABV, &collidee->worldTransform);
+
+		auto worldBounds = worldAbv->computeBoundingBox();
+		if (!worldBounds) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+		}
+
+		// Expand by both objects' motion over the tested interval, plus a rounding margin in game units.
+		constexpr auto sweepPadding = 1.0f;
+		static const Point3 zeroVelocity(0.0f, 0.0f, 0.0f);
+		const auto& colliderVelocity = velocities ? velocities->worldVelocity : zeroVelocity;
+		const auto& collideeVelocity = collidee->velocities ? collidee->velocities->worldVelocity : zeroVelocity;
+		const Point3 sweep = {
+			(std::fabs(colliderVelocity.x) + std::fabs(collideeVelocity.x)) * fTime + sweepPadding,
+			(std::fabs(colliderVelocity.y) + std::fabs(collideeVelocity.y)) * fTime + sweepPadding,
+			(std::fabs(colliderVelocity.z) + std::fabs(collideeVelocity.z)) * fTime + sweepPadding,
+		};
+		worldBounds->minimum = worldBounds->minimum - sweep;
+		worldBounds->maximum = worldBounds->maximum + sweep;
+
+		// Bound the world box's eight transformed corners in model space.
+		const auto inverseScale = 1.0f / worldTransform.scale;
+		const auto worldRotationInverse = worldTransform.rotation.invert() * inverseScale;
+		const auto toModelSpace = [&](const Point3& worldCorner) {
+			return worldRotationInverse * (worldCorner - worldTransform.translation);
+		};
+		const auto worldCorners = worldBounds->vertices();
+		const auto firstCorner = toModelSpace(worldCorners[0]);
+		BoundingBox modelBounds(firstCorner, firstCorner);
+		for (auto i = 1u; i < worldCorners.size(); ++i) {
+			modelBounds.merge(toModelSpace(worldCorners[i]));
+		}
+
+		// A local list: collision callbacks may issue nested queries.
+		std::vector<unsigned int> candidates;
+		if (!data->getAabbCandidateTriangles(modelBounds, candidates)) {
+			return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+		}
+
+		// Vanilla allocates world vertices on demand before its loop.
+		if (!worldVertices) {
+			vTable.asAVObject->createWorldVertices(this);
+			if (!worldVertices) {
+				return 0;
+			}
+		}
+
+		for (const auto i : candidates) {
+			const auto& triangle = triList[i];
+
+			// Reread velocities; collision callbacks may change them.
+			const auto loopColliderVelocity = velocities ? &velocities->worldVelocity : &zeroVelocity;
+			const auto loopCollideeVelocity = collidee->velocities ? &collidee->velocities->worldVelocity : &zeroVelocity;
+
+			if (worldAbv->findIntersectGeom(fTime, loopCollideeVelocity, &worldVertices[triangle.vertices[0]], &worldVertices[triangle.vertices[1]], &worldVertices[triangle.vertices[2]], loopColliderVelocity, &intersect->fTime, &intersect->point, calculateNormals, &intersect->normal1, &intersect->normal0)) {
+				if (runCollisionCallbacks(intersect)) {
+					return 1;
+				}
+			}
+		}
+		return 0;
+#else
+		// Non-MWSE targets fall through to engine vanilla behavior.
+		return NI_TriBasedGeometry_findCollisionsTriVsABV(this, fTime, collidee, calculateNormals, intersect);
+#endif
+#else
+		throw not_implemented_exception();
+#endif
 	}
 }

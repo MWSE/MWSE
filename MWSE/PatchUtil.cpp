@@ -2813,6 +2813,36 @@ namespace mwse::patch {
 		overrideVirtualTableEnforced(0x750A00, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriStrips
 		overrideVirtualTableEnforced(0x750CC0, offsetof(NI::TriBasedGeometry_vTable, findIntersections), 0x6F0350, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindIntersections)); // NiTriBasedGeometry
 
+		// Patch: Accelerate swept collision tests with the shared per-mesh BVH cache.
+		auto NiTriBasedGeometry_FindCollisionsTriVsABV = &NI::TriBasedGeometry::findCollisionsTriVsABV;
+		genCallEnforced(0x6F149F, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1574, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+		genCallEnforced(0x6F1599, 0x6F11B0, *reinterpret_cast<DWORD*>(&NiTriBasedGeometry_FindCollisionsTriVsABV));
+
+		// Patch: Release cached per-mesh acceleration data when geometry data is destroyed.
+		// Replaces the whole 11-byte destructor body, which every subclass destructor chains through.
+		auto NiTriBasedGeometryData_dtor = &NI::TriBasedGeometryData::dtor;
+		genJumpUnprotected(0x6FF100, *reinterpret_cast<DWORD*>(&NiTriBasedGeometryData_dtor), 0xB);
+
+		// Patch: Skip the redundant refresh in the per-actor collision probe.
+		auto NiNode_updateForCollisionProbe = &NI::Node::updateForCollisionProbe;
+		genCallEnforced(0x522D32, 0x6EB000, *reinterpret_cast<DWORD*>(&NiNode_updateForCollisionProbe));
+		auto NiNode_updateCollisionData = &NI::Node::updateCollisionData;
+		genJumpUnprotected(0x6C94D0, *reinterpret_cast<DWORD*>(&NiNode_updateCollisionData));
+
+		// Patch: Update collider volumes without walking whole subtrees.
+		auto NiCollisionGroup_updateWorldData = &NI::CollisionGroup::updateWorldData;
+		genCallEnforced(0x5638CF, 0x6FD710, *reinterpret_cast<DWORD*>(&NiCollisionGroup_updateWorldData));
+		// Collider removals go through the wrappers so their tracking is evicted. 0x55ECC0 already reaches removeAll().
+		auto NiCollisionGroup_removeCollider = &NI::CollisionGroup::removeCollider;
+		genCallEnforced(0x563429, 0x6FD5A0, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeCollider)); // MobManager::dtor
+		genCallEnforced(0x563853, 0x6FD5A0, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeCollider)); // MobManager::removeMob
+		genCallEnforced(0x563961, 0x6FD5A0, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeCollider)); // MobManager::processMobs
+		genCallEnforced(0x5639EA, 0x6FD5A0, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeCollider)); // MobManager::removeProps
+		genCallEnforced(0x563C71, 0x6FD5A0, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeCollider)); // MobManager::removeAllMobs
+		auto NiCollisionGroup_removeAll = &NI::CollisionGroup::removeAll;
+		genCallEnforced(0x563C29, 0x6FD680, *reinterpret_cast<DWORD*>(&NiCollisionGroup_removeAll)); // MobManager::removeAllMobs
+
 		// Patch: Respect targets when searching for symlinks.
 		writeDoubleWordUnprotected(0x746114, reinterpret_cast<DWORD>(&PatchFindFirstFileA));
 		writeDoubleWordUnprotected(0x746118, reinterpret_cast<DWORD>(&PatchFindNextFileA));

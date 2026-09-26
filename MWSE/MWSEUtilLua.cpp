@@ -19,6 +19,8 @@
 
 #include "ReferenceTracker.h"
 
+#include "NITriBasedGeometryData.h"
+
 namespace mwse::lua {
 	void crash() {
 		// You're not my manager!
@@ -53,6 +55,18 @@ namespace mwse::lua {
 		return { TES3::Script::currentlyExecutingScript, TES3::Script::currentlyExecutingScriptReference };
 	}
 
+	sol::table getPhysicsOptimizationStats(sol::this_state ts) {
+		const auto stats = NI::TriBasedGeometryData::getCandidateCacheStats();
+		sol::state_view state = ts;
+		auto result = state.create_table();
+		result["enabled"] = Configuration::UsePhysicsOptimizations;
+		result["meshCacheEntries"] = stats.entries;
+		result["meshCacheBytes"] = stats.bytes;
+		result["meshCacheBuilds"] = stats.builds;
+		result["meshCacheEvictions"] = stats.evictions;
+		return result;
+	}
+
 	void bindMWSEUtil() {
 		auto& manager = LuaManager::getInstance();
 		const auto stateHandle = manager.getThreadSafeStateHandle();
@@ -84,6 +98,7 @@ namespace mwse::lua {
 		lua_mwse["crash"] = crash;
 		lua_mwse["forceCursorOn"] = forceCursorOn;
 		lua_mwse["getCurrentMorrowindScriptState"] = getCurrentMorrowindScriptState;
+		lua_mwse["getPhysicsOptimizationStats"] = getPhysicsOptimizationStats;
 		lua_mwse["getVersion"] = getVersion;
 		lua_mwse["getVirtualMemoryUsage"] = getVirtualMemoryUsage;
 		lua_mwse["iconv"] = iconv;
