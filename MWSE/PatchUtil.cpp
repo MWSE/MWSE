@@ -1169,19 +1169,21 @@ namespace mwse::patch {
 	}
 
 	//
-	// Patch: Guard against invalid light flicker/pulse updates.
+	// Patch: Guard against invalid light flicker/pulse updates, and make them independent of the frame rate.
 	//
 
-	const auto TES3_Light_UpdateFlickerPulse = reinterpret_cast<void(__thiscall*)(TES3::Light*, NI::Node*, float*, TES3::ItemData*)>(0x4D33D0);
-	void __fastcall PatchEntityLightFlickerPulseUpdate(TES3::Light* light, DWORD _EDX_, NI::Node* sgNode, float* flickerPhase, TES3::ItemData* itemData) {
-		if (sgNode == nullptr) {
+	bool __fastcall PatchEntityLightFlickerPulseUpdate(TES3::Light* light, DWORD _EDX_, NI::Pointer<NI::Light> sgLight, float* flickerPhase, TES3::ItemData* itemData) {
+		if (sgLight == nullptr) {
 #if _DEBUG
 			log::getLog() << "[MWSE] Warning: Light '" << light->getObjectID() << "' attempting to update update flicker/phase without a scene graph node." << std::endl;
 #endif
-			return;
+			return false;
 		}
 
-		TES3_Light_UpdateFlickerPulse(light, sgNode, flickerPhase, itemData);
+		if (Configuration::ReplaceLightFlicker) {
+			return light->updateFlickerPulseEased(sgLight, flickerPhase, itemData);
+		}
+		return light->updateFlickerPulse(sgLight, flickerPhase, itemData);
 	}
 
 	//
@@ -2824,7 +2826,7 @@ namespace mwse::patch {
 		genCallEnforced(0x4D260C, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
 		genCallEnforced(0x5243D6, 0x4E5170, reinterpret_cast<DWORD>(PatchGetLightAttachmentIfItHasALight));
 
-		// Patch: Guard against invalid light flicker/pulse updates.
+		// Patch: Guard against invalid light flicker/pulse updates, and make them independent of the frame rate.
 		genCallEnforced(0x49B75E, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 		genCallEnforced(0x4D33BF, 0x4D33D0, reinterpret_cast<DWORD>(PatchEntityLightFlickerPulseUpdate));
 
