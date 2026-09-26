@@ -167,8 +167,8 @@ namespace TES3 {
 
 	void Weather::clearCachedLuaObjects() {
 		weatherObjectCacheMutex.lock();
-		for (auto& item : weatherObjectCache) {
-			mwse::lua::clearUserdataPointer(item.second);
+		for (auto& [_, object] : weatherObjectCache) {
+			mwse::lua::clearUserdataPointer(object);
 		}
 		weatherObjectCache.clear();
 		weatherObjectCacheMutex.unlock();

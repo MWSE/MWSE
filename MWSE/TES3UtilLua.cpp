@@ -658,9 +658,9 @@ namespace mwse::lua {
 			}
 			else if (filter.value().is<sol::table>()) {
 				sol::table filterTable = filter.value().as<sol::table>();
-				for (const auto& kv : filterTable) {
-					if (kv.second.is<unsigned int>()) {
-						filters.insert(kv.second.as<unsigned int>());
+				for (const auto& [_, value] : filterTable) {
+					if (value.is<unsigned int>()) {
+						filters.insert(value.as<unsigned int>());
 					}
 				}
 			}
@@ -972,8 +972,7 @@ namespace mwse::lua {
 		// Allow defining references/nodes to ignore from the raytest.
 		sol::optional<sol::table> ignoreTable = params["ignore"];
 		if (ignoreTable) {
-			for (const auto& kvPair : ignoreTable.value()) {
-				sol::object value = kvPair.second;
+			for (const auto& [_, value] : ignoreTable.value()) {
 				if (value.is<NI::Node>()) {
 					auto node = value.as<NI::Node*>();
 					if (!node->getAppCulled()) {
@@ -5645,8 +5644,8 @@ namespace mwse::lua {
 	sol::table getKillCounts(sol::this_state ts) {
 		sol::state_view state = ts;
 		sol::table killMap = state.create_table();
-		for (auto& itt : *TES3::WorldController::get()->playerKills->counter) {
-			killMap[itt.first] = itt.second;
+		for (auto& [actor, killCount] : *TES3::WorldController::get()->playerKills->counter) {
+			killMap[actor] = killCount;
 		}
 		return killMap;
 	}

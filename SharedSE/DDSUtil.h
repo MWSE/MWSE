@@ -51,12 +51,7 @@ namespace se::dds {
 	}
 
 	inline unsigned int getMaskShift(unsigned int mask) {
-		unsigned int shift = 0;
-		while (mask && (mask & 1) == 0) {
-			mask >>= 1;
-			++shift;
-		}
-		return shift;
+		return mask == 0 ? 0 : std::countr_zero(mask);
 	}
 
 	inline unsigned char getMaskedByte(unsigned int value, unsigned int mask) {

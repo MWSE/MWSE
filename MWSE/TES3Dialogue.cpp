@@ -141,7 +141,12 @@ namespace TES3 {
 
 		for (const auto& [loadID, info] : dialogueIt->second) {
 			const auto reverseIt = g_DialogueInfoLoadIdReverseMap.find(info);
-			if (reverseIt != g_DialogueInfoLoadIdReverseMap.end() && reverseIt->second.first == dialogue && reverseIt->second.second == loadID) {
+			if (reverseIt == g_DialogueInfoLoadIdReverseMap.end()) {
+				continue;
+			}
+			const auto& [reverseDialogue, reverseLoadID] = reverseIt->second;
+
+			if (reverseDialogue == dialogue && reverseLoadID == loadID) {
 				g_DialogueInfoLoadIdReverseMap.erase(reverseIt);
 			}
 		}
@@ -181,8 +186,7 @@ namespace TES3 {
 
 		const auto reverseIt = g_DialogueInfoLoadIdReverseMap.find(info);
 		if (reverseIt != g_DialogueInfoLoadIdReverseMap.end()) {
-			const auto previousDialogue = reverseIt->second.first;
-			const auto previousLoadID = reverseIt->second.second;
+			const auto& [previousDialogue, previousLoadID] = reverseIt->second;
 
 			const auto previousDialogueIt = g_DialogueInfoLoadIdMap.find(previousDialogue);
 			if (previousDialogueIt != g_DialogueInfoLoadIdMap.end()) {
@@ -203,8 +207,7 @@ namespace TES3 {
 			return;
 		}
 
-		const auto dialogue = reverseIt->second.first;
-		const auto loadID = reverseIt->second.second;
+		const auto& [dialogue, loadID] = reverseIt->second;
 		const auto dialogueIt = g_DialogueInfoLoadIdMap.find(dialogue);
 		if (dialogueIt != g_DialogueInfoLoadIdMap.end()) {
 			dialogueIt->second.erase(loadID);
