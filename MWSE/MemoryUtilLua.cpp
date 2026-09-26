@@ -299,6 +299,10 @@ namespace mwse::lua {
 		}
 
 		size_t byteCount = bytes.value().size();
+		if (byteCount == 0) {
+			throw std::invalid_argument("Invalid 'bytes' parameter provided. It needs to contain at least one byte to write.");
+		}
+
 		std::vector<BYTE> data(byteCount);
 		for (size_t i = 0; i < byteCount; ++i) {
 			sol::object byte = bytes.value()[i + 1];
