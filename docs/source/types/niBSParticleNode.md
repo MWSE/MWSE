@@ -22,6 +22,75 @@ Convenient access to this object's alpha property. Setting this value to be nil 
 
 ***
 
+### `animationFlags`
+<div class="search_terms" style="display: none">animationflags</div>
+
+A bit field of animation flags. The engine sets and clears these flags while the game runs. NIF files do not contain these flags.
+
+To change one flag, use `bit.bor` or `bit.band`. Do not assign a new value to the full field, because that also changes the flags of the engine. Usually, the always update flag is the only flag that a mod must set. The engine controls the other flags.
+
+- `0x2` (first time): The engine sets this flag when it creates the node. The first update of the node always updates the controllers. Then the engine clears this flag.
+- `0x4` (managed): The node is in the list of the nearest `niBSAnimationManager` above it in the scene graph. The engine sets this flag only for nodes that have the animated flag (`0x20` in `flags`).
+- `0x8` (displayed): The engine drew the node in the last frame. The engine sets this flag when it draws the node. The next update clears this flag.
+- `0x10` (always update): The engine updates the controllers of the node and of its children in each frame.
+
+If the always update flag is clear, the engine updates the controllers of the node and of its children only when the displayed flag is set. Thus, a node that the engine does not draw does not animate.
+
+This is important for particle systems. A particle system has no particles until its controller runs. If the engine does not draw the particle system, its controller does not run. The particle system then stays empty, and you cannot see it.
+
+When the engine launches a spell projectile, it sets the always update flag on all animation nodes of the projectile. If you attach a mesh to a projectile after the launch, for example in the `mobileActivated` event, set the always update flag on the animation nodes of that mesh.
+
+**Returns**:
+
+* `result` (integer)
+
+??? example "Example: Replacing the mesh of a spell projectile"
+
+	```lua
+	-- The bolt meshes to use, by spell ID.
+	local boltMeshes = {
+		["my_spell_id"] = "my_mod\\my_bolt.nif",
+	}
+	
+	-- The projectiles that already have the new mesh. The mobileActivated event
+	-- triggers again for a projectile when the player changes cells.
+	local replaced = setmetatable({}, { __mode = "k" })
+	
+	--- @param e mobileActivatedEventData
+	local function onMobileActivated(e)
+		if e.mobile.objectType ~= tes3.objectType.mobileSpellProjectile then return end
+		if replaced[e.reference] then return end
+	
+		local meshPath = boltMeshes[e.mobile.spellInstance.source.id]
+		if not meshPath then return end
+	
+		local mesh = tes3.loadMesh(meshPath, false)
+	
+		-- The engine set the always update flag on the projectile nodes at launch.
+		-- This mesh did not exist at launch, so set the flag on its animation nodes.
+		-- Without the flag, a particle system outside the view does not start.
+		for node in mesh:traverse({ type = ni.type.NiBSAnimationNode }) do
+			---@cast node niBSAnimationNode
+			node.animationFlags = bit.bor(node.animationFlags, 0x10)
+		end
+	
+		local sceneNode = e.reference.sceneNode
+		if not sceneNode then return end
+	
+		sceneNode:detachAllChildren()
+		sceneNode:attachChild(mesh)
+		sceneNode:updateProperties()
+		sceneNode:updateEffects()
+	
+		-- The engine updates the projectile in each frame. An update call here is not necessary.
+		replaced[e.reference] = true
+	end
+	event.register(tes3.event.mobileActivated, onMobileActivated)
+
+	```
+
+***
+
 ### `appCulled`
 <div class="search_terms" style="display: none">appculled</div>
 
