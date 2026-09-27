@@ -33,22 +33,21 @@ namespace mwse {
 		}
 
 		// Gather values into a temporary vector so they can be pushed onto the stack in reverse order.
-		std::list<short> values;
+		std::vector<short> values(count);
 		for (long i = 0; i < count; ++i) {
 			try {
 				short value = FileSystem::getInstance().readValue<short>(fileName);
-				values.push_front(value);
+				values.push_back(value);
 				valuesRead++;
 			}
 			catch (std::exception&) {
-				values.push_front(0);
+				values.push_back(0);
 			}
 		}
 
 		// Copy values from the temporary vector to the stack.
-		while (!values.empty()) {
-			stack.pushShort(values.front());
-			values.pop_front();
+		for (const auto& v : std::views::reverse(values)) {
+			stack.pushShort(v);
 		}
 		stack.pushLong(valuesRead);
 

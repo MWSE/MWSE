@@ -31,24 +31,23 @@ namespace mwse {
 			stack.pushLong(valuesRead);
 			return 0.0f;
 		}
-		
-		// Gather values into a temporary list, so they aren't in reverse order.
-		std::list<float> values;
+
+		// Gather values into a temporary vector so they can be pushed onto the stack in reverse order.
+		std::vector<float> values(count);
 		for (long i = 0; i < count; ++i) {
 			try {
 				float value = FileSystem::getInstance().readValue<float>(fileName);
-				values.push_front(value);
+				values.push_back(value);
 				valuesRead++;
 			}
 			catch (std::exception&) {
-				values.push_front(0.0f);
+				values.push_back(0.0f);
 			}
 		}
 
 		// Copy values from the temporary vector to the stack.
-		while (!values.empty()) {
-			stack.pushFloat(values.front());
-			values.pop_front();
+		for (const auto& v : std::views::reverse(values)) {
+			stack.pushFloat(v);
 		}
 		stack.pushLong(valuesRead);
 
