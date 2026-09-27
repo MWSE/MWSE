@@ -58,7 +58,7 @@ namespace se::string {
 	}
 
 	static inline void ltrim(std::string& s) {
-		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) { return !std::isspace(ch); }));
+		s.erase(s.begin(), std::ranges::find_if(s, [](int ch) { return !std::isspace(ch); }));
 	}
 
 	static inline void rtrim(std::string& s) {

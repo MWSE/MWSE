@@ -65,7 +65,7 @@ namespace se::cs {
 		}
 
 		auto& incorrectList = reference->baseObject->isMobileCapableActor() ? cellObjRefs : cellNpcRefs;
-		const auto it = std::find(incorrectList.begin(), incorrectList.end(), reference);
+		const auto it = std::ranges::find(incorrectList, reference);
 		if (it != incorrectList.end()) {
 			incorrectList.erase(it);
 			addReference(reference);

@@ -186,11 +186,11 @@ namespace CrashLogger::Calltrace {
 				return;
 			}
 
-			const auto addressLength = std::max_element(entries.begin(), entries.end(), [](const auto& a, const auto& b) {
-				return a.address.length() < b.address.length();
+			const auto addressLength = std::ranges::max_element(entries, {}, [](const StackEntry& entry) {
+				return entry.address.length();
 			})->address.length();
-			const auto nameLength = std::max_element(entries.begin(), entries.end(), [](const auto& a, const auto& b) {
-				return a.name.length() < b.name.length();
+			const auto nameLength = std::ranges::max_element(entries, {}, [](const StackEntry& entry) { 
+				return entry.name.length();
 			})->name.length();
 
 			output << fmt::format("{:^10} | {:>{}} | {:<{}} | {}", "EBP", "Function Address", addressLength, "Function Name", nameLength, "Source") << '\n';

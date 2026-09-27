@@ -1,5 +1,7 @@
 #include "CrashLogger.h"
 
+#include "StringUtil.h"
+
 namespace CrashLogger::Device {
 	static std::stringstream output;
 
@@ -18,6 +20,7 @@ namespace CrashLogger::Device {
 			HKEY cpuKey = nullptr;
 			if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &cpuKey) == ERROR_SUCCESS) {
 				cpu = GetRegistryString(cpuKey, "ProcessorNameString");
+				se::string::rtrim(cpu);
 				RegCloseKey(cpuKey);
 			}
 
@@ -39,10 +42,7 @@ namespace CrashLogger::Device {
 
 			ULONGLONG memoryAmount = 0;
 			GetPhysicallyInstalledSystemMemory(&memoryAmount);
-			cpu.erase(std::find_if(cpu.rbegin(), cpu.rend(), [](int character) {
-				return !std::isspace(character);
-			}).base(), cpu.end());
-
+			
 			output << fmt::format("OS:  {} - {} ({})", version, buildNumber, release) << '\n';
 			output << fmt::format("CPU: {}", cpu) << '\n';
 			output << fmt::format("GPU: {}", Client::GetGPU()) << '\n';

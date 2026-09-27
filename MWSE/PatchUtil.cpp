@@ -1141,10 +1141,7 @@ namespace mwse::patch {
 
 	BOOL __stdcall PatchFindClose(HANDLE hFindFile) {
 		findFileMutex.lock();
-		const auto itt = findFilePaths.find(hFindFile);
-		if (itt != findFilePaths.end()) {
-			findFilePaths.erase(itt);
-		}
+		findFilePaths.erase(hFindFile);
 		findFileMutex.unlock();
 
 		return FindClose(hFindFile);
@@ -1748,11 +1745,6 @@ namespace mwse::patch {
 				length = strlen(d->name ? d->name : "");
 			}
 		};
-		struct {
-			bool operator()(const DialogueLengthCache& a, const DialogueLengthCache& b) {
-				return a.length > b.length;
-			}
-		} dialogueLengthSorter;
 
 		// Clone the dialogues in an array, then sort the array.
 		// TODO: We should improve our TList implementation to support sorting.
@@ -1761,7 +1753,7 @@ namespace mwse::patch {
 		for (const auto& dialogue : *dialogues) {
 			sortedDialogues.push_back(dialogue);
 		}
-		std::ranges::sort(sortedDialogues, dialogueLengthSorter);
+		std::ranges::sort(sortedDialogues, std::ranges::greater{}, &DialogueLengthCache::length);
 
 		// Clone the sorted data back into the TList, without any allocations.
 		auto itt = dialogues->head;
