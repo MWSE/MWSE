@@ -45,7 +45,7 @@ namespace mwse::lua {
 		return {};
 	}
 
-	template <typename T>
+	template <TES3BaseObject T>
 	T* getOptionalParamObject(sol::optional<sol::table> maybeParams, const char* key) {
 		T* value = nullptr;
 

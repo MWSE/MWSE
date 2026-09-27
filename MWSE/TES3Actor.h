@@ -9,6 +9,9 @@
 
 #include "NIIteratedList.h"
 
+template<typename T>
+concept TES3Actor = std::derived_from<T, TES3::Actor>;
+
 namespace TES3 {
 	namespace ActorFlag {
 		typedef unsigned int value_type;

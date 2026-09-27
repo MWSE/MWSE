@@ -11,7 +11,7 @@ namespace mwse::lua {
 	std::function<NI::Pointer<NI::AVObject>()> traverse(NI::AVObject* self, sol::optional<sol::table> param);
 
 	// Speed-optimized binding for NI::Object.
-	template <typename T>
+	template <NIObject T>
 	void setUserdataForNIObject(sol::usertype<T>& usertypeDefinition) {
 		usertypeDefinition[sol::meta_function::to_string] = &NI::Object::toString;
 		usertypeDefinition["__tojson"] = &NI::Object::toJson;
@@ -31,7 +31,7 @@ namespace mwse::lua {
 	}
 
 	// Speed-optimized binding for NI::ObjectNET.
-	template <typename T>
+	template <NIObjectNET T>
 	void setUserdataForNIObjectNET(sol::usertype<T>& usertypeDefinition) {
 		setUserdataForNIObject(usertypeDefinition);
 
@@ -55,7 +55,7 @@ namespace mwse::lua {
 	}
 
 	// Speed-optimized binding for NI::AVObject.
-	template <typename T>
+	template <NIAVObject T>
 	void setUserdataForNIAVObject(sol::usertype<T>& usertypeDefinition) {
 		setUserdataForNIObjectNET(usertypeDefinition);
 

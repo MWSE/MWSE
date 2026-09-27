@@ -1,5 +1,8 @@
 #pragma once
 
+template <typename From, typename To>
+concept PointerConvertible = std::convertible_to<From*, To*>;
+
 namespace NI {
 	template <class T>
 	class Pointer {
@@ -11,8 +14,9 @@ namespace NI {
 		Pointer(const Pointer<T>& pointer) {
 			claim(pointer);
 		}
-
-		template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
+		
+		template<class U>
+		requires PointerConvertible<U, T>
 		Pointer(const Pointer<U>& pointer) {
 			claim(pointer.get());
 		}
@@ -59,7 +63,8 @@ namespace NI {
 			return *this;
 		}
 
-		template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
+		template<class U>
+		requires PointerConvertible<U, T>
 		Pointer<T>& operator=(const Pointer<U>& pointer) {
 			if (m_Pointer != pointer.get()) {
 				claim(pointer.get());

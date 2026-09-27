@@ -8,10 +8,8 @@
 #include "TES3MobileObject.h"
 
 namespace mwse::lua {
-	template <typename T>
+	template <TES3BaseObject T>
 	void setUserdataForTES3BaseObject(sol::usertype<T>& usertypeDefinition) {
-		static_assert(std::is_base_of<TES3::BaseObject, T>::value, "Type must inherit from TES3::BaseObject.");
-
 		// Basic property binding.
 		usertypeDefinition["objectType"] = sol::readonly_property(&TES3::BaseObject::objectType);
 		usertypeDefinition["objectFlags"] = sol::readonly_property(&TES3::BaseObject::objectFlags);
@@ -38,9 +36,8 @@ namespace mwse::lua {
 		usertypeDefinition["isValid"] = &isUserdataPointerValid;
 	}
 
-	template <typename T>
+	template <TES3Object T>
 	void setUserdataForTES3Object(sol::usertype<T>& usertypeDefinition) {
-		static_assert(std::is_base_of<TES3::Object, T>::value, "Type must inherit from TES3::PhysicalObject.");
 		setUserdataForTES3BaseObject(usertypeDefinition);
 
 		// Basic property binding.
@@ -57,9 +54,8 @@ namespace mwse::lua {
 		usertypeDefinition["supportsLuaData"] = sol::property(&TES3::Object::getSupportsLuaData);
 	}
 
-	template <typename T>
+	template <TES3PhysicalObject T>
 	void setUserdataForTES3PhysicalObject(sol::usertype<T>& usertypeDefinition) {
-		static_assert(std::is_base_of<TES3::PhysicalObject, T>::value, "Type must inherit from TES3::PhysicalObject.");
 		setUserdataForTES3Object(usertypeDefinition);
 
 		// Basic property binding.
