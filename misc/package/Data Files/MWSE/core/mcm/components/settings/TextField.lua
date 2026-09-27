@@ -8,6 +8,8 @@ local Parent = require("mcm.components.settings.Setting")
 --- Class Object
 --- @class mwseMCMTextField
 local TextField = Parent:new()
+TextField.__index = TextField
+
 TextField.buttonText = mwse.mcm.i18n("Submit")
 TextField.sNewValue = mwse.mcm.i18n("New value: '%s'")
 TextField.defaultSetting = ""

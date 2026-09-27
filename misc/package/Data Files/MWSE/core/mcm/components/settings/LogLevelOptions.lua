@@ -10,6 +10,8 @@ local pathResolver = require("logger.pathResolver")
 --- @class mwseMCMLogLevelOptions : mwseMCMDropdown
 --- @field logger mwseLogger
 local LogLevelOptions = Parent:new()
+LogLevelOptions.__index = LogLevelOptions
+
 LogLevelOptions.label = mwse.mcm.i18n("Logging Level")
 LogLevelOptions.options = {
 	{ label = mwse.mcm.i18n("Trace"), value = mwse.logLevel.trace },
