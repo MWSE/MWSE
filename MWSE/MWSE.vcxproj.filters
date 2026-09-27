@@ -184,6 +184,12 @@
     <Filter Include="Header Files\Utility\CrashLogger">
       <UniqueIdentifier>{6accd156-f13f-4975-bb12-9d571a8e0c48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utility\Patches">
+      <UniqueIdentifier>{0bece360-7853-47c9-b830-b30232c3f2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility\Patches">
+      <UniqueIdentifier>{5aa3689c-9c8d-40e3-bcaf-4c5e7b623258}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Flags.h">
@@ -1173,9 +1179,6 @@
     <ClInclude Include="LuaPickLockEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
-    <ClInclude Include="BitUtil.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="LuaObjectInvalidatedEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
     </ClInclude>
@@ -1574,6 +1577,39 @@
     </ClInclude>
     <ClInclude Include="LuaMobileSpellProjectileWaterCollisionEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchNI.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="Minidump.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchMagic.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchAudio.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchMWScript.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchInput.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchIO.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchUI.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchActors.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchDialogue.h">
+      <Filter>Header Files\Utility\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchEngine.h">
+      <Filter>Header Files\Utility\Patches</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3521,10 +3557,10 @@
     <ClCompile Include="CrashLogLabelsMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-	<ClCompile Include="CrashLoggerMWSE.cpp">
+    <ClCompile Include="CrashLoggerMWSE.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
-	<ClCompile Include="CrashLoggerMWSEClient.cpp">
+    <ClCompile Include="CrashLoggerMWSEClient.cpp">
       <Filter>Source Files\Utility\CrashLogger</Filter>
     </ClCompile>
     <ClCompile Include="ReferenceTracker.cpp">
@@ -3532,6 +3568,39 @@
     </ClCompile>
     <ClCompile Include="TES3ActionData.cpp">
       <Filter>Source Files\DataAdapters\TES3</Filter>
+    </ClCompile>
+    <ClCompile Include="Minidump.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchNI.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMagic.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchAudio.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchMWScript.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchInput.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchIO.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchUI.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchActors.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchDialogue.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchEngine.cpp">
+      <Filter>Source Files\Utility\Patches</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
