@@ -16,7 +16,8 @@ namespace mwse {
 	xStringBuild::xStringBuild() : mwse::InstructionInterface_t(OpCode::xStringBuild) {}
 
 	float xStringBuild::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& format = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		bool suppressNull = false;
 		std::string badCodes;
@@ -26,7 +27,7 @@ namespace mwse {
 			mwse::log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
 		}
 
-		mwse::Stack::getInstance().pushString(result);
+		stack.pushString(result);
 
 		return 0.0f;
 	}

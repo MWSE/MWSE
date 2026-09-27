@@ -16,6 +16,7 @@ namespace mwse {
 	xGetLockLevel::xGetLockLevel() : mwse::InstructionInterface_t(OpCode::xGetLockLevel) {}
 
 	float xGetLockLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		short lockLevel = -1;
 
 		// Get reference to what we're finding the lock level of.
@@ -24,7 +25,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetLockLevel: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -46,7 +47,7 @@ namespace mwse {
 			}
 		}
 
-		Stack::getInstance().pushShort(lockLevel);
+		stack.pushShort(lockLevel);
 
 		return 0.0f;
 	}

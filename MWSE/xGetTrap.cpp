@@ -18,6 +18,7 @@ namespace mwse {
 	xGetTrap::xGetTrap() : mwse::InstructionInterface_t(OpCode::xGetTrap) {}
 
 	float xGetTrap::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		char* id = nullptr;
 		char* name = nullptr;
 		short cost = 0;
@@ -28,9 +29,9 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetTrap: Called on invalid reference." << std::endl;
 			}
-			Stack::getInstance().pushShort(cost);
-			Stack::getInstance().pushString(name);
-			Stack::getInstance().pushString(id);
+			stack.pushShort(cost);
+			stack.pushString(name);
+			stack.pushString(id);
 			return 0.0f;
 		}
 
@@ -57,9 +58,9 @@ namespace mwse {
 			}
 		}
 
-		Stack::getInstance().pushShort(cost);
-		Stack::getInstance().pushString(name);
-		Stack::getInstance().pushString(id);
+		stack.pushShort(cost);
+		stack.pushString(name);
+		stack.pushString(id);
 
 		return 0.0f;
 	}

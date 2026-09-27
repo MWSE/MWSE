@@ -20,9 +20,10 @@ namespace mwse {
 	xCast::xCast() : mwse::InstructionInterface_t(OpCode::xCast) {}
 
 	float xCast::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& spellId = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		mwseString& targetId = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& spellId = virtualMachine.getString(stack.popLong());
+		mwseString& targetId = virtualMachine.getString(stack.popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();

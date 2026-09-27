@@ -16,11 +16,12 @@ namespace mwse {
 	xStringLength::xStringLength() : mwse::InstructionInterface_t(OpCode::xStringLength) {}
 
 	float xStringLength::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& parameter = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		mwseString& parameter = virtualMachine.getString(stack.popLong());
 
 		long result = parameter.length();
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

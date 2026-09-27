@@ -19,6 +19,7 @@ namespace mwse {
 	xGetMaxCharge::xGetMaxCharge() : mwse::InstructionInterface_t(OpCode::xGetMaxCharge) {}
 
 	float xGetMaxCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		float charge = 0.0f;
 
 		// Get reference.
@@ -27,7 +28,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetMaxCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -37,7 +38,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetMaxCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -47,7 +48,7 @@ namespace mwse {
 			charge = enchantment->maxCharge;
 		}
 
-		mwse::Stack::getInstance().pushFloat(charge);
+		stack.pushFloat(charge);
 
 		return 0.0f;
 	}

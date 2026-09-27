@@ -26,8 +26,9 @@ namespace mwse {
 	xSetWeight::xSetWeight() : mwse::InstructionInterface_t(OpCode::xSetWeight) {}
 
 	float xSetWeight::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float weight = mwse::Stack::getInstance().popFloat();
+		float weight = stack.popFloat();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -35,7 +36,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetWeight: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -45,7 +46,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetWeight: No base record found." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -90,7 +91,7 @@ namespace mwse {
 			break;
 		}
 
-		mwse::Stack::getInstance().pushLong(setWeight);
+		stack.pushLong(setWeight);
 
 		return 0.0f;
 	}

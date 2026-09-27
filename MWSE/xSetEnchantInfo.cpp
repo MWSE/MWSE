@@ -18,19 +18,20 @@ namespace mwse {
 	xSetEnchantInfo::xSetEnchantInfo() : mwse::InstructionInterface_t(OpCode::xSetEnchantInfo) {}
 
 	float xSetEnchantInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& enchantId = virtualMachine.getString(Stack::getInstance().popLong());
-		long type = Stack::getInstance().popLong();
-		long cost = Stack::getInstance().popLong();
-		long charge = Stack::getInstance().popLong();
-		bool autocalc = (Stack::getInstance().popLong() != 0);
+		mwseString& enchantId = virtualMachine.getString(stack.popLong());
+		long type = stack.popLong();
+		long cost = stack.popLong();
+		long charge = stack.popLong();
+		bool autocalc = (stack.popLong() != 0);
 
 		// Validate type.
 		if (type < 0 || type > 3) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetEnchantInfo: Type out of range." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return false;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetEnchantInfo: No effect found given id '" << enchantId << "'." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return false;
 		}
 
@@ -49,7 +50,7 @@ namespace mwse {
 		enchant->maxCharge = static_cast<unsigned short>(charge);
 		enchant->setAutoCalc(autocalc);
 
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 		return 0.0f;
 	}
 }

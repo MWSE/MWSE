@@ -18,9 +18,10 @@ namespace mwse {
 	xDrop::xDrop() : mwse::InstructionInterface_t(OpCode::xDrop) {}
 
 	float xDrop::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long count = mwse::Stack::getInstance().popLong();
+		mwseString& id = virtualMachine.getString(stack.popLong());
+		long count = stack.popLong();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();

@@ -25,18 +25,19 @@ namespace mwse {
 	xGetKeyBind::xGetKeyBind() : mwse::InstructionInterface_t(OpCode::xGetKeyBind) {}
 
 	float xGetKeyBind::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long inputIndex = Stack::getInstance().popLong();
+		long inputIndex = stack.popLong();
 
 		// Validate index.
 		if (inputIndex < TES3::KeyBind::FirstKey || inputIndex > TES3::KeyBind::LastKey) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetKeyBind: Index out of bounds." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -77,9 +78,9 @@ namespace mwse {
 		}
 
 		// Return values.
-		mwse::Stack::getInstance().pushLong(keyCode);
-		mwse::Stack::getInstance().pushLong(scanDevice);
-		mwse::Stack::getInstance().pushLong(scanCode);
+		stack.pushLong(keyCode);
+		stack.pushLong(scanDevice);
+		stack.pushLong(scanCode);
 
 		return 0.0f;
 	}

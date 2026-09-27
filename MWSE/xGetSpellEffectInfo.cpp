@@ -18,9 +18,10 @@ namespace mwse {
 	xGetSpellEffectInfo::xGetSpellEffectInfo() : mwse::InstructionInterface_t(OpCode::xGetSpellEffectInfo) {}
 
 	float xGetSpellEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& effectId = virtualMachine.getString(Stack::getInstance().popLong());
-		short effectIndex = Stack::getInstance().popShort();
+		mwseString& effectId = virtualMachine.getString(stack.popLong());
+		short effectIndex = stack.popShort();
 
 		// Return values.
 		long effectEnumId = TES3::EffectID::None;
@@ -58,12 +59,12 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(magMax);
-		mwse::Stack::getInstance().pushLong(magMin);
-		mwse::Stack::getInstance().pushLong(duration);
-		mwse::Stack::getInstance().pushLong(area);
-		mwse::Stack::getInstance().pushLong(rangeType);
-		mwse::Stack::getInstance().pushLong(effectEnumId);
+		stack.pushLong(magMax);
+		stack.pushLong(magMin);
+		stack.pushLong(duration);
+		stack.pushLong(area);
+		stack.pushLong(rangeType);
+		stack.pushLong(effectEnumId);
 
 		return 0.0f;
 	}

@@ -50,13 +50,14 @@ namespace mwse {
 
 		// Get the NPC's race.
 		TES3::Race* race = object->getRace();
+		auto& stack = Stack::getInstance();
 
 		// Get argument: return variable type.
-		short returnTypeParam = mwse::Stack::getInstance().popShort();
+		short returnTypeParam = stack.popShort();
 
 		// Simple case. Just push the race name.
 		if (returnTypeParam == 0) {
-			mwse::Stack::getInstance().pushString(race->name);
+			stack.pushString(race->name);
 			return 0.0f;
 		}
 
@@ -123,13 +124,13 @@ namespace mwse {
 				returnArray.push_back(race->flags >> 1);
 
 				// Push array result
-				mwse::Stack::getInstance().pushLong(mainArrayId);
+				stack.pushLong(mainArrayId);
 				return 0.0f;
 			}
 		}
 
 		// Invalid return type, or something wrong happened.
-		mwse::Stack::getInstance().pushLong(false);
+		stack.pushLong(false);
 		return 0.0f;
 	}
 }

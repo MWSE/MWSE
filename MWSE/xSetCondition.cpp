@@ -18,8 +18,9 @@ namespace mwse {
 	xSetCondition::xSetCondition() : mwse::InstructionInterface_t(OpCode::xSetCondition) {}
 
 	float xSetCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		long value = Stack::getInstance().popLong();
+		long value = stack.popLong();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -27,7 +28,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetCondition: No reference provided." << std::endl;
 			}
-			Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -40,11 +41,11 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetCondition: Could not get attached VARNODE." << std::endl;
 			}
-			Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
-		Stack::getInstance().pushShort(1);
+		stack.pushShort(1);
 
 		return 0.0f;
 	}

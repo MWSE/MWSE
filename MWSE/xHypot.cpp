@@ -14,10 +14,11 @@ namespace mwse {
 	xHypot::xHypot() : mwse::InstructionInterface_t(OpCode::xHypot) {}
 
 	float xHypot::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float param1 = mwse::Stack::getInstance().popFloat();
-		float param2 = mwse::Stack::getInstance().popFloat();
+		auto& stack = Stack::getInstance();
+		float param1 = stack.popFloat();
+		float param2 = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(std::hypotf(param1, param2));
+		stack.pushFloat(std::hypotf(param1, param2));
 
 		return 0.0f;
 	}

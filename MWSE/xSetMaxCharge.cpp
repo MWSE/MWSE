@@ -19,8 +19,9 @@ namespace mwse {
 	xSetMaxCharge::xSetMaxCharge() : mwse::InstructionInterface_t(OpCode::xSetMaxCharge) {}
 
 	float xSetMaxCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
-		float maxCharge = mwse::Stack::getInstance().popFloat();
+		float maxCharge = stack.popFloat();
 		bool success = false;
 
 		// Get reference.
@@ -29,7 +30,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetMaxCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetMaxCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -60,7 +61,7 @@ namespace mwse {
 		}
 
 		// Push success state.
-		mwse::Stack::getInstance().pushLong(success);
+		stack.pushLong(success);
 
 		return 0.0f;
 	}

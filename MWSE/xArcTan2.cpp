@@ -14,10 +14,11 @@ namespace mwse {
 	xArcTan2::xArcTan2() : mwse::InstructionInterface_t(OpCode::xArcTan2) {}
 
 	float xArcTan2::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float param1 = mwse::Stack::getInstance().popFloat();
-		float param2 = mwse::Stack::getInstance().popFloat();
+		auto& stack = Stack::getInstance();
+		float param1 = stack.popFloat();
+		float param2 = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(std::atan2(param1, param2));
+		stack.pushFloat(std::atan2(param1, param2));
 
 		return 0.0f;
 	}

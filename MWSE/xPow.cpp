@@ -14,10 +14,11 @@ namespace mwse {
 	xPow::xPow() : mwse::InstructionInterface_t(OpCode::xPow) {}
 
 	float xPow::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float base = mwse::Stack::getInstance().popFloat();
-		float exponent = mwse::Stack::getInstance().popFloat();
+		auto& stack = Stack::getInstance();
+		float base = stack.popFloat();
+		float exponent = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(std::powf(base, exponent));
+		stack.pushFloat(std::powf(base, exponent));
 
 		return 0.0f;
 	}

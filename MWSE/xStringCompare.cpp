@@ -16,12 +16,13 @@ namespace mwse {
 	xStringCompare::xStringCompare() : mwse::InstructionInterface_t(OpCode::xStringCompare) {}
 
 	float xStringCompare::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& string1 = virtualMachine.getString(Stack::getInstance().popLong());
-		mwseString& string2 = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		mwseString& string1 = virtualMachine.getString(stack.popLong());
+		mwseString& string2 = virtualMachine.getString(stack.popLong());
 
 		long result = strcmp(string1.c_str(), string2.c_str());
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

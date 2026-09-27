@@ -25,8 +25,9 @@ namespace mwse {
 	xSetValue::xSetValue() : mwse::InstructionInterface_t(OpCode::xSetValue) {}
 
 	float xSetValue::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		long value = mwse::Stack::getInstance().popLong();
+		long value = stack.popLong();
 		bool setValue = false;
 
 		// Get reference.
@@ -35,7 +36,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetValue: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -45,7 +46,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetValue: No base record found." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -96,7 +97,7 @@ namespace mwse {
 			break;
 		}
 
-		mwse::Stack::getInstance().pushLong(setValue);
+		stack.pushLong(setValue);
 
 		return 0.0f;
 	}

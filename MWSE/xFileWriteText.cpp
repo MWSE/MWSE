@@ -16,13 +16,14 @@ namespace mwse {
 	xFileWriteText::xFileWriteText() : mwse::InstructionInterface_t(OpCode::xFileWriteText) {}
 
 	float xFileWriteText::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			mwse::log::getLog() << "xFileWriteText: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		mwseString& format = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		bool suppressNull = false;
 		std::string badCodes;

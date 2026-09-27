@@ -14,10 +14,11 @@ namespace mwse {
 	xBitAnd::xBitAnd() : mwse::InstructionInterface_t(OpCode::xBitAnd) {}
 
 	float xBitAnd::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param1 = mwse::Stack::getInstance().popLong();
-		long param2 = mwse::Stack::getInstance().popLong();
+		auto& stack = Stack::getInstance();
+		long param1 = stack.popLong();
+		long param2 = stack.popLong();
 
-		mwse::Stack::getInstance().pushLong(param1 & param2);
+		stack.pushLong(param1 & param2);
 
 		return 0.0f;
 	}

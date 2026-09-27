@@ -18,14 +18,15 @@ namespace mwse {
 	xModService::xModService() : mwse::InstructionInterface_t(OpCode::xModService) {}
 
 	float xModService::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModService: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
 
-		unsigned long data = Stack::getInstance().popLong();
+		unsigned long data = stack.popLong();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -33,7 +34,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModService: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -43,7 +44,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModService: Called on non-NPC reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -53,7 +54,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModService: Failed to obtain NPC's class." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 

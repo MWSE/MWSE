@@ -18,8 +18,9 @@ namespace mwse {
 	xGetItemCount::xGetItemCount() : mwse::InstructionInterface_t(OpCode::xGetItemCount) {}
 
 	float xGetItemCount::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(stack.popLong());
 
 		// Get who we're getting the item count of. mwscript's GetItemCount validates the
 		// object type for us, we don't need to.
@@ -28,7 +29,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetItemCount: No reference found for function call." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -38,14 +39,14 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetItemCount: No template found with id " << id << "." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
 		long result = mwse::mwscript::GetItemCount(script, reference, itemTemplate);
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

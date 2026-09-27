@@ -20,17 +20,18 @@ namespace mwse {
 	xSetEffectInfo::xSetEffectInfo() : mwse::InstructionInterface_t(OpCode::xSetEffectInfo) {}
 
 	float xSetEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long targetType = Stack::getInstance().popLong();
-		mwseString& targetId = virtualMachine.getString(Stack::getInstance().popLong());
-		long effectIndex = Stack::getInstance().popLong();
-		long effectId = Stack::getInstance().popLong();
-		long effectSkillAttributeId = Stack::getInstance().popLong();
-		long effectRange = Stack::getInstance().popLong();
-		long effectArea = Stack::getInstance().popLong();
-		long effectDuration = Stack::getInstance().popLong();
-		long effectMagMin = Stack::getInstance().popLong();
-		long effectMagMax = Stack::getInstance().popLong();
+		long targetType = stack.popLong();
+		mwseString& targetId = virtualMachine.getString(stack.popLong());
+		long effectIndex = stack.popLong();
+		long effectId = stack.popLong();
+		long effectSkillAttributeId = stack.popLong();
+		long effectRange = stack.popLong();
+		long effectArea = stack.popLong();
+		long effectDuration = stack.popLong();
+		long effectMagMin = stack.popLong();
+		long effectMagMax = stack.popLong();
 
 		bool result = false;
 
@@ -88,7 +89,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 		return 0.0f;
 	}
 }

@@ -20,6 +20,7 @@ namespace mwse {
 
 	// This function changes the script at runtime.
 	float xMessageFix::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		unsigned short mboxhdr[2] = {};
 
 		// We want to modify the real script SCDT info. We'll keep track of where we're reading/writing with a read/write pointer,
@@ -39,7 +40,7 @@ namespace mwse {
 		}
 
 		// Get the parameter matching the main message string.
-		mwseString& format = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		// The first string is the message text. Following parameters might be based on the format there.
 		// We can skip the substitution if the string is empty or nonexistant.
@@ -85,7 +86,7 @@ namespace mwse {
 			scriptRWP += 1;
 
 			// Get the replacement string.
-			mwseString& newButtonText = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+			mwseString& newButtonText = virtualMachine.getString(stack.popLong());
 
 			// We can skip the substitution if the string is empty or nonexistant.
 			if (!newButtonText.empty()) {

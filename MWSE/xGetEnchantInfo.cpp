@@ -18,8 +18,9 @@ namespace mwse {
 	xGetEnchantInfo::xGetEnchantInfo() : mwse::InstructionInterface_t(OpCode::xGetEnchantInfo) {}
 
 	float xGetEnchantInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& enchantId = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& enchantId = virtualMachine.getString(stack.popLong());
 
 		// Return values.
 		long type = 0;
@@ -42,11 +43,11 @@ namespace mwse {
 				mwse::log::getLog() << "xGetEnchantInfo: Could not find spell of id '" << enchantId << "'" << std::endl;
 			}
 		}
-		mwse::Stack::getInstance().pushLong(autocalc);
-		mwse::Stack::getInstance().pushLong(effects);
-		mwse::Stack::getInstance().pushLong(maxCharge);
-		mwse::Stack::getInstance().pushLong(cost);
-		mwse::Stack::getInstance().pushLong(type);
+		stack.pushLong(autocalc);
+		stack.pushLong(effects);
+		stack.pushLong(maxCharge);
+		stack.pushLong(cost);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

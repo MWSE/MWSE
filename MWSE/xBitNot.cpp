@@ -14,9 +14,10 @@ namespace mwse {
 	xBitNot::xBitNot() : mwse::InstructionInterface_t(OpCode::xBitNot) {}
 
 	float xBitNot::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param = mwse::Stack::getInstance().popLong();
+		auto& stack = Stack::getInstance();
+		long param = stack.popLong();
 
-		mwse::Stack::getInstance().pushLong(~param);
+		stack.pushLong(~param);
 
 		return 0.0f;
 	}

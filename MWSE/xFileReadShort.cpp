@@ -15,14 +15,15 @@ namespace mwse {
 	xFileReadShort::xFileReadShort() : mwse::InstructionInterface_t(OpCode::xFileReadShort) {}
 
 	float xFileReadShort::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			mwse::log::getLog() << "xFileReadShort: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
 		// Get arguments from the stack.
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long count = mwse::Stack::getInstance().popLong();
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		long count = stack.popLong();
 
 		// Gather values into a temporary list, so they aren't in reverse order.
 		long valuesRead = 0;
@@ -40,10 +41,10 @@ namespace mwse {
 
 		// Copy values from the temporary vector to the stack.
 		while (!values.empty()) {
-			mwse::Stack::getInstance().pushShort(values.front());
+			stack.pushShort(values.front());
 			values.pop_front();
 		}
-		mwse::Stack::getInstance().pushLong(valuesRead);
+		stack.pushLong(valuesRead);
 
 		return 0.0f;
 	}

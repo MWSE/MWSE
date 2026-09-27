@@ -67,13 +67,14 @@ namespace mwse {
 		}
 
 		// Push results to the stack.
-		Stack::getInstance().pushLong(autocalc);
-		Stack::getInstance().pushLong(effects);
-		Stack::getInstance().pushLong(maxCharge);
-		Stack::getInstance().pushFloat(currCharge);
-		Stack::getInstance().pushLong(cost);
-		Stack::getInstance().pushLong(type);
-		Stack::getInstance().pushString(enchId);
+		auto& stack = Stack::getInstance();
+		stack.pushLong(autocalc);
+		stack.pushLong(effects);
+		stack.pushLong(maxCharge);
+		stack.pushFloat(currCharge);
+		stack.pushLong(cost);
+		stack.pushLong(type);
+		stack.pushString(enchId);
 
 		return 0.0f;
 	}

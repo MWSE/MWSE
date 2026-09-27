@@ -15,13 +15,14 @@ namespace mwse {
 	xFileSeek::xFileSeek() : mwse::InstructionInterface_t(OpCode::xFileSeek) {}
 
 	float xFileSeek::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			mwse::log::getLog() << "xFileSeek: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long position = mwse::Stack::getInstance().popLong();
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		long position = stack.popLong();
 
 		mwse::FileSystem::getInstance().seek(fileName, position);
 

@@ -15,17 +15,18 @@ namespace mwse {
 	xGetArraySize::xGetArraySize() : mwse::InstructionInterface_t(OpCode::xGetArraySize) {}
 
 	float xGetArraySize::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
 			mwse::log::getLog() << "xGetArraySize: Function called with no arguments." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		long id = mwse::Stack::getInstance().popLong();
+		long id = stack.popLong();
 
 		long size = mwse::Arrays::getInstance().getSize("xGetArraySize", id);
 
-		mwse::Stack::getInstance().pushLong(size);
+		stack.pushLong(size);
 
 		return 0.0f;
 	}

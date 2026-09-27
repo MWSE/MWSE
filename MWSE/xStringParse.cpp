@@ -16,18 +16,19 @@ namespace mwse {
 	xStringParse::xStringParse() : mwse::InstructionInterface_t(OpCode::xStringParse) {}
 
 	float xStringParse::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& format = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		// We have to hijack this function for version checking, to make it backwards-compatible.
 		if (format == "MWSE_VERSION") {
-			long checkVersionAgainst = mwse::Stack::getInstance().popLong();
-			mwse::Stack::getInstance().pushLong(MWSE_VERSION_INTEGER >= checkVersionAgainst);
-			mwse::Stack::getInstance().pushLong(MWSE_VERSION_INTEGER);
+			long checkVersionAgainst = stack.popLong();
+			stack.pushLong(MWSE_VERSION_INTEGER >= checkVersionAgainst);
+			stack.pushLong(MWSE_VERSION_INTEGER);
 			return 0.0f;
 		}
 
 		// If we're not doing an actual version check, we'll want the string.
-		mwseString& string = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& string = virtualMachine.getString(stack.popLong());
 
 		int resultCount = 0;
 		bool eolMode = false;
@@ -38,7 +39,7 @@ namespace mwse {
 		se::string::secernate(format.c_str(), string.c_str(), results.data(), resultCount);
 
 		while (resultCount--) {
-			mwse::Stack::getInstance().pushLong(results[resultCount]);
+			stack.pushLong(results[resultCount]);
 		}
 
 		return 0.0f;

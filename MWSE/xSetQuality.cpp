@@ -21,8 +21,9 @@ namespace mwse {
 	xSetQuality::xSetQuality() : mwse::InstructionInterface_t(OpCode::xSetQuality) {}
 
 	float xSetQuality::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float value = mwse::Stack::getInstance().popFloat();
+		float value = stack.popFloat();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -67,7 +68,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(valueSet);
+		stack.pushLong(valueSet);
 
 		return 0.0f;
 	}

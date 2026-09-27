@@ -16,10 +16,11 @@ namespace mwse {
 	xStringCapture::xStringCapture() : mwse::InstructionInterface_t(OpCode::xStringCapture) {}
 
 	float xStringCapture::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters from stack.
-		mwseString& string = virtualMachine.getString(Stack::getInstance().popLong());
-		mwseString& pattern = virtualMachine.getString(Stack::getInstance().popLong());
-		long desiredMatches = Stack::getInstance().popLong();
+		mwseString& string = virtualMachine.getString(stack.popLong());
+		mwseString& pattern = virtualMachine.getString(stack.popLong());
+		long desiredMatches = stack.popLong();
 
 		// Go and try to get all of our matches, to a limit of the count given to us as our 3rd parameter.
 		long matchesReturned = 0;
@@ -36,7 +37,7 @@ namespace mwse {
 
 					// Bring the match into string storage and push it back to mwscript.
 					mwseString& match = se::string::store::getOrCreate(regex_matches[i].str());
-					mwse::Stack::getInstance().pushString(match);
+					stack.pushString(match);
 					matchesReturned++;
 				}
 			}
@@ -47,7 +48,7 @@ namespace mwse {
 
 		// If we didn't get enough matches, pad it out with zeros.
 		while (matchesReturned < desiredMatches) {
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			matchesReturned++;
 		}
 

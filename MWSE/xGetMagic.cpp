@@ -53,8 +53,9 @@ namespace mwse {
 		}
 
 		// Return type/id.
-		Stack::getInstance().pushString(id);
-		Stack::getInstance().pushLong(type);
+		auto& stack = Stack::getInstance();
+		stack.pushString(id);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

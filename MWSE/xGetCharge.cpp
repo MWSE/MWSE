@@ -21,6 +21,7 @@ namespace mwse {
 	xGetCharge::xGetCharge() : mwse::InstructionInterface_t(OpCode::xGetCharge) {}
 
 	float xGetCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		float charge = INVALID_VALUE;
 
 		// Get reference.
@@ -29,7 +30,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -61,7 +62,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushFloat(charge);
+		stack.pushFloat(charge);
 
 		return 0.0f;
 	}

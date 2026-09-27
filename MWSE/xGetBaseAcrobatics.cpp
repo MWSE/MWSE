@@ -21,13 +21,14 @@ namespace mwse {
 	xGetBaseAcrobatics::xGetBaseAcrobatics() : mwse::InstructionInterface_t(OpCode::xGetBaseAcrobatics) {}
 
 	float xGetBaseAcrobatics::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseAcrobatics: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -36,12 +37,12 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseAcrobatics: Could not find mobile attachment for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::Acrobatics].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::Acrobatics].base);
 
 		return 0.0f;
 	}

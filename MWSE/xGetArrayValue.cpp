@@ -15,18 +15,19 @@ namespace mwse {
 	xGetArrayValue::xGetArrayValue() : mwse::InstructionInterface_t(OpCode::xGetArrayValue) {}
 
 	float xGetArrayValue::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			mwse::log::getLog() << "xGetArrayValue: Function requires 2 arguments." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		long id = mwse::Stack::getInstance().popLong();
-		long index = mwse::Stack::getInstance().popLong();
+		long id = stack.popLong();
+		long index = stack.popLong();
 
 		long value = mwse::Arrays::getInstance().getValue("xGetArrayValue", id, index);
 
-		mwse::Stack::getInstance().pushLong(value);
+		stack.pushLong(value);
 
 		return 0.0f;
 	}

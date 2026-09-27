@@ -14,10 +14,11 @@ namespace mwse {
 	xLongToFloats::xLongToFloats() : mwse::InstructionInterface_t(OpCode::xLongToFloats) {}
 
 	float xLongToFloats::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param = mwse::Stack::getInstance().popLong();
+		auto& stack = Stack::getInstance();
+		long param = stack.popLong();
 
-		mwse::Stack::getInstance().pushFloat(static_cast<float>((param >> 16) + 0x10000));
-		mwse::Stack::getInstance().pushFloat(static_cast<float>(param & 0xFFFF));
+		stack.pushFloat(static_cast<float>((param >> 16) + 0x10000));
+		stack.pushFloat(static_cast<float>(param & 0xFFFF));
 
 		return 0.0f;
 	}

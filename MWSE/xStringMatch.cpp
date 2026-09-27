@@ -16,8 +16,9 @@ namespace mwse {
 	xStringMatch::xStringMatch() : mwse::InstructionInterface_t(OpCode::xStringMatch) {}
 
 	float xStringMatch::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& string = virtualMachine.getString(Stack::getInstance().popLong());
-		mwseString& pattern = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		mwseString& string = virtualMachine.getString(stack.popLong());
+		mwseString& pattern = virtualMachine.getString(stack.popLong());
 
 		bool result = false;
 		try {
@@ -27,7 +28,7 @@ namespace mwse {
 			result = false;
 		}
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

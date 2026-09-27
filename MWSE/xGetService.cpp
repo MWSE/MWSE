@@ -20,18 +20,19 @@ namespace mwse {
 	xGetService::xGetService() : mwse::InstructionInterface_t(OpCode::xGetService) {}
 
 	float xGetService::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetRace: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		long flags = 0;
-		long mask = mwse::Stack::getInstance().popLong();
+		long mask = stack.popLong();
 
 		// Get the AI configuration from the NPC;
 		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
@@ -44,7 +45,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(flags);
+		stack.pushLong(flags);
 
 		return 0.0f;
 	}

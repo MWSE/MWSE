@@ -18,12 +18,13 @@ namespace mwse {
 	xSetGSString::xSetGSString() : mwse::InstructionInterface_t(OpCode::xSetGSString) {}
 
 	float xSetGSString::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long gmstId = Stack::getInstance().popLong();
-		mwseString& newString = virtualMachine.getString(Stack::getInstance().popLong());
+		auto& stack = Stack::getInstance();
+		long gmstId = stack.popLong();
+		mwseString& newString = virtualMachine.getString(stack.popLong());
 
 		if (gmstId < TES3::GMST::FirstGMST || gmstId > TES3::GMST::LastGMST) {
 			mwse::log::getLog() << "xSetGSString: Invalid GMST id." << std::endl;
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 		// Copy over new value.
 		strcpy(oldString, newString.c_str());
 
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 		return 0.0f;
 	}
 }

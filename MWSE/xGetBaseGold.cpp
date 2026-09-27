@@ -19,13 +19,14 @@ namespace mwse {
 	xGetBaseGold::xGetBaseGold() : mwse::InstructionInterface_t(OpCode::xGetBaseGold) {}
 
 	float xGetBaseGold::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseGold: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -57,7 +58,7 @@ namespace mwse {
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushShort(gold);
+		stack.pushShort(gold);
 
 		return 0.0f;
 	}

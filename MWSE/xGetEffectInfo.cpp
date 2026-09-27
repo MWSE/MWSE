@@ -23,10 +23,11 @@ namespace mwse {
 	xGetEffectInfo::xGetEffectInfo() : mwse::InstructionInterface_t(OpCode::xGetEffectInfo) {}
 
 	float xGetEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long effectType = Stack::getInstance().popLong();
-		mwseString& effectId = virtualMachine.getString(Stack::getInstance().popLong());
-		long effectIndex = Stack::getInstance().popLong();
+		long effectType = stack.popLong();
+		mwseString& effectId = virtualMachine.getString(stack.popLong());
+		long effectIndex = stack.popLong();
 
 		// Return values.
 		long effectEnumId = TES3::EffectID::None;
@@ -106,13 +107,13 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(magMax);
-		mwse::Stack::getInstance().pushLong(magMin);
-		mwse::Stack::getInstance().pushLong(duration);
-		mwse::Stack::getInstance().pushLong(area);
-		mwse::Stack::getInstance().pushLong(rangeType);
-		mwse::Stack::getInstance().pushLong(skillAttributeId);
-		mwse::Stack::getInstance().pushLong(effectEnumId);
+		stack.pushLong(magMax);
+		stack.pushLong(magMin);
+		stack.pushLong(duration);
+		stack.pushLong(area);
+		stack.pushLong(rangeType);
+		stack.pushLong(skillAttributeId);
+		stack.pushLong(effectEnumId);
 
 		return 0.0f;
 	}

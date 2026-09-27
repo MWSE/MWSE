@@ -18,13 +18,14 @@ namespace mwse {
 	xGetStackSize::xGetStackSize() : mwse::InstructionInterface_t(OpCode::xGetStackSize) {}
 
 	float xGetStackSize::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetStackSize: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -35,7 +36,7 @@ namespace mwse {
 			count = varNode->count;
 		}
 
-		mwse::Stack::getInstance().pushLong(count);
+		stack.pushLong(count);
 
 		return 0.0f;
 	}

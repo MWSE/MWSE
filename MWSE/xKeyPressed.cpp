@@ -16,7 +16,8 @@ namespace mwse {
 	xKeyPressed::xKeyPressed() : mwse::InstructionInterface_t(OpCode::xKeyPressed) {}
 
 	float xKeyPressed::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long keyCode = Stack::getInstance().popLong();
+		auto& stack = Stack::getInstance();
+		long keyCode = stack.popLong();
 
 		// A particular key, based on virtual key codes.
 		if (keyCode > 0 && keyCode < 256) {
@@ -24,7 +25,7 @@ namespace mwse {
 			if (state / 2) {
 				state = 2 + state % 2;
 			}
-			Stack::getInstance().pushLong(state);
+			stack.pushLong(state);
 			return 0.0f;
 		}
 
@@ -45,14 +46,14 @@ namespace mwse {
 					if (keyCode == 16 && (GetAsyncKeyState(160) / 2 || GetAsyncKeyState(161) / 2)) continue;
 					if (keyCode == 17 && (GetAsyncKeyState(162) / 2 || GetAsyncKeyState(163) / 2)) continue;
 					if (keyCode == 18 && (GetAsyncKeyState(164) / 2 || GetAsyncKeyState(164) / 2)) continue;
-					Stack::getInstance().pushLong(keyCode);
+					stack.pushLong(keyCode);
 					return 0.0f;
 				}
 			} while (keyCode != lastCode);
 		}
 
 		// Fallthrough state.
-		Stack::getInstance().pushLong(0);
+		stack.pushLong(0);
 		return 0.0f;
 	}
 }

@@ -17,21 +17,22 @@ namespace mwse {
 	xMyCellID::xMyCellID() : mwse::InstructionInterface_t(OpCode::xMyCellID) {}
 
 	float xMyCellID::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xMyCellID: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		TES3::ReferenceList* referenceList = reference->owningCollection.asReferenceList;
 		if (referenceList && referenceList->cell) {
-			mwse::Stack::getInstance().pushString(referenceList->cell->name);
+			stack.pushString(referenceList->cell->name);
 		}
 		else {
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 		}
 
 		return 0.0f;

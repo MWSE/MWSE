@@ -14,7 +14,8 @@ namespace mwse {
 	xSin::xSin() : mwse::InstructionInterface_t(OpCode::xSin) {}
 
 	float xSin::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::sin(mwse::Stack::getInstance().popFloat()));
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::sin(stack.popFloat()));
 		return 0.0f;
 	}
 }

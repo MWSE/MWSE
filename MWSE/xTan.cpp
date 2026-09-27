@@ -14,7 +14,8 @@ namespace mwse {
 	xTan::xTan() : mwse::InstructionInterface_t(OpCode::xTan) {}
 
 	float xTan::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::tan(mwse::Stack::getInstance().popFloat()));
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::tan(stack.popFloat()));
 		return 0.0f;
 	}
 }

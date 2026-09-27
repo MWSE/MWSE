@@ -15,14 +15,15 @@ namespace mwse {
 	xGetRef::xGetRef() : InstructionInterface_t(OpCode::xGetRef) {}
 
 	float xGetRef::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the parameter.
-		mwseString& id = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(stack.popLong());
 
 		// Get its reference.
 		TES3::Reference* ref = virtualMachine.getReference(id.c_str());
 
 		// Push back as long.
-		Stack::getInstance().pushLong((long)ref);
+		stack.pushLong((long)ref);
 
 		return 0.0f;
 	}

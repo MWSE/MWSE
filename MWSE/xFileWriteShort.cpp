@@ -15,13 +15,14 @@ namespace mwse {
 	xFileWriteShort::xFileWriteShort() : mwse::InstructionInterface_t(OpCode::xFileWriteShort) {}
 
 	float xFileWriteShort::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			mwse::log::getLog() << "xFileWriteShort: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		short value = mwse::Stack::getInstance().popShort();
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		short value = stack.popShort();
 
 		mwse::FileSystem::getInstance().writeShort(fileName, value);
 

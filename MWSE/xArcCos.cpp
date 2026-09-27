@@ -14,7 +14,8 @@ namespace mwse {
 	xArcCos::xArcCos() : mwse::InstructionInterface_t(OpCode::xArcCos) {}
 
 	float xArcCos::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::acos(mwse::Stack::getInstance().popFloat()));
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::acos(stack.popFloat()));
 		return 0.0f;
 	}
 }

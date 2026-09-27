@@ -17,14 +17,15 @@ namespace mwse {
 	xModProgressLevel::xModProgressLevel() : mwse::InstructionInterface_t(OpCode::xModProgressLevel) {}
 
 	float xModProgressLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModProgressLevel: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
 
-		long modValue = mwse::Stack::getInstance().popLong();
+		long modValue = stack.popLong();
 
 		// Get the MACP record.
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
@@ -37,7 +38,7 @@ namespace mwse {
 		mobileObject->levelUpProgress = newValue;
 
 		// Push to indicate success.
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

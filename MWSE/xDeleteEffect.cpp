@@ -20,10 +20,11 @@ namespace mwse {
 	xDeleteEffect::xDeleteEffect() : mwse::InstructionInterface_t(OpCode::xDeleteEffect) {}
 
 	float xDeleteEffect::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long type = mwse::Stack::getInstance().popLong();
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		unsigned long effectIndex = mwse::Stack::getInstance().popLong() - 1; // 0-based index.
+		long type = stack.popLong();
+		mwseString& id = virtualMachine.getString(stack.popLong());
+		unsigned long effectIndex = stack.popLong() - 1; // 0-based index.
 		size_t effectCount = 0;
 
 		// Get the desired effect.
@@ -38,7 +39,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					mwse::log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -52,7 +53,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					mwse::log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -72,7 +73,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xDeleteEffect: Record type of " << type << " is not supported." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -81,14 +82,14 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xDeleteEffect: Effect count must be at least one." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 		else if (effectIndex >= effectCount) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xDeleteEffect: Effect index out of range for effect." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -101,7 +102,7 @@ namespace mwse {
 			effects[i].effectID = TES3::EffectID::None;
 		}
 
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

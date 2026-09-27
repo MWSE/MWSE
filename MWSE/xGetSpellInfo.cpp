@@ -18,8 +18,9 @@ namespace mwse {
 	xGetSpellInfo::xGetSpellInfo() : mwse::InstructionInterface_t(OpCode::xGetSpellInfo) {}
 
 	float xGetSpellInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& spellId = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& spellId = virtualMachine.getString(stack.popLong());
 
 		// Return values.
 		char* name = nullptr;
@@ -45,12 +46,12 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(origin);
-		mwse::Stack::getInstance().pushLong(flags);
-		mwse::Stack::getInstance().pushLong(effects);
-		mwse::Stack::getInstance().pushLong(cost);
-		mwse::Stack::getInstance().pushLong(type);
-		mwse::Stack::getInstance().pushString(name);
+		stack.pushLong(origin);
+		stack.pushLong(flags);
+		stack.pushLong(effects);
+		stack.pushLong(cost);
+		stack.pushLong(type);
+		stack.pushString(name);
 
 		return 0.0f;
 	}

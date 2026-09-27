@@ -14,7 +14,8 @@ namespace mwse {
 	xCos::xCos() : mwse::InstructionInterface_t(OpCode::xCos) {}
 
 	float xCos::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::cos(mwse::Stack::getInstance().popFloat()));
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::cos(stack.popFloat()));
 		return 0.0f;
 	}
 }

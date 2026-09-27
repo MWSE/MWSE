@@ -26,9 +26,10 @@ namespace mwse {
 	xGetEncumbrance::xGetEncumbrance() : mwse::InstructionInterface_t(OpCode::xGetEncumbrance) {}
 
 	float xGetEncumbrance::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		EncumbranceQueryType queryType = static_cast<EncumbranceQueryType>(mwse::Stack::getInstance().popLong());
-		bool roundResult = mwse::Stack::getInstance().popLong();
+		EncumbranceQueryType queryType = static_cast<EncumbranceQueryType>(stack.popLong());
+		bool roundResult = stack.popLong();
 
 		// Get reference to target.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -36,7 +37,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -46,7 +47,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -55,7 +56,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: Called on unsupported record type " << record->objectType << "." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -67,7 +68,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -84,7 +85,7 @@ namespace mwse {
 			encumbrance = round(encumbrance * 100.0) / 100.0;
 		}
 
-		mwse::Stack::getInstance().pushFloat(static_cast<float>(encumbrance));
+		stack.pushFloat(static_cast<float>(encumbrance));
 
 		return 0.0f;
 	}

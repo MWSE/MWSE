@@ -19,8 +19,9 @@ namespace mwse {
 	xSetService::xSetService() : mwse::InstructionInterface_t(OpCode::xSetService) {}
 
 	float xSetService::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long flags = mwse::Stack::getInstance().popLong() & TES3::ServiceFlag::AllServicesMask;
+		long flags = stack.popLong() & TES3::ServiceFlag::AllServicesMask;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -28,7 +29,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xSetService: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 

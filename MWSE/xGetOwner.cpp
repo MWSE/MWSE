@@ -19,13 +19,14 @@ namespace mwse {
 	xGetOwner::xGetOwner() : mwse::InstructionInterface_t(OpCode::xGetOwner) {}
 
 	float xGetOwner::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetOwner: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -44,7 +45,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushString(owner);
+		stack.pushString(owner);
 
 		return 0.0f;
 	}

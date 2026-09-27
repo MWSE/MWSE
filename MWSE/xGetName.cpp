@@ -16,13 +16,14 @@ namespace mwse {
 	xGetName::xGetName() : mwse::InstructionInterface_t(OpCode::xGetName) {}
 
 	float xGetName::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetName: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushString(name);
+		stack.pushString(name);
 
 		return 0.0f;
 	}

@@ -21,8 +21,9 @@ namespace mwse {
 	xSpellList::xSpellList() : mwse::InstructionInterface_t(OpCode::xSpellList) {}
 
 	float xSpellList::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get our next node.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(stack.popLong());
 
 		// Arguments we will be returning.
 		long spellCount = 0;
@@ -81,14 +82,14 @@ namespace mwse {
 		spellFlags = spell->spellFlags;
 
 		// Push the data back to mwscript.
-		mwse::Stack::getInstance().pushLong((long)node->next);
-		mwse::Stack::getInstance().pushLong(spellFlags);
-		mwse::Stack::getInstance().pushLong(spellEffectCount);
-		mwse::Stack::getInstance().pushLong(spellCost);
-		mwse::Stack::getInstance().pushLong(spellType);
-		mwse::Stack::getInstance().pushString(spellName);
-		mwse::Stack::getInstance().pushString(spellId);
-		mwse::Stack::getInstance().pushLong(spellCount);
+		stack.pushLong((long)node->next);
+		stack.pushLong(spellFlags);
+		stack.pushLong(spellEffectCount);
+		stack.pushLong(spellCost);
+		stack.pushLong(spellType);
+		stack.pushString(spellName);
+		stack.pushString(spellId);
+		stack.pushLong(spellCount);
 
 		return 0.0f;
 	}

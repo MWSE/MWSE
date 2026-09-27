@@ -18,12 +18,13 @@ namespace mwse {
 	xPositionCell::xPositionCell() : mwse::InstructionInterface_t(OpCode::xPositionCell) {}
 
 	float xPositionCell::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float x = mwse::Stack::getInstance().popFloat();
-		float y = mwse::Stack::getInstance().popFloat();
-		float z = mwse::Stack::getInstance().popFloat();
-		float rotation = mwse::Stack::getInstance().popFloat();
-		mwseString& cell = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		float x = stack.popFloat();
+		float y = stack.popFloat();
+		float z = stack.popFloat();
+		float rotation = stack.popFloat();
+		mwseString& cell = virtualMachine.getString(stack.popLong());
 
 		// Get other context information for original opcode.
 		TES3::Reference* reference = virtualMachine.getReference();

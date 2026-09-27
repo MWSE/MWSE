@@ -17,18 +17,19 @@ namespace mwse {
 	xNextStack::xNextStack() : mwse::InstructionInterface_t(OpCode::xNextStack) {}
 
 	float xNextStack::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the passed node.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());
 		if (node == nullptr) {
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushLong((long)node->next);
-		mwse::Stack::getInstance().pushLong(node->data->count);
-		mwse::Stack::getInstance().pushString(node->data->object->getObjectID());
+		stack.pushLong((long)node->next);
+		stack.pushLong(node->data->count);
+		stack.pushString(node->data->object->getObjectID());
 
 		return 0.0f;
 	}

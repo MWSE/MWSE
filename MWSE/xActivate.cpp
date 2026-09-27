@@ -20,8 +20,9 @@ namespace mwse {
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
 	float xActivate::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get potential target.
-		long parameter = Stack::getInstance().popLong();
+		long parameter = stack.popLong();
 
 		// Verify that the script is called on a valid reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -83,7 +84,7 @@ namespace mwse {
 		// Call the original activate function.
 		TES3::Script* script = virtualMachine.getScript();
 		mwscript::Activate(script, target);
-		Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

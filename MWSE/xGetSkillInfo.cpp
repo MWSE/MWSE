@@ -21,8 +21,9 @@ namespace mwse {
 	xGetSkillInfo::xGetSkillInfo() : mwse::InstructionInterface_t(OpCode::xGetSkillInfo) {}
 
 	float xGetSkillInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		long skillIndex = Stack::getInstance().popLong();
+		long skillIndex = stack.popLong();
 
 		// Return values.
 		long attributeId = TES3::Attribute::Invalid;
@@ -46,12 +47,12 @@ namespace mwse {
 		}
 
 		// Push desired values.
-		mwse::Stack::getInstance().pushFloat(actions[3]);
-		mwse::Stack::getInstance().pushFloat(actions[2]);
-		mwse::Stack::getInstance().pushFloat(actions[1]);
-		mwse::Stack::getInstance().pushFloat(actions[0]);
-		mwse::Stack::getInstance().pushLong(specialization);
-		mwse::Stack::getInstance().pushLong(attributeId);
+		stack.pushFloat(actions[3]);
+		stack.pushFloat(actions[2]);
+		stack.pushFloat(actions[1]);
+		stack.pushFloat(actions[0]);
+		stack.pushLong(specialization);
+		stack.pushLong(attributeId);
 
 		return 0.0f;
 	}

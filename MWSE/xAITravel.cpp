@@ -18,10 +18,11 @@ namespace mwse {
 	xAITravel::xAITravel() : mwse::InstructionInterface_t(OpCode::xAITravel) {}
 
 	float xAITravel::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float x = mwse::Stack::getInstance().popFloat();
-		float y = mwse::Stack::getInstance().popFloat();
-		float z = mwse::Stack::getInstance().popFloat();
+		float x = stack.popFloat();
+		float y = stack.popFloat();
+		float z = stack.popFloat();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();

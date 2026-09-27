@@ -19,13 +19,14 @@ namespace mwse {
 	xIsProvider::xIsProvider() : mwse::InstructionInterface_t(OpCode::xIsProvider) {}
 
 	float xIsProvider::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xIsProvider: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -53,7 +54,7 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(npcServiceFlags | classServiceFlags);
+		stack.pushLong(npcServiceFlags | classServiceFlags);
 
 		return 0.0f;
 	}

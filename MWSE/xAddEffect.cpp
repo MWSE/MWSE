@@ -20,16 +20,17 @@ namespace mwse {
 	xAddEffect::xAddEffect() : mwse::InstructionInterface_t(OpCode::xAddEffect) {}
 
 	float xAddEffect::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long type = mwse::Stack::getInstance().popLong();
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long effectId = mwse::Stack::getInstance().popLong();
-		long skillAttributeId = mwse::Stack::getInstance().popLong();
-		long range = mwse::Stack::getInstance().popLong();
-		long area = mwse::Stack::getInstance().popLong();
-		long duration = mwse::Stack::getInstance().popLong();
-		long magMin = mwse::Stack::getInstance().popLong();
-		long magMax = mwse::Stack::getInstance().popLong();
+		long type = stack.popLong();
+		mwseString& id = virtualMachine.getString(stack.popLong());
+		long effectId = stack.popLong();
+		long skillAttributeId = stack.popLong();
+		long range = stack.popLong();
+		long area = stack.popLong();
+		long duration = stack.popLong();
+		long magMin = stack.popLong();
+		long magMax = stack.popLong();
 		size_t effectCount = 0;
 
 		// Get the desired effect.
@@ -44,7 +45,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					mwse::log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -58,7 +59,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					mwse::log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -72,7 +73,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					mwse::log::getLog() << "xAddEffect: No alchemy record found with id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -80,7 +81,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xAddEffect: Record type of " << type << " is not supported." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -89,13 +90,13 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xAddEffect: Record already contains 8 effects." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Add effect.
 		auto success = tes3::setEffect(effects, effectCount + 1, effectId, skillAttributeId, range, area, duration, magMin, magMax);
-		mwse::Stack::getInstance().pushLong(success);
+		stack.pushLong(success);
 
 		return 0.0f;
 	}

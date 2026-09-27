@@ -20,6 +20,7 @@ namespace mwse {
 	xGetBaseFatigue::xGetBaseFatigue() : mwse::InstructionInterface_t(OpCode::xGetBaseFatigue) {}
 
 	float xGetBaseFatigue::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		auto mobileObject = reference->getAttachedMobileActor();
@@ -27,12 +28,12 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xGetBaseFatigue: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->fatigue.base);
+		stack.pushFloat(mobileObject->fatigue.base);
 
 		return 0.0f;
 	}

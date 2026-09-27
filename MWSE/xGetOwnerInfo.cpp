@@ -63,9 +63,10 @@ namespace mwse {
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(rank);
-		mwse::Stack::getInstance().pushString(id);
-		mwse::Stack::getInstance().pushLong(type);
+		auto& stack = Stack::getInstance();
+		stack.pushLong(rank);
+		stack.pushString(id);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

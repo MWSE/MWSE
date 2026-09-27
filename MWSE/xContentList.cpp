@@ -20,8 +20,9 @@ namespace mwse {
 	xContentList::xContentList() : mwse::InstructionInterface_t(OpCode::xContentList) {}
 
 	float xContentList::execute(mwse::VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
+		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
@@ -29,13 +30,13 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xContentList: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -68,13 +69,13 @@ namespace mwse {
 		}
 
 		// Push values to the stack.
-		mwse::Stack::getInstance().pushLong((long)next);
-		mwse::Stack::getInstance().pushString(name);
-		mwse::Stack::getInstance().pushFloat(weight);
-		mwse::Stack::getInstance().pushLong(value);
-		mwse::Stack::getInstance().pushLong(type);
-		mwse::Stack::getInstance().pushLong(count);
-		mwse::Stack::getInstance().pushString(id);
+		stack.pushLong((long)next);
+		stack.pushString(name);
+		stack.pushFloat(weight);
+		stack.pushLong(value);
+		stack.pushLong(type);
+		stack.pushLong(count);
+		stack.pushString(id);
 
 		return 0.0f;
 	}
