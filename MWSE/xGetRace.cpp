@@ -64,28 +64,29 @@ namespace mwse {
 			long mainArrayId = 0;
 			long skillArrayId = 0;
 			long attributeArrayId = 0;
+			auto& arrays = Arrays::getInstance();
 			auto foundArrayId = arrayMap.find((long)race);
 			if (foundArrayId != arrayMap.end()) {
 				// Array found. Clear the arrays for reuse.
 				mainArrayId = foundArrayId->second;
-				Arrays::getInstance().clear("xGetRace", mainArrayId);
+				arrays.clear("xGetRace", mainArrayId);
 				skillArrayId = mainArrayId + 1;
-				Arrays::getInstance().clear("xGetRace", skillArrayId);
+				arrays.clear("xGetRace", skillArrayId);
 				attributeArrayId = mainArrayId + 1;
-				Arrays::getInstance().clear("xGetRace", attributeArrayId);
+				arrays.clear("xGetRace", attributeArrayId);
 			}
 			else {
 				// Arrays not found. Create them.
-				mainArrayId = Arrays::getInstance().create("xGetRace");
-				skillArrayId = Arrays::getInstance().create("xGetRace");
-				attributeArrayId = Arrays::getInstance().create("xGetRace");
+				mainArrayId = arrays.create("xGetRace");
+				skillArrayId = arrays.create("xGetRace");
+				attributeArrayId = arrays.create("xGetRace");
 				arrayMap[(long)race] = mainArrayId;
 			}
 
 			if (mainArrayId != 0) {
 				// Create array for skills.
 				if (skillArrayId != 0) {
-					ContainedArray_t& skillArray = Arrays::getInstance().get(skillArrayId);
+					ContainedArray_t& skillArray = arrays.get(skillArrayId);
 					skillArray.push_back(7);
 					for (size_t i = 0; i < 7; ++i) {
 						if (race->skillBonuses[i].skill != TES3::SkillID::Invalid) {
@@ -100,15 +101,15 @@ namespace mwse {
 
 				// Create array for attributes.
 				if (attributeArrayId != 0) {
-					ContainedArray_t& attributeArray = Arrays::getInstance().get(attributeArrayId);
-					for (size_t i = 0; i < 8; ++i) {
-						attributeArray.push_back(race->baseAttributes[i].male);
-						attributeArray.push_back(race->baseAttributes[i].female);
+					ContainedArray_t& attributeArray = arrays.get(attributeArrayId);
+					for (const auto& attribute : race->baseAttributes) {
+						attributeArray.push_back(attribute.male);
+						attributeArray.push_back(attribute.female);
 					}
 				}
 
 				// Push the above arrays and other values to the result array.
-				ContainedArray_t& returnArray = Arrays::getInstance().get(mainArrayId);
+				ContainedArray_t& returnArray = arrays.get(mainArrayId);
 				returnArray.push_back(se::string::store::getOrCreate(race->id));
 				returnArray.push_back(se::string::store::getOrCreate(race->name));
 				returnArray.push_back(skillArrayId);
