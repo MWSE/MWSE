@@ -42,6 +42,7 @@ namespace mwse::lua {
 			usertypeDefinition["stop"] = &TES3::Sound::stop;
 
 			// Expose float-based volume control.
+			usertypeDefinition["frequency"] = sol::property(&TES3::Sound::getFrequency_lua, &TES3::Sound::setFrequency);
 			usertypeDefinition["maxDistance"] = sol::property(&TES3::Sound::getMaxDistance, &TES3::Sound::setMaxDistance_lua);
 			usertypeDefinition["minDistance"] = sol::property(&TES3::Sound::getMinDistance, &TES3::Sound::setMinDistance_lua);
 			usertypeDefinition["volume"] = sol::property(&TES3::Sound::getVolume, &TES3::Sound::setVolume);

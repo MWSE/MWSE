@@ -26,4 +26,16 @@ namespace mwse::rng {
 		std::uniform_real_distribution<float> dist(min, max);
 		return dist(mwse_rng_mt19937);
 	}
+
+	double getRandomDouble(double min, double max) {
+		if (min > max) {
+			return 0.0f;
+		}
+		else if (min == max) {
+			return min;
+		}
+
+		std::uniform_real_distribution<double> dist(min, max);
+		return dist(mwse_rng_mt19937);
+	}
 }

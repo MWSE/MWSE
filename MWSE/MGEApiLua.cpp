@@ -344,7 +344,7 @@ namespace mge::lua {
 	}
 
 	sol::table WeatherConfig::getWind(int weatherID, sol::this_state ts) {
-		if (!(weatherID >= 0 && weatherID < 10)) {
+		if (weatherID < 0) {
 			throw std::invalid_argument("valid weather parameter required.");
 		}
 
@@ -357,7 +357,7 @@ namespace mge::lua {
 		auto weatherID = mwse::lua::getOptionalParam<int>(params, "weather", -1);
 		auto speed = mwse::lua::getOptionalParam<float>(params, "speed", -1.0f);
 
-		if (!(weatherID >= 0 && weatherID < 10)) {
+		if (weatherID < 0) {
 			throw std::invalid_argument("valid weather parameter required.");
 		}
 		if (speed < 0) {
