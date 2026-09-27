@@ -20,11 +20,12 @@ namespace mwse {
 	float xPCCellID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		TES3::DataHandler* masterCell = TES3::DataHandler::get();
+		constexpr auto defaultCellName = "Wilderness";
 		if (masterCell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xPCCellID: Cell master could not be found." << std::endl;
 			}
-			stack.pushString("Wilderness");
+			stack.pushString(defaultCellName);
 			return 0.0f;
 		}
 
@@ -40,7 +41,7 @@ namespace mwse {
 			stack.pushString(cell->name);
 		}
 		else {
-			stack.pushString("Wilderness");
+			stack.pushString(defaultCellName);
 		}
 
 		return 0.0f;
