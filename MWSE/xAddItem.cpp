@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xAddItem xAddItemInstance;
 
-	xAddItem::xAddItem() : mwse::InstructionInterface_t(OpCode::xAddItem) {}
+	xAddItem::xAddItem() : InstructionInterface_t(OpCode::xAddItem) {}
 
-	float xAddItem::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAddItem::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& id = virtualMachine.getString(stack.popLong());
@@ -27,7 +27,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddItem: Called on invalid reference." << std::endl;
+				log::getLog() << "xAddItem: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -36,14 +36,14 @@ namespace mwse {
 		TES3::BaseObject* itemTemplate = virtualMachine.getTemplate(id.c_str());
 		if (itemTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddItem: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xAddItem: No template found with id '" << id << "'." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::AddItem(script, reference, itemTemplate, count);
+		mwscript::AddItem(script, reference, itemTemplate, count);
 
 		return 0.0f;
 	}

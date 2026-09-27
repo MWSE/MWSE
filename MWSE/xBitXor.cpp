@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xBitXor xBitXorInstance;
 
-	xBitXor::xBitXor() : mwse::InstructionInterface_t(OpCode::xBitXor) {}
+	xBitXor::xBitXor() : InstructionInterface_t(OpCode::xBitXor) {}
 
-	float xBitXor::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xBitXor::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long param1 = stack.popLong();
 		long param2 = stack.popLong();

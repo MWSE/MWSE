@@ -18,9 +18,9 @@ namespace mwse {
 
 	static xSpellList xSpellListInstance;
 
-	xSpellList::xSpellList() : mwse::InstructionInterface_t(OpCode::xSpellList) {}
+	xSpellList::xSpellList() : InstructionInterface_t(OpCode::xSpellList) {}
 
-	float xSpellList::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSpellList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get our next node.
 		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(stack.popLong());
@@ -38,7 +38,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSpellList: Could not get reference." << std::endl;
+				log::getLog() << "xSpellList: Could not get reference." << std::endl;
 			}
 			pushErrorResponse();
 			return 0.0f;
@@ -47,7 +47,7 @@ namespace mwse {
 		// Function only works on NPCs.
 		if (reference->baseObject->objectType != TES3::ObjectType::NPC) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSpellList: Called on non-NPC reference." << std::endl;
+				log::getLog() << "xSpellList: Called on non-NPC reference." << std::endl;
 			}
 			pushErrorResponse();
 			return 0.0f;
@@ -96,7 +96,7 @@ namespace mwse {
 
 	void xSpellList::pushErrorResponse() {
 		for (auto i = 0; i < 8; ++i) {
-			mwse::Stack::getInstance().pushLong(0);
+			Stack::getInstance().pushLong(0);
 		}
 	}
 }

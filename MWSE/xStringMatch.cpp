@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xStringMatch xStringMatchInstance;
 
-	xStringMatch::xStringMatch() : mwse::InstructionInterface_t(OpCode::xStringMatch) {}
+	xStringMatch::xStringMatch() : InstructionInterface_t(OpCode::xStringMatch) {}
 
-	float xStringMatch::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringMatch::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		mwseString& string = virtualMachine.getString(stack.popLong());
 		mwseString& pattern = virtualMachine.getString(stack.popLong());

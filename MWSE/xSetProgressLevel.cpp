@@ -14,9 +14,9 @@ namespace mwse {
 
 	static xSetProgressLevel xSetProgressLevelInstance;
 
-	xSetProgressLevel::xSetProgressLevel() : mwse::InstructionInterface_t(OpCode::xSetProgressLevel) {}
+	xSetProgressLevel::xSetProgressLevel() : InstructionInterface_t(OpCode::xSetProgressLevel) {}
 
-	float xSetProgressLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetProgressLevel::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		long progress = stack.popLong();
@@ -25,7 +25,7 @@ namespace mwse {
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressLevel: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xSetProgressLevel: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

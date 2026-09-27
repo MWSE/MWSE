@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseEnchant xGetBaseEnchantInstance;
 
-	xGetBaseEnchant::xGetBaseEnchant() : mwse::InstructionInterface_t(OpCode::xGetBaseEnchant) {}
+	xGetBaseEnchant::xGetBaseEnchant() : InstructionInterface_t(OpCode::xGetBaseEnchant) {}
 
-	float xGetBaseEnchant::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseEnchant::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseDestruction: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseDestruction: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseEnchant: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseEnchant: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

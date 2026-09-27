@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xCast xCastInstance;
 
-	xCast::xCast() : mwse::InstructionInterface_t(OpCode::xCast) {}
+	xCast::xCast() : InstructionInterface_t(OpCode::xCast) {}
 
-	float xCast::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xCast::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& spellId = virtualMachine.getString(stack.popLong());
@@ -29,7 +29,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
+				log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -38,7 +38,7 @@ namespace mwse {
 		TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(spellId.c_str());
 		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xCast: No template found with id '" << spellId << "'." << std::endl;
+				log::getLog() << "xCast: No template found with id '" << spellId << "'." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -47,14 +47,14 @@ namespace mwse {
 		TES3::Reference* target = virtualMachine.getReference(targetId.c_str());
 		if (target == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xCast: Could not find valid target by id '" << targetId << "'." << std::endl;
+				log::getLog() << "xCast: Could not find valid target by id '" << targetId << "'." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// This function isn't working yet.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::log::getLog() << "xCast: Function unimplemented." << std::endl;
+		log::getLog() << "xCast: Function unimplemented." << std::endl;
 
 		return 0.0f;
 	}

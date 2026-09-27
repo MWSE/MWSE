@@ -18,7 +18,7 @@ namespace mwse {
 
 	static xTextInputAlt xTextInputAltInstance;
 
-	xTextInputAlt::xTextInputAlt() : mwse::InstructionInterface_t(OpCode::xTextInputAlt) {}
+	xTextInputAlt::xTextInputAlt() : InstructionInterface_t(OpCode::xTextInputAlt) {}
 
 	static std::map<int, char> keyCharMap;
 
@@ -26,7 +26,7 @@ namespace mwse {
 		return BITMASK_TEST(GetAsyncKeyState(VK_key), 0x8001);
 	}
 
-	float xTextInputAlt::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xTextInputAlt::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// 1st parameter: Message Id.
 		mwseString& message = virtualMachine.getString(stack.popLong());

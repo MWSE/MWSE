@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetModel xGetModelInstance;
 
-	xGetModel::xGetModel() : mwse::InstructionInterface_t(OpCode::xGetModel) {}
+	xGetModel::xGetModel() : InstructionInterface_t(OpCode::xGetModel) {}
 
-	float xGetModel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetModel::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get our parameter.
 		long param = stack.popLong();

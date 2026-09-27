@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseIllusion xGetBaseIllusionInstance;
 
-	xGetBaseIllusion::xGetBaseIllusion() : mwse::InstructionInterface_t(OpCode::xGetBaseIllusion) {}
+	xGetBaseIllusion::xGetBaseIllusion() : InstructionInterface_t(OpCode::xGetBaseIllusion) {}
 
-	float xGetBaseIllusion::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseIllusion::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseIllusion: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseIllusion: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseIllusion: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseIllusion: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

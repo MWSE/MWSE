@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetService xGetServiceInstance;
 
-	xGetService::xGetService() : mwse::InstructionInterface_t(OpCode::xGetService) {}
+	xGetService::xGetService() : InstructionInterface_t(OpCode::xGetService) {}
 
-	float xGetService::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetService::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetRace: No reference provided." << std::endl;
+				log::getLog() << "xGetRace: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -41,7 +41,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetService: Could not resolve AI configuration." << std::endl;
+				log::getLog() << "xGetService: Could not resolve AI configuration." << std::endl;
 			}
 		}
 

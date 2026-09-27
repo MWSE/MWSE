@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xPlace xPlaceInstance;
 
-	xPlace::xPlace() : mwse::InstructionInterface_t(OpCode::xPlace) {}
+	xPlace::xPlace() : InstructionInterface_t(OpCode::xPlace) {}
 
-	float xPlace::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xPlace::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& id = virtualMachine.getString(stack.popLong());
@@ -26,7 +26,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference("player");
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xPlace: Called on invalid reference." << std::endl;
+				log::getLog() << "xPlace: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -36,7 +36,7 @@ namespace mwse {
 		TES3::BaseObject* templateToPlace = virtualMachine.getTemplate(id.c_str());
 		if (templateToPlace == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xPlace: No template found for id '" << id << "'." << std::endl;
+				log::getLog() << "xPlace: No template found for id '" << id << "'." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -44,10 +44,10 @@ namespace mwse {
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::PlaceAtPC(script, reference, templateToPlace, 1, 256.0f, 1);
+		mwscript::PlaceAtPC(script, reference, templateToPlace, 1, 256.0f, 1);
 
 		// Push back the reference we created.
-		TES3::Reference* createdReference = mwse::mwscript::lastCreatedPlaceAtPCReference;
+		TES3::Reference* createdReference = mwscript::lastCreatedPlaceAtPCReference;
 		stack.pushLong((long)createdReference);
 
 		return 0.0f;

@@ -12,19 +12,19 @@ namespace mwse {
 
 	static xFileWriteShort xFileWriteShortInstance;
 
-	xFileWriteShort::xFileWriteShort() : mwse::InstructionInterface_t(OpCode::xFileWriteShort) {}
+	xFileWriteShort::xFileWriteShort() : InstructionInterface_t(OpCode::xFileWriteShort) {}
 
-	float xFileWriteShort::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xFileWriteShort::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 2) {
-			mwse::log::getLog() << "xFileWriteShort: Function called with too few arguments." << std::endl;
+			log::getLog() << "xFileWriteShort: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
 		mwseString& fileName = virtualMachine.getString(stack.popLong());
 		short value = stack.popShort();
 
-		mwse::FileSystem::getInstance().writeShort(fileName, value);
+		FileSystem::getInstance().writeShort(fileName, value);
 
 		return 0.0f;
 	}

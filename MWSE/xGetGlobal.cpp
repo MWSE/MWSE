@@ -16,9 +16,9 @@ namespace mwse {
 
 	static xGetGlobal xGetGlobalInstance;
 
-	xGetGlobal::xGetGlobal() : mwse::InstructionInterface_t(OpCode::xGetGlobal) {}
+	xGetGlobal::xGetGlobal() : InstructionInterface_t(OpCode::xGetGlobal) {}
 
-	float xGetGlobal::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetGlobal::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		mwseString& variable = virtualMachine.getString(stack.popLong());
 
@@ -27,7 +27,7 @@ namespace mwse {
 		// Get global.
 		const TES3::GlobalVariable* global = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(variable.c_str());
 		if (global == nullptr) {
-			mwse::log::getLog() << "xGetGlobal: Global '" << variable << "' could not be found." << std::endl;
+			log::getLog() << "xGetGlobal: Global '" << variable << "' could not be found." << std::endl;
 			stack.pushFloat(0.0f);
 			stack.pushLong(false);
 			return 0.0f;

@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xSetEffectInfo xSetEffectInfoInstance;
 
-	xSetEffectInfo::xSetEffectInfo() : mwse::InstructionInterface_t(OpCode::xSetEffectInfo) {}
+	xSetEffectInfo::xSetEffectInfo() : InstructionInterface_t(OpCode::xSetEffectInfo) {}
 
-	float xSetEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetEffectInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long targetType = stack.popLong();
@@ -46,7 +46,7 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No spell record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No spell record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
@@ -57,7 +57,7 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No enchant record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No enchant record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
@@ -68,13 +68,13 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No alchemy record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No alchemy record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xSetEffectInfo: Record type of " << targetType << " is not supported." << std::endl;
+					log::getLog() << "xSetEffectInfo: Record type of " << targetType << " is not supported." << std::endl;
 				}
 			}
 
@@ -85,7 +85,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
+				log::getLog() << "xSetEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
 			}
 		}
 

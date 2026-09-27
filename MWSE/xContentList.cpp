@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xContentList xContentListInstance;
 
-	xContentList::xContentList() : mwse::InstructionInterface_t(OpCode::xContentList) {}
+	xContentList::xContentList() : InstructionInterface_t(OpCode::xContentList) {}
 
-	float xContentList::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xContentList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());
@@ -28,7 +28,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xContentList: Called on invalid reference." << std::endl;
+				log::getLog() << "xContentList: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);

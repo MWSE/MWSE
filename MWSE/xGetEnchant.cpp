@@ -20,9 +20,9 @@ namespace mwse {
 
 	static xGetEnchant xGetEnchantInstance;
 
-	xGetEnchant::xGetEnchant() : mwse::InstructionInterface_t(OpCode::xGetEnchant) {}
+	xGetEnchant::xGetEnchant() : InstructionInterface_t(OpCode::xGetEnchant) {}
 
-	float xGetEnchant::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEnchant::execute(VMExecuteInterface& virtualMachine) {
 		// Return values.
 		char* enchId = nullptr;
 		long type = 0;

@@ -18,17 +18,17 @@ namespace mwse {
 
 	static xStartScript xStartScriptInstance;
 
-	xStartScript::xStartScript() : mwse::InstructionInterface_t(OpCode::xStartScript) {}
+	xStartScript::xStartScript() : InstructionInterface_t(OpCode::xStartScript) {}
 
-	float xStartScript::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStartScript::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		mwseString& scriptName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& scriptName = virtualMachine.getString(Stack::getInstance().popLong());
 
 		// Try to get the target script.
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName.c_str());
 		if (targetScript == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xStartScript: No script could be found with name '" << scriptName << "'." << std::endl;
+				log::getLog() << "xStartScript: No script could be found with name '" << scriptName << "'." << std::endl;
 			}
 			return 0.0f;
 		}

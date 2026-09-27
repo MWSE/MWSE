@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xSetSkillInfo xSetSkillInfoInstance;
 
-	xSetSkillInfo::xSetSkillInfo() : mwse::InstructionInterface_t(OpCode::xSetSkillInfo) {}
+	xSetSkillInfo::xSetSkillInfo() : InstructionInterface_t(OpCode::xSetSkillInfo) {}
 
-	float xSetSkillInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetSkillInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		long skillIndex = stack.popLong();
@@ -35,7 +35,7 @@ namespace mwse {
 		// Validate skill index.
 		if (skillIndex < TES3::SkillID::FirstSkill || skillIndex > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSkillInfo: Skill index out of range." << std::endl;
+				log::getLog() << "xSetSkillInfo: Skill index out of range." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -44,7 +44,7 @@ namespace mwse {
 		// Validate attribute.
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSkillInfo: Attribute id out of range." << std::endl;
+				log::getLog() << "xSetSkillInfo: Attribute id out of range." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -53,7 +53,7 @@ namespace mwse {
 		// Validate specialization.
 		if (specialization < TES3::SkillSpecialization::FirstSpecialization || specialization > TES3::SkillSpecialization::LastSpecialization) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSkillInfo: Specialization out of range." << std::endl;
+				log::getLog() << "xSetSkillInfo: Specialization out of range." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

@@ -18,13 +18,13 @@ namespace mwse {
 
 	static xGetBaseAttribute xGetBaseAttributeInstance;
 
-	xGetBaseAttribute::xGetBaseAttribute() : mwse::InstructionInterface_t(OpCode::xGetBaseAttribute) {}
+	xGetBaseAttribute::xGetBaseAttribute() : InstructionInterface_t(OpCode::xGetBaseAttribute) {}
 
-	float xGetBaseAttribute::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseAttribute::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Function called with too few arguments." << std::endl;
+				log::getLog() << "xGetBaseAttribute: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -33,7 +33,7 @@ namespace mwse {
 		long attributeId = stack.popLong();
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Invalid attribute id: " << attributeId << std::endl;
+				log::getLog() << "xGetBaseAttribute: Invalid attribute id: " << attributeId << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -43,7 +43,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseAttribute: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -52,7 +52,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAttribute: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

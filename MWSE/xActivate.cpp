@@ -19,7 +19,7 @@ namespace mwse {
 
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
-	float xActivate::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xActivate::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get potential target.
 		long parameter = stack.popLong();

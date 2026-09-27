@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetSpellEffects xGetSpellEffectsInstance;
 
-	xGetSpellEffects::xGetSpellEffects() : mwse::InstructionInterface_t(OpCode::xGetSpellEffects) {}
+	xGetSpellEffects::xGetSpellEffects() : InstructionInterface_t(OpCode::xGetSpellEffects) {}
 
-	float xGetSpellEffects::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpellEffects::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		mwseString& id = virtualMachine.getString(stack.popLong());
@@ -26,7 +26,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffects: Called on invalid reference." << std::endl;
+				log::getLog() << "xGetSpellEffects: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -36,7 +36,7 @@ namespace mwse {
 		TES3::BaseObject* spellTemplate = virtualMachine.getTemplate(id.c_str());
 		if (spellTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffects: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xGetSpellEffects: No template found with id '" << id << "'." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -44,7 +44,7 @@ namespace mwse {
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		bool result = mwse::mwscript::GetSpellEffects(script, reference, spellTemplate);
+		bool result = mwscript::GetSpellEffects(script, reference, spellTemplate);
 
 		stack.pushLong(result);
 

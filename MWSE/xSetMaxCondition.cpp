@@ -20,9 +20,9 @@ namespace mwse {
 
 	static xSetMaxCondition xSetMaxConditionInstance;
 
-	xSetMaxCondition::xSetMaxCondition() : mwse::InstructionInterface_t(OpCode::xSetMaxCondition) {}
+	xSetMaxCondition::xSetMaxCondition() : InstructionInterface_t(OpCode::xSetMaxCondition) {}
 
-	float xSetMaxCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetMaxCondition::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
 		int maxCondition = static_cast<int>(stack.popLong());
@@ -32,7 +32,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: No reference provided." << std::endl;
+				log::getLog() << "xSetMaxCondition: No reference provided." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -42,7 +42,7 @@ namespace mwse {
 		TES3::BaseObject* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: No object found for reference." << std::endl;
+				log::getLog() << "xSetMaxCondition: No object found for reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -66,7 +66,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: Invalid object type: " << object->objectType << std::endl;
+				log::getLog() << "xSetMaxCondition: Invalid object type: " << object->objectType << std::endl;
 			}
 			stack.pushLong(success);
 			return 0.0f;

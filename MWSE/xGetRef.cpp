@@ -14,7 +14,7 @@ namespace mwse {
 
 	xGetRef::xGetRef() : InstructionInterface_t(OpCode::xGetRef) {}
 
-	float xGetRef::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetRef::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the parameter.
 		mwseString& id = virtualMachine.getString(stack.popLong());

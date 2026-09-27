@@ -12,12 +12,12 @@ namespace mwse {
 
 	static xFileReadShort xFileReadShortInstance;
 
-	xFileReadShort::xFileReadShort() : mwse::InstructionInterface_t(OpCode::xFileReadShort) {}
+	xFileReadShort::xFileReadShort() : InstructionInterface_t(OpCode::xFileReadShort) {}
 
-	float xFileReadShort::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xFileReadShort::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 2) {
-			mwse::log::getLog() << "xFileReadShort: Function called with too few arguments." << std::endl;
+			log::getLog() << "xFileReadShort: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
@@ -30,7 +30,7 @@ namespace mwse {
 		std::list<short> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				short value = mwse::FileSystem::getInstance().readShort(fileName);
+				short value = FileSystem::getInstance().readShort(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}

@@ -12,9 +12,9 @@ namespace mwse {
 
 	static xRandomLong xRandomLongInstance;
 
-	xRandomLong::xRandomLong() : mwse::InstructionInterface_t(OpCode::xRandomLong) {}
+	xRandomLong::xRandomLong() : InstructionInterface_t(OpCode::xRandomLong) {}
 
-	float xRandomLong::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xRandomLong::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long min = stack.popLong();
 		long max = stack.popLong();

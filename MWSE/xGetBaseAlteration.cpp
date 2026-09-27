@@ -18,15 +18,15 @@ namespace mwse {
 
 	static xGetBaseAlteration xGetBaseAlterationInstance;
 
-	xGetBaseAlteration::xGetBaseAlteration() : mwse::InstructionInterface_t(OpCode::xGetBaseAlteration) {}
+	xGetBaseAlteration::xGetBaseAlteration() : InstructionInterface_t(OpCode::xGetBaseAlteration) {}
 
-	float xGetBaseAlteration::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseAlteration::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlteration: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseAlteration: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -35,7 +35,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlteration: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAlteration: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

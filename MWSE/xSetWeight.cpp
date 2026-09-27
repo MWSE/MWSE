@@ -23,9 +23,9 @@ namespace mwse {
 
 	static xSetWeight xSetWeightInstance;
 
-	xSetWeight::xSetWeight() : mwse::InstructionInterface_t(OpCode::xSetWeight) {}
+	xSetWeight::xSetWeight() : InstructionInterface_t(OpCode::xSetWeight) {}
 
-	float xSetWeight::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetWeight::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		float weight = stack.popFloat();
@@ -34,7 +34,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetWeight: No reference provided." << std::endl;
+				log::getLog() << "xSetWeight: No reference provided." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -44,7 +44,7 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetWeight: No base record found." << std::endl;
+				log::getLog() << "xSetWeight: No base record found." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -86,7 +86,7 @@ namespace mwse {
 		default:
 			setWeight = false;
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetWeight: Call on invalid record type." << std::endl;
+				log::getLog() << "xSetWeight: Call on invalid record type." << std::endl;
 			}
 			break;
 		}

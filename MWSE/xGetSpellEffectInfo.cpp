@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetSpellEffectInfo xGetSpellEffectInfoInstance;
 
-	xGetSpellEffectInfo::xGetSpellEffectInfo() : mwse::InstructionInterface_t(OpCode::xGetSpellEffectInfo) {}
+	xGetSpellEffectInfo::xGetSpellEffectInfo() : InstructionInterface_t(OpCode::xGetSpellEffectInfo) {}
 
-	float xGetSpellEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpellEffectInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& effectId = virtualMachine.getString(stack.popLong());
@@ -49,13 +49,13 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetSpellEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
+					log::getLog() << "xGetSpellEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
 				}
 			}
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
+				log::getLog() << "xGetSpellEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
 			}
 		}
 

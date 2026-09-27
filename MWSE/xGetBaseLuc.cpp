@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetBaseLuc xGetBaseLucInstance;
 
-	xGetBaseLuc::xGetBaseLuc() : mwse::InstructionInterface_t(OpCode::xGetBaseLuc) {}
+	xGetBaseLuc::xGetBaseLuc() : InstructionInterface_t(OpCode::xGetBaseLuc) {}
 
-	float xGetBaseLuc::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseLuc::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseLuc: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseLuc: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -33,7 +33,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseLuc: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseLuc: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

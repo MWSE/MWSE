@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xStringCompare xStringCompareInstance;
 
-	xStringCompare::xStringCompare() : mwse::InstructionInterface_t(OpCode::xStringCompare) {}
+	xStringCompare::xStringCompare() : InstructionInterface_t(OpCode::xStringCompare) {}
 
-	float xStringCompare::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringCompare::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		mwseString& string1 = virtualMachine.getString(stack.popLong());
 		mwseString& string2 = virtualMachine.getString(stack.popLong());

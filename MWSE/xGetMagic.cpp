@@ -16,9 +16,9 @@ namespace mwse {
 
 	static xGetMagic xGetMagicInstance;
 
-	xGetMagic::xGetMagic() : mwse::InstructionInterface_t(OpCode::xGetMagic) {}
+	xGetMagic::xGetMagic() : InstructionInterface_t(OpCode::xGetMagic) {}
 
-	float xGetMagic::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetMagic::execute(VMExecuteInterface& virtualMachine) {
 		// Return values.
 		long type = 0;
 		const char* id = nullptr;

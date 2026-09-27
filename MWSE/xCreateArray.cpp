@@ -12,12 +12,12 @@ namespace mwse {
 
 	static xCreateArray xCreateArrayInstance;
 
-	xCreateArray::xCreateArray() : mwse::InstructionInterface_t(OpCode::xCreateArray) {}
+	xCreateArray::xCreateArray() : InstructionInterface_t(OpCode::xCreateArray) {}
 
-	float xCreateArray::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long id = mwse::Arrays::getInstance().create("xCreateArray");
+	float xCreateArray::execute(VMExecuteInterface& virtualMachine) {
+		long id = Arrays::getInstance().create("xCreateArray");
 
-		mwse::Stack::getInstance().pushLong(id);
+		Stack::getInstance().pushLong(id);
 
 		return 0.0f;
 	}

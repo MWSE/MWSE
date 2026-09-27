@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xKeyPressed xKeyPressedInstance;
 
-	xKeyPressed::xKeyPressed() : mwse::InstructionInterface_t(OpCode::xKeyPressed) {}
+	xKeyPressed::xKeyPressed() : InstructionInterface_t(OpCode::xKeyPressed) {}
 
-	float xKeyPressed::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xKeyPressed::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long keyCode = stack.popLong();
 

@@ -14,9 +14,9 @@ namespace mwse {
 
 	static xNextStack xNextStackInstance;
 
-	xNextStack::xNextStack() : mwse::InstructionInterface_t(OpCode::xNextStack) {}
+	xNextStack::xNextStack() : InstructionInterface_t(OpCode::xNextStack) {}
 
-	float xNextStack::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xNextStack::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the passed node.
 		auto node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());

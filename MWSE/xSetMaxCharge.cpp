@@ -16,9 +16,9 @@ namespace mwse {
 
 	static xSetMaxCharge xSetMaxChargeInstance;
 
-	xSetMaxCharge::xSetMaxCharge() : mwse::InstructionInterface_t(OpCode::xSetMaxCharge) {}
+	xSetMaxCharge::xSetMaxCharge() : InstructionInterface_t(OpCode::xSetMaxCharge) {}
 
-	float xSetMaxCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetMaxCharge::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
 		float maxCharge = stack.popFloat();
@@ -28,7 +28,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCharge: No reference provided." << std::endl;
+				log::getLog() << "xSetMaxCharge: No reference provided." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -38,7 +38,7 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCharge: No record found for reference." << std::endl;
+				log::getLog() << "xSetMaxCharge: No record found for reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

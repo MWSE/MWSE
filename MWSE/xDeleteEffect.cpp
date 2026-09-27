@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xDeleteEffect xDeleteEffectInstance;
 
-	xDeleteEffect::xDeleteEffect() : mwse::InstructionInterface_t(OpCode::xDeleteEffect) {}
+	xDeleteEffect::xDeleteEffect() : InstructionInterface_t(OpCode::xDeleteEffect) {}
 
-	float xDeleteEffect::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xDeleteEffect::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long type = stack.popLong();
@@ -37,7 +37,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
+					log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;
@@ -51,7 +51,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
+					log::getLog() << "xDeleteEffect: No spell found with id '" << id << "'." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;
@@ -65,13 +65,13 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xDeleteEffect: No alchemy record found with id '" << id << "'." << std::endl;
+					log::getLog() << "xDeleteEffect: No alchemy record found with id '" << id << "'." << std::endl;
 				}
 			}
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xDeleteEffect: Record type of " << type << " is not supported." << std::endl;
+				log::getLog() << "xDeleteEffect: Record type of " << type << " is not supported." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -80,14 +80,14 @@ namespace mwse {
 		// Verify that the effect can be deleted.
 		if (effectCount == 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xDeleteEffect: Effect count must be at least one." << std::endl;
+				log::getLog() << "xDeleteEffect: Effect count must be at least one." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
 		}
 		else if (effectIndex >= effectCount) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xDeleteEffect: Effect index out of range for effect." << std::endl;
+				log::getLog() << "xDeleteEffect: Effect index out of range for effect." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

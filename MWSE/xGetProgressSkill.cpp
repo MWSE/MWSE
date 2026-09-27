@@ -19,15 +19,15 @@ namespace mwse {
 
 	static xGetProgressSkill xGetProgressSkillInstance;
 
-	xGetProgressSkill::xGetProgressSkill() : mwse::InstructionInterface_t(OpCode::xGetProgressSkill) {}
+	xGetProgressSkill::xGetProgressSkill() : InstructionInterface_t(OpCode::xGetProgressSkill) {}
 
-	float xGetProgressSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetProgressSkill::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter off the stack.
 		long skillIndex = stack.popLong();
 		if (skillIndex < TES3::SkillID::FirstSkill || skillIndex > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetProgressSkill: Invalid skill index provided." << std::endl;
+				log::getLog() << "xGetProgressSkill: Invalid skill index provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			stack.pushFloat(INVALID_VALUE);

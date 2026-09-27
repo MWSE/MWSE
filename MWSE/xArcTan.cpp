@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xArcTan xArcTanInstance;
 
-	xArcTan::xArcTan() : mwse::InstructionInterface_t(OpCode::xArcTan) {}
+	xArcTan::xArcTan() : InstructionInterface_t(OpCode::xArcTan) {}
 
-	float xArcTan::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xArcTan::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		stack.pushFloat(std::atan(stack.popFloat()));
 		return 0.0f;

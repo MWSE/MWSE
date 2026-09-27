@@ -14,13 +14,13 @@ namespace mwse {
 
 	static xModAttribute xModAttributeInstance;
 
-	xModAttribute::xModAttribute() : mwse::InstructionInterface_t(OpCode::xModAttribute) {}
+	xModAttribute::xModAttribute() : InstructionInterface_t(OpCode::xModAttribute) {}
 
-	float xModAttribute::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xModAttribute::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 2) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Function called with too few arguments." << std::endl;
+				log::getLog() << "xModAttribute: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -31,7 +31,7 @@ namespace mwse {
 		// Verify attribute range.
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Invalid attribute id: " << attributeId << std::endl;
+				log::getLog() << "xModAttribute: Invalid attribute id: " << attributeId << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -41,7 +41,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Called on invalid reference." << std::endl;
+				log::getLog() << "xModAttribute: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -51,7 +51,7 @@ namespace mwse {
 		TES3::ObjectType::ObjectType type = reference->baseObject->objectType;
 		if (type != TES3::ObjectType::NPC && type != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Called on non-NPC, non-creature reference." << std::endl;
+				log::getLog() << "xModAttribute: Called on non-NPC, non-creature reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -61,7 +61,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xModAttribute: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

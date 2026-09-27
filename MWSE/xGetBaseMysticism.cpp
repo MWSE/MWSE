@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseMysticism xGetBaseMysticismInstance;
 
-	xGetBaseMysticism::xGetBaseMysticism() : mwse::InstructionInterface_t(OpCode::xGetBaseMysticism) {}
+	xGetBaseMysticism::xGetBaseMysticism() : InstructionInterface_t(OpCode::xGetBaseMysticism) {}
 
-	float xGetBaseMysticism::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseMysticism::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseMysticism: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseMysticism: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseMysticism: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseMysticism: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

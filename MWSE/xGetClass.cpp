@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetClass xGetClassInstance;
 
-	xGetClass::xGetClass() : mwse::InstructionInterface_t(OpCode::xGetClass) {}
+	xGetClass::xGetClass() : InstructionInterface_t(OpCode::xGetClass) {}
 
-	float xGetClass::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetClass::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: No reference provided." << std::endl;
+				log::getLog() << "xGetClass: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -40,7 +40,7 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: No object found for reference." << std::endl;
+				log::getLog() << "xGetClass: No object found for reference." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -53,7 +53,7 @@ namespace mwse {
 		}
 		else if (object->objectType != TES3::ObjectType::NPC) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: Called on a non-NPC reference." << std::endl;
+				log::getLog() << "xGetClass: Called on a non-NPC reference." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);

@@ -15,24 +15,24 @@ namespace mwse {
 
 	static xStartCombat xStartCombatInstance;
 
-	xStartCombat::xStartCombat() : mwse::InstructionInterface_t(OpCode::xStartCombat) {}
+	xStartCombat::xStartCombat() : InstructionInterface_t(OpCode::xStartCombat) {}
 
-	float xStartCombat::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStartCombat::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		TES3::Reference* target = reinterpret_cast<TES3::Reference*>(mwse::Stack::getInstance().popLong());
+		TES3::Reference* target = reinterpret_cast<TES3::Reference*>(Stack::getInstance().popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xStartCombat: Called on invalid reference." << std::endl;
+				log::getLog() << "xStartCombat: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::StartCombat(script, reference, target);
+		mwscript::StartCombat(script, reference, target);
 
 		return 0.0f;
 	}

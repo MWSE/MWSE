@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xStringParse xStringParseInstance;
 
-	xStringParse::xStringParse() : mwse::InstructionInterface_t(OpCode::xStringParse) {}
+	xStringParse::xStringParse() : InstructionInterface_t(OpCode::xStringParse) {}
 
-	float xStringParse::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringParse::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		mwseString& format = virtualMachine.getString(stack.popLong());
 

@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xSetTrap xSetTrapInstance;
 
-	xSetTrap::xSetTrap() : mwse::InstructionInterface_t(OpCode::xSetTrap) {}
+	xSetTrap::xSetTrap() : InstructionInterface_t(OpCode::xSetTrap) {}
 
-	float xSetTrap::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetTrap::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long spellId = stack.popLong();
 
@@ -25,7 +25,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetTrap: No reference provided." << std::endl;
+				log::getLog() << "xSetTrap: No reference provided." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

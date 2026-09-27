@@ -15,15 +15,15 @@ namespace mwse {
 
 	static xInventory xInventoryInstance;
 
-	xInventory::xInventory() : mwse::InstructionInterface_t(OpCode::xInventory) {}
+	xInventory::xInventory() : InstructionInterface_t(OpCode::xInventory) {}
 
-	float xInventory::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xInventory::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xInventory: Invalid reference attachment." << std::endl;
+				log::getLog() << "xInventory: Invalid reference attachment." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -33,7 +33,7 @@ namespace mwse {
 
 		if (!reference->baseObject->isActor()) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xInventory: Reference is not for an actor." << std::endl;
+				log::getLog() << "xInventory: Reference is not for an actor." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;

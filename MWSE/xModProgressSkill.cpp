@@ -17,13 +17,13 @@ namespace mwse {
 
 	static xModProgressSkill xModProgressSkillInstance;
 
-	xModProgressSkill::xModProgressSkill() : mwse::InstructionInterface_t(OpCode::xModProgressSkill) {}
+	xModProgressSkill::xModProgressSkill() : InstructionInterface_t(OpCode::xModProgressSkill) {}
 
-	float xModProgressSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xModProgressSkill::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 3) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModProgressSkill: Function called with too few arguments." << std::endl;
+				log::getLog() << "xModProgressSkill: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -35,7 +35,7 @@ namespace mwse {
 		// Verify attribute range.
 		if (skillId < TES3::SkillID::FirstSkill || skillId > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModProgressSkill: Invalid skill id: " << skillId << std::endl;
+				log::getLog() << "xModProgressSkill: Invalid skill id: " << skillId << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

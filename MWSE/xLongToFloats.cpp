@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xLongToFloats xLongToFloatsInstance;
 
-	xLongToFloats::xLongToFloats() : mwse::InstructionInterface_t(OpCode::xLongToFloats) {}
+	xLongToFloats::xLongToFloats() : InstructionInterface_t(OpCode::xLongToFloats) {}
 
-	float xLongToFloats::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xLongToFloats::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long param = stack.popLong();
 

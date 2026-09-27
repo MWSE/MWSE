@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xHypot xHypotInstance;
 
-	xHypot::xHypot() : mwse::InstructionInterface_t(OpCode::xHypot) {}
+	xHypot::xHypot() : InstructionInterface_t(OpCode::xHypot) {}
 
-	float xHypot::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xHypot::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		float param1 = stack.popFloat();
 		float param2 = stack.popFloat();

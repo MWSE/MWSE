@@ -18,9 +18,9 @@ namespace mwse {
 
 	static xScriptRunning xScriptRunningInstance;
 
-	xScriptRunning::xScriptRunning() : mwse::InstructionInterface_t(OpCode::xScriptRunning) {}
+	xScriptRunning::xScriptRunning() : InstructionInterface_t(OpCode::xScriptRunning) {}
 
-	float xScriptRunning::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xScriptRunning::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& scriptName = virtualMachine.getString(stack.popLong());
@@ -29,7 +29,7 @@ namespace mwse {
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName.c_str());
 		if (targetScript == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xScriptRunning: No script could be found with name '" << scriptName << "'." << std::endl;
+				log::getLog() << "xScriptRunning: No script could be found with name '" << scriptName << "'." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

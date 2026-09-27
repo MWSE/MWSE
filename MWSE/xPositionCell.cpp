@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xPositionCell xPositionCellInstance;
 
-	xPositionCell::xPositionCell() : mwse::InstructionInterface_t(OpCode::xPositionCell) {}
+	xPositionCell::xPositionCell() : InstructionInterface_t(OpCode::xPositionCell) {}
 
-	float xPositionCell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xPositionCell::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		float x = stack.popFloat();
@@ -30,14 +30,14 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xPositionCell: Called on invalid reference." << std::endl;
+				log::getLog() << "xPositionCell: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::PositionCell(script, reference, x, y, z, rotation, cell.c_str());
+		mwscript::PositionCell(script, reference, x, y, z, rotation, cell.c_str());
 
 		return 0.0f;
 	}

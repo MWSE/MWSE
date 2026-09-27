@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetAlchemyInfo xGetAlchemyInfoInstance;
 
-	xGetAlchemyInfo::xGetAlchemyInfo() : mwse::InstructionInterface_t(OpCode::xGetAlchemyInfo) {}
+	xGetAlchemyInfo::xGetAlchemyInfo() : InstructionInterface_t(OpCode::xGetAlchemyInfo) {}
 
-	float xGetAlchemyInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetAlchemyInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& id = virtualMachine.getString(stack.popLong());
@@ -26,7 +26,7 @@ namespace mwse {
 		const auto record = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Alchemy>(id);
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetAlchemyInfo: No record found by id '" << id << "'." << std::endl;
+				log::getLog() << "xGetAlchemyInfo: No record found by id '" << id << "'." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -34,7 +34,7 @@ namespace mwse {
 		}
 		else if (record->objectType != TES3::ObjectType::Alchemy) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetAlchemyInfo: Found record by id '" << id << "' of invalid type " << record->objectType << "." << std::endl;
+				log::getLog() << "xGetAlchemyInfo: Found record by id '" << id << "' of invalid type " << record->objectType << "." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);

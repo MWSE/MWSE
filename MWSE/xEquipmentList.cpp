@@ -29,9 +29,9 @@ namespace mwse {
 
 	static xEquipmentList xEquipmentListInstance;
 
-	xEquipmentList::xEquipmentList() : mwse::InstructionInterface_t(OpCode::xEquipmentList) {}
+	xEquipmentList::xEquipmentList() : InstructionInterface_t(OpCode::xEquipmentList) {}
 
-	float xEquipmentList::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xEquipmentList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		auto node = reinterpret_cast<NI::IteratedList<TES3::EquipmentStack*>::Node*>(stack.popLong());
@@ -41,7 +41,7 @@ namespace mwse {
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
-			mwse::log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
+			log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
 			stack.pushLong(0);
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -57,7 +57,7 @@ namespace mwse {
 		// Verify actor state.
 		TES3::Actor* actor = reinterpret_cast<TES3::Actor*>(reference->baseObject);
 		if (!actor->isMobileCapableActor()) {
-			mwse::log::getLog() << "xEquipmentList: Called on non-actor." << std::endl;
+			log::getLog() << "xEquipmentList: Called on non-actor." << std::endl;
 			stack.pushLong(0);
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -72,7 +72,7 @@ namespace mwse {
 
 		// Make sure the object isn't a base actor.
 		if (actor->isBaseActor()) {
-			mwse::log::getLog() << "xEquipmentList: Called on base actor. Must be used on instance." << std::endl;
+			log::getLog() << "xEquipmentList: Called on base actor. Must be used on instance." << std::endl;
 			stack.pushLong(0);
 			stack.pushLong(0);
 			stack.pushLong(0);

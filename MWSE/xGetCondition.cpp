@@ -15,15 +15,15 @@ namespace mwse {
 
 	static xGetCondition xGetConditionInstance;
 
-	xGetCondition::xGetCondition() : mwse::InstructionInterface_t(OpCode::xGetCondition) {}
+	xGetCondition::xGetCondition() : InstructionInterface_t(OpCode::xGetCondition) {}
 
-	float xGetCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetCondition::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCondition: No reference provided." << std::endl;
+				log::getLog() << "xGetCondition: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

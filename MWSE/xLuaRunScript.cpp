@@ -18,9 +18,9 @@ namespace mwse {
 
 	static xLuaRunScript xLuaRunScriptInstance;
 
-	xLuaRunScript::xLuaRunScript() : mwse::InstructionInterface_t(OpCode::xLuaRunScript) {}
+	xLuaRunScript::xLuaRunScript() : InstructionInterface_t(OpCode::xLuaRunScript) {}
 
-	float xLuaRunScript::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xLuaRunScript::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		lua::LuaManager& manager = lua::LuaManager::getInstance();
 		const auto stateHandle = manager.getThreadSafeStateHandle();

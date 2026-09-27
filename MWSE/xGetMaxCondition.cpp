@@ -13,15 +13,15 @@ namespace mwse {
 
 	static xGetMaxCondition xGetMaxConditionInstance;
 
-	xGetMaxCondition::xGetMaxCondition() : mwse::InstructionInterface_t(OpCode::xGetMaxCondition) {}
+	xGetMaxCondition::xGetMaxCondition() : InstructionInterface_t(OpCode::xGetMaxCondition) {}
 
-	float xGetMaxCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetMaxCondition::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetMaxCondition: No reference provided." << std::endl;
+				log::getLog() << "xGetMaxCondition: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

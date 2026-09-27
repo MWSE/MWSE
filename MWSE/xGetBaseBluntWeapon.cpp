@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseBluntWeapon xGetBaseBluntWeaponInstance;
 
-	xGetBaseBluntWeapon::xGetBaseBluntWeapon() : mwse::InstructionInterface_t(OpCode::xGetBaseBluntWeapon) {}
+	xGetBaseBluntWeapon::xGetBaseBluntWeapon() : InstructionInterface_t(OpCode::xGetBaseBluntWeapon) {}
 
-	float xGetBaseBluntWeapon::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseBluntWeapon::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseBluntWeapon: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseBluntWeapon: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseBluntWeapon: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseBluntWeapon: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

@@ -12,12 +12,12 @@ namespace mwse {
 
 	static xFileReadString xFileReadStringInstance;
 
-	xFileReadString::xFileReadString() : mwse::InstructionInterface_t(OpCode::xFileReadString) {}
+	xFileReadString::xFileReadString() : InstructionInterface_t(OpCode::xFileReadString) {}
 
-	float xFileReadString::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xFileReadString::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 1) {
-			mwse::log::getLog() << "xFileReadString: Function called with too few arguments." << std::endl;
+			log::getLog() << "xFileReadString: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
@@ -25,7 +25,7 @@ namespace mwse {
 		mwseString& fileName = virtualMachine.getString(stack.popLong());
 
 		// Read the string from the file.
-		std::string readString = mwse::FileSystem::getInstance().readString(fileName, true);
+		std::string readString = FileSystem::getInstance().readString(fileName, true);
 
 		// Push the found string to the stack.
 		if (!readString.empty()) {

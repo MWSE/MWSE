@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xPow xPowInstance;
 
-	xPow::xPow() : mwse::InstructionInterface_t(OpCode::xPow) {}
+	xPow::xPow() : InstructionInterface_t(OpCode::xPow) {}
 
-	float xPow::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xPow::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		float base = stack.popFloat();
 		float exponent = stack.popFloat();

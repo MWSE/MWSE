@@ -12,15 +12,15 @@ namespace mwse {
 
 	static xDistance xDistanceInstance;
 
-	xDistance::xDistance() : mwse::InstructionInterface_t(OpCode::xDistance) {}
+	xDistance::xDistance() : InstructionInterface_t(OpCode::xDistance) {}
 
-	float xDistance::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xDistance::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get target reference
 		auto targetref = reinterpret_cast<TES3::Reference*>(stack.popLong());
 		if (targetref == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModProgressSkill: Target reference is invalid." << std::endl;
+				log::getLog() << "xModProgressSkill: Target reference is invalid." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
@@ -30,7 +30,7 @@ namespace mwse {
 		TES3::Reference* thisref = virtualMachine.getReference();
 		if (thisref == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModProgressSkill: Script reference is invalid." << std::endl;
+				log::getLog() << "xModProgressSkill: Script reference is invalid." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;

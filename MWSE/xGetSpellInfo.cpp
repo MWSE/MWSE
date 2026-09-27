@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetSpellInfo xGetSpellInfoInstance;
 
-	xGetSpellInfo::xGetSpellInfo() : mwse::InstructionInterface_t(OpCode::xGetSpellInfo) {}
+	xGetSpellInfo::xGetSpellInfo() : InstructionInterface_t(OpCode::xGetSpellInfo) {}
 
-	float xGetSpellInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpellInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& spellId = virtualMachine.getString(stack.popLong());
@@ -42,7 +42,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
+				log::getLog() << "xGetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
 			}
 		}
 

@@ -22,9 +22,9 @@ namespace mwse {
 
 	static xSetValue xSetValueInstance;
 
-	xSetValue::xSetValue() : mwse::InstructionInterface_t(OpCode::xSetValue) {}
+	xSetValue::xSetValue() : InstructionInterface_t(OpCode::xSetValue) {}
 
-	float xSetValue::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetValue::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		long value = stack.popLong();
@@ -34,7 +34,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetValue: No reference provided." << std::endl;
+				log::getLog() << "xSetValue: No reference provided." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -44,7 +44,7 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetValue: No base record found." << std::endl;
+				log::getLog() << "xSetValue: No base record found." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -92,7 +92,7 @@ namespace mwse {
 		}
 		default:
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetValue: Call on invalid record type." << std::endl;
+				log::getLog() << "xSetValue: Call on invalid record type." << std::endl;
 			}
 			break;
 		}

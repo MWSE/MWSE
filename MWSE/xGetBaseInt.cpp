@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetBaseInt xGetBaseIntInstance;
 
-	xGetBaseInt::xGetBaseInt() : mwse::InstructionInterface_t(OpCode::xGetBaseInt) {}
+	xGetBaseInt::xGetBaseInt() : InstructionInterface_t(OpCode::xGetBaseInt) {}
 
-	float xGetBaseInt::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseInt::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseInt: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseInt: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -33,7 +33,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseInt: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseInt: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

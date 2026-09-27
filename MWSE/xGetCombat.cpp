@@ -14,15 +14,15 @@ namespace mwse {
 
 	static xGetCombat xGetCombatInstance;
 
-	xGetCombat::xGetCombat() : mwse::InstructionInterface_t(OpCode::xGetCombat) {}
+	xGetCombat::xGetCombat() : InstructionInterface_t(OpCode::xGetCombat) {}
 
-	float xGetCombat::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetCombat::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCombat: No reference provided." << std::endl;
+				log::getLog() << "xGetCombat: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -31,7 +31,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCombat: No mach node found." << std::endl;
+				log::getLog() << "xGetCombat: No mach node found." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

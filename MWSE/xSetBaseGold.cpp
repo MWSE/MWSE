@@ -15,16 +15,16 @@ namespace mwse {
 
 	static xSetBaseGold xSetBaseGoldInstance;
 
-	xSetBaseGold::xSetBaseGold() : mwse::InstructionInterface_t(OpCode::xSetBaseGold) {}
+	xSetBaseGold::xSetBaseGold() : InstructionInterface_t(OpCode::xSetBaseGold) {}
 
-	float xSetBaseGold::execute(mwse::VMExecuteInterface& virtualMachine) {
-		short gold = mwse::Stack::getInstance().popShort();
+	float xSetBaseGold::execute(VMExecuteInterface& virtualMachine) {
+		short gold = Stack::getInstance().popShort();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetBaseGold: Called on invalid reference." << std::endl;
+				log::getLog() << "xSetBaseGold: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -37,7 +37,7 @@ namespace mwse {
 				npc->baseNPC->barterGold = gold;
 			}
 			else {
-				mwse::log::getLog() << "xSetBaseGold: Could not get base NPC record for \"" << npc->objectID << "\"" << std::endl;
+				log::getLog() << "xSetBaseGold: Could not get base NPC record for \"" << npc->objectID << "\"" << std::endl;
 			}
 		}
 		else if (baseRecord->objectType == TES3::ObjectType::Creature) {
@@ -46,7 +46,7 @@ namespace mwse {
 				creature->baseCreature->barterGold = gold;
 			}
 			else {
-				mwse::log::getLog() << "xSetBaseGold: Could not get base creature record for \"" << creature->objectID << "\"" << std::endl;
+				log::getLog() << "xSetBaseGold: Could not get base creature record for \"" << creature->objectID << "\"" << std::endl;
 			}
 		}
 

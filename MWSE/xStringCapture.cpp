@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xStringCapture xStringCaptureInstance;
 
-	xStringCapture::xStringCapture() : mwse::InstructionInterface_t(OpCode::xStringCapture) {}
+	xStringCapture::xStringCapture() : InstructionInterface_t(OpCode::xStringCapture) {}
 
-	float xStringCapture::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringCapture::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters from stack.
 		mwseString& string = virtualMachine.getString(stack.popLong());
@@ -43,7 +43,7 @@ namespace mwse {
 			}
 		}
 		catch (boost::regex_error& e) {
-			mwse::log::getLog() << "xStringCapture: A regex exception has occurred. " << e.what() << std::endl;
+			log::getLog() << "xStringCapture: A regex exception has occurred. " << e.what() << std::endl;
 		}
 
 		// If we didn't get enough matches, pad it out with zeros.

@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xArcSin xArcSinInstance;
 
-	xArcSin::xArcSin() : mwse::InstructionInterface_t(OpCode::xArcSin) {}
+	xArcSin::xArcSin() : InstructionInterface_t(OpCode::xArcSin) {}
 
-	float xArcSin::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xArcSin::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		stack.pushFloat(std::asin(stack.popFloat()));
 		return 0.0f;

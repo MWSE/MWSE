@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetOwner xGetOwnerInstance;
 
-	xGetOwner::xGetOwner() : mwse::InstructionInterface_t(OpCode::xGetOwner) {}
+	xGetOwner::xGetOwner() : InstructionInterface_t(OpCode::xGetOwner) {}
 
-	float xGetOwner::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetOwner::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetOwner: No reference provided." << std::endl;
+				log::getLog() << "xGetOwner: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -41,7 +41,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetOwner: Could not obtain attached VARNODE." << std::endl;
+				log::getLog() << "xGetOwner: Could not obtain attached VARNODE." << std::endl;
 			}
 		}
 

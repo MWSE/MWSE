@@ -12,12 +12,12 @@ namespace mwse {
 
 	static xSetArrayValue xSetArrayValueInstance;
 
-	xSetArrayValue::xSetArrayValue() : mwse::InstructionInterface_t(OpCode::xSetArrayValue) {}
+	xSetArrayValue::xSetArrayValue() : InstructionInterface_t(OpCode::xSetArrayValue) {}
 
-	float xSetArrayValue::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetArrayValue::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 3) {
-			mwse::log::getLog() << "xSetArrayValue: Function called with too few arguments." << std::endl;
+			log::getLog() << "xSetArrayValue: Function called with too few arguments." << std::endl;
 			stack.pushLong(0);
 			return 0.0f;
 		}
@@ -26,7 +26,7 @@ namespace mwse {
 		long index = stack.popLong();
 		long value = stack.popLong();
 
-		short status = mwse::Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
+		short status = Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
 
 		stack.pushShort(status);
 

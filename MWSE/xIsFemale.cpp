@@ -15,15 +15,15 @@ namespace mwse {
 
 	static xIsFemale xIsFemaleInstance;
 
-	xIsFemale::xIsFemale() : mwse::InstructionInterface_t(OpCode::xIsFemale) {}
+	xIsFemale::xIsFemale() : InstructionInterface_t(OpCode::xIsFemale) {}
 
-	float xIsFemale::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xIsFemale::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xIsFemale: Called on invalid reference." << std::endl;
+				log::getLog() << "xIsFemale: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

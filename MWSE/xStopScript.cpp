@@ -19,11 +19,11 @@ namespace mwse {
 
 	static xStopScript xStopScriptInstance;
 
-	xStopScript::xStopScript() : mwse::InstructionInterface_t(OpCode::xStopScript) {}
+	xStopScript::xStopScript() : InstructionInterface_t(OpCode::xStopScript) {}
 
-	float xStopScript::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStopScript::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameter: script name. We allow a value of 0 to target the current script.
-		long scriptNameId = mwse::Stack::getInstance().popLong();
+		long scriptNameId = Stack::getInstance().popLong();
 		const char* scriptName = nullptr;
 		if (scriptNameId == 0) {
 			scriptName = virtualMachine.getScript()->header.name;
@@ -36,7 +36,7 @@ namespace mwse {
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName);
 		if (targetScript == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xStopScript: No script could be found with name '" << scriptName << "'." << std::endl;
+				log::getLog() << "xStopScript: No script could be found with name '" << scriptName << "'." << std::endl;
 			}
 			return 0.0f;
 		}

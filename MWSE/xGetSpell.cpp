@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xGetSpell xGetSpellInstance;
 
-	xGetSpell::xGetSpell() : mwse::InstructionInterface_t(OpCode::xGetSpell) {}
+	xGetSpell::xGetSpell() : InstructionInterface_t(OpCode::xGetSpell) {}
 
-	float xGetSpell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpell::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		short result = 0;
 
@@ -30,14 +30,14 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpell: Could not find reference." << std::endl;
+				log::getLog() << "xGetSpell: Could not find reference." << std::endl;
 			}
 			stack.pushShort(result);
 			return 0.0f;
 		}
 		else if (reference->baseObject->objectType != TES3::ObjectType::NPC) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpell: Target is not an NPC." << std::endl;
+				log::getLog() << "xGetSpell: Target is not an NPC." << std::endl;
 			}
 			stack.pushShort(result);
 			return 0.0f;

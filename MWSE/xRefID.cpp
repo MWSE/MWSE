@@ -14,13 +14,13 @@ namespace mwse {
 
 	static xRefID xRefIDInstance;
 
-	xRefID::xRefID() : mwse::InstructionInterface_t(OpCode::xRefID) {}
+	xRefID::xRefID() : InstructionInterface_t(OpCode::xRefID) {}
 
-	float xRefID::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xRefID::execute(VMExecuteInterface& virtualMachine) {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xRefID: Called on invalid reference." << std::endl;
+				log::getLog() << "xRefID: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}

@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseShortBlade xGetBaseShortBladeInstance;
 
-	xGetBaseShortBlade::xGetBaseShortBlade() : mwse::InstructionInterface_t(OpCode::xGetBaseShortBlade) {}
+	xGetBaseShortBlade::xGetBaseShortBlade() : InstructionInterface_t(OpCode::xGetBaseShortBlade) {}
 
-	float xGetBaseShortBlade::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseShortBlade::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseShortBlade: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseShortBlade: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseShortBlade: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseShortBlade: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

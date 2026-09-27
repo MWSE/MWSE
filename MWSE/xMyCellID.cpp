@@ -14,14 +14,14 @@ namespace mwse {
 
 	static xMyCellID xMyCellIDInstance;
 
-	xMyCellID::xMyCellID() : mwse::InstructionInterface_t(OpCode::xMyCellID) {}
+	xMyCellID::xMyCellID() : InstructionInterface_t(OpCode::xMyCellID) {}
 
-	float xMyCellID::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xMyCellID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xMyCellID: Called on invalid reference." << std::endl;
+				log::getLog() << "xMyCellID: Called on invalid reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

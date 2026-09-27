@@ -15,15 +15,15 @@ namespace mwse {
 
 	static xGetStackSize xGetStackSizeInstance;
 
-	xGetStackSize::xGetStackSize() : mwse::InstructionInterface_t(OpCode::xGetStackSize) {}
+	xGetStackSize::xGetStackSize() : InstructionInterface_t(OpCode::xGetStackSize) {}
 
-	float xGetStackSize::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetStackSize::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetStackSize: No reference provided." << std::endl;
+				log::getLog() << "xGetStackSize: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

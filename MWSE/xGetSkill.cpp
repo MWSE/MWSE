@@ -18,15 +18,15 @@ namespace mwse {
 
 	static xGetSkill xGetSkillInstance;
 
-	xGetSkill::xGetSkill() : mwse::InstructionInterface_t(OpCode::xGetSkill) {}
+	xGetSkill::xGetSkill() : InstructionInterface_t(OpCode::xGetSkill) {}
 
-	float xGetSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSkill::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get skill id argument.
 		long skillId = stack.popLong();
 		if (skillId < TES3::SkillID::FirstSkill || skillId > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Invalid skill id: " << skillId << std::endl;
+				log::getLog() << "xGetSkill: Invalid skill id: " << skillId << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -36,7 +36,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Call on invalid reference." << std::endl;
+				log::getLog() << "xGetSkill: Call on invalid reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -45,7 +45,7 @@ namespace mwse {
 		// Verify target record type.
 		if (reference->baseObject->objectType != TES3::ObjectType::NPC && reference->baseObject->objectType != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Reference is not a creature or NPC." << std::endl;
+				log::getLog() << "xGetSkill: Reference is not a creature or NPC." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -55,7 +55,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetSkill: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

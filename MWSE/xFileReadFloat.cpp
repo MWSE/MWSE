@@ -12,12 +12,12 @@ namespace mwse {
 
 	static xFileReadFloat xFileReadFloatInstance;
 
-	xFileReadFloat::xFileReadFloat() : mwse::InstructionInterface_t(OpCode::xFileReadFloat) {}
+	xFileReadFloat::xFileReadFloat() : InstructionInterface_t(OpCode::xFileReadFloat) {}
 
-	float xFileReadFloat::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xFileReadFloat::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 2) {
-			mwse::log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
+			log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
@@ -30,7 +30,7 @@ namespace mwse {
 		std::list<float> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				float value = mwse::FileSystem::getInstance().readFloat(fileName);
+				float value = FileSystem::getInstance().readFloat(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}

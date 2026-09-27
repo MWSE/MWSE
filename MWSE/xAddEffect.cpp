@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xAddEffect xAddEffectInstance;
 
-	xAddEffect::xAddEffect() : mwse::InstructionInterface_t(OpCode::xAddEffect) {}
+	xAddEffect::xAddEffect() : InstructionInterface_t(OpCode::xAddEffect) {}
 
-	float xAddEffect::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAddEffect::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long type = stack.popLong();
@@ -43,7 +43,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
+					log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;
@@ -57,7 +57,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
+					log::getLog() << "xAddEffect: No spell found with id '" << id << "'." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;
@@ -71,7 +71,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xAddEffect: No alchemy record found with id '" << id << "'." << std::endl;
+					log::getLog() << "xAddEffect: No alchemy record found with id '" << id << "'." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;
@@ -79,7 +79,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddEffect: Record type of " << type << " is not supported." << std::endl;
+				log::getLog() << "xAddEffect: Record type of " << type << " is not supported." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -88,7 +88,7 @@ namespace mwse {
 		// Get effect count.
 		if (effectCount == 8) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddEffect: Record already contains 8 effects." << std::endl;
+				log::getLog() << "xAddEffect: Record already contains 8 effects." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

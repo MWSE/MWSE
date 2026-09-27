@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xAnd xAndInstance;
 
-	xAnd::xAnd() : mwse::InstructionInterface_t(OpCode::xAnd) {}
+	xAnd::xAnd() : InstructionInterface_t(OpCode::xAnd) {}
 
-	float xAnd::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAnd::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long param1 = stack.popLong();
 		long param2 = stack.popLong();

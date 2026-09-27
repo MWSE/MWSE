@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseLightArmor xGetBaseLightArmorInstance;
 
-	xGetBaseLightArmor::xGetBaseLightArmor() : mwse::InstructionInterface_t(OpCode::xGetBaseLightArmor) {}
+	xGetBaseLightArmor::xGetBaseLightArmor() : InstructionInterface_t(OpCode::xGetBaseLightArmor) {}
 
-	float xGetBaseLightArmor::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseLightArmor::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseLightArmor: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseLightArmor: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseLightArmor: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseLightArmor: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

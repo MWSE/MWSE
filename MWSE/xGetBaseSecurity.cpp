@@ -17,15 +17,15 @@ namespace mwse {
 
 	static xGetBaseSecurity xGetBaseSecurityInstance;
 
-	xGetBaseSecurity::xGetBaseSecurity() : mwse::InstructionInterface_t(OpCode::xGetBaseSecurity) {}
+	xGetBaseSecurity::xGetBaseSecurity() : InstructionInterface_t(OpCode::xGetBaseSecurity) {}
 
-	float xGetBaseSecurity::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseSecurity::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseSecurity: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseSecurity: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -34,7 +34,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseSecurity: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseSecurity: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

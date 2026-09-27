@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xGetLockLevel xGetLockLevelInstance;
 
-	xGetLockLevel::xGetLockLevel() : mwse::InstructionInterface_t(OpCode::xGetLockLevel) {}
+	xGetLockLevel::xGetLockLevel() : InstructionInterface_t(OpCode::xGetLockLevel) {}
 
-	float xGetLockLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetLockLevel::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		short lockLevel = -1;
 
@@ -23,7 +23,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetLockLevel: No reference provided." << std::endl;
+				log::getLog() << "xGetLockLevel: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

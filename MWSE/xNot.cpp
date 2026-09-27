@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xNot xNotInstance;
 
-	xNot::xNot() : mwse::InstructionInterface_t(OpCode::xNot) {}
+	xNot::xNot() : InstructionInterface_t(OpCode::xNot) {}
 
-	float xNot::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xNot::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long value = stack.popLong();
 		stack.pushLong(!value);

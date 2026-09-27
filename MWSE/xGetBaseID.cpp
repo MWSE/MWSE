@@ -14,15 +14,15 @@ namespace mwse {
 
 	static xGetBaseID xGetBaseIDInstance;
 
-	xGetBaseID::xGetBaseID() : mwse::InstructionInterface_t(OpCode::xGetBaseID) {}
+	xGetBaseID::xGetBaseID() : InstructionInterface_t(OpCode::xGetBaseID) {}
 
-	float xGetBaseID::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseID: Called without reference." << std::endl;
+				log::getLog() << "xGetBaseID: Called without reference." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

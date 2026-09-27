@@ -15,17 +15,17 @@ namespace mwse {
 
 	static xAddSpell xAddSpellInstance;
 
-	xAddSpell::xAddSpell() : mwse::InstructionInterface_t(OpCode::xAddSpell) {}
+	xAddSpell::xAddSpell() : InstructionInterface_t(OpCode::xAddSpell) {}
 
-	float xAddSpell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAddSpell::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameter.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(Stack::getInstance().popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddSpell: Called on invalid reference." << std::endl;
+				log::getLog() << "xAddSpell: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -34,14 +34,14 @@ namespace mwse {
 		TES3::BaseObject* spellTemplate = virtualMachine.getTemplate(id.c_str());
 		if (spellTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAddSpell: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xAddSpell: No template found with id '" << id << "'." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::AddSpell(script, reference, spellTemplate);
+		mwscript::AddSpell(script, reference, spellTemplate);
 
 		return 0.0f;
 	}

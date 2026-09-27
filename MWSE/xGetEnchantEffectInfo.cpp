@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xGetEnchantEffectInfo xGetEnchantEffectInfoInstance;
 
-	xGetEnchantEffectInfo::xGetEnchantEffectInfo() : mwse::InstructionInterface_t(OpCode::xGetEnchantEffectInfo) {}
+	xGetEnchantEffectInfo::xGetEnchantEffectInfo() : InstructionInterface_t(OpCode::xGetEnchantEffectInfo) {}
 
-	float xGetEnchantEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEnchantEffectInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& effectId = virtualMachine.getString(stack.popLong());
@@ -49,13 +49,13 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetEnchantEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
+					log::getLog() << "xGetEnchantEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
 				}
 			}
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEnchantEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
+				log::getLog() << "xGetEnchantEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
 			}
 		}
 

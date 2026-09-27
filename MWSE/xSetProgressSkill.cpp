@@ -17,9 +17,9 @@ namespace mwse {
 
 	static xSetProgressSkill xSetProgressSkillInstance;
 
-	xSetProgressSkill::xSetProgressSkill() : mwse::InstructionInterface_t(OpCode::xSetProgressSkill) {}
+	xSetProgressSkill::xSetProgressSkill() : InstructionInterface_t(OpCode::xSetProgressSkill) {}
 
-	float xSetProgressSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetProgressSkill::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long skillIndex = stack.popLong();
@@ -30,7 +30,7 @@ namespace mwse {
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xSetProgressSkill: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -39,7 +39,7 @@ namespace mwse {
 		// Verify skill index.
 		if (skillIndex < TES3::SkillID::FirstSkill || skillIndex > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Skill index out of bounds." << std::endl;
+				log::getLog() << "xSetProgressSkill: Skill index out of bounds." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -48,7 +48,7 @@ namespace mwse {
 		// Verify progress.
 		if (progress < 0) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Progress cannot be negative." << std::endl;
+				log::getLog() << "xSetProgressSkill: Progress cannot be negative." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

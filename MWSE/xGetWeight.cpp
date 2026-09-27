@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetWeight xGetWeightInstance;
 
-	xGetWeight::xGetWeight() : mwse::InstructionInterface_t(OpCode::xGetWeight) {}
+	xGetWeight::xGetWeight() : InstructionInterface_t(OpCode::xGetWeight) {}
 
-	float xGetWeight::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetWeight::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetWeight: No reference provided." << std::endl;
+				log::getLog() << "xGetWeight: No reference provided." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
@@ -50,7 +50,7 @@ namespace mwse {
 		}
 		catch (std::exception& e) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetWeight: " << e.what() << std::endl;
+				log::getLog() << "xGetWeight: " << e.what() << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;

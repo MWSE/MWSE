@@ -16,15 +16,15 @@ namespace mwse {
 
 	static xGetValue xGetValueInstance;
 
-	xGetValue::xGetValue() : mwse::InstructionInterface_t(OpCode::xGetValue) {}
+	xGetValue::xGetValue() : InstructionInterface_t(OpCode::xGetValue) {}
 
-	float xGetValue::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetValue::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetValue: No reference provided." << std::endl;
+				log::getLog() << "xGetValue: No reference provided." << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;
@@ -50,7 +50,7 @@ namespace mwse {
 		}
 		catch (std::exception& e) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetValue: " << e.what() << std::endl;
+				log::getLog() << "xGetValue: " << e.what() << std::endl;
 			}
 			stack.pushLong(0);
 			return 0.0f;

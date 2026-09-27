@@ -15,14 +15,14 @@ namespace mwse {
 
 	static xPCCellID xPCCellIDInstance;
 
-	xPCCellID::xPCCellID() : mwse::InstructionInterface_t(OpCode::xPCCellID) {}
+	xPCCellID::xPCCellID() : InstructionInterface_t(OpCode::xPCCellID) {}
 
-	float xPCCellID::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xPCCellID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		TES3::DataHandler* masterCell = TES3::DataHandler::get();
 		if (masterCell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xPCCellID: Cell master could not be found." << std::endl;
+				log::getLog() << "xPCCellID: Cell master could not be found." << std::endl;
 			}
 			stack.pushString("Wilderness");
 			return 0.0f;

@@ -15,14 +15,14 @@ namespace mwse {
 
 	static xGetGSString xGetGSStringInstance;
 
-	xGetGSString::xGetGSString() : mwse::InstructionInterface_t(OpCode::xGetGSString) {}
+	xGetGSString::xGetGSString() : InstructionInterface_t(OpCode::xGetGSString) {}
 
-	float xGetGSString::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetGSString::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long gmstId = stack.popLong();
 
 		if (gmstId < TES3::GMST::FirstGMST || gmstId > TES3::GMST::LastGMST) {
-			mwse::log::getLog() << "xGetGSString: Invalid GMST id." << std::endl;
+			log::getLog() << "xGetGSString: Invalid GMST id." << std::endl;
 			stack.pushLong(NULL);
 			return 0.0f;
 		}

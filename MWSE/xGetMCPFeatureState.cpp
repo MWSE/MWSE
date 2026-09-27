@@ -14,14 +14,14 @@ namespace mwse {
 
 	static xGetMCPFeatureState xGetMCPFeatureStateInstance;
 
-	xGetMCPFeatureState::xGetMCPFeatureState() : mwse::InstructionInterface_t(OpCode::xGetMCPFeatureState) {}
+	xGetMCPFeatureState::xGetMCPFeatureState() : InstructionInterface_t(OpCode::xGetMCPFeatureState) {}
 
-	float xGetMCPFeatureState::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetMCPFeatureState::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long id = stack.popLong();
 
-		if (mwse::mcp::hasFeaturesFound()) {
-			bool enabled = mwse::mcp::getFeatureEnabled(id);
+		if (mcp::hasFeaturesFound()) {
+			bool enabled = mcp::getFeatureEnabled(id);
 			stack.pushShort(enabled);
 		}
 		else {

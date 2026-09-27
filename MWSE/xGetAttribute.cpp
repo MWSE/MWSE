@@ -17,12 +17,12 @@ namespace mwse {
 
 	static xGetAttribute xGetAttributeInstance;
 
-	xGetAttribute::xGetAttribute() : mwse::InstructionInterface_t(OpCode::xGetAttribute) {}
+	xGetAttribute::xGetAttribute() : InstructionInterface_t(OpCode::xGetAttribute) {}
 
-	float xGetAttribute::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetAttribute::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 1) {
-			mwse::log::getLog() << "xGetAttribute: Function called with too few arguments." << std::endl;
+			log::getLog() << "xGetAttribute: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
@@ -30,7 +30,7 @@ namespace mwse {
 		long attributeId = stack.popLong();
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetAttribute: Invalid attribute id: " << attributeId << std::endl;
+				log::getLog() << "xGetAttribute: Invalid attribute id: " << attributeId << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -41,7 +41,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetAttribute: No reference provided." << std::endl;
+				log::getLog() << "xGetAttribute: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -50,7 +50,7 @@ namespace mwse {
 		TES3::MobileActor* mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetAttribute: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetAttribute: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

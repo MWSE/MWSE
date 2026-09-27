@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xSetCondition xSetConditionInstance;
 
-	xSetCondition::xSetCondition() : mwse::InstructionInterface_t(OpCode::xSetCondition) {}
+	xSetCondition::xSetCondition() : InstructionInterface_t(OpCode::xSetCondition) {}
 
-	float xSetCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetCondition::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		long value = stack.popLong();

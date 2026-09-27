@@ -17,13 +17,13 @@ namespace mwse {
 
 	static xGetBaseSkill xGetBaseSkillInstance;
 
-	xGetBaseSkill::xGetBaseSkill() : mwse::InstructionInterface_t(OpCode::xGetBaseSkill) {}
+	xGetBaseSkill::xGetBaseSkill() : InstructionInterface_t(OpCode::xGetBaseSkill) {}
 
-	float xGetBaseSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseSkill::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		if (stack.size() < 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseSkill: Function called with too few arguments." << std::endl;
+				log::getLog() << "xGetBaseSkill: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -32,7 +32,7 @@ namespace mwse {
 		long skillId = stack.popLong();
 		if (skillId < TES3::SkillID::FirstSkill || skillId > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseSkill: Invalid skill id: " << skillId << std::endl;
+				log::getLog() << "xGetBaseSkill: Invalid skill id: " << skillId << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -42,7 +42,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseShortBlade: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseShortBlade: No reference provided." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
@@ -51,7 +51,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseSkill: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseSkill: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

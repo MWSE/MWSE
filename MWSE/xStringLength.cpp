@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xStringLength xStringLengthInstance;
 
-	xStringLength::xStringLength() : mwse::InstructionInterface_t(OpCode::xStringLength) {}
+	xStringLength::xStringLength() : InstructionInterface_t(OpCode::xStringLength) {}
 
-	float xStringLength::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringLength::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		mwseString& parameter = virtualMachine.getString(stack.popLong());
 

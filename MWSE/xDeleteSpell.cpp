@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xDeleteSpell xDeleteSpellInstance;
 
-	xDeleteSpell::xDeleteSpell() : mwse::InstructionInterface_t(OpCode::xDeleteSpell) {}
+	xDeleteSpell::xDeleteSpell() : InstructionInterface_t(OpCode::xDeleteSpell) {}
 
-	float xDeleteSpell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xDeleteSpell::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& id = virtualMachine.getString(stack.popLong());
@@ -26,7 +26,7 @@ namespace mwse {
 		TES3::Spell* spell = TES3::DataHandler::get()->nonDynamicData->getSpellById(id.c_str());
 		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xDeleteSpell: No spell found with id '" << id << "'." << std::endl;
+				log::getLog() << "xDeleteSpell: No spell found with id '" << id << "'." << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;

@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xSqrt xSqrtInstance;
 
-	xSqrt::xSqrt() : mwse::InstructionInterface_t(OpCode::xSqrt) {}
+	xSqrt::xSqrt() : InstructionInterface_t(OpCode::xSqrt) {}
 
-	float xSqrt::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSqrt::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		stack.pushFloat(std::sqrt(stack.popFloat()));
 		return 0.0f;

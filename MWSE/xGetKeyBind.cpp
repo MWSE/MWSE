@@ -22,9 +22,9 @@ namespace mwse {
 
 	static xGetKeyBind xGetKeyBindInstance;
 
-	xGetKeyBind::xGetKeyBind() : mwse::InstructionInterface_t(OpCode::xGetKeyBind) {}
+	xGetKeyBind::xGetKeyBind() : InstructionInterface_t(OpCode::xGetKeyBind) {}
 
-	float xGetKeyBind::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetKeyBind::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long inputIndex = stack.popLong();
@@ -32,7 +32,7 @@ namespace mwse {
 		// Validate index.
 		if (inputIndex < TES3::KeyBind::FirstKey || inputIndex > TES3::KeyBind::LastKey) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetKeyBind: Index out of bounds." << std::endl;
+				log::getLog() << "xGetKeyBind: Index out of bounds." << std::endl;
 			}
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -73,7 +73,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetKeyBind: Device type " << scanDevice << " cannot be converted." << std::endl;
+				log::getLog() << "xGetKeyBind: Device type " << scanDevice << " cannot be converted." << std::endl;
 			}
 		}
 

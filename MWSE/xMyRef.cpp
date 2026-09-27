@@ -14,7 +14,7 @@ namespace mwse {
 
 	xMyRef::xMyRef() : InstructionInterface_t(OpCode::xMyRef) {}
 
-	float xMyRef::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xMyRef::execute(VMExecuteInterface& virtualMachine) {
 		// Get the reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 

@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xSetSpellInfo xSetSpellInfoInstance;
 
-	xSetSpellInfo::xSetSpellInfo() : mwse::InstructionInterface_t(OpCode::xSetSpellInfo) {}
+	xSetSpellInfo::xSetSpellInfo() : InstructionInterface_t(OpCode::xSetSpellInfo) {}
 
-	float xSetSpellInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetSpellInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& spellId = virtualMachine.getString(stack.popLong());
@@ -30,7 +30,7 @@ namespace mwse {
 		// Validate spell type.
 		if (type < TES3::SpellCastType::FirstCastType || type > TES3::SpellCastType::LastCastType) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell type out of range: " << type << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell type out of range: " << type << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -39,7 +39,7 @@ namespace mwse {
 		// Validate spell flags.
 		if (flags < TES3::SpellFlag::NoSpellFlags || flags > TES3::SpellFlag::AllSpellFlags) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell flags out of range: " << flags << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell flags out of range: " << flags << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -48,7 +48,7 @@ namespace mwse {
 		// Validate spell origin.
 		if (origin != 0 && (origin < TES3::SpellOrigin::FirstSpellOrigin || origin > TES3::SpellOrigin::LastSpellOrigin)) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell origin out of range: " << origin << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell origin out of range: " << origin << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -58,7 +58,7 @@ namespace mwse {
 		const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId);;
 		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
+				log::getLog() << "xSetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
 			}
 			stack.pushLong(false);
 			return 0.0f;
@@ -69,7 +69,7 @@ namespace mwse {
 			mwseString& name = virtualMachine.getString(nameId);
 			if (name.length() > 31) {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xSetSpellInfo: Given name must be 31 characters or less." << std::endl;
+					log::getLog() << "xSetSpellInfo: Given name must be 31 characters or less." << std::endl;
 				}
 				stack.pushLong(false);
 				return 0.0f;

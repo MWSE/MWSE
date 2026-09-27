@@ -23,9 +23,9 @@ namespace mwse {
 
 	static xGetEncumbrance xGetEncumbranceInstance;
 
-	xGetEncumbrance::xGetEncumbrance() : mwse::InstructionInterface_t(OpCode::xGetEncumbrance) {}
+	xGetEncumbrance::xGetEncumbrance() : InstructionInterface_t(OpCode::xGetEncumbrance) {}
 
-	float xGetEncumbrance::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEncumbrance::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		EncumbranceQueryType queryType = static_cast<EncumbranceQueryType>(stack.popLong());
@@ -35,7 +35,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
+				log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
@@ -45,7 +45,7 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
+				log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
@@ -54,7 +54,7 @@ namespace mwse {
 		// This function only supports creatures and NPCs.
 		if (record->objectType != TES3::ObjectType::NPC && record->objectType != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: Called on unsupported record type " << record->objectType << "." << std::endl;
+				log::getLog() << "xGetEncumbrance: Called on unsupported record type " << record->objectType << "." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
@@ -66,7 +66,7 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
+				log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
 			}
 			stack.pushFloat(0.0f);
 			return 0.0f;

@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xAITravel xAITravelInstance;
 
-	xAITravel::xAITravel() : mwse::InstructionInterface_t(OpCode::xAITravel) {}
+	xAITravel::xAITravel() : InstructionInterface_t(OpCode::xAITravel) {}
 
-	float xAITravel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAITravel::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		float x = stack.popFloat();
@@ -28,14 +28,14 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
+				log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::AITravel(script, reference, x, y, z);
+		mwscript::AITravel(script, reference, x, y, z);
 
 		return 0.0f;
 	}

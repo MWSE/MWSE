@@ -11,9 +11,9 @@ namespace mwse {
 
 	static xShift xShiftInstance;
 
-	xShift::xShift() : mwse::InstructionInterface_t(OpCode::xShift) {}
+	xShift::xShift() : InstructionInterface_t(OpCode::xShift) {}
 
-	float xShift::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xShift::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		long value = stack.popLong();
 		long magnitude = stack.popLong();

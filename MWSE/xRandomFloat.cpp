@@ -12,9 +12,9 @@ namespace mwse {
 
 	static xRandomFloat xRandomFloatInstance;
 
-	xRandomFloat::xRandomFloat() : mwse::InstructionInterface_t(OpCode::xRandomFloat) {}
+	xRandomFloat::xRandomFloat() : InstructionInterface_t(OpCode::xRandomFloat) {}
 
-	float xRandomFloat::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xRandomFloat::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		float min = stack.popFloat();
 		float max = stack.popFloat();

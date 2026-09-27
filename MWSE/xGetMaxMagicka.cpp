@@ -16,16 +16,16 @@ namespace mwse {
 
 	static xGetMaxMagicka xGetMaxMagickaInstance;
 
-	xGetMaxMagicka::xGetMaxMagicka() : mwse::InstructionInterface_t(OpCode::xGetMaxMagicka) {}
+	xGetMaxMagicka::xGetMaxMagicka() : InstructionInterface_t(OpCode::xGetMaxMagicka) {}
 
-	float xGetMaxMagicka::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetMaxMagicka::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetMaxMagicka: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetMaxMagicka: Could not find MACP record for reference." << std::endl;
 			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;

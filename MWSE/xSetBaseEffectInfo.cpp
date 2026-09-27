@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xSetBaseEffectInfo xSetBaseEffectInfoInstance;
 
-	xSetBaseEffectInfo::xSetBaseEffectInfo() : mwse::InstructionInterface_t(OpCode::xSetBaseEffectInfo) {}
+	xSetBaseEffectInfo::xSetBaseEffectInfo() : InstructionInterface_t(OpCode::xSetBaseEffectInfo) {}
 
-	float xSetBaseEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetBaseEffectInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		long id = stack.popLong();

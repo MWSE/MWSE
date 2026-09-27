@@ -15,9 +15,9 @@ namespace mwse {
 
 	static xSetEnchantInfo xSetEnchantInfoInstance;
 
-	xSetEnchantInfo::xSetEnchantInfo() : mwse::InstructionInterface_t(OpCode::xSetEnchantInfo) {}
+	xSetEnchantInfo::xSetEnchantInfo() : InstructionInterface_t(OpCode::xSetEnchantInfo) {}
 
-	float xSetEnchantInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetEnchantInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
 		mwseString& enchantId = virtualMachine.getString(stack.popLong());
@@ -29,7 +29,7 @@ namespace mwse {
 		// Validate type.
 		if (type < 0 || type > 3) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetEnchantInfo: Type out of range." << std::endl;
+				log::getLog() << "xSetEnchantInfo: Type out of range." << std::endl;
 			}
 			stack.pushLong(false);
 			return false;
@@ -38,7 +38,7 @@ namespace mwse {
 		const auto enchant = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Enchantment>(enchantId);
 		if (enchant == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetEnchantInfo: No effect found given id '" << enchantId << "'." << std::endl;
+				log::getLog() << "xSetEnchantInfo: No effect found given id '" << enchantId << "'." << std::endl;
 			}
 			stack.pushLong(false);
 			return false;

@@ -18,9 +18,9 @@ namespace mwse {
 
 	static xGetSkillInfo xGetSkillInfoInstance;
 
-	xGetSkillInfo::xGetSkillInfo() : mwse::InstructionInterface_t(OpCode::xGetSkillInfo) {}
+	xGetSkillInfo::xGetSkillInfo() : InstructionInterface_t(OpCode::xGetSkillInfo) {}
 
-	float xGetSkillInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSkillInfo::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameter.
 		long skillIndex = stack.popLong();
@@ -42,7 +42,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkillInfo: Skill index out of range." << std::endl;
+				log::getLog() << "xGetSkillInfo: Skill index out of range." << std::endl;
 			}
 		}
 

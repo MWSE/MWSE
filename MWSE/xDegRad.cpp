@@ -13,9 +13,9 @@ namespace mwse {
 
 	static xDegRad xDegRadInstance;
 
-	xDegRad::xDegRad() : mwse::InstructionInterface_t(OpCode::xDegRad) {}
+	xDegRad::xDegRad() : InstructionInterface_t(OpCode::xDegRad) {}
 
-	float xDegRad::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xDegRad::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		const auto degrees = stack.popFloat();
 		const auto radians = se::math::degreesToRadians(degrees);
