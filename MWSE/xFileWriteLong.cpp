@@ -24,7 +24,7 @@ namespace mwse {
 		mwseString& fileName = virtualMachine.getString(stack.popLong());
 		long value = stack.popLong();
 
-		FileSystem::getInstance().writeLong(fileName, value);
+		FileSystem::getInstance().writeValue<long>(fileName, value);
 
 		return 0.0f;
 	}

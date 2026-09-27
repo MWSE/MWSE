@@ -30,7 +30,7 @@ namespace mwse {
 		std::list<short> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				short value = FileSystem::getInstance().readShort(fileName);
+				short value = FileSystem::getInstance().readValue<short>(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}

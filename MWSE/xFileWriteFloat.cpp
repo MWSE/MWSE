@@ -24,7 +24,7 @@ namespace mwse {
 		mwseString& fileName = virtualMachine.getString(stack.popLong());
 		float value = stack.popFloat();
 
-		FileSystem::getInstance().writeFloat(fileName, value);
+		FileSystem::getInstance().writeValue<float>(fileName, value);
 
 		return 0.0f;
 	}
