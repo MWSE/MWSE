@@ -23,7 +23,7 @@ namespace mwse {
 	float xSpellList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get our next node.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(stack.popLong());
+		auto node = stack.popPointer<NI::IteratedList<TES3::Spell*>::Node*>();
 
 		// Arguments we will be returning.
 		long spellCount = 0;
@@ -82,7 +82,7 @@ namespace mwse {
 		spellFlags = spell->spellFlags;
 
 		// Push the data back to mwscript.
-		stack.pushLong((long)node->next);
+		stack.pushPointer(node->next);
 		stack.pushLong(spellFlags);
 		stack.pushLong(spellEffectCount);
 		stack.pushLong(spellCost);

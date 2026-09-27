@@ -19,7 +19,7 @@ namespace mwse {
 	float xNextStack::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get the passed node.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());
+		auto node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
 		if (node == nullptr) {
 			stack.pushLong(0);
 			stack.pushLong(0);
@@ -27,7 +27,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		stack.pushLong((long)node->next);
+		stack.pushPointer(node->next);
 		stack.pushLong(node->data->count);
 		stack.pushString(node->data->object->getObjectID());
 

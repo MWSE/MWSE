@@ -34,7 +34,7 @@ namespace mwse {
 	float xEquipmentList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::EquipmentStack*>::Node*>(stack.popLong());
+		auto node = stack.popPointer<NI::IteratedList<TES3::EquipmentStack*>::Node*>();
 		long typeFilter = stack.popLong();
 		long subtypeFilter = stack.popLong() - 1;
 
@@ -142,7 +142,7 @@ namespace mwse {
 		}
 
 		// Push values to the stack.
-		stack.pushLong((long)next);
+		stack.pushPointer(next);
 		stack.pushString(enchantId);
 		stack.pushString(name);
 		stack.pushFloat(weight);

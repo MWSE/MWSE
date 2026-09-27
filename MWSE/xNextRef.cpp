@@ -51,7 +51,7 @@ namespace mwse {
 			next = nullptr;
 		}
 
-		stack.pushLong((long)next);
+		stack.pushPointer(next);
 
 		return 0.0f;
 	}

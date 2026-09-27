@@ -39,7 +39,7 @@ namespace mwse {
 
 		// Push the reference of the combat target, or 0 if no target reference is found.
 		if (mobileObject->actionData.target && mobileObject->actionData.target->reference) {
-			stack.pushLong((long)mobileObject->actionData.target->reference);
+			stack.pushPointer(mobileObject->actionData.target->reference);
 		}
 		else {
 			stack.pushLong(0);

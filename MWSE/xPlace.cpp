@@ -48,7 +48,7 @@ namespace mwse {
 
 		// Push back the reference we created.
 		TES3::Reference* createdReference = mwscript::lastCreatedPlaceAtPCReference;
-		stack.pushLong((long)createdReference);
+		stack.pushPointer(createdReference);
 
 		return 0.0f;
 	}

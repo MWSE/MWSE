@@ -20,10 +20,6 @@ namespace mwse {
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
 	float xActivate::execute(VMExecuteInterface& virtualMachine) {
-		auto& stack = Stack::getInstance();
-		// Get potential target.
-		long parameter = stack.popLong();
-
 		// Verify that the script is called on a valid reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
@@ -44,8 +40,9 @@ namespace mwse {
 
 		// Determine if the target is a reference.
 		TES3::Reference* target = nullptr;
+		auto& stack = Stack::getInstance();
 		try {
-			TES3::Reference* potential = reinterpret_cast<TES3::Reference*>(parameter);
+			auto potential = stack.popPointer<TES3::Reference*>();
 			if (potential && potential->objectType == TES3::ObjectType::Reference) {
 				target = potential;
 			}

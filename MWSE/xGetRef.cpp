@@ -23,7 +23,7 @@ namespace mwse {
 		TES3::Reference* ref = virtualMachine.getReference(id.c_str());
 
 		// Push back as long.
-		stack.pushLong((long)ref);
+		stack.pushPointer(ref);
 
 		return 0.0f;
 	}

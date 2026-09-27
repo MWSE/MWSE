@@ -47,7 +47,7 @@ namespace mwse {
 			return 0.0f;
 		}
 
-		stack.pushLong((long)firstItem->next);
+		stack.pushPointer(firstItem->next);
 		stack.pushLong(firstItem->data->count);
 		stack.pushString(firstItem->data->object->getObjectID());
 

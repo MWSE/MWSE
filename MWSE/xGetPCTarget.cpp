@@ -19,7 +19,7 @@ namespace mwse {
 		TES3::Reference* target = virtualMachine.getCurrentTarget();
 
 		//push the Reference on the stack.
-		Stack::getInstance().pushLong((long)target);
+		Stack::getInstance().pushPointer(target);
 
 		return 0.0f;
 	}
