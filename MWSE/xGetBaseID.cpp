@@ -19,11 +19,8 @@ namespace mwse {
 	float xGetBaseID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetBaseID: Called without reference." << std::endl;
-			}
 			stack.pushLong(0);
 			return 0.0f;
 		}

@@ -26,11 +26,8 @@ namespace mwse {
 		float value = stack.popFloat();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xSetQuality: No reference provided." << std::endl;
-			}
 			return 0.0f;
 		}
 

@@ -18,11 +18,8 @@ namespace mwse {
 	float xGetMaxCondition::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetMaxCondition: No reference provided." << std::endl;
-			}
 			stack.pushLong(0);
 			return 0.0f;
 		}

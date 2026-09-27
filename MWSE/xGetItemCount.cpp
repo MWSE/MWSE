@@ -24,11 +24,8 @@ namespace mwse {
 
 		// Get who we're getting the item count of. mwscript's GetItemCount validates the
 		// object type for us, we don't need to.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetItemCount: No reference found for function call." << std::endl;
-			}
 			stack.pushLong(0);
 			return 0.0f;
 		}

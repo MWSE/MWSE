@@ -27,11 +27,8 @@ namespace mwse {
 		}
 
 		// Get script reference.
-		TES3::Reference* thisref = virtualMachine.getReference();
+		TES3::Reference* thisref = getReference(virtualMachine, __FUNCTION__);
 		if (thisref == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xModProgressSkill: Script reference is invalid." << std::endl;
-			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
 		}

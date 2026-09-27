@@ -17,11 +17,8 @@ namespace mwse {
 
 	float xRefType::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
-		TES3::Reference* refr = virtualMachine.getReference();
+		TES3::Reference* refr = getReference(virtualMachine, __FUNCTION__);
 		if (refr == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xRefType: Called on invalid reference." << std::endl;
-			}
 			stack.pushLong(0);
 			return 0.0f;
 		}

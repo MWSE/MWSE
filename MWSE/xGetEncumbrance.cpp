@@ -32,11 +32,8 @@ namespace mwse {
 		bool roundResult = stack.popLong();
 
 		// Get reference to target.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
-			}
 			stack.pushFloat(0.0f);
 			return 0.0f;
 		}

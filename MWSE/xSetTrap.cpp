@@ -22,11 +22,8 @@ namespace mwse {
 		long spellId = stack.popLong();
 
 		// Get reference to what we're finding the trap of.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xSetTrap: No reference provided." << std::endl;
-			}
 			stack.pushLong(false);
 			return 0.0f;
 		}

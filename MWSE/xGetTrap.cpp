@@ -24,11 +24,8 @@ namespace mwse {
 		short cost = 0;
 
 		// Get reference to what we're finding the trap of.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetTrap: Called on invalid reference." << std::endl;
-			}
 			stack.pushShort(cost);
 			stack.pushString(name);
 			stack.pushString(id);

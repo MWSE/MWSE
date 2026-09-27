@@ -25,11 +25,8 @@ namespace mwse {
 		NI::IteratedList<TES3::ItemStack*>::Node* node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xContentList: Called on invalid reference." << std::endl;
-			}
 			stack.pushLong(0);
 			stack.pushLong(0);
 			stack.pushFloat(0.0f);

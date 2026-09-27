@@ -38,11 +38,8 @@ namespace mwse {
 		}
 
 		// Get the associated MACP record.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetAttribute: No reference provided." << std::endl;
-			}
 			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}

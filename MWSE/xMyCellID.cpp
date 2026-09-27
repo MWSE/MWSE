@@ -18,11 +18,8 @@ namespace mwse {
 
 	float xMyCellID::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xMyCellID: Called on invalid reference." << std::endl;
-			}
 			stack.pushLong(0);
 			return 0.0f;
 		}

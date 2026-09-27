@@ -27,11 +27,8 @@ namespace mwse {
 		mwseString& spellId = virtualMachine.getString(stack.popLong());
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xGetSpell: Could not find reference." << std::endl;
-			}
 			stack.pushShort(result);
 			return 0.0f;
 		}

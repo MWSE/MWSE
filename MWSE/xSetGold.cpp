@@ -20,11 +20,8 @@ namespace mwse {
 	float xSetGold::execute(VMExecuteInterface& virtualMachine) {
 		long gold = Stack::getInstance().popLong();
 
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xSetGold: No reference provided." << std::endl;
-			}
 			return 0.0f;
 		}
 

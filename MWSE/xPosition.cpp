@@ -26,11 +26,8 @@ namespace mwse {
 		float rotation = stack.popFloat();
 
 		// Get other context information for original opcode.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xPosition: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 

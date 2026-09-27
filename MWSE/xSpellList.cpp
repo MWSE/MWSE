@@ -35,11 +35,8 @@ namespace mwse {
 		long spellFlags = 0;
 
 		// Get the reference we're checking.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xSpellList: Could not get reference." << std::endl;
-			}
 			pushErrorResponse();
 			return 0.0f;
 		}

@@ -22,11 +22,8 @@ namespace mwse {
 		TES3::Reference* target = Stack::getInstance().popPointer<TES3::Reference*>();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xStartCombat: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
