@@ -6,7 +6,7 @@ namespace mwse {
 	class xAnd : InstructionInterface_t {
 	public:
 		xAnd();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAnd xAndInstance;

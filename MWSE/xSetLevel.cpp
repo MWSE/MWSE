@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetLevel : InstructionInterface_t {
 	public:
 		xSetLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetLevel xSetLevelInstance;

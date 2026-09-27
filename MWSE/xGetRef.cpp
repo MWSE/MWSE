@@ -7,7 +7,7 @@ namespace mwse {
 	{
 	public:
 		xGetRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetRef xGetRefInstance;

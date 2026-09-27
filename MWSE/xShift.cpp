@@ -6,7 +6,7 @@ namespace mwse {
 	class xShift : InstructionInterface_t {
 	public:
 		xShift();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xShift xShiftInstance;

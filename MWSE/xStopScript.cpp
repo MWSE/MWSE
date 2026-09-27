@@ -14,7 +14,7 @@ namespace mwse {
 	class xStopScript : InstructionInterface_t {
 	public:
 		xStopScript();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStopScript xStopScriptInstance;

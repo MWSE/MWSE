@@ -10,7 +10,7 @@ namespace mwse {
 	class xAddItem : InstructionInterface_t {
 	public:
 		xAddItem();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAddItem xAddItemInstance;

@@ -11,7 +11,7 @@ namespace mwse {
 	class xIsTrader : InstructionInterface_t {
 	public:
 		xIsTrader();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsTrader xIsTraderInstance;

@@ -12,7 +12,7 @@ namespace mwse {
 	class xModProgressSkill : InstructionInterface_t {
 	public:
 		xModProgressSkill();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xModProgressSkill xModProgressSkillInstance;

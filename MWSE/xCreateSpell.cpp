@@ -15,7 +15,7 @@ namespace mwse {
 	class xCreateSpell : InstructionInterface_t {
 	public:
 		xCreateSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xCreateSpell xCreateSpellInstance;

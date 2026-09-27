@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileRewind : InstructionInterface_t {
 	public:
 		xFileRewind();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileRewind xFileRewindInstance;

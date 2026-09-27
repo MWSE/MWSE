@@ -6,7 +6,7 @@ namespace mwse {
 	class xBitAnd : InstructionInterface_t {
 	public:
 		xBitAnd();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xBitAnd xBitAndInstance;

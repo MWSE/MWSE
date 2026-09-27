@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetTrap : InstructionInterface_t {
 	public:
 		xSetTrap();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetTrap xSetTrapInstance;

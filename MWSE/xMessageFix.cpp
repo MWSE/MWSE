@@ -11,7 +11,7 @@ namespace mwse {
 	class xMessageFix : InstructionInterface_t {
 	public:
 		xMessageFix();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xMessageFix xMessageFixInstance;

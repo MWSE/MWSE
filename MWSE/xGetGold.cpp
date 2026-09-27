@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetGold : InstructionInterface_t {
 	public:
 		xGetGold();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetGold xGetGoldInstance;

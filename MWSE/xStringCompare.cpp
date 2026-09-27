@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringCompare : InstructionInterface_t {
 	public:
 		xStringCompare();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringCompare xStringCompareInstance;

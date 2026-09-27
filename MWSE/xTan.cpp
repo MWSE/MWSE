@@ -6,7 +6,7 @@ namespace mwse {
 	class xTan : InstructionInterface_t {
 	public:
 		xTan();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xTan xTanInstance;

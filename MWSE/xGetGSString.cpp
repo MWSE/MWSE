@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetGSString : InstructionInterface_t {
 	public:
 		xGetGSString();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetGSString xGetGSStringInstance;

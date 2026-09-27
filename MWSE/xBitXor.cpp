@@ -6,7 +6,7 @@ namespace mwse {
 	class xBitXor : InstructionInterface_t {
 	public:
 		xBitXor();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xBitXor xBitXorInstance;

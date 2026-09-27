@@ -20,7 +20,7 @@ namespace mwse {
 	class xLogMessage : InstructionInterface_t {
 	public:
 		xLogMessage();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xLogMessage xLogMessageInstance;

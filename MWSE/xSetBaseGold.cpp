@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetBaseGold : InstructionInterface_t {
 	public:
 		xSetBaseGold();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetBaseGold xSetBaseGoldInstance;

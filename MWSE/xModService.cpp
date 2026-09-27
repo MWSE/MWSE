@@ -10,7 +10,7 @@ namespace mwse {
 	class xModService : InstructionInterface_t {
 	public:
 		xModService();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xModService xModServiceInstance;

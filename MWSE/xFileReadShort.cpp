@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileReadShort : InstructionInterface_t {
 	public:
 		xFileReadShort();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadShort xFileReadShortInstance;

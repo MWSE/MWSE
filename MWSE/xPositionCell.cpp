@@ -10,7 +10,7 @@ namespace mwse {
 	class xPositionCell : InstructionInterface_t {
 	public:
 		xPositionCell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPositionCell xPositionCellInstance;

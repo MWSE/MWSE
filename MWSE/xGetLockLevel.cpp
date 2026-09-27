@@ -8,7 +8,7 @@ namespace mwse {
 	class xGetLockLevel : InstructionInterface_t {
 	public:
 		xGetLockLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetLockLevel xGetLockLevelInstance;

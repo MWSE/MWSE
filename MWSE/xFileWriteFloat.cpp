@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileWriteFloat : InstructionInterface_t {
 	public:
 		xFileWriteFloat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileWriteFloat xFileWriteFloatInstance;

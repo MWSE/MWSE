@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileReadString : InstructionInterface_t {
 	public:
 		xFileReadString();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadString xFileReadStringInstance;

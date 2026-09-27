@@ -10,7 +10,7 @@ namespace mwse {
 	class xDrop : InstructionInterface_t {
 	public:
 		xDrop();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xDrop xDropInstance;

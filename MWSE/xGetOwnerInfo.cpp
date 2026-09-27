@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetOwnerInfo : InstructionInterface_t {
 	public:
 		xGetOwnerInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetOwnerInfo xGetOwnerInfoInstance;

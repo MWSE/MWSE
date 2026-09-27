@@ -10,7 +10,7 @@ namespace mwse {
 	class xFirstStatic : InstructionInterface_t {
 	public:
 		xFirstStatic();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFirstStatic xFirstStaticInstance;

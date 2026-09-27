@@ -10,7 +10,7 @@ namespace mwse {
 	class xInventory : InstructionInterface_t {
 	public:
 		xInventory();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xInventory xInventoryInstance;

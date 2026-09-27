@@ -9,7 +9,7 @@ namespace mwse {
 	class xRefID : InstructionInterface_t {
 	public:
 		xRefID();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRefID xRefIDInstance;

@@ -10,7 +10,7 @@ namespace mwse {
 	class xIsFemale : InstructionInterface_t {
 	public:
 		xIsFemale();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsFemale xIsFemaleInstance;

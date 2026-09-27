@@ -6,7 +6,7 @@ namespace mwse {
 	class xArcSin : InstructionInterface_t {
 	public:
 		xArcSin();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcSin xArcSinInstance;

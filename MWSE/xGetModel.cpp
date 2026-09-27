@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetModel : InstructionInterface_t {
 	public:
 		xGetModel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetModel xGetModelInstance;

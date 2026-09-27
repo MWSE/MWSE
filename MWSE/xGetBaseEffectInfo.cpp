@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetBaseEffectInfo : InstructionInterface_t {
 	public:
 		xGetBaseEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetBaseEffectInfo xGetBaseEffectInfoInstance;

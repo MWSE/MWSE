@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetBaseWil : InstructionInterface_t {
 	public:
 		xGetBaseWil();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

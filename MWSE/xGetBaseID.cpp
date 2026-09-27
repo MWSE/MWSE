@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetBaseID : InstructionInterface_t {
 	public:
 		xGetBaseID();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetBaseID xGetBaseIDInstance;

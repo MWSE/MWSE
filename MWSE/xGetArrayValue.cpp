@@ -7,7 +7,7 @@ namespace mwse {
 	class xGetArrayValue : InstructionInterface_t {
 	public:
 		xGetArrayValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetArrayValue xGetArrayValueInstance;

@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileSeek : InstructionInterface_t {
 	public:
 		xFileSeek();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileSeek xFileSeekInstance;

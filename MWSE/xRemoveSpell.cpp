@@ -10,7 +10,7 @@ namespace mwse {
 	class xRemoveSpell : InstructionInterface_t {
 	public:
 		xRemoveSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRemoveSpell xRemoveSpellInstance;

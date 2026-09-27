@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringParse : InstructionInterface_t {
 	public:
 		xStringParse();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringParse xStringParseInstance;

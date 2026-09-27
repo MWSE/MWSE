@@ -7,7 +7,7 @@ namespace mwse {
 	class xSetArrayValue : InstructionInterface_t {
 	public:
 		xSetArrayValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetArrayValue xSetArrayValueInstance;

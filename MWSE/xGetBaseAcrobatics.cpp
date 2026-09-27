@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetBaseAcrobatics : InstructionInterface_t {
 	public:
 		xGetBaseAcrobatics();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

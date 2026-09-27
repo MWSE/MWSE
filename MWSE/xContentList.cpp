@@ -12,7 +12,7 @@ namespace mwse {
 	class xContentList : InstructionInterface_t {
 	public:
 		xContentList();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xContentList xContentListInstance;

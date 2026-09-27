@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetKeyBind : InstructionInterface_t {
 	public:
 		xGetKeyBind();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	enum xGetKeyBindReturnType {

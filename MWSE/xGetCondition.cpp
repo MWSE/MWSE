@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetCondition : InstructionInterface_t {
 	public:
 		xGetCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetCondition xGetConditionInstance;

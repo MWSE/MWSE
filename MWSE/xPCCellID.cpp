@@ -10,7 +10,7 @@ namespace mwse {
 	class xPCCellID : InstructionInterface_t {
 	public:
 		xPCCellID();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPCCellID xPCCellIDInstance;

@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetAlchemyInfo : InstructionInterface_t {
 	public:
 		xGetAlchemyInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetAlchemyInfo xGetAlchemyInfoInstance;

@@ -6,7 +6,7 @@ namespace mwse {
 	class xLongToFloats : InstructionInterface_t {
 	public:
 		xLongToFloats();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xLongToFloats xLongToFloatsInstance;

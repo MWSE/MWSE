@@ -10,7 +10,7 @@ namespace mwse {
 	class xPlace : InstructionInterface_t {
 	public:
 		xPlace();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPlace xPlaceInstance;

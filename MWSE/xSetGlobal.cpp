@@ -11,7 +11,7 @@ namespace mwse {
 	class xSetGlobal : InstructionInterface_t {
 	public:
 		xSetGlobal();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetGlobal xSetGlobalInstance;

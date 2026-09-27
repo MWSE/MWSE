@@ -10,7 +10,7 @@ namespace mwse {
 	class xFirstNPC : InstructionInterface_t {
 	public:
 		xFirstNPC();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFirstNPC xFirstNPCInstance;

@@ -11,7 +11,7 @@ namespace mwse {
 	class xFirstItem : InstructionInterface_t {
 	public:
 		xFirstItem();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFirstItem xFirstItemInstance;

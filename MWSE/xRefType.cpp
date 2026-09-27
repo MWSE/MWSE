@@ -8,7 +8,7 @@ namespace mwse {
 	{
 	public:
 		xRefType();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRefType xRefTypeInstance;

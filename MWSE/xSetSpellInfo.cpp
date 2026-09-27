@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetSpellInfo : InstructionInterface_t {
 	public:
 		xSetSpellInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetSpellInfo xSetSpellInfoInstance;

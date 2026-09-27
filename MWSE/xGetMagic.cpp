@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetMagic : InstructionInterface_t {
 	public:
 		xGetMagic();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetMagic xGetMagicInstance;

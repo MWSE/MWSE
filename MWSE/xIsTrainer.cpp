@@ -11,7 +11,7 @@ namespace mwse {
 	class xIsTrainer : InstructionInterface_t {
 	public:
 		xIsTrainer();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsTrainer xIsTrainerInstance;

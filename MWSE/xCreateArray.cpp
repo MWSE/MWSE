@@ -7,7 +7,7 @@ namespace mwse {
 	class xCreateArray : InstructionInterface_t {
 	public:
 		xCreateArray();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xCreateArray xCreateArrayInstance;

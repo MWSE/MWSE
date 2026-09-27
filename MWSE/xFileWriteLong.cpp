@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileWriteLong : InstructionInterface_t {
 	public:
 		xFileWriteLong();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileWriteLong xFileWriteLongInstance;

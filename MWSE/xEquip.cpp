@@ -11,7 +11,7 @@ namespace mwse {
 	class xEquip : InstructionInterface_t {
 	public:
 		xEquip();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xEquip xEquipInstance;

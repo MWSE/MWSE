@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetItemCount : InstructionInterface_t {
 	public:
 		xGetItemCount();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetItemCount xGetItemCountInstance;

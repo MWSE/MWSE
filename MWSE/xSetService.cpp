@@ -11,7 +11,7 @@ namespace mwse {
 	class xSetService : InstructionInterface_t {
 	public:
 		xSetService();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetService xSetServiceInstance;

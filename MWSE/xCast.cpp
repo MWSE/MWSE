@@ -12,7 +12,7 @@ namespace mwse {
 	class xCast : InstructionInterface_t {
 	public:
 		xCast();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xCast xCastInstance;

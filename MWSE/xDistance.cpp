@@ -7,7 +7,7 @@ namespace mwse {
 	class xDistance : InstructionInterface_t {
 	public:
 		xDistance();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xDistance xDistanceInstance;

@@ -12,7 +12,7 @@ namespace mwse {
 	class xDeleteEffect : InstructionInterface_t {
 	public:
 		xDeleteEffect();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xDeleteEffect xDeleteEffectInstance;

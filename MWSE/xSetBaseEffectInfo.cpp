@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetBaseEffectInfo : InstructionInterface_t {
 	public:
 		xSetBaseEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetBaseEffectInfo xSetBaseEffectInfoInstance;

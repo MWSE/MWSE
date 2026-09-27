@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetCombat : InstructionInterface_t {
 	public:
 		xGetCombat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetCombat xGetCombatInstance;

@@ -9,7 +9,7 @@ namespace mwse {
 	class xModAttribute : InstructionInterface_t {
 	public:
 		xModAttribute();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xModAttribute xModAttributeInstance;

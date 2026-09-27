@@ -10,7 +10,7 @@ namespace mwse {
 	class xLuaRunScript : InstructionInterface_t {
 	public:
 		xLuaRunScript();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		std::unordered_map<int, sol::table> cachedScripts;

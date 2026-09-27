@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetBaseStr : InstructionInterface_t {
 	public:
 		xGetBaseStr();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

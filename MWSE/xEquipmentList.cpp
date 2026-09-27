@@ -20,7 +20,7 @@ namespace mwse {
 	class xEquipmentList : InstructionInterface_t {
 	public:
 		xEquipmentList();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		bool nodeMatchesFilter(NI::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);

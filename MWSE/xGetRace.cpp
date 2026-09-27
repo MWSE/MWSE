@@ -14,7 +14,7 @@ namespace mwse {
 	class xGetRace : InstructionInterface_t {
 	public:
 		xGetRace();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		std::map<long, long> arrayMap;
 	};

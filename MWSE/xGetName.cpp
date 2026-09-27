@@ -8,7 +8,7 @@ namespace mwse {
 	class xGetName : InstructionInterface_t {
 	public:
 		xGetName();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetName xGetNameInstance;

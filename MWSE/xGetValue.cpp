@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetValue : InstructionInterface_t {
 	public:
 		xGetValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetValue xGetValueInstance;

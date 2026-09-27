@@ -9,7 +9,7 @@ namespace mwse {
 	class xNextStack : InstructionInterface_t {
 	public:
 		xNextStack();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xNextStack xNextStackInstance;

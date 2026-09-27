@@ -11,7 +11,7 @@ namespace mwse {
 	class xIsProvider : InstructionInterface_t {
 	public:
 		xIsProvider();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsProvider xIsProviderInstance;

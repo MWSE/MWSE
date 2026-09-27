@@ -12,7 +12,7 @@ namespace mwse {
 	class xContentListFiltered : InstructionInterface_t {
 	public:
 		xContentListFiltered();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		long getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType);

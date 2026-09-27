@@ -8,7 +8,7 @@ namespace mwse {
 	class xKeyPressed : InstructionInterface_t {
 	public:
 		xKeyPressed();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xKeyPressed xKeyPressedInstance;

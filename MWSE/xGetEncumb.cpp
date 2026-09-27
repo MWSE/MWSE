@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetEncumb : InstructionInterface_t {
 	public:
 		xGetEncumb();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetEncumb xGetEncumbInstance;

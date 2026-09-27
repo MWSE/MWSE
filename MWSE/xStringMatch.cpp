@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringMatch : InstructionInterface_t {
 	public:
 		xStringMatch();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringMatch xStringMatchInstance;

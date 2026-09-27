@@ -8,7 +8,7 @@ namespace mwse {
 	class xRadDeg : InstructionInterface_t {
 	public:
 		xRadDeg();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRadDeg xRadDegInstance;

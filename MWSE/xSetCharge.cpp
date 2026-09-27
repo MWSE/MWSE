@@ -11,7 +11,7 @@ namespace mwse {
 	class xSetCharge : InstructionInterface_t {
 	public:
 		xSetCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetCharge xSetChargeInstance;

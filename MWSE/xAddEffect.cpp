@@ -12,7 +12,7 @@ namespace mwse {
 	class xAddEffect : InstructionInterface_t {
 	public:
 		xAddEffect();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAddEffect xAddEffectInstance;

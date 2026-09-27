@@ -13,7 +13,7 @@ namespace mwse {
 	class xScriptRunning : InstructionInterface_t {
 	public:
 		xScriptRunning();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xScriptRunning xScriptRunningInstance;

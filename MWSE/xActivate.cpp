@@ -12,7 +12,7 @@ namespace mwse {
 	class xActivate : InstructionInterface_t {
 	public:
 		xActivate();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xActivate xActivateInstance;

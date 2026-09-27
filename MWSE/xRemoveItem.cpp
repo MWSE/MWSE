@@ -10,7 +10,7 @@ namespace mwse {
 	class xRemoveItem : InstructionInterface_t {
 	public:
 		xRemoveItem();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRemoveItem xRemoveItemInstance;

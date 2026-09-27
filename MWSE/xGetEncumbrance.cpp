@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetEncumbrance : InstructionInterface_t {
 	public:
 		xGetEncumbrance();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 		enum EncumbranceQueryType {
 			CurrentEncumbrance = 0,

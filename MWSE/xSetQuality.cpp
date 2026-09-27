@@ -13,7 +13,7 @@ namespace mwse {
 	class xSetQuality : InstructionInterface_t {
 	public:
 		xSetQuality();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetQuality xSetQualityInstance;

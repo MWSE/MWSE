@@ -7,7 +7,7 @@ namespace mwse {
 	class xRandomLong : InstructionInterface_t {
 	public:
 		xRandomLong();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRandomLong xRandomLongInstance;

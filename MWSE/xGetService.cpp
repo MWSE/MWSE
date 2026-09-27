@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetService : InstructionInterface_t {
 	public:
 		xGetService();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetService xGetServiceInstance;

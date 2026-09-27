@@ -10,7 +10,7 @@ namespace mwse {
 	class xAddSpell : InstructionInterface_t {
 	public:
 		xAddSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAddSpell xAddSpellInstance;

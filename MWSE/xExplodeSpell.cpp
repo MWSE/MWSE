@@ -10,7 +10,7 @@ namespace mwse {
 	class xExplodeSpell : InstructionInterface_t {
 	public:
 		xExplodeSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xExplodeSpell xExplodeSpellInstance;

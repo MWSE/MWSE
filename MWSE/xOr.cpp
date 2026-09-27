@@ -6,7 +6,7 @@ namespace mwse {
 	class xOr : InstructionInterface_t {
 	public:
 		xOr();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xOr xOrInstance;

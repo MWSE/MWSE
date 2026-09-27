@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringLength : InstructionInterface_t {
 	public:
 		xStringLength();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringLength xStringLengthInstance;

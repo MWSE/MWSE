@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringBuild : InstructionInterface_t {
 	public:
 		xStringBuild();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringBuild xStringBuildInstance;

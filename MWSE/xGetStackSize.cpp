@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetStackSize : InstructionInterface_t {
 	public:
 		xGetStackSize();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetStackSize xGetStackSizeInstance;

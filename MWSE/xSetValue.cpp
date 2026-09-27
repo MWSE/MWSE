@@ -17,7 +17,7 @@ namespace mwse {
 	class xSetValue : InstructionInterface_t {
 	public:
 		xSetValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetValue xSetValueInstance;

@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetWeight : InstructionInterface_t {
 	public:
 		xGetWeight();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetWeight xGetWeightInstance;

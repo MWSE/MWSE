@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetBaseMagicka : InstructionInterface_t {
 	public:
 		xGetBaseMagicka();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

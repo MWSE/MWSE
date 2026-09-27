@@ -18,7 +18,7 @@ namespace mwse {
 	class xSetWeight : InstructionInterface_t {
 	public:
 		xSetWeight();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetWeight xSetWeightInstance;

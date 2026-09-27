@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetMCPFeatureState : InstructionInterface_t {
 	public:
 		xGetMCPFeatureState();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetMCPFeatureState xGetMCPFeatureStateInstance;

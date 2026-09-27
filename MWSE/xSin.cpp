@@ -6,7 +6,7 @@ namespace mwse {
 	class xSin : InstructionInterface_t {
 	public:
 		xSin();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSin xSinInstance;

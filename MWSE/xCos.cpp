@@ -6,7 +6,7 @@ namespace mwse {
 	class xCos : InstructionInterface_t {
 	public:
 		xCos();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xCos xCosInstance;

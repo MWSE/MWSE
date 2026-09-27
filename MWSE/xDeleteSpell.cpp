@@ -10,7 +10,7 @@ namespace mwse {
 	class xDeleteSpell : InstructionInterface_t {
 	public:
 		xDeleteSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xDeleteSpell xDeleteSpellInstance;

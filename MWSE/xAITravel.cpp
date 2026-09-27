@@ -10,7 +10,7 @@ namespace mwse {
 	class xAITravel : InstructionInterface_t {
 	public:
 		xAITravel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAITravel xAITravelInstance;

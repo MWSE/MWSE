@@ -6,7 +6,7 @@ namespace mwse {
 	class xNot : InstructionInterface_t {
 	public:
 		xNot();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xNot xNotInstance;

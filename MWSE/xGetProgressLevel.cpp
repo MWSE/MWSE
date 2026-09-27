@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetProgressLevel : InstructionInterface_t {
 	public:
 		xGetProgressLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const long INVALID_VALUE = -1;
 	};

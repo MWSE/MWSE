@@ -6,7 +6,7 @@ namespace mwse {
 	class xArcCos : InstructionInterface_t {
 	public:
 		xArcCos();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcCos xArcCosInstance;

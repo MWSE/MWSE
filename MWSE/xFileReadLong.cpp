@@ -7,7 +7,7 @@ namespace mwse {
 	class xFileReadLong : InstructionInterface_t {
 	public:
 		xFileReadLong();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadLong xFileReadLongInstance;

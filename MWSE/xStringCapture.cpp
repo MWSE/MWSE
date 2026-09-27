@@ -8,7 +8,7 @@ namespace mwse {
 	class xStringCapture : InstructionInterface_t {
 	public:
 		xStringCapture();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringCapture xStringCaptureInstance;

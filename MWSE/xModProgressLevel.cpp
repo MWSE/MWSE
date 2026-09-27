@@ -9,7 +9,7 @@ namespace mwse {
 	class xModProgressLevel : InstructionInterface_t {
 	public:
 		xModProgressLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xModProgressLevel xModProgressLevelInstance;

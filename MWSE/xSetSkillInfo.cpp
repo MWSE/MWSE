@@ -12,7 +12,7 @@ namespace mwse {
 	class xSetSkillInfo : InstructionInterface_t {
 	public:
 		xSetSkillInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetSkillInfo xSetSkillInfoInstance;

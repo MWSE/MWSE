@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetIngredientEffect : InstructionInterface_t {
 	public:
 		xSetIngredientEffect();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetIngredientEffect xSetIngredientEffectInstance;

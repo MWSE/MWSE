@@ -11,7 +11,7 @@ namespace mwse {
 	class xGetGlobal : InstructionInterface_t {
 	public:
 		xGetGlobal();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetGlobal xGetGlobalInstance;

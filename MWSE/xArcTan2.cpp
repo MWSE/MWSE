@@ -6,7 +6,7 @@ namespace mwse {
 	class xArcTan2 : InstructionInterface_t {
 	public:
 		xArcTan2();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcTan2 xArcTan2Instance;

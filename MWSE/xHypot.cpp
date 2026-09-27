@@ -6,7 +6,7 @@ namespace mwse {
 	class xHypot : InstructionInterface_t {
 	public:
 		xHypot();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xHypot xHypotInstance;

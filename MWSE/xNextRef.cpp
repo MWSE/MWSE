@@ -10,7 +10,7 @@ namespace mwse {
 	class xNextRef : InstructionInterface_t {
 	public:
 		xNextRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xNextRef xNextRefInstance;

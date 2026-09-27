@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetEnchantEffectInfo : InstructionInterface_t {
 	public:
 		xGetEnchantEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetEnchantEffectInfo xGetEnchantEffectInfoInstance;

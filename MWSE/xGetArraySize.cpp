@@ -7,7 +7,7 @@ namespace mwse {
 	class xGetArraySize : InstructionInterface_t {
 	public:
 		xGetArraySize();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetArraySize xGetArraySizeInstance;

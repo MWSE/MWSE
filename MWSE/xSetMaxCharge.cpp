@@ -11,7 +11,7 @@ namespace mwse {
 	class xSetMaxCharge : InstructionInterface_t {
 	public:
 		xSetMaxCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetMaxCharge xSetMaxChargeInstance;

@@ -10,7 +10,7 @@ namespace mwse {
 	class xGetSpellEffectInfo : InstructionInterface_t {
 	public:
 		xGetSpellEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetSpellEffectInfo xGetSpellEffectInfoInstance;

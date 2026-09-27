@@ -8,7 +8,7 @@ namespace mwse {
 	class xGetQuality : InstructionInterface_t {
 	public:
 		xGetQuality();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

@@ -6,7 +6,7 @@ namespace mwse {
 	class xBitNot : InstructionInterface_t {
 	public:
 		xBitNot();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xBitNot xBitNotInstance;

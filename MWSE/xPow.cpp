@@ -6,7 +6,7 @@ namespace mwse {
 	class xPow : InstructionInterface_t {
 	public:
 		xPow();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPow xPowInstance;

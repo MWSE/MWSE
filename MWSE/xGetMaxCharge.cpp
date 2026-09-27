@@ -9,7 +9,7 @@ namespace mwse {
 	class xGetMaxCharge : InstructionInterface_t {
 	public:
 		xGetMaxCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};

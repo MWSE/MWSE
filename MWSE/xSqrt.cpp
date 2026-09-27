@@ -6,7 +6,7 @@ namespace mwse {
 	class xSqrt : InstructionInterface_t {
 	public:
 		xSqrt();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSqrt xSqrtInstance;

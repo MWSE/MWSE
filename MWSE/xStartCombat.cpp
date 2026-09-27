@@ -10,7 +10,7 @@ namespace mwse {
 	class xStartCombat : InstructionInterface_t {
 	public:
 		xStartCombat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStartCombat xStartCombatInstance;

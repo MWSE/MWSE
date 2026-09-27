@@ -10,7 +10,7 @@ namespace mwse {
 	class xSetCondition : InstructionInterface_t {
 	public:
 		xSetCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetCondition xSetConditionInstance;

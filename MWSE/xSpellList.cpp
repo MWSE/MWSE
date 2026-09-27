@@ -11,7 +11,7 @@ namespace mwse {
 	class xSpellList : InstructionInterface_t {
 	public:
 		xSpellList();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		void pushErrorResponse();
 	};

@@ -15,7 +15,7 @@ namespace mwse {
 	class xSetMaxCondition : InstructionInterface_t {
 	public:
 		xSetMaxCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetMaxCondition xSetMaxConditionInstance;

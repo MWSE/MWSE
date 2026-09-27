@@ -13,7 +13,7 @@ namespace mwse {
 	class xStartScript : InstructionInterface_t {
 	public:
 		xStartScript();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStartScript xStartScriptInstance;

@@ -7,7 +7,7 @@ namespace mwse {
 	class xClearArray : InstructionInterface_t {
 	public:
 		xClearArray();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xClearArray xClearArrayInstance;

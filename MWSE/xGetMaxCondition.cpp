@@ -8,7 +8,7 @@ namespace mwse {
 	class xGetMaxCondition : InstructionInterface_t {
 	public:
 		xGetMaxCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetMaxCondition xGetMaxConditionInstance;

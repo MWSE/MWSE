@@ -10,7 +10,7 @@ namespace mwse {
 	class xTextInputAlt : InstructionInterface_t {
 	public:
 		xTextInputAlt();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		bool GetKeyIsPressed(int VK_key);
