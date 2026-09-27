@@ -17,7 +17,7 @@ namespace mwse {
 	float xDistance::execute(mwse::VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get target reference
-		TES3::Reference* targetref = reinterpret_cast<TES3::Reference*>(stack.popLong());
+		auto targetref = reinterpret_cast<TES3::Reference*>(stack.popLong());
 		if (targetref == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				mwse::log::getLog() << "xModProgressSkill: Target reference is invalid." << std::endl;
