@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef NELEM
-#define NELEM(a) (sizeof(a)/sizeof(a[0]))
-#endif
-
 namespace mwse {
 
 	struct mwseFileState_t {
