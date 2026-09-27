@@ -26,6 +26,11 @@ namespace mwse {
 		long index = stack.popLong();
 		long value = stack.popLong();
 
+		if (index < 0) {
+			log::getLog() << "xSetArrayValue: Array index out of bounds. id: " << id << " index: " << index << std::endl;
+			stack.pushShort(0);
+			return 0.0f;
+		}
 		short status = Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
 
 		stack.pushShort(status);
