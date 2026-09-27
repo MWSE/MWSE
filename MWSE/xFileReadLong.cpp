@@ -24,9 +24,15 @@ namespace mwse {
 		// Get arguments from the stack.
 		mwseString& fileName = virtualMachine.getString(stack.popLong());
 		long count = stack.popLong();
-
-		// Gather values into a temporary list, so they aren't in reverse order.
 		long valuesRead = 0;
+
+		if (count <= 0) {
+			log::getLog() << "xFileReadLong: Provided 'count' needs to be a number larger than 0." << std::endl;
+			stack.pushLong(valuesRead);
+			return 0.0f;
+		}
+
+		// Gather values into a temporary list, so they aren't in reverse order..
 		std::list<long> values;
 		for (long i = 0; i < count; ++i) {
 			try {
