@@ -5,9 +5,7 @@
 namespace mwse {
 	Arrays Arrays::singleton;
 
-	Arrays::Arrays() {
-		arrays = Arrays_t();
-	}
+	Arrays::Arrays() = default;
 
 	size_t Arrays::create(std::string_view caller) {
 		size_t id = 0;
