@@ -20,7 +20,7 @@ namespace mwse {
 	float xNextRef::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get REFR pointer as an argument.
-		auto reference = (TES3::Reference*)stack.popLong();
+		auto reference = stack.popPointer<TES3::Reference*>();
 
 		// Start looking for our next reference.
 		TES3::Reference* next = nullptr;
