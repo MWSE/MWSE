@@ -26,7 +26,7 @@ namespace mwse::lua {
 			usertypeDefinition["sound"] = &TES3::RegionSound::sound;
 
 			// Restrict chance [0-100].
-			usertypeDefinition["chance"] = sol::property(&TES3::RegionSound::chance, &TES3::RegionSound::setChance);
+			usertypeDefinition["chance"] = sol::property(&TES3::RegionSound::getChance, &TES3::RegionSound::setChance);
 		}
 
 		// Binding for TES3::Region.

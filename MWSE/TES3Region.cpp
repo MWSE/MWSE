@@ -9,6 +9,10 @@ namespace TES3 {
 	// TES3::RegionSound
 	//
 
+	unsigned char RegionSound::getChance() const {
+		return chance;
+	}
+
 	void RegionSound::setChance(int newChance) {
 		chance = std::clamp(newChance, 0, 100);
 	}

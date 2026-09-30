@@ -16,6 +16,7 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		unsigned char getChance() const;
 		void setChance(int newChance);
 
 	};
