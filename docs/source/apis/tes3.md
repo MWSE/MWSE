@@ -1638,13 +1638,12 @@ local race = tes3.findRace(id)
 Fetches the core game region object for a given region ID. If the region with a given ID doesn't exist, nil is returned.
 
 ```lua
-local region = tes3.findRegion({ id = ... })
+local region = tes3.findRegion(id)
 ```
 
 **Parameters**:
 
-* `params` (table)
-	* `id` (string): ID of the region to search for.
+* `id` (string): ID of the region to search for.
 
 **Returns**:
 

@@ -963,15 +963,9 @@ function tes3.findQuest(params) end
 function tes3.findRace(id) end
 
 --- Fetches the core game region object for a given region ID. If the region with a given ID doesn't exist, nil is returned.
---- @param params tes3.findRegion.params This table accepts the following values:
---- 
---- `id`: string — ID of the region to search for.
+--- @param id string ID of the region to search for.
 --- @return tes3region? region No description yet available.
-function tes3.findRegion(params) end
-
----Table parameter definitions for `tes3.findRegion`.
---- @class tes3.findRegion.params
---- @field id string ID of the region to search for.
+function tes3.findRegion(id) end
 
 --- Forces the player's POV to first person the next simulation frame, and returns true if the POV has been changed.
 --- @return boolean changedPOV No description yet available.
